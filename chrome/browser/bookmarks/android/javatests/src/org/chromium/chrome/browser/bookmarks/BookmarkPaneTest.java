@@ -33,7 +33,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -79,7 +78,6 @@ public class BookmarkPaneTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisabledTest(message = "crbug.com/464481832")
     public void testBookmarkIsDisplayed() {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         String urlOne =
@@ -101,7 +99,6 @@ public class BookmarkPaneTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisabledTest(message = "crbug.com/474580496")
     public void testBookmarkSearchMatch() {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         String urlOne =
@@ -127,7 +124,6 @@ public class BookmarkPaneTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisabledTest(message = "crbug.com/444494388")
     public void testBookmarkClickOpens() {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         String urlOne =
