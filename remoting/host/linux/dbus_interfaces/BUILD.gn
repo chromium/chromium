@@ -19,6 +19,7 @@ source_set("interface_headers") {
     "org_freedesktop_systemd1_Manager.h",
     "org_freedesktop_systemd1_Service.h",
     "org_freedesktop_systemd1_Unit.h",
+    "org_gnome_DisplayManager.h",
     "org_gnome_Mutter_DisplayConfig.h",
     "org_gnome_Mutter_RemoteDesktop.h",
     "org_gnome_Mutter_ScreenCast.h",
