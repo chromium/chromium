@@ -418,6 +418,7 @@ class ExtensionDownloader {
   UpdateAvailability GetUpdateAvailability(
       const ExtensionId& extension_id,
       const std::vector<const UpdateManifestResult*>& possible_candidates,
+      bool is_corrupt_reinstall,
       UpdateManifestResult** update_result_out) const;
 
   // The delegate that receives the crx files downloaded by the
