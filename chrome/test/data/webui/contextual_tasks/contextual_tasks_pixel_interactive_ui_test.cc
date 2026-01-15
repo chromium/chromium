@@ -52,6 +52,8 @@ class ContextualTasksComposeBoxPixelTest
   }
 
   void SetUpOnMainThread() override {
+    SetRTL(GetParam().rtl);
+    SetDarkMode(GetParam().dark_mode);
     WebUIComposeBoxPixelTest::SetUpOnMainThread();
     identity_test_environment_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
@@ -82,6 +84,7 @@ INSTANTIATE_TEST_SUITE_P(
         {.focused = true},
         {.dark_mode = true},
         {.focused = true, .dark_mode = true},
+        {.dark_mode = true, .with_text = true},
         // Testing focused vs unfocused with text.
         {.with_text = true},
         {.focused = true, .with_text = true},
@@ -143,5 +146,5 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksComposeBoxPixelTest, Screenshots) {
       // Take a screenshot of the composebox.
       ScreenshotWebUi(kActiveTab, kComposebox,
                       /*screenshot_name=*/"ContextualTasksComposebox",
-                      /*baseline_cl=*/"7262899"));
+                      /*baseline_cl=*/"7396104"));
 }
