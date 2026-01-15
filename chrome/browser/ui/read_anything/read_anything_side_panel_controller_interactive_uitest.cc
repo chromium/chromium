@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <atomic>
 #include <optional>
 
 #include "base/metrics/histogram_base.h"
@@ -34,8 +35,7 @@ namespace {
 constexpr char kDocumentWithNamedElement[] = "/select.html";
 }  // namespace
 
-class MockReadAnythingLifecycleObserver
-    : public ReadAnythingLifecycleObserver {
+class MockReadAnythingLifecycleObserver : public ReadAnythingLifecycleObserver {
  public:
   MOCK_METHOD(void,
               Activate,
@@ -311,6 +311,21 @@ class ReadAnythingOmniboxTest
                         }).SetMustRemainVisible(false));
   }
 
+  // Mimic dwelling on the current page for 4 seconds.
+  auto MockDwellTime(ui::ElementIdentifier tab) {
+    return InAnyContext(WithElement(tab, [this](ui::TrackedElement* el) {
+      content::WebContents* contents =
+          InteractiveFeaturePromoTest::AsInstrumentedWebContents(el)
+              ->web_contents();
+      tabs::TabInterface* tab_interface =
+          browser()->tab_strip_model()->GetTabForWebContents(contents);
+      CHECK(tab_interface);
+      tab_interface->GetTabFeatures()
+          ->read_anything_side_panel_controller()
+          ->SetDwellTimeForTesting(base::TimeTicks::Now() - base::Seconds(4));
+    }));
+  }
+
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
   GURL distillable_url_;
@@ -343,32 +358,32 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxTest,
       InstrumentTab(kActiveTab),
       // Shown and ignored (1).
       NavigateWebContents(kActiveTab, distillable_url_),
-      WaitForPageActionChipVisible(),
+      WaitForPageActionChipVisible(), MockDwellTime(kActiveTab),
       NavigateWebContents(kActiveTab, non_distillable_url_),
       WaitForPageActionChipNotVisible(),
       // Shown and ignored (2).
       NavigateWebContents(kActiveTab, distillable_url_),
-      WaitForPageActionChipVisible(),
+      WaitForPageActionChipVisible(), MockDwellTime(kActiveTab),
       NavigateWebContents(kActiveTab, non_distillable_url_),
       WaitForPageActionChipNotVisible(),
       // Shown and ignored (3).
       NavigateWebContents(kActiveTab, distillable_url_),
-      WaitForPageActionChipVisible(),
+      WaitForPageActionChipVisible(), MockDwellTime(kActiveTab),
       NavigateWebContents(kActiveTab, non_distillable_url_),
       WaitForPageActionChipNotVisible(),
       // Shown and ignored (4).
       NavigateWebContents(kActiveTab, distillable_url_),
-      WaitForPageActionChipVisible(),
+      WaitForPageActionChipVisible(), MockDwellTime(kActiveTab),
       NavigateWebContents(kActiveTab, non_distillable_url_),
       WaitForPageActionChipNotVisible(),
       // Shown and ignored (5).
       NavigateWebContents(kActiveTab, distillable_url_),
-      WaitForPageActionChipVisible(),
+      WaitForPageActionChipVisible(), MockDwellTime(kActiveTab),
       NavigateWebContents(kActiveTab, non_distillable_url_),
       WaitForPageActionChipNotVisible(),
       // Shown and ignored (6). From now on should show as icon only.
       NavigateWebContents(kActiveTab, distillable_url_),
-      WaitForPageActionChipVisible(),
+      WaitForPageActionChipVisible(), MockDwellTime(kActiveTab),
       NavigateWebContents(kActiveTab, non_distillable_url_),
       WaitForPageActionChipNotVisible(),
       // Now should show as icon only.
@@ -415,28 +430,28 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxTest,
       AddInstrumentedTab(kTab8, distillable_url_, 7),
       WaitForWebContentsReady(kTab2),
       // Move to the second tab and close the first tab, ignoring the chip.
-      SelectTab(kTabStripElementId, 1), CloseTab(kTab1),
+      SelectTab(kTabStripElementId, 1), MockDwellTime(kTab1), CloseTab(kTab1),
       WaitForWebContentsReady(kTab3),
       // Move to the third tab and close the second tab, this should not count
       // as ignored since the chip should not show on the second tab.
       SelectTab(kTabStripElementId, 1), CloseTab(kTab2),
       WaitForPageActionChipVisible(), WaitForWebContentsReady(kTab4),
       // Move to the fourth tab and close the third tab, ignoring the chip.
-      SelectTab(kTabStripElementId, 1), CloseTab(kTab3),
+      SelectTab(kTabStripElementId, 1), MockDwellTime(kTab3), CloseTab(kTab3),
       WaitForPageActionChipVisible(), WaitForWebContentsReady(kTab5),
       // Move to the fifth tab and close the fourth tab, ignoring the chip.
-      SelectTab(kTabStripElementId, 1), CloseTab(kTab4),
+      SelectTab(kTabStripElementId, 1), MockDwellTime(kTab4), CloseTab(kTab4),
       WaitForPageActionChipVisible(), WaitForWebContentsReady(kTab6),
       // Move to the sixth tab and close the fifth tab, ignoring the chip.
-      SelectTab(kTabStripElementId, 1), CloseTab(kTab5),
+      SelectTab(kTabStripElementId, 1), MockDwellTime(kTab5), CloseTab(kTab5),
       WaitForPageActionChipVisible(), WaitForWebContentsReady(kTab7),
       // Move to the seventh tab and close the sixth tab, ignoring the chip.
-      SelectTab(kTabStripElementId, 1), CloseTab(kTab6),
+      SelectTab(kTabStripElementId, 1), MockDwellTime(kTab6), CloseTab(kTab6),
       WaitForPageActionChipVisible(), WaitForWebContentsReady(kTab8),
       // Move to the eighth tab and close the seventh tab, ignoring the chip for
       // the sixth time, so the omnibox should now show as icon only.
-      SelectTab(kTabStripElementId, 1), CloseTab(kTab7),
-      WaitForPageActionChipNotVisible(), WaitForPageActionIconVisible());
+      SelectTab(kTabStripElementId, 1), MockDwellTime(kTab7), CloseTab(kTab7),
+      WaitForPageActionIconVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxTest,
