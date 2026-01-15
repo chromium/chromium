@@ -29114,21 +29114,6 @@
             ]
         }
     ],
-    "WinSboxStrictHandleChecks": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WinSboxStrictHandleChecks"
-                    ]
-                }
-            ]
-        }
-    ],
     "WindowsSystemTracing": [
         {
             "platforms": [
