@@ -687,7 +687,7 @@ TEST_P(InstallFromSyncTest, Shutdown) {
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ(future.Get<webapps::InstallResultCode>(),
             webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
-  EXPECT_FALSE(registrar().IsInRegistrar(app_id));
+  EXPECT_FALSE(registrar().GetInstallState(app_id).has_value());
 }
 
 TEST_P(InstallFromSyncTest, TrustedIconInstallsFromFallback) {

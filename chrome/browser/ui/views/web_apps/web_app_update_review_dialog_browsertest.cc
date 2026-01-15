@@ -523,7 +523,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUpdateDialogBrowserTests, CancelUninstall) {
   WebAppProvider* provider = WebAppProvider::GetForTest(profile());
   views::test::AcceptDialog(uninstall_dialog);
   provider->command_manager().AwaitAllCommandsCompleteForTesting();
-  EXPECT_FALSE(provider->registrar_unsafe().IsInRegistrar(app_id));
+  EXPECT_FALSE(
+      provider->registrar_unsafe().GetInstallState(app_id).has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppUpdateDialogBrowserTests, IgnoreRemovesMenuLabel) {

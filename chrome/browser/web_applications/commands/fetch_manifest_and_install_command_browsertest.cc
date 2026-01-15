@@ -212,7 +212,10 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, MultipleInstalls) {
             EXPECT_EQ(
                 code,
                 webapps::InstallResultCode::kCancelledDueToMainFrameNavigation);
-            EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(app_id));
+            EXPECT_FALSE(provider()
+                             .registrar_unsafe()
+                             .GetInstallState(app_id)
+                             .has_value());
             loop.Quit();
           }),
       FallbackBehavior::kCraftedManifestOnly);
@@ -233,7 +236,8 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, InvalidManifest) {
       base::BindLambdaForTesting([&](const webapps::AppId& app_id,
                                      webapps::InstallResultCode code) {
         EXPECT_EQ(code, webapps::InstallResultCode::kNotValidManifestForWebApp);
-        EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(app_id));
+        EXPECT_FALSE(
+            provider().registrar_unsafe().GetInstallState(app_id).has_value());
         loop.Quit();
       }),
       FallbackBehavior::kCraftedManifestOnly);
@@ -255,7 +259,10 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, UserDeclineInstall) {
       base::BindLambdaForTesting(
           [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kUserInstallDeclined);
-            EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(app_id));
+            EXPECT_FALSE(provider()
+                             .registrar_unsafe()
+                             .GetInstallState(app_id)
+                             .has_value());
             loop.Quit();
           }),
       FallbackBehavior::kCraftedManifestOnly);
@@ -278,7 +285,10 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
       base::BindLambdaForTesting(
           [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kWebContentsDestroyed);
-            EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(app_id));
+            EXPECT_FALSE(provider()
+                             .registrar_unsafe()
+                             .GetInstallState(app_id)
+                             .has_value());
             loop.Quit();
           }),
       FallbackBehavior::kCraftedManifestOnly);

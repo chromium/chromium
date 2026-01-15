@@ -539,7 +539,8 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerBrowserTest,
 
   run_loop.Run();
 
-  EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(kAppId1));
+  EXPECT_FALSE(
+      provider().registrar_unsafe().GetInstallState(kAppId1).has_value());
 }
 
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerBrowserTest,
@@ -563,8 +564,12 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerBrowserTest,
       base::BindLambdaForTesting([&]() {
         // The second app was installed just to catch the final policy processed
         // callback, both apps are processed together.
-        EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(kAppId1));
-        if (provider().registrar_unsafe().IsInRegistrar(kAppId2) == true) {
+        EXPECT_FALSE(
+            provider().registrar_unsafe().GetInstallState(kAppId1).has_value());
+        if (provider()
+                .registrar_unsafe()
+                .GetInstallState(kAppId2)
+                .has_value() == true) {
           run_loop.Quit();
         }
       }));
@@ -721,7 +726,8 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerBrowserTest,
 
     EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
         kAppId1, WebAppFilter::PolicyInstalledIsolatedWebApp()));
-    EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(kAppId2));
+    EXPECT_FALSE(
+        provider().registrar_unsafe().GetInstallState(kAppId2).has_value());
   }
 
   // Set the policy with 2 IWAs and wait for the second IWA to be re-installed.
@@ -781,8 +787,10 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerBrowserTest,
 
     EXPECT_THAT(uninstall_observer.Wait(), testing::AnyOf(kAppId1, kAppId2));
 
-    EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(kAppId1));
-    EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(kAppId2));
+    EXPECT_FALSE(
+        provider().registrar_unsafe().GetInstallState(kAppId1).has_value());
+    EXPECT_FALSE(
+        provider().registrar_unsafe().GetInstallState(kAppId2).has_value());
   }
 }
 

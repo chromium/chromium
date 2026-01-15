@@ -948,10 +948,11 @@ const WebApp* WebAppRegistrar::LookUpAppByInstallSourceInstallUrl(
   return nullptr;
 }
 
-bool WebAppRegistrar::IsInRegistrar(const webapps::AppId& app_id) const {
+std::optional<proto::InstallState> WebAppRegistrar::GetInstallState(
+    const webapps::AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
   if (!web_app || web_app->is_uninstalling()) {
-    return false;
+    return std::nullopt;
   }
 
   // `is_from_sync_and_pending_installation()` should be treated as 'not
@@ -961,18 +962,8 @@ bool WebAppRegistrar::IsInRegistrar(const webapps::AppId& app_id) const {
   sources_except_sync.Remove(WebAppManagement::kSync);
   if (web_app->is_from_sync_and_pending_installation() &&
       sources_except_sync.empty()) {
-    return false;
-  }
-  return true;
-}
-
-std::optional<proto::InstallState> WebAppRegistrar::GetInstallState(
-    const webapps::AppId& app_id) const {
-  if (!IsInRegistrar(app_id)) {
     return std::nullopt;
   }
-  const WebApp* web_app = GetAppById(app_id);
-  CHECK(web_app);
   return web_app->install_state();
 }
 

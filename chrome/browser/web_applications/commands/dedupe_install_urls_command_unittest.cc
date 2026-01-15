@@ -192,7 +192,10 @@ TEST_F(DedupeInstallUrlsCommandTest,
   }
 
   // Placeholder app should no longer be present.
-  EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(placeholder_app_id));
+  EXPECT_FALSE(provider()
+                   .registrar_unsafe()
+                   .GetInstallState(placeholder_app_id)
+                   .has_value());
 
   // Real app should be installed
   const WebApp* real_app =
@@ -264,7 +267,10 @@ TEST_F(DedupeInstallUrlsCommandTest,
   SynchronizePreinstalledWebAppManagerWithInstallUrl(install_url);
 
   // Placeholder app should no longer be present.
-  EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(placeholder_app_id));
+  EXPECT_FALSE(provider()
+                   .registrar_unsafe()
+                   .GetInstallState(placeholder_app_id)
+                   .has_value());
 
   // Real app should be installed
   const WebApp* real_app =
@@ -365,7 +371,10 @@ TEST_F(DedupeInstallUrlsCommandTest, SameInstallUrlForRealAndPlaceholder) {
   SynchronizePolicyWebAppManager();
 
   // Placeholder app should no longer be present.
-  EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(placeholder_app_id));
+  EXPECT_FALSE(provider()
+                   .registrar_unsafe()
+                   .GetInstallState(placeholder_app_id)
+                   .has_value());
 
   // Real app should be installed
   const WebApp* real_app =
@@ -471,7 +480,10 @@ TEST_F(DedupeInstallUrlsCommandTest, DefaultPlaceholderForceReinstalled) {
   SynchronizePreinstalledWebAppManagerWithInstallUrl(install_url);
 
   // Placeholder app should no longer be present.
-  EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(placeholder_app_id));
+  EXPECT_FALSE(provider()
+                   .registrar_unsafe()
+                   .GetInstallState(placeholder_app_id)
+                   .has_value());
 
   // Real app should be installed
   const WebApp* real_app =
@@ -541,8 +553,8 @@ TEST_F(DedupeInstallUrlsCommandTest, MoreThanTwoDuplicates) {
 
   // The most recently installed web app is chosen as the dedupe into target.
   const WebAppRegistrar& registrar = provider().registrar_unsafe();
-  EXPECT_FALSE(registrar.IsInRegistrar(app_id_a1));
-  EXPECT_FALSE(registrar.IsInRegistrar(app_id_a2));
+  EXPECT_FALSE(registrar.GetInstallState(app_id_a1).has_value());
+  EXPECT_FALSE(registrar.GetInstallState(app_id_a2).has_value());
   const WebApp* app_a = registrar.GetAppById(app_id_a3);
   ASSERT_TRUE(app_a);
   EXPECT_EQ(app_a->GetSources(),
@@ -550,8 +562,8 @@ TEST_F(DedupeInstallUrlsCommandTest, MoreThanTwoDuplicates) {
                                    WebAppManagement::Type::kKiosk,
                                    WebAppManagement::Type::kPolicy}));
 
-  EXPECT_FALSE(registrar.IsInRegistrar(app_id_b1));
-  EXPECT_FALSE(registrar.IsInRegistrar(app_id_b2));
+  EXPECT_FALSE(registrar.GetInstallState(app_id_b1).has_value());
+  EXPECT_FALSE(registrar.GetInstallState(app_id_b2).has_value());
   const WebApp* app_b = registrar.GetAppById(app_id_b3);
   ASSERT_TRUE(app_b);
   EXPECT_EQ(

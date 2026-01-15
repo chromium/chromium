@@ -401,7 +401,8 @@ TEST_F(FetchManifestAndInstallCommandTest,
                 CreateDialogCallback(true, mojom::UserDisplayMode::kStandalone),
                 FallbackBehavior::kAllowFallbackDataAlways),
             webapps::InstallResultCode::kGetWebAppInstallInfoFailed);
-  EXPECT_FALSE(provider()->registrar_unsafe().IsInRegistrar(kWebAppId));
+  EXPECT_FALSE(
+      provider()->registrar_unsafe().GetInstallState(kWebAppId).has_value());
   EXPECT_EQ(0, fake_ui_manager().num_reparent_tab_calls());
 }
 
@@ -420,7 +421,8 @@ TEST_F(FetchManifestAndInstallCommandTest, UserInstallDeclined) {
                            CreateDialogCallback(
                                false, mojom::UserDisplayMode::kStandalone)),
             webapps::InstallResultCode::kUserInstallDeclined);
-  EXPECT_FALSE(provider()->registrar_unsafe().IsInRegistrar(kWebAppId));
+  EXPECT_FALSE(
+      provider()->registrar_unsafe().GetInstallState(kWebAppId).has_value());
   EXPECT_EQ(0, fake_ui_manager().num_reparent_tab_calls());
 }
 
@@ -838,7 +840,8 @@ TEST_F(FetchManifestAndInstallCommandTest, WebContentsNavigates) {
   ASSERT_TRUE(install_future.Wait());
   EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
             webapps::InstallResultCode::kCancelledDueToMainFrameNavigation);
-  EXPECT_FALSE(provider()->registrar_unsafe().IsInRegistrar(kWebAppId));
+  EXPECT_FALSE(
+      provider()->registrar_unsafe().GetInstallState(kWebAppId).has_value());
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

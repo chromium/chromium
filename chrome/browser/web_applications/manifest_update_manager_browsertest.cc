@@ -1512,7 +1512,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   // This is to ensure that the uninstall command that was scheduled also
   // completes.
   GetProvider().command_manager().AwaitAllCommandsCompleteForTesting();
-  EXPECT_FALSE(GetProvider().registrar_unsafe().IsInRegistrar(app_id));
+  EXPECT_FALSE(
+      GetProvider().registrar_unsafe().GetInstallState(app_id).has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,

@@ -305,7 +305,8 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
     webapps::AppId web_app_id =
         web_app::GenerateAppId(/*manifest_id_path=*/std::nullopt, start_url);
     auto* provider = web_app::WebAppProvider::GetForTest(profile());
-    EXPECT_FALSE(provider->registrar_unsafe().IsInRegistrar(web_app_id));
+    EXPECT_FALSE(
+        provider->registrar_unsafe().GetInstallState(web_app_id).has_value());
     EXPECT_EQ(0, static_cast<int>(
                      provider->ui_manager().GetNumWindowsForApp(web_app_id)));
 

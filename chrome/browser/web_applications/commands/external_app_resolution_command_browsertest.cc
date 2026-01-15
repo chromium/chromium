@@ -196,7 +196,8 @@ IN_PROC_BROWSER_TEST_F(ExternalAppResolutionCommandBrowserTest,
   webapps::InstallResultCode install_code = result.code;
   EXPECT_EQ(install_code,
             webapps::InstallResultCode::kNotValidManifestForWebApp);
-  EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(app_id));
+  EXPECT_FALSE(
+      provider().registrar_unsafe().GetInstallState(app_id).has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(

@@ -207,7 +207,9 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, MigratingAppsDoNotSync) {
   // Wait for any syncing to complete, verify app is not synced.
   ASSERT_TRUE(apps_helper::AwaitWebAppQuiescence(GetAllProfiles()));
   EXPECT_FALSE(AllProfilesHaveSameWebAppIds());
-  EXPECT_FALSE(GetRegistrar(GetProfile(/*index=*/1)).IsInRegistrar(app_id));
+  EXPECT_FALSE(GetRegistrar(GetProfile(/*index=*/1))
+                   .GetInstallState(app_id)
+                   .has_value());
 }
 
 IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, Minimal) {

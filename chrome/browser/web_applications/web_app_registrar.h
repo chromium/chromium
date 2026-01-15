@@ -148,13 +148,9 @@ class WebAppRegistrar {
       WebAppManagement::Type install_source,
       const GURL& install_url) const;
 
-  // Returns true if the given `app_id` is in the registrar. Important: This
-  // function should not be used to check whether an app is installed or not.
-  // Please consider GetInstallState() instead of this function for that.
-  bool IsInRegistrar(const webapps::AppId& app_id) const;
-
-  // Returns the install state of the given `app_id`, or std::nullopt if it is
-  // not in the registrar.
+  // Returns the install state of the given `app_id`, or std::nullopt if the
+  // app is scheduled to be uninstalled, is going to be uninstalled via sync, or
+  // if the app is not in the registry.
   std::optional<proto::InstallState> GetInstallState(
       const webapps::AppId& app_id) const;
 

@@ -225,7 +225,8 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
   // TODO(crbug.com/442643377): Delete this wait after the update runs for every
   // navigation.
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
-  EXPECT_TRUE(provider().registrar_unsafe().IsInRegistrar(app_id));
+  EXPECT_TRUE(
+      provider().registrar_unsafe().GetInstallState(app_id).has_value());
   EXPECT_TRUE(gfx::test::AreBitmapsClose(
       web_app::test::LoadTestImageFromDisk(kBlueIcon).AsBitmap(),
       GetBitmapForInstalledAppOnDisk(app_id, provider().icon_manager()),
@@ -301,7 +302,8 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
   // TODO(crbug.com/442643377): Delete this wait after the update runs for every
   // navigation.
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
-  EXPECT_TRUE(provider().registrar_unsafe().IsInRegistrar(app_id));
+  EXPECT_TRUE(
+      provider().registrar_unsafe().GetInstallState(app_id).has_value());
   EXPECT_TRUE(gfx::test::AreBitmapsClose(
       web_app::test::LoadTestImageFromDisk(kBlueIcon).AsBitmap(),
       GetBitmapForInstalledAppOnDisk(app_id, provider().icon_manager()),
@@ -567,7 +569,8 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandLineTests,
   // TODO(crbug.com/442643377): Delete this wait after the update runs for every
   // navigation.
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
-  EXPECT_TRUE(provider().registrar_unsafe().IsInRegistrar(app_id));
+  EXPECT_TRUE(
+      provider().registrar_unsafe().GetInstallState(app_id).has_value());
   EXPECT_TRUE(gfx::test::AreBitmapsClose(
       web_app::test::LoadTestImageFromDisk(kBlueIcon).AsBitmap(),
       GetBitmapForInstalledAppOnDisk(app_id, provider().icon_manager()),

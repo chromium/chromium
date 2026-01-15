@@ -233,7 +233,8 @@ TEST_F(InstallAppLocallyCommandTest, AppNotInRegistrar) {
   fake_provider().scheduler().InstallAppLocally(app_id,
                                                 test_future.GetCallback());
   EXPECT_TRUE(test_future.Wait());
-  EXPECT_FALSE(fake_provider().registrar_unsafe().IsInRegistrar(app_id));
+  EXPECT_FALSE(
+      fake_provider().registrar_unsafe().GetInstallState(app_id).has_value());
 }
 
 TEST_F(InstallAppLocallyCommandTest, MigrationPWAsNotAllowed) {

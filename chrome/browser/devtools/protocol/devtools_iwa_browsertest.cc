@@ -98,7 +98,7 @@ class IWAProtocolTestBase : public DevToolsProtocolTestBase {
     auto* provider = WebAppProvider::GetForTest(browser()->profile());
     CHECK(provider);
 
-    return provider->registrar_unsafe().IsInRegistrar(AppId());
+    return provider->registrar_unsafe().GetInstallState(AppId()).has_value();
   }
 
   void InstallCommand(const GURL& url) {

@@ -939,8 +939,10 @@ TEST_F(WebAppSyncBridgeTest, CanDeleteNonUserInstallableApps) {
 
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
 
-  EXPECT_FALSE(registrar().IsInRegistrar(
-      GetAppIdFromWebAppProto(web_app_proto_uninstalling)));
+  EXPECT_FALSE(
+      registrar()
+          .GetInstallState(GetAppIdFromWebAppProto(web_app_proto_uninstalling))
+          .has_value());
   EXPECT_FALSE(registrar().AppMatches(
       GetAppIdFromWebAppProto(web_app_proto_uninstalling),
       WebAppFilter::InstalledInChrome()));

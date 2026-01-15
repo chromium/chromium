@@ -191,11 +191,11 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandTest,
           *profile(), future.GetCallback()));
   EXPECT_EQ(future.Get(), std::nullopt);
 
-  EXPECT_FALSE(registrar_unsafe().IsInRegistrar(app_id1));
-  EXPECT_FALSE(registrar_unsafe().IsInRegistrar(app_id2));
-  EXPECT_FALSE(registrar_unsafe().IsInRegistrar(app_id3));
-  EXPECT_FALSE(registrar_unsafe().IsInRegistrar(app_id4));
-  EXPECT_FALSE(registrar_unsafe().IsInRegistrar(app_id5));
+  EXPECT_FALSE(registrar_unsafe().GetInstallState(app_id1).has_value());
+  EXPECT_FALSE(registrar_unsafe().GetInstallState(app_id2).has_value());
+  EXPECT_FALSE(registrar_unsafe().GetInstallState(app_id3).has_value());
+  EXPECT_FALSE(registrar_unsafe().GetInstallState(app_id4).has_value());
+  EXPECT_FALSE(registrar_unsafe().GetInstallState(app_id5).has_value());
 
   // TODO(crbug.com/40277668): As a temporary fix to avoid race conditions with
   // `ScopedProfileKeepAlive`s, manually shutdown `KeyedService`s holding them.
@@ -244,7 +244,7 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandWithIconManagerTest,
           *profile(), future.GetCallback()));
   EXPECT_EQ(future.Get(), app_id + "[Sync]: kError");
 
-  EXPECT_FALSE(registrar_unsafe().IsInRegistrar(app_id));
+  EXPECT_FALSE(registrar_unsafe().GetInstallState(app_id).has_value());
 }
 
 }  // namespace web_app

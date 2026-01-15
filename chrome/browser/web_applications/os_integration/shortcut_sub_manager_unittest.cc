@@ -571,7 +571,8 @@ TEST_P(ShortcutSubManagerExecuteTest, ForceUnregisterAppNotInRegistry) {
     EXPECT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
         profile(), app_id, app_name));
   }
-  EXPECT_FALSE(fake_provider().registrar_unsafe().IsInRegistrar(app_id));
+  EXPECT_FALSE(
+      fake_provider().registrar_unsafe().GetInstallState(app_id).has_value());
 
   // Force unregister shouldn't change anything.
   SynchronizeOsOptions options;

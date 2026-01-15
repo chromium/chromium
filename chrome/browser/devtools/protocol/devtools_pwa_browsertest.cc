@@ -157,8 +157,9 @@ class PWAProtocolTest : public PWAProtocolTestWithoutApp {
   bool AppExists(const ManifestId& manifest_id) {
     auto* provider = WebAppProvider::GetForTest(browser()->profile());
     CHECK(provider);
-    return provider->registrar_unsafe().IsInRegistrar(
-        web_app::GenerateAppIdFromManifestId(manifest_id));
+    return provider->registrar_unsafe()
+        .GetInstallState(web_app::GenerateAppIdFromManifestId(manifest_id))
+        .has_value();
   }
 
   void InstallFromManifest() {

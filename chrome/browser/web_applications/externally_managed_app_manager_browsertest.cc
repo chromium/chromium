@@ -414,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
   const webapps::AppId new_app_id = GenerateAppId(std::nullopt, start_url);
 
   EXPECT_NE(new_app_id, placeholder_app_id);
-  EXPECT_FALSE(registrar().IsInRegistrar(placeholder_app_id));
+  EXPECT_FALSE(registrar().GetInstallState(placeholder_app_id).has_value());
   EXPECT_TRUE(registrar().AppMatches(
       new_app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
   EXPECT_FALSE(
@@ -464,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
   const webapps::AppId new_app_id = GenerateAppId("some_id", start_url);
 
   EXPECT_NE(new_app_id, placeholder_app_id);
-  EXPECT_FALSE(registrar().IsInRegistrar(placeholder_app_id));
+  EXPECT_FALSE(registrar().GetInstallState(placeholder_app_id).has_value());
   EXPECT_TRUE(registrar().AppMatches(
       new_app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
   EXPECT_FALSE(
@@ -1168,8 +1168,9 @@ IN_PROC_BROWSER_TEST_F(
                               /*number_of_app_instances=*/0u);
 
   // Wait for the placeholder removal task to be done.
-  ASSERT_FALSE(base::test::RunUntil(
-      [&]() -> bool { return registrar().IsInRegistrar(placeholder_app_id); }));
+  ASSERT_FALSE(base::test::RunUntil([&]() -> bool {
+    return registrar().GetInstallState(placeholder_app_id).has_value();
+  }));
 
   // Check that the new app is launched.
   WaitForNumberOfAppInstances(final_app_id, /*number_of_app_instances=*/1u);
