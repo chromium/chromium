@@ -2941,16 +2941,16 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@e5aebf166a3d252f51466e89c28bb160f30e74da',
+  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@7968154251d56c38d1dfe7c4e358b29c90c1f5ed',
   'src/third_party/glslang/src': '{chromium_git}/external/github.com/KhronosGroup/glslang@7881226269b1596feb604515743f528f02041375',
   'src/third_party/spirv-cross/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Cross@b8fcf307f1f347089e3c46eb4451d27f32ebc8d3',
   'src/third_party/spirv-headers/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Headers@babee77020ff82b571d723ce2c0262e2ec0ee3f1',
-  'src/third_party/spirv-tools/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Tools@65b2ace21293057714b7fa1e87bd764d3dcef305',
+  'src/third_party/spirv-tools/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Tools@a1eace9772ea3b5f727359db14305baeaf16a7d7',
   'src/third_party/vulkan-headers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Headers@0777a3ad88bad5f4b11cfd509458bbc0ddadc773',
   'src/third_party/vulkan-loader/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Loader@30af4710d16ff85dc50f27a7d8b5018129c04e3c',
   'src/third_party/vulkan-tools/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Tools@f5ba3301bdd000d925b4bf277a18ac0fa69c1fd2',
   'src/third_party/vulkan-utility-libraries/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Utility-Libraries@b4e9ebbfc779cba85f1efbe2f69fdfc5744ed5e5',
-  'src/third_party/vulkan-validation-layers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-ValidationLayers@a9074171d1c5982b581de58a75292224c8f84fbe',
+  'src/third_party/vulkan-validation-layers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-ValidationLayers@a4de6d6fafe1a1f477ca300f05fa79d8921a4901',
 
   'src/third_party/vulkan_memory_allocator':
     Var('chromium_git') + '/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git' + '@' + 'cb0597213b0fcb999caa9ed08c2f88dc45eb7d50',
