@@ -702,6 +702,6 @@ public class AutofillTestHelper {
 
         void addMaskedBankAccount(BankAccount bankAccount);
 
-        void addEwallet(Ewallet ewallet);
+        void addEwallet(@JniType("autofill::Ewallet") Ewallet ewallet);
     }
 }

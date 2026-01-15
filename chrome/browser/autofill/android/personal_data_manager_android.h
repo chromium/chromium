@@ -235,17 +235,7 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       const base::android::JavaRef<jobject>& jbank_account);
 
   // Returns an array of Ewallet objects retrieved from the PersonalDataManager.
-  base::android::ScopedJavaLocalRef<jobjectArray> GetEwallets(JNIEnv* env);
-
-  // Create an object of Java Ewallet from native Ewallet.
-  static base::android::ScopedJavaLocalRef<jobject> CreateJavaEwalletFromNative(
-      JNIEnv* env,
-      const Ewallet& ewallet);
-
-  // Create an object of native Ewallet from Java Ewallet.
-  static Ewallet CreateNativeEwalletFromJava(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& jewallet);
+  base::span<const Ewallet> GetEwallets();
 
   // Returns whether a card with the specified `guid` is eligible for card
   // benefits.

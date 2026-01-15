@@ -71,8 +71,7 @@ void FacilitatedPaymentsBottomSheetBridge::RequestShowContentForPaymentLink(
   ewallet_vector.reserve(ewallet_suggestions.size());
   for (const autofill::Ewallet& ewallet : ewallet_suggestions) {
     ewallet_vector.push_back(
-        autofill::PersonalDataManagerAndroid::CreateJavaEwalletFromNative(
-            env, ewallet));
+        autofill::CreateJavaEwalletFromNative(env, ewallet));
   }
 
   base::android::ScopedJavaLocalRef<jobjectArray> j_app_array;

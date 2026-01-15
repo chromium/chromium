@@ -187,11 +187,7 @@ static void JNI_AutofillTestHelper_AddMaskedBankAccount(
 }
 
 // static
-static void JNI_AutofillTestHelper_AddEwallet(
-    JNIEnv* env,
-    const JavaRef<jobject>& jewallet) {
-  Ewallet ewallet =
-      PersonalDataManagerAndroid::CreateNativeEwalletFromJava(env, jewallet);
+static void JNI_AutofillTestHelper_AddEwallet(const Ewallet& ewallet) {
   PersonalDataManager* personal_data_manager =
       GetPersonalDataManagerForLastUsedProfile();
   personal_data_manager->payments_data_manager().AddEwalletForTest(ewallet);
