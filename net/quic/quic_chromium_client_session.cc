@@ -3070,7 +3070,8 @@ static void LogMTCCertVerifyMetrics(
     const std::vector<std::vector<uint8_t>>& client_mtc_tais,
     const std::vector<std::vector<uint8_t>>& server_tais,
     const ProofVerifyDetailsChromium* verify_details,
-    bool is_resumption) {
+    bool is_resumption,
+    int64_t mtc_update_time_seconds) {
   std::optional<uint64_t> client_landmark;
   std::optional<uint64_t> server_landmark;
   for (const auto& id : client_mtc_tais) {
@@ -3102,6 +3103,19 @@ static void LogMTCCertVerifyMetrics(
           "Net.QuicSession.MTCLandmarkDelta.CurrentClient",
           *client_landmark - *server_landmark);
     }
+  }
+  if (mtc_update_time_seconds != 0) {
+    base::TimeDelta landmark_age =
+        base::Time::Now() -
+        base::Time::FromSecondsSinceUnixEpoch(mtc_update_time_seconds);
+    // The MTCMetadata is only useful for a max of 7 days. The histogram logs
+    // thru 10 days so that if clients are out of date, we have somewhat of an
+    // idea of how out of date they are.
+    UMA_HISTOGRAM_CUSTOM_TIMES("Net.QuicSession.MTCMetadataAge", landmark_age,
+                               base::Seconds(1), base::Days(10), 100);
+    UMA_HISTOGRAM_BOOLEAN("Net.QuicSession.HasMTCMetadata", true);
+  } else {
+    UMA_HISTOGRAM_BOOLEAN("Net.QuicSession.HasMTCMetadata", false);
   }
 
   bool cert_is_mtc =
@@ -3168,9 +3182,11 @@ void QuicChromiumClientSession::OnProofVerifyDetailsAvailable(
   if (server_advertised_mtc_tai_ && verify_mtcs_enabled) {
     auto client_mtc_tais =
         ssl_config_service_->GetSSLContextConfig().mtc_trust_anchor_ids;
-    LogMTCCertVerifyMetrics(client_mtc_tais, server_tais,
-                            verify_details_chromium,
-                            crypto_stream_->IsResumption());
+    int64_t mtc_update_time_seconds =
+        ssl_config_service_->GetSSLContextConfig().mtc_update_time_seconds;
+    LogMTCCertVerifyMetrics(
+        client_mtc_tais, server_tais, verify_details_chromium,
+        crypto_stream_->IsResumption(), mtc_update_time_seconds);
   }
 }
 

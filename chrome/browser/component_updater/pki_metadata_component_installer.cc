@@ -334,7 +334,8 @@ void PKIMetadataComponentInstallerService::UpdateTrustAnchorIDsImpl() {
       SystemNetworkContextManager::GetInstance();
   CHECK(network_context_manager);
   network_context_manager->UpdateTrustAnchorIDs(
-      std::move(trust_anchor_ids), std::move(mtc_trust_anchor_ids));
+      std::move(trust_anchor_ids), std::move(mtc_trust_anchor_ids),
+      mtc_metadata_update_time_seconds_);
 }
 
 void PKIMetadataComponentInstallerService::UpdateCRSTrustAnchorIDs(
@@ -449,6 +450,7 @@ bool PKIMetadataComponentInstallerService::UpdateMtcMetadataTrustAnchorIDs(
 
   mtc_log_id_landmark_trust_anchor_ids_ =
       std::move(mtc_log_id_signatureless_trust_anchor_ids);
+  mtc_metadata_update_time_seconds_ = message->update_time_seconds();
 
   UpdateTrustAnchorIDsImpl();
   return true;

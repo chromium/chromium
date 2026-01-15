@@ -304,7 +304,7 @@ TEST_F(SSLConfigServiceManagerTest, InitialTrustAnchorIDs) {
   EXPECT_TRUE(initial_config_->mtc_trust_anchor_ids.empty());
 
   // Simulate an update that has an empty set of Trust Anchor IDs.
-  config_manager->UpdateTrustAnchorIDs({}, {});
+  config_manager->UpdateTrustAnchorIDs({}, {}, 0);
   // Wait for the SSLConfigServiceManagerPref to be notified of the Trust Anchor
   // IDs being changed, and for it to notify the test fixture of the change.
   ASSERT_NO_FATAL_FAILURE(WaitForUpdate());
@@ -328,7 +328,7 @@ TEST_F(SSLConfigServiceManagerTest, InitialTrustAnchorIDs) {
   }
 
   // Simulate an update that has a non-empty set of Trust Anchor IDs.
-  config_manager->UpdateTrustAnchorIDs({{0x01, 0x02}, {0x03, 0x04}}, {});
+  config_manager->UpdateTrustAnchorIDs({{0x01, 0x02}, {0x03, 0x04}}, {}, 0);
   // Wait for the SSLConfigServiceManagerPref to be notified of the Trust Anchor
   // IDs being changed, and for it to notify the test fixture of the change.
   ASSERT_NO_FATAL_FAILURE(WaitForUpdate());
@@ -357,7 +357,7 @@ TEST_F(SSLConfigServiceManagerTest, InitialTrustAnchorIDs) {
 
   // Simulate an update that also has a non-empty set of MTC Trust Anchor IDs.
   config_manager->UpdateTrustAnchorIDs({{0x01, 0x03}, {0x03, 0x05}},
-                                       {{0x05, 0x06}, {0x07, 0x08}});
+                                       {{0x05, 0x06}, {0x07, 0x08}}, 0);
   // Wait for the SSLConfigServiceManagerPref to be notified of the Trust Anchor
   // IDs being changed, and for it to notify the test fixture of the change.
   ASSERT_NO_FATAL_FAILURE(WaitForUpdate());
@@ -391,7 +391,7 @@ TEST_F(SSLConfigServiceManagerTest, InitialTrustAnchorIDs) {
 
   // Simulate an update that only has MTC Trust Anchor IDs, but no regular
   // ones.
-  config_manager->UpdateTrustAnchorIDs({}, {{0x05, 0x07}, {0x07, 0x09}});
+  config_manager->UpdateTrustAnchorIDs({}, {{0x05, 0x07}, {0x07, 0x09}}, 0);
   // Wait for the SSLConfigServiceManagerPref to be notified of the Trust Anchor
   // IDs being changed, and for it to notify the test fixture of the change.
   ASSERT_NO_FATAL_FAILURE(WaitForUpdate());
@@ -431,7 +431,7 @@ TEST_F(SSLConfigServiceManagerTest, TrustAnchorIDsAfterPrefChange) {
       SetUpConfigServiceManager(&local_state);
 
   EXPECT_FALSE(initial_config_->rev_checking_required_local_anchors);
-  config_manager->UpdateTrustAnchorIDs({{0x01, 0x01}}, {{0x02, 0x02}});
+  config_manager->UpdateTrustAnchorIDs({{0x01, 0x01}}, {{0x02, 0x02}}, 0);
   ASSERT_NO_FATAL_FAILURE(WaitForUpdate());
   EXPECT_THAT(
       observed_configs_[0]->trust_anchor_ids,
@@ -474,7 +474,7 @@ TEST_F(SSLConfigServiceManagerTest, PrefsPreservedAfterTrustAnchorIDsUpdated) {
 
   // Update Trust Anchor IDs and check that both the existing pref and the new
   // Trust Anchor IDs are reflected in the new config.
-  config_manager->UpdateTrustAnchorIDs({{0x01, 0x01}}, {{0x02, 0x02}});
+  config_manager->UpdateTrustAnchorIDs({{0x01, 0x01}}, {{0x02, 0x02}}, 0);
   ASSERT_NO_FATAL_FAILURE(WaitForUpdate());
   EXPECT_THAT(
       observed_configs_[0]->trust_anchor_ids,
