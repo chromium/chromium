@@ -26,6 +26,7 @@ import sys
 import tempfile
 import textwrap
 import time
+import urllib.request
 from typing import List, Optional, Set, Tuple
 
 REPOSITORY_ROOT = os.path.abspath(
@@ -210,6 +211,10 @@ def _wait_and_fail_if_not_presubmit_verified(change_id: str):
       time.sleep(60 * 5)  # 5 mins
 
 
+def _is_ci_bot():
+  return os.environ.get('SWARMING_BOT_ID',
+                        '').startswith('luci-chrome-trusted-')
+
 def _run_copybara_to_aosp(config: str, copybara_binary: str,
                           git_url_and_branch: Optional[Tuple[str, str]],
                           regenerate_consistency_file: bool,
@@ -236,7 +241,7 @@ def _run_copybara_to_aosp(config: str, copybara_binary: str,
       Chromium version: {version}
 
       """)
-  if not os.environ.get('SWARMING_BOT_ID', '').startswith('luci-chrome-trusted-'):
+  if not _is_ci_bot():
     # This is not ideal, but we don't have a better signal to tell if gn2bp is
     # running in CI or somewhere else.
     #
@@ -338,6 +343,36 @@ def _fill_desc_file_for_arch(arch, desc_file, delete_temporary_files):
     _write_desc_json(gn_out_dir, desc_file)
 
 
+def _verify_latest_stable_or_exit(stamp: str):
+  """Verifies that the current checkout is on the latest stable milestone."""
+  print('Fetching latest stable version from chromiumdash...')
+  with urllib.request.urlopen(
+      'https://chromiumdash.appspot.com/fetch_releases?num=1&platform=Android&channel=Stable'
+  ) as url:
+    data = json.loads(url.read().decode())
+    latest_stable = data[0]
+    latest_version = latest_stable['version']
+    print(f'Latest stable version is {latest_version}')
+    current_version = _get_version_string()
+    print(f'Current checkout version is {current_version}')
+
+    # Version is major.minor.build.patch
+    latest_build = latest_version.split('.')[2]
+    current_build = current_version.split('.')[2]
+
+    if latest_build != current_build:
+      # There are two main approaches: either exit cleanly (indicating success
+      # without an import) or exit with an error. Exiting cleanly might falsely
+      # suggest a successful import, while exiting with an error could obscure
+      # genuine pipeline failures. We opt for the safer approach of exiting
+      # with an error until this logic is integrated into a LUCI recipe.
+      print(f'Note: The current branch ({current_build}) is not on the '
+            f'latest stable milestone branch ({latest_build}). Exiting!')
+      # stamp is never null since this runs in CI context only.
+      build_utils.Touch(stamp)
+      sys.exit(0)
+
+
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--stamp', type=str, help='Path to touch on success')
@@ -394,6 +429,11 @@ def main():
       'Whether the script should wait for presubmit verified after uploading a CL to Android',
       action='store_true')
   args = parser.parse_args()
+
+  if args.channel == 'stable' and _is_ci_bot():
+    # Only CI bot needs to verify that it's on the latest branch. This is to
+    # allow trybots to be executed even from HEAD.
+    _verify_latest_stable_or_exit(args.stamp)
   delete_temporary_files = not args.keep_temporary_files
 
   if not args.skip_copybara and os.listdir(
