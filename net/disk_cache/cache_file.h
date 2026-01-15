@@ -32,6 +32,8 @@ class NET_EXPORT CacheFile {
   virtual int64_t GetLength() = 0;
   virtual bool SetLength(int64_t length) = 0;
 
+  // Same as Read() and Write(), but return true iff `data` was completely
+  // read or written, respectively.
   virtual bool ReadAndCheck(int64_t offset, base::span<uint8_t> data) = 0;
   virtual bool WriteAndCheck(int64_t offset,
                              base::span<const uint8_t> data) = 0;
