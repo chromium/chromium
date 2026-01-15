@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/types/optional_ref.h"
+#include "chrome/browser/ui/autofill/autofill_ai/entity_attribute_update_details.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -22,32 +23,6 @@ class EntityInstance;
 // Autofill AI data bubble.
 class AutofillAiImportDataController {
  public:
-  enum class EntityAttributeUpdateType {
-    kNewEntityAttributeAdded,
-    kNewEntityAttributeUpdated,
-    kNewEntityAttributeUnchanged,
-  };
-
-  // Specifies for each attribute of a new instance whether the attribute is
-  // new, updated, or unchanged. Also includes updates of an old instance
-  // attribute that had its value changed.
-  struct EntityAttributeUpdateDetails {
-    EntityAttributeUpdateDetails();
-    EntityAttributeUpdateDetails(std::u16string attribute_name,
-                                 std::u16string attribute_value,
-                                 EntityAttributeUpdateType update_type);
-    EntityAttributeUpdateDetails(const EntityAttributeUpdateDetails&);
-    EntityAttributeUpdateDetails(EntityAttributeUpdateDetails&&);
-    EntityAttributeUpdateDetails& operator=(
-        const EntityAttributeUpdateDetails&);
-    EntityAttributeUpdateDetails& operator=(EntityAttributeUpdateDetails&&);
-    ~EntityAttributeUpdateDetails();
-
-    std::u16string attribute_name;
-    std::u16string attribute_value;
-    EntityAttributeUpdateType update_type{};
-  };
-
   AutofillAiImportDataController() = default;
   AutofillAiImportDataController(const AutofillAiImportDataController&) =
       delete;

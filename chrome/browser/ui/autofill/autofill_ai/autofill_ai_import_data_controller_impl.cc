@@ -18,6 +18,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_data_controller.h"
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_string_utils.h"
+#include "chrome/browser/ui/autofill/autofill_ai/entity_attribute_update_details.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
@@ -43,8 +44,6 @@
 namespace autofill {
 
 namespace {
-
-using enum AutofillAiImportDataController::EntityAttributeUpdateType;
 
 std::u16string GetPrimaryAccountEmailFromProfile(Profile* profile) {
   if (!profile) {
@@ -129,70 +128,10 @@ bool AutofillAiImportDataControllerImpl::IsSavePrompt() const {
   return !old_entity_.has_value();
 }
 
-std::vector<AutofillAiImportDataController::EntityAttributeUpdateDetails>
+std::vector<EntityAttributeUpdateDetails>
 AutofillAiImportDataControllerImpl::GetUpdatedAttributesDetails() const {
-  std::vector<EntityAttributeUpdateDetails> details;
-
-  auto get_attribute_update_type =
-      [&](const AttributeInstance& new_entity_attribute) {
-        if (!old_entity_) {
-          return kNewEntityAttributeAdded;
-        }
-
-        base::optional_ref<const AttributeInstance> old_entity_attribute =
-            old_entity_->attribute(new_entity_attribute.type());
-        if (!old_entity_attribute) {
-          return kNewEntityAttributeAdded;
-        }
-
-        return std::ranges::all_of(
-                   new_entity_attribute.type().field_subtypes(),
-                   [&](FieldType type) {
-                     return old_entity_attribute->GetInfo(
-                                type, app_locale_,
-                                /*format_string=*/std::nullopt) ==
-                            new_entity_attribute.GetInfo(
-                                type, app_locale_,
-                                /*format_string=*/std::nullopt);
-                   })
-                   ? kNewEntityAttributeUnchanged
-                   : kNewEntityAttributeUpdated;
-      };
-
-  for (const AttributeInstance& attribute : new_entity_->attributes()) {
-    EntityAttributeUpdateType update_type =
-        get_attribute_update_type(attribute);
-    std::u16string attribute_value;
-    if (std::optional<std::u16string> date = MaybeGetLocalizedDate(attribute)) {
-      attribute_value = *std::move(date);
-    } else {
-      attribute_value = attribute.GetCompleteInfo(app_locale_);
-    }
-    if (!attribute_value.empty()) {
-      details.emplace_back(attribute.type().GetNameForI18n(),
-                           std::move(attribute_value), update_type);
-    }
-  }
-
-  // Move new entity values that were either added or updated to the top.
-  std::ranges::stable_sort(details, [](const EntityAttributeUpdateDetails& a,
-                                       const EntityAttributeUpdateDetails& b) {
-    // Returns true if `attribute` is a new entity attribute that was either
-    // added or updated.
-    auto added_or_updated = [](const EntityAttributeUpdateDetails& attribute) {
-      return attribute.update_type == kNewEntityAttributeAdded ||
-             attribute.update_type == kNewEntityAttributeUpdated;
-    };
-    if (added_or_updated(a) && !added_or_updated(b)) {
-      return true;
-    }
-
-    if (!added_or_updated(a) && added_or_updated(b)) {
-      return false;
-    }
-    return false;
-  });
-  return details;
+  return EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
+      *new_entity_, old_entity_, app_locale_);
 }
 
 std::u16string AutofillAiImportDataControllerImpl::GetDialogTitle() const {

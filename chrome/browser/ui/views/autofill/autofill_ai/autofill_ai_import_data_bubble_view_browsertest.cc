@@ -30,10 +30,6 @@ namespace {
 
 using ::testing::Bool;
 using ::testing::Combine;
-using EntityAttributeUpdateDetails =
-    AutofillAiImportDataController::EntityAttributeUpdateDetails;
-using EntityAttributeUpdateType =
-    AutofillAiImportDataController::EntityAttributeUpdateType;
 using TestParameterType = std::tuple<bool, bool>;
 
 class AutofillAiImportDataBubbleViewBrowsertest

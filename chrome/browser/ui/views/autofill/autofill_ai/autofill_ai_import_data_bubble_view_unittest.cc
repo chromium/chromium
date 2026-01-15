@@ -32,10 +32,6 @@ namespace autofill {
 
 namespace {
 
-using EntityAttributeUpdateDetails =
-    AutofillAiImportDataController::EntityAttributeUpdateDetails;
-using EntityAttributeUpdateType =
-    AutofillAiImportDataController::EntityAttributeUpdateType;
 class AutofillAiImportDataBubbleViewTest : public ChromeViewsTestBase {
  public:
   AutofillAiImportDataBubbleViewTest() = default;

@@ -1,0 +1,111 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/autofill/autofill_ai/entity_attribute_update_details.h"
+
+#include <optional>
+#include <ranges>
+
+#include "base/types/optional_ref.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_import_utils.h"
+
+namespace autofill {
+
+EntityAttributeUpdateDetails::EntityAttributeUpdateDetails(
+    std::u16string attribute_name,
+    std::u16string attribute_value,
+    EntityAttributeUpdateType update_type)
+    : attribute_name_(std::move(attribute_name)),
+      attribute_value_(std::move(attribute_value)),
+      update_type_(update_type) {}
+
+EntityAttributeUpdateDetails::EntityAttributeUpdateDetails() = default;
+
+EntityAttributeUpdateDetails::EntityAttributeUpdateDetails(
+    const EntityAttributeUpdateDetails&) = default;
+
+EntityAttributeUpdateDetails::EntityAttributeUpdateDetails(
+    EntityAttributeUpdateDetails&&) = default;
+
+EntityAttributeUpdateDetails& EntityAttributeUpdateDetails::operator=(
+    const EntityAttributeUpdateDetails&) = default;
+
+EntityAttributeUpdateDetails& EntityAttributeUpdateDetails::operator=(
+    EntityAttributeUpdateDetails&&) = default;
+
+EntityAttributeUpdateDetails::~EntityAttributeUpdateDetails() = default;
+
+std::vector<EntityAttributeUpdateDetails>
+EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
+    const EntityInstance& new_entity,
+    base::optional_ref<const EntityInstance> old_entity,
+    const std::string& app_locale) {
+  std::vector<EntityAttributeUpdateDetails> details;
+
+  auto get_attribute_update_type =
+      [&](const AttributeInstance& new_entity_attribute) {
+        if (!old_entity) {
+          return EntityAttributeUpdateType::kNewEntityAttributeAdded;
+        }
+
+        base::optional_ref<const AttributeInstance> old_entity_attribute =
+            old_entity->attribute(new_entity_attribute.type());
+        if (!old_entity_attribute) {
+          return EntityAttributeUpdateType::kNewEntityAttributeAdded;
+        }
+
+        return std::ranges::all_of(
+                   new_entity_attribute.type().field_subtypes(),
+                   [&](FieldType type) {
+                     return old_entity_attribute->GetInfo(
+                                type, app_locale,
+                                /*format_string=*/std::nullopt) ==
+                            new_entity_attribute.GetInfo(
+                                type, app_locale,
+                                /*format_string=*/std::nullopt);
+                   })
+                   ? EntityAttributeUpdateType::kNewEntityAttributeUnchanged
+                   : EntityAttributeUpdateType::kNewEntityAttributeUpdated;
+      };
+
+  for (const AttributeInstance& attribute : new_entity.attributes()) {
+    EntityAttributeUpdateType update_type =
+        get_attribute_update_type(attribute);
+    std::u16string attribute_value;
+    if (std::optional<std::u16string> date = MaybeGetLocalizedDate(attribute)) {
+      attribute_value = *std::move(date);
+    } else {
+      attribute_value = attribute.GetCompleteInfo(app_locale);
+    }
+    if (!attribute_value.empty()) {
+      details.emplace_back(attribute.type().GetNameForI18n(),
+                           std::move(attribute_value), update_type);
+    }
+  }
+
+  // Move new entity values that were either added or updated to the top.
+  std::ranges::stable_sort(details, [](const EntityAttributeUpdateDetails& a,
+                                       const EntityAttributeUpdateDetails& b) {
+    // Returns true if `attribute` is a new entity attribute that was either
+    // added or updated.
+    auto added_or_updated = [](const EntityAttributeUpdateDetails& attribute) {
+      return attribute.update_type() ==
+                 EntityAttributeUpdateType::kNewEntityAttributeAdded ||
+             attribute.update_type() ==
+                 EntityAttributeUpdateType::kNewEntityAttributeUpdated;
+    };
+    if (added_or_updated(a) && !added_or_updated(b)) {
+      return true;
+    }
+
+    if (!added_or_updated(a) && added_or_updated(b)) {
+      return false;
+    }
+    return false;
+  });
+  return details;
+}
+
+}  // namespace autofill
