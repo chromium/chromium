@@ -65,23 +65,23 @@ void SigninForContext(URLContext* context,
                       base::OnceClosure closure) {
   // Iterate over all identities on device because the newGaia could
   // be in a different profile.
-  id<SystemIdentity> newIdentity;
+  id<SystemIdentity> new_identity = nil;
   NSMutableArray<id<SystemIdentity>>* identities =
       [[NSMutableArray alloc] init];
   GetApplicationContext()->GetSystemIdentityManager()->IterateOverIdentities(
       base::BindRepeating(&IdentitiesOnDevice, identities));
   for (id<SystemIdentity> identity in identities) {
     if (identity.gaiaId == context.gaiaID) {
-      newIdentity = identity;
+      new_identity = identity;
     }
   }
   // Don't perform sign-in if the new identity is not found.
-  if (!newIdentity) {
+  if (!new_identity) {
     std::move(closure).Run();
     return;
   }
 
-  authentication_service->SignIn(newIdentity,
+  authentication_service->SignIn(new_identity,
                                  signin_metrics::AccessPoint::kWidget);
   if (openURL) {
     scene_state.URLContextsToOpen = contexts;
