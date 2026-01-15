@@ -8966,7 +8966,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "DevToolsAiPromptApi"
+                        "DevToolsAiPromptApi",
+                        "DevToolsConsoleInsightsTeasers"
                     ]
                 }
             ]

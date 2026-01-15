@@ -2073,6 +2073,16 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
                       std::move(devtools_context_selection_agent));
   }
 
+  base::Value::Dict console_insights_teasers_dict;
+  console_insights_teasers_dict.Set(
+      "enabled", base::FeatureList::IsEnabled(
+                     ::features::kDevToolsConsoleInsightsTeasers));
+  console_insights_teasers_dict.Set(
+      "allowWithoutGpu",
+      features::kDevToolsConsoleInsightsTeasersAllowWithoutGpu.Get());
+  response_dict.Set("devToolsConsoleInsightsTeasers",
+                    std::move(console_insights_teasers_dict));
+
   base::Value response = base::Value(std::move(response_dict));
   std::move(callback).Run(&response);
 }

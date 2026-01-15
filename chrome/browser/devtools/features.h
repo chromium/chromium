@@ -122,6 +122,10 @@ BASE_DECLARE_FEATURE(kDevToolsShowPolicyDialog);
 
 BASE_DECLARE_FEATURE(kDevToolsAiAssistanceContextSelectionAgent);
 
+BASE_DECLARE_FEATURE(kDevToolsConsoleInsightsTeasers);
+extern const base::FeatureParam<bool>
+    kDevToolsConsoleInsightsTeasersAllowWithoutGpu;
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_DEVTOOLS_FEATURES_H_
