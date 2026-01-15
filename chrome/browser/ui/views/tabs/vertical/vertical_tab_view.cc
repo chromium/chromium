@@ -324,7 +324,10 @@ void VerticalTabView::OnPaint(gfx::Canvas* canvas) {
     flags.setColor(tab_style_->GetCurrentTabBackgroundColor(
         GetSelectionState(), IsHoverAnimationActive(), GetHoverAnimationValue(),
         IsFrameActive(), GetColorProvider()));
-    canvas->DrawRect(GetContentsBounds(), flags);
+    const float corner_radius =
+        GetLayoutConstant(LayoutConstant::kVerticalTabCornerRadius) -
+        (split_ ? GetInsets().top() / 2.0 : 0.0);
+    canvas->DrawRoundRect(GetContentsBounds(), corner_radius, flags);
   }
 
   views::View::OnPaint(canvas);
@@ -346,10 +349,6 @@ void VerticalTabView::AddedToWidget() {
 void VerticalTabView::RemovedFromWidget() {
   paint_as_active_subscription_ = {};
   UpdateHovered(false);
-}
-
-void VerticalTabView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  SetClipPath(GetPath());
 }
 
 void VerticalTabView::OnThemeChanged() {
@@ -620,8 +619,7 @@ float VerticalTabView::GetHoverOpacity() const {
 
 SkPath VerticalTabView::GetPath() const {
   const SkScalar corner_radius = SkIntToScalar(
-      GetLayoutConstant(LayoutConstant::kVerticalTabCornerRadius) +
-      (split_ ? GetInsets().height() : 0));
+      GetLayoutConstant(LayoutConstant::kVerticalTabCornerRadius));
   return SkPath::RRect(SkRRect::MakeRectXY(gfx::RectToSkRect(GetLocalBounds()),
                                            corner_radius, corner_radius));
 }
