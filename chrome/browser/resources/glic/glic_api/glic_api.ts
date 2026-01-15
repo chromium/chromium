@@ -580,7 +580,10 @@ export declare interface GlicBrowserHost {
   /** Returns the state of the glic closed captioning setting. */
   getClosedCaptioningSetting?(): ObservableValue<boolean>;
 
-  /** Returns the state of the web actuation setting. */
+  /**
+   * Returns the state of the web actuation setting. This reflects a
+   * user-controlled toggle for whether actuation is allowed.
+   */
   getActuationOnWebSetting?(): ObservableValue<boolean>;
 
   /**
@@ -963,7 +966,10 @@ export declare interface GlicBrowserHost {
    */
   getAdditionalContext?(): Observable<AdditionalContext>;
 
-  /** Returns the host's capability to act on web pages. */
+  /**
+   * Returns the host's capability to act on web pages. This reflects enterprise
+   * policy for whether actuation is allowed.
+   */
   getActOnWebCapability?(): ObservableValue<boolean>;
 
   /**
