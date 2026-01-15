@@ -19,8 +19,7 @@ class LabelButton;
 
 // A footer view attached to MediaItemUIUpdatedView containing the casting
 // device and a stop casting button for a cast media item. This is used within
-// MediaDialogView on non-CrOS desktop platforms when the
-// media::kGlobalMediaControlsUpdatedUI flag is enabled.
+// MediaDialogView on non-CrOS desktop platforms.
 class CastDeviceFooterView : public global_media_controls::MediaItemUIFooter {
   METADATA_HEADER(CastDeviceFooterView,
                   global_media_controls::MediaItemUIFooter)

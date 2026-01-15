@@ -2254,12 +2254,6 @@ inline constexpr char
         "Enables policy initialization for signed in users in new entry "
         "points.";
 
-inline constexpr char kGlobalMediaControlsUpdatedUIName[] =
-    "Global Media Controls updated UI";
-inline constexpr char kGlobalMediaControlsUpdatedUIDescription[] =
-    "Show updated UI for Global Media Controls in all the non-CrOS desktop "
-    "platforms.";
-
 inline constexpr char kGoogleOneOfferFilesBannerName[] =
     "Google One offer Files banner";
 inline constexpr char kGoogleOneOfferFilesBannerDescription[] =

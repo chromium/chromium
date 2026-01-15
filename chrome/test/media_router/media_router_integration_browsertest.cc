@@ -93,8 +93,6 @@ MediaRouterIntegrationBrowserTest::MediaRouterIntegrationBrowserTest(
           // MediaDialogView::AddedToWidget(), which is called indirectly
           // from MediaDialogView::ShowDialogForPresentationRequest().
           ash::features::kOnDeviceSpeechRecognition,
-#else
-          media::kGlobalMediaControlsUpdatedUI,
 #endif
       },
       {});

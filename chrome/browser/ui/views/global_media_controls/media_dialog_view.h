@@ -180,8 +180,8 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   base::ObserverList<MediaDialogViewObserver> observers_;
 
   // A map of all the media item UIs that `MediaDialogView` is currently
-  // observing. If media::kGlobalMediaControlsUpdatedUI on non-CrOS is enabled,
-  // `updated_items_` is used, otherwise `observed_items_` is used.
+  // observing. `updated_items_` is used for non-CrOS platforms, otherwise
+  // `observed_items_` is used.
   std::map<const std::string,
            raw_ptr<global_media_controls::MediaItemUIView, CtnExperimental>>
       observed_items_;

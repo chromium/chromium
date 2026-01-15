@@ -135,8 +135,7 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
     feature_list_.InitWithFeatures(
         {media::kGlobalMediaControls,
          feature_engagement::kIPHLiveCaptionFeature,
-         media::kFeatureManagementLiveTranslateCrOS, media::kLiveTranslate,
-         media::kGlobalMediaControlsUpdatedUI},
+         media::kFeatureManagementLiveTranslateCrOS, media::kLiveTranslate},
         {});
   }
 
