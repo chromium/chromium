@@ -53,10 +53,21 @@ void ToolbarLayer::PushResource(int toolbar_resource_id,
       ToolbarResource::From(resource_manager_->GetResource(
           ui::ANDROID_RESOURCE_TYPE_DYNAMIC, toolbar_resource_id));
 
-  // Ensure the toolbar resource is available before making the layer visible.
-  layer_->SetHideLayerAndSubtree(!resource);
-  if (!resource)
+  // TODO(https://crbug.com/466162772): after the progress bar is decoupled from
+  // the toolbar, we can freely set the visibility of the toolbar without
+  // worrying about the progress bar. If AnimatedProgressBar is enabled, ensure
+  // that we don't hide the parent layer so that the progress bar is still
+  // visible even when we don't have a capture for the toolbar.
+  if (features::IsAndroidAnimatedProgressBarInBrowserEnabled()) {
+    toolbar_background_layer_->SetHideLayerAndSubtree(!resource);
+    url_bar_background_layer_->SetHideLayerAndSubtree(!resource);
+    bitmap_layer_->SetHideLayerAndSubtree(!resource);
+  } else {
+    layer_->SetHideLayerAndSubtree(!resource);
+  }
+  if (!resource) {
     return;
+  }
 
   // This layer effectively draws over the space the resource takes for shadows.
   // Set the bounds to the non-shadow size so that other things can properly
