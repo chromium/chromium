@@ -16,6 +16,10 @@ features:
 - name: has
   files:
   - has-*
+- name: link-selectors
+  files:
+  - "*visited*"
+  - "!has-visited*"
 - name: read-write-pseudos
   files:
   - selector-read-write-*
@@ -53,9 +57,6 @@ features:
   files:
   - user-invalid.html
   - user-valid.html
-- name: caret-color
-  files:
-  - caret-color-visited-inheritance.html
 - name: user-action-pseudos
   files:
   - hover-001-manual.html

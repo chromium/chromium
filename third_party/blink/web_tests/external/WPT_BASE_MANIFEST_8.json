@@ -150152,7 +150152,7 @@
          ]
         ],
         "column-reverse-dense-packing-multi-span-006.html": [
-         "6bc173cce71a32136c233101a25334f60561ccad",
+         "7f9ab766dc5f53d198c461298ed91a0f8b48d6a8",
          [
           null,
           [
@@ -150244,7 +150244,7 @@
           ]
          ],
          "column-dense-packing-007.html": [
-          "c35f968efab878af5f147c0a015270b51ade201f",
+          "cb8e9a7dcb9bed566f03dde6093e3c66d04aba82",
           [
            null,
            [
@@ -150257,7 +150257,7 @@
           ]
          ],
          "column-dense-packing-008.html": [
-          "1a738435093a4ebb9abfaffb84f15deb8fc81807",
+          "5c6be679909d6e1c1190132f2275419e6623d95e",
           [
            null,
            [
@@ -150374,7 +150374,7 @@
           ]
          ],
          "column-dense-packing-multi-span-010.html": [
-          "63c5e251704158cb86cec2bd3e94419f54632e00",
+          "73f68b7e1d9846f88ecd736e9fa4755f1668aea6",
           [
            null,
            [
@@ -150387,7 +150387,7 @@
           ]
          ],
          "column-dense-packing-multi-span-011.html": [
-          "44725dc0fcb0d63994db87a9d01deaffebdb7430",
+          "7112e90bc5d6878d08c05a5b58a99f6b07f62ea0",
           [
            null,
            [
@@ -150400,7 +150400,7 @@
           ]
          ],
          "column-dense-packing-multi-span-012.html": [
-          "1139a89a8b2c459b7e6f224e0808e5cde2f70f6c",
+          "a0cefe4619067d039f0385ca903e21358af31ff9",
           [
            null,
            [
@@ -150923,7 +150923,7 @@
          ]
         ],
         "row-reverse-dense-packing-002.html": [
-         "f31937c3ab28cf264b4c17f83494ebd4af9fe295",
+         "f54199b73dd4760db459ae7f3a4a165e72a305b2",
          [
           null,
           [
@@ -225579,6 +225579,58 @@
         [
          [
           "/css/css-text/text-indent/reference/text-indent-caret-hanging-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-indent-dynamic-each-line-001.html": [
+       "2d833e56f690ab5af73b9173e140a11849648058",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-indent/reference/text-indent-each-line-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-indent-dynamic-each-line-002.html": [
+       "ae0cc2d467371ce051b99c0d7193a07172b943b7",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-indent/reference/text-indent-each-line-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-indent-dynamic-hanging-001.html": [
+       "190a530f5ca10a1de4a87ec7d4aa898e2768acee",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-indent/reference/text-indent-hanging-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-indent-dynamic-hanging-002.html": [
+       "9d34416ccf287289e900432758dd27d73d5378ba",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-indent/reference/text-indent-hanging-001-ref.html",
           "=="
          ]
         ],
@@ -374457,7 +374509,7 @@
           []
          ],
          "column-dense-packing-008-ref.html": [
-          "b52aee53be14fddebac30823ee6c6e98755d55b7",
+          "2961d346d2e252f280992b802368cf3fa9762133",
           []
          ],
          "column-dense-packing-multi-span-001-ref.html": [
@@ -374783,16 +374835,6 @@
         ],
         "row-order-property-auto-placement-005-ref.html": [
          "7a0ca2beced766cc911e8d4d2e202bab69907645",
-         []
-        ]
-       },
-       "parsing": {
-        "flow-tolerance-computed-expected.txt": [
-         "1dcfe36e37f3cf7b3da10e9f37810292c15c624e",
-         []
-        ],
-        "flow-tolerance-valid-expected.txt": [
-         "2063f5e6fb05a14b8bc07b7aefaf011ec861d559",
          []
         ]
        },
@@ -391086,8 +391128,16 @@
         "b65dd17ef503f6e85b3e69b172c67d6e0b2e0e8a",
         []
        ],
+       "text-indent-each-line-001-ref.html": [
+        "bd35f367b487370e3fa28a18d32663afe786bded",
+        []
+       ],
        "text-indent-each-line-hanging-ref.html": [
         "3357d7d8f5fb766b613b092839f331f3654053b0",
+        []
+       ],
+       "text-indent-hanging-001-ref.html": [
+        "97993151c81781572826d6aec3ef06b3e5449364",
         []
        ],
        "text-indent-length-001-ref.html": [
@@ -404585,7 +404635,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "cde2cdd954a42a1ccee5199f72b80fd2b28479fb",
+      "840cac48a48591cf29610205c243c34e2b1c0da6",
       []
      ],
      "attribute-selectors": {
@@ -404806,7 +404856,7 @@
      },
      "invalidation": {
       "WEB_FEATURES.yml": [
-       "4ce547d3910bb93516870baa93e78b94311b36cb",
+       "6ab52cfab8028a8565924ef82e0633e1df1ee6b5",
        []
       ],
       "any-link-attribute-removal-ref.html": [
