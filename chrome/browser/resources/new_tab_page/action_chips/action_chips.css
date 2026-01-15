@@ -63,7 +63,6 @@
   flex-wrap: wrap;
   gap: 4px;
   justify-content: center;
-  min-height: 88px;
   opacity: 0;
   padding: 10px;
   transform: translateY(-56px);
