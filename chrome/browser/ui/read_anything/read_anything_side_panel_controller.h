@@ -76,9 +76,9 @@ class ReadAnythingSidePanelController
       const ReadAnythingSidePanelController&) = delete;
   ~ReadAnythingSidePanelController() override;
 
-  // The amount of time the user must spend on the previous page before the
-  // omnibox entrypoint is considered "ignored".
-  static const int kTimeOnPreviousPageBeforeOmniboxIgnored = 3000;
+  // Delay before showing the ominbox entrypoint to ensure the user is actually
+  // attempting to read the page.
+  static const int kShowPageActionDelayMs = 3000;
   // Delay before logging whether the user opened RM after seeing the IPH for
   // the omnibox entrypoint. If they don't open RM within this time, log that
   // they didn't open it, as it's unlikely the IPH convinced them to open RM.
@@ -102,14 +102,10 @@ class ReadAnythingSidePanelController
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  void SetDwellTimeForTesting(base::TimeTicks test_time) {
-    candidate_check_triggered_time_ms_ = test_time;
-  }
-
   tabs::TabInterface* tab() { return tab_.get(); }
 
  private:
-  void ReturnWebUIToController();
+   void ReturnWebUIToController();
 
   // Creates the container view and all its child views for side panel entry.
   std::unique_ptr<views::View> CreateContainerView(SidePanelEntryScope& scope);
@@ -171,6 +167,9 @@ class ReadAnythingSidePanelController
   // The cached result of CheckIfGoodCandidateForReadingMode.
   bool was_last_checked_page_distillable_ = false;
 
+  // A timer for delaying showing the ominbox entrypoint to ensure the user is
+  // actually attempting to read the page.
+  std::unique_ptr<base::RetainingOneShotTimer> page_dwell_timer_;
   // A timer for logging whether the user opened RM after seeing the omnibox
   // IPH.
   std::unique_ptr<base::OneShotTimer> iph_response_timer_;

@@ -331,6 +331,9 @@ void ReadAnythingSidePanelController::TabBackgrounded(tabs::TabInterface* tab) {
     iph_response_timer_->Stop();
     RecordOpenedAfterPromo();
   }
+  if (page_dwell_timer_ && page_dwell_timer_->IsRunning()) {
+    page_dwell_timer_->Stop();
+  }
 }
 
 void ReadAnythingSidePanelController::TabWillDetach(
@@ -405,6 +408,9 @@ void ReadAnythingSidePanelController::CheckIfGoodCandidateForReadingMode() {
   // Readability will callback with whether or not the current contents are a
   // good candidate for distillation.
   candidate_check_triggered_time_ms_ = base::TimeTicks::Now();
+  if (page_dwell_timer_) {
+    page_dwell_timer_->Stop();
+  }
   RunReadabilityHeuristicsOnWebContents(
       tab_->GetContents(),
       base::BindOnce(&ReadAnythingSidePanelController::OnReadabilityResult,
@@ -422,7 +428,25 @@ void ReadAnythingSidePanelController::OnReadabilityResult(bool should_show) {
     return;
   }
 
-  UpdateOmniboxEntryPoint(should_show);
+  base::TimeDelta time_since_page_shown_ =
+      base::TimeTicks::Now() - candidate_check_triggered_time_ms_;
+  // Always hide the omnibox immediately when it should be hidden. Use a delay
+  // to show the omnibox to ensure the user intends to consume this page.
+  if (!should_show ||
+      time_since_page_shown_.InMilliseconds() >= kShowPageActionDelayMs) {
+    UpdateOmniboxEntryPoint(should_show);
+  } else if (should_show) {
+    auto timer_length =
+        base::Milliseconds(kShowPageActionDelayMs) - time_since_page_shown_;
+    if (!page_dwell_timer_) {
+      page_dwell_timer_ = std::make_unique<base::RetainingOneShotTimer>();
+    }
+    page_dwell_timer_->Start(
+        FROM_HERE, timer_length,
+        base::BindRepeating(
+            &ReadAnythingSidePanelController::UpdateOmniboxEntryPoint,
+            base::Unretained(this), should_show));
+  }
 }
 
 void ReadAnythingSidePanelController::UpdateOmniboxEntryPoint(
@@ -491,8 +515,8 @@ void ReadAnythingSidePanelController::UpdateOmniboxEntryPointIgnored(
       candidate_check_triggered_time_ms_.is_null()
           ? base::Milliseconds(0)
           : base::TimeTicks::Now() - candidate_check_triggered_time_ms_;
-  if (is_showing && time_on_previous_page.InMilliseconds() >
-                        kTimeOnPreviousPageBeforeOmniboxIgnored) {
+  if (is_showing &&
+      time_on_previous_page.InMilliseconds() > kShowPageActionDelayMs) {
     if (auto* browser_window_interface = tab_->GetBrowserWindowInterface()) {
       read_anything::ReadAnythingEntryPointController::OnPageActionIgnored(
           browser_window_interface);
