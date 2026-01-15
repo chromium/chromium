@@ -10,14 +10,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/legion/private_ai_service_factory.h"
+#include "chrome/browser/legion/test_private_ai_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/legion/features.h"
-#include "components/legion/phosphor/blind_sign_auth_factory.h"
-#include "components/legion/phosphor/mock_blind_sign_auth.h"
 #include "components/legion/phosphor/token_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_test.h"
@@ -27,62 +26,6 @@
 #include "third_party/abseil-cpp/absl/time/time.h"
 
 namespace legion {
-
-namespace {
-
-class TestBlindSignAuthFactory : public phosphor::BlindSignAuthFactory {
- public:
-  TestBlindSignAuthFactory() = default;
-  ~TestBlindSignAuthFactory() override = default;
-
-  std::unique_ptr<quiche::BlindSignAuthInterface> CreateBlindSignAuth(
-      std::unique_ptr<network::PendingSharedURLLoaderFactory>
-          pending_url_loader_factory) override {
-    auto bsa = std::make_unique<phosphor::MockBlindSignAuth>();
-    bsa_ = bsa.get();
-    return bsa;
-  }
-
-  phosphor::MockBlindSignAuth* mock_bsa() { return bsa_; }
-
- private:
-  raw_ptr<phosphor::MockBlindSignAuth> bsa_;
-};
-
-class TestPrivateAiService : public legion::PrivateAiService {
- public:
-  TestPrivateAiService(
-      signin::IdentityManager* identity_manager,
-      PrefService* pref_service,
-      Profile* profile,
-      // This factory is owned by `PrivateAiService`, so we need to keep a
-      // raw pointer to it.
-      TestBlindSignAuthFactory* test_bsa_factory,
-      std::unique_ptr<phosphor::BlindSignAuthFactory> bsa_factory);
-
-  ~TestPrivateAiService() override = default;
-
-  legion::phosphor::MockBlindSignAuth* mock_bsa() {
-    return test_bsa_factory_->mock_bsa();
-  }
-
- private:
-  raw_ptr<TestBlindSignAuthFactory> test_bsa_factory_;
-};
-
-TestPrivateAiService::TestPrivateAiService(
-    signin::IdentityManager* identity_manager,
-    PrefService* pref_service,
-    Profile* profile,
-    TestBlindSignAuthFactory* test_bsa_factory,
-    std::unique_ptr<phosphor::BlindSignAuthFactory> bsa_factory)
-    : legion::PrivateAiService(identity_manager,
-                               pref_service,
-                               profile,
-                               std::move(bsa_factory)),
-      test_bsa_factory_(test_bsa_factory) {}
-
-}  // namespace
 
 class PrivateAiServiceBrowserTest : public InProcessBrowserTest {
  public:
@@ -139,8 +82,7 @@ class PrivateAiServiceBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(PrivateAiServiceBrowserTest,
                        IsTokenFetchEnabledAfterAccountChanges) {
-  legion::PrivateAiService* host =
-      PrivateAiServiceFactory::GetForProfile(profile());
+  PrivateAiService* host = PrivateAiServiceFactory::GetForProfile(profile());
   ASSERT_TRUE(host);
 
   // No account, so token fetch should be disabled.

@@ -13,11 +13,10 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chrome/browser/legion/test_private_ai_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/legion/features.h"
-#include "components/legion/phosphor/blind_sign_auth_factory.h"
 #include "components/legion/phosphor/data_types.h"
-#include "components/legion/phosphor/mock_blind_sign_auth.h"
 #include "components/legion/phosphor/token_fetcher_helper.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
@@ -31,64 +30,6 @@ namespace legion {
 namespace {
 
 constexpr char kTestEmail[] = "test@example.com";
-
-class TestBlindSignAuthFactory : public phosphor::BlindSignAuthFactory {
- public:
-  TestBlindSignAuthFactory();
-  ~TestBlindSignAuthFactory() override;
-
-  std::unique_ptr<quiche::BlindSignAuthInterface> CreateBlindSignAuth(
-      std::unique_ptr<network::PendingSharedURLLoaderFactory>
-          pending_url_loader_factory) override;
-
-  phosphor::MockBlindSignAuth* bsa() { return bsa_; }
-
- private:
-  raw_ptr<phosphor::MockBlindSignAuth> bsa_ = nullptr;
-};
-
-class TestPrivateAiService : public PrivateAiService {
- public:
-  TestPrivateAiService(
-      signin::IdentityManager* identity_manager,
-      PrefService* pref_service,
-      Profile* profile,
-      // This factory is owned by `PrivateAiService`, so we need to keep a
-      // raw pointer to it.
-      TestBlindSignAuthFactory* test_bsa_factory,
-      std::unique_ptr<phosphor::BlindSignAuthFactory> bsa_factory);
-
-  ~TestPrivateAiService() override = default;
-
-  phosphor::MockBlindSignAuth* bsa() { return test_bsa_factory_->bsa(); }
-
- private:
-  raw_ptr<TestBlindSignAuthFactory> test_bsa_factory_;
-};
-
-TestBlindSignAuthFactory::TestBlindSignAuthFactory() = default;
-TestBlindSignAuthFactory::~TestBlindSignAuthFactory() = default;
-
-std::unique_ptr<quiche::BlindSignAuthInterface>
-TestBlindSignAuthFactory::CreateBlindSignAuth(
-    std::unique_ptr<network::PendingSharedURLLoaderFactory>
-        pending_url_loader_factory) {
-  auto bsa = std::make_unique<phosphor::MockBlindSignAuth>();
-  bsa_ = bsa.get();
-  return bsa;
-}
-
-TestPrivateAiService::TestPrivateAiService(
-    signin::IdentityManager* identity_manager,
-    PrefService* pref_service,
-    Profile* profile,
-    TestBlindSignAuthFactory* test_bsa_factory,
-    std::unique_ptr<phosphor::BlindSignAuthFactory> bsa_factory)
-    : PrivateAiService(identity_manager,
-                       pref_service,
-                       profile,
-                       std::move(bsa_factory)),
-      test_bsa_factory_(test_bsa_factory) {}
 
 }  // namespace
 

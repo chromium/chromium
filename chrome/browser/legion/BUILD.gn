@@ -31,6 +31,23 @@ if (!is_android) {
     ]
   }
 
+  source_set("test_support") {
+    testonly = true
+    sources = [
+      "test_private_ai_service.cc",
+      "test_private_ai_service.h",
+    ]
+    public_deps = [
+      ":legion",
+      "//components/legion/phosphor",
+      "//components/legion/phosphor:test_support",
+    ]
+    deps = [
+      "//net/third_party/quiche:blind_sign_auth",
+      "//services/network/public/cpp",
+    ]
+  }
+
   source_set("unit_tests") {
     testonly = true
     sources = [
@@ -39,6 +56,7 @@ if (!is_android) {
     ]
     deps = [
       ":legion",
+      ":test_support",
       "//base/test:test_support",
       "//chrome/browser/profiles:test_support",
       "//chrome/test:test_support",
@@ -62,6 +80,7 @@ if (!is_android) {
 
     deps = [
       ":legion",
+      ":test_support",
       "//base",
       "//base/test:test_support",
       "//chrome/browser",
