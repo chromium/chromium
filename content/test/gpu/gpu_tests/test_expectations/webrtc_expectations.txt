@@ -114,9 +114,6 @@
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 crbug.com/415954245 [ android ] WebRTC_Codec_Loopback_H265 [ Failure ]
 
-# MacOS 14.5 -> 15.4 failures
-crbug.com/417974605 [ sequoia intel-0x3e9b ] WebRTC_Codec_Loopback_H265 [ Failure ]
-
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
