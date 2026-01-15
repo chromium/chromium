@@ -132,9 +132,8 @@ class AutofillProfile : public FormGroup {
     return stored_types;
   }();
 
-  // The values used to represent Autofill in the `initial_creator_id()` and
-  // `last_modifier_id()`.
-  static constexpr int kInitialCreatorOrModifierChrome = 70073;
+  // The values used to represent Autofill in the `initial_creator_id()`.
+  static constexpr int kInitialCreatorChrome = 70073;
   AutofillProfile(const std::string& guid,
                   RecordType record_type,
                   AddressCountryCode country_code);
@@ -371,11 +370,6 @@ class AutofillProfile : public FormGroup {
     initial_creator_id_ = creator_id;
   }
 
-  int last_modifier_id() const { return last_modifier_id_; }
-  void set_last_modifier_id(int modifier_id) {
-    last_modifier_id_ = modifier_id;
-  }
-
   // Converts a non-`kAccount` profile to a `kAccount` profile and returns it.
   // The converted profile shares the same content, but with a different GUID
   // and with `record_type` `kAccount`. Additional `kAccount`-specific metadata
@@ -482,16 +476,14 @@ class AutofillProfile : public FormGroup {
 
   RecordType record_type_;
 
-  // Indicates the application that initially created the profile and the
-  // application that performed the last non-metadata modification of it.
+  // Indicates the application that initially created the profile.
   // Only relevant for `record_type_ == kAccount` profiles, since
   // `kLocalOrSyncable` profiles are only used within Autofill. The integer
   // values represent a server-side enum `BillableService`, which is not
   // duplicated in Chromium. For Autofill, the exact application that
-  // created/modified the profile is thus opaque. However, Autofill is
-  // represented by the value `kInitialCreatorOrModifierChrome`.
+  // created the profile is thus opaque. However, Autofill is
+  // represented by the value `kInitialCreatorChrome`.
   int initial_creator_id_ = 0;
-  int last_modifier_id_ = 0;
 
   // Stores information about the quality of this profile's stored types.
   ProfileTokenQuality token_quality_;

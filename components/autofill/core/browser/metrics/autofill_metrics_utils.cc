@@ -119,7 +119,7 @@ AutofillProfileRecordTypeCategory GetCategoryOfProfile(
       return AutofillProfileRecordTypeCategory::kLocalOrSyncable;
     case AutofillProfile::RecordType::kAccount:
       return profile.initial_creator_id() ==
-                     AutofillProfile::kInitialCreatorOrModifierChrome
+                     AutofillProfile::kInitialCreatorChrome
                  ? AutofillProfileRecordTypeCategory::kAccountChrome
                  : AutofillProfileRecordTypeCategory::kAccountNonChrome;
     case AutofillProfile::RecordType::kAccountHome:

@@ -259,8 +259,7 @@ AutofillProfile::AutofillProfile(const std::string& guid,
       phone_number_(this),
       address_(country_code),
       record_type_(record_type),
-      initial_creator_id_(kInitialCreatorOrModifierChrome),
-      last_modifier_id_(kInitialCreatorOrModifierChrome),
+      initial_creator_id_(kInitialCreatorChrome),
       token_quality_(this),
       usage_history_information_(/*usage_history_size=*/1) {}
 
@@ -324,7 +323,6 @@ AutofillProfile& AutofillProfile::operator=(const AutofillProfile& profile) {
 
   record_type_ = profile.record_type_;
   initial_creator_id_ = profile.initial_creator_id_;
-  last_modifier_id_ = profile.last_modifier_id_;
 
   token_quality_ = profile.token_quality_;
   token_quality_.set_profile(this);
@@ -1291,9 +1289,8 @@ AutofillProfile AutofillProfile::ConvertToAccountProfile() const {
   // GUID is assigned.
   account_profile.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   account_profile.record_type_ = RecordType::kAccount;
-  // Initial creator and last modifier are unused for kLocalOrSyncable profiles.
-  account_profile.initial_creator_id_ = kInitialCreatorOrModifierChrome;
-  account_profile.last_modifier_id_ = kInitialCreatorOrModifierChrome;
+  // Initial creator is unused for kLocalOrSyncable profiles.
+  account_profile.initial_creator_id_ = kInitialCreatorChrome;
   return account_profile;
 }
 

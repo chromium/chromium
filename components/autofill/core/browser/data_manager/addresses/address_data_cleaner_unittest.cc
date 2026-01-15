@@ -280,7 +280,7 @@ TEST_F(AddressDataCleanerTest, Deduplicate_MergingSubsets) {
   superset_profile_1.usage_history().set_use_count(10);
   test_adm_.AddProfile(superset_profile_1);
 
-  // Setup superset 2 (not mergabe with the first superset) with count: 1 and
+  // Setup superset 2 (not mergeable with the first superset) with count: 1 and
   // use date: Now.
   AutofillProfile superset_profile_2(AddressCountryCode("US"));
   superset_profile_2.SetInfoWithVerificationStatus(

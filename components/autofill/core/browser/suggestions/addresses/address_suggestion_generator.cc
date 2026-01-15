@@ -698,7 +698,7 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
     // IPH should only be shown for non-H/W profiles.
     if (profile.record_type() == AutofillProfile::RecordType::kAccount &&
         profile.initial_creator_id() !=
-            AutofillProfile::kInitialCreatorOrModifierChrome) {
+            AutofillProfile::kInitialCreatorChrome) {
       suggestion.iph_metadata = Suggestion::IPHMetadata(
           &feature_engagement::
               kIPHAutofillExternalAccountProfileSuggestionFeature);
