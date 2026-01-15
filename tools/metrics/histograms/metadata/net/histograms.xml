@@ -299,6 +299,25 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Crypto.SecureEnclaveOperation.Apple.{Operation}.Error"
+    enum="MacSecurityFrameworkOSStatus" expires_after="2027-01-14">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>nsatragno@chromium.org</owner>
+  <owner>src/crypto/OWNERS</owner>
+  <summary>
+    Collected on Mac and iOS when a {Operation} operation failed for a
+    SecureEnclave-protected ECDSA key. Represents the OSStatus code returned by
+    the API corresponding with that operation.
+  </summary>
+  <token key="Operation">
+    <variant name="KeyDeletion" summary="key deletion"/>
+    <variant name="MessageSigning" summary="signing"/>
+    <variant name="NewKeyCreation" summary="new key creation"/>
+    <variant name="WrappedKeyCreation" summary="wrapped key creation"/>
+    <variant name="WrappedKeyExport" summary="wrapped key export"/>
+  </token>
+</histogram>
+
 <histogram name="Crypto.SecureEnclaveOperation.Mac.{Operation}.Error"
     enum="MacSecurityFrameworkOSStatus" expires_after="2026-10-05">
   <owner>seblalancette@chromium.org</owner>
@@ -311,6 +330,9 @@ chromium-metrics-reviews@google.com.
 
     Warning: this histogram was expired from 2025-10-06 to 2025-12-08; data may
     be missing.
+
+    Note: This histogram should be removed upon expiration and replaced by
+    Crypto.SecureEnclaveOperation.Apple.{Operation}.Error
   </summary>
   <token key="Operation">
     <variant name="KeyDeletion" summary="key deletion"/>

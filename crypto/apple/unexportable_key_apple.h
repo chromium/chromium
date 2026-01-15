@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CRYPTO_APPLE_UNEXPORTABLE_KEY_MAC_H_
-#define CRYPTO_APPLE_UNEXPORTABLE_KEY_MAC_H_
+#ifndef CRYPTO_APPLE_UNEXPORTABLE_KEY_APPLE_H_
+#define CRYPTO_APPLE_UNEXPORTABLE_KEY_APPLE_H_
 
 #include <memory>
 
@@ -15,7 +15,7 @@
 
 namespace crypto::apple {
 
-// UserVerifyingKeyProviderMac is an implementation of the
+// UserVerifyingKeyProviderApple is an implementation of the
 // UserVerifyingKeyProvider interface on top of Apple's Secure Enclave. Callers
 // must provide a keychain access group when instantiating this class. This
 // means that the build must be codesigned for any of this to work.
@@ -23,12 +23,12 @@ namespace crypto::apple {
 //
 // Only NIST P-256 elliptic curves are supported.
 //
-// Unlike Windows keys, macOS will store key metadata locally. Callers are
-// responsible for deleting keys when they are no longer needed.
-class UnexportableKeyProviderMac : public StatefulUnexportableKeyProvider {
+// Unlike Windows keys, Apple platforms will store key metadata locally. Callers
+// are responsible for deleting keys when they are no longer needed.
+class UnexportableKeyProviderApple : public StatefulUnexportableKeyProvider {
  public:
-  explicit UnexportableKeyProviderMac(Config config);
-  ~UnexportableKeyProviderMac() override;
+  explicit UnexportableKeyProviderApple(Config config);
+  ~UnexportableKeyProviderApple() override;
 
 #if defined(__OBJC__)
   // Like UnexportableKeyProvider::FromWrappedSigningKeySlowly, but lets you
@@ -77,9 +77,9 @@ class UnexportableKeyProviderMac : public StatefulUnexportableKeyProvider {
   std::unique_ptr<ObjCStorage> objc_storage_;
 };
 
-std::unique_ptr<UnexportableKeyProviderMac> GetUnexportableKeyProviderMac(
+std::unique_ptr<UnexportableKeyProviderApple> GetUnexportableKeyProviderApple(
     UnexportableKeyProvider::Config config);
 
 }  // namespace crypto::apple
 
-#endif  // CRYPTO_APPLE_UNEXPORTABLE_KEY_MAC_H_
+#endif  // CRYPTO_APPLE_UNEXPORTABLE_KEY_APPLE_H_

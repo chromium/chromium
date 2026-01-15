@@ -41,9 +41,9 @@ const crypto::SignatureVerifier::SignatureAlgorithm kAllAlgorithms[] = {
     crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
 };
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 constexpr char kTestKeychainAccessGroup[] = "test-keychain-access-group";
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
 
 std::string ToString(Provider provider) {
   switch (provider) {
@@ -66,9 +66,9 @@ class UnexportableKeySigningTest
     }
 
     crypto::UnexportableKeyProvider::Config config{
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
         .keychain_access_group = kTestKeychainAccessGroup
-#endif  // BUILDLFAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
     };
     return crypto::GetUnexportableKeyProvider(std::move(config));
   }

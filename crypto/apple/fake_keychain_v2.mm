@@ -383,8 +383,10 @@ BOOL FakeKeychainV2::LAContextCanEvaluatePolicy(
              uv_method_ == UVMethod::kPasswordOnly;
     case LAPolicyDeviceOwnerAuthenticationWithBiometrics:
       return uv_method_ == UVMethod::kBiometrics;
+#if !BUILDFLAG(IS_IOS)
     case LAPolicyDeviceOwnerAuthenticationWithBiometricsOrWatch:
       return uv_method_ == UVMethod::kBiometrics;
+#endif        // !BUILDFLAG(IS_IOS)
     default:  // Avoid needing to refer to values not available in the minimum
               // supported macOS version.
       NOTIMPLEMENTED();

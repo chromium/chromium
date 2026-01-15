@@ -16,9 +16,9 @@
 #include "crypto/crypto_export.h"
 #include "crypto/signature_verifier.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #import <Security/Security.h>
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
 
 namespace crypto {
 
@@ -28,7 +28,7 @@ class StatefulUnexportableKeyProvider;
 // UnexportableSigningKey provides a hardware-backed signing oracle on platforms
 // that support it. Current support is:
 //   Windows: RSA_PKCS1_SHA256 via TPM 1.2+ and ECDSA_SHA256 via TPM 2.0.
-//   macOS: ECDSA_SHA256 via the Secure Enclave.
+//   macOS and iOS: ECDSA_SHA256 via the Secure Enclave.
 //   Tests: ECDSA_SHA256 via ScopedMockUnexportableSigningKeyForTesting.
 //
 // See also //components/unexportable_keys for a higher-level key management
@@ -75,11 +75,11 @@ class CRYPTO_EXPORT UnexportableSigningKey {
   // does exist.
   virtual bool IsHardwareBacked() const;
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   // Returns the underlying reference to a Keychain key owned by the current
   // instance.
   virtual SecKeyRef GetSecKeyRef() const = 0;
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
 
   // Typesafe downcast to `StatefulUnexportableSigningKey`. Returns nullptr if
   // the key is not stateful.
@@ -107,7 +107,7 @@ class CRYPTO_EXPORT UnexportableKeyProvider {
 
   // Platform-specific configuration parameters for the provider.
   struct Config {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
     // Determines the level of user verification needed to sign with the key.
     // https://developer.apple.com/documentation/security/secaccesscontrolcreateflags?language=objc
     enum class AccessControl {
@@ -138,7 +138,7 @@ class CRYPTO_EXPORT UnexportableKeyProvider {
 
     // The access control set for keys created by the provider.
     AccessControl access_control = AccessControl::kNone;
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
   };
 
   // SelectAlgorithm returns which signature algorithm from

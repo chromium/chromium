@@ -31,8 +31,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_view_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
@@ -40,7 +40,7 @@
 #include "base/types/expected_macros.h"
 #include "crypto/apple/keychain_util.h"
 #include "crypto/apple/keychain_v2.h"
-#include "crypto/apple/unexportable_key_mac.h"
+#include "crypto/apple/unexportable_key_apple.h"
 #include "crypto/keypair.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key_metrics.h"
@@ -61,12 +61,24 @@ constexpr char kAttrLabel[] = "Chromium unexportable key";
 // Logs `status` to an error histogram capturing that `operation` failed for a
 // key backed by Secure Enclave.
 void LogKeychainOperationError(TPMOperation operation, OSStatus status) {
-  static constexpr char kKeyErrorStatusHistogramFormat[] =
-      "Crypto.SecureEnclaveOperation.Mac.%s.Error";
+// Will be removed upon expiration
+#if BUILDFLAG(IS_MAC)
+  static constexpr char kKeyErrorStatusHistogramFormatMacPrefix[] =
+      "Crypto.SecureEnclaveOperation.Mac.";
+  static constexpr char kKeyErrorStatusHistogramFormatMacSuffix[] = ".Error";
   base::UmaHistogramSparse(
-      base::StringPrintf(kKeyErrorStatusHistogramFormat,
-                         OperationToString(operation).c_str()),
+      base::StrCat({kKeyErrorStatusHistogramFormatMacPrefix,
+                    OperationToString(operation),
+                    kKeyErrorStatusHistogramFormatMacSuffix}),
       status);
+#endif  // BUILDFLAG(IS_MAC)
+  static constexpr char kKeyErrorStatusHistogramFormatPrefix[] =
+      "Crypto.SecureEnclaveOperation.Apple.";
+  static constexpr char kKeyErrorStatusHistogramFormatSuffix[] = ".Error";
+  base::UmaHistogramSparse(base::StrCat({kKeyErrorStatusHistogramFormatPrefix,
+                                         OperationToString(operation),
+                                         kKeyErrorStatusHistogramFormatSuffix}),
+                           status);
 }
 
 // Logs `error` to an error histogram capturing that `operation` failed for a
@@ -226,20 +238,20 @@ std::optional<std::vector<uint8_t>> Convertx963ToDerSpki(
   return imported->ToSubjectPublicKeyInfo();
 }
 
-// UnexportableSigningKeyMac is an implementation of the UnexportableSigningKey
-// interface on top of Apple's Secure Enclave.
-class UnexportableSigningKeyMac : public StatefulUnexportableSigningKey {
+// UnexportableSigningKeyApple is an implementation of the
+// UnexportableSigningKey interface on top of Apple's Secure Enclave.
+class UnexportableSigningKeyApple : public StatefulUnexportableSigningKey {
  public:
-  explicit UnexportableSigningKeyMac(CFDictionaryRef key_attributes)
-      : UnexportableSigningKeyMac(
+  explicit UnexportableSigningKeyApple(CFDictionaryRef key_attributes)
+      : UnexportableSigningKeyApple(
             base::apple::ScopedCFTypeRef<SecKeyRef>(
                 base::apple::GetValueFromDictionary<SecKeyRef>(key_attributes,
                                                                kSecValueRef),
                 base::scoped_policy::RETAIN),
             key_attributes) {}
 
-  UnexportableSigningKeyMac(base::apple::ScopedCFTypeRef<SecKeyRef> key,
-                            CFDictionaryRef key_attributes)
+  UnexportableSigningKeyApple(base::apple::ScopedCFTypeRef<SecKeyRef> key,
+                              CFDictionaryRef key_attributes)
       : key_(std::move(key)),
         application_label_(base::ToVector(base::apple::CFDataToSpan(
             base::apple::GetValueFromDictionary<CFDataRef>(
@@ -258,7 +270,7 @@ class UnexportableSigningKeyMac : public StatefulUnexportableSigningKey {
     public_key_spki_ = *Convertx963ToDerSpki(x962_span);
   }
 
-  ~UnexportableSigningKeyMac() override = default;
+  ~UnexportableSigningKeyApple() override = default;
 
   SignatureVerifier::SignatureAlgorithm Algorithm() const override {
     return SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256;
@@ -315,7 +327,7 @@ class UnexportableSigningKeyMac : public StatefulUnexportableSigningKey {
   // The wrapped key as returned by the Keychain API.
   const base::apple::ScopedCFTypeRef<SecKeyRef> key_;
 
-  // The MacOS Keychain API sets the application label to the hash of the public
+  // The Apple Keychain API sets the application label to the hash of the public
   // key. We use this to uniquely identify the key in lieu of a wrapped private
   // key.
   const std::vector<uint8_t> application_label_;
@@ -332,12 +344,12 @@ class UnexportableSigningKeyMac : public StatefulUnexportableSigningKey {
 
 }  // namespace
 
-struct UnexportableKeyProviderMac::ObjCStorage {
+struct UnexportableKeyProviderApple::ObjCStorage {
   NSString* __strong keychain_access_group_;
   NSString* __strong application_tag_;
 };
 
-UnexportableKeyProviderMac::UnexportableKeyProviderMac(Config config)
+UnexportableKeyProviderApple::UnexportableKeyProviderApple(Config config)
     : access_control_(config.access_control),
       objc_storage_(std::make_unique<ObjCStorage>()) {
   objc_storage_->keychain_access_group_ =
@@ -345,10 +357,10 @@ UnexportableKeyProviderMac::UnexportableKeyProviderMac(Config config)
   objc_storage_->application_tag_ =
       base::SysUTF8ToNSString(std::move(config.application_tag));
 }
-UnexportableKeyProviderMac::~UnexportableKeyProviderMac() = default;
+UnexportableKeyProviderApple::~UnexportableKeyProviderApple() = default;
 
 std::optional<SignatureVerifier::SignatureAlgorithm>
-UnexportableKeyProviderMac::SelectAlgorithm(
+UnexportableKeyProviderApple::SelectAlgorithm(
     base::span<const SignatureVerifier::SignatureAlgorithm>
         acceptable_algorithms) {
   return std::ranges::contains(acceptable_algorithms,
@@ -358,14 +370,14 @@ UnexportableKeyProviderMac::SelectAlgorithm(
 }
 
 std::unique_ptr<UnexportableSigningKey>
-UnexportableKeyProviderMac::GenerateSigningKeySlowly(
+UnexportableKeyProviderApple::GenerateSigningKeySlowly(
     base::span<const SignatureVerifier::SignatureAlgorithm>
         acceptable_algorithms) {
   return GenerateSigningKeySlowly(acceptable_algorithms, /*lacontext=*/nil);
 }
 
 std::unique_ptr<UnexportableSigningKey>
-UnexportableKeyProviderMac::GenerateSigningKeySlowly(
+UnexportableKeyProviderApple::GenerateSigningKeySlowly(
     base::span<const SignatureVerifier::SignatureAlgorithm>
         acceptable_algorithms,
     LAContext* lacontext) {
@@ -437,18 +449,18 @@ UnexportableKeyProviderMac::GenerateSigningKeySlowly(
   base::apple::ScopedCFTypeRef<CFDictionaryRef> key_metadata =
       crypto::apple::KeychainV2::GetInstance().KeyCopyAttributes(
           private_key.get());
-  return std::make_unique<UnexportableSigningKeyMac>(std::move(private_key),
-                                                     key_metadata.get());
+  return std::make_unique<UnexportableSigningKeyApple>(std::move(private_key),
+                                                       key_metadata.get());
 }
 
 std::unique_ptr<UnexportableSigningKey>
-UnexportableKeyProviderMac::FromWrappedSigningKeySlowly(
+UnexportableKeyProviderApple::FromWrappedSigningKeySlowly(
     base::span<const uint8_t> wrapped_key) {
   return FromWrappedSigningKeySlowly(wrapped_key, /*lacontext=*/nil);
 }
 
 std::unique_ptr<UnexportableSigningKey>
-UnexportableKeyProviderMac::FromWrappedSigningKeySlowly(
+UnexportableKeyProviderApple::FromWrappedSigningKeySlowly(
     base::span<const uint8_t> wrapped_key,
     LAContext* lacontext) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -475,7 +487,7 @@ UnexportableKeyProviderMac::FromWrappedSigningKeySlowly(
             return GetApplicationTag(key_dict.get());
           });
       it != key_dicts.end()) {
-    return std::make_unique<UnexportableSigningKeyMac>(it->get());
+    return std::make_unique<UnexportableSigningKeyApple>(it->get());
   }
 
   // Lastly, if there are matching entries for `wrapped_key`, but no exact match
@@ -498,17 +510,17 @@ UnexportableKeyProviderMac::FromWrappedSigningKeySlowly(
     return nullptr;
   }
 
-  return std::make_unique<UnexportableSigningKeyMac>(
+  return std::make_unique<UnexportableSigningKeyApple>(
       NSToCFPtrCast(key_attributes));
 }
 
 StatefulUnexportableKeyProvider*
-UnexportableKeyProviderMac::AsStatefulUnexportableKeyProvider() {
+UnexportableKeyProviderApple::AsStatefulUnexportableKeyProvider() {
   return this;
 }
 
 std::optional<std::vector<std::unique_ptr<UnexportableSigningKey>>>
-UnexportableKeyProviderMac::GetAllSigningKeysSlowly() {
+UnexportableKeyProviderApple::GetAllSigningKeysSlowly() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 
@@ -523,11 +535,11 @@ UnexportableKeyProviderMac::GetAllSigningKeysSlowly() {
 
   return base::ToVector(
       keys, [](const auto& key) -> std::unique_ptr<UnexportableSigningKey> {
-        return std::make_unique<UnexportableSigningKeyMac>(key.get());
+        return std::make_unique<UnexportableSigningKeyApple>(key.get());
       });
 }
 
-std::optional<size_t> UnexportableKeyProviderMac::DeleteSigningKeysSlowly(
+std::optional<size_t> UnexportableKeyProviderApple::DeleteSigningKeysSlowly(
     base::span<const base::span<const uint8_t>> wrapped_keys) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
@@ -574,7 +586,8 @@ std::optional<size_t> UnexportableKeyProviderMac::DeleteSigningKeysSlowly(
       keys, [&](const auto& key) { return DeleteKey(key.get()); });
 }
 
-std::optional<size_t> UnexportableKeyProviderMac::DeleteAllSigningKeysSlowly() {
+std::optional<size_t>
+UnexportableKeyProviderApple::DeleteAllSigningKeysSlowly() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 
@@ -599,7 +612,7 @@ std::optional<size_t> UnexportableKeyProviderMac::DeleteAllSigningKeysSlowly() {
       keys, [&](const auto& key) { return DeleteKey(key.get()); });
 }
 
-std::optional<size_t> UnexportableKeyProviderMac::DeleteSigningKeySlowlyImpl(
+std::optional<size_t> UnexportableKeyProviderApple::DeleteSigningKeySlowlyImpl(
     base::span<const uint8_t> wrapped_key) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
@@ -620,11 +633,11 @@ std::optional<size_t> UnexportableKeyProviderMac::DeleteSigningKeySlowlyImpl(
       keys, [](const auto& key) { return DeleteKey(key.get()); });
 }
 
-std::unique_ptr<UnexportableKeyProviderMac> GetUnexportableKeyProviderMac(
+std::unique_ptr<UnexportableKeyProviderApple> GetUnexportableKeyProviderApple(
     UnexportableKeyProvider::Config config) {
   CHECK(!config.keychain_access_group.empty())
       << "A keychain access group must be set when using unexportable keys on "
-         "macOS";
+         "Apple platforms";
   if (![crypto::apple::KeychainV2::GetInstance().GetTokenIDs()
           containsObject:CFToNSPtrCast(kSecAttrTokenIDSecureEnclave)]) {
     return nullptr;
@@ -637,7 +650,7 @@ std::unique_ptr<UnexportableKeyProviderMac> GetUnexportableKeyProviderMac(
     return nullptr;
   }
 #endif  // !BUILDFLAG(IS_IOS)
-  return std::make_unique<UnexportableKeyProviderMac>(std::move(config));
+  return std::make_unique<UnexportableKeyProviderApple>(std::move(config));
 }
 
 }  // namespace crypto::apple

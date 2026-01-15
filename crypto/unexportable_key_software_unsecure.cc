@@ -17,9 +17,9 @@
 #include "third_party/boringssl/src/include/openssl/obj.h"
 #include "third_party/boringssl/src/include/openssl/rsa.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "base/notreached.h"
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
 
 namespace crypto {
 
@@ -73,9 +73,9 @@ class SoftwareECDSA : public UnexportableSigningKey {
     return nullptr;
   }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   SecKeyRef GetSecKeyRef() const override { NOTREACHED(); }
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
 
  private:
   bssl::UniquePtr<EC_KEY> key_;
@@ -118,9 +118,9 @@ class SoftwareRSA : public UnexportableSigningKey {
     return ret;
   }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   SecKeyRef GetSecKeyRef() const override { NOTREACHED(); }
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
 
   StatefulUnexportableSigningKey* AsStatefulUnexportableSigningKey() override {
     return nullptr;
