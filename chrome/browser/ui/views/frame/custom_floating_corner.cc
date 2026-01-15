@@ -33,6 +33,10 @@ CustomFloatingCorner::CornerOrientation GetVisualOrientation(
       return CustomFloatingCorner::CornerOrientation::kTopTrailing;
     case CustomFloatingCorner::CornerOrientation::kTopTrailing:
       return CustomFloatingCorner::CornerOrientation::kTopLeading;
+    case CustomFloatingCorner::CornerOrientation::kBottomLeading:
+      return CustomFloatingCorner::CornerOrientation::kBottomTrailing;
+    case CustomFloatingCorner::CornerOrientation::kBottomTrailing:
+      return CustomFloatingCorner::CornerOrientation::kBottomLeading;
   }
 }
 
@@ -108,7 +112,8 @@ gfx::Size CustomFloatingCorner::CalculatePreferredSize(
   CHECK(GetLayoutProvider());
   const float corner_radius =
       GetLayoutProvider()->GetCornerRadiusMetric(corner_radius_token_);
-  const float corner_size = corner_radius + views::Separator::kThickness;
+  const float corner_size =
+      corner_radius + (stroke_color_ ? views::Separator::kThickness : 0);
   return gfx::Size(corner_size, corner_size);
 }
 
@@ -164,6 +169,21 @@ void CustomFloatingCorner::OnPaint(gfx::Canvas* canvas) {
         clip_path.lineTo(0, 0);
       }
       break;
+    case CornerOrientation::kBottomLeading:
+      clip_path.moveTo(0, 0);
+      clip_path.arcTo(corner_radius, 0, SkPathBuilder::kSmall_ArcSize,
+                      SkPathDirection::kCCW,
+                      SkPoint(rect.width(), rect.height()));
+      clip_path.lineTo(0, rect.height());
+      clip_path.lineTo(0, 0);
+      break;
+    case CornerOrientation::kBottomTrailing:
+      clip_path.moveTo(rect.width(), 0);
+      clip_path.lineTo(rect.width(), rect.height());
+      clip_path.lineTo(0, rect.height());
+      clip_path.arcTo(corner_radius, 0, SkPathBuilder::kSmall_ArcSize,
+                      SkPathDirection::kCCW, SkPoint(rect.width(), 0));
+      break;
   }
   canvas->ClipPath(clip_path.detach(), /*do_anti_alias=*/true);
 
@@ -196,6 +216,10 @@ void CustomFloatingCorner::OnPaint(gfx::Canvas* canvas) {
                           SkPathDirection::kCCW,
                           SkPoint(0, views::Separator::kThickness));
         break;
+      case CornerOrientation::kBottomLeading:
+        NOTREACHED() << "Stroke not yet implemented for lower corners.";
+      case CornerOrientation::kBottomTrailing:
+        NOTREACHED() << "Stroke not yet implemented for lower corners.";
     }
     canvas->DrawPath(stroke_path.detach(), flags);
   }

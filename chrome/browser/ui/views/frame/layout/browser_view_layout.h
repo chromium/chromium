@@ -58,6 +58,7 @@ struct BrowserViewLayoutViews {
   raw_ptr<HorizontalTabStripRegionView> horizontal_tab_strip_region_view =
       nullptr;
   raw_ptr<VerticalTabStripRegionView> vertical_tab_strip_region_view = nullptr;
+  raw_ptr<views::View> vertical_tab_strip_bottom_corner = nullptr;
   raw_ptr<ProjectsPanelView> projects_panel_container = nullptr;
   raw_ptr<views::View> toolbar = nullptr;
   raw_ptr<InfoBarContainerView> infobar_container = nullptr;

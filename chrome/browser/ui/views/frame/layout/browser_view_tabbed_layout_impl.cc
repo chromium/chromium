@@ -372,6 +372,22 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
                     tab_strip_type == TabStripType::kVertical);
   }
 
+  // Position the vertical tabstrip bottom corner.
+  if (IsParentedTo(views().vertical_tab_strip_bottom_corner,
+                   views().browser_view)) {
+    gfx::Rect corner_bounds;
+    if (tab_strip_type == TabStripType::kVertical) {
+      const auto preferred =
+          views().vertical_tab_strip_bottom_corner->GetPreferredSize();
+      corner_bounds =
+          gfx::Rect(params.visual_client_area.x(),
+                    params.visual_client_area.bottom() - preferred.height(),
+                    preferred.width(), preferred.height());
+    }
+    layout.AddChild(views().vertical_tab_strip_bottom_corner, corner_bounds,
+                    tab_strip_type == TabStripType::kVertical);
+  }
+
   // TODO(crbug.com/469425263): Ensure correct layout calculations for the
   // Project Panel Container.
   if (IsParentedToAndVisible(views().projects_panel_container,

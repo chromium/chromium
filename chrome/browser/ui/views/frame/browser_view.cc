@@ -141,6 +141,7 @@
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/contents_layout_manager.h"
 #include "chrome/browser/ui/views/frame/contents_separator.h"
+#include "chrome/browser/ui/views/frame/custom_floating_corner.h"
 #include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_delegate_impl.h"
@@ -966,6 +967,12 @@ BrowserView::BrowserView(Browser* browser)
 
     vertical_tab_strip_region_view_ =
         AddChildView(std::move(vertical_tab_strip_container));
+
+    vertical_tabs_strip_bottom_corner_ =
+        AddChildView(std::make_unique<CustomFloatingCorner>(
+            *this, CustomFloatingCorner::CornerOrientation::kBottomLeading,
+            views::ShapeContextTokens::kContentSeparatorRadius,
+            CustomFloatingCorner::FrameColor()));
   }
 
   if (tabs::IsProjectsPanelFeatureEnabled()) {
@@ -1073,6 +1080,7 @@ BrowserView::~BrowserView() {
   window_scrim_view_ = nullptr;
   contents_container_ = nullptr;
   vertical_tab_strip_region_view_ = nullptr;
+  vertical_tabs_strip_bottom_corner_ = nullptr;
   projects_panel_container_ = nullptr;
   toolbar_height_side_panel_ = nullptr;
   contents_height_side_panel_ = nullptr;
@@ -5255,6 +5263,8 @@ void BrowserView::AddedToWidget() {
   layout_views.horizontal_tab_strip_region_view =
       horizontal_tab_strip_region_view_;
   layout_views.vertical_tab_strip_region_view = vertical_tab_strip_region_view_;
+  layout_views.vertical_tab_strip_bottom_corner =
+      vertical_tabs_strip_bottom_corner_;
   layout_views.projects_panel_container = projects_panel_container_;
   layout_views.toolbar = toolbar_;
   layout_views.infobar_container = infobar_container_;
