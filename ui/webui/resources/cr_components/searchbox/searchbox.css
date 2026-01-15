@@ -156,12 +156,9 @@
   padding-top: 16px;
 }
 
-:host-context(:not([ntp-realbox-next-enabled])) input {
+:host(:not([ntp-realbox-next-enabled])) input,
+:host([searchbox-layout-mode='Compact']) input {
   align-self: center;
-  padding-top: 0;
-}
-
-:host-context([searchbox-layout-mode='Compact']) input {
   padding-top: 2px;
 }
 

@@ -545,7 +545,7 @@ search-animated-glow {
 
 :host([searchbox-next-enabled][searchbox-layout-mode="Compact"]) {
   --expanded-border-radius: var(--cr-composebox-expanded-border-radius, 30px);
-  --input-bottom-spacing: 10px;
+  --input-bottom-spacing: 16px;
 }
 
 :host([searchbox-next-enabled][searchbox-layout-mode="Compact"]) #iconContainer {
