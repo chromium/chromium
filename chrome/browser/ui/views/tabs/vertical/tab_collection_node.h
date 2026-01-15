@@ -15,6 +15,7 @@
 #include "base/types/pass_key.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_collection_types.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace views {
 class View;
@@ -37,7 +38,8 @@ class TabCollectionNode {
       CustomAddChildViewCallback;
   typedef base::RepeatingCallback<void(views::View* view_to_remove)>
       CustomRemoveChildViewCallback;
-  typedef base::RepeatingCallback<void(std::unique_ptr<views::View>, size_t)>
+  typedef base::RepeatingCallback<void(std::unique_ptr<views::View>,
+                                       const gfx::Rect&)>
       CustomAttachChildViewCallback;
   typedef base::RepeatingCallback<std::unique_ptr<views::View>(views::View*)>
       CustomDetachChildViewCallback;

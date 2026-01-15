@@ -68,8 +68,8 @@ VerticalTabGroupView::VerticalTabGroupView(TabCollectionNode* collection_node)
   collection_node->set_remove_child_from_node(base::BindRepeating(
       &TabCollectionAnimatingLayoutManager::AnimateAndDestroyChildView,
       base::Unretained(&layout_manager_.get())));
-  collection_node->set_detach_child_from_node(base::BindRepeating(
-      &TabCollectionAnimatingLayoutManager::RemoveChildViewForReparenting,
+  collection_node->set_attach_child_to_node(base::BindRepeating(
+      &TabCollectionAnimatingLayoutManager::AnimateAndReparentView,
       base::Unretained(&layout_manager_.get())));
 
   node_destroyed_subscription_ =

@@ -280,6 +280,9 @@ void TabCollectionNode::MoveChild(base::PassKey<TabCollectionNode> pass_key,
       continue;
     }
 
+    const gfx::Rect previous_bounds_in_screen =
+        child_node->node_view_->GetBoundsInScreen();
+
     std::unique_ptr<views::View> removed_view =
         src_parent_node->detach_child_from_node_
             ? src_parent_node->detach_child_from_node_.Run(
@@ -292,7 +295,7 @@ void TabCollectionNode::MoveChild(base::PassKey<TabCollectionNode> pass_key,
     dst_parent_node->AddChildNode(std::move(removed_node), new_index);
     if (dst_parent_node->attach_child_to_node_) {
       dst_parent_node->attach_child_to_node_.Run(std::move(removed_view),
-                                                 new_index);
+                                                 previous_bounds_in_screen);
     } else {
       dst_parent_node->node_view_->AddChildView(std::move(removed_view));
     }
