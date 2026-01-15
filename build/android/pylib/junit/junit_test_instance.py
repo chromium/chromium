@@ -29,6 +29,8 @@ class JunitTestInstance(test_instance.TestInstance):
     self._test_filters = test_filter.InitializeFiltersFromArgs(args)
     self._test_suite = args.test_suite
     self._quiet = args.quiet
+    self._external_shard_index = args.test_launcher_shard_index
+    self._total_external_shards = args.test_launcher_total_shards
 
   #override
   def TestType(self):
@@ -101,3 +103,11 @@ class JunitTestInstance(test_instance.TestInstance):
   @property
   def suite(self):
     return self._test_suite
+
+  @property
+  def external_shard_index(self):
+    return self._external_shard_index
+
+  @property
+  def total_external_shards(self):
+    return self._total_external_shards

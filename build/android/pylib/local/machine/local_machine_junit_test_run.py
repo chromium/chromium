@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import dataclasses
+import hashlib
 import json
 import logging
 import multiprocessing
@@ -155,6 +156,30 @@ class LocalMachineJunitTestRun(test_run.TestRun):
       num_workers = max(1, multiprocessing.cpu_count() // 2)
     return min(num_workers, num_jobs)
 
+  def _ApplyExternalSharding(self, json_config):
+    shard_index = self._test_instance.external_shard_index
+    total_shards = self._test_instance.total_external_shards
+    if total_shards <= 1:
+      return json_config
+
+    logging.info('Using external sharding settings. This is shard %d/%d',
+                 shard_index, total_shards)
+
+    new_configs = {}
+    for config_name, methods_by_class in json_config['configs'].items():
+      new_methods_by_class = {}
+      for class_name, methods in methods_by_class.items():
+        new_methods = []
+        for method in methods:
+          test_name = f'{class_name}.{method}'
+          if _DeterministicHash(test_name) % total_shards == shard_index:
+            new_methods.append(method)
+        if new_methods:
+          new_methods_by_class[class_name] = new_methods
+      if new_methods_by_class:
+        new_configs[config_name] = new_methods_by_class
+
+    return {**json_config, 'configs': new_configs}
   @property
   def _wrapper_path(self):
     return os.path.join(constants.GetOutDirectory(), 'bin', 'helper',
@@ -222,6 +247,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
   #override
   def GetTestsForListing(self):
     json_config = self._GetJsonConfig()
+    json_config = self._ApplyExternalSharding(json_config)
     ret = []
     for config in json_config['configs'].values():
       for class_name, methods in config.items():
@@ -244,6 +270,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
       except (subprocess.CalledProcessError, IOError):
         results.append(_MakeUnknownFailureResult('Filter matched no tests'))
         return
+    json_config = self._ApplyExternalSharding(json_config)
     test_groups = GroupTests(json_config, _MAX_TESTS_PER_JOB)
 
     shard_list = list(range(len(test_groups)))
@@ -386,6 +413,11 @@ def GroupTests(json_config, max_per_job):
   # at the end.
   ret.sort(key=lambda x: -len(x.methods_by_class))
   return ret
+
+
+def _DeterministicHash(test_name):
+  hash_bytes = hashlib.sha256(test_name.encode('utf-8')).digest()
+  return int.from_bytes(hash_bytes[-3:], byteorder='big')
 
 
 def _MakeUnknownFailureResult(message):
