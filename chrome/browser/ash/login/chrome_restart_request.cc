@@ -250,6 +250,7 @@ void DeriveFeatures(base::CommandLine* out_command_line) {
       &ash::features::kSeamlessRefreshRateSwitching,
       &::features::kPluginVm,
       &display::features::kCtmColorManagement,
+      &display::features::kDrmColorSpaceDefaultIsRec709,
       &display::features::kOledScaleFactorEnabled,
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
       &media::kPlatformHEVCDecoderSupport,
