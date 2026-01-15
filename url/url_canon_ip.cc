@@ -119,10 +119,7 @@ void AppendIPv4Address(base::span<const uint8_t> address, CanonOutput* output) {
   for (int i = 0; i < 4; i++) {
     char str[16];
     _itoa_s(address[i], str, 10);
-
-    for (int ch = 0; UNSAFE_TODO(str[ch]) != 0; ch++) {
-      output->push_back(UNSAFE_TODO(str[ch]));
-    }
+    output->Append(std::string_view(str));
 
     if (i != 3)
       output->push_back('.');
@@ -156,9 +153,7 @@ void AppendIPv6Address(base::span<const uint8_t> address, CanonOutput* output) {
       // Stringify the 16 bit number (at most requires 4 hex digits).
       char str[5];
       _itoa_s(x, str, 16);
-      for (int ch = 0; UNSAFE_TODO(str[ch]) != 0; ++ch) {
-        output->push_back(UNSAFE_TODO(str[ch]));
-      }
+      output->Append(std::string_view(str));
 
       // Put a colon after each number, except the last.
       if (i < 16)
