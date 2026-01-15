@@ -168,11 +168,13 @@ class GlicInstanceCoordinatorImpl
   }
   std::string DescribeForTesting();
 
+  // Testing support. These methods should not be added to the public interface.
+  GlicInstanceImpl* GetInstanceImplFor(const InstanceId& id) const;
+  GlicInstanceImpl* GetInstanceImplForTab(const tabs::TabInterface* tab) const;
+
  private:
   void OnTabEvent(const GlicTabEvent& event);
   GlicInstanceImpl* GetOrCreateGlicInstanceImplForTab(tabs::TabInterface* tab);
-  GlicInstanceImpl* GetInstanceImplFor(const InstanceId& id) const;
-  GlicInstanceImpl* GetInstanceImplForTab(const tabs::TabInterface* tab) const;
   GlicInstanceImpl* GetOrCreateInstanceImplForFloaty();
   GlicInstanceImpl* CreateGlicInstance();
   std::unique_ptr<GlicInstanceImpl> CreateInstanceImpl();
