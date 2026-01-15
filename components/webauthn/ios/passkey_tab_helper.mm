@@ -421,6 +421,52 @@ void PasskeyTabHelper::DeferToRenderer(web::WebFrame* web_frame,
                                                            request_id);
 }
 
+void PasskeyTabHelper::DeferPendingRequestToRenderer(
+    const std::string& request_id) {
+  std::string frame_id;
+  if (registration_requests_.contains(request_id)) {
+    std::optional<RegistrationRequestParams> optional_params =
+        ExtractParamsFromRegistrationRequestsMap(request_id);
+    if (!optional_params.has_value()) {
+      // Passkey request not found.
+      return;
+    }
+
+    frame_id = optional_params->FrameId();
+  } else if (assertion_requests_.contains(request_id)) {
+    std::optional<AssertionRequestParams> optional_params =
+        ExtractParamsFromAssertionRequestsMap(request_id);
+    if (!optional_params.has_value()) {
+      // Passkey request not found.
+      return;
+    }
+
+    frame_id = optional_params->FrameId();
+  }
+
+  if (frame_id.empty()) {
+    return;
+  }
+
+  web::WebFrame* web_frame = GetWebFrame(frame_id);
+  if (!web_frame) {
+    return;
+  }
+
+  DeferToRenderer(web_frame, request_id);
+}
+
+std::string PasskeyTabHelper::UsernameForRequest(
+    const std::string& request_id) {
+  // Check registration requests
+  auto registration_it = registration_requests_.find(request_id);
+  if (registration_it != registration_requests_.end()) {
+    return registration_it->second.UserEntity().name;
+  }
+
+  return "";
+}
+
 void PasskeyTabHelper::CompletePasskeyCreation(
     RegistrationRequestParams params,
     std::string client_data_json,

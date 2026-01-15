@@ -80,6 +80,14 @@ class PasskeyTabHelper : public web::WebStateObserver,
   // Utility function to defer the passkey request back to the renderer.
   void DeferToRenderer(IOSPasskeyClient::RequestInfo request_info) const;
 
+  // Utility function to defer a pending passkey request back to the renderer.
+  void DeferPendingRequestToRenderer(const std::string& request_id);
+
+  // Returns the username associated with the current request ID or an empty
+  // string if the request is not found. Note that only registration requests
+  // have a username.
+  std::string UsernameForRequest(const std::string& request_id);
+
   // Sets the passkey command handler.
   void SetIOSPasskeyClientCommandsHandler(id<IOSPasskeyClientCommands> handler);
 
