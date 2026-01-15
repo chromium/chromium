@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_components/cr_shortcut_input/cr_shortcut_input.js';
 
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {KeyboardShortcutDelegate} from './keyboard_shortcut_delegate.js';
@@ -33,12 +34,15 @@ export class ExtensionsKeyboardShortcutsElement extends
     return {
       delegate: {type: Object},
       items: {type: Array},
+      showGlobalScopeOption_: {type: Boolean},
     };
   }
 
   accessor delegate: KeyboardShortcutDelegate =
       createDummyKeyboardShortcutDelegate();
   accessor items: chrome.developerPrivate.ExtensionInfo[] = [];
+  protected accessor showGlobalScopeOption_: boolean =
+      loadTimeData.getBoolean('enableGlobalScopedShortcuts');
 
   override firstUpdated() {
     this.addEventListener('view-enter-start', this.onViewEnter_);

@@ -70,6 +70,16 @@ std::string GetLoadTimeClasses(bool in_dev_mode) {
   return in_dev_mode ? "in-dev-mode" : std::string();
 }
 
+bool IsGlobalShortcutEnabled() {
+// Disable the global scoped shortcuts on Android and ChromeOS since they're
+// no-ops.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+  return false;
+#else
+  return true;
+#endif
+}
+
 content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
                                                        bool in_dev_mode) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
@@ -485,6 +495,7 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
   source->AddBoolean(
       "safetyHubThreeDotDetails",
       base::FeatureList::IsEnabled(features::kSafetyHubThreeDotDetails));
+  source->AddBoolean("enableGlobalScopedShortcuts", IsGlobalShortcutEnabled());
 
   // MV2 deprecation.
   auto* mv2_experiment_manager = ManifestV2ExperimentManager::Get(profile);
