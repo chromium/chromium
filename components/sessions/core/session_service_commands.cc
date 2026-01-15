@@ -1051,7 +1051,12 @@ std::unique_ptr<SessionCommand> CreateSessionCommandForPayload(
     SessionCommand::id_type id,
     const Payload& payload) {
   auto command = std::make_unique<SessionCommand>(id, sizeof(payload));
-  UNSAFE_TODO(memcpy(command->contents(), &payload, sizeof(payload)));
+  // TODO(crbug.com/435317390): Rewrite to use spans. The main obstruction is
+  // that some payloads have non-unique object representations due to having
+  // padding. Options include allowlisting the affected payloads via
+  // `base::kCanSafelyConvertToByteSpan` or adding (unused, but initialized)
+  // members that take up the padding.
+  UNSAFE_TODO(memcpy(command->contents().data(), &payload, sizeof(payload)));
   return command;
 }
 
