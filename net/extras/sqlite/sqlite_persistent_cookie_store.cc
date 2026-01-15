@@ -10,7 +10,6 @@
 #include <optional>
 #include <set>
 #include <tuple>
-#include <unordered_set>
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -46,6 +45,7 @@
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 #include "url/third_party/mozilla/url_parse.h"
 
@@ -373,7 +373,7 @@ class SQLitePersistentCookieStore::Backend
   bool MakeCookiesFromSQLStatement(
       std::vector<std::unique_ptr<CanonicalCookie>>& cookies,
       sql::Statement& statement,
-      std::unordered_set<std::string>& top_frame_site_keys_to_delete);
+      absl::flat_hash_set<std::string>& top_frame_site_keys_to_delete);
 
   // Batch a cookie addition.
   void AddCookie(const CanonicalCookie& cc);
@@ -450,7 +450,7 @@ class SQLitePersistentCookieStore::Backend
   bool LoadCookiesForDomains(const std::set<std::string>& key);
 
   void DeleteTopFrameSiteKeys(
-      const std::unordered_set<std::string>& top_frame_site_keys);
+      const absl::flat_hash_set<std::string>& top_frame_site_keys);
 
   // Batch a cookie operation (add or delete)
   void BatchOperation(PendingOperation::OperationType op,
@@ -898,7 +898,7 @@ bool SQLitePersistentCookieStore::Backend::LoadCookiesForDomains(
   }
 
   std::vector<std::unique_ptr<CanonicalCookie>> cookies;
-  std::unordered_set<std::string> top_frame_site_keys_to_delete;
+  absl::flat_hash_set<std::string> top_frame_site_keys_to_delete;
   auto it = domains.begin();
   bool ok = true;
   for (; it != domains.end() && ok; ++it) {
@@ -934,7 +934,7 @@ bool SQLitePersistentCookieStore::Backend::LoadCookiesForDomains(
 }
 
 void SQLitePersistentCookieStore::Backend::DeleteTopFrameSiteKeys(
-    const std::unordered_set<std::string>& top_frame_site_keys) {
+    const absl::flat_hash_set<std::string>& top_frame_site_keys) {
   if (top_frame_site_keys.empty())
     return;
 
@@ -955,7 +955,7 @@ void SQLitePersistentCookieStore::Backend::DeleteTopFrameSiteKeys(
 bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
     std::vector<std::unique_ptr<CanonicalCookie>>& cookies,
     sql::Statement& statement,
-    std::unordered_set<std::string>& top_frame_site_keys_to_delete) {
+    absl::flat_hash_set<std::string>& top_frame_site_keys_to_delete) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   bool ok = true;
   while (statement.Step()) {
