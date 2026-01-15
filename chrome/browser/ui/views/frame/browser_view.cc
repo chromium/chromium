@@ -3070,7 +3070,7 @@ bool BrowserView::IsToolbarShowing() const {
 bool BrowserView::IsLocationBarVisible() const {
   return browser_->SupportsWindowFeature(
              Browser::WindowFeature::kFeatureLocationBar) &&
-         GetLocationBarView()->GetVisible();
+         GetLocationBar()->IsVisible();
 }
 
 void BrowserView::ShowUpdateChromeDialog() {
@@ -3937,11 +3937,8 @@ std::u16string BrowserView::GetAccessibleTabLabel(int index,
   }
 
   // Tab has a pending permission request.
-  if (toolbar_ && toolbar_->location_bar() &&
-      toolbar_->location_bar()->GetChipController() &&
-      toolbar_->location_bar()
-          ->GetChipController()
-          ->IsPermissionPromptChipVisible()) {
+  if (GetLocationBar() && GetLocationBar()->GetChipController() &&
+      GetLocationBar()->GetChipController()->IsPermissionPromptChipVisible()) {
     return l10n_util::GetStringFUTF16(
         IDS_TAB_AX_LABEL_PERMISSION_REQUESTED_FORMAT, title);
   }

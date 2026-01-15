@@ -144,7 +144,7 @@ class ToolbarView : public views::AccessiblePaneView,
   ToolbarButton* forward_button() const { return forward_; }
   ExtensionsToolbarButton* GetExtensionsButton() const;
   ReloadButton* reload_button() const { return reload_; }
-  LocationBarView* location_bar() const { return location_bar_; }
+  LocationBarView* location_bar() const { return location_bar_view_; }
   CustomTabBarView* custom_tab_bar() { return custom_tab_bar_; }
   BatterySaverButton* battery_saver_button() const {
     return battery_saver_button_;
@@ -279,7 +279,8 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<HomeButton> home_ = nullptr;
   raw_ptr<SplitTabsToolbarButton> split_tabs_ = nullptr;
   raw_ptr<CustomTabBarView> custom_tab_bar_ = nullptr;
-  raw_ptr<LocationBarView> location_bar_ = nullptr;
+  raw_ptr<LocationBarView> location_bar_view_ = nullptr;
+  raw_ptr<LocationBar> location_bar_ = nullptr;
   raw_ptr<ExtensionsToolbarContainer> extensions_container_ = nullptr;
   raw_ptr<views::View> toolbar_divider_ = nullptr;
   raw_ptr<BatterySaverButton> battery_saver_button_ = nullptr;

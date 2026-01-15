@@ -195,19 +195,6 @@ class LocationBarView
 
   const OmniboxController* GetOmniboxController() const;
 
-  // Returns true if the location bar's current security state does not match
-  // the currently visible state.
-  bool HasSecurityStateChanged();
-
-  // Updates the controller, and, if |contents| is non-null, restores saved
-  // state that the tab holds.
-  void Update(content::WebContents* contents);
-
-  // Clears the location bar's state for |contents|.
-  void ResetTabState(content::WebContents* contents);
-
-  // Controls the chip in the LocationBarView.
-  ChipController* GetChipController();
 
   // Controls the permission dashboard in the LocationBarView.
   PermissionDashboardController* permission_dashboard_controller() {
@@ -221,11 +208,19 @@ class LocationBarView
   void Revert() override;
   OmniboxView* GetOmniboxView() override;
   OmniboxController* GetOmniboxController() override;
+  ChipController* GetChipController() override;
   void UpdateWithoutTabRestore() override;
   LocationBarModel* GetLocationBarModel() override;
   content::WebContents* GetWebContents() override;
   std::optional<bubble_anchor_util::AnchorConfiguration> GetChipAnchor()
       override;
+  bool IsVisible() const override;
+  gfx::Rect Bounds() const override;
+  gfx::Size MinimumSize() const override;
+  gfx::Size PreferredSize() const override;
+  void Update(content::WebContents* contents) override;
+  void ResetTabState(content::WebContents* contents) override;
+  bool HasSecurityStateChanged() override;
 
   // views::View:
   void AddedToWidget() override;

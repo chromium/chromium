@@ -1216,6 +1216,22 @@ LocationBarView::GetChipAnchor() {
   return std::nullopt;
 }
 
+bool LocationBarView::IsVisible() const {
+  return GetVisible();
+}
+
+gfx::Rect LocationBarView::Bounds() const {
+  return bounds();
+}
+
+gfx::Size LocationBarView::MinimumSize() const {
+  return GetMinimumSize();
+}
+
+gfx::Size LocationBarView::PreferredSize() const {
+  return GetPreferredSize();
+}
+
 SkColor LocationBarView::GetIconLabelBubbleSurroundingForegroundColor() const {
   // If keyword mode is active, then override the "surrounding foreground color"
   // to ensure that the keyword mode separator has a distinct color. Otherwise,

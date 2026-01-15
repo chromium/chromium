@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
@@ -112,9 +111,7 @@ OmniboxNotOpenPrecondition::~OmniboxNotOpenPrecondition() = default;
 user_education::FeaturePromoResult
 OmniboxNotOpenPrecondition::CheckPrecondition(
     ui::UnownedTypedDataCollection&) const {
-  return browser_view_->GetLocationBarView()
-                 ->GetOmniboxController()
-                 ->IsPopupOpen()
+  return browser_view_->GetLocationBar()->GetOmniboxController()->IsPopupOpen()
              ? user_education::FeaturePromoResult::kBlockedByUi
              : user_education::FeaturePromoResult::Success();
 }

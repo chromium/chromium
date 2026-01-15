@@ -284,6 +284,7 @@ class TestLocationBar : public LocationBar {
   void Revert() override {}
   OmniboxView* GetOmniboxView() override { return nullptr; }
   OmniboxController* GetOmniboxController() override { return nullptr; }
+  ChipController* GetChipController() override { return nullptr; }
   LocationBarTesting* GetLocationBarForTesting() override { return nullptr; }
   LocationBarModel* GetLocationBarModel() override {
     return location_bar_model_;
@@ -301,6 +302,14 @@ class TestLocationBar : public LocationBar {
       omnibox_view_->Update();
     }
   }
+
+  bool IsVisible() const override { return true; }
+  gfx::Rect Bounds() const override { return gfx::Rect(); }
+  gfx::Size MinimumSize() const override { return gfx::Size(); }
+  gfx::Size PreferredSize() const override { return gfx::Size(); }
+  void Update(content::WebContents* contents) override {}
+  void ResetTabState(content::WebContents* contents) override {}
+  bool HasSecurityStateChanged() override { return false; }
 
   raw_ptr<LocationBarModel> location_bar_model_;
   raw_ptr<OmniboxViewViews> omnibox_view_ = nullptr;

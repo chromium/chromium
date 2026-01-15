@@ -240,8 +240,9 @@ void ToolbarView::Init() {
   size_animation_.Reset(1);
 
   if (display_mode_ != DisplayMode::kNormal) {
-    location_bar_ = AddChildView(std::move(location_bar));
-    location_bar_->Init();
+    location_bar_view_ = AddChildView(std::move(location_bar));
+    location_bar_view_->Init();
+    location_bar_ = location_bar_view_;
   }
 
   if (display_mode_ == DisplayMode::kNormal) {
@@ -269,7 +270,9 @@ void ToolbarView::Init() {
                         views::LayoutOrientation::kHorizontal,
                         views::MinimumFlexSizeRule::kPreferredSnapToZero))
         .SetFlexAllocationOrder(views::FlexAllocationOrder::kReverse);
-    location_bar_->SetProperty(
+    CHECK(location_bar_view_)
+        << "Alternate location bar impls need to handle this.";
+    location_bar_view_->SetProperty(
         views::kFlexBehaviorKey,
         views::FlexSpecification(views::LayoutOrientation::kHorizontal,
                                  views::MinimumFlexSizeRule::kScaleToZero,
@@ -337,7 +340,8 @@ void ToolbarView::Init() {
     AddChildView(std::make_unique<ContextualTasksButton>(browser_));
   }
 
-  location_bar_ = AddChildView(std::move(location_bar));
+  location_bar_view_ = AddChildView(std::move(location_bar));
+  location_bar_ = location_bar_view_;
 
   if (extensions_container) {
     extensions_container_ = AddChildView(std::move(extensions_container));
@@ -450,7 +454,9 @@ void ToolbarView::Init() {
   // the widget (widget found by way of app_menu_button_->GetWidget()).
   app_menu_icon_controller_.UpdateDelegate();
 
-  location_bar_->Init();
+  if (location_bar_view_) {
+    location_bar_view_->Init();
+  }
 
   show_forward_button_.Init(
       prefs::kShowForwardButton, prefs,
@@ -521,8 +527,8 @@ void ToolbarView::SetToolbarVisibility(bool visible) {
   SetVisible(visible);
   views::View* bar = display_mode_ == DisplayMode::kCustomTab
                          ? static_cast<views::View*>(custom_tab_bar_)
-                         : static_cast<views::View*>(location_bar_);
-
+                         : static_cast<views::View*>(location_bar_view_);
+  CHECK(bar) << "Alternate location bar impls need to handle this.";
   bar->SetVisible(visible);
 }
 
@@ -685,7 +691,7 @@ gfx::Size ToolbarView::CalculatePreferredSize(
       size = custom_tab_bar_->GetPreferredSize();
       break;
     case DisplayMode::kLocation:
-      size = location_bar_->GetPreferredSize();
+      size = location_bar_->PreferredSize();
       break;
     case DisplayMode::kNormal:
       size = AccessiblePaneView::CalculatePreferredSize(available_size);
@@ -695,11 +701,10 @@ gfx::Size ToolbarView::CalculatePreferredSize(
       // button) plus margins.
       // TODO(crbug.com/40663413): Figure out why the height reports incorrectly
       // on some installations.
-      if (layout_manager_ && location_bar_->GetVisible()) {
-        const int max_height =
-            std::max(location_bar_->GetPreferredSize().height(),
-                     back_->GetPreferredSize().height()) +
-            layout_manager_->interior_margin().height();
+      if (layout_manager_ && location_bar_->IsVisible()) {
+        const int max_height = std::max(location_bar_->PreferredSize().height(),
+                                        back_->GetPreferredSize().height()) +
+                               layout_manager_->interior_margin().height();
         size.SetToMin({size.width(), max_height});
       }
   }
@@ -714,7 +719,7 @@ gfx::Size ToolbarView::GetMinimumSize() const {
       size = custom_tab_bar_->GetMinimumSize();
       break;
     case DisplayMode::kLocation:
-      size = location_bar_->GetMinimumSize();
+      size = location_bar_->MinimumSize();
       break;
     case DisplayMode::kNormal:
       size = AccessiblePaneView::GetMinimumSize();
@@ -724,11 +729,10 @@ gfx::Size ToolbarView::GetMinimumSize() const {
       // button) plus margins.
       // TODO(crbug.com/40663413): Figure out why the height reports incorrectly
       // on some installations.
-      if (layout_manager_ && location_bar_->GetVisible()) {
-        const int max_height =
-            std::max(location_bar_->GetMinimumSize().height(),
-                     back_->GetMinimumSize().height()) +
-            layout_manager_->interior_margin().height();
+      if (layout_manager_ && location_bar_->IsVisible()) {
+        const int max_height = std::max(location_bar_->MinimumSize().height(),
+                                        back_->GetMinimumSize().height()) +
+                               layout_manager_->interior_margin().height();
         size.SetToMin({size.width(), max_height});
       }
   }
@@ -745,7 +749,9 @@ void ToolbarView::Layout(PassKey) {
   if (display_mode_ == DisplayMode::kCustomTab) {
     custom_tab_bar_->SetBounds(0, 0, width(),
                                custom_tab_bar_->GetPreferredSize().height());
-    location_bar_->SetVisible(false);
+    CHECK(location_bar_view_)
+        << "Alternate location bar impls need to handle this.";
+    location_bar_view_->SetVisible(false);
     return;
   }
 
@@ -815,7 +821,7 @@ void ToolbarView::ChildPreferredSizeChanged(views::View* child) {
 // the location bar gets focus, not the first control in the toolbar - and
 // also so that it selects all content in the location bar.
 views::View* ToolbarView::GetDefaultFocusableChild() {
-  return location_bar_;
+  return location_bar_view_;
 }
 
 void ToolbarView::InitLayout() {
@@ -845,9 +851,12 @@ void ToolbarView::InitLayout() {
       .SetCollapseMargins(true)
       .SetDefault(views::kMarginsKey, gfx::Insets::VH(0, default_margin));
 
-  location_bar_->SetProperty(views::kFlexBehaviorKey, location_bar_flex_rule);
-  location_bar_->SetProperty(views::kMarginsKey,
-                             gfx::Insets::VH(0, location_bar_margin));
+  if (location_bar_view_) {
+    location_bar_view_->SetProperty(views::kFlexBehaviorKey,
+                                    location_bar_flex_rule);
+    location_bar_view_->SetProperty(views::kMarginsKey,
+                                    gfx::Insets::VH(0, location_bar_margin));
+  }
 
   if (extensions_container_) {
     const views::FlexSpecification extensions_flex_rule =
@@ -974,7 +983,7 @@ gfx::Size ToolbarView::GetToolbarButtonSize() const {
   // smaller to accommodate the smaller size.
   const int size =
       display_mode_ == DisplayMode::kLocation
-          ? location_bar_->GetPreferredSize().height()
+          ? location_bar_->PreferredSize().height()
           : GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
   return gfx::Size(size, size);
 }
@@ -1019,12 +1028,15 @@ gfx::Rect ToolbarView::GetFindBarBoundingBox(int contents_bottom) {
     return gfx::Rect();
   }
 
-  if (!location_bar_->IsDrawn()) {
+  CHECK(location_bar_view_)
+      << "Alternate location bar impls need to handle this.";
+
+  if (!location_bar_view_->IsDrawn()) {
     return gfx::Rect();
   }
 
-  gfx::Rect bounds =
-      location_bar_->ConvertRectToWidget(location_bar_->GetLocalBounds());
+  gfx::Rect bounds = location_bar_view_->ConvertRectToWidget(
+      location_bar_view_->GetLocalBounds());
   return gfx::Rect(bounds.x(), bounds.bottom(), bounds.width(),
                    contents_bottom - bounds.bottom());
 }
@@ -1045,7 +1057,7 @@ views::View* ToolbarView::GetAnchorView(
     return pinned_toolbar_actions_container_->GetButtonFor(action_id.value());
   }
 
-  return location_bar_;
+  return location_bar_view_;
 }
 
 views::BubbleAnchor ToolbarView::GetBubbleAnchor(
@@ -1067,7 +1079,9 @@ void ToolbarView::ZoomChangedForActiveTab(bool can_show_bubble) {
     return;
   }
 
-  location_bar_->page_action_icon_controller()->ZoomChangedForActiveTab(
+  CHECK(location_bar_view_)
+      << "Alternate location bar impls need to handle this.";
+  location_bar_view_->page_action_icon_controller()->ZoomChangedForActiveTab(
       can_show_bubble);
 }
 
@@ -1162,8 +1176,10 @@ void ToolbarView::OnTouchUiChanged() {
         GetLayoutConstant(LayoutConstant::kToolbarStandardSpacing);
     layout_manager_->SetDefault(views::kMarginsKey,
                                 gfx::Insets::VH(0, default_margin));
-    location_bar_->SetProperty(views::kMarginsKey,
-                               gfx::Insets::VH(0, location_bar_margin));
+    if (location_bar_view_) {
+      location_bar_view_->SetProperty(views::kMarginsKey,
+                                      gfx::Insets::VH(0, location_bar_margin));
+    }
 
     LoadImages();
     PreferredSizeChanged();

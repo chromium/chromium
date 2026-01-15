@@ -730,9 +730,8 @@ void BookmarkBarView::Layout(PassKey) {
   int toolbar_bottom_margin = 0;
   // Note: |browser_view_| may be null during tests.
   if (browser_view_ && !browser_view_->IsFullscreen()) {
-    toolbar_bottom_margin =
-        browser_view_->toolbar()->height() -
-        browser_view_->GetLocationBarView()->bounds().bottom();
+    toolbar_bottom_margin = browser_view_->toolbar()->height() -
+                            browser_view_->GetLocationBar()->Bounds().bottom();
   }
   // Center the buttons in the total available space.
   const int total_height = GetContentsBounds().height() + toolbar_bottom_margin;

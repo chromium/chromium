@@ -52,6 +52,10 @@ OmniboxController* TestBrowserWindow::TestLocationBar::GetOmniboxController() {
   return nullptr;
 }
 
+ChipController* TestBrowserWindow::TestLocationBar::GetChipController() {
+  return nullptr;
+}
+
 LocationBarTesting*
     TestBrowserWindow::TestLocationBar::GetLocationBarForTesting() {
   return nullptr;
@@ -68,6 +72,26 @@ content::WebContents* TestBrowserWindow::TestLocationBar::GetWebContents() {
 std::optional<bubble_anchor_util::AnchorConfiguration>
 TestBrowserWindow::TestLocationBar::GetChipAnchor() {
   return {};
+}
+
+bool TestBrowserWindow::TestLocationBar::IsVisible() const {
+  return true;
+}
+
+gfx::Rect TestBrowserWindow::TestLocationBar::Bounds() const {
+  return gfx::Rect();
+}
+
+gfx::Size TestBrowserWindow::TestLocationBar::MinimumSize() const {
+  return gfx::Size();
+}
+
+gfx::Size TestBrowserWindow::TestLocationBar::PreferredSize() const {
+  return gfx::Size();
+}
+
+bool TestBrowserWindow::TestLocationBar::HasSecurityStateChanged() {
+  return false;
 }
 
 // TestBrowserWindow ----------------------------------------------------------

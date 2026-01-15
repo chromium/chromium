@@ -288,6 +288,7 @@ class TestBrowserWindow : public BrowserWindow, public BrowserListObserver {
     void Revert() override {}
     OmniboxView* GetOmniboxView() override;
     OmniboxController* GetOmniboxController() override;
+    ChipController* GetChipController() override;
     LocationBarTesting* GetLocationBarForTesting() override;
     LocationBarModel* GetLocationBarModel() override;
     content::WebContents* GetWebContents() override;
@@ -295,6 +296,13 @@ class TestBrowserWindow : public BrowserWindow, public BrowserListObserver {
         override;
     void OnChanged() override {}
     void UpdateWithoutTabRestore() override {}
+    bool IsVisible() const override;
+    gfx::Rect Bounds() const override;
+    gfx::Size MinimumSize() const override;
+    gfx::Size PreferredSize() const override;
+    void Update(content::WebContents* contents) override {}
+    void ResetTabState(content::WebContents* contents) override {}
+    bool HasSecurityStateChanged() override;
   };
 
   // BrowserListObserver:

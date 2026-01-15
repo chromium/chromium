@@ -24,12 +24,20 @@ class WebUILocationBar : public LocationBar {
   void Revert() override;
   OmniboxView* GetOmniboxView() override;
   OmniboxController* GetOmniboxController() override;
+  ChipController* GetChipController() override;
   content::WebContents* GetWebContents() override;
   LocationBarModel* GetLocationBarModel() override;
   std::optional<bubble_anchor_util::AnchorConfiguration> GetChipAnchor()
       override;
   void OnChanged() override;
   void UpdateWithoutTabRestore() override;
+  bool IsVisible() const override;
+  gfx::Rect Bounds() const override;
+  gfx::Size MinimumSize() const override;
+  gfx::Size PreferredSize() const override;
+  void Update(content::WebContents* contents) override;
+  void ResetTabState(content::WebContents* contents) override;
+  bool HasSecurityStateChanged() override;
   LocationBarTesting* GetLocationBarForTesting() override;
 
  private:
