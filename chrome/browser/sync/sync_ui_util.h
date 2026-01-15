@@ -114,8 +114,10 @@ void OpenTabForSyncKeyRecoverabilityDegraded(
 
 // Opens a new tab with the help page for bookmarks count limit exceeded error
 // and acknowledges the error.
-void ShowBookmarksLimitExceededHelp(Browser* browser,
-                                    syncer::SyncService* sync_service);
+void ShowBookmarksLimitExceededHelp(
+    Browser* browser,
+    syncer::SyncService* sync_service,
+    syncer::SyncService::BookmarksLimitExceededHelpClickedSource source);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #endif  // CHROME_BROWSER_SYNC_SYNC_UI_UTIL_H_

@@ -44,7 +44,7 @@ class SyncServiceAndroidBridge : public SyncServiceObserver {
 
   // Please keep all methods below in the same order as the @NativeMethods in
   // SyncServiceImpl.java.
-  void AcknowledgeBookmarksLimitExceededError(JNIEnv* env);
+  void AcknowledgeBookmarksLimitExceededError(JNIEnv* env, jint source);
   jint GetBookmarksLimit(JNIEnv* env);
   bool IsSyncFeatureEnabled(JNIEnv* env);
   bool IsSyncFeatureActive(JNIEnv* env);

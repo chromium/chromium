@@ -184,7 +184,8 @@ class TestSyncService : public SyncService {
   void SelectTypeAndMigrateLocalDataItemsWhenActive(
       DataType data_type,
       std::vector<LocalDataItemModel::DataId> items) override;
-  void AcknowledgeBookmarksLimitExceededError() override;
+  void AcknowledgeBookmarksLimitExceededError(
+      BookmarksLimitExceededHelpClickedSource source) override;
 
   // KeyedService implementation.
   void Shutdown() override;

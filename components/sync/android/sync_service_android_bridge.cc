@@ -179,8 +179,11 @@ void SyncServiceAndroidBridge::OnSyncShutdown(SyncService* sync) {
 }
 
 void SyncServiceAndroidBridge::AcknowledgeBookmarksLimitExceededError(
-    JNIEnv* env) {
-  native_sync_service_->AcknowledgeBookmarksLimitExceededError();
+    JNIEnv* env,
+    jint source) {
+  native_sync_service_->AcknowledgeBookmarksLimitExceededError(
+      static_cast<SyncService::BookmarksLimitExceededHelpClickedSource>(
+          source));
 }
 
 jint SyncServiceAndroidBridge::GetBookmarksLimit(JNIEnv* env) {

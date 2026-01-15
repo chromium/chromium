@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.sync.BookmarksLimitExceededHelpClickedSource;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
 import org.chromium.components.trusted_vault.TrustedVaultUserActionTriggerForUMA;
@@ -382,11 +383,15 @@ public class SyncSettingsUtils {
      * Opens a help center article for the bookmark sync limit and acknowledges the error.
      *
      * @param activity The activity to use for starting the intent.
-     * @param profile The profile to acknowledge the error for.
+     * @param syncService The sync service to acknowledge the error for.
+     * @param source The source UI surface that triggered the click.
      */
-    public static void openBookmarkLimitHelpPage(Activity activity, SyncService syncService) {
+    public static void openBookmarkLimitHelpPage(
+            Activity activity,
+            SyncService syncService,
+            @BookmarksLimitExceededHelpClickedSource int source) {
         assert syncService != null;
-        syncService.acknowledgeBookmarksLimitExceededError();
+        syncService.acknowledgeBookmarksLimitExceededError(source);
         openCustomTabWithURL(activity, BOOKMARK_LIMIT_HELP_PAGE_URL);
     }
 

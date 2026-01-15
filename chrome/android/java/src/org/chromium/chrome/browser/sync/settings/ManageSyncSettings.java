@@ -83,6 +83,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.SignoutReason;
+import org.chromium.components.sync.BookmarksLimitExceededHelpClickedSource;
 import org.chromium.components.sync.SyncFirstSetupCompleteSource;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
@@ -1228,7 +1229,10 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 GmsUpdateLauncher.launch(getContext());
                 return;
             case UserActionableError.BOOKMARKS_LIMIT_EXCEEDED:
-                SyncSettingsUtils.openBookmarkLimitHelpPage(getActivity(), mSyncService);
+                SyncSettingsUtils.openBookmarkLimitHelpPage(
+                        getActivity(),
+                        mSyncService,
+                        BookmarksLimitExceededHelpClickedSource.SETTINGS);
                 return;
             case UserActionableError.NONE:
             default:

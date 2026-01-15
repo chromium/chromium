@@ -483,6 +483,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.BookmarksLimitExceededHelpClickedSource"
+    enum="BookmarksLimitExceededHelpClickedSource" expires_after="2026-06-21">
+  <owner>mtatarski@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Recorded when the user clicks on the &quot;Learn more&quot; link regarding
+    the bookmarks limit exceeded error. Recorded by the UI surface that
+    triggered the click.
+  </summary>
+</histogram>
+
 <histogram name="Sync.BookmarksModelMetadataCorruptionReason"
     enum="SyncBookmarkModelMetadataCorruptionReason" expires_after="2026-07-05">
   <owner>rushans@google.com</owner>

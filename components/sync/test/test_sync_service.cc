@@ -491,7 +491,8 @@ void TestSyncService::SelectTypeAndMigrateLocalDataItemsWhenActive(
     DataType data_type,
     std::vector<LocalDataItemModel::DataId> items) {}
 
-void TestSyncService::AcknowledgeBookmarksLimitExceededError() {
+void TestSyncService::AcknowledgeBookmarksLimitExceededError(
+    BookmarksLimitExceededHelpClickedSource source) {
   bookmarks_limit_exceeded_ = false;
 }
 

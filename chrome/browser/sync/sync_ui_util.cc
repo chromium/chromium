@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -354,11 +355,13 @@ void OpenTabForSyncKeyRecoverabilityDegraded(
   OpenTabForSyncTrustedVaultUserAction(browser, url, std::nullopt);
 }
 
-void ShowBookmarksLimitExceededHelp(Browser* browser,
-                                    syncer::SyncService* sync_service) {
+void ShowBookmarksLimitExceededHelp(
+    Browser* browser,
+    syncer::SyncService* sync_service,
+    syncer::SyncService::BookmarksLimitExceededHelpClickedSource source) {
   CHECK(browser);
   CHECK(sync_service);
-  sync_service->AcknowledgeBookmarksLimitExceededError();
+  sync_service->AcknowledgeBookmarksLimitExceededError(source);
   NavigateParams params(browser, GURL(kBookmarksLimitExceededHelpCenter),
                         ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;

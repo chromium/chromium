@@ -944,7 +944,9 @@ void PeopleHandler::HandleSyncShowBookmarkLimitExceededHelp(
   if (!browser) {
     return;
   }
-  ShowBookmarksLimitExceededHelp(browser, GetSyncService());
+  ShowBookmarksLimitExceededHelp(
+      browser, GetSyncService(),
+      syncer::SyncService::BookmarksLimitExceededHelpClickedSource::kSettings);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

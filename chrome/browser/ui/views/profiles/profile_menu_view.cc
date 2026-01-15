@@ -389,7 +389,9 @@ void ProfileMenuView::OnSyncErrorButtonClicked(
       break;
     case syncer::SyncService::UserActionableError::kBookmarksLimitExceeded:
       ShowBookmarksLimitExceededHelp(
-          &browser(), SyncServiceFactory::GetForProfile(&profile()));
+          &browser(), SyncServiceFactory::GetForProfile(&profile()),
+          syncer::SyncService::BookmarksLimitExceededHelpClickedSource::
+              kProfileMenu);
       break;
     case syncer::SyncService::UserActionableError::kNone:
       NOTREACHED();

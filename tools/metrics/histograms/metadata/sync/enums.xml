@@ -135,6 +135,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync_bookmarks/bookmark_model_merger.cc:BookmarksGUIDDuplicates) -->
 
+<!-- LINT.IfChange(BookmarksLimitExceededHelpClickedSource) -->
+
+<enum name="BookmarksLimitExceededHelpClickedSource">
+  <int value="0" label="Settings"/>
+  <int value="1" label="Sync Error Message"/>
+  <int value="2" label="Profile Menu"/>
+  <int value="3" label="Identity Error Info Pill"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/service/sync_service.h:BookmarksLimitExceededHelpClickedSource) -->
+
 <enum name="BooleanIsFirstSync">
   <int value="0" label="Not first sync"/>
   <int value="1" label="First sync"/>

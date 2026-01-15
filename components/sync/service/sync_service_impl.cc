@@ -2506,8 +2506,11 @@ void SyncServiceImpl::SelectTypeAndMigrateLocalDataItemsWhenActive(
           data_type, std::move(items));
 }
 
-void SyncServiceImpl::AcknowledgeBookmarksLimitExceededError() {
+void SyncServiceImpl::AcknowledgeBookmarksLimitExceededError(
+    BookmarksLimitExceededHelpClickedSource source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::UmaHistogramEnumeration("Sync.BookmarksLimitExceededHelpClickedSource",
+                                source);
   bookmark_sync_error_state_.AcknowledgeError();
 }
 

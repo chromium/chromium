@@ -400,10 +400,12 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     }
 
     @Override
-    public void acknowledgeBookmarksLimitExceededError() {
+    public void acknowledgeBookmarksLimitExceededError(
+            @BookmarksLimitExceededHelpClickedSource int source) {
         mThreadChecker.assertOnValidThread();
         assert mSyncServiceAndroidBridge != 0;
-        SyncServiceImplJni.get().acknowledgeBookmarksLimitExceededError(mSyncServiceAndroidBridge);
+        SyncServiceImplJni.get()
+                .acknowledgeBookmarksLimitExceededError(mSyncServiceAndroidBridge, source);
     }
 
     @Override
@@ -535,7 +537,8 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     @NativeMethods
     interface Natives {
         // Please keep all methods below in the same order as sync_service_android_bridge.h.
-        void acknowledgeBookmarksLimitExceededError(long nativeSyncServiceAndroidBridge);
+        void acknowledgeBookmarksLimitExceededError(
+                long nativeSyncServiceAndroidBridge, int source);
 
         int getBookmarksLimit(long nativeSyncServiceAndroidBridge);
 

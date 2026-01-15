@@ -61,6 +61,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
+import org.chromium.components.sync.BookmarksLimitExceededHelpClickedSource;
 import org.chromium.components.sync.UserActionableError;
 import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
@@ -266,7 +267,9 @@ public class SyncErrorMessageTest {
 
         // Resolving the error should dismiss the current message.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> mFakeSyncServiceImpl.acknowledgeBookmarksLimitExceededError());
+                () ->
+                        mFakeSyncServiceImpl.acknowledgeBookmarksLimitExceededError(
+                                BookmarksLimitExceededHelpClickedSource.SYNC_ERROR_MESSAGE));
         verifyHasDismissedMessage();
         Assert.assertEquals(
                 (long) UserActionableError.NONE,

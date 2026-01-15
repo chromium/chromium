@@ -45,6 +45,7 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.sync.BookmarksLimitExceededHelpClickedSource;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
 import org.chromium.components.trusted_vault.TrustedVaultUserActionTriggerForUMA;
@@ -394,7 +395,10 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
     }
 
     private void openBookmarkLimitHelpPage() {
-        SyncSettingsUtils.openBookmarkLimitHelpPage(mActivity, mSyncService);
+        SyncSettingsUtils.openBookmarkLimitHelpPage(
+                mActivity,
+                mSyncService,
+                BookmarksLimitExceededHelpClickedSource.SYNC_ERROR_MESSAGE);
     }
 
     private void openTrustedVaultKeyRetrievalActivity() {
