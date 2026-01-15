@@ -339,8 +339,8 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
 
   if (x <= 0 && y <= 0 && x + orig_info.width() >= host->Size().width() &&
       y + orig_info.height() >= host->Size().height()) {
-    MemoryManagedPaintRecorder& recorder = provider->Recorder();
-    if (recorder.HasSideRecording()) {
+    MemoryManagedPaintRecorder* recorder = Recorder();
+    if (recorder->HasSideRecording()) {
       // Even with opened layers, WritePixels would write to the main canvas
       // surface under the layers. We can therefore clear the paint ops recorded
       // before the first `beginLayer`, but the layers themselves must be kept
@@ -348,9 +348,9 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
       // disabled in `putImageData` by raising an exception if layers are
       // opened. Still, it's preferable to handle this scenario here because the
       // alternative would be to crash or leave the canvas in an invalid state.
-      recorder.ReleaseMainRecording();
+      recorder->ReleaseMainRecording();
     } else {
-      recorder.RestartRecording();
+      recorder->RestartRecording();
     }
   } else {
     provider->FlushCanvas();
@@ -466,7 +466,7 @@ MemoryManagedPaintCanvas* CanvasRenderingContext2D::GetOrCreatePaintCanvas() {
     }
   }
 
-  return &provider->Recorder().getRecordingCanvas();
+  return &Recorder()->getRecordingCanvas();
 }
 
 const MemoryManagedPaintCanvas* CanvasRenderingContext2D::GetPaintCanvas()
@@ -478,11 +478,19 @@ const MemoryManagedPaintCanvas* CanvasRenderingContext2D::GetPaintCanvas()
   if (!provider) [[unlikely]] {
     return nullptr;
   }
-  return &provider->Recorder().getRecordingCanvas();
+  return &Recorder()->getRecordingCanvas();
 }
 
 const MemoryManagedPaintRecorder* CanvasRenderingContext2D::Recorder() const {
   const CanvasResourceProvider* provider = GetResourceProvider();
+  if (provider == nullptr) [[unlikely]] {
+    return nullptr;
+  }
+  return &provider->Recorder();
+}
+
+MemoryManagedPaintRecorder* CanvasRenderingContext2D::Recorder() {
+  CanvasResourceProvider* provider = GetResourceProvider();
   if (provider == nullptr) [[unlikely]] {
     return nullptr;
   }
