@@ -172,7 +172,11 @@ std::optional<size_t> EncryptedCacheFile::Write(
 }
 
 bool EncryptedCacheFile::GetInfo(base::File::Info* file_info) {
-  return file_->GetInfo(file_info);
+  if (!file_->GetInfo(file_info)) {
+    return false;
+  }
+  file_info->size = GetLength();
+  return true;
 }
 
 int64_t EncryptedCacheFile::GetLength() {
@@ -205,9 +209,80 @@ int64_t EncryptedCacheFile::GetLength() {
 }
 
 bool EncryptedCacheFile::SetLength(int64_t length) {
-  // TODO(crbug.com/460509865): Implement set length for both truncation and
-  // extension cases.
-  return file_->SetLength(length);
+  if (length < 0) {
+    return false;
+  }
+  if (!EnsureInitialized()) {
+    return false;
+  }
+
+  int64_t current_len = GetLength();
+
+  if (length == current_len) {
+    return true;
+  }
+
+  if (length == 0) {
+    // No chunks to re-encrypt, just truncate to header size.
+    return file_->SetLength(kHeaderSize);
+  }
+
+  // Truncation case.
+  if (length < current_len) {
+    uint32_t new_last_chunk_index = GetChunkIndex(length - 1);
+    size_t len_in_chunk = length - GetLogicalChunkStart(new_last_chunk_index);
+
+    // Read existing data from this chunk to preserve it, and resize it to the
+    // new length.
+    auto result = ReadAndDecryptChunk(new_last_chunk_index);
+    if (!result.has_value()) {
+      // TODO(crbug.com/474585860): Log errors in UMA.
+      return false;
+    }
+    std::vector<uint8_t> plaintext = std::move(result.value());
+    plaintext.resize(len_in_chunk, 0);
+
+    // To avoid partial-update overhead in `WriteChunk`, we inline the
+    // encryption here.
+    std::vector<uint8_t> ciphertext = encryptor_->EncryptChunk(
+        plaintext, new_last_chunk_index, /*is_last_chunk=*/true);
+    int64_t offset = GetPhysicalOffset(new_last_chunk_index);
+    if (!file_->WriteAndCheck(offset, ciphertext)) {
+      return false;
+    }
+    int64_t new_phys_len = offset + plaintext.size() + kAuthTagSize;
+    return file_->SetLength(new_phys_len);
+  }
+
+  // Extension case.
+  // 32KB buffer size used to batch writes of encrypted zeros. This is for
+  // optimization purposes only, to minimize allocation sizes for large
+  // extensions.
+  const int64_t kMaxPaddingChunkSize = 32 * 1024;
+
+  // Create a buffer of zeros. We can't rely on the OS to pad with zeros because
+  // they are not valid ciphertext in our scheme. To maintain integrity, we need
+  // to encrypt the zeros.
+  std::vector<uint8_t> zeros(
+      std::min(length - current_len, kMaxPaddingChunkSize), 0);
+
+  while (current_len < length) {
+    size_t write_size =
+        std::min(length - current_len, static_cast<int64_t>(zeros.size()));
+    if (write_size != zeros.size()) {
+      zeros.resize(write_size);
+    }
+
+    auto val = Write(current_len, base::span(zeros));
+    if (!val.has_value()) {
+      // TODO(crbug.com/474585860): Log errors in UMA.
+      return false;
+    }
+
+    current_len += write_size;
+  }
+
+  return true;
 }
 
 bool EncryptedCacheFile::ReadAndCheck(int64_t offset,

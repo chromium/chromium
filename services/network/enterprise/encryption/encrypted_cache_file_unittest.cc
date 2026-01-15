@@ -8,6 +8,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/rand_util.h"
 #include "net/disk_cache/basic_cache_file.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network::enterprise_encryption {
@@ -294,6 +295,92 @@ TEST_F(EncryptedCacheFileTest, DeepCorruptionTest) {
     auto res = encrypted_file->Read(0, base::span(buf));
     EXPECT_FALSE(res.has_value());
   }
+}
+
+TEST_F(EncryptedCacheFileTest, Truncate) {
+  auto encrypted_file = CreateEncryptedFile(key_);
+  std::string data = "HelloForTruncation";
+  EXPECT_TRUE(encrypted_file->Write(0, base::as_byte_span(data)).has_value());
+  EXPECT_EQ(static_cast<int64_t>(data.size()), encrypted_file->GetLength());
+
+  // Truncate to 0.
+  EXPECT_TRUE(encrypted_file->SetLength(0));
+  EXPECT_EQ(0, encrypted_file->GetLength());
+
+  EXPECT_TRUE(encrypted_file->Write(0, base::as_byte_span(data)).has_value());
+  EXPECT_EQ(static_cast<int64_t>(data.size()), encrypted_file->GetLength());
+
+  // Truncate to middle of chunk 0.
+  int64_t trunc_len = 5;
+  EXPECT_TRUE(encrypted_file->SetLength(trunc_len));
+  EXPECT_EQ(trunc_len, encrypted_file->GetLength());
+  std::vector<uint8_t> buffer(5);
+  auto read_res = encrypted_file->Read(0, base::span(buffer));
+  ASSERT_TRUE(read_res.has_value());
+  EXPECT_EQ("Hello", std::string(buffer.begin(), buffer.end()));
+}
+
+TEST_F(EncryptedCacheFileTest, SetLengthExtension) {
+  auto encrypted_file = CreateEncryptedFile(key_);
+  std::string data = "Hello, Extension Test!";
+  EXPECT_TRUE(encrypted_file->Write(0, base::as_byte_span(data)).has_value());
+
+  // Verify encrypted write.
+  std::vector<uint8_t> check_buf(data.size());
+  auto check_res = encrypted_file->Read(0, base::span(check_buf));
+  ASSERT_TRUE(check_res.has_value());
+  EXPECT_EQ(data, std::string(check_buf.begin(), check_buf.end()));
+
+  // Extend file (padding with zeros).
+  // Intended behavior:
+  // 1. Padding of the current partial chunk (chunk 0) up to 4096 bytes (chunk
+  // size) with zeros.
+  // 2. Creation of new chunks filled with zeros.
+  //
+  // Use a large extension (> 32K) to trigger any batching logic.
+  int64_t new_len = kChunkDataSize + 33 * 1024 + 10;
+  EXPECT_TRUE(encrypted_file->SetLength(new_len));
+
+  // Verify length.
+  EXPECT_EQ(new_len, encrypted_file->GetLength());
+
+  // Verify GetInfo reports correct logical size.
+  base::File::Info info;
+  ASSERT_TRUE(encrypted_file->GetInfo(&info));
+  EXPECT_EQ(new_len, info.size);
+
+  // Close and re-open to ensure everything is flushed/persistent.
+  encrypted_file = OpenEncryptedFile(key_);
+  EXPECT_EQ(new_len, encrypted_file->GetLength());
+
+  // Verify original data is still there.
+  std::vector<uint8_t> start_buf(data.size());
+  auto read_res = encrypted_file->Read(0, base::span(start_buf));
+  ASSERT_TRUE(read_res.has_value());
+  EXPECT_EQ(data, std::string(start_buf.begin(), start_buf.end()));
+
+  // Verify padding in Chunk 0 is zeros.
+  std::vector<uint8_t> pad_buf(kChunkDataSize - data.size());
+  read_res = encrypted_file->Read(data.size(), base::span(pad_buf));
+  ASSERT_TRUE(read_res.has_value());
+  EXPECT_THAT(pad_buf, testing::Each(0));
+
+  // Verify Chunk 1 is zeros.
+  std::vector<uint8_t> chunk_1_buf(10);
+  read_res = encrypted_file->Read(kChunkDataSize, base::span(chunk_1_buf));
+  ASSERT_TRUE(read_res.has_value());
+  EXPECT_THAT(chunk_1_buf, testing::Each(0));
+
+  // Verify large extension (batching) by extending by 35KB (> 32KB batch size).
+  const int64_t large_len = new_len + 35 * 1024;
+  ASSERT_TRUE(encrypted_file->SetLength(large_len));
+  EXPECT_EQ(large_len, encrypted_file->GetLength());
+
+  // Verify entire extension is zeros.
+  std::vector<uint8_t> extension_buf(large_len - new_len);
+  read_res = encrypted_file->Read(new_len, base::span(extension_buf));
+  ASSERT_TRUE(read_res.has_value());
+  EXPECT_THAT(extension_buf, testing::Each(0));
 }
 
 }  // namespace network::enterprise_encryption
