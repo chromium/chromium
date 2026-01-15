@@ -289,8 +289,11 @@ ContentAnalysisDelegate::GetCustomRuleMessageRanges() const {
 }
 
 bool ContentAnalysisDelegate::BypassRequiresJustification() const {
-  return data_.settings.tags.count(final_result_tag_) &&
-         data_.settings.tags.at(final_result_tag_).requires_justification;
+  auto it = data_.settings.tags.find(final_result_tag_);
+  if (it == data_.settings.tags.end()) {
+    return false;
+  }
+  return it->second.requires_justification;
 }
 
 std::u16string ContentAnalysisDelegate::GetBypassJustificationLabel() const {
