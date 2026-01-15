@@ -394,9 +394,6 @@ SidePanel::SidePanel(BrowserView* browser_view,
       type_(type),
       visible_bounds_view_clipper_(
           std::make_unique<VisibleBoundsViewClipper>(this)) {
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
-
   horizontal_alignment_ =
       GetHorizontalAlignment(browser_view->GetProfile()->GetPrefs(), type_);
 
@@ -639,14 +636,6 @@ void SidePanel::OnBoundsChanged(const gfx::Rect& previous_bounds) {
     keyboard_resized_ = false;
     AnnounceResize();
   }
-
-  // Set clip rect for the visible width of the side panel.
-  int visible_width = base::ClampFloor(width() * GetAnimationValue());
-  if (visible_width != width()) {
-    SetClipPath(SkPath::Rect(
-        SkRect::MakeXYWH(IsRightAligned() ? 0 : width() - visible_width, 0,
-                         visible_width, height())));
-  }
 }
 
 double SidePanel::GetAnimationValue() const {
@@ -826,6 +815,8 @@ void SidePanel::UpdateVisibility(bool should_be_open, bool animate_transition) {
   // create and destroy the layer to reclaim memory and avoid painting and
   // compositing this border when it's not showing. See
   // https://crbug.com/1269090.
+  // TODO(pbos): Should layer visibility/painting be automatically tied to
+  // parent visibility? I.e. the difference between GetVisible() and IsDrawn().
   bool side_panel_open_or_closing = GetVisible() || should_be_open;
   if (border_view_ &&
       side_panel_open_or_closing != border_view_->GetVisible()) {
