@@ -36,6 +36,7 @@
 * [win-rel](https://ci.chromium.org/ui/p/chromium/builders/try/win-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22win-rel%5C%22%22))
 
 ### android_browsertests
+* [android-arm64-rel](https://ci.chromium.org/ui/p/chromium/builders/try/android-arm64-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22android-arm64-rel%5C%22%22))
 * [android-desktop-x64-rel](https://ci.chromium.org/ui/p/chromium/builders/try/android-desktop-x64-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22android-desktop-x64-rel%5C%22%22))
 * [android-x64-rel](https://ci.chromium.org/ui/p/chromium/builders/try/android-x64-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22android-x64-rel%5C%22%22))
 

@@ -3215,9 +3215,6 @@ ci.builder(
         ],
         per_test_modifications = {
             "android_browsertests": targets.mixin(
-                # TODO(https://crbug.com/475299611): Add back to CQ once the
-                # pending time is back to normal.
-                ci_only = True,
                 swarming = targets.swarming(
                     shards = 7,
                 ),
