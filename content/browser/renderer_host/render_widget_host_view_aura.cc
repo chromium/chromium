@@ -2293,27 +2293,30 @@ void RenderWidgetHostViewAura::OnDeviceScaleFactorChanged(
 }
 
 void RenderWidgetHostViewAura::OnWindowDestroying(aura::Window* window) {
+  // Make sure that the input method no longer references to this object before
+  // this object is removed from the root window (i.e. this object loses access
+  // to the input method).
+  DetachFromInputMethod(true);
+
+  if (overscroll_controller_) {
+    overscroll_controller_->Reset();
+  }
+
 #if BUILDFLAG(IS_WIN)
   // The LegacyRenderWidgetHostHWND instance is destroyed when its window is
-  // destroyed. Normally we control when that happens via the Destroy call
-  // in the dtor. However there may be cases where the window is destroyed
-  // by Windows, i.e. the parent window is destroyed before the
-  // RenderWidgetHostViewAura instance goes away etc. To avoid that we
-  // destroy the LegacyRenderWidgetHostHWND instance here.
+  // destroyed. Normally we control when that happens via the Destroy call in
+  // the dtor. However there may be cases where the window is destroyed by
+  // Windows, i.e. the parent window is destroyed before the
+  // RenderWidgetHostViewAura instance goes away etc. To avoid that we destroy
+  // the LegacyRenderWidgetHostHWND instance here. Do this last, as the call to
+  // DestroyWindow in here may pump window messages, and consequently delete
+  // this.
   if (legacy_render_widget_host_HWND_) {
     // The Destroy call below will delete the LegacyRenderWidgetHostHWND
     // instance.
     legacy_render_widget_host_HWND_.ExtractAsDangling()->Destroy();
   }
 #endif
-
-  // Make sure that the input method no longer references to this object before
-  // this object is removed from the root window (i.e. this object loses access
-  // to the input method).
-  DetachFromInputMethod(true);
-
-  if (overscroll_controller_)
-    overscroll_controller_->Reset();
 }
 
 void RenderWidgetHostViewAura::OnWindowDestroyed(aura::Window* window) {
