@@ -20,7 +20,6 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "chromeos/ui/base/app_types.h"
@@ -206,7 +205,7 @@ MruWindowTracker::WindowList BuildWindowListInternal(
 
         // Only add windows that have not been added previously from
         // |mru_windows| (if available).
-        if (mru_windows && base::Contains(*mru_windows, child))
+        if (mru_windows && std::ranges::contains(*mru_windows, child))
           continue;
 
         windows.emplace_back(child);

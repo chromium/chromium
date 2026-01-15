@@ -4,13 +4,13 @@
 
 #include "ash/display/touch_calibrator_controller.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "ash/display/touch_calibrator_view.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/touch/ash_touch_transform_controller.h"
-#include "base/containers/contains.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/test/test_display_layout_manager.h"
@@ -233,7 +233,7 @@ TEST_F(TouchCalibratorControllerTest, StartCalibration) {
 
   ui::EventTargetTestApi test_api(Shell::Get());
   ui::EventHandlerList handlers = test_api.GetPreTargetHandlers();
-  EXPECT_TRUE(base::Contains(handlers, &touch_calibrator_controller));
+  EXPECT_TRUE(std::ranges::contains(handlers, &touch_calibrator_controller));
 }
 
 TEST_F(TouchCalibratorControllerTest, StartTouchscreenMapping) {
@@ -243,7 +243,7 @@ TEST_F(TouchCalibratorControllerTest, StartTouchscreenMapping) {
 
   ui::EventTargetTestApi test_api(Shell::Get());
   ui::EventHandlerList handlers = test_api.GetPreTargetHandlers();
-  EXPECT_TRUE(base::Contains(handlers, &touch_calibrator_controller));
+  EXPECT_TRUE(std::ranges::contains(handlers, &touch_calibrator_controller));
 }
 
 TEST_F(TouchCalibratorControllerTest, Mapping_OneExternalDisplay_FullFlow) {

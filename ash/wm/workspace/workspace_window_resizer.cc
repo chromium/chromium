@@ -36,7 +36,6 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/workspace/phantom_window_controller.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -340,7 +339,7 @@ int GetDraggingThreshold(const DragDetails& details) {
       WindowStateType::kDefault,        WindowStateType::kNormal,
       WindowStateType::kPrimarySnapped, WindowStateType::kSecondarySnapped,
       WindowStateType::kMaximized,      WindowStateType::kFloated};
-  DCHECK(base::Contains(draggable_states, state));
+  DCHECK(std::ranges::contains(draggable_states, state));
 #endif
 
   // Snapped and maximized windows need to be dragged a certain amount before
@@ -1404,7 +1403,7 @@ bool WorkspaceWindowResizer::UpdateMagnetismWindow(
   for (auto i = children.rbegin();
        i != children.rend() && !matcher.AreEdgesObscured(); ++i) {
     // Ignore already attached windows.
-    if (base::Contains(attached_windows_, *i)) {
+    if (std::ranges::contains(attached_windows_, *i)) {
       continue;
     }
 

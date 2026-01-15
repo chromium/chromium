@@ -1190,7 +1190,7 @@ TEST_F(AcceleratorConfigurationProviderTest, NonConfigurableReverseLookup) {
         std::vector<uint32_t> found_ids =
             GetNonConfigurableIdFromAccelerator(accelerator);
         ASSERT_FALSE(found_ids.empty());
-        EXPECT_TRUE(base::Contains(found_ids, ambient_action_id));
+        EXPECT_TRUE(std::ranges::contains(found_ids, ambient_action_id));
       }
     }
   }

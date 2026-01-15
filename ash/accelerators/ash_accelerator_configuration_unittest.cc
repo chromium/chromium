@@ -17,7 +17,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -457,8 +456,8 @@ TEST_F(AshAcceleratorConfigurationTest, MultipleDefaultAccelerators) {
 
   EXPECT_EQ(2u, default_accelerators.size());
 
-  EXPECT_TRUE(base::Contains(default_accelerators, expected_default));
-  EXPECT_TRUE(base::Contains(default_accelerators, expected_default_2));
+  EXPECT_TRUE(std::ranges::contains(default_accelerators, expected_default));
+  EXPECT_TRUE(std::ranges::contains(default_accelerators, expected_default_2));
 }
 TEST_F(AshAcceleratorConfigurationTest, DefaultNotFound) {
   const AcceleratorData test_data[] = {

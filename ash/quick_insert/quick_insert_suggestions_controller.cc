@@ -4,6 +4,8 @@
 
 #include "ash/quick_insert/quick_insert_suggestions_controller.h"
 
+#include <algorithm>
+
 #include "ash/quick_insert/model/quick_insert_mode_type.h"
 #include "ash/quick_insert/model/quick_insert_model.h"
 #include "ash/quick_insert/quick_insert_category.h"
@@ -83,13 +85,13 @@ void QuickInsertSuggestionsController::GetSuggestions(
         !model.is_caps_lock_enabled(), GetQuickInsertShortcutForCapsLock())});
   }
 
-  if (base::Contains(model.GetAvailableCategories(),
-                     QuickInsertCategory::kEditorRewrite)) {
+  if (std::ranges::contains(model.GetAvailableCategories(),
+                            QuickInsertCategory::kEditorRewrite)) {
     client.GetSuggestedEditorResults(callback);
   }
 
-  if (base::Contains(model.GetAvailableCategories(),
-                     QuickInsertCategory::kLobsterWithSelectedText)) {
+  if (std::ranges::contains(model.GetAvailableCategories(),
+                            QuickInsertCategory::kLobsterWithSelectedText)) {
     callback.Run({QuickInsertLobsterResult(
         QuickInsertLobsterResult::Mode::kWithSelection, /*display_name=*/u"")});
   }

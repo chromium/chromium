@@ -27,7 +27,6 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/presentation_time_recorder.h"
@@ -181,7 +180,7 @@ void DeskBarController::OnKeyEvent(ui::KeyEvent* event) {
       ui::VKEY_TAB,   ui::VKEY_UP,    ui::VKEY_DOWN,   ui::VKEY_LEFT,
       ui::VKEY_RIGHT, ui::VKEY_SHIFT, ui::VKEY_CONTROL};
   if (!(event->IsControlDown() && event->key_code() == ui::VKEY_Z) &&
-      !base::Contains(traversal_keys, event->key_code())) {
+      !std::ranges::contains(traversal_keys, event->key_code())) {
     desks_controller->MaybeDismissPersistentDeskRemovalToast();
   }
 

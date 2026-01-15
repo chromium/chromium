@@ -4,6 +4,7 @@
 
 #include "ash/game_dashboard/game_dashboard_controller.h"
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <string>
@@ -62,7 +63,7 @@ static const std::array<std::string, 19> kGameAppIdAllowList{
 // Checks whether the given `app_id` is allow listed to show the Game
 // Dashboard button.
 bool IsAppIdAllowListed(const std::string& app_id) {
-  return base::Contains(kGameAppIdAllowList, app_id);
+  return std::ranges::contains(kGameAppIdAllowList, app_id);
 }
 }  // namespace
 

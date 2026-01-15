@@ -4,6 +4,7 @@
 
 #include "ash/wm/desks/templates/admin_template_launch_tracker.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "ash/public/cpp/saved_desk_delegate.h"
@@ -271,7 +272,7 @@ void AdjustAdminTemplateWindowBounds(
     gfx::Rect& bounds) {
   bounds.AdjustToFit(work_area);
 
-  while (base::Contains(existing_bounds, bounds)) {
+  while (std::ranges::contains(existing_bounds, bounds)) {
     // There's an exact match for bounds, so we need to adjust it. We move it
     // down and to the right, while staying within the work area.
     int xoffset = std::min(kWindowOffset, work_area.right() - bounds.right());

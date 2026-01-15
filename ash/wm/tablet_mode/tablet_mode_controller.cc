@@ -28,7 +28,6 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -359,7 +358,7 @@ class TabletModeController::ScopedContainerHider {
   ScopedContainerHider& operator=(const ScopedContainerHider&) = delete;
   ~ScopedContainerHider() {
     // Cancel if the root window is deleted while taking a screenshot.
-    if (!base::Contains(Shell::GetAllRootWindows(), root_window_)) {
+    if (!std::ranges::contains(Shell::GetAllRootWindows(), root_window_)) {
       return;
     }
 
@@ -1314,7 +1313,7 @@ void TabletModeController::OnLayerCopyed(
   container_hider_.reset();
 
   // Cancel if the root window is deleted while taking a screenshot.
-  if (!base::Contains(Shell::GetAllRootWindows(), root_window)) {
+  if (!std::ranges::contains(Shell::GetAllRootWindows(), root_window)) {
     return;
   }
 

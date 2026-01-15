@@ -40,7 +40,6 @@
 #include "ash/wm/wm_constants.h"
 #include "ash/wm/wm_event.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ui/base/app_types.h"
@@ -487,7 +486,7 @@ void EnsureTransientRoots(
   for (auto it = out_window_list->begin(); it != out_window_list->end();) {
     aura::Window* transient_root = ::wm::GetTransientRoot(*it);
     if (*it != transient_root) {
-      if (base::Contains(*out_window_list, transient_root)) {
+      if (std::ranges::contains(*out_window_list, transient_root)) {
         it = out_window_list->erase(it);
       } else {
         *it = transient_root;

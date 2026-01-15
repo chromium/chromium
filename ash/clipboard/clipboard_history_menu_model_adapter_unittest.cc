@@ -4,6 +4,7 @@
 
 #include "ash/clipboard/clipboard_history_menu_model_adapter.h"
 
+#include <algorithm>
 #include <string>
 
 #include "ash/clipboard/clipboard_history.h"
@@ -16,7 +17,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
-#include "base/containers/contains.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -72,8 +72,9 @@ GetClipboardHistoryShowSources() {
        i <= static_cast<int>(ClipboardHistoryControllerShowSource::kMaxValue);
        ++i) {
     // kControlVLongpress is deprecated.
-    if (!base::Contains(kDeprecated,
-                        static_cast<ClipboardHistoryControllerShowSource>(i))) {
+    if (!std::ranges::contains(
+            kDeprecated,
+            static_cast<ClipboardHistoryControllerShowSource>(i))) {
       sources.push_back(static_cast<ClipboardHistoryControllerShowSource>(i));
     }
   }

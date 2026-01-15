@@ -25,7 +25,6 @@
 #include "ash/wm/wm_metrics.h"
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -525,7 +524,7 @@ void SplitViewMetricsController::StopRecordSplitViewMetrics() {
 }
 
 bool SplitViewMetricsController::IsObservingWindow(aura::Window* window) const {
-  return base::Contains(observed_windows_, window);
+  return std::ranges::contains(observed_windows_, window);
 }
 
 void SplitViewMetricsController::AddObservedWindow(aura::Window* window) {

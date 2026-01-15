@@ -51,7 +51,6 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
@@ -156,7 +155,7 @@ void AppendWindowsToOverview(
   overview_session->set_auto_add_windows_enabled(false);
   for (aura::Window* window :
        Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk)) {
-    if (!base::Contains(windows, window) ||
+    if (!std::ranges::contains(windows, window) ||
         window_util::ShouldExcludeForOverview(window)) {
       continue;
     }
@@ -651,7 +650,7 @@ void DesksController::NewDesk(DesksCreationRemovalSource source,
 }
 
 bool DesksController::HasDesk(const Desk* desk) const {
-  return base::Contains(desks_, desk, &std::unique_ptr<Desk>::get);
+  return std::ranges::contains(desks_, desk, &std::unique_ptr<Desk>::get);
 }
 
 Desk* DesksController::GetDeskAtIndex(size_t index) const {
@@ -1649,7 +1648,7 @@ void DesksController::OnAnimationFinished(DeskAnimationBase* animation) {
 }
 
 bool DesksController::HasDeskWithName(const std::u16string& desk_name) const {
-  return base::Contains(desks_, desk_name, &Desk::name);
+  return std::ranges::contains(desks_, desk_name, &Desk::name);
 }
 
 void DesksController::ActivateDeskInternal(const Desk* desk,
@@ -2258,7 +2257,7 @@ const Desk* DesksController::FindDeskOfWindow(aura::Window* window) const {
   }
 
   for (const auto& desk : desks_) {
-    if (base::Contains(desk->windows(), window))
+    if (std::ranges::contains(desk->windows(), window))
       return desk.get();
   }
 
@@ -2350,7 +2349,7 @@ bool DesksController::MoveWindowFromSourceDeskTo(
   // the active desk, and cannot be removed. Except floated window, which is
   // handled by `FloatController::OnMovingFloatedWindowToDesk`.
   const bool is_floated = WindowState::Get(window)->IsFloated();
-  if (!base::Contains(source_desk->windows(), window) && !is_floated) {
+  if (!std::ranges::contains(source_desk->windows(), window) && !is_floated) {
     return false;
   }
 

@@ -4,9 +4,9 @@
 
 #include "ash/public/cpp/shell_window_ids.h"
 
+#include <algorithm>
 #include <array>
 
-#include "base/containers/contains.h"
 
 namespace ash {
 
@@ -70,7 +70,7 @@ std::vector<int> GetActivatableShellWindowIds() {
 }
 
 bool IsActivatableShellWindowId(int id) {
-  return base::Contains(GetActivatableShellWindowIds(), id);
+  return std::ranges::contains(GetActivatableShellWindowIds(), id);
 }
 
 }  // namespace ash

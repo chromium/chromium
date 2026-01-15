@@ -4,6 +4,7 @@
 
 #include "ash/wm/splitview/split_view_controller.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <tuple>
@@ -55,7 +56,6 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/wm_metrics.h"
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -295,7 +295,7 @@ class SplitViewControllerTest : public AshTestBase {
 
  protected:
   void CheckForDuplicateTraceName(const char* trace) {
-    DCHECK(!base::Contains(trace_names_, trace)) << trace;
+    DCHECK(!std::ranges::contains(trace_names_, trace)) << trace;
     trace_names_.push_back(trace);
   }
 
@@ -867,9 +867,9 @@ TEST_F(SplitViewControllerTest, EnterOverviewMode) {
   ToggleOverview();
   EXPECT_EQ(split_view_controller()->state(),
             SplitViewController::State::kPrimarySnapped);
-  EXPECT_FALSE(
-      base::Contains(GetWindowsListInOverviewGrids(),
-                     split_view_controller()->GetDefaultSnappedWindow()));
+  EXPECT_FALSE(std::ranges::contains(
+      GetWindowsListInOverviewGrids(),
+      split_view_controller()->GetDefaultSnappedWindow()));
 }
 
 // Tests that if split view mode and overview mode are active at the same time,
@@ -3425,8 +3425,8 @@ TEST_F(SplitViewControllerTest, SplitViewDividerObserveSnappedWindow) {
   // The left and right windows are observed by split view divider->
   aura::Window::Windows observed_windows =
       split_view_divider()->observed_windows();
-  EXPECT_TRUE(base::Contains(observed_windows, left_window.get()));
-  EXPECT_TRUE(base::Contains(observed_windows, right_window.get()));
+  EXPECT_TRUE(std::ranges::contains(observed_windows, left_window.get()));
+  EXPECT_TRUE(std::ranges::contains(observed_windows, right_window.get()));
 }
 
 // Tests that the bounds of the window and divider get updated correctly when

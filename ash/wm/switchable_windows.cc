@@ -4,11 +4,11 @@
 
 #include "ash/wm/switchable_windows.h"
 
+#include <algorithm>
 #include <array>
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/wm/desks/desks_util.h"
-#include "base/containers/contains.h"
 #include "ui/aura/window.h"
 
 namespace ash {
@@ -60,7 +60,7 @@ bool IsSwitchableContainer(const aura::Window* window) {
   if (!window)
     return false;
 
-  return base::Contains(GetSwitchableContainerIds(), window->GetId());
+  return std::ranges::contains(GetSwitchableContainerIds(), window->GetId());
 }
 
 }  // namespace ash

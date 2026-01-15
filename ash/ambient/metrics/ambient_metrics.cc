@@ -4,6 +4,7 @@
 
 #include "ash/ambient/metrics/ambient_metrics.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -15,7 +16,6 @@
 #include "ash/public/cpp/ash_web_view.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -203,7 +203,7 @@ AmbientModePhotoSource AmbientSettingsToPhotoSource(
     return AmbientModePhotoSource::kGooglePhotosEmpty;
   }
 
-  bool has_recent_highlights = base::Contains(
+  bool has_recent_highlights = std::ranges::contains(
       settings.selected_album_ids, ash::kAmbientModeRecentHighlightsAlbumId);
 
   if (has_recent_highlights && settings.selected_album_ids.size() == 1) {

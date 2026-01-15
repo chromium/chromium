@@ -4,6 +4,7 @@
 
 #include "ash/system/input_device_settings/input_device_tracker.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -14,7 +15,6 @@
 #include "ash/system/input_device_settings/input_device_key_alias_manager.h"
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
-#include "base/containers/contains.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -57,7 +57,7 @@ bool InputDeviceTracker::WasDevicePreviouslyConnected(
     std::string_view device_key) const {
   const auto* observed_devices = GetObservedDevicesForCategory(category);
   return observed_devices &&
-         base::Contains(observed_devices->GetValue(), device_key);
+         std::ranges::contains(observed_devices->GetValue(), device_key);
 }
 
 void InputDeviceTracker::Init(PrefService* pref_service) {

@@ -12,7 +12,6 @@
 #include "ash/display/display_util.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/public/cpp/window_tree_host_lookup.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "ui/aura/window_tree_host.h"
@@ -137,8 +136,8 @@ void ClipboardHistoryResourceManager::OnImageModelRendered(
 
   // Set the HTML preview for each item attached to `id`'s request.
   for (auto& item : clipboard_history_->GetItems()) {
-    if (!base::Contains(image_model_request->clipboard_history_item_ids,
-                        item.id())) {
+    if (!std::ranges::contains(image_model_request->clipboard_history_item_ids,
+                               item.id())) {
       continue;
     }
 
@@ -167,8 +166,8 @@ ClipboardHistoryResourceManager::GetImageModelRequestForItem(
     const ClipboardHistoryItem& item) {
   return std::ranges::find_if(
       image_model_requests_, [&](const auto& image_model_request) {
-        return base::Contains(image_model_request.clipboard_history_item_ids,
-                              item.id());
+        return std::ranges::contains(
+            image_model_request.clipboard_history_item_ids, item.id());
       });
 }
 

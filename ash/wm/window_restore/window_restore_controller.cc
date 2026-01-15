@@ -4,6 +4,7 @@
 
 #include "ash/wm/window_restore/window_restore_controller.h"
 
+#include <algorithm>
 #include <cstdint>
 
 #include "ash/app_list/app_list_controller_impl.h"
@@ -26,7 +27,6 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ui/base/app_types.h"
@@ -507,13 +507,13 @@ void WindowRestoreController::SaveWindowImpl(
 
   // Only apps whose parent is a certain container can be saved.
   if (!window->parent() ||
-      !base::Contains(kAppParentContainers, window->parent()->GetId())) {
+      !std::ranges::contains(kAppParentContainers, window->parent()->GetId())) {
     return;
   }
 
   // Only some app types can be saved.
-  if (!base::Contains(kSupportedAppTypes,
-                      window->GetProperty(chromeos::kAppTypeKey))) {
+  if (!std::ranges::contains(kSupportedAppTypes,
+                             window->GetProperty(chromeos::kAppTypeKey))) {
     return;
   }
 

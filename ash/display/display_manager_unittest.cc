@@ -102,28 +102,28 @@ class DisplayManagerObserverValidator : public display::DisplayObserver,
 
   // display::DisplayObserver:
   void OnDisplayAdded(const display::Display& new_display) override {
-    if (!base::Contains(added_displays_, new_display)) {
-      EXPECT_TRUE(base::Contains(active_display_list(), new_display));
+    if (!std::ranges::contains(added_displays_, new_display)) {
+      EXPECT_TRUE(std::ranges::contains(active_display_list(), new_display));
       added_displays_.push_back(new_display);
     }
   }
   void OnWillRemoveDisplays(const Displays& removed_displays) override {
     for (const auto& display : removed_displays) {
-      EXPECT_TRUE(base::Contains(active_display_list(), display));
+      EXPECT_TRUE(std::ranges::contains(active_display_list(), display));
     }
   }
   void OnDisplaysRemoved(const display::Displays& removed_displays) override {
     for (const auto& display : removed_displays) {
-      EXPECT_FALSE(base::Contains(active_display_list(), display));
-      if (!base::Contains(added_displays_, display)) {
+      EXPECT_FALSE(std::ranges::contains(active_display_list(), display));
+      if (!std::ranges::contains(added_displays_, display)) {
         removed_displays_.push_back(display);
       }
     }
   }
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override {
-    EXPECT_TRUE(base::Contains(active_display_list(), display));
-    if (!base::Contains(changed_displays_, display)) {
+    EXPECT_TRUE(std::ranges::contains(active_display_list(), display));
+    if (!std::ranges::contains(changed_displays_, display)) {
       changed_displays_.push_back(display);
     }
     if (!changed_metrics_.try_emplace(display.id(), changed_metrics).second) {

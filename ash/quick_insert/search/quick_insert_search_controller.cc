@@ -19,7 +19,6 @@
 #include "ash/quick_insert/search/quick_insert_search_request.h"
 #include "ash/quick_insert/views/quick_insert_view_delegate.h"
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -114,7 +113,8 @@ std::vector<std::string> GetLanguageCodesFromPrefs(PrefService* prefs) {
     std::string short_ime_id =
         extension_ime_util::GetComponentIDByInputMethodID(id);
     if (const auto& it = kImeToLangCode.find(short_ime_id);
-        it != kImeToLangCode.end() && !base::Contains(results, it->second)) {
+        it != kImeToLangCode.end() &&
+        !std::ranges::contains(results, it->second)) {
       results.push_back(std::string(it->second));
     }
   }

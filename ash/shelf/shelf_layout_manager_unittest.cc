@@ -4,6 +4,7 @@
 
 #include "ash/shelf/shelf_layout_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -75,7 +76,6 @@
 #include "ash/wm/work_area_insets.h"
 #include "ash/wm/workspace_controller.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
@@ -2001,7 +2001,7 @@ TEST_F(ShelfLayoutManagerTest, AutohideShelfForAutohideWhenActiveWindow) {
   auto* shelf_window = shelf->GetWindow();
   aura::Window* container = shelf_window->GetRootWindow()->GetChildById(
       kShellWindowId_AlwaysOnTopContainer);
-  EXPECT_TRUE(base::Contains(container->children(), window_two));
+  EXPECT_TRUE(std::ranges::contains(container->children(), window_two));
 
   widget_two->Maximize();
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());

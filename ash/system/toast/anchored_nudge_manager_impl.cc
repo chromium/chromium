@@ -14,7 +14,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/toast/anchored_nudge.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ui/base/nudge_util.h"
@@ -471,7 +470,7 @@ void AnchoredNudgeManagerImpl::OnSessionStateChanged(
   CloseAllNudges();
 }
 
-// TODO(b/311526868): Replace instances of `base::Contains()` and
+// TODO(b/311526868): Replace instances of `std::ranges::contains()` and
 // `shown_nudges_[id]` with logic that only performs a single lookup.
 
 // TODO(b/296948349): Replace this with a new `GetNudge(id)` function as this

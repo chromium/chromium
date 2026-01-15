@@ -4,6 +4,8 @@
 
 #include "ash/wm/window_util.h"
 
+#include <algorithm>
+
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -13,7 +15,6 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/wm_event.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
@@ -183,8 +184,8 @@ TEST_F(WindowUtilTest, EnsureTransientRoots) {
   window_list.push_back(descendant2.get());
   EnsureTransientRoots(&window_list);
   ASSERT_EQ(2u, window_list.size());
-  ASSERT_TRUE(base::Contains(window_list, window1.get()));
-  ASSERT_TRUE(base::Contains(window_list, window2.get()));
+  ASSERT_TRUE(std::ranges::contains(window_list, window1.get()));
+  ASSERT_TRUE(std::ranges::contains(window_list, window2.get()));
 
   // Create a window which has a transient parent that is not in |window_list|.
   // Test that the window is replaced with its transient root when calling
@@ -195,8 +196,8 @@ TEST_F(WindowUtilTest, EnsureTransientRoots) {
   window_list.push_back(descendant3.get());
   EnsureTransientRoots(&window_list);
   EXPECT_EQ(3u, window_list.size());
-  EXPECT_TRUE(base::Contains(window_list, window3.get()));
-  EXPECT_FALSE(base::Contains(window_list, descendant3.get()));
+  EXPECT_TRUE(std::ranges::contains(window_list, window3.get()));
+  EXPECT_FALSE(std::ranges::contains(window_list, descendant3.get()));
 
   // Create two windows which have the same transient parent that is not in
   // |window_list|. Test that one of the windows is replaced with its transient
@@ -211,9 +212,9 @@ TEST_F(WindowUtilTest, EnsureTransientRoots) {
   window_list.push_back(descendant5.get());
   EnsureTransientRoots(&window_list);
   EXPECT_EQ(4u, window_list.size());
-  EXPECT_TRUE(base::Contains(window_list, window4.get()));
-  EXPECT_FALSE(base::Contains(window_list, descendant4.get()));
-  EXPECT_FALSE(base::Contains(window_list, descendant5.get()));
+  EXPECT_TRUE(std::ranges::contains(window_list, window4.get()));
+  EXPECT_FALSE(std::ranges::contains(window_list, descendant4.get()));
+  EXPECT_FALSE(std::ranges::contains(window_list, descendant5.get()));
 }
 
 TEST_F(WindowUtilTest,

@@ -4,6 +4,7 @@
 
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <utility>
@@ -236,8 +237,9 @@ bool MayContainsSelectedPlaylist(
     return true;
   }
 
-  return base::Contains(playlists_fetched, selected_playlist.id,
-                        &FocusModeSoundsController::Playlist::playlist_id);
+  return std::ranges::contains(
+      playlists_fetched, selected_playlist.id,
+      &FocusModeSoundsController::Playlist::playlist_id);
 }
 
 bool MatchesFocusModeRequestId(

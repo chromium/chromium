@@ -4,8 +4,9 @@
 
 #include "ash/webui/shimless_rma/backend/version_updater.h"
 
+#include <algorithm>
+
 #include "ash/constants/ash_features.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine.pb.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
@@ -161,7 +162,7 @@ bool VersionUpdater::UpdateOs() {
 }
 
 bool VersionUpdater::IsUpdateEngineIdle() {
-  return base::Contains(
+  return std::ranges::contains(
       kIdleUpdateOperations,
       UpdateEngineClient::Get()->GetLastStatus().current_operation());
 }

@@ -4,6 +4,8 @@
 
 #include "ash/wm/overview/overview_window_drag_controller.h"
 
+#include <algorithm>
+
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/shell.h"
@@ -28,7 +30,6 @@
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_util.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -280,7 +281,7 @@ TEST_F(OverviewWindowDragControllerTest,
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_TRUE(overview_grid->empty());
   const Desk* desk_2 = controller->GetDeskAtIndex(1);
-  EXPECT_TRUE(base::Contains(desk_2->windows(), window.get()));
+  EXPECT_TRUE(std::ranges::contains(desk_2->windows(), window.get()));
   EXPECT_TRUE(const_cast<OverviewGrid*>(overview_grid)->no_windows_widget());
 }
 

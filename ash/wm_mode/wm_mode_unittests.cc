@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <string>
 
 #include "ash/constants/ash_features.h"
@@ -16,7 +17,6 @@
 #include "ash/wm_mode/pie_menu_view.h"
 #include "ash/wm_mode/wm_mode_button_tray.h"
 #include "ash/wm_mode/wm_mode_controller.h"
-#include "base/containers/contains.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
@@ -348,8 +348,8 @@ TEST_F(WmModeTests, MoveWindowToDeskFromPieMenu) {
   // Clicking on the button for the second desk will move the window to that
   // desk.
   LeftClickPieMenuButton(WmModeController::kDeskButtonIdStart + 1);
-  EXPECT_TRUE(base::Contains(DesksController::Get()->desks().back()->windows(),
-                             window.get()));
+  EXPECT_TRUE(std::ranges::contains(
+      DesksController::Get()->desks().back()->windows(), window.get()));
 
   // The pie menu should have been hidden, and the selected window is now
   // cleared.

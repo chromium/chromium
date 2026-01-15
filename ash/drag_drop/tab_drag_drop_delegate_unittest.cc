@@ -4,6 +4,7 @@
 
 #include "ash/drag_drop/tab_drag_drop_delegate.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -21,7 +22,6 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_util.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
@@ -326,8 +326,8 @@ TEST_F(TabDragDropDelegateTest, DropTabInSplitViewMode) {
   EXPECT_EQ(new_window2.get(),
             split_view_controller->GetSnappedWindow(SnapPosition::kPrimary));
   ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
-  EXPECT_TRUE(
-      base::Contains(GetWindowsListInOverviewGrids(), source_window.get()));
+  EXPECT_TRUE(std::ranges::contains(GetWindowsListInOverviewGrids(),
+                                    source_window.get()));
 }
 
 TEST_F(TabDragDropDelegateTest, DropTabToOverviewMode) {
@@ -363,7 +363,7 @@ TEST_F(TabDragDropDelegateTest, DropTabToOverviewMode) {
   EXPECT_EQ(nullptr,
             split_view_controller->GetSnappedWindow(SnapPosition::kSecondary));
   EXPECT_TRUE(
-      base::Contains(GetWindowsListInOverviewGrids(), new_window.get()));
+      std::ranges::contains(GetWindowsListInOverviewGrids(), new_window.get()));
 }
 
 TEST_F(TabDragDropDelegateTest, WillNotDropTabToOverviewModeInSnappingZone) {
@@ -434,7 +434,7 @@ TEST_F(TabDragDropDelegateTest, WillNotDropTabToOverviewMode) {
   EXPECT_EQ(new_window.get(),
             split_view_controller->GetSnappedWindow(SnapPosition::kPrimary));
   EXPECT_FALSE(
-      base::Contains(GetWindowsListInOverviewGrids(), new_window.get()));
+      std::ranges::contains(GetWindowsListInOverviewGrids(), new_window.get()));
 }
 
 TEST_F(TabDragDropDelegateTest, SourceWindowBoundsUpdatedWhileDragging) {

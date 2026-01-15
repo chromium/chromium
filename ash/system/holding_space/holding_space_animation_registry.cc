@@ -18,7 +18,6 @@
 #include "ash/shell.h"
 #include "ash/system/progress_indicator/progress_icon_animation.h"
 #include "ash/system/progress_indicator/progress_ring_animation.h"
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
@@ -177,10 +176,11 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
     // longer present in the attached `model_`.
     registry_->EraseAllAnimationsForKeyIf([&](AnimationKey key) {
       return key != controller_key &&
-             !base::Contains(model_->items(), key,
-                             [](const std::unique_ptr<HoldingSpaceItem>& item) {
-                               return AsAnimationKey(item.get());
-                             });
+             !std::ranges::contains(
+                 model_->items(), key,
+                 [](const std::unique_ptr<HoldingSpaceItem>& item) {
+                   return AsAnimationKey(item.get());
+                 });
     });
 
     HoldingSpaceProgress last_cumulative_progress = cumulative_progress_;

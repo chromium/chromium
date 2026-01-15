@@ -4,11 +4,11 @@
 
 #include "ash/projector/projector_metadata_model.h"
 
+#include <algorithm>
 #include <string_view>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
@@ -97,7 +97,7 @@ bool isEndOfSentence(const std::string& word,
     return false;
   }
 
-  if (base::Contains(kSentenceEndPunctuations, word.back())) {
+  if (std::ranges::contains(kSentenceEndPunctuations, word.back())) {
     if (caption_language.starts_with("en") &&
         kEnglishAbbreviationsInLowerCase.contains(base::ToLowerASCII(word))) {
       // This is an English abbreviation, not end of a sentence.
@@ -110,7 +110,7 @@ bool isEndOfSentence(const std::string& word,
 
 bool isEndOfCJKSentence(std::u16string word) {
   return !word.empty() &&
-         base::Contains(kCJKSentenceEndPunctuations, word.back());
+         std::ranges::contains(kCJKSentenceEndPunctuations, word.back());
 }
 
 std::vector<std::vector<media::HypothesisParts>>

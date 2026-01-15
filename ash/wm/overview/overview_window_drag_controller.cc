@@ -208,7 +208,7 @@ class OverviewItemMoveHelper : public aura::WindowObserver {
       : windows_(std::move(windows)),
         item_window_(item_window),
         target_item_bounds_(target_item_bounds) {
-    CHECK(base::Contains(windows_, item_window_));
+    CHECK(std::ranges::contains(windows_, item_window_));
     for (auto window : windows_) {
       window->AddObserver(this);
     }
@@ -226,11 +226,11 @@ class OverviewItemMoveHelper : public aura::WindowObserver {
 
   // aura::WindowObserver:
   void OnWindowDestroyed(aura::Window* window) override {
-    DCHECK(base::Contains(windows_, window));
+    DCHECK(std::ranges::contains(windows_, window));
     ResetWindowAndDeleteIfEmpty(window);
   }
   void OnWindowAddedToRootWindow(aura::Window* window) override {
-    DCHECK(base::Contains(windows_, window));
+    DCHECK(std::ranges::contains(windows_, window));
     bool is_item_window = item_window_ == window;
 
     OverviewController* overview_controller = OverviewController::Get();

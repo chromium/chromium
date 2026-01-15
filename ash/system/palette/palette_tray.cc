@@ -4,6 +4,7 @@
 
 #include "ash/system/palette/palette_tray.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "ash/accessibility/accessibility_controller.h"
@@ -34,7 +35,6 @@
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -286,7 +286,8 @@ bool PaletteTray::ShouldShowOnDisplay() {
 
   for (const ui::TouchscreenDevice& device :
        ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices()) {
-    if (device.has_stylus && base::Contains(ids, device.target_display_id)) {
+    if (device.has_stylus &&
+        std::ranges::contains(ids, device.target_display_id)) {
       return true;
     }
   }

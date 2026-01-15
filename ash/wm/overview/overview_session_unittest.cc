@@ -4,6 +4,7 @@
 
 #include "ash/wm/overview/overview_session.h"
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <optional>
@@ -97,7 +98,6 @@
 #include "ash/wm/wm_event.h"
 #include "ash/wm/wm_metrics.h"
 #include "ash/wm/workspace/workspace_window_resizer.h"
-#include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -4054,8 +4054,8 @@ TEST_F(FloatOverviewSessionTest, DraggingToNewDeskWithFloatedWindow) {
   generator->ReleaseLeftButton();
   auto* controller = DesksController::Get();
   EXPECT_EQ(2u, controller->desks().size());
-  EXPECT_TRUE(base::Contains(controller->GetDeskAtIndex(1)->windows(),
-                             normal_window.get()));
+  EXPECT_TRUE(std::ranges::contains(controller->GetDeskAtIndex(1)->windows(),
+                                    normal_window.get()));
 }
 
 // Tests that the overview item associated with the floated window appears
@@ -6932,7 +6932,7 @@ TEST_F(SplitViewOverviewSessionTest,
   const std::vector<aura::Window*> window_list =
       GetWindowsListInOverviewGrids();
   EXPECT_EQ(2u, window_list.size());
-  EXPECT_FALSE(base::Contains(window_list, window1.get()));
+  EXPECT_FALSE(std::ranges::contains(window_list, window1.get()));
   EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
 
   // Drag the divider to the left edge.
@@ -6950,7 +6950,7 @@ TEST_F(SplitViewOverviewSessionTest,
   const std::vector<aura::Window*> new_window_list =
       GetWindowsListInOverviewGrids();
   EXPECT_EQ(3u, new_window_list.size());
-  EXPECT_TRUE(base::Contains(new_window_list, window1.get()));
+  EXPECT_TRUE(std::ranges::contains(new_window_list, window1.get()));
   EXPECT_FALSE(wm::IsActiveWindow(window1.get()));
 }
 

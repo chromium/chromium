@@ -11,7 +11,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
-#include "base/containers/contains.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -83,7 +82,7 @@ class TestAppListConfigProviderObserver
 
   // AppListConfigProvider::Observer:
   void OnAppListConfigCreated(ash::AppListConfigType config_type) override {
-    ASSERT_FALSE(base::Contains(created_types_, config_type));
+    ASSERT_FALSE(std::ranges::contains(created_types_, config_type));
 
     created_types_.push_back(config_type);
   }

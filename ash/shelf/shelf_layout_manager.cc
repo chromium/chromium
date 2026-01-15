@@ -2584,7 +2584,7 @@ bool ShelfLayoutManager::IsActiveWindowStylusApp() const {
   if (active_id.IsNull())
     return false;
 
-  return base::Contains(kStylusAppIds, active_id.app_id);
+  return std::ranges::contains(kStylusAppIds, active_id.app_id);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -77,7 +77,7 @@ std::vector<RecentAppInfo> GetRecentApps(
       continue;
 
     std::string item_id = ItemIdFromAppId(result->id());
-    if (base::Contains(ids_to_ignore, item_id))
+    if (std::ranges::contains(ids_to_ignore, item_id))
       continue;
 
     AppListItem* item = model->FindItem(item_id);

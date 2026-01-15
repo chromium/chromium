@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <string>
@@ -95,7 +96,6 @@
 #include "ash/wm/workspace/backdrop_controller.h"
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "ash/wm/workspace_controller.h"
-#include "base/containers/contains.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -228,8 +228,8 @@ std::unique_ptr<aura::Window> CreateTransientModalChildWindow(
 }
 
 bool DoesActiveDeskContainWindow(aura::Window* window) {
-  return base::Contains(DesksController::Get()->active_desk()->windows(),
-                        window);
+  return std::ranges::contains(DesksController::Get()->active_desk()->windows(),
+                               window);
 }
 
 // Combines or closes a desk.
@@ -1751,7 +1751,7 @@ TEST_P(DesksTest, DragWindowToDesk) {
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_EQ(1u, overview_grid->GetNumWindows());
   EXPECT_FALSE(DoesActiveDeskContainWindow(win1.get()));
-  EXPECT_TRUE(base::Contains(desk_2->windows(), win1.get()));
+  EXPECT_TRUE(std::ranges::contains(desk_2->windows(), win1.get()));
   EXPECT_FALSE(overview_grid->drop_target());
 
   // After dragging an item outside of overview to another desk, the focus
@@ -1847,7 +1847,7 @@ TEST_P(DesksTest, DragMinimizedWindowToDesk) {
                   GetEventGenerator(), GetParam().use_touch_gestures);
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_TRUE(overview_grid->empty());
-  EXPECT_TRUE(base::Contains(desk_2->windows(), window.get()));
+  EXPECT_TRUE(std::ranges::contains(desk_2->windows(), window.get()));
   EXPECT_FALSE(overview_grid->drop_target());
   DeskSwitchAnimationWaiter waiter;
   LeftClickOn(desk_2_mini_view);
@@ -1999,8 +1999,8 @@ TEST_P(DesksTest, DragWindowAtZeroState) {
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_EQ(2u, desks_bar_view->mini_views().size());
   EXPECT_EQ(2u, controller->desks().size());
-  EXPECT_TRUE(
-      base::Contains(controller->GetDeskAtIndex(1)->windows(), win1.get()));
+  EXPECT_TRUE(std::ranges::contains(controller->GetDeskAtIndex(1)->windows(),
+                                    win1.get()));
   // The active desk should still be the first desk, even though a new desk
   // is created.
   EXPECT_EQ(DesksController::Get()->active_desk(),
@@ -2082,8 +2082,8 @@ TEST_P(DesksTest, DragWindowAtZeroStateWithoutDroppingItOnTheNewDesk) {
   EXPECT_FALSE(desks_bar_view->IsZeroState());
   EXPECT_FALSE(IsLazyInitViewVisible(desks_bar_view->new_desk_button_label()));
   EXPECT_EQ(1u, controller->desks().size());
-  EXPECT_TRUE(
-      base::Contains(controller->GetDeskAtIndex(0)->windows(), win1.get()));
+  EXPECT_TRUE(std::ranges::contains(controller->GetDeskAtIndex(0)->windows(),
+                                    win1.get()));
 }
 
 // Tests that dragging and dropping window to new desk while desks bar view is
@@ -2125,8 +2125,8 @@ TEST_P(DesksTest, DragWindowAtExpandedState) {
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_EQ(3u, desks_bar_view->mini_views().size());
   EXPECT_EQ(3u, controller->desks().size());
-  EXPECT_TRUE(
-      base::Contains(controller->GetDeskAtIndex(2)->windows(), win1.get()));
+  EXPECT_TRUE(std::ranges::contains(controller->GetDeskAtIndex(2)->windows(),
+                                    win1.get()));
 }
 
 // Tests that dragging and dropping a window on the new desk button does not
@@ -2186,8 +2186,8 @@ TEST_P(DesksTest, DragWindowAtMaximumDesksState) {
   EXPECT_EQ(desks_util::GetMaxNumberOfDesks(),
             desks_bar_view->mini_views().size());
   EXPECT_EQ(desks_util::GetMaxNumberOfDesks(), controller->desks().size());
-  EXPECT_TRUE(
-      base::Contains(controller->GetDeskAtIndex(0)->windows(), win1.get()));
+  EXPECT_TRUE(std::ranges::contains(controller->GetDeskAtIndex(0)->windows(),
+                                    win1.get()));
 }
 
 TEST_P(DesksTest, MruWindowTracker) {
@@ -2769,7 +2769,7 @@ TEST_F(DesksWithMultiDisplayOverview, DropOnOtherDeskInOtherDisplay) {
   EXPECT_FALSE(win->IsVisible());
   auto* controller = DesksController::Get();
   const Desk* desk_2 = controller->GetDeskAtIndex(1);
-  EXPECT_TRUE(base::Contains(desk_2->windows(), win.get()));
+  EXPECT_TRUE(std::ranges::contains(desk_2->windows(), win.get()));
 }
 
 // Tests that closing a desk while in overview before the overview starting
@@ -3254,7 +3254,7 @@ TEST_P(TabletModeDesksTest, Backdrops) {
                   desk_2_mini_view->GetBoundsInScreen().CenterPoint(),
                   GetEventGenerator());
   EXPECT_TRUE(overview_controller->InOverviewSession());
-  EXPECT_TRUE(base::Contains(desk_2->windows(), window.get()));
+  EXPECT_TRUE(std::ranges::contains(desk_2->windows(), window.get()));
   EXPECT_FALSE(desk_1_backdrop_controller->backdrop_window());
   ASSERT_TRUE(desk_2_backdrop_controller->backdrop_window());
   EXPECT_FALSE(desk_2_backdrop_controller->backdrop_window()->IsVisible());
@@ -3334,7 +3334,7 @@ TEST_P(TabletModeDesksTest,
   // The backdrop should be destroyed for |desk_1|, and a new one should be
   // created for |window| in desk_2 and should be stacked below it.
   EXPECT_TRUE(overview_controller->InOverviewSession());
-  EXPECT_TRUE(base::Contains(desk_2->windows(), window.get()));
+  EXPECT_TRUE(std::ranges::contains(desk_2->windows(), window.get()));
   EXPECT_FALSE(desk_1_backdrop_controller->backdrop_window());
   ASSERT_TRUE(desk_2_backdrop_controller->backdrop_window());
   EXPECT_FALSE(desk_1_backdrop_controller->window_having_backdrop());
@@ -5402,7 +5402,7 @@ TEST_P(DesksAcceleratorsTest, MoveWindowLeftRightDesk) {
   SendAccelerator(ui::VKEY_OEM_6, flags);
   EXPECT_EQ(nullptr, window_util::GetActiveWindow());
   EXPECT_TRUE(desk_1->windows().empty());
-  EXPECT_TRUE(base::Contains(desk_2->windows(), window.get()));
+  EXPECT_TRUE(std::ranges::contains(desk_2->windows(), window.get()));
 
   // No more active windows on this desk, nothing happens.
   SendAccelerator(ui::VKEY_OEM_6, flags);
@@ -5420,7 +5420,7 @@ TEST_P(DesksAcceleratorsTest, MoveWindowLeftRightDesk) {
   SendAccelerator(ui::VKEY_OEM_4, flags);
   EXPECT_TRUE(desk_2->windows().empty());
   EXPECT_EQ(nullptr, window_util::GetActiveWindow());
-  EXPECT_TRUE(base::Contains(desk_1->windows(), window.get()));
+  EXPECT_TRUE(std::ranges::contains(desk_1->windows(), window.get()));
 }
 
 TEST_P(DesksAcceleratorsTest, MoveWindowLeftRightDeskOverview) {
@@ -5457,7 +5457,7 @@ TEST_P(DesksAcceleratorsTest, MoveWindowLeftRightDeskOverview) {
   EXPECT_EQ(win0.get(), overview_session->GetFocusedWindow());
   SendAccelerator(ui::VKEY_OEM_6, flags);
   EXPECT_FALSE(DoesActiveDeskContainWindow(win0.get()));
-  EXPECT_TRUE(base::Contains(desk_2->windows(), win0.get()));
+  EXPECT_TRUE(std::ranges::contains(desk_2->windows(), win0.get()));
   EXPECT_TRUE(overview_controller->InOverviewSession());
 
   // The focus ring should move to the next window if we call
@@ -5466,7 +5466,7 @@ TEST_P(DesksAcceleratorsTest, MoveWindowLeftRightDeskOverview) {
   EXPECT_EQ(win1.get(), overview_session->GetFocusedWindow());
   SendAccelerator(ui::VKEY_OEM_6, flags);
   EXPECT_FALSE(DoesActiveDeskContainWindow(win1.get()));
-  EXPECT_TRUE(base::Contains(desk_2->windows(), win1.get()));
+  EXPECT_TRUE(std::ranges::contains(desk_2->windows(), win1.get()));
   EXPECT_TRUE(overview_controller->InOverviewSession());
 
   // Nothing is focused.
@@ -5690,7 +5690,7 @@ class PerDeskShelfTest : public AshTestBase,
 
     views::View* item_view = view_model->view_at(index);
     const bool contained_in_visible_indices =
-        base::Contains(shelf_view->visible_views_indices(), index);
+        std::ranges::contains(shelf_view->visible_views_indices(), index);
 
     EXPECT_EQ(expected_visibility, item_view->GetVisible());
     EXPECT_EQ(expected_visibility, contained_in_visible_indices);
@@ -6563,7 +6563,7 @@ TEST_P(DesksTest, VisibleOnAllDesksMoveWindowToDeskViaDragAndDrop) {
   EXPECT_TRUE(desks_util::BelongsToActiveDesk(window.get()));
   EXPECT_EQ(1u, controller->visible_on_all_desks_windows().size());
   EXPECT_TRUE(desks_util::IsWindowVisibleOnAllWorkspaces(window.get()));
-  EXPECT_TRUE(base::Contains(desk_1->windows(), window.get()));
+  EXPECT_TRUE(std::ranges::contains(desk_1->windows(), window.get()));
 }
 
 // Tests the behavior of a window that is visible on all desks when a user tries
@@ -6589,7 +6589,7 @@ TEST_P(DesksTest, VisibleOnAllDesksMoveWindowToDeskViaShortcuts) {
   EXPECT_FALSE(desks_util::BelongsToActiveDesk(window.get()));
   EXPECT_EQ(0u, controller->visible_on_all_desks_windows().size());
   EXPECT_FALSE(desks_util::IsWindowVisibleOnAllWorkspaces(window.get()));
-  EXPECT_TRUE(base::Contains(desk_2->windows(), window.get()));
+  EXPECT_TRUE(std::ranges::contains(desk_2->windows(), window.get()));
 }
 
 // Tests the behavior of a window that is visible on all desks when a user tries
@@ -6612,7 +6612,7 @@ TEST_P(DesksTest, VisibleOnAllDesksMoveWindowToDeskViaContextMenu) {
   EXPECT_FALSE(desks_util::BelongsToActiveDesk(window.get()));
   EXPECT_EQ(0u, controller->visible_on_all_desks_windows().size());
   EXPECT_FALSE(desks_util::IsWindowVisibleOnAllWorkspaces(window.get()));
-  EXPECT_TRUE(base::Contains(desk_2->windows(), window.get()));
+  EXPECT_TRUE(std::ranges::contains(desk_2->windows(), window.get()));
 }
 
 // Tests that when a window that is visible on all desks is destroyed it is
@@ -8358,8 +8358,8 @@ TEST_P(DesksCloseAllTest, ShortcutCloseAll) {
   ASSERT_EQ(2u, controller->desks().size());
   Desk* desk_1 = controller->GetDeskAtIndex(0);
   ASSERT_TRUE(desk_1->is_active());
-  ASSERT_TRUE(base::Contains(desk_1->windows(), window1.window()));
-  ASSERT_TRUE(base::Contains(desk_1->windows(), window2.window()));
+  ASSERT_TRUE(std::ranges::contains(desk_1->windows(), window1.window()));
+  ASSERT_TRUE(std::ranges::contains(desk_1->windows(), window2.window()));
 
   EnterOverview();
   auto* overview_session = OverviewController::Get()->overview_session();
@@ -8391,8 +8391,8 @@ TEST_P(DesksCloseAllTest, ShortcutUndoCloseAll) {
   ASSERT_EQ(2u, controller->desks().size());
   Desk* desk_1 = controller->GetDeskAtIndex(0);
   ASSERT_TRUE(desk_1->is_active());
-  ASSERT_TRUE(base::Contains(desk_1->windows(), window1.window()));
-  ASSERT_TRUE(base::Contains(desk_1->windows(), window2.window()));
+  ASSERT_TRUE(std::ranges::contains(desk_1->windows(), window1.window()));
+  ASSERT_TRUE(std::ranges::contains(desk_1->windows(), window2.window()));
 
   EnterOverview();
   auto* overview_session = OverviewController::Get()->overview_session();
@@ -8421,8 +8421,8 @@ TEST_P(DesksCloseAllTest, CloseActiveDeskCloseWindows) {
   ASSERT_EQ(2u, controller->desks().size());
   Desk* desk_1 = controller->GetDeskAtIndex(0);
   ASSERT_TRUE(desk_1->is_active());
-  ASSERT_TRUE(base::Contains(desk_1->windows(), window1.window()));
-  ASSERT_TRUE(base::Contains(desk_1->windows(), window2.window()));
+  ASSERT_TRUE(std::ranges::contains(desk_1->windows(), window1.window()));
+  ASSERT_TRUE(std::ranges::contains(desk_1->windows(), window2.window()));
 
   // Closes the active desk.
   RemoveDesk(desk_1, DeskCloseType::kCloseAllWindowsAndWait);
@@ -8447,8 +8447,8 @@ TEST_P(DesksCloseAllTest, ForceCloseWindows) {
   ASSERT_EQ(2u, controller->desks().size());
   Desk* desk_1 = controller->GetDeskAtIndex(0);
   ASSERT_TRUE(desk_1->is_active());
-  ASSERT_TRUE(base::Contains(desk_1->windows(), window1.window()));
-  ASSERT_TRUE(base::Contains(desk_1->windows(), window2.window()));
+  ASSERT_TRUE(std::ranges::contains(desk_1->windows(), window1.window()));
+  ASSERT_TRUE(std::ranges::contains(desk_1->windows(), window2.window()));
 
   RemoveDesk(desk_1, DeskCloseType::kCloseAllWindowsAndWait);
 
@@ -8732,7 +8732,7 @@ TEST_P(DesksCloseAllTest, ClosingWindowsHaveParent) {
   ASSERT_EQ(2u, controller->desks().size());
   Desk* desk_1 = controller->GetDeskAtIndex(0);
   ASSERT_TRUE(desk_1->is_active());
-  EXPECT_TRUE(base::Contains(desk_1->windows(), window.window()));
+  EXPECT_TRUE(std::ranges::contains(desk_1->windows(), window.window()));
 
   RemoveDesk(desk_1, DeskCloseType::kCloseAllWindowsAndWait);
 

@@ -4,6 +4,8 @@
 
 #include "ash/system/notification_center/session_state_notification_blocker.h"
 
+#include <algorithm>
+
 #include "ash/public/cpp/message_center/oobe_notification_constants.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -11,7 +13,6 @@
 #include "ash/system/lock_screen_notification_controller.h"
 #include "ash/system/power/battery_notification.h"
 #include "ash/system/privacy/screen_security_controller.h"
-#include "base/containers/contains.h"
 #include "chromeos/ash/components/policy/restriction_schedule/device_restriction_schedule_controller_delegate_impl.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -40,7 +41,7 @@ bool CalculateShouldShowNotification() {
 
   // Do not show notifications in kiosk mode or before session starts.
   if (session_controller->IsRunningInAppMode() ||
-      base::Contains(kNotificationBlockedStates, state)) {
+      std::ranges::contains(kNotificationBlockedStates, state)) {
     return false;
   }
 
@@ -75,7 +76,7 @@ bool IsAllowedDuringOOBE(std::string_view notification_id) {
   static const std::string_view kAllowedProfileBoundNotificationIDs[] = {
       kOOBELocaleSwitchNotificationId, kOOBEGnubbyNotificationId};
 
-  if (base::Contains(kAllowedSystemNotificationIDs, notification_id)) {
+  if (std::ranges::contains(kAllowedSystemNotificationIDs, notification_id)) {
     return true;
   }
 

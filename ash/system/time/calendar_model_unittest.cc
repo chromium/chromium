@@ -26,7 +26,6 @@
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/test/ash_test_base.h"
-#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -1489,7 +1488,7 @@ TEST_P(CalendarModelTest, FindUpcomingEvents_SameDay) {
   auto events = calendar_model_->FindUpcomingEvents(now_);
 
   auto event_list_contains = [](auto& event_list, auto& id) {
-    return base::Contains(event_list, id, &CalendarEvent::id);
+    return std::ranges::contains(event_list, id, &CalendarEvent::id);
   };
 
   // We should only get the 2 events back that start in 10 mins or were ongoing
@@ -1536,7 +1535,7 @@ TEST_P(CalendarModelTest, FindUpcomingEvents_NextDay) {
   auto events = calendar_model_->FindUpcomingEvents(now_);
 
   auto event_list_contains = [](auto& event_list, auto& id) {
-    return base::Contains(event_list, id, &CalendarEvent::id);
+    return std::ranges::contains(event_list, id, &CalendarEvent::id);
   };
 
   EXPECT_EQ(events.size(), size_t(0));
@@ -1571,7 +1570,7 @@ TEST_P(CalendarModelTest, FindUpcomingEvents_PreviousDay) {
   auto events = calendar_model_->FindUpcomingEvents(now_);
 
   auto event_list_contains = [](auto& event_list, auto& id) {
-    return base::Contains(event_list, id, &CalendarEvent::id);
+    return std::ranges::contains(event_list, id, &CalendarEvent::id);
   };
 
   EXPECT_EQ(events.size(), size_t(1));
@@ -1607,7 +1606,7 @@ TEST_P(CalendarModelTest, FindUpcomingEvents_ShowTheNextEvent) {
   auto events = calendar_model_->FindUpcomingEvents(now_);
 
   auto event_list_contains = [](auto& event_list, auto& id) {
-    return base::Contains(event_list, id, &CalendarEvent::id);
+    return std::ranges::contains(event_list, id, &CalendarEvent::id);
   };
 
   EXPECT_EQ(events.size(), size_t(1));
@@ -1689,7 +1688,7 @@ TEST_P(CalendarModelTest, ShowEventsStartIn10MinsAsUpNext) {
   auto events = calendar_model_->FindUpcomingEvents(now_);
 
   auto event_list_contains = [](auto& event_list, auto& id) {
-    return base::Contains(event_list, id, &CalendarEvent::id);
+    return std::ranges::contains(event_list, id, &CalendarEvent::id);
   };
 
   EXPECT_EQ(events.size(), size_t(2));
@@ -1728,7 +1727,7 @@ TEST_P(CalendarModelTest, ShowTheFirstEventAsUpNext) {
   auto events = calendar_model_->FindUpcomingEvents(now_);
 
   auto event_list_contains = [](auto& event_list, auto& id) {
-    return base::Contains(event_list, id, &CalendarEvent::id);
+    return std::ranges::contains(event_list, id, &CalendarEvent::id);
   };
 
   EXPECT_EQ(events.size(), size_t(1));

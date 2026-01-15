@@ -12,7 +12,6 @@
 #include "ash/host/ash_window_tree_host_delegate.h"
 #include "ash/host/root_window_transformer.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "ui/aura/window.h"
@@ -101,7 +100,7 @@ void AshWindowTreeHostUnified::RegisterMirroringHost(
   aura::Window* src_root = mirroring_ash_host->AsWindowTreeHost()->window();
   src_root->SetEventTargeter(
       std::make_unique<UnifiedEventTargeter>(src_root, window(), delegate_));
-  DCHECK(!base::Contains(mirroring_hosts_, mirroring_ash_host));
+  DCHECK(!std::ranges::contains(mirroring_hosts_, mirroring_ash_host));
   mirroring_hosts_.push_back(mirroring_ash_host);
   src_root->AddObserver(this);
   mirroring_ash_host->UpdateCursorConfig();

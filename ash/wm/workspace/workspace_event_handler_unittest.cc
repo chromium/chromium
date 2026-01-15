@@ -4,6 +4,8 @@
 
 #include "ash/wm/workspace/workspace_event_handler.h"
 
+#include <algorithm>
+
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -14,7 +16,6 @@
 #include "ash/wm/wm_event.h"
 #include "ash/wm/workspace_controller.h"
 #include "ash/wm/workspace_controller_test_api.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -92,7 +93,7 @@ class WindowPropertyObserver : public aura::WindowObserver {
   ~WindowPropertyObserver() override { window_->RemoveObserver(this); }
 
   bool DidPropertyChange(const void* property) const {
-    return base::Contains(properties_changed_, property);
+    return std::ranges::contains(properties_changed_, property);
   }
 
  private:

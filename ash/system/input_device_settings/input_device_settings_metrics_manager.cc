@@ -4,6 +4,7 @@
 
 #include "ash/system/input_device_settings/input_device_settings_metrics_manager.h"
 
+#include <algorithm>
 #include <array>
 #include <cstdint>
 #include <iterator>
@@ -21,7 +22,6 @@
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/system/input_device_settings/settings_updated_metrics_info.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/json/values_util.h"
@@ -290,14 +290,14 @@ bool ShouldRecordFkeyMetrics(const mojom::Keyboard& keyboard) {
          Shell::Get()->keyboard_capability()->IsChromeOSKeyboard(keyboard.id) &&
          (keyboard.settings->f11.has_value() &&
           keyboard.settings->f12.has_value()) &&
-         !base::Contains(keyboard.modifier_keys,
-                         ui::mojom::ModifierKey::kFunction);
+         !std::ranges::contains(keyboard.modifier_keys,
+                                ui::mojom::ModifierKey::kFunction);
 }
 
 bool ShouldRecordSixPackKeyMetrics(const mojom::Keyboard& keyboard) {
   return features::IsAltClickAndSixPackCustomizationEnabled() &&
-         !base::Contains(keyboard.modifier_keys,
-                         ui::mojom::ModifierKey::kFunction);
+         !std::ranges::contains(keyboard.modifier_keys,
+                                ui::mojom::ModifierKey::kFunction);
 }
 
 void RecordButtonMetrics(const mojom::Button& button,
@@ -672,8 +672,8 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardInitialMetrics(
   }
 
   // Record remapping metrics when keyboard is initialized.
-  if (base::Contains(keyboard.modifier_keys,
-                     ui::mojom::ModifierKey::kQuickInsert)) {
+  if (std::ranges::contains(keyboard.modifier_keys,
+                            ui::mojom::ModifierKey::kQuickInsert)) {
     RecordSplitModifierRemappingHash(keyboard);
   } else {
     RecordModifierRemappingHash(keyboard);

@@ -4,9 +4,10 @@
 
 #include "ash/system/palette/palette_tool_manager.h"
 
+#include <algorithm>
+
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/system/palette/palette_tool.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 
@@ -25,7 +26,8 @@ bool PaletteToolManager::HasTool(PaletteToolId tool_id) {
 
 void PaletteToolManager::AddTool(std::unique_ptr<PaletteTool> tool) {
   // The same PaletteToolId cannot be registered twice.
-  DCHECK(!base::Contains(tools_, tool->GetToolId(), &PaletteTool::GetToolId));
+  DCHECK(!std::ranges::contains(tools_, tool->GetToolId(),
+                                &PaletteTool::GetToolId));
 
   tools_.emplace_back(std::move(tool));
 }

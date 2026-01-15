@@ -48,7 +48,6 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/ranges.h"
 #include "base/run_loop.h"
@@ -879,10 +878,10 @@ TEST_F(WindowCycleControllerTest, CycleShowsAllDesksWindows) {
   // All desks' windows are included in the cycle list.
   auto cycle_windows = GetWindows(cycle_controller);
   EXPECT_EQ(4u, cycle_windows.size());
-  EXPECT_TRUE(base::Contains(cycle_windows, win0.get()));
-  EXPECT_TRUE(base::Contains(cycle_windows, win1.get()));
-  EXPECT_TRUE(base::Contains(cycle_windows, win2.get()));
-  EXPECT_TRUE(base::Contains(cycle_windows, win3.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, win0.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, win1.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, win2.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, win3.get()));
 
   // The MRU order is {win3, win2, win1, win0}. We're now at win2. Cycling one
   // more time and completing the cycle, will activate win1 which exists on a
@@ -969,7 +968,7 @@ TEST_F(WindowCycleControllerTest, DoubleAltTabWithDeskSwitch) {
   ASSERT_EQ(win1.get(), window_util::GetActiveWindow());
   auto desk_1_windows = desk_1->windows();
   EXPECT_EQ(1u, desk_1_windows.size());
-  EXPECT_TRUE(base::Contains(desk_1_windows, win1.get()));
+  EXPECT_TRUE(std::ranges::contains(desk_1_windows, win1.get()));
 
   DeskSwitchAnimationWaiter waiter;
   cycle_controller->HandleCycleWindow(
@@ -2285,11 +2284,11 @@ TEST_F(ModeSelectionWindowCycleControllerTest, CycleShowsWindowsPerMode) {
   auto cycle_windows = GetWindows(cycle_controller);
   EXPECT_EQ(5u, cycle_windows.size());
   EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
-  EXPECT_TRUE(base::Contains(cycle_windows, win0.get()));
-  EXPECT_TRUE(base::Contains(cycle_windows, win1.get()));
-  EXPECT_TRUE(base::Contains(cycle_windows, win2.get()));
-  EXPECT_TRUE(base::Contains(cycle_windows, win3.get()));
-  EXPECT_TRUE(base::Contains(cycle_windows, win4.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, win0.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, win1.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, win2.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, win3.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, win4.get()));
 
   // Switching alt-tab to the current-desk mode should show windows in the
   // active desk.
@@ -2297,9 +2296,9 @@ TEST_F(ModeSelectionWindowCycleControllerTest, CycleShowsWindowsPerMode) {
   cycle_windows = GetWindows(cycle_controller);
   EXPECT_EQ(3u, GetWindowCycleItemViews().size());
   EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
-  EXPECT_TRUE(base::Contains(cycle_windows, win2.get()));
-  EXPECT_TRUE(base::Contains(cycle_windows, win3.get()));
-  EXPECT_TRUE(base::Contains(cycle_windows, win4.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, win2.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, win3.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, win4.get()));
   CompleteCycling(cycle_controller);
 
   // Activate desk1 and start alt-tab.
@@ -2312,8 +2311,8 @@ TEST_F(ModeSelectionWindowCycleControllerTest, CycleShowsWindowsPerMode) {
   cycle_windows = GetWindows(cycle_controller);
   EXPECT_EQ(2u, GetWindowCycleItemViews().size());
   EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
-  EXPECT_TRUE(base::Contains(cycle_windows, win0.get()));
-  EXPECT_TRUE(base::Contains(cycle_windows, win1.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, win0.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, win1.get()));
 
   // Switch to the all-desks mode, check and stop alt-tab.
   SwitchPerDeskAltTabMode(false);
@@ -2354,7 +2353,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, OneWindowInActiveDesk) {
   cycle_windows = GetWindows(cycle_controller);
   EXPECT_EQ(1u, GetWindowCycleItemViews().size());
   EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
-  EXPECT_TRUE(base::Contains(cycle_windows, win1.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, win1.get()));
   CompleteCycling(cycle_controller);
 
   // Re-opening alt-tab again in the current-desk mode should work because the
@@ -2365,7 +2364,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, OneWindowInActiveDesk) {
   cycle_windows = GetWindows(cycle_controller);
   EXPECT_EQ(1u, GetWindowCycleItemViews().size());
   EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
-  EXPECT_TRUE(base::Contains(cycle_windows, win1.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, win1.get()));
   CompleteCycling(cycle_controller);
 }
 
@@ -3690,13 +3689,13 @@ TEST_F(SameAppWindowCycleControllerTest, PerDeskMode) {
   auto cycle_windows = GetWindows(cycle_controller);
   EXPECT_EQ(7u, cycle_windows.size());
   EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
-  EXPECT_TRUE(base::Contains(cycle_windows, w1.get()));
-  EXPECT_TRUE(base::Contains(cycle_windows, w2.get()));
-  EXPECT_TRUE(base::Contains(cycle_windows, w3.get()));
-  EXPECT_TRUE(base::Contains(cycle_windows, w6.get()));
-  EXPECT_TRUE(base::Contains(cycle_windows, w7.get()));
-  EXPECT_TRUE(base::Contains(cycle_windows, w8.get()));
-  EXPECT_TRUE(base::Contains(cycle_windows, w9.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, w1.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, w2.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, w3.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, w6.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, w7.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, w8.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, w9.get()));
 
   // Select current-desk mode. We should see 4 windows of app B.
   generator->MoveMouseTo(
@@ -3705,10 +3704,10 @@ TEST_F(SameAppWindowCycleControllerTest, PerDeskMode) {
   cycle_windows = GetWindows(cycle_controller);
   EXPECT_EQ(4u, GetWindowCycleItemViews().size());
   EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
-  EXPECT_TRUE(base::Contains(cycle_windows, w6.get()));
-  EXPECT_TRUE(base::Contains(cycle_windows, w7.get()));
-  EXPECT_TRUE(base::Contains(cycle_windows, w8.get()));
-  EXPECT_TRUE(base::Contains(cycle_windows, w9.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, w6.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, w7.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, w8.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, w9.get()));
   generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
 
   // Go to desk 1 and start cycling, we should still be on current-desk mode and
@@ -3720,9 +3719,9 @@ TEST_F(SameAppWindowCycleControllerTest, PerDeskMode) {
   cycle_windows = GetWindows(cycle_controller);
   EXPECT_EQ(3u, GetWindowCycleItemViews().size());
   EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
-  EXPECT_TRUE(base::Contains(cycle_windows, w1.get()));
-  EXPECT_TRUE(base::Contains(cycle_windows, w2.get()));
-  EXPECT_TRUE(base::Contains(cycle_windows, w3.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, w1.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, w2.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, w3.get()));
   generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
 
   // Start alt tabbing. The mode selection should be shared between alt tab and
@@ -3733,10 +3732,10 @@ TEST_F(SameAppWindowCycleControllerTest, PerDeskMode) {
   cycle_windows = GetWindows(cycle_controller);
   EXPECT_EQ(4u, GetWindowCycleItemViews().size());
   EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
-  EXPECT_TRUE(base::Contains(cycle_windows, w0.get()));
-  EXPECT_TRUE(base::Contains(cycle_windows, w1.get()));
-  EXPECT_TRUE(base::Contains(cycle_windows, w2.get()));
-  EXPECT_TRUE(base::Contains(cycle_windows, w3.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, w0.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, w1.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, w2.get()));
+  EXPECT_TRUE(std::ranges::contains(cycle_windows, w3.get()));
   generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
 }
 

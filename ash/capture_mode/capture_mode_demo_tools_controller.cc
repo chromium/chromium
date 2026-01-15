@@ -4,6 +4,7 @@
 
 #include "ash/capture_mode/capture_mode_demo_tools_controller.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/shell.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/location.h"
 #include "base/notreached.h"
@@ -109,7 +109,7 @@ constexpr ui::KeyboardCode kNotNeedingModifierKeys[] = {
 // Returns true if `key_code` is a non-modifier key for which a `KeyComboViewer`
 // can be shown even if there are no modifier keys are currently pressed.
 bool ShouldConsiderKey(ui::KeyboardCode key_code) {
-  return base::Contains(kNotNeedingModifierKeys, key_code);
+  return std::ranges::contains(kNotNeedingModifierKeys, key_code);
 }
 
 views::Widget::InitParams CreateWidgetParams(

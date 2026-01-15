@@ -38,7 +38,6 @@
 #include "ash/system/input_device_settings/pref_handlers/pointing_stick_pref_handler_impl.h"
 #include "ash/system/input_device_settings/pref_handlers/touchpad_pref_handler_impl.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_tree.h"
 #include "base/feature_list.h"
@@ -387,8 +386,8 @@ bool KeyboardSettingsAreValid(
     const mojom::Keyboard& keyboard,
     const mojom::KeyboardSettings& settings,
     const mojom::KeyboardPolicies& keyboard_policies) {
-  const bool containsFnKey =
-      base::Contains(keyboard.modifier_keys, ui::mojom::ModifierKey::kFunction);
+  const bool containsFnKey = std::ranges::contains(
+      keyboard.modifier_keys, ui::mojom::ModifierKey::kFunction);
 
   for (const auto& remapping : settings.modifier_remappings) {
     auto it = std::ranges::find(keyboard.modifier_keys, remapping.first);

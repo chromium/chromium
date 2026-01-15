@@ -4,6 +4,8 @@
 
 #include "ash/style/dark_light_mode_controller_impl.h"
 
+#include <algorithm>
+
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -149,7 +151,7 @@ bool DarkLightModeControllerImpl::IsDarkModeEnabled() const {
         return false;
       }
     }
-    return base::Contains(kStatesSupportingDarkTheme, oobe_state_);
+    return std::ranges::contains(kStatesSupportingDarkTheme, oobe_state_);
   }
 
   if (active_user_pref_service_) {

@@ -12,7 +12,6 @@
 
 #include "ash/api/tasks/tasks_client.h"
 #include "ash/api/tasks/tasks_types.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
@@ -172,7 +171,8 @@ void FakeTasksClient::OnGlanceablesBubbleClosed(base::OnceClosure callback) {
 }
 
 void FakeTasksClient::AddTaskList(std::unique_ptr<TaskList> task_list_data) {
-  CHECK(!base::Contains(*task_lists_, task_list_data->id, &TaskList::id));
+  CHECK(
+      !std::ranges::contains(*task_lists_, task_list_data->id, &TaskList::id));
   tasks_in_task_lists_.emplace(task_list_data->id,
                                std::make_unique<ui::ListModel<Task>>());
   task_lists_->Add(std::move(task_list_data));
@@ -184,7 +184,7 @@ void FakeTasksClient::AddTask(const std::string& task_list_id,
   CHECK(task_list_iter != tasks_in_task_lists_.end());
 
   auto& tasks = task_list_iter->second;
-  CHECK(!base::Contains(*tasks, task_data->id, &Task::id));
+  CHECK(!std::ranges::contains(*tasks, task_data->id, &Task::id));
   tasks->Add(std::move(task_data));
 }
 

@@ -4,11 +4,11 @@
 
 #include "ash/ambient/managed/screensaver_image_downloader.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 
 #include "ash/ambient/metrics/managed_screensaver_metrics.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -107,7 +107,7 @@ class ScreensaverImageDownloaderTest : public testing::Test {
     ASSERT_EQ(expected_images.size(), image_list.size());
 
     for (const auto& [path, file_content] : expected_images) {
-      ASSERT_TRUE(base::Contains(image_list, path));
+      ASSERT_TRUE(std::ranges::contains(image_list, path));
       ASSERT_TRUE(base::PathExists(path));
 
       std::string actual_file_contents;

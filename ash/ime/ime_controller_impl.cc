@@ -12,7 +12,6 @@
 #include "ash/ime/mode_indicator_observer.h"
 #include "ash/shell.h"
 #include "ash/system/tray/system_tray_notifier.h"
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -266,7 +265,7 @@ std::vector<std::string> ImeControllerImpl::GetCandidateImesForAccelerator(
 
   // Obtain the intersection of input_method_ids_to_switch and available_imes_.
   for (const ImeInfo& ime : available_imes_) {
-    if (base::Contains(input_method_ids_to_switch, ime.id))
+    if (std::ranges::contains(input_method_ids_to_switch, ime.id))
       candidate_ids.push_back(ime.id);
   }
   return candidate_ids;
