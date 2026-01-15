@@ -23,8 +23,10 @@ namespace {
 
 // Deprecated pref names. Kept around to clear them, until they are removed one
 // year later.
-constexpr char kAutofillRanQuasiDuplicateExtraDeduplication[] =
-    "autofill.ran_quasi_duplicate_extra_deduplication";
+#if BUILDFLAG(IS_ANDROID)
+inline constexpr char kFacilitatedPaymentsPixAccountLinkingDeprecated[] =
+    "facilitated_payments.pix_account_linking";
+#endif
 constexpr char kAutofillRanExtraDeduplication[] =
     "autofill.ran_extra_deduplication";
 
@@ -163,8 +165,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Deprecated prefs registered for migration.
   registry->RegisterBooleanPref(kAutofillEnabledDeprecated, true);
   registry->RegisterStringPref(kAutofillAblationSeedPref, "");
-  registry->RegisterBooleanPref(kAutofillRanQuasiDuplicateExtraDeduplication,
-                                false);
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(kFacilitatedPaymentsPixAccountLinkingDeprecated,
                                 /*default_value=*/true);
@@ -174,10 +174,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 }
 
 void MigrateDeprecatedAutofillPrefs(PrefService* pref_service) {
-  // Added 07/2024 (moved from profile pref to local state)
-  pref_service->ClearPref(kAutofillAblationSeedPref);
-  // Added 10/2024
-  pref_service->ClearPref(kAutofillRanQuasiDuplicateExtraDeduplication);
   // Added 03/2025
   pref_service->ClearPref(kAutofillEnabledDeprecated);
 #if BUILDFLAG(IS_ANDROID)
