@@ -122,6 +122,7 @@ components/cbor
 components/certificate_transparency
 components/cronet/gn2bp/templates
 components/domain_reliability
+components/enterprise/connectors/core
 components/enterprise/obfuscation/core
 components/gcm_driver
 components/infobars/android/java/src/org/chromium/components/infobars
@@ -253,6 +254,7 @@ sandbox/linux/suid/client
 sandbox/policy/linux
 services/device/serial
 services/network
+services/network/enterprise/encryption
 services/network/public/cpp
 services/network/public/cpp/permissions_policy
 services/network/public/mojom
@@ -711,8 +713,8 @@ third_party/rust/chromium_crates_io/vendor/prost-v0_14
 third_party/rust/chromium_crates_io/vendor/qr_code-v2
 third_party/rust/chromium_crates_io/vendor/quote-v1
 third_party/rust/chromium_crates_io/vendor/quote-v1/.github/workflows
-third_party/rust/chromium_crates_io/vendor/read-fonts-v0_36/src/tables
-third_party/rust/chromium_crates_io/vendor/read-fonts-v0_36/src/tables/postscript
+third_party/rust/chromium_crates_io/vendor/read-fonts-v0_37/src/tables
+third_party/rust/chromium_crates_io/vendor/read-fonts-v0_37/src/tables/postscript
 third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4
 third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/src/util
 third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/tests/dfa
