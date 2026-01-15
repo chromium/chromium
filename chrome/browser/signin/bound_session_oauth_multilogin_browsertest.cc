@@ -186,6 +186,21 @@ class BoundSessionOAuthMultiloginBaseTest
         IdentityManagerFactory::GetForProfile(browser()->profile()));
   }
 
+  network::mojom::DeviceBoundSessionManager& device_bound_session_manager() {
+    return CHECK_DEREF(ChromeSigninClientFactory::GetForProfile(GetProfile())
+                           ->GetDeviceBoundSessionManager());
+  }
+
+  BoundSessionCookieRefreshService& bound_session_cookie_refresh_service() {
+    return CHECK_DEREF(BoundSessionCookieRefreshServiceFactory::GetForProfile(
+        browser()->profile()));
+  }
+
+  void SetBoundSessionParamsUpdatedCallback(base::RepeatingClosure callback) {
+    bound_session_cookie_refresh_service()
+        .SetBoundSessionParamsUpdatedCallbackForTesting(std::move(callback));
+  }
+
   unexportable_keys::UnexportableKeyId GenerateNewKey() {
     base::test::TestFuture<
         unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>>
@@ -224,17 +239,6 @@ class BoundSessionOAuthMultiloginPrototypeTest
   BoundSessionOAuthMultiloginPrototypeTest()
       : BoundSessionOAuthMultiloginBaseTest(GetPrototypeFeatures(),
                                             GetStandardFeatures()) {}
-
- protected:
-  BoundSessionCookieRefreshService& bound_session_cookie_refresh_service() {
-    return CHECK_DEREF(BoundSessionCookieRefreshServiceFactory::GetForProfile(
-        browser()->profile()));
-  }
-
-  void SetBoundSessionParamsUpdatedCallback(base::RepeatingClosure callback) {
-    bound_session_cookie_refresh_service()
-        .SetBoundSessionParamsUpdatedCallbackForTesting(std::move(callback));
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginPrototypeTest,
@@ -741,12 +745,6 @@ class BoundSessionOAuthMultiloginStandardTest
   BoundSessionOAuthMultiloginStandardTest()
       : BoundSessionOAuthMultiloginBaseTest(GetStandardFeatures(),
                                             GetPrototypeFeatures()) {}
-
- protected:
-  network::mojom::DeviceBoundSessionManager& device_bound_session_manager() {
-    return CHECK_DEREF(ChromeSigninClientFactory::GetForProfile(GetProfile())
-                           ->GetDeviceBoundSessionManager());
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
@@ -837,4 +835,101 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
                 net::device_bound_sessions::SessionKey::Id("sidts_session")),
           Field(&net::device_bound_sessions::SessionKey::site,
                 net::SchemefulSite::Deserialize("https://google.com")))));
+}
+
+class BoundSessionOAuthMultiloginStandardWithPrototypeFallbackTest
+    : public BoundSessionOAuthMultiloginBaseTest {
+ public:
+  // Enables both standard and prototype features except a dedicated feature
+  // flag for OAML to use DBSC standard. This should trigger the prototype
+  // fallback for OAML.
+  BoundSessionOAuthMultiloginStandardWithPrototypeFallbackTest()
+      : BoundSessionOAuthMultiloginBaseTest(
+            /*enabled_features=*/
+            {net::features::kDeviceBoundSessions,
+             network::features::kUseUnexportableKeyServiceInBrowserProcess,
+             switches::kEnableBoundSessionCredentials,
+             switches::kEnableOAuthMultiloginCookiesBinding},
+            /*disabled_features=*/{
+                switches::kEnableOAuthMultiloginStandardCookiesBinding}) {}
+};
+
+IN_PROC_BROWSER_TEST_F(
+    BoundSessionOAuthMultiloginStandardWithPrototypeFallbackTest,
+    StartsNewBoundSession) {
+  const unexportable_keys::UnexportableKeyId key_id = GenerateNewKey();
+  const std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id);
+  signin::MakeAccountAvailable(
+      &identity_manager(),
+      signin::AccountAvailabilityOptionsBuilder()
+          .AsPrimary(signin::ConsentLevel::kSignin)
+          .WithGaiaId(FakeGaiaMixin::kFakeUserGaiaId)
+          .WithRefreshToken(FakeGaiaMixin::kFakeRefreshToken)
+          .WithRefreshTokenBindingKey(wrapped_key)
+          .Build(FakeGaiaMixin::kFakeUserEmail));
+
+  ASSERT_TRUE(
+      identity_manager().HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_EQ(identity_manager().GetWrappedBindingKey(), wrapped_key);
+  // Verify that there are no bound sessions for DBSC prototype before OAML.
+  ASSERT_THAT(
+      bound_session_cookie_refresh_service().GetBoundSessionThrottlerParams(),
+      IsEmpty());
+
+  // This makes sure that eventually OAML will return bound cookies, at the same
+  // time `/ListAccounts` WON'T return primary account triggering OAML - it
+  // simulates similar scenario to cookies being cleared.
+  fake_gaia_mixin().SetupFakeGaiaForLoginWithDefaults();
+  FakeGaia::Configuration config;
+  config.session_sid_cookie = "fake_sid";
+  config.session_lsid_cookie = "fake_lsid";
+  config.session_1p_sidts_cookie = "fake_1p_sidts";
+  config.session_3p_sidts_cookie = "fake_3p_sidts";
+  fake_gaia().SetConfiguration(config);
+
+  base::RunLoop run_loop;
+  SetBoundSessionParamsUpdatedCallback(run_loop.QuitClosure());
+
+  // Enforce initial `/ListAccounts`.
+  signin::SetFreshnessOfAccountsInGaiaCookie(&identity_manager(),
+                                             /*accounts_are_fresh=*/false);
+
+  run_loop.Run();
+
+  base::queue<FakeGaia::MultiloginCall> multilogin_calls =
+      fake_gaia().GetAndResetMultiloginCalls();
+
+  ASSERT_THAT(multilogin_calls, SizeIs(2));
+
+  const auto& first_call = multilogin_calls.front();
+  // OAML first returns the challenge to sign.
+  ASSERT_EQ(first_call.action,
+            FakeGaia::MultiloginCall::Action::kReturnBindingChallenge);
+  multilogin_calls.pop();
+
+  // After the challenge is received and signed, OAML returns the bound cookies.
+  const auto& second_call = multilogin_calls.front();
+  ASSERT_EQ(second_call.action,
+            FakeGaia::MultiloginCall::Action::kReturnBoundCookies);
+
+  // Verify that the challenge was signed correctly.
+  const std::optional<gaia::MultiOAuthHeader> header = second_call.header;
+  ASSERT_TRUE(header.has_value());
+  ASSERT_THAT(header->account_requests(), SizeIs(1));
+  EXPECT_TRUE(signin::VerifyJwtSignature(
+      header->account_requests().at(0).token_binding_assertion(),
+      *unexportable_key_service().GetAlgorithm(key_id),
+      *unexportable_key_service().GetSubjectPublicKeyInfo(key_id)));
+
+  // Verify that the new bound session started for the DBSC prototype.
+  EXPECT_THAT(
+      bound_session_cookie_refresh_service().GetBoundSessionThrottlerParams(),
+      SizeIs(1));
+
+  // Verify that no session is created for the DBSC standard.
+  base::test::TestFuture<
+      const std::vector<net::device_bound_sessions::SessionKey>&>
+      sessions_future;
+  device_bound_session_manager().GetAllSessions(sessions_future.GetCallback());
+  EXPECT_THAT(sessions_future.Get(), IsEmpty());
 }
