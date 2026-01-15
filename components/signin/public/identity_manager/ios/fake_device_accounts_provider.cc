@@ -29,35 +29,35 @@ void FakeDeviceAccountsProvider::GetAccessToken(
   requests_.push_back(AccessTokenRequest(account_id, std::move(callback)));
 }
 
-std::vector<DeviceAccountsProvider::AccountInfo>
+std::vector<DeviceAccountsProvider::DeviceAccountInfo>
 FakeDeviceAccountsProvider::GetAccountsForProfile() const {
   return accounts_;
 }
 
-std::vector<DeviceAccountsProvider::AccountInfo>
+std::vector<DeviceAccountsProvider::DeviceAccountInfo>
 FakeDeviceAccountsProvider::GetAccountsOnDevice() const {
   // TODO(crbug.com/368409110): Add the capability to set accounts-on-device
   // separate from accounts-for-profile.
   return accounts_;
 }
 
-DeviceAccountsProvider::AccountInfo FakeDeviceAccountsProvider::AddAccount(
-    const GaiaId& gaia,
-    const std::string& email) {
-  DeviceAccountsProvider::AccountInfo account(gaia, email, "");
+DeviceAccountsProvider::DeviceAccountInfo
+FakeDeviceAccountsProvider::AddAccount(const GaiaId& gaia,
+                                       const std::string& email) {
+  DeviceAccountsProvider::DeviceAccountInfo account(gaia, email, "");
   accounts_.push_back(account);
   FireOnAccountsOnDeviceChanged();
   return account;
 }
 
-DeviceAccountsProvider::AccountInfo FakeDeviceAccountsProvider::UpdateAccount(
-    const GaiaId& gaia,
-    const std::string& email) {
-  for (AccountInfo& account : accounts_) {
+DeviceAccountsProvider::DeviceAccountInfo
+FakeDeviceAccountsProvider::UpdateAccount(const GaiaId& gaia,
+                                          const std::string& email) {
+  for (DeviceAccountInfo& account : accounts_) {
     if (account.GetGaiaId() != gaia) {
       continue;
     }
-    account = AccountInfo(gaia, email, account.GetHostedDomain());
+    account = DeviceAccountInfo(gaia, email, account.GetHostedDomain());
     FireAccountOnDeviceUpdated(account);
     return account;
   }
@@ -97,7 +97,7 @@ void FakeDeviceAccountsProvider::FireOnAccountsOnDeviceChanged() {
 }
 
 void FakeDeviceAccountsProvider::FireAccountOnDeviceUpdated(
-    const AccountInfo& account) {
+    const DeviceAccountInfo& account) {
   for (auto& observer : observer_list_) {
     observer.OnAccountOnDeviceUpdated(account);
   }

@@ -81,11 +81,11 @@ TEST_F(WebViewDeviceAccountsProviderImplTest, GetAllAccounts) {
   OCMExpect([data_source allKnownIdentities]).andReturn(@[ identity ]);
 
   WebViewDeviceAccountsProviderImpl accounts_provider;
-  std::vector<DeviceAccountsProvider::AccountInfo> accounts =
+  std::vector<DeviceAccountsProvider::DeviceAccountInfo> accounts =
       accounts_provider.GetAccountsOnDevice();
 
   ASSERT_EQ(1UL, accounts.size());
-  DeviceAccountsProvider::AccountInfo account_info = accounts[0];
+  DeviceAccountsProvider::DeviceAccountInfo account_info = accounts[0];
   EXPECT_EQ("foo@chromium.org", account_info.GetEmail());
   EXPECT_EQ(GaiaId("gaia-id"), account_info.GetGaiaId());
 

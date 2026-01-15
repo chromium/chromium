@@ -23,7 +23,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
-using ProviderAccount = DeviceAccountsProvider::AccountInfo;
+using ProviderAccount = DeviceAccountsProvider::DeviceAccountInfo;
 
 namespace {
 constexpr char kNoBindingChallenge[] = "";

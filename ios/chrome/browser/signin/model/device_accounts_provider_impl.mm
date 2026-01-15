@@ -24,7 +24,7 @@ using signin::constants::kNoHostedDomainFound;
 namespace {
 
 using AccessTokenResult = DeviceAccountsProvider::AccessTokenResult;
-using AccountInfo = DeviceAccountsProvider::AccountInfo;
+using DeviceAccountInfo = DeviceAccountsProvider::DeviceAccountInfo;
 
 // Helper function converting `error` for `identity` to a
 // GoogleServiceAuthError.
@@ -101,7 +101,7 @@ AccessTokenResult AccessTokenResultFrom(
   }
 }
 
-DeviceAccountsProvider::AccountInfo ConvertSystemIdentityToAccountInfo(
+DeviceAccountsProvider::DeviceAccountInfo ConvertSystemIdentityToAccountInfo(
     id<SystemIdentity> identity) {
   CHECK(identity);
 
@@ -120,14 +120,14 @@ DeviceAccountsProvider::AccountInfo ConvertSystemIdentityToAccountInfo(
                         : kNoHostedDomainFound;
   }
   bool has_persistent_auth_error = !identity.hasValidAuth;
-  return AccountInfo(identity.gaiaId,
-                     base::SysNSStringToUTF8(identity.userEmail),
-                     std::move(hosted_domain), has_persistent_auth_error);
+  return DeviceAccountInfo(identity.gaiaId,
+                           base::SysNSStringToUTF8(identity.userEmail),
+                           std::move(hosted_domain), has_persistent_auth_error);
 }
 
-std::vector<DeviceAccountsProvider::AccountInfo>
+std::vector<DeviceAccountsProvider::DeviceAccountInfo>
 ConvertSystemIdentitiesToAccountInfos(NSArray<id<SystemIdentity>>* identities) {
-  std::vector<AccountInfo> result;
+  std::vector<DeviceAccountInfo> result;
   result.reserve(identities.count);
 
   for (id<SystemIdentity> identity : identities) {
@@ -187,14 +187,14 @@ void DeviceAccountsProviderImpl::GetAccessToken(
           .Then(std::move(callback)));
 }
 
-std::vector<DeviceAccountsProvider::AccountInfo>
+std::vector<DeviceAccountsProvider::DeviceAccountInfo>
 DeviceAccountsProviderImpl::GetAccountsForProfile() const {
   NSArray<id<SystemIdentity>>* identities =
       account_manager_service_->GetAllIdentities();
   return ConvertSystemIdentitiesToAccountInfos(identities);
 }
 
-std::vector<DeviceAccountsProvider::AccountInfo>
+std::vector<DeviceAccountsProvider::DeviceAccountInfo>
 DeviceAccountsProviderImpl::GetAccountsOnDevice() const {
   NSArray<id<SystemIdentity>>* identities =
       account_manager_service_->GetAllIdentitiesOnDevice(
@@ -210,7 +210,7 @@ void DeviceAccountsProviderImpl::OnIdentitiesOnDeviceChanged() {
 
 void DeviceAccountsProviderImpl::OnIdentityOnDeviceUpdated(
     id<SystemIdentity> identity) {
-  AccountInfo info = ConvertSystemIdentityToAccountInfo(identity);
+  DeviceAccountInfo info = ConvertSystemIdentityToAccountInfo(identity);
   for (auto& observer : observer_list_) {
     observer.OnAccountOnDeviceUpdated(info);
   }

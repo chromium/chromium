@@ -112,20 +112,20 @@ void WebViewDeviceAccountsProviderImpl::GetAccessToken(
                 }];
 }
 
-std::vector<DeviceAccountsProvider::AccountInfo>
+std::vector<DeviceAccountsProvider::DeviceAccountInfo>
 WebViewDeviceAccountsProviderImpl::GetAccountsForProfile() const {
   // WebView doesn't have profiles, so the accounts for this profile are the
   // same as the accounts on the device.
   return GetAccountsOnDevice();
 }
 
-std::vector<DeviceAccountsProvider::AccountInfo>
+std::vector<DeviceAccountsProvider::DeviceAccountInfo>
 WebViewDeviceAccountsProviderImpl::GetAccountsOnDevice() const {
   DCHECK(CWVSyncController.dataSource);
 
   NSArray<CWVIdentity*>* identities =
       [CWVSyncController.dataSource allKnownIdentities];
-  std::vector<AccountInfo> account_infos;
+  std::vector<DeviceAccountInfo> account_infos;
   for (CWVIdentity* identity in identities) {
     account_infos.emplace_back(GaiaId(identity.gaiaID),
                                base::SysNSStringToUTF8(identity.email),

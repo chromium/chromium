@@ -31,11 +31,11 @@ namespace {
 
 using AccessTokenInfo = DeviceAccountsProvider::AccessTokenInfo;
 using AccessTokenResult = DeviceAccountsProvider::AccessTokenResult;
+using DeviceAccountInfo = DeviceAccountsProvider::DeviceAccountInfo;
 using TokenResponseBuilder = OAuth2AccessTokenConsumer::TokenResponse::Builder;
 
-// Converts a DeviceAccountsProvider::AccountInfo to an AccountInfo.
-AccountInfo AccountInfoFromDeviceAccount(
-    const DeviceAccountsProvider::AccountInfo& account) {
+// Converts a DeviceAccountInfo to an AccountInfo.
+AccountInfo AccountInfoFromDeviceAccount(const DeviceAccountInfo& account) {
   AccountInfo::Builder builder(account.GetGaiaId(), account.GetEmail());
   if (std::string hosted_domain = account.GetHostedDomain();
       !hosted_domain.empty()) {
@@ -45,7 +45,7 @@ AccountInfo AccountInfoFromDeviceAccount(
 }
 
 GoogleServiceAuthError GoogleServiceAuthErrorFromDeviceAccount(
-    const DeviceAccountsProvider::AccountInfo& account) {
+    const DeviceAccountInfo& account) {
   return account.HasPersistentAuthError()
              ? GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
                    GoogleServiceAuthError::InvalidGaiaCredentialsReason::
@@ -194,14 +194,13 @@ void ProfileOAuth2TokenServiceIOSDelegate::ReloadCredentials(
 
   // Get the list of new account ids.
   std::set<CoreAccountId> new_account_ids;
-  base::flat_map<CoreAccountId, DeviceAccountsProvider::AccountInfo>
-      new_accounts =
-          base::MakeFlatMap<CoreAccountId, DeviceAccountsProvider::AccountInfo>(
-              provider_->GetAccountsForProfile(), {},
-              [](const DeviceAccountsProvider::AccountInfo& account) {
-                return std::make_pair(
-                    CoreAccountId::FromGaiaId(account.GetGaiaId()), account);
-              });
+  base::flat_map<CoreAccountId, DeviceAccountInfo> new_accounts =
+      base::MakeFlatMap<CoreAccountId, DeviceAccountInfo>(
+          provider_->GetAccountsForProfile(), {},
+          [](const DeviceAccountInfo& account) {
+            return std::make_pair(
+                CoreAccountId::FromGaiaId(account.GetGaiaId()), account);
+          });
   for (const auto& [new_account_id, new_account] : new_accounts) {
     // Account must to be seeded before adding an account to ensure that
     // the GAIA ID is available if any client of this token service starts
@@ -405,7 +404,7 @@ void ProfileOAuth2TokenServiceIOSDelegate::OnAccountsOnDeviceChanged() {
 }
 
 void ProfileOAuth2TokenServiceIOSDelegate::OnAccountOnDeviceUpdated(
-    const DeviceAccountsProvider::AccountInfo& device_account) {
+    const DeviceAccountInfo& device_account) {
   // Note: Ideally, only notifications about accounts that are *not* in the
   // current profile would be forwarded here, since AccountTrackerService takes
   // care of notifying observers about accounts in the profile anyway. But

@@ -38,8 +38,8 @@ class DeviceAccountsProviderImpl
                       const std::string& client_id,
                       const std::set<std::string>& scopes,
                       AccessTokenCallback callback) override;
-  std::vector<AccountInfo> GetAccountsForProfile() const override;
-  std::vector<AccountInfo> GetAccountsOnDevice() const override;
+  std::vector<DeviceAccountInfo> GetAccountsForProfile() const override;
+  std::vector<DeviceAccountInfo> GetAccountsOnDevice() const override;
 
   // ChromeAccountManagerService::Observer
   void OnIdentitiesOnDeviceChanged() override;
