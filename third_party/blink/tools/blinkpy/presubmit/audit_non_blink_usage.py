@@ -1724,7 +1724,6 @@ _CONFIG = [
             'gpu::ContextSupport',
             'gpu::gles2::GLES2Interface',
             'gpu::Mailbox',
-            'gpu::MailboxHolder',
             'gpu::raster::RasterInterface',
             'gpu::RasterScopedAccess',
             'gpu::SHARED_IMAGE_USAGE_.+',
@@ -1899,7 +1898,6 @@ _CONFIG = [
             'third_party/blink/renderer/modules/mediacapturefromelement/',
         ],
         'allowed': [
-            'gpu::MailboxHolder',
             'media::.+',
             'libyuv::.+',
             'viz::SkColorTypeToSinglePlaneSharedImageFormat',
@@ -2017,7 +2015,6 @@ _CONFIG = [
             'gfx::ContentColorUsage',
             'gpu::kNullSurfaceHandle',
             'gpu::Mailbox',
-            'gpu::MailboxHolder',
             'gpu::raster::RasterInterface',
             'gpu::SHARED_IMAGE_.+',
             'gpu::SharedImageInterface',

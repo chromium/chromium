@@ -199,7 +199,7 @@ void MailboxVideoFrameConverter::WrapSharedImageAndVideoFrameAndOutput(
   const gfx::Size coded_size = to_coded_size(frame);
   scoped_refptr<VideoFrame> mailbox_frame = VideoFrame::WrapSharedImage(
       frame->format(), shared_image, shared_image_sync_token,
-      /*mailbox_holder_release_cb=*/{}, coded_size, frame->visible_rect(),
+      /*shared_image_release_cb=*/{}, coded_size, frame->visible_rect(),
       frame->natural_size(), frame->timestamp());
   mailbox_frame->set_color_space(shared_image->color_space());
   mailbox_frame->set_hdr_metadata(frame->hdr_metadata());

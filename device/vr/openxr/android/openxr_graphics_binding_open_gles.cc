@@ -257,8 +257,8 @@ void OpenXrGraphicsBindingOpenGLES::ResizeSharedBuffer(
   if (swap_chain_info.shared_image) {
     DVLOG(2) << ": DestroySharedImage, mailbox="
              << swap_chain_info.shared_image->mailbox().ToDebugString();
-    // Note: the sync token in mailbox_holder may not be accurate. See comment
-    // in TransferFrame below.
+    // Note: The sync token in shared image may not be accurate. See comment
+    // in XrImageTransportBase::TransferFrame.
     swap_chain_info.shared_image->UpdateDestructionSyncToken(
         swap_chain_info.sync_token);
     swap_chain_info.shared_image.reset();

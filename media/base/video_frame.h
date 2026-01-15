@@ -210,13 +210,13 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       bool zero_initialize_memory);
 
   // Wraps a native texture shared image with a VideoFrame.
-  // |mailbox_holder_release_cb| will be called with a sync token as the
+  // |shared_image_release_cb| will be called with a sync token as the
   // argument when the VideoFrame is to be destroyed.
   static scoped_refptr<VideoFrame> WrapSharedImage(
       VideoPixelFormat format,
       scoped_refptr<gpu::ClientSharedImage> shared_image,
       gpu::SyncToken sync_token,
-      ReleaseMailboxCB mailbox_holder_release_cb,
+      ReleaseMailboxCB shared_image_release_cb,
       const gfx::Size& coded_size,
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
@@ -226,12 +226,12 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // backed by CPU mappable gpu buffers or shared memory buffers.
   // TODO(crbug.com/40263579): Once all VideoFrame clients are fully converted
   // to use MappableSI, look into refactoring this method and
-  // ::WrapSharedImage() into one. |mailbox_holder_release_cb| will be called
+  // ::WrapSharedImage() into one. |shared_image_release_cb| will be called
   // with a sync token as the argument when the VideoFrame is to be destroyed.
   static scoped_refptr<VideoFrame> WrapMappableSharedImage(
       scoped_refptr<gpu::ClientSharedImage> shared_image,
       gpu::SyncToken sync_token,
-      ReleaseMailboxCB mailbox_holder_release_cb,
+      ReleaseMailboxCB shared_image_release_cb,
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
       base::TimeDelta timestamp);
@@ -791,7 +791,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 
   // Sync token associated with the `shared_image_`.
   gpu::SyncToken acquire_sync_token_;
-  ReleaseMailboxCB mailbox_holder_release_cb_;
+  ReleaseMailboxCB shared_image_release_cb_;
 
   // Native texture shared image that is only set when the VideoFrame is
   // created via VideoFrame::WrapSharedImage().
