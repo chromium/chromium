@@ -28,7 +28,11 @@ static bool JNI_IncognitoUtils_GetIncognitoModeManaged(JNIEnv* env,
                                                        Profile* profile) {
   PrefService* prefs = profile->GetPrefs();
   return prefs->IsManagedPreference(
-      policy::policy_prefs::kIncognitoModeAvailability);
+             policy::policy_prefs::kIncognitoModeAvailability) ||
+         prefs->IsManagedPreference(
+             policy::policy_prefs::kIncognitoModeUrlAllowlist) ||
+         prefs->IsManagedPreference(
+             policy::policy_prefs::kIncognitoModeUrlBlocklist);
 }
 
 DEFINE_JNI(IncognitoUtils)
