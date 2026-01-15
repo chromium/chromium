@@ -105,7 +105,7 @@ _TEST_CODE_EXCLUDED_PATHS = (
     # Chromium Codelab
     r'codelabs/*')
 
-_THIRD_PARTY_EXCEPT_BLINK = 'third_party/(?!blink/)'
+_THIRD_PARTY_EXCEPT_BLINK = '(?:ios/)?third_party/(?!blink/)'
 
 _TEST_ONLY_WARNING = (
     'You might be calling functions intended only for testing from\n'
@@ -6491,7 +6491,9 @@ def CheckForIncludeGuards(input_api, output_api):
                                            'partition_allocator'))
                 and (not file_with_path.startswith('third_party')
                      or file_with_path.startswith(
-                         input_api.os_path.join('third_party', 'blink'))))
+                         input_api.os_path.join('third_party', 'blink')))
+                and not file_with_path.startswith(
+                    input_api.os_path.join('ios', 'third_party')))
 
     def replace_special_with_underscore(string):
         return input_api.re.sub(r'[+\\/.-]', '_', string)
