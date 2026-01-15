@@ -104,10 +104,11 @@ cr-composebox[searchbox-layout-mode="TallTopContext"] {
 
 cr-composebox[show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext']::part(voice-icon) {
   inset-inline-end: calc(var(--cr-composebox-submit-container-size) + 6px);
+  margin-inline-end: 6px;
 }
 
 cr-composebox[show-submit_][submit-enabled_][searchbox-layout-mode="TallTopContext"]::part(voice-icon) {
-  margin-inline-end: -8px;
+  margin-inline-end: -2px;
 }
 
 cr-composebox[searchbox-layout-mode="TallBottomContext"][show-dropdown_]::part(voice-icon) {
