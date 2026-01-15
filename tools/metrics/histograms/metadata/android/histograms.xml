@@ -7258,8 +7258,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.DevUi.SessionDuration2.{AndroidWebViewFragment}"
-    units="ms" expires_after="2026-01-15">
-  <owner>hazems@chromium.org</owner>
+    units="ms" expires_after="2026-07-13">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
