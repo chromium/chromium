@@ -39,6 +39,7 @@ class VerticalTabGroupViewTest
                TabStripUserGestureDetails::GestureType::kOther));
 
     browser()->tab_strip_model()->AddToNewGroup({1});
+    RunScheduledLayouts();
   }
 
   void CreateInactiveTabGroup() {
@@ -50,6 +51,7 @@ class VerticalTabGroupViewTest
     browser()->tab_strip_model()->ActivateTabAt(
         2, TabStripUserGestureDetails(
                TabStripUserGestureDetails::GestureType::kOther));
+    RunScheduledLayouts();
   }
 
   void ClickTabGroupHeaderToToggleCollapse() {
