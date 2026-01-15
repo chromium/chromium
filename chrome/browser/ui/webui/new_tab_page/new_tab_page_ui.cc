@@ -706,6 +706,13 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean("enableThreadsRail",
                      ntp_composebox::kEnableThreadsRail.Get());
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  source->AddBoolean("enableThreadsRailLogo",
+                     ntp_composebox::kEnableThreadsRailLogo.Get());
+#else
+  source->AddBoolean("enableThreadsRailLogo", false);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
   // Action Chips LoadTimeData
   bool action_chips_eligible =
       ntp_features::kNtpNextShowSimplificationUIParam.Get()

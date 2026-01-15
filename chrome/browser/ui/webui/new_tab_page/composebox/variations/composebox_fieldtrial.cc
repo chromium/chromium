@@ -324,6 +324,9 @@ const base::FeatureParam<bool> kEnableModalComposebox(&kNtpComposebox,
 const base::FeatureParam<bool> kEnableThreadsRail(&kNtpComposebox,
                                                   "EnableThreadsRail",
                                                   false);
+const base::FeatureParam<bool> kEnableThreadsRailLogo(&kNtpComposebox,
+                                                      "EnableThreadsRailLogo",
+                                                      true);
 
 FeatureConfig::FeatureConfig() : config(GetNTPComposeboxConfig()) {}
 

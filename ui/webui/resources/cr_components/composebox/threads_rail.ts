@@ -28,8 +28,13 @@ export class ThreadsRailElement extends ThreadsRailElementBase {
   }
 
   static override get properties() {
-    return {};
+    return {
+      displayLogo_: {type: Boolean},
+    };
   }
+
+  protected accessor displayLogo_: boolean =
+      loadTimeData.getBoolean('enableThreadsRailLogo');
 
   override render() {
     return getHtml.bind(this)();

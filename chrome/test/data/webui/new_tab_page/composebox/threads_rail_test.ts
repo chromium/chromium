@@ -23,6 +23,7 @@ suite('NewTabPageThreadsRailTest', () => {
     loadTimeData.overrideValues({
       aimThreadsHistoryLabel: AIM_THREADS_HISTORY_LABEL,
       threadsUrl: AIM_THREADS_URL,
+      enableThreadsRailLogo: true,
     });
     threadsRailElement = document.createElement('cr-threads-rail');
     document.body.appendChild(threadsRailElement);
@@ -31,6 +32,25 @@ suite('NewTabPageThreadsRailTest', () => {
 
   teardown(() => {
     document.body.removeChild(threadsRailElement);
+  });
+
+  test('Logo shows on rail when enabled', async () => {
+    const threadsRail = document.createElement('cr-threads-rail');
+    document.body.appendChild(threadsRail);
+    await threadsRail.updateComplete;
+
+    const logo = threadsRail.shadowRoot.querySelector<HTMLElement>('#logo');
+    assertTrue(!!logo);
+  });
+
+  test('Logo does not show on rail when disabled', async () => {
+    loadTimeData.overrideValues({enableThreadsRailLogo: false});
+    const threadsRail = document.createElement('cr-threads-rail');
+    document.body.appendChild(threadsRail);
+    await threadsRail.updateComplete;
+
+    const logo = threadsRail.shadowRoot.querySelector<HTMLElement>('#logo');
+    assertEquals(null, logo);
   });
 
   test('history button has correct tooltip', () => {

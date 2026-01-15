@@ -152,6 +152,9 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabPageActionChipDeepSearchIcon] = {
       ui::kColorSysOnSurfaceSubtle};
 
+  // Threads rail colors.
+  mixer[kColorNewTabPageThreadsRailBackground] = {ui::kColorSysBaseContainer};
+
   mixer[kColorNewTabPageModuleBackground] = {ui::kColorSysBaseContainer};
   mixer[kColorNewTabPageModuleIconBackground] = {ui::kColorSysNeutralContainer};
   // Styling for Doodle Share Button.

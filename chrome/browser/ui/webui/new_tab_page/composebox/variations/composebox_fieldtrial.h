@@ -84,6 +84,8 @@ extern const base::FeatureParam<bool> kAddTabUploadDelayOnRecentTabChipClick;
 extern const base::FeatureParam<bool> kEnableModalComposebox;
 // Whether to show the AIM threads rail when composebox is open.
 extern const base::FeatureParam<bool> kEnableThreadsRail;
+// Whether to show the AIM threads rail Google logo.
+extern const base::FeatureParam<bool> kEnableThreadsRailLogo;
 
 bool IsNtpComposeboxEnabled(Profile* profile);
 
