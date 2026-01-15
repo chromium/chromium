@@ -113,7 +113,7 @@ base::expected<std::vector<int32_t>, std::string> ToSignedDimensions(
   std::vector<int32_t> output_dimensions;
   output_dimensions.reserve(input_dimensions.size());
   for (auto dimension : input_dimensions) {
-    auto checked_dimension = base::MakeCheckedNum<int32_t>(dimension);
+    base::CheckedNumeric<int32_t> checked_dimension = dimension;
     if (!checked_dimension.IsValid()) {
       return base::unexpected("The dimension is too large.");
     }
@@ -213,9 +213,9 @@ std::optional<PaddingSizes> CalculateExplicitPaddingForSamePaddingMode(
     uint32_t stride,
     uint32_t dilation,
     bool is_transposed_conv2d) {
-  auto checked_dilated_filter_size =
-      (base::MakeCheckedNum<uint32_t>(filter_size) - 1) * dilation + 1;
-  auto checked_input_size = base::MakeCheckedNum<uint32_t>(input_size);
+  base::CheckedNumeric<uint32_t> checked_dilated_filter_size =
+      (base::MakeCheckedNum(filter_size) - 1) * dilation + 1;
+  base::CheckedNumeric<uint32_t> checked_input_size = input_size;
   base::CheckedNumeric<uint32_t> checked_total_padding;
   if (is_transposed_conv2d) {
     // The checked_total_padding (beginningPadding + endingPadding) can be
@@ -368,7 +368,7 @@ GetCoordinatesNDFromIndex(size_t flat_index,
     size_t coordinate = flat_index / strides[i];
     flat_index -= coordinate * strides[i];
 
-    auto checked_coordinate = base::MakeCheckedNum<DataType>(coordinate);
+    base::CheckedNumeric<DataType> checked_coordinate = coordinate;
     if (!checked_coordinate.IsValid()) {
       return base::unexpected("The coordinate is too large.");
     }
@@ -1639,7 +1639,7 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(
   const double input_scale = static_cast<double>(input_scale_values[0]);
   const double output_scale = static_cast<double>(output_scale_values[0]);
   const bool scalar_filter_scale = filter_scale_values.size() == 1;
-  auto input_product_scalar_filter = base::MakeCheckedNum<double>(input_scale);
+  base::CheckedNumeric<double> input_product_scalar_filter = input_scale;
   if (scalar_filter_scale) {
     input_product_scalar_filter *= filter_scale_values[0];
   }
@@ -1781,16 +1781,15 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(
     const float scale_min = 1.0f / 1024.0f;
     const float scale_max = 256.0f;
 
-    auto checked_lhs_output_scale =
-        base::MakeCheckedNum<float>(lhs_scale_value);
+    base::CheckedNumeric<float> checked_lhs_output_scale = lhs_scale_value;
     checked_lhs_output_scale /= output_scale_value;
     if (!checked_lhs_output_scale.IsValid() ||
         checked_lhs_output_scale.ValueOrDie() < scale_min ||
         checked_lhs_output_scale.ValueOrDie() >= scale_max) {
       return std::nullopt;
     }
-    auto checked_rhs_output_scale =
-        base::MakeCheckedNum<float>(rhs_scale_value) / output_scale_value;
+    base::CheckedNumeric<float> checked_rhs_output_scale =
+        base::MakeCheckedNum(rhs_scale_value) / output_scale_value;
     if (!checked_rhs_output_scale.IsValid() ||
         checked_rhs_output_scale.ValueOrDie() < scale_min ||
         checked_rhs_output_scale.ValueOrDie() >= scale_max) {
@@ -1801,8 +1800,8 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(
     // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.cc;l=3985;drc=f667feb8a5c6f227b49328ce78a062acc4f81187
     const float scale_min = 1.0f / 65536.0f;
     const float scale_max = 256.0f;
-    auto checked_product_output_scale =
-        (lhs_scale_value * base::MakeCheckedNum<float>(rhs_scale_value)) /
+    base::CheckedNumeric<float> checked_product_output_scale =
+        (base::MakeCheckedNum(lhs_scale_value) * rhs_scale_value) /
         output_scale_value;
     if (!checked_product_output_scale.IsValid() ||
         checked_product_output_scale.ValueOrDie() < scale_min ||
@@ -1984,8 +1983,8 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Gemm& gemm) {
         GetQuantizeScaleValue(output_quantize.scale_operand_id);
     const double a_scale = static_cast<double>(a_scale_values[0]);
     const double output_scale = static_cast<double>(output_scale_values[0]);
-    auto a_product_b =
-        base::MakeCheckedNum<double>(a_scale) * b_scale_values[0];
+    base::CheckedNumeric<double> a_product_b =
+        base::MakeCheckedNum(a_scale) * b_scale_values[0];
     auto scale_diff = a_product_b - static_cast<double>(c_scale_values[0]);
     scale_diff = scale_diff.Abs() / output_scale;
     if (!scale_diff.IsValid() || scale_diff.ValueOrDie() > 0.02) {
@@ -2075,8 +2074,7 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Pool2d& pool2d) {
   base::FixedArray<float> output_scale_values =
       GetQuantizeScaleValue(output_quantize.scale_operand_id);
   base::CheckedNumeric<float> checked_sub_scale =
-      base::MakeCheckedNum<float>(input_scale_values[0]) -
-      output_scale_values[0];
+      base::MakeCheckedNum(input_scale_values[0]) - output_scale_values[0];
   if (!checked_sub_scale.IsValid() ||
       checked_sub_scale.Abs().ValueOrDie() > 1.0e-6) {
     return std::nullopt;
@@ -2290,8 +2288,7 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Softmax& softmax) {
     base::FixedArray<float> output_scale_values =
         GetQuantizeScaleValue(output_quantize.scale_operand_id);
     base::CheckedNumeric<float> checked_scale =
-        base::MakeCheckedNum<float>(output_scale_values[0]) -
-        expected_scale_value;
+        base::MakeCheckedNum(output_scale_values[0]) - expected_scale_value;
     if (!checked_scale.IsValid() ||
         checked_scale.Abs().ValueOrDie() > 0.001f * expected_scale_value) {
       return std::nullopt;
@@ -2432,8 +2429,7 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(
   // The `input scale / output scale` must be in the range.
   // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.cc;l=4162;drc=f667feb8a5c6f227b49328ce78a062acc4f81187
   base::CheckedNumeric<float> checked_positive_scale =
-      base::MakeCheckedNum<float>(input_scale_values[0]) /
-      output_scale_values[0];
+      base::MakeCheckedNum(input_scale_values[0]) / output_scale_values[0];
   if (!checked_positive_scale.IsValid() ||
       checked_positive_scale.ValueOrDie() < scale_positive_min ||
       checked_positive_scale.ValueOrDie() > scale_positive_max) {
@@ -3296,7 +3292,7 @@ auto GraphBuilderTflite::SerializeSliceOperation(
     -> base::expected<OperatorOffset, std::string> {
   CHECK_EQ(slice_starts.size(), slice_sizes.size());
   // Serialize the starting index of each input dimension.
-  auto checked_number = base::MakeCheckedNum<int32_t>(slice_starts.size());
+  base::CheckedNumeric<int32_t> checked_number = slice_starts.size();
   if (!checked_number.IsValid()) {
     return base::unexpected("The number of starts and sizes is too large.");
   }
@@ -3428,16 +3424,14 @@ auto GraphBuilderTflite::InsertPadOperation(const TensorInfo& input_tensor_info,
   CHECK_EQ(input_tensor_info.dimensions.size(), 4u);
   base::FixedArray<int32_t> output_shape(padding_rank);
   for (size_t i = 0; i < padding_rank; ++i) {
-    auto checked_dimension =
-        base::MakeCheckedNum<int32_t>(input_tensor_info.dimensions[i]);
+    base::CheckedNumeric<int32_t> checked_dimension =
+        input_tensor_info.dimensions[i];
     // Calculate output height with padding beginning and ending height.
     if (i == 1) {
-      checked_dimension +=
-          base::MakeCheckedNum<int32_t>(paddings[0]) + paddings[1];
+      checked_dimension += base::MakeCheckedNum(paddings[0]) + paddings[1];
     } else if (i == 2) {
       // Calculate output width with padding beginning and ending width.
-      checked_dimension +=
-          base::MakeCheckedNum<int32_t>(paddings[2]) + paddings[3];
+      checked_dimension += base::MakeCheckedNum(paddings[2]) + paddings[3];
     }
     if (!checked_dimension.IsValid()) {
       return base::unexpected("The input dimension or padding is too large.");
@@ -3548,7 +3542,7 @@ auto GraphBuilderTflite::SerializeArgMinMax(const mojom::ArgMinMax& arg_min_max)
 
   // The WebNN axis option is uint32 data type, but TFLite axis needs int32
   // type, so the axis need to be validated here to not overflow.
-  auto checked_axis = base::MakeCheckedNum<int32_t>(arg_min_max.axis);
+  base::CheckedNumeric<int32_t> checked_axis = arg_min_max.axis;
   if (!checked_axis.IsValid()) {
     return base::unexpected("The axis in arg_min_max operation is too large.");
   }
@@ -4578,7 +4572,7 @@ auto GraphBuilderTflite::SerializeGather(const mojom::Gather& gather)
 
   // The WebNN axis option is uint32 data type, but TFLite axis needs int32
   // type, so the axis need to be validated here to not overflow.
-  auto checked_axis = base::MakeCheckedNum<int32_t>(gather.axis);
+  base::CheckedNumeric<int32_t> checked_axis = gather.axis;
   if (!checked_axis.IsValid()) {
     return base::unexpected("The axis in gather operation is too large.");
   }
@@ -5283,8 +5277,7 @@ auto GraphBuilderTflite::SerializeGruCell(const mojom::GruCell& gru_cell)
   const TensorIndex output_tensor_index =
       SerializeOutputTensorInfo(gru_cell.output_operand_id).index;
 
-  const auto checked_hidden_size =
-      base::MakeCheckedNum<int32_t>(gru_cell.hidden_size);
+  base::CheckedNumeric<int32_t> checked_hidden_size = gru_cell.hidden_size;
   if (!checked_hidden_size.IsValid()) {
     return base::unexpected("The hidden size is too large.");
   }
@@ -5640,13 +5633,12 @@ auto GraphBuilderTflite::SerializeRecurrentNetwork(
       const TensorInfo& input_tensor_info,
       SerializeInputTensorInfo(recurrent_network.input_operand_id));
   const ::tflite::TensorType input_tensor_type = input_tensor_info.data_type;
-  const auto checked_hidden_size =
-      base::MakeCheckedNum<int32_t>(recurrent_network.hidden_size);
+  const base::CheckedNumeric<int32_t> checked_hidden_size =
+      recurrent_network.hidden_size;
   if (!checked_hidden_size.IsValid()) {
     return base::unexpected("The hidden size is too large.");
   }
-  const auto checked_steps =
-      base::MakeCheckedNum<int32_t>(recurrent_network.steps);
+  const base::CheckedNumeric<int32_t> checked_steps = recurrent_network.steps;
   if (!checked_steps.IsValid()) {
     return base::unexpected("The steps size is too large.");
   }
@@ -6394,8 +6386,8 @@ auto GraphBuilderTflite::SerializeLstmCell(const mojom::LstmCell& lstm_cell)
         SerializeOutputTensorInfo(lstm_cell.output_operand_ids[i]).index;
   }
 
-  const auto checked_hidden_size =
-      base::MakeCheckedNum<int32_t>(lstm_cell.hidden_size);
+  const base::CheckedNumeric<int32_t> checked_hidden_size =
+      lstm_cell.hidden_size;
   if (!checked_hidden_size.IsValid()) {
     return base::unexpected("The hidden size is too large.");
   }
@@ -6486,10 +6478,9 @@ auto GraphBuilderTflite::SerializePad(const mojom::Pad& pad)
   std::vector<int32_t> paddings;
   paddings.resize(pad.beginning_padding.size() * 2);
   for (size_t i = 0; i < pad.beginning_padding.size(); ++i) {
-    auto checked_pre_padding =
-        base::MakeCheckedNum<int32_t>(pad.beginning_padding[i]);
-    auto checked_post_padding =
-        base::MakeCheckedNum<int32_t>(pad.ending_padding[i]);
+    base::CheckedNumeric<int32_t> checked_pre_padding =
+        pad.beginning_padding[i];
+    base::CheckedNumeric<int32_t> checked_post_padding = pad.ending_padding[i];
     if (!checked_pre_padding.IsValid() || !checked_post_padding.IsValid()) {
       return base::unexpected("The padding is too large.");
     }
@@ -6857,7 +6848,7 @@ auto GraphBuilderTflite::SerializeQuantizeParams(
 
   QuantizateParametersOffset quantize_params;
   if (axis) {
-    auto checked_axis = base::MakeCheckedNum<int32_t>(*axis);
+    base::CheckedNumeric<int32_t> checked_axis = *axis;
     if (!checked_axis.IsValid()) {
       return std::nullopt;
     }
@@ -7739,10 +7730,9 @@ auto GraphBuilderTflite::SerializeSlice(const mojom::Slice& slice)
   base::FixedArray<int32_t> slice_strides(slice.ranges.size());
   for (size_t i = 0; i < slice.ranges.size(); ++i) {
     const auto& range = slice.ranges[i];
-    auto checked_start = base::MakeCheckedNum<int32_t>(range.start);
-    auto checked_end =
-        base::MakeCheckedNum<int32_t>(range.size) + checked_start;
-    auto checked_stride = base::MakeCheckedNum<int32_t>(range.stride);
+    base::CheckedNumeric<int32_t> checked_start = range.start;
+    base::CheckedNumeric<int32_t> checked_end = range.size + checked_start;
+    base::CheckedNumeric<int32_t> checked_stride = range.stride;
     if (!checked_start.IsValid() || !checked_end.IsValid() ||
         !checked_stride.IsValid()) {
       return base::unexpected(
@@ -7766,7 +7756,7 @@ auto GraphBuilderTflite::SerializeSlice(const mojom::Slice& slice)
           ? quantized_output->index
           : SerializeOutputTensorInfo(slice.output_operand_id).index;
 
-  auto checked_number = base::MakeCheckedNum<int32_t>(slice.ranges.size());
+  base::CheckedNumeric<int32_t> checked_number = slice.ranges.size();
   if (!checked_number.IsValid()) {
     return base::unexpected("The input rank is too large.");
   }
@@ -7945,7 +7935,7 @@ auto GraphBuilderTflite::SerializeSplit(const mojom::Split& split)
       GetOperand(split.input_operand_id).descriptor));
 
   // Serialize the axis tensor to split input tensor along it.
-  const auto checked_axis = base::MakeCheckedNum<int32_t>(split.axis);
+  const base::CheckedNumeric<int32_t> checked_axis = split.axis;
   if (!checked_axis.IsValid()) {
     return base::unexpected("The axis is too large.");
   }
@@ -7981,8 +7971,7 @@ auto GraphBuilderTflite::SerializeSplit(const mojom::Split& split)
       op_outputs[i] = output_tensor_info.index;
     }
   }
-  const auto checked_split_size =
-      base::MakeCheckedNum<int32_t>(split_sizes.size());
+  const base::CheckedNumeric<int32_t> checked_split_size = split_sizes.size();
   if (!checked_split_size.IsValid()) {
     return base::unexpected("The split size is too large.");
   }
@@ -8095,13 +8084,14 @@ auto GraphBuilderTflite::SerializeTriangular(
   CHECK_GE(input_rank, 2u);
   const int32_t height = input_tensor_info.dimensions[input_rank - 2];
   const int32_t width = input_tensor_info.dimensions[input_rank - 1];
-  auto checked_size = base::MakeCheckedNum<int32_t>(height) * width;
+  base::CheckedNumeric<int32_t> checked_size =
+      base::MakeCheckedNum(height) * width;
   if (!checked_size.IsValid()) {
     return base::unexpected("Triangular mask is too large.");
   }
   const std::array<int32_t, 2> mask_dimensions = {height, width};
-  auto checked_diagonal = base::MakeCheckedNum<int32_t>(triangular.diagonal) +
-                          std::max(height, width);
+  base::CheckedNumeric<int32_t> checked_diagonal =
+      base::MakeCheckedNum(triangular.diagonal) + std::max(height, width);
   if (!checked_diagonal.IsValid()) {
     return base::unexpected("The diagonal is too large.");
   }
