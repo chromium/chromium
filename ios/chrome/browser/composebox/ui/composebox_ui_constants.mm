@@ -19,11 +19,25 @@ NSString* const kComposeboxQRCodeButtonAccessibilityIdentifier =
     @"kComposeboxQRCodeButtonAccessibilityIdentifier";
 NSString* const kComposeboxSendButtonAccessibilityIdentifier =
     @"kComposeboxSendButtonAccessibilityIdentifier";
-NSString* const kComposeboxCreateImageActionAccessibilityIdentifier =
-    @"kComposeboxCreateImageActionAccessibilityIdentifier";
-NSString* const kComposeboxImageGenerationButtonAccessibilityIdentifier =
-    @"kComposeboxImageGenerationButtonAccessibilityIdentifier";
-NSString* const kComposeboxAIMActionAccessibilityIdentifier =
-    @"kComposeboxAIMActionAccessibilityIdentifier";
 NSString* const kComposeboxAIMButtonAccessibilityIdentifier =
     @"kComposeboxAIMButtonAccessibilityIdentifier";
+NSString* const kComposeboxImageGenerationButtonAccessibilityIdentifier =
+    @"kComposeboxImageGenerationButtonAccessibilityIdentifier";
+
+NSString* const kComposeboxAIMActionAccessibilityIdentifier =
+    @"kComposeboxAIMActionAccessibilityIdentifier";
+NSString* const kComposeboxImageGenerationActionAccessibilityIdentifier =
+    @"kComposeboxImageGenerationActionAccessibilityIdentifier";
+NSString* const kComposeboxAttachFileActionAccessibilityIdentifier =
+    @"kComposeboxAttachFileActionAccessibilityIdentifier";
+NSString* const kComposeboxGalleryActionAccessibilityIdentifier =
+    @"kComposeboxGalleryActionAccessibilityIdentifier";
+NSString* const kComposeboxCameraActionAccessibilityIdentifier =
+    @"kComposeboxCameraActionAccessibilityIdentifier";
+NSString* const kComposeboxAttachCurrentTabActionAccessibilityIdentifier =
+    @"kComposeboxAttachCurrentTabActionAccessibilityIdentifier";
+NSString* const kComposeboxSelectTabsActionAccessibilityIdentifier =
+    @"kComposeboxSelectTabsActionAccessibilityIdentifier";
+
+NSString* const kComposeboxTabPickerViewAccessibilityIdentifier =
+    @"kComposeboxTabPickerAccessibilityIdentifier";

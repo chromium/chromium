@@ -166,7 +166,7 @@ NSString* kLongText =
   // Tap the "Create image" button.
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
-                     kComposeboxCreateImageActionAccessibilityIdentifier)]
+                     kComposeboxImageGenerationActionAccessibilityIdentifier)]
       performAction:grey_tap()];
 
   // Verify that the image generation button is visible.
@@ -200,7 +200,7 @@ NSString* kLongText =
   // Verify that the "Create image" action is NOT visible.
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
-                     kComposeboxCreateImageActionAccessibilityIdentifier)]
+                     kComposeboxImageGenerationActionAccessibilityIdentifier)]
       assertWithMatcher:grey_notVisible()];
 }
 
@@ -247,6 +247,56 @@ NSString* kLongText =
       selectElementWithMatcher:grey_accessibilityID(
                                    kComposeboxAIMButtonAccessibilityIdentifier)]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that all buttons in the plus menu are enabled.
+- (void)testPlusMenuButtonsEnabled {
+  // Composebox is not available on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
+  }
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGreyUI focusOmnibox];
+
+  // Wait for the composebox to be visible.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ComposeboxMatcher()];
+
+  // Tap the plus button.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kComposeboxPlusButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Check that the buttons are enabled.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kComposeboxImageGenerationActionAccessibilityIdentifier)]
+      assertWithMatcher:grey_enabled()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kComposeboxAIMActionAccessibilityIdentifier)]
+      assertWithMatcher:grey_enabled()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kComposeboxSelectTabsActionAccessibilityIdentifier)]
+      assertWithMatcher:grey_enabled()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kComposeboxAttachFileActionAccessibilityIdentifier)]
+      assertWithMatcher:grey_enabled()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kComposeboxGalleryActionAccessibilityIdentifier)]
+      assertWithMatcher:grey_enabled()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kComposeboxCameraActionAccessibilityIdentifier)]
+      assertWithMatcher:grey_enabled()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kComposeboxAttachCurrentTabActionAccessibilityIdentifier)]
+      assertWithMatcher:grey_enabled()];
 }
 
 @end

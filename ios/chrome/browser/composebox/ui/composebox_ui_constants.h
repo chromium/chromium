@@ -13,6 +13,7 @@ extern const CGFloat kOmniboxMinHeight;
 // Accessibility identifier for the composebox.
 extern NSString* const kComposeboxAccessibilityIdentifier;
 
+// ==== Buttons in the composebox.
 // Accessibility identifier for the plus button in the composebox.
 extern NSString* const kComposeboxPlusButtonAccessibilityIdentifier;
 // Accessibility identifier for the microphone button in the composebox.
@@ -23,13 +24,28 @@ extern NSString* const kComposeboxLensButtonAccessibilityIdentifier;
 extern NSString* const kComposeboxQRCodeButtonAccessibilityIdentifier;
 // Accessibility identifier for the send button in the composebox.
 extern NSString* const kComposeboxSendButtonAccessibilityIdentifier;
-// Accessibility identifier for the create image action in the plus menu.
-extern NSString* const kComposeboxCreateImageActionAccessibilityIdentifier;
-// Accessibility identifier for the image generation button in the composebox.
-extern NSString* const kComposeboxImageGenerationButtonAccessibilityIdentifier;
-// Accessibility identifier for the AI mode action in the plus menu.
-extern NSString* const kComposeboxAIMActionAccessibilityIdentifier;
 // Accessibility identifier for the AI mode button in the composebox.
 extern NSString* const kComposeboxAIMButtonAccessibilityIdentifier;
+// Accessibility identifier for the image generation button in the composebox.
+extern NSString* const kComposeboxImageGenerationButtonAccessibilityIdentifier;
+
+// ==== Actions in the plus menu.
+// Accessibility identifier for the AI mode action in the plus menu.
+extern NSString* const kComposeboxAIMActionAccessibilityIdentifier;
+// Accessibility identifier for the create image action in the plus menu.
+extern NSString* const kComposeboxImageGenerationActionAccessibilityIdentifier;
+// Accessibility identifier for the Attach File button in the plus menu.
+extern NSString* const kComposeboxAttachFileActionAccessibilityIdentifier;
+// Accessibility identifier for the Gallery button in the plus menu.
+extern NSString* const kComposeboxGalleryActionAccessibilityIdentifier;
+// Accessibility identifier for the Camera button in the plus menu.
+extern NSString* const kComposeboxCameraActionAccessibilityIdentifier;
+// Accessibility identifier for the Attach Current Tab button in the plus menu.
+extern NSString* const kComposeboxAttachCurrentTabActionAccessibilityIdentifier;
+// Accessibility identifier for the Select Tabs button in the plus menu.
+extern NSString* const kComposeboxSelectTabsActionAccessibilityIdentifier;
+
+// Accessibility identifier for the Composebox Tab Picker View Controller.
+extern NSString* const kComposeboxTabPickerViewAccessibilityIdentifier;
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_UI_CONSTANTS_H_

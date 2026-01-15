@@ -1296,6 +1296,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                 [weakSelf.delegate
                     composeboxViewControllerDidTapGalleryButton:weakSelf];
               }];
+  galleryAction.accessibilityIdentifier =
+      kComposeboxGalleryActionAccessibilityIdentifier;
   UIAction* cameraAction = [UIAction
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_CAMERA_ACTION)
                 image:DefaultSymbolWithPointSize(kSystemCameraSymbol,
@@ -1305,6 +1307,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                 [weakSelf.delegate
                     composeboxViewControllerDidTapCameraButton:weakSelf];
               }];
+  cameraAction.accessibilityIdentifier =
+      kComposeboxCameraActionAccessibilityIdentifier;
 
   UIAction* fileAction = [UIAction
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_FILES_ACTION)
@@ -1315,6 +1319,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                 [weakSelf.delegate
                     composeboxViewControllerDidTapFileButton:weakSelf];
               }];
+  fileAction.accessibilityIdentifier =
+      kComposeboxAttachFileActionAccessibilityIdentifier;
 
   UIAction* attachCurrentTabAction =
       [UIAction actionWithTitle:l10n_util::GetNSString(
@@ -1327,6 +1333,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                         handler:^(UIAction* action) {
                           [weakSelf.mutator attachCurrentTabContent];
                         }];
+  attachCurrentTabAction.accessibilityIdentifier =
+      kComposeboxAttachCurrentTabActionAccessibilityIdentifier;
 
   UIAction* selectTabsAction = [UIAction
       actionWithTitle:l10n_util::GetNSString(
@@ -1337,6 +1345,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
               handler:^(UIAction* action) {
                 [weakSelf handleAttachTabs];
               }];
+  selectTabsAction.accessibilityIdentifier =
+      kComposeboxSelectTabsActionAccessibilityIdentifier;
 
   UIAction* aimAction = [UIAction
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_AIM_ACTION)
@@ -1362,7 +1372,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                           [weakSelf handleImageGenTappedFromToolMenu];
                         }];
   createImageAction.accessibilityIdentifier =
-      kComposeboxCreateImageActionAccessibilityIdentifier;
+      kComposeboxImageGenerationActionAccessibilityIdentifier;
 
   if (_imageGenerationEnabled) {
     [createImageAction setState:UIMenuElementStateOn];
