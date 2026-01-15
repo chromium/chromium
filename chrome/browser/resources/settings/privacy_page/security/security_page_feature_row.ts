@@ -67,10 +67,20 @@ export class SecurityPageFeatureRowElement extends PolymerElement {
 
       stateTextMap: Object,
 
+      /**
+       * Optional key to override the lookup in stateTextMap.
+       * If provided, this is used instead of pref.value.
+       */
+      currentStateOverrideKey: {
+        type: String,
+        value: null,
+      },
+
       /* The computed string label for the current pref state. */
       currentStateLabel_: {
         type: String,
-        computed: 'computeCurrentStateLabel_(pref.value, stateTextMap)',
+        computed:
+            'computeCurrentStateLabel_(pref.value, stateTextMap, currentStateKey)',
       },
     };
   }
@@ -84,6 +94,7 @@ export class SecurityPageFeatureRowElement extends PolymerElement {
   declare numericUncheckedValues: number[];
   declare numericCheckedValue: number;
   declare stateTextMap: Record<string, string>;
+  declare currentStateOverrideKey: string|null;
   declare private currentStateLabel_: string;
 
 
@@ -103,10 +114,15 @@ export class SecurityPageFeatureRowElement extends PolymerElement {
   }
 
   private computeCurrentStateLabel_(): string {
-    if (this.stateTextMap && this.stateTextMap[this.pref.value] !== undefined) {
-      return this.stateTextMap[this.pref.value];
+    // Determine which key to use for lookup.
+    // If currentStateKey is set (not null/empty), use it. Otherwise, use
+    // pref.value.
+    const key = this.currentStateOverrideKey ? this.currentStateOverrideKey :
+                                               this.pref.value;
+    if (this.stateTextMap && this.stateTextMap[key] !== undefined) {
+      return this.stateTextMap[key];
     }
-    // Return an empty string if no mapping is found
+    // Return an empty string if no mapping is found.
     return '';
   }
 }

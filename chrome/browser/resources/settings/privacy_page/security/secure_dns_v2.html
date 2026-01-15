@@ -42,13 +42,15 @@
 
 <security-page-feature-row
     id="secureDnsToggle"
-    pref="{{secureDnsToggle_}}"
+    pref="{{secureDnsTogglePref_}}"
     label="$i18n{securitySecureDnsTitle}"
     sub-label="$i18n{securitySecureDnsDescription}"
     on-change="onToggleChanged_"
     numeric-unchecked-values="[[secureDnsModeUncheckedValues_]]"
     icon="settings20:warning_outline"
-    icon-visible="[[isSecureDnsWarningIconVisible_]]">
+    icon-visible="[[isSecureDnsWarningIconVisible_]]"
+    state-text-map="[[secureDnsStateTextMap_]]"
+    current-state-override-key="[[computedStateKey_]]">
   <div slot="collapse">
     <settings-radio-group id="secureDnsRadioGroup"
         pref="{{prefs.dns_over_https.mode}}"
