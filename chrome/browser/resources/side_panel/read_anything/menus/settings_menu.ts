@@ -324,9 +324,12 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   }
 
   protected onMenuItemLeave_(e: PointerEvent) {
-    // Clear the open timer so that submenus aren't opened after the cursor
-    // stops hovering.
-    this.clearOpenTimer_();
+    if (this.openTimer_) {
+      // Clear the open timer so that submenus aren't opened after the cursor
+      // stops hovering.
+      clearTimeout(this.openTimer_);
+      this.openTimer_ = null;
+    }
 
     const currentTarget = e.currentTarget as HTMLElement;
     if (currentTarget) {
@@ -379,7 +382,6 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   }
 
   close() {
-    this.clearTimers_();
     this.$.lazyMenu.get().close();
     document.body.classList.remove('read-anything-menu-open');
     window.removeEventListener(
