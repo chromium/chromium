@@ -18,29 +18,35 @@
 
 namespace crypto {
 
-Aead::Aead(AeadAlgorithm algorithm) {
+namespace {
+
+const EVP_AEAD* AeadForAlgorithm(Aead::AeadAlgorithm algorithm) {
   switch (algorithm) {
-    case AES_128_CTR_HMAC_SHA256:
-      aead_ = EVP_aead_aes_128_ctr_hmac_sha256();
-      break;
-    case AES_256_GCM:
-      aead_ = EVP_aead_aes_256_gcm();
-      break;
-    case AES_256_GCM_SIV:
-      aead_ = EVP_aead_aes_256_gcm_siv();
-      break;
-    case CHACHA20_POLY1305:
-      aead_ = EVP_aead_chacha20_poly1305();
-      break;
+    case Aead::AES_128_CTR_HMAC_SHA256:
+      return EVP_aead_aes_128_ctr_hmac_sha256();
+    case Aead::AES_256_GCM:
+      return EVP_aead_aes_256_gcm();
+    case Aead::AES_256_GCM_SIV:
+      return EVP_aead_aes_256_gcm_siv();
+    case Aead::CHACHA20_POLY1305:
+      return EVP_aead_chacha20_poly1305();
   }
+}
+
+}  // namespace
+
+Aead::Aead(AeadAlgorithm algorithm) : algorithm_(algorithm) {}
+
+Aead::Aead(AeadAlgorithm algorithm, base::span<const uint8_t> key)
+    : Aead(algorithm) {
+  Init(key);
 }
 
 Aead::~Aead() = default;
 
 void Aead::Init(base::span<const uint8_t> key) {
-  DCHECK(!key_);
-  DCHECK_EQ(KeyLength(), key.size());
-  key_ = key;
+  CHECK(EVP_AEAD_CTX_init(ctx_.get(), AeadForAlgorithm(algorithm_), key.data(),
+                          key.size(), EVP_AEAD_DEFAULT_TAG_LENGTH, nullptr));
 }
 
 void Aead::Init(const std::string* key) {
@@ -51,8 +57,9 @@ std::vector<uint8_t> Aead::Seal(
     base::span<const uint8_t> plaintext,
     base::span<const uint8_t> nonce,
     base::span<const uint8_t> additional_data) const {
+  const EVP_AEAD* aead = EVP_AEAD_CTX_aead(ctx_.get());
   size_t max_output_length =
-      base::CheckAdd(plaintext.size(), EVP_AEAD_max_overhead(aead_))
+      base::CheckAdd(plaintext.size(), EVP_AEAD_max_overhead(aead))
           .ValueOrDie();
   std::vector<uint8_t> ret(max_output_length);
 
@@ -67,8 +74,9 @@ bool Aead::Seal(std::string_view plaintext,
                 std::string_view nonce,
                 std::string_view additional_data,
                 std::string* ciphertext) const {
+  const EVP_AEAD* aead = EVP_AEAD_CTX_aead(ctx_.get());
   size_t max_output_length =
-      base::CheckAdd(plaintext.size(), EVP_AEAD_max_overhead(aead_))
+      base::CheckAdd(plaintext.size(), EVP_AEAD_max_overhead(aead))
           .ValueOrDie();
   ciphertext->resize(max_output_length);
 
@@ -123,25 +131,21 @@ bool Aead::Open(std::string_view ciphertext,
 }
 
 size_t Aead::KeyLength() const {
-  return EVP_AEAD_key_length(aead_);
+  return EVP_AEAD_key_length(AeadForAlgorithm(algorithm_));
 }
 
 size_t Aead::NonceLength() const {
-  return EVP_AEAD_nonce_length(aead_);
+  return EVP_AEAD_nonce_length(AeadForAlgorithm(algorithm_));
 }
 
 std::optional<size_t> Aead::Seal(base::span<const uint8_t> plaintext,
                                  base::span<const uint8_t> nonce,
                                  base::span<const uint8_t> additional_data,
                                  base::span<uint8_t> out) const {
-  DCHECK(key_);
   DCHECK_EQ(NonceLength(), nonce.size());
-  bssl::ScopedEVP_AEAD_CTX ctx;
 
   size_t out_len;
-  if (!EVP_AEAD_CTX_init(ctx.get(), aead_, key_->data(), key_->size(),
-                         EVP_AEAD_DEFAULT_TAG_LENGTH, nullptr) ||
-      !EVP_AEAD_CTX_seal(ctx.get(), out.data(), &out_len, out.size(),
+  if (!EVP_AEAD_CTX_seal(ctx_.get(), out.data(), &out_len, out.size(),
                          nonce.data(), nonce.size(), plaintext.data(),
                          plaintext.size(), additional_data.data(),
                          additional_data.size())) {
@@ -156,14 +160,11 @@ std::optional<size_t> Aead::Open(base::span<const uint8_t> ciphertext,
                                  base::span<const uint8_t> nonce,
                                  base::span<const uint8_t> additional_data,
                                  base::span<uint8_t> out) const {
-  DCHECK(key_);
   DCHECK_EQ(NonceLength(), nonce.size());
   bssl::ScopedEVP_AEAD_CTX ctx;
 
   size_t out_len;
-  if (!EVP_AEAD_CTX_init(ctx.get(), aead_, key_->data(), key_->size(),
-                         EVP_AEAD_DEFAULT_TAG_LENGTH, nullptr) ||
-      !EVP_AEAD_CTX_open(ctx.get(), out.data(), &out_len, out.size(),
+  if (!EVP_AEAD_CTX_open(ctx_.get(), out.data(), &out_len, out.size(),
                          nonce.data(), nonce.size(), ciphertext.data(),
                          ciphertext.size(), additional_data.data(),
                          additional_data.size())) {
