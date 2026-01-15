@@ -412,6 +412,7 @@
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(и још 1)}one{(и још #)}few{(и још #)}other{(и још #)}}</translation>
 <translation id="5403592356182871684">Имена</translation>
 <translation id="5407203562970638234">Побољшајте безбедност</translation>
+<translation id="5436307623797390637">Апликације на уређају</translation>
 <translation id="5438097262470833822">Овај избор ће ресетовати дозволе за <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Када је укључено, сајтови могу да траже вашу локацију. Када је искључено, сајтови не могу да виде вашу локацију.</translation>
 <translation id="5489227211564503167">Протекло време: <ph name="ELAPSED_TIME" /> од <ph name="TOTAL_TIME" />.</translation>

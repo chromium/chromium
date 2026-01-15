@@ -412,6 +412,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 muu)}other{(+ # muuta)}}</translation>
 <translation id="5403592356182871684">Nimet</translation>
 <translation id="5407203562970638234">Paranna suojausta</translation>
+<translation id="5436307623797390637">Sovellukset laitteella</translation>
 <translation id="5438097262470833822">Valinta nollaa luvat osoitteessa <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Kun tämä on päällä, sivustot voivat kysyä sijaintiasi. Kun tämä on pois päältä, sivustot eivät voi nähdä sijaintiasi.</translation>
 <translation id="5489227211564503167">Kulunut aika: <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" /></translation>

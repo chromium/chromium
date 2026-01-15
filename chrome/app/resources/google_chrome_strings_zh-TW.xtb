@@ -506,6 +506,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6326175484149238433">從 Chrome 中移除</translation>
 <translation id="6327105987658262776">沒有可用的更新。</translation>
 <translation id="6334815226785304306">將 Google Chrome 設為預設瀏覽器，並固定到工作列</translation>
+<translation id="63540178978900677">Chrome 不再是預設瀏覽器。將 Chrome 設為預設瀏覽器？</translation>
 <translation id="6360449101159168105">當這個分頁處於閒置狀態時，系統會釋出記憶體，加快 Chrome 的運作速度。你可以選擇一律不讓這個網站進入閒置狀態。</translation>
 <translation id="6388799252195623474">幫幫我</translation>
 <translation id="6412673304250309937">可使用儲存在 Chrome 中的不安全網站清單檢查網址。如果有網站試圖竊取你的密碼，或當你下載有害檔案時，Chrome 可能也會將網址 (包括部分網頁內容) 傳送至安全瀏覽功能。</translation>
@@ -707,6 +708,9 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8418845734693287262">你的帳戶登入詳細資料尚未更新，因此 Chrome OS 無法同步處理你的資料。</translation>
 <translation id="842386925677997438">Chrome 安全工具</translation>
 <translation id="8425765582779547329">為確保家長監護設定可以進一步守護你的上網安全，請登入 Chrome</translation>
+<translation id="842852285618875960">已達到 Google Chrome 的書籤數量上限 (<ph name="BOOKMARK_LIMIT" /> 個)，因此部分書籤尚未儲存到 Google 帳戶。
+
+請先刪除一些書籤，才能將新書籤儲存到帳戶。如果現在登出，系統會刪除未儲存的書籤。</translation>
 <translation id="8433638294851456451">如要將號碼從這裡傳送到 Android 手機，請在這兩部裝置上登入 Chrome。</translation>
 <translation id="8496177819998570653">Google 密碼管理工具(&amp;A)</translation>
 <translation id="8498858610309223613">Google Chrome 剛才套用了特殊的安全性更新。請立即重新啟動，系統會恢復你原先開啟的分頁。</translation>

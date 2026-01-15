@@ -104,6 +104,7 @@
 <translation id="1366297852155605523">Nirekin partekatutakoak</translation>
 <translation id="1369286077209859800">Erakutsi fitxa taldeko fitxa guztiak</translation>
 <translation id="136942498637440594">Irudiak eta ikusten duzuna bila ditzakezu.</translation>
+<translation id="1373120905936431262">Kargatu irudi bat Nano Banana-rekin nahasteko</translation>
 <translation id="1377508275003315939">Pasahitzak</translation>
 <translation id="1381022135873211423">{count,plural, =1{Helbide {count}etik {position}garrena}other{{count} helbidetatik {position}garrena}}</translation>
 <translation id="1383876407941801731">Bilaketa</translation>
@@ -235,6 +236,7 @@
 <translation id="1836891464494477513">{count,plural, =1{Gorde da laster-marka Google-ko kontuan ({email})}other{Gorde dira laster-markak Google-ko kontuan ({email})}}</translation>
 <translation id="1838089197478136166">Diru-zorroa zerbitzuan ireki nahi duzu?</translation>
 <translation id="183878838231635348">Segurtasun-egiaztapenak pribatutasun- edo segurtasun-arazoren bat aurkitzen badu automatikoki, txartel honetan agertuko da.</translation>
+<translation id="1840320537320704887">Kendu dira fitxa berriaren orriaren hobespenak</translation>
 <translation id="1845230888742614096">Mantendu taldea</translation>
 <translation id="1853692000353488670">Ezkutuko moduko fitxa berria</translation>
 <translation id="1854463785401910334">Bilatu irekitako fitxetan</translation>
@@ -701,6 +703,7 @@
 <translation id="368329460027487650">Amaitu da saioa. Saioa hasteko aukerak irekitzen ditu.</translation>
 <translation id="3695446226812920698">Lortu argibideak</translation>
 <translation id="3700134753671613714">Hasi saioa laster-markak gailu guztietan izateko.</translation>
+<translation id="3701167022068948696">Konpondu</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} pasahitz gailu honetan soilik gordeta dago. Beste gailuetan erabiltzeko, gorde ezazu Google-ko kontuan ({EMAIL}).}other{{COUNT} pasahitz gailu honetan soilik gordeta daude. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan ({EMAIL}).}}</translation>
 <translation id="3709621342136814217">Aukeratu letra, testuaren tamaina eta abar hemen</translation>
 <translation id="371230970611282515">Gertaera arriskutsuak iragartzen ditu eta haien berri ematen dizu gertatu aurretik.</translation>
@@ -876,6 +879,7 @@
 <translation id="4338650699862464074">Bisitatzen dituzun orrien URLak bidaltzen dizkio Google-ri.</translation>
 <translation id="4342946437867096381">Dagoeneko gorde duzu webgune honetarako pasahitz bat Google-ko kontuan. Google-k azken pasahitza aukera dezake.</translation>
 <translation id="4365121137632832185">Fitxa taldea. Zabalduta.</translation>
+<translation id="4365685757967464989">Eman kameraren bidez argazkiak ateratzeko baimena Gemini-ri</translation>
 <translation id="4367971618859387374">Bistaratzeko izena</translation>
 <translation id="4375772272517383391">Itxi fitxa guztiak</translation>
 <translation id="4378154925671717803">Telefonoa</translation>
@@ -959,6 +963,7 @@
 
        Aukeratu zer egin nahi duzun gailuan lehendik dauden arakatze-datuekin.</translation>
 <translation id="4675298276894277358">Webgune hau ez da erakutsiko berriro</translation>
+<translation id="4676647168422678078">Fitxa berriaren orriaren hobespenak aplikatu nahi dituzu?</translation>
 <translation id="4682496302933121474">Orria itzuli nahi duzu?</translation>
 <translation id="4682686630151240767">1. Ireki iPhone-aren Settings (ezarpenak) atala.</translation>
 <translation id="4691892551491778176">Eginbide hau erabiltzen duzunean, orriaren edukia eta URLak Google-ra bidaltzen dira, baina ez dira erabiliko AA generatiboko ereduak hobetzeko. Aukera hori desaktibatzeko, joan Ezarpenak atalera.</translation>
@@ -1007,6 +1012,7 @@
 <translation id="4840495572919996524">Laster-markak, historia, pasahitzak eta beste ez dira sinkronizatuko Google-ko kontuarekin aurrerantzean.</translation>
 <translation id="484280513275854557">Zure saioa amaitu da, eta arakatze-datuak ezabatu dira</translation>
 <translation id="4850886885716139402">Ikusi</translation>
+<translation id="4854068532375923088">Eman kamera erabiltzeko baimena "Gemini" aplikazioari</translation>
 <translation id="4860895144060829044">Deitu</translation>
 <translation id="4861953997778766866">Guztiek egin ditzakete aldaketak zure fitxa talde partekatuetan</translation>
 <translation id="4865063548323785458">Gorde pasahitzak eta bete itzazu automatikoki webgune eta aplikazioetan saioa erraz hasteko</translation>
@@ -1211,6 +1217,7 @@
 <translation id="5579012242779565775">Ezkutatu "Irakurketa-zerrenda"</translation>
 <translation id="5581786858144165447">Galdetu AA moduari</translation>
 <translation id="5585019845078534178">Txartelak</translation>
+<translation id="5591526871732898147">Erantsitako {index}garren irudia</translation>
 <translation id="5595485650161345191">Editatu helbidea</translation>
 <translation id="559567008082979829">Konfiguratu deskargak hilabeteren buruan ezabatzeko.</translation>
 <translation id="5596627076506792578">Aukera gehiago</translation>
@@ -1912,6 +1919,7 @@
 <translation id="8059312861912872211">{count,plural, =1{{count} laster-marka}other{{count} laster-marka}}</translation>
 <translation id="8059533439631660104">Hautapena tolesten du.</translation>
 <translation id="8061584726507121204">Historia</translation>
+<translation id="8064946459644399612">Aplikatu dira fitxa berriaren orriaren hobespenak</translation>
 <translation id="8069168488983557089">Lortu edozein gai ulertzeko informazio garrantzitsua eta estatistikak</translation>
 <translation id="8069394452933076548">Hautatu noiz eramaten diren azkenaldian erabili ez diren fitxak fitxa inaktiboen atalera.</translation>
 <translation id="8073670137947914548">Deskargatu da</translation>
@@ -1942,6 +1950,7 @@
 <translation id="8161614462829037225">Desblokeatu <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> erabilita</translation>
 <translation id="8173034266693057059">Luzera</translation>
 <translation id="8182037667962849780">{count,plural, =1{Webgunea: {website_1}}=2{Webguneak: {website_1} eta {website_2}}=3{Webguneak: {website_1}, {website_2} eta beste bat}other{Webguneak: {website_1}, {website_2} eta beste {more_count}}}</translation>
+<translation id="8184895727539791845">Gemini-k kamera erabili ahal dezan, aktibatu Camera (kamera) iOS-en ezarpenetan</translation>
 <translation id="8185076488803799132">Import (inportatu)</translation>
 <translation id="8189615296021678665">Saioa hasten duzun hurrengo aldian pasahitz hau erraz atzitzeko, sakatu "Gorde".</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Zure gailuak<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -2010,6 +2019,7 @@
 <translation id="8428045167754449968">Hiria/Udalerria</translation>
 <translation id="8428213095426709021">Ezarpenak</translation>
 <translation id="8428634594422941299">Ados</translation>
+<translation id="8429455911440977338">Piztu kamera</translation>
 <translation id="8434837876193928924">Fitxa taldearen xehetasunak</translation>
 <translation id="8438566539970814960">Hobetu bilaketak eta arakatze-jarduerak</translation>
 <translation id="8439758443371991593">Ezkutatu "Gehitu irakurketa-zerrendan"</translation>
@@ -2251,6 +2261,7 @@
 <translation id="956218893102219091">Gemini-k emaitzarik zehatzenak eman ditzan, erabili kokapen zehatza, IP helbidean oinarritutako kokapen estimatu baten ordez. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Ezabatu arakatze-datuak</translation>
 <translation id="963102227019621224">Sareko eta aplikazioetako jarduerak</translation>
+<translation id="965259330007686240">Sortu irudi bat Gemini-rekin</translation>
 <translation id="965879457362663186">Gehitu eranskina</translation>
 <translation id="966593914872420832">Ahozko bilaketa</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{Sartu fitxa taldean <ph name="OWNER_NAME" /> erabiltzailearekin}=1{Sartu fitxa taldean <ph name="OWNER_NAME" /> eta beste {COUNT} erabiltzailerekin}other{Sartu fitxa taldean <ph name="OWNER_NAME" /> eta beste {COUNT} erabiltzailerekin}}</translation>

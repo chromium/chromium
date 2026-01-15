@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">Faça a gestão do acesso</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Fechar item}other{Fechar itens}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Secção inferior do separador a meia altura.</translation>
 <translation id="374923079891132274">Miniat. pré-visual. folha partilha</translation>
 <translation id="3776329373944672717">Título do grupo de separadores: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Administrar</translation>
@@ -125,6 +126,7 @@
 <translation id="5339733443032484186">O seu último separador</translation>
 <translation id="5380159289133845234">Arquivar separadores duplicados</translation>
 <translation id="5446043142172831860">Remover separador e sair do grupo</translation>
+<translation id="5465437530117042974">Alterações à secção inferior do separador fechadas.</translation>
 <translation id="5490235265819901748">Grupo de separadores expandido</translation>
 <translation id="5494920125229734069">Selecionar tudo</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Adicione até <ph name="LIMIT_COUNT_ONE" /> ficheiro, separador ou imagem}other{Adicione até <ph name="LIMIT_COUNT_MANY" /> ficheiros, separadores ou imagens}}</translation>
@@ -140,6 +142,7 @@
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6051432659151380973">Os seus grupos de separadores são guardados automaticamente</translation>
 <translation id="6054741997831917303">O preço deste artigo desceu recentemente de <ph name="PREVIOUS_PRICE" /> para <ph name="NEW_PRICE" /></translation>
+<translation id="606985262342505139">Secção inferior do separador à altura total</translation>
 <translation id="6109251075362363230">Agora, todos os separadores duplicados também vão ser arquivados, com exceção da cópia usada mais recentemente.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Fechar <ph name="TABS_COUNT_ONE" /> item selecionado}other{Fechar <ph name="TABS_COUNT_MANY" /> itens selecionados}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Mover grupo para nova janela}other{Mover grupo para outra janela}}</translation>

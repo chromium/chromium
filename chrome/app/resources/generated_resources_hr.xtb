@@ -2562,6 +2562,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2713444072780614174">Bijela</translation>
 <translation id="2714180132046334502">Tamna pozadina</translation>
 <translation id="2714393097308983682">Trgovina Google Play</translation>
+<translation id="2714617928488200509">Modeli</translation>
 <translation id="2715751256863167692">Ovom nadogradnjom Chromebook se vraća na zadano, a trenutačni korisnički podaci se uklanjaju.</translation>
 <translation id="2715934493766003251">Pohrana se ne može očistiti dok je uključena sinkronizacija datoteka</translation>
 <translation id="2716986496990888774">Tom postavkom upravlja roditelj.</translation>
@@ -4600,6 +4601,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4078738236287221428">Agresivno</translation>
 <translation id="4078903002989614318">Opcije razvrstavanja i popisa</translation>
 <translation id="4079140982534148664">Koristi poboljšanu provjeru pravopisa</translation>
+<translation id="4082070466456857368">Misaoni (3 Pro)</translation>
 <translation id="4084682180776658562">Označi</translation>
 <translation id="4084835346725913160">Zatvori karticu <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">Na ovoj je stranici blokiran JavaScript.</translation>
@@ -7276,6 +7278,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5955721306465922729">Web-lokacija želi otvoriti ovu aplikaciju.</translation>
 <translation id="5955809630138889698">Možda uređaj ispunjava uvjete samo za online demo način. Više pojedinosti zatražite od predstavnika podrške.</translation>
 <translation id="59561895884837262">Primit ćete obavijest kad se snimanje pokrene.</translation>
+<translation id="5957613098218939406">Više opcija</translation>
 <translation id="5957987129450536192">Dodirnite ikonu Odabira za govor u blizini svoje profilne slike, a zatim odaberite što želite čuti.</translation>
 <translation id="5958836583172610505">Sinkronizacija je uključena</translation>
 <translation id="5959471481388474538">Mreža nije dostupna</translation>
@@ -7841,6 +7844,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6350821834561350243">Jasno objasnite problem i korake za njegovo reproduciranje (ako je moguće)</translation>
 <translation id="6351178441572658285">Jezici aplikacija</translation>
 <translation id="6354918092619878358">SECG eliptična krivulja secp256r1 (poznata i kao ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355632359041940003">Preuzmi zadatak</translation>
 <translation id="635609604405270300">Neka uređaj ostane uključen</translation>
 <translation id="6356537493253478650">Spokojan</translation>
 <translation id="63566973648609420">Samo osoba koja ima vašu šifru može čitati vaše kriptirane podatke. Šifra se ne šalje Googleu i ne pohranjuje na njemu. Ako zaboravite šifru ili želite promijeniti tu postavku, morat ćete <ph name="BEGIN_LINK" />poništiti sinkronizaciju<ph name="END_LINK" />.</translation>
@@ -8812,6 +8816,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7017219178341817193">Dodajte novu stranicu</translation>
 <translation id="7017354871202642555">Nakon postavljanja prozora nije moguće postaviti način.</translation>
 <translation id="7019805045859631636">Brzo</translation>
+<translation id="7020810150082302220">Vaš je zadani preglednik promijenjen</translation>
 <translation id="7021524108486027008">Pokrenite alate, uređivače i IDE-jeve u okruženju kojim upravlja vaša tvrtka na uređaju <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7022222879220069865">Prekinuta je veza sa svim dodirnim podlogama</translation>
 <translation id="7022562585984256452">Vaša je početna stranica postavljena.</translation>
@@ -10193,6 +10198,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7969144945436590933">Saznajte više pojedinosti</translation>
 <translation id="7970673414865679092">Pojedinosti o ethernetu</translation>
 <translation id="7972714317346275248">PKCS br. 1 SHA-384 s RSA enkripcijom</translation>
+<translation id="7972837668077967426">Canvas</translation>
 <translation id="7973149423217802477">Palac dolje šalje povratne informacije da vam se to ne sviđa.</translation>
 <translation id="7973776233567882054">Koje od sljedećeg najbolje opisuje vašu mrežu?</translation>
 <translation id="797394244396603170">Odaberite uređaj s kojim želite dijeliti datoteke</translation>
@@ -10631,6 +10637,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8263228331881858381">Pristupni je ključ spremljen</translation>
 <translation id="8263336784344783289">Postavite naziv grupe</translation>
 <translation id="8264024885325823677">Tom postavkom upravlja vaš administrator.</translation>
+<translation id="826410575944953302">Proširi okomite kartice</translation>
 <translation id="8264195025773092348">Prikazuju se samo podržani uređaji. USB uređaji više neće biti dostupni nativnim aplikacijama dok se ne iskopčaju.</translation>
 <translation id="8265018477030547118">Samo na ovom uređaju</translation>
 <translation id="826511437356419340">Otvoren je način pregleda u prozoru. Da biste se kretali, prijeđite prstom ili, ako koristite tipkovnicu, pritisnite tabulator.</translation>
@@ -10728,6 +10735,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8323518750352551353">Želite li podijeljeno pregledavanje?</translation>
 <translation id="8323744572398547859">Da bi se prikazale kartice s drugih uređaja, prijavite se i sinkronizirajte povijest. Također ćete moći pristupati svojim zaporkama i drugim podacima na svim svojim uređajima. Sinkronizaciju možete uvijek zaustaviti u postavkama. Google može personalizirati Pretraživanje i druge usluge na temelju vaše povijesti.</translation>
 <translation id="8324158725704657629">Više me ne pitaj</translation>
+<translation id="8324264291265547520">Proširi okomite kartice</translation>
 <translation id="8325413836429495820">Nije dopušten pregled međuspremnika</translation>
 <translation id="8326478304147373412">PKCS br. 7, lanac certifikata</translation>
 <translation id="8327386430364625757">Matematički font</translation>
@@ -10753,6 +10761,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8339288417038613756">Veličina prikaza i teksta</translation>
 <translation id="833986336429795709">Da biste otvorili tu vezu, odaberite aplikaciju</translation>
 <translation id="8340547030807793004">Više radnji za uređaj <ph name="DEVICE" /></translation>
+<translation id="8341693734243413517">Alat za ažuriranje Chromea</translation>
 <translation id="8341804784147620576">Prikaži prečace za pretraživanje</translation>
 <translation id="8342221978608739536">Nisam pokušao/pokušala</translation>
 <translation id="8342387517402567689">Instalacije web-aplikacija nisu podržane u anonimnom načinu</translation>
@@ -11056,6 +11065,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8551588720239073785">Postavke datuma i vremena</translation>
 <translation id="8551647092888540776">Datoteka <ph name="FILE_NAMES" /> ne može se otvoriti offline</translation>
 <translation id="8552102814346875916">Spremi na popis Neka ove web-lokacije uvijek budu aktivne</translation>
+<translation id="8552947739661397736">Preuzmi zadatak, Gemini trenutačno upravlja</translation>
 <translation id="8553342806078037065">Upravljajte drugim osobama</translation>
 <translation id="8554899698005018844">Nema jezika</translation>
 <translation id="8555444629041783356">Automatski raspored zalazaka sunca</translation>

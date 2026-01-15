@@ -412,6 +412,7 @@
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ ще 1)}one{(+ ще #)}few{(+ ще #)}many{(+ ще #)}other{(+ ще #)}}</translation>
 <translation id="5403592356182871684">Імена</translation>
 <translation id="5407203562970638234">Посильте захист</translation>
+<translation id="5436307623797390637">Установлені додатки</translation>
 <translation id="5438097262470833822">Буде скинуто дозволи для веб-сайту <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Якщо цей параметр увімкнено, сайти можуть просити доступ до геоданих. Якщо його вимкнено, сайти не можуть просити доступ до геоданих.</translation>
 <translation id="5489227211564503167">Минуло часу: <ph name="ELAPSED_TIME" /> з <ph name="TOTAL_TIME" /></translation>

@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Nieuw venster</translation>
 <translation id="1558391695376153246">Incognitotabbladen sluiten</translation>
 <translation id="1565371473877914088">Nieuw incognitotabblad</translation>
+<translation id="1567960978791353852">Leesmodus tonen</translation>
 <translation id="1571780780926010134">Incognitotabbladen</translation>
 <translation id="1580715474678097352">Beveiliging tegen schadelijke websites</translation>
 <translation id="1580783302095112590">E-mail verzonden.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">Als je wachtwoorden wilt zien, moet je eerst een toegangscode instellen op je apparaat.</translation>
 <translation id="201759455285471444">Tabbladgroep uitvouwen.</translation>
 <translation id="202070562065520783">Leg dit aan me uit</translation>
+<translation id="2023713324775943812">Open de leesmodus via de adresbalk als deze beschikbaar is</translation>
 <translation id="2044394949148788042">Open het tabbladraster</translation>
 <translation id="2044681667265133332">Het account <ph name="USER_EMAIL" /> wordt beheerd door <ph name="HOSTED_DOMAIN" />. Dit domein kan bepaalde informatie bekijken. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nieuw item</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Je tabbladgroepen worden hier opgeslagen</translation>
 <translation id="2273327106802955778">Menu Meer</translation>
 <translation id="2287614783861766820">{count,plural, =1{Dit adres wordt verwijderd van dit apparaat.}other{Deze adressen worden verwijderd van dit apparaat.}}</translation>
+<translation id="2295236662082735391">Houd je vinger lang op een afbeelding op het web om deze te bewerken met Gemini</translation>
 <translation id="2297989278479054870">Nadat je bent uitgelogd, worden onder andere de bookmarks en wachtwoorden in je Google-account van dit apparaat verwijderd.</translation>
 <translation id="2299218006564889602">Je wachtwoorden worden versleuteld op je apparaat voordat ze worden opgeslagen in Google Wachtwoordmanager</translation>
 <translation id="2306265833370324042">Details voor <ph name="SEARCH_ENGINE_NAME" /> tonen</translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Maak een foto van wat je zoekt</translation>
 <translation id="2761898608071930085">Een ander account gebruiken</translation>
 <translation id="2762000892062317888">zojuist</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Voeg maximaal 1 afbeelding toe}other{Voeg maximaal {COUNT} afbeeldingen toe}}</translation>
 <translation id="2772667768515195373">Je kunt opgeslagen adressen gebruiken in meerdere Google-producten. Dit adres is opgeslagen in je Google-account <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">E-mailmeldingen</translation>
 <translation id="2781331604911854368">Aan</translation>
@@ -703,6 +707,7 @@
 <translation id="368329460027487650">Uitgelogd. Hiermee open je de inlogopties.</translation>
 <translation id="3695446226812920698">Meer informatie</translation>
 <translation id="3700134753671613714">Log in om je bookmarks op al je apparaten te bekijken.</translation>
+<translation id="3701167022068948696">Nu oplossen</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} wachtwoord wordt alleen op dit apparaat opgeslagen. Als je het op je andere apparaten wilt gebruiken, sla je het op in je Google-account, {EMAIL}.}other{{COUNT} wachtwoorden worden alleen op dit apparaat opgeslagen. Als je ze op je andere apparaten wilt gebruiken, sla je ze op in je Google-account, {EMAIL}.}}</translation>
 <translation id="3709621342136814217">Kies hier onder andere je lettertype en tekstgrootte</translation>
 <translation id="371230970611282515">Voorspelt en waarschuwt je voor gevaarlijke gebeurtenissen voordat deze plaatsvinden.</translation>
@@ -1352,6 +1357,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="605721222689873409">JJ</translation>
 <translation id="6058415747854995776">Video opnemen</translation>
 <translation id="6059830886158432458">Beheer hier je artikelen en activiteiten</translation>
+<translation id="6063802271331271857">Een afbeelding remixen</translation>
 <translation id="6066301408025741299">Tik om te annuleren.</translation>
 <translation id="6074656473835429958">Meldingen krijgen</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) kan niet worden geüpload</translation>
@@ -1870,6 +1876,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="7899199123054742721">Alles als ongelezen markeren</translation>
 <translation id="7911190106180361398">Je organisatie staat niet toe dat je alles synchroniseert.</translation>
 <translation id="7918999344502274923">Details voor <ph name="SEARCH_ENGINE_NAME" /> verbergen</translation>
+<translation id="7921559948846049514">Kies een thema, kleur of meer voor je achtergrond</translation>
 <translation id="792357691529995513">Geen problemen gevonden</translation>
 <translation id="7925108652071887026">Gegevens van Automatisch invullen</translation>
 <translation id="7926975587469166629">Bijnaam kaart</translation>

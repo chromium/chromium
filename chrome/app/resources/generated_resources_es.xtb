@@ -1085,6 +1085,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1709916727352927457">Eliminar llave de acceso</translation>
 <translation id="1709972045049031556">No se puede compartir</translation>
 <translation id="1712143791363119140">En curso</translation>
+<translation id="1713120794167761305">Mover pestañas al lateral</translation>
 <translation id="1714265454085143857">Pestañas fijas</translation>
 <translation id="1714326320203665217">Archivos de anotaciones del nodo principal descargados</translation>
 <translation id="1714644264617423774">Permite habilitar las funciones de accesibilidad para facilitar el uso de tu dispositivo. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -3227,6 +3228,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3167562202484086668">Eliminar todos los datos de <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Elige el tema que mejor se adapte a tus necesidades. Para cambiar el tema, el fondo de pantalla, el salvapantallas y otras opciones, mantén pulsado el escritorio.</translation>
 <translation id="3170072451822350649">También puedes <ph name="LINK_START" />navegar como invitado<ph name="LINK_END" /> sin iniciar sesión.</translation>
+<translation id="3172642937040465677">Mover pestañas a la parte superior</translation>
 <translation id="3175067642577044620">Cuerpo</translation>
 <translation id="3175862692832442091">Bosque</translation>
 <translation id="3176347586396987181">Usa "z" para mantener pulsado un botón del ratón</translation>
@@ -3481,6 +3483,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="335581015389089642">Voz</translation>
 <translation id="335587007651175930">Busca lo que aparece en tu pantalla con Google Lens</translation>
 <translation id="3355936511340229503">Error de conexión</translation>
+<translation id="335678817537689040">Estático</translation>
 <translation id="3359256513598016054">Restricciones de políticas de certificados</translation>
 <translation id="3360297538363969800">Se ha producido un error al imprimir. Comprueba la impresora y vuelve a intentarlo.</translation>
 <translation id="3360306038446926262">Ventanas</translation>
@@ -4180,6 +4183,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
         <ph name="BREAK" />
         Puedes gestionar la configuración en el menú de la tarjeta o ver más opciones en Personalizar Chrome.</translation>
 <translation id="3801449494961771207">Voz de la conversión de texto a voz del sistema</translation>
+<translation id="3801748538479607989">Mover pestañas a la parte superior</translation>
 <translation id="3802486193901166966">Esta extensión no requiere permisos especiales y no tiene acceso adicional al sitio</translation>
 <translation id="380329542618494757">Nombre</translation>
 <translation id="3803345858388753269">Calidad de vídeo</translation>
@@ -5992,6 +5996,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5060419232449737386">Ajustes de subtítulos</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Esta carpeta contiene un marcador. ¿Seguro que quieres eliminarla?}other{Esta carpeta contiene # marcadores. ¿Seguro que quieres eliminarla?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
+<translation id="5062863364865466276">Movimiento</translation>
 <translation id="5062930723426326933">Se ha producido un error al iniciar sesión. Conéctate a Internet y vuelve a intentarlo.</translation>
 <translation id="5063480226653192405">Uso</translation>
 <translation id="5064921774605267982">Abre el perfil <ph name="PROFILE_NAME" />. Tu padre o madre gestiona este perfil.</translation>
@@ -6932,6 +6937,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5722086096420375088">Verde y blanco</translation>
 <translation id="572328651809341494">Pestañas recientes</translation>
 <translation id="5723508132121499792">No se están ejecutando aplicaciones en segundo plano.</translation>
+<translation id="5724723163580775373">Enfoque grande</translation>
 <translation id="5725112283692663422">Enviar comentarios sobre la función Crear tema con IA</translation>
 <translation id="5727728807527375859">Las extensiones, las aplicaciones y los temas pueden dañar tu ordenador. ¿Seguro que quieres continuar?</translation>
 <translation id="5728072125198221967">Servicios de Google vinculados</translation>
@@ -7179,6 +7185,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5888889603768021126">Sesión iniciada con</translation>
 <translation id="5889282057229379085">Número máximo de entidades emisoras de certificados intermediarias: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Cifra los datos sincronizados con tu propia <ph name="BEGIN_LINK" />frase de contraseña de sincronización<ph name="END_LINK" />. Los métodos de pago y las direcciones de Google Pay no se cifrarán. El historial de navegación de Chrome no se sincronizará.</translation>
+<translation id="5890072287476934834">Mover pestañas al lateral</translation>
 <translation id="5891688036610113830">Redes Wi-Fi preferidas</translation>
 <translation id="5894056653502215961">Desmarcar carpeta <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -7279,6 +7286,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5955721306465922729">Un sitio web quiere abrir esta aplicación.</translation>
 <translation id="5955809630138889698">Es posible que este dispositivo solo sea apto para el modo Demo online. Para obtener más información, ponte en contacto con tu representante de soporte.</translation>
 <translation id="59561895884837262">Recibirás una notificación cuando empiece la grabación.</translation>
+<translation id="5957613098218939406">Más opciones</translation>
 <translation id="5957987129450536192">Toca el icono Enunciar selección, situado junto a la imagen de tu perfil, y selecciona la parte que quieres escuchar.</translation>
 <translation id="5958836583172610505">La sincronización está activada</translation>
 <translation id="5959471481388474538">Red no disponible</translation>
@@ -8332,6 +8340,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6702639462873609204">&amp;Editar...</translation>
 <translation id="6702859741546259407">Para usar <ph name="FEATURE_NAME" />, activa el Bluetooth y la conexión Wi-Fi</translation>
 <translation id="6703109186846420472">,</translation>
+<translation id="670431355064244920">Enfoque pequeño</translation>
 <translation id="6707122714992751648">Ejecutar las pruebas de diagnóstico de ChromeOS</translation>
 <translation id="6707389671160270963">Certificado de cliente SSL</translation>
 <translation id="6707671917294473995">Los sitios web no tienen permiso para usar tu cámara</translation>
@@ -9323,6 +9332,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7389615853658756494">Cambiarlo en el sitio</translation>
 <translation id="7392118418926456391">Error en el análisis antivirus</translation>
 <translation id="7392915005464253525">Volv&amp;er a abrir ventana cerrada</translation>
+<translation id="739299645392306071">Enfoque medio</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 elemento copiado}other{{COUNT} elementos copiados}}</translation>
 <translation id="7393435859300249877">Recibirás una notificación si hablas mientras el micrófono está silenciado al usar determinadas aplicaciones, como aplicaciones de chat de vídeo. El audio no saldrá de tu dispositivo.</translation>
 <translation id="7395008140803590549">No se puede eliminar el certificado</translation>

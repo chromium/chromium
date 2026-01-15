@@ -528,6 +528,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1824402189105105503">Åttende rull</translation>
 <translation id="1826516787628120939">Kontrollerer</translation>
 <translation id="1829026591231985685">lagrer informasjon i Google Wallet i innstillingene</translation>
+<translation id="1832474362231610822">Bildet er lagret i OneDrive</translation>
 <translation id="1832730227369924598">Synkronisering av skrivebord</translation>
 <translation id="1834452765064623979">Bygging og vedlikehold</translation>
 <translation id="1838374766361614909">Fjern søket</translation>
@@ -581,6 +582,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1935353813610900265">Send tilbakemelding om AI-basert loggsøk</translation>
 <translation id="1935995810530254458">Kopier likevel</translation>
 <translation id="1938580037092872316">Legg til ny informasjon i den lagrede adressen</translation>
+<translation id="1938812296371201896">Kan ikke lagre videoen</translation>
 <translation id="1939059826036755332">Automatisk bilde-i-bilde</translation>
 <translation id="1939175642807587452">Kan be om å få sende varsler</translation>
 <translation id="1940441167050915935">Slett lagrede sikkerhetskoder</translation>
@@ -743,6 +745,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adresse}other{# adresser}}</translation>
 <translation id="2188375229972301266">Flere hull bunn</translation>
 <translation id="218940509700321686">Kommadelte verdier</translation>
+<translation id="2191980191135734720">Lås opp skjermen i neste trinn, vanligvis med fingeravtrykket ditt. Du kan også <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Ting å tenke på</translation>
 <translation id="2198183835992354675">Known traveler-nummer</translation>
 <translation id="2198215508485017216">Noe uventet skjedde. <ph name="BEGIN_LINK" />Finn ut mer om Disk-opplastinger<ph name="END_LINK" /></translation>
@@ -791,6 +794,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2256721673839268919">Såpeoperaer</translation>
 <translation id="2258928405015593961">Oppgi en fremtidig utløpsdato, og prøv på nytt</translation>
 <translation id="225943865679747347">Feilkode: <ph name="ERROR_CODE" /></translation>
+<translation id="2262183267184054286">verifisere på en annen måte</translation>
 <translation id="2262243747453050782">HTTP-feil</translation>
 <translation id="2265192657948645752">Jobber innen detaljhandel</translation>
 <translation id="2265356434276802347">Dette regelen skal ikke ha mer enn <ph name="MAX_ITEMS_LIMIT" /> fremhevede oppføringer.</translation>
@@ -869,6 +873,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2370368710215137370">Opplasting av filer</translation>
 <translation id="2370739752330685659">Kanskje senere</translation>
 <translation id="2371084566192454134">Faner og fanegrupper</translation>
+<translation id="237379235388498999">Videoen er lagret i OneDrive</translation>
 <translation id="2374629208601905275">På grunn av en lov som gjelder i regionen din, ber vi deg om å velge en standardsøkemotor for Chrome. Disse søkemotorene er populære i regionen din og vises i tilfeldig rekkefølge.</translation>
 <translation id="2376455483361831781">Ny tabell</translation>
 <translation id="2377241607395428273">Programvare for tegning og animasjon</translation>
@@ -1384,6 +1389,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Må oppdateres nå}=2{Må oppdateres innen i morgen}other{Må oppdateres innen # dager}}</translation>
 <translation id="3218376667417971956">Motorkjøretøy</translation>
 <translation id="3218388919950135939">Gå bare til <ph name="BEGIN_LINK" />dette usikre nettstedet<ph name="END_LINK" /> hvis du er sikker på at du forstår risikoen.</translation>
+<translation id="3219056262712778751">Videoen er tapt på grunn av en ukjent feil</translation>
 <translation id="3220264767789936523">Formelle klær</translation>
 <translation id="3223287115535306850">Throbber for appstart</translation>
 <translation id="3223425961342298674">Posisjon er ikke tillatt</translation>
@@ -2280,6 +2286,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4652440160515225514">Organisasjonen din har blokkert dette nettstedet fordi det bryter en regel.</translation>
 <translation id="4654457557264366314">Betalingsavtaler er avhengig av kvalifikasjon.</translation>
 <translation id="4658638640878098064">Stift oppe til venstre</translation>
+<translation id="4658801711339831733">Skanningen er lagret i Google Disk</translation>
 <translation id="4660592918803576381">Åpne i Disk</translation>
 <translation id="4661556981531699496">Dyr og kjæledyr</translation>
 <translation id="4661868874067696603">Søk etter flere kjøpsalternativer</translation>
@@ -2309,6 +2316,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4702656508969495934">Direkteteksting er synlig – bruk vindusbytteren for å fokusere</translation>
 <translation id="4703342001883078444">Familie og forhold</translation>
 <translation id="4704745399240123930">Kort som ikke godtas av denne selgeren, er deaktivert, for eksempel virtuelle kort.</translation>
+<translation id="4705573018059932476">Du har valgt å bekrefte med <ph name="AUTHENTICATOR" /> på nettsteder som bruker <ph name="PROVIDER_ORIGIN" />. Denne leverandøren kan ha lagret informasjon om hvordan du betaler, som du kan <ph name="LINK_TEXT" />.</translation>
 <translation id="4708268264240856090">Tilkoblingen ble avbrutt</translation>
 <translation id="4708276642004148190">Vannforsyning og -behandling</translation>
 <translation id="4711628883879888561">Samarbeid om fanegruppe</translation>
@@ -2592,6 +2600,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5138014172396933048">Virtuelt kort er ikke tilgjengelig akkurat nå – kontakt banken</translation>
 <translation id="5138227688689900538">Vis færre</translation>
 <translation id="5140155249377545621">Førerkort</translation>
+<translation id="5143310416385956149">Skanningen er lagret i OneDrive</translation>
 <translation id="5144613843429436866">Du har gitt dette nettstedet tillatelse til å bruke <ph name="PERMISSION" /></translation>
 <translation id="5145883236150621069">Feilkode i responsen for enhetsinnstillinger</translation>
 <translation id="5146995429444047494">Varsler for <ph name="ORIGIN" /> er blokkert</translation>
@@ -2770,6 +2779,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
             <ph name="LIST_ITEM" />informasjonskapsler og nettstedsdata
             <ph name="LIST_ITEM" />informasjon du har lagt inn i skjemaer
           <ph name="END_LIST" /></translation>
+<translation id="5436307623797390637">Apper på enheten</translation>
 <translation id="5443468954631487277">Motsatt rekkefølge – forsiden opp</translation>
 <translation id="5447235695608032700">Tillat at <ph name="SITE" /> bruker informasjon de har lagret om deg</translation>
 <translation id="5447973833955560753">Gjenopprettingspassord</translation>
@@ -3090,6 +3100,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5974052231147553524">Sjette rull</translation>
 <translation id="5975083100439434680">Zoom ut</translation>
 <translation id="5979084224081478209">Kontroller passordene</translation>
+<translation id="5983602399618208855">Du finner den i Kamera-mappen</translation>
 <translation id="5984570616552610254">Kammerfuktighet</translation>
 <translation id="598637245381783098">Kan ikke åpne betalingsappen</translation>
 <translation id="5989320800837274978">Verken statiske proxytjenere eller en nettadresse med .pac-skript er angitt.</translation>
@@ -3223,6 +3234,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6171968084616623939">«<ph name="PROXY_INVALID_SCHEME_HOST_PORT" />» er ikke en gyldig verdi.</translation>
 <translation id="617256461084925519">Google Chrome prøver å bekrefte at det er deg, så den kan fylle ut betalingsopplysningene dine.</translation>
 <translation id="6173208311907792313">Fullfør kjøpet med Windows Hello</translation>
+<translation id="6175423614837252320">Bildet er lagret i Google Disk</translation>
 <translation id="6176387967264100435">Denne prisen er høy</translation>
 <translation id="6177128806592000436">Tilkoblingen til dette nettstedet er ikke sikker</translation>
 <translation id="6177531123306197852">C2-konvolutt</translation>
@@ -3508,6 +3520,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">IT-utdanning</translation>
 <translation id="6633476656216409494">Forretnings- og produktivitetsprogramvare</translation>
+<translation id="6635900375070654124">en autentiseringsenhet</translation>
 <translation id="6641852376826221947">Bekreft kjøpet</translation>
 <translation id="6643016212128521049">Tøm</translation>
 <translation id="6645291930348198241">få tilgang til informasjonskapsler og nettstedsdata</translation>
@@ -3535,6 +3548,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6677351035258626477">Hurtigmat</translation>
 <translation id="6677738644213083042">Bytt til denne fanen</translation>
 <translation id="6679354743514146922">Chrome-nettleseren prøver å fylle ut passordet ditt på <ph name="APP_NAME" />.</translation>
+<translation id="668132230070712111">Videoen er lagret i Google Disk</translation>
 <translation id="6681790815630918386">Verifiseringskoden er lagret</translation>
 <translation id="6683022854667115063">Hodetelefoner</translation>
 <translation id="6687230248707087982">Konvolutt (vanlig)</translation>
@@ -3826,6 +3840,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7136009930065337683">Finn ut mer om Inkognito</translation>
 <translation id="7138472120740807366">Leveringsmetode</translation>
 <translation id="7138678301420049075">Annet</translation>
+<translation id="7139358018102157153">Ta bilde på nytt</translation>
 <translation id="7139892792842608322">Hovedskuff</translation>
 <translation id="7140087718106278457">Listen over betalingsmåter er lukket.</translation>
 <translation id="714064300541049402">X-forskyvning av bilde på side 2</translation>
@@ -3904,6 +3919,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7260075294900977274">En ny smart mappe du kan bruke til å lagre alle handlesidene dine på ett sted, slik at du kan spore priser automatisk, få prisstatistikk med mer</translation>
 <translation id="7264942008235065057">Dette nettstedet forblir blokkert fordi du er underlagt Googles Avansert beskyttelse-program. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">Adressen er bare tilgjengelig på denne enheten</translation>
+<translation id="7266094331715305887">apper på enheten</translation>
 <translation id="7269151392155523061">Snarveien kan ikke være lik søkeordet for søkeaggregatoren som er definert av <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Filer du laster ned, sendes til Google Cloud eller tredjeparter for analyse. De kan for eksempel bli skannet for sensitive data eller skadelig programvare, og de kan bli lagret i henhold til bedriftens retningslinjer og være synlige for administratoren din.</translation>
 <translation id="7275334191706090484">Administrerte bokmerker</translation>
@@ -3921,6 +3937,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7304030187361489308">Høyt</translation>
 <translation id="7304562222803846232">Administrer personverninnstillingene for Google-kontoen</translation>
 <translation id="7305756307268530424">Start tregere</translation>
+<translation id="7305767780379163575">Kan ikke lagre bildet</translation>
 <translation id="7307063504147610123">Adressen er lagret på denne enheten</translation>
 <translation id="7308436126008021607">bakgrunnssynkronisering</translation>
 <translation id="7309058266849426521">Finn ut hvordan du administrerer annonsepersonvernet ditt i Chrome.</translation>
@@ -4179,6 +4196,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="767550629621587224">Forhåndsstanset fanepapir</translation>
 <translation id="7675756033024037212">Rulling og zooming er ikke tillatt</translation>
 <translation id="7676643023259824263">Søk etter teksten <ph name="TEXT" /> på utklippstavlen</translation>
+<translation id="7678730592635586336">Ta opp videoen på nytt</translation>
 <translation id="7679287273775285018">Betal med e-lommebok</translation>
 <translation id="7679367271685653708">Se og administrer nettleserloggen din i Chrome-innstillingene</translation>
 <translation id="7679947978757153706">Baseball</translation>
@@ -4213,6 +4231,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7716147886133743102">Blokkert av administratoren din</translation>
 <translation id="7716375162095500223">Ignorert eller ikke lastet opp ennå</translation>
 <translation id="7716424297397655342">Dette nettstedet kan ikke lastes inn fra bufferen</translation>
+<translation id="7718626066800460799">Kan ikke lagre skanningen</translation>
 <translation id="7719791801330803993">Foto- og videoprogramvare</translation>
 <translation id="772128550427553158">CVC-koden finner du på forsiden av kortet.</translation>
 <translation id="7724603315864178912">Klipp ut</translation>
@@ -4220,6 +4239,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7734285854693414638">Opprett et nytt skjema i Google Skjemaer raskt</translation>
 <translation id="773466115871691567">Oversett alltid sider på <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="7736959720849233795">Kopier linkadressen</translation>
+<translation id="7739868470710894050">Skann på nytt</translation>
 <translation id="7740996059027112821">Standard</translation>
 <translation id="77424286611022110">Dette nettstedet viser forstyrrende eller villedende annonser. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
 <translation id="7744505202669469867">Tabell over lagrede adresser</translation>
@@ -4434,6 +4454,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="809543534949702122">Søkelogg</translation>
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
+<translation id="8099473231501330216">be om å få slettet</translation>
 <translation id="8103161714697287722">Betalingsmåte</translation>
 <translation id="8103643211515685474">Skriv ut likevel</translation>
 <translation id="8105368624971345109">Slå av</translation>
@@ -4544,6 +4565,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8282409409360764263">Hagevedlikehold</translation>
 <translation id="8282947398454257691">få kjennskap til den unike enhetsidentifikatoren</translation>
 <translation id="8284769179630993263">Administrer Safe Browsing med mer i Chrome-innstillingene</translation>
+<translation id="828558778104922222">Bildet er tapt på grunn av en ukjent feil</translation>
 <translation id="8286036467436129157">Logg på</translation>
 <translation id="8286799286781881307">Apper som er autorisert av administratoren din, kan ta opp alle skjermene som er tilknyttet enheten din. Denne informasjonen kan behandles lokalt eller lastes opp til organisasjonens tjenere.</translation>
 <translation id="8287123726498397887">Konvolutt (fortrykt)</translation>
@@ -4616,6 +4638,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8402442052798347631">Angripere på nettstedet du prøvde å besøke, kan lure deg til å installere skadelig programvare som påvirker måten du surfer på – for eksempel ved å endre startsiden eller vise deg ekstra annonser på nettstedene du besøker. Chrome anbefaler på det sterkeste at du går tilbake til trygg grunn for å unngå skade. <ph name="BEGIN_LEARN_MORE_LINK" />Finn ut mer om denne advarselen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Fanfiksjon</translation>
 <translation id="8405579342203358118">Administrer hvilken informasjon du synkroniserer, i Chrome-innstillingene</translation>
+<translation id="8405621913275228683">Skanningen gikk tapt på grunn av en ukjent feil</translation>
 <translation id="8406071103346257942">slutte å bruke skjermlåsen til å fylle ut passord</translation>
 <translation id="8407031780528483338">Kjøkkenutstyr</translation>
 <translation id="8409413588194360210">betalingsbehandlere</translation>

@@ -412,6 +412,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 altro)}other{(+ altri #)}}</translation>
 <translation id="5403592356182871684">Nomi</translation>
 <translation id="5407203562970638234">Migliora la tua sicurezza</translation>
+<translation id="5436307623797390637">App sul dispositivo</translation>
 <translation id="5438097262470833822">Questa selezione reimposterà le autorizzazioni per <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Quando l'opzione è attiva, i siti possono chiedere la tua posizione. Quando l'opzione è disattivata, i siti non possono vedere la tua posizione.</translation>
 <translation id="5489227211564503167">Tempo trascorso: <ph name="ELAPSED_TIME" /> di <ph name="TOTAL_TIME" />.</translation>

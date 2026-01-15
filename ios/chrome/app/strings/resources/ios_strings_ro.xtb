@@ -104,6 +104,7 @@
 <translation id="1366297852155605523">Accesibile pentru mine</translation>
 <translation id="1369286077209859800">Afișează toate filele din grupul de file</translation>
 <translation id="136942498637440594">Poți să cauți imagini și ceea ce vezi.</translation>
+<translation id="1373120905936431262">Încarcă o imagine de remixat cu Nano Banana</translation>
 <translation id="1377508275003315939">Parole</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} din {count} adresă}few{{position} din {count} adrese}other{{position} din {count} de adrese}}</translation>
 <translation id="1383876407941801731">Caută</translation>
@@ -235,6 +236,7 @@
 <translation id="1836891464494477513">{count,plural, =1{Marcajul s-a salvat în Contul Google, {email}}few{Marcajele s-au salvat în Contul Google, {email}}other{Marcajele s-au salvat în Contul Google, {email}}}</translation>
 <translation id="1838089197478136166">Deschizi în Portofel?</translation>
 <translation id="183878838231635348">Acest card afișează toate problemele de confidențialitate sau de securitate pe care Verificarea de siguranță le detectează automat pentru tine.</translation>
+<translation id="1840320537320704887">Preferințele pentru pagina Filă nouă au fost eliminate</translation>
 <translation id="1845230888742614096">Păstrează grupul</translation>
 <translation id="1853692000353488670">Filă incognito nouă</translation>
 <translation id="1854463785401910334">Caută în filele deschise</translation>
@@ -701,6 +703,7 @@
 <translation id="368329460027487650">Utilizator deconectat. Deschide opțiunile pentru a te conecta.</translation>
 <translation id="3695446226812920698">Află cum</translation>
 <translation id="3700134753671613714">Conectează-te pentru a putea accesa marcajele pe toate dispozitivele.</translation>
+<translation id="3701167022068948696">Remediază acum</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} parolă se salvează numai pe acest dispozitiv. Pentru a-l folosi pe celelalte dispozitive, salvează-l în Contul tău Google, {EMAIL}.}few{{COUNT} parole se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google {EMAIL}.}other{{COUNT} de parole se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google {EMAIL}.}}</translation>
 <translation id="3709621342136814217">Alege fontul, dimensiunea textului și multe altele aici</translation>
 <translation id="371230970611282515">Anticipează și te avertizează cu privire la evenimente periculoase înainte să aibă loc.</translation>
@@ -876,6 +879,7 @@
 <translation id="4338650699862464074">Trimite la Google adresele URL ale paginilor pe care le accesezi.</translation>
 <translation id="4342946437867096381">Ai salvat deja o parolă pentru acest site în Contul Google. Google poate alege cea mai recentă parolă pentru tine.</translation>
 <translation id="4365121137632832185">Grup de file. Extins.</translation>
+<translation id="4365685757967464989">Permite ca Gemini să utilizeze camera pentru a face fotografii</translation>
 <translation id="4367971618859387374">Numele afișat</translation>
 <translation id="4375772272517383391">Închide toate filele</translation>
 <translation id="4378154925671717803">Telefon</translation>
@@ -959,6 +963,7 @@
 
        Alege ce să faci cu datele de navigare existente de pe acest dispozitiv.</translation>
 <translation id="4675298276894277358">Acest site nu se va mai afișa</translation>
+<translation id="4676647168422678078">Dorești să aplici preferințele pentru pagina Filă nouă?</translation>
 <translation id="4682496302933121474">Traduci pagina?</translation>
 <translation id="4682686630151240767">1. Deschide Setările dispozitivului iPhone.</translation>
 <translation id="4691892551491778176">Când folosești această funcție, conținutul paginilor și adresele URL sunt trimise la Google, dar nu se vor folosi pentru a îmbunătăți modelele de AI generativ. Poți dezactiva oricând această opțiune din setări.</translation>
@@ -1007,6 +1012,7 @@
 <translation id="4840495572919996524">Marcajele, istoricul, parolele și alte setări nu vor mai fi sincronizate cu Contul Google.</translation>
 <translation id="484280513275854557">Te-ai deconectat și datele de navigare au fost șterse</translation>
 <translation id="4850886885716139402">Afișează</translation>
+<translation id="4854068532375923088">Permite ca Gemini să utilizeze camera</translation>
 <translation id="4860895144060829044">Apelează</translation>
 <translation id="4861953997778766866">Oricine poate să facă modificări în grupurile de file la care se permite accesul</translation>
 <translation id="4865063548323785458">Salvează și completează automat parolele pentru a te conecta cu ușurință la site-uri și aplicații</translation>
@@ -1211,6 +1217,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5579012242779565775">Ascunde Lista de lecturi</translation>
 <translation id="5581786858144165447">Întreabă Modul AI</translation>
 <translation id="5585019845078534178">Carduri</translation>
+<translation id="5591526871732898147">Imaginea atașată {index}</translation>
 <translation id="5595485650161345191">Editează adresa</translation>
 <translation id="559567008082979829">Setează ștergerea descărcărilor după o lună.</translation>
 <translation id="5596627076506792578">Mai multe opțiuni</translation>
@@ -1912,6 +1919,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="8059312861912872211">{count,plural, =1{{count} marcaj}few{{count} marcaje}other{{count} de marcaje}}</translation>
 <translation id="8059533439631660104">Restrânge secțiunea.</translation>
 <translation id="8061584726507121204">Istoric</translation>
+<translation id="8064946459644399612">Preferințele pentru pagina Filă nouă au fost aplicate</translation>
 <translation id="8069168488983557089">Obține concluzii și statistici cheie care te ajută să înțelegi orice subiect</translation>
 <translation id="8069394452933076548">Alege momentul în care filele care nu au folosite recent se mută în secțiunea filelor inactive.</translation>
 <translation id="8073670137947914548">Descărcarea s-a finalizat</translation>
@@ -1942,6 +1950,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="8161614462829037225">Deblochează cu <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Lungime</translation>
 <translation id="8182037667962849780">{count,plural, =1{Pentru {website_1}}=2{Pentru {website_1}, {website_2}}=3{Pentru {website_1}, {website_2} și încă unul}few{Pentru {website_1}, {website_2} și încă {more_count}}other{Pentru {website_1}, {website_2} și încă {more_count}}}</translation>
+<translation id="8184895727539791845">Pentru a permite ca Gemini să utilizeze camera, activează Cameră foto în setările iOS</translation>
 <translation id="8185076488803799132">Importă</translation>
 <translation id="8189615296021678665">Atinge Salvează pentru a accesa cu ușurință această parolă data viitoare când te conectezi.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Dispozitivele tale<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -2010,6 +2019,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="8428045167754449968">Oraș</translation>
 <translation id="8428213095426709021">Setări</translation>
 <translation id="8428634594422941299">Am înțeles</translation>
+<translation id="8429455911440977338">Activează camera</translation>
 <translation id="8434837876193928924">Detaliile grupului de file</translation>
 <translation id="8438566539970814960">Îmbunătățește căutările și navigarea</translation>
 <translation id="8439758443371991593">Ascunde opțiunea Adaugă în lista de lecturi</translation>
@@ -2251,6 +2261,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="956218893102219091">Folosește locația exactă pentru cele mai precise rezultate Gemini, în locul unei locații estimate pe baza adresei IP. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Șterge datele de navigare</translation>
 <translation id="963102227019621224">Activitatea de pe web și din aplicații</translation>
+<translation id="965259330007686240">Creează o imagine cu Gemini</translation>
 <translation id="965879457362663186">Adaugă un atașament</translation>
 <translation id="966593914872420832">Căutare vocală</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{Alătură-te grupului de file cu <ph name="OWNER_NAME" />}=1{Alătură-te grupului de file cu <ph name="OWNER_NAME" /> și încă {COUNT} persoană}few{Alătură-te grupului de file cu <ph name="OWNER_NAME" /> și încă {COUNT} persoane}other{Alătură-te grupului de file cu <ph name="OWNER_NAME" /> și încă {COUNT} de persoane}}</translation>

@@ -104,6 +104,7 @@
 <translation id="1366297852155605523">Compartidos comigo</translation>
 <translation id="1369286077209859800">Mostrar todas as pestanas dun grupo de pestanas</translation>
 <translation id="136942498637440594">Podes buscar imaxes e o que vexas.</translation>
+<translation id="1373120905936431262">Carga unha imaxe para facer un remix con Nano Banana</translation>
 <translation id="1377508275003315939">Contrasinais</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} de {count} enderezo}other{{position} de {count} enderezos}}</translation>
 <translation id="1383876407941801731">Buscar</translation>
@@ -235,6 +236,7 @@
 <translation id="1836891464494477513">{count,plural, =1{O marcador gardouse na túa Conta de Google ({email})}other{Os marcadores gardáronse na túa Conta de Google ({email})}}</translation>
 <translation id="1838089197478136166">Queres abrilo en Wallet?</translation>
 <translation id="183878838231635348">Nesta tarxeta mostraranse os problemas de privacidade ou seguranza que detecte automaticamente Comprobación de seguranza.</translation>
+<translation id="1840320537320704887">Quitáronse as preferencias da páxina Nova pestana</translation>
 <translation id="1845230888742614096">Manter grupo</translation>
 <translation id="1853692000353488670">Nova pestana de incógnito</translation>
 <translation id="1854463785401910334">Fai buscas nas pestanas abertas</translation>
@@ -701,6 +703,7 @@
 <translation id="368329460027487650">Tes a sesión pechada. Abre as opcións de inicio de sesión.</translation>
 <translation id="3695446226812920698">Máis información</translation>
 <translation id="3700134753671613714">Inicia sesión para ter os teus marcadores en todos os teus dispositivos.</translation>
+<translation id="3701167022068948696">Corrixir agora</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{Hai {COUNT} contrasinal gardado só neste dispositivo. Para usalo noutros aparellos, gárdao na túa Conta de Google ({EMAIL}).}other{Hai {COUNT} contrasinais gardados só neste dispositivo. Para usalos noutros aparellos, gárdaos na túa Conta de Google ({EMAIL}).}}</translation>
 <translation id="3709621342136814217">Escolle o tipo de letra, o tamaño de texto e moito máis aquí</translation>
 <translation id="371230970611282515">Predí eventos perigosos antes de que se produzan e móstrache unha advertencia.</translation>
@@ -876,6 +879,7 @@
 <translation id="4338650699862464074">Envía a Google os URL das páxinas que visitas.</translation>
 <translation id="4342946437867096381">Xa gardaches un contrasinal para este sitio na túa Conta de Google. Google pode seleccionar o contrasinal máis recente por ti.</translation>
 <translation id="4365121137632832185">Grupo de pestanas. Despregado.</translation>
+<translation id="4365685757967464989">Permite que Gemini use a cámara para facer fotos</translation>
 <translation id="4367971618859387374">Nome visible</translation>
 <translation id="4375772272517383391">Pechar todas as pestanas</translation>
 <translation id="4378154925671717803">Teléfono</translation>
@@ -959,6 +963,7 @@
 
        Escolle que queres facer cos datos de navegación deste dispositivo.</translation>
 <translation id="4675298276894277358">Este sitio non se volverá mostrar</translation>
+<translation id="4676647168422678078">Queres aplicar as preferencias da páxina Nova pestana?</translation>
 <translation id="4682496302933121474">Queres traducir a páxina?</translation>
 <translation id="4682686630151240767">1. Abre a configuración do iPhone</translation>
 <translation id="4691892551491778176">Cando uses esta función, o contido da páxina e os URL enviaranse a Google, pero non se usarán para mellorar os modelos de IA xenerativa. Podes desactivala cando queiras na configuración.</translation>
@@ -1007,6 +1012,7 @@
 <translation id="4840495572919996524">Os marcadores, o historial, os contrasinais e outros datos deixarán de sincronizarse coa túa Conta de Google.</translation>
 <translation id="484280513275854557">Pechouse a túa sesión e elimináronse os datos de navegación</translation>
 <translation id="4850886885716139402">Vista</translation>
+<translation id="4854068532375923088">Permite que Gemini use a túa cámara</translation>
 <translation id="4860895144060829044">Chamar</translation>
 <translation id="4861953997778766866">Todos os membros do grupo poden facer cambios nos grupos de pestanas compartidos</translation>
 <translation id="4865063548323785458">Garda e autocompleta os contrasinais para poder iniciar sesión facilmente nos sitios e nas aplicacións</translation>
@@ -1211,6 +1217,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5579012242779565775">Ocultar Lista de lectura</translation>
 <translation id="5581786858144165447">Pregunta co modo IA</translation>
 <translation id="5585019845078534178">Tarxetas</translation>
+<translation id="5591526871732898147">Imaxe anexa {index}</translation>
 <translation id="5595485650161345191">Editar enderezo</translation>
 <translation id="559567008082979829">Configura as descargas para que se eliminen ao cabo dun mes.</translation>
 <translation id="5596627076506792578">Máis opcións</translation>
@@ -1912,6 +1919,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="8059312861912872211">{count,plural, =1{{count} marcador}other{{count} marcadores}}</translation>
 <translation id="8059533439631660104">Contrae a sección.</translation>
 <translation id="8061584726507121204">Historial</translation>
+<translation id="8064946459644399612">Aplicáronse as preferencias da páxina Nova pestana</translation>
 <translation id="8069168488983557089">Obtén puntos claves e estatísticas que che axudarán a entender calquera tema</translation>
 <translation id="8069394452933076548">Selecciona cando queres que as pestanas que non se usasen recentemente se movan á sección de pestanas inactivas.</translation>
 <translation id="8073670137947914548">A descarga finalizou</translation>
@@ -1942,6 +1950,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="8161614462829037225">Desbloquear co seguinte método: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Lonxitude</translation>
 <translation id="8182037667962849780">{count,plural, =1{Para {website_1}}=2{Para {website_1} e {website_2}}=3{Para {website_1}, {website_2} e 1 sitio máis}other{Para {website_1}, {website_2} e {more_count} sitios máis}}</translation>
+<translation id="8184895727539791845">Para permitir que Gemini use a túa cámara, actívaa na configuración de iOS</translation>
 <translation id="8185076488803799132">Import (Importar)</translation>
 <translation id="8189615296021678665">Toca Gardar para acceder facilmente a este contrasinal a próxima vez que inicies sesión.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Os teus dispositivos<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -2010,6 +2019,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="8428045167754449968">Cidade/localidade</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8428634594422941299">De acordo</translation>
+<translation id="8429455911440977338">Activar cámara</translation>
 <translation id="8434837876193928924">Detalles do grupo de pestanas</translation>
 <translation id="8438566539970814960">Mellorar as buscas e a navegación</translation>
 <translation id="8439758443371991593">Ocultar Engadir á lista de lectura</translation>
@@ -2251,6 +2261,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="956218893102219091">Usa a túa localización precisa en lugar dunha localización estimada baseada no teu enderezo IP para obter os resultados máis precisos de Gemini. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Eliminar datos navegación</translation>
 <translation id="963102227019621224">Actividade web e das aplicacións</translation>
+<translation id="965259330007686240">Crea unha imaxe con Gemini</translation>
 <translation id="965879457362663186">Engadir un anexo</translation>
 <translation id="966593914872420832">Busca por voz</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{Unirte ao grupo de pestanas con <ph name="OWNER_NAME" />}=1{Unirte ao grupo de pestanas con <ph name="OWNER_NAME" /> e {COUNT} persoa máis}other{Unirte ao grupo de pestanas con <ph name="OWNER_NAME" /> e {COUNT} persoas máis}}</translation>

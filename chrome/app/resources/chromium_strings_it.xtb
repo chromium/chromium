@@ -531,6 +531,9 @@ Alcune funzioni potrebbero non essere disponibili. Specifica un'altra directory 
 <translation id="6901631050894301805">Imposta Chromium come browser predefinito e aggiungilo alla barra delle applicazioni</translation>
 <translation id="6909503629704372277">&amp;Gestisci i profili Chromium</translation>
 <translation id="6934579572334859869">Chiedi alla Ricerca immagini informazioni su questa immagine</translation>
+<translation id="6948031725951063910">Hai raggiunto il limite di <ph name="BOOKMARK_LIMIT" /> preferiti di Chromium, quindi alcuni dei tuoi preferiti non sono ancora stati salvati nel tuo Account Google.
+
+Non è possibile salvare nuovi preferiti nel tuo account finché non ne elimini alcuni. Se esci ora, i preferiti non salvati verranno eliminati.</translation>
 <translation id="6964305034639999644">Apri link in una finestra di navigazione in inco&amp;gnito di Chromium</translation>
 <translation id="6965382102122355670">Ok</translation>
 <translation id="6978145336957848883">Le password inefficaci sono facili da indovinare. Consenti a Chromium di <ph name="BEGIN_LINK" />creare e memorizzare password efficaci per te<ph name="END_LINK" />.</translation>
@@ -699,6 +702,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8880203542552872219">In questo caso, modifica la password salvata su Chromium in modo che corrisponda alla nuova password.</translation>
 <translation id="8891709362986793894">La tua organizzazione richiede l'accesso a Chromium</translation>
 <translation id="8907580949721785412">Chromium sta cercando di visualizzare le password. Per consentire la visualizzazione, digita la tua password Windows.</translation>
+<translation id="8932992523185907506">Chromium non è più il browser predefinito. Impostare Chromium come browser predefinito?</translation>
 <translation id="8941642502866065432">Impossibile aggiornare Chromium</translation>
 <translation id="897581876605952338">Logo di Chromium Enterprise</translation>
 <translation id="8981150672034878610">Impossibile avviare Chromium perché si è verificato un problema durante l'apertura del tuo profilo. Prova a riavviare Chromium.</translation>

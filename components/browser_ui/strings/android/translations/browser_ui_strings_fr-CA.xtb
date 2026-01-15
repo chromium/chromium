@@ -412,6 +412,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 autre)}one{(+ # autre)}other{(+ # autres)}}</translation>
 <translation id="5403592356182871684">Noms</translation>
 <translation id="5407203562970638234">Améliorez votre sécurité</translation>
+<translation id="5436307623797390637">Applis sur l'appareil</translation>
 <translation id="5438097262470833822">Ce choix réinitialisera les autorisations du site <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Lorsque cette option est activée, les sites peuvent vous demander votre position. Lorsqu'elle est désactivée, les sites ne peuvent pas voir votre position.</translation>
 <translation id="5489227211564503167">Temps écoulé : <ph name="ELAPSED_TIME" /> sur <ph name="TOTAL_TIME" /></translation>

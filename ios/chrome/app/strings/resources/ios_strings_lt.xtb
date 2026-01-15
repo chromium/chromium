@@ -104,6 +104,7 @@
 <translation id="1366297852155605523">Bendrinama su manimi</translation>
 <translation id="1369286077209859800">Rodyti visus skirtukus skirtukų grupėje</translation>
 <translation id="136942498637440594">Galite ieškoti vaizdų ir to, ką matote.</translation>
+<translation id="1373120905936431262">Įkelkite vaizdą, kurį norite perkurti naudodami „Nano Banana“</translation>
 <translation id="1377508275003315939">Slaptažodžiai</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} adresas iš {count}}one{{position} adresas iš {count}}few{{position} adresas iš {count}}many{{position} adresas iš {count}}other{{position} adresas iš {count}}}</translation>
 <translation id="1383876407941801731">Ieškoti</translation>
@@ -235,6 +236,7 @@
 <translation id="1836891464494477513">{count,plural, =1{Žymė išsaugota „Google“ paskyroje, {email}}one{Žymės išsaugotos „Google“ paskyroje, {email}}few{Žymės išsaugotos „Google“ paskyroje, {email}}many{Žymės išsaugotos „Google“ paskyroje, {email}}other{Žymės išsaugotos „Google“ paskyroje, {email}}}</translation>
 <translation id="1838089197478136166">Atidaryti sistemoje „Wallet“?</translation>
 <translation id="183878838231635348">Šioje kortelėje rodomos visos privatumo ar saugos problemos, kurias saugos patikra automatiškai aptinka.</translation>
+<translation id="1840320537320704887">Pašalintos naujo skirtuko puslapio nuostatos</translation>
 <translation id="1845230888742614096">Palikti grupę</translation>
 <translation id="1853692000353488670">Naujas inkognito skirtukas</translation>
 <translation id="1854463785401910334">Paieška atidarytuose skirtukuose</translation>
@@ -701,6 +703,7 @@
 <translation id="368329460027487650">Atsijungta. Atidaromos prisijungimo parinktys.</translation>
 <translation id="3695446226812920698">Sužinokite kaip</translation>
 <translation id="3700134753671613714">Prisijunkite, kad pasiektumėte žymes visuose įrenginiuose.</translation>
+<translation id="3701167022068948696">Ištaisyti dabar</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} slaptažodis išsaugotas tik šiame įrenginyje. Jei norite jį naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje ({EMAIL}).}one{{COUNT} slaptažodis išsaugotas tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje {EMAIL}.}few{{COUNT} slaptažodžiai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje {EMAIL}.}many{{COUNT} slaptažodžio išsaugota tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje {EMAIL}.}other{{COUNT} slaptažodžių išsaugota tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje {EMAIL}.}}</translation>
 <translation id="3709621342136814217">Čia pasirinkite šriftą, teksto dydį ir kt.</translation>
 <translation id="371230970611282515">Numato ir įspėja jus apie pavojingus įvykius, prieš jiems nutinkant.</translation>
@@ -876,6 +879,7 @@
 <translation id="4338650699862464074">Siunčiami „Google“ puslapių, kuriuose lankotės, URL.</translation>
 <translation id="4342946437867096381">Jau išsaugojote šios svetainės slaptažodį „Google“ paskyroje. „Google“ gali pasirinkti naujausią slaptažodį už jus.</translation>
 <translation id="4365121137632832185">Skirtukų grupė. Išskleista.</translation>
+<translation id="4365685757967464989">Leiskite „Gemini“ naudoti fotoaparatą nuotraukoms fotografuoti</translation>
 <translation id="4367971618859387374">Rodomas pavadinimas</translation>
 <translation id="4375772272517383391">Visų skirtukų uždarymas</translation>
 <translation id="4378154925671717803">Telefonas</translation>
@@ -959,6 +963,7 @@
 
        Pasirinkite, ką norite daryti su esamais naršymo duomenimis šiame įrenginyje.</translation>
 <translation id="4675298276894277358">Ši svetainė nebebus rodoma</translation>
+<translation id="4676647168422678078">Pritaikyti naujo skirtuko puslapio nuostatas?</translation>
 <translation id="4682496302933121474">Versti puslapį?</translation>
 <translation id="4682686630151240767">1. Atidarykite „iPhone“ nustatymus</translation>
 <translation id="4691892551491778176">Kai naudojate šią funkciją, puslapio turinys ir URL siunčiami „Google“, bet nenaudojami generatyvinio DI modeliams tobulinti. Galite bet kada išjungti tai nustatymuose.</translation>
@@ -1007,6 +1012,7 @@
 <translation id="4840495572919996524">Žymės, istorija, slaptažodžiai ir kiti duomenys nebebus sinchronizuojami su „Google“ paskyra.</translation>
 <translation id="484280513275854557">Buvote atjungti, naršymo duomenys buvo ištrinti</translation>
 <translation id="4850886885716139402">Žiūrėti</translation>
+<translation id="4854068532375923088">Leisti „Gemini“ naudoti vaizdo kamerą</translation>
 <translation id="4860895144060829044">Skambinti</translation>
 <translation id="4861953997778766866">Visi žmonės gali keisti bendrinamų skirtukų grupes</translation>
 <translation id="4865063548323785458">Išsaugokite ir automatiškai pildykite slaptažodžius, kad galėtumėte lengvai prisijungti prie svetainių ir programų</translation>
@@ -1211,6 +1217,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="5579012242779565775">Slėpti skaitymo sąrašą</translation>
 <translation id="5581786858144165447">„Klausti DI“ režimas</translation>
 <translation id="5585019845078534178">Kortelės</translation>
+<translation id="5591526871732898147">Pridėtas vaizdas Nr. {index}</translation>
 <translation id="5595485650161345191">Adreso redagavimas</translation>
 <translation id="559567008082979829">Nustatykite, kad atsisiuntimai būtų ištrinti po vieno mėnesio.</translation>
 <translation id="5596627076506792578">Daugiau parinkčių</translation>
@@ -1912,6 +1919,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="8059312861912872211">{count,plural, =1{{count} žymė}one{{count} žymė}few{{count} žymės}many{{count} žymės}other{{count} žymių}}</translation>
 <translation id="8059533439631660104">Sutraukia skiltį.</translation>
 <translation id="8061584726507121204">Istorija</translation>
+<translation id="8064946459644399612">Pritaikytos naujo skirtuko puslapio nuostatos</translation>
 <translation id="8069168488983557089">Gaukite pagrindinių išvadų ir įžvalgų, kurios padės suprasti bet kurią temą</translation>
 <translation id="8069394452933076548">Pasirinkite, kada pastaruoju metu nenaudojami skirtukai bus perkelti į neaktyvių skirtukų skiltį.</translation>
 <translation id="8073670137947914548">Atsisiuntimas užbaigtas</translation>
@@ -1942,6 +1950,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="8161614462829037225">Atrakinti naudojant <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Ilgis</translation>
 <translation id="8182037667962849780">{count,plural, =1{Skirta {website_1}}=2{Skirta {website_1}, {website_2}}=3{Skirta {website_1}, {website_2} ir dar vienai}one{Skirta {website_1}, {website_2} ir dar {more_count}}few{Skirta {website_1}, {website_2} ir dar {more_count}}many{Skirta {website_1}, {website_2} ir dar {more_count}}other{Skirta {website_1}, {website_2} ir dar {more_count}}}</translation>
+<translation id="8184895727539791845">Jei norite leisti „Gemini“ naudoti fotoaparatą, įjunkite Fotoaparatą „iOS“ nustatymuose</translation>
 <translation id="8185076488803799132">Importuoti</translation>
 <translation id="8189615296021678665">Palieskite „Išsaugoti“, kad galėtumėte lengvai pasiekti šį slaptažodį, kai kitą kartą prisijungsite.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Jūsų įrenginiai<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -2010,6 +2019,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="8428045167754449968">Didm. / miest.</translation>
 <translation id="8428213095426709021">Nustatymai</translation>
 <translation id="8428634594422941299">Supratau</translation>
+<translation id="8429455911440977338">Vaizdo kameros įjungimas</translation>
 <translation id="8434837876193928924">Išsami skirtukų grupės informacija</translation>
 <translation id="8438566539970814960">Tobulinti paieškas ir naršymą</translation>
 <translation id="8439758443371991593">Slėpti parinktį „Pridėti prie skaitymo sąrašo“</translation>
@@ -2251,6 +2261,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="956218893102219091">Naudokite tikslią vietovę, kad gautumėte tiksliausius „Gemini“ rezultatus, o ne numatomą vietą, pagrįstą jūsų IP adresu. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Ištrinti naršymo duomenis</translation>
 <translation id="963102227019621224">Žiniatinklio ir programų veikla</translation>
+<translation id="965259330007686240">Sukurti vaizdą naudojant „Gemini“</translation>
 <translation id="965879457362663186">Pridėti priedą</translation>
 <translation id="966593914872420832">Paieška balsu</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{Prisijungimas prie skirtukų grupės su <ph name="OWNER_NAME" />}=1{Prisijungimas prie skirtukų grupės su <ph name="OWNER_NAME" /> ir dar {COUNT} žmogumi}one{Prisijungimas prie skirtukų grupės su <ph name="OWNER_NAME" /> ir dar {COUNT} žmogumi}few{Prisijungimas prie skirtukų grupės su <ph name="OWNER_NAME" /> ir dar {COUNT} žmonėmis}many{Prisijungimas prie skirtukų grupės su <ph name="OWNER_NAME" /> ir dar {COUNT} žmogaus}other{Prisijungimas prie skirtukų grupės su <ph name="OWNER_NAME" /> ir dar {COUNT} žmonių}}</translation>

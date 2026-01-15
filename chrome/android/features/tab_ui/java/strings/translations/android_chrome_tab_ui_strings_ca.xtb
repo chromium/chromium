@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">Gestiona l'accés</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Tanca l'element}other{Tanca els elements}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Full inferior de la pestanya a mitja alçada.</translation>
 <translation id="374923079891132274">Miniatura del full de compartició.</translation>
 <translation id="3776329373944672717">Títol del grup de pestanyes <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Gestiona</translation>
@@ -125,6 +126,7 @@
 <translation id="5339733443032484186">La teva darrera pestanya</translation>
 <translation id="5380159289133845234">Arxiva les pestanyes duplicades</translation>
 <translation id="5446043142172831860">Suprimeix la pestanya i surt del grup</translation>
+<translation id="5465437530117042974">El full inferior de la pestanya ha canviat a Tancat.</translation>
 <translation id="5490235265819901748">El grup de pestanyes s'ha desplegat</translation>
 <translation id="5494920125229734069">Selecciona-ho tot</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Afegeix fins a <ph name="LIMIT_COUNT_ONE" /> fitxer, pestanya o imatge}other{Afegeix fins a <ph name="LIMIT_COUNT_MANY" /> fitxers, pestanyes o imatges}}</translation>
@@ -140,6 +142,7 @@
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6051432659151380973">Els teus grups de pestanyes es desen automàticament</translation>
 <translation id="6054741997831917303">El preu d'aquest article fa poc ha baixat de <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
+<translation id="606985262342505139">Full inferior de la pestanya a alçada completa</translation>
 <translation id="6109251075362363230">Ara també s'arxivaran totes les pestanyes duplicades, a excepció de la còpia que s'hagi utilitzat més recentment.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Tanca <ph name="TABS_COUNT_ONE" /> element seleccionat}other{Tanca els <ph name="TABS_COUNT_MANY" /> elements seleccionats}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Mou el grup a una finestra nova}other{Mou el grup a una altra finestra}}</translation>

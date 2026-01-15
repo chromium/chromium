@@ -3268,6 +3268,8 @@ Si se inhabilita <ph name="NTPCARDSVISIBLE" />, no se mostrará la tarjeta de Ou
       Si se inhabilita la política, los dispositivos registrados no enviarán información sobre las sesiones activas del kiosko.</translation>
 <translation id="3303770131697159224">Configuración predeterminada del permiso de gestión de ventanas</translation>
 <translation id="3303911765031636277">Política de configuración para el conector OnFileAttached de Chrome Enterprise Connectors</translation>
+<translation id="3305586786770047829">Si se le asigna el valor 0 a esta política o no se define, la política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> solo se aplicará al permiso de usuario para los usuarios afiliados.
+Si se le asigna el valor 1 a esta política, la política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> se aplicará al permiso de usuario, aunque ese usuario no esté afiliado.</translation>
 <translation id="3307744348419745296">No permitir que las configuraciones de la red Wi‑Fi se sincronicen en los dispositivos <ph name="PRODUCT_OS_NAME" /> y en un teléfono Android conectado</translation>
 <translation id="3308724602356134956">Si se le asigna un valor a esta política, <ph name="PRODUCT_OS_NAME" />
 

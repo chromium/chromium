@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">Кирүү мүмкүнчүлүгүн тескөө</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Өтмөктү жабуу}other{Өтмөктөрдү жабуу}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Өтмөктүн ылдыйкы экраны жарым экранда ачылды.</translation>
 <translation id="374923079891132274">Бөлүшүлгөн баракты алдын ала көрүү эскизи</translation>
 <translation id="3776329373944672717">Өтмөктөр тобунун аталышы (<ph name="TITLE_OF_GROUP" />)</translation>
 <translation id="3810973564298564668">Башкаруу</translation>
@@ -125,6 +126,7 @@
 <translation id="5339733443032484186">Акыркы өтмөгүңүз</translation>
 <translation id="5380159289133845234">Кайталанма өтмөктөрдү архивдөө</translation>
 <translation id="5446043142172831860">Өтмөктү өчүрүп, топтон чыгуу</translation>
+<translation id="5465437530117042974">Өтмөктүн ылдыйкы экранындагы өзгөртүүлөр жабылды.</translation>
 <translation id="5490235265819901748">Өтмөктөр тобу жайылып көрсөтүлдү</translation>
 <translation id="5494920125229734069">Баарын тандоо</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{<ph name="LIMIT_COUNT_ONE" /> файлга, өтмөккө же сүрөткө чейин кошуңуз}other{<ph name="LIMIT_COUNT_MANY" /> файлга, өтмөккө же сүрөткө чейин кошуңуз}}</translation>
@@ -140,6 +142,7 @@
 <translation id="6040143037577758943">Жабуу</translation>
 <translation id="6051432659151380973">Өтмөк топторуңуз автоматтык түрдө сакталат</translation>
 <translation id="6054741997831917303"><ph name="PREVIOUS_PRICE" /> турган бул нерсенин баасы <ph name="NEW_PRICE" /> болуп калды</translation>
+<translation id="606985262342505139">Өтмөктүн ылдыйкы экраны толук ачылды</translation>
 <translation id="6109251075362363230">Эми эң акыркы колдонулгандан башка бардык кайталанма өтмөктөр архивделет.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Тандалган <ph name="TABS_COUNT_ONE" /> өтмөктү жабуу}other{Тандалган <ph name="TABS_COUNT_MANY" /> өтмөктү жабуу}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Топту жаңы терезеге жылдыруу}other{Топту башка терезеге жылдыруу}}</translation>

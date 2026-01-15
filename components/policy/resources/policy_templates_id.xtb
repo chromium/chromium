@@ -1609,6 +1609,15 @@ Jika kebijakan disetel ke 1, grup tab tidak dapat dibagikan.</translation>
 <translation id="2144236546337326489">Izinkan pengaktifan kelanjutan tugas Phone Hub</translation>
 <translation id="2145735238144543545">Sertifikat Klien yang diperlukan</translation>
 <translation id="2146103669166779785">Warna hex yang akan digunakan untuk membuat dan menerapkan tema ke browser.</translation>
+<translation id="2146539033119095550">Kebijakan ini memungkinkan Anda menetapkan daftar pola URL yang menentukan origin tingkat teratas yang partisi penyimpanan pihak ketiganya (partisi penyimpanan iframe lintas origin) harus dinonaktifkan.
+
+Jika kebijakan ini tidak disetel atau jika origin tingkat teratas tidak cocok dengan salah satu pola URL, <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> akan berlaku.
+
+Untuk mengetahui informasi selengkapnya tentang pola yang valid, lihat https://chromeenterprise.google/policies/url-patterns. Perlu diingat bahwa pola yang Anda cantumkan di sini dianggap sebagai origin, bukan URL, jadi Anda tidak perlu menentukan jalur.
+
+Untuk mengetahui informasi mendetail tentang partisi penyimpanan pihak ketiga, lihat https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.
+
+Metode ini akan dihapus di Chrome 145, dan sebaiknya Anda menggunakan metode requestStorageAccess sebagai gantinya: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Masukan dapat diberikan di https://crbug.com/425248669.</translation>
 <translation id="2148733583160916305">Mengizinkan WebPrinting API di situs ini</translation>
 <translation id="2148769554831004951">Paksa pengaktifan WebSQL.</translation>
 <translation id="214901426630414675">Batasi mode dupleks pencetakan</translation>
@@ -3524,6 +3533,15 @@ Jika disetel ke Nonaktif, fitur penulisan prediktif tidak akan diizinkan di keyb
 <translation id="33993310248354034">Mengizinkan deteksi entity teks biasa di halaman web.</translation>
 <translation id="3399859571630358395">Paksa penonaktifan Sambungan Cepat (penyambungan Bluetooth cepat).</translation>
 <translation id="3404681701763345449">Aktifkan Integrasi <ph name="GOOGLE_CALENDAR_NAME" />.</translation>
+<translation id="3405276853140830214">Kebijakan ini mengontrol apakah partisi penyimpanan pihak ketiga diizinkan secara default.
+
+Jika kebijakan ini disetel ke nilai 1 - AllowPartitioning, atau tidak disetel, partisi penyimpanan pihak ketiga akan diizinkan secara default. Setelan default ini dapat diabaikan jika ada origin tingkat teratas tertentu yang ditetapkan dengan cara lain.
+
+Jika kebijakan ini disetel ke nilai 2 - BlockPartitioning, partisi penyimpanan pihak ketiga akan dinonaktifkan untuk semua konteks.
+
+Gunakan <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> untuk menonaktifkan partisi penyimpanan pihak ketiga bagi origin tingkat teratas tertentu. Untuk mengetahui informasi mendetail tentang partisi penyimpanan pihak ketiga, lihat https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.
+
+Metode ini akan dihapus di Chrome 145, dan sebaiknya Anda menggunakan metode requestStorageAccess sebagai gantinya: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Masukan dapat diberikan di https://crbug.com/425248669.</translation>
 <translation id="3405361833556012520">Kebijakan ini hanya berlaku untuk traffic browser. Play Store, navigasi web aplikasi Android, dan traffic pengguna lainnya seperti traffic VM Linux atau tugas pencetakan masih mematuhi batasan yang diberlakukan oleh VPN Selalu Aktif. Kebijakan ini hanya diterapkan saat VPN tidak terhubung dan hanya untuk traffic browser pengguna. Meskipun kebijakan ini diterapkan, traffic sistem juga dapat tidak menggunakan VPN Selalu Aktif untuk melakukan tugas seperti pengambilan kebijakan dan sinkronisasi jam sistem.
 
 Gunakan kebijakan ini untuk membuka pengecualian untuk skema tertentu, subdomain dari domain lain, port, atau jalur khusus, menggunakan format yang ditentukan di https://support.google.com/chrome/a?p=url_blocklist_filter_format. Filter yang paling spesifik akan menentukan apakah URL diblokir atau diizinkan.
@@ -5351,6 +5369,21 @@ Perilaku sebelumnya dan yang lama: Dalam `beforeunload`, memanggil `event.preven
 <translation id="46321462262887935">Perlakukan tombol baris atas sebagai tombol fungsi, tetapi izinkan pengguna mengubahnya</translation>
 <translation id="4632343302005518762">Izinkan <ph name="PRODUCT_FRAME_NAME" /> menangani jenis konten yang tercantum</translation>
 <translation id="4636354638176939375">Nonaktifkan pembuatan pengguna yang diawasi</translation>
+<translation id="4637701328641064644">Kebijakan ini mengontrol apakah URL Blob dipartisi selama pengambilan dan navigasi.
+Jika kebijakan ini disetel ke Aktif atau tidak disetel, URL Blob akan dipartisi.
+Jika kebijakan ini disetel ke Nonaktif, URL Blob tidak akan dipartisi.
+
+Jika Anda harus menggunakan kebijakan ini, laporkan bug di
+<ph name="BUG_URL" />
+dengan menjelaskan kasus penggunaan Anda. Kebijakan ini dijadwalkan untuk ditawarkan hingga
+versi <ph name="PRODUCT_NAME" /> 146. Setelah itu,
+implementasi lama akan dihapus.
+
+CATATAN: Hanya proses perender yang baru dimulai yang akan menunjukkan perubahan pada
+kebijakan ini saat browser berjalan.
+
+Untuk mengetahui informasi mendetail tentang partisi penyimpanan pihak ketiga, lihat
+https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.</translation>
 <translation id="46383668315040154">Menentukan saluran rilis yang harus dikaitkan ke perangkat ini.
 
 Menyetel <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> hanya akan berpengaruh jika <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> disetel ke Salah (False).</translation>

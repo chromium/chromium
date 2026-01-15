@@ -532,6 +532,9 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="6901631050894301805">Зробіть Chromium вебпереглядачем за умовчанням і закріпіть його на панелі завдань</translation>
 <translation id="6909503629704372277">&amp;Керувати профілями Chromium</translation>
 <translation id="6934579572334859869">Запитати про це зображення в сервісі "Пошук за зображенням"</translation>
+<translation id="6948031725951063910">Ви додали максимальну кількість закладок у Chromium (<ph name="BOOKMARK_LIMIT" />), тому деякі з них іще не збережено у вашому обліковому записі Google.
+
+Щоб зберегти нові закладки в обліковому записі, видаліть деякі з наявних. Якщо вийти зараз, незбережені закладки буде видалено.</translation>
 <translation id="6964305034639999644">Відкрити посилання в аноні&amp;мному вікні Chromium</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6978145336957848883">Ненадійні паролі можна легко вгадати. Тому радимо <ph name="BEGIN_LINK" />створювати й зберігати безпечні паролі<ph name="END_LINK" /> в Chromium.</translation>
@@ -700,6 +703,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="8880203542552872219">Якщо так, змініть збережений пароль у Chromium, щоб він збігався з новим.</translation>
 <translation id="8891709362986793894">За вимогами вашої організації, ви повинні ввійти в обліковий запис Chromium</translation>
 <translation id="8907580949721785412">Chromium намагається показати паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
+<translation id="8932992523185907506">Chromium більше не є вебпереглядачем за умовчанням. Зробити Chromium вебпереглядачем за умовчанням?</translation>
 <translation id="8941642502866065432">Не вдається оновити Chromium</translation>
 <translation id="897581876605952338">Логотип Chromium Enterprise</translation>
 <translation id="8981150672034878610">Не вдалося запустити Chromium через помилку під час відкриття профілю. Перезапустіть Chromium.</translation>

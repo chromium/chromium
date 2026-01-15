@@ -3265,6 +3265,8 @@ URL должен иметь стандартный вид (например, htt
       Если правило отключено, эта информация не отправляется.</translation>
 <translation id="3303770131697159224">Настройки управления окнами по умолчанию</translation>
 <translation id="3303911765031636277">Настройки коннектора OnFileAttached для Chrome Enterprise</translation>
+<translation id="3305586786770047829">Если это правило не настроено или для него установлено значение 0, <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> применяется только на уровне пользователя и только если он аффилирован.
+Если указано значение 1, <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> действует на уровне пользователя, даже если он не аффилирован.</translation>
 <translation id="3307744348419745296">Запретить синхронизацию параметров сети Wi-Fi между устройствами с <ph name="PRODUCT_OS_NAME" /> и подключенным телефоном Android</translation>
 <translation id="3308724602356134956">Если правило настроено, <ph name="PRODUCT_OS_NAME" />
 

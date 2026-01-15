@@ -412,6 +412,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 další)}few{(+ # další)}many{(+ # další)}other{(+ # dalších)}}</translation>
 <translation id="5403592356182871684">Názvy</translation>
 <translation id="5407203562970638234">Vylepšete své zabezpečení</translation>
+<translation id="5436307623797390637">Aplikace v zařízení</translation>
 <translation id="5438097262470833822">Výběrem této možnosti resetujete oprávnění webu <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Když je tato možnost zapnutá, weby mohou žádat o přístup k vaší poloze. Když je vypnutá, weby vaši polohu nevidí.</translation>
 <translation id="5489227211564503167">Uplynulá doba: <ph name="ELAPSED_TIME" /> z <ph name="TOTAL_TIME" />.</translation>

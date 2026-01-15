@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">Administra el acceso</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Cerrar elemento}other{Cerrar elementos}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Hoja inferior de pestañas a media altura.</translation>
 <translation id="374923079891132274">Hoja de compartir en miniatura.</translation>
 <translation id="3776329373944672717">Título del grupo de pestañas <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Administrar</translation>
@@ -125,6 +126,7 @@
 <translation id="5339733443032484186">Tu pestaña más reciente</translation>
 <translation id="5380159289133845234">Archivar pestañas duplicadas</translation>
 <translation id="5446043142172831860">Quitar pestaña y abandonar grupo</translation>
+<translation id="5465437530117042974">Se cerró la hoja inferior de pestañas.</translation>
 <translation id="5490235265819901748">Se expandió el grupo de pestañas</translation>
 <translation id="5494920125229734069">Seleccionar todo</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Agrega hasta <ph name="LIMIT_COUNT_ONE" /> archivo, pestaña o imagen}other{Agrega hasta <ph name="LIMIT_COUNT_MANY" /> archivos, pestañas o imágenes}}</translation>
@@ -140,6 +142,7 @@
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6051432659151380973">Tus grupos de pestañas se guardan automáticamente</translation>
 <translation id="6054741997831917303">El precio de este artículo recientemente bajó de <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
+<translation id="606985262342505139">Hoja inferior de pestañas en pantalla completa</translation>
 <translation id="6109251075362363230">Ahora también se archivarán todas las pestañas duplicadas, excepto la copia más reciente.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Cerrar <ph name="TABS_COUNT_ONE" /> elemento seleccionado}other{Cerrar <ph name="TABS_COUNT_MANY" /> elementos seleccionados}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Mover grupo a ventana nueva}other{Mover grupo a otra ventana}}</translation>

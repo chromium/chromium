@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">رسائی کا نظم کریں</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{آئٹم بند کریں}other{آئٹمز بند کریں}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">ٹیب کی نیچے کی شیٹ آدھی کھلی ہے۔</translation>
 <translation id="374923079891132274">شیٹ پیش منظر شیئر کریں کیلئے تھمب نیل</translation>
 <translation id="3776329373944672717">ٹیب گروپ کا عنوان <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">نظم کریں</translation>
@@ -125,6 +126,7 @@
 <translation id="5339733443032484186">آپ کا آخری ٹیب</translation>
 <translation id="5380159289133845234">ڈپلیکیٹ ٹیبز کو آرکائیو کریں</translation>
 <translation id="5446043142172831860">ٹیب کو ہٹائیں اور گروپ سے نکلیں</translation>
+<translation id="5465437530117042974">ٹیب کی نیچے کی شیٹ کی تبدیلیاں بند ہو گئیں۔</translation>
 <translation id="5490235265819901748">ٹیب گروپ پھیلا دیا گیا</translation>
 <translation id="5494920125229734069">سبھی کو منتخب کریں</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{‫<ph name="LIMIT_COUNT_ONE" /> فائل، ٹیب یا تصویر تک شامل کریں}other{‫<ph name="LIMIT_COUNT_MANY" /> فائلز، ٹیبز یا تصاویر تک شامل کریں}}</translation>
@@ -140,6 +142,7 @@
 <translation id="6040143037577758943">بند کریں</translation>
 <translation id="6051432659151380973">آپ کے ٹیب گروپس خودکار طور پر محفوظ ہو جاتے ہیں</translation>
 <translation id="6054741997831917303">اس آئٹم کی قیمت حال ہی میں کم ہو کر <ph name="PREVIOUS_PRICE" /> سے <ph name="NEW_PRICE" /> ہوئی ہے</translation>
+<translation id="606985262342505139">ٹیب کی نیچے کی شیٹ مکمل طور پر کھلی ہے</translation>
 <translation id="6109251075362363230">حال ہی میں سب سے زیادہ مستعمل کاپی کے استثناء کے ساتھ تمام ڈپلیکیٹ ٹیبز کو بھی آرکائیو کیا جائے گا۔</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{منتخب کردہ <ph name="TABS_COUNT_ONE" /> آئٹم کو بند کریں}other{منتخب کردہ <ph name="TABS_COUNT_MANY" /> آئٹمز کو بند کریں}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{گروپ کو نئی ونڈو میں منتقل کریں}other{گروپ کو دوسری ونڈو میں منتقل کریں}}</translation>

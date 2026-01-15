@@ -3261,6 +3261,8 @@ Als <ph name="NTPCARDSVISIBLE" /> niet wordt toegepast, wordt de kaart Outlook n
       Als je het beleid niet toepast, rapporteren ingeschreven apparaten geen informatie over kiosksessies.</translation>
 <translation id="3303770131697159224">Standaardinstelling voor het recht voor vensterbeheer</translation>
 <translation id="3303911765031636277">Configuratiebeleid voor de Chrome Enterprise-connector OnFileAttached</translation>
+<translation id="3305586786770047829">Als je dit beleid instelt op 0 of niet instelt, wordt het beleid <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> alleen toegepast op gebruikersniveau voor aangesloten gebruikers.
+Als je dit beleid instelt op 1, wordt het beleid <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> toegepast op gebruikersniveau, ook als die gebruiker niet is aangesloten.</translation>
 <translation id="3307744348419745296">Niet toestaan dat wifi-netwerkconfiguraties worden gesynchroniseerd tussen <ph name="PRODUCT_OS_NAME" />-apparaten en een gekoppelde Android-telefoon</translation>
 <translation id="3308724602356134956">Als je het beleid instelt, downloadt en gebruikt <ph name="PRODUCT_OS_NAME" /> de door jou ingestelde achtergrondafbeelding voor de achtergrond van het bureaublad van de gebruiker en het inlogscherm. Gebruikers kunnen de afbeelding niet wijzigen. Specificeer de URL (die toegankelijk moet zijn zonder verificatie) waar <ph name="PRODUCT_OS_NAME" /> de achtergrondafbeelding kan downloaden, evenals een cryptografische hash (in jpeg-indeling met een bestandsgrootte van maximaal 16 MB) om de integriteit daarvan te verifiëren.
 

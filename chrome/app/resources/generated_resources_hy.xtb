@@ -2559,6 +2559,7 @@
 <translation id="2713444072780614174">Սպիտակ</translation>
 <translation id="2714180132046334502">Մուգ ֆոն</translation>
 <translation id="2714393097308983682">Google Play Խանութ</translation>
+<translation id="2714617928488200509">Մոդելներ</translation>
 <translation id="2715751256863167692">Այս թարմացումը կվերակայի ձեր Chromebook-ը և կհեռացնի ընթացիկ օգտատիրոջ տվյալները։</translation>
 <translation id="2715934493766003251">Հնարավոր չէ մաքրել հիշողությունը, երբ ֆայլերի համաժամացումը միացված է</translation>
 <translation id="2716986496990888774">Այս կարգավորումը կառավարվում է ծնողի կողմից:</translation>
@@ -3178,7 +3179,7 @@
 <translation id="3129173833825111527">Ձախ լուսանցք</translation>
 <translation id="3130528281680948470">Սարքը կվերականգնվի: Բոլոր օգտատերերի հաշիվները և տեղային տվյալները կհեռացվեն: Գործողությունը հնարավոր չէ հետարկել:</translation>
 <translation id="3130863904455712965">Պատմություն և այլ տվյալներ</translation>
-<translation id="313205617302240621">Մոռացե՞լ եք գաղտնաբառը:</translation>
+<translation id="313205617302240621">Մոռացե՞լ եք գաղտնաբառը</translation>
 <translation id="3132277757485842847">Ձեր հեռախոսի հետ կապն ընդհատվել է։ Համոզվեք, որ այն մոտակայքում է, ապակողպված է, և որ Bluetooth-ն ու Wi-Fi-ը միացված են։</translation>
 <translation id="3132896062549112541">Կանոն</translation>
 <translation id="3132996321662585180">Թարմացնել ամեն օր</translation>
@@ -4596,6 +4597,7 @@
 <translation id="4078738236287221428">Ագրեսիվ</translation>
 <translation id="4078903002989614318">Տեսակավորման և ցանկի ընտրանքներ</translation>
 <translation id="4079140982534148664">Օգտագործել ուղղագրության ընդլայնված ստուգումը</translation>
+<translation id="4082070466456857368">Մտածող (3 Pro)</translation>
 <translation id="4084682180776658562">Էջանիշ</translation>
 <translation id="4084835346725913160">Փակել <ph name="TAB_NAME" /> ներդիրը</translation>
 <translation id="4085298594534903246">JavaScript-ն արգելափակված է այս էջում:</translation>
@@ -7273,6 +7275,7 @@
 <translation id="5955721306465922729">Կայքին անհրաժեշտ է բացել այս հավելվածը:</translation>
 <translation id="5955809630138889698">Այս սարքն աշխատում է միայն անցանց դեմո ռեժիմում։ Մանրամասներն իմանալու համար դիմեք աջակցման կենտրոնի մասնագետներին։</translation>
 <translation id="59561895884837262">Երբ տեսագրումը սկսվի, դուք ծանուցում կստանաք։</translation>
+<translation id="5957613098218939406">Լրացուցիչ ընտրանքներ</translation>
 <translation id="5957987129450536192">Հպեք «Ընտրեք և լսեք» պատկերակին և նշեք տեքստը՝ այն հնչեցնելու համար։</translation>
 <translation id="5958836583172610505">Համաժամացումը միացված է</translation>
 <translation id="5959471481388474538">Ցանցը մատչելի չէ</translation>
@@ -7838,6 +7841,7 @@
 <translation id="6350821834561350243">Հստակ նկարագրեք խնդիրը և այն վերարտադրելու քայլերը (եթե հնարավոր է)</translation>
 <translation id="6351178441572658285">Հավելվածների լեզուներ</translation>
 <translation id="6354918092619878358">SECG օվալաձև կոր secp256r1 (հայտնի է նաև որպես ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355632359041940003">Ստանձնել առաջադրանքի կատարումը</translation>
 <translation id="635609604405270300">Սարքը մի՛ անջատեք</translation>
 <translation id="6356537493253478650">Անհոգ</translation>
 <translation id="63566973648609420">Միայն ձեր անցաբառն ունեցող օգտատերը կարող է կարդալ ձեր գաղտնագրված տվյալները: Անցաբառը չի ուղարկվում Google-ին և չի պահվում դրա կողմից: Անցաբառը մոռանալու դեպքում ձեզ անհրաժեշտ կլինի <ph name="BEGIN_LINK" />վերակայել համաժամացումը<ph name="END_LINK" />:</translation>
@@ -8807,6 +8811,7 @@
 <translation id="7017219178341817193">Ավելացնել նոր էջ</translation>
 <translation id="7017354871202642555">Հնարավոր չէ կարգավորել ռեժիմը՝ պատուհանը կարգավորելուց հետո:</translation>
 <translation id="7019805045859631636">Արագ</translation>
+<translation id="7020810150082302220">Ձեր կանխադրված դիտարկիչը փոխվել է</translation>
 <translation id="7021524108486027008">Աշխատեցրեք գործիքներ, խմբագրիչներ և IDE-ներ ձեր <ph name="DEVICE_TYPE" />-ում՝ ձեր ընկերության կողմից կառավարվող միջավայրում։</translation>
 <translation id="7022222879220069865">Բոլոր հպահարթակներն անջատվել են</translation>
 <translation id="7022562585984256452">Ձեր գլխավոր էջը կարգավորված է:</translation>
@@ -10187,6 +10192,7 @@
 <translation id="7969144945436590933">Այլ մանրամասներ</translation>
 <translation id="7970673414865679092">Տեղեկություններ Ethernet-ի մասին</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384՝ RSA գաղտնագրումով</translation>
+<translation id="7972837668077967426">Canvas</translation>
 <translation id="7973149423217802477">«Վատն է» կոճակի սեղմումը բացասական կարծիք է ուղարկում այս գործառույթի մասին։</translation>
 <translation id="7973776233567882054">Հետևյալ նկարագրություններից ո՞րն է համապատասխանում ձեր ցանցին։</translation>
 <translation id="797394244396603170">Ընտրեք սարքը, որի հետ ուզում եք կիսվել ֆայլերով</translation>
@@ -10748,6 +10754,7 @@
 <translation id="8339288417038613756">Էկրանի և տեքստի չափսը</translation>
 <translation id="833986336429795709">Հղումը բացելու համար ընտրեք հավելված</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> սարքի հետ կապված այլ գործողություններ</translation>
+<translation id="8341693734243413517">Chrome Updater</translation>
 <translation id="8341804784147620576">Ցույց տալ որոնման դյուրանցումները</translation>
 <translation id="8342221978608739536">Չեմ փորձել</translation>
 <translation id="8342387517402567689">Վեբ հավելվածների ներբեռնումը չի աջակցվում ինկոգնիտո ռեժիմում</translation>
@@ -11051,6 +11058,7 @@
 <translation id="8551588720239073785">Ամսաթվի և ժամի կարգավորումներ</translation>
 <translation id="8551647092888540776">Անցանց ռեժիմում հնարավոր չէ բացել <ph name="FILE_NAMES" /> ֆայլերը</translation>
 <translation id="8552102814346875916">Պահել Միշտ ակտիվ պահել այս կայքերը ցանկում</translation>
+<translation id="8552947739661397736">Ստանձնել առաջադրանքի կատարումը (ներկայումս Gemini-ն է դրանով զբաղվում)</translation>
 <translation id="8553342806078037065">Կառավարել այլ օգտատերերի</translation>
 <translation id="8554899698005018844">Լեզու նշված չէ</translation>
 <translation id="8555444629041783356">Մայրամուտի ժամանակացույցի ավտոմատ թարմացում</translation>

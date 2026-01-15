@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">Διαχείριση πρόσβασης</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Κλείσιμο στοιχείου}other{Κλείσιμο στοιχείων}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Φύλλο κάτω μέρους καρτέλας στο μισό ύψος.</translation>
 <translation id="374923079891132274">Μικρ. προεπ. φύλλου κοινής χρήσης.</translation>
 <translation id="3776329373944672717">Τίτλος ομάδας καρτελών <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Διαχείριση</translation>
@@ -125,6 +126,7 @@
 <translation id="5339733443032484186">Η τελευταία καρτέλα σας</translation>
 <translation id="5380159289133845234">Αρχειοθέτηση διπλότυπων καρτελών</translation>
 <translation id="5446043142172831860">Κατάργηση καρτέλας και αποχώρηση από την ομάδα</translation>
+<translation id="5465437530117042974">Οι αλλαγές στο φύλλο κάτω μέρους της καρτέλας έκλεισαν.</translation>
 <translation id="5490235265819901748">Η ομάδα καρτελών αναπτύχθηκε</translation>
 <translation id="5494920125229734069">Επιλογή όλων</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Προσθέστε έως <ph name="LIMIT_COUNT_ONE" /> αρχείο, καρτέλα ή εικόνα}other{Προσθέστε έως <ph name="LIMIT_COUNT_MANY" /> αρχεία, καρτέλες ή εικόνες}}</translation>
@@ -140,6 +142,7 @@
 <translation id="6040143037577758943">Κλείσιμο</translation>
 <translation id="6051432659151380973">Οι ομάδες καρτελών σας αποθηκεύονται αυτόματα</translation>
 <translation id="6054741997831917303">Η τιμή αυτού του στοιχείου μειώθηκε πρόσφατα από <ph name="PREVIOUS_PRICE" /> σε <ph name="NEW_PRICE" /></translation>
+<translation id="606985262342505139">Φύλλο κάτω μέρους καρτέλας σε πλήρες ύψος</translation>
 <translation id="6109251075362363230">Από εδώ και στο εξής, όλες οι διπλότυπες καρτέλες θα αρχειοθετούνται, με εξαίρεση το αντίγραφο που χρησιμοποιήθηκε πιο πρόσφατα.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Κλείσιμο <ph name="TABS_COUNT_ONE" /> επιλεγμένου στοιχείου}other{Κλείσιμο <ph name="TABS_COUNT_MANY" /> επιλεγμένων στοιχείων}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Μετακίνηση ομάδας σε νέο παράθυρο}other{Μετακίνηση ομάδας σε άλλα παράθυρα}}</translation>

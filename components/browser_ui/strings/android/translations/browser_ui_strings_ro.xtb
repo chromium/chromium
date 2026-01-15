@@ -412,6 +412,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ încă 1)}few{(+ încă #)}other{(+ încă #)}}</translation>
 <translation id="5403592356182871684">Nume</translation>
 <translation id="5407203562970638234">Îmbunătățește-ți securitatea</translation>
+<translation id="5436307623797390637">Aplicații de pe dispozitiv</translation>
 <translation id="5438097262470833822">Astfel, se vor reseta permisiunile pentru <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Când opțiunea este activată, site-urile pot solicita informații despre locație. Când opțiunea este dezactivată, site-urile nu îți pot vedea locația.</translation>
 <translation id="5489227211564503167">Timp scurs: <ph name="ELAPSED_TIME" /> din <ph name="TOTAL_TIME" />.</translation>

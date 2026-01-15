@@ -104,6 +104,7 @@
 <translation id="1366297852155605523">Споделено со мене</translation>
 <translation id="1369286077209859800">Прикажи ги сите картички во група картички</translation>
 <translation id="136942498637440594">Може да пребарувате слики, како и работите што ги гледате.</translation>
+<translation id="1373120905936431262">Прикачете слика за да направите ремикс со Nano Banana</translation>
 <translation id="1377508275003315939">Лозинки</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} од {count} адреса}one{{position} од {count} адреса}other{{position} од {count} адреси}}</translation>
 <translation id="1383876407941801731">Барај</translation>
@@ -235,6 +236,7 @@
 <translation id="1836891464494477513">{count,plural, =1{Обележувачот е зачуван во вашата сметка на Google, {email}}one{Обележувачите се зачувани во вашата сметка на Google, {email}}other{Обележувачите се зачувани во вашата сметка на Google, {email}}}</translation>
 <translation id="1838089197478136166">Да се отвори во Wallet?</translation>
 <translation id="183878838231635348">Во картичкава се прикажуваат сите проблеми со приватност или безбедност што ги открила „Безбедносната проверка“ автоматски за вас.</translation>
+<translation id="1840320537320704887">Поставките за страницата во нова картичка се отстранети</translation>
 <translation id="1845230888742614096">Задржи ја групата</translation>
 <translation id="1853692000353488670">Нова картичка „Инкогнито“</translation>
 <translation id="1854463785401910334">Пребарувајте низ отворените картички</translation>
@@ -701,6 +703,7 @@
 <translation id="368329460027487650">Одјавено. Отвора опции за најавување.</translation>
 <translation id="3695446226812920698">Дознајте како</translation>
 <translation id="3700134753671613714">Најавете се за да ги добиете обележувачите на сите уреди.</translation>
+<translation id="3701167022068948696">Поправи сега</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} лозинка е зачувана само на овој уред. За да ја користите на другите ваши уреди, зачувајте ја во вашата сметка на Google, {EMAIL}.}one{{COUNT} лозинка се зачувани само на овој уред. За да ги користите на другите ваши уреди, зачувајте ги во вашата сметка на Google, {EMAIL}.}other{{COUNT} лозинки се зачувани само на овој уред. За да ги користите на другите ваши уреди, зачувајте ги во вашата сметка на Google, {EMAIL}.}}</translation>
 <translation id="3709621342136814217">Изберете ги фонтот, големината на текстот и друго овде</translation>
 <translation id="371230970611282515">Предвидува опасни настани и ве предупредува пред да се случат.</translation>
@@ -876,6 +879,7 @@
 <translation id="4338650699862464074">Ги испраќа URL-адресите на страниците што ги посетувате во Google.</translation>
 <translation id="4342946437867096381">Веќе зачувавте лозинка за сајтов во сметката на Google. Google може да ја избере најновата лозинка за вас.</translation>
 <translation id="4365121137632832185">Група картички. Проширена.</translation>
+<translation id="4365685757967464989">Дозволете му на Gemini да ја користи камерата за да фотографира</translation>
 <translation id="4367971618859387374">Име за приказ</translation>
 <translation id="4375772272517383391">Затворете ги сите картички</translation>
 <translation id="4378154925671717803">Телефон</translation>
@@ -959,6 +963,7 @@
 
        Изберете што да се прави со постојните податоци од прелистување на уредов.</translation>
 <translation id="4675298276894277358">Сајтов нема да се прикажува повторно</translation>
+<translation id="4676647168422678078">Да се применат поставките за страницата во нова картичка?</translation>
 <translation id="4682496302933121474">Да се преведе страницата?</translation>
 <translation id="4682686630151240767">1. Отворете ги поставките за iPhone</translation>
 <translation id="4691892551491778176">Кога ја користите функцијава, содржините и URL-адресите на страницата се испраќаат до Google, но не се користат за подобрување на моделите на генеративната AI. Ова може да го исклучите во поставките кога сакате.</translation>
@@ -1007,6 +1012,7 @@
 <translation id="4840495572919996524">Обележувачите, историјата, лозинките и другo веќе нема да се синхронизираат со сметката на Google.</translation>
 <translation id="484280513275854557">Се одјавивте; податоците од прелистување се избришаа</translation>
 <translation id="4850886885716139402">Приказ</translation>
+<translation id="4854068532375923088">Дозволете му на Gemini да ја користи вашата камера</translation>
 <translation id="4860895144060829044">Повикајте</translation>
 <translation id="4861953997778766866">Секој може да врши промени во споделените групи картички</translation>
 <translation id="4865063548323785458">Зачувувајте и автоматски пополнувајте ги лозинките за да може лесно да се најавувате на сајтовите и апликациите</translation>
@@ -1211,6 +1217,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5579012242779565775">Скриј „Список за читање“</translation>
 <translation id="5581786858144165447">Прашајте го „AI-режимот“</translation>
 <translation id="5585019845078534178">Картички</translation>
+<translation id="5591526871732898147">Приложена слика {index}</translation>
 <translation id="5595485650161345191">Измени адреса</translation>
 <translation id="559567008082979829">Поставете преземањата да се бришат по еден месец.</translation>
 <translation id="5596627076506792578">Повеќе опции</translation>
@@ -1912,6 +1919,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8059312861912872211">{count,plural, =1{{count} обележувач}one{{count} обележувач}other{{count} обележувачи}}</translation>
 <translation id="8059533439631660104">Го собира делот.</translation>
 <translation id="8061584726507121204">Историја</translation>
+<translation id="8064946459644399612">Поставките за страницата во нова картичка се применети</translation>
 <translation id="8069168488983557089">Добивајте клучни заклучоци и согледувања што ќе ви помогнат да ја разберете која било тема</translation>
 <translation id="8069394452933076548">Изберете кога картичките што не сте ги користеле неодамна да се преместуваат во делот за неактивни картички.</translation>
 <translation id="8073670137947914548">Преземањето заврши</translation>
@@ -1942,6 +1950,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8161614462829037225">Отклучете со <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Должина</translation>
 <translation id="8182037667962849780">{count,plural, =1{За {website_1}}=2{За {website_1}, {website_2}}=3{За {website_1}, {website_2} и уште 1}one{За {website_1}, {website_2} и уште {more_count}}other{За {website_1}, {website_2} и уште {more_count}}}</translation>
+<translation id="8184895727539791845">За да му дозволите на Gemini да ја користи вашата камера, вклучете ја камерата во поставките за iOS</translation>
 <translation id="8185076488803799132">Import</translation>
 <translation id="8189615296021678665">Допрете „Зачувај“ за да пристапите до лозинкава лесно следниот пат кога ќе се најавите.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Вашите уреди<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -2010,6 +2019,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8428045167754449968">Град</translation>
 <translation id="8428213095426709021">Поставки</translation>
 <translation id="8428634594422941299">Сфатив</translation>
+<translation id="8429455911440977338">Вклучете ја камерата</translation>
 <translation id="8434837876193928924">Детали за групата картички</translation>
 <translation id="8438566539970814960">Подобрете ги пребарувањата и прелистувањето</translation>
 <translation id="8439758443371991593">Скриј „Додај во список за читање“</translation>
@@ -2251,6 +2261,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="956218893102219091">Користете ја вашата прецизна локација за да добивате најпрецизни резултати од Gemini, наместо приближна локација заснована на вашата IP-адреса. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Избришете го прелистувањето</translation>
 <translation id="963102227019621224">Активност на интернет и апликации</translation>
+<translation id="965259330007686240">Создајте слика со Gemini</translation>
 <translation id="965879457362663186">Додајте прилог</translation>
 <translation id="966593914872420832">Гласовно пребарување</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{Придружете се во групата картички со <ph name="OWNER_NAME" />}=1{Придружете се во групата картички со <ph name="OWNER_NAME" /> и уште {COUNT}}one{Придружете се во групата картички со <ph name="OWNER_NAME" /> и уште {COUNT}}other{Придружете се во групата картички со <ph name="OWNER_NAME" /> и уште {COUNT}}}</translation>

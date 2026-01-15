@@ -8978,6 +8978,25 @@ Politika, Devre Dışı değerine ayarlanırsa veya ayarlanmadan bırakılırsa 
 olarak bu tür istekleri engelleme davranışı geçerli olur.</translation>
 <translation id="6915524162137327111">Yönetim etiketlerini 30 saniye boyunca göster</translation>
 <translation id="6919205861950516688">Sekme Düzenleyici'ye izin verme.</translation>
+<translation id="6920791385071265136">Kötü amaçlı yazılım dışı ihlaller nedeniyle kaldırılan uzantıların, düşük güven düzeyine sahip ortamlarda zorunlu olarak yüklenip yüklenemeyeceğini kontrol eder.
+
+Kötü amaçlı yazılım dışı ihlaller ve kaldırma işlemleri hakkında daha fazla bilgiyi https://developer.chrome.com/docs/webstore/review-process#warning adresinde bulabilirsiniz.
+
+Kötü amaçlı yazılım dışı ihlal çözüldükten sonra uzantı etkin kalır ve devre dışı bırakılamaz veya kaldırılamaz.
+
+<ph name="MS_WIN_NAME" /> işletim sisteminde bu politika bir <ph name="MS_AD_NAME" /> veya <ph name="MS_AAD_NAME" /> alan adına katılmış ya da "<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılamaz.
+
+<ph name="MAC_OS_NAME" /> işletim sisteminde bu politika MDM üzerinden yönetilen, MCX aracılığıyla bir alan adına katılmış veya "<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />" öğesine kaydolmuş örneklerde kullanılamaz.
+
+Kötü amaçlı yazılım dışı ihlal içeren zorunlu yüklenmiş uzantılar bu durumlarda etkin kalır.
+
+Şu anda kötü amaçlı yazılım dışı ihlal içeren zorunlu yüklenmiş bir uzantı Chrome'da yüklü ve etkin durumda.
+
+Politika, Etkin değerine ayarlanırsa zorunlu yüklenmiş uzantılar, kötü amaçlı yazılım dışı ihlallerden bağımsız olarak aynı davranır (etkin kalır).
+
+Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa kötü amaçlı yazılım dışı ihlal içeren zorunlu yüklenmiş uzantılar devre dışı bırakılır.
+
+Bu politika M145'te kaldırıldı. İlgili sürümden itibaren, kötü amaçlı yazılım dışı ihlal içeren zorunlu yüklenmiş uzantılar, düşük güven düzeyine sahip ortamlarda devre dışı bırakılır.</translation>
 <translation id="692096803256767290">OS'yi hedef sürüme geri al</translation>
 <translation id="6921241119085515674"><ph name="MICROSOFT_ONE_DRIVE_NAME" /> ve <ph name="MICROSOFT_365_NAME" /> için <ph name="CLOUD_UPLOAD_NAME" /> akışına izin ver</translation>
 <translation id="6921544339867564740">Cihazların ChromeOS'te sanal makineler çalıştırmasına izin ver</translation>

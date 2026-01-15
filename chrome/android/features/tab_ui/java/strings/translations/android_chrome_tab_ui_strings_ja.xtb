@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">アクセスを管理</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{アイテムを閉じる}other{アイテムを閉じる}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" /> / <ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">タブのボトムシートが画面の下半分に表示されています。</translation>
 <translation id="374923079891132274">共有シートのプレビューのサムネイル。</translation>
 <translation id="3776329373944672717">タブグループのタイトル <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">管理</translation>
@@ -125,6 +126,7 @@
 <translation id="5339733443032484186">最後のタブ</translation>
 <translation id="5380159289133845234">重複するタブをアーカイブする</translation>
 <translation id="5446043142172831860">タブを削除するとグループから退出します</translation>
+<translation id="5465437530117042974">タブのボトムシートの変更が閉じられました。</translation>
 <translation id="5490235265819901748">タブグループを展開しました</translation>
 <translation id="5494920125229734069">すべて選択</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{追加できるファイル、タブ、または画像は最大 <ph name="LIMIT_COUNT_ONE" /> 個です}other{追加できるファイル、タブ、または画像は最大 <ph name="LIMIT_COUNT_MANY" /> 個です}}</translation>
@@ -140,6 +142,7 @@
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6051432659151380973">タブグループは自動的に保存されます</translation>
 <translation id="6054741997831917303">このアイテムの価格は最近 <ph name="PREVIOUS_PRICE" /> から <ph name="NEW_PRICE" /> に下がりました</translation>
+<translation id="606985262342505139">タブのボトムシートが画面全体に表示されています</translation>
 <translation id="6109251075362363230">最後に使用したもの以外の重複するすべてのタブをアーカイブします</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のアイテムを閉じる}other{選択した <ph name="TABS_COUNT_MANY" /> 個のアイテムを閉じる}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{グループを新しいウィンドウに移動}other{グループを別のウィンドウに移動}}</translation>

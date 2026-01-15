@@ -412,6 +412,7 @@
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 í viðbót)}one{(+ # í viðbót)}other{(+ # í viðbót)}}</translation>
 <translation id="5403592356182871684">Heiti</translation>
 <translation id="5407203562970638234">Auktu öryggi þitt</translation>
+<translation id="5436307623797390637">Forrit í tæki</translation>
 <translation id="5438097262470833822">Þetta val endurstillir heimildir fyrir <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Þegar kveikt er á þessu geta vefsvæði beðið um að fá að sjá staðsetningu þína. Þegar slökkt er á þessu geta vefsvæði ekki séð staðsetningu þína.</translation>
 <translation id="5489227211564503167">Liðinn tími: <ph name="ELAPSED_TIME" /> af <ph name="TOTAL_TIME" />.</translation>

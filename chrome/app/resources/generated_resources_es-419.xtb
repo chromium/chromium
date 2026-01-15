@@ -2556,6 +2556,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2713444072780614174">Blanco</translation>
 <translation id="2714180132046334502">Fondo oscuro</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
+<translation id="2714617928488200509">Modelos</translation>
 <translation id="2715751256863167692">Esta actualización restablece tu Chromebook y quita los datos del usuario actual.</translation>
 <translation id="2715934493766003251">No se puede liberar almacenamiento mientras la sincronización de archivos está activada</translation>
 <translation id="2716986496990888774">Esta configuración la administra uno de tus padres.</translation>
@@ -4595,6 +4596,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4078738236287221428">Exhaustiva</translation>
 <translation id="4078903002989614318">Opciones de orden y lista</translation>
 <translation id="4079140982534148664">Usar el corrector ortográfico mejorado</translation>
+<translation id="4082070466456857368">Pensar (3 Pro)</translation>
 <translation id="4084682180776658562">Marcador</translation>
 <translation id="4084835346725913160">Cerrar <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">JavaScript fue bloqueado en esta página.</translation>
@@ -7276,6 +7278,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5955721306465922729">Un sitio web quiere abrir esta app.</translation>
 <translation id="5955809630138889698">Es posible que este dispositivo solo esté habilitado para el modo de demostración en línea. Para obtener más información, comunícate con tu representante de asistencia.</translation>
 <translation id="59561895884837262">Recibirás una notificación cuando comience la grabación.</translation>
+<translation id="5957613098218939406">Más opciones</translation>
 <translation id="5957987129450536192">Presiona el ícono de Seleccionar para pronunciar que se encuentra cerca de tu imagen de perfil y, luego, elige lo que quieras escuchar.</translation>
 <translation id="5958836583172610505">La sincronización está activada</translation>
 <translation id="5959471481388474538">Red no disponible</translation>
@@ -7841,6 +7844,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6350821834561350243">Brinda una descripción clara del problema y los pasos para reproducirlo (si es posible)</translation>
 <translation id="6351178441572658285">Idiomas de la app</translation>
 <translation id="6354918092619878358">Curva elíptica SECG elliptic secp256r1 (también conocido como ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355632359041940003">Tomar el control de la tarea</translation>
 <translation id="635609604405270300">No apagues el dispositivo</translation>
 <translation id="6356537493253478650">Sereno</translation>
 <translation id="63566973648609420">Solo las personas que tengan tu frase de contraseña pueden leer los datos encriptados. Google no envía ni almacena la frase de contraseña. Si la olvidas o quieres cambiar esta configuración, deberás <ph name="BEGIN_LINK" />restablecer la sincronización<ph name="END_LINK" />.</translation>
@@ -8808,6 +8812,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7017219178341817193">Agregar nueva página</translation>
 <translation id="7017354871202642555">No es posible configurar el modo después de que se ha configurado la ventana.</translation>
 <translation id="7019805045859631636">Rápida</translation>
+<translation id="7020810150082302220">Se cambió tu navegador predeterminado</translation>
 <translation id="7021524108486027008">Ejecuta herramientas, IDE y editores en un entorno administrado por tu empresa en tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7022222879220069865">Se desconectaron todos los paneles táctiles</translation>
 <translation id="7022562585984256452">Se configuró tu página principal.</translation>
@@ -10189,6 +10194,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7969144945436590933">Obtener más detalles</translation>
 <translation id="7970673414865679092">Detalles de Ethernet</translation>
 <translation id="7972714317346275248">PKCS N. º 1, SHA-384 con encriptación RSA</translation>
+<translation id="7972837668077967426">Canvas</translation>
 <translation id="7973149423217802477">La opción No me gusta envía comentarios que indican que no te gusta esta función.</translation>
 <translation id="7973776233567882054">¿Cuál de las siguientes respuestas describe mejor la red?</translation>
 <translation id="797394244396603170">Selecciona el dispositivo con el que quieres compartir archivos.</translation>
@@ -10627,6 +10633,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8263228331881858381">Se guardó la llave de acceso</translation>
 <translation id="8263336784344783289">Escribe un nombre para este grupo</translation>
 <translation id="8264024885325823677">El administrador controla esta configuración.</translation>
+<translation id="826410575944953302">Expandir pestañas verticales</translation>
 <translation id="8264195025773092348">Solo se muestran dispositivos compatibles. Los dispositivos USB ya no estarán disponibles para las apps nativas hasta que se desconecten.</translation>
 <translation id="8265018477030547118">Solo en este dispositivo</translation>
 <translation id="826511437356419340">Se activó el modo de vista Recientes. Desliza el dedo para navegar o presiona Tab si usas un teclado.</translation>
@@ -10724,6 +10731,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8323518750352551353">¿Quieres separar la navegación?</translation>
 <translation id="8323744572398547859">Para obtener las pestañas de tus otros dispositivos, accede y sincroniza el historial. También accederás a tus contraseñas y más en todos tus dispositivos. Puedes detener la sincronización en cualquier momento desde la configuración. Es posible que Google personalice la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="8324158725704657629">No volver a preguntar</translation>
+<translation id="8324264291265547520">Expandir pestañas verticales</translation>
 <translation id="8325413836429495820">No puede ver el contenido del portapapeles</translation>
 <translation id="8326478304147373412">PKCS N. º 7, cadena de certificados</translation>
 <translation id="8327386430364625757">Fuente matemática</translation>
@@ -10749,6 +10757,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8339288417038613756">Tamaño de la pantalla y el texto</translation>
 <translation id="833986336429795709">Para abrir este vínculo, selecciona una app</translation>
 <translation id="8340547030807793004">Más acciones para <ph name="DEVICE" /></translation>
+<translation id="8341693734243413517">Actualizador de Chrome</translation>
 <translation id="8341804784147620576">Mostrar atajos de búsqueda</translation>
 <translation id="8342221978608739536">No lo intenté</translation>
 <translation id="8342387517402567689">No se admiten las instalaciones de apps web en el modo Incógnito</translation>
@@ -11052,6 +11061,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8551588720239073785">Configuración de fecha y hora</translation>
 <translation id="8551647092888540776">No se puede abrir <ph name="FILE_NAMES" /> sin conexión</translation>
 <translation id="8552102814346875916">Guardar en la lista "Mantener estos sitios siempre activos"</translation>
+<translation id="8552947739661397736">Tomar el control de la tarea, Gemini tiene el control en este momento</translation>
 <translation id="8553342806078037065">Administrar otras personas</translation>
 <translation id="8554899698005018844">Ningún idioma</translation>
 <translation id="8555444629041783356">Programación automática de horario de cambio de modo</translation>

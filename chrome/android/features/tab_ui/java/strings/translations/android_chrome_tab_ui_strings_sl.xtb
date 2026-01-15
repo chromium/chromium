@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">Upravljanje dostopa</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Zapri element}one{Zapri elemente}two{Zapri elemente}few{Zapri elemente}other{Zapri elemente}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Razdelek na dnu zaslona za zavihek pri polovični višini.</translation>
 <translation id="374923079891132274">Sličica za predogled deljenega lista.</translation>
 <translation id="3776329373944672717">Naslov skupine zavihkov <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Upravljaj</translation>
@@ -125,6 +126,7 @@
 <translation id="5339733443032484186">Zadnji zavihek</translation>
 <translation id="5380159289133845234">Arhiviranje podvojenih zavihkov</translation>
 <translation id="5446043142172831860">Odstrani zavihek in zapusti skupino</translation>
+<translation id="5465437530117042974">Spremembe razdelka na dnu zaslona za zavihek so zaprte.</translation>
 <translation id="5490235265819901748">Skupina zavihkov je razširjena</translation>
 <translation id="5494920125229734069">Izberi vse</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Dodajte največ <ph name="LIMIT_COUNT_ONE" /> datoteko, zavihek ali sliko}one{Dodajte do <ph name="LIMIT_COUNT_MANY" /> datoteko, zavihek ali sliko}two{Dodajte do <ph name="LIMIT_COUNT_MANY" /> datoteki, zavihka ali sliki}few{Dodajte do <ph name="LIMIT_COUNT_MANY" /> datoteke, zavihke ali slike}other{Dodajte do <ph name="LIMIT_COUNT_MANY" /> datotek, zavihkov ali slik}}</translation>
@@ -140,6 +142,7 @@
 <translation id="6040143037577758943">Zapri</translation>
 <translation id="6051432659151380973">Skupine zavihkov se samodejno shranjujejo</translation>
 <translation id="6054741997831917303">Cena tega izdelka je bila nedavno <ph name="PREVIOUS_PRICE" />, zdaj je <ph name="NEW_PRICE" /></translation>
+<translation id="606985262342505139">Razdelek na dnu zaslona za zavihek pri polni višini</translation>
 <translation id="6109251075362363230">Vsi podvojeni zavihki, razen nazadnje uporabljene kopije, bodo zdaj tudi arhivirani.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Zapiranje <ph name="TABS_COUNT_ONE" /> izbranega elementa}one{Zapiranje <ph name="TABS_COUNT_MANY" /> izbranega elementa}two{Zapiranje <ph name="TABS_COUNT_MANY" /> izbranih elementov}few{Zapiranje <ph name="TABS_COUNT_MANY" /> izbranih elementov}other{Zapiranje <ph name="TABS_COUNT_MANY" /> izbranih elementov}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Premik skupine v novo okno}one{Premik skupine v drugo okno}two{Premik skupine v drugo okno}few{Premik skupine v drugo okno}other{Premik skupine v drugo okno}}</translation>

@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">Upravljajte pristupom</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Zatvori stavku}one{Zatvori stavke}few{Zatvori stavke}other{Zatvori stavke}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" /> od <ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Donja tabela kartice na pola visine.</translation>
 <translation id="374923079891132274">Sličica pregleda lista za dijeljenje.</translation>
 <translation id="3776329373944672717">Naslov grupe kartica <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Upravljaj</translation>
@@ -125,6 +126,7 @@
 <translation id="5339733443032484186">Posljednja kartica</translation>
 <translation id="5380159289133845234">Arhiviraj duplikate kartica</translation>
 <translation id="5446043142172831860">Ukloni karticu i napusti grupu</translation>
+<translation id="5465437530117042974">Promjene donje tabele kartice su zatvorene.</translation>
 <translation id="5490235265819901748">Grupa kartica je proširena</translation>
 <translation id="5494920125229734069">Odaberi sve</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Dodajte do <ph name="LIMIT_COUNT_ONE" /> fajla, kartice ili slike}one{Dodajte do <ph name="LIMIT_COUNT_MANY" /> fajla, kartice ili slike}few{Dodajte do <ph name="LIMIT_COUNT_MANY" /> fajla, kartice ili slike}other{Dodajte do <ph name="LIMIT_COUNT_MANY" /> fajlova, kartica ili slika}}</translation>
@@ -140,6 +142,7 @@
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6051432659151380973">Grupe kartica se pohranjuju automatski</translation>
 <translation id="6054741997831917303">Cijena ove stavke je nedavno pala sa <ph name="PREVIOUS_PRICE" /> na <ph name="NEW_PRICE" /></translation>
+<translation id="606985262342505139">Donja tabela kartice u punoj visini</translation>
 <translation id="6109251075362363230">Svi duplikati kartica će se sada arhivirati s izuzetkom posljednje korištene kopije.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Zatvaranje <ph name="TABS_COUNT_ONE" /> odabrane stavke}one{Zatvaranje <ph name="TABS_COUNT_MANY" /> odabrane stavke}few{Zatvaranje <ph name="TABS_COUNT_MANY" /> odabrane stavke}other{Zatvaranje <ph name="TABS_COUNT_MANY" /> odabranih stavki}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Premjesti grupu u novi prozor}one{Premjesti grupu u drugi prozor}few{Premjesti grupu u drugi prozor}other{Premjesti grupu u drugi prozor}}</translation>

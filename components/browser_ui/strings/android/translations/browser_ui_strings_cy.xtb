@@ -412,6 +412,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 arall)}zero{(+ # arall)}two{(+ # arall)}few{(+ # arall)}many{(+ # arall)}other{(+ # arall)}}</translation>
 <translation id="5403592356182871684">Enwau</translation>
 <translation id="5407203562970638234">Gwella eich diogelwch</translation>
+<translation id="5436307623797390637">Apiau ar y ddyfais</translation>
 <translation id="5438097262470833822">Bydd y dewis hwn yn ailosod caniatadau ar gyfer <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am eich lleoliad. Pan fydd wedi'i ddiffodd, ni all gwefannau weld eich lleoliad.</translation>
 <translation id="5489227211564503167">Mae <ph name="ELAPSED_TIME" /> o <ph name="TOTAL_TIME" /> wedi mynd heibio.</translation>

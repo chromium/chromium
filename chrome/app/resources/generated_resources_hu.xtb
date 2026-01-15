@@ -2571,6 +2571,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2713444072780614174">Fehér</translation>
 <translation id="2714180132046334502">Sötét háttér</translation>
 <translation id="2714393097308983682">Google Play Áruház</translation>
+<translation id="2714617928488200509">Modellek</translation>
 <translation id="2715751256863167692">Ez a frissítés visszaállítja a Chromebookot, és eltávolítja a jelenlegi felhasználói adatokat.</translation>
 <translation id="2715934493766003251">Nem lehet tárhelyet felszabadítani, amíg be van kapcsolva a fájlszinkronizálás</translation>
 <translation id="2716986496990888774">Ezt a beállítást szülő kezeli.</translation>
@@ -4609,6 +4610,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4078738236287221428">Agresszív</translation>
 <translation id="4078903002989614318">Rendezési és listabeállítások</translation>
 <translation id="4079140982534148664">Továbbfejlesztett helyesírás-ellenőrzés használata</translation>
+<translation id="4082070466456857368">Gondolkodó (3 Pro)</translation>
 <translation id="4084682180776658562">Könyvjelző</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> bezárása</translation>
 <translation id="4085298594534903246">A JavaScript le van tiltva ezen az oldalon.</translation>
@@ -7291,6 +7293,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5955721306465922729">Egy webhely meg akarja nyitni ezt az alkalmazást.</translation>
 <translation id="5955809630138889698">Lehet, hogy az eszköz csak az online demó mód használatára jogosult. További részletekért forduljon az ügyfélszolgálati képviselőjéhez.</translation>
 <translation id="59561895884837262">Értesítést kap a rögzítés megkezdéséről.</translation>
+<translation id="5957613098218939406">További lehetőségek</translation>
 <translation id="5957987129450536192">Koppintson a profilképe melletti Felolvasás ikonra, majd válassza ki, hogy mit szeretne hallani.</translation>
 <translation id="5958836583172610505">A szinkronizálás be van kapcsolva</translation>
 <translation id="5959471481388474538">A hálózat nem érhető el</translation>
@@ -7856,6 +7859,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6350821834561350243">Adja meg a probléma egyértelmű leírását és a probléma reprodukálásának lépéseit (ha lehetséges).</translation>
 <translation id="6351178441572658285">Az alkalmazások nyelve</translation>
 <translation id="6354918092619878358">SECG elliptikus görbe secp256r1 (vagyis ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355632359041940003">Feladat átvétele</translation>
 <translation id="635609604405270300">Az eszköz bekapcsolva tartása</translation>
 <translation id="6356537493253478650">Derűs</translation>
 <translation id="63566973648609420">Titkosított adatait csak az olvashatja el, aki rendelkezik összetett jelszavával. Az összetett jelszót a Google nem kapja meg, és nem is tárolja. Ha elfelejtette összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />alaphelyzetbe kell állítania a szinkronizálást<ph name="END_LINK" />.</translation>
@@ -8823,6 +8827,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7017219178341817193">Új oldal hozzáadása</translation>
 <translation id="7017354871202642555">A mód beállítása már nem lehetséges, miután beállította az ablakot.</translation>
 <translation id="7019805045859631636">Gyors</translation>
+<translation id="7020810150082302220">Az alapértelmezett böngésző megváltozott</translation>
 <translation id="7021524108486027008">Eszközeit, szerkesztőit és IDE-jeit a vállalkozása által kezelt környezetben futtathatja <ph name="DEVICE_TYPE" /> eszközén.</translation>
 <translation id="7022222879220069865">Az összes érintőpad le lett választva</translation>
 <translation id="7022562585984256452">Beállítottuk kezdőoldalát.</translation>
@@ -10203,6 +10208,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7969144945436590933">További információk megtekintése</translation>
 <translation id="7970673414865679092">Ethernet-hálózat részletei</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 RSA titkosítással</translation>
+<translation id="7972837668077967426">Canvas</translation>
 <translation id="7973149423217802477">A „Nem tetszik” értékeléssel azt a visszajelzést küldi, hogy ez nem tetszik Önnek.</translation>
 <translation id="7973776233567882054">Az alábbiak közül melyik jellemzi legjobban hálózatát?</translation>
 <translation id="797394244396603170">Válassza ki azt az eszközt, amellyel fájlokat szeretne megosztani</translation>
@@ -10641,6 +10647,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8263228331881858381">Azonosítókulcs mentve</translation>
 <translation id="8263336784344783289">Nevezze el a csoportot</translation>
 <translation id="8264024885325823677">Ezt a beállítást a rendszergazdája kezeli.</translation>
+<translation id="826410575944953302">Függőleges lapok kibontása</translation>
 <translation id="8264195025773092348">Csak a támogatott eszközök jelennek meg. Az USB-eszközök addig nem állnak rendelkezésre a natív alkalmazások számára, amíg le nem választja őket.</translation>
 <translation id="8265018477030547118">Csak erre az eszközre</translation>
 <translation id="826511437356419340">Ablakáttekintési módba lépett. A navigáció csúsztatással, illetve billentyűzet használata esetén a Tab gombbal lehetséges.</translation>
@@ -10738,6 +10745,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8323518750352551353">Különválasztja a böngészést?</translation>
 <translation id="8323744572398547859">Ha a többi eszközén lévő lapokhoz is szeretne hozzáférni, jelentkezzen be, majd szinkronizálja az előzményeit. Egyebek mellett a jelszavaihoz is hozzáférhet bármely eszközén. A beállítások között bármikor leállíthatja a szinkronizálást. A Google az Ön előzményei alapján személyre szabhatja a Keresőt és más szolgáltatásokat.</translation>
 <translation id="8324158725704657629">Ne jelenjen meg többé</translation>
+<translation id="8324264291265547520">Függőleges lapok kibontása</translation>
 <translation id="8325413836429495820">Nem használhatják a vágólapot</translation>
 <translation id="8326478304147373412">PKCS #7, tanúsítványlánc</translation>
 <translation id="8327386430364625757">Matematikai betűtípus</translation>
@@ -10763,6 +10771,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8339288417038613756">Megjelenítési és szövegméret</translation>
 <translation id="833986336429795709">Válassza ki, hogy melyik alkalmazással szeretné megnyitni ezt a linket</translation>
 <translation id="8340547030807793004">További műveletek a következőhöz: <ph name="DEVICE" /></translation>
+<translation id="8341693734243413517">Chrome-frissítő</translation>
 <translation id="8341804784147620576">Keresési parancsikonok megjelenítése</translation>
 <translation id="8342221978608739536">Nem próbáltam</translation>
 <translation id="8342387517402567689">Az internetes alkalmazások telepítése nem támogatott inkognitó módban</translation>
@@ -11066,6 +11075,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8551588720239073785">Dátum- és időbeállítások</translation>
 <translation id="8551647092888540776">A(z) <ph name="FILE_NAMES" /> nem nyitható meg offline állapotban</translation>
 <translation id="8552102814346875916">Mentés az „Ezek a webhelyek mindig legyenek aktívak” listára</translation>
+<translation id="8552947739661397736">Feladat átvétele, jelenleg a Gemini irányít</translation>
 <translation id="8553342806078037065">Más személyek kezelése</translation>
 <translation id="8554899698005018844">Nincs nyelv</translation>
 <translation id="8555444629041783356">Automatikus naplemente-ütemezés</translation>

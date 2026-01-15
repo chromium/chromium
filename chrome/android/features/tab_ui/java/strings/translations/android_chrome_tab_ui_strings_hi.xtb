@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">ऐक्सेस मैनेज करें</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{आइटम बंद करें}one{आइटम बंद करें}other{आइटम बंद करें}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">टैब बॉटम शीट आधी स्क्रीन पर दिख रही है.</translation>
 <translation id="374923079891132274">Share sheet की झलक का थंबनेल.</translation>
 <translation id="3776329373944672717">टैब ग्रुप का टाइटल <ph name="TITLE_OF_GROUP" /> है</translation>
 <translation id="3810973564298564668">मैनेज करें</translation>
@@ -125,6 +126,7 @@
 <translation id="5339733443032484186">आपका आखिरी टैब</translation>
 <translation id="5380159289133845234">डुप्लीकेट टैब संग्रहित करें</translation>
 <translation id="5446043142172831860">टैब हटाएं और ग्रुप छोड़ें</translation>
+<translation id="5465437530117042974">टैब बॉटम शीट बंद हो गई है.</translation>
 <translation id="5490235265819901748">टैब ग्रुप बड़ा किया गया</translation>
 <translation id="5494920125229734069">सभी को चुनें</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{ज़्यादा से ज़्यादा <ph name="LIMIT_COUNT_ONE" /> फ़ाइल, टैब या इमेज जोड़ें}one{ज़्यादा से ज़्यादा <ph name="LIMIT_COUNT_MANY" /> फ़ाइल, टैब या इमेज जोड़ें}other{ज़्यादा से ज़्यादा <ph name="LIMIT_COUNT_MANY" /> फ़ाइलें, टैब या इमेज जोड़ें}}</translation>
@@ -140,6 +142,7 @@
 <translation id="6040143037577758943">बंद करें</translation>
 <translation id="6051432659151380973">आपके टैब ग्रुप अपने-आप सेव होते हैं</translation>
 <translation id="6054741997831917303">इस आइटम की कीमत <ph name="PREVIOUS_PRICE" /> से कम होकर <ph name="NEW_PRICE" /> हो गई है</translation>
+<translation id="606985262342505139">टैब बॉटम शीट पूरी स्क्रीन पर खुली है</translation>
 <translation id="6109251075362363230">अब सभी डुप्लीकेट टैब भी संग्रहित किए जाएंगे. हालांकि, सबसे हाल ही में इस्तेमाल किए गए डुप्लीकेट टैब को संग्रहित नहीं किया जाएगा.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{चुना गया <ph name="TABS_COUNT_ONE" /> आइटम बंद करें}one{चुना गया <ph name="TABS_COUNT_MANY" /> आइटम बंद करें}other{चुने गए <ph name="TABS_COUNT_MANY" /> आइटम बंद करें}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ग्रुप को दूसरी विंडो पर ले जाएं}one{ग्रुप को दूसरी विंडो पर ले जाएं}other{ग्रुप को दूसरी विंडो पर ले जाएं}}</translation>

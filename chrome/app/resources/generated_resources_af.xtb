@@ -2572,6 +2572,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2713444072780614174">Wit</translation>
 <translation id="2714180132046334502">Donker agtergrond</translation>
 <translation id="2714393097308983682">Google Play Winkel</translation>
+<translation id="2714617928488200509">Modelle</translation>
 <translation id="2715751256863167692">Hierdie opgradering stel jou Chromebook terug en verwyder huidige gebruikerdata.</translation>
 <translation id="2715934493766003251">Kan nie berging opruim terwyl lêersinkronisering aan is nie</translation>
 <translation id="2716986496990888774">'n Ouer bestuur hierdie instelling.</translation>
@@ -4611,6 +4612,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4078738236287221428">Aggressief</translation>
 <translation id="4078903002989614318">Sorteer- en lysopsies</translation>
 <translation id="4079140982534148664">Gebruik verbeterde speltoets</translation>
+<translation id="4082070466456857368">Deurdink (3 Pro)</translation>
 <translation id="4084682180776658562">Boekmerk</translation>
 <translation id="4084835346725913160">Maak <ph name="TAB_NAME" /> toe</translation>
 <translation id="4085298594534903246">JavaScript is op hierdie bladsy geblokkeer.</translation>
@@ -7293,6 +7295,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5955721306465922729">'n Webwerf wil hierdie app oopmaak.</translation>
 <translation id="5955809630138889698">Hierdie toestel kwalifiseer dalk vir aanlyn demonstrasiemodus. Kontak jou steundiensverteenwoordiger vir meer besonderhede.</translation>
 <translation id="59561895884837262">Jy sal in kennis gestel word wanneer die opname begin.</translation>
+<translation id="5957613098218939406">Meer opsies</translation>
 <translation id="5957987129450536192">Tik op die Hardoplees-ikoon naby jou profielprent en kies wat jy wil hoor.</translation>
 <translation id="5958836583172610505">Sinkronisering is aan</translation>
 <translation id="5959471481388474538">Netwerk nie beskikbaar nie</translation>
@@ -7858,6 +7861,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6350821834561350243">Verskaf ’n duidelike beskrywing van die probleem en stappe om die probleem weer te laat gebeur (indien moontlik)</translation>
 <translation id="6351178441572658285">Apptale</translation>
 <translation id="6354918092619878358">SECG-elliptiesekurwe-secp256r1 (ook bekend as ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355632359041940003">Neem taak oor</translation>
 <translation id="635609604405270300">Hou toestel aangeskakel</translation>
 <translation id="6356537493253478650">Rustig</translation>
 <translation id="63566973648609420">Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word nie na Google gestuur of deur Google geberg nie. As jy jou wagfrase vergeet of hierdie instelling wil verander, sal jy <ph name="BEGIN_LINK" />sinkronisering moet terugstel<ph name="END_LINK" />.</translation>
@@ -8825,6 +8829,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7017219178341817193">Voeg 'n nuwe bladsy by</translation>
 <translation id="7017354871202642555">Kan nie modus stel ná venster gestel is nie.</translation>
 <translation id="7019805045859631636">Vinnig</translation>
+<translation id="7020810150082302220">Jou verstekblaaier is verander</translation>
 <translation id="7021524108486027008">Laat loop nutsdinge, redigeerders en IDE’s in ’n omgewing wat deur jou onderneming bestuur word op jou <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7022222879220069865">Alle raakpanele is ontkoppel</translation>
 <translation id="7022562585984256452">Jou tuisblad is gestel.</translation>
@@ -10205,6 +10210,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7969144945436590933">Kry nog besonderhede</translation>
 <translation id="7970673414865679092">Ethernet-besonderhede</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 met RSA-enkripsie</translation>
+<translation id="7972837668077967426">Skilderdoek</translation>
 <translation id="7973149423217802477">Afduim stuur terugvoer dat jy nie hiervan hou nie.</translation>
 <translation id="7973776233567882054">Watter van die volgende beskryf jou netwerk die beste?</translation>
 <translation id="797394244396603170">Kies die toestel waarmee jy lêers wil deel</translation>
@@ -10642,6 +10648,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8263228331881858381">Toegangsleutel is gestoor</translation>
 <translation id="8263336784344783289">Gee hierdie groep 'n naam</translation>
 <translation id="8264024885325823677">Jou administrateur bestuur hierdie instelling.</translation>
+<translation id="826410575944953302">Vou vertikale oortjies uit</translation>
 <translation id="8264195025773092348">Slegs gesteunde toestelle word gewys. USB-toestelle sal nie meer aan toestelspesifieke apps beskikbaar wees totdat dit ontkoppel is nie.</translation>
 <translation id="8265018477030547118">Net op hierdie toestel</translation>
 <translation id="826511437356419340">Het in vensteroorsigmodus ingegaan. Swiep om te navigeer of druk Tab as jy 'n sleutelbord gebruik.</translation>
@@ -10739,6 +10746,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8323518750352551353">Skei blaai?</translation>
 <translation id="8323744572398547859">Om jou oortjies van jou ander toestelle te kry, meld aan en sinkroniseer geskiedenis. Jy sal ook jou wagwoorde en meer op al jou toestelle kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="8324158725704657629">Moenie weer vra nie</translation>
+<translation id="8324264291265547520">Vou vertikale oortjies uit</translation>
 <translation id="8325413836429495820">Mag nie jou knipbord sien nie</translation>
 <translation id="8326478304147373412">PKCS # 7, sertifikaatketting</translation>
 <translation id="8327386430364625757">Wiskundige lettertipe</translation>
@@ -10764,6 +10772,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8339288417038613756">Skerm- en teksgrootte</translation>
 <translation id="833986336429795709">Kies 'n app om hierdie skakel oop te maak</translation>
 <translation id="8340547030807793004">Meer handelinge vir <ph name="DEVICE" /></translation>
+<translation id="8341693734243413517">Chrome-opdateerder</translation>
 <translation id="8341804784147620576">Wys soekkortpaaie</translation>
 <translation id="8342221978608739536">Het nie probeer nie</translation>
 <translation id="8342387517402567689">Webappinstallerings word nie in Ingocnitomodus gesteun nie</translation>
@@ -11067,6 +11076,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8551588720239073785">Datum- en tydinstellings</translation>
 <translation id="8551647092888540776">Kan nie <ph name="FILE_NAMES" /> oopmaak wanneer stelsel vanlyn is nie</translation>
 <translation id="8552102814346875916">Stoor op die "hou hierdie werwe altyd aktief"-lys</translation>
+<translation id="8552947739661397736">Neem taak oor (Gemini is tans in beheer)</translation>
 <translation id="8553342806078037065">Bestuur ander mense</translation>
 <translation id="8554899698005018844">Geen taal nie</translation>
 <translation id="8555444629041783356">Outomatiese sonsondergangskedule</translation>

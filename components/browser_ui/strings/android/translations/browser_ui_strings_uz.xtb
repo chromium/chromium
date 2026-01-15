@@ -412,6 +412,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(yana 1 ta)}other{(yana # ta)}}</translation>
 <translation id="5403592356182871684">Ismlar</translation>
 <translation id="5407203562970638234">Xavfsizlik darajasini oshiring</translation>
+<translation id="5436307623797390637">Qurilmadagi ilovalar</translation>
 <translation id="5438097262470833822">Bunda <ph name="WEBSITE" /> ruxsatlari tiklanadi</translation>
 <translation id="5459413148890178711">Yoqilsa, saytlar joylashuvingizni soʻrashi mumkin. Oʻchirilsa, joylashuvingizni koʻra olmaydi.</translation>
 <translation id="5489227211564503167">Ijro etilgan vaqt: <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" />.</translation>

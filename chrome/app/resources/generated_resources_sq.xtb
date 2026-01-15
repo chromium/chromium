@@ -2557,6 +2557,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2713444072780614174">E bardhë</translation>
 <translation id="2714180132046334502">Sfondi i errët</translation>
 <translation id="2714393097308983682">Dyqani i "Luaj me Google"</translation>
+<translation id="2714617928488200509">Modelet</translation>
 <translation id="2715751256863167692">Ky përmirësim e rivendos pajisjen tënde Chromebook dhe heq të dhënat e përdoruesit aktual.</translation>
 <translation id="2715934493766003251">Hapësira ruajtëse nuk mund të pastrohet ndërkohë që sinkronizimi i skedarëve është aktiv.</translation>
 <translation id="2716986496990888774">Ky cilësim menaxhohet nga një prind.</translation>
@@ -4596,6 +4597,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4078738236287221428">Agresiv</translation>
 <translation id="4078903002989614318">Opsionet për renditjen dhe listat</translation>
 <translation id="4079140982534148664">Përdor kontrollin drejtshkrimor të përmirësuar</translation>
+<translation id="4082070466456857368">Arsyetuesi (3 Pro)</translation>
 <translation id="4084682180776658562">Faqeshënuesi</translation>
 <translation id="4084835346725913160">Mbyll <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">JavaScript u bllokua në këtë faqe.</translation>
@@ -7275,6 +7277,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5955721306465922729">Një uebsajt dëshiron që ta hapë këtë aplikacion.</translation>
 <translation id="5955809630138889698">Kjo pajisje mund të jetë e përshtatshme vetëm për modalitetin e demonstrimit online. Kontakto me përfaqësuesin e ekipit të mbështetjes për më shumë detaje.</translation>
 <translation id="59561895884837262">Do të njoftohesh kur të fillojë regjistrimi.</translation>
+<translation id="5957613098218939406">Opsione të tjera</translation>
 <translation id="5957987129450536192">Trokit ikonën e "Zgjidh që të thuhet" pranë imazhit të profilit tënd, më pas zgjidh atë që dëshiron të dëgjosh.</translation>
 <translation id="5958836583172610505">Sinkronizimi është aktiv</translation>
 <translation id="5959471481388474538">Rrjeti nuk ofrohet</translation>
@@ -7840,6 +7843,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6350821834561350243">Jep një përshkrim të qartë të problemit dhe hapat për ta rikrijuar atë (nëse është e mundur)</translation>
 <translation id="6351178441572658285">Gjuhët e aplikacioneve</translation>
 <translation id="6354918092619878358">Kurba eliptike SECG secp256r1 (e njohur edhe si ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355632359041940003">Merr kontrollin mbi detyrën</translation>
 <translation id="635609604405270300">Mbaje pajisjen të aktivizuar</translation>
 <translation id="6356537493253478650">E qetë</translation>
 <translation id="63566973648609420">Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua të koduara. Kjo frazë kalimi nuk dërgohet te Google dhe as nuk ruhet nga ai. Nëse e harron frazën tënde të kalimit apo dëshiron të ndryshosh këtë cilësim, duhet që të <ph name="BEGIN_LINK" />rivendosësh sinkronizimin<ph name="END_LINK" />.</translation>
@@ -8807,6 +8811,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7017219178341817193">Shto një faqe të re</translation>
 <translation id="7017354871202642555">Nuk mund të caktojë modalitetin pas caktimit të dritares.</translation>
 <translation id="7019805045859631636">E shpejtë</translation>
+<translation id="7020810150082302220">Shfletuesi yt i parazgjedhur u ndryshua</translation>
 <translation id="7021524108486027008">Ekzekuto veglat, modifikuesit dhe IDE-të në një mjedis të menaxhuar nga ndërmarrje jote në <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7022222879220069865">Të gjitha blloqet me prekje janë shkëputur</translation>
 <translation id="7022562585984256452">Faqja jote kryesore është caktuar.</translation>
@@ -10187,6 +10192,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7969144945436590933">Merr detaje të tjera</translation>
 <translation id="7970673414865679092">Detajet e eternetit</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 me enkriptim RSA</translation>
+<translation id="7972837668077967426">Kanavaca</translation>
 <translation id="7973149423217802477">Opsioni i gishtave poshtë tregon se nuk të pëlqen kjo.</translation>
 <translation id="7973776233567882054">Cilat nga të mëposhtmet e përshkruan më mirë rrjetin tënd?</translation>
 <translation id="797394244396603170">Zgjidh pajisjen me të cilën dëshiron të ndash skedarë</translation>
@@ -10748,6 +10754,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8339288417038613756">Madhësia e ekranit dhe e tekstit</translation>
 <translation id="833986336429795709">Për të hapur këtë lidhje, zgjidh një aplikacion</translation>
 <translation id="8340547030807793004">Më shumë veprime për <ph name="DEVICE" /></translation>
+<translation id="8341693734243413517">Përditësuesi i Chrome</translation>
 <translation id="8341804784147620576">Shfaq shkurtoret e kërkimit</translation>
 <translation id="8342221978608739536">Nuk e provova</translation>
 <translation id="8342387517402567689">Instalimet e aplikacioneve të uebit nuk mbështeten në modalitetin "I fshehtë"</translation>
@@ -11051,6 +11058,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8551588720239073785">Cilësimet e datës dhe orës</translation>
 <translation id="8551647092888540776"><ph name="FILE_NAMES" /> nuk mund të hapet kur je offline</translation>
 <translation id="8552102814346875916">Ruaj te lista "Mbaji gjithmonë aktive këto sajte"</translation>
+<translation id="8552947739661397736">Merr kontrollin mbi detyrën, Gemini është aktualisht në kontroll</translation>
 <translation id="8553342806078037065">Menaxho kontaktet e tjera</translation>
 <translation id="8554899698005018844">Nuk ka gjuhë</translation>
 <translation id="8555444629041783356">Programi automatik i perëndimit të diellit</translation>

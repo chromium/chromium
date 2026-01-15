@@ -2561,6 +2561,7 @@
 <translation id="2713444072780614174">سفید</translation>
 <translation id="2714180132046334502">گہرا پس منظر</translation>
 <translation id="2714393097308983682">‏‫Google Play اسٹور</translation>
+<translation id="2714617928488200509">ماڈلز</translation>
 <translation id="2715751256863167692">‏یہ اپ گریڈ آپ کے Chromebook کو ری سیٹ کرتا ہے اور موجودہ صارف ڈیٹا کو ہٹاتا ہے۔</translation>
 <translation id="2715934493766003251">فائل کی مطابقت پذیری آن ہونے پر اسٹوریج کو صاف نہیں کیا جا سکتا</translation>
 <translation id="2716986496990888774">یہ ترتیب والد/والدہ کے زیر انتظام ہے۔</translation>
@@ -4598,6 +4599,7 @@
 <translation id="4078738236287221428">پرجوش</translation>
 <translation id="4078903002989614318">ترتیب دینے اور فہرست کے اختیارات</translation>
 <translation id="4079140982534148664">املا کی بہتر جانچ استعمال کریں</translation>
+<translation id="4082070466456857368">‏تجزیاتی (3 Pro)</translation>
 <translation id="4084682180776658562">بُک مارک</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> کو بند کریں</translation>
 <translation id="4085298594534903246">‏JavaScript کو اس صفحہ پر مسدود کر دیا گیا۔</translation>
@@ -7080,7 +7082,7 @@
 <translation id="5830205393314753525"><ph name="APP_NAME" /> نہیں کھل سکتی</translation>
 <translation id="5830512293931520102">آپ کا پاس ورڈ مرموز کردہ ہے اور کسی نے کبھی نہیں دیکھا</translation>
 <translation id="5830720307094128296">صفحہ محفوظ کریں &amp;بطور…</translation>
-<translation id="5831217499016131155">Google Wallet</translation>
+<translation id="5831217499016131155">‏‫Google والٹ</translation>
 <translation id="583179300286794292"><ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> کے بطور سائن ان کردہ</translation>
 <translation id="5831950941058843834"><ph name="SITE_NAME" /> اور اس کے ماتحت سبھی سائٹس، اور انسٹال کردہ ایپ کے لیے سائٹ کا ڈیٹا اور اجازتیں حذف کریں؟</translation>
 <translation id="5832813618714645810">پروفائلز</translation>
@@ -7276,6 +7278,7 @@
 <translation id="5955721306465922729">ایک ویب سائٹ یہ ایپلیکیشن کھولنا چاہتی ہے۔</translation>
 <translation id="5955809630138889698">ہو سکتا ہے کہ یہ آلہ صرف آن لائن ڈیمو موڈ کیلئے ہی اہل ہو۔ براہ کرم مزید تفصیلات کیلئے اپنے معاون نمائندے سے رابطہ کریں۔</translation>
 <translation id="59561895884837262">ریکارڈنگ شروع ہونے پر، آپ کو مطلع کیا جائے گا۔</translation>
+<translation id="5957613098218939406">مزید اختیارات</translation>
 <translation id="5957987129450536192">اپنی پروفائل تصویر کے قریب موجود "سننے کیلئے منتخب کریں" آئیکن کو تھپتھپائیں، پھر جو آپ سننا چاہتے ہیں اسے منتخب کریں۔</translation>
 <translation id="5958836583172610505">مطابقت پذیری آن ہے</translation>
 <translation id="5959471481388474538">نیٹ ورک دستیاب نہیں ہے</translation>
@@ -7841,6 +7844,7 @@
 <translation id="6350821834561350243">مسئلہ کی واضح تفصیل اور مسئلہ کو دوبارہ پیش کرنے کے اقدامات فراہم کریں (اگر ممکن ہو)</translation>
 <translation id="6351178441572658285">ایپ کی زبانیں</translation>
 <translation id="6354918092619878358">‏SECG elliptic curve secp256r1 (المعروف ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355632359041940003">ٹاسک کو کنٹرول کریں</translation>
 <translation id="635609604405270300">آلے کو آن رکھیں</translation>
 <translation id="6356537493253478650">خاموش</translation>
 <translation id="63566973648609420">‏صرف وہ شخص جس کے پاس آپ کا پاس فریز ہے آپ کے مرموز کردہ ڈیٹا کو پڑھ سکتا ہے۔ پاس فریز Google کو نہیں بھیجا جاتا یا اس کے ذریعے اسٹور نہیں کیا جاتا ہے۔ اگر آپ اپنا پاس فریز بھول جاتے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو آپ کو <ph name="BEGIN_LINK" />مطابقت پذیری دوبارہ ترتیب دینے<ph name="END_LINK" /> کی ضرورت ہوگی۔</translation>
@@ -8808,6 +8812,7 @@
 <translation id="7017219178341817193">ایک نیا صفحہ شامل کریں</translation>
 <translation id="7017354871202642555">ونڈو سیٹ ہو جانے کے بعد وضع سیٹ نہیں کر سکتے۔</translation>
 <translation id="7019805045859631636">تیز</translation>
+<translation id="7020810150082302220">آپ کا ڈیفالٹ براؤزر تبدیل کر دیا گیا ہے</translation>
 <translation id="7021524108486027008">‏اپنے <ph name="DEVICE_TYPE" /> پر اپنے انٹرپرائز کے زیر انتظام ماحول میں ٹولز، ایڈیٹرز اور IDEs چلائیں۔</translation>
 <translation id="7022222879220069865">تمام ٹچ پیڈز غیر منسلک کر دیے گئے ہیں</translation>
 <translation id="7022562585984256452">آپ کا ہوم صفحہ سیٹ کر دیا گیا ہے۔</translation>
@@ -10188,6 +10193,7 @@
 <translation id="7969144945436590933">مزید تفصیلات حاصل کریں</translation>
 <translation id="7970673414865679092">ایتھرنیٹ کی تفصیلات</translation>
 <translation id="7972714317346275248">‏PKCS #1 SHA-384 مع RSA مرموز کاری</translation>
+<translation id="7972837668077967426">Canvas</translation>
 <translation id="7973149423217802477">اظہار پسندیدگی یہ تاثرات جمع کراتا ہے کہ آپ اسے ناپسند کرتے ہیں۔</translation>
 <translation id="7973776233567882054">درج ذیل میں سے کون آپ کے نیٹ ورک کی بہترین وضاحت کرتا ہے؟</translation>
 <translation id="797394244396603170">وہ آلہ منتخب کریں جس کے ساتھ آپ فائلز کا اشتراک کرنا چاہتے ہیں</translation>
@@ -10749,6 +10755,7 @@
 <translation id="8339288417038613756">ڈسپلے اور ٹیکسٹ کا سائز</translation>
 <translation id="833986336429795709">یہ لنک کھولنے کیلئے، ایک ایپ منتخب کریں</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> کے لیے مزید کارروائیاں</translation>
+<translation id="8341693734243413517">‏‫Chrome کا اپ ڈیٹ کنندہ</translation>
 <translation id="8341804784147620576">تلاش کے شارٹ کٹس دکھائیں</translation>
 <translation id="8342221978608739536">کوشش نہیں کی</translation>
 <translation id="8342387517402567689">پوشیدگی وضع میں ویب ایپ انسٹالز تعاون یافتہ نہیں ہیں</translation>
@@ -11052,6 +11059,7 @@
 <translation id="8551588720239073785">تاریخ اور وقت کی ترتیبات</translation>
 <translation id="8551647092888540776">آف لائن ہونے پر <ph name="FILE_NAMES" /> کو نہیں کھولا جا سکتا</translation>
 <translation id="8552102814346875916">"ان سائٹس کو ہمیشہ فعال رکھیں" کی فہرست میں محفوظ کریں</translation>
+<translation id="8552947739661397736">‏ٹاسک کو کنٹرول کریں، Gemini فی الحال کنٹرول میں ہے</translation>
 <translation id="8553342806078037065">دوسرے لوگوں کا نظم کریں</translation>
 <translation id="8554899698005018844">کوئی زبان نہیں</translation>
 <translation id="8555444629041783356">غروب آفتاب کا خودکار شیڈول</translation>

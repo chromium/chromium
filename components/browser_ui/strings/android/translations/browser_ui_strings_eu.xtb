@@ -412,6 +412,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(eta beste bat)}other{(eta beste #)}}</translation>
 <translation id="5403592356182871684">Izenak</translation>
 <translation id="5407203562970638234">Hobetu zure segurtasuna</translation>
+<translation id="5436307623797390637">Gailuko aplikazioak</translation>
 <translation id="5438097262470833822"><ph name="WEBSITE" /> webgunearen baimenak berrezarriko dira</translation>
 <translation id="5459413148890178711">Aktibatuta dagoenean, webguneek kokapena eska diezazukete. Desaktibatuta dagoenean, webguneek ezin dute ikusi zure kokapena.</translation>
 <translation id="5489227211564503167"><ph name="ELAPSED_TIME" /> igaro dira, eta <ph name="TOTAL_TIME" /> gelditzen</translation>

@@ -2573,6 +2573,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2713444072780614174">Branco</translation>
 <translation id="2714180132046334502">Plano de fundo escuro</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
+<translation id="2714617928488200509">Modelos</translation>
 <translation id="2715751256863167692">Esse upgrade redefine seu Chromebook e remove os dados do usuário atuais.</translation>
 <translation id="2715934493766003251">Não é possível limpar o armazenamento enquanto a sincronização está ativada</translation>
 <translation id="2716986496990888774">Esta configuração é gerenciada por um dos seus pais.</translation>
@@ -4612,6 +4613,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4078738236287221428">Agressivo</translation>
 <translation id="4078903002989614318">Opções de classificação e lista</translation>
 <translation id="4079140982534148664">Usar a verificação ortográfica aprimorada</translation>
+<translation id="4082070466456857368">Raciocínio (3 Pro)</translation>
 <translation id="4084682180776658562">Favorito</translation>
 <translation id="4084835346725913160">Fechar <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">O JavaScript foi bloqueado nesta página.</translation>
@@ -7294,6 +7296,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5955721306465922729">Um site quer abrir esse aplicativo.</translation>
 <translation id="5955809630138889698">Este dispositivo pode estar qualificado apenas para o modo de demonstração on-line. Entre em contato com seu representante de suporte para receber mais detalhes.</translation>
 <translation id="59561895884837262">Você vai receber uma notificação quando a gravação começar.</translation>
+<translation id="5957613098218939406">Mais opções</translation>
 <translation id="5957987129450536192">Toque no ícone Selecionar para Ouvir ao lado da sua imagem de perfil e selecione o que você quer ouvir.</translation>
 <translation id="5958836583172610505">Sincronização ativada</translation>
 <translation id="5959471481388474538">Rede não disponível</translation>
@@ -7859,6 +7862,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6350821834561350243">Forneça uma descrição clara do problema e as etapas necessárias para reproduzi-lo (se possível)</translation>
 <translation id="6351178441572658285">Idiomas do app</translation>
 <translation id="6354918092619878358">Curva elíptica SECG secp256r1 (também conhecida como ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355632359041940003">Assumir tarefa</translation>
 <translation id="635609604405270300">Mantenha o dispositivo ligado</translation>
 <translation id="6356537493253478650">Tranquilo</translation>
 <translation id="63566973648609420">Somente uma pessoa que tenha sua senha longa pode ler seus dados criptografados. A senha longa não é enviada para o Google ou armazenada por ele. Se você esquecer sua senha longa ou quiser alterar essa configuração, será necessário <ph name="BEGIN_LINK" />redefinir a sincronização<ph name="END_LINK" />.</translation>
@@ -8828,6 +8832,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7017219178341817193">Adicionar uma nova página</translation>
 <translation id="7017354871202642555">Não é possível definir o modo após a definição da janela.</translation>
 <translation id="7019805045859631636">Rápido</translation>
+<translation id="7020810150082302220">Seu navegador padrão foi alterado</translation>
 <translation id="7021524108486027008">Execute ferramentas, editores e ambientes de desenvolvimento integrado em um ambiente gerenciado pela sua empresa no <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7022222879220069865">Todos os touchpads foram desconectados</translation>
 <translation id="7022562585984256452">Sua página inicial foi definida.</translation>
@@ -10209,6 +10214,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7969144945436590933">Ver mais detalhes</translation>
 <translation id="7970673414865679092">Detalhes da Ethernet</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 com criptografia RSA</translation>
+<translation id="7972837668077967426">Canvas</translation>
 <translation id="7973149423217802477">O botão "Não gostei" envia feedback informando que você não gostou desse recurso.</translation>
 <translation id="7973776233567882054">Qual das seguintes alternativas melhor descreve sua rede?</translation>
 <translation id="797394244396603170">Selecione o dispositivo com que você quer compartilhar arquivos</translation>
@@ -10647,6 +10653,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8263228331881858381">Chave de acesso salva</translation>
 <translation id="8263336784344783289">Dê um nome para este grupo</translation>
 <translation id="8264024885325823677">Essas configurações são gerenciadas pelo administrador.</translation>
+<translation id="826410575944953302">Abrir guias verticais</translation>
 <translation id="8264195025773092348">Apenas os aparelhos compatíveis são exibidos. Os dispositivos USB não vão mais estar disponíveis para apps nativos até que sejam desconectados.</translation>
 <translation id="8265018477030547118">Somente neste dispositivo</translation>
 <translation id="826511437356419340">Iniciado modo de visão geral da janela. Deslize para navegar ou pressione Tab se estiver usando um teclado.</translation>
@@ -10744,6 +10751,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8323518750352551353">Navegação separada?</translation>
 <translation id="8323744572398547859">Para acessar as guias dos seus outros dispositivos, faça login e sincronize o histórico. Você também terá acesso a senhas e muito mais em todos os seus aparelhos. É possível parar a sincronização a qualquer momento nas configurações. O Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="8324158725704657629">Não perguntar novamente</translation>
+<translation id="8324264291265547520">Abrir guias verticais</translation>
 <translation id="8325413836429495820">Bloquear o acesso à área de transferência</translation>
 <translation id="8326478304147373412">PKCS #7, cadeia de certificados</translation>
 <translation id="8327386430364625757">Fonte matemática</translation>
@@ -10769,6 +10777,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8339288417038613756">Tamanho de exibição e de texto</translation>
 <translation id="833986336429795709">Para abrir este link, escolha um app</translation>
 <translation id="8340547030807793004">Mais ações para o dispositivo <ph name="DEVICE" /></translation>
+<translation id="8341693734243413517">Atualizador do Chrome</translation>
 <translation id="8341804784147620576">Mostrar atalhos de pesquisa</translation>
 <translation id="8342221978608739536">Não tentei</translation>
 <translation id="8342387517402567689">Não é possível instalar apps da Web no modo de navegação anônima</translation>
@@ -11072,6 +11081,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8551588720239073785">Configurações de data e hora</translation>
 <translation id="8551647092888540776">Não é possível abrir o arquivo <ph name="FILE_NAMES" /> quando o dispositivo está off-line</translation>
 <translation id="8552102814346875916">Salvar na lista "Sempre manter estes sites ativos"</translation>
+<translation id="8552947739661397736">Assumir a tarefa. No momento, o Gemini está no controle</translation>
 <translation id="8553342806078037065">Gerenciar outras pessoas</translation>
 <translation id="8554899698005018844">Sem idioma</translation>
 <translation id="8555444629041783356">Programação automática de desativação</translation>

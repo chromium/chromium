@@ -104,6 +104,7 @@
 <translation id="1366297852155605523">میرے ساتھ اشتراک کردہ</translation>
 <translation id="1369286077209859800">ٹیب گروپ میں سبھی ٹیبز دکھائیں</translation>
 <translation id="136942498637440594">آپ تصاویر اور جو کچھ آپ دیکھتے ہیں تلاش کر سکتے ہیں۔</translation>
+<translation id="1373120905936431262">‏‫Nano Banana کے ساتھ ریمکس کرنے کے لیے کوئی تصویر اپ لوڈ کریں</translation>
 <translation id="1377508275003315939">پاس ورڈز</translation>
 <translation id="1381022135873211423">{count,plural, =1{{count} پتہ میں سے {position}}other{{count} پتے میں سے {position}}}</translation>
 <translation id="1383876407941801731">تلاش کریں</translation>
@@ -235,6 +236,7 @@
 <translation id="1836891464494477513">{count,plural, =1{‏بک مارک آپ کے Google اکاؤنٹ میں محفوظ کیا، {email}}other{‏باک مارکس آپ کے Google اکاؤنٹ میں محفوظ کیے گئے، {email}}}</translation>
 <translation id="1838089197478136166">والٹ میں کھولیں؟</translation>
 <translation id="183878838231635348">اس کارڈ پر رازداری یا سیکیورٹی کا ایسا کوئی بھی مسئلہ دکھائی دیتا ہے جس کا سیفٹی چیک خصوصیت خودکار طور پر آپ کیلئے پتا لگاتی ہے۔</translation>
+<translation id="1840320537320704887">آپ کے نئے ٹیب کے صفحہ کی ترجیحات کو ہٹا دیا گیا</translation>
 <translation id="1845230888742614096">گروپ کو برقرار رکھیں</translation>
 <translation id="1853692000353488670">نیا پوشیدگی ٹیب</translation>
 <translation id="1854463785401910334">کھلے ٹیبز تلاش کریں</translation>
@@ -701,6 +703,7 @@
 <translation id="368329460027487650">سائن آؤٹ ہو گئے۔ سائن ان کرنے کے اختیارات کھولتا ہے۔</translation>
 <translation id="3695446226812920698">طریقہ جانیں</translation>
 <translation id="3700134753671613714">اپنے سبھی آلات پر اپنے بُک مارکس حاصل کرنے کیلئے سائن ان کریں۔</translation>
+<translation id="3701167022068948696">ابھی درست کریں</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{‏{COUNT} پاس ورڈ صرف اس آلے پر محفوظ ہے۔ اسے اپنے دیگر آلات پر استعمال کرنے کیلئے، اسے اپنے Google اکاؤنٹ {EMAIL} میں محفوظ کریں۔}other{‏{COUNT} پاس ورڈز صرف اس آلے پر محفوظ ہیں۔ انہیں اپنے دیگر آلات پر استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ، {EMAIL} میں محفوظ کریں۔}}</translation>
 <translation id="3709621342136814217">یہاں اپنا فونٹ، ٹیکسٹ کا سائز اور مزید منتخب کریں</translation>
 <translation id="371230970611282515">خطرناک ایونٹس ہونے سے پہلے ان کی پیشین گوئی کرتا ہے اور آپ کو ان کے بارے میں متنبہ کرتا ہے۔</translation>
@@ -876,6 +879,7 @@
 <translation id="4338650699862464074">‏Google کو آپ کے ملاحظہ کردہ صفحات کے URLs بھیجتا ہے۔</translation>
 <translation id="4342946437867096381">‏آپ نے پہلے ہی اپنے Google اکاؤنٹ میں اس سائٹ کا پاس ورڈ محفوظ کر لیا ہے۔ Google آپ کے حالیہ ترین پاس ورڈ کو منتخب کر سکتا ہے۔</translation>
 <translation id="4365121137632832185">ٹیب گروپ۔ پھیلایا گیا۔</translation>
+<translation id="4365685757967464989">‏تصاویر لینے کے لیے Gemini کو اپنا کیمرا استعمال کرنے دیں</translation>
 <translation id="4367971618859387374">ڈسپلے نام</translation>
 <translation id="4375772272517383391">سبھی ٹیبز بند کریں</translation>
 <translation id="4378154925671717803">فون</translation>
@@ -959,6 +963,7 @@
 
        منتخب کریں کہ اس آلے پر موجود براؤزنگ ڈیٹا کے ساتھ کیا کرنا ہے۔</translation>
 <translation id="4675298276894277358">یہ سائٹ دوبارہ نہیں دکھائی جائے گی</translation>
+<translation id="4676647168422678078">اپنے نئے ٹیب کے صفحہ کی ترجیحات لاگو کریں؟</translation>
 <translation id="4682496302933121474">صفحہ کا ترجمہ کریں؟</translation>
 <translation id="4682686630151240767">‏1۔ iPhone ترتیبات کھولیں</translation>
 <translation id="4691892551491778176">‏جب آپ اس خصوصیت کا استعمال کرتے ہیں تو صفحہ کا مواد اور URLs‏ Google کو بھیجے جاتے ہیں لیکن ان کا استعمال تخلیق کر سکنے والے AI ماڈلز کو بہتر بنانے کے لیے نہیں کیا جائے گا۔ آپ اسے ترتیبات میں کسی بھی وقت آف کر سکتے ہیں۔</translation>
@@ -1007,6 +1012,7 @@
 <translation id="4840495572919996524">‏آپ کے بُک مارکس، سرگزشت، پاس ورڈز وغیرہ کی اب آپ کے Google اکاؤنٹ کے ساتھ مطابقت پذیری نہیں کی جائے گی۔</translation>
 <translation id="484280513275854557">آپ کو سائن آؤٹ کر دیا گیا؛ برؤزنگ ڈیٹا کو حذف کر دیا گیا</translation>
 <translation id="4850886885716139402">دیکھیں</translation>
+<translation id="4854068532375923088">‏‫"Gemini" کو اپنا کیمرا استعمال کرنے کی اجازت دیں</translation>
 <translation id="4860895144060829044">کال کریں</translation>
 <translation id="4861953997778766866">ہر کوئی آپ کے مشترکہ ٹیب گروپس میں تبدیلیاں کر سکتا ہے</translation>
 <translation id="4865063548323785458">سائٹس اور ایپس میں آسانی سے سائن ان کرنے کیلئے اپنے پاس ورڈز محفوظ اور انہیں آٹو فل کریں</translation>
@@ -1211,6 +1217,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5579012242779565775">پڑھنے کی فہرست کو چھپائیں</translation>
 <translation id="5581786858144165447">‏‫AI وضع سے پوچھیں</translation>
 <translation id="5585019845078534178">کارڈز</translation>
+<translation id="5591526871732898147">‏منسلک کردہ تصویر {index}</translation>
 <translation id="5595485650161345191">پتے میں ترمیم کریں</translation>
 <translation id="559567008082979829">اپنے ڈاؤن لوڈز کو ایک ماہ کے بعد حذف ہونے کیلئے سیٹ کریں۔</translation>
 <translation id="5596627076506792578">مزید اختیارات</translation>
@@ -1912,6 +1919,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8059312861912872211">{count,plural, =1{‫{count} بُک مارکس}other{‫{count} بُک مارکس}}</translation>
 <translation id="8059533439631660104">سیکشن کو سکیڑیں۔</translation>
 <translation id="8061584726507121204">سرگزشت</translation>
+<translation id="8064946459644399612">آپ کے نئے ٹیب کے صفحہ کی ترجیحات لاگو ہو گئیں</translation>
 <translation id="8069168488983557089">اہم نکات اور بصیرتیں حاصل کریں جو کسی بھی موضوع کو سمجھنے میں آپ کی مدد کرتی ہیں</translation>
 <translation id="8069394452933076548">منتخب کریں کہ وہ ٹیبز جو حال ہی میں استعمال نہیں ہوئے ہیں انہیں غیر فعال ٹیب سیکشن میں کب منتقل کیا جائے۔</translation>
 <translation id="8073670137947914548">ڈاؤن لوڈ کا عمل مکمل ہو گیا</translation>
@@ -1942,6 +1950,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8161614462829037225"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> سے غیر مقفل کریں</translation>
 <translation id="8173034266693057059">لمبائی</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} کیلئے}=2{{website_1}، {website_2} کیلئے}=3{{website_1}، {website_2} اور 1 مزید کیلئے}other{{website_1}، {website_2} اور {more_count} مزید کیلئے}}</translation>
+<translation id="8184895727539791845">‏‫Gemini کو اپنا کیمرا استعمال کرنے کی اجازت دینے کے لیے، iOS کی ترتیبات میں کیمرا آن کریں</translation>
 <translation id="8185076488803799132">ایکسپورٹ کریں</translation>
 <translation id="8189615296021678665">"محفوظ کریں" پر تھپتھپائیں تاکہ اگلی بار سائن ان کرتے وقت آپ کو آسانی سے یہ پاس ورڈ دستیاب ہو۔</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />آپ کے آلات<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -2010,6 +2019,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8428045167754449968">شہر / قصبہ</translation>
 <translation id="8428213095426709021">ترتیبات</translation>
 <translation id="8428634594422941299">سمجھ آ گئی</translation>
+<translation id="8429455911440977338">کیمرا آن کریں</translation>
 <translation id="8434837876193928924">ٹیب گروپ کی تفصیلات</translation>
 <translation id="8438566539970814960">تلاشوں اور براؤزنگ کو بہتر بنائیں</translation>
 <translation id="8439758443371991593">'پڑھنے کی فہرست میں شامل کریں' کو چھپائیں</translation>
@@ -2251,6 +2261,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="956218893102219091">‏اپنے IP پتہ کی بنیاد پر تخمینی مقام کے بجائے، انتہائی درست Gemini نتائج کے لیے اپنے قطعی مقام کا استعمال کریں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">براؤزنگ ڈیٹا حذف کریں</translation>
 <translation id="963102227019621224">ویب اور ایپ سرگرمی</translation>
+<translation id="965259330007686240">‏‫Gemini کی مدد سے ایک تصویر بنائیں</translation>
 <translation id="965879457362663186">منسلکہ شامل کریں</translation>
 <translation id="966593914872420832">صوتی تلاش</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{‫<ph name="OWNER_NAME" /> کے ساتھ ٹیب گروپ میں شامل ہوں}=1{‫<ph name="OWNER_NAME" /> اور {COUNT} دیگر کے ساتھ ٹیب گروپ میں شامل ہوں}other{‫<ph name="OWNER_NAME" /> اور {COUNT} دیگر کے ساتھ ٹیب گروپ میں شامل ہوں}}</translation>

@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">Správa prístupu</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Zavrieť položku}few{Zavrieť položky}many{Close items}other{Zavrieť položky}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Dolný hárok karty na polovičnú výšku.</translation>
 <translation id="374923079891132274">Miniat. zdieľ. ukážky tab.</translation>
 <translation id="3776329373944672717">Názov skupiny kariet: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Spravovať</translation>
@@ -125,6 +126,7 @@
 <translation id="5339733443032484186">Vaša posledná karta</translation>
 <translation id="5380159289133845234">Archivovať duplicitné karty</translation>
 <translation id="5446043142172831860">Odstrániť kartu a opustiť skupinu</translation>
+<translation id="5465437530117042974">Zmeny dolného hárka karty boli zavreté.</translation>
 <translation id="5490235265819901748">Skupina kariet bola rozbalená</translation>
 <translation id="5494920125229734069">Vybrať všetko</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Pridajte maximálne <ph name="LIMIT_COUNT_ONE" /> súbor, kartu alebo obrázok}few{Pridajte maximálne <ph name="LIMIT_COUNT_MANY" /> súbory, karty alebo obrázky}many{Add up to <ph name="LIMIT_COUNT_MANY" /> files, tabs, or images}other{Pridajte maximálne <ph name="LIMIT_COUNT_MANY" /> súborov, kariet alebo obrázkov}}</translation>
@@ -140,6 +142,7 @@
 <translation id="6040143037577758943">Zavrieť</translation>
 <translation id="6051432659151380973">Skupiny kariet sa ukladajú automaticky</translation>
 <translation id="6054741997831917303">Cena tejto položky nedávno klesla z <ph name="PREVIOUS_PRICE" /> na <ph name="NEW_PRICE" /></translation>
+<translation id="606985262342505139">Dolný hárok karty na celú výšku</translation>
 <translation id="6109251075362363230">Všetky duplicitné karty s výnimkou naposledy použitej kópie budú odteraz archivované.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Zavrieť <ph name="TABS_COUNT_ONE" /> vybranú položku}few{Zavrieť <ph name="TABS_COUNT_MANY" /> vybrané položky}many{Close <ph name="TABS_COUNT_MANY" /> selected items}other{Zavrieť <ph name="TABS_COUNT_MANY" /> vybraných položiek}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Presunúť skupinu do nového okna}few{Presunúť skupinu do iného okna}many{Presunúť skupinu do iného okna}other{Presunúť skupinu do iného okna}}</translation>

@@ -412,6 +412,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 ďalšie)}few{(+ # ďalšie)}many{(+ # more)}other{(+ # ďalších)}}</translation>
 <translation id="5403592356182871684">Názvy</translation>
 <translation id="5407203562970638234">Zlepšite svoje zabezpečenie</translation>
+<translation id="5436307623797390637">Aplikácie v zariadení</translation>
 <translation id="5438097262470833822">Týmto výberom resetujete povolenia pre web <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Keď je táto možnosť zapnutá, weby môžu žiadať o vašu polohu. Keď je táto funkcia vypnutá, weby nevidia vašu polohu.</translation>
 <translation id="5489227211564503167">Uplynutý čas: <ph name="ELAPSED_TIME" /> z <ph name="TOTAL_TIME" />.</translation>

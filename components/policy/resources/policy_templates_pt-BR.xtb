@@ -9178,6 +9178,25 @@ Se ela for desativada ou deixada sem definição, o comportamento padrão de
 bloqueio dessas solicitações será aplicado.</translation>
 <translation id="6915524162137327111">Mostrar identificadores de gerenciamento por 30 segundos</translation>
 <translation id="6919205861950516688">Não permitir o uso do Organizador de guias.</translation>
+<translation id="6920791385071265136">Controla se ainda é possível fazer a instalação forçada de extensões removidas por violações que não são de malware em ambientes de baixa confiança.
+
+Mais informações sobre violações que não são de malware e remoções estão disponíveis aqui. https://developer.chrome.com/docs/webstore/review-process#warning
+
+Depois que essas violações forem resolvidas, a extensão vai continuar ativada e não poderá ser desabilitada ou removida.
+
+No <ph name="MS_WIN_NAME" />, essa política não está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" /> ou do <ph name="MS_AAD_NAME" /> ou registradas no <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+No <ph name="MAC_OS_NAME" />, essa política não está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas no <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+As extensões de instalação forçada com violações que não são de malware vão continuar ativadas nessas instâncias.
+
+No momento, uma extensão de instalação forçada com violações que não são de malware permanece instalada e ativada no Chrome.
+
+Se a política for ativada, as extensões de instalação forçada vão se comportar da mesma forma (ou seja, vão continuar habilitadas), independentemente de violações que não sejam de malware.
+
+Se a política for desativada ou não for definida, essas extensões serão desabilitadas.
+
+Esta política foi removida na versão M145. A partir dessa versão, as extensões de instalação forçada com violações que não são de malware serão desativadas em ambientes de baixa confiança.</translation>
 <translation id="692096803256767290">Reverter o SO para a versão de destino</translation>
 <translation id="6921241119085515674">Permitir o fluxo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6921544339867564740">Permite que os dispositivos executem máquinas virtuais no ChromeOS</translation>

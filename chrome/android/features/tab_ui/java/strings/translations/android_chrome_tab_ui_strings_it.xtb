@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">Gestisci accesso</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Chiudi elemento}other{Chiudi elementi}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Riquadro inferiore della scheda nella parte inferiore dello schermo.</translation>
 <translation id="374923079891132274">Miniatura dell'anteprima del foglio di condivisione.</translation>
 <translation id="3776329373944672717">Titolo del gruppo di schede <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Gestisci</translation>
@@ -125,6 +126,7 @@
 <translation id="5339733443032484186">Ultima scheda</translation>
 <translation id="5380159289133845234">Archivia le schede duplicate</translation>
 <translation id="5446043142172831860">Rimuovi scheda e esci dal gruppo</translation>
+<translation id="5465437530117042974">Modifiche al riquadro inferiore della scheda chiuse.</translation>
 <translation id="5490235265819901748">Gruppo di schede espanso</translation>
 <translation id="5494920125229734069">Seleziona tutto</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Aggiungi fino a <ph name="LIMIT_COUNT_ONE" /> file, scheda o immagine}other{Aggiungi fino a <ph name="LIMIT_COUNT_MANY" /> file, schede o immagini}}</translation>
@@ -140,6 +142,7 @@
 <translation id="6040143037577758943">Chiudi</translation>
 <translation id="6051432659151380973">I gruppi di schede vengono salvati automaticamente</translation>
 <translation id="6054741997831917303">Il prezzo di questo articolo è recentemente sceso da <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
+<translation id="606985262342505139">Riquadro inferiore della scheda a schermo intero</translation>
 <translation id="6109251075362363230">Ora verranno archiviate anche tutte le schede duplicate, fatta eccezione per la copia utilizzata più di recente.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Chiudi <ph name="TABS_COUNT_ONE" /> elemento selezionato}other{Chiudi <ph name="TABS_COUNT_MANY" /> elementi selezionati}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Sposta gruppo in una nuova finestra}other{Sposta gruppo in un'altra finestra}}</translation>

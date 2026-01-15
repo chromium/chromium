@@ -1094,6 +1094,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1709916727352927457">Padamkan kunci laluan</translation>
 <translation id="1709972045049031556">Tidak dapat berkongsi</translation>
 <translation id="1712143791363119140">Dalam Proses</translation>
+<translation id="1713120794167761305">Alihkan Tab Ke Sisi</translation>
 <translation id="1714265454085143857">Tab yang disematkan</translation>
 <translation id="1714326320203665217">Fail anotasi nod utama telah dimuat turun</translation>
 <translation id="1714644264617423774">Dayakan ciri kebolehaksesan untuk menjadikan peranti anda lebih mudah digunakan. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
@@ -3239,6 +3240,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3167562202484086668">Padamkan semua data <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Pilih tema yang sesuai dengan keperluan anda. Untuk menukar tema, kertas dinding, penyelamat skrin dan pelbagai lagi, cuma sentuh &amp; tahan pada desktop.</translation>
 <translation id="3170072451822350649">Anda juga boleh melangkau log masuk dan <ph name="LINK_START" />menyemak imbas sebagai tetamu<ph name="LINK_END" />.</translation>
+<translation id="3172642937040465677">Alihkan tab ke atas</translation>
 <translation id="3175067642577044620">Kandungan</translation>
 <translation id="3175862692832442091">Hutan</translation>
 <translation id="3176347586396987181">Gunakan “z” untuk menekan dan menahan butang tetikus</translation>
@@ -3493,6 +3495,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="335581015389089642">Pertuturan</translation>
 <translation id="335587007651175930">Cari kandungan yang dipaparkan pada skrin anda dengan Google Lens</translation>
 <translation id="3355936511340229503">Ralat sambungan</translation>
+<translation id="335678817537689040">Statik</translation>
 <translation id="3359256513598016054">Kekangan Dasar Sijil</translation>
 <translation id="3360297538363969800">Pencetakan gagal. Sila periksa pencetak anda dan cuba lagi.</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -4192,6 +4195,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
         <ph name="BREAK" />
         Anda boleh mengurus tetapan daripada menu kad atau melihat lebih banyak pilihan dalam Sesuaikan Chrome.</translation>
 <translation id="3801449494961771207">Suara teks kepada pertuturan sistem</translation>
+<translation id="3801748538479607989">Alihkan Tab Ke Atas</translation>
 <translation id="3802486193901166966">Sambungan ini tidak memerlukan kebenaran khas dan tiada akses laman tambahan</translation>
 <translation id="380329542618494757">Nama</translation>
 <translation id="3803345858388753269">Kualiti Video</translation>
@@ -6006,6 +6010,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5060419232449737386">Tetapan sari kata</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Folder ini mengandungi penanda halaman. Adakah anda pasti mahu memadamnya?}other{Folder ini mengandungi # penanda halaman. Adakah anda pasti mahu memadamnya?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
+<translation id="5062863364865466276">Pergerakan</translation>
 <translation id="5062930723426326933">Log masuk gagal, sila sambungkan ke internet dan cuba lagi.</translation>
 <translation id="5063480226653192405">Penggunaan</translation>
 <translation id="5064921774605267982">Buka profil <ph name="PROFILE_NAME" />. Profil ini diurus oleh ibu/bapa anda.</translation>
@@ -6947,6 +6952,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5722086096420375088">Hijau dan putih</translation>
 <translation id="572328651809341494">Tab terbaharu</translation>
 <translation id="5723508132121499792">Tiada apl latar belakang dijalankan</translation>
+<translation id="5724723163580775373">Fokus besar</translation>
 <translation id="5725112283692663422">Hantar maklum balas untuk Buat tema dengan AI</translation>
 <translation id="5727728807527375859">Sambungan, apl dan tema boleh membahayakan komputer anda. Adakah anda pasti anda mahu meneruskan?</translation>
 <translation id="5728072125198221967">Perkhidmatan Google terpaut</translation>
@@ -7194,6 +7200,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5888889603768021126">Dilog masuk dengan</translation>
 <translation id="5889282057229379085">Bilangan maksimum CA pengantara: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Sulitkan data yang disegerakkan dengan <ph name="BEGIN_LINK" />ungkapan laluan penyegerakan<ph name="END_LINK" /> anda sendiri. Kaedah pembayaran dan alamat daripada Google Pay tidak akan disulitkan. Sejarah penyemakan imbas daripada Chrome tidak akan disegerakkan.</translation>
+<translation id="5890072287476934834">Alihkan tab ke sisi</translation>
 <translation id="5891688036610113830">Rangkaian Wi-Fi pilihan</translation>
 <translation id="5894056653502215961">Nyahpilih <ph name="FOLDER_TITLE" /> folder</translation>
 <translation id="5895138241574237353">Mulakan Semula</translation>
@@ -7294,6 +7301,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5955721306465922729">Satu laman web ingin membuka aplikasi ini.</translation>
 <translation id="5955809630138889698">Peranti ini mungkin layak untuk mod tunjuk cara dalam talian sahaja. Sila hubungi wakil sokongan anda untuk mendapatkan butiran lanjut.</translation>
 <translation id="59561895884837262">Anda akan dimaklumi apabila rakaman bermula.</translation>
+<translation id="5957613098218939406">Lebih Banyak Pilihan</translation>
 <translation id="5957987129450536192">Ketik ikon Pilih untuk Cakap berdekatan imej profil anda, kemudian pilih apa yang hendak anda dengar.</translation>
 <translation id="5958836583172610505">Penyegerakan Dihidupkan</translation>
 <translation id="5959471481388474538">Rangkaian tak tersedia</translation>
@@ -8347,6 +8355,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6702639462873609204">&amp;Edit...</translation>
 <translation id="6702859741546259407">Untuk menggunakan <ph name="FEATURE_NAME" />, hidupkan Bluetooth dan Wi-Fi</translation>
 <translation id="6703109186846420472">,</translation>
+<translation id="670431355064244920">Fokus kecil</translation>
 <translation id="6707122714992751648">Jalankan ujian diagnostik ChromeOS</translation>
 <translation id="6707389671160270963">Sijil Klien SSL</translation>
 <translation id="6707671917294473995">Laman web tidak dibenarkan untuk menggunakan kamera anda</translation>
@@ -9338,6 +9347,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7389615853658756494">Tukar pada laman</translation>
 <translation id="7392118418926456391">Imbasan virus gagal</translation>
 <translation id="7392915005464253525">B&amp;uka semula tetingkap ditutup</translation>
+<translation id="739299645392306071">Fokus sederhana</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 item disalin}other{{COUNT} item disalin}}</translation>
 <translation id="7393435859300249877">Anda akan diberitahu jika anda bercakap semasa mikrofon anda diredamkan apabila anda menggunakan apl tertentu, seperti apl sembang video. Peranti anda tidak menghasilkan audio.</translation>
 <translation id="7395008140803590549">Tidak dapat memadamkan sijil</translation>

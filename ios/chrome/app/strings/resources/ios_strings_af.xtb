@@ -104,6 +104,7 @@
 <translation id="1366297852155605523">Met my gedeel</translation>
 <translation id="1369286077209859800">Wys alle oortjies in oortjiegroep</translation>
 <translation id="136942498637440594">Jy kan na prente en wat jy sien, soek.</translation>
+<translation id="1373120905936431262">Laai ’n prent op om met Nano Banana te hermeng</translation>
 <translation id="1377508275003315939">Wagwoorde</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} van {count} adres}other{{position} van {count} adresse}}</translation>
 <translation id="1383876407941801731">Soek</translation>
@@ -235,6 +236,7 @@
 <translation id="1836891464494477513">{count,plural, =1{Boekmerk is in jou Google-rekening, {email}, gestoor}other{Boekmerke is in jou Google-rekening, {email}, gestoor}}</translation>
 <translation id="1838089197478136166">Maak in Wallet oop?</translation>
 <translation id="183878838231635348">Hierdie kaart wys enige privaatheid- of sekuriteitkwessies wat veiligheidskontrole outomaties vir jou bespeur.</translation>
+<translation id="1840320537320704887">Jou Nuwe Oortjie-bladsy se voorkeure is verwyder</translation>
 <translation id="1845230888742614096">Hou groep</translation>
 <translation id="1853692000353488670">Nuwe incognito-oortjie</translation>
 <translation id="1854463785401910334">Deursoek oop oortjies</translation>
@@ -701,6 +703,7 @@
 <translation id="368329460027487650">Afgemeld. Maak opsies oop om aan te meld.</translation>
 <translation id="3695446226812920698">Vind uit hoe</translation>
 <translation id="3700134753671613714">Meld aan om jou boekmerke op al jou toestelle te kry.</translation>
+<translation id="3701167022068948696">Stel nou reg</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} wagwoord word net op hierdie toestel gestoor. Stoor dit in jou Google-rekening, {EMAIL}, om dit op jou ander toestelle te gebruik.}other{{COUNT} wagwoorde word net op hierdie toestel gestoor. Stoor hulle in jou Google-rekening, {EMAIL}, om hulle op jou ander toestelle te gebruik.}}</translation>
 <translation id="3709621342136814217">Kies hier jou lettertipe, teksgrootte en meer</translation>
 <translation id="371230970611282515">Voorspel en waarsku jou teen gevaarlike gevalle voordat hulle plaasvind.</translation>
@@ -876,6 +879,7 @@
 <translation id="4338650699862464074">Stuur URL'e van bladsye wat jy besoek na Google toe.</translation>
 <translation id="4342946437867096381">Jy het reeds ’n wagwoord vir hierdie werf in jou Google-rekening gestoor. Google kan die mees onlangse wagwoord vir jou kies.</translation>
 <translation id="4365121137632832185">Oortjiegroep. Uitgevou.</translation>
+<translation id="4365685757967464989">Laat toe dat Gemini jou kamera gebruik om foto’s te neem</translation>
 <translation id="4367971618859387374">Vertoonnaam</translation>
 <translation id="4375772272517383391">Maak alle oortjies toe</translation>
 <translation id="4378154925671717803">Foon</translation>
@@ -959,6 +963,7 @@
 
        Kies wat om met bestaande blaaierdata op hierdie toestel te doen.</translation>
 <translation id="4675298276894277358">Hierdie werf sal nie weer gewys word nie</translation>
+<translation id="4676647168422678078">Wil jy jou Nuwe Oortjie-bladsy se voorkeure toepas?</translation>
 <translation id="4682496302933121474">Vertaal bladsy?</translation>
 <translation id="4682686630151240767">1. Maak iPhone Settings oop</translation>
 <translation id="4691892551491778176">Wanneer jy hierdie kenmerk gebruik, word bladsyinhoud en URL’e na Google toe gestuur, maar dit sal nie gebruik word om generatiewe KI-modelle te verbeter nie. Jy kan dit enige tyd in instellings afskakel.</translation>
@@ -1007,6 +1012,7 @@
 <translation id="4840495572919996524">Jou boekmerke, geskiedenis, wagwoorde en meer sal nie meer met jou Google-rekening gesinkroniseer word nie.</translation>
 <translation id="484280513275854557">Jy is uitgeteken; blaaierdata is uitgevee</translation>
 <translation id="4850886885716139402">Bekyk</translation>
+<translation id="4854068532375923088">Laat “Gemini” toe om jou kamera te gebruik</translation>
 <translation id="4860895144060829044">Bel</translation>
 <translation id="4861953997778766866">Almal kan veranderinge aan jou gedeelde oortjiegroepe aanbring</translation>
 <translation id="4865063548323785458">Stoor en outovul jou wagwoorde om maklik by werwe en apps aan te meld</translation>
@@ -1211,6 +1217,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5579012242779565775">Versteek leeslys</translation>
 <translation id="5581786858144165447">Vra KI-modus</translation>
 <translation id="5585019845078534178">Kaarte</translation>
+<translation id="5591526871732898147">Aangehegde prent {index}</translation>
 <translation id="5595485650161345191">Wysig adres</translation>
 <translation id="559567008082979829">Stel aflaaie op om na een maand uitgevee te word.</translation>
 <translation id="5596627076506792578">Meer opsies</translation>
@@ -1912,6 +1919,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="8059312861912872211">{count,plural, =1{{count} boekmerke}other{{count} boekmerke}}</translation>
 <translation id="8059533439631660104">Vou die afdeling in.</translation>
 <translation id="8061584726507121204">Geskiedenis</translation>
+<translation id="8064946459644399612">Jou Nuwe Oortjie-bladsy se voorkeure is toegepas</translation>
 <translation id="8069168488983557089">Kry sleutelopsommings en insigte wat jou help om enige onderwerp te verstaan</translation>
 <translation id="8069394452933076548">Kies wanneer oortjies wat nie onlangs gebruik is nie na die afdeling vir onaktiewe oortjies toe geskuif word.</translation>
 <translation id="8073670137947914548">Aflaai is klaar</translation>
@@ -1942,6 +1950,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="8161614462829037225">Ontsluit met <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Lengte</translation>
 <translation id="8182037667962849780">{count,plural, =1{Vir {website_1}}=2{Vir {website_1}, {website_2}}=3{Vir {website_1}, {website_2} en nog 1}other{Vir {website_1}, {website_2} en nog {more_count}}}</translation>
+<translation id="8184895727539791845">Skakel Kamera in iOS-instellings aan om Gemini toe te laat om jou kamera te gebruik</translation>
 <translation id="8185076488803799132">Voer in</translation>
 <translation id="8189615296021678665">Tik op “Stoor” om hierdie wagwoord maklik te kry wanneer jy die volgende keer aanmeld.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Jou toestelle<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -2010,6 +2019,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="8428045167754449968">Stad / dorp</translation>
 <translation id="8428213095426709021">Instellings</translation>
 <translation id="8428634594422941299">Het dit</translation>
+<translation id="8429455911440977338">Skakel kamera aan</translation>
 <translation id="8434837876193928924">Besonderhede van oortjiegroep</translation>
 <translation id="8438566539970814960">Maak soektogte en blaai-ervaring beter</translation>
 <translation id="8439758443371991593">Versteek Voeg by leeslys</translation>
@@ -2251,6 +2261,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="956218893102219091">Gebruik jou presiese ligging vir die akkuraatste Gemini-resultate, pleks van ’n geskatte ligging op grond van jou IP-adres. <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Vee blaaierdata uit</translation>
 <translation id="963102227019621224">Web- en Appaktiwiteit</translation>
+<translation id="965259330007686240">Skep ’n prent met Gemini</translation>
 <translation id="965879457362663186">Voeg aanhegsel by</translation>
 <translation id="966593914872420832">Stemsoektog</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{Sluit aan by oortjiegroep met <ph name="OWNER_NAME" />}=1{Sluit aan by oortjiegroep met <ph name="OWNER_NAME" /> en {COUNT} ander mens}other{Sluit aan by oortjiegroep met <ph name="OWNER_NAME" /> en {COUNT} ander mense}}</translation>

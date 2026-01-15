@@ -3278,6 +3278,8 @@ Nếu bạn tắt <ph name="NTPCARDSVISIBLE" />, Thẻ Outlook sẽ không hiể
       Nếu bạn đặt chính sách này thành Tắt, thiết bị đã đăng ký sẽ không báo cáo thông tin về phiên kiosk.</translation>
 <translation id="3303770131697159224">Cài đặt quyền Quản lý cửa sổ mặc định</translation>
 <translation id="3303911765031636277">Chính sách cấu hình cho Trình kết nối OnFileAttached của Chrome Enterprise</translation>
+<translation id="3305586786770047829">Khi bạn không đặt chính sách này hoặc đặt thành 0, chính sách <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> sẽ chỉ được áp dụng ở phạm vi người dùng đối với người dùng liên kết.
+Khi bạn đặt chính sách này thành 1, chính sách <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> sẽ được áp dụng ở phạm vi người dùng, ngay cả khi người dùng đó chưa được liên kết.</translation>
 <translation id="3307744348419745296">Không cho phép đồng bộ hoá các cấu hình mạng Wi-Fi trên nhiều thiết bị <ph name="PRODUCT_OS_NAME" /> với một điện thoại Android được kết nối</translation>
 <translation id="3308724602356134956">Nếu bạn đặt chính sách này, <ph name="PRODUCT_OS_NAME" />
 
@@ -8979,6 +8981,25 @@ Nếu bạn không đặt hoặc đặt chính sách này thành Tắt thì thao
 tức là chặn những yêu cầu này, sẽ được áp dụng.</translation>
 <translation id="6915524162137327111">Hiển thị nhãn quản lý trong 30 giây</translation>
 <translation id="6919205861950516688">Không cho phép Trình sắp xếp thẻ.</translation>
+<translation id="6920791385071265136">Kiểm soát việc các tiện ích bị gỡ bỏ do vi phạm không liên quan đến phần mềm độc hại có thể bị buộc cài đặt trong các môi trường có độ tin cậy thấp nữa hay không.
+
+Bạn có thể xem thêm thông tin về các trường hợp vi phạm không liên quan đến phần mềm độc hại và bị gỡ bỏ tại đây. https://developer.chrome.com/docs/webstore/review-process#warning
+
+Sau khi trường hợp vi phạm không liên quan đến phần mềm độc hại được giải quyết, tiện ích sẽ vẫn bật và không thể tắt hay gỡ bỏ.
+
+Trên <ph name="MS_WIN_NAME" />, chính sách này không có trên các phiên bản đã liên kết với một miền <ph name="MS_AD_NAME" />, <ph name="MS_AAD_NAME" /> hoặc đã đăng ký <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />`.
+
+Trên <ph name="MAC_OS_NAME" />, chính sách này không có trên các phiên bản được quản lý qua MDM (Quản lý thiết bị di động), đã liên kết với một miền qua MCX hoặc đã đăng ký <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Trong những phiên bản này, các tiện ích bị buộc cài đặt có hành vi vi phạm không liên quan đến phần mềm độc hại sẽ vẫn được bật.
+
+Hiện tại, tiện ích bị buộc cài đặt có hành vi vi phạm không liên quan đến phần mềm độc hại vẫn được cài đặt và bật trong Chrome.
+
+Nếu bạn đặt chính sách này thành Enabled (Bật), các tiện ích bị buộc cài đặt sẽ hoạt động như cũ (tức là vẫn bật) bất kể có hành vi vi phạm không liên quan đến phần mềm độc hại.
+
+Nếu bạn đặt chính sách này thành Disabled (Tắt) hoặc không đặt, các tiện ích bị buộc cài đặt có hành vi vi phạm không liên quan đến phần mềm độc hại sẽ bị tắt.
+
+Chính sách này đã bị xoá trong phiên bản M145. Kể từ phiên bản đó, các tiện ích bị buộc cài đặt có hành vi vi phạm không liên quan đến phần mềm độc hại sẽ bị tắt trong các môi trường có độ tin cậy thấp.</translation>
 <translation id="692096803256767290">Khôi phục hệ điều hành về phiên bản đích</translation>
 <translation id="6921241119085515674">Cho phép quy trình <ph name="CLOUD_UPLOAD_NAME" /> cho <ph name="MICROSOFT_ONE_DRIVE_NAME" /> và <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6921544339867564740">Cho phép các thiết bị chạy máy ảo trên ChromeOS</translation>

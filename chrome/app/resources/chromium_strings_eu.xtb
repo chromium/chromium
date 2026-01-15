@@ -533,6 +533,9 @@ Baliteke eginbide batzuk erabilgarri ez egotea. Adierazi beste profil-direktorio
 <translation id="6901631050894301805">Ezarri Chromium arakatzaile lehenetsi gisa eta aingura ezazu zereginen barran</translation>
 <translation id="6909503629704372277">&amp;Kudeatu Chromium-eko profilak</translation>
 <translation id="6934579572334859869">Egin irudi honi buruzko galdera bat irudi-bilaketari</translation>
+<translation id="6948031725951063910">Chromium-ek onartzen dituen laster-marken mugara iritsi zara (<ph name="BOOKMARK_LIMIT" />). Beraz, laster-marka batzuk ez dira gorde Google-ko kontuan oraindik.
+
+Laster-marka batzuk ezabatu arte, ezingo da beste laster-markarik gorde kontuan. Orain saioa amaitzen baduzu, gorde gabeko laster-markak ezabatuko dira.</translation>
 <translation id="6964305034639999644">Ireki esteka Chromium-eko &amp;ezkutuko moduko leiho batean</translation>
 <translation id="6965382102122355670">Ados</translation>
 <translation id="6978145336957848883">Seguruak ez diren pasahitzak erraz asmatzen dira. Utzi Chromium-i <ph name="BEGIN_LINK" />pasahitz konplexuak sortzen eta gogoratzen<ph name="END_LINK" />.</translation>
@@ -701,6 +704,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="8880203542552872219">Hala bada, editatu Chromium-en gordetako pasahitza, berriarekin bat etor dadin.</translation>
 <translation id="8891709362986793894">Chromium-en saioa hasteko eskatzen dizu zure erakundeak</translation>
 <translation id="8907580949721785412">Chromium pasahitzak erakusten saiatzen ari da. Hori baimentzeko, idatzi Windows pasahitza.</translation>
+<translation id="8932992523185907506">Chromium jada ez da arakatzaile lehenetsia. Chromium arakatzaile lehenetsi gisa ezarri nahi duzu?</translation>
 <translation id="8941642502866065432">Ezin da eguneratu Chromium</translation>
 <translation id="897581876605952338">Chromium Enterprise-ren logotipoa</translation>
 <translation id="8981150672034878610">Ezin da abiarazi Chromium, arazo bat izan delako profila irekitzean. Berrabiarazi Chromium.</translation>

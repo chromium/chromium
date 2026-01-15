@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">إدارة أذونات الوصول</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{إغلاق علامة التبويب}zero{إغلاق علامات التبويب}two{إغلاق علامتَي التبويب}few{إغلاق علامات التبويب}many{إغلاق علامات التبويب}other{إغلاق علامات التبويب}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">تم فتح البطاقة السفلية لعلامة التبويب في نصف الشاشة.</translation>
 <translation id="374923079891132274">صورة مصغّرة لمعاينة صفحة المشاركة</translation>
 <translation id="3776329373944672717">عنوان مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="3810973564298564668">إدارة</translation>
@@ -125,6 +126,7 @@
 <translation id="5339733443032484186">علامة التبويب الأخيرة</translation>
 <translation id="5380159289133845234">أرشفة علامات التبويب المكرّرة</translation>
 <translation id="5446043142172831860">إزالة علامة التبويب ومغادرة المجموعة</translation>
+<translation id="5465437530117042974">تم إغلاق البطاقة السفلية لعلامة التبويب.</translation>
 <translation id="5490235265819901748">تم توسيع مجموعة علامات التبويب.</translation>
 <translation id="5494920125229734069">اختيار الكل</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{يمكنك إضافة مرفق واحد فقط (<ph name="LIMIT_COUNT_ONE" />)، سواء كان ملف أو علامة تبويب أو صورة}zero{يمكنك إضافة ما يصل إلى <ph name="LIMIT_COUNT_MANY" /> ملف أو علامة تبويب أو صورة}two{يمكنك إضافة ما يصل إلى ملفَين أو علامتَي تبويب أو صورتَين (<ph name="LIMIT_COUNT_MANY" />)}few{يمكنك إضافة ما يصل إلى <ph name="LIMIT_COUNT_MANY" /> ملفات أو علامات تبويب أو صور}many{يمكنك إضافة ما يصل إلى <ph name="LIMIT_COUNT_MANY" /> ملفًا أو علامة تبويب أو صورة}other{يمكنك إضافة ما يصل إلى <ph name="LIMIT_COUNT_MANY" /> ملف أو علامة تبويب أو صورة}}</translation>
@@ -140,6 +142,7 @@
 <translation id="6040143037577758943">إغلاق</translation>
 <translation id="6051432659151380973">يتم حفظ مجموعات علامات التبويب تلقائيًا</translation>
 <translation id="6054741997831917303">انخفض مؤخرًا سعر هذا المنتج من <ph name="PREVIOUS_PRICE" /> إلى <ph name="NEW_PRICE" />.</translation>
+<translation id="606985262342505139">تم فتح البطاقة السفلية لعلامة التبويب بطول الشاشة</translation>
 <translation id="6109251075362363230">ستتم أرشفة جميع علامات التبويب المكرّرة أيضًا، باستثناء آخر نسخة تم استخدامها.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{إغلاق علامة تبويب محدَّدة واحدة (<ph name="TABS_COUNT_ONE" />)}zero{إغلاق <ph name="TABS_COUNT_MANY" /> علامة تبويب محدَّدة}two{إغلاق علامتَي تبويب محدَّدتَين (<ph name="TABS_COUNT_MANY" />)}few{إغلاق <ph name="TABS_COUNT_MANY" /> علامات تبويب محدَّدة}many{إغلاق <ph name="TABS_COUNT_MANY" /> علامة تبويب محدَّدة}other{إغلاق <ph name="TABS_COUNT_MANY" /> علامة تبويب محدَّدة}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{نقل المجموعة إلى نافذة جديدة}zero{نقل المجموعة إلى نافذة أخرى}two{نقل المجموعة إلى نافذة أخرى}few{نقل المجموعة إلى نافذة أخرى}many{نقل المجموعة إلى نافذة أخرى}other{نقل المجموعة إلى نافذة أخرى}}</translation>

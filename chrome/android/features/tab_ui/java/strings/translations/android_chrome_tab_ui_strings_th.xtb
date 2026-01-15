@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">จัดการการเข้าถึง</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{ปิดรายการ}other{ปิดรายการ}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Bottom Sheet ของแท็บแบบครึ่งหน้า</translation>
 <translation id="374923079891132274">ภาพแบบย่อตัวอย่างชีตที่แชร์</translation>
 <translation id="3776329373944672717">ชื่อกลุ่มแท็บ <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">จัดการ</translation>
@@ -125,6 +126,7 @@
 <translation id="5339733443032484186">แท็บสุดท้าย</translation>
 <translation id="5380159289133845234">เก็บแท็บที่ซ้ำกัน</translation>
 <translation id="5446043142172831860">นำแท็บออกและออกจากกลุ่ม</translation>
+<translation id="5465437530117042974">ปิดการเปลี่ยนแปลง Bottom Sheet ของแท็บแล้ว</translation>
 <translation id="5490235265819901748">ขยายกลุ่มแท็บแล้ว</translation>
 <translation id="5494920125229734069">เลือกทั้งหมด</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{เพิ่มไฟล์ แท็บ หรือรูปภาพได้สูงสุด <ph name="LIMIT_COUNT_ONE" /> รายการ}other{เพิ่มไฟล์ แท็บ หรือรูปภาพได้สูงสุด <ph name="LIMIT_COUNT_MANY" /> รายการ}}</translation>
@@ -140,6 +142,7 @@
 <translation id="6040143037577758943">ปิด</translation>
 <translation id="6051432659151380973">ระบบจะบันทึกกลุ่มแท็บโดยอัตโนมัติ</translation>
 <translation id="6054741997831917303">ราคาสินค้านี้เพิ่งลดลงจาก <ph name="PREVIOUS_PRICE" /> เหลือ <ph name="NEW_PRICE" /></translation>
+<translation id="606985262342505139">Bottom Sheet ของแท็บแบบเต็มความสูง</translation>
 <translation id="6109251075362363230">ตอนนี้ระบบจะเก็บแท็บที่ซ้ำกันทั้งหมดด้วย ยกเว้นสำเนาที่ใช้ล่าสุด</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{ปิดรายการที่เลือก <ph name="TABS_COUNT_ONE" /> รายการ}other{ปิดรายการที่เลือก <ph name="TABS_COUNT_MANY" /> รายการ}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ย้ายกลุ่มไปยังหน้าต่างใหม่}other{ย้ายกลุ่มไปยังหน้าต่างอื่น}}</translation>

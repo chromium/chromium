@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">Gestionează accesul</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Închide elementul}few{Închide elementele}other{Închide elementele}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Foaia din partea de jos a filei la jumătate din înălțime.</translation>
 <translation id="374923079891132274">Previzualizarea trimiterii foii.</translation>
 <translation id="3776329373944672717">Titlul grupului de file <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Gestionează</translation>
@@ -125,6 +126,7 @@
 <translation id="5339733443032484186">Ultima filă</translation>
 <translation id="5380159289133845234">Arhivează filele dublură</translation>
 <translation id="5446043142172831860">Elimină fila și părăsește grupul</translation>
+<translation id="5465437530117042974">Modificările foii din partea de jos a filei au fost închise.</translation>
 <translation id="5490235265819901748">Grup de file extins</translation>
 <translation id="5494920125229734069">Selectează-le pe toate</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Adaugă maximum <ph name="LIMIT_COUNT_ONE" /> fișier, o filă sau o imagine}few{Adaugă maximum <ph name="LIMIT_COUNT_MANY" /> fișiere, file sau imagini}other{Adaugă maximum <ph name="LIMIT_COUNT_MANY" /> de fișiere, file sau imagini}}</translation>
@@ -140,6 +142,7 @@
 <translation id="6040143037577758943">Închide</translation>
 <translation id="6051432659151380973">Grupurile de file se salvează automat</translation>
 <translation id="6054741997831917303">Prețul articolului a scăzut recent de la <ph name="PREVIOUS_PRICE" /> la <ph name="NEW_PRICE" /></translation>
+<translation id="606985262342505139">Foaia din partea de jos a filei la înălțime completă</translation>
 <translation id="6109251075362363230">Toate filele dublură vor fi acum arhivate, cu excepția copiei folosite cel mai recent.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Închide <ph name="TABS_COUNT_ONE" /> element selectat}few{Închide <ph name="TABS_COUNT_MANY" /> elemente selectate}other{Închide <ph name="TABS_COUNT_MANY" /> de elemente selectate}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Mută grupul într-o fereastră nouă}few{Mută grupul în altă fereastră}other{Mută grupul în altă fereastră}}</translation>

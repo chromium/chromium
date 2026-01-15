@@ -104,6 +104,7 @@
 <translation id="1366297852155605523">Partagés avec moi</translation>
 <translation id="1369286077209859800">Afficher tous les onglets du groupe d'onglets</translation>
 <translation id="136942498637440594">Vous pouvez rechercher des images et ce que vous voyez.</translation>
+<translation id="1373120905936431262">Téléversez une image à remixer avec Nano Banana</translation>
 <translation id="1377508275003315939">Mots de passe</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} sur {count} adresse}one{{position} sur {count} adresse}other{{position} sur {count} adresses}}</translation>
 <translation id="1383876407941801731">Rechercher</translation>
@@ -161,6 +162,7 @@
 <translation id="1554477036522844996">Nouvelle fenêtre</translation>
 <translation id="1558391695376153246">Fermer onglets navig. privée</translation>
 <translation id="1565371473877914088">Nouvel onglet de navigation privée</translation>
+<translation id="1567960978791353852">Afficher le mode Lecture</translation>
 <translation id="1571780780926010134">Onglets de navigation privée</translation>
 <translation id="1580715474678097352">Protégez-vous contre les sites Web dangereux</translation>
 <translation id="1580783302095112590">Courriel envoyé.</translation>
@@ -235,6 +237,7 @@
 <translation id="1836891464494477513">{count,plural, =1{Favori enregistré dans votre compte Google, {email}}one{Favori enregistré dans votre compte Google, {email}}other{Favoris enregistrés dans votre compte Google, {email}}}</translation>
 <translation id="1838089197478136166">Ouvrir dans Portefeuille?</translation>
 <translation id="183878838231635348">Cette carte affiche tous les problèmes de confidentialité ou de sécurité que la Vérification de sécurité détecte automatiquement pour vous.</translation>
+<translation id="1840320537320704887">Retrait de vos préférences de la page Nouvel onglet</translation>
 <translation id="1845230888742614096">Conserver le groupe</translation>
 <translation id="1853692000353488670">Nouvel onglet de navigation privée</translation>
 <translation id="1854463785401910334">Rechercher dans les onglets ouverts</translation>
@@ -289,6 +292,7 @@
 <translation id="2015722694326466240">Pour afficher vos mots de passe, vous devez d'abord définir un mot de passe sur votre appareil.</translation>
 <translation id="201759455285471444">Développer le groupe d'onglets.</translation>
 <translation id="202070562065520783">Explique-moi ceci</translation>
+<translation id="2023713324775943812">Accédez au mode Lecture à partir de la barre d'adresse lorsqu'il est accessible</translation>
 <translation id="2044394949148788042">Ouvrir la grille d'onglets</translation>
 <translation id="2044681667265133332">Le compte <ph name="USER_EMAIL" /> est géré par <ph name="HOSTED_DOMAIN" />, qui pourrait être en mesure de consulter certaines informations. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nouvel élément</translation>
@@ -358,6 +362,7 @@
 <translation id="2271452184061378400">Vos groupes d'onglets sont enregistrés ici</translation>
 <translation id="2273327106802955778">Menu Plus</translation>
 <translation id="2287614783861766820">{count,plural, =1{Cette adresse sera supprimée de cet appareil.}one{Ces adresses seront supprimées de cet appareil.}other{Ces adresses seront supprimées de cet appareil.}}</translation>
+<translation id="2295236662082735391">Maintenez le doigt sur une image sur le Web pour la modifier avec Gemini</translation>
 <translation id="2297989278479054870">Après la déconnexion, les favoris, les mots de passe et plus encore de votre compte Google seront retirés de cet appareil.</translation>
 <translation id="2299218006564889602">Vos mots de passe sont chiffrés sur votre appareil avant d'être enregistrés dans le gestionnaire de mots de passe Google.</translation>
 <translation id="2306265833370324042">Afficher les détails de <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -479,6 +484,7 @@
 <translation id="2761788987260570878">Prenez une photo de votre recherche</translation>
 <translation id="2761898608071930085">Utiliser un autre compte</translation>
 <translation id="2762000892062317888">à l'instant</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Ajoutez jusqu'à 1 image}one{Ajoutez jusqu'à {COUNT} image}other{Ajoutez jusqu'à {COUNT} images}}</translation>
 <translation id="2772667768515195373">Vous pouvez utiliser les adresses enregistrées avec tous les produits Google. Cette adresse est enregistrée dans votre compte Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773344962924806829">Notifications par courriel</translation>
 <translation id="2781331604911854368">Activé</translation>
@@ -701,6 +707,7 @@
 <translation id="368329460027487650">Déconnecté. Ouvre les options de connexion.</translation>
 <translation id="3695446226812920698">Découvrez comment</translation>
 <translation id="3700134753671613714">Connectez-vous pour synchroniser vos favoris sur tous vos appareils.</translation>
+<translation id="3701167022068948696">Corriger maintenant</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} mot de passe est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google, {EMAIL}.}one{{COUNT} mot de passe est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google, {EMAIL}.}other{{COUNT} mots de passe sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google, {EMAIL}.}}</translation>
 <translation id="3709621342136814217">Choisissez votre police, la taille du texte et plus encore ici</translation>
 <translation id="371230970611282515">Il prédit les événements dangereux et vous en informe avant qu'ils ne surviennent.</translation>
@@ -876,6 +883,7 @@
 <translation id="4338650699862464074">Envoie les URL des pages que vous consultez à Google.</translation>
 <translation id="4342946437867096381">Vous avez déjà enregistré un mot de passe pour ce site dans votre compte Google. Google peut choisir pour vous le mot de passe le plus récent.</translation>
 <translation id="4365121137632832185">Groupe d'onglets. Développé.</translation>
+<translation id="4365685757967464989">Autoriser Gemini à utiliser votre appareil photo pour prendre des photos</translation>
 <translation id="4367971618859387374">Nom à afficher</translation>
 <translation id="4375772272517383391">Fermer tous les onglets</translation>
 <translation id="4378154925671717803">Numéro de téléphone</translation>
@@ -959,6 +967,7 @@
 
        Choisissez ce que vous voulez faire avec les données de navigation existantes sur cet appareil.</translation>
 <translation id="4675298276894277358">Ce site ne sera plus affiché</translation>
+<translation id="4676647168422678078">Appliquer les préférences de votre page Nouvel onglet?</translation>
 <translation id="4682496302933121474">Traduire la page?</translation>
 <translation id="4682686630151240767">1. Ouvrez Réglages de l'iPhone</translation>
 <translation id="4691892551491778176">Lorsque vous utilisez cette fonctionnalité, le contenu et les URL de la page sont envoyés à Google, mais ils ne seront pas utilisés pour améliorer les modèles d'IA générative. Vous pouvez désactiver cette option dans les paramètres en tout temps.</translation>
@@ -1007,6 +1016,7 @@
 <translation id="4840495572919996524">Vos favoris, votre historique, vos mots de passe et d'autres paramètres ne seront plus synchronisés avec votre compte Google.</translation>
 <translation id="484280513275854557">Vous avez été déconnecté, et les données de navigation ont été supprimées</translation>
 <translation id="4850886885716139402">Affichage</translation>
+<translation id="4854068532375923088">Autoriser « Gemini » à utiliser votre appareil photo</translation>
 <translation id="4860895144060829044">Appeler</translation>
 <translation id="4861953997778766866">Tout le monde peut apporter des modifications à vos groupes d'onglets partagés</translation>
 <translation id="4865063548323785458">Enregistrez et remplissez automatiquement vos mots de passe pour vous connecter facilement aux sites et aux applis</translation>
@@ -1211,6 +1221,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5579012242779565775">Masquer la Liste de lecture</translation>
 <translation id="5581786858144165447">Mode Demander à l'IA</translation>
 <translation id="5585019845078534178">Cartes</translation>
+<translation id="5591526871732898147">Image {index} en pièce jointe</translation>
 <translation id="5595485650161345191">Modifier l'adresse</translation>
 <translation id="559567008082979829">Faites en sorte que vos téléchargements soient supprimés après un mois.</translation>
 <translation id="5596627076506792578">Autres options</translation>
@@ -1346,6 +1357,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="605721222689873409">AA</translation>
 <translation id="6058415747854995776">Enregistrer une vidéo</translation>
 <translation id="6059830886158432458">Gérez vos histoires et votre activité ici</translation>
+<translation id="6063802271331271857">Remixez une image</translation>
 <translation id="6066301408025741299">Appuyez pour annuler.</translation>
 <translation id="6074656473835429958">Recevoir des notifications</translation>
 <translation id="607620096698446287">Impossible de téléverser <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -1864,6 +1876,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="7899199123054742721">Tout marquer comme non lu</translation>
 <translation id="7911190106180361398">Votre organisation ne vous autorise pas à tout synchroniser.</translation>
 <translation id="7918999344502274923">Masquer les détails de <ph name="SEARCH_ENGINE_NAME" /></translation>
+<translation id="7921559948846049514">Choisissez un thème, une couleur ou plus pour votre arrière-plan</translation>
 <translation id="792357691529995513">Aucun problème trouvé</translation>
 <translation id="7925108652071887026">Données de remplissage automatique</translation>
 <translation id="7926975587469166629">Pseudo de la carte</translation>
@@ -1912,6 +1925,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="8059312861912872211">{count,plural, =1{{count} favori}one{{count} favori}other{{count} favoris}}</translation>
 <translation id="8059533439631660104">Réduit la section.</translation>
 <translation id="8061584726507121204">Historique</translation>
+<translation id="8064946459644399612">Préférences de votre page Nouvel onglet appliquées</translation>
 <translation id="8069168488983557089">Obtenez des informations et des points clés qui vous aident à comprendre n'importe quel sujet</translation>
 <translation id="8069394452933076548">Choisir quand les onglets qui n'ont pas été utilisés récemment sont déplacés vers la section des onglets inactifs.</translation>
 <translation id="8073670137947914548">Téléchargement terminé</translation>
@@ -1942,6 +1956,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="8161614462829037225">Déverrouiller avec <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Mesure</translation>
 <translation id="8182037667962849780">{count,plural, =1{Pour {website_1}}=2{Pour {website_1}, {website_2}}=3{Pour {website_1}, {website_2} et 1 autre}one{Pour {website_1}, {website_2} et {more_count} autre}other{Pour {website_1}, {website_2} et {more_count} autres}}</translation>
+<translation id="8184895727539791845">Pour autoriser Gemini à utiliser votre appareil photo, activez l'Appareil photo dans les paramètres iOS</translation>
 <translation id="8185076488803799132">Importer</translation>
 <translation id="8189615296021678665">Touchez « Enregistrer » pour accéder facilement à ce mot de passe lors de votre prochaine connexion.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vos appareils<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -2010,6 +2025,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="8428045167754449968">Ville</translation>
 <translation id="8428213095426709021">Paramètres</translation>
 <translation id="8428634594422941299">OK</translation>
+<translation id="8429455911440977338">Activer l'Appareil photo</translation>
 <translation id="8434837876193928924">Détails du groupe d'onglets</translation>
 <translation id="8438566539970814960">Amélioration des recherches et de la navigation</translation>
 <translation id="8439758443371991593">Masquer Ajouter à la Liste de lecture</translation>
@@ -2251,6 +2267,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="956218893102219091">Utilisez votre position exacte plutôt qu'une position estimée en fonction de votre adresse IP pour optimiser la précision des résultats de Gemini. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Supp. données de navigation</translation>
 <translation id="963102227019621224">Activité sur le Web et dans les applis</translation>
+<translation id="965259330007686240">Créer une image avec Gemini</translation>
 <translation id="965879457362663186">Ajouter une pièce jointe</translation>
 <translation id="966593914872420832">Recherche vocale</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{Se joindre au groupe d'onglets avec <ph name="OWNER_NAME" />}=1{Se joindre au groupe d'onglets avec <ph name="OWNER_NAME" /> et {COUNT} autre}one{Se joindre au groupe d'onglets avec <ph name="OWNER_NAME" /> et {COUNT} autre}other{Se joindre au groupe d'onglets avec <ph name="OWNER_NAME" /> et {COUNT} autres}}</translation>

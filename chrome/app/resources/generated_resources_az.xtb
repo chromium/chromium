@@ -2562,6 +2562,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2713444072780614174">Ağ</translation>
 <translation id="2714180132046334502">Tünd arxa fon</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
+<translation id="2714617928488200509">Modellər</translation>
 <translation id="2715751256863167692">Bu güncəlləmə Chromebook'u sıfırlayır və cari istifadəçi datasını silir.</translation>
 <translation id="2715934493766003251">Fayl sinxronlaşdırması aktiv olduqda yaddaşı təmizləmək olmur</translation>
 <translation id="2716986496990888774">Bu ayar valideyn tərəfindən idarə edilir.</translation>
@@ -4601,6 +4602,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4078738236287221428">Aqressiv</translation>
 <translation id="4078903002989614318">Çeşidləmə və siyahı seçimləri</translation>
 <translation id="4079140982534148664">Qabaqcıl orfoqrafik yoxlama istifadə edin</translation>
+<translation id="4082070466456857368">Düşünmə (3 Pro)</translation>
 <translation id="4084682180776658562">Əlfəcin</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> panelini bağlayın</translation>
 <translation id="4085298594534903246">JavaScript bu səhifədə bloklanmışdı.</translation>
@@ -7278,6 +7280,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5955721306465922729">Veb sayt bu tətbiqi açmaq istəyir.</translation>
 <translation id="5955809630138889698">Bu cihaz yalnız onlayn demo rejimi üçün uyğundur. Ətraflı məlumat üçün dəstək nüməyəndəsi ilə əlaqə saxlayın.</translation>
 <translation id="59561895884837262">Qeydəalma başladıqda sizə xəbər veriləcək.</translation>
+<translation id="5957613098218939406">Əlavə Seçimlər</translation>
 <translation id="5957987129450536192">Profil şəklinin yanında Səsləndirmək üçün Seçim əmrinə klikləyin sonra dinləmək istədiyiniz elementi seçin.</translation>
 <translation id="5958836583172610505">Sinxronlaşdırma yanılıdır</translation>
 <translation id="5959471481388474538">Şəbəkə mövcud deyil</translation>
@@ -7843,6 +7846,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6350821834561350243">Problemin aydın təsvirini və reproduksiya yollarını təqdim edin (mümkündürsə)</translation>
 <translation id="6351178441572658285">Tətbiq dilləri</translation>
 <translation id="6354918092619878358">SECG oval əyrisi secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355632359041940003">Tapşırığı öz öhdəliyinizə götürün</translation>
 <translation id="635609604405270300">Cihazı aktiv saxlayın</translation>
 <translation id="6356537493253478650">Sakit</translation>
 <translation id="63566973648609420">Yalnız parol sözünüzü bilən adam şifrələnmiş məlumatınızı oxuya bilər. Parol söz Google tərəfindən göndərilmir və yadda saxlanılmır. Əgər parol sözü unutmusunuzsa və ya bu ayarı dəyişmək istəyirsinizsə <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlamalısınız<ph name="END_LINK" />.</translation>
@@ -8810,6 +8814,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7017219178341817193">Yeni səhifə əlavə edin</translation>
 <translation id="7017354871202642555">Pəncərə ayarlandıqdan sonra rejim ayarlana bilməz.</translation>
 <translation id="7019805045859631636">Sürətli</translation>
+<translation id="7020810150082302220">Defolt brauzeriniz dəyişdirildi</translation>
 <translation id="7021524108486027008"><ph name="DEVICE_TYPE" /> cihazında müəssisənin idarə etdiyi mühitdə alət, redaktor və IDE işlədin.</translation>
 <translation id="7022222879220069865">Taçpedlər ayrılıb</translation>
 <translation id="7022562585984256452">Əsas səhifəniz ayarlandı.</translation>
@@ -10190,6 +10195,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7969144945436590933">Ətraflı məlumat əldə edin</translation>
 <translation id="7970673414865679092">Ethernet detalları</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 RSA Şifrələmə ilə</translation>
+<translation id="7972837668077967426">Canvas</translation>
 <translation id="7973149423217802477">"Baş barmaq aşağı" bunu bəyənmədiyinizi göstərir.</translation>
 <translation id="7973776233567882054">Aşağıdakılardan hansı şəbəkənizi daha yaxşı təsvir edir?</translation>
 <translation id="797394244396603170">Faylları paylaşmaq istədiyiniz cihaz seçin</translation>
@@ -10627,6 +10633,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8263228331881858381">Giriş açarı saxlanıldı</translation>
 <translation id="8263336784344783289">Bu Qrupu Adlandırın</translation>
 <translation id="8264024885325823677">Bu ayar inzibatçınız tərəfindən idarə edilir.</translation>
+<translation id="826410575944953302">Vertikal tabları genişləndirin</translation>
 <translation id="8264195025773092348">Yalnız dəstəklənən cihazlar göstərilir. Bağlantı kəsilənə qədər USB cihazları artıq lokal tətbiqlər üçün əlçatan olmayacaq.</translation>
 <translation id="8265018477030547118">Yalnız bu cihazda</translation>
 <translation id="826511437356419340">Pəncərə icmalı rejiminə daxil olundu. Naviqasiya üçün sürüşdürün və ya klaviatura istifadə edirsinizsə tabı basın.</translation>
@@ -10724,6 +10731,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8323518750352551353">Baxış ayrılsın?</translation>
 <translation id="8323744572398547859">Digər cihazlarınızdakı tablara giriş əldə etmək üçün hesabınıza daxil olun və tarixçəni sinxronlaşdırın. Həmçinin bütün cihazlarınızda parollarınızı və daha çoxunu əldə edəcəksiniz. Ayarlarda sinxronlaşdırmanı istənilən vaxt dayandıra bilərsiniz. Google tarixçənizə əsasən Axtarış və digər xidmətləri fərdiləşdirə bilər.</translation>
 <translation id="8324158725704657629">Daha soruşma</translation>
+<translation id="8324264291265547520">Vertikal Tabları genişləndirin</translation>
 <translation id="8325413836429495820">Mübadilə buferinizə baxmaq icazəsi verilməyib</translation>
 <translation id="8326478304147373412">PKCS # 7, sertifikat zənciri</translation>
 <translation id="8327386430364625757">Riyazi şrift</translation>
@@ -10749,6 +10757,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8339288417038613756">Displey və mətn ölçüsü</translation>
 <translation id="833986336429795709">Bu linki açmaq üçün tətbiq seçin</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> üçün digər əməliyyatlar</translation>
+<translation id="8341693734243413517">Chrome güncəlləyicisi</translation>
 <translation id="8341804784147620576">Axtarış Qısayollarını göstərin</translation>
 <translation id="8342221978608739536">Sınaqdan keçirilmədi</translation>
 <translation id="8342387517402567689">Anonim rejimdə veb-tətbiq quraşdırmaları dəstəklənmir</translation>
@@ -11052,6 +11061,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8551588720239073785">Tarix və vaxt ayarları</translation>
 <translation id="8551647092888540776">Oflayn olduqda <ph name="FILE_NAMES" /> faylını açmaq olmur</translation>
 <translation id="8552102814346875916">"Bu saytları həmişə aktiv saxlayın" siyahısında saxlayın</translation>
+<translation id="8552947739661397736">Tapşırığı öz öhdəliyinizə götürün, hazırda idarəetmə Gemini tərəfindən həyata keçirilir.</translation>
 <translation id="8553342806078037065">Digər insanları idarə edin</translation>
 <translation id="8554899698005018844">Dil yoxdur</translation>
 <translation id="8555444629041783356">Avtomatik gün batımı cədvəli</translation>

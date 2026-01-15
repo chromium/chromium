@@ -8827,6 +8827,25 @@ Si la règle <ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NAME" /
 Si la règle est désactivée ou n'est pas configurée, le comportement par défaut s'applique et ces requêtes sont bloquées.</translation>
 <translation id="6915524162137327111">Afficher les libellés de gestion pendant 30 secondes</translation>
 <translation id="6919205861950516688">Ne pas autoriser l'organiseur d'onglets.</translation>
+<translation id="6920791385071265136">Détermine si les extensions supprimées en raison de cas de non-respect non liés à des logiciels malveillants peuvent toujours être installées d'office dans des environnements de faible confiance.
+
+Pour en savoir plus sur les cas de non-respect non liés à des logiciels malveillants et les suppressions, consultez https://developer.chrome.com/docs/webstore/review-process#warning.
+
+Une fois le cas de non-respect non lié à un logiciel malveillant résolu, l'extension restera activée et ne pourra pas être désactivée ni supprimée.
+
+Sous <ph name="MS_WIN_NAME" />, cette règle n'est pas disponible sur les instances associées à un domaine <ph name="MS_AD_NAME" />, à <ph name="MS_AAD_NAME" /> ou qui bénéficient de <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Sous <ph name="MAC_OS_NAME" />, cette règle n'est pas disponible sur les instances gérées via MDM, associées à un domaine via MCX ou qui bénéficient de <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Les extensions installées d'office qui présentent des cas de non-respect non liés à des logiciels malveillants resteront activées sur ces instances.
+
+Actuellement, une extension installée d'office qui présente des cas de non-respect non liés à des logiciels malveillants reste installée et activée dans Chrome.
+
+Si cette règle est activée, les extensions installées d'office se comporteront de la même manière (autrement dit, elles resteront activées), quels que soient les cas de non-respect non liés à des logiciels malveillants.
+
+Si cette règle est désactivée ou n'est pas configurée, les extensions installées d'office qui présentent des cas de non-respect non liés à des logiciels malveillants seront désactivées.
+
+Cette règle a été supprimée dans M145. À partir de cette version, les extensions installées d'office qui présentent des cas de non-respect non liés à des logiciels malveillants seront désactivées dans les environnements de faible confiance.</translation>
 <translation id="692096803256767290">Effectuer un rollback de l'OS vers la version cible</translation>
 <translation id="6921241119085515674">Autoriser le flux <ph name="CLOUD_UPLOAD_NAME" /> pour <ph name="MICROSOFT_ONE_DRIVE_NAME" /> et <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6921544339867564740">Autoriser les appareils à exécuter des machines virtuelles sur Chrome OS</translation>

@@ -2566,6 +2566,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2713444072780614174">Hvit</translation>
 <translation id="2714180132046334502">Mørk bakgrunn</translation>
 <translation id="2714393097308983682">Google Play Butikk</translation>
+<translation id="2714617928488200509">Modeller</translation>
 <translation id="2715751256863167692">Oppgraderingen tilbakestiller Chromebooken og fjerner gjeldende brukerdata.</translation>
 <translation id="2715934493766003251">Kan ikke frigjøre lagringsplass mens filsynkronisering er på</translation>
 <translation id="2716986496990888774">Denne innstillingen administreres av en forelder.</translation>
@@ -4603,6 +4604,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4078738236287221428">Aggressiv</translation>
 <translation id="4078903002989614318">Sorterings- og listealternativer</translation>
 <translation id="4079140982534148664">Bruk forbedret stavekontroll</translation>
+<translation id="4082070466456857368">Tenkende (3 Pro)</translation>
 <translation id="4084682180776658562">Legg til bokmerke</translation>
 <translation id="4084835346725913160">Lukk <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">JavaScript er blokkert på siden.</translation>
@@ -7281,6 +7283,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5955721306465922729">Et nettsted vil åpne denne appen.</translation>
 <translation id="5955809630138889698">Denne enheten er kanskje bare kvalifisert for én demomodus på nettet. Kontakt brukerstøtterepresentanten din for å få mer informasjon.</translation>
 <translation id="59561895884837262">Du varsles når opptaket starter.</translation>
+<translation id="5957613098218939406">Flere alternativer</translation>
 <translation id="5957987129450536192">Trykk på tekstopplesing-ikonet ved profilbildet ditt, og velg hva du vil høre.</translation>
 <translation id="5958836583172610505">Synkronisering er på</translation>
 <translation id="5959471481388474538">Nettverket er utilgjengelig</translation>
@@ -7846,6 +7849,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6350821834561350243">Gi en tydelig beskrivelse av problemet og fremgangsmåten for å gjenskape problemet (hvis det er mulig)</translation>
 <translation id="6351178441572658285">Appspråk</translation>
 <translation id="6354918092619878358">SECG elliptisk kurve secp256r1 (også kjent som ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355632359041940003">Ta over oppgaven</translation>
 <translation id="635609604405270300">Hold enheten påslått</translation>
 <translation id="6356537493253478650">Rolig</translation>
 <translation id="63566973648609420">Bare de som har passordfrasen din, kan lese de krypterte dataene dine. Passordfrasen blir verken sendt til Google eller lagret av oss. Hvis du glemmer passordfrasen eller vil endre denne innstillingen, må du <ph name="BEGIN_LINK" />tilbakestille synkroniseringen<ph name="END_LINK" />.</translation>
@@ -8813,6 +8817,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7017219178341817193">Legg til en ny side</translation>
 <translation id="7017354871202642555">Kan ikke angi modus etter at vinduet er opprettet.</translation>
 <translation id="7019805045859631636">Høy</translation>
+<translation id="7020810150082302220">Standardnettleseren din er endret</translation>
 <translation id="7021524108486027008">Kjør verktøy, redigeringsverktøy og IDE-er på <ph name="DEVICE_TYPE" /> i et miljø som administreres av bedriften din.</translation>
 <translation id="7022222879220069865">Alle styreflater er frakoblet</translation>
 <translation id="7022562585984256452">Startsiden din er angitt.</translation>
@@ -10194,6 +10199,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7969144945436590933">Få mer informasjon</translation>
 <translation id="7970673414865679092">Ethernet-detaljer</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 med RSA-kryptering</translation>
+<translation id="7972837668077967426">Canvas</translation>
 <translation id="7973149423217802477">Tommel ned sender tilbakemelding om at du ikke liker dette.</translation>
 <translation id="7973776233567882054">Hvilket av disse alternativene beskriver nettverket ditt best?</translation>
 <translation id="797394244396603170">Velg enheten du vil dele filer med</translation>
@@ -10756,6 +10762,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8339288417038613756">Visnings- og tekststørrelse</translation>
 <translation id="833986336429795709">For å åpne denne linken, velg en app</translation>
 <translation id="8340547030807793004">Flere handlinger for <ph name="DEVICE" /></translation>
+<translation id="8341693734243413517">Chrome Updater</translation>
 <translation id="8341804784147620576">Vis søkesnarveier</translation>
 <translation id="8342221978608739536">Prøvde ikke</translation>
 <translation id="8342387517402567689">Installering av nettapper støttes ikke i inkognitomodus</translation>
@@ -11059,6 +11066,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8551588720239073785">Innstillinger for dato og klokkeslett</translation>
 <translation id="8551647092888540776">Kan ikke åpne <ph name="FILE_NAMES" /> uten nett</translation>
 <translation id="8552102814346875916">Lagre på «La disse nettstedene alltid være aktive»-listen</translation>
+<translation id="8552947739661397736">Ta over oppgaven – Gemini har kontrollen nå</translation>
 <translation id="8553342806078037065">Administrer andre</translation>
 <translation id="8554899698005018844">Ingen språk</translation>
 <translation id="8555444629041783356">Automatisk tidsplan basert på solnedgang</translation>

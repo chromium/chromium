@@ -412,6 +412,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ još 1)}one{(+ još #)}few{(+ još #)}other{(+ još #)}}</translation>
 <translation id="5403592356182871684">Nazivi</translation>
 <translation id="5407203562970638234">Poboljšajte sigurnost</translation>
+<translation id="5436307623797390637">Aplikacije na uređaju</translation>
 <translation id="5438097262470833822">Poništit će se dopuštenja za web-lokaciju <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Kad je ta postavka uključena, web-lokacije mogu tražiti vašu lokaciju. Kad je ta postavka isključena, web-lokacije ne mogu vidjeti vašu lokaciju.</translation>
 <translation id="5489227211564503167">Proteklo vrijeme: <ph name="ELAPSED_TIME" /> od <ph name="TOTAL_TIME" /></translation>

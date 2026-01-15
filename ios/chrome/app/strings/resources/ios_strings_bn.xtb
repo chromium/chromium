@@ -104,6 +104,7 @@
 <translation id="1366297852155605523">আমার সাথে শেয়ার করা</translation>
 <translation id="1369286077209859800">ট্যাব গ্রুপে সব ট্যাব দেখুন</translation>
 <translation id="136942498637440594">আপনি ছবি ও কী দেখতে পারেন তা সার্চ করতে পারবেন।</translation>
+<translation id="1373120905936431262">Nano Banana-র সাহায্যে রিমিক্স করার জন্য কোনও ছবি আপলোড করুন</translation>
 <translation id="1377508275003315939">পাসওয়ার্ড</translation>
 <translation id="1381022135873211423">{count,plural, =1{{count}টি ঠিকানার মধ্যে {position} নম্বর}one{{count}টি ঠিকানার মধ্যে {position} নম্বর}other{{count}টি ঠিকানার মধ্যে {position} নম্বর}}</translation>
 <translation id="1383876407941801731">খুঁজুন</translation>
@@ -235,6 +236,7 @@
 <translation id="1836891464494477513">{count,plural, =1{আপনার Google অ্যাকাউন্টে বুকমার্ক সেভ করা আছে, {email}}one{আপনার Google অ্যাকাউন্টে বুকমার্ক সেভ করা আছে, {email}}other{আপনার Google অ্যাকাউন্টে বুকমার্ক সেভ করা আছে, {email}}}</translation>
 <translation id="1838089197478136166">Wallet-এ খুলতে চান?</translation>
 <translation id="183878838231635348">আপনার জন্য 'নিরাপত্তা সংক্রান্ত পরীক্ষা' ফিচার অটোমেটিক যেকোনও গোপনীয়তা বা সুরক্ষা সংক্রান্ত সমস্যা শনাক্ত করলে, এই কার্ড তা দেখায়।</translation>
+<translation id="1840320537320704887">আপনার নতুন ট্যাব পৃষ্ঠার পছন্দ সরানো হয়েছে</translation>
 <translation id="1845230888742614096">গ্রুপ রেখে দিন</translation>
 <translation id="1853692000353488670">নতুন ছদ্মবেশী ট্যাব</translation>
 <translation id="1854463785401910334">খুলে রাখা ট্যাবে সার্চ করুন</translation>
@@ -701,6 +703,7 @@
 <translation id="368329460027487650">সাইন-আউট হয়ে গেছেন। সাইন-ইন করার জন্য বিকল্প খোলে।</translation>
 <translation id="3695446226812920698">কীভাবে করবেন তা জানুন</translation>
 <translation id="3700134753671613714">আপনার সকল ডিভাইসগুলিতে আপনার বুকমার্কগুলি পেতে সাইন করুন।</translation>
+<translation id="3701167022068948696">এখনই সমাধান করুন</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT}টি পাসওয়ার্ড শুধুমাত্র এই ডিভাইসে সেভ করা হয়েছে। আপনার অন্যান্য ডিভাইসেও সেগুলি ব্যবহার করতে হলে, Google অ্যাকাউন্ট {EMAIL}-এ সেভ করুন।}one{{COUNT}টি পাসওয়ার্ড শুধুমাত্র এই ডিভাইসে সেভ করা হয়েছে। আপনার অন্যান্য ডিভাইসেও সেগুলি ব্যবহার করতে হলে, Google অ্যাকাউন্ট {EMAIL}-এ সেভ করুন।}other{{COUNT}টি পাসওয়ার্ড শুধুমাত্র এই ডিভাইসে সেভ করা হয়েছে। আপনার অন্যান্য ডিভাইসেও সেগুলি ব্যবহার করতে হলে, Google অ্যাকাউন্ট {EMAIL}-এ সেভ করুন।}}</translation>
 <translation id="3709621342136814217">আপনার ফন্ট, টেক্সট সাইজ ও আরও অনেক কিছু এখান থেকে বেছে নিন</translation>
 <translation id="371230970611282515">কোনও ঝুঁকিপূর্ণ ঘটনা ঘটলে সেটি অনুমান করে আপনাকে সতর্ক করা হয়।</translation>
@@ -876,6 +879,7 @@
 <translation id="4338650699862464074">আপনার দেখা পৃষ্ঠাগুলির ইউআরএল Google-এ পাঠায়।</translation>
 <translation id="4342946437867096381">আপনি আগেই আপনার Google অ্যাকাউন্টে এই সাইটের জন্য একটি পাসওয়ার্ড সেভ করেছেন। Google আপনার জন্য সবচেয়ে সাম্প্রতিক পাসওয়ার্ড বেছে নিতে পারে।</translation>
 <translation id="4365121137632832185">ট্যাব গ্রুপ। বড় করা হয়েছে।</translation>
+<translation id="4365685757967464989">Gemini-কে আপনার ক্যামেরা ব্যবহার করে ফটো তোলার অনুমতি দিন</translation>
 <translation id="4367971618859387374">যে নাম দেখানো হবে</translation>
 <translation id="4375772272517383391">সব ট্যাব বন্ধ করুন</translation>
 <translation id="4378154925671717803">ফোন</translation>
@@ -959,6 +963,7 @@
 
        এই ডিভাইসে আগে থেকে থাকা ব্রাউজ করা ডেটার ক্ষেত্রে কী করবেন তা বেছে নিন।</translation>
 <translation id="4675298276894277358">এই সাইট আর দেখানো হবে না</translation>
+<translation id="4676647168422678078">আপনার নতুন ট্যাব পৃষ্ঠার পছন্দ প্রয়োগ করবেন?</translation>
 <translation id="4682496302933121474">পৃষ্ঠাটি অনুবাদ করবেন?</translation>
 <translation id="4682686630151240767">১. iPhone সেটিংস খুলুন</translation>
 <translation id="4691892551491778176">আপনি যখন এই ফিচার ব্যবহার করেন, পৃষ্ঠার কন্টেন্ট ও URL, Google-কে পাঠানো হয় তবে জেনারেটিভ AI মডেল উন্নত করতে ব্যবহার করা হবে না। যেকোনও সময়ে সেটিংস থেকে এটি বন্ধ করে দিতে পারবেন।</translation>
@@ -1007,6 +1012,7 @@
 <translation id="4840495572919996524">আপনার বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং আরও অনেক কিছু আপনার Google অ্যাকাউন্টের সাথে আর সিঙ্ক করা হবে না।</translation>
 <translation id="484280513275854557">আপনি সাইন-আউট হয়ে গেছেন; ব্রাউজ করা ডেটা মুছে দেওয়া হয়েছে</translation>
 <translation id="4850886885716139402">দেখুন</translation>
+<translation id="4854068532375923088">আপনার ক্যামেরা ব্যবহার করার জন্য “Gemini”-কে অনুমতি দিন</translation>
 <translation id="4860895144060829044">কল করুন</translation>
 <translation id="4861953997778766866">আপনার শেয়ার করা ট্যাব গ্রুপে প্রত্যেকে পরিবর্তন করতে পারবেন</translation>
 <translation id="4865063548323785458">সাইট ও অ্যাপে সহজে সাইন-ইন করতে আপনার পাসওয়ার্ড সেভ ও অটোফিল করুন</translation>
@@ -1212,6 +1218,7 @@
 <translation id="5579012242779565775">'পড়ার তালিকা' লুকান</translation>
 <translation id="5581786858144165447">AI মোডকে জিজ্ঞাসা করুন</translation>
 <translation id="5585019845078534178">কার্ড</translation>
+<translation id="5591526871732898147">অ্যাটাচ করা ছবি {index}</translation>
 <translation id="5595485650161345191">ঠিকানা সম্পাদনা করুন</translation>
 <translation id="559567008082979829">আপনার ডাউনলোড করা ফাইলগুলি যাতে এক মাস পরে মুছে যায় সেই অনুযায়ী সেট করুন।</translation>
 <translation id="5596627076506792578">আরও বিকল্পগুলি</translation>
@@ -1913,6 +1920,7 @@
 <translation id="8059312861912872211">{count,plural, =1{{count}টি বুকমার্ক}one{{count}টি বুকমার্ক}other{{count}টি বুকমার্ক}}</translation>
 <translation id="8059533439631660104">বিভাগটি সঙ্কুচন করে।</translation>
 <translation id="8061584726507121204">ইতিহাস</translation>
+<translation id="8064946459644399612">আপনার নতুন ট্যাব পৃষ্ঠা সম্পর্কিত পছন্দ প্রয়োগ করা হয়েছে</translation>
 <translation id="8069168488983557089">যেকোনও বিষয় বোঝার ব্যাপারে সহায়তা পেতে, প্রয়োজনীয় তথ্য ও ইনসাইট পান</translation>
 <translation id="8069394452933076548">যে ট্যাবগুলি সম্প্রতি ব্যবহার করা হয়নি সেগুলি কখন ইনঅ্যাক্টিভ ট্যাব বিভাগে সরানো হবে তা বেছে নিন।</translation>
 <translation id="8073670137947914548">ডাউনলোড হয়ে গেছে</translation>
@@ -1943,6 +1951,7 @@
 <translation id="8161614462829037225"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> দিয়ে আনলক করুন</translation>
 <translation id="8173034266693057059">দৈর্ঘ্য</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1}-এর জন্য}=2{{website_2}, {website_1}-এর জন্য}=3{{website_1}, {website_2} এবং আরও ১টির জন্য}one{{website_1}, {website_2} এবং আরও {more_count}টির জন্য}other{{website_1}, {website_2} এবং আরও {more_count}টির জন্য}}</translation>
+<translation id="8184895727539791845">Gemini-কে আপনার ক্যামেরা ব্যবহার করার অনুমতি দিতে, iOS সেটিংসে গিয়ে ক্যামেরা চালু করুন</translation>
 <translation id="8185076488803799132">ইমপোর্ট করুন</translation>
 <translation id="8189615296021678665">পরেরবার সাইন-ইন করার সময় সহজে এই পাসওয়ার্ড অ্যাক্সেস করতে, "সেভ করুন" বিকল্পে ট্যাপ করুন।</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />আপনার ডিভাইস<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -2011,6 +2020,7 @@
 <translation id="8428045167754449968">নগর / ছোট শহর</translation>
 <translation id="8428213095426709021">সেটিংস</translation>
 <translation id="8428634594422941299">বুঝেছি</translation>
+<translation id="8429455911440977338">ক্যামেরা চালু করুন</translation>
 <translation id="8434837876193928924">ট্যাব গ্রুপ সম্পর্কিত বিবরণ</translation>
 <translation id="8438566539970814960">সার্চ এবং ব্রাউজিং অভিজ্ঞতা আরও উন্নত করুন</translation>
 <translation id="8439758443371991593">'পড়ার তালিকায় যোগ করুন' বিকল্পটি লুকান</translation>
@@ -2252,6 +2262,7 @@
 <translation id="956218893102219091">Gemini থেকে সবচেয়ে নিখুঁত ফলাফল পেতে, আনুমানিক লোকেশনের পরিবর্তে, আপনার IP অ্যাড্রেসের ভিত্তিতে পাওয়া সুনির্দিষ্ট লোকেশন ব্যবহার করুন। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">ব্রাউজ করা ডেটা মুছে দিন</translation>
 <translation id="963102227019621224">ওয়েব ও অ্যাপ অ্যাক্টিভিটি</translation>
+<translation id="965259330007686240">Gemini ব্যবহার করে একটি ছবি তৈরি করুন</translation>
 <translation id="965879457362663186">অ্যাটাচমেন্ট যোগ করুন</translation>
 <translation id="966593914872420832">ভয়েস সার্চ</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{<ph name="OWNER_NAME" />-এর সাথে ট্যাব গ্রুপে যোগ দিন}=1{<ph name="OWNER_NAME" /> এবং অন্য {COUNT} জনের সাথে ট্যাব গ্রুপে যোগ দিন}one{<ph name="OWNER_NAME" /> এবং অন্য {COUNT} জনের সাথে ট্যাব গ্রুপে যোগ দিন}other{<ph name="OWNER_NAME" /> এবং অন্য {COUNT} জনের সাথে ট্যাব গ্রুপে যোগ দিন}}</translation>

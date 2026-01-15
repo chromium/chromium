@@ -412,6 +412,7 @@
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(තවත් + 1ක්)}one{(තවත් + #ක්)}other{(තවත් + #ක්)}}</translation>
 <translation id="5403592356182871684">නම්</translation>
 <translation id="5407203562970638234">ඔබේ ආරක්ෂාව ඉහළ නංවන්න</translation>
+<translation id="5436307623797390637">උපාංගයෙහි යෙදුම්</translation>
 <translation id="5438097262470833822">මෙම තේරීම <ph name="WEBSITE" /> සඳහා අවසර යළි සකසනු ඇත</translation>
 <translation id="5459413148890178711">සක්‍රීය වූ විට, අඩවිවලට ඔබේ ස්ථානය ඉල්ලිය හැක. අක්‍රිය වූ විට, අඩවිවලට ඔබේ ස්ථානය බැලිය නොහැක.</translation>
 <translation id="5489227211564503167">ගත වූ කාලය <ph name="TOTAL_TIME" /> න් <ph name="ELAPSED_TIME" />.</translation>

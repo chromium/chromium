@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">Stjórna aðgangi</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Loka atriði}one{Loka atriðum}other{Loka atriðum}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Neðsta blað flipa í hálfri hæð.</translation>
 <translation id="374923079891132274">Smámynd til að deila forskoðun blaðs</translation>
 <translation id="3776329373944672717">Heiti flipahóps: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Stjórna</translation>
@@ -125,6 +126,7 @@
 <translation id="5339733443032484186">Síðasti flipi</translation>
 <translation id="5380159289133845234">Setja tvítekna flipa í geymslu</translation>
 <translation id="5446043142172831860">Fjarlægja flipa og yfirgefa hóp</translation>
+<translation id="5465437530117042974">Breytingum á neðsta blaði flipa lokað.</translation>
 <translation id="5490235265819901748">Flipahópur stækkaður</translation>
 <translation id="5494920125229734069">Velja allt</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Bættu við allt að <ph name="LIMIT_COUNT_ONE" /> skrá, flipa eða mynd}one{Bættu við allt að <ph name="LIMIT_COUNT_MANY" /> skrám, flipum eða myndum}other{Bættu við allt að <ph name="LIMIT_COUNT_MANY" /> skrám, flipum eða myndum}}</translation>
@@ -140,6 +142,7 @@
 <translation id="6040143037577758943">Loka</translation>
 <translation id="6051432659151380973">Flipahóparnir þínir vistast sjálfkrafa</translation>
 <translation id="6054741997831917303">Verð á þessari vöru lækkaði nýlega úr <ph name="PREVIOUS_PRICE" /> í <ph name="NEW_PRICE" /></translation>
+<translation id="606985262342505139">Neðsta blað flipa í fullri hæð</translation>
 <translation id="6109251075362363230">Allir tvíteknir flipar verða nú einnig settir í geymslu, fyrir utan það afrit sem síðast var notað.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Loka <ph name="TABS_COUNT_ONE" /> völdu atriði}one{Loka <ph name="TABS_COUNT_MANY" /> völdu atriði}other{Loka <ph name="TABS_COUNT_MANY" /> völdum atriðum}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Færa hóp í nýjan glugga}one{Færa hóp í annan glugga}other{Færa hóp í annan glugga}}</translation>

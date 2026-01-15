@@ -505,6 +505,7 @@
 <translation id="6326175484149238433">Fjern fra Chrome</translation>
 <translation id="6327105987658262776">Ingen oppdatering er tilgjengelig.</translation>
 <translation id="6334815226785304306">Gjør Google Chrome til standardnettleser, og fest den til oppgavelinjen</translation>
+<translation id="63540178978900677">Chrome er ikke lenger standardnettleseren din. Vil du bruke Chrome som standardnettleseren?</translation>
 <translation id="6360449101159168105">Mens denne fanen var inaktiv, ble minnet frigjort for å holde Chrome rask. Du kan velge å alltid ekskludere dette nettstedet fra å gjøres inaktivt.</translation>
 <translation id="6388799252195623474">hjelp meg med dette</translation>
 <translation id="6412673304250309937">Kontrollerer nettadresser opp mot en liste i Chrome over utrygge nettsteder. Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chrome også sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing.</translation>
@@ -706,6 +707,9 @@
 <translation id="8418845734693287262">ChromeOS kunne ikke synkronisere dataene dine, ettersom påloggingsopplysningene for kontoen din er utdaterte.</translation>
 <translation id="842386925677997438">Sikkerhetsverktøyene i Chrome</translation>
 <translation id="8425765582779547329">For å holde deg tryggere på nettet med innstillingene som forelderen din har valgt, logg på Chrome</translation>
+<translation id="842852285618875960">Du har nådd grensen på <ph name="BOOKMARK_LIMIT" /> bokmerker i Google Chrome, så noen av bokmerkene dine er ikke lagret i Google-kontoen din ennå.
+
+Du kan ikke lagre nye bokmerker i kontoen din før du sletter noen. Hvis du logger av nå, slettes bokmerker som ikke er lagret.</translation>
 <translation id="8433638294851456451">For å sende numre herfra til Android-telefonen din, logg på Chrome på begge enhetene.</translation>
 <translation id="8496177819998570653">Google P&amp;assordlagring</translation>
 <translation id="8498858610309223613">En spesiell sikkerhetsoppdatering for Google Chrome ble nettopp installert. Start på nytt nå, så gjenoppretter vi fanene dine.</translation>

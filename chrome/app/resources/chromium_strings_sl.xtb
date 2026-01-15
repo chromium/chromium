@@ -534,6 +534,9 @@ Nekatere funkcije morda ne bodo na voljo. Določite drug imenik profila ali upor
 <translation id="6901631050894301805">Nastavite Chromium kot privzeti brskalnik in ga pripnite v opravilno vrstico</translation>
 <translation id="6909503629704372277">&amp;Upravljanje profilov v Chromiumu</translation>
 <translation id="6934579572334859869">Vprašajte slikovno iskanje o tej sliki</translation>
+<translation id="6948031725951063910">Dosegli ste omejitev Chromiuma za toliko zaznamkov: <ph name="BOOKMARK_LIMIT" />, zato nekateri zaznamki še niso bili shranjeni v računu Google.
+
+Novih zaznamkov ni mogoče shraniti v račun, dokler nekaterih ne izbrišete. Če se odjavite zdaj, bodo neshranjeni zaznamki izbrisani.</translation>
 <translation id="6964305034639999644">Odpri povezavo v Chromiumovem oknu brez bele&amp;ženja zgodovine</translation>
 <translation id="6965382102122355670">V redu</translation>
 <translation id="6978145336957848883">Šibka gesla je preprosto ugotoviti. Chromiumu omogočite, da <ph name="BEGIN_LINK" />ustvari zapletena gesla za vas in jih shrani<ph name="END_LINK" />.</translation>
@@ -702,6 +705,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="8880203542552872219">Če ste ga, uredite shranjeno geslo v Chromiumu, da se bo ujemalo z novim geslom.</translation>
 <translation id="8891709362986793894">Vaša organizacija zahteva, da se prijavite v Chromium</translation>
 <translation id="8907580949721785412">Chromium poskuša prikazati gesla. Če želite omogočiti to, vnesite geslo za Windows.</translation>
+<translation id="8932992523185907506">Chromium ni več privzeti brskalnik. Želite Chromium nastaviti kot privzeti brskalnik?</translation>
 <translation id="8941642502866065432">Chromiuma ni mogoče posodobiti</translation>
 <translation id="897581876605952338">Logotip za Chromium Enterprise</translation>
 <translation id="8981150672034878610">Chromiuma ni mogoče zagnati, ker je prišlo do težave pri odpiranju profila. Poskusite znova zagnati Chromium.</translation>

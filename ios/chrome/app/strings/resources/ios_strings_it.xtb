@@ -104,6 +104,7 @@
 <translation id="1366297852155605523">Condivisi con me</translation>
 <translation id="1369286077209859800">Mostra tutte le schede nel gruppo di schede</translation>
 <translation id="136942498637440594">Puoi cercare immagini e ciò che vedi.</translation>
+<translation id="1373120905936431262">Carica un'immagine da remixare con Nano Banana</translation>
 <translation id="1377508275003315939">Password</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} di {count} indirizzo}other{{position} di {count} indirizzi}}</translation>
 <translation id="1383876407941801731">Cerca</translation>
@@ -235,6 +236,7 @@
 <translation id="1836891464494477513">{count,plural, =1{Preferito salvato nel tuo Account Google {email}}other{Preferiti salvati nel tuo Account Google {email}}}</translation>
 <translation id="1838089197478136166">Aprire in Wallet?</translation>
 <translation id="183878838231635348">In questa scheda vengono mostrati eventuali problemi di privacy o di sicurezza che il controllo di sicurezza rileva automaticamente per te.</translation>
+<translation id="1840320537320704887">Preferenze della pagina Nuova scheda rimosse</translation>
 <translation id="1845230888742614096">Mantieni gruppo</translation>
 <translation id="1853692000353488670">Nuova scheda in incognito</translation>
 <translation id="1854463785401910334">Esegui una ricerca nelle schede aperte</translation>
@@ -701,6 +703,7 @@
 <translation id="368329460027487650">Account disconnesso. Consente di aprire le opzioni per accedere.</translation>
 <translation id="3695446226812920698">Scopri come</translation>
 <translation id="3700134753671613714">Accedi per visualizzare i tuoi Preferiti su tutti i tuoi dispositivi.</translation>
+<translation id="3701167022068948696">Correggi</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} password è salvata solo su questo dispositivo. Per usarla su altri dispositivi, salvala nel tuo Account Google {EMAIL}.}other{{COUNT} password sono salvate solo su questo dispositivo. Per usarle su altri dispositivi, salvale nel tuo Account Google {EMAIL}.}}</translation>
 <translation id="3709621342136814217">Scegli qui il carattere, le dimensioni del testo e altro ancora</translation>
 <translation id="371230970611282515">Prevede e ti avvisa quando stanno per verificarsi eventi pericolosi.</translation>
@@ -876,6 +879,7 @@
 <translation id="4338650699862464074">Invia a Google gli URL delle pagine che visiti.</translation>
 <translation id="4342946437867096381">Hai già salvato una password per questo sito nel tuo Account Google. Google può scegliere automaticamente la password più recente.</translation>
 <translation id="4365121137632832185">Gruppo di schede. Espanso.</translation>
+<translation id="4365685757967464989">Consenti a Gemini di usare la fotocamera per scattare foto</translation>
 <translation id="4367971618859387374">Nome visualizzato</translation>
 <translation id="4375772272517383391">Chiudi tutte le schede</translation>
 <translation id="4378154925671717803">Telefono</translation>
@@ -959,6 +963,7 @@
 
        Scegli cosa fare con i dati di navigazione esistenti su questo dispositivo.</translation>
 <translation id="4675298276894277358">Questo sito non verrà più mostrato</translation>
+<translation id="4676647168422678078">Applicare le preferenze della pagina Nuova scheda?</translation>
 <translation id="4682496302933121474">Vuoi tradurre la pagina?</translation>
 <translation id="4682686630151240767">1. Apri le Impostazioni dell'iPhone</translation>
 <translation id="4691892551491778176">Quando usi questa funzionalità, i contenuti e gli URL della pagina vengono inviati a Google, ma non saranno usati per migliorare i modelli di AI generativa. Puoi disattivare questa opzione nelle impostazioni in qualsiasi momento.</translation>
@@ -1007,6 +1012,7 @@
 <translation id="4840495572919996524">I preferiti, la cronologia, le password e altre impostazioni non verranno più sincronizzati con il tuo Account Google.</translation>
 <translation id="484280513275854557">Il tuo account è stato disconnesso; i dati di navigazione sono stati eliminati</translation>
 <translation id="4850886885716139402">Visualizza</translation>
+<translation id="4854068532375923088">Consenti a "Gemini" di usare la fotocamera</translation>
 <translation id="4860895144060829044">Chiama</translation>
 <translation id="4861953997778766866">Tutti possono apportare modifiche ai tuoi gruppi di schede condivisi</translation>
 <translation id="4865063548323785458">Salva e compila automaticamente le password per accedere facilmente a siti e app</translation>
@@ -1211,6 +1217,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5579012242779565775">Nascondi elenco di lettura</translation>
 <translation id="5581786858144165447">Chiedi a AI Mode</translation>
 <translation id="5585019845078534178">Schede</translation>
+<translation id="5591526871732898147">Immagine allegata {index}</translation>
 <translation id="5595485650161345191">Modifica indirizzo</translation>
 <translation id="559567008082979829">Imposta l'eliminazione dei download dopo un mese.</translation>
 <translation id="5596627076506792578">Altre opzioni</translation>
@@ -1912,6 +1919,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8059312861912872211">{count,plural, =1{{count} preferito}other{{count} preferiti}}</translation>
 <translation id="8059533439631660104">Viene compressa la sezione.</translation>
 <translation id="8061584726507121204">Cronologia</translation>
+<translation id="8064946459644399612">Preferenze della pagina Nuova scheda applicate</translation>
 <translation id="8069168488983557089">Ottieni informazioni e approfondimenti che ti aiutano a comprendere qualsiasi argomento</translation>
 <translation id="8069394452933076548">Scegli quando spostare nella sezione Schede non attive le schede che non sono state utilizzate di recente.</translation>
 <translation id="8073670137947914548">Download terminato</translation>
@@ -1942,6 +1950,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8161614462829037225">Sblocca con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Lunghezza</translation>
 <translation id="8182037667962849780">{count,plural, =1{Per {website_1}}=2{Per {website_1}, {website_2}}=3{Per {website_1}, {website_2} e 1 altro}other{Per {website_1}, {website_2} e altri {more_count}}}</translation>
+<translation id="8184895727539791845">Per consentire a Gemini di usare la fotocamera, attiva l'autorizzazione Fotocamera nelle impostazioni di iOS</translation>
 <translation id="8185076488803799132">Importa</translation>
 <translation id="8189615296021678665">Tocca "Salva" per trovare facilmente questa password al prossimo accesso.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />I tuoi dispositivi<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -2010,6 +2019,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8428045167754449968">Città/località</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
 <translation id="8428634594422941299">Ok</translation>
+<translation id="8429455911440977338">Attiva videocamera</translation>
 <translation id="8434837876193928924">Dettagli gruppo di schede</translation>
 <translation id="8438566539970814960">Migliora le ricerche e le attività di navigazione</translation>
 <translation id="8439758443371991593">Nascondi Aggiungi all'elenco di lettura</translation>
@@ -2251,6 +2261,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="956218893102219091">Per ottenere i risultati più precisi di Gemini, invece di una posizione stimata in base al tuo indirizzo IP, usa la tua posizione esatta. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Elimina dati navigazione</translation>
 <translation id="963102227019621224">Attività web e app</translation>
+<translation id="965259330007686240">Crea un'immagine con Gemini</translation>
 <translation id="965879457362663186">Aggiungi allegato</translation>
 <translation id="966593914872420832">Ricerca vocale</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{Partecipa al gruppo di schede con <ph name="OWNER_NAME" />}=1{Partecipa al gruppo di schede con <ph name="OWNER_NAME" /> e {COUNT} altra persona}other{Partecipa al gruppo di schede con <ph name="OWNER_NAME" /> e {COUNT} altre persone}}</translation>

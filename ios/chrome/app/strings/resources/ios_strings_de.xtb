@@ -104,6 +104,7 @@
 <translation id="1366297852155605523">Für mich freigegeben</translation>
 <translation id="1369286077209859800">Alle Tabs in Tabgruppe anzeigen</translation>
 <translation id="136942498637440594">Du kannst nach Bildern und dem, was du siehst, suchen.</translation>
+<translation id="1373120905936431262">Bild hochladen, um es mit Nano Banana zu remixen</translation>
 <translation id="1377508275003315939">Passwörter</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} von {count} Adresse}other{{position} von {count} Adressen}}</translation>
 <translation id="1383876407941801731">Suchen</translation>
@@ -235,6 +236,7 @@
 <translation id="1836891464494477513">{count,plural, =1{Das Lesezeichen wurde in deinem Google-Konto ({email}) gespeichert}other{Die Lesezeichen wurden in deinem Google-Konto ({email}) gespeichert}}</translation>
 <translation id="1838089197478136166">In Wallet öffnen?</translation>
 <translation id="183878838231635348">Auf dieser Karte werden alle Datenschutz- oder Sicherheitsprobleme angezeigt, die der Sicherheitscheck automatisch erkennt.</translation>
+<translation id="1840320537320704887">Einstellungen für die Seite „Neuer Tab“ wurden entfernt</translation>
 <translation id="1845230888742614096">Gruppe beibehalten</translation>
 <translation id="1853692000353488670">Neuer Inkognitotab</translation>
 <translation id="1854463785401910334">In geöffneten Tabs suchen</translation>
@@ -701,6 +703,7 @@
 <translation id="368329460027487650">Abgemeldet. Anmeldeoptionen werden geöffnet.</translation>
 <translation id="3695446226812920698">Weitere Informationen</translation>
 <translation id="3700134753671613714">Melde dich an, um deine Lesezeichen auf allen Ihren Geräten abzurufen.</translation>
+<translation id="3701167022068948696">Jetzt beheben</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} Passwort ist nur auf diesem Gerät gespeichert. Wenn du es auf deinen anderen Geräten verwenden möchtest, speichere es in deinem Google-Konto {EMAIL}.}other{{COUNT} Passwörter sind nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto {EMAIL}.}}</translation>
 <translation id="3709621342136814217">Hier kannst du Schriftart, Textgröße und mehr auswählen</translation>
 <translation id="371230970611282515">Erkennt schädliche Ereignisse im Voraus und warnt dich, bevor diese eintreten.</translation>
@@ -876,6 +879,7 @@
 <translation id="4338650699862464074">URLs der von dir besuchten Seiten werden an Google gesendet.</translation>
 <translation id="4342946437867096381">Du hast bereits ein Passwort für diese Website in deinem Google-Konto gespeichert. Google kann für dich das neueste Passwort auswählen.</translation>
 <translation id="4365121137632832185">Tabgruppe. Maximiert.</translation>
+<translation id="4365685757967464989">Erlaube Gemini, die Kamera zum Aufnehmen von Fotos zu verwenden</translation>
 <translation id="4367971618859387374">Anzeigename</translation>
 <translation id="4375772272517383391">Alle Tabs schließen</translation>
 <translation id="4378154925671717803">Telefon</translation>
@@ -959,6 +963,7 @@
 
        Wähle aus, was mit den Browserdaten auf diesem Gerät geschehen soll.</translation>
 <translation id="4675298276894277358">Diese Website wird nicht mehr angezeigt</translation>
+<translation id="4676647168422678078">Einstellungen für die Seite „Neuer Tab“ übernehmen?</translation>
 <translation id="4682496302933121474">Seite übersetzen?</translation>
 <translation id="4682686630151240767">1. Öffne die iPhone-Einstellungen</translation>
 <translation id="4691892551491778176">Wenn du diese Funktion nutzt, werden Seiteninhalte und URLs an Google gesendet, aber nicht zur Verbesserung generativer KI-Modelle verwendet. Das lässt sich in den Einstellungen jederzeit deaktivieren.</translation>
@@ -1007,6 +1012,7 @@
 <translation id="4840495572919996524">Deine Lesezeichen, der Verlauf, deine Passwörter und andere Einstellungen werden nicht mehr mit deinem Google-Konto synchronisiert.</translation>
 <translation id="484280513275854557">Du wurdest abgemeldet und Browserdaten wurden gelöscht</translation>
 <translation id="4850886885716139402">Anzeigen</translation>
+<translation id="4854068532375923088">Gemini die Verwendung deiner Kamera erlauben</translation>
 <translation id="4860895144060829044">Anrufen</translation>
 <translation id="4861953997778766866">Jeder kann Änderungen an deinen freigegebenen Tabgruppen vornehmen</translation>
 <translation id="4865063548323785458">Du kannst deine Passwörter speichern und automatisch ausfüllen lassen, um dich einfacher auf Websites und in Apps anzumelden</translation>
@@ -1211,6 +1217,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5579012242779565775">Leseliste ausblenden</translation>
 <translation id="5581786858144165447">Mit dem KI-Modus fragen</translation>
 <translation id="5585019845078534178">Karten</translation>
+<translation id="5591526871732898147">Angehängtes Bild {index}</translation>
 <translation id="5595485650161345191">Adresse bearbeiten</translation>
 <translation id="559567008082979829">Du kannst festlegen, dass deine Downloads nach einem Monat gelöscht werden.</translation>
 <translation id="5596627076506792578">Weitere Optionen</translation>
@@ -1912,6 +1919,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8059312861912872211">{count,plural, =1{{count} Lesezeichen}other{{count} Lesezeichen}}</translation>
 <translation id="8059533439631660104">Abschnitt minimieren</translation>
 <translation id="8061584726507121204">Verlauf</translation>
+<translation id="8064946459644399612">Einstellungen für die Seite „Neuer Tab“ wurden übernommen</translation>
 <translation id="8069168488983557089">Hol dir wichtige Informationen und Erkenntnisse, die dir dabei helfen, jedes Thema zu verstehen</translation>
 <translation id="8069394452933076548">Lege fest, wann Tabs, die länger nicht verwendet wurden, in den Bereich „Inaktive Tabs“ verschoben werden sollen.</translation>
 <translation id="8073670137947914548">Download abgeschlossen</translation>
@@ -1942,6 +1950,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8161614462829037225">Mit <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> entsperren</translation>
 <translation id="8173034266693057059">Länge</translation>
 <translation id="8182037667962849780">{count,plural, =1{Für {website_1}}=2{Für {website_1} und {website_2}}=3{Für {website_1}, {website_2} und 1 weitere}other{Für {website_1}, {website_2} und {more_count} weitere}}</translation>
+<translation id="8184895727539791845">Wenn Gemini deine Kamera verwenden soll, musst du die Kamera in den iOS-Einstellungen aktivieren</translation>
 <translation id="8185076488803799132">Importieren</translation>
 <translation id="8189615296021678665">Tippe auf „Speichern“, um bei der nächsten Anmeldung einfach auf dieses Passwort zuzugreifen.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Meine Geräte<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -2010,6 +2019,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8428045167754449968">Stadt/Ort</translation>
 <translation id="8428213095426709021">Einstellungen</translation>
 <translation id="8428634594422941299">Ok</translation>
+<translation id="8429455911440977338">Kamera einschalten</translation>
 <translation id="8434837876193928924">Details zur Tabgruppe</translation>
 <translation id="8438566539970814960">Suchanfragen und das Surfen verbessern</translation>
 <translation id="8439758443371991593">„Zur Leseliste hinzufügen“ ausblenden</translation>
@@ -2251,6 +2261,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="956218893102219091">Wenn du deinen genauen Standort verwendest, erhältst du die genauesten Gemini-Ergebnisse. Anderenfalls wird ein ungefährer Standort auf Basis deiner IP-Adresse verwendet. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Browserdaten löschen</translation>
 <translation id="963102227019621224">Web- &amp; App-Aktivitäten</translation>
+<translation id="965259330007686240">Bild mit Gemini erstellen</translation>
 <translation id="965879457362663186">Anhang hinzufügen</translation>
 <translation id="966593914872420832">Sprachsuche</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{Tabgruppe mit <ph name="OWNER_NAME" /> beitreten}=1{Tabgruppe mit <ph name="OWNER_NAME" /> und {COUNT} weiteren Person beitreten}other{Tabgruppe mit <ph name="OWNER_NAME" /> und {COUNT} weiteren Personen beitreten}}</translation>

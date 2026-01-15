@@ -104,6 +104,7 @@
 <translation id="1366297852155605523">Delas med mig</translation>
 <translation id="1369286077209859800">Visa alla flikar i flikgruppen</translation>
 <translation id="136942498637440594">Du kan söka efter bilder och saker du ser.</translation>
+<translation id="1373120905936431262">Ladda upp en bild att remixa med Nano Banana</translation>
 <translation id="1377508275003315939">Lösenord</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} av {count} adress}other{{position} av {count} adresser}}</translation>
 <translation id="1383876407941801731">Sök</translation>
@@ -235,6 +236,7 @@
 <translation id="1836891464494477513">{count,plural, =1{Bokmärket har sparats i ditt Google-konto, {email}}other{Bokmärkena har sparats i ditt Google-konto, {email}}}</translation>
 <translation id="1838089197478136166">Vill du öppna den i Wallet?</translation>
 <translation id="183878838231635348">På det här kortet visas eventuella integritets- eller säkerhetsproblem som automatiskt har identifierats av säkerhetskontrollen.</translation>
+<translation id="1840320537320704887">Dina inställningar för sidan Ny flik har tagits bort</translation>
 <translation id="1845230888742614096">Behåll gruppen</translation>
 <translation id="1853692000353488670">Ny inkognitoflik</translation>
 <translation id="1854463785401910334">Sök på öppna flikar</translation>
@@ -701,6 +703,7 @@
 <translation id="368329460027487650">Utloggad. Öppnar inloggningsalternativen.</translation>
 <translation id="3695446226812920698">Läs mer</translation>
 <translation id="3700134753671613714">Logga in om du vill ha dina bokmärken på alla dina enheter.</translation>
+<translation id="3701167022068948696">Åtgärda nu</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} lösenord sparas endast på den här enheten. Om du vill använda det på dina andra enheter sparar du det i Google-kontot {EMAIL}.}other{{COUNT} lösenord sparas endast på den här enheten. Om du vill använda dem på dina andra enheter kan du spara dem i Google-kontot {EMAIL}.}}</translation>
 <translation id="3709621342136814217">Välj font, textstorlek med mera här</translation>
 <translation id="371230970611282515">Förutser och varnar dig om farliga händelser innan de inträffar.</translation>
@@ -876,6 +879,7 @@
 <translation id="4338650699862464074">Skickar webbadresser till sidor du besöker till Google.</translation>
 <translation id="4342946437867096381">Du har redan sparat ett lösenord för den här webbplatsen i Google-kontot. Google kan välja det senaste lösenordet åt dig.</translation>
 <translation id="4365121137632832185">Flikgrupp. Utökad.</translation>
+<translation id="4365685757967464989">Låt Gemini använda kameran för att ta foton</translation>
 <translation id="4367971618859387374">Visningsnamn</translation>
 <translation id="4375772272517383391">Stänga alla flikar</translation>
 <translation id="4378154925671717803">Mobil</translation>
@@ -959,6 +963,7 @@
 
        Välj vad du vill göra med befintlig webbinformation på den här enheten.</translation>
 <translation id="4675298276894277358">Den här webbplatsen visas inte igen</translation>
+<translation id="4676647168422678078">Vill du tillämpa dina inställningar för sidan Ny flik?</translation>
 <translation id="4682496302933121474">Vill du översätta sidan?</translation>
 <translation id="4682686630151240767">1. Öppna iPhone-inställningarna</translation>
 <translation id="4691892551491778176">När du använder den här funktionen skickas sidinnehåll och webbadresser till Google, men vi använder inte denna data för att förbättra generativa AI-modeller. Du kan inaktivera detta i inställningarna när som helst.</translation>
@@ -1007,6 +1012,7 @@
 <translation id="4840495572919996524">Bokmärken, historik, lösenord och annat synkroniseras inte längre med ditt Google-konto.</translation>
 <translation id="484280513275854557">Du har loggats ut och webbinformation har raderats</translation>
 <translation id="4850886885716139402">Visa</translation>
+<translation id="4854068532375923088">Tillåt att Gemini använder kameran</translation>
 <translation id="4860895144060829044">Ring</translation>
 <translation id="4861953997778766866">Alla kan göra ändringar i dina delade flikgrupper</translation>
 <translation id="4865063548323785458">Spara och autofyll dina lösenord för att enkelt logga in på webbplatser och i appar</translation>
@@ -1211,6 +1217,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5579012242779565775">Dölj Läslista</translation>
 <translation id="5581786858144165447">Fråga AI-läget</translation>
 <translation id="5585019845078534178">Kort</translation>
+<translation id="5591526871732898147">Bifogad bild {index}</translation>
 <translation id="5595485650161345191">Redigera adress</translation>
 <translation id="559567008082979829">Ställ in att dina nedladdningar ska raderas efter en månad.</translation>
 <translation id="5596627076506792578">Fler alternativ</translation>
@@ -1912,6 +1919,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="8059312861912872211">{count,plural, =1{{count} bokmärke}other{{count} bokmärken}}</translation>
 <translation id="8059533439631660104">Komprimera avsnittet.</translation>
 <translation id="8061584726507121204">Historik</translation>
+<translation id="8064946459644399612">Dina inställningar för sidan Ny flik har tillämpats</translation>
 <translation id="8069168488983557089">Få viktiga insikter som hjälper dig att förstå alla ämnen</translation>
 <translation id="8069394452933076548">Välj när flikar som inte har använts nyligen ska flyttas till avsnittet för inaktiva flikar.</translation>
 <translation id="8073670137947914548">Nedladdningen är klar</translation>
@@ -1942,6 +1950,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="8161614462829037225">Lås upp med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Längd</translation>
 <translation id="8182037667962849780">{count,plural, =1{För {website_1}}=2{För {website_1}, {website_2}}=3{För {website_1}, {website_2} och 1 till}other{För {website_1}, {website_2} och {more_count} till}}</translation>
+<translation id="8184895727539791845">Aktivera Kamera i iOS-inställningarna om du vill ge Gemini åtkomst till kameran</translation>
 <translation id="8185076488803799132">Importera</translation>
 <translation id="8189615296021678665">Tryck på Spara för att enkelt komma åt lösenordet nästa gång du loggar in.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Dina enheter<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -2010,6 +2019,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="8428045167754449968">Ort</translation>
 <translation id="8428213095426709021">Inställningar</translation>
 <translation id="8428634594422941299">Jag förstår</translation>
+<translation id="8429455911440977338">Slå på kameran</translation>
 <translation id="8434837876193928924">Information om flikgruppen</translation>
 <translation id="8438566539970814960">Förbättra sökningar och surfandet</translation>
 <translation id="8439758443371991593">Dölj Lägg till i läslistan</translation>
@@ -2251,6 +2261,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="956218893102219091">Använd din exakta plats för att få Gemini-resultat som är så specifika som möjligt i stället för en ungefärlig plats baserat på din IP-adress. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Radera webbinformation</translation>
 <translation id="963102227019621224">Webb- och appaktivitet</translation>
+<translation id="965259330007686240">Skapa en bild med Gemini</translation>
 <translation id="965879457362663186">Lägg till bilaga</translation>
 <translation id="966593914872420832">Röstsökning</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{Gå med i flikgruppen med <ph name="OWNER_NAME" />}=1{Gå med i flikgruppen med <ph name="OWNER_NAME" /> och {COUNT} till}other{Gå med i flikgruppen med <ph name="OWNER_NAME" /> och {COUNT} till}}</translation>

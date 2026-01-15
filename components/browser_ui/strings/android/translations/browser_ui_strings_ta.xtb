@@ -412,6 +412,7 @@
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(மேலும் 1)}other{(மேலும் #)}}</translation>
 <translation id="5403592356182871684">பெயர்கள்</translation>
 <translation id="5407203562970638234">பாதுகாப்பை மேம்படுத்துங்கள்</translation>
+<translation id="5436307623797390637">சாதனத்திலுள்ள ஆப்ஸ்</translation>
 <translation id="5438097262470833822">இதைச் செய்தால் <ph name="WEBSITE" /> தளத்திற்கான அனுமதிகள் ரீசெட் செய்யப்படும்</translation>
 <translation id="5459413148890178711">இயக்கப்பட்டிருக்கும்போது, தளங்கள் உங்கள் இருப்பிடத் தகவலைக் கேட்கலாம். முடக்கப்பட்டிருக்கும்போது, தளங்களால் உங்கள் இருப்பிடத் தகவலைப் பார்க்க முடியாது.</translation>
 <translation id="5489227211564503167">முடிந்த நேரம்: <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" />.</translation>

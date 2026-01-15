@@ -2557,6 +2557,7 @@
 <translation id="2713444072780614174">Бела</translation>
 <translation id="2714180132046334502">Тамна позадина</translation>
 <translation id="2714393097308983682">Google Play продавница</translation>
+<translation id="2714617928488200509">Модели</translation>
 <translation id="2715751256863167692">Овом надоградњом Chromebook се ресетује и уклањају се актуелни подаци корисника.</translation>
 <translation id="2715934493766003251">Меморијски простор не може да се очисти док је синхронизација фајлова укључена</translation>
 <translation id="2716986496990888774">Овим подешавањем управља родитељ.</translation>
@@ -4596,6 +4597,7 @@
 <translation id="4078738236287221428">Агресивна</translation>
 <translation id="4078903002989614318">Опције сортирања и листа</translation>
 <translation id="4079140982534148664">Користите побољшану проверу правописа</translation>
+<translation id="4082070466456857368">Мисаони (3 Pro)</translation>
 <translation id="4084682180776658562">Обележивач</translation>
 <translation id="4084835346725913160">Затвори <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">JavaScript је блокиран на овој страници.</translation>
@@ -7276,6 +7278,7 @@
 <translation id="5955721306465922729">Веб-сајт жели да отвори ову апликацију.</translation>
 <translation id="5955809630138889698">Овај уређај можда испуњава услове само за онлајн режим демонстрације. Више детаља потражите од представника подршке.</translation>
 <translation id="59561895884837262">Обавестићемо вас када почне снимање.</translation>
+<translation id="5957613098218939406">Још опција</translation>
 <translation id="5957987129450536192">Додирните икону Изаберите за говор поред слике профила, па изаберите оно што желите да чујете.</translation>
 <translation id="5958836583172610505">Синхронизација је укључена</translation>
 <translation id="5959471481388474538">Мрежа није доступна</translation>
@@ -7841,6 +7844,7 @@
 <translation id="6350821834561350243">Јасно опишите проблем и кораке за његово репродуковање (ако је могуће)</translation>
 <translation id="6351178441572658285">Језици апликација</translation>
 <translation id="6354918092619878358">Елиптична крива SECG secp256r1 (такође позната као ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355632359041940003">Преузми задатак</translation>
 <translation id="635609604405270300">Не искључујте уређај</translation>
 <translation id="6356537493253478650">Спокојно</translation>
 <translation id="63566973648609420">Само неко ко има приступну фразу може да чита шифроване податке. Google не шаље нити чува приступну фразу. Ако заборавите приступну фразу или желите да промените ово подешавање, мораћете да <ph name="BEGIN_LINK" />ресетујете синхронизацију<ph name="END_LINK" />.</translation>
@@ -8812,6 +8816,7 @@
 <translation id="7017219178341817193">Додајте нову страницу</translation>
 <translation id="7017354871202642555">Није могуће подесити режим након подешавања прозора.</translation>
 <translation id="7019805045859631636">Брзо</translation>
+<translation id="7020810150082302220">Подразумевани прегледач је промењен</translation>
 <translation id="7021524108486027008">Покрећите алатке, уређиваче и IDE-ове у окружењу којим управља ваше предузеће на уређају <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7022222879220069865">Веза са свим тачпедима је прекинута</translation>
 <translation id="7022562585984256452">Почетна страница је подешена.</translation>
@@ -10193,6 +10198,7 @@
 <translation id="7969144945436590933">Сазнајте више</translation>
 <translation id="7970673414865679092">Детаљи о етернету</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 са RSA шифровањем</translation>
+<translation id="7972837668077967426">Canvas</translation>
 <translation id="7973149423217802477">Опција Не свиђа ми се шаље повратне информације да вам се ово не свиђа.</translation>
 <translation id="7973776233567882054">Шта од наведеног најбоље описује вашу мрежу?</translation>
 <translation id="797394244396603170">Изаберите уређај са којим желите да делите фајлове</translation>
@@ -10755,6 +10761,7 @@
 <translation id="8339288417038613756">Величина приказа и текста</translation>
 <translation id="833986336429795709">Изаберите апликацију да бисте отворили овај линк</translation>
 <translation id="8340547030807793004">Још радњи за <ph name="DEVICE" /></translation>
+<translation id="8341693734243413517">Chrome програм за ажурирање</translation>
 <translation id="8341804784147620576">Прикажи пречице претраге</translation>
 <translation id="8342221978608739536">Нисам покушао/ла</translation>
 <translation id="8342387517402567689">Инсталирање веб-апликација није подржано у режиму без архивирања</translation>
@@ -11058,6 +11065,7 @@
 <translation id="8551588720239073785">Подешавања датума и времена</translation>
 <translation id="8551647092888540776"><ph name="FILE_NAMES" /> не може да се отвори када сте офлајн</translation>
 <translation id="8552102814346875916">Сачувајте на листи Увек задржи ове сајтове активним</translation>
+<translation id="8552947739661397736">Преузми задатак, Gemini тренутно има контролу</translation>
 <translation id="8553342806078037065">Управљање другим људима</translation>
 <translation id="8554899698005018844">Без језика</translation>
 <translation id="8555444629041783356">Аутоматски распоред заласка сунца</translation>

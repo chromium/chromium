@@ -104,6 +104,7 @@
 <translation id="1366297852155605523">共有アイテム</translation>
 <translation id="1369286077209859800">タブグループにすべてのタブを表示</translation>
 <translation id="136942498637440594">画像や見たものを検索できます。</translation>
+<translation id="1373120905936431262">画像をアップロードして Nano Banana でリミックスできます</translation>
 <translation id="1377508275003315939">パスワード</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position}/{count} 件の住所}other{{position}/{count} 件の住所}}</translation>
 <translation id="1383876407941801731">検索</translation>
@@ -235,6 +236,7 @@
 <translation id="1836891464494477513">{count,plural, =1{Google アカウント（{email}）にブックマークを保存しました}other{Google アカウント（{email}）にブックマークを保存しました}}</translation>
 <translation id="1838089197478136166">ウォレットで開きますか？</translation>
 <translation id="183878838231635348">このカードには、安全チェックで自動検出されたプライバシーやセキュリティの問題が表示されます。</translation>
+<translation id="1840320537320704887">新しいタブページの設定を削除しました</translation>
 <translation id="1845230888742614096">グループを保持</translation>
 <translation id="1853692000353488670">新しいシークレット タブ</translation>
 <translation id="1854463785401910334">開いているタブを検索</translation>
@@ -701,6 +703,7 @@
 <translation id="368329460027487650">ログアウトしています。ログインのオプションを開きます。</translation>
 <translation id="3695446226812920698">詳細</translation>
 <translation id="3700134753671613714">ログインすると、お使いのどのデバイスでも同じブックマークを利用できるようになります。</translation>
+<translation id="3701167022068948696">今すぐ修正</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} 件のパスワードがこのデバイスのみに保存されます。他のデバイスで使用するには、Google アカウント（{EMAIL}）に保存してください。}other{{COUNT} 件のパスワードがこのデバイスのみに保存されます。他のデバイスで使用するには、Google アカウント（{EMAIL}）に保存してください。}}</translation>
 <translation id="3709621342136814217">フォントやテキストサイズなどをここで選択します</translation>
 <translation id="371230970611282515">危険なイベントの発生を予測して警告します。</translation>
@@ -876,6 +879,7 @@
 <translation id="4338650699862464074">アクセスしたページの URL を Google に送信します。</translation>
 <translation id="4342946437867096381">このサイトのパスワードは Google アカウントにすでに保存されています。Google では最新のパスワードが自動的に選択されます。</translation>
 <translation id="4365121137632832185">タブグループ。開いています。</translation>
+<translation id="4365685757967464989">写真を撮影するには、Gemini にカメラの使用を許可してください</translation>
 <translation id="4367971618859387374">表示名</translation>
 <translation id="4375772272517383391">すべてのタブを閉じる</translation>
 <translation id="4378154925671717803">電話</translation>
@@ -959,6 +963,7 @@
 
        このデバイスの既存の閲覧データの処理方法を選択してください。</translation>
 <translation id="4675298276894277358">このサイトは今後表示されません</translation>
+<translation id="4676647168422678078">新しいタブページの設定を適用しますか？</translation>
 <translation id="4682496302933121474">ページを翻訳しますか？</translation>
 <translation id="4682686630151240767">1. iPhone の [設定] を開く</translation>
 <translation id="4691892551491778176">この機能を使用すると、ページ コンテンツと URL が Google に送信されます。これらの情報が、生成 AI モデルの改善に使用されることはありません。この動作は設定でいつでもオフにできます。</translation>
@@ -1007,6 +1012,7 @@
 <translation id="4840495572919996524">ブックマーク、履歴、パスワードなどの設定は Google アカウントと同期されなくなります。</translation>
 <translation id="484280513275854557">ログアウトして閲覧データを削除しました</translation>
 <translation id="4850886885716139402">表示</translation>
+<translation id="4854068532375923088">「Gemini」にカメラの使用を許可する</translation>
 <translation id="4860895144060829044">通話</translation>
 <translation id="4861953997778766866">共有タブグループは誰でも変更できます</translation>
 <translation id="4865063548323785458">パスワードを保存し、サイトやアプリに自動入力して簡単にログインできます</translation>
@@ -1211,6 +1217,7 @@
 <translation id="5579012242779565775">リーディング リストを非表示</translation>
 <translation id="5581786858144165447">AI モードに質問</translation>
 <translation id="5585019845078534178">カード</translation>
+<translation id="5591526871732898147">添付された画像 {index}</translation>
 <translation id="5595485650161345191">住所の編集</translation>
 <translation id="559567008082979829">ダウンロードを 1 か月後に削除するよう設定します。</translation>
 <translation id="5596627076506792578">その他のオプション</translation>
@@ -1912,6 +1919,7 @@
 <translation id="8059312861912872211">{count,plural, =1{{count} 件のブックマーク}other{{count} 件のブックマーク}}</translation>
 <translation id="8059533439631660104">セクションを折りたたみます。</translation>
 <translation id="8061584726507121204">履歴</translation>
+<translation id="8064946459644399612">新しいタブページの設定を適用しました</translation>
 <translation id="8069168488983557089">トピックの理解に役立つ重要なポイントや分析情報を入手できます</translation>
 <translation id="8069394452933076548">最近使用していないタブを無効なタブセクションにいつ移動するかを選択します。</translation>
 <translation id="8073670137947914548">ダウンロードが完了しました</translation>
@@ -1942,6 +1950,7 @@
 <translation id="8161614462829037225"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> でロックを解除</translation>
 <translation id="8173034266693057059">長さ</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1}}=2{{website_1}、{website_2}}=3{{website_1}、{website_2}、他 1 個}other{{website_1}、{website_2}、他 {more_count} 個}}</translation>
+<translation id="8184895727539791845">Gemini にカメラの使用を許可するには、iOS の設定でカメラをオンにしてください</translation>
 <translation id="8185076488803799132">読み込む</translation>
 <translation id="8189615296021678665">[保存] をタップすると、次回ログイン時にこのパスワードを簡単に使用できます。</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />あなたのデバイス<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -2010,6 +2019,7 @@
 <translation id="8428045167754449968">市区町村</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8428634594422941299">OK</translation>
+<translation id="8429455911440977338">カメラをオンにする</translation>
 <translation id="8434837876193928924">タブグループの詳細</translation>
 <translation id="8438566539970814960">検索とブラウジングを改善する</translation>
 <translation id="8439758443371991593">[リーディング リストに追加] を非表示</translation>
@@ -2251,6 +2261,7 @@
 <translation id="956218893102219091">Gemini で最も正確な結果を得るには、IP アドレスに基づくおおよその現在地ではなく、正確な位置情報を使用してください。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">閲覧履歴データを削除</translation>
 <translation id="963102227019621224">ウェブとアプリのアクティビティ</translation>
+<translation id="965259330007686240">Gemini を使用して画像を作成できます</translation>
 <translation id="965879457362663186">添付ファイルを追加</translation>
 <translation id="966593914872420832">音声検索</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{<ph name="OWNER_NAME" /> さんのタブグループに参加}=1{<ph name="OWNER_NAME" /> さんと他 {COUNT} 人のタブグループに参加}other{<ph name="OWNER_NAME" /> さんと他 {COUNT} 人のタブグループに参加}}</translation>

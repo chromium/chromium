@@ -8960,6 +8960,25 @@ Se la policy <ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NAME" /
 Se la policy viene impostata su Disabled o se non viene configurata, verrà applicato il comportamento predefinito di blocco di queste richieste.</translation>
 <translation id="6915524162137327111">Visualizzazione delle etichette di gestione per 30 secondi</translation>
 <translation id="6919205861950516688">Non consentire Organizza schede.</translation>
+<translation id="6920791385071265136">Consente di stabilire se le estensioni rimosse a causa di violazioni non correlate a malware possono comunque essere installate forzatamente in ambienti a bassa affidabilità.
+
+Puoi trovare ulteriori informazioni sulle violazioni non correlate a malware e sulle rimozioni qui: https://developer.chrome.com/docs/webstore/review-process#warning
+
+Una volta che la violazione non correlata a malware sarà risolta, l'estensione rimarrà attiva e non potrà essere disattivata o rimossa.
+
+Su <ph name="MS_WIN_NAME" />, questa policy non è disponibile per le istanze aggiunte a un dominio <ph name="MS_AD_NAME" /> o a <ph name="MS_AAD_NAME" /> oppure registrate in "<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />".
+
+Su <ph name="MAC_OS_NAME" />, questa policy non è disponibile per le istanze gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in "<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />".
+
+Le estensioni con installazione forzata con violazioni non correlate a malware rimarranno attive in queste istanze.
+
+Al momento, un'estensione con installazione forzata con violazioni non correlate a malware rimane installata e attiva in Chrome.
+
+Se la policy viene impostata su Attivata, le estensioni con installazione forzata si comportano allo stesso modo (ovvero rimangono attive) indipendentemente dalle violazioni non correlate a malware.
+
+Se la policy viene impostata su Disattivata o se non viene configurata, le estensioni con installazione forzata con violazioni non correlate a malware verranno disattivate.
+
+Questa policy è stata rimossa nella versione M145. A partire da questa versione, le estensioni con installazione forzata con violazioni non correlate a malware verranno disattivate in ambienti a bassa affidabilità.</translation>
 <translation id="692096803256767290">Esegui il rollback del sistema operativo alla versione target</translation>
 <translation id="6921241119085515674">Consenti il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6921544339867564740">Consenti ai dispositivi di eseguire macchine virtuali su ChromeOS</translation>
