@@ -3333,19 +3333,13 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, DrawImage_Video_Flush) {
   NonThrowableExceptionState exception_state;
 
   Context2D()->fillRect(0, 0, 5, 5);
-  EXPECT_TRUE(Context2D()
-                  ->GetResourceProviderForTesting()
-                  ->Recorder()
-                  .HasRecordedDrawOps());
+  EXPECT_TRUE(Context2D()->Recorder()->HasRecordedDrawOps());
 
   Context2D()->drawImage(frame, 0, 0, 10, 10, 0, 0, 10, 10, exception_state);
   EXPECT_FALSE(exception_state.HadException());
   // The drawImage Operation is supposed to trigger a flush, which means that
   // There should not be any Recorded ops at this point.
-  EXPECT_FALSE(Context2D()
-                   ->GetResourceProviderForTesting()
-                   ->Recorder()
-                   .HasRecordedDrawOps());
+  EXPECT_FALSE(Context2D()->Recorder()->HasRecordedDrawOps());
 }
 
 TEST_P(CanvasRenderingContext2DTest, FlushRestoresClipStack) {
