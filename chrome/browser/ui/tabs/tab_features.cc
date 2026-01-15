@@ -52,6 +52,7 @@
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
+#include "chrome/browser/ui/tabs/back_to_opener/back_to_opener_controller.h"
 #include "chrome/browser/ui/tabs/inactive_window_mouse_event_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_page_action_controller.h"
@@ -93,6 +94,7 @@
 #include "chrome/browser/wallet/chrome_walletable_pass_client.h"
 #endif
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -490,6 +492,13 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
                 tab, tab, apps::AppServiceProxyFactory::GetForProfile(profile));
   }
 #endif
+
+  // The controller is created for all tabs but only affects back button
+  // behavior for destination tabs with opener relationships.
+  if (base::FeatureList::IsEnabled(tabs::kBackToOpener)) {
+    back_to_opener_controller_ =
+        std::make_unique<back_to_opener::BackToOpenerController>(tab);
+  }
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(

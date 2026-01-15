@@ -854,6 +854,32 @@ chromium-metrics-reviews@google.com.
   <summary>Whether the back-forward navigation was served from cache.</summary>
 </histogram>
 
+<histogram name="Navigation.BackToOpener.Clicked" enum="Boolean"
+    expires_after="2026-10-31">
+  <owner>dljames@chromium.org</owner>
+  <owner>xiaqu@microsoft.com</owner>
+  <owner>edgecin@microsoft.com</owner>
+  <summary>
+    Records when the back-to-opener feature is used. This is recorded when the
+    user clicks the back button to navigate back to the opener tab.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.BackToOpener.DestinationTabCloseDuration"
+    units="ms" expires_after="2026-10-31">
+  <owner>dljames@chromium.org</owner>
+  <owner>xiaqu@microsoft.com</owner>
+  <owner>edgecin@microsoft.com</owner>
+  <summary>
+    The time it takes to close the destination tab after the back-to-opener
+    action is triggered. This includes any unload prompts that may delay the tab
+    closure. Recorded when the WebContents is destroyed (in
+    TabCloseObserver::WebContentsDestroyed, which is triggered by
+    BackToOpenerController::GoBackToOpener). The value is measured from when
+    ClosePage() is called until the WebContents is actually destroyed.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.BrowserInitiatedSessionHistoryCount"
     enum="HistoryNavType" expires_after="2026-05-03">
   <owner>liuwilliam@chromium.org</owner>

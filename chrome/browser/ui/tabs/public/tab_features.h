@@ -41,6 +41,10 @@ class ManagePasswordsPageActionController;
 class BookmarkBarPreloadPipelineManager;
 class NewTabPagePreloadPipelineManager;
 
+namespace back_to_opener {
+class BackToOpenerController;
+}  // namespace back_to_opener
+
 namespace autofill {
 class BubbleManager;
 }  // namespace autofill
@@ -304,6 +308,10 @@ class TabFeatures {
     return ask_before_http_dialog_controller_.get();
   }
 
+  back_to_opener::BackToOpenerController* back_to_opener_controller() {
+    return back_to_opener_controller_.get();
+  }
+
   BookmarkBarPreloadPipelineManager* bookmarkbar_preload_pipeline_manager() {
     return bookmarkbar_preload_pipeline_manager_.get();
   }
@@ -504,6 +512,9 @@ class TabFeatures {
 
   std::unique_ptr<NewTabPagePreloadPipelineManager>
       new_tab_page_preload_pipeline_manager_;
+
+  std::unique_ptr<back_to_opener::BackToOpenerController>
+      back_to_opener_controller_;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
