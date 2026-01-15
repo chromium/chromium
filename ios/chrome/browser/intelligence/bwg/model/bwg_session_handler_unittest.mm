@@ -160,7 +160,6 @@ TEST_F(BWGSessionHandlerTest, TestUnrealizedWebStates) {
   auto unrealized_web_state = std::make_unique<web::FakeWebState>();
   unrealized_web_state->SetBrowserState(profile_.get());
   unrealized_web_state->SetIsRealized(false);
-  BwgTabHelper::CreateForWebState(unrealized_web_state.get());
   web_state_list_->InsertWebState(std::move(unrealized_web_state),
                                   WebStateList::InsertionParams::Automatic());
 

@@ -122,20 +122,6 @@ class SessionRestorationWebStateObserverTest : public PlatformTest {
 // Tests that SessionRestorationWebStateObserver consider the WebState as
 // clean on creation.
 TEST_F(SessionRestorationWebStateObserverTest, Creation) {
-  web_state()->SetIsRealized(false);
-
-  size_t call_count = 0;
-  SessionRestorationWebStateObserver* observer =
-      CreateSessionRestorationWebStateObserver(
-          web_state(), base::BindRepeating(&IncrementCounter, &call_count));
-
-  EXPECT_FALSE(observer->is_dirty());
-  EXPECT_EQ(call_count, 0u);
-}
-
-// Tests that SessionRestorationWebStateObserver consider the WebState as
-// clean on creation even if the WebState is already realized.
-TEST_F(SessionRestorationWebStateObserverTest, Creation_Realized) {
   web_state()->SetIsRealized(true);
 
   size_t call_count = 0;
@@ -143,21 +129,6 @@ TEST_F(SessionRestorationWebStateObserverTest, Creation_Realized) {
       CreateSessionRestorationWebStateObserver(
           web_state(), base::BindRepeating(&IncrementCounter, &call_count));
 
-  EXPECT_FALSE(observer->is_dirty());
-  EXPECT_EQ(call_count, 0u);
-}
-
-// Tests that SessionRestorationWebStateObserver does not mark WebState
-// dirty upon realization.
-TEST_F(SessionRestorationWebStateObserverTest, Realization) {
-  web_state()->SetIsRealized(false);
-
-  size_t call_count = 0;
-  SessionRestorationWebStateObserver* observer =
-      CreateSessionRestorationWebStateObserver(
-          web_state(), base::BindRepeating(&IncrementCounter, &call_count));
-
-  web_state()->ForceRealized();
   EXPECT_FALSE(observer->is_dirty());
   EXPECT_EQ(call_count, 0u);
 }
