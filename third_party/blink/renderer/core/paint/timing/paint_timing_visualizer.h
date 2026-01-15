@@ -27,8 +27,6 @@ class KURL;
 // rects, can be visualized by third-party visualization tools.
 class CORE_EXPORT PaintTimingVisualizer
     : public trace_event::TraceSessionObserver {
-  DISALLOW_NEW();
-
  public:
   PaintTimingVisualizer();
   ~PaintTimingVisualizer() override;
