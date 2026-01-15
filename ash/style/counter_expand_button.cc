@@ -142,7 +142,6 @@ void CounterExpandButton::UpdateTooltip() {
   std::u16string tooltip_text = expanded_ ? GetExpandedStateTooltipText()
                                           : GetCollapsedStateTooltipText();
   if (g_tooltip_enabled_for_testing.value_or(true)) {
-    LOG(ERROR) << "!!!TOOLTIP!!!";
     SetTooltipText(tooltip_text);
   }
   GetViewAccessibility().SetName(
