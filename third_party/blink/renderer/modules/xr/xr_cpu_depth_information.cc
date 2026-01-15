@@ -78,6 +78,12 @@ DOMArrayBuffer* XRCPUDepthInformation::data(
     return nullptr;
   }
 
+  if (data_->IsDetached()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kArrayBufferDetached);
+    return nullptr;
+  }
+
   return data_.Get();
 }
 

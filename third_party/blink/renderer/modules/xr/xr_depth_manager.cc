@@ -39,28 +39,27 @@ void XRDepthManager::ProcessDepthInformation(
     device::mojom::blink::XRDepthDataPtr depth_data) {
   DVLOG(3) << __func__ << ": depth_data valid? " << !!depth_data;
 
-  // Throw away old data, we won't need it anymore because we'll either replace
-  // it with new data, or no new data is available (& we don't want to keep the
-  // old data in that case as well).
-  depth_data_ = nullptr;
-  data_ = nullptr;
-
   if (depth_data) {
     DVLOG(3) << __func__ << ": depth_data->which()="
              << static_cast<uint32_t>(depth_data->which());
-
     switch (depth_data->which()) {
       case device::mojom::blink::XRDepthData::Tag::kDataStillValid:
         // Stale depth buffer is still the most recent information we have.
         // Current API shape is not well-suited to return data pertaining to
         // older frames, so we just discard the data we previously got and will
         // not set the new one.
+        data_dirty_ = !!depth_data_;
+        depth_data_ = nullptr;
         break;
       case device::mojom::blink::XRDepthData::Tag::kUpdatedDepthData:
         // We got new depth buffer - store the current depth data as a member.
         depth_data_ = std::move(depth_data->get_updated_depth_data());
+        data_dirty_ = true;
         break;
     }
+  } else {
+    data_dirty_ = !!depth_data_;
+    depth_data_ = nullptr;
   }
 }
 
@@ -112,14 +111,22 @@ XRWebGLDepthInformation* XRDepthManager::GetWebGLDepthInformation(
 }
 
 void XRDepthManager::EnsureData() {
-  DCHECK(depth_data_);
+  CHECK(depth_data_);
 
-  if (data_) {
+  if (!data_dirty_) {
     return;
   }
 
-  // Copy the pixel data into ArrayBuffer:
-  data_ = DOMArrayBuffer::Create(depth_data_->pixel_data);
+  // Recreate `data_` if needed, otherwise just copy the bits over to prevent
+  // a reallocation.
+  if (!data_ || data_->IsDetached() ||
+      data_->ByteSpan().size() != depth_data_->pixel_data.size()) {
+    data_ = DOMArrayBuffer::Create(depth_data_->pixel_data);
+  } else {
+    data_->ByteSpan().copy_from(depth_data_->pixel_data);
+  }
+
+  data_dirty_ = false;
 }
 
 void XRDepthManager::Trace(Visitor* visitor) const {

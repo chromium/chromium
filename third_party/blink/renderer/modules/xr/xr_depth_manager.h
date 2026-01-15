@@ -50,6 +50,7 @@ class XRDepthManager : public GarbageCollected<XRDepthManager> {
   // Cached version of the depth buffer data. If not null, contains the same
   // information as |depth_data_.pixel_data| buffer.
   Member<DOMArrayBuffer> data_;
+  bool data_dirty_ = true;
 
   void EnsureData();
 };
