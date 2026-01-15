@@ -429,6 +429,38 @@ TEST_F(ContextualTasksUiServiceTest, SearchResultsNavigation_ViewedInTab) {
   run_loop.Run();
 }
 
+// If the search results patch is navigated to by a link in the embedded page
+// but doesn't have a query (e.g. search home), make sure it isn't treated as
+// a thread link click.
+TEST_F(ContextualTasksUiServiceTest,
+       SearchResultsNavigation_ViewedInTab_NoQuery) {
+  GURL navigated_url(kSrpHomepage);
+  GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(host_web_content_url);
+  tabs::MockTabInterface tab;
+  ON_CALL(tab, GetContents).WillByDefault(Return(web_contents.get()));
+
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_,
+              OnSearchResultsNavigationInTab(navigated_url, _))
+      .Times(1);
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+  EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
+      CreateOpenUrlParams(navigated_url, true), web_contents.get(), &tab,
+      /*is_from_embedded_page=*/true,
+      /*is_to_new_tab=*/false));
+  // TODO(crbug.com/470448689): RunUntilIdle is needed to ensure the EXPECT_CALL
+  // above that is sent to a posted task never gets called. Using RunUntilIdle
+  // is bad practice and these tests should be updated to avoid the need for
+  // RunUntilIdle.
+  task_environment()->RunUntilIdle();
+}
+
 // If the search results page is navigated to while viewing the UI in the side
 // panel (e.g. no tab tied to the WebContents), ensure the correct event is
 // fired.

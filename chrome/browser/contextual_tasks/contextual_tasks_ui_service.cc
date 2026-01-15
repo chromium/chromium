@@ -442,38 +442,41 @@ bool ContextualTasksUiService::HandleNavigationImpl(
     // if being viewed in the side panel, but only if it is intercepted without
     // the side panel-specific params. If the params have already been added, do
     // nothing, otherwise this logic causes an infinite "intercept" loop.
-    if (IsValidSearchResultsPage(url_params.url) || is_nav_to_ai) {
-      // The search results page needs to be handled differently depending on
-      // whether viewed in a tab or side panel.
-      if (tab && !is_nav_to_ai) {
-        // The SRP should never be embedded in the WebUI when viewed in a tab.
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                &ContextualTasksUiService::OnSearchResultsNavigationInTab,
-                weak_ptr_factory_.GetWeakPtr(), url_params.url,
-                tab->GetWeakPtr()));
-        return true;
-      } else if (!lens::HasCommonSearchQueryParameters(url_params.url)) {
-        // If a navigation to search results happened without the common
-        // params and in the side panel, it needs special handling.
-        ContextualTasksUI* webui_controller = nullptr;
-        if (source_contents->GetWebUI()) {
-          webui_controller = source_contents->GetWebUI()
-                                 ->GetController()
-                                 ->GetAs<ContextualTasksUI>();
+    if (IsSearchResultsUrl(url_params.url) || is_nav_to_ai) {
+      if (tab) {
+        if (!is_nav_to_ai) {
+          // The SRP should never be embedded in the WebUI when viewed in a tab.
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE,
+              base::BindOnce(
+                  &ContextualTasksUiService::OnSearchResultsNavigationInTab,
+                  weak_ptr_factory_.GetWeakPtr(), url_params.url,
+                  tab->GetWeakPtr()));
+          return true;
+        } else {
+          // Allow any navigations to an AI page.
+          return false;
+        }
+      } else if (IsValidSearchResultsPage(url_params.url) || is_nav_to_ai) {
+        if (!lens::HasCommonSearchQueryParameters(url_params.url)) {
+          ContextualTasksUI* webui_controller = nullptr;
+          if (source_contents->GetWebUI()) {
+            webui_controller = source_contents->GetWebUI()
+                                   ->GetController()
+                                   ->GetAs<ContextualTasksUI>();
+          }
+
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE,
+              base::BindOnce(&ContextualTasksUiService::
+                                 OnSearchResultsNavigationInSidePanel,
+                             weak_ptr_factory_.GetWeakPtr(),
+                             std::move(url_params), webui_controller));
+          return true;
         }
 
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                &ContextualTasksUiService::OnSearchResultsNavigationInSidePanel,
-                weak_ptr_factory_.GetWeakPtr(), std::move(url_params),
-                webui_controller));
-        return true;
-      } else {
-        // If already in the side panel and the custom params are present,
-        // allow the navigation.
+        // If the params are present and the page is "valid" (e.g. not
+        // shopping and has a query), allow the navigation.
         return false;
       }
     }
@@ -787,7 +790,7 @@ bool ContextualTasksUiService::IsContextualTasksUrl(const GURL& url) {
          url.host() == chrome::kChromeUIContextualTasksHost;
 }
 
-bool ContextualTasksUiService::IsValidSearchResultsPage(const GURL& url) {
+bool ContextualTasksUiService::IsSearchResultsUrl(const GURL& url) {
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
     return false;
   }
@@ -797,6 +800,14 @@ bool ContextualTasksUiService::IsValidSearchResultsPage(const GURL& url) {
   }
 
   if (!base::StartsWith(url.path(), "/search")) {
+    return false;
+  }
+
+  return true;
+}
+
+bool ContextualTasksUiService::IsValidSearchResultsPage(const GURL& url) {
+  if (!IsSearchResultsUrl(url)) {
     return false;
   }
 
