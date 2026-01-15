@@ -103,11 +103,13 @@ if (enable_swift_cxx_interop) {
     ]
 
     _apinotes_deps = []
+    _inputs = []
     foreach(module, invoker.modules) {
       assert(defined(module.name),
              "Each module in a swift_modulemap must have a 'name'")
       assert(defined(module.sources),
              "Each module in a swift_modulemap must have 'sources'")
+      _inputs += module.sources
       _modulemap_contents += [ "module ${module.name} {" ]
       foreach(header, module.sources) {
         _header_path_relative_to_modulemap = rebase_path(header, target_gen_dir)
@@ -121,6 +123,7 @@ if (enable_swift_cxx_interop) {
         "",
       ]
       if (defined(module.apinotes)) {
+        _inputs += module.apinotes
         _apinotes_target = "${target_name}_${module.name}_apinotes"
         _apinotes_deps += [ ":${_apinotes_target}" ]
         copy(_apinotes_target) {
@@ -133,6 +136,16 @@ if (enable_swift_cxx_interop) {
     config("${target_name}_config") {
       swiftflags = [ "-Xcc=-fmodule-map-file=" +
                      rebase_path(_modulemap_path, root_build_dir) ]
+
+      # All the header files referenced in the generated modulemap need to be
+      # explicitly propagated as "inputs" to swift targets that depend on the
+      # modulemap so that ninja will know to rebuild the dependent swift modules
+      # when an imported header is modified.
+      # We also need to do this for apinotes because the dirty propagation from
+      # `_apinotes_deps` could get pruned in incremental builds if the generated
+      # modulemap file (the output of the swift_modulemap) remains identical but
+      # an apinotes file has changed.
+      inputs = _inputs
     }
 
     generated_file(target_name) {
