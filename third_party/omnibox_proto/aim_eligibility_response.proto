@@ -10,8 +10,10 @@ option java_outer_classname = 'AimEligibilityResponseProto';
 
 package omnibox;
 
+import "searchbox_config.proto";
+
 // AIM Eligibility Response.
-// Next ID: 7
+// Next ID: 8
 message AimEligibilityResponse {
   optional bool is_eligible = 1;
   optional bool is_pdf_upload_eligible = 2;
@@ -20,4 +22,5 @@ message AimEligibilityResponse {
   optional bool is_image_generation_eligible = 6;
   // The session index of the user.
   optional int32 session_index = 5;
+  optional SearchboxConfig searchbox_config = 7;
 }
