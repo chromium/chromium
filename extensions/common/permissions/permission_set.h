@@ -163,17 +163,17 @@ class PermissionSet {
   // The list of hosts this effectively grants access to.
   URLPatternSet effective_hosts_;
 
-  enum ShouldWarnAllHostsType {
-    UNINITIALIZED = 0,
-    WARN_ALL_HOSTS,
-    DONT_WARN_ALL_HOSTS
+  enum class ShouldWarnAllHostsType {
+    kUninitialized = 0,
+    kWarnAllHosts,
+    kDontWarnAllHosts
   };
   // Cache whether this set implies access to all hosts, because it's
   // non-trivial to compute (lazily initialized).
   mutable ShouldWarnAllHostsType host_permissions_should_warn_all_hosts_ =
-      UNINITIALIZED;
+      ShouldWarnAllHostsType::kUninitialized;
   mutable ShouldWarnAllHostsType api_permissions_should_warn_all_hosts_ =
-      UNINITIALIZED;
+      ShouldWarnAllHostsType::kUninitialized;
 };
 
 }  // namespace extensions
