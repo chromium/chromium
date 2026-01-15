@@ -1831,7 +1831,9 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
                              new_pip_contents->GetTopLevelNativeWindow())
                              ->GetWidget();
   EXPECT_NE(moved_bounds, new_pip_widget->GetWindowBoundsInScreen());
-  EXPECT_EQ(initial_bounds, new_pip_widget->GetWindowBoundsInScreen());
+  WidgetBoundsChangeWaiter(new_pip_widget,
+                           WidgetBoundsChangeWaiter::Comparison::kIsEqual)
+      .Wait(initial_bounds);
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
