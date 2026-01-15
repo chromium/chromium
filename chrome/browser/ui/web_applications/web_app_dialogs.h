@@ -201,7 +201,6 @@ void ShowSubAppsInstallDialog(
     const std::vector<std::unique_ptr<WebAppInstallInfo>>& sub_apps,
     const std::string& parent_app_name,
     const webapps::AppId& parent_app_id,
-    Profile* profile,
     base::OnceCallback<void(bool)> callback);
 
 // Sets whether |ShowSimpleInstallDialogForWebApps| should accept immediately

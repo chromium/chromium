@@ -217,7 +217,6 @@ void ShowSubAppsInstallDialog(
     const std::vector<std::unique_ptr<WebAppInstallInfo>>& sub_apps,
     const std::string& parent_app_name,
     const webapps::AppId& parent_app_id,
-    Profile* profile,
     base::OnceCallback<void(bool)> callback) {
   if (SubAppsInstallDialogController::
           HandleAutomaticActionForTesting(  // IN-TEST
@@ -231,6 +230,8 @@ void ShowSubAppsInstallDialog(
 
   int num_sub_apps = sub_apps.size();
   std::u16string parent_app_name_u16 = base::UTF8ToUTF16(parent_app_name);
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
   std::unique_ptr<ui::DialogModel> dialog_model =
       ui::DialogModel::Builder(std::move(controller))

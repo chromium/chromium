@@ -65,8 +65,7 @@ class SubAppsInstallDialogControllerBrowserTest : public InProcessBrowserTest {
                                          "SubAppsInstallDialog");
     ShowSubAppsInstallDialog(
         browser()->tab_strip_model()->GetActiveWebContents(), /*sub_apps=*/{},
-        kParentAppName, parent_app_id, browser()->profile(),
-        std::move(callback));
+        kParentAppName, parent_app_id, std::move(callback));
     return waiter.WaitIfNeededAndGet();
   }
 
@@ -101,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
                                        "SubAppsInstallDialog");
   ShowSubAppsInstallDialog(browser()->tab_strip_model()->GetActiveWebContents(),
                            sub_apps, kParentAppName, parent_app_id,
-                           browser()->profile(), base::DoNothing());
+                           base::DoNothing());
   views::Widget* widget = waiter.WaitIfNeededAndGet();
   views::DialogDelegate* dialog = widget->widget_delegate()->AsDialogDelegate();
 
@@ -142,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
                                        "SubAppsInstallDialog");
   ShowSubAppsInstallDialog(browser()->tab_strip_model()->GetActiveWebContents(),
                            sub_apps, kParentAppName, parent_app_id,
-                           browser()->profile(), base::DoNothing());
+                           base::DoNothing());
   views::Widget* widget = waiter.WaitIfNeededAndGet();
 
   std::vector<raw_ptr<views::View, VectorExperimental>> sub_app_labels;
