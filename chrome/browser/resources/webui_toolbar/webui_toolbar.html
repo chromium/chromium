@@ -1,11 +1,11 @@
 <!doctype html>
 <html dir="$i18n{textdirection}" lang="$i18n{language}">
-<head>
   <meta charset="utf-8">
   <link rel="stylesheet" href="chrome://theme/colors.css?sets=ui,chrome">
+  <link rel="stylesheet" href="webui_toolbar.css">
 </head>
-<body style="margin: 0; overflow: hidden">
-  <script type="module" src="webui_toolbar.js"></script>
-  <reload-button-app id="reload"></reload-button-app>
+<body>
+  <script type="module" src="app.js"></script>
+  <toolbar-app></toolbar-app>
 </body>
 </html>

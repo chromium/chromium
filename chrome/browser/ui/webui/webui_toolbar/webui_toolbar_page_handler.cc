@@ -148,6 +148,12 @@ void WebUIToolbarPageHandler::ShowContextMenu(
   }
 }
 
+void WebUIToolbarPageHandler::OnPageInitialized() {
+  if (delegate_) {
+    delegate_->OnPageInitialized();
+  }
+}
+
 void WebUIToolbarPageHandler::SetReloadButtonState(bool is_loading,
                                                    bool is_menu_enabled) {
   if (auto* metrics_reporter = GetMetricsReporter()) {

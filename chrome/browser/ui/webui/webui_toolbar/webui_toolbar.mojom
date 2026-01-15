@@ -53,6 +53,8 @@ interface PageHandler {
   ShowContextMenu(ContextMenuType menu_type,
                   gfx.mojom.Point viewport_coordinate_css_pixels,
                   ui.mojom.MenuSourceType source);
+  // Called when the page finishes initialization.
+  OnPageInitialized();
 };
 
 // Called from C++ side of chrome://webui-toolbar.top-chrome

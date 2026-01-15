@@ -30,6 +30,7 @@ class WebUIToolbarPageHandler : public webui_toolbar::mojom::PageHandler {
         webui_toolbar::mojom::ContextMenuType menu_type,
         gfx::Point viewport_coordinate_css_pixels,
         ui::mojom::MenuSourceType source) = 0;
+    virtual void OnPageInitialized() = 0;
   };
 
   WebUIToolbarPageHandler(
@@ -54,6 +55,7 @@ class WebUIToolbarPageHandler : public webui_toolbar::mojom::PageHandler {
   void ShowContextMenu(webui_toolbar::mojom::ContextMenuType menu_type,
                        const gfx::Point& viewport_coordinate_css_pixels,
                        ui::mojom::MenuSourceType source) override;
+  void OnPageInitialized() override;
 
  private:
   // Returns the MetricsReporter associated with `web_contents_` or nullptr.

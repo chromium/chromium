@@ -64,6 +64,7 @@ class MockWebWebUIToolbarDelegate
                gfx::Point,
                ui::mojom::MenuSourceType),
               (override));
+  MOCK_METHOD(void, OnPageInitialized, (), (override));
 };
 
 }  // namespace

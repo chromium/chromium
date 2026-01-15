@@ -9,22 +9,32 @@ assert(!is_android)
 build_webui("build") {
   grd_prefix = "webui_toolbar"
 
-  static_files = [ "webui_toolbar.html" ]
+  static_files = [
+    "webui_toolbar.html",
+    "webui_toolbar.css",
+  ]
 
   ts_files = [
     "browser_proxy.ts",
     "metrics_recorder.ts",
     "reload_button.html.ts",
     "reload_button.ts",
-    "webui_toolbar.ts",
+    "app.ts",
+    "app.html.ts",
   ]
-  css_files = [ "reload_button.css" ]
+  css_files = [
+    "reload_button.css",
+    "app.css",
+  ]
 
   webui_context_type = "trusted"
   optimize = optimize_webui
   if (optimize) {
     optimize_webui_host = "webui-toolbar.top-chrome"
-    optimize_webui_in_files = [ "webui_toolbar.js" ]
+    optimize_webui_in_files = [
+      "app.js",
+      "reload_button.js",
+    ]
     optimize_webui_external_paths =
         [ "chrome://webui-toolbar.top-chrome|" +
           rebase_path(

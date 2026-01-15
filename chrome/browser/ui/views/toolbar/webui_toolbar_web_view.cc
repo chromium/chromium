@@ -99,9 +99,7 @@ void WebUIToolbarWebView::HandleContextMenu(
   }
 }
 
-void WebUIToolbarWebView::DidFinishLoad(
-    content::RenderFrameHost* render_frame_host,
-    const GURL& validated_url) {
+void WebUIToolbarWebView::OnPageInitialized() {
   InitialWebUIManager::From(browser_)->OnWebUIToolbarLoaded();
 }
 

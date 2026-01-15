@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/views/toolbar/webui_reload_control.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_page_handler.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -24,8 +23,8 @@ class WebView;
 // A view that displays the toolbar as a WebView.
 class WebUIToolbarWebView
     : public views::View,
-      public WebUIToolbarPageHandler::WebUIToolbarDelegate,
-      public content::WebContentsObserver {
+      public content::WebContentsObserver,
+      public WebUIToolbarPageHandler::WebUIToolbarDelegate {
   METADATA_HEADER(WebUIToolbarWebView, views::View)
 
  public:
@@ -41,13 +40,12 @@ class WebUIToolbarWebView
   void HandleContextMenu(webui_toolbar::mojom::ContextMenuType menu_type,
                          gfx::Point viewport_coordinate_css_pixels,
                          ui::mojom::MenuSourceType source) override;
+  void OnPageInitialized() override;
 
   // views::View:
   void AddedToWidget() override;
 
   // content::WebContentsObserver:
-  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
-                     const GURL& validated_url) override;
   void DidFirstVisuallyNonEmptyPaint() override;
 
   void SetDidFirstNonEmptyPaintCallbackForTesting(base::OnceClosure callback);
