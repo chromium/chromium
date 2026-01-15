@@ -62,13 +62,8 @@ class BaseBookmarkBubbleViewBrowserTest : public DialogBrowserTest {
 #if !BUILDFLAG(IS_CHROMEOS)
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(browser()->profile());
-
-    signin::ConsentLevel consent_level = (name == "bookmark_details_synced_off")
-                                             ? signin::ConsentLevel::kSignin
-                                             : signin::ConsentLevel::kSync;
-    constexpr char kTestUserEmail[] = "testuser@gtest.com";
-    signin::MakePrimaryAccountAvailable(identity_manager, kTestUserEmail,
-                                        consent_level);
+    signin::MakePrimaryAccountAvailable(identity_manager, "testuser@gtest.com",
+                                        signin::ConsentLevel::kSignin);
 #endif
 
     if (name == "bookmark_details_on_trackable_product") {
