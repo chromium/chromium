@@ -161,7 +161,7 @@ TEST_P(ActorTaskListBubbleTest, CreateAndShowBubbleWithClosedTabTask) {
   actor::TaskId id = actor_service_->CreateTaskForTesting();
   actor_service_->GetTask(id)->Pause(/*from_actor=*/true);
   absl::flat_hash_map<actor::TaskId, bool> task_list;
-  task_list[id] = true;
+  task_list[id] = false;
 
   views::Widget* actor_task_list_bubble =
       CreateBubbleView(std::move(task_list));
@@ -171,10 +171,15 @@ TEST_P(ActorTaskListBubbleTest, CreateAndShowBubbleWithClosedTabTask) {
   views::View* content_view =
       GetContentViewInActorTaskListBubble(std::move(actor_task_list_bubble));
 
+  // Check for correct subtitle
   EXPECT_EQ(1u, content_view->children().size());
   EXPECT_EQ(u"Tab closed",
             static_cast<RichHoverButton*>(content_view->children().front())
                 ->GetSubtitleText());
+  // Check for disabled state correctly set (requires_processing is set to
+  // false)
+  EXPECT_FALSE(static_cast<RichHoverButton*>(content_view->children().front())
+                   ->GetEnabled());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
