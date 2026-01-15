@@ -2606,6 +2606,7 @@ static_library("browser") {
 
   if (!is_android) {
     deps += [
+      "//chrome/browser/accessibility_annotator",
       "//chrome/browser/contextual_tasks:ui_impl",
       "//chrome/browser/legion",
       "//chrome/browser/startup",
