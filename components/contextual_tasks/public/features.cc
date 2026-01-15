@@ -204,7 +204,8 @@ std::string GetForcedEmbeddedPageHost() {
 
   // If there's a non-empty host, ensure that it is only ever going to a
   // google.com domain. If not, return the default empty string.
-  if (!host.empty() && !base::EndsWith(host, ".google.com")) {
+  if (!host.empty() && !(base::EndsWith(host, ".google.com") ||
+                         base::EndsWith(host, ".googlers.com"))) {
     return kContextualTasksForcedEmbeddedPageHost.default_value;
   }
 
