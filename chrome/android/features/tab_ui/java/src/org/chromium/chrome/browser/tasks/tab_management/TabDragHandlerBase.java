@@ -450,7 +450,7 @@ public abstract class TabDragHandlerBase
         mDragInProgressSupplier.set(false);
     }
 
-    private @BackPressResult int cancelDrag() {
+    protected @BackPressResult int cancelDrag() {
         if (mDragSourceView != null) {
             mDragSourceView.cancelDragAndDrop();
             return BackPressResult.SUCCESS;

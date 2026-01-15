@@ -174,7 +174,10 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
     }
 
     @Override
-    public void stopReorderMode(StripLayoutView[] stripViews, StripLayoutGroupTitle[] groupTitles) {
+    public void stopReorderMode(
+            StripLayoutView[] stripViews,
+            StripLayoutGroupTitle[] groupTitles,
+            boolean isDragCancelled) {
         List<Animator> animatorList = new ArrayList<>();
         mInteractingViewDuringStop = mInteractingView;
         Runnable onAnimationEnd = () -> mInteractingView = null;

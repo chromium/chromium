@@ -366,7 +366,10 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
     }
 
     @Override
-    public void stopReorderMode(StripLayoutView[] stripViews, StripLayoutGroupTitle[] groupTitles) {
+    public void stopReorderMode(
+            StripLayoutView[] stripViews,
+            StripLayoutGroupTitle[] groupTitles,
+            boolean isDragCancelled) {
         mAnimationHost.finishAnimationsAndPushTabUpdates();
         ArrayList<Animator> animationList = new ArrayList<>();
         Runnable onAnimationEnd =

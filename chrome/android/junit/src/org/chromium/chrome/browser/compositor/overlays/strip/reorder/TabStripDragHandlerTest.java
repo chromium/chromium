@@ -1161,7 +1161,7 @@ public class TabStripDragHandlerTest {
         verify(mSourceStripLayoutHelper, times(1))
                 .handleDragEnter(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
         // Stop reorder on drop and drag end.
-        verify(mSourceStripLayoutHelper, times(2)).stopReorderMode();
+        verify(mSourceStripLayoutHelper, times(2)).stopReorderMode(false);
         // Verify view not moved.
         verifyViewNotMovedToWindow(isGroupDrag);
         // Verify destination strip not invoked.
@@ -1191,7 +1191,7 @@ public class TabStripDragHandlerTest {
         verify(mSourceStripLayoutHelper, times(1))
                 .handleDragEnter(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
         // Stop reorder on drop and drag end.
-        verify(mSourceStripLayoutHelper, times(2)).stopReorderMode();
+        verify(mSourceStripLayoutHelper, times(2)).stopReorderMode(false);
         // Verify view not moved.
         verify(mSourceMultiInstanceManager, times(0))
                 .moveTabsToWindow(any(Activity.class), any(), anyInt());
@@ -1236,7 +1236,7 @@ public class TabStripDragHandlerTest {
         // Verify view is not moved since drop is on source toolbar.
         verifyViewNotMovedToWindow(isGroupDrag);
         // Verify tab cleared.
-        verify(mSourceStripLayoutHelper, times(1)).stopReorderMode();
+        verify(mSourceStripLayoutHelper, times(1)).stopReorderMode(false);
         // Verify destination strip not invoked.
         verifyNoInteractions(mDestStripLayoutHelper);
         // Verify histograms.
@@ -1275,7 +1275,7 @@ public class TabStripDragHandlerTest {
         verify(mSourceMultiInstanceManager, times(0))
                 .moveTabsToWindow(any(Activity.class), any(), anyInt());
         // Verify tab cleared.
-        verify(mSourceStripLayoutHelper, times(1)).stopReorderMode();
+        verify(mSourceStripLayoutHelper, times(1)).stopReorderMode(false);
         // Verify destination strip not invoked.
         verifyNoInteractions(mDestStripLayoutHelper);
         // Verify histograms.
@@ -1403,11 +1403,11 @@ public class TabStripDragHandlerTest {
         verifyViewMovedToWindow(isGroupDrag, TAB_INDEX);
 
         // Verify reorder mode cleared.
-        verify(mSourceStripLayoutHelper, times(1)).stopReorderMode();
+        verify(mSourceStripLayoutHelper, times(1)).stopReorderMode(false);
         // Verify destination strip calls.
         verify(mDestStripLayoutHelper)
                 .handleDragEnter(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
-        verify(mDestStripLayoutHelper).stopReorderMode();
+        verify(mDestStripLayoutHelper).stopReorderMode(false);
 
         assertNull(ShadowToast.getLatestToast());
         histogramExpectation.assertExpected();
@@ -1437,11 +1437,11 @@ public class TabStripDragHandlerTest {
                 .maybeMergeToGroupOnDrop(eq(tabIds), eq(TAB_INDEX), eq(false));
 
         // Verify reorder mode cleared.
-        verify(mSourceStripLayoutHelper, times(1)).stopReorderMode();
+        verify(mSourceStripLayoutHelper, times(1)).stopReorderMode(false);
         // Verify destination strip calls.
         verify(mDestStripLayoutHelper)
                 .handleDragEnter(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
-        verify(mDestStripLayoutHelper).stopReorderMode();
+        verify(mDestStripLayoutHelper).stopReorderMode(false);
 
         assertNull(ShadowToast.getLatestToast());
     }
@@ -1604,7 +1604,7 @@ public class TabStripDragHandlerTest {
         verifyViewNotMovedToWindow(isGroupDrag);
 
         // Verify tab cleared.
-        verify(mSourceStripLayoutHelper, times(1)).stopReorderMode();
+        verify(mSourceStripLayoutHelper, times(1)).stopReorderMode(false);
 
         // Verify histograms.
         histogramExpectation.assertExpected();
@@ -1652,7 +1652,7 @@ public class TabStripDragHandlerTest {
                 .moveTabsToWindow(any(Activity.class), any(), anyInt());
 
         // Verify tab cleared.
-        verify(mSourceStripLayoutHelper, times(1)).stopReorderMode();
+        verify(mSourceStripLayoutHelper, times(1)).stopReorderMode(false);
 
         // Verify histograms.
         histogramExpectation.assertExpected();
@@ -1693,7 +1693,7 @@ public class TabStripDragHandlerTest {
         verify(mSourceStripLayoutHelper, times(2))
                 .handleDragEnter(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
         // Stop reorder on drop and drag end.
-        verify(mSourceStripLayoutHelper, times(2)).stopReorderMode();
+        verify(mSourceStripLayoutHelper, times(2)).stopReorderMode(false);
 
         // Verify not moved.
         verifyViewNotMovedToWindow(isGroupDrag);
@@ -1733,7 +1733,7 @@ public class TabStripDragHandlerTest {
         verify(mSourceStripLayoutHelper, times(2))
                 .handleDragEnter(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
         // Stop reorder on drop and drag end.
-        verify(mSourceStripLayoutHelper, times(2)).stopReorderMode();
+        verify(mSourceStripLayoutHelper, times(2)).stopReorderMode(false);
 
         // Verify not moved.
         verify(mSourceMultiInstanceManager, times(0))

@@ -421,10 +421,13 @@ public class ReorderDelegate {
     }
 
     /** See {@link ReorderStrategy#stopReorderMode} */
-    public void stopReorderMode(StripLayoutView[] stripViews, StripLayoutGroupTitle[] groupTitles) {
+    public void stopReorderMode(
+            StripLayoutView[] stripViews,
+            StripLayoutGroupTitle[] groupTitles,
+            boolean isDragCancelled) {
         assert mActiveStrategy != null && getInReorderMode()
                 : "Attempted to stop reorder without an active Strategy.";
-        mActiveStrategy.stopReorderMode(stripViews, groupTitles);
+        mActiveStrategy.stopReorderMode(stripViews, groupTitles, isDragCancelled);
 
         // Reset state.
         mReorderScrollState = REORDER_SCROLL_NONE;

@@ -43,6 +43,7 @@ import java.util.function.Supplier;
 public class TabReorderStrategy extends ReorderStrategyBase {
     // Tab being reordered.
     private @Nullable StripLayoutTab mInteractingTab;
+    private int mOriginIndex = TabModel.INVALID_TAB_INDEX;
 
     // Dependencies
     private final Supplier<Boolean> mInReorderModeSupplier;
@@ -86,6 +87,8 @@ public class TabReorderStrategy extends ReorderStrategyBase {
         RecordUserAction.record("MobileToolbarStartReorderTab");
         mInteractingTab = (StripLayoutTab) interactingView;
         interactingView.setIsForegrounded(/* isForegrounded= */ true);
+
+        mOriginIndex = StripLayoutUtils.findIndexForTab(stripTabs, mInteractingTab.getTabId());
 
         // 1. Select this tab so that it is always in the foreground.
         TabModelUtils.setIndex(
@@ -199,7 +202,10 @@ public class TabReorderStrategy extends ReorderStrategyBase {
     }
 
     @Override
-    public void stopReorderMode(StripLayoutView[] stripViews, StripLayoutGroupTitle[] groupTitles) {
+    public void stopReorderMode(
+            StripLayoutView[] stripViews,
+            StripLayoutGroupTitle[] groupTitles,
+            boolean isDragCancelled) {
         List<Animator> animatorList = new ArrayList<>();
         Runnable onAnimationEnd =
                 () -> {
@@ -208,6 +214,11 @@ public class TabReorderStrategy extends ReorderStrategyBase {
                         mInteractingTab = null;
                     }
                 };
+
+        if (isDragCancelled && mInteractingTab != null) {
+            mModel.moveTab(mInteractingTab.getTabId(), mOriginIndex);
+        }
+
         handleStopReorderMode(
                 stripViews,
                 groupTitles,

@@ -130,7 +130,9 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
             @ActionType int actionType) {
         // Exit reorder mode if the dialog will show. Tab drag and drop is cancelled elsewhere.
         Runnable beforeSyncDialogRunnable =
-                () -> mReorderDelegate.stopReorderMode(stripViews, groupTitles);
+                () ->
+                        mReorderDelegate.stopReorderMode(
+                                stripViews, groupTitles, /* isDragCancelled= */ false);
         String userAction =
                 interactingTabs.size() > 1
                         ? "MobileToolbarReorderTab.TabsRemovedFromGroup"

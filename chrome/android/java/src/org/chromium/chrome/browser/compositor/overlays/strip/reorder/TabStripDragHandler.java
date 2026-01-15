@@ -96,6 +96,8 @@ public class TabStripDragHandler extends TabDragHandlerBase {
     // Tracks whether the current drag has ever left the source strip.
     private boolean mDragEverLeftStrip;
 
+    private boolean mWasCancelled;
+
     /**
      * Prepares the toolbar view to listen to the drag events and data drop after the drag is
      * initiated.
@@ -369,6 +371,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         mHandler.postDelayed(mOnDragExitRunnable, /* delayMillis= */ 50L);
 
         mLastXDp = xPx * mPxToDp;
+        mWasCancelled = false;
         return true;
     }
 
@@ -396,7 +399,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
 
     private boolean onDrop(DragEvent dropEvent) {
         StripLayoutHelper helper = mStripLayoutHelperSupplier.get();
-        helper.stopReorderMode();
+        helper.stopReorderMode(false);
         if (isDragSource()) {
             DragDropMetricUtils.recordReorderStripWithDragDrop(
                     mDragEverLeftStrip, isTabGroupDrop(), isMultiTabDrop());
@@ -554,7 +557,8 @@ public class TabStripDragHandler extends TabDragHandlerBase {
             return false;
         }
 
-        mStripLayoutHelperSupplier.get().stopReorderMode();
+        mStripLayoutHelperSupplier.get().stopReorderMode(mWasCancelled);
+
         mHandler.removeCallbacks(mOnDragExitRunnable);
         if (mShadowView != null) {
             mShadowView.clear();
@@ -661,6 +665,12 @@ public class TabStripDragHandler extends TabDragHandlerBase {
                 /* isTabGroup= */ true,
                 /* isMultiTab= */ false);
         return true;
+    }
+
+    @Override
+    protected @BackPressResult int cancelDrag() {
+        mWasCancelled = true;
+        return super.cancelDrag();
     }
 
     @VisibleForTesting
