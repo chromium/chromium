@@ -16945,6 +16945,24 @@
             ]
         }
     ],
+    "NoSynchronizedScrolling": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "SynchronizedScrolling"
+                    ]
+                }
+            ]
+        }
+    ],
     "NoThrottlingVisibleAgent": [
         {
             "platforms": [
