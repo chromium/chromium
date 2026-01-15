@@ -83,6 +83,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PaymentRequest.InternalAppAvailability"
+    enum="InternalPaymentAppAvailability" expires_after="2027-01-14">
+  <owner>smcgruer@chromium.org</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Records whether an internal app was found to be available when a Payment
+    Request is created for a URL that is expected to have an internal app.
+    Recorded once per 'new PaymentRequest(..)' call, albeit asychronously (as
+    Payment Request creation is async). Only the first-encountered failure
+    reason is recorded for a given Payment Request construction, which may hide
+    other failure reasons that could occur later in the flow.
+
+    Note that the &quot;Not Applicable&quot; case of the
+    InternalPaymentAppAvailability enum is not recorded in practice, as it is
+    not relevant to record. It exists only for completeness in the internal
+    code.
+
+    This histogram is not recorded if the internal app factory is disabled or is
+    not available for a given platform (WebView, all other non-Android
+    platforms).
+  </summary>
+</histogram>
+
 <histogram
     name="PaymentRequest.IsCanMakePaymentAllowedByPref.PaymentRequestConstruction.Once"
     enum="Boolean" expires_after="2026-04-06">
