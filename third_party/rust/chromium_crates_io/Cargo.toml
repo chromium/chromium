@@ -27,7 +27,6 @@ font-types = "0.11"
 hex = "0.4"
 hmac-sha256 = "1.1.12"
 indexmap = "2.12.1"
-jxl = "0.2.2"
 lazy_static = "1"
 libc = "0.2"
 minijinja = "2.14.0"
@@ -92,6 +91,10 @@ default-features = false
 version = "0.25.9"
 default-features = false
 features = ["bmp"]
+
+[dependencies.jxl]
+version = "0.2.2"
+features = ["all-simd"]
 
 [dependencies.llguidance]
 version = "1.0.0"
