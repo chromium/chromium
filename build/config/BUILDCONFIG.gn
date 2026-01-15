@@ -444,10 +444,7 @@ if (is_win) {
 } else if (is_android) {
   # Warn whenever linking code that could unintentionally switch off
   # branch target identification (BTI) on Arm systems.
-  _linker_configs = [
-    "//build/config/android:lld_branch_target_hardening",
-    "//build/config/android:default_relr_relocations",
-  ]
+  _linker_configs = [ "//build/config/android:lld_branch_target_hardening" ]
 } else {
   _linker_configs = []
 }
