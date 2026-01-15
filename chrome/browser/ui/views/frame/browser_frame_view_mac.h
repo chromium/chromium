@@ -85,20 +85,6 @@ class BrowserFrameViewMac : public BrowserFrameView,
   FRIEND_TEST_ALL_PREFIXES(BrowserFrameViewMacTest,
                            GetCaptionButtonPlaceholderBounds);
 
-  // Creates an inset from the caption button size which controls for which edge
-  // the captions buttons exists on. Used to position elements like the tabstrip
-  // that are adjacent to the caption buttons.
-  //
-  // The `visual_overlap` parameter specifies how much - if any - the adjacent
-  // View overlaps the caption button region; the insets will be reduced by that
-  // amount. For example, the tabstrip overlaps by the size of the bottom curve
-  // of the first tab. In most cases this will be zero.
-  gfx::Insets GetCaptionButtonInsets(int visual_overlap = 0) const;
-
-  static gfx::Rect GetCenteredTitleBounds(gfx::Rect frame,
-                                          gfx::Rect available_space,
-                                          int preferred_title_width);
-
   // Calculate the y offset the top UI needs to shift down due to showing the
   // slide down menu bar at the very top in full screen.
   int TopUIFullscreenYOffset() const;
