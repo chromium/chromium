@@ -309,7 +309,11 @@ void AddressDataManager::UpdateProfile(const AutofillProfile& profile) {
   if (!webdata_service_) {
     return;
   }
-  UpdateProfileInDB(profile);
+  ongoing_profile_changes_.emplace_back(
+      AutofillProfileChange(AutofillProfileChange::UPDATE, profile.guid(),
+                            profile),
+      /*is_ongoing=*/false);
+  HandleNextProfileChange();
 }
 
 void AddressDataManager::RemoveProfile(
@@ -749,14 +753,6 @@ void AddressDataManager::OnAutofillProfileChanged(
   }
 
   OnProfileChangeDone();
-}
-
-void AddressDataManager::UpdateProfileInDB(const AutofillProfile& profile) {
-  ongoing_profile_changes_.emplace_back(
-      AutofillProfileChange(AutofillProfileChange::UPDATE, profile.guid(),
-                            profile),
-      /*is_ongoing=*/false);
-  HandleNextProfileChange();
 }
 
 void AddressDataManager::HandleNextProfileChange() {
