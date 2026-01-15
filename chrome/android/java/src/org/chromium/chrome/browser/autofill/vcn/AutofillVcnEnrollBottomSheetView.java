@@ -36,6 +36,9 @@ import org.chromium.ui.widget.LoadingView;
     /** The container for the card icon, label, and description. */
     final View mCardContainer;
 
+    /** The Google Pay icon. */
+    final ImageView mGpayIcon;
+
     /** The icon for the card. */
     final ImageView mIssuerIcon;
 
@@ -83,6 +86,7 @@ import org.chromium.ui.widget.LoadingView;
         mDialogTitle = mContentView.findViewById(R.id.dialog_title);
         mVirtualCardDescription = mContentView.findViewById(R.id.virtual_card_description);
         mCardContainer = mContentView.findViewById(R.id.card_container);
+        mGpayIcon = mContentView.findViewById(R.id.gpay_icon);
         mIssuerIcon = mContentView.findViewById(R.id.issuer_icon);
         mCardLabel = mContentView.findViewById(R.id.card_label);
         mCardDescription = mContentView.findViewById(R.id.card_description);

@@ -35,6 +35,7 @@ found in the LICENSE file.
 
             <!-- Google Pay logo -->
             <org.chromium.ui.widget.ChromeImageView
+                android:id="@+id/gpay_icon"
                 android:importantForAccessibility="no"
                 android:layout_gravity="center_horizontal"
                 android:layout_height="wrap_content"

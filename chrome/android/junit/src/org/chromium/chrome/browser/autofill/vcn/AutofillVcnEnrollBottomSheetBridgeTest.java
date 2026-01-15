@@ -69,6 +69,7 @@ import java.util.ArrayList;
 @RunWith(BaseRobolectricTestRunner.class)
 @SmallTest
 @EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER})
+@DisableFeatures({AutofillFeatures.AUTOFILL_ENABLE_WALLET_BRANDING})
 public final class AutofillVcnEnrollBottomSheetBridgeTest {
     private static final long NATIVE_AUTOFILL_VCN_ENROLL_BOTTOM_SHEET_BRIDGE = 0xa1fabe7a;
 
@@ -303,6 +304,36 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
                 mBridge.getCoordinatorForTesting()
                         .getPropertyModelForTesting()
                         .get(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE));
+    }
+
+    @Test
+    @EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_WALLET_BRANDING})
+    public void testInitialModelValues_GPayLogoVisibility_WalletBrandingEnabled() {
+        when(mWebContents.isDestroyed()).thenReturn(false);
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
+
+        requestShowContent(mWebContents);
+
+        // When Wallet branding is enabled, the GPay logo should be hidden.
+        assertFalse(
+                mBridge.getCoordinatorForTesting()
+                        .getPropertyModelForTesting()
+                        .get(AutofillVcnEnrollBottomSheetProperties.IS_GPAY_LOGO_VISIBLE));
+    }
+
+    @Test
+    @DisableFeatures({AutofillFeatures.AUTOFILL_ENABLE_WALLET_BRANDING})
+    public void testInitialModelValues_GPayLogoVisibility_WalletBrandingDisabled() {
+        when(mWebContents.isDestroyed()).thenReturn(false);
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
+
+        requestShowContent(mWebContents);
+
+        // When Wallet branding is disabled, the GPay logo should be visible.
+        assertTrue(
+                mBridge.getCoordinatorForTesting()
+                        .getPropertyModelForTesting()
+                        .get(AutofillVcnEnrollBottomSheetProperties.IS_GPAY_LOGO_VISIBLE));
     }
 
     @Test
