@@ -472,10 +472,13 @@ protocol::Response DOMAgent::dispatchMouseEvent(
   if (!base::FeatureList::IsEnabled(
           ui_devtools::kUIDebugToolsEnableSyntheticEvents))
     return Response::ServerError("Dispatch mouse events is not enabled.");
-  if (node_id_to_ui_element_.count(node_id) == 0)
+  auto it = node_id_to_ui_element_.find(node_id);
+  if (it == node_id_to_ui_element_.end()) {
     return Response::ServerError("Element not found on node id");
-  if (!node_id_to_ui_element_[node_id]->DispatchMouseEvent(event.get()))
+  }
+  if (!it->second->DispatchMouseEvent(event.get())) {
     return Response::ServerError("Failed to dispatch mouse event for node id");
+  }
   return Response::Success();
 }
 
@@ -485,21 +488,25 @@ protocol::Response DOMAgent::dispatchKeyEvent(
   if (!base::FeatureList::IsEnabled(
           ui_devtools::kUIDebugToolsEnableSyntheticEvents))
     return Response::ServerError("Dispatch key events is not enabled.");
-  if (node_id_to_ui_element_.count(node_id) == 0)
+  auto it = node_id_to_ui_element_.find(node_id);
+  if (it == node_id_to_ui_element_.end()) {
     return Response::ServerError("Element not found on node id");
-  if (!node_id_to_ui_element_[node_id]->DispatchKeyEvent(event.get()))
+  }
+  if (!it->second->DispatchKeyEvent(event.get())) {
     return Response::ServerError("Failed to dispatch key event for node id");
+  }
   return Response::Success();
 }
 
 protocol::Response DOMAgent::getNodeBoundsInScreen(
     int node_id,
     std::unique_ptr<protocol::DOM::Rect>* bounds_in_screen) {
-  if (node_id_to_ui_element_.count(node_id) == 0) {
+  auto it = node_id_to_ui_element_.find(node_id);
+  if (it == node_id_to_ui_element_.end()) {
     return Response::ServerError("Element not found on node id");
   }
 
-  UIElement* ui_element = node_id_to_ui_element_[node_id];
+  UIElement* ui_element = it->second;
   gfx::Rect bounds = ui_element->GetNodeBoundsInScreen();
 
   *bounds_in_screen = protocol::DOM::Rect::create()
@@ -514,11 +521,12 @@ protocol::Response DOMAgent::getNodeBoundsInScreen(
 
 protocol::Response DOMAgent::getDeviceScaleFactor(int node_id,
                                                   double* device_scale_factor) {
-  if (node_id_to_ui_element_.count(node_id) == 0) {
+  auto it = node_id_to_ui_element_.find(node_id);
+  if (it == node_id_to_ui_element_.end()) {
     return Response::ServerError("Element not found on node id");
   }
 
-  UIElement* ui_element = node_id_to_ui_element_[node_id];
+  UIElement* ui_element = it->second;
   if (ui_element->type() != UIElementType::WINDOW) {
     return Response::ServerError(
         "Node ID does not correspond to a window element");
