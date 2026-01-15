@@ -705,16 +705,6 @@ BASE_FEATURE_PARAM(bool,
                    "autofill_improved_labels_without_main_text_changes",
                    false);
 
-// Controls whether differentiating labels should be shown before or after the
-// improved labels.
-// TODO(crbug.com/380273791): Clean up when launched.
-BASE_FEATURE_PARAM(
-    bool,
-    kAutofillImprovedLabelsParamWithDifferentiatingLabelsInFrontParam,
-    &kAutofillImprovedLabels,
-    "autofill_improved_labels_with_differentiating_labels_in_front",
-    false);
-
 // TODO(crbug.com/346507576): Remove once the experiment is over.
 // When enabled, makes autocomplete label sensitive.
 BASE_FEATURE(kAutofillLabelSensitiveAutocomplete,

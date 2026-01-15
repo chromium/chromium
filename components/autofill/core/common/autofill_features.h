@@ -249,10 +249,6 @@ BASE_DECLARE_FEATURE_PARAM(
     bool,
     kAutofillImprovedLabelsParamWithoutMainTextChangesParam);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kAutofillImprovedLabelsParamWithDifferentiatingLabelsInFrontParam);
-COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillLabelSensitiveAutocomplete);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE_PARAM(

@@ -430,7 +430,6 @@ class AutofillProfile : public FormGroup {
       const std::vector<FieldType>& field_types,
       size_t num_fields_to_include,
       std::string_view app_locale,
-      bool force_differentiating_label_in_front,
       std::vector<std::u16string>& labels);
 
   // Utilities for listing and lookup of the data members that constitute

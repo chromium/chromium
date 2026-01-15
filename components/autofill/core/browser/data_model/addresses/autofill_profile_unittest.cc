@@ -597,59 +597,6 @@ TEST_F(AutofillProfileTest, CreateInferredLabelsFallsBackToFullName) {
   EXPECT_EQ(u"88 Nowhere Ave., Johnny K Doe", labels[1]);
 }
 
-// Test that we use the triggering field to decide whether an additional
-// differentiating label should be added.
-TEST_F(
-    AutofillProfileTest,
-    CreateInferredLabels_TriggeringFieldUsedToDecideWhetherToAddADifferentiatingLabel) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kAutofillImprovedLabels,
-      {{features::
-            kAutofillImprovedLabelsParamWithDifferentiatingLabelsInFrontParam
-                .name,
-        "true"}});
-
-  AutofillProfile profile1 = test::GetFullProfile();
-  AutofillProfile profile2 = test::GetFullProfile();
-  profile1.SetRawInfo(EMAIL_ADDRESS, u"hoa@gmail.com");
-  profile2.SetRawInfo(EMAIL_ADDRESS, u"pham@gmail.com");
-
-  // First check that when `triggering_field_type` is not present, a second
-  // differentiating label is added.
-  std::vector<std::u16string> labels = AutofillProfile::CreateInferredLabels(
-      {&profile1, &profile2},
-      /*suggested_fields=*/std::nullopt,
-      /*triggering_field_type=*/std::nullopt,
-      /*excluded_fields=*/{}, /*minimal_fields_shown=*/1, "en-US");
-  ASSERT_EQ(2U, labels.size());
-  EXPECT_EQ(u"John H. Doe, hoa@gmail.com", labels[0]);
-  EXPECT_EQ(u"John H. Doe, pham@gmail.com", labels[1]);
-
-  // If the `triggering_field_type` is present and is unique, there is no need
-  // for a second differentiating label.
-  labels = AutofillProfile::CreateInferredLabels(
-      {&profile1, &profile2},
-      /*suggested_fields=*/std::nullopt,
-      /*triggering_field_type=*/EMAIL_ADDRESS,
-      /*excluded_fields=*/{}, /*minimal_fields_shown=*/1, "en-US",
-      /*use_improved_labels_order=*/true);
-  ASSERT_EQ(2U, labels.size());
-  EXPECT_EQ(u"John H. Doe", labels[0]);
-  EXPECT_EQ(u"John H. Doe", labels[1]);
-
-  // If the `triggering_field_type` is present and is not unique, a second
-  // differentiating label is added.
-  labels = AutofillProfile::CreateInferredLabels(
-      {&profile1, &profile2},
-      /*suggested_fields=*/std::nullopt,
-      /*triggering_field_type=*/NAME_FIRST,
-      /*excluded_fields=*/{}, /*minimal_fields_shown=*/1, "en-US",
-      /*use_improved_labels_order=*/true);
-  ASSERT_EQ(2U, labels.size());
-  EXPECT_EQ(u"hoa@gmail.com, John H. Doe", labels[0]);
-  EXPECT_EQ(u"pham@gmail.com, John H. Doe", labels[1]);
-}
 
 // Test that we do not show duplicate fields in the labels.
 TEST_F(AutofillProfileTest, CreateInferredLabelsNoDuplicatedFields) {
@@ -736,36 +683,6 @@ TEST_F(AutofillProfileTest, CreateInferredLabelsFlattensMultiLineValues) {
   EXPECT_EQ(u"88 Nowhere Ave., Apt. 42", labels[0]);
 }
 
-// Test that `ADDRESS_HOME_LINE2` is used as a differentiating label if
-// necessary.
-TEST_F(AutofillProfileTest, CreateInferredLabelsDifferentiateByAddressLine2) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kAutofillImprovedLabels,
-      {{features::
-            kAutofillImprovedLabelsParamWithDifferentiatingLabelsInFrontParam
-                .name,
-        "true"}});
-
-  std::vector<std::unique_ptr<AutofillProfile>> profiles;
-  profiles.push_back(std::make_unique<AutofillProfile>(
-      i18n_model_definition::kLegacyHierarchyCountryCode));
-  test::SetProfileInfo(profiles[0].get(), "John", "", "Doe", "", "",
-                       "88 Nowhere Ave.", "Apt. 42", "", "", "", "", "");
-  profiles.push_back(std::make_unique<AutofillProfile>(
-      i18n_model_definition::kLegacyHierarchyCountryCode));
-  test::SetProfileInfo(profiles[1].get(), "John", "", "Doe", "", "",
-                       "88 Nowhere Ave.", "Apt. 43", "", "", "", "", "");
-
-  std::vector<std::u16string> labels = AutofillProfile::CreateInferredLabels(
-      ToRawPointerVector(profiles), /*suggested_fields=*/std::nullopt,
-      /*triggering_field_type=*/NAME_FULL, {NAME_FULL},
-      /*minimal_fields_shown=*/1, "en-US",
-      /*use_improved_labels_order=*/true);
-  ASSERT_EQ(2U, labels.size());
-  EXPECT_EQ(u"Apt. 42, 88 Nowhere Ave.", labels[0]);
-  EXPECT_EQ(u"Apt. 43, 88 Nowhere Ave.", labels[1]);
-}
 
 TEST_F(AutofillProfileTest, IsSubsetOf) {
   AutofillProfileComparator comparator("en-US");
