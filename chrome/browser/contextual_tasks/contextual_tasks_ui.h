@@ -24,6 +24,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
+#include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -52,7 +53,6 @@ struct AccessTokenInfo;
 }  // namespace signin
 
 namespace contextual_tasks {
-class ContextualTasksService;
 class ContextualTasksSidePanelCoordinator;
 class ContextualTasksUiService;
 }  // namespace contextual_tasks
@@ -66,13 +66,15 @@ class ContextualTasksInternalsPageHandler;
 
 class ContextualTasksPageHandler;
 
-class ContextualTasksUI : public TaskInfoDelegate,
-                          public TopChromeWebUIController,
-                          public contextual_tasks::mojom::PageHandlerFactory,
-                          public composebox::mojom::PageHandlerFactory,
-                          public contextual_tasks_internals::mojom::
-                              ContextualTasksInternalsPageHandlerFactory,
-                          public signin::IdentityManager::Observer {
+class ContextualTasksUI
+    : public TaskInfoDelegate,
+      public TopChromeWebUIController,
+      public contextual_tasks::mojom::PageHandlerFactory,
+      public composebox::mojom::PageHandlerFactory,
+      public contextual_tasks_internals::mojom::
+          ContextualTasksInternalsPageHandlerFactory,
+      public signin::IdentityManager::Observer,
+      public contextual_tasks::ContextualTasksService::Observer {
  public:
   // A WebContentsObserver used to observe navigations or URL changes in the
   // frame being hosted by this WebUI. Top-level navigations are ignored since
@@ -131,6 +133,11 @@ class ContextualTasksUI : public TaskInfoDelegate,
   BrowserWindowInterface* GetBrowser() override;
   content::WebContents* GetWebUIWebContents() override;
   void OnZeroStateChange(bool is_zero_state) override;
+
+  // ContextualTaskService::Observer impl:
+  void OnTaskUpdated(
+      const contextual_tasks::ContextualTask& task,
+      contextual_tasks::ContextualTasksService::TriggerSource source) override;
 
   // Returns whether the given URL is an AI page zero state. This is used to
   // determine if the UI should be rendered in zero state. Static so it can be
@@ -346,6 +353,11 @@ class ContextualTasksUI : public TaskInfoDelegate,
   };
   WebUIState previous_web_ui_state_ = WebUIState::kUnknown;
   bool was_ai_page_ = false;
+
+  // Scoped observation for contextual_tasks_service_.
+  base::ScopedObservation<contextual_tasks::ContextualTasksService,
+                          contextual_tasks::ContextualTasksService::Observer>
+      contextual_tasks_service_observation_{this};
 
   base::WeakPtrFactory<ContextualTasksUI> weak_ptr_factory_{this};
 

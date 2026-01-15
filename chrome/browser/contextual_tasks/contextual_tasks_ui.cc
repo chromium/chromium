@@ -385,6 +385,7 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
 
   Profile* profile = Profile::FromWebUI(web_ui);
   AddZeroStateStrings(source, profile);
+  contextual_tasks_service_observation_.Observe(contextual_tasks_service_);
 }
 
 ContextualTasksUI::~ContextualTasksUI() = default;
@@ -486,6 +487,15 @@ void ContextualTasksUI::OnRefreshTokenUpdatedForAccount(
 void ContextualTasksUI::OnZeroStateChange(bool is_zero_state) {
   if (page_) {
     page_->OnZeroStateChange(is_zero_state);
+  }
+}
+
+void ContextualTasksUI::OnTaskUpdated(
+    const contextual_tasks::ContextualTask& task,
+    contextual_tasks::ContextualTasksService::TriggerSource source) {
+  if (task_id_ && task_id_.value() == task.GetTaskId()) {
+    // Update the auto suggested tab chip if needed.
+    OnActiveTabContextStatusChanged();
   }
 }
 
