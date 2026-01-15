@@ -383,4 +383,32 @@ TEST_F(EncryptedCacheFileTest, SetLengthExtension) {
   EXPECT_THAT(extension_buf, testing::Each(0));
 }
 
+TEST_F(EncryptedCacheFileTest, SparseWrites) {
+  auto encrypted_file = CreateEncryptedFile(key_);
+
+  // Write at offset `kChunkDataSize` (Skip chunk 0 completely)
+  std::string data = "Chunk1Data";
+
+  // This created a gap [0-`kChunkDataSize`).
+  // The implementation should assume zeros for the gap and encrypt them.
+  EXPECT_TRUE(encrypted_file->Write(kChunkDataSize, base::as_byte_span(data))
+                  .has_value());
+
+  int64_t expected_size = kChunkDataSize + data.size();
+  EXPECT_EQ(expected_size, encrypted_file->GetLength());
+
+  // Verify the gap reads as zeros.
+  std::vector<uint8_t> zeros(kChunkDataSize);
+  auto read_gap = encrypted_file->Read(0, base::span(zeros));
+  ASSERT_TRUE(read_gap.has_value());
+  EXPECT_EQ(kChunkDataSize, read_gap.value());
+  EXPECT_THAT(zeros, testing::Each(0));
+
+  // Verify the data written after the gap.
+  std::vector<uint8_t> buffer(data.size());
+  auto read_data = encrypted_file->Read(kChunkDataSize, base::span(buffer));
+  ASSERT_TRUE(read_data.has_value());
+  EXPECT_EQ(data, std::string(buffer.begin(), buffer.end()));
+}
+
 }  // namespace network::enterprise_encryption

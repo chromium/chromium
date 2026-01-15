@@ -125,10 +125,22 @@ std::optional<size_t> EncryptedCacheFile::Write(
     old_last_chunk_index = GetChunkIndex(current_logical_length - 1);
   }
 
+  // Handle separate writes (gaps) correctly by filling them with encrypted
+  // zeros.
+  if (offset > current_logical_length) {
+    if (!SetLength(offset)) {
+      return std::nullopt;
+    }
+    // Update length after extension.
+    current_logical_length = offset;
+    old_last_chunk_index = 0;
+    if (current_logical_length > 0) {
+      old_last_chunk_index = GetChunkIndex(current_logical_length - 1);
+    }
+  }
+
   // If write starts after the old last chunk, we need to pad/re-encrypt the old
   // last chunk to the full chunk size.
-  // TODO(crbug.com/460509865): Handle separate writes (gaps) correctly. For
-  // now, callers should ensure sequential writes or use `SetLength` to extend.
   if (current_logical_length > 0 && start_chunk_index > old_last_chunk_index) {
     if (!EnsurePreviousChunkNotLast(new_logical_length)) {
       return std::nullopt;
