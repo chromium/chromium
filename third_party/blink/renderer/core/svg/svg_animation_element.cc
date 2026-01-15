@@ -460,6 +460,7 @@ float SVGAnimationElement::CalculatePercentFromKeyPoints(float percent) const {
   DCHECK_LT(index + 1, KeyTimes().size());
   float from_percent = KeyTimes()[index];
   float to_percent = KeyTimes()[index + 1];
+  DCHECK_GT(to_percent, from_percent);
   float to_key_point = key_points_[index + 1];
   float key_point_percent =
       (percent - from_percent) / (to_percent - from_percent);
@@ -586,8 +587,10 @@ bool SVGAnimationElement::CheckAnimationParameters() const {
     // are 'keyTimes' or 'keyPoints'.
     if (key_splines_.empty() ||
         (has_key_points && key_splines_.size() != key_points_.size() - 1) ||
-        (has_key_times && key_splines_.size() != KeyTimes().size() - 1))
+        (has_key_times && key_splines_.size() != KeyTimes().size() - 1) ||
+        (!KeyTimes().empty() && KeyTimes().back() != 1)) {
       return false;
+    }
   }
   if (animation_mode_ == kValuesAnimation) {
     const wtf_size_t values_count = ValuesCount();
