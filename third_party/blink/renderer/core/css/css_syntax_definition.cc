@@ -172,6 +172,11 @@ const CSSValue* ConsumeSingleType(const CSSSyntaxComponent& syntax,
                                   CSSParserTokenStream& stream,
                                   const CSSParserContext& context,
                                   bool is_attr_tainted) {
+  // TODO(crbug.com/413385732): CSSParserLocalContext should be aware of the
+  // property syntax is used at. Need to pass CSSParserLocalContext from upper
+  // in the stack trace.
+  CSSParserLocalContext local_context =
+      CSSParserLocalContext::CreateWithoutPropertyForSyntax();
   switch (syntax.GetType()) {
     case CSSSyntaxType::kIdent:
       if (stream.Peek().GetType() == kIdentToken &&
@@ -185,51 +190,54 @@ const CSSValue* ConsumeSingleType(const CSSSyntaxComponent& syntax,
       CSSParserContext::ParserModeOverridingScope scope(context,
                                                         kHTMLStandardMode);
       return css_parsing_utils::ConsumeLength(
-          stream, context, CSSPrimitiveValue::ValueRange::kAll);
+          stream, context, local_context, CSSPrimitiveValue::ValueRange::kAll);
     }
     case CSSSyntaxType::kNumber:
       return css_parsing_utils::ConsumeNumber(
-          stream, context, CSSPrimitiveValue::ValueRange::kAll);
+          stream, context, local_context, CSSPrimitiveValue::ValueRange::kAll);
     case CSSSyntaxType::kPercentage:
       return css_parsing_utils::ConsumePercent(
-          stream, context, CSSPrimitiveValue::ValueRange::kAll);
+          stream, context, local_context, CSSPrimitiveValue::ValueRange::kAll);
     case CSSSyntaxType::kLengthPercentage: {
       CSSParserContext::ParserModeOverridingScope scope(context,
                                                         kHTMLStandardMode);
       return css_parsing_utils::ConsumeLengthOrPercent(
-          stream, context, CSSPrimitiveValue::ValueRange::kAll);
+          stream, context, local_context, CSSPrimitiveValue::ValueRange::kAll);
     }
     case CSSSyntaxType::kColor: {
       CSSParserContext::ParserModeOverridingScope scope(context,
                                                         kHTMLStandardMode);
-      return css_parsing_utils::ConsumeColor(stream, context);
+      return css_parsing_utils::ConsumeColor(stream, context, local_context);
     }
     case CSSSyntaxType::kImage:
-      return css_parsing_utils::ConsumeImage(stream, context);
+      return css_parsing_utils::ConsumeImage(stream, context, local_context);
     case CSSSyntaxType::kUrl:
       if (is_attr_tainted) {
         return nullptr;
       }
       return css_parsing_utils::ConsumeUrl(stream, context);
     case CSSSyntaxType::kInteger:
-      return css_parsing_utils::ConsumeIntegerOrNumberCalc(stream, context);
+      return css_parsing_utils::ConsumeIntegerOrNumberCalc(stream, context,
+                                                           local_context);
     case CSSSyntaxType::kAngle:
-      return css_parsing_utils::ConsumeAngle(stream, context,
+      return css_parsing_utils::ConsumeAngle(stream, context, local_context,
                                              std::optional<WebFeature>());
     case CSSSyntaxType::kTime:
       return css_parsing_utils::ConsumeTime(
-          stream, context, CSSPrimitiveValue::ValueRange::kAll);
+          stream, context, local_context, CSSPrimitiveValue::ValueRange::kAll);
     case CSSSyntaxType::kResolution:
-      return css_parsing_utils::ConsumeResolution(stream, context);
+      return css_parsing_utils::ConsumeResolution(stream, context,
+                                                  local_context);
     case CSSSyntaxType::kTransformFunction: {
-      CSSParserLocalContext local_context = CSSParserLocalContext();
       return css_parsing_utils::ConsumeTransformValue(stream, context,
                                                       local_context);
     }
     case CSSSyntaxType::kTransformList:
-      return css_parsing_utils::ConsumeTransformList(stream, context);
+      return css_parsing_utils::ConsumeTransformList(stream, context,
+                                                     local_context);
     case CSSSyntaxType::kCustomIdent:
-      return css_parsing_utils::ConsumeCustomIdent(stream, context);
+      return css_parsing_utils::ConsumeCustomIdent(stream, context,
+                                                   local_context);
     case CSSSyntaxType::kString:
       return css_parsing_utils::ConsumeString(stream);
     default:

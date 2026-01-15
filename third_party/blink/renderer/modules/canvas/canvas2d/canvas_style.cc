@@ -74,9 +74,12 @@ static ColorParseResult ParseColor(Color& parsed_color,
     return ColorParseResult::kColor;
   }
   CSSParserTokenStream stream(color_string);
+  CSSParserLocalContext local_context =
+      CSSParserLocalContext::CreateWithoutPropertyForCanvas();
   const CSSValue* parsed_value =
       css_parsing_utils::ConsumeColorWithoutElementContext(
-          stream, *StrictCSSParserContext(SecureContextMode::kInsecureContext));
+          stream, *StrictCSSParserContext(SecureContextMode::kInsecureContext),
+          local_context);
   if (parsed_value && (parsed_value->IsColorMixValue() ||
                        parsed_value->IsRelativeColorValue() ||
                        parsed_value->IsUnresolvedColorValue())) {

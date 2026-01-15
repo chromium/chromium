@@ -18,7 +18,96 @@ class CORE_EXPORT CSSParserLocalContext {
   STACK_ALLOCATED();
 
  public:
-  CSSParserLocalContext() = default;
+  // TODO(crbug.com/475807587): CSS Typed OM currently does not specify
+  // random(), so we will use empty property name for it for now.
+  static CSSParserLocalContext CreateWithoutPropertyForCSSOM() {
+    return CSSParserLocalContext();
+  }
+
+  // TODO(crbug.com/413385732): This constructor is used for substitution
+  // functions like var(), attr(), if(), @function, etc. This should be removed
+  // once we support property-dependent random inside them.
+  static CSSParserLocalContext CreateWithoutPropertyForSubstitutions() {
+    return CSSParserLocalContext();
+  }
+
+  // TODO(crbug.com/413385732): We used this constructor to create a local
+  // context for animations, i.e. in all css_parsing_utils::Consume* calls from
+  // files inside `third_party/blink/renderer/core/animation/`. Figure out if we
+  // actually need property context for random() in there.
+  static CSSParserLocalContext CreateWithoutPropertyForAnimations() {
+    return CSSParserLocalContext();
+  }
+
+  // Should only be used for testing.
+  static CSSParserLocalContext CreateWithoutPropertyForTest() {
+    return CSSParserLocalContext();
+  }
+
+  // TODO(crbug.com/413385732): This constructor is used for registered custom
+  // properties, this should be removed once we support property-dependent
+  // random() inside registered custom functions.
+  static CSSParserLocalContext CreateWithoutPropertyForSyntax() {
+    return CSSParserLocalContext();
+  }
+
+  // TODO(crbug.com/413385732): We use this constructor for at-rules and their
+  // descriptors. We should probably use descriptor name as property name for
+  // random and only use this constructor inside rule definition since we don't
+  // have a property context in that case.
+  static CSSParserLocalContext CreateWithoutPropertyForAtRules() {
+    return CSSParserLocalContext();
+  }
+
+  // TODO(crbug.com/475808971): Since @media don't have property context, we for
+  // now will use empty property name when caching random() values without user
+  // specified identifier. This behaviour is not defined in spec, there is an
+  // open issue addressing that:
+  // https://drafts.csswg.org/css-values-5/#issue-cd071f29
+  static CSSParserLocalContext CreateWithoutPropertyForMediaQueries() {
+    return CSSParserLocalContext();
+  }
+
+  // This is used for view-transition pseudo selectors, like
+  // ::view-transition-new(),
+  // https://drafts.csswg.org/css-view-transitions/#selectordef-view-transition
+  // There is a chance we can have random() inside ident() in there, but it's
+  // not yet clear whether ident() should be allowed inside pseudo selectors:
+  // https://github.com/w3c/csswg-drafts/issues/12219.
+  static CSSParserLocalContext CreateWithoutPropertyForSelectors() {
+    return CSSParserLocalContext();
+  }
+
+  // TODO(crbug.com/413385732): This is used for parsing colors without element
+  // context in `blink/renderer/modules/canvas/canvas2d/canvas_style.cc`. We
+  // don't have property context there, so will use empty string as property
+  // name for property-dependent random() values. We might want to disallow
+  // random() at parse time for setting values on the canvas contexts.
+  static CSSParserLocalContext CreateWithoutPropertyForCanvas() {
+    return CSSParserLocalContext();
+  }
+
+  // TODO(crbug.com/413385732): We use this constructor to create a local
+  // context for all css_parsing_utils::Consume* calls from inspector classes.
+  // Figure out if we actually need property context for random() in there.
+  static CSSParserLocalContext CreateWithoutPropertyForInspector() {
+    return CSSParserLocalContext();
+  }
+
+  // TODO(crbug.com/413385732): This constructor is used in
+  // ConsumeBorderRadiusCommon in css_parsing_utils.cc, to avoid logical changes
+  // when parsing legacy properties with border radius. Using constructor with
+  // property name causes
+  // `animations/interpolation/webkit-clip-path-interpolation.html` test to
+  // fail. This constructor should be removed.
+  static CSSParserLocalContext CreateWithoutPropertyForBorderRadius() {
+    return CSSParserLocalContext();
+  }
+
+  // For standard CSS properties, need to pass CSSPropertyName with unresolved
+  // property id.
+  explicit CSSParserLocalContext(CSSPropertyName property_name)
+      : property_name_(property_name) {}
 
   CSSParserLocalContext WithCurrentShorthand(
       CSSPropertyID current_shorthand) const {
@@ -27,37 +116,27 @@ class CORE_EXPORT CSSParserLocalContext {
     return context;
   }
 
-  // For non custom properties, need to pass CSSPropertyName with unresolved
-  // property id.
-  CSSParserLocalContext WithPropertyName(CSSPropertyName property_name) const {
-    CSSParserLocalContext context = *this;
-    context.property_name_ = property_name;
-    return context;
-  }
-
   void IncrementRandomValueCount() { ++random_value_count_; }
 
   bool UseAliasParsing() const {
-    if (property_name_.IsCustomProperty()) {
+    if (!property_name_) {
       return false;
     }
-    return IsPropertyAlias(property_name_.Id());
+    if (property_name_->IsCustomProperty()) {
+      return false;
+    }
+    return IsPropertyAlias(property_name_->Id());
   }
 
   CSSPropertyID CurrentShorthand() const { return current_shorthand_; }
 
-  CSSPropertyName PropertyName() const {
-    if (property_name_.IsCustomProperty()) {
-      return property_name_;
-    }
-    return CSSPropertyName(ResolveCSSPropertyID(property_name_.Id()));
-  }
-
   wtf_size_t RandomValueCount() const { return random_value_count_; }
 
  private:
+  CSSParserLocalContext() = default;
+
   CSSPropertyID current_shorthand_ = CSSPropertyID::kInvalid;
-  CSSPropertyName property_name_ = CSSPropertyName(g_empty_atom);
+  std::optional<CSSPropertyName> property_name_;
   wtf_size_t random_value_count_ = 0;
 };
 

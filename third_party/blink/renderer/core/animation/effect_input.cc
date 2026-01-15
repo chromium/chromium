@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_value_id_mappings_generated.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/resolver/element_resolve_context.h"
@@ -146,15 +147,17 @@ std::optional<ParsedOffset> ParseOffsetFromCssText(
     ExceptionState& exception_state) {
   const CSSParserContext* context =
       document.ElementSheet().Contents()->ParserContext();
+  CSSParserLocalContext local_context =
+      CSSParserLocalContext::CreateWithoutPropertyForAnimations();
   CSSParserTokenStream stream(css_text);
   stream.ConsumeWhitespace();
 
   // <number>
   {
     CSSParserTokenStream::State savepoint = stream.Save();
-    const auto* number =
-        DynamicTo<CSSPrimitiveValue>(css_parsing_utils::ConsumeNumber(
-            stream, *context, CSSPrimitiveValue::ValueRange::kAll));
+    const auto* number = DynamicTo<CSSPrimitiveValue>(
+        css_parsing_utils::ConsumeNumber(stream, *context, local_context,
+                                         CSSPrimitiveValue::ValueRange::kAll));
 
     if (number && stream.AtEnd()) {
       std::optional<double> offset = number->GetValueIfKnown();
@@ -169,9 +172,9 @@ std::optional<ParsedOffset> ParseOffsetFromCssText(
   // <percent>
   {
     CSSParserTokenStream::State savepoint = stream.Save();
-    const CSSPrimitiveValue* percent =
-        DynamicTo<CSSPrimitiveValue>(css_parsing_utils::ConsumePercent(
-            stream, *context, CSSPrimitiveValue::ValueRange::kAll));
+    const CSSPrimitiveValue* percent = DynamicTo<CSSPrimitiveValue>(
+        css_parsing_utils::ConsumePercent(stream, *context, local_context,
+                                          CSSPrimitiveValue::ValueRange::kAll));
     if (percent && stream.AtEnd()) {
       std::optional<double> percentage = percent->GetValueIfKnown();
       if (!percentage.has_value()) {
@@ -184,8 +187,9 @@ std::optional<ParsedOffset> ParseOffsetFromCssText(
   }
 
   // <range-name> <percent>
-  auto* range_name_percent = To<CSSValueList>(
-      css_parsing_utils::ConsumeTimelineRangeNameAndPercent(stream, *context));
+  auto* range_name_percent =
+      To<CSSValueList>(css_parsing_utils::ConsumeTimelineRangeNameAndPercent(
+          stream, *context, local_context));
   if (range_name_percent && stream.AtEnd()) {
     TimelineOffset::NamedRange range =
         To<CSSIdentifierValue>(range_name_percent->Item(0))

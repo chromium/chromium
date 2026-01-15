@@ -188,9 +188,8 @@ void CustomProperty::ApplyValue(StyleResolverState& state,
   if (!registered_value) {
     DCHECK(declaration);
     CSSVariableData& data = *declaration->VariableDataValue();
-    registered_value =
-        Parse(data.OriginalText(), *context,
-              CSSParserLocalContext().WithPropertyName(GetCSSPropertyName()));
+    registered_value = Parse(data.OriginalText(), *context,
+                             CSSParserLocalContext(GetCSSPropertyName()));
   }
 
   if (!registered_value) {

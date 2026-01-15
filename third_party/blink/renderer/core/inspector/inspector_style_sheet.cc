@@ -831,7 +831,9 @@ bool InspectorStyle::CheckRegisteredPropertySyntaxWithVarSubstitution(
   CustomProperty p(atomic_name, empty_registry);
 
   const CSSParserContext* parser_context = ParserContextForDocument(document);
-  const CSSValue* result = p.Parse(property.value, *parser_context, {});
+  const CSSValue* result =
+      p.Parse(property.value, *parser_context,
+              CSSParserLocalContext::CreateWithoutPropertyForInspector());
   if (!result) {
     return false;
   }
@@ -995,7 +997,8 @@ InspectorStyle::LonghandProperties(
     return nullptr;
   }
   auto local_context =
-      CSSParserLocalContext().WithCurrentShorthand(property_id);
+      CSSParserLocalContext::CreateWithoutPropertyForInspector()
+          .WithCurrentShorthand(property_id);
   HeapVector<CSSPropertyValue, 64> longhand_properties;
   if (To<Shorthand>(property).ParseShorthand(
           property_entry.important, stream,

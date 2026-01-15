@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_scoped_keyword_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
@@ -65,6 +66,7 @@ class CSSParserTokenStream;
 class TryTacticTransform;
 class WritingDirectionMode;
 class CSSMathExpressionNode;
+class CSSParserLocalContext;
 
 // The order of this enum should not change since its elements are used as
 // indices in the addSubtractResult matrix.
@@ -194,6 +196,7 @@ class CORE_EXPORT CSSMathExpressionNode
       CSSValueID function_id,
       CSSParserTokenStream& stream,
       const CSSParserContext&,
+      CSSParserLocalContext& local_context,
       const Flags parsing_flags,
       CSSAnchorQueryTypes allowed_anchor_queries,
       // Variable substitutions for relative color syntax.
@@ -1171,7 +1174,8 @@ struct DowncastTraits<CSSMathExpressionSiblingFunction> {
 class RandomValueSharing : public GarbageCollected<RandomValueSharing> {
  public:
   static const RandomValueSharing* Parse(CSSParserTokenStream& stream,
-                                         const CSSParserContext&);
+                                         const CSSParserContext&,
+                                         CSSParserLocalContext&);
   static const RandomValueSharing* Auto() {
     DEFINE_THREAD_SAFE_STATIC_LOCAL(
         ThreadSpecific<Persistent<RandomValueSharing>>, thread_specific_random,

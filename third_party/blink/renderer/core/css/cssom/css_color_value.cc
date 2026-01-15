@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/cssom/css_color_value.h"
+
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_csscolorvalue_cssstylevalue.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
@@ -17,6 +18,7 @@
 #include "third_party/blink/renderer/core/css/cssom/css_unit_value.h"
 #include "third_party/blink/renderer/core/css/cssom/cssom_types.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
@@ -65,8 +67,11 @@ V8UnionCSSColorValueOrCSSStyleValue* CSSColorValue::parse(
   CSSParserTokenStream stream(css_text);
   stream.ConsumeWhitespace();
 
+  CSSParserLocalContext local_context =
+      CSSParserLocalContext::CreateWithoutPropertyForCSSOM();
   const CSSValue* parsed_value = css_parsing_utils::ConsumeColor(
-      stream, *MakeGarbageCollected<CSSParserContext>(*execution_context));
+      stream, *MakeGarbageCollected<CSSParserContext>(*execution_context),
+      local_context);
   stream.ConsumeWhitespace();
 
   if (!parsed_value) {

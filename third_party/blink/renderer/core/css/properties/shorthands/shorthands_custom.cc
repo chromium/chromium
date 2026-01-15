@@ -62,30 +62,35 @@ bool IsResetOnlyAnimationProperty(CSSPropertyID property) {
 // Legacy parsing allows <string>s for animation-name.
 CSSValue* ConsumeAnimationValue(CSSPropertyID property,
                                 CSSParserTokenStream& stream,
-                                const CSSParserContext& context) {
+                                const CSSParserContext& context,
+                                CSSParserLocalContext& local_context) {
   switch (property) {
     case CSSPropertyID::kAnimationDelay:
       return css_parsing_utils::ConsumeTime(
-          stream, context, CSSPrimitiveValue::ValueRange::kAll);
+          stream, context, local_context, CSSPrimitiveValue::ValueRange::kAll);
     case CSSPropertyID::kAnimationDirection:
       return css_parsing_utils::ConsumeIdent<
           CSSValueID::kNormal, CSSValueID::kAlternate, CSSValueID::kReverse,
           CSSValueID::kAlternateReverse>(stream);
     case CSSPropertyID::kAnimationDuration:
-      return css_parsing_utils::ConsumeAnimationDuration(stream, context);
+      return css_parsing_utils::ConsumeAnimationDuration(stream, context,
+                                                         local_context);
     case CSSPropertyID::kAnimationFillMode:
       return css_parsing_utils::ConsumeIdent<
           CSSValueID::kNone, CSSValueID::kForwards, CSSValueID::kBackwards,
           CSSValueID::kBoth>(stream);
     case CSSPropertyID::kAnimationIterationCount:
-      return css_parsing_utils::ConsumeAnimationIterationCount(stream, context);
+      return css_parsing_utils::ConsumeAnimationIterationCount(stream, context,
+                                                               local_context);
     case CSSPropertyID::kAnimationName:
-      return css_parsing_utils::ConsumeAnimationName(stream, context);
+      return css_parsing_utils::ConsumeAnimationName(stream, context,
+                                                     local_context);
     case CSSPropertyID::kAnimationPlayState:
       return css_parsing_utils::ConsumeIdent<CSSValueID::kRunning,
                                              CSSValueID::kPaused>(stream);
     case CSSPropertyID::kAnimationTimingFunction:
-      return css_parsing_utils::ConsumeAnimationTimingFunction(stream, context);
+      return css_parsing_utils::ConsumeAnimationTimingFunction(stream, context,
+                                                               local_context);
     case CSSPropertyID::kAnimationTimeline:
     case CSSPropertyID::kAnimationRangeStart:
     case CSSPropertyID::kAnimationRangeEnd:
@@ -109,7 +114,7 @@ bool ParseAnimationShorthand(const StylePropertyShorthand& shorthand,
       longhands(longhand_count);
   if (!css_parsing_utils::ConsumeAnimationShorthand(
           shorthand, longhands, ConsumeAnimationValue,
-          IsResetOnlyAnimationProperty, stream, context)) {
+          IsResetOnlyAnimationProperty, stream, context, local_context)) {
     return false;
   }
 
@@ -245,13 +250,15 @@ bool ParseBackgroundOrMaskPosition(
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
+    CSSParserLocalContext& local_context,
     std::optional<WebFeature> three_value_position,
     HeapVector<CSSPropertyValue, 64>& properties) {
   const CSSValue* result_x = nullptr;
   const CSSValue* result_y = nullptr;
   if (!css_parsing_utils::ConsumeBackgroundPosition(
-          stream, context, css_parsing_utils::UnitlessQuirk::kAllow,
-          three_value_position, result_x, result_y)) {
+          stream, context, local_context,
+          css_parsing_utils::UnitlessQuirk::kAllow, three_value_position,
+          result_x, result_y)) {
     return false;
   }
   const StylePropertyShorthand::Properties& longhands = shorthand.properties();
@@ -296,16 +303,18 @@ namespace {
 // https://drafts.csswg.org/css-animations-2/#animation-trigger-exit-range
 bool ConsumeAnimationRangeItemInto(CSSParserTokenStream& stream,
                                    const CSSParserContext& context,
+                                   CSSParserLocalContext& local_context,
                                    CSSValueList* start_list,
                                    CSSValueList* end_list,
                                    bool allow_auto) {
   using css_parsing_utils::ConsumeAnimationRange;
-  using css_parsing_utils::ConsumeTimelineRangeName;
 
-  const CSSValue* start_range = ConsumeAnimationRange(
-      stream, context, /* default_offset_percent */ 0.0, allow_auto);
-  const CSSValue* end_range = ConsumeAnimationRange(
-      stream, context, /* default_offset_percent */ 100.0, allow_auto);
+  const CSSValue* start_range =
+      ConsumeAnimationRange(stream, context, local_context,
+                            /* default_offset_percent */ 0.0, allow_auto);
+  const CSSValue* end_range =
+      ConsumeAnimationRange(stream, context, local_context,
+                            /* default_offset_percent */ 100.0, allow_auto);
 
   if (!end_range) {
     end_range = css_parsing_utils::GetImpliedRangeEnd(start_range);
@@ -433,6 +442,7 @@ bool ParseAnimationRangeShorthand(const StylePropertyShorthand& shorthand,
                                   bool important,
                                   CSSParserTokenStream& stream,
                                   const CSSParserContext& context,
+                                  CSSParserLocalContext& local_context,
                                   HeapVector<CSSPropertyValue, 64>& properties,
                                   bool allow_auto) {
   using css_parsing_utils::AddProperty;
@@ -443,8 +453,8 @@ bool ParseAnimationRangeShorthand(const StylePropertyShorthand& shorthand,
   CSSValueList* end_list = CSSValueList::CreateCommaSeparated();
 
   do {
-    if (!ConsumeAnimationRangeItemInto(stream, context, start_list, end_list,
-                                       allow_auto)) {
+    if (!ConsumeAnimationRangeItemInto(stream, context, local_context,
+                                       start_list, end_list, allow_auto)) {
       return false;
     }
   } while (ConsumeCommaIncludingWhitespace(stream));
@@ -475,7 +485,8 @@ bool AnimationRange::ParseShorthand(
   DCHECK_EQ(&GetCSSPropertyAnimationRangeEnd(), shorthand.properties()[1]);
   return ParseAnimationRangeShorthand(
       shorthand, CSSPropertyID::kAnimationRangeStart,
-      CSSPropertyID::kAnimationRangeEnd, important, stream, context, properties,
+      CSSPropertyID::kAnimationRangeEnd, important, stream, context,
+      local_context, properties,
       /*allow_auto=*/false);
 }
 
@@ -520,10 +531,10 @@ bool BackgroundPosition::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
-    CSSParserLocalContext&,
+    CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   return ParseBackgroundOrMaskPosition(
-      backgroundPositionShorthand(), important, stream, context,
+      backgroundPositionShorthand(), important, stream, context, local_context,
       WebFeature::kThreeValuedPositionBackground, properties);
 }
 
@@ -750,7 +761,7 @@ bool BorderImage::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
-    CSSParserLocalContext&,
+    CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   CSSValue* source = nullptr;
   CSSValue* slice = nullptr;
@@ -759,7 +770,7 @@ bool BorderImage::ParseShorthand(
   CSSValue* repeat = nullptr;
 
   if (!css_parsing_utils::ConsumeBorderImageComponents(
-          stream, context, source, slice, width, outset, repeat,
+          stream, context, local_context, source, slice, width, outset, repeat,
           css_parsing_utils::DefaultFill::kNoFill)) {
     return false;
   }
@@ -1021,17 +1032,19 @@ bool BorderSpacing::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
-    CSSParserLocalContext&,
+    CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
-  CSSValue* horizontal_spacing = ConsumeLength(
-      stream, context, CSSPrimitiveValue::ValueRange::kNonNegative,
-      css_parsing_utils::UnitlessQuirk::kAllow);
+  CSSValue* horizontal_spacing =
+      ConsumeLength(stream, context, local_context,
+                    CSSPrimitiveValue::ValueRange::kNonNegative,
+                    css_parsing_utils::UnitlessQuirk::kAllow);
   if (!horizontal_spacing) {
     return false;
   }
-  CSSValue* vertical_spacing = ConsumeLength(
-      stream, context, CSSPrimitiveValue::ValueRange::kNonNegative,
-      css_parsing_utils::UnitlessQuirk::kAllow);
+  CSSValue* vertical_spacing =
+      ConsumeLength(stream, context, local_context,
+                    CSSPrimitiveValue::ValueRange::kNonNegative,
+                    css_parsing_utils::UnitlessQuirk::kAllow);
   if (!vertical_spacing) {
     vertical_spacing = horizontal_spacing;
   }
@@ -1123,7 +1136,7 @@ bool ColumnRule::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
-    CSSParserLocalContext&,
+    CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(columnRuleShorthand().length(), 3u);
   // If the CSSGapDecorations feature is not enabled, consume greedily since
@@ -1138,7 +1151,8 @@ bool ColumnRule::ParseShorthand(
   CSSValueList* rule_colors = nullptr;
 
   if (!css_parsing_utils::ConsumeGapDecorationsRuleShorthand(
-          important, context, stream, rule_widths, rule_styles, rule_colors)) {
+          important, context, local_context, stream, rule_widths, rule_styles,
+          rule_colors)) {
     return false;
   }
 
@@ -1167,7 +1181,7 @@ bool RowRule::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
-    CSSParserLocalContext&,
+    CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(rowRuleShorthand().length(), 3u);
   CSSValueList* rule_widths = nullptr;
@@ -1175,7 +1189,8 @@ bool RowRule::ParseShorthand(
   CSSValueList* rule_colors = nullptr;
 
   if (!css_parsing_utils::ConsumeGapDecorationsRuleShorthand(
-          important, context, stream, rule_widths, rule_styles, rule_colors)) {
+          important, context, local_context, stream, rule_widths, rule_styles,
+          rule_colors)) {
     return false;
   }
 
@@ -1242,7 +1257,7 @@ bool ColumnRuleInset::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
-    CSSParserLocalContext&,
+    CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(columnRuleInsetShorthand().length(), 4u);
 
@@ -1252,7 +1267,7 @@ bool ColumnRuleInset::ParseShorthand(
   CSSValue* rule_interior_end_inset = nullptr;
 
   if (!css_parsing_utils::ConsumeGapDecorationsRuleInsetShorthand(
-          important, context, stream, rule_edge_start_inset,
+          important, context, local_context, stream, rule_edge_start_inset,
           rule_edge_end_inset, rule_interior_start_inset,
           rule_interior_end_inset)) {
     return false;
@@ -1292,7 +1307,7 @@ bool RowRuleInset::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
-    CSSParserLocalContext&,
+    CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(rowRuleInsetShorthand().length(), 4u);
 
@@ -1302,7 +1317,7 @@ bool RowRuleInset::ParseShorthand(
   CSSValue* rule_interior_end_inset = nullptr;
 
   if (!css_parsing_utils::ConsumeGapDecorationsRuleInsetShorthand(
-          important, context, stream, rule_edge_start_inset,
+          important, context, local_context, stream, rule_edge_start_inset,
           rule_edge_end_inset, rule_interior_start_inset,
           rule_interior_end_inset)) {
     return false;
@@ -1342,7 +1357,7 @@ bool RuleInset::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
-    CSSParserLocalContext&,
+    CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(ruleInsetShorthand().length(), 8u);
 
@@ -1352,7 +1367,7 @@ bool RuleInset::ParseShorthand(
   CSSValue* rule_interior_end_inset = nullptr;
 
   if (!css_parsing_utils::ConsumeGapDecorationsRuleInsetShorthand(
-          important, context, stream, rule_edge_start_inset,
+          important, context, local_context, stream, rule_edge_start_inset,
           rule_edge_end_inset, rule_interior_start_inset,
           rule_interior_end_inset)) {
     return false;
@@ -1409,7 +1424,7 @@ bool ColumnRuleEdgeInset::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
-    CSSParserLocalContext&,
+    CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(columnRuleEdgeInsetShorthand().length(), 2u);
 
@@ -1417,7 +1432,7 @@ bool ColumnRuleEdgeInset::ParseShorthand(
   CSSValue* rule_edge_end_inset = nullptr;
 
   if (!css_parsing_utils::ConsumeGapDecorationsRuleEdgeInteriorInsetShorthand(
-          important, context, stream, rule_edge_start_inset,
+          important, context, local_context, stream, rule_edge_start_inset,
           rule_edge_end_inset)) {
     return false;
   }
@@ -1450,7 +1465,7 @@ bool RowRuleEdgeInset::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
-    CSSParserLocalContext&,
+    CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(rowRuleEdgeInsetShorthand().length(), 2u);
 
@@ -1458,7 +1473,7 @@ bool RowRuleEdgeInset::ParseShorthand(
   CSSValue* rule_edge_end_inset = nullptr;
 
   if (!css_parsing_utils::ConsumeGapDecorationsRuleEdgeInteriorInsetShorthand(
-          important, context, stream, rule_edge_start_inset,
+          important, context, local_context, stream, rule_edge_start_inset,
           rule_edge_end_inset)) {
     return false;
   }
@@ -1491,7 +1506,7 @@ bool ColumnRuleInteriorInset::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
-    CSSParserLocalContext&,
+    CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(columnRuleInteriorInsetShorthand().length(), 2u);
 
@@ -1499,7 +1514,7 @@ bool ColumnRuleInteriorInset::ParseShorthand(
   CSSValue* rule_interior_end_inset = nullptr;
 
   if (!css_parsing_utils::ConsumeGapDecorationsRuleEdgeInteriorInsetShorthand(
-          important, context, stream, rule_interior_start_inset,
+          important, context, local_context, stream, rule_interior_start_inset,
           rule_interior_end_inset)) {
     return false;
   }
@@ -1534,7 +1549,7 @@ bool RowRuleInteriorInset::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
-    CSSParserLocalContext&,
+    CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(rowRuleInteriorInsetShorthand().length(), 2u);
 
@@ -1542,7 +1557,7 @@ bool RowRuleInteriorInset::ParseShorthand(
   CSSValue* rule_interior_end_inset = nullptr;
 
   if (!css_parsing_utils::ConsumeGapDecorationsRuleEdgeInteriorInsetShorthand(
-          important, context, stream, rule_interior_start_inset,
+          important, context, local_context, stream, rule_interior_start_inset,
           rule_interior_end_inset)) {
     return false;
   }
@@ -1576,7 +1591,7 @@ bool RuleEdgeInset::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
-    CSSParserLocalContext&,
+    CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(ruleEdgeInsetShorthand().length(), 4u);
 
@@ -1584,7 +1599,7 @@ bool RuleEdgeInset::ParseShorthand(
   CSSValue* rule_edge_end_inset = nullptr;
 
   if (!css_parsing_utils::ConsumeGapDecorationsRuleEdgeInteriorInsetShorthand(
-          important, context, stream, rule_edge_start_inset,
+          important, context, local_context, stream, rule_edge_start_inset,
           rule_edge_end_inset)) {
     return false;
   }
@@ -1624,7 +1639,7 @@ bool RuleInteriorInset::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
-    CSSParserLocalContext&,
+    CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(ruleInteriorInsetShorthand().length(), 4u);
 
@@ -1632,7 +1647,7 @@ bool RuleInteriorInset::ParseShorthand(
   CSSValue* rule_interior_end_inset = nullptr;
 
   if (!css_parsing_utils::ConsumeGapDecorationsRuleEdgeInteriorInsetShorthand(
-          important, context, stream, rule_interior_start_inset,
+          important, context, local_context, stream, rule_interior_start_inset,
           rule_interior_end_inset)) {
     return false;
   }
@@ -1675,25 +1690,26 @@ bool Columns::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
-    CSSParserLocalContext&,
+    CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   CSSValue* column_width = nullptr;
   CSSValue* column_count = nullptr;
   CSSValue* column_height = nullptr;
 
   if (!css_parsing_utils::ConsumeColumnWidthOrCount(
-          stream, context, column_width, column_count)) {
+          stream, context, local_context, column_width, column_count)) {
     return false;
   }
-  css_parsing_utils::ConsumeColumnWidthOrCount(stream, context, column_width,
-                                               column_count);
+  css_parsing_utils::ConsumeColumnWidthOrCount(stream, context, local_context,
+                                               column_width, column_count);
 
   if (RuntimeEnabledFeatures::MulticolColumnWrappingEnabled() &&
       css_parsing_utils::ConsumeSlashIncludingWhitespace(stream)) {
     column_height = css_parsing_utils::ConsumeIdent<CSSValueID::kAuto>(stream);
     if (!column_height) {
       column_height = css_parsing_utils::ConsumeLength(
-          stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
+          stream, context, local_context,
+          CSSPrimitiveValue::ValueRange::kNonNegative);
       if (!column_height) {
         return false;
       }
@@ -1816,10 +1832,10 @@ bool Container::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
-    CSSParserLocalContext&,
+    CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   const CSSValue* name =
-      css_parsing_utils::ConsumeContainerName(stream, context);
+      css_parsing_utils::ConsumeContainerName(stream, context, local_context);
   if (!name) {
     return false;
   }
@@ -1900,8 +1916,8 @@ bool Corners::ParseShorthand(
   std::array<CSSValue*, 4> radii = {nullptr, nullptr, nullptr, nullptr};
   std::array<CSSValue*, 4> shapes = {nullptr, nullptr, nullptr, nullptr};
   for (size_t i = 0; i < 4; ++i) {
-    if (!css_parsing_utils::ConsumeCorner(stream, context, radii[i],
-                                          shapes[i])) {
+    if (!css_parsing_utils::ConsumeCorner(stream, context, local_context,
+                                          radii[i], shapes[i])) {
       return false;
     }
     if (i == 3 || !css_parsing_utils::ConsumeSlashIncludingWhitespace(stream)) {
@@ -2104,7 +2120,7 @@ const CSSValue* CornerInlineEndShape::CSSValueFromComputedStyleInternal(
 bool Flex::ParseShorthand(bool important,
                           CSSParserTokenStream& stream,
                           const CSSParserContext& context,
-                          CSSParserLocalContext&,
+                          CSSParserLocalContext& local_context,
                           HeapVector<CSSPropertyValue, 64>& properties) const {
   const CSSValue* flex_grow = nullptr;
   const CSSValue* flex_shrink = nullptr;
@@ -2120,7 +2136,8 @@ bool Flex::ParseShorthand(bool important,
     for (;;) {
       CSSParserSavePoint savepoint(stream);
       if (const CSSPrimitiveValue* num = css_parsing_utils::ConsumeNumber(
-              stream, context, CSSPrimitiveValue::ValueRange::kNonNegative)) {
+              stream, context, local_context,
+              CSSPrimitiveValue::ValueRange::kNonNegative)) {
         if (!flex_grow) {
           flex_grow = num;
           savepoint.Release();
@@ -2148,7 +2165,8 @@ bool Flex::ParseShorthand(bool important,
 
         if (!flex_basis) {
           flex_basis = css_parsing_utils::ConsumeLengthOrPercent(
-              stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
+              stream, context, local_context,
+              CSSPrimitiveValue::ValueRange::kNonNegative);
         }
         if (flex_basis) {
           // <'flex-basis'> may not appear between <'flex-grow'> and
@@ -2245,6 +2263,7 @@ bool ConsumeSystemFont(bool important,
 bool ConsumeFont(bool important,
                  CSSParserTokenStream& stream,
                  const CSSParserContext& context,
+                 CSSParserLocalContext& local_context,
                  HeapVector<CSSPropertyValue, 64>& properties) {
   // Optional font-style, font-variant, font-stretch and font-weight.
   // Each may be normal.
@@ -2261,7 +2280,8 @@ bool ConsumeFont(bool important,
     }
     if (!font_style &&
         (id == CSSValueID::kItalic || id == CSSValueID::kOblique)) {
-      font_style = css_parsing_utils::ConsumeFontStyle(stream, context);
+      font_style =
+          css_parsing_utils::ConsumeFontStyle(stream, context, local_context);
       if (!font_style) {
         // NOTE: Strictly speaking, perhaps we should rewind the stream here
         // and return true instead, but given that this rule exists solely
@@ -2279,7 +2299,8 @@ bool ConsumeFont(bool important,
       }
     }
     if (!font_weight) {
-      font_weight = css_parsing_utils::ConsumeFontWeight(stream, context);
+      font_weight =
+          css_parsing_utils::ConsumeFontWeight(stream, context, local_context);
       if (font_weight) {
         continue;
       }
@@ -2388,7 +2409,8 @@ bool ConsumeFont(bool important,
       properties);
 
   // Now a font size _must_ come.
-  CSSValue* font_size = css_parsing_utils::ConsumeFontSize(stream, context);
+  CSSValue* font_size =
+      css_parsing_utils::ConsumeFontSize(stream, context, local_context);
   if (!font_size || stream.AtEnd()) {
     return false;
   }
@@ -2399,7 +2421,7 @@ bool ConsumeFont(bool important,
 
   if (css_parsing_utils::ConsumeSlashIncludingWhitespace(stream)) {
     CSSValue* line_height =
-        css_parsing_utils::ConsumeLineHeight(stream, context);
+        css_parsing_utils::ConsumeLineHeight(stream, context, local_context);
     if (!line_height) {
       return false;
     }
@@ -2434,13 +2456,13 @@ bool ConsumeFont(bool important,
 bool Font::ParseShorthand(bool important,
                           CSSParserTokenStream& stream,
                           const CSSParserContext& context,
-                          CSSParserLocalContext&,
+                          CSSParserLocalContext& local_context,
                           HeapVector<CSSPropertyValue, 64>& properties) const {
   const CSSParserToken& token = stream.Peek();
   if (CSSParserFastPaths::IsValidSystemFont(token.Id())) {
     return ConsumeSystemFont(important, stream, properties);
   }
-  return ConsumeFont(important, stream, context, properties);
+  return ConsumeFont(important, stream, context, local_context, properties);
 }
 
 const CSSValue* Font::CSSValueFromComputedStyleInternal(
@@ -2455,7 +2477,7 @@ bool FontVariant::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
-    CSSParserLocalContext&,
+    CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   if (css_parsing_utils::IdentMatches<CSSValueID::kNormal, CSSValueID::kNone>(
           stream.Peek().Id())) {
@@ -2506,7 +2528,7 @@ bool FontVariant::ParseShorthand(
     FontVariantEastAsianParser::ParseResult east_asian_parse_result =
         east_asian_parser.ConsumeEastAsian(stream);
     FontVariantAlternatesParser::ParseResult alternates_parse_result =
-        alternates_parser.ConsumeAlternates(stream, context);
+        alternates_parser.ConsumeAlternates(stream, context, local_context);
     if (ligatures_parse_result ==
             FontVariantLigaturesParser::ParseResult::kConsumedValue ||
         numeric_parse_result ==
@@ -2730,11 +2752,13 @@ const CSSValue* FontSynthesis::CSSValueFromComputedStyleInternal(
 bool Gap::ParseShorthand(bool important,
                          CSSParserTokenStream& stream,
                          const CSSParserContext& context,
-                         CSSParserLocalContext&,
+                         CSSParserLocalContext& local_context,
                          HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(shorthandForProperty(CSSPropertyID::kGap).length(), 2u);
-  CSSValue* row_gap = css_parsing_utils::ConsumeGapLength(stream, context);
-  CSSValue* column_gap = css_parsing_utils::ConsumeGapLength(stream, context);
+  CSSValue* row_gap =
+      css_parsing_utils::ConsumeGapLength(stream, context, local_context);
+  CSSValue* column_gap =
+      css_parsing_utils::ConsumeGapLength(stream, context, local_context);
   if (!row_gap) {
     return false;
   }
@@ -2763,12 +2787,12 @@ bool GridArea::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
-    CSSParserLocalContext&,
+    CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(gridAreaShorthand().length(), 4u);
 
   CSSValue* row_start_value =
-      css_parsing_utils::ConsumeGridLine(stream, context);
+      css_parsing_utils::ConsumeGridLine(stream, context, local_context);
   if (!row_start_value) {
     return false;
   }
@@ -2776,17 +2800,20 @@ bool GridArea::ParseShorthand(
   CSSValue* row_end_value = nullptr;
   CSSValue* column_end_value = nullptr;
   if (css_parsing_utils::ConsumeSlashIncludingWhitespace(stream)) {
-    column_start_value = css_parsing_utils::ConsumeGridLine(stream, context);
+    column_start_value =
+        css_parsing_utils::ConsumeGridLine(stream, context, local_context);
     if (!column_start_value) {
       return false;
     }
     if (css_parsing_utils::ConsumeSlashIncludingWhitespace(stream)) {
-      row_end_value = css_parsing_utils::ConsumeGridLine(stream, context);
+      row_end_value =
+          css_parsing_utils::ConsumeGridLine(stream, context, local_context);
       if (!row_end_value) {
         return false;
       }
       if (css_parsing_utils::ConsumeSlashIncludingWhitespace(stream)) {
-        column_end_value = css_parsing_utils::ConsumeGridLine(stream, context);
+        column_end_value =
+            css_parsing_utils::ConsumeGridLine(stream, context, local_context);
         if (!column_end_value) {
           return false;
         }
@@ -2842,7 +2869,7 @@ bool GridColumn::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
-    CSSParserLocalContext&,
+    CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   const StylePropertyShorthand& shorthand =
       shorthandForProperty(CSSPropertyID::kGridColumn);
@@ -2851,7 +2878,7 @@ bool GridColumn::ParseShorthand(
   CSSValue* start_value = nullptr;
   CSSValue* end_value = nullptr;
   if (!css_parsing_utils::ConsumeGridItemPositionShorthand(
-          important, stream, context, start_value, end_value)) {
+          important, stream, context, local_context, start_value, end_value)) {
     return false;
   }
 
@@ -2912,7 +2939,7 @@ CSSValueList* ConsumeImplicitAutoFlow(
 bool Grid::ParseShorthand(bool important,
                           CSSParserTokenStream& stream,
                           const CSSParserContext& context,
-                          CSSParserLocalContext&,
+                          CSSParserLocalContext& local_context,
                           HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(shorthandForProperty(CSSPropertyID::kGrid).length(), 6u);
 
@@ -2929,8 +2956,8 @@ bool Grid::ParseShorthand(bool important,
   // (we want to fall back to the part below). So we make a quick fix
   // to check for either end _or_ !important.
   const bool ok = css_parsing_utils::ConsumeGridTemplateShorthand(
-      important, stream, context, template_rows, template_columns,
-      template_areas);
+      important, stream, context, local_context, template_rows,
+      template_columns, template_areas);
   stream.ConsumeWhitespace();
   if (ok && (stream.AtEnd() || (stream.Peek().GetType() == kDelimiterToken &&
                                 stream.Peek().Delimiter() == '!'))) {
@@ -2990,7 +3017,8 @@ bool Grid::ParseShorthand(bool important,
       auto_rows_value = GetCSSPropertyGridAutoRows().InitialValue();
     } else {
       auto_rows_value = css_parsing_utils::ConsumeGridTrackList(
-          stream, context, css_parsing_utils::TrackListType::kGridAuto);
+          stream, context, local_context,
+          css_parsing_utils::TrackListType::kGridAuto);
       if (!auto_rows_value) {
         return false;
       }
@@ -2999,16 +3027,16 @@ bool Grid::ParseShorthand(bool important,
       }
     }
     if (!(template_columns =
-              css_parsing_utils::ConsumeGridTemplatesRowsOrColumns(stream,
-                                                                   context))) {
+              css_parsing_utils::ConsumeGridTemplatesRowsOrColumns(
+                  stream, context, local_context))) {
       return false;
     }
     template_rows = CSSIdentifierValue::Create(CSSValueID::kNone);
     auto_columns_value = GetCSSPropertyGridAutoColumns().InitialValue();
   } else {
     // 3- <grid-template-rows> / [ auto-flow && dense? ] <grid-auto-columns>?
-    template_rows =
-        css_parsing_utils::ConsumeGridTemplatesRowsOrColumns(stream, context);
+    template_rows = css_parsing_utils::ConsumeGridTemplatesRowsOrColumns(
+        stream, context, local_context);
     if (!template_rows) {
       return false;
     }
@@ -3021,7 +3049,8 @@ bool Grid::ParseShorthand(bool important,
       return false;
     }
     auto_columns_value = css_parsing_utils::ConsumeGridTrackList(
-        stream, context, css_parsing_utils::TrackListType::kGridAuto);
+        stream, context, local_context,
+        css_parsing_utils::TrackListType::kGridAuto);
     if (!auto_columns_value) {
       // End of stream or parse error; in the latter case,
       // the caller will clean up since we're not at the end.
@@ -3079,7 +3108,7 @@ bool GridLanes::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
-    CSSParserLocalContext&,
+    CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   String grid_lanes_template_areas;
   bool is_template_columns = true;
@@ -3099,7 +3128,7 @@ bool GridLanes::ParseShorthand(
   // `grid-template-columns` or `grid-template-rows`
   const CSSValue* grid_lanes_template_tracks =
       css_parsing_utils::ConsumeGridTemplatesRowsOrColumns(
-          stream, context,
+          stream, context, local_context,
           /*is_grid_lanes_shorthand=*/true);
   if (!grid_lanes_template_tracks) {
     return false;
@@ -3182,7 +3211,7 @@ bool GridRow::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
-    CSSParserLocalContext&,
+    CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   const StylePropertyShorthand& shorthand =
       shorthandForProperty(CSSPropertyID::kGridRow);
@@ -3191,7 +3220,7 @@ bool GridRow::ParseShorthand(
   CSSValue* start_value = nullptr;
   CSSValue* end_value = nullptr;
   if (!css_parsing_utils::ConsumeGridItemPositionShorthand(
-          important, stream, context, start_value, end_value)) {
+          important, stream, context, local_context, start_value, end_value)) {
     return false;
   }
 
@@ -3221,14 +3250,14 @@ bool GridTemplate::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
-    CSSParserLocalContext&,
+    CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   const CSSValue* template_rows = nullptr;
   const CSSValue* template_columns = nullptr;
   const CSSValue* template_areas = nullptr;
   if (!css_parsing_utils::ConsumeGridTemplateShorthand(
-          important, stream, context, template_rows, template_columns,
-          template_areas)) {
+          important, stream, context, local_context, template_rows,
+          template_columns, template_areas)) {
     return false;
   }
 
@@ -3596,16 +3625,17 @@ bool Offset::ParseShorthand(
       GetCSSPropertyOffsetPosition().ParseSingleValue(stream, context,
                                                       local_context);
   const CSSValue* offset_path =
-      css_parsing_utils::ConsumeOffsetPath(stream, context);
+      css_parsing_utils::ConsumeOffsetPath(stream, context, local_context);
   const CSSValue* offset_distance = nullptr;
   const CSSValue* offset_rotate = nullptr;
   if (offset_path) {
     offset_distance = css_parsing_utils::ConsumeLengthOrPercent(
-        stream, context, CSSPrimitiveValue::ValueRange::kAll);
-    offset_rotate = css_parsing_utils::ConsumeOffsetRotate(stream, context);
+        stream, context, local_context, CSSPrimitiveValue::ValueRange::kAll);
+    offset_rotate =
+        css_parsing_utils::ConsumeOffsetRotate(stream, context, local_context);
     if (offset_rotate && !offset_distance) {
       offset_distance = css_parsing_utils::ConsumeLengthOrPercent(
-          stream, context, CSSPrimitiveValue::ValueRange::kAll);
+          stream, context, local_context, CSSPrimitiveValue::ValueRange::kAll);
     }
   }
   const CSSValue* offset_anchor = nullptr;
@@ -4264,6 +4294,7 @@ namespace {
 // https://drafts.csswg.org/scroll-animations-1/#scroll-timeline-shorthand
 bool ConsumeTimelineItemInto(CSSParserTokenStream& stream,
                              const CSSParserContext& context,
+                             CSSParserLocalContext& local_context,
                              CSSValueList* name_list,
                              CSSValueList* axis_list,
                              CSSValueList* inset_list) {
@@ -4271,7 +4302,7 @@ bool ConsumeTimelineItemInto(CSSParserTokenStream& stream,
   using css_parsing_utils::ConsumeSingleTimelineInset;
   using css_parsing_utils::ConsumeSingleTimelineName;
 
-  CSSValue* name = ConsumeSingleTimelineName(stream, context);
+  CSSValue* name = ConsumeSingleTimelineName(stream, context, local_context);
 
   if (!name) {
     return false;
@@ -4286,7 +4317,7 @@ bool ConsumeTimelineItemInto(CSSParserTokenStream& stream,
       continue;
     }
     if (inset_list && !inset &&
-        (inset = ConsumeSingleTimelineInset(stream, context))) {
+        (inset = ConsumeSingleTimelineInset(stream, context, local_context))) {
       continue;
     }
     break;
@@ -4319,7 +4350,7 @@ bool ParseTimelineShorthand(CSSPropertyID shorthand_id,
                             bool important,
                             CSSParserTokenStream& stream,
                             const CSSParserContext& context,
-                            CSSParserLocalContext&,
+                            CSSParserLocalContext& local_context,
                             HeapVector<CSSPropertyValue, 64>& properties) {
   using css_parsing_utils::AddProperty;
   using css_parsing_utils::ConsumeCommaIncludingWhitespace;
@@ -4331,8 +4362,8 @@ bool ParseTimelineShorthand(CSSPropertyID shorthand_id,
       shorthand.length() == 3u ? CSSValueList::CreateCommaSeparated() : nullptr;
 
   do {
-    if (!ConsumeTimelineItemInto(stream, context, name_list, axis_list,
-                                 inset_list)) {
+    if (!ConsumeTimelineItemInto(stream, context, local_context, name_list,
+                                 axis_list, inset_list)) {
       return false;
     }
   } while (ConsumeCommaIncludingWhitespace(stream));
@@ -4612,8 +4643,8 @@ bool TimelineTrigger::ParseShorthand(
              css_parsing_utils::kMaxNumTimelineTriggerLonghands>
       longhands(longhand_count);
 
-  if (!css_parsing_utils::ConsumeTimelineTriggerShorthand(shorthand, longhands,
-                                                          stream, context)) {
+  if (!css_parsing_utils::ConsumeTimelineTriggerShorthand(
+          shorthand, longhands, stream, context, local_context)) {
     return false;
   }
 
@@ -4662,7 +4693,7 @@ bool TimelineTriggerEntryRange::ParseShorthand(
   return ParseAnimationRangeShorthand(
       shorthand, CSSPropertyID::kTimelineTriggerEntryRangeStart,
       CSSPropertyID::kTimelineTriggerEntryRangeEnd, important, stream, context,
-      properties,
+      local_context, properties,
       /*allow_auto=*/false);
 }
 
@@ -4702,7 +4733,7 @@ bool TimelineTriggerActiveRange::ParseShorthand(
   return ParseAnimationRangeShorthand(
       shorthand, CSSPropertyID::kTimelineTriggerActiveRangeStart,
       CSSPropertyID::kTimelineTriggerActiveRangeEnd, important, stream, context,
-      properties,
+      local_context, properties,
       /*allow_auto=*/true);
 }
 
@@ -4710,18 +4741,22 @@ namespace {
 
 CSSValue* ConsumeTransitionValue(CSSPropertyID property,
                                  CSSParserTokenStream& stream,
-                                 const CSSParserContext& context) {
+                                 const CSSParserContext& context,
+                                 CSSParserLocalContext& local_context) {
   switch (property) {
     case CSSPropertyID::kTransitionDelay:
       return css_parsing_utils::ConsumeTime(
-          stream, context, CSSPrimitiveValue::ValueRange::kAll);
+          stream, context, local_context, CSSPrimitiveValue::ValueRange::kAll);
     case CSSPropertyID::kTransitionDuration:
       return css_parsing_utils::ConsumeTime(
-          stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
+          stream, context, local_context,
+          CSSPrimitiveValue::ValueRange::kNonNegative);
     case CSSPropertyID::kTransitionProperty:
-      return css_parsing_utils::ConsumeTransitionProperty(stream, context);
+      return css_parsing_utils::ConsumeTransitionProperty(stream, context,
+                                                          local_context);
     case CSSPropertyID::kTransitionTimingFunction:
-      return css_parsing_utils::ConsumeAnimationTimingFunction(stream, context);
+      return css_parsing_utils::ConsumeAnimationTimingFunction(stream, context,
+                                                               local_context);
     case CSSPropertyID::kTransitionBehavior:
       return css_parsing_utils::ConsumeTransitionBehavior(stream);
     default:
@@ -4747,7 +4782,7 @@ bool Transition::ParseShorthand(
       longhands(longhand_count);
   if (!css_parsing_utils::ConsumeAnimationShorthand(
           shorthand, longhands, ConsumeTransitionValue, is_reset_only_function,
-          stream, context)) {
+          stream, context, local_context)) {
     return false;
   }
 
@@ -4950,7 +4985,7 @@ bool LineClamp::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
-    CSSParserLocalContext&,
+    CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   const CSSValue* max_lines = nullptr;
   const CSSValue* block_ellipsis = nullptr;
@@ -4977,7 +5012,8 @@ bool LineClamp::ParseShorthand(
       }
 
       if (!max_lines) {
-        max_lines = css_parsing_utils::ConsumePositiveInteger(stream, context);
+        max_lines = css_parsing_utils::ConsumePositiveInteger(stream, context,
+                                                              local_context);
         if (max_lines) {
           continue;
         }
@@ -5051,7 +5087,7 @@ bool AlternativeWebkitLineClamp::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
-    CSSParserLocalContext&,
+    CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   const CSSValue* max_lines = nullptr;
   const CSSValue* block_ellipsis = nullptr;
@@ -5064,7 +5100,8 @@ bool AlternativeWebkitLineClamp::ParseShorthand(
     block_ellipsis = CSSIdentifierValue::Create(CSSValueID::kNoEllipsis);
     continue_value = CSSIdentifierValue::Create(CSSValueID::kAuto);
   } else {
-    max_lines = css_parsing_utils::ConsumePositiveInteger(stream, context);
+    max_lines = css_parsing_utils::ConsumePositiveInteger(stream, context,
+                                                          local_context);
     if (!max_lines) {
       return false;
     }
@@ -5108,7 +5145,7 @@ bool WebkitMaskBoxImage::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
-    CSSParserLocalContext&,
+    CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   CSSValue* source = nullptr;
   CSSValue* slice = nullptr;
@@ -5117,7 +5154,7 @@ bool WebkitMaskBoxImage::ParseShorthand(
   CSSValue* repeat = nullptr;
 
   if (!css_parsing_utils::ConsumeBorderImageComponents(
-          stream, context, source, slice, width, outset, repeat,
+          stream, context, local_context, source, slice, width, outset, repeat,
           css_parsing_utils::DefaultFill::kFill)) {
     return false;
   }
@@ -5185,7 +5222,7 @@ bool MaskPosition::ParseShorthand(
     CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   return ParseBackgroundOrMaskPosition(
-      maskPositionShorthand(), important, stream, context,
+      maskPositionShorthand(), important, stream, context, local_context,
       local_context.UseAliasParsing()
           ? WebFeature::kThreeValuedPositionBackground
           : std::optional<WebFeature>(),
@@ -5212,7 +5249,8 @@ bool Rule::ParseShorthand(bool important,
   CSSValueList* rule_colors = nullptr;
 
   if (!css_parsing_utils::ConsumeGapDecorationsRuleShorthand(
-          important, context, stream, rule_widths, rule_styles, rule_colors)) {
+          important, context, local_context, stream, rule_widths, rule_styles,
+          rule_colors)) {
     return false;
   }
 
@@ -5256,7 +5294,7 @@ bool RuleColor::ParseShorthand(
     HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(shorthandForProperty(CSSPropertyID::kRuleColor).length(), 2u);
   CSSValue* rule_color = css_parsing_utils::ConsumeGapDecorationPropertyList(
-      stream, context, CSSGapDecorationPropertyType::kColor);
+      stream, context, local_context, CSSGapDecorationPropertyType::kColor);
 
   if (!rule_color) {
     return false;
@@ -5292,7 +5330,7 @@ bool RuleWidth::ParseShorthand(
     HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(shorthandForProperty(CSSPropertyID::kRuleWidth).length(), 2u);
   CSSValue* rule_width = css_parsing_utils::ConsumeGapDecorationPropertyList(
-      stream, context, CSSGapDecorationPropertyType::kWidth);
+      stream, context, local_context, CSSGapDecorationPropertyType::kWidth);
 
   if (!rule_width) {
     return false;
@@ -5328,7 +5366,7 @@ bool RuleStyle::ParseShorthand(
     HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(shorthandForProperty(CSSPropertyID::kRuleStyle).length(), 2u);
   CSSValue* rule_style = css_parsing_utils::ConsumeGapDecorationPropertyList(
-      stream, context, CSSGapDecorationPropertyType::kStyle);
+      stream, context, local_context, CSSGapDecorationPropertyType::kStyle);
 
   if (!rule_style) {
     return false;

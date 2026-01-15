@@ -155,8 +155,7 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
   // so they cannot go out of sync.
   if (is_shorthand) {
     auto local_context =
-        CSSParserLocalContext()
-            .WithPropertyName(CSSPropertyName(unresolved_property))
+        CSSParserLocalContext(CSSPropertyName(unresolved_property))
             .WithCurrentShorthand(property_id);
     // Variable references will fail to parse here and will fall out to the
     // variable ref parser below.

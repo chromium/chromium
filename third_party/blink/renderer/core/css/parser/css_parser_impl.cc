@@ -1620,9 +1620,11 @@ StyleRuleFontFeature* CSSParserImpl::ConsumeFontFeatureRuleBlock(
       if (numbers->length() == max_allowed_values) {
         return nullptr;
       }
+      CSSParserLocalContext local_context =
+          CSSParserLocalContext::CreateWithoutPropertyForAtRules();
       CSSPrimitiveValue* parsed_number =
           css_parsing_utils::ConsumeIntegerOrNumberCalc(
-              stream, *context_,
+              stream, *context_, local_context,
               CSSPrimitiveValue::ValueRange::kNonNegativeInteger);
       if (!parsed_number) {
         return nullptr;
@@ -2180,8 +2182,11 @@ StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
   // <container-name>
   AtomicString name;
   if (stream.Peek().GetType() == kIdentToken) {
+    CSSParserLocalContext local_context =
+        CSSParserLocalContext::CreateWithoutPropertyForAtRules();
     auto* ident = DynamicTo<CSSCustomIdentValue>(
-        css_parsing_utils::ConsumeSingleContainerName(stream, *context_));
+        css_parsing_utils::ConsumeSingleContainerName(stream, *context_,
+                                                      local_context));
     if (ident) {
       name = ident->Value();
     }
@@ -3426,9 +3431,11 @@ std::unique_ptr<Vector<KeyframeOffset>> CSSParserImpl::ConsumeKeyframeKeyList(
         result->push_back(KeyframeOffset(TimelineOffset::NamedRange::kNone, 1));
         stream.ConsumeIncludingWhitespace();
       } else {
+        CSSParserLocalContext local_context =
+            CSSParserLocalContext::CreateWithoutPropertyForAtRules();
         auto* stream_name_percent = To<CSSValueList>(
-            css_parsing_utils::ConsumeTimelineRangeNameAndPercent(stream,
-                                                                  *context));
+            css_parsing_utils::ConsumeTimelineRangeNameAndPercent(
+                stream, *context, local_context));
         if (!stream_name_percent) {
           return nullptr;
         }

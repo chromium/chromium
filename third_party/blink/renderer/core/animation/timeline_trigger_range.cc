@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/animation/view_timeline.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -38,6 +39,8 @@ bool ValidateBoundary(ExecutionContext* execution_context,
                       bool allow_auto) {
   if (boundary->IsString()) {
     CSSParserTokenStream stream(boundary->GetAsString());
+    CSSParserLocalContext local_context =
+        CSSParserLocalContext::CreateWithoutPropertyForAnimations();
     const CSSValue* value = css_parsing_utils::ConsumeAnimationRange(
         stream,
         *To<LocalDOMWindow>(execution_context)
@@ -45,6 +48,7 @@ bool ValidateBoundary(ExecutionContext* execution_context,
              ->ElementSheet()
              .Contents()
              ->ParserContext(),
+        local_context,
         /* default_offset_percent */ default_percent, allow_auto);
     if (!value || !stream.AtEnd()) {
       exception_state.ThrowTypeError(

@@ -17,10 +17,12 @@ FontVariantAlternatesParser::FontVariantAlternatesParser() = default;
 FontVariantAlternatesParser::ParseResult
 FontVariantAlternatesParser::ConsumeAlternates(
     CSSParserTokenStream& stream,
-    const CSSParserContext& context) {
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context) {
   // Handled in longhand parsing imstream.
   DCHECK(stream.Peek().Id() != CSSValueID::kNormal);
-  if (!ConsumeHistoricalForms(stream) && !ConsumeAlternate(stream, context)) {
+  if (!ConsumeHistoricalForms(stream) &&
+      !ConsumeAlternate(stream, context, local_context)) {
     return ParseResult::kUnknownValue;
   }
   return ParseResult::kConsumedValue;
@@ -28,7 +30,8 @@ FontVariantAlternatesParser::ConsumeAlternates(
 
 bool FontVariantAlternatesParser::ConsumeAlternate(
     CSSParserTokenStream& stream,
-    const CSSParserContext& context) {
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context) {
   auto peek = stream.Peek().FunctionId();
   cssvalue::CSSAlternateValue** value_to_set = nullptr;
   switch (peek) {
@@ -78,8 +81,9 @@ bool FontVariantAlternatesParser::ConsumeAlternate(
     CSSParserTokenStream::RestoringBlockGuard guard(stream);
     stream.ConsumeWhitespace();
     aliases = ConsumeCommaSeparatedList<CSSCustomIdentValue*(
-        CSSParserTokenStream&, const CSSParserContext&)>(ConsumeCustomIdent,
-                                                         stream, context);
+        CSSParserTokenStream&, const CSSParserContext&,
+        CSSParserLocalContext&)>(ConsumeCustomIdent, stream, context,
+                                 local_context);
     // At least one argument is required:
     // https://drafts.csswg.org/css-fonts-4/#font-variant-alternates-prop
     if (!aliases || !stream.AtEnd()) {

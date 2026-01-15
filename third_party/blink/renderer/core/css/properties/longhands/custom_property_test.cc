@@ -167,8 +167,8 @@ TEST_F(CustomPropertyTest, ComputedCSSValueIntegerCalc) {
 
 TEST_F(CustomPropertyTest, ParseSingleValueUnregistered) {
   CustomProperty property(AtomicString("--x"), GetDocument());
-  const CSSValue* value =
-      ParseValue(property, "100px", CSSParserLocalContext());
+  const CSSValue* value = ParseValue(
+      property, "100px", CSSParserLocalContext::CreateWithoutPropertyForTest());
   ASSERT_TRUE(value->IsUnparsedDeclaration());
   EXPECT_EQ("100px", value->CssText());
 }
@@ -176,14 +176,15 @@ TEST_F(CustomPropertyTest, ParseSingleValueUnregistered) {
 TEST_F(CustomPropertyTest, ParseSingleValueTyped) {
   RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
   CustomProperty property(AtomicString("--x"), GetDocument());
-  const CSSValue* value1 =
-      ParseValue(property, "100px", CSSParserLocalContext());
+  const CSSValue* value1 = ParseValue(
+      property, "100px", CSSParserLocalContext::CreateWithoutPropertyForTest());
   EXPECT_TRUE(value1->IsPrimitiveValue());
   EXPECT_EQ(100, To<CSSPrimitiveValue>(value1)->ComputeLength<double>(
                      CSSToLengthConversionData(/*element=*/nullptr)));
 
   const CSSValue* value2 =
-      ParseValue(property, "maroon", CSSParserLocalContext());
+      ParseValue(property, "maroon",
+                 CSSParserLocalContext::CreateWithoutPropertyForTest());
   EXPECT_FALSE(value2);
 }
 
@@ -232,9 +233,11 @@ TEST_F(CustomPropertyTest, ParseAnchorQueriesAsLength) {
   // Anchor queries are not allowed in registered custom properties for
   // <length>.
   EXPECT_FALSE(
-      ParseValue(property, "anchor(--foo top)", CSSParserLocalContext()));
-  EXPECT_FALSE(ParseValue(property, "anchor-size(--foo width)",
-                          CSSParserLocalContext()));
+      ParseValue(property, "anchor(--foo top)",
+                 CSSParserLocalContext::CreateWithoutPropertyForTest()));
+  EXPECT_FALSE(
+      ParseValue(property, "anchor-size(--foo width)",
+                 CSSParserLocalContext::CreateWithoutPropertyForTest()));
 }
 
 TEST_F(CustomPropertyTest, ParseAnchorQueriesAsLengthPercentage) {
@@ -244,12 +247,14 @@ TEST_F(CustomPropertyTest, ParseAnchorQueriesAsLengthPercentage) {
   // Anchor queries are not allowed in registered custom properties for
   // <length-percentage>.
   EXPECT_FALSE(
-      ParseValue(property, "anchor(--foo top)", CSSParserLocalContext()));
-  EXPECT_FALSE(ParseValue(property, "anchor-size(--foo width)",
-                          CSSParserLocalContext()));
-  EXPECT_FALSE(ParseValue(property,
-                          "calc(anchor(--foo top) + anchor-size(--foo width))",
-                          CSSParserLocalContext()));
+      ParseValue(property, "anchor(--foo top)",
+                 CSSParserLocalContext::CreateWithoutPropertyForTest()));
+  EXPECT_FALSE(
+      ParseValue(property, "anchor-size(--foo width)",
+                 CSSParserLocalContext::CreateWithoutPropertyForTest()));
+  EXPECT_FALSE(
+      ParseValue(property, "calc(anchor(--foo top) + anchor-size(--foo width))",
+                 CSSParserLocalContext::CreateWithoutPropertyForTest()));
 }
 
 TEST_F(CustomPropertyTest, ValueMode) {

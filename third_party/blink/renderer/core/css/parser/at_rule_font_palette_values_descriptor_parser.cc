@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/css/parser/at_rule_descriptor_parser.h"
-
 #include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
+#include "third_party/blink/renderer/core/css/parser/at_rule_descriptor_parser.h"
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptors.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 
 namespace blink {
@@ -21,15 +21,15 @@ CSSValue* ConsumeFontFamily(CSSParserTokenStream& stream,
 }
 
 CSSValue* ConsumeBasePalette(CSSParserTokenStream& stream,
-                             const CSSParserContext& context) {
+                             const CSSParserContext& context,
+                             CSSParserLocalContext& local_context) {
   if (CSSValue* ident =
           css_parsing_utils::ConsumeIdent<CSSValueID::kLight,
                                           CSSValueID::kDark>(stream)) {
     return ident;
   }
-
   CSSPrimitiveValue* palette_index =
-      css_parsing_utils::ConsumeInteger(stream, context, 0);
+      css_parsing_utils::ConsumeInteger(stream, context, local_context, 0);
   if (palette_index && !palette_index->IsElementDependent()) {
     // Only calc() expressions that can be fully simplified at parse time are
     // valid. If not, they rely on an element context, and @font-palette-values
@@ -40,11 +40,12 @@ CSSValue* ConsumeBasePalette(CSSParserTokenStream& stream,
 }
 
 CSSValue* ConsumeColorOverride(CSSParserTokenStream& stream,
-                               const CSSParserContext& context) {
+                               const CSSParserContext& context,
+                               CSSParserLocalContext& local_context) {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
   do {
     CSSPrimitiveValue* color_index =
-        css_parsing_utils::ConsumeInteger(stream, context, 0);
+        css_parsing_utils::ConsumeInteger(stream, context, local_context, 0);
     if (!color_index || color_index->IsElementDependent()) {
       // Only calc() expressions that can be fully simplified at parse time are
       // valid. If not, they rely on an element context, and
@@ -52,7 +53,9 @@ CSSValue* ConsumeColorOverride(CSSParserTokenStream& stream,
       return nullptr;
     }
     stream.ConsumeWhitespace();
-    CSSValue* color = css_parsing_utils::ConsumeAbsoluteColor(stream, context);
+
+    CSSValue* color =
+        css_parsing_utils::ConsumeAbsoluteColor(stream, context, local_context);
     if (!color) {
       return nullptr;
     }
@@ -80,6 +83,10 @@ CSSValue* AtRuleDescriptorParser::ParseAtFontPaletteValuesDescriptor(
   CSSValue* parsed_value = nullptr;
   CSSParserContext::ParserModeOverridingScope scope(
       context, kCSSFontPaletteValuesRuleMode);
+  // TODO(crbug.com/413385732): Store correct property name in
+  // CSSParserLocalContext for random().
+  CSSParserLocalContext local_context =
+      CSSParserLocalContext::CreateWithoutPropertyForAtRules();
 
   switch (id) {
     case AtRuleDescriptorID::FontFamily:
@@ -88,11 +95,11 @@ CSSValue* AtRuleDescriptorParser::ParseAtFontPaletteValuesDescriptor(
       break;
     case AtRuleDescriptorID::BasePalette:
       stream.ConsumeWhitespace();
-      parsed_value = ConsumeBasePalette(stream, context);
+      parsed_value = ConsumeBasePalette(stream, context, local_context);
       break;
     case AtRuleDescriptorID::OverrideColors:
       stream.ConsumeWhitespace();
-      parsed_value = ConsumeColorOverride(stream, context);
+      parsed_value = ConsumeColorOverride(stream, context, local_context);
       break;
     default:
       break;

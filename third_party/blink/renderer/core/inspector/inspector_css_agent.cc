@@ -2463,7 +2463,8 @@ protocol::Response InspectorCSSAgent::resolveValues(
         "Property name should not be a shorthand.");
   }
 
-  CSSParserLocalContext local_context;
+  CSSParserLocalContext local_context =
+      CSSParserLocalContext::CreateWithoutPropertyForInspector();
   *results = std::make_unique<protocol::Array<String>>();
   for (auto value : *values) {
     CSSVariableData* data =
@@ -2572,7 +2573,8 @@ protocol::Response InspectorCSSAgent::getLonghandProperties(
       MakeGarbageCollected<CSSParserContext>(kHTMLStandardMode,
                                              SecureContextMode::kSecureContext);
   auto local_context =
-      CSSParserLocalContext().WithCurrentShorthand(property.PropertyID());
+      CSSParserLocalContext::CreateWithoutPropertyForInspector()
+          .WithCurrentShorthand(property.PropertyID());
 
   HeapVector<CSSPropertyValue, 64> css_longhand_properties;
   const auto* shorthand = DynamicTo<Shorthand>(property);

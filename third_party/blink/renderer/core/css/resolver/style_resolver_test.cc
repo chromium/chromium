@@ -1295,7 +1295,8 @@ const CSSValue* ParseCustomProperty(Document& document,
                                     const CustomProperty& property,
                                     const String& value) {
   const auto* context = MakeGarbageCollected<CSSParserContext>(document);
-  CSSParserLocalContext local_context;
+  CSSParserLocalContext local_context =
+      CSSParserLocalContext::CreateWithoutPropertyForTest();
 
   return property.Parse(value, *context, local_context);
 }

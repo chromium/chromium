@@ -22,8 +22,10 @@
 #include "third_party/blink/renderer/core/css/cssom/css_math_sum.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unit_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -357,12 +359,14 @@ CSSNumericValue* CSSNumericValue::parse(
         using enum CSSMathExpressionNode::Flag;
         using Flags = CSSMathExpressionNode::Flags;
 
+        CSSParserLocalContext local_context =
+            CSSParserLocalContext::CreateWithoutPropertyForCSSOM();
         // TODO(crbug.com/1309178): Decide how to handle anchor queries here.
         CSSMathExpressionNode* expression =
             CSSMathExpressionNode::ParseMathFunction(
                 CSSValueID::kCalc, stream,
                 *MakeGarbageCollected<CSSParserContext>(*execution_context),
-                Flags({AllowPercent}), kCSSAnchorQueryTypesAll);
+                local_context, Flags({AllowPercent}), kCSSAnchorQueryTypesAll);
         if (!expression) {
           break;
         }
