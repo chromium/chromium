@@ -745,6 +745,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       determineTabGridTransitionTypeWithAnimationEnabled:animationEnabled];
 
   Browser* browser = isIncognito ? self.incognitoBrowser : self.regularBrowser;
+  if (!browser) {
+    // The browser can be nil here, for example when switching account. Do not
+    // try to call the completion block as the code assumes there is a browser.
+    // See crbug.com/466376004.
+    return;
+  }
   web::WebState* activeWebState =
       browser->GetWebStateList()->GetActiveWebState();
   BOOL isRegularBrowserNTP = !isIncognito && activeWebState &&
