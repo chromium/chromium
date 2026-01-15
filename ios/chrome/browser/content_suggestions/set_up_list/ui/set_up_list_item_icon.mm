@@ -275,9 +275,14 @@ UIView* IconInSquare(NSString* symbol,
           @[ [UIColor whiteColor], [UIColor colorNamed:kBlue500Color] ]);
     }
     case SetUpListItemType::kSafariImport:
+      return _inSquare
+                 ? IconInSquare(kSaveImageActionSymbol, NO, kGreen500Color)
+                 : IconInCircle(kSaveImageActionSymbol, _compactLayout,
+                                kGreen500Color);
     case SetUpListItemType::kBackgroundCustomization:
-      NOTREACHED();
-      // TODO(crbug.com/462437008): Add proper icons to the setup list.
+      return _inSquare ? IconInSquare(kEditActionSymbol, NO, kPurple500Color)
+                       : IconInCircle(kEditActionSymbol, _compactLayout,
+                                      kPurple500Color);
   }
 }
 
