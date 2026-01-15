@@ -67,6 +67,7 @@
 #include "net/http/http_util.h"
 #include "net/http/no_vary_search_cache.h"
 #include "net/log/net_log_event_type.h"
+#include "net/log/net_log_util.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_config_service.h"
 
@@ -187,6 +188,8 @@ int HttpCache::Transaction::Start(const HttpRequestInfo* request,
   DCHECK(request);
   DCHECK(request->IsConsistent());
   DCHECK(!callback.is_null());
+  TRACE_EVENT("net", "HttpCache::Transaction::Start",
+              NetLogWithSourceToFlow(net_log));
   TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("net"),
                     "HttpCacheTransactionState", track_for_state_change_, "url",
                     request->url.spec());
@@ -1874,6 +1877,8 @@ int HttpCache::Transaction::DoCacheUpdateStaleWhileRevalidateTimeoutComplete(
 }
 
 int HttpCache::Transaction::DoSendRequest() {
+  TRACE_EVENT("net", "HttpCache::Transaction::DoSendRequest",
+              NetLogWithSourceToFlow(net_log_));
   TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("net"), "DoSendRequest",
                       track_for_state_change_);
   DCHECK(mode_ & WRITE || mode_ == NONE);

@@ -83,6 +83,7 @@
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
+#include "net/log/net_log_util.h"
 #include "net/log/net_log_values.h"
 #include "net/log/net_log_with_source.h"
 #include "net/nqe/network_quality_estimator.h"
@@ -504,6 +505,9 @@ bool ShouldBlockAllCookies(PrivacyMode privacy_mode) {
 void URLRequestHttpJob::OnGotFirstPartySetMetadata(
     FirstPartySetMetadata first_party_set_metadata,
     FirstPartySetsCacheFilter::MatchInfo match_info) {
+  TRACE_EVENT("net", "URLRequestHttpJob::OnGotFirstPartySetMetadata",
+              NetLogWithSourceToFlow(request_->net_log()));
+
   first_party_set_metadata_ = std::move(first_party_set_metadata);
   request_info_.fps_cache_filter = match_info.clear_at_run_id;
   request_info_.browser_run_id = match_info.browser_run_id;
@@ -666,6 +670,9 @@ void URLRequestHttpJob::DestroyTransaction() {
 }
 
 void URLRequestHttpJob::StartTransaction() {
+  TRACE_EVENT("net", "URLRequestHttpJob::StartTransaction",
+              NetLogWithSourceToFlow(request_->net_log()));
+
   DCHECK(!override_response_info_);
 
   NetworkDelegate* network_delegate = request()->network_delegate();
@@ -810,6 +817,9 @@ void URLRequestHttpJob::AddExtraHeaders() {
 }
 
 void URLRequestHttpJob::AddCookieHeaderAndStart() {
+  TRACE_EVENT("net", "URLRequestHttpJob::AddCookieHeaderAndStart",
+              NetLogWithSourceToFlow(request_->net_log()));
+
   CookieStore* cookie_store = request_->context()->cookie_store();
   DCHECK(cookie_store);
   DCHECK(ShouldAddCookieHeader());
@@ -844,6 +854,9 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
     const CookieOptions& options,
     const CookieAccessResultList& cookies_with_access_result_list,
     const CookieAccessResultList& excluded_list) {
+  TRACE_EVENT("net", "URLRequestHttpJob::SetCookieHeaderAndStart",
+              NetLogWithSourceToFlow(request_->net_log()));
+
   DCHECK(request_->maybe_sent_cookies().empty());
 
   CookieAccessResultList maybe_included_cookies =
@@ -1355,6 +1368,9 @@ void URLRequestHttpJob::OnReadCompleted(int result) {
 }
 
 void URLRequestHttpJob::RestartTransaction() {
+  TRACE_EVENT("net", "URLRequestHttpJob::RestartTransaction",
+              NetLogWithSourceToFlow(request_->net_log()));
+
   DCHECK(!override_response_info_);
 
   // These will be reset in OnStartCompleted.

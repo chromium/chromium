@@ -28,6 +28,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -730,6 +731,8 @@ void SQLitePersistentCookieStore::Backend::Load(
 void SQLitePersistentCookieStore::Backend::LoadCookiesForKey(
     base::optional_ref<const std::string> key,
     LoadedCallback loaded_callback) {
+  TRACE_EVENT("net", "SQLitePersistentCookieStore::Backend::LoadCookiesForKey",
+              perfetto::Flow::FromPointer(this));
   if (crypto_) {
     crypto_->Init(base::BindOnce(&Backend::CryptoHasInitFromLoad, this,
                                  key.CopyAsOptional(),
@@ -751,6 +754,9 @@ void SQLitePersistentCookieStore::Backend::CryptoHasInitFromLoad(
 void SQLitePersistentCookieStore::Backend::LoadAndNotifyInBackground(
     base::optional_ref<const std::string> key,
     LoadedCallback loaded_callback) {
+  TRACE_EVENT("net",
+              "SQLitePersistentCookieStore::Backend::LoadAndNotifyInBackground",
+              perfetto::Flow::FromPointer(this));
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   bool success = false;
 
@@ -775,6 +781,10 @@ void SQLitePersistentCookieStore::Backend::LoadAndNotifyInBackground(
 void SQLitePersistentCookieStore::Backend::NotifyLoadCompleteInForeground(
     LoadedCallback loaded_callback,
     bool load_success) {
+  TRACE_EVENT(
+      "net",
+      "SQLitePersistentCookieStore::Backend::NotifyLoadCompleteInForeground",
+      perfetto::Flow::FromPointer(this));
   DCHECK(client_task_runner()->RunsTasksInCurrentSequence());
 
   std::vector<std::unique_ptr<CanonicalCookie>> cookies;
@@ -1565,6 +1575,9 @@ void SQLitePersistentCookieStore::Backend::BackgroundDeleteAllInList(
 void SQLitePersistentCookieStore::Backend::FinishedLoadingCookies(
     LoadedCallback loaded_callback,
     bool success) {
+  TRACE_EVENT("loading",
+              "SQLitePersistentCookieStore::Backend::FinishedLoadingCookies",
+              perfetto::Flow::FromPointer(this));
   PostClientTask(FROM_HERE,
                  base::BindOnce(&Backend::NotifyLoadCompleteInForeground, this,
                                 std::move(loaded_callback), success));
