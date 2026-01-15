@@ -351,6 +351,10 @@ public class ClipDrawableProgressBar extends ImageView {
         }
     }
 
+    public int getDesiredAndroidVisibility() {
+        return mDesiredAndroidVisibility;
+    }
+
     private int applyAlpha(int color, float alpha) {
         return (Math.round(alpha * (color >>> 24)) << 24) | (0x00ffffff & color);
     }
