@@ -54,6 +54,18 @@ struct ProfileEnablement {
 
   // Whether live (audio) functionality is disallowed for this account type.
   bool live_disallowed;
+
+  // Summary of whether actuation is enabled, and if not, why not.
+  ActuationEligibility actuation_eligibility;
+};
+
+// Whether actuation is enabled, and if not, why not.
+enum ActuationEligibility {
+  kEligible,
+  kMissingAccountCapability,
+  kMissingChromeBenefits,
+  kManagedOrDataProtected,
+  kPlatformUnsupported,
 };
 
 // The ready state of the profile.

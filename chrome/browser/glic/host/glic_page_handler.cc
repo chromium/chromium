@@ -2258,9 +2258,9 @@ void GlicPageHandler::WebUiStateChanged(glic::mojom::WebUiState new_state) {
 
 void GlicPageHandler::GetProfileEnablement(
     GetProfileEnablementCallback callback) {
+  Profile* profile = Profile::FromBrowserContext(browser_context_);
   GlicEnabling::ProfileEnablement enablement =
-      GlicEnabling::EnablementForProfile(
-          Profile::FromBrowserContext(browser_context_));
+      GlicEnabling::EnablementForProfile(profile);
 
   auto result = mojom::ProfileEnablement::New();
   result->feature_disabled = enablement.feature_disabled;
@@ -2272,6 +2272,36 @@ void GlicPageHandler::GetProfileEnablement(
   result->disallowed_by_remote_other = enablement.disallowed_by_remote_other;
   result->not_consented = enablement.not_consented;
   result->live_disallowed = enablement.live_disallowed;
+
+#if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+  result->actuation_eligibility =
+      mojom::ActuationEligibility::kPlatformUnsupported;
+#else
+  actor::ActorPolicyChecker& actor_policy_checker =
+      actor::ActorKeyedService::Get(profile)->GetPolicyChecker();
+  if (actor_policy_checker.CanActOnWeb()) {
+    result->actuation_eligibility = mojom::ActuationEligibility::kEligible;
+  } else {
+    switch (actor_policy_checker.CannotActOnWebReason()) {
+      case actor::ActorPolicyChecker::CannotActReason::
+          kAccountCapabilityIneligible:
+        result->actuation_eligibility =
+            mojom::ActuationEligibility::kMissingAccountCapability;
+        break;
+      case actor::ActorPolicyChecker::CannotActReason::
+          kAccountMissingChromeBenefits:
+        result->actuation_eligibility =
+            mojom::ActuationEligibility::kMissingChromeBenefits;
+        break;
+      case actor::ActorPolicyChecker::CannotActReason::kManagedOrDataProtected:
+        result->actuation_eligibility =
+            mojom::ActuationEligibility::kManagedOrDataProtected;
+        break;
+      case actor::ActorPolicyChecker::CannotActReason::kNone:
+        NOTREACHED();
+    }
+  }
+#endif
 
   std::move(callback).Run(std::move(result));
 }

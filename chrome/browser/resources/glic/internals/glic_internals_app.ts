@@ -5,6 +5,7 @@
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {BrowserProxyImpl} from '../browser_proxy.js';
+import {ActuationEligibility} from '../glic.mojom-webui.js';
 import type {ProfileEnablement} from '../glic.mojom-webui.js';
 
 import {getCss} from './glic_internals_app.css.js';
@@ -40,6 +41,24 @@ export class GlicInternalsAppElement extends CrLitElement {
         ({enablement}) => {
           this.enablement_ = enablement;
         });
+  }
+
+  protected getActuationEligibilityString_(eligibility: ActuationEligibility):
+      string {
+    switch (eligibility) {
+      case ActuationEligibility.kEligible:
+        return 'eligible';
+      case ActuationEligibility.kMissingAccountCapability:
+        return 'missing account capability';
+      case ActuationEligibility.kMissingChromeBenefits:
+        return 'missing Chrome benefits';
+      case ActuationEligibility.kManagedOrDataProtected:
+        return 'managed or data protected';
+      case ActuationEligibility.kPlatformUnsupported:
+        return 'platform unsupported';
+      default:
+        return 'unknown';
+    }
   }
 }
 

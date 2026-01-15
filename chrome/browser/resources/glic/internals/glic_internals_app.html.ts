@@ -34,10 +34,6 @@ export function getHtml(this: GlicInternalsAppElement) {
           <td>${!this.enablement_.primaryAccountNotCapable}</td>
         </tr>
         <tr>
-          <td>Account is eligible for Live</td>
-          <td>${!this.enablement_.liveDisallowed}</td>
-        </tr>
-        <tr>
           <td>
             Chrome Enterprise policy allows this feature (or doesn't apply)
           </td>
@@ -54,6 +50,26 @@ export function getHtml(this: GlicInternalsAppElement) {
         <tr>
           <td>User did pass the FRE</td>
           <td>${!this.enablement_.notConsented}</td>
+        </tr>
+      </table>` :
+      html`<h3 id="loadingMsg">Loading...</h3>`}
+    <h2>Sub-features</h2>
+    ${this.enablement_ ? html`
+      <table>
+        <tr>
+          <th>Feature</th>
+          <th>State</th>
+        </tr>
+        <tr>
+          <td>Account is eligible for Live</td>
+          <td>${!this.enablement_.liveDisallowed}</td>
+        </tr>
+        <tr>
+          <td>Actuation eligibility</td>
+          <td>
+            ${this.getActuationEligibilityString_(
+                this.enablement_.actuationEligibility)}
+          </td>
         </tr>
       </table>` :
       html`<h3 id="loadingMsg">Loading...</h3>`}
