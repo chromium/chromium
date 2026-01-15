@@ -374,7 +374,7 @@ export class SettingsInputMethodOptionsPageElement extends
     };
   }
 
-  private dependentOptionsDisabled_(value: OptionValue): boolean {
+  private dependentOptionsDisabled_(value: OptionValue|string): boolean {
     // TODO(b/189909728): Sometimes the value comes as a string, other times as
     // an integer, other times as a boolean, so handle all cases. Try to
     // understand and fix this.

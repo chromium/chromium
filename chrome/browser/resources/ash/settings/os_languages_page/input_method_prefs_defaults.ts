@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {JapaneseInputMode, JapaneseKeymapStyle, JapanesePunctuationStyle, JapaneseSelectionShortcut, JapaneseShiftKeyModeStyle, JapaneseSpaceInputStyle, JapaneseSymbolStyle, KoreanKeyboardLayout, OptionType, PinyinXkbLayout, ZhuyinKeyboardLayout, ZhuyinSelectKeys} from './input_method_prefs_consts.js';
+import {JapaneseInputMode, JapaneseKeymapStyle, JapanesePunctuationStyle, JapaneseSelectionShortcut, JapaneseShiftKeyModeStyle, JapaneseSpaceInputStyle, JapaneseSymbolStyle, KoreanKeyboardLayout, OptionType, PinyinXkbLayout, ZhuyinKeyboardLayout, ZhuyinPageSize, ZhuyinSelectKeys} from './input_method_prefs_consts.js';
 
 /**
  * Default values for each option type.
@@ -56,7 +56,7 @@ export const OPTION_DEFAULT = {
 
   // Default option values for Zhuyin input method.
   [OptionType.ZHUYIN_KEYBOARD_LAYOUT]: ZhuyinKeyboardLayout.STANDARD,
-  [OptionType.ZHUYIN_PAGE_SIZE]: '10',
+  [OptionType.ZHUYIN_PAGE_SIZE]: ZhuyinPageSize.ZHUYIN_PAGE_SIZE_10,
   [OptionType.ZHUYIN_SELECT_KEYS]:
       ZhuyinSelectKeys.ZHUYIN_SELECT_KEYS_1234567890,
 

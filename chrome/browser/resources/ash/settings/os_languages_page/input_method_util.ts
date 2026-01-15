@@ -9,7 +9,7 @@ import {assertExhaustive} from '../assert_extras.js';
 import type {Route} from '../router.js';
 import {routes} from '../router.js';
 
-import {JapaneseInputMode, JapaneseKeymapStyle, JapanesePunctuationStyle, JapaneseSelectionShortcut, JapaneseShiftKeyModeStyle, JapaneseSpaceInputStyle, JapaneseSymbolStyle, KoreanKeyboardLayout, OptionType, PinyinXkbLayout, ZhuyinKeyboardLayout, ZhuyinSelectKeys} from './input_method_prefs_consts.js';
+import {JapaneseInputMode, JapaneseKeymapStyle, JapanesePunctuationStyle, JapaneseSelectionShortcut, JapaneseShiftKeyModeStyle, JapaneseSpaceInputStyle, JapaneseSymbolStyle, KoreanKeyboardLayout, OptionType, PinyinXkbLayout, ZhuyinKeyboardLayout, ZhuyinPageSize, ZhuyinSelectKeys} from './input_method_prefs_consts.js';
 import {OPTION_DEFAULT} from './input_method_prefs_defaults.js';
 import type {SettingsContext} from './input_method_settings.js';
 import {getInputMethodSettings, SettingsType} from './input_method_settings.js';
@@ -695,9 +695,9 @@ export function getOptionMenuItems(option: OptionType|UiOptionType):
     case OptionType.ZHUYIN_PAGE_SIZE:
       // Zhuyin page size is just a number, so is not translated.
       return [
-        {value: '10'},
-        {value: '9'},
-        {value: '8'},
+        {value: ZhuyinPageSize.ZHUYIN_PAGE_SIZE_10},
+        {value: ZhuyinPageSize.ZHUYIN_PAGE_SIZE_9},
+        {value: ZhuyinPageSize.ZHUYIN_PAGE_SIZE_8},
       ];
     case OptionType.JAPANESE_INPUT_MODE:
       return [

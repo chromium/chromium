@@ -130,6 +130,15 @@ export enum PinyinXkbLayout {
 }
 
 /**
+ * Values persisted in OptionType.ZHUYIN_PAGE_SIZE CrOS-Prefs entry.
+ */
+export enum ZhuyinPageSize {
+  ZHUYIN_PAGE_SIZE_10 = '10',
+  ZHUYIN_PAGE_SIZE_9 = '9',
+  ZHUYIN_PAGE_SIZE_8 = '8',
+}
+
+/**
  * Values persisted in OptionType.ZHUYIN_SELECT_KEYS CrOS-Prefs entry.
  */
 export enum ZhuyinSelectKeys {
