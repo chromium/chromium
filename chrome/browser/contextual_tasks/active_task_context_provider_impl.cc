@@ -7,7 +7,7 @@
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/context_decoration_params.h"
 #include "components/contextual_tasks/public/contextual_task.h"
@@ -37,22 +37,20 @@ std::set<tabs::TabHandle> GetTabsFromContext(
     return tabs;
   }
 
-  TabStripModel* tab_strip_model = browser_window->GetTabStripModel();
-  if (!tab_strip_model) {
+  TabListInterface* tab_list = TabListInterface::From(browser_window);
+  if (!tab_list) {
     return tabs;
   }
 
-  for (int i = 0; i < tab_strip_model->count(); ++i) {
-    content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(i);
+  for (int i = 0; i < tab_list->GetTabCount(); ++i) {
+    tabs::TabInterface* tab = tab_list->GetTab(i);
+    content::WebContents* web_contents = tab ? tab->GetContents() : nullptr;
     if (!web_contents) {
       continue;
     }
     SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents);
     if (context_session_ids.contains(tab_id)) {
-      if (tabs::TabInterface* tab =
-              tabs::TabInterface::GetFromContents(web_contents)) {
-        tabs.insert(tab->GetHandle());
-      }
+      tabs.insert(tab->GetHandle());
     }
   }
 
