@@ -83,6 +83,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
     private BottomSheetSigninAndHistorySyncConfig mConfig;
     private final @SigninAccessPoint int mSigninAccessPoint;
     private @Nullable Profile mProfile;
+    private final boolean mIsLegacyFlow;
 
     private @Nullable SigninBottomSheetCoordinator mSigninBottomSheetCoordinator;
     private @Nullable HistorySyncCoordinator mHistorySyncCoordinator;
@@ -199,6 +200,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         mSnackbarManager = snackbarManager;
         mSigninAccessPoint = signinAccessPoint;
         mActivityDelegate = null;
+        mIsLegacyFlow = false;
 
         mRegisteredActivityKey = ADD_ACCOUNT_ACTIVITY_KEY + signinAccessPoint;
         activityResultTracker.register(
@@ -261,6 +263,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         mConfig = config;
         mSnackbarManager = null;
         mProfileSupplier.onAvailable(this::onProfileAvailable);
+        mIsLegacyFlow = true;
 
         // TODO(crbug.com/41493768): Implement the loading state UI.
     }
@@ -442,6 +445,12 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
             mHistorySyncCoordinator.destroy();
             mHistorySyncCoordinator = null;
         }
+        if (!mIsLegacyFlow && mDialogModel != null) {
+            mModalDialogManagerSupplier
+                    .get()
+                    .dismissDialog(mDialogModel, DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED);
+        }
+
         SigninAndHistorySyncCoordinator.Result flowResult =
                 new SigninAndHistorySyncCoordinator.Result(
                         mDidShowSigninStep && !didSignOut, isHistorySyncAccepted);
@@ -538,10 +547,6 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
             onFlowComplete(new SigninAndHistorySyncCoordinator.Result(mDidShowSigninStep, false));
             return;
         }
-        ModalDialogManager manager = mModalDialogManagerSupplier.get();
-        assert manager != null;
-        boolean isSeamlessSigninFlow =
-                mConfig.withAccountSigninMode == WithAccountSigninMode.SEAMLESS_SIGNIN;
 
         mDialogModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
@@ -565,7 +570,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
                                             dismissHistorySync(
                                                     /* didSignOut= */ false,
                                                     /* isHistorySyncAccepted= */ false);
-                                        } else if (!isSeamlessSigninFlow) {
+                                        } else if (mIsLegacyFlow) {
                                             // TODO(crbug.com/453930445): onFlowComplete can be
                                             // called twice. Remove after seamless sign-in launch.
                                             onFlowComplete(
@@ -579,7 +584,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
                                 // TODO(crbug.com/453930445): remove entire handleOnBackPressed
                                 // block after seamless sign-in launch. Back pressing by default
                                 // dismisses the dialog.
-                                new OnBackPressedCallback(!isSeamlessSigninFlow) {
+                                new OnBackPressedCallback(mIsLegacyFlow) {
                                     @Override
                                     public void handleOnBackPressed() {
                                         if (mHistorySyncCoordinator != null) {
@@ -631,12 +636,13 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         view.setBackgroundColor(getHistorySyncBackgroundColor());
         assumeNonNull(mDialogModel);
         mDialogModel.set(ModalDialogProperties.CUSTOM_VIEW, view);
-        ModalDialogManager manager = mModalDialogManagerSupplier.get();
-        assert manager != null;
-        manager.showDialog(
-                mDialogModel,
-                ModalDialogManager.ModalDialogType.APP,
-                ModalDialogManager.ModalDialogPriority.VERY_HIGH);
+
+        mModalDialogManagerSupplier
+                .get()
+                .showDialog(
+                        mDialogModel,
+                        ModalDialogManager.ModalDialogType.APP,
+                        ModalDialogManager.ModalDialogPriority.VERY_HIGH);
     }
 
     private void onFlowComplete(SigninAndHistorySyncCoordinator.Result result) {
@@ -649,7 +655,6 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
                     this,
                     result);
         }
-        // TODO(https://crbug.com/437039516): Dismiss history sync dialog.
         mDelegate.onFlowComplete(result);
     }
 
