@@ -390,6 +390,14 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
     trace_event::AddTraceSessionObserver(this);
   }
 
+  if (base::FeatureList::IsEnabled(kInputHandlingModeFromPerformanceScenario)) {
+    if (auto performance_scenario_observer_list =
+            performance_scenarios::PerformanceScenarioObserverList::GetForScope(
+                performance_scenarios::ScenarioScope::kCurrentProcess)) {
+      performance_scenario_observer_list->AddObserver(this);
+    }
+  }
+
   internal::ProcessState::Get()->is_process_backgrounded =
       main_thread_only().renderer_backgrounded;
 
@@ -428,6 +436,13 @@ MainThreadSchedulerImpl::~MainThreadSchedulerImpl() {
   CHECK(main_thread_only().detached_task_queues.empty());
   CHECK(!virtual_time_control_task_queue_);
 
+  if (base::FeatureList::IsEnabled(kInputHandlingModeFromPerformanceScenario)) {
+    if (auto performance_scenario_observer_list =
+            performance_scenarios::PerformanceScenarioObserverList::GetForScope(
+                performance_scenarios::ScenarioScope::kCurrentProcess)) {
+      performance_scenario_observer_list->RemoveObserver(this);
+    }
+  }
   trace_event::RemoveTraceSessionObserver(this);
 }
 
@@ -445,6 +460,18 @@ WebThreadScheduler& WebThreadScheduler::MainThreadScheduler() {
   // `WebThreadScheduler` is needed.
   CHECK(scheduler);
   return *scheduler;
+}
+
+void MainThreadSchedulerImpl::OnInputScenarioChanged(
+    performance_scenarios::ScenarioScope scope,
+    performance_scenarios::InputScenario old_scenario,
+    performance_scenarios::InputScenario new_scenario) {
+  DCHECK(
+      base::FeatureList::IsEnabled(kInputHandlingModeFromPerformanceScenario));
+  if (isolate()) {
+    isolate()->SetIsInputHandling(
+        ComputeIsInputHandlingFromPerformanceScenario(new_scenario));
+  }
 }
 
 MainThreadSchedulerImpl::MainThreadOnly::MainThreadOnly(
@@ -1579,11 +1606,6 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
         isolate()->SetIsInputHandling(
             ComputeIsInputHandlingFromUseCase(new_policy.use_case));
       }
-      if (base::FeatureList::IsEnabled(
-              kInputHandlingModeFromPerformanceScenario)) {
-        isolate()->SetIsInputHandling(
-            ComputeIsInputHandlingFromPerformanceScenario());
-      }
     }
   }
 
@@ -1656,15 +1678,13 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-bool MainThreadSchedulerImpl::ComputeIsInputHandlingFromPerformanceScenario()
-    const {
+bool MainThreadSchedulerImpl::ComputeIsInputHandlingFromPerformanceScenario(
+    performance_scenarios::InputScenario input_scenario) const {
   DCHECK(!base::FeatureList::IsEnabled(kInputHandlingModeFromUseCase));
   using performance_scenarios::InputScenario;
   using performance_scenarios::ScenarioScope;
 
-  auto input_state = GetInputScenario(ScenarioScope::kCurrentProcess)
-                         ->load(std::memory_order_relaxed);
-  switch (input_state) {
+  switch (input_scenario) {
     case InputScenario::kTyping:
     case InputScenario::kTap:
     case InputScenario::kScroll:

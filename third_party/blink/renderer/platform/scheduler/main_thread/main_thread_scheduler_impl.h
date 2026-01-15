@@ -28,6 +28,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/performance_manager/scenario_api/performance_scenario_observer.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
@@ -134,7 +135,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
       public WebThreadScheduler,
       public IdleHelper::Delegate,
       public RenderWidgetSignals::Observer,
-      public trace_event::TraceSessionObserver {
+      public trace_event::TraceSessionObserver,
+      public performance_scenarios::PerformanceScenarioObserver {
  public:
   // Duration after which rendering is considered starved, in which case the
   // compositor task queues will have an increased priority until the next
@@ -207,6 +209,12 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   MainThreadSchedulerImpl& operator=(const MainThreadSchedulerImpl&) = delete;
 
   ~MainThreadSchedulerImpl() override;
+
+  // PerformanceScenarioObserver implementation:
+  void OnInputScenarioChanged(
+      performance_scenarios::ScenarioScope scope,
+      performance_scenarios::InputScenario old_scenario,
+      performance_scenarios::InputScenario new_scenario) override;
 
   // WebThreadScheduler implementation:
   scoped_refptr<base::SingleThreadTaskRunner> DeprecatedDefaultTaskRunner()
@@ -597,7 +605,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
       EXCLUSIVE_LOCKS_REQUIRED(any_thread_lock_);
 
   bool ComputeIsInputHandlingFromUseCase(UseCase) const;
-  bool ComputeIsInputHandlingFromPerformanceScenario() const;
+  bool ComputeIsInputHandlingFromPerformanceScenario(
+      performance_scenarios::InputScenario) const;
 
   // Helper for computing the RAILMode based on the given UseCase and current
   // scheduler state.
