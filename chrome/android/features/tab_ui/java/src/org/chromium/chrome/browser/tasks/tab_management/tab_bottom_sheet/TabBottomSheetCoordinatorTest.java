@@ -16,8 +16,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
 import org.junit.Before;
@@ -33,7 +35,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.tasks.tab_management.tab_bottom_sheet.TabBottomSheetUtils.TabBottomSheetModes;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -48,6 +49,7 @@ public class TabBottomSheetCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private BottomSheetController mMockBottomSheetController;
+    @Mock private TabBottomSheetToolbar mMockToolbar;
     @Captor private ArgumentCaptor<TabBottomSheetContent> mBottomSheetContentArgumentCaptor;
     @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverArgumentCaptor;
 
@@ -62,6 +64,10 @@ public class TabBottomSheetCoordinatorTest {
 
         mCoordinator = new TabBottomSheetCoordinator(mActivity, mMockBottomSheetController);
         mCoordinatorModel = mCoordinator.getModelForTesting();
+
+        // Setup generic toolbar
+        when(mMockToolbar.getToolbarView())
+                .thenReturn(new FrameLayout(ApplicationProvider.getApplicationContext()));
     }
 
     @After
@@ -79,7 +85,7 @@ public class TabBottomSheetCoordinatorTest {
     private BottomSheetObserver simulateShowSuccessAndGetObserver() {
         when(mMockBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
                 .thenReturn(true);
-        mCoordinator.showBottomSheet(/* tabBottomSheetMode= */ TabBottomSheetModes.SIMPLE);
+        mCoordinator.showBottomSheet(mMockToolbar);
         verify(mMockBottomSheetController)
                 .addObserver(mBottomSheetObserverArgumentCaptor.capture());
         BottomSheetObserver coordinatorObserver = mBottomSheetObserverArgumentCaptor.getValue();
@@ -115,7 +121,7 @@ public class TabBottomSheetCoordinatorTest {
     public void testShowBottomSheet_Fails_Cleanup() {
         when(mMockBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
                 .thenReturn(false);
-        mCoordinator.showBottomSheet(/* tabBottomSheetMode= */ TabBottomSheetModes.SIMPLE);
+        mCoordinator.showBottomSheet(mMockToolbar);
         verify(mMockBottomSheetController)
                 .requestShowContent(any(BottomSheetContent.class), eq(true));
         verify(mMockBottomSheetController, never()).addObserver(any(BottomSheetObserver.class));
@@ -145,7 +151,7 @@ public class TabBottomSheetCoordinatorTest {
     public void testDestroy_WhenNotShown_CleansUp() {
         when(mMockBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
                 .thenReturn(false);
-        mCoordinator.showBottomSheet(/* tabBottomSheetMode= */ TabBottomSheetModes.SIMPLE);
+        mCoordinator.showBottomSheet(mMockToolbar);
         mCoordinator.destroy();
 
         verify(mMockBottomSheetController, never()).hideContent(any(), anyBoolean(), anyInt());

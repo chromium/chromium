@@ -177,6 +177,8 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGroupListFaviconResol
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarController;
 import org.chromium.chrome.browser.tasks.tab_management.tab_bottom_sheet.TabBottomSheetManager;
+import org.chromium.chrome.browser.tasks.tab_management.tab_bottom_sheet.TabBottomSheetSimpleManager;
+import org.chromium.chrome.browser.tasks.tab_management.tab_bottom_sheet.TabBottomSheetUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
@@ -290,6 +292,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable LoadingFullscreenCoordinator mLoadingFullscreenCoordinator;
     private @Nullable BookmarkOpener mBookmarkOpener;
     private @Nullable TabBottomSheetManager mTabBottomSheetManager;
+    private @Nullable TabBottomSheetSimpleManager mTabBottomSheetSimpleManager;
     private final @NonNull ObservableSupplier<BookmarkManagerOpener> mBookmarkManagerOpenerSupplier;
     private @NonNull AdvancedProtectionCoordinator mAdvancedProtectionCoordinator;
     private final @NonNull KeyboardFocusRowManager mKeyboardFocusRowManager;
@@ -783,6 +786,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mTabBottomSheetManager.destroy();
             mTabBottomSheetManager = null;
         }
+        if (mTabBottomSheetSimpleManager != null) {
+            mTabBottomSheetSimpleManager.destroy();
+            mTabBottomSheetSimpleManager = null;
+        }
+
         mCrossDeviceSettingImporter.destroy();
 
         super.onDestroy();
@@ -1017,7 +1025,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mBookmarkBarVisibilityProvider.addObserver(mBookmarkBarVisibilityObserver);
         }
 
-        initiateTabBottomSheetManager();
+        initiateTabBottomSheetManagers();
     }
 
     @Override
@@ -1575,13 +1583,15 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
     }
 
-    private void initiateTabBottomSheetManager() {
-        if (ChromeFeatureList.sTabBottomSheet.isEnabled()) {
+    private void initiateTabBottomSheetManagers() {
+        if (TabBottomSheetUtils.isTabBottomSheetEnabled()) {
             mTabBottomSheetManager =
-                    new TabBottomSheetManager(
+                    new TabBottomSheetManager(mActivity, getBottomSheetController());
+            mTabBottomSheetSimpleManager =
+                    new TabBottomSheetSimpleManager(
                             mActivity,
-                            mTabModelSelectorSupplier.get().getModel(false),
-                            getBottomSheetController());
+                            mTabModelSelectorSupplier.get().getModel(/* incognito= */ false),
+                            mTabBottomSheetManager);
         }
     }
 

@@ -4,23 +4,15 @@
 
 package org.chromium.chrome.browser.tasks.tab_management.tab_bottom_sheet;
 
-import androidx.annotation.IntDef;
-
 import org.chromium.build.annotations.NullMarked;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** Utility methods used by the Tab Bottom Sheet components. */
 @NullMarked
 public final class TabBottomSheetUtils {
     private TabBottomSheetUtils() {}
 
-    /** Modes for the Tab Bottom Sheet. */
-    @IntDef({TabBottomSheetModes.SIMPLE, TabBottomSheetModes.COMPLEX})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface TabBottomSheetModes {
-        int SIMPLE = 0;
-        int COMPLEX = 1;
+    public static boolean isTabBottomSheetEnabled() {
+        return ChromeFeatureList.sTabBottomSheet.isEnabled();
     }
 }

@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.tasks.tab_management.tab_bottom_sheet.TabBottomSheetUtils.TabBottomSheetModes;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -31,7 +30,6 @@ public class TabBottomSheetCoordinator {
     private @Nullable BottomSheetObserver mSheetObserver;
     private @Nullable PropertyModelChangeProcessor mViewBinder;
     private @Nullable View mContentView;
-    private @Nullable TabBottomSheetToolbarContainer mToolbarContainer;
 
     private boolean mIsSheetCurrentlyManagedByController;
 
@@ -49,7 +47,7 @@ public class TabBottomSheetCoordinator {
     }
 
     /** Shows the bottom sheet. */
-    public void showBottomSheet(@TabBottomSheetModes int tabBottomSheetMode) {
+    public void showBottomSheet(TabBottomSheetToolbar tabBottomSheetToolbar) {
         if (mIsSheetCurrentlyManagedByController) {
             return;
         }
@@ -58,10 +56,9 @@ public class TabBottomSheetCoordinator {
 
         // Build the bottom sheet.
         mContentView = LayoutInflater.from(mContext).inflate(R.layout.tab_bottom_sheet, null);
-        ViewGroup container = mContentView.findViewById(R.id.toolbar_container);
+        ViewGroup toolbarContainer = mContentView.findViewById(R.id.toolbar_container);
 
-        mToolbarContainer = new TabBottomSheetToolbarContainer(mContext, container);
-        mToolbarContainer.setToolbar(tabBottomSheetMode);
+        toolbarContainer.addView(tabBottomSheetToolbar.getToolbarView());
 
         mViewBinder =
                 PropertyModelChangeProcessor.create(
@@ -106,10 +103,6 @@ public class TabBottomSheetCoordinator {
         if (mViewBinder != null) {
             mViewBinder.destroy();
             mViewBinder = null;
-        }
-        if (mToolbarContainer != null) {
-            mToolbarContainer.destroy();
-            mToolbarContainer = null;
         }
         mIsSheetCurrentlyManagedByController = false;
     }
