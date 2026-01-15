@@ -569,7 +569,8 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         arguments.putInt(SHOW_GAIA_SERVICE_TYPE_EXTRA, serviceType);
         SettingsNavigation settingsNavigation =
                 SettingsNavigationFactory.createSettingsNavigation();
-        settingsNavigation.startSettings(context, AccountManagementFragment.class, arguments);
+        settingsNavigation.startSettings(
+                context, AccountManagementFragment.class, arguments, /* addToBackStack= */ true);
     }
 
     private void closeDialogIfOpen(String tag) {
