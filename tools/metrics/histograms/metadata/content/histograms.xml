@@ -1829,6 +1829,7 @@ chromium-metrics-reviews@google.com.
 
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
+  <improvement direction="HIGHER_IS_BETTER"/>
   <summary>
     Tracks user behavior with {FeedType}. Each bucket is one of two types of
     metric. Per-visit metrics sample once per &quot;visit&quot;, which is a
