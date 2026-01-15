@@ -105,6 +105,11 @@ Test resolveValues on register custom property
 {"input": [invalid,1em,1rem,calc(3px + 3px),calc(1em + 1px)]}
 {"results":["invalid","10px","30px","6px","11px"]}
 
+Running test: testRegisterCustomPropertyWithoutCombinedSyntax
+Test resolveValues on registered custom property with value not parsable with combined syntax
+{"input": [1px 3px 9px,1em 3em 9em,calc(3 * 1px) calc(3 * 3px) calc(3 * 9px)]}
+{"results":["1px 3px 9px","10px 30px 90px","3px 9px 27px"]}
+
 Running test: testPseudoElement
 Pseudo element test
 {"input": [invalid,1em,1rem,calc(3px + 3px),calc(1em + 1px)]}

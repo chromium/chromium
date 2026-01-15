@@ -2448,8 +2448,7 @@ protocol::Response InspectorCSSAgent::resolveValues(
                             *property_registration);
   CustomProperty temporary_custom_property(temp_custom_property_name, document);
 
-  std::optional<CSSPropertyName> property_name =
-      CSSPropertyName(temp_custom_property_name);
+  std::optional<CSSPropertyName> property_name;
   if (property_name_str.has_value()) {
     property_name =
         CSSPropertyName::From(execution_context, *property_name_str);
@@ -2459,11 +2458,12 @@ protocol::Response InspectorCSSAgent::resolveValues(
     }
   }
 
-  if (CSSProperty::Get(property_name->Id()).IsShorthand()) {
+  if (property_name && CSSProperty::Get(property_name->Id()).IsShorthand()) {
     return protocol::Response::ServerError(
         "Property name should not be a shorthand.");
   }
 
+  CSSParserLocalContext local_context;
   *results = std::make_unique<protocol::Array<String>>();
   for (auto value : *values) {
     CSSVariableData* data =
@@ -2496,10 +2496,27 @@ protocol::Response InspectorCSSAgent::resolveValues(
       continue;
     }
 
+    const CSSValue* parsed_value = nullptr;
+    if (property_name.has_value()) {
+      if (property_name->IsCustomProperty()) {
+        CustomProperty custom_property(property_name->ToAtomicString(),
+                                       element->GetDocument());
+        // Unregistered custom properties should always be parsed against
+        // combined syntax.
+        parsed_value =
+            custom_property.IsRegistered()
+                ? custom_property.Parse(substituted->CssText(), *parser_context,
+                                        local_context)
+                : nullptr;
+      } else {
+        parsed_value = CSSParser::ParseSingleValue(
+            property_name->Id(), substituted->CssText(), parser_context);
+      }
+    }
+
     const CSSValue* computed_value = nullptr;
-    const CSSValue* parsed_value = CSSParser::ParseSingleValue(
-        property_name->Id(), substituted->CssText(), parser_context);
     if (parsed_value) {
+      DCHECK(property_name);
       computed_value =
           StyleResolver::ComputeValue(element, *property_name, *parsed_value);
       if (String resolved_value = ResolvePercentagesValues(
@@ -2508,7 +2525,9 @@ protocol::Response InspectorCSSAgent::resolveValues(
         continue;
       }
     } else {
-      auto local_context = CSSParserLocalContext();
+      // Value cannot be parsed using specified property's syntax,  ignore
+      // property and try to parse using combined syntax as if null property was
+      // provided.
       parsed_value = temporary_custom_property.Parse(
           substituted->CssText(), *parser_context, local_context);
       if (!parsed_value) {

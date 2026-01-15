@@ -10,6 +10,7 @@
   const validPercentageExpressions = ["10%", "50%", "calc(10% + 10%)", "calc(10% - 10%)", "calc(10px + 10% - 10%)", "calc(10px + 10px)", "calc(10px + 0%)", "calc(10px + 10%)", "calc(1em + 10%)"];
   const invalidPercentageExpressions = ["calc(", "%", "calc(10 + 20)%", "calc(10 + 30%"];
   const arbSubs = ["var(--x)", "attr(data-foo type(<length>))", "attr(invalid, 3px)", "var(--invalid, 3px)", "var(--cycle1)"];
+  const listOfLengths = ["1px 3px 9px", "1em 3em 9em", "calc(3 * 1px) calc(3 * 3px) calc(3 * 9px)"];
 
   var {page, session, dp} = await testRunner.startURL('resources/css-resolve-values.html', 'Test css.resolveValue method');
 
@@ -144,6 +145,10 @@
     async function testRegisterCustomProperty() {
       testRunner.log('Test resolveValues on register custom property');
       await testResolveValues('div', testValues, "--reg-prop");
+    },
+    async function testRegisterCustomPropertyWithoutCombinedSyntax() {
+      testRunner.log('Test resolveValues on registered custom property with value not parsable with combined syntax');
+      await testResolveValues('div', listOfLengths, "--reg-prop");
     },
     async function testPseudoElement() {
       testRunner.log('Pseudo element test');
