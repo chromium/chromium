@@ -12,7 +12,7 @@ class LayoutTextControlInnerEditorTest : public RenderingTest {};
 TEST_F(LayoutTextControlInnerEditorTest, AddChildWithoutTrailingLf) {
   SetBodyInnerHTML("<textarea id=ta>foo\nbar</textarea>");
   const auto* ta = GetLayoutBoxByElementId("ta");
-  const auto* inner_editor = To<LayoutBlockFlow>(ta->FirstChildBox());
+  const auto* inner_editor = To<LayoutBlockFlow>(ta->SlowFirstChild());
   ASSERT_TRUE(inner_editor);
 
   // The first anonymous block should have a LayoutText and a LayoutBR.
@@ -43,7 +43,7 @@ TEST_F(LayoutTextControlInnerEditorTest, AddChildWithoutTrailingLf) {
 TEST_F(LayoutTextControlInnerEditorTest, AddChildWithTrailingLf) {
   SetBodyInnerHTML("<textarea id=ta>foo\nbar\n</textarea>");
   const auto* ta = GetLayoutBoxByElementId("ta");
-  const auto* inner_editor = To<LayoutBlockFlow>(ta->FirstChildBox());
+  const auto* inner_editor = To<LayoutBlockFlow>(ta->SlowFirstChild());
   ASSERT_TRUE(inner_editor);
 
   // The first anonymous block should have a LayoutText and a LayoutBR.
@@ -85,7 +85,7 @@ TEST_F(LayoutTextControlInnerEditorTest, AddChildWithTrailingLf) {
 TEST_F(LayoutTextControlInnerEditorTest, RemoveChildWithoutTrailingLf) {
   SetBodyInnerHTML("<textarea id=ta>foo\nbar</textarea>");
   const auto* ta = GetLayoutBoxByElementId("ta");
-  const auto* inner_editor = To<LayoutBlockFlow>(ta->FirstChildBox());
+  const auto* inner_editor = To<LayoutBlockFlow>(ta->SlowFirstChild());
   ASSERT_TRUE(inner_editor);
   auto* inner_editor_element = To<Element>(inner_editor->GetNode());
 
@@ -127,7 +127,7 @@ TEST_F(LayoutTextControlInnerEditorTest, EnableDynamic) {
   SetBodyInnerHTML("<textarea id=ta disabled></textarea>");
   auto* ta = GetElementById("ta");
   const auto* inner_editor =
-      To<LayoutBlockFlow>(ta->GetLayoutBox()->FirstChildBox());
+      To<LayoutBlockFlow>(ta->GetLayoutBox()->SlowFirstChild());
   ASSERT_TRUE(inner_editor);
 
   ta->SetBooleanAttribute(html_names::kDisabledAttr, false);

@@ -176,7 +176,7 @@ TEST_F(HTMLTextAreaElementTest, ClearWithInsertText) {
   textarea.Focus();
   textarea.select();
   const auto* inner_editor =
-      To<LayoutBlockFlow>(textarea.GetLayoutBox()->FirstChildBox());
+      To<LayoutBlockFlow>(textarea.GetLayoutBox()->SlowFirstChild());
   ASSERT_TRUE(inner_editor);
 
   GetDocument().execCommand("insertText", false, "", ASSERT_NO_EXCEPTION);
@@ -192,7 +192,7 @@ TEST_F(HTMLTextAreaElementTest, RemoveLastLineWithInsertText) {
   textarea.Focus();
   textarea.SetSelectionRange(2, 3);
   const auto* inner_editor =
-      To<LayoutBlockFlow>(textarea.GetLayoutBox()->FirstChildBox());
+      To<LayoutBlockFlow>(textarea.GetLayoutBox()->SlowFirstChild());
   ASSERT_TRUE(inner_editor);
 
   GetDocument().execCommand("insertText", false, "", ASSERT_NO_EXCEPTION);

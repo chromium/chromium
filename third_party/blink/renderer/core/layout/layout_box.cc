@@ -235,13 +235,20 @@ LayoutUnit TextAreaIntrinsicBlockSize(const HTMLTextAreaElement& textarea,
   }
 
   const auto* inner_editor = textarea.InnerEditorElement();
-  const auto* reference_box =
+  const LayoutBox* editor_box =
       inner_editor ? inner_editor->GetLayoutBox() : nullptr;
-  if (reference_box && reference_box->FirstChildBox()) {
-    reference_box = reference_box->FirstChildBox();
-  }
-  const LayoutUnit line_height =
-      reference_box ? reference_box->FirstLineHeight() : box.FirstLineHeight();
+  const LayoutBox* inner_box =
+      editor_box ? DynamicTo<LayoutBox>(editor_box->SlowFirstChild()) : nullptr;
+
+  const LayoutUnit line_height = ([&]() {
+    if (inner_box) {
+      return inner_box->FirstLineHeight();
+    }
+    if (editor_box) {
+      return editor_box->FirstLineHeight();
+    }
+    return box.FirstLineHeight();
+  })();
 
   return line_height * textarea.rows() + scrollbar_thickness;
 }

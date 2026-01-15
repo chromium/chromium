@@ -1143,7 +1143,7 @@ LayoutInputNode BlockNode::FirstChild() const {
   }
   auto* block = DynamicTo<LayoutBlock>(box_.Get());
   if (!block) [[unlikely]] {
-    return BlockNode(box_->FirstChildBox());
+    return BlockNode(To<LayoutBox>(box_->SlowFirstChild()));
   }
   auto* child = block->FirstChild();
   if (!child)

@@ -212,10 +212,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // affect anything that is anchored to it.
   bool TransformsChangeMayRequireLayout() const;
 
-  // Use this with caution! No type checking is done!
-  LayoutBox* FirstChildBox() const;
-  LayoutBox* LastChildBox() const;
-
   // Returns the LogicalRect of this box for LocationContainer()'s writing-mode.
   // The coordinate origin is the border corner of the LocationContainer().
   // This function doesn't take into account of TextDirection.
@@ -322,10 +318,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                        OutlineInfo*,
                        const PhysicalOffset& additional_offset,
                        OutlineType) const override;
-
-  // Use this with caution! No type checking is done!
-  LayoutBox* PreviousSiblingBox() const;
-  LayoutBox* NextSiblingBox() const;
 
   bool CanResize() const;
 
@@ -1428,26 +1420,6 @@ template <>
 struct DowncastTraits<LayoutBox> {
   static bool AllowFrom(const LayoutObject& object) { return object.IsBox(); }
 };
-
-inline LayoutBox* LayoutBox::PreviousSiblingBox() const {
-  NOT_DESTROYED();
-  return To<LayoutBox>(PreviousSibling());
-}
-
-inline LayoutBox* LayoutBox::NextSiblingBox() const {
-  NOT_DESTROYED();
-  return To<LayoutBox>(NextSibling());
-}
-
-inline LayoutBox* LayoutBox::FirstChildBox() const {
-  NOT_DESTROYED();
-  return To<LayoutBox>(SlowFirstChild());
-}
-
-inline LayoutBox* LayoutBox::LastChildBox() const {
-  NOT_DESTROYED();
-  return To<LayoutBox>(SlowLastChild());
-}
 
 inline wtf_size_t LayoutBox::FirstInlineFragmentItemIndex() const {
   NOT_DESTROYED();

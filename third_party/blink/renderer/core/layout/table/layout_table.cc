@@ -332,14 +332,14 @@ PhysicalRect LayoutTable::OverflowClipRect(
   // possible.
   // The current solution is to not clip if we have captions.
   // Maybe a fix is to do an additional clip in table painter?
-  const LayoutBox* child = FirstChildBox();
+  const LayoutObject* child = FirstChild();
   while (child) {
     if (child->IsTableCaption()) {
       // If there are captions, we cannot clip to content box.
       clip_rect.Unite(PhysicalRect(location, StitchedSize()));
       break;
     }
-    child = child->NextSiblingBox();
+    child = child->NextSibling();
   }
   return clip_rect;
 }
