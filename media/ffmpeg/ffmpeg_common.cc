@@ -793,9 +793,17 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
        AVCodecParametersCodedSideToSpan(stream->codecpar)) {
     switch (side_data.type) {
       case AV_PKT_DATA_DISPLAYMATRIX: {
-        CHECK_EQ(side_data.size, sizeof(int32_t) * 3 * 3);
+        constexpr size_t kNumElements = 3 * 3;
+        CHECK_EQ(side_data.size, sizeof(int32_t) * kNumElements);
+        // SAFETY: The FFmpeg API guarantees that `side_data.data` is a valid
+        // pointer to `side_data.size` bytes of data. The size is checked to be
+        // 3x3 matrix of int32_t.
+        // See:
+        // https://ffmpeg.org/doxygen/trunk/group__lavc__packet__side__data.html#gga9a80bfcacc586b483a973272800edb97aab8c149a1e6c67aad340733becec87e1
         video_transformation = VideoTransformation::FromFFmpegDisplayMatrix(
-            reinterpret_cast<int32_t*>(side_data.data));
+            UNSAFE_BUFFERS(base::span<const int32_t, kNumElements>(
+                reinterpret_cast<const int32_t*>(side_data.data),
+                kNumElements)));
         break;
       }
       case AV_PKT_DATA_MASTERING_DISPLAY_METADATA: {
