@@ -516,8 +516,14 @@ class WebRtcScreenCaptureBrowserTestWithFakeUI
   const TestConfigForFakeUI test_config_;
 };
 
+// TODO(crbug.com/461258716): enable this flaky test.
+#if (BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER))
+#define MAYBE_ScreenCaptureVideo_1 DISABLED_ScreenCaptureVideo
+#else
+#define MAYBE_ScreenCaptureVideo_1 ScreenCaptureVideo
+#endif  // (BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER))
 IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithFakeUI,
-                       ScreenCaptureVideo) {
+                       MAYBE_ScreenCaptureVideo_1) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
