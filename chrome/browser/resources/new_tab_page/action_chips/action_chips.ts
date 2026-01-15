@@ -241,7 +241,8 @@ export class ActionChipsElement extends CrLitElement {
     }
     const url = new URL(chip.tab.url.url);
     const domain = url.hostname.replace(/^www\./, '');
-    return `${chip.title} - ${domain}`;
+    return `${this.showSimplifiedUI_ ? chip.suggestion : chip.title} - ${
+        domain}`;
   }
 
   protected isDeepDiveChip_(chip: ActionChip) {
