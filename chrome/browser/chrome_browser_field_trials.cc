@@ -210,13 +210,6 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   feature_overrides.EnableFeature(
       chrome::android::kAndroidPinnedTabsTabletTabStrip);
 
-  // Three flags are required for the bookmarks bar feature.
-  // TODO(crbug.com/430059235): Remove once feature is launched to 100% on all
-  // form factors.
-  feature_overrides.EnableFeature(chrome::android::kAndroidBookmarkBar);
-  feature_overrides.EnableFeature(chrome::android::kAndroidAppearanceSettings);
-  feature_overrides.EnableFeature(chrome::android::kTopControlsRefactor);
-
   // Enable ANGLE/Vulkan features.
   // TODO (crbug.com//376280554): Enable these features with runtime checks
   // instead.
