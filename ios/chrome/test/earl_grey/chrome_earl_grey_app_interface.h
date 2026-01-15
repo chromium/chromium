@@ -80,9 +80,6 @@ enum class TipsNotificationType;
 // Reloads the page without waiting for the page to load.
 + (void)startReloading;
 
-// Loads `URL` as if it was opened from an external application.
-+ (void)openURLFromExternalApp:(NSString*)URL;
-
 // Programmatically dismisses settings screen.
 + (void)dismissSettings;
 

@@ -268,10 +268,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   }
 }
 
-- (void)openURLFromExternalApp:(const GURL&)URL {
-  NSString* spec = base::SysUTF8ToNSString(URL.spec());
-  [ChromeEarlGreyAppInterface openURLFromExternalApp:spec];
-}
 
 - (void)dismissSettings {
   [ChromeEarlGreyAppInterface dismissSettings];

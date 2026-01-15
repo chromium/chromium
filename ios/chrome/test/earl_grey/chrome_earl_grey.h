@@ -232,9 +232,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // GREYAssert is induced.
 - (void)waitForIncognitoTabCount:(NSUInteger)count;
 
-// Loads `URL` as if it was opened from an external application.
-- (void)openURLFromExternalApp:(const GURL&)URL;
-
 // Programmatically dismisses settings screen.
 - (void)dismissSettings;
 

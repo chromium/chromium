@@ -735,7 +735,7 @@ void SwitchToNormalMode() {
   [ChromeEarlGrey openNewTab];
   GURL url(kTestUrl1);
 
-  [ChromeEarlGrey openURLFromExternalApp:url];
+  [ChromeEarlGrey simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:url];
 
   // Add a delay to ensure the tab has fully opened.  Because the check below
   // is for zero metrics recorded, it adds no flakiness.  However, this pause

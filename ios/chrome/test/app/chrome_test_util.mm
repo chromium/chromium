@@ -246,23 +246,6 @@ bool IsCrashpadReportingEnabled() {
   return crash_helper::common::UserEnabledUploading();
 }
 
-void OpenChromeFromExternalApp(const GURL& url) {
-  UIScene* scene =
-      [[UIApplication sharedApplication].connectedScenes anyObject];
-  [scene.delegate sceneWillResignActive:scene];
-
-  // FakeUIOpenURLContext cannot be instanciated, but it is just needed
-  // for carrying the properties over to the scene delegate.
-  FakeUIOpenURLContext* context = [FakeUIOpenURLContext alloc];
-  context.URL = net::NSURLWithGURL(url);
-
-  NSSet<UIOpenURLContext*>* URLContexts =
-      [[NSSet alloc] initWithArray:@[ context ]];
-
-  [scene.delegate scene:scene openURLContexts:URLContexts];
-  [scene.delegate sceneDidBecomeActive:scene];
-}
-
 bool PurgeCachedWebViewPages() {
   web::WebState* web_state = chrome_test_util::GetCurrentWebState();
   const GURL last_committed_url = web_state->GetLastCommittedURL();

@@ -276,11 +276,6 @@ NSString* GetIdForWebState(web::WebState* web_state) {
       ->Reload();
 }
 
-+ (void)openURLFromExternalApp:(NSString*)URL {
-  chrome_test_util::OpenChromeFromExternalApp(
-      GURL(base::SysNSStringToUTF8(URL)));
-}
-
 + (void)dismissSettings {
   [chrome_test_util::HandlerForActiveBrowser() closePresentedViews];
 }
