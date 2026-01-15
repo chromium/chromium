@@ -136,8 +136,8 @@ void BundleVersionsStorage::RemoveBundle(
 std::optional<BundleVersionsStorage::BundleOrUpdateManifest>
 BundleVersionsStorage::GetResource(const std::string& route) {
   // Parses /<web_bundle_id>/<file_name> into { <web_bundle_id>, <file_name> }.
-  auto pieces = base::SplitString(route, "/", base::TRIM_WHITESPACE,
-                                  base::SPLIT_WANT_NONEMPTY);
+  const std::vector<std::string_view> pieces = base::SplitStringPiece(
+      route, "/", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (pieces.size() != 2) {
     return std::nullopt;
   }
@@ -153,7 +153,7 @@ BundleVersionsStorage::GetResource(const std::string& route) {
     return std::nullopt;
   }
 
-  const auto& path = pieces[1];
+  const std::string_view path = pieces[1];
   if (path == kUpdateManifestFileName) {
     return GetUpdateManifest(web_bundle_id);
   } else if (path.ends_with(".swbn")) {
