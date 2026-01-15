@@ -21,6 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_ref.h"
+#include "base/types/zip.h"
 #include "components/autofill/core/browser/crowdsourcing/randomized_encoder.h"
 #include "components/autofill/core/browser/crowdsourcing/server_prediction_overrides.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
@@ -1120,25 +1121,33 @@ void ProcessServerPredictionsQueryResponse(
 
   bool heuristics_detected_fillable_field = false;
   bool query_response_overrode_heuristics = false;
-  std::map<std::pair<FormSignature, FieldSignature>,
-           std::deque<FieldSuggestion>>
-      fields_suggestions =
-          GetSuggestionsMapFromResponse(response, queried_form_signatures);
+  std::vector<std::vector<std::optional<FieldSuggestion>>>
+      form_field_suggestions = base::ToVector(
+          forms, [field_suggestion_map = GetSuggestionsMapFromResponse(
+                      response, queried_form_signatures)](
+                     const raw_ref<FormStructure>& form) mutable {
+            return base::ToVector(
+                form->fields(),
+                [&](const std::unique_ptr<AutofillField>& field) mutable {
+                  return GetFieldSuggestion(*form, *field,
+                                            field_suggestion_map);
+                });
+          });
 
   const base::flat_set<FormSignature> forms_for_which_to_run_ai_model =
       GetFormsForWhichToRunAiModel(response, queried_form_signatures);
 
   // Copy the field types into the actual form.
-  for (const raw_ref<FormStructure>& form : forms) {
+  for (auto [form, field_suggestions] :
+       base::zip(forms, form_field_suggestions)) {
     form->set_may_run_autofill_ai_model(
         forms_for_which_to_run_ai_model.contains(form->form_signature()));
 
     // Fields can share the same field signature. This map records for each
     // signature how many fields with the same signature have been observed.
     std::map<FieldSignature, size_t> field_rank_map;
-    for (auto& field : form->fields()) {
-      std::optional<FieldSuggestion> field_suggestion =
-          GetFieldSuggestion(*form, *field, fields_suggestions);
+    for (auto [field, field_suggestion] :
+         base::zip(form->fields(), field_suggestions)) {
       if (!field_suggestion) {
         continue;
       }
