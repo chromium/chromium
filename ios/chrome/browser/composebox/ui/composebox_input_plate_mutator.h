@@ -26,6 +26,10 @@ class GURL;
 /// Processes the given `PDFFileURL` for a file.
 - (void)processPDFFileURL:(GURL)PDFFileURL;
 
+// Processes the given `itemProvider` for an image.
+- (void)processImageItemProvider:(NSItemProvider*)itemProvider
+                         assetID:(NSString*)assetID;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_INPUT_PLATE_MUTATOR_H_

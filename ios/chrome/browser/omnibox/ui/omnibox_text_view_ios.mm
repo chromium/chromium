@@ -133,6 +133,12 @@ const CGFloat kPlaceholderLeadingPadding = 4.0;
       self.textDragInteraction.enabled = NO;
     }
 
+    // Remove drop when presented by the Composebox so that the composebox can
+    // handle all drop actions.
+    if (_presentationContext == OmniboxPresentationContext::kComposebox) {
+      [self removeInteraction:self.textDropInteraction];
+    }
+
     // Force initial layout of internal text label.
     self.font = self.currentFont;
     [self updateTextContainerInset];

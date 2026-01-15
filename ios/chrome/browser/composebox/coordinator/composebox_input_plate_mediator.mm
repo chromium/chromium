@@ -284,48 +284,6 @@ CreateInputDataFromAnnotatedPageContent(
   _prefService = nullptr;
 }
 
-- (void)processImageItemProvider:(NSItemProvider*)itemProvider
-                         assetID:(NSString*)assetID {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-
-  BOOL unableToLoadUIImage =
-      ![itemProvider canLoadObjectOfClass:[UIImage class]];
-  BOOL assetAlreadyLoaded = [_items assetAlreadyLoaded:assetID];
-  if (unableToLoadUIImage || assetAlreadyLoaded) {
-    return;
-  }
-
-  ComposeboxInputItem* item = [[ComposeboxInputItem alloc]
-      initWithComposeboxInputItemType:ComposeboxInputItemType::
-                                          kComposeboxInputItemTypeImage
-                              assetID:assetID];
-  item.uploadIndex = _imageUploadCount++;
-
-  [_items addItem:item];
-  __block base::UnguessableToken identifier = item.identifier;
-
-  __weak __typeof(self) weakSelf = self;
-  // Load the preview image.
-  [itemProvider
-      loadPreviewImageWithOptions:nil
-                completionHandler:^(UIImage* previewImage, NSError* error) {
-                  dispatch_async(dispatch_get_main_queue(), ^{
-                    [weakSelf didLoadPreviewImage:previewImage
-                            forItemWithIdentifier:identifier];
-                  });
-                }];
-
-  // Concurrently load the full image.
-  [itemProvider loadObjectOfClass:[UIImage class]
-                completionHandler:^(__kindof id<NSItemProviderReading> object,
-                                    NSError* error) {
-                  dispatch_async(dispatch_get_main_queue(), ^{
-                    [weakSelf didLoadFullImage:(UIImage*)object
-                         forItemWithIdentifier:identifier];
-                  });
-                }];
-}
-
 - (void)setConsumer:(id<ComposeboxInputPlateConsumer>)consumer {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   _consumer = consumer;
@@ -454,6 +412,51 @@ CreateInputDataFromAnnotatedPageContent(
                                           fromURL:PDFFileURL
                                          withData:data];
       }));
+}
+
+- (void)processImageItemProvider:(NSItemProvider*)itemProvider
+                         assetID:(NSString*)assetID {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+
+  BOOL unableToLoadUIImage =
+      ![itemProvider canLoadObjectOfClass:[UIImage class]];
+
+  // TODO(crbug.com/475203545): Prevent duplicate items being added. The file
+  // picker and the drag-and-drop interfaces have different schemes for
+  // generating asset IDs. They should be common, in order to prevent the same
+  // file being added several times.
+  BOOL assetAlreadyLoaded = [_items assetAlreadyLoaded:assetID];
+  if (unableToLoadUIImage || assetAlreadyLoaded) {
+    return;
+  }
+
+  ComposeboxInputItem* item = [[ComposeboxInputItem alloc]
+      initWithComposeboxInputItemType:ComposeboxInputItemType::
+                                          kComposeboxInputItemTypeImage
+                              assetID:assetID];
+  [_items addItem:item];
+  __block base::UnguessableToken identifier = item.identifier;
+
+  __weak __typeof(self) weakSelf = self;
+  // Load the preview image.
+  [itemProvider
+      loadPreviewImageWithOptions:nil
+                completionHandler:^(UIImage* previewImage, NSError* error) {
+                  dispatch_async(dispatch_get_main_queue(), ^{
+                    [weakSelf didLoadPreviewImage:previewImage
+                            forItemWithIdentifier:identifier];
+                  });
+                }];
+
+  // Concurrently load the full image.
+  [itemProvider loadObjectOfClass:[UIImage class]
+                completionHandler:^(__kindof id<NSItemProviderReading> object,
+                                    NSError* error) {
+                  dispatch_async(dispatch_get_main_queue(), ^{
+                    [weakSelf didLoadFullImage:(UIImage*)object
+                         forItemWithIdentifier:identifier];
+                  });
+                }];
 }
 
 #pragma mark - ComposeboxModeObserver

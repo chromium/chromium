@@ -164,6 +164,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
       _dataSource;
   /// The view containing the input text field and action buttons.
   UIView* _inputPlateContainerView;
+  /// The view that receives UIDropInteractions.
+  UIView* _dragAndDropReceiverView;
   /// The view containing containing the plusButton, mic, send, etc.. in
   /// expanded mode.
   UIView* _toolbarView;
@@ -251,9 +253,11 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
   // --- Bottom Input Area ---
 
-  // Input plate container
+  // Input plate container.
+  [self setupDragAndDropReceiverView];
+  AddSameConstraints(_dragAndDropReceiverView, self.view);
   [self setupInputPlateContainerView];
-  AddSameConstraints(_inputPlateContainerView, self.view);
+  AddSameConstraints(_inputPlateContainerView, _dragAndDropReceiverView);
 
   _omniboxContainer.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -343,7 +347,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   _editView.translatesAutoresizingMaskIntoConstraints = NO;
   _editView.minimumHeight = kOmniboxMinHeight;
   _editView.accessibilityIdentifier = kComposeboxAccessibilityIdentifier;
-  [_omniboxContainer addSubview:editView];
+  [_omniboxContainer addSubview:_editView];
   [NSLayoutConstraint activateConstraints:@[
     [_editView.leadingAnchor
         constraintEqualToAnchor:_omniboxContainer.layoutMarginsGuide
@@ -700,35 +704,15 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
 - (UIDropProposal*)dropInteraction:(UIDropInteraction*)interaction
                   sessionDidUpdate:(id<UIDropSession>)session {
-  if (session.items.count > _remainingAttachmentCapacity) {
-    return
-        [[UIDropProposal alloc] initWithDropOperation:UIDropOperationForbidden];
-  }
-
-  BOOL willAllowPDFDrop = [self willAllowPDFDrop:session];
-
-  // TODO(crbug.com/473569401): Introduce drag and drop for images.
-  BOOL dropWillBeAllowed = willAllowPDFDrop;
-
   return [[UIDropProposal alloc]
-      initWithDropOperation:dropWillBeAllowed ? UIDropOperationCopy
-                                              : UIDropOperationForbidden];
+      initWithDropOperation:[self isDropAllowed:session]
+                                ? UIDropOperationCopy
+                                : UIDropOperationForbidden];
 }
 
 - (void)dropInteraction:(UIDropInteraction*)interaction
             performDrop:(id<UIDropSession>)session {
-  // Drop each eligible dragged item into the Composebox.
-  for (UIDragItem* item in session.items) {
-    if ([self willAllowPDFDrop:session] &&
-        [item.itemProvider
-            hasItemConformingToTypeIdentifier:UTTypePDF.identifier]) {
-      [self performDropForPDF:item.itemProvider];
-    }
-    // TODO(crbug.com/473569401): Introduce `else-if` to enable drag and drop
-    // for images.
-  }
-  // Drop complete.
-  _dragSessionWithinInputPlate = NO;
+  [self performDrop:session];
 }
 
 - (void)dropInteraction:(UIDropInteraction*)interaction
@@ -738,23 +722,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
 - (void)dropInteraction:(UIDropInteraction*)interaction
           sessionDidEnd:(id<UIDropSession>)session {
-  CHECK(self.delegate);
-
-  if (!_dragSessionWithinInputPlate) {
-    return;
-  }
-
-  if (session.items.count > _remainingAttachmentCapacity) {
-    [self.delegate didFailToAttachDueToAttachmentLimit:self];
-    return;
-  }
-
-  if (_imageGenerationEnabled &&
-      ![session.items.firstObject.itemProvider
-          hasItemConformingToTypeIdentifier:UTTypeImage.identifier]) {
-    [self.delegate didFailToAttachDueToAttachmentLimit:self];
-    return;
-  }
+  [self dropSessionDidEnd:session];
 }
 
 #pragma mark - UICollectionViewDelegateFlowLayout
@@ -1526,6 +1494,19 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   ]];
 }
 
+/// Sets up the view that receives drop interactions for the input plate.
+- (void)setupDragAndDropReceiverView {
+  _dragAndDropReceiverView = [[UIView alloc] init];
+  _dragAndDropReceiverView.translatesAutoresizingMaskIntoConstraints = NO;
+  _dragAndDropReceiverView.backgroundColor = [UIColor clearColor];
+
+  // TODO(crbug.com/475834813): Add glow effect when dragging an item over the
+  // composebox.
+  [_dragAndDropReceiverView
+      addInteraction:[[UIDropInteraction alloc] initWithDelegate:self]];
+  [self.view addSubview:_dragAndDropReceiverView];
+}
+
 /// Sets up the main container view for the input plate.
 - (void)setupInputPlateContainerView {
   _inputPlateContainerView = [[UIView alloc] init];
@@ -1543,17 +1524,15 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                      _inputPlateContainerView);
 
   [self updateDepthShadowAppearance];
-  [_inputPlateContainerView
-      addInteraction:[[UIDropInteraction alloc] initWithDelegate:self]];
-  [self.view addSubview:_inputPlateContainerView];
+  [_dragAndDropReceiverView addSubview:_inputPlateContainerView];
 
   _glowEffectView = ios::provider::CreateGlowEffect(
       CGRectZero, kInputPlateCornerRadius, /*glowWidth is deprecated*/ 0);
   if (_glowEffectView) {
     _glowEffectView.translatesAutoresizingMaskIntoConstraints = NO;
     _glowEffectView.userInteractionEnabled = NO;
-    [self.view insertSubview:_glowEffectView
-                aboveSubview:_inputPlateContainerView];
+    [_dragAndDropReceiverView insertSubview:_glowEffectView
+                               aboveSubview:_inputPlateContainerView];
     AddSameConstraints(_inputPlateContainerView, _glowEffectView);
   }
 }
@@ -1706,15 +1685,55 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   return button;
 }
 
+- (void)dropSessionDidEnd:(id<UIDropSession>)session {
+  CHECK(self.delegate);
+
+  if (!_dragSessionWithinInputPlate) {
+    return;
+  }
+
+  if ([self isDropAllowed:session]) {
+    return;
+  }
+
+  // Drop to attach was not allowed because the set of items dropped was not
+  // valid.
+  [self.delegate didFailToAttachDueToIneligibleAttachments:self];
+}
+
+/// Returns whether a drop action will be allowed for a given drop session.
+- (BOOL)isDropAllowed:(id<UIDropSession>)session {
+  if (session.items.count > _remainingAttachmentCapacity) {
+    return NO;
+  }
+
+  BOOL willAllowPDFDrop = [self willAllowPDFDrop:session];
+  BOOL willAllowImageDrop = [self willAllowImageDrop:session];
+
+  return willAllowPDFDrop || willAllowImageDrop;
+}
+
+/// Returns whether an image drop will be allowed based on the Composebox mode,
+/// whether a drag and drop action is allowed, and whether there is an image in
+/// the drop session.
+- (BOOL)willAllowImageDrop:(id<UIDropSession>)session {
+  if (_galleryActionsDisabled || _galleryActionsHidden) {
+    return NO;
+  }
+
+  if (![session
+          hasItemsConformingToTypeIdentifiers:@[ UTTypeImage.identifier ]]) {
+    return NO;
+  }
+
+  return YES;
+}
+
 /// Returns whether a PDF drop will be allowed based on the Composebox mode,
 /// whether a drag and drop action is allowed, and whether there is a PDF in the
 /// drop session.
 - (BOOL)willAllowPDFDrop:(id<UIDropSession>)session {
-  if (_attachFileActionsDisabled) {
-    return NO;
-  }
-
-  if (_attachFileActionsHidden) {
+  if (_attachFileActionsDisabled || _attachFileActionsHidden) {
     return NO;
   }
 
@@ -1724,6 +1743,39 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   }
 
   return YES;
+}
+
+/// Performs a drop action for a given drop session.
+- (void)performDrop:(id<UIDropSession>)session {
+  // Drop each eligible dragged item into the Composebox.
+  for (UIDragItem* item in session.items) {
+    if ([self willAllowPDFDrop:session] &&
+        [item.itemProvider
+            hasItemConformingToTypeIdentifier:UTTypePDF.identifier]) {
+      [self performDropForPDF:item.itemProvider];
+    } else if ([self willAllowImageDrop:session] &&
+               [item.itemProvider
+                   hasItemConformingToTypeIdentifier:UTTypeImage.identifier]) {
+      [self performDropForImage:item.itemProvider];
+    }
+  }
+  // Drop complete.
+  _dragSessionWithinInputPlate = NO;
+}
+
+/// Performs a drop for a dragged image file from a given `itemProvider`.
+- (void)performDropForImage:(NSItemProvider*)itemProvider {
+  CHECK(self.mutator);
+  CHECK(
+      [itemProvider hasItemConformingToTypeIdentifier:UTTypeImage.identifier]);
+
+  // TODO(crbug.com/475203545): Prevent duplicate items being added. The file
+  // picker and the drag-and-drop interfaces have different schemes for
+  // generating asset IDs. They should be common, in order to prevent the same
+  // file being added several times. This should be updated so that asset IDs
+  // generated during drag-and-drop match for the same image being dropped.
+  [self.mutator processImageItemProvider:itemProvider
+                                 assetID:[NSUUID UUID].UUIDString];
 }
 
 /// Performs a drop for a dragged PDF file from a given `itemProvider`.
@@ -1745,6 +1797,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   if (!url) {
     return;
   }
+
   if (error) {
     return;
   }
