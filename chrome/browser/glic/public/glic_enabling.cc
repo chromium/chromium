@@ -128,8 +128,7 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
     }
   }
 
-  if (!HasConsentedForProfile(profile) &&
-      !base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding)) {
+  if (!HasConsentedForProfile(profile)) {
     result.not_consented = true;
   }
 
@@ -229,7 +228,12 @@ mojom::ProfileReadyState GlicEnabling::GetProfileReadyState(Profile* profile) {
   if (enablement.DisallowedByAdmin()) {
     return mojom::ProfileReadyState::kDisabledByAdmin;
   }
-  if (!enablement.IsEnabledAndConsented()) {
+  if (!enablement.IsEnabled()) {
+    return mojom::ProfileReadyState::kIneligible;
+  }
+
+  if (enablement.not_consented &&
+      !base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding)) {
     return mojom::ProfileReadyState::kIneligible;
   }
 
