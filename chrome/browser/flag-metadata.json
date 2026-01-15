@@ -7475,7 +7475,7 @@
   {
     "name": "pdf-oopif",
     "owners": [ "andyphan@chromium.org", "//pdf/OWNERS" ],
-    "expiry_milestone": 146
+    "expiry_milestone": 150
   },
   {
     "name": "pdf-portfolio",
@@ -7493,12 +7493,12 @@
   {
     "name": "pdf-use-skia-renderer",
     "owners": [ "thestig@chromium.org", "//pdf/OWNERS" ],
-    "expiry_milestone": 146
+    "expiry_milestone": 152
   },
   {
     "name": "pdf-xfa-forms",
     "owners": [ "thestig@chromium.org", "//pdf/OWNERS" ],
-    "expiry_milestone": 146
+    "expiry_milestone": 156
   },
   {
     "name": "permission-element",
