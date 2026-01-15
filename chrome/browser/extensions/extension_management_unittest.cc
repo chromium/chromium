@@ -1787,7 +1787,7 @@ TEST_F(ExtensionAdminPolicyTest, UserMayLoadBlocklisted) {
   EXPECT_FALSE(
       UserMayLoad(&blocklist, nullptr, nullptr, extension_.get(), nullptr));
 
-  // With a allowlist. There's no such thing as a allowlist wildcard.
+  // With an allowlist. There's no such thing as an allowlist wildcard.
   base::Value::List allowlist;
   allowlist.Append("behllobkkfkfnphdnhnkndlbkcpglgmj");
   EXPECT_FALSE(

@@ -73,7 +73,7 @@ inline constexpr char kExtensionManagement[] = "extensions.management";
 inline constexpr char kExtensionUnpublishedAvailability[] =
     "extensions.unpublished_availability";
 
-// A allowlist of extension ids the user can install: exceptions from the
+// An allowlist of extension ids the user can install: exceptions from the
 // following denylist.
 inline constexpr char kInstallAllowList[] = "extensions.install.allowlist";
 
