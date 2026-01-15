@@ -1712,10 +1712,14 @@
       "Linux"
     ],
     "bases": [
+      "external/wpt/jpegxl",
       "http/tests/inspector-protocol/emulation/emulation-set-disabled-image-types-picture.js",
       "http/tests/inspector-protocol/emulation/emulation-set-disabled-image-types-img.js",
       "http/tests/inspector-protocol/prefetch/request-will-be-sent-redirect-cross-site.https.js",
       "http/tests/misc/xhtml.php"
+    ],
+    "exclusive_tests": [
+      "external/wpt/jpegxl"
     ],
     "args": [
       "--enable-features=JXLImageFormat"
