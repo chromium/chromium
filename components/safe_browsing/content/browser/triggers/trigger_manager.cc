@@ -260,9 +260,12 @@ TriggerManager::FinishCollectingThreatDetails(
   }
 
   if (trigger_type == TriggerType::GAIA_PASSWORD_REUSE) {
+    // The `num_visits` value here reflects the value returned by the history
+    // service after navigation. Since the first visit is not a repeat visit,
+    // log false when `num_visits` is 1.
     base::UmaHistogramBoolean(
-        "SafeBrowsing.ClientSafeBrowsingReport.PasswordReuse.RepeatVisit",
-        num_visits > 0);
+        "SafeBrowsing.ClientSafeBrowsingReport.PasswordReuse.RepeatVisit2",
+        num_visits > 1);
   }
 
   // Make sure there's a ThreatDetails collector running on this tab.

@@ -714,15 +714,33 @@ void ChromePasswordProtectionService::MaybeFinishCollectingThreatDetails(
   if (!trigger_manager_)
     return;
 
-  // Since we don't keep track the threat details in progress, it is safe to
-  // ignore the result of |FinishCollectingThreatDetails()|. TriggerManager will
-  // take care of whether report should be sent.
-  trigger_manager_->FinishCollectingThreatDetails(
-      safe_browsing::TriggerType::GAIA_PASSWORD_REUSE,
-      GetWebContentsKey(web_contents), base::Milliseconds(0), did_proceed,
-      /*num_visits=*/0,
-      TriggerManager::GetDataCollectionPermissions(*profile_->GetPrefs(),
-                                                   web_contents));
+  // Get the num_visits for the URL from the history service. If the value is
+  // not able to be retrieved, set it to 0.
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(profile_,
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  if (history_service) {
+    history_service->GetVisibleVisitCountToHost(
+        web_contents->GetLastCommittedURL(),
+        base::BindOnce(
+            &ChromePasswordProtectionService::OnGetVisibleVisitCountToHost,
+            weak_ptr_factory_.GetWeakPtr(),
+            safe_browsing::TriggerType::GAIA_PASSWORD_REUSE,
+            GetWebContentsKey(web_contents), base::Milliseconds(0), did_proceed,
+            TriggerManager::GetDataCollectionPermissions(*profile_->GetPrefs(),
+                                                         web_contents)),
+        &task_tracker_);
+  } else {
+    // Since we don't keep track the threat details in progress, it is safe to
+    // ignore the result of |FinishCollectingThreatDetails()|. TriggerManager
+    // will take care of whether report should be sent.
+    trigger_manager_->FinishCollectingThreatDetails(
+        safe_browsing::TriggerType::GAIA_PASSWORD_REUSE,
+        GetWebContentsKey(web_contents), base::Milliseconds(0), did_proceed,
+        /*num_visits=*/0,
+        TriggerManager::GetDataCollectionPermissions(*profile_->GetPrefs(),
+                                                     web_contents));
+  }
 }
 
 void ChromePasswordProtectionService::MaybeLogPasswordReuseDetectedEvent(
@@ -2055,6 +2073,20 @@ ChromePasswordProtectionService::GetStoreForReusedCredential(
                  password_manager::PasswordForm::Store::kAccountStore
              ? GetAccountPasswordStore()
              : GetProfilePasswordStore();
+}
+
+void ChromePasswordProtectionService::OnGetVisibleVisitCountToHost(
+    const TriggerType trigger_type,
+    WebContentsKey web_contents_key,
+    const base::TimeDelta& delay,
+    bool did_proceed,
+    const TriggerManager::DataCollectionPermissions&
+        data_collection_permissions,
+    history::VisibleVisitCountToHostResult result) {
+  int visit_count = result.success && result.count ? result.count : 0;
+  trigger_manager_->FinishCollectingThreatDetails(
+      trigger_type, web_contents_key, delay, did_proceed, visit_count,
+      data_collection_permissions);
 }
 
 }  // namespace safe_browsing

@@ -664,7 +664,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram
-    name="SafeBrowsing.ClientSafeBrowsingReport.PasswordReuse.RepeatVisit"
+    name="SafeBrowsing.ClientSafeBrowsingReport.PasswordReuse.RepeatVisit2"
     enum="BooleanRepeatVisit" expires_after="2026-06-21">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
