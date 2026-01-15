@@ -535,9 +535,12 @@ void LayoutBox::WillBeDestroyed() {
     DisassociatePhysicalFragments();
   }
 
-  if (Style() && StyleRef().HasOutOfFlowPosition()) {
-    if (auto* display_locks = DisplayLocksAffectedByAnchors()) {
-      NotifyContainingDisplayLocksForAnchorPositioning(display_locks, nullptr);
+  if (!RuntimeEnabledFeatures::LayoutReinsertOnInFlowStateChangeEnabled()) {
+    if (Style() && StyleRef().HasOutOfFlowPosition()) {
+      if (auto* display_locks = DisplayLocksAffectedByAnchors()) {
+        NotifyContainingDisplayLocksForAnchorPositioning(display_locks,
+                                                         nullptr);
+      }
     }
   }
 
@@ -567,6 +570,15 @@ void LayoutBox::InsertedIntoTree() {
 void LayoutBox::WillBeRemovedFromTree() {
   NOT_DESTROYED();
   ClearCustomLayoutChild();
+
+  if (RuntimeEnabledFeatures::LayoutReinsertOnInFlowStateChangeEnabled()) {
+    // Notify the display-locks that anchors within a sub-tree may disappear.
+    if (Style() && StyleRef().HasOutOfFlowPosition()) {
+      NotifyContainingDisplayLocksForAnchorPositioning(
+          DisplayLocksAffectedByAnchors(), nullptr);
+    }
+  }
+
   LayoutBoxModelObject::WillBeRemovedFromTree();
 }
 
@@ -591,7 +603,9 @@ void LayoutBox::StyleWillChange(StyleDifference diff,
     if (diff.NeedsFullLayout() && Parent()) {
       bool will_move_out_of_ifc = false;
       if (old_style->GetPosition() != new_style.GetPosition()) {
-        if (!old_style->HasOutOfFlowPosition() &&
+        if (!RuntimeEnabledFeatures::
+                LayoutReinsertOnInFlowStateChangeEnabled() &&
+            !old_style->HasOutOfFlowPosition() &&
             new_style.HasOutOfFlowPosition()) {
           // We're about to go out of flow. Before that takes place, we need to
           // mark the current containing block chain for preferred widths
@@ -624,12 +638,14 @@ void LayoutBox::StyleWillChange(StyleDifference diff,
       }
 
       bool will_become_inflow = false;
-      if ((old_style->IsFloating() || old_style->HasOutOfFlowPosition()) &&
-          !new_style.IsFloating() && !new_style.HasOutOfFlowPosition()) {
-        // As a float or OOF, this object may have been part of an inline
-        // formatting context, but that's definitely no longer the case.
-        will_become_inflow = true;
-        will_move_out_of_ifc = true;
+      if (!RuntimeEnabledFeatures::LayoutReinsertOnInFlowStateChangeEnabled()) {
+        if ((old_style->IsFloating() || old_style->HasOutOfFlowPosition()) &&
+            !new_style.IsFloating() && !new_style.HasOutOfFlowPosition()) {
+          // As a float or OOF, this object may have been part of an inline
+          // formatting context, but that's definitely no longer the case.
+          will_become_inflow = true;
+          will_move_out_of_ifc = true;
+        }
       }
 
       if (will_move_out_of_ifc && FirstInlineFragmentItemIndex()) {
@@ -664,11 +680,14 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
   if (HasReflection() && !HasLayer())
     SetHasReflection(false);
 
-  if (auto* parent_flow_block = DynamicTo<LayoutBlockFlow>(Parent())) {
-    if (IsFloatingOrOutOfFlowPositioned() && old_style &&
-        !old_style->IsFloating() && !old_style->HasOutOfFlowPosition()) {
-      // Note that |parent_flow_block| may have been destroyed after this call.
-      parent_flow_block->ChildBecameFloatingOrOutOfFlow(this);
+  if (!RuntimeEnabledFeatures::LayoutReinsertOnInFlowStateChangeEnabled()) {
+    if (auto* parent_flow_block = DynamicTo<LayoutBlockFlow>(Parent())) {
+      if (IsFloatingOrOutOfFlowPositioned() && old_style &&
+          !old_style->IsFloating() && !old_style->HasOutOfFlowPosition()) {
+        // Note that |parent_flow_block| may have been destroyed after this
+        // call.
+        parent_flow_block->ChildBecameFloatingOrOutOfFlow(this);
+      }
     }
   }
 

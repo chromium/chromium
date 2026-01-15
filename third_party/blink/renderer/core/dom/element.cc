@@ -5779,7 +5779,20 @@ StyleRecalcChange Element::RecalcOwnStyle(
       // was available.
       apply_changes = LayoutObject::ApplyStyleChanges::kYes;
     }
+
+    const bool needs_reinsert =
+        RuntimeEnabledFeatures::LayoutReinsertOnInFlowStateChangeEnabled() &&
+        ComputedStyle::NeedsReinsertLayoutTree(*old_style, *layout_style);
+    if (needs_reinsert) {
+      layout_object->Remove();
+    }
     layout_object->SetStyle(layout_style, apply_changes);
+    if (needs_reinsert) {
+      LayoutTreeBuilderTraversal::ParentLayoutObject(*this)->AddChild(
+          layout_object,
+          LayoutTreeBuilderTraversal::NextSiblingLayoutObject(*this));
+      layout_object->UpdateAfterReinsert(*old_style);
+    }
   }
 
   return child_change;
@@ -6990,9 +7003,10 @@ void Element::SetNeedsCompositingUpdate() {
     return;
   }
 
-  auto* painting_layer = layout_object->PaintingLayer();
   // Repaint because the foreign layer may have changed.
-  painting_layer->SetNeedsRepaint();
+  if (auto* painting_layer = layout_object->PaintingLayer()) {
+    painting_layer->SetNeedsRepaint();
+  }
 
   // Changes to AdditionalCompositingReasons can change direct compositing
   // reasons which affect paint properties.
