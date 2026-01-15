@@ -20,6 +20,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/path_service.h"
+#include "base/strings/string_view_util.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
@@ -548,9 +549,9 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(TransmitFileClient,
   base::File file =
       DeserializeFileFrom(*transport, listener.WaitForNextMessage());
 
-  std::vector<char> data(file.GetLength());
-  UNSAFE_TODO(file.Read(0, data.data(), data.size()));
-  EXPECT_EQ(kMessage1, std::string(data.begin(), data.end()));
+  std::vector<uint8_t> data(file.GetLength());
+  ASSERT_TRUE(file.ReadAndCheck(0, data));
+  EXPECT_EQ(kMessage1, base::as_string_view(data));
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
@@ -592,7 +593,7 @@ TEST_P(MojoIpczTransportSecurityTest, TransmitFile) {
       flags = base::File::AddFlagsForPassingToUntrustedProcess(flags);
     }
     base::File new_file(temp_dir.GetPath().AppendASCII("testfile"), flags);
-    UNSAFE_TODO(new_file.Write(0, kMessage1.data(), kMessage1.size()));
+    ASSERT_TRUE(new_file.WriteAndCheck(0, base::as_byte_span(kMessage1)));
 
     TransportListener listener(*transport);
     if (IsEnforcementEnabled() && !ShouldMarkNoExecute()) {
