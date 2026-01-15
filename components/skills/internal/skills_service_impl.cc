@@ -74,6 +74,12 @@ const Skill* SkillsServiceImpl::UpdateSkill(std::string_view skill_id,
 
   Skill* skill = it->get();
 
+  // First party skills are not owned by the user. They cannot be updated.
+  // Instead, the user should copy the skill content, so that the new, copied
+  // skill is user created, then update the copied skill.
+  CHECK(skill->source == SkillSource::kUserCreated)
+      << "Skill does not belong to the user. Cannot update skill.";
+
   // Update the existing skill.
   bool is_changed = false;
   if (skill->name != name) {

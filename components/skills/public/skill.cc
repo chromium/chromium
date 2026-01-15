@@ -10,7 +10,10 @@ Skill::Skill(const std::string& id,
              const std::string& name,
              const std::string& icon,
              const std::string& prompt)
-    : id(id), name(name), icon(icon), prompt(prompt) {}
+    : id(id),
+      name(name),
+      icon(icon),
+      prompt(prompt) {}
 
 Skill::~Skill() = default;
 

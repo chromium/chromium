@@ -76,6 +76,7 @@ TEST_F(SkillsServiceImplTest, AddSkill) {
   EXPECT_EQ("name", added_skill->name);
   EXPECT_EQ("icon", added_skill->icon);
   EXPECT_EQ("prompt", added_skill->prompt);
+  EXPECT_EQ(SkillSource::kUserCreated, added_skill->source);
   EXPECT_EQ(1u, service_.GetSkills().size());
   EXPECT_FALSE(added_skill->id.empty());
   EXPECT_TRUE(base::Uuid::ParseLowercase(added_skill->id).is_valid());
