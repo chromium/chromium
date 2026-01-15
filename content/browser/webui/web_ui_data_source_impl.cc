@@ -133,8 +133,6 @@ void GetDataResourceBytesOnWorkerThreadFromDisk(
 }
 #endif  // BUILDFLAG(LOAD_WEBUI_FROM_DISK)
 
-const int kNonExistentResource = -1;
-
 }  // namespace
 
 // Internal class to hide the fact that WebUIDataSourceImpl implements

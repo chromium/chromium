@@ -28,6 +28,8 @@ namespace content {
 class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
                                            public WebUIDataSource {
  public:
+  static constexpr int kNonExistentResource = -1;
+
   WebUIDataSourceImpl(const WebUIDataSourceImpl&) = delete;
   WebUIDataSourceImpl& operator=(const WebUIDataSourceImpl&) = delete;
 
@@ -79,6 +81,8 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   const std::map<std::string, std::string>& path_to_response_map() const {
     return path_to_response_map_;
   }
+
+  int default_resource() const { return default_resource_; }
 
  protected:
   explicit WebUIDataSourceImpl(const std::string& source_name);
