@@ -24,9 +24,9 @@
 #include "chrome/browser/glic/host/context/glic_active_pinned_focused_tab_manager.h"
 #include "chrome/browser/glic/host/context/glic_empty_focused_browser_manager.h"
 #include "chrome/browser/glic/host/context/glic_empty_focused_tab_manager.h"
-#include "chrome/browser/glic/host/context/glic_focused_browser_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_pinned_tab_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
+#include "chrome/browser/glic/host/context/glic_sharing_manager_coordinator.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
@@ -187,71 +187,17 @@ GlicInstanceImpl::GlicInstanceImpl(
     base::WeakPtr<InstanceCoordinatorDelegate> coordinator_delegate,
     GlicMetrics* metrics,
     contextual_cueing::ContextualCueingService* contextual_cueing_service)
-    : GlicInstanceImpl(profile,
-                       instance_id,
-                       coordinator_delegate,
-                       metrics,
-                       contextual_cueing_service,
-#if !BUILDFLAG(IS_ANDROID)
-                       new GlicFocusedBrowserManagerImpl(this, profile),
-                       new GlicFocusedBrowserManagerImpl(this, profile)
-#else
-                       false
-#endif
-      ) {
-}
-
-GlicInstanceImpl::GlicInstanceImpl(
-    Profile* profile,
-    InstanceId instance_id,
-    base::WeakPtr<InstanceCoordinatorDelegate> coordinator_delegate,
-    GlicMetrics* metrics,
-    contextual_cueing::ContextualCueingService* contextual_cueing_service,
-#if !BUILDFLAG(IS_ANDROID)
-    GlicFocusedBrowserManager* detached_mode_focused_browser_manager,
-    GlicFocusedBrowserManager* live_mode_focused_browser_manager
-#else
-    bool ignored
-#endif
-    )
     : profile_(profile),
       service_(GlicKeyedService::Get(profile)),
       coordinator_delegate_(coordinator_delegate),
       id_(instance_id),
       host_(profile_, this, this, this),
-      pinned_tab_manager_(
-          std::make_unique<GlicPinnedTabManagerImpl>(profile, this, metrics)),
-#if !BUILDFLAG(IS_ANDROID)
-      detached_mode_sharing_manager_(
-          std::make_unique<GlicPinAwareDetachedFocusedTabManager>(
-              &sharing_manager_,
-              detached_mode_focused_browser_manager),
-          base::WrapUnique<GlicFocusedBrowserManager>(
-              detached_mode_focused_browser_manager),
-          pinned_tab_manager_.get(),
-          profile,
-          metrics),
-      live_mode_sharing_manager_(std::make_unique<GlicFocusedTabManager>(
-                                     live_mode_focused_browser_manager),
-                                 base::WrapUnique<GlicFocusedBrowserManager>(
-                                     live_mode_focused_browser_manager),
-                                 pinned_tab_manager_.get(),
-                                 profile,
-                                 metrics),
-#endif
-      attached_mode_sharing_manager_(
-          std::make_unique<GlicActivePinnedFocusedTabManager>(
-              profile,
-              &sharing_manager_),
-          std::make_unique<GlicEmptyFocusedBrowserManager>(),
-          pinned_tab_manager_.get(),
-          profile,
-          metrics),
-      sharing_manager_(&attached_mode_sharing_manager_),
-      instance_metrics_(&sharing_manager_),
+      sharing_manager_coordinator_(profile, this, metrics),
+      instance_metrics_(
+          &sharing_manager_coordinator_.GetActiveSharingManager()),
       zero_state_suggestions_manager_(
           std::make_unique<GlicZeroStateSuggestionsManager>(
-              &sharing_manager_,
+              &sharing_manager(),
               this,
               contextual_cueing_service)),
       actor_task_manager_(std::make_unique<GlicActorTaskManager>(profile)),
@@ -267,7 +213,7 @@ GlicInstanceImpl::GlicInstanceImpl(
   host_observation_.Observe(&host_);
   if (base::FeatureList::IsEnabled(features::kGlicBindPinnedUnboundTab)) {
     pinned_tabs_change_subscription_ =
-        sharing_manager_.AddTabPinningStatusChangedCallback(
+        sharing_manager().AddTabPinningStatusChangedCallback(
             base::BindRepeating(&GlicInstanceImpl::OnTabPinningStatusChanged,
                                 weak_ptr_factory_.GetWeakPtr()));
   }
@@ -436,7 +382,7 @@ GlicUiEmbedder* GlicInstanceImpl::GetEmbedderForKey(EmbedderKey key) {
 }
 
 GlicSharingManager& GlicInstanceImpl::sharing_manager() {
-  return sharing_manager_;
+  return sharing_manager_coordinator_.GetActiveSharingManager();
 }
 
 void GlicInstanceImpl::CloseInstanceAndShutdown() {
@@ -602,26 +548,12 @@ void GlicInstanceImpl::PrepareForOpen() {
   }
 }
 
-void GlicInstanceImpl::UpdateSharingManagerDelegate() {
-  if (last_non_hidden_panel_state_kind_ == mojom::PanelStateKind::kAttached) {
-    sharing_manager_.SetDelegate(&attached_mode_sharing_manager_);
-    return;
-  }
-#if !BUILDFLAG(IS_ANDROID)
-  if (interaction_mode_ == mojom::WebClientMode::kAudio) {
-    sharing_manager_.SetDelegate(&live_mode_sharing_manager_);
-    return;
-  }
 
-  sharing_manager_.SetDelegate(&detached_mode_sharing_manager_);
-#else
-  NOTREACHED() << "Android only has attached mode";
-#endif
-}
 
 void GlicInstanceImpl::OnInteractionModeChange(mojom::WebClientMode new_mode) {
   interaction_mode_ = new_mode;
-  UpdateSharingManagerDelegate();
+  sharing_manager_coordinator_.UpdateState(GetPanelState().kind,
+                                           interaction_mode_);
 }
 
 void GlicInstanceImpl::AddStateObserver(PanelStateObserver* observer) {
@@ -840,12 +772,8 @@ void GlicInstanceImpl::ShowInactiveSidePanelEmbedderFor(
 void GlicInstanceImpl::SetActiveEmbedderAndNotifyStateChange(
     std::optional<EmbedderKey> new_key) {
   active_embedder_key_ = new_key;
-  mojom::PanelStateKind panel_state_kind = GetPanelState().kind;
-  if (last_non_hidden_panel_state_kind_ != panel_state_kind &&
-      panel_state_kind != mojom::PanelStateKind::kHidden) {
-    last_non_hidden_panel_state_kind_ = panel_state_kind;
-    UpdateSharingManagerDelegate();
-  }
+  sharing_manager_coordinator_.UpdateState(GetPanelState().kind,
+                                           interaction_mode_);
   NotifyStateChange();
   NotifyPanelStateChanged();
 }
@@ -1157,11 +1085,11 @@ void GlicInstanceImpl::MaybeRemoveBlankInstanceOnClose() {
 
   // Only remove the instance if there are no pinned tabs, or if the only pinned
   // tab is the one for this embedder.
-  if (sharing_manager_.GetNumPinnedTabs() > 1) {
+  if (sharing_manager().GetNumPinnedTabs() > 1) {
     return;
   }
-  if (sharing_manager_.GetNumPinnedTabs() == 1 &&
-      !sharing_manager_.IsTabPinned((*tab)->GetHandle())) {
+  if (sharing_manager().GetNumPinnedTabs() == 1 &&
+      !sharing_manager().IsTabPinned((*tab)->GetHandle())) {
     return;
   }
 
@@ -1183,7 +1111,8 @@ void GlicInstanceImpl::NotifyInstanceActivationChanged(bool is_active) {
         base::BindOnce(&GlicInstanceImpl::Hibernate, base::Unretained(this)));
   }
 
-  sharing_manager_.OnGlicWindowActivationChanged(is_active && IsDetached());
+  sharing_manager_coordinator_.OnGlicWindowActivationChanged(is_active &&
+                                                             IsDetached());
   if (coordinator_delegate_) {
     coordinator_delegate_->OnInstanceActivationChanged(this, is_active);
   }
