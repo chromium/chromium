@@ -45,6 +45,7 @@
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/common/locale_util.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/url_constants.h"
 #include "read_anything_entry_point_controller.h"
 #include "read_anything_side_panel_controller.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -392,6 +393,14 @@ void ReadAnythingSidePanelController::DidStopLoading() {
 
 void ReadAnythingSidePanelController::CheckIfGoodCandidateForReadingMode() {
   if (!features::IsReadAnythingOmniboxChipEnabled() || !tab_->IsActivated()) {
+    return;
+  }
+
+  // Don't show the omnibox entrypoint for chrome:// URLs
+  const GURL& url = tab_->GetContents()->GetLastCommittedURL();
+  if (url.SchemeIs(content::kChromeUIScheme) || url.IsAboutBlank() ||
+      url.is_empty()) {
+    UpdateOmniboxEntryPoint(false);
     return;
   }
 
