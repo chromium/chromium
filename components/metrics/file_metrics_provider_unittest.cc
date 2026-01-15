@@ -260,9 +260,10 @@ class FileMetricsProviderTestBase : public testing::Test {
     // Use DCHECK so the stack-trace will indicate where this was called.
     DCHECK(writer.IsValid()) << path;
     size_t file_size = create_large_files_ ? metrics->size() : metrics->used();
-    int written =
-        UNSAFE_TODO(writer.Write(0, (const char*)metrics->data(), file_size));
-    DCHECK_EQ(static_cast<int>(file_size), written);
+    bool success = writer.WriteAndCheck(
+        0, UNSAFE_BUFFERS(base::span(
+               static_cast<const uint8_t*>(metrics->data()), file_size)));
+    DCHECK(success);
   }
 
   void WriteMetricsFileAtTime(const base::FilePath& path,
