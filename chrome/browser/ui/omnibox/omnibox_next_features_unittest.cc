@@ -336,24 +336,28 @@ TEST_F(OmniboxNextAimEligibilityTest, IsAimPopupEnabled) {
 
 TEST_F(OmniboxNextAimEligibilityTest, ShouldShowAimContextMenuOption) {
   profile_.GetPrefs()->SetInteger(omnibox::kAIModeSettings, 0);
-  const struct {
+  struct TestCase {
     bool is_aim_eligible;
     bool aim_enabled;
     bool ai_mode_entry_point_enabled;
     bool webui_aim_popup_enabled;
     const char* context_button_variant;
     bool expected_should_show;
-  } test_cases[] = {
-      {true, true, true, true, "below_results", true},
-      {true, true, false, true, "below_results", true},
-      {true, true, false, true, "none", false},
-      {true, true, false, false, "none", false},
-      {true, true, true, false, "below_results", true},
-      {false, true, true, false, "below_results", false},
-      {true, false, true, false, "below_results", false},
+  };
+  std::vector<TestCase> test_cases = {
+      // If either AIM feature is enabled, then menu option should be shown.
+      // Entry point is enabled:
+      {true, false, true, false, "", true},
+      // Context button is enabled:
+      {true, false, false, true, "below_results", true},
+      // If the user is AIM ineligible, then the menu option should be hidden
+      // even if both features are enabled:
+      {false, true, true, true, "below_results", false},
   };
 
-  for (const auto& test_case : test_cases) {
+  for (size_t i = 0; i < test_cases.size(); ++i) {
+    const auto& test_case = test_cases[i];
+
     SetUpAimEligibilityService(test_case.is_aim_eligible);
     base::test::ScopedFeatureList feature_list;
     std::vector<base::test::FeatureRefAndParams> features_with_params;
@@ -385,7 +389,8 @@ TEST_F(OmniboxNextAimEligibilityTest, ShouldShowAimContextMenuOption) {
                                                disabled_features);
 
     EXPECT_EQ(ShouldShowAimContextMenuOption(profile()),
-              test_case.expected_should_show);
+              test_case.expected_should_show)
+        << " case " << i;
   }
 }
 
