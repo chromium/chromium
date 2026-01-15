@@ -1,4 +1,4 @@
-// Copyright 2026 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,7 +54,6 @@ public class XrSceneCoreSessionInitializerImpl
         // This can happen when the activity gets recreated because of the
         // Activity#onConfigurationChanged while being in a non-default mode.
         if (!inDesiredXrSpaceMode()) {
-            assert mXrSceneCoreSessionManager != null : "XrSceneCoreSessionManager is null.";
             if (!mXrSceneCoreSessionManager.requestSpaceModeChange(false)) {
                 // If unable to switch back to the Home Space mode due to the focus issue -
                 // add a focus listener and try again when the app window receives focus.
@@ -66,7 +65,6 @@ public class XrSceneCoreSessionInitializerImpl
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         if (hasFocus) {
-            assert mXrSceneCoreSessionManager != null : "XrSceneCoreSessionManager is null.";
             if (!inDesiredXrSpaceMode()) {
                 assumeNonNull(mXrSceneCoreSessionManager).requestSpaceModeChange(false);
             }
