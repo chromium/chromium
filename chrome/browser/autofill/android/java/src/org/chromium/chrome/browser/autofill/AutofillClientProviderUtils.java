@@ -101,7 +101,7 @@ public class AutofillClientProviderUtils {
         if (AWG_COMPONENT_NAME.equals(componentName.flattenToString())) {
             return AndroidAutofillAvailabilityStatus.ANDROID_AUTOFILL_SERVICE_IS_GOOGLE;
         }
-        if (!prefs.getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE)) {
+        if (!prefs.getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL)) {
             return AndroidAutofillAvailabilityStatus.SETTING_TURNED_OFF;
         }
         return AndroidAutofillAvailabilityStatus.AVAILABLE;

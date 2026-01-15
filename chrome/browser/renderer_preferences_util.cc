@@ -154,6 +154,7 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
       pref_service->GetBoolean(prefs::kEnableDoNotTrack);
   prefs->enable_encrypted_media =
       pref_service->GetBoolean(prefs::kEnableEncryptedMedia);
+
   prefs->webrtc_ip_handling_policy = blink::ToWebRTCIPHandlingPolicy(
       pref_service->GetString(prefs::kWebRTCIPHandlingPolicy));
 
@@ -198,8 +199,8 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
       pref_service->GetBoolean(prefs::kFullscreenAllowed);
 #endif
 #if BUILDFLAG(IS_ANDROID)
-  prefs->uses_platform_autofill = pref_service->GetBoolean(
-      autofill::prefs::kAutofillUsingVirtualViewStructure);
+  prefs->uses_platform_autofill =
+      pref_service->GetBoolean(autofill::prefs::kAutofillUsingPlatformAutofill);
 #endif
   prefs->caret_browsing_enabled =
       pref_service->GetBoolean(prefs::kCaretBrowsingEnabled);

@@ -36,7 +36,7 @@ void RecordAvailabilityStatus(AndroidAutofillAvailabilityStatus availability) {
 void RecordWhetherAndroidPrefResets(PrefService& prefs,
                                     bool uses_platform_autofill) {
   const bool will_reset_pref =
-      prefs.GetBoolean(prefs::kAutofillUsingVirtualViewStructure) &&
+      prefs.GetBoolean(prefs::kAutofillUsingPlatformAutofill) &&
       !uses_platform_autofill;
   base::UmaHistogramBoolean("Autofill.ResetAutofillPrefToChrome",
                             will_reset_pref);
@@ -92,7 +92,7 @@ AutofillClientProvider::AutofillClientProvider(PrefService* prefs)
 #if BUILDFLAG(IS_ANDROID)
   RecordWhetherAndroidPrefResets(*prefs, uses_platform_autofill_);
   // Ensure the pref is reset if platform autofill is restricted.
-  prefs->SetBoolean(prefs::kAutofillUsingVirtualViewStructure,
+  prefs->SetBoolean(prefs::kAutofillUsingPlatformAutofill,
                     uses_platform_autofill_);
   SetSharedPrefForSettingsContentProvider(uses_platform_autofill_);
   SetSharedPrefForDeepLink();

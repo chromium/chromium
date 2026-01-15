@@ -94,12 +94,13 @@ TEST_F(AutofillClientProviderBaseTest, ProvidesNoServiceWithoutProfile) {
 TEST_F(AutofillClientProviderBaseTest, UsesBuiltInAutofillForDisabledPref) {
 #if BUILDFLAG(IS_ANDROID)
   // Independent of platform or feature, a disabled pref means Chrome fills.
-  prefs().SetBoolean(prefs::kAutofillUsingVirtualViewStructure, false);
+  prefs().SetBoolean(prefs::kAutofillUsingPlatformAutofill, false);
 #endif  // BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(provider().uses_platform_autofill());
 }
 
 #if BUILDFLAG(IS_ANDROID)
+
 class AutofillClientProviderTest : public AutofillClientProviderBaseTest {
  public:
   AutofillClientProviderTest() {
@@ -118,7 +119,7 @@ TEST_F(AutofillClientProviderTest,
   SetAutofillAvailabilityForTesting(
       AndroidAutofillAvailabilityStatus::kAvailable);
   EXPECT_TRUE(provider().uses_platform_autofill());
-  EXPECT_TRUE(prefs().GetBoolean(prefs::kAutofillUsingVirtualViewStructure));
+  EXPECT_TRUE(prefs().GetBoolean(prefs::kAutofillUsingPlatformAutofill));
 }
 
 TEST_F(AutofillClientProviderTest,
@@ -126,16 +127,16 @@ TEST_F(AutofillClientProviderTest,
   SetAutofillAvailabilityForTesting(
       AndroidAutofillAvailabilityStatus::kSettingTurnedOff);
   EXPECT_FALSE(provider().uses_platform_autofill());
-  EXPECT_FALSE(prefs().GetBoolean(prefs::kAutofillUsingVirtualViewStructure));
+  EXPECT_FALSE(prefs().GetBoolean(prefs::kAutofillUsingPlatformAutofill));
 }
 
 TEST_F(AutofillClientProviderTest, CreateChromeClientForDisabledPref) {
   base::HistogramTester histogram_tester;
-  prefs().SetBoolean(prefs::kAutofillUsingVirtualViewStructure, false);
+  prefs().SetBoolean(prefs::kAutofillUsingPlatformAutofill, false);
   EXPECT_FALSE(provider().uses_platform_autofill());
 
   // A changing pref doesn't change the clients for new tabs:
-  prefs().SetBoolean(prefs::kAutofillUsingVirtualViewStructure, true);
+  prefs().SetBoolean(prefs::kAutofillUsingPlatformAutofill, true);
   EXPECT_FALSE(provider().uses_platform_autofill());
 
   // The pref is used as is and not reset.
@@ -147,13 +148,13 @@ TEST_F(AutofillClientProviderTest, CreateChromeClientIfPolicyPrefIsDisabled) {
   prefs().SetBoolean(prefs::kAutofillThirdPartyPasswordManagersAllowed, false);
 
   // The general pref may be set but it's ineffective if a policy overrides it.
-  prefs().SetBoolean(prefs::kAutofillUsingVirtualViewStructure, true);
+  prefs().SetBoolean(prefs::kAutofillUsingPlatformAutofill, true);
 
   EXPECT_FALSE(provider().uses_platform_autofill());
   histogram_tester.ExpectUniqueSample(kResetPrefMetric, true, 1);
 
   // Check that the pref was reset.
-  EXPECT_FALSE(prefs().GetBoolean(prefs::kAutofillUsingVirtualViewStructure));
+  EXPECT_FALSE(prefs().GetBoolean(prefs::kAutofillUsingPlatformAutofill));
   histogram_tester.ExpectUniqueSample(
       kAvailabilityMetric,
       AndroidAutofillAvailabilityStatus::kNotAllowedByPolicy, 1);
@@ -164,7 +165,7 @@ TEST_F(AutofillClientProviderTest,
   SetAutofillAvailabilityForTesting(
       AndroidAutofillAvailabilityStatus::kAvailable);
   EXPECT_TRUE(provider().uses_platform_autofill());
-  EXPECT_TRUE(prefs().GetBoolean(prefs::kAutofillUsingVirtualViewStructure));
+  EXPECT_TRUE(prefs().GetBoolean(prefs::kAutofillUsingPlatformAutofill));
   base::android::SharedPreferencesManager prefs =
       android::shared_preferences::GetChromeSharedPreferences();
   ASSERT_TRUE(prefs.ContainsKey(kAutofillThirdPartyModeState));
@@ -176,7 +177,7 @@ TEST_F(AutofillClientProviderTest,
   SetAutofillAvailabilityForTesting(
       AndroidAutofillAvailabilityStatus::kSettingTurnedOff);
   EXPECT_FALSE(provider().uses_platform_autofill());
-  EXPECT_FALSE(prefs().GetBoolean(prefs::kAutofillUsingVirtualViewStructure));
+  EXPECT_FALSE(prefs().GetBoolean(prefs::kAutofillUsingPlatformAutofill));
   base::android::SharedPreferencesManager prefs =
       android::shared_preferences::GetChromeSharedPreferences();
   ASSERT_TRUE(prefs.ContainsKey(kAutofillThirdPartyModeState));

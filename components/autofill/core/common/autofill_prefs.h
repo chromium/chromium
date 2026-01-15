@@ -178,10 +178,10 @@ inline constexpr char
 // the setup on each device requires steps outside the browser. Enabling this
 // pref on a device without a proper provider may yield a surprising absence of
 // filling.
-inline constexpr char kAutofillUsingVirtualViewStructure[] =
+inline constexpr char kAutofillUsingPlatformAutofill[] =
     "autofill.using_virtual_view_structure";
 // Boolean set by the `ThirdPartyPasswordManagersAllowed` policy. Defaults to
-// true which allows users to set the `kAutofillUsingVirtualViewStructure` pref.
+// true which allows users to set the `kAutofillUsingPlatformAutofill` pref.
 // If set to false, user can only use the built-in password manager.
 inline constexpr char kAutofillThirdPartyPasswordManagersAllowed[] =
     "autofill.third_party_password_managers_allowed";

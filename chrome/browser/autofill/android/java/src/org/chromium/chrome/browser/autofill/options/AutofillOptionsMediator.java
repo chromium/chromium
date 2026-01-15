@@ -127,7 +127,7 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
      * @return true if the toggle should be read-only.
      */
     boolean should3pToggleBeReadOnly() {
-        if (prefs().getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE)) {
+        if (prefs().getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL)) {
             return false; // Always allow to flip back to built-in password management.
         }
         switch (AutofillClientProviderUtils.getAndroidAutofillFrameworkAvailability(prefs())) {
@@ -149,7 +149,7 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
         assert isInitialized();
         mModel.set(
                 THIRD_PARTY_AUTOFILL_ENABLED,
-                prefs().getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE));
+                prefs().getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL));
         mModel.set(THIRD_PARTY_TOGGLE_IS_READ_ONLY, should3pToggleBeReadOnly());
         mModel.set(THIRD_PARTY_TOGGLE_HINT, getHintSummary());
     }
@@ -192,7 +192,7 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
 
     private void onConfirmWithRestart() {
         prefs().setBoolean(
-                        Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE,
+                        Pref.AUTOFILL_USING_PLATFORM_AUTOFILL,
                         mModel.get(THIRD_PARTY_AUTOFILL_ENABLED));
         RecordHistogram.recordBooleanHistogram(
                 HISTOGRAM_USE_THIRD_PARTY_FILLING, mModel.get(THIRD_PARTY_AUTOFILL_ENABLED));

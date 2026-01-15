@@ -117,7 +117,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  registry->RegisterBooleanPref(kAutofillUsingVirtualViewStructure, false);
+  registry->RegisterBooleanPref(kAutofillUsingPlatformAutofill, false);
   registry->RegisterBooleanPref(kAutofillThirdPartyPasswordManagersAllowed,
                                 true);
   registry->RegisterBooleanPref(

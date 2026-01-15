@@ -132,7 +132,7 @@ public class AutofillOptionsTest {
     @SmallTest
     public void constructedWithPrefAsDefaultForOption() {
         setAutofillAvailabilityToUseForTesting(AVAILABLE);
-        doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
+        doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL);
 
         // Initializing should set default property but not make use of dialogs or restarts yet.
         PropertyModel model =
@@ -148,7 +148,7 @@ public class AutofillOptionsTest {
     @SmallTest
     public void optionDisabledForAwgUpdatesOnResume() {
         setAutofillAvailabilityToUseForTesting(ANDROID_AUTOFILL_SERVICE_IS_GOOGLE);
-        doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
+        doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL);
 
         // Toggling on resume is to align with prefs and shouldn't trigger restart/dialogs.
         AutofillOptionsCoordinator autofillOptions =
@@ -164,7 +164,7 @@ public class AutofillOptionsTest {
 
         // On resume, check again whether AwG isn't used anymore — e.g. coming back from Settings.
         setAutofillAvailabilityToUseForTesting(AVAILABLE);
-        doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
+        doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL);
         lifecycleRegistry.handleLifecycleEvent(Event.ON_RESUME);
 
         assertTrue(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
@@ -176,7 +176,7 @@ public class AutofillOptionsTest {
     @SmallTest
     public void optionDisabledByPolicy() {
         setAutofillAvailabilityToUseForTesting(NOT_ALLOWED_BY_POLICY);
-        doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
+        doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL);
 
         // Toggling on resume is to align with prefs and shouldn't trigger restart/dialogs.
         AutofillOptionsCoordinator autofillOptions =
@@ -194,7 +194,7 @@ public class AutofillOptionsTest {
     @SmallTest
     public void optionEnabledToSwitchOffAwg() {
         setAutofillAvailabilityToUseForTesting(ANDROID_AUTOFILL_SERVICE_IS_GOOGLE);
-        doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
+        doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL);
 
         // Toggling on resume is to align with prefs and shouldn't trigger restart/dialogs.
         PropertyModel model =
@@ -221,7 +221,7 @@ public class AutofillOptionsTest {
         // Enabling the option should be recorded once.
         getRadioButtonComponent().getOptInButton().performClick();
         verifyAndDismissDialogManager(ButtonType.POSITIVE);
-        verify(mPrefs).setBoolean(eq(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE), eq(true));
+        verify(mPrefs).setBoolean(eq(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL), eq(true));
         histogramWatcher.assertExpected();
 
         // Enabling the option again should be ignored.
@@ -235,7 +235,7 @@ public class AutofillOptionsTest {
                         AutofillOptionsMediator.HISTOGRAM_USE_THIRD_PARTY_FILLING, false);
         getRadioButtonComponent().getDefaultButton().performClick();
         verifyAndDismissDialogManager(ButtonType.POSITIVE);
-        verify(mPrefs).setBoolean(eq(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE), eq(false));
+        verify(mPrefs).setBoolean(eq(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL), eq(false));
         histogramWatcher.assertExpected();
 
         verify(mRestartRunnable, times(2)).run(); // For enabling and disabling.
@@ -244,7 +244,7 @@ public class AutofillOptionsTest {
     @Test
     @SmallTest
     public void updateSettingsFromPrefOnViewCreated() {
-        doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
+        doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL);
         assertEquals(DEFAULT, getRadioButtonComponent().getSelectedOption()); // Not updated!
 
         // Update on initial binding. Fail if that triggers the dialog or restarting!
@@ -259,7 +259,7 @@ public class AutofillOptionsTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         AutofillOptionsMediator.HISTOGRAM_RESTART_ACCEPTED, true);
-        doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
+        doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL);
         PropertyModel model =
                 new AutofillOptionsCoordinator(mFragment, () -> mDialogManager, mRestartRunnable)
                         .initializeNow();
@@ -269,7 +269,7 @@ public class AutofillOptionsTest {
 
         verifyAndDismissDialogManager(ButtonType.POSITIVE);
 
-        verify(mPrefs).setBoolean(eq(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE), eq(true));
+        verify(mPrefs).setBoolean(eq(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL), eq(true));
         assertTrue(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
         verifyOptionReflectedInView(USE_3P);
         histogramWatcher.assertExpected();
@@ -282,7 +282,7 @@ public class AutofillOptionsTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         AutofillOptionsMediator.HISTOGRAM_RESTART_ACCEPTED, false);
-        doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
+        doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL);
         PropertyModel model =
                 new AutofillOptionsCoordinator(mFragment, () -> mDialogManager, mRestartRunnable)
                         .initializeNow();
@@ -293,7 +293,7 @@ public class AutofillOptionsTest {
         verifyAndDismissDialogManager(ButtonType.NEGATIVE);
 
         verify(mPrefs, times(0))
-                .setBoolean(eq(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE), anyBoolean());
+                .setBoolean(eq(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL), anyBoolean());
         assertFalse(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
         verifyOptionReflectedInView(DEFAULT);
         histogramWatcher.assertExpected();
@@ -303,7 +303,7 @@ public class AutofillOptionsTest {
     @Test
     @SmallTest
     public void toggledOptionResetsWhenDismissed() {
-        doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
+        doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL);
         PropertyModel model =
                 new AutofillOptionsCoordinator(mFragment, () -> mDialogManager, mRestartRunnable)
                         .initializeNow();
@@ -314,7 +314,7 @@ public class AutofillOptionsTest {
         verifyAndDismissDialogManager();
 
         verify(mPrefs, times(0))
-                .setBoolean(eq(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE), anyBoolean());
+                .setBoolean(eq(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL), anyBoolean());
         assertFalse(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
         verifyOptionReflectedInView(DEFAULT);
         verify(mRestartRunnable, times(0)).run();
@@ -323,7 +323,7 @@ public class AutofillOptionsTest {
     @Test
     @SmallTest
     public void setPrefTogglesOptionOnResume() {
-        doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
+        doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL);
         // Toggling on resume is to align with prefs and shouldn't trigger restart/dialogs.
         AutofillOptionsCoordinator autofillOptions =
                 new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail);
@@ -332,7 +332,7 @@ public class AutofillOptionsTest {
         autofillOptions.observeLifecycle(lifecycleRegistry);
         assertFalse(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
 
-        doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
+        doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL);
         lifecycleRegistry.handleLifecycleEvent(Event.ON_RESUME);
 
         assertTrue(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
