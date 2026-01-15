@@ -154,6 +154,28 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
 std::pair<AutofillPageQueryRequest, std::vector<FormSignature>>
 EncodeAutofillPageQueryRequest(const std::vector<FormData>& forms);
 
+// Holds the predictions used in ProcessServerPredictionsQueryResponse.
+class ServerPredictions {
+ public:
+  ServerPredictions(bool may_run_autofill_ai_model,
+                    std::map<std::pair<FormSignature, FieldSignature>,
+                             std::deque<FieldSuggestion>>& field_suggestion_map,
+                    const FormStructure& form);
+  ServerPredictions(const ServerPredictions&);
+  ServerPredictions(ServerPredictions&&);
+  ServerPredictions& operator=(const ServerPredictions&);
+  ServerPredictions& operator=(ServerPredictions&&);
+  ~ServerPredictions();
+
+  // Sets the information in the stored `FieldSuggestion`s to the appropriate
+  // `AutofillField`s in `form`.
+  void ApplyTo(FormStructure& form) const;
+
+ private:
+  bool may_run_autofill_ai_model_;
+  std::vector<std::optional<FieldSuggestion>> predictions_;
+};
+
 // Parses `payload` as AutofillQueryResponse proto and calls
 // `ProcessServerPredictionsQueryResponse`. `ignore_small_forms` determines
 // whether forms with less than `kSmallFormThreshold` fields (all of
