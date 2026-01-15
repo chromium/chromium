@@ -120,7 +120,10 @@ source_set("browser_tests") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "vertical_tab_strip_top_container_unittest.cc" ]
+  sources = [
+    "tab_collection_animating_layout_manager_unittest.cc",
+    "vertical_tab_strip_top_container_unittest.cc",
+  ]
   deps = [
     ":impl",
     "//base/test:test_support",

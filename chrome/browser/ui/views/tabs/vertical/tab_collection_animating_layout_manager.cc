@@ -83,6 +83,13 @@ void TabCollectionAnimatingLayoutManager::AnimationEnded(
   // Do not invalidate the target layout as the animation progresses, only the
   // animating layout manager requires invalidation.
   InvalidateHost(/*mark_layouts_changed=*/false);
+
+  // Clear any View-specific metadata and state no longer needed once the most
+  // recent animation has finished.
+  ClearViewAnimationMetadata();
+  if (delegate_) {
+    delegate_->OnAnimationEnded();
+  }
 }
 
 views::ProposedLayout

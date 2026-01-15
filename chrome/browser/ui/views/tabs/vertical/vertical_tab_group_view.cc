@@ -188,6 +188,14 @@ bool VerticalTabGroupView::IsViewDragging(const views::View& child_view) const {
   return GetDragHandler().IsViewDragging(child_view);
 }
 
+void VerticalTabGroupView::OnAnimationEnded() {
+  // For collapsed tab groups update child visibility only once animations have
+  // completed. This allows tabs to remain visible as the group animates closed.
+  if (tab_group_visual_data_.is_collapsed()) {
+    UpdateChildVisibilityForCollapseState(true);
+  }
+}
+
 void VerticalTabGroupView::ResetCollectionNode() {
   collection_node_ = nullptr;
 }
@@ -196,10 +204,13 @@ void VerticalTabGroupView::OnDataChanged() {
   tab_group_visual_data_ =
       *GetTabGroupFromNode(collection_node_)->visual_data();
   group_header_->OnDataChanged(&tab_group_visual_data_);
-  // TODO(crbug.com/459824840): Call UpdateChildVisibilityForCollapseState via
-  // some sort of PostOrQueueAction method when collapsing so that children are
-  // set to not visible only after the collapse animation has completed.
-  UpdateChildVisibilityForCollapseState(tab_group_visual_data_.is_collapsed());
+
+  // If the tab group is not collapsed update child visibility immediately. This
+  // allows tabs to be visible as they are animated in.
+  if (!tab_group_visual_data_.is_collapsed()) {
+    UpdateChildVisibilityForCollapseState(false);
+  }
+
   if (GetColorProvider()) {
     SkColor color = GetColorProvider()->GetColor(GetTabGroupTabStripColorId(
         tab_group_visual_data_.color(), GetWidget()->ShouldPaintAsActive()));
