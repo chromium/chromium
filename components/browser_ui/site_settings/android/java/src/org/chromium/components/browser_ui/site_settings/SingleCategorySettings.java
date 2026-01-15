@@ -2023,8 +2023,10 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         if (mSearchViewObserver != null) mSearchViewObserver.onUpdated(false);
     }
 
-    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
+    // A collection of many categories, and only one of them is chosen for display.
+    // Do not index this. The enclosing fragment should decide what to index.
+    // TODO(crbug.com/444470792): Consider having the enclosing fragment manually
+    //     add the title/summary resource of each category it includes.
     public static final BaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
-            new BaseSearchIndexProvider(
-                    SingleCategorySettings.class.getName(), R.xml.website_preferences);
+            new BaseSearchIndexProvider(SingleCategorySettings.class.getName(), 0);
 }
