@@ -374,6 +374,11 @@ class TestAutofillClientTemplate : public T {
     }
   }
 
+  bool IsTabInActorMode() const override { return is_tab_in_actor_mode_; }
+  void set_is_tab_in_actor_mode(bool is_in_actor_mode) {
+    is_tab_in_actor_mode_ = is_in_actor_mode;
+  }
+
   bool IsAutofillEnabled() const override {
     return IsAutofillProfileEnabled() ||
            AutofillClient::GetPaymentsAutofillClient()
@@ -747,6 +752,8 @@ class TestAutofillClientTemplate : public T {
   bool is_cvc_saving_supported_ = true;
 
   bool is_credit_card_upload_enabled_ = true;
+
+  bool is_tab_in_actor_mode_ = false;
 
   SuggestionHidingReason popup_hidden_reason_;
 

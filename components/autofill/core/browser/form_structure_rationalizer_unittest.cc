@@ -36,17 +36,7 @@ using ::testing::Property;
 namespace autofill {
 namespace {
 
-std::string SerializeAndEncode(const AutofillQueryResponse& response) {
-  std::string unencoded_response_string;
-  if (!response.SerializeToString(&unencoded_response_string)) {
-    LOG(ERROR) << "Cannot serialize the response proto";
-    return "";
-  }
-  return base::Base64Encode(unencoded_response_string);
-}
-
-// The key information from which we build FormFieldData objects and an
-// AutofillQueryResponse for tests.
+// The key information from which we build FormFieldData objects for tests.
 struct FieldTemplate {
   std::string_view label;
   std::string_view name;
@@ -70,8 +60,7 @@ struct FieldTemplate {
   FieldType heuristic_type = UNKNOWN_TYPE;
 };
 
-std::pair<std::unique_ptr<FormStructure>, std::string>
-CreateFormAndServerClassification(std::vector<FieldTemplate> fields) {
+std::unique_ptr<FormStructure> CreateForm(std::vector<FieldTemplate> fields) {
   FormData form;
   form.set_url(GURL("http://foo.com"));
   form.set_main_frame_origin(url::Origin::Create(form.url()));
@@ -99,19 +88,6 @@ CreateFormAndServerClassification(std::vector<FieldTemplate> fields) {
     test_api(form).Append(std::move(field));
   }
 
-  // Build the response of the Autofill Server with field classifications.
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
-  for (size_t i = 0; i < fields.size(); ++i) {
-    auto* field_suggestion = form_suggestion->add_field_suggestions();
-    field_suggestion->set_field_signature(
-        CalculateFieldSignatureForField(form.fields()[i]).value());
-    *field_suggestion->add_predictions() =
-        ::autofill::test::CreateFieldPrediction(
-            fields[i].field_type, fields[i].field_type_is_override);
-  }
-  std::string response_string = SerializeAndEncode(response);
-
   auto form_structure = std::make_unique<FormStructure>(form);
   for (auto [field, field_template] :
        base::zip(form_structure->fields(), fields)) {
@@ -121,16 +97,13 @@ CreateFormAndServerClassification(std::vector<FieldTemplate> fields) {
     }
   }
 
-  return std::make_pair(std::move(form_structure), response_string);
+  return form_structure;
 }
 
 std::unique_ptr<FormStructure> BuildFormStructure(
     const std::vector<FieldTemplate>& fields,
     bool run_heuristics) {
-  std::unique_ptr<FormStructure> form_structure;
-  std::string response_string;
-  std::tie(form_structure, response_string) =
-      CreateFormAndServerClassification(fields);
+  std::unique_ptr<FormStructure> form_structure = CreateForm(fields);
 
   // Identifies the sections based on the heuristics types.
   if (run_heuristics) {
@@ -146,10 +119,11 @@ std::unique_ptr<FormStructure> BuildFormStructure(
                                                    fields[i].heuristic_type);
     }
   }
-  ParseServerPredictionsQueryResponse(
-      response_string, {raw_ref(*form_structure)},
-      test::GetEncodedSignatures({raw_ref(*form_structure)}), nullptr,
-      /*ignore_small_forms=*/true);
+  for (auto [field, field_template] :
+       base::zip(form_structure->fields(), fields)) {
+    field->set_server_predictions({test::CreateFieldPrediction(
+        field_template.field_type, field_template.field_type_is_override)});
+  }
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
   return form_structure;
