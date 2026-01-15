@@ -534,7 +534,7 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
       // extensions or external component extensions) with foreground fetch
       // priority; otherwise their installation may be throttled by bandwidth
       // limits.
-      // See https://crbug.com/904600 and https://crbug.com/965686.
+      // See https://crbug.com/41425994 and https://crbug.com/41460304.
       const bool is_high_priority_extension_pending =
           pending_extension_manager->HasHighPriorityPendingExtension();
       if (CanUseUpdateService(pending_id)) {
