@@ -17,6 +17,7 @@
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
+#include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/skill_specifics.pb.h"
@@ -101,14 +102,33 @@ std::optional<syncer::ModelError> SkillsSyncBridge::ApplyIncrementalSyncChanges(
 std::unique_ptr<syncer::DataBatch> SkillsSyncBridge::GetDataForCommit(
     StorageKeyList storage_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTIMPLEMENTED();
-  return nullptr;
+  auto batch = std::make_unique<syncer::MutableDataBatch>();
+
+  for (const std::string& storage_key : storage_keys) {
+    const Skill* skill = skills_service_->GetSkillById(storage_key);
+    if (!skill) {
+      // Skill was deleted locally.
+      continue;
+    }
+
+    batch->Put(storage_key,
+               std::make_unique<syncer::EntityData>(
+                   SpecificsToEntityData(SkillToSpecifics(*skill))));
+  }
+
+  return batch;
 }
 
 std::unique_ptr<syncer::DataBatch> SkillsSyncBridge::GetAllDataForDebugging() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTIMPLEMENTED();
-  return nullptr;
+  auto batch = std::make_unique<syncer::MutableDataBatch>();
+
+  for (const std::unique_ptr<Skill>& skill : skills_service_->GetSkills()) {
+    batch->Put(skill->id, std::make_unique<syncer::EntityData>(
+                              SpecificsToEntityData(SkillToSpecifics(*skill))));
+  }
+
+  return batch;
 }
 
 std::string SkillsSyncBridge::GetClientTag(

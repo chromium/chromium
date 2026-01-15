@@ -15,6 +15,7 @@
 #include "base/uuid.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skills_service.h"
+#include "components/sync/model/data_batch.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/skill_specifics.pb.h"
@@ -30,8 +31,16 @@ namespace {
 
 using base::test::EqualsProto;
 using ::testing::Not;
+using ::testing::Return;
+using ::testing::ReturnRef;
+using ::testing::UnorderedElementsAre;
 
 constexpr char kDefaultPrompt[] = "test prompt";
+
+MATCHER_P(EntityDataHasSkillSpecifics, matcher, "") {
+  return testing::ExplainMatchResult(matcher, arg.specifics.skill(),
+                                     result_listener);
+}
 
 sync_pb::SkillSpecifics CreateSkillSpecifics(std::string prompt) {
   sync_pb::SkillSpecifics specifics;
@@ -46,6 +55,16 @@ syncer::EntityData CreateSkillEntityData(
   *entity_data.specifics.mutable_skill() =
       CreateSkillSpecifics(std::move(prompt));
   return entity_data;
+}
+
+std::vector<syncer::EntityData> ExtractEntityDataFromBatch(
+    std::unique_ptr<syncer::DataBatch> batch) {
+  std::vector<syncer::EntityData> result;
+  while (batch->HasNext()) {
+    const syncer::KeyAndData& data_pair = batch->Next();
+    result.push_back(std::move(*data_pair.second));
+  }
+  return result;
 }
 
 class MockSkillsService : public SkillsService {
@@ -87,18 +106,21 @@ class SkillsSyncBridgeTest : public testing::Test {
     bridge_ = std::make_unique<SkillsSyncBridge>(
         processor_.CreateForwardingProcessor(),
         syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
-        skills_service_);
+        mock_skills_service_);
     run_loop.Run();
   }
 
   syncer::DataTypeStore& store() { return *store_; }
   SkillsSyncBridge& bridge() { return *bridge_; }
+  testing::NiceMock<MockSkillsService>& mock_skills_service() {
+    return mock_skills_service_;
+  }
 
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<syncer::DataTypeStore> store_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor_;
-  testing::NiceMock<MockSkillsService> skills_service_;
+  testing::NiceMock<MockSkillsService> mock_skills_service_;
   std::unique_ptr<SkillsSyncBridge> bridge_;
 };
 
@@ -184,6 +206,83 @@ TEST_F(SkillsSyncBridgeTest, ShouldPreserveUnknownFields) {
   EXPECT_EQ(
       syncer::test::GetUnknownFieldValueFromProto(trimmed_specifics.skill()),
       "specifics_unknown_field");
+}
+
+TEST_F(SkillsSyncBridgeTest, GetDataForCommit) {
+  const std::string kSkillId1 =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  const std::string kSkillId2 =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+
+  Skill skill1(kSkillId1, "name1", "icon1", "prompt1");
+  Skill skill2(kSkillId2, "name2", "icon2", "prompt2");
+  Skill skill_not_requested(
+      /*id=*/base::Uuid::GenerateRandomV4().AsLowercaseString(), "name3",
+      "icon3", "prompt3");
+
+  ON_CALL(mock_skills_service(), GetSkillById(kSkillId1))
+      .WillByDefault(Return(&skill1));
+  ON_CALL(mock_skills_service(), GetSkillById(kSkillId2))
+      .WillByDefault(Return(&skill2));
+  ON_CALL(mock_skills_service(), GetSkillById(skill_not_requested.id))
+      .WillByDefault(Return(&skill_not_requested));
+
+  std::unique_ptr<syncer::DataBatch> batch =
+      bridge().GetDataForCommit({kSkillId1, kSkillId2});
+  ASSERT_TRUE(batch);
+
+  sync_pb::SkillSpecifics expected_specifics_1;
+  expected_specifics_1.set_guid(kSkillId1);
+  expected_specifics_1.set_name("name1");
+  expected_specifics_1.set_icon("icon1");
+  expected_specifics_1.mutable_simple_skill()->set_prompt("prompt1");
+
+  sync_pb::SkillSpecifics expected_specifics_2;
+  expected_specifics_2.set_guid(kSkillId2);
+  expected_specifics_2.set_name("name2");
+  expected_specifics_2.set_icon("icon2");
+  expected_specifics_2.mutable_simple_skill()->set_prompt("prompt2");
+
+  EXPECT_THAT(
+      ExtractEntityDataFromBatch(std::move(batch)),
+      UnorderedElementsAre(
+          EntityDataHasSkillSpecifics(EqualsProto(expected_specifics_1)),
+          EntityDataHasSkillSpecifics(EqualsProto(expected_specifics_2))));
+}
+
+TEST_F(SkillsSyncBridgeTest, GetAllDataForDebugging) {
+  const std::string kSkillId1 =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  const std::string kSkillId2 =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+
+  std::vector<std::unique_ptr<Skill>> skills;
+  skills.push_back(
+      std::make_unique<Skill>(kSkillId1, "name1", "icon1", "prompt1"));
+  skills.push_back(
+      std::make_unique<Skill>(kSkillId2, "name2", "icon2", "prompt2"));
+  ON_CALL(mock_skills_service(), GetSkills()).WillByDefault(ReturnRef(skills));
+
+  std::unique_ptr<syncer::DataBatch> batch = bridge().GetAllDataForDebugging();
+  ASSERT_TRUE(batch);
+
+  sync_pb::SkillSpecifics expected_specifics_1;
+  expected_specifics_1.set_guid(kSkillId1);
+  expected_specifics_1.set_name("name1");
+  expected_specifics_1.set_icon("icon1");
+  expected_specifics_1.mutable_simple_skill()->set_prompt("prompt1");
+
+  sync_pb::SkillSpecifics expected_specifics_2;
+  expected_specifics_2.set_guid(kSkillId2);
+  expected_specifics_2.set_name("name2");
+  expected_specifics_2.set_icon("icon2");
+  expected_specifics_2.mutable_simple_skill()->set_prompt("prompt2");
+
+  EXPECT_THAT(
+      ExtractEntityDataFromBatch(std::move(batch)),
+      UnorderedElementsAre(
+          EntityDataHasSkillSpecifics(EqualsProto(expected_specifics_1)),
+          EntityDataHasSkillSpecifics(EqualsProto(expected_specifics_2))));
 }
 
 }  // namespace
