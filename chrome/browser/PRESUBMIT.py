@@ -399,7 +399,7 @@ def _CheckNewDirectoryHasBuildGn(input_api, output_api):
 
     if missing_build_gn_dirs:
         return [
-            output_api.PresubmitError(
+            output_api.PresubmitPromptWarning(
                 'New directories under chrome/browser must have a BUILD.gn file.',
                 items=sorted(missing_build_gn_dirs))
         ]

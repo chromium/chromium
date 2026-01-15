@@ -333,9 +333,9 @@ class CheckNewDirectoryHasBuildGnTest(unittest.TestCase):
         ]
         mock_input_api.InitFiles(mock_input_api.files)
         mock_output_api = MockOutputApi()
-        errors = PRESUBMIT._CheckNewDirectoryHasBuildGn(
+        warnings = PRESUBMIT._CheckNewDirectoryHasBuildGn(
             mock_input_api, mock_output_api)
-        self.assertEqual([], errors)
+        self.assertEqual([], warnings)
 
     def testNewDirectoryMissingBuildGn(self):
         mock_input_api = MockInputApi()
@@ -345,14 +345,14 @@ class CheckNewDirectoryHasBuildGnTest(unittest.TestCase):
         ]
         mock_input_api.InitFiles(mock_input_api.files)
         mock_output_api = MockOutputApi()
-        errors = PRESUBMIT._CheckNewDirectoryHasBuildGn(
+        warnings = PRESUBMIT._CheckNewDirectoryHasBuildGn(
             mock_input_api, mock_output_api)
-        self.assertEqual(1, len(errors))
+        self.assertEqual(1, len(warnings))
         self.assertEqual(
             'New directories under chrome/browser must have a BUILD.gn file.',
-            errors[0].message)
-        error_items_norm = [s.replace('\\','/') for s in errors[0].items]
-        self.assertEqual(['chrome/browser/new_dir'], error_items_norm)
+            warnings[0].message)
+        warning_items_norm = [s.replace('\\', '/') for s in warnings[0].items]
+        self.assertEqual(['chrome/browser/new_dir'], warning_items_norm)
 
     def testExistingDirectoryWithMissingBuildGn(self):
         mock_input_api = MockInputApi()
@@ -364,9 +364,9 @@ class CheckNewDirectoryHasBuildGnTest(unittest.TestCase):
         ]
         mock_input_api.InitFiles(mock_input_api.files)
         mock_output_api = MockOutputApi()
-        errors = PRESUBMIT._CheckNewDirectoryHasBuildGn(
+        warnings = PRESUBMIT._CheckNewDirectoryHasBuildGn(
             mock_input_api, mock_output_api)
-        self.assertEqual([], errors)
+        self.assertEqual([], warnings)
 
     def testExistingDirectoryWithBuildGnOnDisk(self):
         mock_input_api = MockInputApi()
@@ -388,9 +388,9 @@ class CheckNewDirectoryHasBuildGnTest(unittest.TestCase):
         mock_input_api.os_path.exists = side_effect
 
         mock_output_api = MockOutputApi()
-        errors = PRESUBMIT._CheckNewDirectoryHasBuildGn(
+        warnings = PRESUBMIT._CheckNewDirectoryHasBuildGn(
             mock_input_api, mock_output_api)
-        self.assertEqual([], errors)
+        self.assertEqual([], warnings)
 
     def testChromeBrowserRoot(self):
         mock_input_api = MockInputApi()
@@ -399,9 +399,9 @@ class CheckNewDirectoryHasBuildGnTest(unittest.TestCase):
         ]
         mock_input_api.InitFiles(mock_input_api.files)
         mock_output_api = MockOutputApi()
-        errors = PRESUBMIT._CheckNewDirectoryHasBuildGn(
+        warnings = PRESUBMIT._CheckNewDirectoryHasBuildGn(
             mock_input_api, mock_output_api)
-        self.assertEqual([], errors)
+        self.assertEqual([], warnings)
 
 
 if __name__ == '__main__':
