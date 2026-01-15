@@ -134,6 +134,7 @@ crbug.com/425653491 [ angle-metal graphite-enabled intel-0x3e9b no-asan no-clang
 # Flakes on Android DEMUXER_ERROR_COULD_NOT_OPEN
 crbug.com/426594100 [ android android-pixel-2 graphite-disabled ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
 crbug.com/426594100 [ android android-pixel-6 graphite-disabled ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
+crbug.com/426594100 [ mac intel-0x3e9b graphite-disabled asan ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
 
 # Crop Boundaries Fails
 crbug.com/446124895 [ android android-pixel-10 ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
