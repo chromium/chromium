@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tabmodel;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 
 /** Utility class for tab persistence. */
@@ -15,7 +16,6 @@ public class TabPersistenceUtils {
      * Returns true if the tab should be skipped when persisting tabs.
      *
      * @param tab The tab to check.
-     * @return True if the tab should be skipped, false otherwise.
      */
     public static boolean shouldSkipTab(Tab tab) {
         // Don't skip the tab if it is pinned.
@@ -26,6 +26,26 @@ public class TabPersistenceUtils {
 
         // Only skip NTP tabs that are not in a tab group.
         return tab.getTabGroupId() == null;
+    }
+
+    /**
+     * Returns true if the tab should be skipped when loading persisted tabs.
+     *
+     * @param tabState The tab state to check.
+     */
+    public static boolean shouldSkipTab(TabState tabState) {
+        if (tabState.contentsState == null || tabState.contentsState.buffer().limit() <= 0) {
+            return true;
+        }
+
+        if (tabState.isPinned || tabState.tabGroupId != null) {
+            return false;
+        }
+
+        // We only want to skip NTPs.
+        if (tabState.url == null) return false;
+
+        return UrlUtilities.isNtpUrl(tabState.url);
     }
 
     private TabPersistenceUtils() {}
