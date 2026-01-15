@@ -34,8 +34,10 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
+#include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
@@ -3847,6 +3849,87 @@ TEST_P(CompositingSimTest, ScrollbarLayerWithDecompositedTransform) {
   EXPECT_EQ(gfx::Vector2dF(285, 100),
             scrollbar_layer->offset_to_transform_parent());
   EXPECT_FALSE(scrollbar_layer->subtree_property_changed());
+}
+
+// Test that canvas draw element ids are sent from blink to cc for canvas
+// elements that have opted into html-in-canvas with the layoutsubtree
+// attribute.
+TEST_P(CompositingSimTest, CanvasDrawElementIds) {
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+
+  InitializeWithHTML(R"HTML(
+    <canvas id="canvas_a" width="200" height="200" layoutsubtree>
+      <div id="canvas_a_child_a"></div>
+      <div id="canvas_a_child_b"></div>
+    </canvas>
+    <canvas id="canvas_b" width="200" height="200" layoutsubtree>
+      <div id="canvas_b_child"></div>
+    </canvas>
+    <canvas id="canvas_c" width="200" height="200">
+      <div id="canvas_c_child"></div>
+    </canvas>
+  )HTML");
+  Compositor().BeginFrame();
+  auto* layer_tree_host = Compositor().LayerTreeHost();
+
+  const auto& all_canvas_draw_element_ids =
+      layer_tree_host->all_canvas_draw_element_ids();
+  // There should be canvas draw element ids for canvas_a and canvas_b.
+  EXPECT_EQ(all_canvas_draw_element_ids.size(), 2u);
+
+  // Check the canvas draw element ids for canvas_a.
+  auto* canvas_a_element = GetElementById("canvas_a");
+  auto canvas_a_element_id =
+      CompositorElementIdFromDOMNodeId(canvas_a_element->GetDomNodeId());
+  EXPECT_TRUE(all_canvas_draw_element_ids.count(canvas_a_element_id));
+  const auto& canvas_a_draw_element_ids =
+      all_canvas_draw_element_ids.at(canvas_a_element_id);
+  EXPECT_EQ(canvas_a_draw_element_ids.size(), 2u);
+  auto* canvas_a_child_a_element = GetElementById("canvas_a_child_a");
+  auto canvas_a_child_a_element_id = CompositorElementIdFromDOMNodeId(
+      canvas_a_child_a_element->GetDomNodeId());
+  EXPECT_TRUE(canvas_a_draw_element_ids.count(canvas_a_child_a_element_id));
+  EXPECT_EQ(canvas_a_draw_element_ids.at(canvas_a_child_a_element_id),
+            "canvas_a_child_a");
+  auto* canvas_a_child_b_element = GetElementById("canvas_a_child_b");
+  auto canvas_a_child_b_element_id = CompositorElementIdFromDOMNodeId(
+      canvas_a_child_b_element->GetDomNodeId());
+  EXPECT_TRUE(canvas_a_draw_element_ids.count(canvas_a_child_b_element_id));
+  EXPECT_EQ(canvas_a_draw_element_ids.at(canvas_a_child_b_element_id),
+            "canvas_a_child_b");
+
+  // Check the canvas draw element ids for canvas_b.
+  auto* canvas_b_element = GetElementById("canvas_b");
+  auto canvas_b_element_id =
+      CompositorElementIdFromDOMNodeId(canvas_b_element->GetDomNodeId());
+  EXPECT_TRUE(all_canvas_draw_element_ids.count(canvas_b_element_id));
+  const auto& canvas_b_draw_element_ids =
+      all_canvas_draw_element_ids.at(canvas_b_element_id);
+  EXPECT_EQ(canvas_b_draw_element_ids.size(), 1u);
+  auto* canvas_b_child_element = GetElementById("canvas_b_child");
+  auto canvas_b_child_element_id =
+      CompositorElementIdFromDOMNodeId(canvas_b_child_element->GetDomNodeId());
+  EXPECT_TRUE(canvas_b_draw_element_ids.count(canvas_b_child_element_id));
+  EXPECT_EQ(canvas_b_draw_element_ids.at(canvas_b_child_element_id),
+            "canvas_b_child");
+
+  // canvas_c does not have the layoutsubtree attribute and should not have any
+  // draw element ids.
+  auto* canvas_c_element = GetElementById("canvas_c");
+  auto canvas_c_element_id =
+      CompositorElementIdFromDOMNodeId(canvas_c_element->GetDomNodeId());
+  EXPECT_FALSE(all_canvas_draw_element_ids.count(canvas_c_element_id));
+
+  // Removing layoutsubtree from canvas_a should remove the corresponding
+  // canvas draw element ids on the layer tree host.
+  canvas_a_element->removeAttribute(html_names::kLayoutsubtreeAttr);
+  UpdateAllLifecyclePhases();
+  const auto& all_canvas_draw_element_ids_updated =
+      layer_tree_host->all_canvas_draw_element_ids();
+  // There should be canvas draw element ids for canvas_b only.
+  EXPECT_EQ(all_canvas_draw_element_ids_updated.size(), 1u);
+  EXPECT_FALSE(all_canvas_draw_element_ids_updated.count(canvas_a_element_id));
+  EXPECT_TRUE(all_canvas_draw_element_ids_updated.count(canvas_b_element_id));
 }
 
 }  // namespace blink

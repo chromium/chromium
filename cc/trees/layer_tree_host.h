@@ -46,6 +46,7 @@
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/metrics/events_metrics_manager.h"
 #include "cc/metrics/frame_sequence_tracker.h"
+#include "cc/paint/canvas_draw_element_ids.h"
 #include "cc/paint/node_id.h"
 #include "cc/resources/ui_resource_request.h"
 #include "cc/trees/browser_controls_params.h"
@@ -755,6 +756,14 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void RegisterElement(ElementId element_id, Layer* layer);
   void UnregisterElement(ElementId element_id, const Layer* layer);
 
+  void SetCanvasDrawElementIds(
+      AllCanvasDrawElementIds all_canvas_draw_element_ids) {
+    all_canvas_draw_element_ids_ = std::move(all_canvas_draw_element_ids);
+  }
+  const AllCanvasDrawElementIds& all_canvas_draw_element_ids() const {
+    return all_canvas_draw_element_ids_;
+  }
+
   void SetElementIdsForTesting();
   void BuildPropertyTreesForTesting();
 
@@ -1117,6 +1126,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // This is for layer tree mode only.
   std::unordered_map<ElementId, raw_ptr<Layer, CtnExperimental>, ElementIdHash>
       element_layers_map_;
+
+  // Ids of elements which can be drawn using html-in-canvas.
+  AllCanvasDrawElementIds all_canvas_draw_element_ids_;
 
   bool in_paint_layer_contents_ = false;
 
