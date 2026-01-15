@@ -2363,6 +2363,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Gemini.Feedback" enum="IOSGeminiFeedback"
+    expires_after="2027-01-14">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    The feedback that a user has provided by interacting with the feedback
+    buttons associated with a Gemini response.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Gemini.FirstPrompt.SubmissionMethod"
     enum="IOSGeminiFirstPromptSubmissionMethod" expires_after="2026-06-07">
   <owner>kanouche@google.com</owner>

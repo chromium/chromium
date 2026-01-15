@@ -34,6 +34,16 @@ typedef NS_ENUM(NSInteger, BWGInputType) {
   BWGInputTypeDiscoveryCard = 9,
 };
 
+// The feedback type for Gemini queries.
+// LINT.IfChange(GeminiFeedbackType)
+enum class GeminiFeedbackType {
+  // Thumbs up feedback type.
+  kThumbsUp,
+  // Thumbs down feedback type.
+  kThumbsDown,
+};
+// LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiFeedback)
+
 // Delegate for Gemini session events. Keep up to date with GCR's
 // SessionDelegate.
 @protocol GeminiSessionDelegate
@@ -67,6 +77,11 @@ typedef NS_ENUM(NSInteger, BWGInputType) {
 // TODO(crbug.com/436019705) Rename this to `clientID` and `serverID`.
 - (void)didTapNewChatButtonWithSessionID:(NSString*)sessionID
                           conversationID:(NSString*)conversationID;
+
+// Called when a feedback button is tapped in the Gemini UI.
+- (void)didTapFeedbackButton:(GeminiFeedbackType)feedbackType
+                   sessionID:(NSString*)sessionID
+              conversationID:(NSString*)conversationID;
 
 // Called when the Gemini view state changes.
 - (void)didSwitchToViewState:(ios::provider::GeminiViewState)viewState

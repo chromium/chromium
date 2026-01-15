@@ -707,6 +707,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h:EntryPoint) -->
 
+<!-- LINT.IfChange(IOSGeminiFeedback) -->
+
+<enum name="IOSGeminiFeedback">
+  <int value="0" label="Thumbs Up"/>
+  <int value="1" label="Thumbs Down"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiFeedback) -->
+
 <!-- LINT.IfChange(IOSGeminiFirstPromptSubmissionMethod) -->
 
 <enum name="IOSGeminiFirstPromptSubmissionMethod">

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_session_handler.h"
 
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
@@ -82,6 +83,7 @@ class BWGSessionHandlerTest : public PlatformTest {
   std::unique_ptr<Browser> browser_;
   raw_ptr<WebStateList> web_state_list_;
   base::HistogramTester histogram_tester_;
+  base::UserActionTester user_action_tester_;
   BWGSessionHandler* session_handler_;
   raw_ptr<OptimizationGuideService> optimization_guide_service_;
   id mock_bwg_handler_;
@@ -321,4 +323,25 @@ TEST_F(BWGSessionHandlerTest, TestNewChatButtonTapped) {
   // Verify client ID remains unchanged after new chat.
   std::string post_delete_client_id = tab_helper->GetClientId();
   EXPECT_EQ(initial_client_id, post_delete_client_id);
+}
+
+// Tests that didTapFeedbackButton records the correct metrics.
+TEST_F(BWGSessionHandlerTest, TestFeedbackMetricsRecorded) {
+  // Test Thumbs Up.
+  [session_handler_ didTapFeedbackButton:GeminiFeedbackType::kThumbsUp
+                               sessionID:kTestServerID
+                          conversationID:kTestServerID];
+  histogram_tester_.ExpectBucketCount(kFeedbackHistogram,
+                                      IOSGeminiFeedback::kThumbsUp, 1);
+  EXPECT_EQ(1,
+            user_action_tester_.GetActionCount("MobileGeminiFeedbackThumbsUp"));
+
+  // Test Thumbs Down.
+  [session_handler_ didTapFeedbackButton:GeminiFeedbackType::kThumbsDown
+                               sessionID:kTestServerID
+                          conversationID:kTestServerID];
+  histogram_tester_.ExpectBucketCount(kFeedbackHistogram,
+                                      IOSGeminiFeedback::kThumbsDown, 1);
+  EXPECT_EQ(
+      1, user_action_tester_.GetActionCount("MobileGeminiFeedbackThumbsDown"));
 }
