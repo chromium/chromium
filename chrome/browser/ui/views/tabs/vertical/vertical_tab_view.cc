@@ -175,8 +175,6 @@ VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
       collection_node_->RegisterDataChangedCallback(base::BindRepeating(
           &VerticalTabView::OnDataChanged, base::Unretained(this)));
 
-  OnDataChanged();
-
   set_context_menu_controller(this);
 }
 
@@ -203,6 +201,7 @@ void VerticalTabView::UpdateHovered(bool hovered) {
       hover_controller_->Hide(TabStyle::HideHoverStyle::kGradual);
     }
   }
+
   UpdateColors();
   UpdateCloseButtonVisibility();
 }
@@ -336,6 +335,7 @@ void VerticalTabView::AddedToWidget() {
       GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
           &VerticalTabView::UpdateColors, base::Unretained(this)));
 
+  OnDataChanged();
   // Recompute the hovered state as mouse events are not processed if a view
   // removed from the widget and added.
   if (!split_) {
@@ -345,6 +345,7 @@ void VerticalTabView::AddedToWidget() {
 
 void VerticalTabView::RemovedFromWidget() {
   paint_as_active_subscription_ = {};
+  UpdateHovered(false);
 }
 
 void VerticalTabView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
@@ -491,7 +492,6 @@ void VerticalTabView::OnDataChanged() {
   selected_ = tab->IsSelected();
   split_ = tab->IsSplit();
   pinned_ = tab->IsPinned();
-
   tab_data_ = TabRendererData::FromTabInModel(tab_strip_model, index);
 
   icon_->SetData(tab_data_);
