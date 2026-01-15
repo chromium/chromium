@@ -26,6 +26,14 @@ class MockExtensionInstallPolicyService : public ExtensionInstallPolicyService {
               IsExtensionAllowed,
               (const ExtensionIdAndVersion&),
               (override));
+  MOCK_METHOD(void,
+              AddObserver,
+              (ExtensionInstallPolicyService::Observer*),
+              (override));
+  MOCK_METHOD(void,
+              RemoveObserver,
+              (ExtensionInstallPolicyService::Observer*),
+              (override));
 };
 
 }  // namespace policy

@@ -40,6 +40,12 @@ return base::Value(base::Value::Dict().Set(
            base::Value::Dict().Set("action", action)));
 }
 
+class MockExtensionInstallPolicyServiceObserver
+    : public ExtensionInstallPolicyService::Observer {
+ public:
+  MOCK_METHOD(void, OnExtensionInstallPolicyUpdated, (), (override));
+};
+
 }  // namespace
 
 class ExtensionInstallPolicyServiceTest : public testing::Test {
@@ -71,9 +77,14 @@ class ExtensionInstallPolicyServiceTest : public testing::Test {
     manager->Init(&schema_registry_);
     manager->Connect(g_browser_process->local_state(), std::move(client_));
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+    service_ = std::make_unique<ExtensionInstallPolicyServiceImpl>(profile());
   }
 
-  void TearDown() override { profile_.reset(); }
+  void TearDown() override {
+    service_->Shutdown();
+    service_.reset();
+    profile_.reset();
+  }
 
   TestingProfile* profile() { return profile_.get(); }
 
@@ -102,6 +113,7 @@ class ExtensionInstallPolicyServiceTest : public testing::Test {
   std::unique_ptr<MockConfigurationPolicyProvider> policy_provider_;
   std::unique_ptr<MockCloudPolicyClient> client_;
   std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<ExtensionInstallPolicyServiceImpl> service_;
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kEnableExtensionInstallPolicyFetching};
   SchemaRegistry schema_registry_;
@@ -113,6 +125,14 @@ TEST_F(ExtensionInstallPolicyServiceTest, IsExtensionAllowedUnknown) {
   EXPECT_CALL(*policy_service,
               IsInitializationComplete(POLICY_DOMAIN_EXTENSION_INSTALL))
       .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(*policy_service, AddObserver(testing::_, testing::_));
+  EXPECT_CALL(*policy_service, RemoveObserver(testing::_, testing::_));
+  EXPECT_CALL(*policy_service,
+              AddObserver(POLICY_DOMAIN_EXTENSION_INSTALL, testing::_))
+      .Times(1);
+  EXPECT_CALL(*policy_service,
+              RemoveObserver(POLICY_DOMAIN_EXTENSION_INSTALL, testing::_))
+      .Times(1);
   builder.SetPolicyService(std::move(policy_service));
   auto test_profile = builder.Build();
   test_profile->GetPrefs()->SetBoolean(
@@ -123,12 +143,12 @@ TEST_F(ExtensionInstallPolicyServiceTest, IsExtensionAllowedUnknown) {
                    .IsExtensionAllowed(
                        ExtensionIdAndVersion(kExtensionId, kExtensionVersion))
                    .has_value());
+  service.Shutdown();
 }
 
 TEST_F(ExtensionInstallPolicyServiceTest, IsExtensionAllowedByDefault) {
-  ExtensionInstallPolicyServiceImpl service(profile());
-  EXPECT_TRUE(service
-                  .IsExtensionAllowed(
+  EXPECT_TRUE(service_
+                  ->IsExtensionAllowed(
                       ExtensionIdAndVersion(kExtensionId, kExtensionVersion))
                   .value());
 }
@@ -143,9 +163,8 @@ TEST_F(ExtensionInstallPolicyServiceTest, IsExtensionAllowedByPolicy) {
              nullptr);
   policy_provider_->UpdateExtensionInstallPolicy(policy);
 
-  ExtensionInstallPolicyServiceImpl service(profile());
-  EXPECT_TRUE(service
-                  .IsExtensionAllowed(
+  EXPECT_TRUE(service_
+                  ->IsExtensionAllowed(
                       ExtensionIdAndVersion(kExtensionId, kExtensionVersion))
                   .value());
 }
@@ -160,9 +179,8 @@ TEST_F(ExtensionInstallPolicyServiceTest, IsExtensionBlockedByPolicy) {
              nullptr);
   policy_provider_->UpdateExtensionInstallPolicy(policy);
 
-  ExtensionInstallPolicyServiceImpl service(profile());
-  EXPECT_FALSE(service
-                   .IsExtensionAllowed(
+  EXPECT_FALSE(service_
+                   ->IsExtensionAllowed(
                        ExtensionIdAndVersion(kExtensionId, kExtensionVersion))
                    .value());
 }
@@ -187,13 +205,12 @@ TEST_F(ExtensionInstallPolicyServiceTest,
             extension_management->GetInstallationMode(kExtensionId,
                                                       webstore_update_url));
 
-  ExtensionInstallPolicyServiceImpl service(profile());
   // IsExtensionAllowed() returns true even though the extension is blocked by
   // the ExtensionSettings policy. "true" here means "EIPS will not block it",
   // but other things still can (in this case,
   // StandardManagementPolicyProvider).
-  EXPECT_TRUE(service
-                  .IsExtensionAllowed(
+  EXPECT_TRUE(service_
+                  ->IsExtensionAllowed(
                       ExtensionIdAndVersion(kExtensionId, kExtensionVersion))
                   .value());
 }
@@ -220,11 +237,26 @@ TEST_F(ExtensionInstallPolicyServiceTest,
 
   policy_provider_->UpdateExtensionInstallPolicy(policy);
 
-  ExtensionInstallPolicyServiceImpl service(profile());
-  EXPECT_FALSE(service
-                   .IsExtensionAllowed(
+  EXPECT_FALSE(service_
+                   ->IsExtensionAllowed(
                        ExtensionIdAndVersion(kExtensionId, kExtensionVersion))
                    .value());
+}
+
+TEST_F(ExtensionInstallPolicyServiceTest, PolicyUpdateNotifiesObservers) {
+  MockExtensionInstallPolicyServiceObserver observer;
+  service_->AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnExtensionInstallPolicyUpdated()).Times(1);
+  PolicyMap policy;
+  policy.Set(kExtensionId, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+             POLICY_SOURCE_CLOUD,
+             GetPolicyValueForAction(
+                 kExtensionVersion,
+                 enterprise_management::ExtensionInstallPolicy::ACTION_BLOCK),
+             nullptr);
+  policy_provider_->UpdateExtensionInstallPolicy(policy);
+  service_->RemoveObserver(&observer);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -234,7 +266,6 @@ TEST_F(ExtensionInstallPolicyServiceTest, TypesToFetch) {
   ASSERT_TRUE(manager->core()->client());
 
   {
-    ExtensionInstallPolicyServiceImpl service(profile());
     // This EIPS should now be in types_to_fetch().
     EXPECT_THAT(manager->core()->client()->types_to_fetch(),
                 testing::UnorderedElementsAre(
@@ -242,7 +273,7 @@ TEST_F(ExtensionInstallPolicyServiceTest, TypesToFetch) {
                                       std::string()),
                     PolicyTypeToFetch(
                         dm_protocol::kChromeExtensionInstallUserCloudPolicyType,
-                        &service)));
+                        service_.get())));
 
     // Disable the feature, it should get removed from types_to_fetch().
     profile()->GetPrefs()->SetBoolean(
@@ -262,9 +293,10 @@ TEST_F(ExtensionInstallPolicyServiceTest, TypesToFetch) {
                                       std::string()),
                     PolicyTypeToFetch(
                         dm_protocol::kChromeExtensionInstallUserCloudPolicyType,
-                        &service)));
+                        service_.get())));
   }
 
+  service_->Shutdown();
   EXPECT_THAT(manager->core()->client()->types_to_fetch(),
               testing::UnorderedElementsAre(PolicyTypeToFetch(
                   dm_protocol::GetChromeUserPolicyType(), std::string())));

@@ -203,6 +203,7 @@ class ExtensionInstallPolicyServiceTest : public PolicyTest {
         future.GetCallback());
     ASSERT_TRUE(future.Wait());
     EXPECT_EQ(future.Get(), expected_result);
+    service.Shutdown();
   }
 
  protected:
@@ -223,6 +224,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPolicyServiceTest,
       future.GetCallback());
   ASSERT_TRUE(future.Wait());
   EXPECT_TRUE(future.Get());
+  service.Shutdown();
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionInstallPolicyServiceTest,
