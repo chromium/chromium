@@ -866,6 +866,21 @@
             ]
         }
     ],
+    "AndroidDevToolsFrontend": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidDevToolsFrontend"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidHatsNext": [
         {
             "platforms": [

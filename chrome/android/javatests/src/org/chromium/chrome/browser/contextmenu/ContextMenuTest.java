@@ -1155,10 +1155,12 @@ public class ContextMenuTest {
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
     public void testContextMenuOpenedFromHighlight() {
+        Tab tab = mActivityTestRule.getActivityTab();
+
         when(mItemDelegate.isIncognito()).thenReturn(false);
         when(mItemDelegate.getPageTitle()).thenReturn("");
+        when(mItemDelegate.getWebContents()).thenReturn(tab.getWebContents());
 
-        Tab tab = mActivityTestRule.getActivityTab();
         ContextMenuHelper contextMenuHelper =
                 ContextMenuHelper.createForTesting(0, tab.getWebContents());
         ContextMenuParams params =
