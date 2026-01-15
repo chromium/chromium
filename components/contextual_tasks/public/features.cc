@@ -248,7 +248,7 @@ const base::FeatureParam<int> kContextualTasksNextboxMaxFileSize{
     20 * 1024 * 1024};
 
 const base::FeatureParam<int> kContextualTasksNextboxMaxFileCount{
-    &kContextualTasksContextMenu, "ContextualTasksNextboxMaxFileCount", 4};
+    &kContextualTasksContextMenu, "ContextualTasksNextboxMaxFileCount", 10};
 
 bool GetIsContextualTasksSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksSuggestionsEnabled);
