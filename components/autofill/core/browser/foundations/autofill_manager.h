@@ -510,6 +510,11 @@ class AutofillManager
   void OnLoadedServerPredictions(
       std::optional<AutofillCrowdsourcingManager::QueryResponse> response);
 
+  // Emits the metrics that result from a server query response in
+  // `OnLoadedServerPredictions()`.
+  void LogServerQueryResponseMetrics(
+      const std::vector<raw_ref<FormStructure>>& forms);
+
   // Invoked when forms from OnFormsSeen() have been parsed to
   // |form_structures|.
   void OnFormsParsed(const std::vector<FormData>& forms);

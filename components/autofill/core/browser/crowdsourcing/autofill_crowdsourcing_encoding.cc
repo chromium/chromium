@@ -1216,37 +1216,10 @@ void ProcessServerPredictionsQueryResponse(
             field_suggestion_map, *form);
       });
 
-  bool heuristics_detected_fillable_field = false;
-  bool query_response_overrode_heuristics = false;
   for (auto [form, server_predictions] :
        base::zip(forms, form_server_predictions)) {
     server_predictions.ApplyTo(*form);
-
-    for (const std::unique_ptr<AutofillField>& field : form->fields()) {
-      FieldType heuristic_type = field->heuristic_type();
-      if (heuristic_type != UNKNOWN_TYPE) {
-        heuristics_detected_fillable_field = true;
-      }
-      if (!field->Type().GetTypes().contains(heuristic_type)) {
-        query_response_overrode_heuristics = true;
-      }
-    }
-    AutofillMetrics::LogServerResponseHasDataForForm(std::ranges::any_of(
-        form->fields(), [](FieldType t) { return t != NO_SERVER_DATA; },
-        &AutofillField::server_type));
   }
-
-  AutofillMetrics::ServerQueryMetric metric;
-  if (query_response_overrode_heuristics) {
-    if (heuristics_detected_fillable_field) {
-      metric = AutofillMetrics::QUERY_RESPONSE_OVERRODE_LOCAL_HEURISTICS;
-    } else {
-      metric = AutofillMetrics::QUERY_RESPONSE_WITH_NO_LOCAL_HEURISTICS;
-    }
-  } else {
-    metric = AutofillMetrics::QUERY_RESPONSE_MATCHED_LOCAL_HEURISTICS;
-  }
-  AutofillMetrics::LogServerQueryMetric(metric);
 }
 
 }  // namespace autofill

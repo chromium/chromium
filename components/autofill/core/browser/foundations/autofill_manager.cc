@@ -873,20 +873,50 @@ void AutofillManager::OnLoadedServerPredictions(
   for (const raw_ref<FormStructure>& form : queried_forms) {
     form->RationalizeAndAssignSections(client().GetVariationConfigCountryCode(),
                                        GetCurrentPageLanguage(), log_manager());
-
-    autofill_metrics::LogQualityMetricsBasedOnAutocomplete(
-        *form, client().GetFormInteractionsUkmLogger(),
-        driver().GetPageUkmSourceId());
     LogCurrentFieldTypes(&*form);
-
     NotifyObservers(&Observer::OnFieldTypesDetermined, form->global_id(),
                     Observer::FieldTypeSource::kAutofillServer);
   }
 
+  LogServerQueryResponseMetrics(queried_forms);
   if (base::FeatureList::IsEnabled(features::debug::kShowDomNodeIDs)) {
     driver().ExposeDomNodeIdsInAllFrames();
   }
   OnLoadedServerPredictionsImpl(queried_forms);
+}
+
+void AutofillManager::LogServerQueryResponseMetrics(
+    const std::vector<raw_ref<FormStructure>>& forms) {
+  bool heuristics_detected_fillable_field = false;
+  bool query_response_overrode_heuristics = false;
+  for (raw_ref<FormStructure> form : forms) {
+    for (const std::unique_ptr<AutofillField>& field : form->fields()) {
+      FieldType heuristic_type = field->heuristic_type();
+      if (heuristic_type != UNKNOWN_TYPE) {
+        heuristics_detected_fillable_field = true;
+      }
+      if (!field->Type().GetTypes().contains(heuristic_type)) {
+        query_response_overrode_heuristics = true;
+      }
+    }
+    AutofillMetrics::LogServerResponseHasDataForForm(std::ranges::any_of(
+        form->fields(), [](FieldType t) { return t != NO_SERVER_DATA; },
+        &AutofillField::server_type));
+    autofill_metrics::LogQualityMetricsBasedOnAutocomplete(
+        *form, client().GetFormInteractionsUkmLogger(),
+        driver().GetPageUkmSourceId());
+  }
+
+  AutofillMetrics::ServerQueryMetric metric;
+  if (query_response_overrode_heuristics &&
+      heuristics_detected_fillable_field) {
+    metric = AutofillMetrics::QUERY_RESPONSE_OVERRODE_LOCAL_HEURISTICS;
+  } else if (query_response_overrode_heuristics) {
+    metric = AutofillMetrics::QUERY_RESPONSE_WITH_NO_LOCAL_HEURISTICS;
+  } else {
+    metric = AutofillMetrics::QUERY_RESPONSE_MATCHED_LOCAL_HEURISTICS;
+  }
+  AutofillMetrics::LogServerQueryMetric(metric);
 }
 
 void AutofillManager::UpdateFormCache(
