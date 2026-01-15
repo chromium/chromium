@@ -37,7 +37,7 @@ suite('Toolbar Settings Menu', () => {
   function getMenuItem(id: SettingsOption): HTMLElement|null {
     const actionMenu = settingsMenu.$.lazyMenu.get();
     const menuItems =
-        Array.from(actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row'));
+        Array.from(actionMenu.querySelectorAll<HTMLElement>('.menu-row'));
     const item = menuItems.find(item => item.id === id);
     if (item instanceof HTMLElement) {
       return item;
@@ -263,4 +263,20 @@ suite('Toolbar Settings Menu', () => {
         keyDownOn(settingsMenu, 0, undefined, 'Escape');
         assertFalse(targetMenu.open);
       });
+
+  test('submenus should not open after settings menu is closed', () => {
+    const targetItem = getMenuItem(SettingsOption.FONT);
+    assertTrue(!!targetItem);
+    const timer = new MockTimer();
+    timer.install();
+
+    targetItem.dispatchEvent(new PointerEvent(
+        'pointerenter', {bubbles: true, cancelable: true, view: window}));
+    timer.tick(MENU_SHOW_DELAY_MS - 1);
+    settingsMenu.close();
+    timer.tick(1);
+
+    assertFalse(toolbar.$.fontMenu.$.menu.$.lazyMenu.get().open);
+    timer.uninstall();
+  });
 });

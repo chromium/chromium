@@ -210,4 +210,28 @@ suite('SettingsMenuElement', () => {
         keyDownOn(settingsMenu, 0, undefined, 'ArrowLeft');
         await whenFired;
       });
+
+  test('closing the menu prevents open timer to be fired', () => {
+    const actionMenu = settingsMenu.$.lazyMenu.get();
+    const menuItems =
+        Array.from(actionMenu.querySelectorAll<HTMLElement>('.menu-row'));
+    const targetItem =
+        menuItems.find(item => item.id === SettingsOption.LINE_SPACING);
+    assertTrue(!!targetItem);
+
+    let openSubmenuWasFiredAfterClose = false;
+    actionMenu.addEventListener(ToolbarEvent.OPEN_SETTINGS_SUBMENU, () => {
+      openSubmenuWasFiredAfterClose = true;
+    });
+
+    const timer = new MockTimer();
+    targetItem.dispatchEvent(new PointerEvent(
+        'pointerenter', {bubbles: true, cancelable: true, view: window}));
+    timer.tick(SUBMENU_SHOW_DELAY_MS - 1);
+    actionMenu.close();
+    timer.tick(1);
+
+    assertFalse(openSubmenuWasFiredAfterClose);
+    timer.uninstall();
+  });
 });
