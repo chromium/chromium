@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -105,6 +106,8 @@ class PDFiumRange {
   mutable gfx::Point cached_screen_rects_point_;
   mutable double cached_screen_rects_zoom_ = 0;
 };
+
+std::ostream& operator<<(std::ostream& os, const PDFiumRange& range);
 
 }  // namespace chrome_pdf
 
