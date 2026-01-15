@@ -36,6 +36,7 @@
     "svgo": "3.0.2",
     "postcss": "8.5.3",
     "postcss-minify": "1.1.0",
+    "stylelint": "16.26.1",
     "terser": "5.37.0",
     "ts-proto": "2.7.7",
     "typescript": "5.9.3"
