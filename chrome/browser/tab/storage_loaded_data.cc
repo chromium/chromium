@@ -176,9 +176,6 @@ StorageLoadedData::StorageLoadedData(
       active_tab_index_(active_tab_index) {}
 StorageLoadedData::~StorageLoadedData() = default;
 
-StorageLoadedData::StorageLoadedData(StorageLoadedData&&) = default;
-StorageLoadedData& StorageLoadedData::operator=(StorageLoadedData&&) = default;
-
 RestoreEntityTracker* StorageLoadedData::GetTracker() const {
   return tracker_.get();
 }
@@ -194,6 +191,18 @@ StorageLoadedData::GetLoadedGroups() {
 
 std::optional<int> StorageLoadedData::GetActiveTabIndex() const {
   return active_tab_index_;
+}
+
+void StorageLoadedData::NotifyChildRejected(StorageId parent) {
+  observers_.Notify(&Observer::OnChildRejected, parent);
+}
+
+void StorageLoadedData::RegisterObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void StorageLoadedData::UnregisterObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 }  // namespace tabs

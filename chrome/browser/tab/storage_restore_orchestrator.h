@@ -5,10 +5,14 @@
 #ifndef CHROME_BROWSER_TAB_STORAGE_RESTORE_ORCHESTRATOR_H_
 #define CHROME_BROWSER_TAB_STORAGE_RESTORE_ORCHESTRATOR_H_
 
+#include <memory>
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/tab/collection_storage_observer.h"
 #include "chrome/browser/tab/storage_loaded_data.h"
 #include "chrome/browser/tab/tab_state_storage_service.h"
+#include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_collection_observer.h"
 #include "components/tabs/public/tab_strip_collection.h"
 
@@ -39,10 +43,29 @@ class StorageRestoreOrchestrator : public TabCollectionObserver {
                          const TabCollectionNodes& handles) override;
   void OnChildMoved(const TabCollection::Position& to_position,
                     const NodeData& node_data) override;
+  void OnChildRejected(const StorageId parent);
 
  private:
+  class ObserverImpl : public StorageLoadedData::Observer {
+   public:
+    explicit ObserverImpl(StorageRestoreOrchestrator* orchestrator);
+    ~ObserverImpl() override;
+    void OnChildRejected(StorageId parent) override;
+
+   private:
+    raw_ptr<StorageRestoreOrchestrator> orchestrator_;
+  };
+
+  void OnAddChildTab(const TabCollection::NodeHandle& handle);
+  void OnAddChildCollection(const TabCollection::NodeHandle& handle);
+  void MaybeAddModifiedParent(const StorageId& id,
+                              std::optional<TabCollectionHandle> handle);
+
   // Represents default observer methods.
   CollectionStorageObserver default_observer_;
+
+  // Tracks events performed on StorageLoadedData.
+  ObserverImpl data_observer_;
 
   raw_ptr<TabStripCollection> collection_;
   raw_ptr<TabStateStorageService> service_;
@@ -52,7 +75,8 @@ class StorageRestoreOrchestrator : public TabCollectionObserver {
   absl::flat_hash_set<TabCollectionNodeHandle> restored_nodes_;
 
   // Used to keep track of parents that have had their children vector modified.
-  absl::flat_hash_set<TabCollectionHandle> modified_parents_;
+  absl::flat_hash_map<StorageId, std::optional<TabCollectionHandle>>
+      modified_parents_;
 };
 
 }  // namespace tabs

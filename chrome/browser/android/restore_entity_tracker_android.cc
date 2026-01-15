@@ -77,6 +77,20 @@ bool RestoreEntityTrackerAndroid::HasCollectionBeenAssociated(
   return associated_collections_.contains(handle);
 }
 
+std::optional<StorageId> RestoreEntityTrackerAndroid::GetParentIdForTab(
+    int tab_android_id) {
+  auto it = tab_android_id_to_storage_id_.find(tab_android_id);
+  if (it == tab_android_id_to_storage_id_.end()) {
+    return std::nullopt;
+  }
+
+  auto parent_it = id_to_parent_id_.find(it->second);
+  if (parent_it == id_to_parent_id_.end()) {
+    return std::nullopt;
+  }
+  return parent_it->second;
+}
+
 void RestoreEntityTrackerAndroid::AssociateAncestorsInternal(
     StorageId storage_id,
     const TabCollection* collection) {

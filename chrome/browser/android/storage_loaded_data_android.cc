@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 
 #include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
@@ -13,6 +14,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/token_android.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/android/restore_entity_tracker_android.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_group_collection_data_android.h"
 #include "chrome/browser/android/tab_state_storage_service_factory.h"
@@ -88,6 +90,16 @@ StorageLoadedDataAndroid::~StorageLoadedDataAndroid() = default;
 
 void StorageLoadedDataAndroid::Destroy(JNIEnv* env) {
   delete this;
+}
+
+void StorageLoadedDataAndroid::OnTabRejected(JNIEnv* env, int tab_android_id) {
+  RestoreEntityTrackerAndroid* tracker =
+      static_cast<RestoreEntityTrackerAndroid*>(data_->GetTracker());
+  std::optional<StorageId> parent_id =
+      tracker->GetParentIdForTab(tab_android_id);
+  if (parent_id.has_value()) {
+    GetData()->NotifyChildRejected(*parent_id);
+  }
 }
 
 base::android::ScopedJavaLocalRef<jobject>

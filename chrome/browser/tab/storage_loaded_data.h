@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/observer_list.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/tab/payload.h"
 #include "chrome/browser/tab/protocol/tab_state.pb.h"
@@ -30,13 +31,20 @@ class TabStateStorageDatabase;
 // Represents data loaded from the database.
 class StorageLoadedData {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when the child of a node is rejected. This occurs when the child
+    // is declared invalid or unneeded after loading it.
+    virtual void OnChildRejected(StorageId parent) = 0;
+  };
+
   ~StorageLoadedData();
 
   StorageLoadedData(const StorageLoadedData&) = delete;
   StorageLoadedData& operator=(const StorageLoadedData&) = delete;
 
-  StorageLoadedData(StorageLoadedData&&);
-  StorageLoadedData& operator=(StorageLoadedData&&);
+  StorageLoadedData(StorageLoadedData&&) = delete;
+  StorageLoadedData& operator=(StorageLoadedData&&) = delete;
 
   class Builder {
    public:
@@ -75,6 +83,13 @@ class StorageLoadedData {
   std::vector<std::unique_ptr<TabGroupCollectionData>>& GetLoadedGroups();
   std::optional<int> GetActiveTabIndex() const;
 
+  // Alerts observers that a child node has been rejected during the restoration
+  // process.
+  void NotifyChildRejected(StorageId parent);
+
+  void RegisterObserver(Observer* observer);
+  void UnregisterObserver(Observer* observer);
+
  private:
   friend class Builder;
 
@@ -84,6 +99,7 @@ class StorageLoadedData {
       std::unique_ptr<RestoreEntityTracker> associator,
       std::optional<int> active_tab_index);
 
+  base::ObserverList<Observer> observers_;
   std::vector<tabs_pb::TabState> loaded_tabs_;
   std::vector<std::unique_ptr<TabGroupCollectionData>> loaded_groups_;
   std::unique_ptr<RestoreEntityTracker> tracker_;

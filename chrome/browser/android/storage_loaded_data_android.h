@@ -29,6 +29,8 @@ class StorageLoadedDataAndroid {
   // by it.
   void Destroy(JNIEnv* env);
 
+  void OnTabRejected(JNIEnv* env, int tab_android_id);
+
   StorageLoadedData* GetData() const;
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const;
