@@ -267,7 +267,7 @@ bool ExecutionEngine::ShouldDeferNavigation(
       bool skip_prompt = navigation_handle.IsInPrerenderedMainFrame();
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
-          base::BindOnce(&ExecutionEngine::CheckNavigationBlocklist,
+          base::BindOnce(&ExecutionEngine::CheckNavigationSensitiveUrlList,
                          GetWeakPtr(), navigation_handle.GetInitiatorOrigin(),
                          navigation_handle.GetURL(), skip_prompt,
                          std::move(callback)));
@@ -343,43 +343,42 @@ ExecutionEngine::GatingDecision ExecutionEngine::DetermineGatingDecision(
   return GatingDecision::kNeedsAsyncCheck;
 }
 
-void ExecutionEngine::CheckNavigationBlocklist(
+void ExecutionEngine::CheckNavigationSensitiveUrlList(
     base::optional_ref<const url::Origin> initiator_origin,
     const GURL& navigation_url,
     bool skip_prompt,
     ExecutionEngine::NavigationDecisionCallback callback) {
-  // Check previously confirmed origins on the sensitive blocklist. If the user
+  // Check previously confirmed origins on the sensitive list. If the user
   // has previously confirmed the origin is allowed, we should proceed and not
   // double prompt.
   if (origin_checker_.IsSensitiveUrlConfirmed(navigation_url)) {
-    OnNavigationBlocklistDecision(initiator_origin, navigation_url, skip_prompt,
-                                  std::move(callback),
-                                  /*not_on_blocklist=*/true);
+    OnNavigationSensitiveUrlListChecked(initiator_origin, navigation_url,
+                                        skip_prompt, std::move(callback),
+                                        /*not_sensitive=*/true);
     return;
   }
   auto [callback1, callback2] = base::SplitOnceCallback(std::move(callback));
   if (MaybeCheckOptimizationGuideForSensitiveUrl(
           navigation_url, profile_,
-          base::BindOnce(&ExecutionEngine::OnNavigationBlocklistDecision,
+          base::BindOnce(&ExecutionEngine::OnNavigationSensitiveUrlListChecked,
                          GetWeakPtr(), initiator_origin, navigation_url,
                          skip_prompt, std::move(callback1)))) {
     return;
   }
-  OnNavigationBlocklistDecision(initiator_origin, navigation_url, skip_prompt,
-                                std::move(callback2),
-                                /*not_on_blocklist=*/true);
+  OnNavigationSensitiveUrlListChecked(initiator_origin, navigation_url,
+                                      skip_prompt, std::move(callback2),
+                                      /*not_sensitive=*/true);
 }
 
-void ExecutionEngine::OnNavigationBlocklistDecision(
+void ExecutionEngine::OnNavigationSensitiveUrlListChecked(
     base::optional_ref<const url::Origin> initiator_origin,
     const GURL navigation_url,
     bool skip_prompt,
     ExecutionEngine::NavigationDecisionCallback callback,
-    bool not_on_blocklist) {
-  // If not blocked by blocklist, check if it's in origin the actor has
-  // previously interacted with or received instructions from the server to
-  // interact with.
-  if (not_on_blocklist &&
+    bool not_sensitive) {
+  // If not sensitive, check if it's an origin the actor has previously
+  // interacted with or received instructions from the server to interact with.
+  if (not_sensitive &&
       origin_checker_.IsNavigationAllowed(initiator_origin, navigation_url)) {
     LogNavigationGating(initiator_origin, navigation_url,
                         /*applied_gate=*/false);
@@ -395,27 +394,24 @@ void ExecutionEngine::OnNavigationBlocklistDecision(
     return;
   }
 
-  // If the site is not on the blocklist, this is a novel origin and we should
-  // either confirm the navigation with the web client or prompt the user
-  // depending on the feature state.
-  if (not_on_blocklist) {
+  // If the origin is not sensitive *and* not already allowed, this is a novel
+  // origin and we should either confirm the navigation with the web client or
+  // prompt the user depending on the feature state.
+  if (not_sensitive) {
     HandleNavigationToNewOrigin(url::Origin::Create(navigation_url),
                                 std::move(callback));
     return;
   }
 
-  // We use `kGlicPromptUserForSensitiveNavigations` to toggle user
-  // confirmations when navigating to a URL on the optimization guide
-  // blocklist.
+  // If we cannot prompt for sensitive navigations, then we block instead.
   if (!kGlicPromptUserForSensitiveNavigations.Get()) {
     std::move(callback).Run(/*may_continue=*/false);
     return;
   }
 
-  // Otherwise if the site is blocked, present a user confirmation dialog to
-  // continue.
+  // Otherwise, present a user confirmation dialog to continue.
   SendUserConfirmationDialogRequest(url::Origin::Create(navigation_url),
-                                    /*for_blocklisted_origin=*/true,
+                                    /*for_sensitive_origin=*/true,
                                     std::move(callback));
 }
 
@@ -428,7 +424,7 @@ void ExecutionEngine::HandleNavigationToNewOrigin(
   }
   if (kGlicPromptUserForNavigationToNewOrigins.Get()) {
     SendUserConfirmationDialogRequest(navigation_origin,
-                                      /*for_blocklisted_origin=*/false,
+                                      /*for_sensitive_origin=*/false,
                                       std::move(callback));
     return;
   }
@@ -471,7 +467,7 @@ void ExecutionEngine::OnNavigationConfirmationDecision(
 
 void ExecutionEngine::SendUserConfirmationDialogRequest(
     const url::Origin& navigation_origin,
-    bool for_blocklisted_origin,
+    bool for_sensitive_origin,
     ExecutionEngine::NavigationDecisionCallback callback) {
   if (!task_->delegate()) {
     std::move(callback).Run(/*may_continue=*/false);
@@ -482,15 +478,15 @@ void ExecutionEngine::SendUserConfirmationDialogRequest(
                 "SendUserConfirmationDialogRequest", {});
 
   task_->delegate()->RequestToShowUserConfirmationDialog(
-      task_->id(), navigation_origin, for_blocklisted_origin,
+      task_->id(), navigation_origin, for_sensitive_origin,
       base::BindOnce(&ExecutionEngine::OnPromptUserToConfirmNavigationDecision,
-                     GetWeakPtr(), navigation_origin, for_blocklisted_origin,
+                     GetWeakPtr(), navigation_origin, for_sensitive_origin,
                      std::move(callback)));
 }
 
 void ExecutionEngine::OnPromptUserToConfirmNavigationDecision(
     url::Origin navigation_origin,
-    bool for_blocklisted_origin,
+    bool for_sensitive_origin,
     ExecutionEngine::NavigationDecisionCallback callback,
     webui::mojom::UserConfirmationDialogResponsePtr response) {
   if (response->result->is_permission_granted()) {
@@ -499,14 +495,14 @@ void ExecutionEngine::OnPromptUserToConfirmNavigationDecision(
                           permission_granted);
     if (permission_granted) {
       // See the comment on `OriginOrPrecursorIfOpaque` for why we do not store
-      // `navigation_origin` directly here and for the confirmed blocklist
+      // `navigation_origin` directly here and for the confirmed sensitive
       // origins.
       origin_checker_.AllowNavigationTo(
           OriginOrPrecursorIfOpaque(navigation_origin));
-      // We update both lists in the `for_blocklisted_origin` case so that we do
+      // We update both lists in the `for_sensitive_origin` case so that we do
       // not have to double-confirm this origin when we invoke
       // ExecutionEngine::HandleNavigationToNewOrigin.
-      if (for_blocklisted_origin) {
+      if (for_sensitive_origin) {
         origin_checker_.ConfirmSensitiveOrigin(
             OriginOrPrecursorIfOpaque(navigation_origin));
       }
@@ -691,7 +687,8 @@ void ExecutionEngine::SafetyChecksForNextAction() {
   // check uses `GetLastCommittedURL()` from the tab. For opaque origins, this
   // means that we'll get the precursor URL. For this reason, we previously
   // invoked `origin_checker_.ConfirmSensitiveOrigin()` with the precursor to
-  // ensure the optimization blocklist check would be skipped as expected.
+  // ensure the optimization guide sensitive origin check would be skipped as
+  // expected.
   ActorKeyedService::Get(profile_)->GetPolicyChecker().MayActOnTab(
       *tab, *journal_, task_->id(), origin_checker_,
       base::BindOnce(
@@ -711,7 +708,7 @@ void ExecutionEngine::OnMayActOnTabDecision(
           kGlicPromptUserForSensitiveNavigations.Get()) {
         SendUserConfirmationDialogRequest(
             evaluated_origin,
-            /*for_blocklisted_origin=*/true,
+            /*for_sensitive_origin=*/true,
             base::BindOnce(&ExecutionEngine::DidFinishAsyncSafetyChecks,
                            GetWeakPtr(), evaluated_origin));
         return;

@@ -275,17 +275,17 @@ class ExecutionEngine : public ToolDelegate {
   GatingDecision DetermineGatingDecision(const GURL& source_url,
                                          const GURL& destination_url) const;
 
-  void CheckNavigationBlocklist(
+  void CheckNavigationSensitiveUrlList(
       base::optional_ref<const url::Origin> initiator_origin,
       const GURL& navigation_url,
       bool skip_prompt,
       NavigationDecisionCallback callback);
-  void OnNavigationBlocklistDecision(
+  void OnNavigationSensitiveUrlListChecked(
       base::optional_ref<const url::Origin> initiator_origin,
       const GURL navigation_url,
       bool skip_prompt,
       NavigationDecisionCallback callback,
-      bool not_on_blocklist);
+      bool not_sensitive);
 
   // Called when the browser detects the actor needs to confirm a
   // client-side-initiated navigation to a novel origin.
@@ -301,16 +301,16 @@ class ExecutionEngine : public ToolDelegate {
       webui::mojom::NavigationConfirmationResponsePtr response);
 
   // Called when the browser detects the actor navigating to an origin in the
-  // blocklist. The web client should confirm with the user that the actor is
-  // allowed to navigate to this origin.
+  // sensitive origin list. The web client should confirm with the user that the
+  // actor is allowed to navigate to this origin.
   // This may also be called when the browser detects the actor navigating to
   // a novel origin when `kGlicPromptUserForNavigationToNewOrigins` is enabled.
   void SendUserConfirmationDialogRequest(const url::Origin& navigation_origin,
-                                         bool for_blocklisted_origin,
+                                         bool for_sensitive_origin,
                                          NavigationDecisionCallback callback);
   void OnPromptUserToConfirmNavigationDecision(
       url::Origin navigation_origin,
-      bool for_blocklisted_origin,
+      bool for_sensitive_origin,
       NavigationDecisionCallback callback,
       webui::mojom::UserConfirmationDialogResponsePtr response);
 
