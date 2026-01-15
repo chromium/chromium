@@ -1849,11 +1849,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             mStartupMetricsTracker = null;
         }
 
-        if (mRootUiCoordinator != null) {
-            mRootUiCoordinator.onDestroy();
-            mRootUiCoordinator = null;
-        }
-
         destroyTabModels();
 
         mBookmarkModelSupplier.set(null);
