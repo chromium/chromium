@@ -750,6 +750,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableBootstrapIPRandomizationForDoh);
 NET_EXPORT BASE_DECLARE_FEATURE(kUseNSURLDataForGURLConversion);
 #endif  // BUILDFLAG(IS_APPLE)
 
+// Controls whether X509Util on Android (Cronet, and WebView only) should use
+// lock-free certificate verification mechanism.
+NET_EXPORT BASE_DECLARE_FEATURE(kUseLockFreeX509Verification);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

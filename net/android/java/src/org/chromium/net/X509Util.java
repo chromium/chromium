@@ -13,8 +13,6 @@ import android.os.Build;
 import android.security.KeyChain;
 import android.util.Pair;
 
-import androidx.annotation.GuardedBy;
-
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
@@ -88,8 +86,10 @@ public class X509Util {
     private static final String OID_SERVER_GATED_MICROSOFT = "1.3.6.1.4.1.311.10.3.3";
 
     /** A root that will be installed as a user-trusted root for testing purposes. */
-    @GuardedBy("sLock")
     private static @Nullable X509Certificate sTestRoot;
+
+    // Don't use directly - call shouldUseLockFreeVerification() instead.
+    private static volatile @Nullable Boolean sUseLockFreeVerification;
 
     /** Lock object used to synchronize all calls that modify or depend on the trust managers. */
     private static final Object sLock = new Object();
@@ -156,9 +156,14 @@ public class X509Util {
                 }
 
                 if (shouldReloadTrustManager) {
-                    synchronized (sLock) {
+                    if (shouldUseLockFreeVerification()) {
                         sCertVerifier.reinitialize();
                         X509UtilJni.get().notifyTrustStoreChanged();
+                    } else {
+                        synchronized (sLock) {
+                            sCertVerifier.reinitialize();
+                            X509UtilJni.get().notifyTrustStoreChanged();
+                        }
                     }
                 }
             }
@@ -259,28 +264,47 @@ public class X509Util {
                     });
 
     private static final class CertificateVerifierHolder {
+        private static final Object sFirstInitializationLock = new Object();
         private @NonNull final CertificateVerifierSupplier mCertificateVerifierSupplier;
-        private @Nullable CertificateVerifier mCertVerifier;
+        private volatile @Nullable CertificateVerifier mCertVerifier;
 
         public CertificateVerifierHolder(CertificateVerifierSupplier certificateVerifierSupplier) {
             mCertificateVerifierSupplier = certificateVerifierSupplier;
         }
 
-        @GuardedBy("sLock")
         public @Nullable CertificateVerifier get() {
-            if (mCertVerifier == null) reinitialize();
+            if (shouldUseLockFreeVerification()) {
+                // If we're using the lock-free implementation then `get()` can be called
+                // concurrently from multiple threads. In order to avoid creating multiple
+                // certVerifiers, do a double check locking around mCertVerifier.
+                if (mCertVerifier == null) {
+                    synchronized (sFirstInitializationLock) {
+                        if (mCertVerifier == null) reinitialize();
+                    }
+                }
+            } else {
+                assert Thread.holdsLock(sLock);
+                if (mCertVerifier == null) reinitialize();
+            }
             return mCertVerifier;
         }
 
-        @GuardedBy("sLock")
         public boolean isInitialized() {
             return mCertVerifier != null;
         }
 
-        @GuardedBy("sLock")
         public void reinitialize() {
             mCertVerifier = mCertificateVerifierSupplier.supply();
         }
+    }
+
+    private static boolean shouldUseLockFreeVerification() {
+        // Multiple threads could initialize the same variable. However, that
+        // should not be an issue as it can never flip flop between different values.
+        if (sUseLockFreeVerification == null) {
+            sUseLockFreeVerification = X509UtilJni.get().useLockFreeVerification();
+        }
+        return sUseLockFreeVerification;
     }
 
     /**
@@ -418,6 +442,36 @@ public class X509Util {
         return false;
     }
 
+    public static AndroidCertVerifyResult verifyServerCertificatesMaybeLocked(
+            byte[][] certChain,
+            String authType,
+            String host,
+            byte @Nullable [] ocspResponse,
+            byte @Nullable [] sctList)
+            throws KeyStoreException, NoSuchAlgorithmException, CertificateException {
+        AndroidCertVerifyResult result =
+                new AndroidCertVerifyResult(CertVerifyStatusAndroid.FAILED);
+        // In the lock-free codepath, the value of sCertVerifier.get() can
+        // change at any moment. So call it once and cache the value locally
+        // to prevent inconsistent behaviour.
+        CertificateVerifier certVerifier = sCertVerifier.get();
+        // The sCertVerifier can fail to initialize for whatever reason. In this
+        // case, fail all HTTPS requests.
+        if (certVerifier != null) {
+            result =
+                    certVerifier.verifyServerCertificates(
+                            certChain, authType, host, ocspResponse, sctList);
+        }
+        if (sTestCertVerifier.isInitialized() && result.getStatus() != CertVerifyStatusAndroid.OK) {
+            result =
+                    sTestCertVerifier
+                            .get()
+                            .verifyServerCertificates(
+                                    certChain, authType, host, ocspResponse, sctList);
+        }
+        return result;
+    }
+
     public static AndroidCertVerifyResult verifyServerCertificates(
             byte[][] certChain,
             String authType,
@@ -425,27 +479,14 @@ public class X509Util {
             byte @Nullable [] ocspResponse,
             byte @Nullable [] sctList)
             throws KeyStoreException, NoSuchAlgorithmException, CertificateException {
-        synchronized (sLock) {
-            AndroidCertVerifyResult result =
-                    new AndroidCertVerifyResult(CertVerifyStatusAndroid.FAILED);
-            // The sCertVerifier can fail to initialize for whatever reason. In this
-            // case, fail all HTTPS requests.
-            if (sCertVerifier.get() != null) {
-                result =
-                        sCertVerifier
-                                .get()
-                                .verifyServerCertificates(
-                                        certChain, authType, host, ocspResponse, sctList);
+        if (shouldUseLockFreeVerification()) {
+            return verifyServerCertificatesMaybeLocked(
+                    certChain, authType, host, ocspResponse, sctList);
+        } else {
+            synchronized (sLock) {
+                return verifyServerCertificatesMaybeLocked(
+                        certChain, authType, host, ocspResponse, sctList);
             }
-            if (sTestCertVerifier.isInitialized()
-                    && result.getStatus() != CertVerifyStatusAndroid.OK) {
-                result =
-                        sTestCertVerifier
-                                .get()
-                                .verifyServerCertificates(
-                                        certChain, authType, host, ocspResponse, sctList);
-            }
-            return result;
         }
     }
 
@@ -680,5 +721,7 @@ public class X509Util {
         void notifyTrustStoreChanged();
 
         void notifyClientCertStoreChanged();
+
+        boolean useLockFreeVerification();
     }
 }
