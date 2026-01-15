@@ -931,7 +931,11 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     private void onGoogleActivityControlsClicked(String signedInAccountName) {
         if (isEeaChoiceCountry()) {
             SettingsNavigationFactory.createSettingsNavigation()
-                    .startSettings(getContext(), PersonalizeGoogleServicesSettings.class);
+                    .startSettings(
+                            getContext(),
+                            PersonalizeGoogleServicesSettings.class,
+                            /* fragmentArgs= */ null,
+                            /* addToBackStack= */ true);
             RecordUserAction.record("Signin_AccountSettings_PersonalizeGoogleServicesClicked");
         } else {
             GoogleActivityController.create()
