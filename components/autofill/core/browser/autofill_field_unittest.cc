@@ -535,7 +535,8 @@ TEST_P(AutocompleteUnrecognizedTypeTest, TypePredictions) {
 
   // Expect that the predicted type wins over ac=unrecognized.
   EXPECT_THAT(field.Type().GetTypes(), ElementsAre(test.predicted_type));
-  EXPECT_EQ(field.ShouldSuppressSuggestionsAndFillingByDefault(),
+  EXPECT_EQ(field.ShouldSuppressSuggestionsAndFillingByDefault(
+                /*suppress_if_ac_unrecognized=*/true),
             test.expect_should_suppress_suggestions_and_filling);
   EXPECT_EQ(field.PredictionSource(), test.expected_source);
 }

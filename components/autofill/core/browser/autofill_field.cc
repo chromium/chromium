@@ -796,7 +796,8 @@ bool AutofillField::HasExpirationDateType() const {
   return Type().GetTypes().contains_any(kExpirationDateTypes);
 }
 
-bool AutofillField::ShouldSuppressSuggestionsAndFillingByDefault() const {
+bool AutofillField::ShouldSuppressSuggestionsAndFillingByDefault(
+    bool suppress_if_ac_unrecognized) const {
   return html_type_ == HtmlFieldType::kUnrecognized &&
          !server_type_prediction_is_override() && !IsCreditCardPrediction();
 }

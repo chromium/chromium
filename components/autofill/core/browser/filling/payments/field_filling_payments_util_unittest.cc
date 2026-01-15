@@ -1469,7 +1469,7 @@ TEST_F(FieldFillingPaymentsUtilTest,
 
   EXPECT_FALSE(WillFillCreditCardNumberOrCvc(
       form_data.fields(), form_structure.fields(), *form_structure.fields()[0],
-      /*card_has_cvc=*/true));
+      /*card_has_cvc=*/true, /*suppress_if_ac_unrecognized=*/true));
 }
 
 // Verify that `WillFillCreditCardNumberOrCvc` returns false on a form where
@@ -1490,7 +1490,7 @@ TEST_F(FieldFillingPaymentsUtilTest,
 
   EXPECT_FALSE(WillFillCreditCardNumberOrCvc(
       form_data.fields(), form_structure.fields(), *form_structure.fields()[0],
-      /*card_has_cvc=*/true));
+      /*card_has_cvc=*/true, /*suppress_if_ac_unrecognized=*/true));
 }
 
 // Verify that `WillFillCreditCardNumberOrCvc` returns false on a form where
@@ -1511,7 +1511,7 @@ TEST_F(FieldFillingPaymentsUtilTest,
 
   EXPECT_FALSE(WillFillCreditCardNumberOrCvc(
       form_data.fields(), form_structure.fields(), *form_structure.fields()[0],
-      /*card_has_cvc=*/true));
+      /*card_has_cvc=*/true, /*suppress_if_ac_unrecognized=*/true));
 }
 
 // Verify that `WillFillCreditCardNumberOrCvc` return true on a form where the
@@ -1531,7 +1531,7 @@ TEST_F(FieldFillingPaymentsUtilTest,
 
   EXPECT_TRUE(WillFillCreditCardNumberOrCvc(
       form_data.fields(), form_structure.fields(), *form_structure.fields()[0],
-      /*card_has_cvc=*/true));
+      /*card_has_cvc=*/true, /*suppress_if_ac_unrecognized=*/true));
 }
 
 // Verify that `WillFillCreditCardNumberOrCvc` return true on a form where the
@@ -1557,7 +1557,7 @@ TEST_F(FieldFillingPaymentsUtilTest,
 
   EXPECT_TRUE(WillFillCreditCardNumberOrCvc(
       form_data.fields(), form_structure.fields(), *form_structure.fields()[0],
-      /*card_has_cvc=*/true));
+      /*card_has_cvc=*/true, /*suppress_if_ac_unrecognized=*/true));
 }
 
 // Verify that `WillFillCreditCardNumberOrCvc` returns true on a form with only
@@ -1574,7 +1574,7 @@ TEST_F(FieldFillingPaymentsUtilTest,
 
   EXPECT_TRUE(WillFillCreditCardNumberOrCvc(
       form_data.fields(), form_structure.fields(), *form_structure.fields()[0],
-      /*card_has_cvc=*/true));
+      /*card_has_cvc=*/true, /*suppress_if_ac_unrecognized=*/true));
 }
 
 // Verify that `WillFillCreditCardNumberOrCvc` returns true on a form with only
@@ -1590,7 +1590,7 @@ TEST_F(FieldFillingPaymentsUtilTest,
 
   EXPECT_TRUE(WillFillCreditCardNumberOrCvc(
       form_data.fields(), form_structure.fields(), *form_structure.fields()[0],
-      /*card_has_cvc=*/true));
+      /*card_has_cvc=*/true, /*suppress_if_ac_unrecognized=*/true));
 }
 
 // Verify that `WillFillCreditCardNumberOrCvc` returns false on a form where
@@ -1614,7 +1614,7 @@ TEST_F(FieldFillingPaymentsUtilTest,
 
   EXPECT_FALSE(WillFillCreditCardNumberOrCvc(
       form_data.fields(), form_structure.fields(), *form_structure.fields()[0],
-      /*card_has_cvc=*/true));
+      /*card_has_cvc=*/true, /*suppress_if_ac_unrecognized=*/true));
 }
 
 // Verify that `WillFillCreditCardNumberOrCvc` returns true on a form where
@@ -1634,7 +1634,7 @@ TEST_F(FieldFillingPaymentsUtilTest,
 
   EXPECT_TRUE(WillFillCreditCardNumberOrCvc(
       form_data.fields(), form_structure.fields(), *form_structure.fields()[0],
-      /*card_has_cvc=*/true));
+      /*card_has_cvc=*/true, /*suppress_if_ac_unrecognized=*/true));
 }
 
 // Verify that `WillFillCreditCardNumberOrCvc` returns false on a form where
@@ -1654,7 +1654,7 @@ TEST_F(FieldFillingPaymentsUtilTest,
 
   EXPECT_FALSE(WillFillCreditCardNumberOrCvc(
       form_data.fields(), form_structure.fields(), *form_structure.fields()[0],
-      /*card_has_cvc=*/false));
+      /*card_has_cvc=*/false, /*suppress_if_ac_unrecognized=*/true));
 }
 
 }  // namespace

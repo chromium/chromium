@@ -115,8 +115,9 @@ bool NeedsReparse(const FormData& live_form, const FormStructure& cached_form) {
              });
 }
 
-bool IsCreditCardFormForSignaturePurposes(const FormStructure& form_structure) {
-  return form_structure.GetFormTypes() ==
+bool IsCreditCardFormForSignaturePurposes(const FormStructure& form_structure,
+                                          bool suppress_if_ac_unrecognized) {
+  return form_structure.GetFormTypes(suppress_if_ac_unrecognized) ==
          DenseSet<FormType>{FormType::kCreditCardForm};
 }
 
@@ -992,7 +993,9 @@ void AutofillManager::UpdateFormCache(
         apply_predictions(*cached_form_structure, *context, i);
       }
       if (preserve_signatures ||
-          IsCreditCardFormForSignaturePurposes(*cached_form_structure)) {
+          IsCreditCardFormForSignaturePurposes(
+              *cached_form_structure,
+              /*suppress_if_ac_unrecognized=*/!client().IsTabInActorMode())) {
         // Not updating signatures of credit card forms is legacy behaviour. We
         // believe that the signatures are kept stable for voting purposes.
         // Credit card forms are those which contain only credit card fields.
@@ -1010,7 +1013,9 @@ void AutofillManager::UpdateFormCache(
       }
 
       if (!preserve_signatures &&
-          !IsCreditCardFormForSignaturePurposes(*cached_form_structure)) {
+          !IsCreditCardFormForSignaturePurposes(
+              *cached_form_structure,
+              /*suppress_if_ac_unrecognized=*/!client().IsTabInActorMode())) {
         // Not updating signatures of credit card forms is legacy behaviour. We
         // believe that the signatures are kept stable for voting purposes.
         // Credit card forms are those which contain only credit card fields.

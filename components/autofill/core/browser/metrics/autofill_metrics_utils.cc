@@ -72,9 +72,10 @@ bool IsPostalAddressForm(const FormStructure& form) {
 // types in `filter_by`.
 DenseSet<FormTypeNameForLogging> GetFormTypesForLogging(
     const FormStructure& form,
+    bool suppress_if_ac_unrecognized,
     std::optional<DenseSet<FormType>> filter_by = std::nullopt) {
   DenseSet<FormTypeNameForLogging> form_types;
-  for (FormType form_type : form.GetFormTypes()) {
+  for (FormType form_type : form.GetFormTypes(suppress_if_ac_unrecognized)) {
     if (filter_by && !(*filter_by).contains(form_type)) {
       continue;
     }
@@ -212,30 +213,37 @@ SettingsVisibleFieldTypeForMetrics ConvertSettingsVisibleFieldTypeForMetrics(
 }
 
 DenseSet<FormTypeNameForLogging> GetFormTypesForLogging(
-    const FormStructure& form) {
-  return internal::GetFormTypesForLogging(form);
+    const FormStructure& form,
+    bool suppress_if_ac_unrecognized) {
+  return internal::GetFormTypesForLogging(form, suppress_if_ac_unrecognized);
 }
 
 DenseSet<FormTypeNameForLogging> GetAddressFormTypesForLogging(
-    const FormStructure& form) {
-  return internal::GetFormTypesForLogging(form, internal::kAddressFormTypes);
+    const FormStructure& form,
+    bool suppress_if_ac_unrecognized) {
+  return internal::GetFormTypesForLogging(form, suppress_if_ac_unrecognized,
+                                          internal::kAddressFormTypes);
 }
 
 DenseSet<FormTypeNameForLogging> GetOneTimePasswordTypesForLogging(
-    const FormStructure& form) {
-  return internal::GetFormTypesForLogging(form,
+    const FormStructure& form,
+    bool suppress_if_ac_unrecognized) {
+  return internal::GetFormTypesForLogging(form, suppress_if_ac_unrecognized,
                                           internal::kOneTimePasswordFormTypes);
 }
 
 DenseSet<FormTypeNameForLogging> GetLoyaltyFormTypesForLogging(
-    const FormStructure& form) {
-  return internal::GetFormTypesForLogging(form,
+    const FormStructure& form,
+    bool suppress_if_ac_unrecognized) {
+  return internal::GetFormTypesForLogging(form, suppress_if_ac_unrecognized,
                                           internal::kLoyaltyCardFormTypes);
 }
 
 DenseSet<FormTypeNameForLogging> GetCreditCardFormTypesForLogging(
-    const FormStructure& form) {
-  return internal::GetFormTypesForLogging(form, internal::kCreditCardFormTypes);
+    const FormStructure& form,
+    bool suppress_if_ac_unrecognized) {
+  return internal::GetFormTypesForLogging(form, suppress_if_ac_unrecognized,
+                                          internal::kCreditCardFormTypes);
 }
 
 bool IsPostalAddress(const AutofillProfile& profile) {

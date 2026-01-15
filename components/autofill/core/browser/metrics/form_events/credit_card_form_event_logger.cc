@@ -512,7 +512,9 @@ void CreditCardFormEventLogger::Log(FormEvent event,
     };
     return ".WithBothServerAndLocalData";
   }();
-  for (FormTypeNameForLogging form_type : GetFormTypesForLogging(form)) {
+  for (FormTypeNameForLogging form_type : GetFormTypesForLogging(
+           form,
+           /*suppress_if_ac_unrecognized=*/!client().IsTabInActorMode())) {
     std::string name = base::StrCat(
         {"Autofill.FormEvents.", FormTypeNameForLoggingToStringView(form_type),
          data_suffix});
@@ -755,8 +757,9 @@ CreditCardFormEventLogger::GetSupportedFormTypeNamesForLogging() const {
 
 DenseSet<FormTypeNameForLogging>
 CreditCardFormEventLogger::GetFormTypesForLogging(
-    const FormStructure& form) const {
-  return GetCreditCardFormTypesForLogging(form);
+    const FormStructure& form,
+    bool suppress_if_ac_unrecognized) const {
+  return GetCreditCardFormTypesForLogging(form, suppress_if_ac_unrecognized);
 }
 
 FormEvent CreditCardFormEventLogger::GetCardNumberStatusFormEvent(

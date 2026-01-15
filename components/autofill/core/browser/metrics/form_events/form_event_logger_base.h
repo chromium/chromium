@@ -208,7 +208,8 @@ class FormEventLoggerBase {
   // Returns the set of all form types the form event logger should log for
   // `form.`
   virtual DenseSet<FormTypeNameForLogging> GetFormTypesForLogging(
-      const FormStructure& form) const = 0;
+      const FormStructure& form,
+      bool suppress_if_ac_unrecognized) const = 0;
 
   // Returns a vector of strings for all parsed form types.
   std::vector<std::string_view> GetParsedFormTypesAsStringViews() const;

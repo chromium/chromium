@@ -273,8 +273,10 @@ class FormStructure {
   // Returns a FormData containing the data this form structure knows about.
   FormData ToFormData() const;
 
-  // Returns the possible form types.
-  DenseSet<FormType> GetFormTypes() const;
+  // Returns the possible form types. `suppress_if_ac_unrecognized` determines
+  // whether fields with unrecognized autocomplete attribute have suppressed
+  // suggestions.
+  DenseSet<FormType> GetFormTypes(bool suppress_if_ac_unrecognized) const;
 
   mojom::SubmissionSource submission_source() const {
     return submission_source_;

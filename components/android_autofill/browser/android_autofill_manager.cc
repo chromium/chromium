@@ -155,7 +155,8 @@ void AndroidAutofillManager::OnHidePopupImpl() {
 void AndroidAutofillManager::OnFormProcessed(
     const FormData& form,
     const FormStructure& form_structure) {
-  DenseSet<FormType> form_types = form_structure.GetFormTypes();
+  DenseSet<FormType> form_types = form_structure.GetFormTypes(
+      /*suppress_if_ac_unrecognized=*/!client().IsTabInActorMode());
   for (FormType form_type : form_types) {
     if (auto* logger = GetEventFormLogger(form_type)) {
       logger->OnDidParseForm();

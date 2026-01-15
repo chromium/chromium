@@ -507,7 +507,8 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
     const RefillOptions& refill_options,
     base::flat_map<FieldType, size_t>& type_count,
     const base::flat_set<FieldGlobalId>& blocked_fields,
-    FillingProduct filling_product) {
+    FillingProduct filling_product,
+    bool suppress_if_ac_unrecognized) {
   DenseSet<FieldFillingSkipReason> skip_reasons;
   const bool is_trigger_field =
       autofill_field.global_id() == trigger_field.global_id();
@@ -533,7 +534,8 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
   // An address fields with unrecognized autocomplete attribute is only filled
   // when it is the field triggering the filling operation.
   add_if(!is_trigger_field &&
-             autofill_field.ShouldSuppressSuggestionsAndFillingByDefault(),
+             autofill_field.ShouldSuppressSuggestionsAndFillingByDefault(
+                 suppress_if_ac_unrecognized),
          FieldFillingSkipReason::kUnrecognizedAutocompleteAttribute);
 
   // Skip if the form has changed in the meantime, which may happen with
@@ -642,9 +644,10 @@ FormFiller::GetFieldFillingSkipReasons(base::span<const FormFieldData> fields,
     // Log events when the fields on the form are filled by autofill
     // suggestion.
     DenseSet<FieldFillingSkipReason> field_skip_reasons =
-        GetFillingSkipReasonsForField(field, *autofill_field, trigger_field,
-                                      refill_options, type_count,
-                                      blocked_fields, filling_product);
+        GetFillingSkipReasonsForField(
+            field, *autofill_field, trigger_field, refill_options, type_count,
+            blocked_fields, filling_product,
+            /*suppress_if_ac_unrecognized=*/!client.IsTabInActorMode());
 
     // Usually, `skip_reasons[field_id].empty()` before executing the line
     // below. It may not be the case though because FieldGlobalIds may not be

@@ -74,7 +74,8 @@ void LogPerfectFillingMetric(const FormStructure& form) {
 void LogDurationMetrics(const FormStructure& form,
                         base::TimeTicks load_time,
                         base::TimeTicks interaction_time,
-                        base::TimeTicks now) {
+                        base::TimeTicks now,
+                        bool suppress_if_ac_unrecognized) {
   size_t num_detected_field_types =
       std::ranges::count_if(form, &FieldHasMeaningfulPossibleFieldTypes,
                             &std::unique_ptr<AutofillField>::operator*);
@@ -107,7 +108,8 @@ void LogDurationMetrics(const FormStructure& form,
     if (!interaction_time.is_null() && now >= interaction_time) {
       base::TimeDelta elapsed = now - interaction_time;
       AutofillMetrics::LogFormFillDurationFromInteraction(
-          form.GetFormTypes(), form_has_autofilled_fields, elapsed);
+          form.GetFormTypes(suppress_if_ac_unrecognized),
+          form_has_autofilled_fields, elapsed);
     }
   }
   if (has_observed_one_time_code_field) {
@@ -204,7 +206,8 @@ void LogFillingMetrics(const FormStructure& form,
                        FormInteractionsUkmLogger& form_interactions_ukm_logger,
                        ukm::SourceId source_id,
                        bool observed_submission,
-                       base::TimeTicks now) {
+                       base::TimeTicks now,
+                       bool suppress_if_ac_unrecognized) {
   const QualityMetricType metric_type =
       observed_submission ? TYPE_SUBMISSION : TYPE_NO_SUBMISSION;
   for (const std::unique_ptr<AutofillField>& field : form) {
@@ -215,8 +218,8 @@ void LogFillingMetrics(const FormStructure& form,
     return;
   }
   LogPerfectFillingMetric(form);
-  LogFieldFillingStatsAndScore(form);
-  LogFillingQualityMetrics(form);
+  LogFieldFillingStatsAndScore(form, suppress_if_ac_unrecognized);
+  LogFillingQualityMetrics(form, suppress_if_ac_unrecognized);
 
   FieldTypeSet autofilled_field_types;
   for (const std::unique_ptr<AutofillField>& field : form) {
@@ -229,7 +232,8 @@ void LogFillingMetrics(const FormStructure& form,
       autofilled_field_types.insert_all(field->Type().GetTypes());
     }
   }
-  if (form.GetFormTypes().contains(FormType::kCreditCardForm)) {
+  if (form.GetFormTypes(suppress_if_ac_unrecognized)
+          .contains(FormType::kCreditCardForm)) {
     AutofillMetrics::LogCreditCardSeamlessnessAtSubmissionTime(
         autofilled_field_types);
   }
@@ -243,19 +247,20 @@ void LogQualityMetrics(const FormStructure& form_structure,
                        base::TimeTicks submission_time,
                        FormInteractionsUkmLogger& form_interactions_ukm_logger,
                        ukm::SourceId source_id,
-                       bool observed_submission) {
+                       bool observed_submission,
+                       bool suppress_if_ac_unrecognized) {
   base::TimeTicks now = base::TimeTicks::Now();
   LogPredictionMetrics(form_structure, form_interactions_ukm_logger, source_id,
                        observed_submission, now);
   LogFillingMetrics(form_structure, form_interactions_ukm_logger, source_id,
-                    observed_submission, now);
+                    observed_submission, now, suppress_if_ac_unrecognized);
   if (observed_submission) {
     // TODO(crbug.com/359768803): Remove this metric once the feature is
     // launched.
     LogSubmittedAlternativeNameCharacterSetValues(form_structure);
     LogExtractionMetrics(form_structure);
     LogDurationMetrics(form_structure, load_time, interaction_time,
-                       submission_time);
+                       submission_time, suppress_if_ac_unrecognized);
   }
 }
 

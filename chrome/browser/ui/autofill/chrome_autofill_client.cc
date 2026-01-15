@@ -1047,6 +1047,7 @@ void ChromeAutofillClient::TriggerAutofillAiSavePromptSurvey(
 }
 
 bool ChromeAutofillClient::IsTabInActorMode() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug.com/469428128) Enable on android once crrev.com/c/7298488 lands.
 #if BUILDFLAG(IS_ANDROID)
   return false;

@@ -507,7 +507,8 @@ bool WillFillCreditCardNumberOrCvc(
     base::span<const FormFieldData> fields,
     base::span<const std::unique_ptr<AutofillField>> autofill_fields,
     const AutofillField& trigger_autofill_field,
-    bool card_has_cvc) {
+    bool card_has_cvc,
+    bool suppress_if_ac_unrecognized) {
   if (fields.size() != autofill_fields.size()) {
     return false;
   }
@@ -529,7 +530,8 @@ bool WillFillCreditCardNumberOrCvc(
   // to validate for each `field` in the cache we try to fill whether it still
   // exists in the renderer and whether it is fillable.
   auto IsFillableField =
-      [&fields, &trigger_autofill_field](const AutofillField& autofill_field) {
+      [&fields, &trigger_autofill_field,
+       suppress_if_ac_unrecognized](const AutofillField& autofill_field) {
         auto field = std::ranges::find(fields, autofill_field.global_id(),
                                        &FormFieldData::global_id);
         if (field == fields.end()) {
@@ -545,7 +547,8 @@ bool WillFillCreditCardNumberOrCvc(
         return FormFiller::GetFillingSkipReasonsForField(
                    *field, autofill_field, trigger_autofill_field,
                    FormFiller::RefillOptions::NotRefill(), type_count,
-                   /*blocked_fields=*/{}, FillingProduct::kCreditCard)
+                   /*blocked_fields=*/{}, FillingProduct::kCreditCard,
+                   suppress_if_ac_unrecognized)
             .empty();
       };
 

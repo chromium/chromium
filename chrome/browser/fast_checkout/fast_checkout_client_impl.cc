@@ -184,8 +184,10 @@ void FastCheckoutClientImpl::OnRunComplete(FastCheckoutRunOutcome run_outcome,
       std::vector<raw_ref<const autofill::FormStructure>> forms =
           autofill_manager_->FindCachedFormsBySignature(form_signature);
       if (!forms.empty()) {
-        form_types =
-            autofill::autofill_metrics::GetFormTypesForLogging(*forms.front());
+        form_types = autofill::autofill_metrics::GetFormTypesForLogging(
+            *forms.front(),
+            /*suppress_if_ac_unrecognized=*/!autofill_client_
+                ->IsTabInActorMode());
       }
       ukm::builders::FastCheckout_FormStatus form_status_builder(
           autofill_client_->GetWebContents()
@@ -453,7 +455,9 @@ void FastCheckoutClientImpl::SetFormFillingStates() {
         if (!form_signatures_to_fill_.contains(form.form_signature())) {
           return;
         }
-        autofill::DenseSet<autofill::FormType> form_types = form.GetFormTypes();
+        autofill::DenseSet<autofill::FormType> form_types = form.GetFormTypes(
+            /*suppress_if_ac_unrecognized=*/!autofill_client_
+                ->IsTabInActorMode());
         for (autofill::FormType form_type : kSupportedFormTypes) {
           // Only attempt to fill forms if they match `form_type`.
           if (!form_types.contains(form_type)) {
@@ -586,7 +590,9 @@ bool FastCheckoutClientImpl::ShouldFillForm(
     return false;
   }
   // Only attempt to fill forms if they match `expected_form_type`.
-  if (!form.GetFormTypes().contains(expected_form_type)) {
+  if (!form.GetFormTypes(/*suppress_if_ac_unrecognized=*/!autofill_client_
+                             ->IsTabInActorMode())
+           .contains(expected_form_type)) {
     return false;
   }
   // Attempt to fill forms once only.

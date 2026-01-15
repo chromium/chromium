@@ -163,7 +163,8 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   DenseSet<FormTypeNameForLogging> GetSupportedFormTypeNamesForLogging()
       const override;
   DenseSet<FormTypeNameForLogging> GetFormTypesForLogging(
-      const FormStructure& form) const override;
+      const FormStructure& form,
+      bool suppress_if_ac_unrecognized) const override;
 
   // Bringing base class' Log function into scope to allow overloading.
   using FormEventLoggerBase::Log;

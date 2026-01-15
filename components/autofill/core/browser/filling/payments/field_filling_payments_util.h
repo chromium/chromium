@@ -41,7 +41,8 @@ bool WillFillCreditCardNumberOrCvc(
     base::span<const FormFieldData> fields,
     base::span<const std::unique_ptr<AutofillField>> autofill_fields,
     const AutofillField& trigger_autofill_field,
-    bool card_has_cvc);
+    bool card_has_cvc,
+    bool suppress_if_ac_unrecognized);
 
 }  // namespace autofill
 

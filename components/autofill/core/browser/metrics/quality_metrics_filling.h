@@ -22,7 +22,8 @@ enum class AutofillDataUtilization {
 };
 
 // Logs filling quality metrics.
-void LogFillingQualityMetrics(const FormStructure& form);
+void LogFillingQualityMetrics(const FormStructure& form,
+                              bool suppress_if_ac_unrecognized);
 
 }  // namespace autofill::autofill_metrics
 

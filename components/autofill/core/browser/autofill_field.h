@@ -308,7 +308,11 @@ class AutofillField : public FormFieldData {
   // suggestions and filling are suppressed on Desktop. This function can be
   // used to determine whether suggestions and filling should be suppressed for
   // this field (independently of the predicted type).
-  bool ShouldSuppressSuggestionsAndFillingByDefault() const;
+  // `suppress_if_ac_unrecognized` denotes whether fields with unrecognized
+  // autocomplete value can have suppressed suggestions in general.
+  // TODO(crbug.com/469428128): Handle `suppress_if_ac_unrecognized`.
+  bool ShouldSuppressSuggestionsAndFillingByDefault(
+      bool suppress_if_ac_unrecognized) const;
 
   // Returns the current value, formatted as desired for import:
   // (1) If the field value hasn't changed since it was seen and the field is a

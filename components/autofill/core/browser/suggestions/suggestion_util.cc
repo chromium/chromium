@@ -10,11 +10,13 @@
 namespace autofill {
 
 bool SuppressSuggestionsForAutocompleteUnrecognizedField(
-    const AutofillField& field) {
+    const AutofillField& field,
+    bool suppress_if_ac_unrecognized) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return false;
 #else
-  return field.ShouldSuppressSuggestionsAndFillingByDefault();
+  return field.ShouldSuppressSuggestionsAndFillingByDefault(
+      suppress_if_ac_unrecognized);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 

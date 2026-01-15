@@ -41,7 +41,8 @@ void LogQualityMetrics(const FormStructure& form_structure,
                        base::TimeTicks now,
                        FormInteractionsUkmLogger& form_interactions_ukm_logger,
                        ukm::SourceId source_id,
-                       bool observed_submission);
+                       bool observed_submission,
+                       bool suppress_if_ac_unrecognized);
 
 // Log the quality of the heuristics and server predictions for the
 // `form_structure` structure, if autocomplete attributes are present on the

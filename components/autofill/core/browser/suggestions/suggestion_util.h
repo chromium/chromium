@@ -11,7 +11,8 @@ class AutofillField;
 // Returns true if suggestions should be suppressed on `field` because of it
 // having an unrecognized HTML autocomplete attribute.
 bool SuppressSuggestionsForAutocompleteUnrecognizedField(
-    const AutofillField& field);
+    const AutofillField& field,
+    bool suppress_if_ac_unrecognized);
 
 }  // namespace autofill
 

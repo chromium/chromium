@@ -365,6 +365,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   std::optional<actor::TaskId> active_actor_task_;
 #endif  // BUILDFLAG(IS_ANDROID)
 
+  SEQUENCE_CHECKER(sequence_checker_);
+
   base::WeakPtrFactory<ChromeAutofillClient> weak_ptr_factory_{this};
 };
 

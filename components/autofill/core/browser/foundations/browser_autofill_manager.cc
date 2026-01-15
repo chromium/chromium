@@ -395,15 +395,17 @@ const char* SubmissionSourceToString(SubmissionSource source) {
 bool ShouldFetchCreditCard(const FormData& form,
                            const FormStructure& form_structure,
                            const AutofillField& autofill_field,
-                           const CreditCard& credit_card) {
+                           const CreditCard& credit_card,
+                           bool suppress_if_ac_unrecognized) {
   if (credit_card.is_bnpl_card()) {
     // This is a BNPL VCN, so fetching is not needed because an authentication
     // already happened.
     return false;
   }
-  if (WillFillCreditCardNumberOrCvc(
-          form.fields(), form_structure.fields(), autofill_field,
-          /*card_has_cvc=*/!credit_card.cvc().empty())) {
+  if (WillFillCreditCardNumberOrCvc(form.fields(), form_structure.fields(),
+                                    autofill_field,
+                                    /*card_has_cvc=*/!credit_card.cvc().empty(),
+                                    suppress_if_ac_unrecognized)) {
     return true;
   }
   // This happens for web sites which cache all credit card details except for
@@ -546,7 +548,8 @@ SuggestionsContext BuildSuggestionsContext(
     const FormStructure* form_structure,
     const FormFieldData& field,
     const AutofillField* autofill_field,
-    AutofillSuggestionTriggerSource trigger_source) {
+    AutofillSuggestionTriggerSource trigger_source,
+    bool suppress_if_ac_unrecognized) {
   SuggestionsContext context;
 
   // When Compose suggestions or manual fallback for plus addresses are
@@ -565,14 +568,17 @@ SuggestionsContext BuildSuggestionsContext(
   context.filling_product =
       GetPreferredSuggestionFillingProduct(autofill_field->Type());
 
-  if (SuppressSuggestionsForAutocompleteUnrecognizedField(*autofill_field)) {
+  if (SuppressSuggestionsForAutocompleteUnrecognizedField(
+          *autofill_field, suppress_if_ac_unrecognized)) {
     // If non-Autocomplete suggestions may be shown on some other field of the
     // form, we want to suppress Autocomplete suggestions on this field.
     // Setting `SuggestionsContext::suppress_reason` to
     // `kAutocompleteUnrecognized` achieves that.
     if (!std::ranges::all_of(
-            *form_structure, [](const std::unique_ptr<AutofillField>& field) {
-              return field->ShouldSuppressSuggestionsAndFillingByDefault() ||
+            *form_structure, [suppress_if_ac_unrecognized](
+                                 const std::unique_ptr<AutofillField>& field) {
+              return field->ShouldSuppressSuggestionsAndFillingByDefault(
+                         suppress_if_ac_unrecognized) ||
                      field->Type().GetTypes().contains(UNKNOWN_TYPE);
             })) {
       context.suppress_reason = SuppressReason::kAutocompleteUnrecognized;
@@ -1034,7 +1040,8 @@ void BrowserAutofillManager::LogSubmissionMetrics(
   if (!metrics_->initial_interaction_timestamp.is_null()) {
     base::TimeDelta time_from_interaction_to_submission =
         base::TimeTicks::Now() - metrics_->initial_interaction_timestamp;
-    DenseSet<FormType> form_types = submitted_form->GetFormTypes();
+    DenseSet<FormType> form_types = submitted_form->GetFormTypes(
+        /*suppress_if_ac_unrecognized=*/!client().IsTabInActorMode());
     bool card_form = form_types.contains(FormType::kCreditCardForm);
     bool address_form = form_types.contains(FormType::kAddressForm);
     if (card_form) {
@@ -1216,7 +1223,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   }
 
   SuggestionsContext context = BuildSuggestionsContext(
-      form, form_structure, field, autofill_field, trigger_source);
+      form, form_structure, field, autofill_field, trigger_source,
+      /*suppress_if_ac_unrecognized=*/!client().IsTabInActorMode());
   InitializeSuggestionGenerators(trigger_source, form.global_id(),
                                  field.global_id());
 
@@ -1330,7 +1338,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
                                       &form_structure, &autofill_field);
 
   SuggestionsContext context = BuildSuggestionsContext(
-      form, form_structure, field, autofill_field, trigger_source);
+      form, form_structure, field, autofill_field, trigger_source,
+      /*suppress_if_ac_unrecognized=*/!client().IsTabInActorMode());
 
   auto generate_suggestions_and_maybe_show_ui_phase2 = base::BindOnce(
       &BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2,
@@ -1976,8 +1985,9 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
       case AutofillTriggerSource::kKeyboardAccessory:
       case AutofillTriggerSource::kTouchToFillCreditCard:
       case AutofillTriggerSource::kGlic:
-        return ShouldFetchCreditCard(form, form_structure, autofill_field,
-                                     credit_card);
+        return ShouldFetchCreditCard(
+            form, form_structure, autofill_field, credit_card,
+            /*suppress_if_ac_unrecognized=*/!client().IsTabInActorMode());
       case AutofillTriggerSource::kScanCreditCard:
       case AutofillTriggerSource::kDevtools:
       case AutofillTriggerSource::kFastCheckout:
@@ -2148,9 +2158,10 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
   }
 
   const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
-  SuggestionsContext context =
-      BuildSuggestionsContext(form, form_structure, field, autofill_field,
-                              AutofillSuggestionTriggerSource::kUnspecified);
+  SuggestionsContext context = BuildSuggestionsContext(
+      form, form_structure, field, autofill_field,
+      AutofillSuggestionTriggerSource::kUnspecified,
+      /*suppress_if_ac_unrecognized=*/!client().IsTabInActorMode());
 
   // This code path checks if suggestions to be announced to a screen reader are
   // available when the focus on a form field changes. This cannot happen in
@@ -3097,7 +3108,8 @@ void BrowserAutofillManager::OnDidIdentifyFormForMetrics(
     const FormStructure& form_structure,
     autofill_metrics::FormEventLoggerBase::FormIdentificationTime
         identification_time) {
-  DenseSet<FormType> form_types = form_structure.GetFormTypes();
+  DenseSet<FormType> form_types = form_structure.GetFormTypes(
+      /*suppress_if_ac_unrecognized=*/!client().IsTabInActorMode());
   const bool card_form = form_types.contains(FormType::kCreditCardForm) ||
                          form_types.contains(FormType::kStandaloneCvcForm);
   const bool address_form = form_types.contains(FormType::kAddressForm);
@@ -3329,7 +3341,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
 
 autofill_metrics::FormEventLoggerBase*
 BrowserAutofillManager::GetEventFormLogger(const AutofillField& field) {
-  if (field.ShouldSuppressSuggestionsAndFillingByDefault()) {
+  if (field.ShouldSuppressSuggestionsAndFillingByDefault(
+          /*suppress_if_ac_unrecognized=*/!client().IsTabInActorMode())) {
     // Ignore ac=unrecognized fields in key metrics.
     return nullptr;
   }
@@ -3425,7 +3438,8 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
     client().GetFormInteractionsUkmLogger().LogFocusedComplexFormAtFormRemove(
         driver().GetPageUkmSourceId(), form_structure, form_events,
         metrics_->initial_interaction_timestamp,
-        metrics_->form_submitted_timestamp);
+        metrics_->form_submitted_timestamp,
+        /*suppress_if_ac_unrecognized=*/!client().IsTabInActorMode());
   }
 
   if (base::FeatureList::IsEnabled(features::kAutofillUKMExperimentalFields) &&

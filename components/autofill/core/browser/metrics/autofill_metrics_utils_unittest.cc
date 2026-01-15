@@ -135,7 +135,8 @@ class AddressFormTypesForLoggingTest
 TEST_P(AddressFormTypesForLoggingTest,
        GetAddressFormTypesForLoggingReturnsAddressFormTypes) {
   EXPECT_EQ(GetAddressFormTypesForLogging(
-                *CreateFormStructure(std::get<0>(GetParam()))),
+                *CreateFormStructure(std::get<0>(GetParam())),
+                /*suppress_if_ac_unrecognized=*/true),
             std::get<1>(GetParam()));
 }
 
@@ -174,7 +175,8 @@ class CreditCardFormTypesForLoggingTest
 TEST_P(CreditCardFormTypesForLoggingTest,
        GetCreditCardFormTypesForLoggingReturnsCreditCardFormTypes) {
   EXPECT_EQ(GetCreditCardFormTypesForLogging(
-                *CreateFormStructure(std::get<0>(GetParam()))),
+                *CreateFormStructure(std::get<0>(GetParam())),
+                /*suppress_if_ac_unrecognized=*/true),
             std::get<1>(GetParam()));
 }
 
@@ -219,7 +221,8 @@ class FormTypesForLoggingTest
 TEST_P(FormTypesForLoggingTest,
        GetFormTypesForLoggingReturnsAppropriateFormTypes) {
   EXPECT_EQ(
-      GetFormTypesForLogging(*CreateFormStructure(std::get<0>(GetParam()))),
+      GetFormTypesForLogging(*CreateFormStructure(std::get<0>(GetParam())),
+                             /*suppress_if_ac_unrecognized=*/true),
       std::get<1>(GetParam()));
 }
 

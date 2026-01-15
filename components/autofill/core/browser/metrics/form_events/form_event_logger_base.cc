@@ -102,7 +102,9 @@ void FormEventLoggerBase::OnDidInteractWithAutofillableForm(
 void FormEventLoggerBase::OnDidIdentifyForm(
     const FormStructure& form,
     FormIdentificationTime identification_time) {
-  DenseSet<FormTypeNameForLogging> form_types = GetFormTypesForLogging(form);
+  DenseSet<FormTypeNameForLogging> form_types = GetFormTypesForLogging(
+      form,
+      /*suppress_if_ac_unrecognized=*/!owner_->client().IsTabInActorMode());
   CHECK(!form_types.empty());
   switch (identification_time) {
     case FormIdentificationTime::kAfterLocalHeuristics:
@@ -177,7 +179,9 @@ void FormEventLoggerBase::OnWillSubmitForm(const FormStructure& form) {
   if (has_logged_will_submit_)
     return;
   has_logged_will_submit_ = true;
-  submitted_form_types_ = GetFormTypesForLogging(form);
+  submitted_form_types_ = GetFormTypesForLogging(
+      form,
+      /*suppress_if_ac_unrecognized=*/!owner_->client().IsTabInActorMode());
 
   // Determine whether logging of email-heuristic only metrics is required.
   is_heuristic_only_email_form_ =
@@ -247,7 +251,10 @@ void FormEventLoggerBase::
 void FormEventLoggerBase::Log(FormEvent event, const FormStructure& form) {
   DCHECK_LT(event, NUM_FORM_EVENTS);
   form_events_set_[form.global_id()].insert(event);
-  for (FormTypeNameForLogging form_type : GetFormTypesForLogging(form)) {
+  for (FormTypeNameForLogging form_type :
+       GetFormTypesForLogging(form,
+                              /*suppress_if_ac_unrecognized=*/!owner_->client()
+                                  .IsTabInActorMode())) {
     std::string name(
         base::StrCat({"Autofill.FormEvents.",
                       FormTypeNameForLoggingToStringView(form_type)}));
@@ -261,7 +268,10 @@ void FormEventLoggerBase::Log(FormEvent event, const FormStructure& form) {
   // Log UKM metrics for only autofillable form events.
   if (IsAutofillable(form)) {
     client().GetFormInteractionsUkmLogger().LogFormEvent(
-        driver().GetPageUkmSourceId(), event, GetFormTypesForLogging(form),
+        driver().GetPageUkmSourceId(), event,
+        GetFormTypesForLogging(form,
+                               /*suppress_if_ac_unrecognized=*/!owner_->client()
+                                   .IsTabInActorMode()),
         form.form_parsed_timestamp());
   }
 }

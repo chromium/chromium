@@ -413,7 +413,8 @@ void VotesUploader::UploadVote(
         *submitted_form, submitted_form->form_parsed_timestamp(),
         initial_interaction_timestamp, submission_timestamp,
         client_->GetFormInteractionsUkmLogger(), ukm_source_id,
-        observed_submission);
+        observed_submission,
+        /*suppress_if_ac_unrecognized=*/!client_->IsTabInActorMode());
   }
   if (!ShouldBeUploaded(*submitted_form)) {
     return;
