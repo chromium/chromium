@@ -249,6 +249,7 @@
 #include "url/origin.h"
 #include "url/url_constants.h"
 #include "url/url_util.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-local-handle.h"
 #include "v8/include/v8-microtask-queue.h"
@@ -1331,7 +1332,7 @@ class MHTMLPartsGenerationDelegateImpl final
     return params_->mhtml_popup_overlay_removal;
   }
 
-  std::unordered_set<std::string> TakeSerializedResourcesUriDigests() {
+  absl::flat_hash_set<std::string> TakeSerializedResourcesUriDigests() {
     return std::move(serialized_resources_uri_digests_);
   }
   mojom::SerializeAsMHTMLParamsPtr TakeParams() { return std::move(params_); }
@@ -1339,7 +1340,7 @@ class MHTMLPartsGenerationDelegateImpl final
  private:
   std::vector<std::string> digests_of_uris_to_skip_;
   mojom::SerializeAsMHTMLParamsPtr params_;
-  std::unordered_set<std::string> serialized_resources_uri_digests_;
+  absl::flat_hash_set<std::string> serialized_resources_uri_digests_;
 };
 
 RenderFrameImpl::AssertNavigationCommits::AssertNavigationCommits(
@@ -5805,7 +5806,7 @@ void RenderFrameImpl::OnSerializeMHTMLComplete(
 
 void RenderFrameImpl::OnWriteMHTMLComplete(
     SerializeAsMHTMLCallback callback,
-    std::unordered_set<std::string> serialized_resources_uri_digests,
+    absl::flat_hash_set<std::string> serialized_resources_uri_digests,
     mojom::MhtmlSaveStatus save_status) {
   TRACE_EVENT1("page-serialization", "RenderFrameImpl::OnWriteMHTMLComplete",
                "frame save status", save_status);

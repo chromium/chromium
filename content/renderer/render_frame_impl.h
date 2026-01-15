@@ -72,6 +72,7 @@
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/mojom/interface_provider.mojom.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
@@ -919,7 +920,7 @@ class CONTENT_EXPORT RenderFrameImpl
   // MHTML to the handle has been completed in the file thread.
   void OnWriteMHTMLComplete(
       SerializeAsMHTMLCallback callback,
-      std::unordered_set<std::string> serialized_resources_uri_digests,
+      absl::flat_hash_set<std::string> serialized_resources_uri_digests,
       mojom::MhtmlSaveStatus save_status);
 
   // Requests that the browser process navigates to |url|.
