@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/composebox/ui/composebox_tab_picker_empty_state_view.h"
 
+#import "ios/chrome/browser/composebox/ui/composebox_ui_constants.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -39,6 +40,8 @@ const CGFloat kImageWidth = 190.0;
 // The scroll view supports dynamic type, allowing content to scroll when large
 // and centering it when it fits the screen.
 - (void)setupViews {
+  self.accessibilityIdentifier =
+      kComposeboxTabPickerEmptyStateViewAccessibilityIdentifier;
   UIScrollView* scrollView = [[UIScrollView alloc] init];
   scrollView.translatesAutoresizingMaskIntoConstraints = NO;
 

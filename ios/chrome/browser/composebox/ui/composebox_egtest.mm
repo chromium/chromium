@@ -395,4 +395,45 @@ void OpenTabPicker() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// Tests that the empty state view is displayed when only NTPs are available
+// (User should not be able to attach NTPs to the composebox). It also ensure
+// that the user can dismiss the view.
+- (void)testTabPickerEmptyStateView {
+  // Composebox is not available on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
+  }
+
+  [ChromeEarlGrey closeAllNormalTabs];
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey waitForMainTabCount:1];
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey waitForMainTabCount:2];
+
+  OpenTabPicker();
+
+  // Check that the empty state view is visible.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kComposeboxTabPickerEmptyStateViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Check that the Done button is disabled and Cancel is enabled.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      assertWithMatcher:grey_allOf(grey_notNil(),
+                                   grey_accessibilityTrait(
+                                       UIAccessibilityTraitNotEnabled),
+                                   nil)];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarCancelButton()]
+      performAction:grey_tap()];
+
+  // Check that the tab picker is not visible anymore.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kComposeboxTabPickerCollectionViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+}
+
 @end

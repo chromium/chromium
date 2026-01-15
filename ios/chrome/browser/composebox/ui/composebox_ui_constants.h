@@ -48,5 +48,8 @@ extern NSString* const kComposeboxSelectTabsActionAccessibilityIdentifier;
 // Accessibility identifier for the tab picker's collection view.
 extern NSString* const
     kComposeboxTabPickerCollectionViewAccessibilityIdentifier;
+// Accessibility identifier for the empty state view in the tab picker.
+extern NSString* const
+    kComposeboxTabPickerEmptyStateViewAccessibilityIdentifier;
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_UI_CONSTANTS_H_

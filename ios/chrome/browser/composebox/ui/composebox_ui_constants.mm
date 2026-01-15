@@ -40,3 +40,5 @@ NSString* const kComposeboxSelectTabsActionAccessibilityIdentifier =
 
 NSString* const kComposeboxTabPickerCollectionViewAccessibilityIdentifier =
     @"kComposeboxTabPickerCollectionViewAccessibilityIdentifier";
+NSString* const kComposeboxTabPickerEmptyStateViewAccessibilityIdentifier =
+    @"kComposeboxTabPickerEmptyStateViewAccessibilityIdentifier";
