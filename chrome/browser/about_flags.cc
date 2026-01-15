@@ -871,10 +871,12 @@ const FeatureEntry::FeatureParam
         {"AddContextButtonVariant", "below_results"},
         {"ShowVoiceSearchInSteadyComposebox", "true"},
         {"ShowVoiceSearchInExpandedComposebox", "true"},
+        {"ShowRecentTabChip", "true"},
 };
 const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonAboveResults[] = {
         {"AddContextButtonVariant", "above_results"},
+        {"ShowRecentTabChip", "true"},
 };
 const FeatureEntry::FeatureParam kWebUIOmniboxAimPopupAddContextButtonInline[] =
     {
