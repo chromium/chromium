@@ -56,7 +56,10 @@ class SyncTransportDataPrefs {
   static bool HasCurrentSyncingGaiaId(const PrefService* pref_service);
   static void ClearCurrentSyncingGaiaId(PrefService* pref_service);
 
-  std::vector<std::string> GetCacheGuidsForAllGaiaIds() const;
+  // Returns the cache GUIDs for the current device for all Gaia IDs. This
+  // includes the current cache GUID (per GetCacheGuid()), but also the cache
+  // GUIDs for any other accounts that were the primary account in this profile
+  // before (and haven't been cleared).
   static std::vector<std::string> GetCacheGuidsForAllGaiaIds(
       const PrefService* pref_service);
 

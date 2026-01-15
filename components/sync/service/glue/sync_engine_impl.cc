@@ -535,11 +535,6 @@ bool SyncEngineImpl::IsNextPollTimeInThePast() const {
   return now >= last_poll_time + poll_interval;
 }
 
-std::vector<std::string> SyncEngineImpl::GetCacheGuidsForAllGaiaIds() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return prefs_->GetCacheGuidsForAllGaiaIds();
-}
-
 void SyncEngineImpl::ClearNigoriDataForMigration() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);

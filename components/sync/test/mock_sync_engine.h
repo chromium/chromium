@@ -80,10 +80,6 @@ class MockSyncEngine : public SyncEngine {
   MOCK_METHOD(void, DisableProtocolEventForwarding, (), (override));
   MOCK_METHOD(void, OnCookieJarChanged, (bool, base::OnceClosure), (override));
   MOCK_METHOD(bool, IsNextPollTimeInThePast, (), (const override));
-  MOCK_METHOD(std::vector<std::string>,
-              GetCacheGuidsForAllGaiaIds,
-              (),
-              (const override));
   MOCK_METHOD(void, ClearNigoriDataForMigration, (), (override));
   MOCK_METHOD(void, GetNigoriNodeForDebugging, (AllNodesCallback), (override));
   MOCK_METHOD(void, RecordNigoriMemoryUsageAndCountsHistograms, (), (override));

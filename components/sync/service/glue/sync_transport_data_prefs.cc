@@ -154,12 +154,6 @@ void SyncTransportDataPrefs::ClearCurrentSyncingGaiaId(
   pref_service->ClearPref(kSyncGaiaId);
 }
 
-std::vector<std::string> SyncTransportDataPrefs::GetCacheGuidsForAllGaiaIds()
-    const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetCacheGuidsForAllGaiaIds(pref_service_);
-}
-
 // static
 std::vector<std::string> SyncTransportDataPrefs::GetCacheGuidsForAllGaiaIds(
     const PrefService* pref_service) {
