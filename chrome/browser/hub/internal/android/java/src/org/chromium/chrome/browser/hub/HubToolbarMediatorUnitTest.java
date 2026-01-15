@@ -14,7 +14,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -23,9 +22,6 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION;
-import static org.chromium.chrome.browser.hub.HubToolbarProperties.BACK_BUTTON_ENABLED;
-import static org.chromium.chrome.browser.hub.HubToolbarProperties.BACK_BUTTON_LISTENER;
-import static org.chromium.chrome.browser.hub.HubToolbarProperties.BACK_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.HUB_SEARCH_ENABLED_STATE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_VISIBLE;
@@ -57,13 +53,11 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
-import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.hub.HubToolbarMediator.HubSearchEntrypoint;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.IntentBuilder;
 import org.chromium.components.feature_engagement.Tracker;
@@ -116,7 +110,6 @@ public class HubToolbarMediatorUnitTest {
             mTabSwitcherSearchBoxVisibilitySupplier = ObservableSuppliers.createNonNull(true);
     private ObservableSupplierImpl<DisplayButtonData>
             mIncognitoTabSwitcherReferenceButtonDataSupplier2;
-    private SettableNullableObservableSupplier<Tab> mCurrentTabSupplier;
     private PropertyModel mModel;
 
     @Before
@@ -124,7 +117,6 @@ public class HubToolbarMediatorUnitTest {
         mFocusedPaneSupplier = new ObservableSupplierImpl<>();
         mTabSwitcherReferenceButtonDataSupplier1 = new ObservableSupplierImpl<>();
         mIncognitoTabSwitcherReferenceButtonDataSupplier2 = new ObservableSupplierImpl<>();
-        mCurrentTabSupplier = ObservableSuppliers.createNullable();
         mFocusedPaneSupplier = new ObservableSupplierImpl<>();
         mModel =
                 new PropertyModel.Builder(HubToolbarProperties.ALL_KEYS)
@@ -200,7 +192,6 @@ public class HubToolbarMediatorUnitTest {
                         mPaneManager,
                         mTracker,
                         mSearchActivityClient,
-                        mCurrentTabSupplier,
                         mExitHubRunnable);
         assertTrue(mFocusedPaneSupplier.hasObservers());
 
@@ -225,7 +216,6 @@ public class HubToolbarMediatorUnitTest {
                         mPaneManager,
                         mTracker,
                         mSearchActivityClient,
-                        mCurrentTabSupplier,
                         mExitHubRunnable);
         assertTrue(mRegularHubSearchEnabledStateSupplier.hasObservers());
 
@@ -249,7 +239,6 @@ public class HubToolbarMediatorUnitTest {
                 mPaneManager,
                 mTracker,
                 mSearchActivityClient,
-                mCurrentTabSupplier,
                 mExitHubRunnable);
 
         // Mimic incognito reauth pending
@@ -275,7 +264,6 @@ public class HubToolbarMediatorUnitTest {
                 mPaneManager,
                 mTracker,
                 mSearchActivityClient,
-                mCurrentTabSupplier,
                 mExitHubRunnable);
         List<FullButtonData> paneSwitcherButtonData = mModel.get(PANE_SWITCHER_BUTTON_DATA);
         assertEquals(2, paneSwitcherButtonData.size());
@@ -297,7 +285,6 @@ public class HubToolbarMediatorUnitTest {
                 mPaneManager,
                 mTracker,
                 mSearchActivityClient,
-                mCurrentTabSupplier,
                 mExitHubRunnable);
         List<FullButtonData> paneSwitcherButtonData = mModel.get(PANE_SWITCHER_BUTTON_DATA);
         assertEquals(1, paneSwitcherButtonData.size());
@@ -316,7 +303,6 @@ public class HubToolbarMediatorUnitTest {
                 mPaneManager,
                 mTracker,
                 mSearchActivityClient,
-                mCurrentTabSupplier,
                 mExitHubRunnable);
         verify(mPropertyObserver, times(1)).onPropertyChanged(any(), eq(PANE_SWITCHER_BUTTON_DATA));
 
@@ -338,7 +324,6 @@ public class HubToolbarMediatorUnitTest {
                 mPaneManager,
                 mTracker,
                 mSearchActivityClient,
-                mCurrentTabSupplier,
                 mExitHubRunnable);
         assertEquals(-1, mModel.get(PANE_SWITCHER_INDEX));
 
@@ -373,7 +358,6 @@ public class HubToolbarMediatorUnitTest {
                 mPaneManager,
                 mTracker,
                 mSearchActivityClient,
-                mCurrentTabSupplier,
                 mExitHubRunnable);
         when(mIncognitoTabSwitcherPane.getMenuButtonVisible()).thenReturn(false);
         mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
@@ -396,7 +380,6 @@ public class HubToolbarMediatorUnitTest {
                         mPaneManager,
                         mTracker,
                         mSearchActivityClient,
-                        mCurrentTabSupplier,
                         mExitHubRunnable);
         assertEquals(2, mModel.get(PANE_SWITCHER_BUTTON_DATA).size());
         assertNull(mediator.getButton(PaneId.TAB_SWITCHER));
@@ -424,7 +407,6 @@ public class HubToolbarMediatorUnitTest {
                 mPaneManager,
                 mTracker,
                 mSearchActivityClient,
-                mCurrentTabSupplier,
                 mExitHubRunnable);
         List<FullButtonData> paneSwitcherButtonData = mModel.get(PANE_SWITCHER_BUTTON_DATA);
         assertEquals(2, paneSwitcherButtonData.size());
@@ -446,7 +428,6 @@ public class HubToolbarMediatorUnitTest {
                 mPaneManager,
                 mTracker,
                 mSearchActivityClient,
-                mCurrentTabSupplier,
                 mExitHubRunnable);
         mFocusedPaneSupplier.set(mTabSwitcherPane);
         assertFalse(mModel.get(IS_INCOGNITO));
@@ -466,7 +447,6 @@ public class HubToolbarMediatorUnitTest {
                 mPaneManager,
                 mTracker,
                 mSearchActivityClient,
-                mCurrentTabSupplier,
                 mExitHubRunnable);
         assertTrue(mModel.get(SEARCH_BOX_VISIBLE));
         assertFalse(mModel.get(SEARCH_LOUPE_VISIBLE));
@@ -485,7 +465,6 @@ public class HubToolbarMediatorUnitTest {
                 mPaneManager,
                 mTracker,
                 mSearchActivityClient,
-                mCurrentTabSupplier,
                 mExitHubRunnable);
         assertFalse(mModel.get(SEARCH_BOX_VISIBLE));
         assertTrue(mModel.get(SEARCH_LOUPE_VISIBLE));
@@ -502,7 +481,6 @@ public class HubToolbarMediatorUnitTest {
                 mPaneManager,
                 mTracker,
                 mSearchActivityClient,
-                mCurrentTabSupplier,
                 mExitHubRunnable);
         assertFalse(mModel.get(APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION));
         assertTrue(mModel.get(SEARCH_BOX_VISIBLE));
@@ -532,7 +510,6 @@ public class HubToolbarMediatorUnitTest {
                 mPaneManager,
                 mTracker,
                 mSearchActivityClient,
-                mCurrentTabSupplier,
                 mExitHubRunnable);
         assertFalse(mModel.get(APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION));
         assertTrue(mModel.get(SEARCH_BOX_VISIBLE));
@@ -563,7 +540,6 @@ public class HubToolbarMediatorUnitTest {
                 mPaneManager,
                 mTracker,
                 mSearchActivityClient,
-                mCurrentTabSupplier,
                 mExitHubRunnable);
         assertFalse(mModel.get(SEARCH_BOX_VISIBLE));
         assertTrue(mModel.get(SEARCH_LOUPE_VISIBLE));
@@ -592,7 +568,6 @@ public class HubToolbarMediatorUnitTest {
                 mPaneManager,
                 mTracker,
                 mSearchActivityClient,
-                mCurrentTabSupplier,
                 mExitHubRunnable);
         assertFalse(mModel.get(SEARCH_BOX_VISIBLE));
         assertTrue(mModel.get(SEARCH_LOUPE_VISIBLE));
@@ -617,7 +592,6 @@ public class HubToolbarMediatorUnitTest {
                 mPaneManager,
                 mTracker,
                 mSearchActivityClient,
-                mCurrentTabSupplier,
                 mExitHubRunnable);
         assertTrue(mModel.get(SEARCH_BOX_VISIBLE));
         assertFalse(mModel.get(SEARCH_LOUPE_VISIBLE));
@@ -668,7 +642,6 @@ public class HubToolbarMediatorUnitTest {
                 mPaneManager,
                 mTracker,
                 mSearchActivityClient,
-                mCurrentTabSupplier,
                 mExitHubRunnable);
         assertFalse(mModel.get(SEARCH_BOX_VISIBLE));
         assertTrue(mModel.get(SEARCH_LOUPE_VISIBLE));
@@ -710,73 +683,6 @@ public class HubToolbarMediatorUnitTest {
     }
 
     @Test
-    public void testBackButton_Phone() {
-        mConfiguration.screenWidthDp = NARROW_SCREEN_WIDTH_DP;
-        mFocusedPaneSupplier.set(mTabSwitcherPane);
-        new HubToolbarMediator(
-                mActivity,
-                mModel,
-                mPaneManager,
-                mTracker,
-                mSearchActivityClient,
-                mCurrentTabSupplier,
-                mExitHubRunnable);
-        assertFalse(mModel.get(BACK_BUTTON_VISIBLE));
-    }
-
-    @Test
-    public void testBackButton_Tablet() {
-        mConfiguration.screenWidthDp = WIDE_SCREEN_WIDTH_DP;
-        mFocusedPaneSupplier.set(mTabSwitcherPane);
-        new HubToolbarMediator(
-                mActivity,
-                mModel,
-                mPaneManager,
-                mTracker,
-                mSearchActivityClient,
-                mCurrentTabSupplier,
-                mExitHubRunnable);
-        assertTrue(mModel.get(BACK_BUTTON_VISIBLE));
-    }
-
-    @Test
-    public void testBackButton_Enabled() {
-        mFocusedPaneSupplier.set(mTabSwitcherPane);
-        new HubToolbarMediator(
-                mActivity,
-                mModel,
-                mPaneManager,
-                mTracker,
-                mSearchActivityClient,
-                mCurrentTabSupplier,
-                mExitHubRunnable);
-        assertFalse(mModel.get(BACK_BUTTON_ENABLED));
-
-        mCurrentTabSupplier.set(mock(Tab.class));
-        assertTrue(mModel.get(BACK_BUTTON_ENABLED));
-
-        mCurrentTabSupplier.set(null);
-        assertFalse(mModel.get(BACK_BUTTON_ENABLED));
-    }
-
-    @Test
-    public void testBackButton_Listener() {
-        mFocusedPaneSupplier.set(mTabSwitcherPane);
-        new HubToolbarMediator(
-                mActivity,
-                mModel,
-                mPaneManager,
-                mTracker,
-                mSearchActivityClient,
-                mCurrentTabSupplier,
-                mExitHubRunnable);
-        assertNotNull(mModel.get(BACK_BUTTON_LISTENER));
-
-        mModel.get(BACK_BUTTON_LISTENER).run();
-        verify(mExitHubRunnable).run();
-    }
-
-    @Test
     public void testSearchBox_UsesConfigurationParameterNotContext() {
         // Set up a scenario where context configuration and parameter configuration differ
         // to verify that the parameter configuration is used
@@ -794,7 +700,6 @@ public class HubToolbarMediatorUnitTest {
                         mPaneManager,
                         mTracker,
                         mSearchActivityClient,
-                        mCurrentTabSupplier,
                         mExitHubRunnable);
 
         // Initially should show search box (phone behavior)
@@ -838,7 +743,6 @@ public class HubToolbarMediatorUnitTest {
                         mPaneManager,
                         mTracker,
                         mSearchActivityClient,
-                        mCurrentTabSupplier,
                         mExitHubRunnable);
         assertTrue(mModel.get(SEARCH_BOX_VISIBLE));
 
@@ -867,7 +771,6 @@ public class HubToolbarMediatorUnitTest {
                 mPaneManager,
                 mTracker,
                 mSearchActivityClient,
-                mCurrentTabSupplier,
                 mExitHubRunnable);
 
         // Verify that focus pane is called when runnables are invoked.

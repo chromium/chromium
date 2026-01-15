@@ -39,11 +39,12 @@ found in the LICENSE file.
         android:layout_height="match_parent"
         android:layout_gravity="start|center_vertical">
 
+        <!-- This is needed to keep the new tab button aligned with the first tab. -->
         <Space
           android:id="@+id/margin_spacer"
           android:layout_width="@dimen/hub_toolbar_action_button_start_margin"
           android:layout_height="match_parent"
-          android:visibility="gone"/>
+          android:visibility="visible"/>
 
         <org.chromium.ui.widget.ChromeImageButton
           android:id="@+id/toolbar_back_button"

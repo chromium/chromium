@@ -6354,10 +6354,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHomeModulePrefRefactorDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kHomeModulePrefRefactor)},
 
-    {"hub-back-button", flag_descriptions::kHubBackButtonName,
-     flag_descriptions::kHubBackButtonDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kHubBackButton)},
-
     {"tab-freezing-uses-discard",
      flag_descriptions::kTabFreezingUsesDiscardName,
      flag_descriptions::kTabFreezingUsesDiscardDescription, kOsAndroid,

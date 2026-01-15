@@ -5396,10 +5396,6 @@ inline constexpr char kHomeModulePrefRefactorDescription[] =
     "Use UserPrefs for home module customization settings (for the "
     "NTP).";
 
-inline constexpr char kHubBackButtonName[] = "Hub back button";
-inline constexpr char kHubBackButtonDescription[] =
-    "Enables a back button on the hub for large screen devices.";
-
 inline constexpr char kMagicStackAndroidName[] = "Magic Stack Android";
 inline constexpr char kMagicStackAndroidDescription[] =
     "Show a magic stack which contains a list of modules on Start surface and "

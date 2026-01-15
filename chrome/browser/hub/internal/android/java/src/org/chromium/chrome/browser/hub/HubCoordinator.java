@@ -150,7 +150,6 @@ public class HubCoordinator implements PaneHubController, BackPressHandler, OnPa
                         userEducationHelper,
                         hubLayoutController.getIsAnimatingSupplier(),
                         bottomToolbarVisibilitySupplier,
-                        currentTabSupplier,
                         () -> {
                             RecordUserAction.record("Hub.BackButtonPressed");
                             selectCurrentTabAndHideHub();

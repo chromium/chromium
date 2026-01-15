@@ -68,8 +68,6 @@ public class HubToolbarView extends LinearLayout {
     private EditText mSearchBoxTextView;
     private ImageView mSearchLoupeView;
     private ImageView mHairline;
-    private ImageButton mBackButton;
-    private @Nullable View mSpacer;
     private FrameLayout mPaneSwitcherCard;
 
     private Callback<Integer> mToolbarOverviewColorSetter;
@@ -106,10 +104,7 @@ public class HubToolbarView extends LinearLayout {
         mSearchBoxLayout = findViewById(R.id.search_box);
         mSearchBoxTextView = findViewById(R.id.search_box_text);
         mSearchLoupeView = findViewById(R.id.search_loupe);
-        mBackButton = findViewById(R.id.toolbar_back_button);
-        mSpacer = findViewById(R.id.margin_spacer);
         mHairline = findViewById(R.id.toolbar_bottom_hairline);
-        updateSpacerVisibility();
     }
 
     void setMenuButtonVisible(boolean visible) {
@@ -355,16 +350,6 @@ public class HubToolbarView extends LinearLayout {
                             ImageViewCompat.setImageTintList(mMenuButton, menuButtonColor);
                         }));
 
-        mixer.registerBlend(
-                new SingleHubViewColorBlend(
-                        PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
-                        colorScheme -> HubColors.getIconColor(context, colorScheme),
-                        interpolatedColor -> {
-                            ColorStateList backButtonColor =
-                                    HubColors.getButtonColorStateList(context, interpolatedColor);
-                            ImageViewCompat.setImageTintList(mBackButton, backButtonColor);
-                        }));
-
         // We don't want to pass a method reference. Lambdas will ensure we run the most recent
         // setter.
         mixer.registerBlend(
@@ -504,36 +489,6 @@ public class HubToolbarView extends LinearLayout {
         mSearchBoxLayout.setOnClickListener(v -> searchBarListener.run());
         mSearchBoxTextView.setOnClickListener(v -> searchBarListener.run());
         mSearchLoupeView.setOnClickListener(v -> searchBarListener.run());
-    }
-
-    /**
-     * In the event there is no back button and the GTS update is enabled, we need to show a spacer
-     * view so that that new tab button is vertically aligned with the tabs in the tab switcher.
-     * Once the back button launches we can remove this spacer.
-     */
-    private void updateSpacerVisibility() {
-        if (mSpacer == null || !HubUtils.isGtsUpdateEnabled()) return;
-
-        boolean shouldShowSpacer = mBackButton.getVisibility() == View.GONE;
-        mSpacer.setVisibility(shouldShowSpacer ? View.VISIBLE : View.GONE);
-    }
-
-    void setBackButtonVisible(boolean visible) {
-        if (!ChromeFeatureList.sHubBackButton.isEnabled()) {
-            updateSpacerVisibility();
-            return;
-        }
-
-        mBackButton.setVisibility(visible ? View.VISIBLE : View.GONE);
-        updateSpacerVisibility();
-    }
-
-    void setBackButtonEnabled(boolean enabled) {
-        mBackButton.setEnabled(enabled);
-    }
-
-    void setBackButtonListener(Runnable backButtonListener) {
-        mBackButton.setOnClickListener(v -> backButtonListener.run());
     }
 
     void setToolbarColorOverviewListener(Callback<Integer> colorSetter) {

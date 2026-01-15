@@ -338,7 +338,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kHeadlessTabModel,
     &kHistoryPaneAndroid,
     &kHomeModulePrefRefactor,
-    &kHubBackButton,
     &kIncognitoNtpSmallIcon,
     &kIncognitoScreenshot,
     &kIncognitoThemeOverlayTesting,
@@ -671,7 +670,6 @@ BASE_FEATURE(kGroupNewTabWithParent, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kHeadlessTabModel, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kHistoryPaneAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kHomeModulePrefRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kHubBackButton, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIncognitoNtpSmallIcon, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIncognitoScreenshot, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIncognitoThemeOverlayTesting, base::FEATURE_DISABLED_BY_DEFAULT);
