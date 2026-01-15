@@ -550,11 +550,9 @@ std::string DevToolsHttpHandler::GetFrontendURLInternal(
                             kPageUrlPrefix, id.c_str());
 }
 
-static bool ParseJsonPath(
-    const std::string& path,
-    std::string* command,
-    std::string* target_id) {
-
+static bool ParseJsonPath(std::string_view path,
+                          std::string* command,
+                          std::string* target_id) {
   // Fall back to list in case of empty query.
   if (path.empty()) {
     *command = "list";
@@ -565,13 +563,14 @@ static bool ParseJsonPath(
     // Malformed command.
     return false;
   }
-  *command = path.substr(1);
+  std::string_view command_view = path.substr(1);
 
-  size_t separator_pos = command->find("/");
-  if (separator_pos != std::string::npos) {
-    *target_id = command->substr(separator_pos + 1);
-    *command = command->substr(0, separator_pos);
+  size_t separator_pos = command_view.find("/");
+  if (separator_pos != std::string_view::npos) {
+    *target_id = command_view.substr(separator_pos + 1);
+    command_view = command_view.substr(0, separator_pos);
   }
+  *command = command_view;
   return true;
 }
 
