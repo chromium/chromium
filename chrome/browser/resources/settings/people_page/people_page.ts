@@ -349,7 +349,9 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     }
 
     return (this.storedAccounts!.length > 0 || this.isSyncing_()) &&
-        !this.syncStatus!.hasError;
+        (!this.syncStatus!.hasError ||
+         this.syncStatus!.statusAction ===
+             StatusAction.SHOW_BOOKMARKS_LIMIT_HELP_ARTICLE);
   }
   // </if>
 

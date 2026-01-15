@@ -360,7 +360,9 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
           this.syncStatus_.statusAction !==
               StatusAction.RETRIEVE_TRUSTED_VAULT_KEYS &&
           this.syncStatus_.statusAction !==
-              StatusAction.CONFIRM_SYNC_SETTINGS));
+              StatusAction.CONFIRM_SYNC_SETTINGS &&
+          this.syncStatus_.statusAction !==
+              StatusAction.SHOW_BOOKMARKS_LIMIT_HELP_ARTICLE));
   }
 
   private computeSyncDisabledByAdmin_(): boolean {

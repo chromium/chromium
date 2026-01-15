@@ -176,6 +176,17 @@ suite('SyncControlsTest', function() {
     assertFalse(syncControls.hidden);
   });
 
+  test('BookmarkLimitError', function() {
+    syncControls.syncStatus = {
+      disabled: false,
+      hasError: true,
+      signedInState: SignedInState.SYNCING,
+      statusAction: StatusAction.SHOW_BOOKMARKS_LIMIT_HELP_ARTICLE,
+    };
+    // Controls are available when there is a bookmark limit error.
+    assertFalse(syncControls.hidden);
+  });
+
   // Regression test for crbug.com/467318495.
   test('SyncNotConfirmed', function() {
     syncControls.syncStatus = {
@@ -439,6 +450,21 @@ suite('SyncControlsAccountSettingsTest', function() {
     };
     // Controls are hidden when signed in and there is an error.
     assertTrue(syncControls.hidden);
+  });
+
+  test('SignedInBookmarkLimitError', function() {
+    // Controls are available by default.
+    assertFalse(syncControls.hidden);
+
+    syncControls.syncStatus = {
+      disabled: false,
+      hasError: true,
+      signedInState: SignedInState.SIGNED_IN,
+      statusAction: StatusAction.SHOW_BOOKMARKS_LIMIT_HELP_ARTICLE,
+    };
+    // Controls are not hidden when signed in and there is a bookmark limit
+    // error.
+    assertFalse(syncControls.hidden);
   });
 
   test('SignedInPassphraseError', function() {

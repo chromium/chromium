@@ -443,11 +443,14 @@ export class SettingsSyncControlsElement extends
 
     // The account page is not shown when the user is not signed in or if they
     // are in sign in pending state, so we don't need to check for the signed in
-    // state here. However, the controls should be hidden if there is a
-    // passphrase error or the user has local sync enabled.
+    // state here. However, the controls should be hidden if there is a generic
+    // sync error, a passphrase is required, or if the user has local sync
+    // enabled.
     // <if expr="not is_chromeos">
     if (this.isAccountSettingsPage_) {
-      return !!this.syncStatus.hasError ||
+      return (!!this.syncStatus.hasError &&
+              this.syncStatus.statusAction !==
+                  StatusAction.SHOW_BOOKMARKS_LIMIT_HELP_ARTICLE) ||
           this.syncStatus.statusAction === StatusAction.ENTER_PASSPHRASE ||
           (!!this.syncPrefs && this.syncPrefs.localSyncEnabled);
     }
@@ -462,7 +465,9 @@ export class SettingsSyncControlsElement extends
         this.syncStatus.statusAction !== StatusAction.ENTER_PASSPHRASE &&
         this.syncStatus.statusAction !==
         StatusAction.RETRIEVE_TRUSTED_VAULT_KEYS &&
-        this.syncStatus.statusAction !== StatusAction.CONFIRM_SYNC_SETTINGS;
+        this.syncStatus.statusAction !== StatusAction.CONFIRM_SYNC_SETTINGS &&
+        this.syncStatus.statusAction !==
+        StatusAction.SHOW_BOOKMARKS_LIMIT_HELP_ARTICLE;
   }
 }
 

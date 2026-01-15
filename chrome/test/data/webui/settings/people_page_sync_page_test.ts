@@ -233,6 +233,20 @@ suite('SyncSettings', function() {
     assertFalse(syncSection.hidden);
   });
 
+  test('SyncSectionLayout_BookmarksLimitError', function() {
+    const syncSection =
+        syncPage.shadowRoot!.querySelector<HTMLElement>('#sync-section')!;
+
+    webUIListenerCallback('sync-status-changed', {
+      signedInState: SignedInState.SYNCING,
+      disabled: false,
+      hasError: true,
+      statusAction: StatusAction.SHOW_BOOKMARKS_LIMIT_HELP_ARTICLE,
+    });
+    flush();
+    assertFalse(syncSection.hidden);
+  });
+
   test('LoadingAndTimeout', function() {
     const configurePage = syncPage.shadowRoot!.querySelector<HTMLElement>(
         '#' + PageStatus.CONFIGURE)!;
