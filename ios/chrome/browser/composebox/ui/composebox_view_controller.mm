@@ -9,6 +9,7 @@
 #import "base/check_op.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_view_controller.h"
+#import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ntp/ui_bundled/incognito/incognito_view.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -680,6 +681,29 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
   _incognitoScrolledAtTop =
       _incognitoView.contentOffset.y <= -_incognitoView.contentInset.top + 1;
+}
+
+#pragma mark - UIAccessibilityAction
+
+- (BOOL)accessibilityPerformEscape {
+  [self.delegate composeboxViewControllerDidTapCloseButton:self];
+  return YES;
+}
+
+#pragma mark - UIResponder
+
+// To always be able to register key commands via -keyCommands, the VC must be
+// able to become first responder.
+- (BOOL)canBecomeFirstResponder {
+  return YES;
+}
+
+- (NSArray*)keyCommands {
+  return @[ UIKeyCommand.cr_close ];
+}
+
+- (void)keyCommand_close {
+  [self.delegate composeboxViewControllerDidTapCloseButton:self];
 }
 
 @end
