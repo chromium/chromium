@@ -99,12 +99,4 @@ TEST_F(LoginUIServiceTest, CanSetMultipleLoginUIs) {
   EXPECT_EQ(nullptr, service.current_login_ui());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
-TEST_F(LoginUIServiceTest, SetProfileBlockingErrorMessage) {
-  LoginUIService service(profile_);
 
-  service.SetProfileBlockingErrorMessage();
-
-  EXPECT_EQ(service.GetLastLoginError(), SigninUIError::ProfileIsBlocked());
-}
-#endif

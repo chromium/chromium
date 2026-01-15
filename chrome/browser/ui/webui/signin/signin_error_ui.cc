@@ -90,12 +90,8 @@ void SigninErrorUI::Initialize(Browser* browser, bool from_profile_picker) {
   LoginUIService* login_ui_service =
       LoginUIServiceFactory::GetForProfile(webui_profile);
   const SigninUIError last_login_error = login_ui_service->GetLastLoginError();
-  const bool is_profile_blocked =
-      last_login_error.type() == SigninUIError::Type::kProfileIsBlocked;
-  if (is_profile_blocked) {
-    source->AddLocalizedString("signinErrorTitle",
-                               IDS_OLD_PROFILES_DISABLED_TITLE);
-  } else if (last_login_error.email().empty()) {
+
+  if (last_login_error.email().empty()) {
     // TODO(crbug.com/40150925): investigate whether an empty email
     // string is ever passed and possibly add a DCHECK.
     source->AddLocalizedString("signinErrorTitle", IDS_SIGNIN_ERROR_TITLE);
@@ -105,37 +101,12 @@ void SigninErrorUI::Initialize(Browser* browser, bool from_profile_picker) {
                                                  last_login_error.email()));
   }
 
-  source->AddString("signinErrorMessage", std::u16string());
-  source->AddString("profileBlockedMessage", std::u16string());
-  source->AddString("profileBlockedAddPersonSuggestion", std::u16string());
-  source->AddString("profileBlockedRemoveProfileSuggestion", std::u16string());
-
   // Tweak the dialog UI depending on whether the signin error is
   // username-in-use error and the error UI is shown with a browser window.
   std::u16string existing_name;
-  if (is_profile_blocked) {
-    source->AddLocalizedString("profileBlockedMessage",
-                               IDS_OLD_PROFILES_DISABLED_MESSAGE);
-    std::string allowed_domain = signin_ui_util::GetAllowedDomain(
-        g_browser_process->local_state()->GetString(
-            prefs::kGoogleServicesUsernamePattern));
-    if (allowed_domain.empty()) {
-      source->AddLocalizedString(
-          "profileBlockedAddPersonSuggestion",
-          IDS_OLD_PROFILES_DISABLED_ADD_PERSON_SUGGESTION);
-    } else {
-      source->AddString(
-          "profileBlockedAddPersonSuggestion",
-          l10n_util::GetStringFUTF16(
-              IDS_OLD_PROFILES_DISABLED_ADD_PERSON_SUGGESTION_WITH_DOMAIN,
-              base::ASCIIToUTF16(allowed_domain)));
-    }
-
-    source->AddLocalizedString("profileBlockedRemoveProfileSuggestion",
-                               IDS_OLD_PROFILES_DISABLED_REMOVED_OLD_PROFILE);
-  } else if (!from_profile_picker &&
-             last_login_error.type() ==
-                 SigninUIError::Type::kAccountAlreadyUsedByAnotherProfile) {
+  if (!from_profile_picker &&
+      last_login_error.type() ==
+          SigninUIError::Type::kAccountAlreadyUsedByAnotherProfile) {
     ProfileAttributesEntry* entry =
         g_browser_process->profile_manager()
             ->GetProfileAttributesStorage()

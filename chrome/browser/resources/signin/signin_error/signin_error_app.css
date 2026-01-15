@@ -21,16 +21,6 @@
   margin-bottom: 0;
 }
 
-#profile-blocking-error-message {
-  margin-top: 30px;
-}
-
-#profile-blocking-error-message > div {
-  align-items: center;
-  display: flex;
-  margin-top: 1em;
-}
-
 cr-icon {
   color: var(--cr-secondary-text-color);
   flex-shrink: 0;

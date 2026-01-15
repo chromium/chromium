@@ -97,9 +97,6 @@ class LoginUIService : public KeyedService {
                           const SigninUIError& error,
                           bool from_profile_picker);
 
-  // Set the profile blocking modal error dialog message.
-  void SetProfileBlockingErrorMessage();
-
 #if !BUILDFLAG(IS_CHROMEOS)
   // Gets the last error set through |DisplayLoginResult|.
   const SigninUIError& GetLastLoginError() const;

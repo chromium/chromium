@@ -76,14 +76,6 @@ void LoginUIService::DisplayLoginResult(Browser* browser,
 #endif
 }
 
-void LoginUIService::SetProfileBlockingErrorMessage() {
-#if BUILDFLAG(IS_CHROMEOS)
-  NOTREACHED();
-#else
-  last_login_error_ = SigninUIError::ProfileIsBlocked();
-#endif
-}
-
 #if !BUILDFLAG(IS_CHROMEOS)
 const SigninUIError& LoginUIService::GetLastLoginError() const {
   return last_login_error_;
