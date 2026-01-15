@@ -75,8 +75,6 @@ import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
-import org.chromium.chrome.browser.omnibox.fusebox.ComposeBoxQueryControllerBridge;
-import org.chromium.chrome.browser.omnibox.fusebox.ComposeBoxQueryControllerBridgeJni;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
@@ -230,7 +228,6 @@ public class LocationBarMediatorTest {
     @Mock private AppBannerManager.Natives mAppBannerManagerJni;
     @Mock private NewTabPageDelegate mNewTabPageDelegate;
     @Mock private FuseboxCoordinator mFuseboxCoordinator;
-    @Mock private ComposeBoxQueryControllerBridge.Natives mComposeboxController;
 
     @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
@@ -285,7 +282,6 @@ public class LocationBarMediatorTest {
         mUiOverrides = new LocationBarEmbedderUiOverrides();
         ComposeplateUtilsJni.setInstanceForTesting(mMockComposeplateUtilsJni);
         when(mMockComposeplateUtilsJni.isAimEntrypointEligible(eq(mProfile))).thenReturn(true);
-        ComposeBoxQueryControllerBridgeJni.setInstanceForTesting(mComposeboxController);
 
         doAnswer(i -> mNavigateButtonIsVisible = i.getArgument(0))
                 .when(mLocationBarLayout)

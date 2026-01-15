@@ -275,6 +275,7 @@ public class LocationBarCoordinator
                         context,
                         windowAndroid,
                         mLocationBarLayout,
+                        profileObservableSupplier,
                         locationBarDataProvider,
                         tabModelSelectorSupplier,
                         templateUrlServiceSupplier,
@@ -373,6 +374,7 @@ public class LocationBarCoordinator
                         browserControlsVisibilityDelegate);
         mLocationBarMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
+        mLocationBarMediator.addUrlFocusChangeListener(mFuseboxCoordinator);
         mLocationBarMediator.addUrlFocusChangeListener(
                 (focused) -> updateBottomContainerPosition());
 

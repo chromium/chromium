@@ -13,6 +13,7 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -20,14 +21,16 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList.FuseboxAttachmentChangeListener;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -52,7 +55,7 @@ import java.lang.annotation.Target;
 
 /** Coordinator for the Fusebox component. */
 @NullMarked
-public class FuseboxCoordinator implements TemplateUrlServiceObserver {
+public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlServiceObserver {
     @IntDef({FuseboxState.DISABLED, FuseboxState.COMPACT, FuseboxState.EXPANDED})
     @Retention(RetentionPolicy.SOURCE)
     @Target(ElementType.TYPE_USE)
@@ -64,6 +67,8 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
 
     private final @Nullable FuseboxViewHolder mViewHolder;
     private final @Nullable LocationBarDataProvider mLocationBarDataProvider;
+    private @Nullable @BrandedColorScheme Integer mLastBrandedColorScheme;
+
     private final ObservableSupplierImpl<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier;
     private final PropertyModel mModel;
@@ -72,12 +77,13 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     private final FuseboxAttachmentModelList mModelList;
     private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private @Nullable FuseboxMediator mMediator;
-
+    private @Nullable ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
     private boolean mDefaultSearchEngineIsGoogle = true;
     private TemplateUrlService mTemplateUrlService;
     private final ObservableSupplierImpl<@FuseboxState Integer> mFuseboxStateSupplier =
             new ObservableSupplierImpl<>(FuseboxState.DISABLED);
-
+    private final ObservableSupplier<Profile> mProfileSupplier;
+    private final Callback<Profile> mProfileObserver = this::onProfileAvailable;
     private final SnackbarManager mSnackbarManager;
     private final @Nullable ViewportRectProvider mViewportRectProvider;
 
@@ -85,6 +91,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
             Context context,
             WindowAndroid windowAndroid,
             ConstraintLayout parent,
+            ObservableSupplier<Profile> profileObservableSupplier,
             LocationBarDataProvider locationBarDataProvider,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
@@ -93,6 +100,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
             SnackbarManager snackbarManager) {
         mContext = context;
         mWindowAndroid = windowAndroid;
+        mProfileSupplier = profileObservableSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mAutocompleteRequestTypeSupplier = autocompleteRequestTypeSupplier;
         mSnackbarManager = snackbarManager;
@@ -156,23 +164,52 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                                 FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON,
                                 OmniboxFeatures.sShowDedicatedModeButton.getValue())
                         .build();
+        PropertyModelChangeProcessor.create(mModel, mViewHolder, FuseboxViewBinder::bind);
+        mProfileSupplier.addObserver(mProfileObserver);
+    }
 
+    @VisibleForTesting
+    void onProfileAvailable(Profile profile) {
+        // Reset previous Mediator instance in case we migrate to continuous Profile observing.
+        if (mMediator != null) {
+            mMediator.destroy();
+            mMediator = null;
+        }
+
+        mComposeBoxQueryControllerBridge = ComposeBoxQueryControllerBridge.getForProfile(profile);
+        AutocompleteController.getForProfile(profile)
+                .setComposeboxQueryControllerBridge(mComposeBoxQueryControllerBridge);
+        if (mComposeBoxQueryControllerBridge == null) return;
+
+        // Set the bridge for the model list to enable tight coupling
+        mModelList.setComposeBoxQueryControllerBridge(mComposeBoxQueryControllerBridge);
+
+        mModel.set(
+                FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE,
+                mComposeBoxQueryControllerBridge.isCreateImagesEligible()
+                        && (OmniboxFeatures.sShowImageGenerationButtonInIncognito.getValue()
+                                || !profile.isIncognitoBranded()));
         mMediator =
                 new FuseboxMediator(
                         mContext,
+                        profile,
                         mWindowAndroid,
                         mModel,
                         assumeNonNull(mViewHolder),
                         mModelList,
                         mAutocompleteRequestTypeSupplier,
                         mTabModelSelectorSupplier,
+                        mComposeBoxQueryControllerBridge,
                         mFuseboxStateSupplier,
                         mSnackbarManager);
-
-        PropertyModelChangeProcessor.create(mModel, mViewHolder, FuseboxViewBinder::bind);
+        if (mLastBrandedColorScheme != null) {
+            mMediator.updateVisualsForState(mLastBrandedColorScheme);
+        }
+        mModelList.setAttachmentUploadFailedListener(mMediator::onAttachmentUploadFailed);
     }
 
     public void destroy() {
+        mProfileSupplier.removeObserver(mProfileObserver);
         if (mMediator != null) {
             mMediator.destroy();
             mMediator = null;
@@ -182,88 +219,55 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         }
         // Clear the model list bridge reference to prevent further operations
         mModelList.setComposeBoxQueryControllerBridge(null);
-        // Session cleanup is handled by setInputSession(null)
-        setInputSession(null);
+        if (mComposeBoxQueryControllerBridge != null) {
+            mComposeBoxQueryControllerBridge.destroy();
+            mComposeBoxQueryControllerBridge = null;
+        }
         if (mViewportRectProvider != null) {
             mViewportRectProvider.destroy();
         }
     }
 
-    @EnsuresNonNullIf("mMediator")
-    private boolean isInInputSession() {
-        return mMediator != null && mMediator.isInInputSession();
-    }
-
     /** Apply a variant of the branded color scheme to Fusebox UI elements */
     public void updateVisualsForState(@BrandedColorScheme int brandedColorScheme) {
         if (mMediator == null) return;
+        mLastBrandedColorScheme = brandedColorScheme;
         mMediator.updateVisualsForState(brandedColorScheme);
     }
 
     public void onAiModeActivatedFromNtp() {
-        if (!isInInputSession()) return;
+        if (mMediator == null) return;
         mMediator.activateAiMode(AiModeActivationSource.NTP_BUTTON);
     }
 
-    /**
-     * Sets the session state for this FuseboxCoordinator. This should be called by the
-     * LocationBarMediator when a new session is created.
-     *
-     * @param inputSession The session state containing Profile and ComposeBoxQueryControllerBridge,
-     *     or null to clear the current session.
-     */
-    public void setInputSession(@Nullable FuseboxInputSession inputSession) {
-        // Mediator may not be created if required views are not available,
-        // or if the corresponding feature flag is disabled.
-        // See the Constructor early return case.
-        if (mMediator == null) return;
-
-        mMediator.setInputSession(inputSession);
-
-        boolean isSupportedPageClass = false;
-        if (mLocationBarDataProvider != null) {
-            int pageClass = mLocationBarDataProvider.getPageClassification(/* prefetch= */ false);
-            isSupportedPageClass =
-                    switch (pageClass) {
-                        // LINT.IfChange(FuseboxSupportedPageClassifications)
-                        case PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE,
-                                PageClassification
-                                        .SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT_VALUE,
-                                PageClassification.OTHER_VALUE ->
-                                true;
-                        // LINT.ThenChange(/components/omnibox/browser/android/java/src/org/chromium/components/omnibox/AutocompleteInput.java:FuseboxSupportedPageClassifications)
-                        default -> false;
-                    };
-        }
-
-        // Stop here if Fusebox should not show.
-        if (!OmniboxFeatures.sOmniboxMultimodalInput.isEnabled()
-                || !isInInputSession()
-                || !isSupportedPageClass
+    /** Called when the URL focus changes. */
+    @Override
+    public void onUrlFocusChange(boolean hasFocus) {
+        if (mMediator == null
+                || mLocationBarDataProvider == null
                 || !mDefaultSearchEngineIsGoogle) {
-            mMediator.setAutocompleteRequestTypeChangeable(false);
-            mMediator.setToolbarVisible(false);
-            mModelList.setComposeBoxQueryControllerBridge(null);
             return;
         }
 
-        // Checked by isInInputSession; enforced by NullAway
-        assert inputSession != null && inputSession.composeBoxController != null;
+        int pageClass = mLocationBarDataProvider.getPageClassification(/* prefetch= */ false);
 
-        mModelList.setComposeBoxQueryControllerBridge(inputSession.composeBoxController);
+        boolean isSupportedPageClass =
+                switch (pageClass) {
+                    // LINT.IfChange(FuseboxSupportedPageClassifications)
+                    case PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE,
+                            PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT_VALUE,
+                            PageClassification.OTHER_VALUE ->
+                            true;
+                    // LINT.ThenChange(/components/omnibox/browser/android/java/src/org/chromium/components/omnibox/AutocompleteInput.java:FuseboxSupportedPageClassifications)
+                    default -> false;
+                };
 
-        // Set the bridge for the model list to enable tight coupling
-        // TODO(...): this doesn't belong here.
-        mModel.set(
-                FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE,
-                inputSession.composeBoxController.isCreateImagesEligible()
-                        && (OmniboxFeatures.sShowImageGenerationButtonInIncognito.getValue()
-                                || !inputSession.profile.isIncognitoBranded()));
-
-        mModelList.setAttachmentUploadFailedListener(mMediator::onAttachmentUploadFailed);
-        mMediator.setAutocompleteRequestTypeChangeable(true);
-        mMediator.setToolbarVisible(true);
-        FuseboxMetrics.notifyOmniboxSessionStarted();
+        boolean isChangeable = hasFocus && isSupportedPageClass;
+        mMediator.setAutocompleteRequestTypeChangeable(isChangeable);
+        mMediator.setToolbarVisible(isChangeable);
+        if (isChangeable) {
+            FuseboxMetrics.notifyOmniboxSessionStarted();
+        }
     }
 
     // TemplateUrlServiceObserver
@@ -275,7 +279,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         mDefaultSearchEngineIsGoogle = isDseGoogle;
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
         mDefaultSearchEngineIsGoogle = mTemplateUrlService.isDefaultSearchEngineGoogle();
-        if (isInInputSession() && !mDefaultSearchEngineIsGoogle) {
+        if (mMediator != null && !mDefaultSearchEngineIsGoogle) {
             mMediator.setToolbarVisible(false);
         }
     }
@@ -289,34 +293,18 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         return mAutocompleteRequestTypeSupplier;
     }
 
-    /**
-     * Retrieves the URL for the current AIM session.
-     *
-     * <p>This is an asynchronous operation. The resulting URL is passed to the provided callback.
-     * If no session is active, the callback receives an empty GURL.
-     *
-     * @param url The base URL to be used for the AIM session.
-     * @param callback The callback to receive the AIM session URL.
-     */
+    /** Returns the URL associated with the current AIM session. */
     public void getAimUrl(GURL url, Callback<GURL> callback) {
-        if (!isInInputSession()) {
+        if (mMediator == null) {
             callback.onResult(GURL.emptyGURL());
             return;
         }
         mMediator.getAimUrl(url, callback);
     }
 
-    /**
-     * Retrieves the URL for the current image generation session.
-     *
-     * <p>This is an asynchronous operation. The resulting URL is passed to the provided callback.
-     * If no session is active, the callback receives an empty GURL.
-     *
-     * @param url The base URL to be used for the image generation session.
-     * @param callback The callback to receive the image generation session URL.
-     */
+    /** Returns the URL associated with the current image generation session. */
     public void getImageGenerationUrl(GURL url, Callback<GURL> callback) {
-        if (!isInInputSession()) {
+        if (mMediator == null) {
             callback.onResult(GURL.emptyGURL());
             return;
         }
@@ -347,18 +335,14 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     }
 
     /**
-     * Handles changes in the text wrapping state of the Fusebox.
+     * Called when fusebox text wrapping changes.
      *
-     * <p>This method is called when the omnibox text wraps or unwraps. It adjusts the Fusebox UI to
-     * be compact when text is not wrapping and expanded when it is. This behavior is only active
-     * when the compact Fusebox feature is enabled.
-     *
-     * @param isWrapping {@code true} if the text is wrapping, {@code false} otherwise.
+     * @param isWrapping true if text is wrapping (should show expanded UI), false for compact UI
      */
     public void onFuseboxTextWrappingChanged(boolean isWrapping) {
         // We only care about url bar wrapping state when compact variant is enabled. Guard against
         // entering compact mode when the variant is disabled by returning early.
-        if (!isInInputSession() || !OmniboxFeatures.sCompactFusebox.getValue()) return;
+        if (mMediator == null || !OmniboxFeatures.sCompactFusebox.getValue()) return;
         mMediator.setUseCompactUi(
                 !isWrapping
                         && mAutocompleteRequestTypeSupplier.get()
@@ -375,11 +359,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         return mode == AutocompleteRequestType.SEARCH;
     }
 
-    /**
-     * Notifies that the Fusebox session has ended and records relevant metrics.
-     *
-     * @param userDidNavigate Whether the user navigated to a URL as a result of the session.
-     */
     public void notifyOmniboxSessionEnded(boolean userDidNavigate) {
         FuseboxMetrics.notifyOmniboxSessionEnded(
                 userDidNavigate, mAutocompleteRequestTypeSupplier.get());
@@ -393,29 +372,17 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         return mFuseboxStateSupplier;
     }
 
-    /**
-     * Registers a listener to be notified of changes to the attachments list.
-     *
-     * @param listener The listener to add.
-     */
+    /** Registers the listener notified whenever attachments list is changed. */
     public void addAttachmentChangeListener(FuseboxAttachmentChangeListener listener) {
         mModelList.addAttachmentChangeListener(listener);
     }
 
-    /**
-     * Unregisters a listener from attachment list change notifications.
-     *
-     * @param listener The listener to remove.
-     */
+    /** Unregisters the listener from being notified that attachments list has been changed. */
     public void removeAttachmentChangeListener(FuseboxAttachmentChangeListener listener) {
         mModelList.removeAttachmentChangeListener(listener);
     }
 
-    /**
-     * Returns the current number of attachments in the Fusebox.
-     *
-     * @return The number of attachments.
-     */
+    /** Returns the number of attachments in the Fusebox Attachments list. */
     public int getAttachmentsCount() {
         return mModelList.size();
     }
