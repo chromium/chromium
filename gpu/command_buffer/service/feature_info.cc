@@ -177,7 +177,18 @@ size_t GetNumAttachments(GLenum attachment) {
 
 }  // anonymous namespace.
 
-FeatureInfo::FeatureFlags::FeatureFlags() = default;
+FeatureInfo::FeatureFlags::FeatureFlags() {
+  mappable_formats = base::MakeFlatSet<viz::SharedImageFormat>(std::vector({
+      viz::SinglePlaneFormat::kBGR_565,
+      viz::SinglePlaneFormat::kRGBA_4444,
+      viz::SinglePlaneFormat::kRGBA_8888,
+      viz::SinglePlaneFormat::kRGBX_8888,
+      viz::MultiPlaneFormat::kYV12,
+      viz::MultiPlaneFormat::kNV12,
+  }));
+}
+
+FeatureInfo::FeatureFlags::~FeatureFlags() = default;
 
 FeatureInfo::FeatureInfo() {
   InitializeBasicState(base::CommandLine::InitializedForCurrentProcess()
@@ -441,7 +452,7 @@ void FeatureInfo::EnableOESTextureHalfFloatLinear() {
   // IOSurfaces.
   if (workarounds_.disable_half_float_for_gmb)
     return;
-  feature_flags_.gpu_memory_buffer_formats.Put(gfx::BufferFormat::RGBA_F16);
+  feature_flags_.mappable_formats.insert(viz::SinglePlaneFormat::kRGBA_F16);
 }
 
 void FeatureInfo::EnableANGLEInstancedArrayIfPossible(
@@ -946,8 +957,8 @@ void FeatureInfo::InitializeFeatures() {
         GL_BGRA8_EXT);
     validators_.texture_sized_texture_filterable_internal_format.AddValue(
         GL_BGRA8_EXT);
-    feature_flags_.gpu_memory_buffer_formats.Put(gfx::BufferFormat::BGRA_8888);
-    feature_flags_.gpu_memory_buffer_formats.Put(gfx::BufferFormat::BGRX_8888);
+    feature_flags_.mappable_formats.insert(viz::SinglePlaneFormat::kBGRA_8888);
+    feature_flags_.mappable_formats.insert(viz::SinglePlaneFormat::kBGRX_8888);
   }
 
 #if BUILDFLAG(IS_MAC)
@@ -958,10 +969,8 @@ void FeatureInfo::InitializeFeatures() {
   // alpha is false, so disable that case for now so that we go through
   // emulation.
   if (gl_version_info_->is_angle_swiftshader) {
-    feature_flags_.gpu_memory_buffer_formats.Remove(
-        gfx::BufferFormat::RGBX_8888);
-    feature_flags_.gpu_memory_buffer_formats.Remove(
-        gfx::BufferFormat::BGRX_8888);
+    feature_flags_.mappable_formats.erase(viz::SinglePlaneFormat::kBGRX_8888);
+    feature_flags_.mappable_formats.erase(viz::SinglePlaneFormat::kRGBX_8888);
   }
 #endif
 
@@ -1184,8 +1193,7 @@ void FeatureInfo::InitializeFeatures() {
 
   if (feature_flags_.chromium_image_ycbcr_420v) {
     AddExtensionString("GL_CHROMIUM_ycbcr_420v_image");
-    feature_flags_.gpu_memory_buffer_formats.Put(
-        gfx::BufferFormat::YUV_420_BIPLANAR);
+    feature_flags_.mappable_formats.insert(viz::MultiPlaneFormat::kNV12);
   }
 
 #if BUILDFLAG(IS_APPLE)
@@ -1208,23 +1216,22 @@ void FeatureInfo::InitializeFeatures() {
     validators_.pixel_type.AddValue(GL_UNSIGNED_INT_2_10_10_10_REV);
   }
   if (feature_flags_.chromium_image_ar30) {
-    feature_flags_.gpu_memory_buffer_formats.Put(
-        gfx::BufferFormat::BGRA_1010102);
+    feature_flags_.mappable_formats.insert(
+        viz::SinglePlaneFormat::kBGRA_1010102);
   }
   if (feature_flags_.chromium_image_ab30) {
-    feature_flags_.gpu_memory_buffer_formats.Put(
-        gfx::BufferFormat::RGBA_1010102);
+    feature_flags_.mappable_formats.insert(
+        viz::SinglePlaneFormat::kRGBA_1010102);
   }
 
   if (feature_flags_.chromium_image_ycbcr_p010) {
     AddExtensionString("GL_CHROMIUM_ycbcr_p010_image");
-    feature_flags_.gpu_memory_buffer_formats.Put(gfx::BufferFormat::P010);
+    feature_flags_.mappable_formats.insert(viz::MultiPlaneFormat::kP010);
   }
 
 #if BUILDFLAG(IS_MAC)
-  feature_flags_.gpu_memory_buffer_formats.Put(gfx::BufferFormat::RGBA_F16);
-  feature_flags_.gpu_memory_buffer_formats.Put(
-      gfx::BufferFormat::YUVA_420_TRIPLANAR);
+  feature_flags_.mappable_formats.insert(viz::SinglePlaneFormat::kRGBA_F16);
+  feature_flags_.mappable_formats.insert(viz::MultiPlaneFormat::kNV12A);
 #endif  // BUILDFLAG(IS_MAC)
 
   // TODO(gman): Add support for these extensions.
@@ -1408,8 +1415,8 @@ void FeatureInfo::InitializeFeatures() {
     validators_.texture_internal_format_storage.AddValue(GL_R8_EXT);
     validators_.texture_internal_format_storage.AddValue(GL_RG8_EXT);
 
-    feature_flags_.gpu_memory_buffer_formats.Put(gfx::BufferFormat::R_8);
-    feature_flags_.gpu_memory_buffer_formats.Put(gfx::BufferFormat::RG_88);
+    feature_flags_.mappable_formats.insert(viz::SinglePlaneFormat::kR_8);
+    feature_flags_.mappable_formats.insert(viz::SinglePlaneFormat::kRG_88);
   }
 
   const bool is_texture_norm16_supported_for_webgl2_or_es3 =
@@ -1466,10 +1473,10 @@ void FeatureInfo::InitializeFeatures() {
     validators_.texture_sized_color_renderable_internal_format.AddValue(
         GL_RGBA16_EXT);
 
-    // TODO(shrekshao): gpu_memory_buffer_formats is not used by WebGL
+    // TODO(shrekshao): mappable_formats is not used by WebGL
     // So didn't expose all buffer formats here.
-    feature_flags_.gpu_memory_buffer_formats.Put(gfx::BufferFormat::R_16);
-    feature_flags_.gpu_memory_buffer_formats.Put(gfx::BufferFormat::RG_1616);
+    feature_flags_.mappable_formats.insert(viz::SinglePlaneFormat::kR_16);
+    feature_flags_.mappable_formats.insert(viz::SinglePlaneFormat::kRG_1616);
   }
 
   if (enable_es3 && gfx::HasExtension(extensions, "GL_EXT_window_rectangles")) {

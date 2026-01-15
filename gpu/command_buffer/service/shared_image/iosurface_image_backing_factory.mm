@@ -145,9 +145,7 @@ IOSurfaceImageBackingFactory::IOSurfaceImageBackingFactory(
       angle_texture_usage_(feature_info->feature_flags().angle_texture_usage),
       progress_reporter_(progress_reporter),
       texture_target_(texture_target) {
-  for (gfx::BufferFormat buffer_format :
-       feature_info->feature_flags().gpu_memory_buffer_formats) {
-    viz::SharedImageFormat format = viz::GetSharedImageFormat(buffer_format);
+  for (auto format : feature_info->feature_flags().mappable_formats) {
     // Add supported single-plane formats.
     if (format.is_single_plane() && IsFormatSupported(format)) {
       supported_formats_.insert(format);

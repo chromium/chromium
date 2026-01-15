@@ -1332,8 +1332,12 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
   caps.mesa_framebuffer_flip_y =
       feature_info_->feature_flags().mesa_framebuffer_flip_y;
 
-  caps.gpu_memory_buffer_formats =
-      feature_info_->feature_flags().gpu_memory_buffer_formats;
+  // Clear the Capabilities EnumSet before copying from FeatureFlags.
+  caps.gpu_memory_buffer_formats.Clear();
+  for (auto si_format : feature_info_->feature_flags().mappable_formats) {
+    caps.gpu_memory_buffer_formats.Put(
+        viz::SharedImageFormatToBufferFormat(si_format));
+  }
 
 #if BUILDFLAG(IS_CHROMEOS)
   PopulateDRMCapabilities(&caps, feature_info_.get());
