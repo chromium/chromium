@@ -1977,10 +1977,6 @@ inline constexpr char kEnableWebAppPredictableAppUpdatingDescription[] =
     "Enables PWA updates to be more predictable by considering changes in icon "
     "urls specified in the manifest";
 
-inline constexpr char kEnableZeroCopyTabCaptureName[] = "Zero-copy tab capture";
-inline constexpr char kEnableZeroCopyTabCaptureDescription[] =
-    "Enable zero-copy content tab for getDisplayMedia() APIs.";
-
 inline constexpr char kExcludePipFromScreenCaptureName[] =
     "Exclude Picture-in-Picture windows from screen capture";
 inline constexpr char kExcludePipFromScreenCaptureDescription[] =

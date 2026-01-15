@@ -994,9 +994,7 @@ class RTCVideoEncoderEncodeTest : public RTCVideoEncoderTest,
 
   explicit RTCVideoEncoderEncodeTest(
       bool enable_keep_encoder_instance_on_release) {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kZeroCopyTabCapture,
-    };
+    std::vector<base::test::FeatureRef> enabled_features;
     if (enable_keep_encoder_instance_on_release) {
       enabled_features.push_back(features::kKeepEncoderInstanceOnRelease);
     }

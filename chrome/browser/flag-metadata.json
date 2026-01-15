@@ -9903,11 +9903,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "zero-copy-tab-capture",
-    "owners": [ "media-capture-dev@chromium.org" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "zero-copy-video-capture",
     "owners": [
       "eugene@chromium.org",

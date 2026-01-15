@@ -7878,14 +7878,6 @@ const FeatureEntry kFeatureEntries[] = {
          "")},
 #endif
 
-    {
-        "zero-copy-tab-capture",
-        flag_descriptions::kEnableZeroCopyTabCaptureName,
-        flag_descriptions::kEnableZeroCopyTabCaptureDescription,
-        kOsMac | kOsWin | kOsCrOS,
-        FEATURE_VALUE_TYPE(blink::features::kZeroCopyTabCapture),
-    },
-
     {"exclude-pip-from-screen-capture",
      flag_descriptions::kExcludePipFromScreenCaptureName,
      flag_descriptions::kExcludePipFromScreenCaptureDescription, kOsAll,
