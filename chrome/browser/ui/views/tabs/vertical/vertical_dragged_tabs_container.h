@@ -16,6 +16,7 @@ class VerticalTabDragHandler;
 namespace views {
 class View;
 struct ProposedLayout;
+class ScrollView;
 }  // namespace views
 
 // `VerticalDraggedTabsContainer` is an abstract class that can be derived to
@@ -52,11 +53,11 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   // ViewObserver
   void OnViewBoundsChanged(views::View* observed_view) override;
 
+ protected:
   // Returns the expected Y coordinate for a dragged tab view's bounds, or null
   // if the view isn't being dragged in this.
   std::optional<int> GetYForDraggedTabBounds(const views::View& view) const;
 
- protected:
   // Helper for getting the view at a given point, excluding dragged views.
   views::View* GetViewAtPoint(const views::ProposedLayout& layout,
                               const gfx::Point& point);
@@ -64,6 +65,9 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
  private:
   virtual VerticalTabDragHandler& GetDragHandler() = 0;
   virtual const VerticalTabDragHandler& GetDragHandler() const = 0;
+
+  // Returns the scroll view for the container.
+  virtual views::ScrollView* GetScrollViewForContainer() const = 0;
 
   // Invalidates the layout of the host view, skipping animations.
   virtual void UpdateLayoutForDrag() = 0;
@@ -84,6 +88,10 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   // Updates the transformations applied to dragging views, according to
   // the last drag point.
   void UpdateDraggingViewTransforms(const gfx::Point& point_in_container);
+
+  // Returns the minimum top bounds to clamp the transformation applied to the
+  // drag view. This is to ensure the dragged view transform doesn't clip.
+  int GetMinYForDragToClamp() const;
 
   const raw_ref<const views::View> host_view_;
 

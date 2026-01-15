@@ -29,6 +29,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
@@ -245,23 +246,25 @@ const VerticalTabDragHandler& VerticalTabGroupView::GetDragHandler() const {
   return collection_node_->GetController()->GetDragHandler();
 }
 
+views::ScrollView* VerticalTabGroupView::GetScrollViewForContainer() const {
+  return views::ScrollView::GetScrollViewForContents(
+      const_cast<views::View*>(parent()));
+}
+
 void VerticalTabGroupView::UpdateLayoutForDrag() {
   layout_manager_->ResetToTargetLayout();
 }
 
 void VerticalTabGroupView::HandleTabDragInContainer(
     const gfx::Point point_in_container) {
-  // If the drag is on or above the group header, treat this as a drag over
-  // group as a whole, rather than a drag over an individual tab.
-  if (point_in_container.y() <= group_header_->bounds().bottom()) {
-    GetDragHandler().DraggedTabsOverNode(*collection_node_);
-    return;
-  }
-
   views::View* view_at_point =
       GetViewAtPoint(layout_manager_->target_layout(), point_in_container);
   if (auto* tab_view = views::AsViewClass<VerticalTabView>(view_at_point)) {
     tab_view->OnTabDragOver();
+  } else {
+    // If the drag isn't over any tab views including the header, then treat it
+    // as a drag over the group view container.
+    GetDragHandler().DraggedTabsOverNode(*collection_node_);
   }
 }
 

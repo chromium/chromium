@@ -195,17 +195,28 @@ void VerticalTabDragHandlerImpl::HandleTabDragOverGroup(
                             : first_tab_in_group;
     tab_strip_model_->MoveSelectedTabsTo(insertion_idx, std::nullopt);
   } else {
-    int insertion_idx = (first_selected_index < first_tab_in_group)
-                            ? first_tab_in_group
-                            : last_tab_in_group;
+    int insertion_idx =
+        (first_selected_index < first_tab_in_group)
+            ? first_tab_in_group - selection_model.selected_tabs().size()
+            : last_tab_in_group + 1;
+    insertion_idx = std::clamp(insertion_idx, 0, tab_strip_model_->count() - 1);
     tab_strip_model_->MoveSelectedTabsTo(insertion_idx, tab_group->id());
   }
 }
 
 void VerticalTabDragHandlerImpl::HandleTabDragOverUnpinnedContainer(
     const TabCollectionNode& node) {
-  tab_strip_model_->MoveSelectedTabsTo(tab_strip_model_->count() - 1,
-                                       std::nullopt);
+  const tabs::TabInterface* selected_tab =
+      *tab_strip_model_->selection_model().selected_tabs().cbegin();
+
+  if (selected_tab->GetGroup().has_value()) {
+    ui::ListSelectionModel::SelectedIndices selected =
+        tab_strip_model_->selection_model()
+            .GetListSelectionModel()
+            .selected_indices();
+    std::vector<int> tab_indices(selected.begin(), selected.end());
+    tab_strip_model_->RemoveFromGroup(tab_indices);
+  }
 }
 
 TabDragContext* VerticalTabDragHandlerImpl::GetDragContext() {

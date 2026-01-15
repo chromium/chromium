@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_unpinned_tab_container_view.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -22,9 +23,12 @@
 namespace {
 
 // Returns the expected Y coordinate for the view of a tab being dragged at
-// `point`.
-int GetYForDraggedTab(const views::View& view, const gfx::Point& point) {
-  return std::max(0.0f, point.y() - (view.height() * 0.5f));
+// `point`. Clamps minimum to `drag_clamp_min_y`.
+int GetYForDraggedTab(const views::View& dragging_view,
+                      const gfx::Point& point,
+                      int drag_clamp_min_y) {
+  return std::max(static_cast<float>(drag_clamp_min_y),
+                  point.y() - (dragging_view.height() * 0.5f));
 }
 
 }  // namespace
@@ -48,13 +52,9 @@ VerticalDraggedTabsContainer& VerticalDraggedTabsContainer::GetTabDragTarget(
         dragging_views_.contains(child)) {
       continue;
     }
-    if (auto* unpinned_container =
-            views::AsViewClass<VerticalUnpinnedTabContainerView>(child)) {
-      return unpinned_container->GetTabDragTarget(point_in_screen);
-    }
     if (auto* group_view = views::AsViewClass<VerticalTabGroupView>(child)) {
       if (!group_view->IsCollapsed()) {
-        return group_view->GetTabDragTarget(point_in_screen);
+        return *group_view;
       }
     }
   }
@@ -82,10 +82,9 @@ TabDragContext* VerticalDraggedTabsContainer::OnTabDragUpdated(
 
   // Used to determine whether the layout should snap into position without
   // animating at the end of this drag cycle.
-  bool is_initial_drag = false;
-  if (dragging_views_.empty()) {
+  bool is_initial_drag = dragging_views_.empty();
+  if (is_initial_drag) {
     InitializeDragState(drag_controller);
-    is_initial_drag = true;
   }
 
   UpdateDraggingViewTransforms(point_in_container);
@@ -153,16 +152,27 @@ void VerticalDraggedTabsContainer::ResetDragState() {
 
 void VerticalDraggedTabsContainer::UpdateDraggingViewTransforms(
     const gfx::Point& point_in_container) {
+  int drag_clamp_min_y = GetMinYForDragToClamp();
   for (views::View* tab_view : dragging_views_) {
     // Use a transformation to render the dragged views, offset from the
     // container's origin.
     gfx::Transform transform;
-    transform.Translate(0, GetYForDraggedTab(*tab_view, point_in_container));
+    transform.Translate(
+        0, GetYForDraggedTab(*tab_view, point_in_container, drag_clamp_min_y));
     tab_view->SetTransform(transform);
     // Applying a transformation for the first time destroys the clip mask
     // layer. Reapply the clip path in case.
     tab_view->SetClipPath(tab_view->clip_path());
   }
+}
+
+int VerticalDraggedTabsContainer::GetMinYForDragToClamp() const {
+  auto* scroll_view = GetScrollViewForContainer();
+  CHECK(scroll_view);
+  gfx::Point limit_point;
+  limit_point = views::View::ConvertPointToTarget(
+      scroll_view, base::to_address(host_view_), limit_point);
+  return limit_point.y();
 }
 
 std::optional<int> VerticalDraggedTabsContainer::GetYForDraggedTabBounds(
@@ -175,8 +185,10 @@ std::optional<int> VerticalDraggedTabsContainer::GetYForDraggedTabBounds(
     // `dragging_views_` but will not have a transformation, which let's
     // the tab view animate into its correct slot.
     return GetYForDraggedTab(
-        view, views::View::ConvertPointFromScreen(base::to_address(host_view_),
-                                                  last_drag_point_in_screen_));
+        view,
+        views::View::ConvertPointFromScreen(base::to_address(host_view_),
+                                            last_drag_point_in_screen_),
+        GetMinYForDragToClamp());
   }
   // If the tab is being dragged, then it is rendered using
   // transformations, offset from the container's origin.

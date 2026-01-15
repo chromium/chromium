@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/proposed_layout.h"
@@ -118,6 +119,12 @@ const VerticalTabDragHandler& VerticalUnpinnedTabContainerView::GetDragHandler()
   return collection_node_->GetController()->GetDragHandler();
 }
 
+views::ScrollView* VerticalUnpinnedTabContainerView::GetScrollViewForContainer()
+    const {
+  return views::ScrollView::GetScrollViewForContents(
+      const_cast<VerticalUnpinnedTabContainerView*>(this));
+}
+
 void VerticalUnpinnedTabContainerView::UpdateLayoutForDrag() {
   layout_manager_->ResetToTargetLayout();
 }
@@ -132,13 +139,10 @@ void VerticalUnpinnedTabContainerView::HandleTabDragInContainer(
   } else if (auto* group_view =
                  views::AsViewClass<VerticalTabGroupView>(view_at_point)) {
     group_view->OnTabDragOver();
-  } else if (point_in_container.y() >= target_layout.host_size.height()) {
-    // If the drag exceeds the bounds all the children, then let the drag
-    // handler determine where to put the dragged tab(s) relative to this node.
+  } else {
+    // If the drag isn't over any child views, then treat it as a drag over
+    // the unpinned tab container.
     GetDragHandler().DraggedTabsOverNode(*collection_node_);
-    // TODO(crbug.com/439963720): Consider having a maximum drag coordinate that
-    // will cause the dragged tabs to detach. For now, the dragged tab will
-    // remain attached as long as it falls in the bounds of this container.
   }
 }
 

@@ -43,6 +43,7 @@ class VerticalUnpinnedTabContainerView
   // VerticalDraggedTabsContainer:
   VerticalTabDragHandler& GetDragHandler() override;
   const VerticalTabDragHandler& GetDragHandler() const override;
+  views::ScrollView* GetScrollViewForContainer() const override;
   void UpdateLayoutForDrag() override;
   void HandleTabDragInContainer(const gfx::Point point_in_container) override;
 
