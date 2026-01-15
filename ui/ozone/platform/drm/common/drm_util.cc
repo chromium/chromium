@@ -1078,13 +1078,6 @@ int GetFourCCFormatForOpaqueFramebuffer(viz::SharedImageFormat format) {
   NOTREACHED();
 }
 
-const char* GetNameForColorspace(const gfx::ColorSpace color_space) {
-  if (color_space == gfx::ColorSpace::CreateHDR10())
-    return kColorSpaceBT2020RGBEnumName;
-
-  return kColorSpaceDefaultEnumName;
-}
-
 uint64_t GetEnumValueForName(const DrmWrapper& drm,
                              int property_id,
                              const char* str) {

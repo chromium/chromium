@@ -35,6 +35,11 @@ BASE_FEATURE(kEnableExternalDisplayHDR10Mode,
 // Feature to control if the CTM is dynamically set to the primary transform
 // from plane color space to output color space.
 BASE_FEATURE(kCtmColorManagement, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Feature to control if we assume that setting the DRM color space to Default
+// will cause the color primaries to be interpreted as Rec709 (as opposed to
+// the color primaries from the EDID).
+BASE_FEATURE(kDrmColorSpaceDefaultIsRec709, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // This features allows listing all display modes of external displays in the

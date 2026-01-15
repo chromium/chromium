@@ -188,7 +188,6 @@ display::VariableRefreshRateState GetVariableRefreshRateState(
     const DrmWrapper& drm,
     HardwareDisplayControllerInfo* info);
 
-const char* GetNameForColorspace(const gfx::ColorSpace color_space);
 uint64_t GetEnumValueForName(const DrmWrapper& drm,
                              int property_id,
                              const char* str);

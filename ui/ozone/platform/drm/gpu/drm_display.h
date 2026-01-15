@@ -122,7 +122,7 @@ class DrmDisplay {
   void SetBackgroundColor(const uint64_t background_color);
   bool SetPrivacyScreen(bool enabled);
   bool SetHdrOutputMetadata(const gfx::ColorSpace color_space);
-  bool SetColorspaceProperty(const gfx::ColorSpace color_space);
+  bool SetColorspaceProperty(const char* color_space);
   bool IsVrrCapable() const;
 
   // Replace CRTCs in |crtc_connector_pairs_| according to mapping provided by
