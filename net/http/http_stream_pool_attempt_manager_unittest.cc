@@ -4642,6 +4642,38 @@ TEST_F(HttpStreamPoolAttemptManagerTest, HavingSpdySessionIsNotStalled) {
                    .has_value());
 }
 
+// Tests that when an AttemptManager only allows QUIC, it's not treated as being
+// stalled on the TCP limit, even after the slow timer triggers.
+TEST_F(HttpStreamPoolAttemptManagerTest, QuicOnlyIsNotStalled) {
+  // Requests gets an IP address instantly, but stalls waiting for the HTTPS
+  // record.
+  resolver()->AddFakeRequest()->add_endpoint(
+      ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint());
+
+  StreamRequester requester;
+  requester.set_destination(kDefaultDestination)
+      .set_allowed_alpns(HttpStreamPool::kQuicBasedProtocols)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+
+  // Stream should not be considered stalled after starting.
+  EXPECT_FALSE(requester.result());
+  EXPECT_FALSE(pool()
+                   .GetGroupForTesting(requester.GetStreamKey())
+                   ->GetPriorityIfStalledByPoolLimit()
+                   .has_value());
+
+  // Group is should still not be considered stalled after the TCP/IP timer
+  // expires, though the timer shouldn't actually even be started, in this case.
+  FastForwardBy(quic_session_pool()->GetTimeDelayForWaitingJob(
+      requester.GetStreamKey().CalculateQuicSessionAliasKey().session_key()));
+  EXPECT_FALSE(requester.result());
+  EXPECT_FALSE(pool()
+                   .GetGroupForTesting(requester.GetStreamKey())
+                   ->GetPriorityIfStalledByPoolLimit()
+                   .has_value());
+}
+
 // Tests that when an AttemptManager has a QUIC session, it's not treated as
 // stalled.
 TEST_F(HttpStreamPoolAttemptManagerTest, HavingQuicSessionIsNotStalled) {
