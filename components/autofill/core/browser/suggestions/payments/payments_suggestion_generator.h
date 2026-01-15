@@ -23,8 +23,6 @@ namespace autofill {
 // Generates suggestions for all available credit cards based on the
 // `trigger_field_type`, `trigger_field` and `four_digit_combinations_in_dom`.
 // `summary` contains metadata about the returned suggestions.
-// `is_complete_form` indicates whether a credit card form is considered
-// complete for the purposes of "Save and Fill".
 // TODO(crbug.com/448688721): Consolidate the input parameters.
 std::vector<Suggestion> GetSuggestionsForCreditCards(
     const FormData& form,
@@ -32,8 +30,6 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     const FormFieldData& trigger_field,
     const AutofillField& autofill_trigger_field,
     AutofillClient& client,
-    bool is_complete_form,
-    bool should_show_scan_credit_card,
     const std::vector<std::string>& four_digit_combinations_in_dom,
     const payments::AmountExtractionStatus& amount_extraction_status,
     autofill_metrics::CreditCardFormEventLogger& credit_card_form_event_logger,
@@ -51,7 +47,6 @@ FetchCreditCardSuggestionDataSync(
     AutofillClient& client,
     FieldType trigger_field_type,
     CreditCardSuggestionSummary& summary,
-    bool is_complete_form,
     const std::vector<std::string>& four_digit_combinations_in_dom,
     autofill_metrics::CreditCardFormEventLogger& credit_card_form_event_logger,
     const AutofillMetrics::PaymentsSigninState signin_state_for_metrics);
@@ -66,7 +61,6 @@ std::vector<Suggestion> GenerateCreditCardSuggestionsSync(
     AutofillClient& client,
     FieldType trigger_field_type,
     CreditCardSuggestionSummary& summary,
-    bool should_show_scan_credit_card,
     const std::vector<std::string>& four_digit_combinations_in_dom,
     const base::flat_map<SuggestionGenerator::SuggestionDataSource,
                          std::vector<SuggestionGenerator::SuggestionData>>&

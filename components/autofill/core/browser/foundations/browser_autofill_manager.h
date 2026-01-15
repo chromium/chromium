@@ -453,10 +453,6 @@ class BrowserAutofillManager : public AutofillManager {
   // latter check is needed because IPC messages can arrive out of order.
   void UpdateInitialInteractionTimestamp(base::TimeTicks interaction_timestamp);
 
-  // Whether the `trigger_field` should show an entry to scan a credit card.
-  bool ShouldShowScanCreditCard(const FormStructure& form,
-                                const AutofillField& trigger_field);
-
   // Checks whether JavaScript cleared an autofilled value within
   // kLimitBeforeRefill after the filling and records metrics for this. This
   // method should be called after we learned that JavaScript modified an
@@ -644,14 +640,10 @@ class BrowserAutofillManager : public AutofillManager {
 
   // Populates `suggestion_generators_` with those capable of producing
   // suggestions for field.
-  // TODO(crbug.com/409962888): Remove `form_structure` and
-  // `trigger_autofill_field` arguments after simplifying CCSG initialization.
   void InitializeSuggestionGenerators(
       AutofillSuggestionTriggerSource trigger_source,
       FormGlobalId form_id,
-      FieldGlobalId field_id,
-      const FormStructure* form_structure,
-      const AutofillField& trigger_autofill_field);
+      FieldGlobalId field_id);
 
   // Delegates to perform external processing (display, selection) on
   // our behalf.

@@ -293,6 +293,11 @@ std::map<std::string, const AutofillOfferData*> GetCardLinkedOffers(
 // generation.
 int GetCreditCardObfuscationLength();
 
+// Whether the `trigger_field` should show an entry to scan a credit card.
+bool ShouldShowScanCreditCard(const FormStructure& form,
+                              const AutofillField& trigger_field,
+                              const AutofillClient& client);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_PAYMENTS_PAYMENTS_SUGGESTION_GENERATOR_UTIL_H_

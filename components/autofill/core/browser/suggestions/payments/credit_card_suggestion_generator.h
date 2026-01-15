@@ -37,8 +37,6 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
  public:
   explicit CreditCardSuggestionGenerator(
       const std::vector<std::string>& four_digit_combinations_in_dom,
-      bool should_show_scan_credit_card,
-      bool is_complete_form,
       const payments::AmountExtractionStatus& amount_extraction_status,
       autofill_metrics::CreditCardFormEventLogger&
           credit_card_form_event_logger,
@@ -93,9 +91,7 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
 
  private:
   raw_ref<const std::vector<std::string>> four_digit_combinations_in_dom_;
-  bool should_show_scan_credit_card_;
   CreditCardSuggestionSummary summary_;
-  bool is_complete_form_;
   raw_ref<const payments::AmountExtractionStatus> amount_extraction_status_;
   raw_ref<autofill_metrics::CreditCardFormEventLogger>
       credit_card_form_event_logger_;

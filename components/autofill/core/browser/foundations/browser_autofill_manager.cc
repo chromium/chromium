@@ -939,33 +939,6 @@ payments::BnplManager* BrowserAutofillManager::GetPaymentsBnplManager() {
   return bnpl_manager_.get();
 }
 
-bool BrowserAutofillManager::ShouldShowScanCreditCard(
-    const FormStructure& form,
-    const AutofillField& trigger_field) {
-  if (!client().GetPaymentsAutofillClient()->HasCreditCardScanFeature() ||
-      !client()
-           .GetPaymentsAutofillClient()
-           ->IsAutofillPaymentMethodsEnabled()) {
-    return false;
-  }
-
-  bool is_card_number_field =
-      trigger_field.Type().GetCreditCardType() == CREDIT_CARD_NUMBER &&
-      base::ContainsOnlyChars(StripCardNumberSeparators(trigger_field.value()),
-                              u"0123456789");
-
-  if (!is_card_number_field) {
-    return false;
-  }
-
-  if (IsFormOrClientNonSecure(client(), form)) {
-    return false;
-  }
-
-  static const int kShowScanCreditCardMaxValueLength = 6;
-  return trigger_field.value().size() <= kShowScanCreditCardMaxValueLength;
-}
-
 bool BrowserAutofillManager::ShouldParseForms() {
   bool autofill_enabled = client().IsAutofillEnabled();
   // If autofill is disabled but the password manager is enabled, we still
@@ -1291,8 +1264,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   SuggestionsContext context = BuildSuggestionsContext(
       form, form_structure, field, autofill_field, trigger_source);
   InitializeSuggestionGenerators(trigger_source, form.global_id(),
-                                 field.global_id(), form_structure,
-                                 *autofill_field);
+                                 field.global_id());
 
   auto barrier_callback = base::BarrierCallback<
       std::pair<SuggestionGenerator::SuggestionDataSource,
@@ -3286,10 +3258,6 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
               ->IsAutofillPaymentMethodsEnabled()) {
         suggestions = GetSuggestionsForCreditCards(
             form, *form_structure, field, *autofill_field, client(),
-            form_structure->IsCompleteCreditCardForm(
-                FormStructure::CreditCardFormCompleteness::
-                    kCompleteCreditCardFormIncludingCvcAndName),
-            ShouldShowScanCreditCard(*form_structure, *autofill_field),
             four_digit_combinations_in_dom_,
             payments::AmountExtractionStatus{
                 .has_timed_out_for_page_load =
@@ -3576,9 +3544,7 @@ void BrowserAutofillManager::SetFastCheckoutRunId(
 void BrowserAutofillManager::InitializeSuggestionGenerators(
     AutofillSuggestionTriggerSource trigger_source,
     FormGlobalId form_id,
-    FieldGlobalId field_id,
-    const FormStructure* form_structure,
-    const AutofillField& trigger_autofill_field) {
+    FieldGlobalId field_id) {
   // Suggestion generators lifespan should be limited to only when they are
   // needed.
   suggestion_generators_.clear();
@@ -3654,17 +3620,9 @@ void BrowserAutofillManager::InitializeSuggestionGenerators(
                                                      log_manager()));
   }
   if (relevant_filling_products.contains(FillingProduct::kCreditCard)) {
-    // TODO(crbug.com/409962888): Move calculating of
-    // `should_show_scan_credit_card` and `is_complete_form` inside of the
-    // `CreditCardSuggestionGenerator` class, and remove them from the
-    // constructor.
     suggestion_generators_.push_back(
         std::make_unique<CreditCardSuggestionGenerator>(
             four_digit_combinations_in_dom_,
-            ShouldShowScanCreditCard(*form_structure, trigger_autofill_field),
-            form_structure->IsCompleteCreditCardForm(
-                FormStructure::CreditCardFormCompleteness::
-                    kCompleteCreditCardFormIncludingCvcAndName),
             payments::AmountExtractionStatus{
                 .has_timed_out_for_page_load =
                     GetAmountExtractionManager().HasTimedOutForPageLoad(),

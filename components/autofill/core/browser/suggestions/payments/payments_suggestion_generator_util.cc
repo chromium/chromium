@@ -56,6 +56,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/autofill/core/common/credit_card_number_validation.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/grit/components_scaled_resources.h"
@@ -1504,6 +1505,31 @@ bool ShouldShowVirtualCardOption(const CreditCard* candidate_card,
   // virtual cards.
   return candidate_card->virtual_card_enrollment_state() ==
          CreditCard::VirtualCardEnrollmentState::kEnrolled;
+}
+
+bool ShouldShowScanCreditCard(const FormStructure& form,
+                              const AutofillField& trigger_field,
+                              const AutofillClient& client) {
+  if (!client.GetPaymentsAutofillClient()->HasCreditCardScanFeature() ||
+      !client.GetPaymentsAutofillClient()->IsAutofillPaymentMethodsEnabled()) {
+    return false;
+  }
+
+  bool is_card_number_field =
+      trigger_field.Type().GetCreditCardType() == CREDIT_CARD_NUMBER &&
+      base::ContainsOnlyChars(StripCardNumberSeparators(trigger_field.value()),
+                              u"0123456789");
+
+  if (!is_card_number_field) {
+    return false;
+  }
+
+  if (IsFormOrClientNonSecure(client, form)) {
+    return false;
+  }
+
+  static const int kShowScanCreditCardMaxValueLength = 6;
+  return trigger_field.value().size() <= kShowScanCreditCardMaxValueLength;
 }
 
 }  // namespace autofill

@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 
+#include "base/containers/extend.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
@@ -248,7 +249,6 @@ FetchCreditCardSuggestionDataSync(
     AutofillClient& client,
     FieldType trigger_field_type,
     CreditCardSuggestionSummary& summary,
-    bool is_complete_form,
     const std::vector<std::string>& four_digit_combinations_in_dom,
     autofill_metrics::CreditCardFormEventLogger& credit_card_form_event_logger,
     const AutofillMetrics::PaymentsSigninState signin_state_for_metrics) {
@@ -284,6 +284,10 @@ FetchCreditCardSuggestionDataSync(
   if (IsInAutofillSuggestionsDisabledExperiment()) {
     return {SuggestionDataSource::kCreditCard, {}};
   }
+
+  bool is_complete_form = form_structure.IsCompleteCreditCardForm(
+      FormStructure::CreditCardFormCompleteness::
+          kCompleteCreditCardFormIncludingCvcAndName);
 
   if (base::FeatureList::IsEnabled(features::kAutofillEnableSaveAndFill) &&
       ShouldShowCreditCardSaveAndFill(client, is_complete_form,
@@ -329,7 +333,6 @@ std::vector<Suggestion> GenerateCreditCardSuggestionsSync(
     AutofillClient& client,
     FieldType trigger_field_type,
     CreditCardSuggestionSummary& summary,
-    bool should_show_scan_credit_card,
     const std::vector<std::string>& four_digit_combinations_in_dom,
     const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
         suggestion_data,
@@ -341,12 +344,13 @@ std::vector<Suggestion> GenerateCreditCardSuggestionsSync(
     bool display_gpay_logo = false;
     suggestions.push_back(
         CreateSaveAndFillSuggestion(client, display_gpay_logo));
-    std::ranges::move(
-        GetCreditCardFooterSuggestions(
-            client, /*should_show_bnpl_suggestion=*/false,
-            should_show_scan_credit_card, trigger_field.is_autofilled(),
-            display_gpay_logo, amount_extraction_status),
-        std::back_inserter(suggestions));
+    base::Extend(suggestions,
+                 GetCreditCardFooterSuggestions(
+                     client, /*should_show_bnpl_suggestion=*/false,
+                     ShouldShowScanCreditCard(form_structure,
+                                              autofill_trigger_field, client),
+                     trigger_field.is_autofilled(), display_gpay_logo,
+                     amount_extraction_status));
   } else if (suggestion_data.contains(
                  SuggestionDataSource::kVirtualStandaloneCvc)) {
     // Only trigger GetVirtualCreditCardsForStandaloneCvcField if it's
@@ -378,7 +382,9 @@ std::vector<Suggestion> GenerateCreditCardSuggestionsSync(
     bool is_card_number_field_empty = card_number_field_value.empty();
 
     suggestions = GenerateCreditCardOrCvcFieldSuggestionsSync(
-        client, trigger_field, trigger_field_type, should_show_scan_credit_card,
+        client, trigger_field, trigger_field_type,
+        ShouldShowScanCreditCard(form_structure, autofill_trigger_field,
+                                 client),
         summary, is_card_number_field_empty, suggestion_data,
         amount_extraction_status);
   }
@@ -402,17 +408,14 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     const FormFieldData& trigger_field,
     const AutofillField& autofill_trigger_field,
     AutofillClient& client,
-    bool is_complete_form,
-    bool should_show_scan_credit_card,
     const std::vector<std::string>& four_digit_combinations_in_dom,
     const payments::AmountExtractionStatus& amount_extraction_status,
     autofill_metrics::CreditCardFormEventLogger& credit_card_form_event_logger,
     const AutofillMetrics::PaymentsSigninState signin_state_for_metrics) {
   std::vector<Suggestion> suggestions;
   CreditCardSuggestionGenerator credit_card_suggestion_generator(
-      four_digit_combinations_in_dom, should_show_scan_credit_card,
-      is_complete_form, amount_extraction_status, credit_card_form_event_logger,
-      signin_state_for_metrics);
+      four_digit_combinations_in_dom, amount_extraction_status,
+      credit_card_form_event_logger, signin_state_for_metrics);
 
   auto on_suggestions_generated =
       [&suggestions](
