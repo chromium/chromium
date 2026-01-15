@@ -16,6 +16,7 @@ import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.j
 import {deduplicateEvents, mergeEvents, parseEvents, UpdaterProcessMap} from '../event_history.js';
 import type {HistoryEvent, MergedHistoryEvent, PolicySet} from '../event_history.js';
 import {loadTimeData} from '../i18n_setup.js';
+import {formatDateShort, formatRelativeDate} from '../tools.js';
 
 import {getCss} from './event_list.css.js';
 import {getHtml} from './event_list.html.js';
@@ -53,43 +54,11 @@ function getEventEntries(
     return {
       event,
       eventDate,
-      formattedEventDate: getFormattedDate(eventDate),
-      formattedRelativeEventDate: getRelativeDate(eventDate),
+      formattedEventDate: formatDateShort(eventDate),
+      formattedRelativeEventDate: formatRelativeDate(eventDate),
       policies: getEffectivePolicySet(processMap, event, allEvents),
     };
   });
-}
-
-function getFormattedDate(date: Date): string {
-  return new Intl
-      .DateTimeFormat(undefined, {
-        timeZoneName: 'short',
-        month: 'numeric',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-      })
-      .format(date);
-}
-
-function getRelativeDate(date: Date): string {
-  const now = new Date();
-  const diffInSeconds = (now.getTime() - date.getTime()) / 1000;
-  const rtf = new Intl.RelativeTimeFormat();
-
-  if (diffInSeconds < 60) {
-    return rtf.format(-Math.floor(diffInSeconds), 'second');
-  }
-  const diffInMinutes = diffInSeconds / 60;
-  if (diffInMinutes < 60) {
-    return rtf.format(-Math.floor(diffInMinutes), 'minute');
-  }
-  const diffInHours = diffInMinutes / 60;
-  if (diffInHours < 24) {
-    return rtf.format(-Math.floor(diffInHours), 'hour');
-  }
-  const diffInDays = diffInHours / 24;
-  return rtf.format(-Math.floor(diffInDays), 'day');
 }
 
 export interface EventEntry {

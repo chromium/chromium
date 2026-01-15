@@ -18,6 +18,7 @@ import {getAppId, isMergedHistoryEvent} from '../event_history.js';
 import type {HistoryEvent, MergedActivateEvent, MergedAppCommandEvent, MergedHistoryEvent, MergedInstallEvent, MergedQualifyEvent, MergedUninstallEvent, MergedUpdateEvent, MergedUpdaterProcessEvent, PersistedDataEvent} from '../event_history.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {getKnownAppNamesById} from '../known_apps.js';
+import {formatDateLong, formatDuration} from '../tools.js';
 
 import {getCss} from './event_list_item.css.js';
 import {getHtml} from './event_list_item.html.js';
@@ -146,17 +147,7 @@ export class EventListItemElement extends CrLitElement {
   }
 
   private computeFormattedDate(): string|undefined {
-    return this.eventDate ? new Intl
-                                .DateTimeFormat(undefined, {
-                                  timeZoneName: 'short',
-                                  month: 'numeric',
-                                  day: 'numeric',
-                                  hour: 'numeric',
-                                  minute: 'numeric',
-                                  second: 'numeric',
-                                })
-                                .format(this.eventDate) :
-                            undefined;
+    return this.eventDate ? formatDateLong(this.eventDate) : undefined;
   }
 
   private computeFormattedDuration(): string|undefined {
@@ -178,12 +169,8 @@ export class EventListItemElement extends CrLitElement {
     remaining = Math.floor(remaining / 24);
     const days = remaining;
 
-    const durationString = new Intl
-                               .DurationFormat(undefined, {
-                                 style: 'narrow',
-                               })
-                               .format({days, hours, minutes, seconds});
-    return loadTimeData.getStringF('duration', durationString);
+    return loadTimeData.getStringF(
+        'duration', formatDuration(days, hours, minutes, seconds));
   }
 
   private computeErrors(): string[] {

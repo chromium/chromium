@@ -26,19 +26,12 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {localizeEventType, localizeScope, localizeUpdateOutcome} from '../event_history.js';
 import type {CommonUpdateOutcome, EventType, Scope} from '../event_history.js';
 import {loadTimeData} from '../i18n_setup.js';
+import {formatDateDigits} from '../tools.js';
 
 import {getCss} from './filter_bar.css.js';
 import {getHtml} from './filter_bar.html.js';
 import {createDefaultFilterSettings} from './filter_settings.js';
 import type {FilterSettings} from './filter_settings.js';
-
-const DATE_FORMATTER = new Intl.DateTimeFormat(undefined, {
-  year: 'numeric',
-  month: '2-digit',
-  day: '2-digit',
-  hour: '2-digit',
-  minute: '2-digit',
-});
 
 export enum FilterCategory {
   APP = 'app',
@@ -298,7 +291,7 @@ export class FilterBarElement extends CrLitElement {
   }
 
   protected getDateFilterString(): string {
-    const format = (d: Date) => DATE_FORMATTER.format(d);
+    const format = (d: Date) => formatDateDigits(d);
     const start = this.filterSettings.startDate ?
         format(this.filterSettings.startDate) :
         undefined;

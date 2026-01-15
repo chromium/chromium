@@ -50,6 +50,7 @@ build_webui("build") {
     "known_apps.ts",
     "scope_icon.html.ts",
     "scope_icon.ts",
+    "tools.ts",
   ]
   css_files = [
     "app.css",
