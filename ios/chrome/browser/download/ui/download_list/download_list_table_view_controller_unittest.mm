@@ -414,13 +414,13 @@ TEST_F(DownloadListTableViewControllerTest, TestNavigationItemConfiguration) {
   EXPECT_TRUE(controller_.navigationItem.rightBarButtonItem);
 }
 
-/// Tests presentationControllerWillDismiss calls download list handler.
+/// Tests presentationControllerDidDismiss calls download list handler.
 TEST_F(DownloadListTableViewControllerTest,
-       TestPresentationControllerWillDismiss) {
+       TestPresentationControllerDidDismiss) {
   id mockPresentationController =
       OCMClassMock([UIPresentationController class]);
 
-  [controller_ presentationControllerWillDismiss:mockPresentationController];
+  [controller_ presentationControllerDidDismiss:mockPresentationController];
 
   EXPECT_TRUE(mock_download_list_handler_.hideDownloadListCalled);
 }

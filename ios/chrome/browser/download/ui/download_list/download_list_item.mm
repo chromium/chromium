@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/download/ui/download_list/download_list_item.h"
 
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
@@ -153,6 +155,9 @@ NSString* const kStatusTextEmptyString = @"";
   // the correct file extension.
   UIDocumentInteractionController* docController =
       [UIDocumentInteractionController interactionControllerWithURL:fileURL];
+  docController.name = self.fileName;
+  docController.UTI = [self uniformTypeIdentifierWithFileURL:fileURL];
+
   _fileTypeIcon = docController.icons.lastObject;
 
   return _fileTypeIcon;
@@ -303,6 +308,21 @@ NSString* const kStatusTextEmptyString = @"";
   }
 }
 
+/// Returns the Uniform Type Identifier (UTI) for the download based on file
+/// extension.
+- (NSString*)uniformTypeIdentifierWithFileURL:(NSURL*)fileURL {
+  if (!fileURL) {
+    return nil;
+  }
+
+  NSString* fileExtension = [fileURL.path pathExtension];
+  if (fileExtension.length == 0) {
+    return nil;
+  }
+
+  UTType* type = [UTType typeWithFilenameExtension:fileExtension];
+  return type.identifier;
+}
 #pragma mark - NSObject
 
 /// Required for UITableViewDiffableDataSource to properly track items.

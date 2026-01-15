@@ -580,8 +580,8 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
-/// Called before the presentation controller will dismiss.
-- (void)presentationControllerWillDismiss:
+/// Called after the presentation controller did dismiss.
+- (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   [self.downloadListHandler hideDownloadList];
 }
