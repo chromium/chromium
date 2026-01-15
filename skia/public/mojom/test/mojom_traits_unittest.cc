@@ -11,6 +11,8 @@
 #include "skia/ext/skcolorspace_primaries.h"
 #include "skia/public/mojom/bitmap.mojom.h"
 #include "skia/public/mojom/bitmap_skbitmap_mojom_traits.h"
+#include "skia/public/mojom/hdr_metadata.mojom.h"
+#include "skia/public/mojom/hdr_metadata_mojom_traits.h"
 #include "skia/public/mojom/image_info.mojom-shared.h"
 #include "skia/public/mojom/image_info.mojom.h"
 #include "skia/public/mojom/skcolorspace.mojom.h"
@@ -28,6 +30,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkString.h"
 #include "third_party/skia/include/core/SkTileMode.h"
+#include "third_party/skia/include/private/SkHdrMetadata.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 #include "ui/gfx/skia_util.h"
 
@@ -554,6 +557,131 @@ TEST(StructTraitsTest, InlineBitmapDeserializeTooManyBytes) {
     EXPECT_FALSE(mojo::test::SerializeAndDeserialize<skia::mojom::InlineBitmap>(
         input, output));
   }
+}
+
+TEST(StructTraitsTest, SkHdrContentLightLevelInformation) {
+  skhdr::ContentLightLevelInformation in;
+  in.fMaxCLL = 1.2f;
+  in.fMaxFALL = 3.4f;
+
+  skhdr::ContentLightLevelInformation out;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+              skia::mojom::SkHdrContentLightLevelInformation>(in, out));
+
+  EXPECT_EQ(in.fMaxCLL, out.fMaxCLL);
+  EXPECT_EQ(in.fMaxFALL, out.fMaxFALL);
+}
+
+TEST(StructTraitsTest, SkHdrMasteringDisplayColorVolume) {
+  skhdr::MasteringDisplayColorVolume in;
+  in.fDisplayPrimaries = SkNamedPrimaries::kRec2020;
+  in.fMaximumDisplayMasteringLuminance = 1.2f;
+  in.fMinimumDisplayMasteringLuminance = 3.4f;
+
+  skhdr::MasteringDisplayColorVolume out;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+              skia::mojom::SkHdrMasteringDisplayColorVolume>(in, out));
+
+  EXPECT_EQ(in.fDisplayPrimaries, out.fDisplayPrimaries);
+  EXPECT_EQ(in.fMaximumDisplayMasteringLuminance,
+            out.fMaximumDisplayMasteringLuminance);
+  EXPECT_EQ(in.fMinimumDisplayMasteringLuminance,
+            out.fMinimumDisplayMasteringLuminance);
+}
+
+TEST(StructTraitsTest, SkHdrAdaptiveGlobalToneMap) {
+  skhdr::AdaptiveGlobalToneMap::HeadroomAdaptiveToneMap inHatm;
+  inHatm.fBaselineHdrHeadroom = 0.1f,
+  inHatm.fGainApplicationSpacePrimaries = SkNamedPrimaries::kRec2020;
+  inHatm.fAlternateImages = {
+      {
+          .fHdrHeadroom = 0.2,
+          .fColorGainFunction =
+              {
+                  .fComponentMixing =
+                      {
+                          .fRed = 0.1f,
+                          .fGreen = 0.2f,
+                          .fBlue = 0.3f,
+                          .fMax = 0.4f,
+                          .fMin = 0.5f,
+                          .fComponent = 0.6f,
+                      },
+                  .fGainCurve =
+                      {
+                          .fControlPoints =
+                              {
+                                  {.fX = 0.7f, .fY = 0.8f, .fM = 0.9f},
+                              },
+                      },
+              },
+      },
+  };
+  skhdr::AdaptiveGlobalToneMap in = {
+      .fHdrReferenceWhite = 100.0f,
+      .fHeadroomAdaptiveToneMap = {inHatm},
+  };
+
+  skhdr::AdaptiveGlobalToneMap out;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+              skia::mojom::SkHdrAdaptiveGlobalToneMap>(in, out));
+
+  EXPECT_EQ(in.fHdrReferenceWhite, out.fHdrReferenceWhite);
+  ASSERT_TRUE(out.fHeadroomAdaptiveToneMap.has_value());
+  EXPECT_EQ(in.fHeadroomAdaptiveToneMap->fBaselineHdrHeadroom,
+            out.fHeadroomAdaptiveToneMap->fBaselineHdrHeadroom);
+  EXPECT_EQ(in.fHeadroomAdaptiveToneMap->fGainApplicationSpacePrimaries,
+            out.fHeadroomAdaptiveToneMap->fGainApplicationSpacePrimaries);
+  EXPECT_EQ(in.fHeadroomAdaptiveToneMap->fAlternateImages.size(),
+            out.fHeadroomAdaptiveToneMap->fAlternateImages.size());
+  EXPECT_EQ(in.fHeadroomAdaptiveToneMap->fAlternateImages[0].fHdrHeadroom,
+            out.fHeadroomAdaptiveToneMap->fAlternateImages[0].fHdrHeadroom);
+  EXPECT_EQ(in.fHeadroomAdaptiveToneMap->fAlternateImages[0]
+                .fColorGainFunction.fComponentMixing.fRed,
+            out.fHeadroomAdaptiveToneMap->fAlternateImages[0]
+                .fColorGainFunction.fComponentMixing.fRed);
+  EXPECT_EQ(in.fHeadroomAdaptiveToneMap->fAlternateImages[0]
+                .fColorGainFunction.fComponentMixing.fGreen,
+            out.fHeadroomAdaptiveToneMap->fAlternateImages[0]
+                .fColorGainFunction.fComponentMixing.fGreen);
+  EXPECT_EQ(in.fHeadroomAdaptiveToneMap->fAlternateImages[0]
+                .fColorGainFunction.fComponentMixing.fBlue,
+            out.fHeadroomAdaptiveToneMap->fAlternateImages[0]
+                .fColorGainFunction.fComponentMixing.fBlue);
+  EXPECT_EQ(in.fHeadroomAdaptiveToneMap->fAlternateImages[0]
+                .fColorGainFunction.fComponentMixing.fMax,
+            out.fHeadroomAdaptiveToneMap->fAlternateImages[0]
+                .fColorGainFunction.fComponentMixing.fMax);
+  EXPECT_EQ(in.fHeadroomAdaptiveToneMap->fAlternateImages[0]
+                .fColorGainFunction.fComponentMixing.fMin,
+            out.fHeadroomAdaptiveToneMap->fAlternateImages[0]
+                .fColorGainFunction.fComponentMixing.fMin);
+  EXPECT_EQ(in.fHeadroomAdaptiveToneMap->fAlternateImages[0]
+                .fColorGainFunction.fComponentMixing.fComponent,
+            out.fHeadroomAdaptiveToneMap->fAlternateImages[0]
+                .fColorGainFunction.fComponentMixing.fComponent);
+  EXPECT_EQ(in.fHeadroomAdaptiveToneMap->fAlternateImages[0]
+                .fColorGainFunction.fGainCurve.fControlPoints.size(),
+            out.fHeadroomAdaptiveToneMap->fAlternateImages[0]
+                .fColorGainFunction.fGainCurve.fControlPoints.size());
+  EXPECT_EQ(in.fHeadroomAdaptiveToneMap->fAlternateImages[0]
+                .fColorGainFunction.fGainCurve.fControlPoints[0]
+                .fX,
+            out.fHeadroomAdaptiveToneMap->fAlternateImages[0]
+                .fColorGainFunction.fGainCurve.fControlPoints[0]
+                .fX);
+  EXPECT_EQ(in.fHeadroomAdaptiveToneMap->fAlternateImages[0]
+                .fColorGainFunction.fGainCurve.fControlPoints[0]
+                .fY,
+            out.fHeadroomAdaptiveToneMap->fAlternateImages[0]
+                .fColorGainFunction.fGainCurve.fControlPoints[0]
+                .fY);
+  EXPECT_EQ(in.fHeadroomAdaptiveToneMap->fAlternateImages[0]
+                .fColorGainFunction.fGainCurve.fControlPoints[0]
+                .fM,
+            out.fHeadroomAdaptiveToneMap->fAlternateImages[0]
+                .fColorGainFunction.fGainCurve.fControlPoints[0]
+                .fM);
 }
 
 }  // namespace
