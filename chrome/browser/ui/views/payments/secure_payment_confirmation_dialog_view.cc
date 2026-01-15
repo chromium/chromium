@@ -341,12 +341,17 @@ bool SecurePaymentConfirmationDialogView::ShouldShowCloseButton() const {
 bool SecurePaymentConfirmationDialogView::Accept() {
   views::DialogDelegateView::Accept();
 
-  // Disable the opt-out link to avoid the user clicking on it whilst the
-  // WebAuthn dialog is showing over the SPC one. If opt-out support wasn't
-  // requested by the SPC caller, it won't be visible and doesn't need disabled.
-  //
-  // TODO(crbug.com/40225659): Even disabled this link still looks clickable
-  // (underline disappears, but color doesn't change). Force style the color?
+  // Disable the footer/opt-out links to avoid the user clicking on it whilst
+  // the WebAuthn dialog is showing over the SPC one. Note that this is only
+  // necessarily if the text is visible.
+  // TODO(crbug.com/476172795): Even disabled this link still looks clickable
+  // (underline disappears, but color doesn't change).
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSecurePaymentConfirmationUxRefresh)) {
+    if (footer_view_->GetVisible()) {
+      footer_view_->SetEnabled(false);
+    }
+  }
   if (opt_out_view_->GetVisible()) {
     opt_out_view_->SetEnabled(false);
   }
@@ -606,9 +611,11 @@ void SecurePaymentConfirmationDialogView::InitViews() {
 
   // Footer
   footer_view_ = AddChildView(CreateFooterView());
+  footer_view_->SetVisible(model_->footer_visible());
 
   // Opt out
   opt_out_view_ = AddChildView(CreateOptOutView());
+  opt_out_view_->SetVisible(model_->opt_out_visible());
 
   InvalidateLayout();
 }
