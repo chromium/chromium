@@ -24,21 +24,16 @@ class ThemeExtensionsTest : public testing::Test {
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
  protected:
-  // TODO(crbug.com/41317803): Continue removing std::string error and
-  // replacing with std::u16string.
   scoped_refptr<Extension> CreateExtension(const base::Value::Dict& manifest,
-                                           std::string* error) {
+                                           std::u16string* error) {
     base::Value::Dict manifest_base;
     manifest_base.Set("name", "test");
     manifest_base.Set("version", "1.0");
     manifest_base.Set("manifest_version", 3);
     manifest_base.Merge(manifest.Clone());
-    std::u16string utf16_error;
-    scoped_refptr<Extension> extension = Extension::Create(
-        temp_dir_.GetPath(), mojom::ManifestLocation::kUnpacked, manifest_base,
-        Extension::NO_FLAGS, "", &utf16_error);
-    *error = base::UTF16ToUTF8(utf16_error);
-    return extension;
+    return Extension::Create(temp_dir_.GetPath(),
+                             mojom::ManifestLocation::kUnpacked, manifest_base,
+                             Extension::NO_FLAGS, "", error);
   }
 
  private:
@@ -54,11 +49,10 @@ TEST_F(ThemeExtensionsTest, InvalidThemeImagesValueType) {
         }
       })");
 
-  std::string error;
+  std::u16string error;
   auto extension = CreateExtension(manifest, &error);
   ASSERT_FALSE(extension);
-  ASSERT_EQ(base::UTF16ToUTF8(manifest_errors::kInvalidThemeImagesValueType),
-            error);
+  ASSERT_EQ(manifest_errors::kInvalidThemeImagesValueType, error);
 }
 
 TEST_F(ThemeExtensionsTest, InvalidThemeImagesPath) {
@@ -84,11 +78,10 @@ TEST_F(ThemeExtensionsTest, InvalidThemeImagesPath) {
         })",
         test_case.relative_path));
 
-    std::string error;
+    std::u16string error;
     auto extension = CreateExtension(manifest, &error);
     ASSERT_FALSE(extension);
-    ASSERT_EQ(base::UTF16ToUTF8(manifest_errors::kInvalidThemeImagesPath),
-              error);
+    ASSERT_EQ(manifest_errors::kInvalidThemeImagesPath, error);
   }
 }
 
@@ -102,15 +95,16 @@ TEST_F(ThemeExtensionsTest, ThemeImagesPathDoesntExist) {
         }
       })");
 
-  std::string error;
+  std::u16string error;
   auto extension = CreateExtension(manifest, &error);
   ASSERT_TRUE(extension);
 
+  std::string utf8_error;
   std::vector<InstallWarning> warnings;
-  ManifestHandler::ValidateExtension(extension.get(), &error, &warnings);
+  ManifestHandler::ValidateExtension(extension.get(), &utf8_error, &warnings);
   ASSERT_EQ(l10n_util::GetStringFUTF8(IDS_EXTENSION_INVALID_IMAGE_PATH,
                                       u"does_not_exist.png"),
-            error);
+            utf8_error);
 }
 
 TEST_F(ThemeExtensionsTest, ThemeImagesPathVariantDoesntExist) {
@@ -125,13 +119,14 @@ TEST_F(ThemeExtensionsTest, ThemeImagesPathVariantDoesntExist) {
         }
       })");
 
-  std::string error;
+  std::u16string error;
   auto extension = CreateExtension(manifest, &error);
   ASSERT_TRUE(extension);
 
+  std::string utf8_error;
   std::vector<InstallWarning> warnings;
-  ASSERT_TRUE(
-      ManifestHandler::ValidateExtension(extension.get(), &error, &warnings));
+  ASSERT_TRUE(ManifestHandler::ValidateExtension(extension.get(), &utf8_error,
+                                                 &warnings));
   ASSERT_EQ(1u, warnings.size());
   ASSERT_EQ(
       ErrorUtils::FormatErrorMessage(

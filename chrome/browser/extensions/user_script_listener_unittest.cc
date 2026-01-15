@@ -71,25 +71,22 @@ std::optional<base::Value::Dict> LoadManifestFile(const base::FilePath path,
   return std::move(*manifest).TakeDict();
 }
 
-// TODO(crbug.com/41317803): Continue removing std::string error and
-// replacing with std::u16string.
 scoped_refptr<Extension> LoadExtension(const std::string& filename,
-                                       std::string* error) {
+                                       std::u16string* error) {
   base::FilePath path;
   base::PathService::Get(chrome::DIR_TEST_DATA, &path);
   path = path.AppendASCII("extensions")
              .AppendASCII("manifest_tests")
              .AppendASCII(filename.c_str());
-  std::optional<base::Value::Dict> manifest = LoadManifestFile(path, error);
+  std::string utf8_error;
+  std::optional<base::Value::Dict> manifest =
+      LoadManifestFile(path, &utf8_error);
   if (!manifest) {
+    *error = base::UTF8ToUTF16(utf8_error);
     return nullptr;
   }
-  std::u16string utf16_error;
-  scoped_refptr<Extension> extension =
-      Extension::Create(path.DirName(), mojom::ManifestLocation::kUnpacked,
-                        *manifest, Extension::NO_FLAGS, &utf16_error);
-  *error = base::UTF16ToUTF8(utf16_error);
-  return extension;
+  return Extension::Create(path.DirName(), mojom::ManifestLocation::kUnpacked,
+                           *manifest, Extension::NO_FLAGS, error);
 }
 
 }  // namespace
@@ -291,7 +288,7 @@ TEST_F(UserScriptListenerTest, MultiProfile) {
   TestingProfile* profile2 =
       profile_manager_->CreateTestingProfile("test-profile2");
   ASSERT_TRUE(profile2);
-  std::string error;
+  std::u16string error;
   scoped_refptr<Extension> extension =
       LoadExtension("content_script_yahoo.json", &error);
   ASSERT_TRUE(extension.get());
