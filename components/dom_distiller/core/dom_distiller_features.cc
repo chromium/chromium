@@ -83,10 +83,8 @@ int GetMinimumAllowableDistilledContentLength() {
              : 0;
 }
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 BASE_FEATURE(kReaderModeSupportNewFonts, base::FEATURE_ENABLED_BY_DEFAULT);
-#elif BUILDFLAG(IS_IOS)
-BASE_FEATURE(kReaderModeSupportNewFonts, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
