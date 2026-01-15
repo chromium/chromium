@@ -126,8 +126,6 @@ static_library("test_support") {
   testonly = true
 
   sources = [
-    "fake_device_name_policy_handler.cc",
-    "fake_device_name_policy_handler.h",
     "minimum_version_policy_test_helpers.cc",
     "minimum_version_policy_test_helpers.h",
   ]
