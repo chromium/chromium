@@ -202,6 +202,9 @@ class ReadAnythingUntrustedPageHandler :
   bool immersive_read_anything_pin_state() {
     return immersive_read_anything_pin_state_;
   }
+  void OnDistillationStateChanged(
+      read_anything::mojom::ReadAnythingDistillationState new_state) override;
+
   // PinnedToolbarModel::Observer
   void OnActionsChanged() override;
 
@@ -299,6 +302,7 @@ class ReadAnythingUntrustedPageHandler :
   void SetUpPdfObserver();
 
   void OnGetPresentationState();
+  ReadAnythingController* GetReadAnythingController();
 
   // Called when reading_mode_hidden_ack_timer_ times out without hearing back
   // from the page_.
@@ -429,6 +433,9 @@ class ReadAnythingUntrustedPageHandler :
   // Hold DOM distiller distillation results.
   std::optional<std::string> dom_distiller_title_;
   std::optional<std::string> dom_distiller_content_;
+
+  read_anything::mojom::ReadAnythingDistillationState distillation_state_ =
+      read_anything::mojom::ReadAnythingDistillationState::kUndefined;
 
   base::WeakPtrFactory<ReadAnythingUntrustedPageHandler> weak_factory_{this};
 };

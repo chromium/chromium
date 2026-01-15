@@ -146,6 +146,10 @@ class MockReadAnythingUntrustedPageHandler
   MOCK_METHOD(void, TogglePresentation, (), (override));
   MOCK_METHOD(void, AckReadingModeHidden, (), (override));
   MOCK_METHOD(void, SendPinStateRequest, (), (override));
+  MOCK_METHOD(void,
+              OnDistillationStateChanged,
+              (read_anything::mojom::ReadAnythingDistillationState new_state),
+              (override));
 
   mojo::PendingRemote<read_anything::mojom::UntrustedPageHandler>
   BindNewPipeAndPassRemote() {
@@ -3229,9 +3233,37 @@ TEST_F(ReadAnythingAppControllerTest,
                                   base::Seconds(1));
 }
 
-TEST_F(ReadAnythingAppControllerTest, ImmersiveReadAnythingTogglesPinState) {
-  controller().TogglePinState();
-  EXPECT_CALL(page_handler_, TogglePinState()).Times(1);
+class ReadAnythingAppControllerImmersiveTest
+    : public ReadAnythingAppControllerTest {
+ public:
+  void SetUp() override {
+    ReadAnythingAppControllerTest::SetUp();
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeatures({features::kImmersiveReadAnything},
+                                          {});
+  }
+};
+
+TEST_F(ReadAnythingAppControllerImmersiveTest,
+       OnDistillationStateChanged_CalledAfterDistillationEmpty) {
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationEmpty))
+      .Times(1);
+  controller().OnAXTreeDistilled(tree_id_, {});
+  page_handler_.FlushForTesting();
+}
+
+TEST_F(ReadAnythingAppControllerImmersiveTest,
+       OnDistillationStateChanged_CalledAfterDistillationWithContent) {
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationWithContent))
+      .Times(1);
+  controller().OnAXTreeDistilled(tree_id_, {1});
+  page_handler_.FlushForTesting();
 }
 
 TEST_F(ReadAnythingAppControllerTest, ReadAloudStateResetsOnNewPageNavigation) {

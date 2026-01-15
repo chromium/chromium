@@ -1405,3 +1405,114 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   EmitWebUIShowEvent(overlay_view);
   ASSERT_TRUE(overlay_view->GetVisible());
 }
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingControllerBrowserTest,
+    OnDistillationStateChanged_EmptyContentInImmersive_TogglesToSidePanel) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+
+  // Show Immersive UI.
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  EmitWebUIShowEvent();
+  AssertOverlayVisibility(/*visible=*/true);
+
+  // Distillation returns empty content.
+  controller->OnDistillationStateChanged(
+      ReadAnythingController::DistillationState::kDistillationEmpty);
+
+  // Verify Immersive UI is closed and Side Panel is open.
+  AssertOverlayVisibility(/*visible=*/false);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingControllerBrowserTest,
+    OnDistillationStateChanged_WithContentInImmersive_StaysImmersive) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+
+  // Show Immersive UI.
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  EmitWebUIShowEvent();
+  AssertOverlayVisibility(/*visible=*/true);
+
+  // Distillation returns content.
+  controller->OnDistillationStateChanged(
+      ReadAnythingController::DistillationState::kDistillationWithContent);
+
+  // Verify Immersive UI is still open and Side Panel is not.
+  AssertOverlayVisibility(/*visible=*/true);
+  ASSERT_FALSE(side_panel_ui->IsSidePanelEntryShowing(
+      SidePanelEntryKey(SidePanelEntryId::kReadAnything)));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingControllerBrowserTest,
+    OnDistillationStateChanged_EmptyInSidePanel_StaysInSidePanel) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+
+  // Show Side Panel UI.
+  controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+  AssertOverlayVisibility(/*visible=*/false);
+
+  // Distillation returns empty content.
+  controller->OnDistillationStateChanged(
+      ReadAnythingController::DistillationState::kDistillationEmpty);
+
+  // Verify Side Panel is still open and Immersive UI is not.
+  ASSERT_TRUE(side_panel_ui->IsSidePanelEntryShowing(
+      SidePanelEntryKey(SidePanelEntryId::kReadAnything)));
+  AssertOverlayVisibility(/*visible=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingControllerBrowserTest,
+    OnDistillationStateChanged_OpenWithDistillationEmpty_OpensInSidePanel) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+
+  // Start with reading mode closed.
+  AssertOverlayVisibility(/*visible=*/false);
+  ASSERT_FALSE(side_panel_ui->IsSidePanelEntryShowing(
+      SidePanelEntryKey(SidePanelEntryId::kReadAnything)));
+
+  // Set Reading Mode presentation state to inactive to represent it was
+  // previously open and is now closed.
+  controller->SetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInactive);
+
+  // Distillation returns empty content.
+  controller->OnDistillationStateChanged(
+      ReadAnythingController::DistillationState::kDistillationEmpty);
+
+  // Try to open immersive UI.
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+
+  // Verify Immersive UI is closed and Side Panel is open instead.
+  AssertOverlayVisibility(/*visible=*/false);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+}

@@ -940,7 +940,18 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     // loading. Therefore, to avoid displaying an empty side panel, wait for
     // Google Docs to finish loading.
     if (!IsGoogleDocs() || model_.page_finished_loading()) {
+      if (features::IsImmersiveReadAnythingEnabled()) {
+        page_handler_->OnDistillationStateChanged(
+            read_anything::mojom::ReadAnythingDistillationState::
+                kDistillationEmpty);
+      }
       DrawEmptyState();
+    }
+  } else {
+    if (features::IsImmersiveReadAnythingEnabled()) {
+      page_handler_->OnDistillationStateChanged(
+          read_anything::mojom::ReadAnythingDistillationState::
+              kDistillationWithContent);
     }
   }
 
@@ -1984,6 +1995,8 @@ void ReadAnythingAppController::OnConnected() {
   page_handler_->GetDependencyParserModel(
       base::BindOnce(&ReadAnythingAppController::UpdateDependencyParserModel,
                      weak_ptr_factory_.GetWeakPtr()));
+  page_handler_->OnDistillationStateChanged(
+      read_anything::mojom::ReadAnythingDistillationState::kNotAttempted);
 }
 
 void ReadAnythingAppController::OnCopy() const {

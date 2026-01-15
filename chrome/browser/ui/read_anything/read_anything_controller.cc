@@ -302,6 +302,17 @@ void ReadAnythingController::TransferWebUiOwnership(
 }
 
 void ReadAnythingController::ShowImmersiveUI(ReadAnythingOpenTrigger trigger) {
+  // Show Reading Mode in side panel mode if the distillation is empty and
+  // Reading Mode was inactive.
+  if (distillation_state_ == DistillationState::kDistillationEmpty &&
+      GetPresentationState() == PresentationState::kInactive) {
+    SidePanelOpenTrigger side_panel_open_trigger =
+        read_anything::ReadAnythingToSidePanelOpenTrigger(trigger);
+
+    ShowSidePanelUI(side_panel_open_trigger);
+    return;
+  }
+
   if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
     return;
   }
@@ -491,4 +502,13 @@ void ReadAnythingController::SetMainContentsAccessible(
                                         ? views::View::FocusBehavior::ALWAYS
                                         : views::View::FocusBehavior::NEVER);
   }
+}
+
+void ReadAnythingController::OnDistillationStateChanged(
+    DistillationState new_state) {
+  if (new_state == DistillationState::kDistillationEmpty &&
+      GetPresentationState() == PresentationState::kInImmersiveOverlay) {
+    TogglePresentation();
+  }
+  distillation_state_ = new_state;
 }

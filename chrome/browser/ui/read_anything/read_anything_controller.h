@@ -98,6 +98,8 @@ class ReadAnythingController {
 
   using PresentationState = read_anything::mojom::ReadAnythingPresentationState;
 
+  using DistillationState = read_anything::mojom::ReadAnythingDistillationState;
+
   ReadAnythingController(tabs::TabInterface* tab,
                          SidePanelRegistry* side_panel_registry);
 
@@ -138,6 +140,8 @@ class ReadAnythingController {
   PresentationState GetPresentationState() const;
 
   void SetPresentationState(PresentationState new_state);
+
+  void OnDistillationStateChanged(DistillationState new_state);
 
   // Lazily creates and returns the WebUIContentsWrapper for the
   // Reading Mode WebUI. Transfers ownership of the WebUIContentsWrapper to the
@@ -233,6 +237,8 @@ class ReadAnythingController {
   // open and covering the page, we don't want the main webpage to be accessible
   // to screen readers and keyboard navigation.
   void SetMainContentsAccessible(bool should_be_accessible);
+
+  DistillationState distillation_state_ = DistillationState::kUndefined;
 
   // The handle returned by web_contents_->IncrementCapturerCount. This is used
   // to release the capture when the ReadAnythingController is destroyed.

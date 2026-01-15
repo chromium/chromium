@@ -1906,6 +1906,42 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_P(
+    ReadAnythingUntrustedPageHandlerTest,
+    OnDistillationStateChanged_EmptyContentTogglesPresentation) {
+  if (IsImmersiveEnabled()) {
+    handler_ = CreateHandler();
+    ReadAnythingController* controller =
+        ReadAnythingController::From(browser()->GetActiveTabInterface());
+    controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+
+    handler_->OnDistillationStateChanged(
+        read_anything::mojom::ReadAnythingDistillationState::
+            kDistillationEmpty);
+
+    EXPECT_EQ(controller->GetPresentationState(),
+              ReadAnythingController::PresentationState::kInSidePanel);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(
+    ReadAnythingUntrustedPageHandlerTest,
+    OnDistillationStateChanged_WithContentDoesNotTogglePresentation) {
+  if (IsImmersiveEnabled()) {
+    handler_ = CreateHandler();
+    ReadAnythingController* controller =
+        ReadAnythingController::From(browser()->GetActiveTabInterface());
+    controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+
+    handler_->OnDistillationStateChanged(
+        read_anything::mojom::ReadAnythingDistillationState::
+            kDistillationWithContent);
+
+    EXPECT_EQ(controller->GetPresentationState(),
+              ReadAnythingController::PresentationState::kInImmersiveOverlay);
+  }
+}
+
 class ReadAnythingUntrustedPageHandlerDistillerTest
     : public ReadAnythingUntrustedPageHandlerTest {
  public:

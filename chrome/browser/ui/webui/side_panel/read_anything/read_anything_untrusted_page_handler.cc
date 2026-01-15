@@ -88,6 +88,7 @@ using ash::language_packs::LanguagePackManager;
 using content::TtsController;
 using read_anything::mojom::ErrorCode;
 using read_anything::mojom::InstallationState;
+using read_anything::mojom::ReadAnythingDistillationState;
 using read_anything::mojom::ReadAnythingPresentationState;
 using read_anything::mojom::UntrustedPage;
 using read_anything::mojom::UntrustedPageHandler;
@@ -700,7 +701,8 @@ void ReadAnythingUntrustedPageHandler::SendNextLanguageRequest() {
 // otherwise do nothing.
 // TODO(crbug.com/463728166): Remove IsImmersiveReadAnythingEnabled flag when no
 // longer flag-guarded code.
-void ReadAnythingUntrustedPageHandler::OnGetPresentationState() {
+ReadAnythingController*
+ReadAnythingUntrustedPageHandler::GetReadAnythingController() {
   if (features::IsImmersiveReadAnythingEnabled()) {
     content::WebContents* main_web_contents = main_observer_->web_contents();
     CHECK(main_web_contents);
@@ -710,6 +712,14 @@ void ReadAnythingUntrustedPageHandler::OnGetPresentationState() {
     CHECK(tab);
 
     auto* ra_controller = ReadAnythingController::From(tab);
+    return ra_controller;
+  }
+  return nullptr;
+}
+
+void ReadAnythingUntrustedPageHandler::OnGetPresentationState() {
+  if (features::IsImmersiveReadAnythingEnabled()) {
+    auto* ra_controller = GetReadAnythingController();
     CHECK(ra_controller);
 
     page_->OnGetPresentationState(ra_controller->GetPresentationState());
@@ -718,6 +728,35 @@ void ReadAnythingUntrustedPageHandler::OnGetPresentationState() {
 
 void ReadAnythingUntrustedPageHandler::GetPresentationState() {
   OnGetPresentationState();
+}
+
+void ReadAnythingUntrustedPageHandler::OnDistillationStateChanged(
+    read_anything::mojom::ReadAnythingDistillationState new_state) {
+  if (features::IsImmersiveReadAnythingEnabled()) {
+    // Distillation state transitions to kNotAttempted are only valid during
+    // initialization (i.e. when the current state is kUndefined).
+    if (distillation_state_ !=
+            read_anything::mojom::ReadAnythingDistillationState::kUndefined &&
+        new_state == read_anything::mojom::ReadAnythingDistillationState::
+                         kNotAttempted) {
+      mojo::ReportBadMessage("Invalid distillation state transition");
+      return;
+    }
+
+    // Distillation state transitions to kUndefined are not valid, regardless of
+    // what the current state is.
+    if (new_state ==
+        read_anything::mojom::ReadAnythingDistillationState::kUndefined) {
+      mojo::ReportBadMessage("Invalid distillation state transition");
+      return;
+    }
+
+    distillation_state_ = new_state;
+    auto* ra_controller = GetReadAnythingController();
+    CHECK(ra_controller);
+
+    ra_controller->OnDistillationStateChanged(new_state);
+  }
 }
 
 void ReadAnythingUntrustedPageHandler::OnGetVoicePackInfo(
