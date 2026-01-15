@@ -2002,23 +2002,56 @@ void RequestService::CompleteRequest(
     bool should_delay_callback) {
   DCHECK(result == FederatedAuthRequestResult::kSuccess ||
          !token_data.has_value());
+  if (!auth_request_token_callback_) {
+    return;
+  }
+  if (!complete_request_delayed_) {
+    // Record metrics and console errors only the first time we complete the
+    // request, even if the callback is delayed.
+    RecordMetricsAndConsoleError(result, token_status, selected_idp_config_url);
+    request_dialog_controller_->OnFlowCompleted(
+        result == FederatedAuthRequestResult::kSuccess);
+    if (token_received_callback_for_autofill_) {
+      std::move(token_received_callback_for_autofill_)
+          .Run(result == FederatedAuthRequestResult::kSuccess);
+    }
+  }
 
+  if (!should_delay_callback || should_complete_request_immediately_) {
+    bool is_auto_selected = identity_selection_type_ != kExplicit;
+    CompleteRequestInternal(result, token_error, selected_idp_config_url,
+                            std::move(token_data), is_auto_selected);
+  } else {
+    complete_request_delayed_ = true;
+    base::TimeDelta delay = GetRandomRejectionTime();
+    TRACE_EVENT_INSTANT("content.fedcm", "Delaying FedCM rejection",
+                        perfetto_track_, "delay", delay);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&RequestService::CompleteRequestInternal,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       FederatedAuthRequestResult::kError,
+                       /*token_error=*/std::nullopt,
+                       /*selected_idp_config_url=*/std::nullopt,
+                       /*token_data=*/std::nullopt, /*is_auto_selected=*/false),
+        delay);
+  }
+}
+
+void RequestService::RecordMetricsAndConsoleError(
+    blink::mojom::FederatedAuthRequestResult result,
+    std::optional<RequestIdTokenStatus> token_status,
+    const std::optional<GURL>& selected_idp_config_url) {
   if (accounts_dialog_shown_time_.has_value()) {
     fedcm_metrics_->RecordAccountsDialogShownDuration(
         idp_data_for_display_,
         base::TimeTicks::Now() - accounts_dialog_shown_time_.value());
-    accounts_dialog_shown_time_ = std::nullopt;
   }
 
   if (mismatch_dialog_shown_time_.has_value()) {
     fedcm_metrics_->RecordMismatchDialogShownDuration(
         idp_data_for_display_,
         base::TimeTicks::Now() - mismatch_dialog_shown_time_.value());
-    mismatch_dialog_shown_time_ = std::nullopt;
-  }
-
-  if (!auth_request_token_callback_) {
-    return;
   }
 
   if (token_status) {
@@ -2079,9 +2112,7 @@ void RequestService::CompleteRequest(
                ready_to_display_accounts_dialog_time_),
           request_dialog_controller_->DidShowUi());
     }
-  } else if (!errors_logged_to_console_) {
-    errors_logged_to_console_ = true;
-
+  } else {
     AddDevToolsIssue(result);
     AddConsoleErrorMessage(result);
 
@@ -2093,47 +2124,38 @@ void RequestService::CompleteRequest(
     }
   }
 
-  bool is_auto_selected = identity_selection_type_ != kExplicit;
-
   if (ShouldNotifyDevtoolsForDialogType(dialog_type_)) {
     devtools_instrumentation::DidCloseFedCmDialog(render_frame_host());
   }
+}
 
-  if (token_received_callback_for_autofill_) {
-    std::move(token_received_callback_for_autofill_)
-        .Run(result == FederatedAuthRequestResult::kSuccess);
+void RequestService::CompleteRequestInternal(
+    blink::mojom::FederatedAuthRequestResult result,
+    std::optional<TokenError> token_error,
+    const std::optional<GURL>& selected_idp_config_url,
+    std::optional<base::Value> token_data,
+    bool is_auto_selected) {
+  if (!auth_request_token_callback_) {
+    return;
   }
+  CleanUp();
+  GetPageData(render_frame_host().GetPage())
+      ->SetPendingWebIdentityRequest(nullptr);
 
-  if (!should_delay_callback || should_complete_request_immediately_) {
-    CleanUp();
-    GetPageData(render_frame_host().GetPage())
-        ->SetPendingWebIdentityRequest(nullptr);
-    errors_logged_to_console_ = false;
-
-    blink::mojom::TokenErrorPtr error;
-    if (token_error) {
-      error = blink::mojom::TokenError::New();
-      error->code = token_error->code;
-      error->url = token_error->url.spec();
-    }
-    RequestTokenStatus status =
-        FederatedAuthRequestResultToRequestTokenStatus(result);
-    std::move(auth_request_token_callback_)
-        .Run(status, selected_idp_config_url, std::move(token_data),
-             std::move(error), is_auto_selected);
-    auth_request_token_callback_.Reset();
-
-    TRACE_EVENT_END("content.fedcm", perfetto_track_);
-  } else {
-    base::TimeDelta delay = GetRandomRejectionTime();
-    TRACE_EVENT_INSTANT("content.fedcm", "Delaying FedCM rejection",
-                        perfetto_track_, "delay", delay);
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&RequestService::OnRejectRequest,
-                       weak_ptr_factory_.GetWeakPtr()),
-        delay);
+  blink::mojom::TokenErrorPtr error;
+  if (token_error) {
+    error = blink::mojom::TokenError::New();
+    error->code = token_error->code;
+    error->url = token_error->url.spec();
   }
+  RequestTokenStatus status =
+      FederatedAuthRequestResultToRequestTokenStatus(result);
+  std::move(auth_request_token_callback_)
+      .Run(status, selected_idp_config_url, std::move(token_data),
+           std::move(error), is_auto_selected);
+  auth_request_token_callback_.Reset();
+
+  TRACE_EVENT_END("content.fedcm", perfetto_track_);
 }
 
 void RequestService::CleanUp() {
@@ -2177,6 +2199,7 @@ void RequestService::CleanUp() {
   identity_selection_type_ = kExplicit;
   had_transient_user_activation_ = false;
   rp_mode_ = RpMode::kPassive;
+  complete_request_delayed_ = false;
 }
 
 void RequestService::AddDevToolsIssue(FederatedAuthRequestResult result) {
@@ -2407,16 +2430,6 @@ bool RequestService::SetupIdentityRegistryFromPopup() {
 #else
   return false;
 #endif
-}
-
-void RequestService::OnRejectRequest() {
-  if (!auth_request_token_callback_) {
-    return;
-  }
-  DCHECK(errors_logged_to_console_);
-  CompleteRequestWithError(FederatedAuthRequestResult::kError,
-                           /*token_status=*/std::nullopt,
-                           /*should_delay_callback=*/false);
 }
 
 FederatedApiPermissionStatus RequestService::GetApiPermissionStatus() {

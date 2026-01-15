@@ -127,6 +127,7 @@ class IdentityDialogController
       blink::mojom::RpMode rp_mode,
       DismissCallback dismiss_callback) override;
   void CloseModalDialog() override;
+  void OnFlowCompleted(bool success) override;
   content::WebContents* GetRpWebContents() override;
   void RequestIdPRegistrationPermision(
       const url::Origin& origin,

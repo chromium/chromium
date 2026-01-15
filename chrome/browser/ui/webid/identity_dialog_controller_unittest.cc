@@ -747,6 +747,43 @@ TEST_F(IdentityDialogControllerTest,
   }
 }
 
+TEST_F(IdentityDialogControllerTest, OnFlowCompleted) {
+  std::unique_ptr<IdentityDialogController> controller =
+      std::make_unique<IdentityDialogController>(web_contents());
+
+  GURL idp_url("https://idp.example");
+  std::string account_id = "account_id123";
+
+  // Test success.
+  {
+    base::MockCallback<OnFederatedTokenReceivedCallback> token_callback;
+    EXPECT_CALL(token_callback, Run(true)).Times(1);
+
+    IdentityDialogController::SetActorLoginRequest(
+        web_contents()->GetPrimaryPage(), idp_url, account_id,
+        token_callback.Get());
+
+    controller->OnFlowCompleted(true);
+  }
+
+  // Test failure.
+  {
+    base::MockCallback<OnFederatedTokenReceivedCallback> token_callback;
+    EXPECT_CALL(token_callback, Run(false)).Times(1);
+
+    IdentityDialogController::SetActorLoginRequest(
+        web_contents()->GetPrimaryPage(), idp_url, account_id,
+        token_callback.Get());
+
+    controller->OnFlowCompleted(false);
+  }
+
+  // Test that it does not crash if there is no actor login request.
+  IdentityDialogController::UnsetActorLoginRequest(
+      web_contents()->GetPrimaryPage());
+  controller->OnFlowCompleted(true);
+}
+
 class IdentityDialogControllerTestWithOptimizationDisabled
     : public IdentityDialogControllerTest {
  public:

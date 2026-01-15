@@ -300,6 +300,9 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // Closes the modal dialog.
   virtual void CloseModalDialog();
 
+  // Informs the controller that the flow has completed.
+  virtual void OnFlowCompleted(bool success);
+
   // When called on an object corresponding to the popup opened by
   // ShowModalDialog, returns the web contents for the original RP page.
   virtual WebContents* GetRpWebContents();
