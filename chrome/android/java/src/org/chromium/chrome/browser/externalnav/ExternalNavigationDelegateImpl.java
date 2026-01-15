@@ -324,6 +324,22 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
         return false;
     }
 
+    @Override
+    public boolean shouldSetAppForCurrentPage() {
+        // TODO(crbug.com/450253146): Implement this method.
+        return false;
+    }
+
+    @Override
+    public void setAppForCurrentPage(Runnable openInApp) {
+        // TODO(crbug.com/450253146): Implement this method.
+    }
+
+    @Override
+    public void clearAppForCurrentPage() {
+        // TODO(crbug.com/450253146): Implement this method.
+    }
+
     /**
      * Sets the {@link TabLaunchType} for this delegate for testing purposes. This has no effect on
      * the related Tab launch type.

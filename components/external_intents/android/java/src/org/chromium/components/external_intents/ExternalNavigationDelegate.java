@@ -207,4 +207,24 @@ public interface ExternalNavigationDelegate {
      * @param params The parameters describing the navigation.
      */
     boolean shouldSelfNavigationLaunchAsMultipleTask(ExternalNavigationParams params);
+
+    /**
+     * Returns whether an app should be set for the current page to be opened by the user on demand
+     * at a later time.
+     */
+    boolean shouldSetAppForCurrentPage();
+
+    /**
+     * Set the app for the current page and stay in the embedder app. The provided runnable is going
+     * to be used to open the current page in the app when the user requests it.
+     *
+     * @param openInApp A {@link Runnable} to be run to open the current page in the app.
+     */
+    void setAppForCurrentPage(Runnable openInApp);
+
+    /**
+     * Clears the app set for the page. This should be called when the app becomes invalid for the
+     * current page, e.g. navigation to another domain.
+     */
+    void clearAppForCurrentPage();
 }
