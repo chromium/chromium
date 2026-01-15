@@ -116,6 +116,7 @@ if (!is_android) {
       "//chrome/browser/startup",
       "//chrome/browser/status_icons",
       "//chrome/browser/ui/views/frame/",
+      "//chrome/browser/ui/views/tabs/glic",
       "//chrome/common:chrome_features",
       "//chrome/test:test_support_ui",
       "//components/keep_alive_registry",

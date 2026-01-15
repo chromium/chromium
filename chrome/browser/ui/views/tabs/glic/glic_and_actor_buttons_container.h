@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_GLIC_AND_ACTOR_BUTTONS_CONTAINER_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_GLIC_AND_ACTOR_BUTTONS_CONTAINER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_GLIC_GLIC_AND_ACTOR_BUTTONS_CONTAINER_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_GLIC_GLIC_AND_ACTOR_BUTTONS_CONTAINER_H_
 
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
@@ -47,4 +47,4 @@ class GlicAndActorButtonsContainer : public views::FlexLayoutView {
   raw_ptr<views::InkDropContainerView> ink_drop_container_view_ = nullptr;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_GLIC_AND_ACTOR_BUTTONS_CONTAINER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_GLIC_GLIC_AND_ACTOR_BUTTONS_CONTAINER_H_

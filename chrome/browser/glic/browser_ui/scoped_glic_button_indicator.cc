@@ -4,7 +4,7 @@
 
 #include "chrome/browser/glic/browser_ui/scoped_glic_button_indicator.h"
 
-#include "chrome/browser/ui/views/tabs/glic_button.h"
+#include "chrome/browser/ui/views/tabs/glic/glic_button.h"
 
 namespace glic {
 ScopedGlicButtonIndicator::ScopedGlicButtonIndicator(GlicButton* glic_button)

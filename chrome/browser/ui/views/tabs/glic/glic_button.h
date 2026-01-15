@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_GLIC_BUTTON_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_GLIC_BUTTON_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_GLIC_GLIC_BUTTON_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_GLIC_GLIC_BUTTON_H_
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/browser_ui/glic_button_controller_delegate.h"
@@ -235,4 +235,4 @@ class GlicButton : public TabStripNudgeButton,
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_GLIC_BUTTON_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_GLIC_GLIC_BUTTON_H_

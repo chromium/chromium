@@ -3997,7 +3997,7 @@ if (!is_android) {
       sources += [
         "../browser/contextual_cueing/zero_state_suggestions_browsertest.cc",
         "../browser/ui/views/side_panel/glic/glic_side_panel_coordinator_browsertest.cc",
-        "../browser/ui/views/tabs/glic_button_browsertest.cc",
+        "../browser/ui/views/tabs/glic/glic_button_browsertest.cc",
         "../browser/ui/webui/settings/glic_handler_browsertest.cc",
       ]
 
@@ -4009,6 +4009,7 @@ if (!is_android) {
         "//chrome/browser/glic/fre",
         "//chrome/browser/glic/test_support",
         "//chrome/browser/ui/omnibox",
+        "//chrome/browser/ui/views/tabs/glic",
         "//chrome/renderer/actor:browser_tests",
         "//chrome/renderer/webui_browser:browser_tests",
       ]
@@ -7509,7 +7510,15 @@ test("unit_tests") {
   }
 
   if (enable_glic || enable_glic_android) {
-    deps += [ "//chrome/browser/glic" ]
+    deps += [
+      "//chrome/browser/background/glic:unit_tests",
+      "//chrome/browser/glic",
+      "//chrome/browser/glic:unit_tests",
+      "//chrome/browser/glic/test_support",
+    ]
+    if (!is_android) {
+      deps += [ "//chrome/browser/ui/views/tabs/glic" ]
+    }
   }
 
   if (chrome_root_store_cert_management_ui) {
@@ -7535,14 +7544,6 @@ test("unit_tests") {
       "//components/compose/core/browser",
       "//components/optimization_guide/core",
       "//components/optimization_guide/proto:optimization_guide_proto",
-    ]
-  }
-
-  if (enable_glic || enable_glic_android) {
-    deps += [
-      "//chrome/browser/background/glic:unit_tests",
-      "//chrome/browser/glic:unit_tests",
-      "//chrome/browser/glic/test_support",
     ]
   }
 
@@ -12348,6 +12349,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/glic:interactive_ui_tests",
         "//chrome/browser/glic/test_support",
         "//chrome/browser/ui/tabs:glic",
+        "//chrome/browser/ui/views/tabs/glic",
       ]
       if (enterprise_cloud_content_analysis) {
         deps += [

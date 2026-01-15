@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/tabs/glic_nudge_delegate.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_observer.h"
-#include "chrome/browser/ui/views/tabs/glic_actor_task_icon.h"
+#include "chrome/browser/ui/views/tabs/glic/glic_actor_task_icon.h"
 #include "chrome/browser/ui/views/tabs/tab_search_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/common/buildflags.h"

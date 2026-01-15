@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_GLIC_ACTOR_TASK_ICON_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_GLIC_ACTOR_TASK_ICON_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_GLIC_GLIC_ACTOR_TASK_ICON_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_GLIC_GLIC_ACTOR_TASK_ICON_H_
 
 #include <string>
 
@@ -66,4 +66,4 @@ class GlicActorTaskIcon : public TabStripNudgeButton {
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_GLIC_ACTOR_TASK_ICON_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_GLIC_GLIC_ACTOR_TASK_ICON_H_

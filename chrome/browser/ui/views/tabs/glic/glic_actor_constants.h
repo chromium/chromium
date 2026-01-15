@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_GLIC_ACTOR_CONSTANTS_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_GLIC_ACTOR_CONSTANTS_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_GLIC_GLIC_ACTOR_CONSTANTS_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_GLIC_GLIC_ACTOR_CONSTANTS_H_
 
 namespace glic {
 
@@ -16,4 +16,4 @@ constexpr int kSplitButtonRoundedEdgeRadius = 10;
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_GLIC_ACTOR_CONSTANTS_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_GLIC_GLIC_ACTOR_CONSTANTS_H_

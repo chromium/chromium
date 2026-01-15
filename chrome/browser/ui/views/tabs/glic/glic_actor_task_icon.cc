@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/tabs/glic_actor_task_icon.h"
+#include "chrome/browser/ui/views/tabs/glic/glic_actor_task_icon.h"
 
 #include <string>
 
@@ -10,7 +10,7 @@
 #include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/views/tabs/glic_actor_constants.h"
+#include "chrome/browser/ui/views/tabs/glic/glic_actor_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
