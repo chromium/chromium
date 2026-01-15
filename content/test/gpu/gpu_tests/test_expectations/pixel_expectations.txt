@@ -603,6 +603,9 @@ crbug.com/286989320 [ linux nvidia ] Pixel_MeetEffects_rainbow_wig_and_eyelashes
 crbug.com/444653106 [ mac amd-0x7340 graphite-enabled angle-metal ] Pixel_CSSFilterEffects [ Slow ]
 crbug.com/444653106 [ mac amd-0x7340 graphite-enabled angle-metal ] Pixel_CSSFilterEffects_NoOverlays [ Slow ]
 
+# Win11 Qualcomm Dawn Startup crash
+crbug.com/476097256 [ win11 qualcomm-0x41333430 graphite-disabled angle-d3d11 ] Pixel_MeetEffects_rainbow_wig_and_eyelashes [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
