@@ -97,7 +97,6 @@ class OpaqueBrowserFrameView : public BrowserFrameView,
   bool IsTabStripVisible() const override;
   bool GetBorderlessModeEnabled() const override;
   bool IsToolbarVisible() const override;
-  gfx::Size GetTabstripMinimumSize() const override;
   int GetTopAreaHeight() const override;
   bool UseCustomFrame() const override;
   bool IsFrameCondensed() const override;

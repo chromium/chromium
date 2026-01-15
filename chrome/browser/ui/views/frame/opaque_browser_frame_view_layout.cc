@@ -98,13 +98,6 @@ gfx::Size OpaqueBrowserFrameViewLayout::GetMinimumSize(
     return min_size;
   }
 
-  // Ensure that we can, at minimum, hold our window controls and a tab strip.
-  int top_width = minimum_size_for_buttons_;
-  if (delegate_->IsTabStripVisible()) {
-    top_width += delegate_->GetTabstripMinimumSize().width();
-  }
-  min_size.set_width(std::max(min_size.width(), top_width));
-
   // Account for the frame.
   const auto border_insets = FrameBorderInsets(false);
   min_size.Enlarge(border_insets.width(),

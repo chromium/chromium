@@ -561,10 +561,6 @@ bool OpaqueBrowserFrameView::IsToolbarVisible() const {
          !GetBrowserView()->toolbar()->GetPreferredSize().IsEmpty();
 }
 
-gfx::Size OpaqueBrowserFrameView::GetTabstripMinimumSize() const {
-  return GetBrowserView()->tab_strip_view()->GetMinimumSize();
-}
-
 int OpaqueBrowserFrameView::GetTopAreaHeight() const {
   const bool is_tabbed = GetBrowserView()->GetIsNormalType();
   const auto info = GetClientFrameElementInfo();

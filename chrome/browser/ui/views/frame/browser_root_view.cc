@@ -426,7 +426,7 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
   }
 
   views::View* tab_strip_view =
-      browser_view_->tab_strip_view()->GetViewByElementId(kTabStripElementId);
+      browser_view_->tab_strip_view()->GetTabStripView();
   CHECK(tab_strip_view);
 
   gfx::RectF tabstrip_bounds(tab_strip_view->GetLocalBounds());

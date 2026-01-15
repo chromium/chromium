@@ -657,11 +657,9 @@ int BrowserFrameViewWin::TitlebarHeight(bool restored) const {
 }
 
 int BrowserFrameViewWin::GetFrameHeight() const {
-  if (GetBrowserView()->GetTabStripVisible()) {
-    // TODO(crbug.com/437915973): Account for the vertical tab region when using
-    // GetMinimumSize().
-    return GetBrowserView()->tab_strip_view()->GetMinimumSize().height() -
-           WindowTopY() -
+  const auto info = GetClientFrameElementInfo();
+  if (info.tabstrip_preferred_height) {
+    return info.tabstrip_preferred_height - WindowTopY() -
            GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap);
   }
   return IsMaximized() ? TitlebarMaximizedVisualHeight()

@@ -590,6 +590,10 @@ void HorizontalTabStripRegionView::SetTabStripObserver(
   tab_strip_->SetTabStripObserver(observer);
 }
 
+views::View* HorizontalTabStripRegionView::GetTabStripView() {
+  return tab_strip_;
+}
+
 void HorizontalTabStripRegionView::LogTabSearchPositionForTesting() {
   tab_search_position_metrics_logger_->LogMetricsForTesting();  // IN-TEST
 }

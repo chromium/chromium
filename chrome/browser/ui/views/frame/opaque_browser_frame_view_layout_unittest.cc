@@ -40,6 +40,7 @@ const int kMaximizedExtraCloseWidth =
 const int kCaptionButtonsWidth =
     kMinimizeButtonWidth + kMaximizeButtonWidth + kCloseButtonWidth;
 const int kCaptionButtonHeight = 18;
+constexpr gfx::Size kTabStripMinimumSize(78, 29);
 
 class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
  public:
@@ -76,9 +77,6 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
   bool IsTabStripVisible() const override { return window_title_.empty(); }
   bool GetBorderlessModeEnabled() const override { return false; }
   bool IsToolbarVisible() const override { return true; }
-  gfx::Size GetTabstripMinimumSize() const override {
-    return IsTabStripVisible() ? gfx::Size(78, 29) : gfx::Size();
-  }
   int GetTopAreaHeight() const override { return 0; }
   bool UseCustomFrame() const override { return true; }
   bool IsFrameCondensed() const override {
@@ -270,9 +268,8 @@ class OpaqueBrowserFrameViewLayoutTest
     } else if (!maximized) {
       tabstrip_x += OpaqueBrowserFrameViewLayout::kFrameBorderThickness;
     }
-    const gfx::Size tabstrip_min_size = delegate_->GetTabstripMinimumSize();
     const gfx::Rect tabstrip_region_bounds =
-        GetBoundsForTabStripRegion(tabstrip_min_size, kWindowWidth);
+        GetBoundsForTabStripRegion(kTabStripMinimumSize, kWindowWidth);
     EXPECT_EQ(tabstrip_x, tabstrip_region_bounds.x());
     if (maximized) {
       EXPECT_EQ(0, tabstrip_region_bounds.y());
@@ -293,17 +290,10 @@ class OpaqueBrowserFrameViewLayoutTest
     const int tabstrip_width =
         kWindowWidth - tabstrip_x - caption_width - spacing;
     EXPECT_EQ(tabstrip_width, tabstrip_region_bounds.width());
-    EXPECT_EQ(tabstrip_min_size.height(), tabstrip_region_bounds.height());
-    gfx::Size browser_view_min_size(delegate_->GetBrowserViewMinimumSize());
+    EXPECT_EQ(kTabStripMinimumSize.height(), tabstrip_region_bounds.height());
+    const gfx::Size browser_view_min_size =
+        delegate_->GetBrowserViewMinimumSize();
 
-    // The tabs and window control buttons (if present) sit above the toolstrip
-    // in the browser window. The only one of these that can really change size
-    // is the tabstrip, so we should be able to find the minimum width of this
-    // region by subtracting out the difference between the current tab strip
-    // width and the minimum tab strip width.
-    const int top_bar_minimum_width = kWindowWidth -
-                                      tabstrip_region_bounds.width() +
-                                      tabstrip_min_size.width();
     // The minimum window width is then the minimum overall browser contents
     // or the minimum tab strip/control buttons size, whichever is larger, plus
     // the frame width.
@@ -311,18 +301,17 @@ class OpaqueBrowserFrameViewLayoutTest
         delegate_->IsFrameCondensed()
             ? 0
             : 2 * OpaqueBrowserFrameViewLayout::kFrameBorderThickness;
-    const int min_width =
-        std::max(browser_view_min_size.width(), top_bar_minimum_width) +
-        frame_width;
-    gfx::Size min_size(layout_manager_->GetMinimumSize(root_view_));
-    EXPECT_EQ(min_width, min_size.width());
+    const int expected_width = browser_view_min_size.width() + frame_width;
+    const gfx::Size actual_min_size =
+        layout_manager_->GetMinimumSize(root_view_);
+    EXPECT_EQ(expected_width, actual_min_size.width());
 
     int restored_border_height =
         2 * OpaqueBrowserFrameViewLayout::kFrameBorderThickness +
         OpaqueBrowserFrameViewLayout::kNonClientExtraTopThickness;
     int top_border_height = maximized ? 0 : restored_border_height;
     int min_height = top_border_height + browser_view_min_size.height();
-    EXPECT_EQ(min_height, min_size.height());
+    EXPECT_EQ(min_height, actual_min_size.height());
   }
 
   void ExpectWindowIcon(bool caption_buttons_on_left) {

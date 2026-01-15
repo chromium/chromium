@@ -273,6 +273,10 @@ void VerticalTabStripRegionView::SetTabStripObserver(
   // Do nothing.
 }
 
+views::View* VerticalTabStripRegionView::GetTabStripView() {
+  return tab_strip_view_;
+}
+
 void VerticalTabStripRegionView::OnResize(int resize_amount,
                                           bool done_resizing) {
   if (!starting_width_on_resize_.has_value()) {

@@ -63,10 +63,6 @@ class OpaqueBrowserFrameViewLayoutDelegate {
   virtual bool IsTabStripVisible() const = 0;
   virtual bool IsToolbarVisible() const = 0;
 
-  // Returns the tabstrips minimum size so the frame layout can work around
-  // it.
-  virtual gfx::Size GetTabstripMinimumSize() const = 0;
-
   // Computes the height of the top area of the frame.
   virtual int GetTopAreaHeight() const = 0;
 

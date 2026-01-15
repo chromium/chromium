@@ -115,6 +115,7 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
       gfx::Point loc_in_local_coords) override;
   views::View* GetViewForDrop() override;
   void SetTabStripObserver(TabStripObserver* observer) override;
+  views::View* GetTabStripView() override;
 
   void LogTabSearchPositionForTesting();
 

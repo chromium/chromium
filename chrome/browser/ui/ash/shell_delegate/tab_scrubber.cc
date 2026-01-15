@@ -282,7 +282,7 @@ void TabScrubber::BeginScrub(BrowserView* browser_view, float x_offset) {
   // HorizontalTabStripRegionView since the current implementation won't work
   // for Vertical Tabs.
   tab_strip_ = views::AsViewClass<TabStrip>(
-      browser_view->tab_strip_view()->GetViewByElementId(kTabStripElementId));
+      browser_view->tab_strip_view()->GetTabStripView());
   scrubbing_ = true;
   browser_ =
       BrowserController::GetInstance()->GetDelegate(browser_view->browser());

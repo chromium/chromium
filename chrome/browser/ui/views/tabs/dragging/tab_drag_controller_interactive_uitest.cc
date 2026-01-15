@@ -4280,9 +4280,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   BrowserView* const browser_view2 =
       BrowserView::GetBrowserViewForBrowser(browser2);
   browser_view2->GetWidget()->LayoutRootViewIfNecessary();
-  auto tabstrip_bounds = browser_view2->tab_strip_view()->GetLocalBounds();
-  tabstrip_bounds =
-      browser_view2->tab_strip_view()->ConvertRectToWidget(tabstrip_bounds);
+  auto* const tabstrip = browser_view2->tab_strip_view()->GetTabStripView();
+  gfx::Rect tabstrip_bounds = tabstrip->GetLocalBounds();
+  tabstrip_bounds = tabstrip->ConvertRectToWidget(tabstrip_bounds);
   gfx::Rect bounds = initial_bounds;
   bounds.Offset(0, tabstrip_bounds.bottom());
   browser()->window()->SetBounds(bounds);

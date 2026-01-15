@@ -358,9 +358,6 @@ void BrowserFrameViewMac::WindowControlsOverlayEnabledChanged() {
 
 gfx::Size BrowserFrameViewMac::GetMinimumSize() const {
   gfx::Size client_size = browser_widget()->client_view()->GetMinimumSize();
-  if (GetBrowserView()->browser()->is_type_normal()) {
-    client_size.SetToMax(GetBrowserView()->tab_strip_view()->GetMinimumSize());
-  }
 
   // macOS apps generally don't allow their windows to get shorter than a
   // certain height, which empirically seems to be related to their *minimum*

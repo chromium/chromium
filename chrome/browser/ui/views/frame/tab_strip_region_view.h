@@ -35,6 +35,7 @@ class TabStripRegionView : public views::AccessiblePaneView,
   virtual void UpdateLoadingAnimations(const base::TimeDelta& elapsed_time) = 0;
   virtual std::optional<int> GetFocusedTabIndex() const = 0;
   virtual const TabRendererData& GetTabRendererData(int tab_index) = 0;
+  virtual views::View* GetTabStripView() = 0;
 
   // -- UI anchoring --
   virtual views::View* GetTabAnchorViewAt(int tab_index) = 0;

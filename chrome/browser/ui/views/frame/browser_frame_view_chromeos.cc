@@ -441,10 +441,7 @@ int BrowserFrameViewChromeOS::NonClientHitTest(const gfx::Point& point) {
     View::ConvertPointToTarget(this, browser_widget()->client_view(),
                                &client_point);
     gfx::Rect tabstrip_shadow_bounds(
-        GetBrowserView()
-            ->tab_strip_view()
-            ->GetViewByElementId(kTabStripElementId)
-            ->bounds());
+        GetBrowserView()->tab_strip_view()->GetTabStripView()->bounds());
     constexpr int kTabShadowHeight = 4;
     tabstrip_shadow_bounds.set_height(kTabShadowHeight);
     if (tabstrip_shadow_bounds.Contains(client_point)) {

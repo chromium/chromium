@@ -117,6 +117,7 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
       gfx::Point loc_in_local_coords) override;
   views::View* GetViewForDrop() override;
   void SetTabStripObserver(TabStripObserver* observer) override;
+  views::View* GetTabStripView() override;
 
   // views::ResizeAreaDelegate:
   void OnResize(int resize_amount, bool done_resizing) override;
