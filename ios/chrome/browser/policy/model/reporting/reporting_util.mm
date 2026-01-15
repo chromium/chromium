@@ -9,8 +9,8 @@
 #import "base/strings/strcat.h"
 #import "components/policy/core/common/cloud/affiliation.h"
 #import "components/policy/core/common/management/management_service.h"
+#import "ios/chrome/browser/policy/model/browser_management_service_factory.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
-#import "ios/chrome/browser/policy/model/management_service_ios_factory.h"
 #import "ios/chrome/browser/policy/model/profile_policy_connector.h"
 #import "ios/chrome/browser/policy/model/reporting/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -43,7 +43,7 @@ GetUnaffiliatedReason(ProfileIOS* profile) {
     return em::
         AffiliationState_UnaffiliationReason_DEVICE_MANANGED_DIFFERENT_DOMAIN;
   }
-  if (policy::ManagementServiceIOSFactory::GetForPlatform()
+  if (policy::BrowserManagementServiceFactory::GetForPlatform()
           ->IsBrowserManaged()) {
     return em::AffiliationState_UnaffiliationReason_DEVICE_MANAGED_BY_PLATFORM;
   }

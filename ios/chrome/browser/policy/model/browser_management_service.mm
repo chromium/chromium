@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/policy/model/management_service_ios.h"
+#import "ios/chrome/browser/policy/model/browser_management_service.h"
 
 #import "ios/chrome/browser/policy/model/management_status_providers_ios.h"
 
@@ -30,9 +30,9 @@ GetManagementStatusProviders(ProfileIOS* profile) {
 
 }  // namespace
 
-ManagementServiceIOS::ManagementServiceIOS(ProfileIOS* profile)
+BrowserManagementService::BrowserManagementService(ProfileIOS* profile)
     : ManagementService(GetManagementStatusProviders(profile)) {}
 
-ManagementServiceIOS::~ManagementServiceIOS() = default;
+BrowserManagementService::~BrowserManagementService() = default;
 
 }  // namespace policy
