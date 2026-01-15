@@ -196,3 +196,31 @@ cc_library_headers {
         "//external/cronet:__subpackages__",
     ],
 }
+
+android_test {
+    name: "${GN2BP_MODULE_PREFIX}NetHttpCoverageTests",
+    enforce_default_target_sdk_version: true,
+    min_sdk_version: "30",
+    test_suites: [
+        "general-tests",
+        "mts-tethering",
+    ],
+    static_libs: [
+        "modules-utils-native-coverage-listener",
+        "CtsNetHttpTestsLib",
+        "${GN2BP_MODULE_PREFIX}api_java",
+        "${GN2BP_MODULE_PREFIX}java__testing",
+        "${GN2BP_MODULE_PREFIX}java_tests",
+    ],
+    compile_multilib: "both", // Include both the 32 and 64 bit versions
+    jni_libs: [
+        "libnativecoverage",
+        "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_tests__testing",
+        "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet__testing",
+        "${GN2BP_MODULE_PREFIX}third_party_netty_tcnative_netty_tcnative_so__testing",
+    ],
+    test_config: "AndroidTest.xml",
+    data: [":${GN2BP_MODULE_PREFIX}javatests_resources"],
+    manifest: "components/cronet/android/test/javatests/AndroidManifest.xml",
+    resource_dirs: ["components/cronet/android/test/res"],
+}
