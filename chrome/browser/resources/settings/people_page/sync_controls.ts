@@ -16,7 +16,7 @@ import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.
 import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SyncBrowserProxy, SyncPrefs, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {SignedInState, StatusAction, SyncBrowserProxyImpl, syncPrefsIndividualDataTypes, UserSelectableType} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {shouldShowSyncTogglesForStatusAction, SignedInState, StatusAction, SyncBrowserProxyImpl, syncPrefsIndividualDataTypes, UserSelectableType} from '/shared/settings/people_page/sync_browser_proxy.js';
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 
 import {routes} from '../route.js';
@@ -462,12 +462,7 @@ export class SettingsSyncControlsElement extends
     }
 
     return !!this.syncStatus.hasError &&
-        this.syncStatus.statusAction !== StatusAction.ENTER_PASSPHRASE &&
-        this.syncStatus.statusAction !==
-        StatusAction.RETRIEVE_TRUSTED_VAULT_KEYS &&
-        this.syncStatus.statusAction !== StatusAction.CONFIRM_SYNC_SETTINGS &&
-        this.syncStatus.statusAction !==
-        StatusAction.SHOW_BOOKMARKS_LIMIT_HELP_ARTICLE;
+        !shouldShowSyncTogglesForStatusAction(this.syncStatus.statusAction);
   }
 }
 

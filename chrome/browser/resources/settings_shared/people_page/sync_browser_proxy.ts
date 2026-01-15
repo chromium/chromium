@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 // clang-format on
 
@@ -68,6 +69,28 @@ export enum StatusAction {
   SHOW_BOOKMARKS_LIMIT_HELP_ARTICLE =
       'showBookmarksLimitHelpArticle',  // User needs to see bookmarks limit
                                         // help article.
+}
+
+/**
+ * Checks whether the error associated with the given status action is
+ * configurable, meaning that the user should still be able to interact with the
+ * sync controls.
+ */
+export function shouldShowSyncTogglesForStatusAction(
+    statusAction: StatusAction): boolean {
+  switch (statusAction) {
+    case StatusAction.ENTER_PASSPHRASE:
+    case StatusAction.RETRIEVE_TRUSTED_VAULT_KEYS:
+    case StatusAction.CONFIRM_SYNC_SETTINGS:
+    case StatusAction.SHOW_BOOKMARKS_LIMIT_HELP_ARTICLE:
+      return true;
+    case StatusAction.NO_ACTION:
+    case StatusAction.REAUTHENTICATE:
+    case StatusAction.UPGRADE_CLIENT:
+      return false;
+    default:
+      assertNotReached();
+  }
 }
 
 /**

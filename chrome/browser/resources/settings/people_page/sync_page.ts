@@ -36,7 +36,7 @@ import {assert, assertNotReached} from '//resources/js/assert.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SyncBrowserProxy, SyncPrefs, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {ChromeSigninAccessPoint, PageStatus, SignedInState, StatusAction, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {ChromeSigninAccessPoint, shouldShowSyncTogglesForStatusAction, PageStatus, SignedInState, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 
@@ -356,13 +356,8 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
         (this.syncStatus_.signedInState !== SignedInState.SYNCING ||
          !!this.syncStatus_.disabled ||
          (!!this.syncStatus_.hasError &&
-          this.syncStatus_.statusAction !== StatusAction.ENTER_PASSPHRASE &&
-          this.syncStatus_.statusAction !==
-              StatusAction.RETRIEVE_TRUSTED_VAULT_KEYS &&
-          this.syncStatus_.statusAction !==
-              StatusAction.CONFIRM_SYNC_SETTINGS &&
-          this.syncStatus_.statusAction !==
-              StatusAction.SHOW_BOOKMARKS_LIMIT_HELP_ARTICLE));
+          !shouldShowSyncTogglesForStatusAction(
+              this.syncStatus_.statusAction)));
   }
 
   private computeSyncDisabledByAdmin_(): boolean {
