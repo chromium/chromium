@@ -10,7 +10,6 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.ui.modelutil.ListObservable;
@@ -73,17 +72,9 @@ class SuggestionListViewBinder {
             listItems.addObserver(
                     new ListObservable.ListObserver<>() {
                         @Override
-                        public void onItemRangeChanged(
-                                ListObservable<Void> source,
-                                int index,
-                                int count,
-                                @Nullable Void payload) {
-                            view.dropdown.resetSelection();
-                        }
-
-                        @Override
                         public void onItemRangeInserted(
                                 ListObservable source, int index, int count) {
+                            view.dropdown.resetSelection();
                             updateContainerVisibility(model, view);
                         }
 

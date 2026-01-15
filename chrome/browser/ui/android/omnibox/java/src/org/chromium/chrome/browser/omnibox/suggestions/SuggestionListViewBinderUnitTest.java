@@ -8,6 +8,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
@@ -63,7 +65,7 @@ public class SuggestionListViewBinderUnitTest {
                 (OmniboxSuggestionsContainer)
                         LayoutInflater.from(mActivity)
                                 .inflate(R.layout.omnibox_results_container, /* root= */ null);
-        mDropdown = mContainer.findViewById(R.id.omnibox_suggestions_dropdown);
+        mDropdown = spy(mContainer.findViewById(R.id.omnibox_suggestions_dropdown));
         PropertyModelChangeProcessor.create(
                 mListModel,
                 new SuggestionListViewHolder(mContainer, mDropdown),
@@ -154,5 +156,13 @@ public class SuggestionListViewBinderUnitTest {
         assertEquals(
                 ContextCompat.getColor(mActivity, R.color.omnibox_suggestion_dropdown_bg),
                 background.getColor());
+    }
+
+    @Test
+    public void suggestionList_resetSelectionWhenItemsInserted() {
+        List<ListItem> suggestionsList = new ArrayList<>();
+        suggestionsList.add(mDropdownItem);
+        mSuggestionModels.set(suggestionsList);
+        verify(mDropdown).resetSelection();
     }
 }
