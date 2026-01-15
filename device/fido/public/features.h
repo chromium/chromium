@@ -110,11 +110,6 @@ BASE_DECLARE_FEATURE(kWebAuthnPasskeyUpgrade);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnEnclaveAttestation);
 
-// Enables using the Microsoft Software Key Storage Provider to store
-// unexportable keys when a TPM is not available.
-COMPONENT_EXPORT(FIDO_PUBLIC)
-BASE_DECLARE_FEATURE(kWebAuthnMicrosoftSoftwareUnexportableKeyProvider);
-
 // Enables hiding passkeys instead of hard deleting them when reported as
 // obsolete by the signal API.
 COMPONENT_EXPORT(FIDO_PUBLIC)

@@ -149,11 +149,6 @@ BASE_FEATURE(kWebAuthnEnclaveAttestation,
              "WebAuthenticationEnclaveAttestation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Default enabled in M135. Remove in or after M138.
-BASE_FEATURE(kWebAuthnMicrosoftSoftwareUnexportableKeyProvider,
-             "WebAuthenticationMicrosoftSoftwareUnexportableKeyProvider",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Default enabled in M144. Remove in or after M147.
 BASE_FEATURE(kWebAuthnSignalApiHidePasskeys,
              "WebAuthenticationSignalApiHidePasskeys",
