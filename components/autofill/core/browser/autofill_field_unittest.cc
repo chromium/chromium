@@ -519,6 +519,9 @@ struct AutocompleteUnrecognizedTypeTestCase {
   bool is_server_overwrite = false;
   // Expected value of `ShouldSuppressSuggestionsAndFillingByDefault()`.
   bool expect_should_suppress_suggestions_and_filling;
+  // Whether the unrecognized autocomplete attribute value should lead to
+  // suppressing suggestions.
+  bool suppress_if_ac_unrecognized;
   const AutofillPredictionSource expected_source;
 };
 
@@ -536,7 +539,7 @@ TEST_P(AutocompleteUnrecognizedTypeTest, TypePredictions) {
   // Expect that the predicted type wins over ac=unrecognized.
   EXPECT_THAT(field.Type().GetTypes(), ElementsAre(test.predicted_type));
   EXPECT_EQ(field.ShouldSuppressSuggestionsAndFillingByDefault(
-                /*suppress_if_ac_unrecognized=*/true),
+                test.suppress_if_ac_unrecognized),
             test.expect_should_suppress_suggestions_and_filling);
   EXPECT_EQ(field.PredictionSource(), test.expected_source);
 }
@@ -549,18 +552,28 @@ INSTANTIATE_TEST_SUITE_P(
         AutocompleteUnrecognizedTypeTestCase{
             .predicted_type = ADDRESS_HOME_CITY,
             .expect_should_suppress_suggestions_and_filling = true,
+            .suppress_if_ac_unrecognized = true,
             .expected_source = AutofillPredictionSource::kServerCrowdsourcing},
         // Server overwrite: Expect suggestions/filling.
         AutocompleteUnrecognizedTypeTestCase{
             .predicted_type = ADDRESS_HOME_CITY,
             .is_server_overwrite = true,
             .expect_should_suppress_suggestions_and_filling = false,
+            .suppress_if_ac_unrecognized = true,
             .expected_source = AutofillPredictionSource::kServerOverride},
         // Credit card prediction: They ignore ac=unrecognized independently of
         // the feature. Thus, expect suggestions/filling.
         AutocompleteUnrecognizedTypeTestCase{
             .predicted_type = CREDIT_CARD_NUMBER,
             .expect_should_suppress_suggestions_and_filling = false,
+            .suppress_if_ac_unrecognized = true,
+            .expected_source = AutofillPredictionSource::kServerCrowdsourcing},
+        // Predicted address type but suppressing ac=unrecognized is disabled.
+        // This expect suggestions/filling.
+        AutocompleteUnrecognizedTypeTestCase{
+            .predicted_type = ADDRESS_HOME_LINE1,
+            .expect_should_suppress_suggestions_and_filling = false,
+            .suppress_if_ac_unrecognized = false,
             .expected_source =
                 AutofillPredictionSource::kServerCrowdsourcing}));
 

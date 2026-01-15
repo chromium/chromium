@@ -310,7 +310,6 @@ class AutofillField : public FormFieldData {
   // this field (independently of the predicted type).
   // `suppress_if_ac_unrecognized` denotes whether fields with unrecognized
   // autocomplete value can have suppressed suggestions in general.
-  // TODO(crbug.com/469428128): Handle `suppress_if_ac_unrecognized`.
   bool ShouldSuppressSuggestionsAndFillingByDefault(
       bool suppress_if_ac_unrecognized) const;
 

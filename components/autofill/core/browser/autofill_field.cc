@@ -799,7 +799,8 @@ bool AutofillField::HasExpirationDateType() const {
 bool AutofillField::ShouldSuppressSuggestionsAndFillingByDefault(
     bool suppress_if_ac_unrecognized) const {
   return html_type_ == HtmlFieldType::kUnrecognized &&
-         !server_type_prediction_is_override() && !IsCreditCardPrediction();
+         suppress_if_ac_unrecognized && !server_type_prediction_is_override() &&
+         !IsCreditCardPrediction();
 }
 
 void AutofillField::SetPasswordRequirements(PasswordRequirementsSpec spec) {
