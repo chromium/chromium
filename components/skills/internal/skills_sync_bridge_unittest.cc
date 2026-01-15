@@ -50,15 +50,20 @@ syncer::EntityData CreateSkillEntityData(
 
 class MockSkillsService : public SkillsService {
  public:
-  MOCK_METHOD(const Skill*,
-              AddSkill,
-              (const std::string&, const std::string&, const std::string&));
   MOCK_METHOD(void, LoadInitialSkills, (std::vector<std::unique_ptr<Skill>>));
   MOCK_METHOD(const Skill*, GetSkillById, (const std::string_view&), (const));
   MOCK_METHOD(const std::vector<std::unique_ptr<Skill>>&,
               GetSkills,
               (),
               (const));
+  MOCK_METHOD(const Skill*,
+              AddSkill,
+              (const std::string&, const std::string&, const std::string&));
+  MOCK_METHOD(const Skill*,
+              UpdateSkill,
+              (std::string_view, std::string_view, std::string_view,
+               std::string_view));
+  MOCK_METHOD(void, DeleteSkill, (std::string_view));
   MOCK_METHOD(void, AddObserver, (Observer*));
   MOCK_METHOD(void, RemoveObserver, (Observer*));
   MOCK_METHOD(base::WeakPtr<syncer::DataTypeControllerDelegate>,

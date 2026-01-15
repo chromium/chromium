@@ -24,7 +24,8 @@ namespace skills {
 
 struct Skill;
 
-// Core service for managing skills.
+// Core service in charge of performing CRUD operations for skills. Each profile
+// has one instance of this service.
 class SkillsService : public KeyedService {
  public:
   class Observer : public base::CheckedObserver {
@@ -45,6 +46,17 @@ class SkillsService : public KeyedService {
   virtual const Skill* AddSkill(const std::string& name,
                                 const std::string& icon,
                                 const std::string& prompt) = 0;
+
+  // Updates an existing skill.
+  // Returns a const pointer to the skill if update is successful.
+  // Returns nullptr if the skill does not exist.
+  virtual const Skill* UpdateSkill(std::string_view skill_id,
+                                   std::string_view name,
+                                   std::string_view icon,
+                                   std::string_view prompt) = 0;
+
+  // Deletes a skill if exists.
+  virtual void DeleteSkill(std::string_view skill_id) = 0;
 
   // Returns the skill with the given ID or nullptr if not found.
   virtual const Skill* GetSkillById(const std::string_view& skill_id) const = 0;

@@ -33,10 +33,21 @@ class SkillsServiceImpl : public SkillsService {
                     syncer::OnceDataTypeStoreFactory create_store_callback);
   ~SkillsServiceImpl() override;
 
-  // SkillsService implementation.
+  // TODO(crbug.com/475863107) Add strong typing to help caller avoid swapping
+  // order of arguments.
   const Skill* AddSkill(const std::string& name,
                         const std::string& icon,
                         const std::string& prompt) override;
+
+  // TODO(crbug.com/475863107) Add strong typing to help caller avoid swapping
+  // order of arguments.
+  const Skill* UpdateSkill(std::string_view skill_id,
+                           std::string_view name,
+                           std::string_view icon,
+                           std::string_view prompt) override;
+
+  void DeleteSkill(std::string_view skill_id) override;
+
   void LoadInitialSkills(
       std::vector<std::unique_ptr<Skill>> initial_skills) override;
   const Skill* GetSkillById(const std::string_view& skill_id) const override;
@@ -47,8 +58,13 @@ class SkillsServiceImpl : public SkillsService {
       override;
 
  private:
-  // Notifies all registered callbacks that the given skill have changed.
   void NotifySkillChanged(const std::string& skill_id);
+
+  // Whether the service is initialized.
+  bool is_initialized_ = false;
+
+  // Sorts the skills by name in alphabetical order.
+  void SortSkills();
 
   // The list of skills managed by this service.
   std::vector<std::unique_ptr<Skill>> skills_;

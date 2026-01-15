@@ -6284,6 +6284,12 @@ static_library("browser") {
     }
   }
 
+  if (enable_glic) {
+    if (is_win || is_mac || is_linux || is_chromeos) {
+      deps += [ "//chrome/browser/skills" ]
+    }
+  }
+
   if (enable_background_mode) {
     deps += [
       "//chrome/browser/background/extensions",
