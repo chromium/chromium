@@ -14,6 +14,8 @@ import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.transition.AutoTransition;
+import android.transition.TransitionManager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -251,18 +253,20 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
                 () -> {
                     searchBox.setVisibility(isShowingMainSettings() ? View.VISIBLE : View.GONE);
                 });
+
+        // Controls search UI visibility in single-column mode.
         mMultiColumnSettings
                 .getSlidingPaneLayout()
                 .addPanelSlideListener(
                         new SlidingPaneLayout.SimplePanelSlideListener() {
                             @Override
                             public void onPanelOpened(View panel) {
-                                searchBox.setVisibility(View.GONE);
+                                showUiInSingleColumn(searchBox, /* show= */ false);
                             }
 
                             @Override
                             public void onPanelClosed(View panel) {
-                                searchBox.setVisibility(View.VISIBLE);
+                                showUiInSingleColumn(searchBox, /* show= */ true);
                             }
                         });
 
@@ -277,6 +281,14 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
                             }
                         },
                         false);
+    }
+
+    private void showUiInSingleColumn(View searchBox, boolean show) {
+        if (mUseMultiColumn) return;
+
+        TransitionManager.beginDelayedTransition(
+                (ViewGroup) searchBox.getParent(), new AutoTransition());
+        searchBox.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     private boolean isShowingMainSettings() {
