@@ -27,21 +27,20 @@ GlicTabSubMenuModel::GlicTabSubMenuModel(TabStripModel* tab_strip_model,
     return;
   }
 
+  AddItem(TabStripModel::CommandGlicCreateNewChat,
+          l10n_util::GetStringUTF16(IDS_TAB_CXMENU_GLIC_CREATE_NEW_CHAT));
+
   recent_conversations_ =
       glic_service->window_controller().GetRecentConversations(
           kMaxRecentConversations);
 
-  for (size_t i = 0; i < recent_conversations_.size(); ++i) {
-    AddItem(kMinRecentConversationCommandId + i,
-            base::UTF8ToUTF16(recent_conversations_[i].title));
-  }
-
   if (!recent_conversations_.empty()) {
     AddSeparator(ui::NORMAL_SEPARATOR);
+    for (size_t i = 0; i < recent_conversations_.size(); ++i) {
+      AddItem(kMinRecentConversationCommandId + i,
+              base::UTF8ToUTF16(recent_conversations_[i].title));
+    }
   }
-
-  AddItem(TabStripModel::CommandGlicCreateNewChat,
-          l10n_util::GetStringUTF16(IDS_TAB_CXMENU_GLIC_CREATE_NEW_CHAT));
 }
 
 GlicTabSubMenuModel::~GlicTabSubMenuModel() = default;

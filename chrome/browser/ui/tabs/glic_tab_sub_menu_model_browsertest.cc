@@ -340,12 +340,18 @@ IN_PROC_BROWSER_TEST_F(GlicTabSubMenuModelTest, SwitchToRecentConversation) {
   ui::MenuModel* submenu = menu->GetSubmenuModelAt(share_index.value());
   ASSERT_TRUE(submenu);
 
+  // Verify that the menu contains "Create new chat" and a separator
+  EXPECT_EQ(submenu->GetCommandIdAt(0),
+            TabStripModel::CommandGlicCreateNewChat);
+  EXPECT_EQ(submenu->GetTypeAt(1), ui::MenuModel::TYPE_SEPARATOR);
+
   // Verify all 5 conversations are present and in the correct order (most
   // recent first).
   for (size_t i = 0; i < 5; ++i) {
     std::u16string expected_title =
         base::UTF8ToUTF16("Title " + base::NumberToString(5 - i));
-    EXPECT_EQ(submenu->GetLabelAt(i), expected_title);
+    // Offset by 2 for "Create new chat" and the separator
+    EXPECT_EQ(submenu->GetLabelAt(i + 2), expected_title);
   }
 
   // Now verify that we can switch a tab to a recent conversation.
