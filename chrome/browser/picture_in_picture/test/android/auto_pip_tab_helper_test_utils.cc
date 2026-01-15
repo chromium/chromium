@@ -78,6 +78,12 @@ JNI_AutoPictureInPictureTabHelperTestUtils_SetIsUsingCameraOrMicrophone(
       is_using_camera_or_microphone);
 }
 
+static bool JNI_AutoPictureInPictureTabHelperTestUtils_IsCurrentlyAudible(
+    JNIEnv* env,
+    content::WebContents* web_contents) {
+  return web_contents->IsCurrentlyAudible();
+}
+
 }  // namespace picture_in_picture
 
 DEFINE_JNI(AutoPictureInPictureTabHelperTestUtils)

@@ -2042,8 +2042,6 @@ data/accessibility/css/carousel-positioned-buttons-expected-blink.txt
 data/accessibility/css/carousel-positioned-buttons.html
 data/accessibility/css/carousel-with-column-tabs-dynamic-expected-blink.txt
 data/accessibility/css/carousel-with-column-tabs-dynamic.html
-data/accessibility/css/carousel-with-wrapped-column-tabs-dynamic-expected-blink.txt
-data/accessibility/css/carousel-with-wrapped-column-tabs-dynamic.html
 data/accessibility/css/carousel-with-column-tabs-expected-blink.txt
 data/accessibility/css/carousel-with-column-tabs.html
 data/accessibility/css/carousel-with-links-expected-android-external.txt
@@ -2056,6 +2054,8 @@ data/accessibility/css/carousel-with-tabs-expected-android-external.txt
 data/accessibility/css/carousel-with-tabs-expected-auralinux.txt
 data/accessibility/css/carousel-with-tabs-expected-blink.txt
 data/accessibility/css/carousel-with-tabs.html
+data/accessibility/css/carousel-with-wrapped-column-tabs-dynamic-expected-blink.txt
+data/accessibility/css/carousel-with-wrapped-column-tabs-dynamic.html
 data/accessibility/css/color-expected-android-assist-data.txt
 data/accessibility/css/color-expected-android-external.txt
 data/accessibility/css/color-expected-android.txt
@@ -8103,6 +8103,9 @@ data/media/session/video-1second.webm
 data/media/session/video-4seconds.webm
 data/media/session/video-6seconds-silent.webm
 data/media/session/video-6seconds.webm
+data/media/session/video-audible-1second.webm
+data/media/session/video-audible-4seconds.webm
+data/media/session/video-audible-6seconds.webm
 data/media/shape_detection_test.html
 data/media/too_many_web_media_players_intervention_test.html
 data/media/tulip2.webm

@@ -587,6 +587,13 @@ public class AutoPictureInPictureTabHelperTest {
         // Start playing the video.
         DOMUtils.playMedia(webContents, VIDEO_ID);
         DOMUtils.waitForMediaPlay(webContents, VIDEO_ID);
+
+        // Wait for the video to be audible.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> AutoPictureInPictureTabHelperTestUtils.isCurrentlyAudible(webContents),
+                "Video did not become audible.",
+                PIP_TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     /**

@@ -16169,16 +16169,19 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MediaIndicatorsAndroid"
-                    ]
-                },
-                {
                     "name": "EnabledWithEnhancedAudioResponsiveness",
                     "enable_features": [
                         "EnableAudioMonitoringOnAndroid",
                         "MediaIndicatorsAndroid"
+                    ]
+                },
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MediaIndicatorsAndroid"
+                    ],
+                    "disable_features": [
+                        "EnableAudioMonitoringOnAndroid"
                     ]
                 }
             ]
