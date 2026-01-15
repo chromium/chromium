@@ -91,20 +91,22 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
     : ToolbarIconContainerView(/*uses_highlight=*/true),
       browser_(browser),
       model_(ToolbarActionsModel::Get(browser_->profile())),
-      extensions_menu_coordinator_(
-          base::FeatureList::IsEnabled(
-              extensions_features::kExtensionsMenuAccessControl)
-              ? std::make_unique<ExtensionsMenuCoordinator>(browser_)
-              : nullptr),
-      extensions_button_(
-          new ExtensionsToolbarButton(browser,
-                                      this,
-                                      extensions_menu_coordinator_.get())),
       display_mode_(display_mode),
       action_hover_card_controller_(
           std::make_unique<ToolbarActionHoverCardController>(this)),
       toolbar_view_model_(
-          std::make_unique<ExtensionsToolbarViewModel>(this, model_)) {
+          std::make_unique<ExtensionsToolbarViewModel>(this, model_)),
+      extensions_menu_coordinator_(
+          base::FeatureList::IsEnabled(
+              extensions_features::kExtensionsMenuAccessControl)
+              ? std::make_unique<ExtensionsMenuCoordinator>(
+                    browser,
+                    toolbar_view_model_.get())
+              : nullptr),
+      extensions_button_(
+          new ExtensionsToolbarButton(browser,
+                                      this,
+                                      extensions_menu_coordinator_.get())) {
   SetProperty(views::kElementIdentifierKey,
               kToolbarExtensionsContainerElementId);
 

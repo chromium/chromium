@@ -204,9 +204,7 @@ void ExtensionsToolbarButton::ToggleExtensionsMenu() {
       base::RecordAction(base::UserMetricsAction(
           "Extensions.Toolbar.MenuOpenedWhenExtensionsAreRequestingAccess"));
     }
-    extensions_menu_coordinator_->Show(
-        this, extensions_toolbar_container_->GetToolbarViewModel(),
-        extensions_toolbar_container_);
+    extensions_menu_coordinator_->Show(this, extensions_toolbar_container_);
     menu = extensions_menu_coordinator_->GetExtensionsMenuWidget();
   } else {
     // Desktop Android will use the

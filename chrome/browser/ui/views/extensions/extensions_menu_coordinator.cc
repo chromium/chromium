@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
@@ -20,8 +21,11 @@
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 
-ExtensionsMenuCoordinator::ExtensionsMenuCoordinator(Browser* browser)
-    : browser_(browser) {}
+ExtensionsMenuCoordinator::ExtensionsMenuCoordinator(
+    Browser* browser,
+    ExtensionsContainer* extensions_container)
+    : browser_(browser),
+      extensions_container_(CHECK_DEREF(extensions_container)) {}
 
 ExtensionsMenuCoordinator::~ExtensionsMenuCoordinator() {
   if (views::Widget* const menu = GetExtensionsMenuWidget()) {
@@ -33,12 +37,11 @@ ExtensionsMenuCoordinator::~ExtensionsMenuCoordinator() {
 
 void ExtensionsMenuCoordinator::Show(
     views::BubbleAnchor anchor,
-    ExtensionsContainer* extensions_container,
     ExtensionsContainerViews* extensions_container_views) {
   DCHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
   std::unique_ptr<views::BubbleDialogDelegate> bubble_delegate =
-      CreateExtensionsMenuBubbleDialogDelegate(anchor, extensions_container,
+      CreateExtensionsMenuBubbleDialogDelegate(anchor,
                                                extensions_container_views);
 
   views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate))->Show();
@@ -66,16 +69,14 @@ views::Widget* ExtensionsMenuCoordinator::GetExtensionsMenuWidget() {
 std::unique_ptr<views::BubbleDialogDelegate>
 ExtensionsMenuCoordinator::CreateExtensionsMenuBubbleDialogDelegateForTesting(
     views::BubbleAnchor anchor,
-    ExtensionsContainer* extensions_container,
     ExtensionsContainerViews* extensions_container_views) {
-  return CreateExtensionsMenuBubbleDialogDelegate(anchor, extensions_container,
+  return CreateExtensionsMenuBubbleDialogDelegate(anchor,
                                                   extensions_container_views);
 }
 
 std::unique_ptr<views::BubbleDialogDelegate>
 ExtensionsMenuCoordinator::CreateExtensionsMenuBubbleDialogDelegate(
     views::BubbleAnchor anchor,
-    ExtensionsContainer* extensions_container,
     ExtensionsContainerViews* extensions_container_views) {
   DCHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
@@ -99,7 +100,7 @@ ExtensionsMenuCoordinator::CreateExtensionsMenuBubbleDialogDelegate(
   bubble_tracker_.SetView(bubble_contents);
 
   menu_delegate_ = std::make_unique<ExtensionsMenuDelegateDesktop>(
-      browser_, extensions_container, extensions_container_views,
+      browser_, &extensions_container_.get(), extensions_container_views,
       bubble_contents);
   menu_delegate_->OpenMainPage();
 

@@ -167,7 +167,7 @@ WebUIBrowserExtensionsContainer::WebUIBrowserExtensionsContainer(
       window_(window),
       model_(*ToolbarActionsModel::Get(browser.profile())),
       extensions_menu_coordinator_(
-          std::make_unique<ExtensionsMenuCoordinator>(&browser_.get())) {
+          std::make_unique<ExtensionsMenuCoordinator>(&browser_.get(), this)) {
   CreateActions();
   observe_actions_.Observe(&model_.get());
 }
@@ -211,7 +211,7 @@ void WebUIBrowserExtensionsContainer::ToggleExtensionsMenu() {
     extensions_menu_coordinator_->Hide();
   } else {
     extensions_menu_coordinator_->Show(window_->GetExtensionsMenuButtonAnchor(),
-                                       this, this);
+                                       this);
   }
 }
 

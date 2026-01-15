@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_COORDINATOR_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view_observer.h"
@@ -23,7 +24,8 @@ class Widget;
 // Handles the lifetime and showing/hidden state of the extensions menu bubble.
 class ExtensionsMenuCoordinator : public views::ViewObserver {
  public:
-  explicit ExtensionsMenuCoordinator(Browser* browser);
+  ExtensionsMenuCoordinator(Browser* browser,
+                            ExtensionsContainer* extensions_container);
   ExtensionsMenuCoordinator(const ExtensionsMenuCoordinator&) = delete;
   const ExtensionsMenuCoordinator& operator=(const ExtensionsMenuCoordinator&) =
       delete;
@@ -31,7 +33,6 @@ class ExtensionsMenuCoordinator : public views::ViewObserver {
 
   // Displays the extensions menu under `anchor`.
   void Show(views::BubbleAnchor anchor,
-            ExtensionsContainer* extensions_container,
             ExtensionsContainerViews* extensions_container_views);
 
   // Hides the currently-showing extensions menu, if it exists.
@@ -50,7 +51,6 @@ class ExtensionsMenuCoordinator : public views::ViewObserver {
   std::unique_ptr<views::BubbleDialogDelegate>
   CreateExtensionsMenuBubbleDialogDelegateForTesting(
       views::BubbleAnchor anchor,
-      ExtensionsContainer* extensions_container,
       ExtensionsContainerViews* extensions_container_views);
 
  private:
@@ -58,7 +58,6 @@ class ExtensionsMenuCoordinator : public views::ViewObserver {
   std::unique_ptr<views::BubbleDialogDelegate>
   CreateExtensionsMenuBubbleDialogDelegate(
       views::BubbleAnchor anchor,
-      ExtensionsContainer* extensions_container,
       ExtensionsContainerViews* extensions_container_views);
 
   // views::ViewObserver
@@ -66,6 +65,9 @@ class ExtensionsMenuCoordinator : public views::ViewObserver {
 
   const raw_ptr<Browser> browser_;
   views::ViewTracker bubble_tracker_;
+
+  // The `ExtensionsContainer` to use. It must outlive `this`.
+  raw_ref<ExtensionsContainer> extensions_container_;
 
   base::ScopedObservation<views::View, views::ViewObserver>
       bubble_view_observation_{this};

@@ -164,7 +164,6 @@ void ExtensionsMenuTestUtil::OpenExtensionsMenu() {
         extensions_toolbar_container_->GetExtensionsMenuCoordinatorForTesting()
             ->CreateExtensionsMenuBubbleDialogDelegateForTesting(
                 extensions_toolbar_container_->GetExtensionsButton(),
-                extensions_toolbar_container_->GetToolbarViewModel(),
                 extensions_toolbar_container_);
   } else {
     bubble_dialog = std::make_unique<ExtensionsMenuView>(

@@ -329,14 +329,6 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   const raw_ptr<Browser> browser_;
   const raw_ptr<ToolbarActionsModel> model_;
 
-  // Coordinator to show and hide the ExtensionsMenuView.
-  const std::unique_ptr<ExtensionsMenuCoordinator> extensions_menu_coordinator_;
-
-  const raw_ptr<ExtensionsToolbarButton, AcrossTasksDanglingUntriaged>
-      extensions_button_;
-  raw_ptr<ExtensionsRequestAccessButton, DanglingUntriaged>
-      request_access_button_ = nullptr;
-
   DisplayMode display_mode_;
 
   // Controller for showing the toolbar action hover card.
@@ -345,6 +337,14 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
 
   // The view model for this container.
   std::unique_ptr<ExtensionsToolbarViewModel> toolbar_view_model_;
+
+  // Coordinator to show and hide the ExtensionsMenuView.
+  const std::unique_ptr<ExtensionsMenuCoordinator> extensions_menu_coordinator_;
+
+  const raw_ptr<ExtensionsToolbarButton, AcrossTasksDanglingUntriaged>
+      extensions_button_;
+  raw_ptr<ExtensionsRequestAccessButton, DanglingUntriaged>
+      request_access_button_ = nullptr;
 
   // View for every action, does not imply pinned or currently shown.
   ToolbarIcons icons_;
