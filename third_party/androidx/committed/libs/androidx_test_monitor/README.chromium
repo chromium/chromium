@@ -1,7 +1,7 @@
 Name: AndroidX Test Library
 Short Name: monitor
-URL: https://dl.google.com/dl/android/maven2/androidx/test/monitor/1.8.0/monitor-1.8.0.aar
-Version: 1.8.0
+URL: https://dl.google.com/dl/android/maven2/androidx/test/monitor/1.9.0-alpha01/monitor-1.9.0-alpha01.aar
+Version: 1.9.0-alpha01
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE

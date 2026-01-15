@@ -1057,7 +1057,7 @@
     {
         "name": "monitor",
         "group": "androidx.test",
-        "version": "1.8.0"
+        "version": "1.9.0-alpha01"
     },
     {
         "name": "rules",
