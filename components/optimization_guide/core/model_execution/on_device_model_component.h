@@ -202,6 +202,7 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
     bool on_device_feature_recently_used = false;
     bool enabled_by_feature = false;
     bool enabled_by_enterprise_policy = false;
+    bool enabled_by_user_setting = false;
 
     // Reasons to uninstall. TODO(302327114): Add UMA for uninstall reason.
     bool out_of_retention = false;
@@ -227,7 +228,7 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
 
     bool is_model_allowed() const {
       return device_capable && enabled_by_feature &&
-             enabled_by_enterprise_policy;
+             enabled_by_enterprise_policy && enabled_by_user_setting;
     }
 
     bool should_install() const {
@@ -241,7 +242,7 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
     bool should_uninstall() const {
       return (is_already_installing &&
               (is_running_out_of_disk_space() || out_of_retention ||
-               !enabled_by_enterprise_policy));
+               !enabled_by_enterprise_policy || !enabled_by_user_setting));
     }
   };
 
@@ -304,6 +305,8 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
   void OnPerformanceClassAvailable();
 
   void OnGenAILocalFoundationalModelEnterprisePolicyChanged();
+
+  void OnGenAILocalFoundationalModelUserSettingChanged();
 
   // UsageTracker::Observer:
   void OnDeviceEligibleFeatureUsed(mojom::OnDeviceFeature feature) override;

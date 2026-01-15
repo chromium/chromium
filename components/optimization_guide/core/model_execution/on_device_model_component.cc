@@ -71,6 +71,8 @@ void LogInstallCriteria(
                      criteria.enabled_by_feature);
   LogInstallCriteria(event_name, "EnabledByEnterprisePolicy",
                      criteria.enabled_by_enterprise_policy);
+  LogInstallCriteria(event_name, "EnabledByUserSetting",
+                     criteria.enabled_by_user_setting);
   LogInstallCriteria(event_name, "All", criteria.should_install());
 }
 
@@ -234,6 +236,11 @@ OnDeviceModelComponentStateManager::OnDeviceModelComponentStateManager(
           &OnDeviceModelComponentStateManager::
               OnGenAILocalFoundationalModelEnterprisePolicyChanged,
           weak_ptr_factory_.GetWeakPtr()));
+  pref_change_registrar_.Add(
+      model_execution::prefs::localstate::kOnDeviceAiUserSettingsEnabled,
+      base::BindRepeating(&OnDeviceModelComponentStateManager::
+                              OnGenAILocalFoundationalModelUserSettingChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
   model_execution::prefs::PruneOldUsagePrefs(local_state_);
   performance_classifier_->ListenForPerformanceClassAvailable(base::BindOnce(
       &OnDeviceModelComponentStateManager::OnPerformanceClassAvailable,
@@ -338,6 +345,12 @@ void OnDeviceModelComponentStateManager::
   BeginUpdateRegistration();
 }
 
+void OnDeviceModelComponentStateManager::
+    OnGenAILocalFoundationalModelUserSettingChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  BeginUpdateRegistration();
+}
+
 void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed(
     mojom::OnDeviceFeature feature) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -366,6 +379,8 @@ void OnDeviceModelComponentStateManager::BeginUpdateRegistration() {
     registration_criteria_->device_capable = true;
     registration_criteria_->enabled_by_feature = true;
     registration_criteria_->enabled_by_enterprise_policy = true;
+    registration_criteria_->enabled_by_user_setting = true;
+
     if (!state_) {
       SetReady(base::Version("override"), *model_path_override_switch,
                MakeOverrideManifest());
@@ -393,6 +408,8 @@ OnDeviceModelComponentStateManager::ComputeRegistrationCriteria(
       GetGenAILocalFoundationalModelEnterprisePolicySettings(local_state_) ==
       model_execution::prefs::
           GenAILocalFoundationalModelEnterprisePolicySettings::kAllowed;
+  result.enabled_by_user_setting = local_state_->GetBoolean(
+      model_execution::prefs::localstate::kOnDeviceAiUserSettingsEnabled);
 
   auto last_time_eligible =
       local_state_->GetTime(model_execution::prefs::localstate::

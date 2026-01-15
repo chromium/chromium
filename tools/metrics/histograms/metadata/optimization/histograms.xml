@@ -1176,6 +1176,8 @@ chromium-metrics-reviews@google.com.
         summary="model installation is enabled by enterprise policy"/>
     <variant name="EnabledByFeature"
         summary="model installation is enabled by feature"/>
+    <variant name="EnabledByUserSetting"
+        summary="model installation is enabled by user setting"/>
     <variant name="FeatureUse"
         summary="There has been recent feature use that could benefit from an
                  on-device model"/>

@@ -51,6 +51,7 @@ using model_execution::prefs::localstate::
 using model_execution::prefs::localstate::
     kLastTimeEligibleForOnDeviceModelDownload;
 using model_execution::prefs::localstate::kLastUsageByFeature;
+using model_execution::prefs::localstate::kOnDeviceAiUserSettingsEnabled;
 using model_execution::prefs::localstate::kOnDevicePerformanceClassVersion;
 using ::on_device_model::mojom::PerformanceClass;
 
@@ -172,6 +173,14 @@ TEST_F(OnDeviceModelComponentTest, InstallsWhenEligible) {
       true, 1);
   histograms_.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtRegistration.EnabledByEnterprisePolicy",
+      true, 1);
+  histograms_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtRegistration.EnabledByUserSetting",
+      true, 1);
+  histograms_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
       "AtRegistration.All",
       true, 1);
 }
@@ -260,6 +269,40 @@ TEST_F(OnDeviceModelComponentTest, DynamicEnterprisePolicyChange) {
       kGenAILocalFoundationalModelEnterprisePolicySettings,
       static_cast<int>(
           GenAILocalFoundationalModelEnterprisePolicySettings::kAllowed));
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(WaitUntilInstallerRegistered());
+}
+
+TEST_F(OnDeviceModelComponentTest, DoesNotInstallWhenDisabledByUserSetting) {
+  // It should not install when disabled by user setting.
+  broker_.local_state().SetBoolean(kOnDeviceAiUserSettingsEnabled, false);
+  DoStartup();
+  EnsurePerformanceClassAvailable();
+  ASSERT_FALSE(WaitForUnexpectedInstallerRegistered());
+  histograms_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtRegistration.EnabledByUserSetting",
+      false, 1);
+}
+
+// Dynamically change the on-device AI enabled pref and ensure the component is
+// installed/uninstalled accordingly.
+TEST_F(OnDeviceModelComponentTest, DynamicOnDeviceAIEnabledChange) {
+  DoStartup();
+  EnsurePerformanceClassAvailable();
+  ASSERT_TRUE(WaitUntilInstallerRegistered());
+  histograms_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtRegistration.EnabledByUserSetting",
+      true, 1);
+
+  // Disabling the pref should trigger uninstallation.
+  broker_.local_state().SetBoolean(kOnDeviceAiUserSettingsEnabled, false);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return broker_.component_state().uninstall_called(); }));
+
+  // Enabling the pref should trigger installation.
+  broker_.local_state().SetBoolean(kOnDeviceAiUserSettingsEnabled, true);
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(WaitUntilInstallerRegistered());
 }
