@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/debug/leak_annotations.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -495,6 +496,37 @@ TEST_F(V4DatabaseTest, TestStoresAvailable) {
   EXPECT_FALSE(v4_database_->AreAllStoresAvailable(StoresToCheck({bogus_id})));
 }
 
+namespace {
+
+// Test class for tracking lifetime of base::RepeatingClosure passed to
+// V4Database::ApplyUpdate().
+class TestApplyUpdateCallback {
+ public:
+  TestApplyUpdateCallback() = default;
+  ~TestApplyUpdateCallback() = default;
+
+  base::RepeatingClosure CreateRepeatingClosure() {
+    was_callback_destroyed_ = true;
+    return base::BindRepeating(&TestApplyUpdateCallback::Run,
+                               weak_ptr_factory_.GetWeakPtr(),
+                               base::Owned(new base::AutoReset<bool>(
+                                   &was_callback_destroyed_, false)));
+  }
+
+  bool was_called() const { return was_called_; }
+
+  bool was_callback_destroyed() const { return was_callback_destroyed_; }
+
+ private:
+  void Run(base::AutoReset<bool>* param) { was_called_ = true; }
+
+  bool was_called_ = false;
+  bool was_callback_destroyed_ = false;
+  base::WeakPtrFactory<TestApplyUpdateCallback> weak_ptr_factory_{this};
+};
+
+}  // anonymous namespace
+
 // Test to ensure that the callback to the database is dropped when the database
 // gets destroyed. See http://crbug.com/683147#c5 for more details.
 TEST_F(V4DatabaseTest, UsingWeakPtrDropsCallback) {
@@ -504,7 +536,7 @@ TEST_F(V4DatabaseTest, UsingWeakPtrDropsCallback) {
   RegisterFactory();
 
   // Step 1: Create the database.
-  WaitForV4DatabaseReady(CreateTaskRunner(),
+  WaitForV4DatabaseReady(db_task_runner,
                          /*simple_task_runners_to_wait_for=*/{db_task_runner});
 
   // Step 2: Try to update the database. This posts V4Store::ApplyUpdate() on
@@ -518,21 +550,24 @@ TEST_F(V4DatabaseTest, UsingWeakPtrDropsCallback) {
   lur->set_response_type(ListUpdateResponse::FULL_UPDATE);
   parsed_server_response->push_back(std::move(lur));
 
-  // We pass |null_callback| as the second argument to |ApplyUpdate| since we
-  // expect it to not get called. This callback method is called from
-  // V4Database::UpdatedStoreReady but we expect that call to get dropped.
+  // The callback passed to ApplyUpdate() is called from V4Store::ApplyUpdate().
+  // We expect the callback not to be executed. Use TestApplyUpdateCallback to
+  // verify this.
+  TestApplyUpdateCallback test_callback;
   v4_database_->ApplyUpdate(std::move(parsed_server_response),
-                            base::NullCallback());
+                            test_callback.CreateRepeatingClosure());
 
   // Step 3: Post task to destroy V4Database on db thread.
   v4_database_.reset();
+  EXPECT_FALSE(test_callback.was_callback_destroyed());
 
   // Step 4: Simulate V4Database::~V4Database() being called on db thread prior
   // to V4Database::UpdatedStoreReady() being called on UI thread.
   // V4Database::UpdatedStoreReady() is posted to the UI thread from
   // V4Store::ApplyUpdate().
   db_task_runner->RunPendingTasks();
-  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(test_callback.was_callback_destroyed());
+  EXPECT_FALSE(test_callback.was_called());
 }
 
 }  // namespace safe_browsing
