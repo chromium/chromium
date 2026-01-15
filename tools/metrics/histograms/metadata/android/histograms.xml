@@ -7137,7 +7137,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.DevUi.AppLaunch" enum="Boolean"
-    expires_after="2026-01-15">
+    expires_after="2026-07-15">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -7148,7 +7148,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.DevUi.CrashList.CollectionState"
-    enum="AndroidWebViewCrashCollectionState" expires_after="2026-01-15">
+    enum="AndroidWebViewCrashCollectionState" expires_after="2026-07-15">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -7162,7 +7162,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.DevUi.CrashList.CrashInteraction"
-    enum="AndroidWebViewCrashInteraction" expires_after="2026-01-15">
+    enum="AndroidWebViewCrashInteraction" expires_after="2026-07-15">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -7178,7 +7178,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.DevUi.DeveloperModeEnabled"
-    enum="BooleanEnabled" expires_after="2026-01-15">
+    enum="BooleanEnabled" expires_after="2026-07-15">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -7189,7 +7189,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.DevUi.FlagLoadingBlockingTime" units="ms"
-    expires_after="2026-01-15">
+    expires_after="2026-07-15">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -7201,7 +7201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.DevUi.FlagsUi.ToggledFromSearch"
-    enum="Boolean" expires_after="2026-01-15">
+    enum="Boolean" expires_after="2026-07-15">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -7214,7 +7214,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.DevUi.FragmentNavigation.{NavType}"
-    enum="AndroidWebViewDevUiFragments" expires_after="2026-01-15">
+    enum="AndroidWebViewDevUiFragments" expires_after="2026-07-15">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -7233,7 +7233,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.DevUi.MenuSelection"
-    enum="AndroidWebViewDevUiMenu" expires_after="2026-01-15">
+    enum="AndroidWebViewDevUiMenu" expires_after="2026-07-15">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -7282,7 +7282,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.DevUi.ToggledFlagCount" units="flags"
-    expires_after="2026-01-15">
+    expires_after="2026-07-15">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
