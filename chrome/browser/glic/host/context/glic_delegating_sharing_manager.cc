@@ -298,8 +298,6 @@ void GlicDelegatingSharingManagerBase::ForceNotify(
   for (auto* tab : old_pinned_tabs) {
     tab_pinning_status_changed_callback_list_.Notify(
         tabs::TabInterface::GetFromContents(tab), false);
-    // TODO(crbug.com/461849870): once metadata getters are implemented,
-    // consider caching and returning a meaningful event here.
     tab_pinning_status_event_callback_list_.Notify(
         tabs::TabInterface::GetFromContents(tab), GetEmptyUnpinEvent());
   }
@@ -307,8 +305,6 @@ void GlicDelegatingSharingManagerBase::ForceNotify(
   for (auto* tab : GetPinnedTabs()) {
     tab_pinning_status_changed_callback_list_.Notify(
         tabs::TabInterface::GetFromContents(tab), true);
-    // TODO(crbug.com/461849870): once metadata getters are implemented,
-    // consider returning a meaningful event here.
     tab_pinning_status_event_callback_list_.Notify(
         tabs::TabInterface::GetFromContents(tab), GetEmptyPinEvent());
   }
