@@ -4799,21 +4799,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram
-    name="Autofill.Leipzig.Duplication.NumberOfLocalSupersetProfilesOnStartup"
-    units="Profiles" expires_after="2026-07-12">
-  <owner>koerber@google.com</owner>
-  <owner>fleimgruber@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Logs the number of kLocalOrSynable profiles that are a strict superset of
-    some kAccount profile. This corresponds to the number of profiles that
-    cannot be automatically deduplicated, since no profiles should be silently
-    deleted from the account storage. Emitted when the Chrome user profile is
-    loaded.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.Leipzig.FillingAssistanceCategory"
     enum="AutofillCategoryResolvedFillingAssistance" expires_after="2026-05-24">
   <owner>koerber@chromium.org</owner>

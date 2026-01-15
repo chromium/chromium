@@ -309,38 +309,6 @@ void AddressDataManager::UpdateProfile(const AutofillProfile& profile) {
   if (!webdata_service_) {
     return;
   }
-
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillDeduplicateAccountAddresses)) {
-    UpdateProfileInDB(profile);
-    return;
-  }
-
-  // The profile is a duplicate of an existing profile if it has a distinct GUID
-  // but the same content.
-  // Duplicates can exist across record types.
-  const std::vector<const AutofillProfile*> profiles =
-      GetProfilesByRecordType(profile.record_type());
-  auto duplicate_profile_iter = std::ranges::find_if(
-      profiles, [&profile](const AutofillProfile* other_profile) {
-        return profile.guid() != other_profile->guid() &&
-               other_profile->Compare(profile) == 0;
-      });
-
-  // Remove the profile if it is a duplicate of another already existing
-  // profile.
-  if (duplicate_profile_iter != profiles.end()) {
-    // Keep the more recently used version of the profile.
-    if (profile.usage_history().use_date() >
-        (*duplicate_profile_iter)->usage_history().use_date()) {
-      UpdateProfileInDB(profile);
-      RemoveProfile((*duplicate_profile_iter)->guid());
-    } else {
-      RemoveProfile(profile.guid());
-    }
-    return;
-  }
-
   UpdateProfileInDB(profile);
 }
 
@@ -876,13 +844,6 @@ void AddressDataManager::LogStoredDataMetrics() const {
   autofill_metrics::LogStoredProfileMetrics(profile_pointers);
   autofill_metrics::LogStoredProfileTokenQualityMetrics(profile_pointers);
   autofill_metrics::LogStoredProfileCountWithAlternativeName(profile_pointers);
-  // TODO(crbug.com/357074792): Once the feature is launched, remove the
-  // code inside the if-statement, it won't be needed anymore.
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillDeduplicateAccountAddresses)) {
-    autofill_metrics::LogLocalProfileSupersetMetrics(
-        std::move(profile_pointers), app_locale_);
-  }
 }
 
 void AddressDataManager::RemoveProfileImpl(

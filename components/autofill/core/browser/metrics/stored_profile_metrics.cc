@@ -88,33 +88,6 @@ void LogStoredProfileMetrics(
       }));
 }
 
-void LogLocalProfileSupersetMetrics(
-    std::vector<const AutofillProfile*> profiles,
-    std::string_view app_locale) {
-  // Place all local profiles before all account profiles.
-  auto account_profiles = std::ranges::partition(
-      profiles, std::not_fn(&AutofillProfile::IsAccountProfile));
-  // Determines if a given `profile` is a strict superset of any account
-  // profile.
-  auto is_account_superset = [&, comparator =
-                                     AutofillProfileComparator(app_locale)](
-                                 const AutofillProfile* profile) {
-    return std::ranges::any_of(account_profiles,
-                               [&](const AutofillProfile* account_profile) {
-                                 return profile->IsStrictSupersetOf(
-                                     comparator, *account_profile);
-                               });
-  };
-  // Count the number of local profiles which are a superset of some account
-  // profile.
-  base::UmaHistogramCounts100(
-      "Autofill.Leipzig.Duplication.NumberOfLocalSupersetProfilesOnStartup",
-      std::ranges::count_if(profiles.begin(), account_profiles.begin(),
-                            [&](const AutofillProfile* local_profile) {
-                              return is_account_superset(local_profile);
-                            }));
-}
-
 void LogStoredProfileCountWithAlternativeName(
     base::span<const AutofillProfile* const> profiles) {
   size_t count =
