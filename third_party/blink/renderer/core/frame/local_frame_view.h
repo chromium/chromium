@@ -1060,6 +1060,11 @@ class CORE_EXPORT LocalFrameView final
   void ForAllNonThrottledLocalFrameViews(
       base::FunctionRef<void(LocalFrameView&)>,
       TraversalOrder = kPreOrder);
+  // Same as above, but the callback returns a boolean. If the callback returns
+  // false, the iteration will not continue into the subtree of the current
+  // frame. This only supports PreOrder traversal.
+  void ForAllNonThrottledLocalFrameViews(
+      base::FunctionRef<bool(LocalFrameView&)>);
   void ForAllThrottledLocalFrameViews(base::FunctionRef<void(LocalFrameView&)>);
 
   void ForAllRemoteFrameViews(base::FunctionRef<void(RemoteFrameView&)>);

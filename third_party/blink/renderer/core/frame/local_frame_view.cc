@@ -429,6 +429,19 @@ void LocalFrameView::ForAllNonThrottledLocalFrameViews(
     function(*this);
 }
 
+void LocalFrameView::ForAllNonThrottledLocalFrameViews(
+    base::FunctionRef<bool(LocalFrameView&)> function) {
+  if (ShouldThrottleRendering()) {
+    return;
+  }
+
+  if (function(*this)) {
+    ForAllChildLocalFrameViews([&function](LocalFrameView& child_view) {
+      child_view.ForAllNonThrottledLocalFrameViews(function);
+    });
+  }
+}
+
 // Note: if this logic is updated, `ForAllNonThrottledLocalFrameViews()` may
 // need to be updated as well.
 void LocalFrameView::ForAllThrottledLocalFrameViews(
@@ -3174,12 +3187,18 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
   StackScrollTranslationVector scroll_translation_nodes;
   ForAllNonThrottledLocalFrameViews([&scroll_translation_nodes](
                                         LocalFrameView& frame_view) {
+    // Skip scroll nodes from detached frames, or any subframe of a detached
+    // frame.
+    if (!frame_view.IsAttached() && !frame_view.GetFrame().IsLocalRoot()) {
+      return false;
+    }
     for (const auto& area : frame_view.scrollable_areas_with_scroll_node_) {
       const auto* paint_properties =
           area->GetLayoutBox()->FirstFragment().PaintProperties();
       CHECK(paint_properties && paint_properties->Scroll());
       scroll_translation_nodes.push_back(paint_properties->ScrollTranslation());
     }
+    return true;
   });
 
   Vector<std::unique_ptr<ViewTransitionRequest>> view_transition_requests;
@@ -3195,11 +3214,17 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
   if (RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
     ForAllNonThrottledLocalFrameViews([&all_canvas_draw_element_ids](
                                           LocalFrameView& frame_view) {
+      // Skip canvas draw elements from detached frames, or any subframe of
+      // a detached frame.
+      if (!frame_view.IsAttached() && !frame_view.GetFrame().IsLocalRoot()) {
+        return false;
+      }
       if (auto* frame_layout_view = frame_view.GetLayoutView()) {
         if (PaintLayer* root_layer = frame_layout_view->Layer()) {
           CollectCanvasDrawElementIds(root_layer, all_canvas_draw_element_ids);
         }
       }
+      return true;
     });
   }
 
@@ -3216,8 +3241,10 @@ void LocalFrameView::AppendViewTransitionRequests(
   DCHECK(frame_->IsLocalRoot());
 
   ForAllNonThrottledLocalFrameViews([&requests](LocalFrameView& frame_view) {
-    if (!frame_view.GetFrame().GetDocument())
+    // TODO: We should skip view transition requests from detached frames.
+    if (!frame_view.GetFrame().GetDocument()) {
       return;
+    }
 
     auto pending_requests = ViewTransitionUtils::GetPendingRequests(
         *frame_view.GetFrame().GetDocument());
