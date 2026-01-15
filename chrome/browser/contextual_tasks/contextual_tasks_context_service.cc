@@ -117,6 +117,18 @@ void RecordTabSelectionMetrics(std::set<GURL> relevant_tab_urls,
                               excess_urls.size());
 }
 
+double GetTabScore(const TabSelectionOptions& options,
+                   const TabSignals& signals) {
+  switch (options.tab_selection_mode) {
+    case mojom::TabSelectionMode::kStaticSignalsOnly:
+      return GetScoreWithStaticSignals(signals);
+    case mojom::TabSelectionMode::kMultiSignalScoring:
+      return GetScoreWithAllSignals(signals);
+    case mojom::TabSelectionMode::kEmbeddingsMatch:
+      return signals.embedding_score.value_or(0.0);
+  }
+}
+
 }  // namespace
 
 ContextualTasksContextService::ContextualTasksContextService(
@@ -319,24 +331,6 @@ ContextualTasksContextService::SelectRelevantTabs(
     const std::vector<content::WebContents*>& all_tabs,
     const std::vector<GURL>& explicit_urls,
     optimization_guide::proto::ContextualTasksContextQuality* quality_log) {
-  switch (options.tab_selection_mode) {
-    case mojom::TabSelectionMode::kMultiSignalScoring:
-      return SelectTabsByMultiSignalScore(query, options, query_embedding,
-                                          all_tabs, explicit_urls, quality_log);
-    case mojom::TabSelectionMode::kEmbeddingsMatch:
-      return SelectTabsByEmbeddingsMatch(query, options, query_embedding,
-                                         all_tabs);
-  }
-}
-
-std::vector<content::WebContents*>
-ContextualTasksContextService::SelectTabsByMultiSignalScore(
-    const std::string& query,
-    const TabSelectionOptions& options,
-    const passage_embeddings::Embedding& query_embedding,
-    const std::vector<content::WebContents*>& all_tabs,
-    const std::vector<GURL>& explicit_urls,
-    optimization_guide::proto::ContextualTasksContextQuality* quality_log) {
   std::vector<content::WebContents*> relevant_tabs;
   for (auto* web_contents : all_tabs) {
     optimization_guide::proto::ContextualTasksTabContext* tab_context =
@@ -396,9 +390,10 @@ ContextualTasksContextService::SelectTabsByMultiSignalScore(
     }
 
     // Score and select qualifying tabs.
-    double score = GetTabScore(tab_signals);
+    double score = GetTabScore(options, tab_signals);
     tab_context->set_aggregate_tab_score(score);
-    if (score >= options.min_model_score.value_or(kMinMultiSignalScore.Get())) {
+    if (score >=
+        options.min_model_score.value_or(kTabSelectionScoreThreshold.Get())) {
       relevant_tabs.push_back(tab_signals.web_contents);
     }
 
@@ -424,45 +419,6 @@ ContextualTasksContextService::SelectTabsByMultiSignalScore(
         tab_signals.duration_of_last_visit.has_value()
             ? tab_signals.duration_of_last_visit->InSeconds()
             : -1));
-  }
-  return relevant_tabs;
-}
-
-std::vector<content::WebContents*>
-ContextualTasksContextService::SelectTabsByEmbeddingsMatch(
-    const std::string& query,
-    const TabSelectionOptions& options,
-    const passage_embeddings::Embedding& query_embedding,
-    const std::vector<content::WebContents*>& all_tabs) {
-  std::vector<content::WebContents*> relevant_tabs;
-  for (auto* web_contents : all_tabs) {
-    std::vector<passage_embeddings::PassageEmbedding> web_contents_embeddings =
-        page_embeddings_service_->GetEmbeddings(web_contents);
-    AUTO_CONTEXT_LOG(base::StringPrintf(
-        "Comparing query embedding to %llu embeddings for %s",
-        web_contents_embeddings.size(),
-        web_contents->GetLastCommittedURL().spec()));
-    std::optional<TabSimilarityScores> similarity_scores = GetEmbeddingScores(
-        web_contents, query_embedding, web_contents_embeddings);
-    if (!similarity_scores) {
-      continue;
-    }
-
-    AUTO_CONTEXT_LOG(
-        base::StringPrintf("Passage with highest similarity with query %s: %f",
-                           similarity_scores->best_similarity_score.second,
-                           similarity_scores->best_similarity_score.first));
-    AUTO_CONTEXT_LOG(
-        base::StringPrintf("Passage with lowest similarity with query %s: %f",
-                           similarity_scores->worst_similarity_score.second,
-                           similarity_scores->worst_similarity_score.first));
-    if (similarity_scores->best_similarity_score.first >
-        options.min_model_score.value_or(kMinEmbeddingSimilarityScore.Get())) {
-      relevant_tabs.push_back(web_contents);
-      AUTO_CONTEXT_LOG(
-          base::StringPrintf("Adding %s to relevant set",
-                             web_contents->GetLastCommittedURL().spec()));
-    }
   }
   return relevant_tabs;
 }

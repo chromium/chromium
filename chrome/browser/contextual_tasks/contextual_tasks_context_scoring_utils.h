@@ -21,13 +21,16 @@ struct TabSignals {
   // Static signals.
   std::optional<float> embedding_score;
   std::optional<int> num_query_title_matching_words;
-  // Dynamic (behavioral) signals.
+  // Dynamic (engagement) signals.
   std::optional<base::TimeDelta> duration_since_last_active;
   std::optional<base::TimeDelta> duration_of_last_visit;
 };
 
-// Gets the score for a tab based on the provided signals.
-double GetTabScore(const TabSignals& signals);
+// Gets the score for a tab based only on the static signals.
+double GetScoreWithStaticSignals(const TabSignals& signals);
+
+// Gets the score for a tab based on all signals.
+double GetScoreWithAllSignals(const TabSignals& signals);
 
 }  // namespace contextual_tasks
 

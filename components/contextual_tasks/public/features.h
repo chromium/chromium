@@ -47,12 +47,10 @@ enum class EntryPointOption {
   kToolbarPermanent
 };
 
-// The minimum score required for two embeddings to be considered similar.
-extern const base::FeatureParam<double> kMinEmbeddingSimilarityScore;
 // Whether to only consider titles for similarity.
 extern const base::FeatureParam<bool> kOnlyUseTitlesForSimilarity;
-// Minimum score, computed using multiple signals, to consider a tab relevant.
-extern const base::FeatureParam<double> kMinMultiSignalScore;
+// Minimum score to consider a tab relevant.
+extern const base::FeatureParam<double> kTabSelectionScoreThreshold;
 // Minimum score required for a tab to be considered visible.
 extern const base::FeatureParam<double> kContentVisibilityThreshold;
 

@@ -27,7 +27,7 @@ float HarmonicMean(const float score1, const float score2) {
 
 // Consider both semantic match and lexical match. If either of them is high,
 // overall score should be high.
-std::optional<double> GetScoreBasedOnStaticSignals(const TabSignals& signals) {
+std::optional<double> ComputeContentScore(const TabSignals& signals) {
   std::optional<double> score;
   if (signals.embedding_score.has_value()) {
     score = ProbOr(score.value_or(0.0f), *(signals.embedding_score));
@@ -44,8 +44,7 @@ std::optional<double> GetScoreBasedOnStaticSignals(const TabSignals& signals) {
 
 // Consider recency as a positive signal, only when duration spent on the tab
 // was significant (>=5 seconds).
-std::optional<double> GetScoreBasedOnBehavioralSignals(
-    const TabSignals& signals) {
+std::optional<double> ComputeEngagementScore(const TabSignals& signals) {
   if (!signals.duration_since_last_active.has_value()) {
     return std::nullopt;
   }
@@ -62,19 +61,24 @@ std::optional<double> GetScoreBasedOnBehavioralSignals(
 
 }  // namespace
 
+double GetScoreWithStaticSignals(const TabSignals& signals) {
+  return ComputeContentScore(signals).value_or(0.0f);
+}
+
 // TODO: crbug.com/452036470 - Update this scoring function with one obtained
-// after analysis/training on logs, or get rid of behavioral signals.
-double GetTabScore(const TabSignals& signals) {
+// after analysis/training on logs, or get rid of engagement signals.
+double GetScoreWithAllSignals(const TabSignals& signals) {
   std::optional<double> score_based_on_static_signals =
-      GetScoreBasedOnStaticSignals(signals);
-  std::optional<double> score_based_on_behavioral_signals =
-      GetScoreBasedOnBehavioralSignals(signals);
+      ComputeContentScore(signals);
+  std::optional<double> score_based_on_engagement_signals =
+      ComputeEngagementScore(signals);
+
   double score = 0.0f;
   if (score_based_on_static_signals.has_value()) {
     score = ProbOr(score, *(score_based_on_static_signals));
   }
-  if (score_based_on_behavioral_signals.has_value()) {
-    score = ProbOr(score, *(score_based_on_behavioral_signals));
+  if (score_based_on_engagement_signals.has_value()) {
+    score = ProbOr(score, *(score_based_on_engagement_signals));
   }
   return score;
 }

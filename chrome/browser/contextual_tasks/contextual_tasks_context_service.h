@@ -117,25 +117,9 @@ class ContextualTasksContextService
   // Returns all tabs for the profile that are eligible for selection.
   std::vector<content::WebContents*> GetAllEligibleTabs();
 
-  // Returns the relevant tabs for `query` based on given `tab_selection_mode`.
+  // Returns the relevant tabs for `query`. Collects and logs all the signals
+  // irrespective of chosen `tab_selection_mode`.
   std::vector<content::WebContents*> SelectRelevantTabs(
-      const std::string& query,
-      const TabSelectionOptions& options,
-      const passage_embeddings::Embedding& query_embedding,
-      const std::vector<content::WebContents*>& all_tabs,
-      const std::vector<GURL>& explicit_urls,
-      optimization_guide::proto::ContextualTasksContextQuality* quality_log);
-
-  // Selects tabs based on embeddings match.
-  std::vector<content::WebContents*> SelectTabsByEmbeddingsMatch(
-      const std::string& query,
-      const TabSelectionOptions& options,
-      const passage_embeddings::Embedding& query_embedding,
-      const std::vector<content::WebContents*>& all_tabs);
-
-  // Scores and selects tabs based on multiple signals like embedding score,
-  // tab recency etc.
-  std::vector<content::WebContents*> SelectTabsByMultiSignalScore(
       const std::string& query,
       const TabSelectionOptions& options,
       const passage_embeddings::Embedding& query_embedding,
