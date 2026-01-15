@@ -34,7 +34,8 @@ export function getHtml(this: ActionChipsElement) {
                   html`<span class="chip-title">${chip.title}</span>` :
                   ''}
           <span
-            title="${chip.suggestion}"
+            title="${this.isRecentTabChip_(chip) ?
+              this.recentTabChipTitle_(chip) : chip.suggestion}"
             class="chip-body">
               ${this.showDashSimplifiedUI_(chip) ? ' - ' : ''}${chip.suggestion}
           </span>
