@@ -8,6 +8,7 @@
 
 #include "base/test/mock_callback.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -81,6 +82,33 @@ TEST_F(TabModelTest, TabModelDidInsert) {
   EXPECT_CALL(did_insert_callback, Run).Times(1);
   tab_strip_src.InsertDetachedTabAt(0, std::move(tab_model),
                                     AddTabTypes::ADD_NONE);
+}
+
+TEST_F(TabModelTest, DetachTabModelGetBrowser) {
+  MockBrowserWindowInterface bwi;
+  TestTabStripModelDelegate delegate;
+  delegate.SetBrowserWindowInterface(&bwi);
+
+  // Create a source tab strip.
+  TabStripModel tab_strip_src(&delegate, profile());
+  AppendTab(tab_strip_src);
+  AppendTab(tab_strip_src);
+
+  // Detach the first tab.
+  std::unique_ptr<TabModel> tab_model =
+      tab_strip_src.DetachTabAtForInsertion(0);
+  TabModel* tab_model_ptr = tab_model.get();
+
+  // Verify GetBrowserWindowInterface returns nullptr.
+  EXPECT_EQ(nullptr, tab_model_ptr->GetBrowserWindowInterface());
+
+  // Attach to a destination tab strip.
+  TabStripModel tab_strip_dst(&delegate, profile());
+  tab_strip_dst.InsertDetachedTabAt(0, std::move(tab_model),
+                                    AddTabTypes::ADD_NONE);
+
+  // Verify GetBrowserWindowInterface returns the browser interface.
+  EXPECT_EQ(&bwi, tab_model_ptr->GetBrowserWindowInterface());
 }
 
 TEST_F(TabModelTest, IsSelected) {

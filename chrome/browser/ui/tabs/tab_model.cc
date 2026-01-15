@@ -287,7 +287,10 @@ bool TabModel::IsInNormalWindow() const {
 }
 
 BrowserWindowInterface* TabModel::GetBrowserWindowInterface() {
-  return GetModelForTabInterface()->delegate()->GetBrowserWindowInterface();
+  if (soon_to_be_owning_model_ || owning_model_) {
+    return GetModelForTabInterface()->delegate()->GetBrowserWindowInterface();
+  }
+  return nullptr;
 }
 
 const BrowserWindowInterface* TabModel::GetBrowserWindowInterface() const {
