@@ -1473,14 +1473,15 @@ chromium-metrics-reviews@google.com.
   <token key="Name" variants="MemoryDumpProviderName"/>
 </histogram>
 
-<histogram name="Memory.DumpProvider.MemoryDumpTime" units="microseconds"
+<histogram name="Memory.DumpProvider.MemoryDumpTime2" units="microseconds"
     expires_after="2026-06-28">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
-    The length of time a MemoryDumpProvider instance spent executing.
-    Memory.DumpProvider.TotalTime, which includes the time it spent queued, will
-    also be logged when this is logged.
+    The length of time a MemoryDumpProvider instance spent executing, not
+    including time the system was suspended. Memory.DumpProvider.TotalTime,
+    which includes the time it spent queued, will also be logged when this is
+    logged.
 
     Variants of this metric are also logged for each type of MemoryDumpProvider,
     with the provider name as a suffix.
@@ -1489,14 +1490,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.DumpProvider.MemoryDumpTime.{Name}"
+<histogram name="Memory.DumpProvider.MemoryDumpTime2.{Name}"
     units="microseconds" expires_after="2026-06-28">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
-    The length of time an instance of MemoryDumpProvider {Name} spent executing.
-    Memory.DumpProvider.TotalTime, which includes the time it spent queued, will
-    also be logged when this is logged.
+    The length of time an instance of MemoryDumpProvider {Name} spent executing,
+    not including time the system was suspended. Memory.DumpProvider.TotalTime,
+    which includes the time it spent queued, will also be logged when this is
+    logged.
 
     An unsuffixed variant of this metric is also logged, covering all types of
     MemoryDumpProvider.
@@ -1506,14 +1508,15 @@ chromium-metrics-reviews@google.com.
   <token key="Name" variants="MemoryDumpProviderName"/>
 </histogram>
 
-<histogram name="Memory.DumpProvider.TotalTime" units="ms"
+<histogram name="Memory.DumpProvider.TotalTime2" units="ms"
     expires_after="2026-06-28">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
     The length of time between a MemoryDumpProvider instance being queued for a
     memory dump, and Memory.DumpProvider.FinalStatus being recorded for that
-    instance. If FinalStatus was recorded because the instance finished running,
+    instance, not including time the system was suspended. If FinalStatus was
+    recorded because the instance finished running,
     Memory.DumpProvider.MemoryDumpTime will also be recorded with the time that
     it took to run.
 
@@ -1524,16 +1527,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.DumpProvider.TotalTime.{Name}" units="ms"
+<histogram name="Memory.DumpProvider.TotalTime2.{Name}" units="ms"
     expires_after="2026-06-28">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
     The length of time between an instance of MemoryDumpProvider {Name} being
     queued for a memory dump, and Memory.DumpProvider.FinalStatus being recorded
-    for that instance. If FinalStatus was recorded because the instance finished
-    running, Memory.DumpProvider.MemoryDumpTime will also be recorded with the
-    time that it took to run.
+    for that instance, not including time the system was suspended. If
+    FinalStatus was recorded because the instance finished running,
+    Memory.DumpProvider.MemoryDumpTime will also be recorded with the time that
+    it took to run.
 
     An unsuffixed variant of this metric is also logged, covering all types of
     MemoryDumpProvider.

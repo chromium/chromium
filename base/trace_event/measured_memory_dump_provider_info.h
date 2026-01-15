@@ -105,7 +105,7 @@ class BASE_EXPORT MeasuredMemoryDumpProviderInfo {
   // being destroyed. This includes the time the MemoryDumpProvider spent in the
   // queue (while other providers were running), and the time the provider was
   // running (if `status_` is kDumpSucceeded or kDumpFailed).
-  base::ElapsedTimer elapsed_timer_;
+  base::ElapsedLiveTimer elapsed_timer_;
 };
 
 }  // namespace base::trace_event

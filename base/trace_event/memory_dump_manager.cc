@@ -483,16 +483,16 @@ void MemoryDumpManager::InvokeOnMemoryDump(
   CHECK(!is_thread_bound ||
         !*(static_cast<volatile bool*>(&mdpinfo->disabled)));
 
-  base::ElapsedTimer memory_dump_timer;
+  base::ElapsedLiveTimer memory_dump_timer;
   bool dump_successful =
       mdpinfo->dump_provider->OnMemoryDump(pmd->dump_args(), pmd);
   const base::TimeDelta memory_dump_time = memory_dump_timer.Elapsed();
   base::UmaHistogramMicrosecondsTimes(
-      base::StrCat({"Memory.DumpProvider.MemoryDumpTime.",
+      base::StrCat({"Memory.DumpProvider.MemoryDumpTime2.",
                     mdpinfo->name.histogram_name()}),
       memory_dump_time);
   // Aggregate all providers together without a suffix.
-  base::UmaHistogramMicrosecondsTimes("Memory.DumpProvider.MemoryDumpTime",
+  base::UmaHistogramMicrosecondsTimes("Memory.DumpProvider.MemoryDumpTime2",
                                       memory_dump_time);
 
   mdpinfo->consecutive_failures =
