@@ -9,7 +9,6 @@
 
 #include "base/check_op.h"
 #include "base/component_export.h"
-#include "base/memory/weak_ptr.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/win/msg_util.h"
@@ -121,13 +120,6 @@ class COMPONENT_EXPORT(GFX) WindowImpl : public MessageMapInterface {
 
   // Our hwnd.
   HWND hwnd_ = nullptr;
-
-  // For debugging.
-  // TODO(sky): nuke this when get crash data.
-  bool got_create_ = false;
-  bool got_valid_hwnd_ = false;
-  // For tracking whether this object has been destroyed. Must be last.
-  base::WeakPtrFactory<WindowImpl> weak_factory_{this};
 };
 
 }  // namespace gfx
