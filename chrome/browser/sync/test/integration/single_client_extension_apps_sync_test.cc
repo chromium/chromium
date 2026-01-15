@@ -18,7 +18,6 @@
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/fake_server.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/test_utils.h"
 #include "extensions/common/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -144,10 +143,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientExtensionAppsSyncTest,
   const std::string id1 = InstallPlatformApp(GetProfile(0), 1);
 
   ASSERT_TRUE(FakeServerAppChecker({id0, id1}).Wait());
-
-  // The following call is necessary as the app installations above have
-  // scheduled their content verification tasks.
-  content::RunAllTasksUntilIdle();
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientExtensionAppsSyncTest, InstallSomeApps) {
