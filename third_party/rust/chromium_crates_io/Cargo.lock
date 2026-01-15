@@ -34,14 +34,6 @@ version = "1.0.100"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
-name = "arbitrary"
-version = "1.4.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "derive_arbitrary",
-]
-
-[[package]]
 name = "array-init"
 version = "2.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -303,16 +295,6 @@ version = "1.0.192"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "indexmap",
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
-name = "derive_arbitrary"
-version = "1.4.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
  "proc-macro2",
  "quote",
  "syn",
@@ -1635,10 +1617,9 @@ dependencies = [
 
 [[package]]
 name = "zip"
-version = "6.0.0"
+version = "7.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "arbitrary",
  "crc32fast",
  "flate2",
  "indexmap",
