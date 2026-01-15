@@ -54,8 +54,6 @@
       var(--chip-animation-curve) forwards,
     chips-fade-in var(--chip-fade-duration) 370ms
       var(--chip-animation-curve) forwards;
-  background-color:
-    var(--simplified-action-chip-bg, transparent);
   border-radius: 16px;
   box-sizing: border-box;
   display: flex;
@@ -71,6 +69,12 @@
 
 :host([show-simplified-ui_][theme-has-background-image])
 .action-chips-container {
+  background-color:
+    rgb(
+      from
+        var(--color-new-tab-page-action-chip-background, transparent) r g b
+        / 0.8
+    );
   overflow: hidden;
 }
 
@@ -126,8 +130,7 @@
 }
 
 :host([show-simplified-ui_]) .action-chip {
-  background-color:
-    var(--simplified-action-chip-bg, transparent);
+  background-color: transparent;
   border-radius: 12px;
   gap: 6px;
   height: 36px;
