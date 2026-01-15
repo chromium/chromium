@@ -4,8 +4,12 @@
 
 source_set("debugger") {
   sources = [
+    "composebox_debugger_breadcrumbs_view_controller.h",
+    "composebox_debugger_breadcrumbs_view_controller.mm",
     "composebox_debugger_coordinator.h",
     "composebox_debugger_coordinator.mm",
+    "composebox_debugger_event.h",
+    "composebox_debugger_event.mm",
   ]
   deps = [
     "//base",

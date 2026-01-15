@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/aim/debugger/coordinator/aim_debugger_coordinator.h"
+#import "ios/chrome/browser/composebox/debugger/composebox_debugger_breadcrumbs_view_controller.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -70,14 +71,13 @@ const CGSize kOptionsButtonSize = {80.0f, 40.0f};
 
 - (void)setupOptionsMenu {
   __weak __typeof(self) weakSelf = self;
-  /*
   UIAction* breadcrumbsAction = [UIAction
       actionWithTitle:@"Composebox logs"
                 image:DefaultSymbolWithPointSize(@"binoculars.circle", 16)
            identifier:nil
-              handler:^(UIAction* action){
+              handler:^(UIAction* action) {
+                [weakSelf showBreadcrumbsLogs];
               }];
-   */
   UIAction* aimEligibilityDebuggerAction = [UIAction
       actionWithTitle:@"AIM Eligibility"
                 image:CustomSymbolWithPointSize(kMagnifyingglassSparkSymbol, 16)
@@ -95,15 +95,74 @@ const CGSize kOptionsButtonSize = {80.0f, 40.0f};
                         .delegate composeboxDebuggerDidRequestOmniboxDebugging];
               }];
 
-  // TODO(crbug.com/457960024): Add `breadcrumbsAction` once implemented.
-  UIMenu* menu = [UIMenu
-      menuWithTitle:@"Debugging options"
-           children:@[ aimEligibilityDebuggerAction, omniboxDebuggerAction ]];
+  UIMenu* menu = [UIMenu menuWithTitle:@"Debugging options"
+                              children:@[
+                                aimEligibilityDebuggerAction, breadcrumbsAction,
+                                omniboxDebuggerAction
+                              ]];
 
   _optionsButton.showsMenuAsPrimaryAction = YES;
   _optionsButton.preferredMenuElementOrder =
       UIContextMenuConfigurationElementOrderFixed;
   _optionsButton.menu = menu;
+}
+
+- (void)showBreadcrumbsLogs {
+  // A list of demo events in preparation of real logging.
+  UIViewController* breadcrumbsViewController =
+      [[ComposeboxDebuggerBreadcrumbsViewController alloc] initWithEvents:@[
+        [ComposeboxDebuggerEvent
+            composeboxGeneralEvent:composebox_debugger::event::Composebox::
+                                       kOpened],
+        [ComposeboxDebuggerEvent
+            composeboxGeneralEvent:composebox_debugger::event::Composebox::
+                                       kCompactModeEnabled],
+        [ComposeboxDebuggerEvent
+            inputPlateTapOnElement:composebox_debugger::element::InputPlate::
+                                       kPlusMenu],
+        [ComposeboxDebuggerEvent
+            contextMenuTapOnElement:composebox_debugger::element::ContextMenu::
+                                        kTabsAttachment],
+        [ComposeboxDebuggerEvent
+            composeboxGeneralEvent:composebox_debugger::event::Composebox::
+                                       kTabPickerShown],
+        [ComposeboxDebuggerEvent
+             tabEvent:composebox_debugger::event::Tabs::kWillLoadTab
+            withTitle:@"example.com"
+                tabID:@"1234"],
+        [ComposeboxDebuggerEvent
+             tabEvent:composebox_debugger::event::Tabs::kWillLoadTab
+            withTitle:@"other.com"
+                tabID:@"3234"],
+        [ComposeboxDebuggerEvent
+             tabEvent:composebox_debugger::event::Tabs::kDidLoadTab
+            withTitle:@"other.com"
+                tabID:@"3234"],
+        [ComposeboxDebuggerEvent
+             tabEvent:composebox_debugger::event::Tabs::kDidLoadTab
+            withTitle:@"example.com"
+                tabID:@"1234"],
+        [ComposeboxDebuggerEvent apcEvent:composebox_debugger::event::APC::
+                                              kExtractionCompletedSuccessfully
+                                withTitle:@"example.com"
+                                    tabID:@"1234"],
+        [ComposeboxDebuggerEvent
+             tabEvent:composebox_debugger::event::Tabs::kDidSelectTab
+            withTitle:@"example.com"
+                tabID:@"1234"],
+        [ComposeboxDebuggerEvent
+            tabPickerTapOnElement:composebox_debugger::element::TabPicker::
+                                      kConfirmSelection],
+        [ComposeboxDebuggerEvent
+            queryAttachmentEvent:composebox_debugger::event::QueryAttachment::
+                                     kUploadCompletedSuccessfully
+                        withType:composebox_debugger::AttachmentType::kTab
+                           title:@"example.com"]
+      ]];
+
+  [self.baseViewController presentViewController:breadcrumbsViewController
+                                        animated:YES
+                                      completion:nil];
 }
 
 - (void)handlePan:(UIPanGestureRecognizer*)gesture {
