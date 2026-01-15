@@ -30,4 +30,9 @@ found in the LICENSE file.
     <dimen name="bnpl_header_margin_bottom">10dp</dimen>
     <dimen name="bnpl_terms_margin_bottom">20dp</dimen>
     <dimen name="bnpl_tos_sheet_item_margin_end">16dp</dimen>
+    <dimen name="bnpl_tos_sheet_item_padding_vertical">10dp</dimen>
+    <dimen name="bnpl_tos_header_item_layout_margin_horizontal">8dp</dimen>
+    <dimen name="bnpl_tos_header_item_layout_margin_bottom">16dp</dimen>
+    <dimen name="bnpl_tos_header_item_icon_height">36dp</dimen>
+    <dimen name="bnpl_tos_header_item_icon_margin_vertical">12dp</dimen>
 </resources>

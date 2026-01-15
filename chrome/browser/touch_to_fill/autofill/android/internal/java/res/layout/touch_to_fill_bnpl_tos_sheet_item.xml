@@ -16,7 +16,8 @@ found in the LICENSE file.
     android:background="@android:color/transparent"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:padding="@dimen/ttf_for_sheet_item_padding">
+    android:paddingHorizontal="@dimen/ttf_for_sheet_item_padding"
+    android:paddingVertical="@dimen/bnpl_tos_sheet_item_padding_vertical">
 
   <ImageView
       android:id="@+id/bnpl_tos_icon"

@@ -27,6 +27,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TERMS_LABEL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TEXT_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TOS_FOOTER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TOS_HEADER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.WALLET_SETTINGS_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.HOME_SCREEN;
@@ -244,6 +245,10 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                 TEXT_BUTTON,
                 TouchToFillPaymentMethodViewBinder::createTextButtonView,
                 TouchToFillPaymentMethodViewBinder::bindButtonView);
+        adapter.registerType(
+                TOS_HEADER,
+                TouchToFillPaymentMethodViewBinder::createBnplTosHeaderView,
+                TouchToFillPaymentMethodViewBinder::bindBnplTosHeaderView);
         view.setSheetItemListAdapter(adapter);
     }
 

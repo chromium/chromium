@@ -135,6 +135,9 @@ class TouchToFillPaymentMethodProperties {
 
         // A section containing a clickable button with no background.
         int TEXT_BUTTON = 17;
+
+        // The header at the top of the BNPL ToS screen.
+        int TOS_HEADER = 18;
     }
 
     /** Metadata associated with a card's image. */
@@ -349,6 +352,21 @@ class TouchToFillPaymentMethodProperties {
         };
 
         private HeaderProperties() {}
+    }
+
+    /**
+     * Properties defined here reflect the visible state of the BNPL ToS header in the TouchToFill
+     * sheet for payments.
+     */
+    static class BnplTosHeaderProperties {
+        static final PropertyModel.ReadableIntPropertyKey ISSUER_IMAGE_DRAWABLE_ID =
+                new PropertyModel.ReadableIntPropertyKey("issuer_image_drawable_id");
+        static final PropertyModel.ReadableObjectPropertyKey<String> ISSUER_TITLE_STRING =
+                new PropertyModel.ReadableObjectPropertyKey<>("issuer_title_string");
+
+        static final PropertyKey[] ALL_KEYS = {ISSUER_IMAGE_DRAWABLE_ID, ISSUER_TITLE_STRING};
+
+        private BnplTosHeaderProperties() {}
     }
 
     /**

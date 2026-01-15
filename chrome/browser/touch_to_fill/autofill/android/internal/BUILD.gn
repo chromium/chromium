@@ -56,6 +56,7 @@ android_resources("java_resources") {
     "java/res/layout/touch_to_fill_bnpl_selection_and_progress_screen_header_item.xml",
     "java/res/layout/touch_to_fill_bnpl_selection_and_progress_screen_terms_item.xml",
     "java/res/layout/touch_to_fill_bnpl_sheet_item.xml",
+    "java/res/layout/touch_to_fill_bnpl_tos_header_item.xml",
     "java/res/layout/touch_to_fill_bnpl_tos_sheet_item.xml",
     "java/res/layout/touch_to_fill_credit_card_sheet_item.xml",
     "java/res/layout/touch_to_fill_error_description_sheet_item.xml",

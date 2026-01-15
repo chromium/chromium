@@ -54,6 +54,8 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.ON_BNPL_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.PRIMARY_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.SECONDARY_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplTosHeaderProperties.ISSUER_IMAGE_DRAWABLE_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplTosHeaderProperties.ISSUER_TITLE_STRING;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties.ON_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties.TEXT_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CURRENT_SCREEN;
@@ -91,6 +93,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TERMS_LABEL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TEXT_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TOS_FOOTER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TOS_HEADER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.LOYALTY_CARD_NUMBER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.MERCHANT_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.NON_TRANSFORMING_LOYALTY_CARD_KEYS;
@@ -159,6 +162,7 @@ import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillResourceProvi
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.AllLoyaltyCardsItemProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressTermsProperties;
+import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplTosHeaderProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ErrorDescriptionProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties;
@@ -451,6 +455,7 @@ public class TouchToFillPaymentMethodViewTest {
     private static final String TITLE_TEXT = "test title string";
     private static final String LEGAL_MESSAGE_LINE = "legal message";
     private static final Consumer<String> MOCK_LINK_OPENER = mock(Consumer.class);
+    private static final String ISSUER_TITLE_TEXT = "Link account and pay with Affirm?";
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -1519,6 +1524,28 @@ public class TouchToFillPaymentMethodViewTest {
 
     @Test
     @MediumTest
+    public void testBnplIssuerTosHeader() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(new ListItem(TOS_HEADER, createTosHeaderModel()));
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        ImageView bnplTosBrandingIcon =
+                mTouchToFillPaymentMethodView
+                        .getContentView()
+                        .findViewById(R.id.bnpl_tos_branding_icon);
+        assertThat(bnplTosBrandingIcon.isShown(), is(true));
+        TextView bnplTosTitle =
+                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.bnpl_tos_title);
+        assertThat(bnplTosTitle.getText().toString(), is(ISSUER_TITLE_TEXT));
+    }
+
+    @Test
+    @MediumTest
     public void testBnplIssuerTosFooter() {
         Runnable acceptCallback = mock(Runnable.class);
         Runnable cancelCallback = mock(Runnable.class);
@@ -2167,6 +2194,13 @@ public class TouchToFillPaymentMethodViewTest {
         return new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                 .with(IMAGE_DRAWABLE_ID, R.drawable.ic_globe_24dp)
                 .with(TITLE_STRING, TITLE_TEXT)
+                .build();
+    }
+
+    private static PropertyModel createTosHeaderModel() {
+        return new PropertyModel.Builder(BnplTosHeaderProperties.ALL_KEYS)
+                .with(ISSUER_IMAGE_DRAWABLE_ID, R.drawable.bnpl_icon_generic)
+                .with(ISSUER_TITLE_STRING, ISSUER_TITLE_TEXT)
                 .build();
     }
 
