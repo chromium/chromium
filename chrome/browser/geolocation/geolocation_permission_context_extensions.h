@@ -10,6 +10,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_manager.h"
+#include "components/permissions/permission_prompt_decision.h"
 #include "content/public/browser/permission_result.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -36,18 +37,26 @@ class GeolocationPermissionContextExtensions {
 
   ~GeolocationPermissionContextExtensions();
 
-  // Returns true if the permission request was handled. In which case,
-  // |permission_set| will be set to true if the permission changed, and the
-  // permission has been set to |new_permission|. Consumes |callback| if it
-  // returns true while setting |permission_set| to false, otherwise |callback|
-  // is not used.
-  bool DecidePermission(
+  struct Decision {
+    bool permission_set;
+    permissions::PermissionPromptDecision decision =
+        permissions::PermissionPromptDecision{
+            .overall_decision = PermissionDecision::kNone,
+            .prompt_options = std::monostate(),
+            .is_final = true,
+        };
+  };
+
+  // Potentially handles a permission request. If it does, it returns a Decision
+  // where |permission_set| is set to true if the permission changed, and if so
+  // |decision| contains the decided |new_permission|. Consumes |callback| if it
+  // returns a Decision where |permission_set| false, otherwise |callback| is
+  // not used.
+  std::optional<Decision> DecidePermission(
       const permissions::PermissionRequestID& request_id,
       const GURL& requesting_frame,
       bool user_gesture,
-      base::OnceCallback<void(content::PermissionResult)>* callback,
-      bool* permission_set,
-      bool* new_permission);
+      base::OnceCallback<void(content::PermissionResult)>* callback);
 
  private:
 #if BUILDFLAG(ENABLE_EXTENSIONS)
