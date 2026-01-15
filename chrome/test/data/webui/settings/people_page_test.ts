@@ -527,9 +527,9 @@ suite('PeoplePageAccountSettings', function() {
     assertFalse(isChildVisible(peoplePage, '#google-services'));
     assertTrue(isChildVisible(peoplePage, '#sync-setup'));
 
-    // The other rows are shown/hidden correctly.
+    // The other rows are shown correctly.
     assertTrue(isChildVisible(peoplePage, '#edit-profile'));
-    assertFalse(isChildVisible(peoplePage, '#manage-google-account'));
+    assertTrue(isChildVisible(peoplePage, '#manage-google-account'));
     assertTrue(isChildVisible(peoplePage, '#importDataDialogTrigger'));
   });
 

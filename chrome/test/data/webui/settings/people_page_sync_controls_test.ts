@@ -467,13 +467,27 @@ suite('SyncControlsAccountSettingsTest', function() {
     assertFalse(syncControls.hidden);
   });
 
+  test('SignedInNeedsUpdate', function() {
+    // Controls are available by default.
+    assertFalse(syncControls.hidden);
+
+    syncControls.syncStatus = {
+      disabled: false,
+      hasError: true,
+      signedInState: SignedInState.SIGNED_IN,
+      statusAction: StatusAction.UPGRADE_CLIENT,
+    };
+    // Controls are not hidden when the user needs to update Chrome.
+    assertFalse(syncControls.hidden);
+  });
+
   test('SignedInPassphraseError', function() {
     // Controls are available by default.
     assertFalse(syncControls.hidden);
 
     syncControls.syncStatus = {
       disabled: false,
-      hasError: false,
+      hasError: true,
       signedInState: SignedInState.SIGNED_IN,
       statusAction: StatusAction.ENTER_PASSPHRASE,
     };

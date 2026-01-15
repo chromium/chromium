@@ -340,18 +340,20 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
 
   // <if expr="not is_chromeos">
   private computeShouldShowGoogleAccount_(): boolean {
-    if (this.replaceSyncPromosWithSignInPromos_) {
-      return false;
-    }
-
     if (this.storedAccounts === undefined || this.syncStatus === undefined) {
       return false;
     }
 
-    return (this.storedAccounts!.length > 0 || this.isSyncing_()) &&
-        (!this.syncStatus!.hasError ||
-         this.syncStatus!.statusAction ===
-             StatusAction.SHOW_BOOKMARKS_LIMIT_HELP_ARTICLE);
+    if (this.syncStatus!.hasError &&
+        this.syncStatus!.statusAction !== StatusAction.UPGRADE_CLIENT &&
+        this.syncStatus!.statusAction !==
+            StatusAction.SHOW_BOOKMARKS_LIMIT_HELP_ARTICLE) {
+      return false;
+    }
+
+    return (!this.replaceSyncPromosWithSignInPromos_ &&
+            this.storedAccounts!.length > 0) ||
+        this.isSyncing_();
   }
   // </if>
 
