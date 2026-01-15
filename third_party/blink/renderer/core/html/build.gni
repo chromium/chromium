@@ -726,8 +726,6 @@ blink_core_tests_html = [
   "html_meta_element_test.cc",
   "html_object_element_test.cc",
   "html_permission_element_test.cc",
-  "html_permission_element_test_helper.cc",
-  "html_permission_element_test_helper.h",
   "html_plugin_element_test.cc",
   "html_script_element_test.cc",
   "html_slot_element_test.cc",

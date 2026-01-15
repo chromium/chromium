@@ -2912,6 +2912,13 @@ _CONFIG = [
             'base::raw_span',
         ],
     },
+    {
+        'paths': [
+            'third_party/blink/renderer/core/html/html_permission_element_test_helper.cc'
+        ],
+        'allowed':
+        ['base::test::RunUntil', 'base::test::ScopedRunLoopTimeout'],
+    }
 ]
 
 

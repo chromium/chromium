@@ -1686,6 +1686,8 @@ source_set("unit_test_support") {
     "frame/frame_test_helpers.h",
     "html/canvas/recording_test_utils.cc",
     "html/canvas/recording_test_utils.h",
+    "html/html_permission_element_test_helper.cc",
+    "html/html_permission_element_test_helper.h",
     "html/media/html_media_test_helper.cc",
     "html/media/html_media_test_helper.h",
     "script/mock_script_element_base.h",
@@ -1861,6 +1863,25 @@ test("css_parser_fuzzer") {
     "//third_party/fuzztest:fuzztest_gtest_main",
   ]
   fuzztests = [ "CssParser.ParseSheetFuzzer" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+test("html_permission_element_fuzzer") {
+  sources =
+      [ "html/fuzzers/permission_element/html_permission_element_fuzzer.cc" ]
+  deps = [
+    ":core",
+    ":fuzztest_utils",
+    ":unit_test_support",
+    "//skia",
+    "//testing/gtest",
+    "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
+  fuzztests = [ "HTMLPermissionElementFuzzer.TestPermissionElementBounds" ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
