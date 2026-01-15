@@ -53,17 +53,16 @@ std::vector<apps::FileHandler::AcceptEntry> GetAcceptEntriesForFileHandler(
 
 }  // namespace
 
-class ExternallyManagedInstallCommandBrowserTest
-    : public WebAppBrowserTestBase {
+class ExternalAppResolutionCommandBrowserTest : public WebAppBrowserTestBase {
  public:
-  ExternallyManagedInstallCommandBrowserTest() = default;
-  ExternallyManagedInstallCommandBrowserTest(
-      const ExternallyManagedInstallCommandBrowserTest&) = delete;
-  ExternallyManagedInstallCommandBrowserTest& operator=(
-      const ExternallyManagedInstallCommandBrowserTest&) = delete;
+  ExternalAppResolutionCommandBrowserTest() = default;
+  ExternalAppResolutionCommandBrowserTest(
+      const ExternalAppResolutionCommandBrowserTest&) = delete;
+  ExternalAppResolutionCommandBrowserTest& operator=(
+      const ExternalAppResolutionCommandBrowserTest&) = delete;
 };
 
-IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternalAppResolutionCommandBrowserTest,
                        BasicInstallCommand) {
   const GURL kWebAppUrl = https_server()->GetURL(
       "/banners/"
@@ -90,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
       app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
 }
 
-IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternalAppResolutionCommandBrowserTest,
                        ExternalInstallWindowMode) {
   const GURL kWebAppUrl = https_server()->GetURL(
       "/banners/"
@@ -118,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
       provider().registrar_unsafe().GetAppUserDisplayMode(app_id).value());
 }
 
-IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternalAppResolutionCommandBrowserTest,
                        ExternalInstallBrowserMode) {
   const GURL kWebAppUrl = https_server()->GetURL(
       "/banners/"
@@ -147,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
       provider().registrar_unsafe().GetAppUserDisplayMode(app_id).value());
 }
 
-IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternalAppResolutionCommandBrowserTest,
                        InstallAppFromPolicy) {
   const GURL kWebAppUrl = https_server()->GetURL(
       "/banners/"
@@ -173,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
       provider().registrar_unsafe().GetAppById(app_id)->IsPolicyInstalledApp());
 }
 
-IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternalAppResolutionCommandBrowserTest,
                        InstallFailsWithInvalidManifest) {
   const GURL kWebAppUrl = https_server()->GetURL(
       "/banners/"
@@ -201,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    ExternallyManagedInstallCommandBrowserTest,
+    ExternalAppResolutionCommandBrowserTest,
     DISABLED_ExternalInstallSourceReinstallOverrideManifestData) {
   const GURL kWebAppUrl = https_server()->GetURL(
       "/banners/"
@@ -287,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(
       handlers[1].accept);
 }
 
-IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExternalAppResolutionCommandBrowserTest,
                        UserInstallReinstallOverrideManifestData) {
   const GURL kWebAppUrl = https_server()->GetURL(
       "/banners/"

@@ -1143,7 +1143,7 @@ source_set("web_applications_browser_tests") {
   sources = [
     "alternative_error_page_override_info_browsertest.cc",
     "commands/compute_app_size_command_browsertest.cc",
-    "commands/externally_managed_install_command_browsertest.cc",
+    "commands/external_app_resolution_command_browsertest.cc",
     "commands/fetch_manifest_and_install_command_browsertest.cc",
     "commands/fetch_manifest_and_update_command_browsertest.cc",
     "commands/install_from_info_command_browsertest.cc",
