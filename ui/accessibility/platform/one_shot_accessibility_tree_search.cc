@@ -169,7 +169,22 @@ void OneShotAccessibilityTreeSearch::SearchByWalkingTree() {
       node = tree_->PreviousInTreeOrder(start_node_, can_wrap_to_last_element_);
   }
 
-  BrowserAccessibility* stop_node = scope_node_->PlatformGetParent();
+  BrowserAccessibility* stop_node = nullptr;
+  if (direction_ == FORWARDS) {
+    // Walk up the ancestor chain until we find an ancestor that has a next
+    // platform sibling. That sibling is the node that comes immediately after
+    // the scope_node's subtree.
+    for (BrowserAccessibility* current_node = scope_node_; current_node;
+         current_node = current_node->PlatformGetParent()) {
+      if (auto* next_sibling = current_node->PlatformGetNextSibling()) {
+        stop_node = next_sibling;
+        break;
+      }
+    }
+  } else {
+    stop_node = tree_->PreviousInTreeOrder(scope_node_, /* wrap */ false);
+  }
+
   while (node && node != stop_node &&
          (result_limit_ == UNLIMITED_RESULTS ||
           static_cast<int>(matches_.size()) < result_limit_)) {
