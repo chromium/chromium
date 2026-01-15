@@ -78,7 +78,6 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage.SmoothTransitionDelegate;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
-import org.chromium.components.autofill.AndroidAutofillFeatures;
 import org.chromium.components.autofill.AutofillManagerWrapper;
 import org.chromium.components.autofill.AutofillProvider;
 import org.chromium.components.autofill.AutofillProviderUMA;
@@ -1653,9 +1652,7 @@ class TabImpl implements Tab {
         }
 
         mWindowAndroid = windowAndroid;
-        if (mAutofillProvider != null
-                && AndroidAutofillFeatures.ANDROID_AUTOFILL_UPDATE_CONTEXT_FOR_WEBCONTENTS
-                        .isEnabled()) {
+        if (mAutofillProvider != null) {
             mAutofillProvider.switchToContext(getActivityContext());
         }
         WebContents webContents = getWebContents();

@@ -20,7 +20,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidAutofillLazyFrameworkWrapper,
     &kAutofillVirtualViewStructureAndroidPasskeyLongPress,
     &kAndroidAutofillForwardIframeOrigin,
-    &kAndroidAutofillUpdateContextForWebContents,
     &kAndroidAutofillImprovedVisibilityDetection};
 
 }  // namespace

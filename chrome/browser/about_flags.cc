@@ -12773,15 +12773,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"autofill-update-context-for-web-contents",
-     flag_descriptions::kAndroidAutofillUpdateContextForWebContentsName,
-     flag_descriptions::kAndroidAutofillUpdateContextForWebContentsDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAndroidAutofillUpdateContextForWebContents)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
     {"autofill-android-desktop-keyboard-accessory-revamp",
      flag_descriptions::kAutofillAndroidDesktopKeyboardAccessoryRevampName,
      flag_descriptions::

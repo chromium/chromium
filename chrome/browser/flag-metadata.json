@@ -1011,11 +1011,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "autofill-update-context-for-web-contents",
-    "owners": [ "friedrichh@chromium.org", "anki-team@google.com" ],
-    "expiry_milestone": 146
-  },
-  {
     "name": "autofill-vcn-enroll-strike-expiry-time",
     "owners": ["hvs@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 147

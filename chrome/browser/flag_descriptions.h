@@ -4792,12 +4792,6 @@ inline constexpr char kAndroidAudioDeviceListenerDescription[] =
     "Enables listening to audio device list change events, allowing web apps "
     "to react to audio devices being connected and disconnected.";
 
-inline constexpr char kAndroidAutofillUpdateContextForWebContentsName[] =
-    "Android Autofill updates context for WebContents";
-inline constexpr char kAndroidAutofillUpdateContextForWebContentsDescription[] =
-    "When enabled, the Autofill provider is updated whenever the context of "
-    "the WebContents changes.";
-
 inline constexpr char kAndroidAutoMintedTWAName[] = "Auto-minted TWA";
 inline constexpr char kAndroidAutoMintedTWADescription[] =
     "Installs Web apps locally as an auto-minted Trusted Web Activity-based "

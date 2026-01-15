@@ -53,7 +53,6 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
-import org.chromium.components.autofill.AndroidAutofillFeatures;
 import org.chromium.components.autofill.AutofillProvider;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -66,7 +65,6 @@ import java.lang.ref.WeakReference;
 /** Tests for {@link Tab}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures(AndroidAutofillFeatures.ANDROID_AUTOFILL_UPDATE_CONTEXT_FOR_WEBCONTENTS_NAME)
 public class TabUnitTest {
     private static final int TAB1_ID = 456;
     private static final int TAB2_ID = 789;
