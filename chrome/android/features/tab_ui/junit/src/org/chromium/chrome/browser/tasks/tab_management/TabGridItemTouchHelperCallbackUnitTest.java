@@ -49,6 +49,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -225,7 +226,8 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                         isDialog ? mTabGridDialogHandler : null,
                         "",
                         !isDialog,
-                        TabListMode.GRID);
+                        TabListMode.GRID,
+                        CallbackUtils.emptyRunnable());
         mItemTouchHelperCallback.setupCallback(THRESHOLD, MERGE_AREA_THRESHOLD, THRESHOLD);
         mItemTouchHelperCallback.getMovementFlags(mRecyclerView, mMockViewHolder1);
     }

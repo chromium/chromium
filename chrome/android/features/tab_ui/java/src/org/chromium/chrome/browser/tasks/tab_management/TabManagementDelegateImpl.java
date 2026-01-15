@@ -136,7 +136,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             Supplier<LayoutStateProvider> layoutStateProviderSupplier,
             @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
             @Nullable MultiInstanceManager multiInstanceManager,
-            @Nullable DragAndDropDelegate dragDropDelegate) {
+            @Nullable DragAndDropDelegate dragDropDelegate,
+            TabSwitcherBackPressHandlerManager dragHandlerManager) {
 
         TabSwitcherDragHandler tabSwitcherDragHandler = null;
         if (modalDialogManager != null
@@ -147,11 +148,14 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                             () -> activity,
                             multiInstanceManager,
                             dragDropDelegate,
-                            () -> AppHeaderUtils.isAppInDesktopWindow(desktopWindowStateManager));
+                            () -> AppHeaderUtils.isAppInDesktopWindow(desktopWindowStateManager),
+                            dragHandlerManager);
             tabSwitcherDragHandler.setTabModelSelector(tabModelSelector);
             if (ChromeFeatureList.sEscCancelDrag.isEnabled()) {
-                backPressManager.addHandler(
-                        tabSwitcherDragHandler, BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG);
+                if (!backPressManager.has(BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG)) {
+                    backPressManager.addHandler(
+                            dragHandlerManager, BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG);
+                }
             }
         }
 

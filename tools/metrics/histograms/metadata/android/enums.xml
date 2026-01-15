@@ -808,13 +808,13 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="(17) FIND_TOOLBAR"/>
   <int value="17" label="(14) LOCATION_BAR"/>
   <int value="18" label="(01) XR_DELEGATE"/>
-  <int value="19" label="(04) PAGE_INSIGHTS_BOTTOM_SHEET"/>
+  <int value="19" label="(XX) PAGE_INSIGHTS_BOTTOM_SHEET (Deprecated)"/>
   <int value="20" label="(18) BOTTOM_CONTROLS"/>
   <int value="21" label="(07) HUB"/>
   <int value="22" label="(06) ARCHIVED_TABS_DIALOG"/>
   <int value="23" label="(20) NATIVE_PAGE"/>
   <int value="24" label="(12) CANCEL_TAB_STRIP_DRAG"/>
-  <int value="25" label="(13) CANCEL_TAB_SWITCHER_DRAG"/>
+  <int value="25" label="(04) CANCEL_TAB_SWITCHER_DRAG"/>
 </enum>
 
 <!-- LINT.IfChange(BackPressTabCloseType) -->

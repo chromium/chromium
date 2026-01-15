@@ -172,7 +172,8 @@ public interface TabManagementDelegate {
             Supplier<LayoutStateProvider> layoutStateProviderSupplier,
             @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
             @Nullable MultiInstanceManager multiInstanceManager,
-            @Nullable DragAndDropDelegate dragDropDelegate);
+            @Nullable DragAndDropDelegate dragDropDelegate,
+            TabSwitcherBackPressHandlerManager dragHandlerManager);
 
     /**
      * Create a {@link TabGroupsPane} for the Hub.

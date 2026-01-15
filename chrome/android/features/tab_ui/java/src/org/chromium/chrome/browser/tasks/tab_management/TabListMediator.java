@@ -1046,7 +1046,8 @@ class TabListMediator implements TabListNotificationHandler {
             @Nullable UndoBarExplicitTrigger undoBarExplicitTrigger,
             @Nullable SnackbarManager snackbarManager,
             int allowedSelectionCount,
-            boolean isSingleContextMode) {
+            boolean isSingleContextMode,
+            Runnable onDragStateChangedListener) {
         mActivity = activity;
         mModelList = modelList;
         mMode = mode;
@@ -1423,7 +1424,8 @@ class TabListMediator implements TabListNotificationHandler {
                         mTabGridDialogHandler,
                         mComponentName,
                         mActionsOnAllRelatedTabs,
-                        mMode);
+                        mMode,
+                        onDragStateChangedListener);
     }
 
     private TabGroupModelFilter getCurrentFilterChecked() {

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -45,7 +47,7 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
             return false;
         }
 
-        default boolean handleDragEnd(float xPx, float yPx) {
+        default boolean handleExternalDragEnd(float xPx, float yPx) {
             return false;
         }
 
@@ -64,10 +66,30 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
         default boolean handleDrop(float xPx, float yPx) {
             return false;
         }
+
+        /**
+         * Returns whether a drag operation is currently in progress.
+         *
+         * @return True if a drag is active, false otherwise.
+         */
+        default boolean isDragInProcess() {
+            return false;
+        }
+
+        /**
+         * Handles the internal drag end event.
+         *
+         * @return The result of the back press handling, typically {@link BackPressResult#SUCCESS}
+         *     if the drag was successfully cancelled.
+         */
+        default int handleInternalDragEnd() {
+            return BackPressResult.FAILURE;
+        }
     }
 
     private @Nullable DragHandlerDelegate mDragHandlerDelegate;
     private @Nullable ImageView mShadowView;
+    private final TabSwitcherBackPressHandlerManager mDragHandlerManager;
 
     /**
      * Prepares the tab container view to listen to the drag events and data drop after the drag is
@@ -82,12 +104,32 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
             Supplier<@Nullable Activity> activitySupplier,
             MultiInstanceManager multiInstanceManager,
             DragAndDropDelegate dragAndDropDelegate,
-            Supplier<Boolean> isAppInDesktopWindowSupplier) {
+            Supplier<Boolean> isAppInDesktopWindowSupplier,
+            TabSwitcherBackPressHandlerManager dragHandlerManager) {
         super(
                 activitySupplier,
                 multiInstanceManager,
                 dragAndDropDelegate,
                 isAppInDesktopWindowSupplier);
+        mDragHandlerManager = dragHandlerManager;
+        mDragHandlerManager.addHandler(this);
+    }
+
+    public void onDragStateChanged(boolean isDragInProcess) {
+        if (isDragInProcess) {
+            onInternalDragStarted();
+        } else {
+            onInternalDragEnded();
+        }
+    }
+
+    @Override
+    public Boolean handleEscPress() {
+        assumeNonNull(mDragHandlerDelegate);
+        if (mDragHandlerDelegate.isDragInProcess()) {
+            return mDragHandlerDelegate.handleInternalDragEnd() == BackPressResult.SUCCESS;
+        }
+        return super.handleEscPress();
     }
 
     /**
@@ -193,6 +235,7 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
 
     @Override
     public void destroy() {
+        mDragHandlerManager.removeHandler(this);
         super.destroy();
         destroyShadowView();
     }
@@ -216,7 +259,9 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
                 // Restore items's visibility.
                 view.setAlpha(1);
                 finishDrag(dragEvent.getResult());
-                res = mDragHandlerDelegate.handleDragEnd(dragEvent.getX(), dragEvent.getY());
+                res =
+                        mDragHandlerDelegate.handleExternalDragEnd(
+                                dragEvent.getX(), dragEvent.getY());
                 break;
             case DragEvent.ACTION_DRAG_ENTERED:
                 res = mDragHandlerDelegate.handleDragEnter();

@@ -95,6 +95,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Token;
@@ -1729,7 +1730,8 @@ public class TabListMediatorUnitTest {
                         /* undoBarExplicitTrigger= */ null,
                         /* snackbarManager= */ null,
                         /* allowedSelectionCount= */ 0,
-                        /* isSingleContextMode= */ false);
+                        /* isSingleContextMode= */ false,
+                        CallbackUtils.emptyRunnable());
         mMediator.initWithNative(mProfile);
 
         initAndAssertAllProperties();
@@ -3566,7 +3568,8 @@ public class TabListMediatorUnitTest {
                         /* undoBarExplicitTrigger= */ null,
                         /* snackbarManager= */ null,
                         /* allowedSelectionCount= */ 0,
-                        /* isSingleContextMode= */ false);
+                        /* isSingleContextMode= */ false,
+                        CallbackUtils.emptyRunnable());
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -3603,7 +3606,8 @@ public class TabListMediatorUnitTest {
                         /* undoBarExplicitTrigger= */ null,
                         /* snackbarManager= */ null,
                         /* allowedSelectionCount= */ 0,
-                        /* isSingleContextMode= */ false);
+                        /* isSingleContextMode= */ false,
+                        CallbackUtils.emptyRunnable());
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initWithThreeTabs();
@@ -3801,7 +3805,8 @@ public class TabListMediatorUnitTest {
                         mUndoBarExplicitTrigger,
                         /* snackbarManager= */ null,
                         /* allowedSelectionCount= */ 0,
-                        /* isSingleContextMode= */ false);
+                        /* isSingleContextMode= */ false,
+                        CallbackUtils.emptyRunnable());
         initAndAssertAllProperties();
 
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
@@ -4126,7 +4131,8 @@ public class TabListMediatorUnitTest {
                         /* undoBarExplicitTrigger= */ null,
                         /* snackbarManager= */ null,
                         /* allowedSelectionCount= */ 0,
-                        /* isSingleContextMode= */ false);
+                        /* isSingleContextMode= */ false,
+                        CallbackUtils.emptyRunnable());
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -4176,7 +4182,8 @@ public class TabListMediatorUnitTest {
                         /* undoBarExplicitTrigger= */ null,
                         /* snackbarManager= */ null,
                         /* allowedSelectionCount= */ 0,
-                        /* isSingleContextMode= */ false);
+                        /* isSingleContextMode= */ false,
+                        CallbackUtils.emptyRunnable());
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -4226,7 +4233,8 @@ public class TabListMediatorUnitTest {
                         /* undoBarExplicitTrigger= */ null,
                         /* snackbarManager= */ null,
                         /* allowedSelectionCount= */ 0,
-                        /* isSingleContextMode= */ false);
+                        /* isSingleContextMode= */ false,
+                        CallbackUtils.emptyRunnable());
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -4969,7 +4977,8 @@ public class TabListMediatorUnitTest {
                         /* undoBarExplicitTrigger= */ null,
                         /* snackbarManager= */ null,
                         /* allowedSelectionCount= */ 0,
-                        /* isSingleContextMode= */ false);
+                        /* isSingleContextMode= */ false,
+                        CallbackUtils.emptyRunnable());
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -5324,7 +5333,8 @@ public class TabListMediatorUnitTest {
                         mUndoBarExplicitTrigger,
                         /* snackbarManager= */ null,
                         /* allowedSelectionCount= */ 0,
-                        /* isSingleContextMode= */ false);
+                        /* isSingleContextMode= */ false,
+                        CallbackUtils.emptyRunnable());
         initAndAssertAllProperties();
 
         mModelList
@@ -5390,7 +5400,8 @@ public class TabListMediatorUnitTest {
                         /* undoBarExplicitTrigger= */ null,
                         /* snackbarManager= */ null,
                         /* allowedSelectionCount= */ 0,
-                        /* isSingleContextMode= */ false);
+                        /* isSingleContextMode= */ false,
+                        CallbackUtils.emptyRunnable());
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -5611,7 +5622,8 @@ public class TabListMediatorUnitTest {
                         /* undoBarExplicitTrigger= */ null,
                         /* snackbarManager= */ null,
                         /* allowedSelectionCount= */ 0,
-                        /* isSingleContextMode= */ false);
+                        /* isSingleContextMode= */ false,
+                        CallbackUtils.emptyRunnable());
         mMediator.initWithNative(mProfile);
 
         initAndAssertAllProperties();
@@ -5823,7 +5835,8 @@ public class TabListMediatorUnitTest {
                         mUndoBarExplicitTrigger,
                         /* snackbarManager= */ null,
                         /* allowedSelectionCount= */ 0,
-                        /* isSingleContextMode= */ false);
+                        /* isSingleContextMode= */ false,
+                        CallbackUtils.emptyRunnable());
         TrackerFactory.setTrackerForTests(mTracker);
         mMediator.registerOrientationListener(mGridLayoutManager);
 

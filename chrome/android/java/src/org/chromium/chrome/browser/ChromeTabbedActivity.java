@@ -288,6 +288,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabModelNotificationDotManager;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherBackPressHandlerManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneBase;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
@@ -603,6 +604,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     private ReadingListBackPressHandler mReadingListBackPressHandler;
     private MinimizeAppAndCloseTabBackPressHandler mMinimizeAppAndCloseTabBackPressHandler;
     private HomeSurfaceTracker mHomeSurfaceTracker;
+    private final TabSwitcherBackPressHandlerManager mDragHandlerManager =
+            new TabSwitcherBackPressHandlerManager();
 
     // ID assigned to each ChromeTabbedActivity instance in Android S+ where multi-instance feature
     // is supported. This can be explicitly set in the incoming Intent or internally assigned.
@@ -1179,7 +1182,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         mLayoutStateProviderSupplier,
                         getXrSpaceModeObservableSupplier(),
                         mMultiInstanceManager,
-                        mDragDropDelegate);
+                        mDragDropDelegate,
+                        mDragHandlerManager);
         if (didFinishNativeInitialization()) {
             result.first.initWithNative();
         }

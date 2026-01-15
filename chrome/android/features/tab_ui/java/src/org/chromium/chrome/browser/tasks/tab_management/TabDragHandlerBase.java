@@ -432,7 +432,7 @@ public abstract class TabDragHandlerBase
     }
 
     @Override
-    public @Nullable Boolean handleEscPress() {
+    public Boolean handleEscPress() {
         return cancelDrag() == BackPressResult.SUCCESS;
     }
 
@@ -440,6 +440,14 @@ public abstract class TabDragHandlerBase
     @Override
     public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mDragInProgressSupplier;
+    }
+
+    protected void onInternalDragStarted() {
+        mDragInProgressSupplier.set(true);
+    }
+
+    protected void onInternalDragEnded() {
+        mDragInProgressSupplier.set(false);
     }
 
     private @BackPressResult int cancelDrag() {

@@ -104,6 +104,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
     private @Nullable OnDropOnArchivalMessageCardEventListener
             mOnDropOnArchivalMessageCardEventListener;
     private int mPreviousArchivedMessageCardIndex = TabModel.INVALID_TAB_INDEX;
+    private final @Nullable Runnable mOnDragStateChangedListener;
 
     /**
      * @param context The activity context.
@@ -126,7 +127,8 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
             @Nullable TabGridDialogHandler tabGridDialogHandler,
             String componentName,
             boolean actionsOnAllRelatedTabs,
-            @TabListMode int mode) {
+            @TabListMode int mode,
+            Runnable onDragStateChangedListener) {
         super(0, 0);
         mModel = tabListModel;
         mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
@@ -135,6 +137,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
         mActionsOnAllRelatedTabs = actionsOnAllRelatedTabs;
         mTabGridDialogHandler = tabGridDialogHandler;
         mTabGroupCreationDialogManager = tabGroupCreationDialogManager;
+        mOnDragStateChangedListener = onDragStateChangedListener;
 
         Resources resources = context.getResources();
         mLongPressDpCancelThreshold =
@@ -388,8 +391,10 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
             assumeNonNull(viewHolder);
             mSelectedTabIndex = viewHolder.getBindingAdapterPosition();
             mModel.updateSelectedCardForSelection(mSelectedTabIndex, true);
+            onDragStateChanged();
             RecordUserAction.record("TabGrid.Drag.Start." + mComponentName);
         } else if (actionState == ItemTouchHelper.ACTION_STATE_IDLE) {
+            onDragStateChanged();
             mIsSwipingToDismiss = false;
 
             RecyclerView.ViewHolder hoveredViewHolder =
@@ -498,6 +503,10 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
         }
         mActionStarted = false;
         mActionAttempted = false;
+    }
+
+    private void onDragStateChanged() {
+        if (mOnDragStateChangedListener != null) mOnDragStateChangedListener.run();
     }
 
     private boolean hasTabPropertiesModel(RecyclerView.@Nullable ViewHolder viewHolder) {
