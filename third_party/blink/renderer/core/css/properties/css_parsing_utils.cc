@@ -5009,22 +5009,6 @@ CSSValue* ConsumeBackgroundComponent(CSSPropertyID resolved_property,
     case CSSPropertyID::kBackgroundImage:
     case CSSPropertyID::kMaskImage:
       return ConsumeImageOrNone(stream, context);
-    case CSSPropertyID::kBackgroundPositionX:
-    case CSSPropertyID::kWebkitMaskPositionX:
-      return ConsumePositionLonghand<CSSValueID::kLeft, CSSValueID::kRight>(
-          stream, context);
-    case CSSPropertyID::kBackgroundPositionY:
-    case CSSPropertyID::kWebkitMaskPositionY:
-      return ConsumePositionLonghand<CSSValueID::kTop, CSSValueID::kBottom>(
-          stream, context);
-    case CSSPropertyID::kBackgroundSize:
-      return ConsumeBackgroundSize(stream, context,
-                                   WebFeature::kNegativeBackgroundSize,
-                                   ParsingStyle::kNotLegacy);
-    case CSSPropertyID::kMaskSize:
-      return ConsumeBackgroundSize(stream, context,
-                                   WebFeature::kNegativeMaskSize,
-                                   ParsingStyle::kNotLegacy);
     case CSSPropertyID::kBackgroundColor:
       return ConsumeColor(stream, context);
     case CSSPropertyID::kMaskClip:
@@ -5042,6 +5026,14 @@ CSSValue* ConsumeBackgroundComponent(CSSPropertyID resolved_property,
       return ConsumeMaskComposite(stream);
     case CSSPropertyID::kMaskMode:
       return ConsumeMaskMode(stream);
+    case CSSPropertyID::kBackgroundPositionX:
+    case CSSPropertyID::kWebkitMaskPositionX:
+    case CSSPropertyID::kBackgroundPositionY:
+    case CSSPropertyID::kWebkitMaskPositionY:
+    case CSSPropertyID::kBackgroundSize:
+    case CSSPropertyID::kMaskSize:
+      // These are explicitly handled by ParseBackgroundOrMask().
+      NOTREACHED();
     default:
       return nullptr;
   };
@@ -5101,6 +5093,10 @@ bool ParseBackgroundOrMask(bool important,
           if (value) {
             bg_position_parsed_in_current_layer = true;
           }
+        } else if (property.IDEquals(CSSPropertyID::kBackgroundPositionY) ||
+                   property.IDEquals(CSSPropertyID::kWebkitMaskPositionY)) {
+          // background-position-x and -y are parsed as a <bg-position> above.
+          continue;
         } else if (property.IDEquals(CSSPropertyID::kBackgroundSize) ||
                    property.IDEquals(CSSPropertyID::kMaskSize)) {
           if (!ConsumeSlashIncludingWhitespace(stream)) {
@@ -5115,9 +5111,6 @@ bool ParseBackgroundOrMask(bool important,
           if (!value || !bg_position_parsed_in_current_layer) {
             return false;
           }
-        } else if (property.IDEquals(CSSPropertyID::kBackgroundPositionY) ||
-                   property.IDEquals(CSSPropertyID::kWebkitMaskPositionY)) {
-          continue;
         } else {
           value =
               ConsumeBackgroundComponent(property.PropertyID(), stream, context,
