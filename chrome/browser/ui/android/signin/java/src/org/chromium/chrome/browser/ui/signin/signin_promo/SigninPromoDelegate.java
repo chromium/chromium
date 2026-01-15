@@ -63,7 +63,7 @@ public abstract class SigninPromoDelegate {
      * Called when dismiss button is clicked. Subclasses that want to hide promos in the future can
      * do it here.
      */
-    abstract void onDismissButtonClicked();
+    abstract void permanentlyDismissPromo();
 
     /**
      * Whether the promo can be shown.
@@ -102,8 +102,8 @@ public abstract class SigninPromoDelegate {
         return false;
     }
 
-    boolean shouldHideDismissButton() {
-        return false;
+    boolean canBeDismissedPermanently() {
+        return true;
     }
 
     boolean shouldDisplaySignedInLayout() {

@@ -626,8 +626,8 @@ public class SigninPromoCoordinatorTest {
         signinAndOptOutHistorySyncIfNeeded(accessPoint);
         setUpSignInPromo(accessPoint);
 
-        if (accessPoint == SigninAccessPoint.RECENT_TABS) {
-            // Recent tabs doesn't support dismiss button.
+        if (!mDelegate.canBeDismissedPermanently()) {
+            // Eg.: Recent tabs doesn't support dismiss functionality
             onView(withId(dismissButtonId)).check(ViewAssertions.matches(not(isDisplayed())));
             return;
         }

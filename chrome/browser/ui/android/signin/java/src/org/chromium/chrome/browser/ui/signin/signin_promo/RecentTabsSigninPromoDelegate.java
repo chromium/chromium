@@ -151,8 +151,13 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     @Override
-    void onDismissButtonClicked() {
-        throw new IllegalStateException("Recent tabs promos shouldn't have a dismiss button");
+    boolean canBeDismissedPermanently() {
+        return false;
+    }
+
+    @Override
+    void permanentlyDismissPromo() {
+        throw new IllegalStateException("Does not support being dismissed permanently.");
     }
 
     @Override
@@ -178,11 +183,6 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
         if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
             return mPromoState != PromoState.SIGNIN;
         }
-        return true;
-    }
-
-    @Override
-    boolean shouldHideDismissButton() {
         return true;
     }
 

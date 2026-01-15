@@ -214,8 +214,9 @@ final class SigninPromoMediator
     }
 
     private void onDismissButtonClicked() {
+        assert mPromoDelegate.canBeDismissedPermanently();
         recordEventHistogram(Event.DISMISSED);
-        mPromoDelegate.onDismissButtonClicked();
+        mPromoDelegate.permanentlyDismissPromo();
         refreshPromoContent(/* wasVisibleAccountUpdated= */ false);
     }
 
@@ -261,7 +262,7 @@ final class SigninPromoMediator
                 mPromoDelegate.getTextForSecondaryButton());
         mModel.set(
                 SigninPromoProperties.SHOULD_HIDE_DISMISS_BUTTON,
-                mPromoDelegate.shouldHideDismissButton());
+                !mPromoDelegate.canBeDismissedPermanently());
         mModel.set(
                 SigninPromoProperties.SHOULD_SHOW_ACCOUNT_PICKER,
                 profileData != null && !mPromoDelegate.shouldDisplaySignedInLayout());

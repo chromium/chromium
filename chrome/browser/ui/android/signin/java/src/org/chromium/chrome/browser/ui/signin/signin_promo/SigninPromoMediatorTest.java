@@ -143,7 +143,7 @@ public class SigninPromoMediatorTest {
         String newPrimaryButtonText = "newPrimaryButtonText";
         String newSecondaryButtonText = "newSecondaryButtonText";
         doReturn(true).when(mPromoDelegate).refreshPromoState(any());
-        doReturn(true).when(mPromoDelegate).shouldHideDismissButton();
+        doReturn(false).when(mPromoDelegate).canBeDismissedPermanently();
         doReturn(newTitle).when(mPromoDelegate).getTitle();
         doReturn(newDescription).when(mPromoDelegate).getDescription(any());
         doReturn(newPrimaryButtonText).when(mPromoDelegate).getTextForPrimaryButton(any());
