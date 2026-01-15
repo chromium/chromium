@@ -26,6 +26,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -45,9 +46,12 @@
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_pref_change_handler.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
+#include "chrome/browser/site_protection/site_familiarity_utils.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/download/public/common/download_item.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -236,6 +240,56 @@ void MigrateUserToEnhancedSecurityBundleIfNeeded(
       static_cast<int>(SecuritySettingsBundleToastState::kPending));
 }
 
+// Performs a one-time migration for the
+// kMigrateToBlockV8OptimizerOnUnfamiliarSites. The feature enables automatic
+// JavaScript optimizer blocking on unfamiliar sites for users that have the
+// setting available in the UI, have Safe Browsing enabled, and have not
+// explicitly disabled JavaScript optimizers for all sites.
+void MigrateUserToAutomaticJavaScriptBlocking(base::WeakPtr<Profile> profile) {
+  if (!profile) {
+    return;
+  }
+
+  const content_settings::JavascriptOptimizerSetting
+      current_js_optimizer_setting =
+          site_protection::ComputeDefaultJavascriptOptimizerSetting(
+              profile.get());
+
+  // Profiles that have JS optimizers blocked for all sites are not migrated.
+  if (current_js_optimizer_setting ==
+      content_settings::JavascriptOptimizerSetting::kBlocked) {
+    return;
+  }
+
+  if (!site_protection::CanEnableBlockingJavascriptOptimizersForUnfamiliarSites(
+          profile.get())) {
+    return;
+  }
+
+  PrefService* pref_service = profile->GetPrefs();
+  const bool opted_self_out_of_feature =
+      pref_service->GetBoolean(
+          prefs::kMigratedToJavascriptOptimizerBlockedForUnfamiliarSites) &&
+      current_js_optimizer_setting !=
+          content_settings::JavascriptOptimizerSetting::
+              kBlockedForUnfamiliarSites;
+
+  if (opted_self_out_of_feature ||
+      !base::FeatureList::IsEnabled(
+          kMigrateToBlockV8OptimizerOnUnfamiliarSites)) {
+    // opted_self_out_of_feature must be checked before feature state to ensure
+    // that only profiles that have kBlockedForUnfamiliarSites selected are
+    // included in the "Enabled" arm.
+    return;
+  }
+
+  // Set pref to prevent future migrations.
+  pref_service->SetBoolean(
+      prefs::kMigratedToJavascriptOptimizerBlockedForUnfamiliarSites, true);
+
+  pref_service->SetBoolean(prefs::kJavascriptOptimizerBlockedForUnfamiliarSites,
+                           true);
+}
 }  // namespace
 
 // static
@@ -611,6 +665,23 @@ void SafeBrowsingServiceImpl::OnProfileAdded(Profile* profile) {
       ->PostTask(FROM_HERE,
                  base::BindOnce(&TriggerSecuritySettingsBundleToastIfNeeded,
                                 profile->GetWeakPtr()));
+
+  // Post task to isolate the automatic js-opt blocking migration from other
+  // code that may be accessing the setting. The feature should be viewed
+  // similarly to a user changing the setting through the settings UI.
+  content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(&MigrateUserToAutomaticJavaScriptBlocking,
+                                profile->GetWeakPtr()));
+
+  base::OnceClosure add_profile_tasks_completed_closure_for_testing =
+      TakeAddProfileTasksCompletedClosureForTesting();  // IN-TEST
+  if (add_profile_tasks_completed_closure_for_testing) {
+    // Must be posted after the other tasks have been queued.
+    content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
+        ->PostTask(FROM_HERE,
+                   std::move(add_profile_tasks_completed_closure_for_testing));
+  }
 }
 
 void SafeBrowsingServiceImpl::OnOffTheRecordProfileCreated(

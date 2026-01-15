@@ -20,6 +20,7 @@ source_set("impl") {
     ":js_optimization",
     "//chrome/browser:primitives",
     "//chrome/browser/site_protection",
+    "//chrome/browser/site_protection:utils",
     "//chrome/browser/ui/actions",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/views",

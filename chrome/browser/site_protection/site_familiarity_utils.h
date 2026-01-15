@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_SITE_PROTECTION_SITE_FAMILIARITY_UTILS_H_
 #define CHROME_BROWSER_SITE_PROTECTION_SITE_FAMILIARITY_UTILS_H_
 
-#include "chrome/browser/content_settings/generated_javascript_optimizer_pref.h"
+#include <optional>
+
+#include "components/content_settings/browser/ui/javascript_optimizer_setting.h"
+#include "components/content_settings/core/common/content_settings.h"
 
 class Profile;
 
@@ -20,6 +23,10 @@ namespace site_protection {
 // on the user's navigation history and the safe-browsing
 // high-confidence-allowlist.
 bool AreV8OptimizationsDisabledOnUnfamiliarSites(Profile* profile);
+
+// Returns whether the mode that enables blocking V8 optimizations on unfamiliar
+// sites can be selected by the profile.
+bool CanEnableBlockingJavascriptOptimizersForUnfamiliarSites(Profile* profile);
 
 // Computes the default Javascript-Optimizer setting. Ignores content-setting
 // exceptions.

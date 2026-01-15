@@ -37,6 +37,7 @@ static_library("safe_browsing") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_io_data",
     "//chrome/browser/signin",
+    "//chrome/browser/site_protection:utils",
     "//chrome/browser/sync",
     "//chrome/browser/ui/autofill",
     "//chrome/common",

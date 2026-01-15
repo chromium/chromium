@@ -10,6 +10,7 @@
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 #include "chrome/common/extensions/api/settings_private.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/content_settings/browser/ui/javascript_optimizer_setting.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
