@@ -2821,7 +2821,7 @@ const CSSValue* ColumnRuleColor::CSSValueFromComputedStyleInternal(
     // sure that when `allow_visited_style` is true, we return a list like we do
     // when `allow_visited_style` is false.
     if (RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
-      CSSValueList* wrapper_list = CSSValueList::CreateSpaceSeparated();
+      CSSValueList* wrapper_list = CSSValueList::CreateCommaSeparated();
       wrapper_list->Append(
           *cssvalue::CSSColor::Create(style.VisitedDependentColor(*this)));
       return wrapper_list;

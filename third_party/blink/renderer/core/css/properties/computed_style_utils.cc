@@ -3718,7 +3718,7 @@ void PopulateRepeaterGapData(CSSValueList* list,
         CSSPrimitiveValue::UnitType::kNumber);
   }
 
-  CSSValueList* repeated_values = CSSValueList::CreateSpaceSeparated();
+  CSSValueList* repeated_values = CSSValueList::CreateCommaSeparated();
 
   for (const auto& value : gap_data.GetValueRepeater()->RepeatedValues()) {
     const CSSValue* css_value =
@@ -3747,7 +3747,7 @@ const CSSValue* ValueForGapDecorationPropertyDataList(
                                          value_phase);
   }
 
-  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
 
   for (const auto& gap_data : gap_color_list.GetGapDataList()) {
     if (gap_data.IsRepeaterData()) {

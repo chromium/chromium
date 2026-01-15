@@ -5698,17 +5698,11 @@ cssvalue::CSSRepeatValue* ConsumeGapDecorationRepeatFunction(
     return nullptr;
   }
 
-  CSSValueList* repeated_values = CSSValueList::CreateSpaceSeparated();
-  while (!stream.AtEnd()) {
-    CSSValue* value = ConsumeGapDecorationPropertyValue(
-        stream, context, local_context, property_type);
-    if (!value) {
-      return nullptr;
-    }
-    repeated_values->Append(*value);
-  }
+  CSSValueList* repeated_values =
+      ConsumeCommaSeparatedList(ConsumeGapDecorationPropertyValue, stream,
+                                context, local_context, property_type);
 
-  if (repeated_values->length() == 0) {
+  if (!repeated_values || repeated_values->length() == 0) {
     return nullptr;
   }
 
@@ -5738,7 +5732,7 @@ CSSValue* ConsumeGapDecorationPropertyList(
   // Flag to limit to one auto-repeat.
   bool seen_auto_repeat = false;
 
-  CSSValueList* values = CSSValueList::CreateSpaceSeparated();
+  CSSValueList* values = CSSValueList::CreateCommaSeparated();
   do {
     if (stream.Peek().FunctionId() == CSSValueID::kRepeat) {
       auto* repeat_value = ConsumeGapDecorationRepeatFunction(
@@ -5761,7 +5755,7 @@ CSSValue* ConsumeGapDecorationPropertyList(
       }
       values->Append(*value);
     }
-  } while (!stream.AtEnd());
+  } while (ConsumeCommaIncludingWhitespace(stream));
 
   // If there are no values, return nullptr rather than an empty list so that we
   // use the default value for the property.
@@ -7629,9 +7623,9 @@ bool ConsumeGapDecorationsShorthandRepeatFunction(
   }
 
   // Lists to hold repeated values for each property.
-  CSSValueList* width_repeated_values = CSSValueList::CreateSpaceSeparated();
-  CSSValueList* style_repeated_values = CSSValueList::CreateSpaceSeparated();
-  CSSValueList* color_repeated_values = CSSValueList::CreateSpaceSeparated();
+  CSSValueList* width_repeated_values = CSSValueList::CreateCommaSeparated();
+  CSSValueList* style_repeated_values = CSSValueList::CreateCommaSeparated();
+  CSSValueList* color_repeated_values = CSSValueList::CreateCommaSeparated();
 
   // Consume one or more <gap-rule> values, each separated by a comma.
   while (!stream.AtEnd()) {
@@ -7821,9 +7815,9 @@ bool ConsumeGapDecorationsRuleShorthand(bool important,
                                         CSSValueList*& rule_colors) {
   CHECK(RuntimeEnabledFeatures::CSSGapDecorationEnabled());
 
-  rule_widths = CSSValueList::CreateSpaceSeparated();
-  rule_styles = CSSValueList::CreateSpaceSeparated();
-  rule_colors = CSSValueList::CreateSpaceSeparated();
+  rule_widths = CSSValueList::CreateCommaSeparated();
+  rule_styles = CSSValueList::CreateCommaSeparated();
+  rule_colors = CSSValueList::CreateCommaSeparated();
 
   bool has_seen_auto_repeat = false;
 
