@@ -89,7 +89,8 @@ class CONTENT_EXPORT PrerenderHost {
     kIsHistoryNavigationInNewChildFrame = 22,
     // kReferrerPolicy = 23,  Obsolete
     kRequestDestination = 24,
-    kMaxValue = kRequestDestination,
+    kIsOverridingUserAgent = 25,
+    kMaxValue = kIsOverridingUserAgent,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:PrerenderActivationNavigationParamsMatch)
 
@@ -546,6 +547,11 @@ class CONTENT_EXPORT PrerenderHost {
   AreCommonNavigationParamsCompatibleWithNavigation(
       const blink::mojom::CommonNavigationParams& potential_activation,
       bool allow_partial_mismatch);
+  // This function only checks partial parameters since `CommitNavigationParams`
+  // is not fully prepared at the point of the prerender activation check.
+  ActivationNavigationParamsMatch
+  AreCommitNavigationParamsCompatibleWithNavigation(
+      const blink::mojom::CommitNavigationParams& potential_activation);
 
   void MaybeSetNoVarySearch(network::mojom::NoVarySearchWithParseError&
                                 no_vary_search_with_parse_error);
@@ -584,6 +590,12 @@ class CONTENT_EXPORT PrerenderHost {
   // for a navigation.
   blink::mojom::BeginNavigationParamsPtr begin_params_;
   blink::mojom::CommonNavigationParamsPtr common_params_;
+  // To check values of `is_overriding_user_agent` of `CommitNavigationParams`
+  // as a workaround for crbug.com/40252581. This field must be set at the same
+  // time with `begin_params_` and `common_params_`.
+  // TODO(crbug.com/474391717): Save whole `CommitNavigationParams` once further
+  // checking is needed.
+  bool commit_params_is_overriding_user_agent_ = false;
 
   // Stores the client hints type that applies to this page.
   base::flat_map<url::Origin, std::vector<network::mojom::WebClientHintsType>>

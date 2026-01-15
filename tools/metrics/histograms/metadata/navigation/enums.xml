@@ -1720,6 +1720,7 @@ chromium-metrics-reviews@google.com.
   <int value="22" label="kIsHistoryNavigationInNewChildFrame"/>
   <int value="23" label="kReferrerPolicy (Obsolete)"/>
   <int value="24" label="kRequestDestination"/>
+  <int value="25" label="kIsOverridingUserAgent"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/preloading/prerender/prerender_host.h:ActivationNavigationParamsMatch) -->

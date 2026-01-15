@@ -1069,6 +1069,15 @@ bool PrerenderHost::AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
     return false;
   }
 
+  // Compare CommitNavigationParams.
+  result = AreCommitNavigationParamsCompatibleWithNavigation(
+      navigation_request.commit_params());
+  if (result != ActivationNavigationParamsMatch::kOk) {
+    RecordPrerenderActivationNavigationParamsMatch(result,
+                                                   GetHistogramSuffix());
+    return false;
+  }
+
   RecordPrerenderActivationNavigationParamsMatch(
       ActivationNavigationParamsMatch::kOk, GetHistogramSuffix());
   return true;
@@ -1321,6 +1330,31 @@ PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
   return ActivationNavigationParamsMatch::kOk;
 }
 
+// Kill switch.
+BASE_FEATURE(kPrerenderActivationCheckForCommitNavigationParams,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+PrerenderHost::ActivationNavigationParamsMatch
+PrerenderHost::AreCommitNavigationParamsCompatibleWithNavigation(
+    const blink::mojom::CommitNavigationParams& potential_activation) {
+  if (!base::FeatureList::IsEnabled(
+          kPrerenderActivationCheckForCommitNavigationParams)) {
+    return ActivationNavigationParamsMatch::kOk;
+  }
+
+  // A mitigation for DCHECK failures happening on Android Desktop. Tentatively
+  // allowing parameter discrepancies at this point for prerender triggered by
+  // speculation rules to narrow the mitigation scope. See crbug.com/40252581
+  // and crbug.com/461578988 for details.
+  if (!IsSpeculationRuleType(trigger_type()) &&
+      (potential_activation.is_overriding_user_agent !=
+       commit_params_is_overriding_user_agent_)) {
+    return ActivationNavigationParamsMatch::kIsOverridingUserAgent;
+  }
+
+  return ActivationNavigationParamsMatch::kOk;
+}
+
 RenderFrameHostImpl* PrerenderHost::GetPrerenderedMainFrameHost() {
   CHECK(GetFrameTree());
   CHECK(GetFrameTree()->root()->current_frame_host());
@@ -1390,6 +1424,8 @@ void PrerenderHost::SetInitialNavigation(NavigationRequest* navigation) {
   initial_navigation_id_ = navigation->GetNavigationId();
   begin_params_ = navigation->begin_params().Clone();
   common_params_ = navigation->common_params().Clone();
+  commit_params_is_overriding_user_agent_ =
+      navigation->commit_params().is_overriding_user_agent;
 
   // The prerendered page should be checked by the main world CSP. See also
   // relevant comments in AreCommonNavigationParamsCompatibleWithNavigation().
