@@ -378241,7 +378241,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "ed620521718918ec0c3ebfac58faef8baa7dbe1f",
+      "6233a26e097587ed74b36b7f1bfb70656e510ca7",
       []
      ],
      "add-inline-child-after-marker-001-ref.html": [
@@ -395683,44 +395683,6 @@
       }
      },
      "the-stylepropertymap": {
-      "computed": {
-       "get-expected.txt": [
-        "051098f10a2d4b1962488ef96f19929e391891ce",
-        []
-       ]
-      },
-      "declared": {
-       "clear-expected.txt": [
-        "467bc7dbf6d89a4736f1364422f4f2a2adacb0e2",
-        []
-       ],
-       "declared.tentative-expected.txt": [
-        "31d774e305d12cd55c9af1647e2ffdf13208db4f",
-        []
-       ],
-       "get-expected.txt": [
-        "58cb50efbb9a19c563c856ef88b291ed2fc0be1f",
-        []
-       ],
-       "get-shorthand-expected.txt": [
-        "b9271ed1d6a26ca0230100009b2212a997b2e2c3",
-        []
-       ]
-      },
-      "inline": {
-       "clear-expected.txt": [
-        "3dd33098128d32dbbbbe6142b6d8ed369471ac10",
-        []
-       ],
-       "get-expected.txt": [
-        "0b2a4eccd936899dc60bcd5a79c19e0661d5bbac",
-        []
-       ],
-       "get-shorthand-expected.txt": [
-        "8aaeba5871a0b19d6e399d311773cdae6771feee",
-        []
-       ]
-      },
       "properties": {
        "WEB_FEATURES.yml": [
         "6e44899542d34a6641f2b14ff0b071e9db684746",
@@ -395735,7 +395697,7 @@
         []
        ],
        "all-expected.txt": [
-        "fdced9ff4afb7b138c3af978c55c13b4ce5df331",
+        "fe6cb6e9c6196ef8b099e6175c2148b0eba65e64",
         []
        ],
        "anchor-scope-expected.txt": [
@@ -395795,11 +395757,11 @@
         []
        ],
        "clip-path-expected.txt": [
-        "00a1df47c427a6f160f16be1cf2ef60791cf4056",
+        "f43aaf5919b3412981fe16414e84b36668fa0137",
         []
        ],
        "container-name-expected.txt": [
-        "1f83aaf5faa87e1866460b4a82bac4f598633a6c",
+        "c272ee2f0649e3de02444927fdbf92b8f0f74428",
         []
        ],
        "dominant-baseline-expected.txt": [
@@ -395811,7 +395773,7 @@
         []
        ],
        "fill-expected.txt": [
-        "fe9c3e5abb02f43df295123e942a29e4138dbee0",
+        "4c33a2996c4f902565567976e748cbc514c79e36",
         []
        ],
        "fill-opacity-expected.txt": [
@@ -395835,7 +395797,7 @@
         []
        ],
        "font-palette-expected.txt": [
-        "11a371ef955591d1e725b84193a0fe446f6e8895",
+        "48d67a59debd6a5c5172216a9d897a6bd42a058c",
         []
        ],
        "font-presentation-expected.txt": [
@@ -395891,7 +395853,7 @@
         []
        ],
        "list-style-type-expected.txt": [
-        "a88dfe45f1e20e09391d0643e07dbf635169a996",
+        "b35fd3e427c7f36cf163f96859dc39bb011bd74c",
         []
        ],
        "logical-expected.txt": [
@@ -395931,7 +395893,7 @@
         []
        ],
        "overflow-wrap-expected.txt": [
-        "51f05fc29c4c33e05cad8a8b59ab44f518f185bb",
+        "f6f17990b9470987e30b3ecba6d80ab2432fe7b5",
         []
        ],
        "padding-expected.txt": [
@@ -395997,11 +395959,11 @@
         []
        ],
        "stroke-expected.txt": [
-        "ff36b7a70281fe2982227f899f24ee24ebb7a1ad",
+        "61944fa2f06c0cdda4ce9d09cce8c39c3d74901a",
         []
        ],
        "stroke-linejoin-expected.txt": [
-        "b70d2c14e081eb25666cffce50fc5288aedd29da",
+        "cec5c36ffcd30764d8072cafaecfbdcb18bfe151",
         []
        ],
        "stroke-miterlimit-expected.txt": [
@@ -396017,7 +395979,7 @@
         []
        ],
        "text-combine-upright-expected.txt": [
-        "55ea45fcfbc7460095d67aaae19d326f78538436",
+        "a066e3953e924ba7c5072a5cc66de6effdaf447e",
         []
        ],
        "text-decoration-skip-expected.txt": [
@@ -396025,7 +395987,7 @@
         []
        ],
        "text-overflow-expected.txt": [
-        "65900d570b7084f12e9a26bcada7ed8cc207c620",
+        "ad6b32664e3f746a2e93d728072a735e4c70cb60",
         []
        ],
        "text-size-adjust-expected.txt": [
@@ -396037,7 +395999,7 @@
         []
        ],
        "transition-expected.txt": [
-        "f492287471809cb1ae4c3f1a1a4c8a0ebe93406f",
+        "e494c416bbc24898441e6619339e66125dea2a57",
         []
        ],
        "white-space-expected.txt": [
@@ -396053,7 +396015,7 @@
         []
        ],
        "word-wrap-expected.txt": [
-        "9c873f5520858b797620b0b2cb9f476fc61f80b1",
+        "1d7d63dc3c60e45b12b61e826284ee14c12e4214",
         []
        ]
       }
@@ -427532,6 +427494,10 @@
         "6d79efc3846c8e427627e9d95af5699ca7096197",
         []
        ],
+       "WEB_FEATURES.yml": [
+        "cbf89b6559380f913cd9888cec35ff01206c8ed1",
+        []
+       ],
        "dir-type-ref.html": [
         "710b39ceca58425f3b6756e7e1312ad774bb6bbe",
         []
@@ -444646,7 +444612,7 @@
      []
     ],
     "pointerevent_support.js": [
-     "7dd60f5a54d905f78eaa9009b9a6d327186a5a6e",
+     "c3290409247d94c453e9684dba799c3ada781df8",
      []
     ],
     "pointerevent_touch-propagates-when-target-is-video_touch-expected.txt": [
@@ -447769,7 +447735,7 @@
       []
      ],
      "webxr-test.js": [
-      "9226b4807700db71855adcd944cb076b6939b91f",
+      "d03ae043ed7bf97244b0af56b01e35175f54d7b9",
       []
      ],
      "webxr-test.js.headers": [
@@ -463890,11 +463856,11 @@
      []
     ],
     "script-transform-generateKeyFrame.js": [
-     "bf8b7535ba9e0c9292ddcb90d7efaf27d149756b",
+     "575c8998c669c7a03b600ee632398e108b399ffb",
      []
     ],
     "script-transform-sendKeyFrameRequest.js": [
-     "990b43d2e5fe1cb3e70d2e0908047c29e5004caf",
+     "5d4b4272743819106605c2f7d5897e2d049158a1",
      []
     ],
     "script-transform-worker.js": [
@@ -722212,15 +722178,9 @@
      ]
     ],
     "pointerevent_attributes.html": [
-     "7b700bf67d8d29040346ec97b5289d964f75cd32",
+     "8a98de20e8f8947e93707dda40ae19dbfcf21b2d",
      [
       "pointerevents/pointerevent_attributes.html?mouse",
-      {
-       "testdriver": true
-      }
-     ],
-     [
-      "pointerevents/pointerevent_attributes.html?mouse-nonstandard",
       {
        "testdriver": true
       }
@@ -722232,19 +722192,7 @@
       }
      ],
      [
-      "pointerevents/pointerevent_attributes.html?mouse-right-nonstandard",
-      {
-       "testdriver": true
-      }
-     ],
-     [
       "pointerevents/pointerevent_attributes.html?pen",
-      {
-       "testdriver": true
-      }
-     ],
-     [
-      "pointerevents/pointerevent_attributes.html?pen-nonstandard",
       {
        "testdriver": true
       }
@@ -722256,19 +722204,7 @@
       }
      ],
      [
-      "pointerevents/pointerevent_attributes.html?pen-right-nonstandard",
-      {
-       "testdriver": true
-      }
-     ],
-     [
       "pointerevents/pointerevent_attributes.html?touch",
-      {
-       "testdriver": true
-      }
-     ],
-     [
-      "pointerevents/pointerevent_attributes.html?touch-nonstandard",
       {
        "testdriver": true
       }
@@ -749585,7 +749521,7 @@
        ]
       ],
       "form.html": [
-       "5ab144b05ed130409a09c116fcceecfc57cfaab5",
+       "c2607f37fb6035e9a3c12b01a2cfe41a88ab5849",
        [
         null,
         {
