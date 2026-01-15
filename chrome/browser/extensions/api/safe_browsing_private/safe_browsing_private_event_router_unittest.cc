@@ -275,18 +275,9 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestProfileUsername) {
       event_observer.PassEventArgs().GetList()[0].Clone().TakeDict();
   EXPECT_EQ("", CHECK_DEREF(captured_args.FindString("userName")));
 
-  // With an unconsented primary account, we should set the username.
+  // With a primary account, we should set the username.
   identity_test_environment_->MakePrimaryAccountAvailable(
       "profile@example.com", signin::ConsentLevel::kSignin);
-  TriggerOnSecurityInterstitialShownEvent();
-  captured_args =
-      event_observer.PassEventArgs().GetList()[0].Clone().TakeDict();
-  EXPECT_EQ("profile@example.com",
-            CHECK_DEREF(captured_args.FindString("userName")));
-
-  // With a consented primary account, we should set the username.
-  identity_test_environment_->MakePrimaryAccountAvailable(
-      "profile@example.com", signin::ConsentLevel::kSync);
   TriggerOnSecurityInterstitialShownEvent();
   captured_args =
       event_observer.PassEventArgs().GetList()[0].Clone().TakeDict();
