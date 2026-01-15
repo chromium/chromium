@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/webui/unexportable_keys_internals/unexportable_keys_internals.mojom.h"
@@ -94,8 +95,7 @@ void UnexportableKeysInternalsHandler::OnGetAllSigningKeysForGarbageCollection(
     if (!wrapped_key.has_value()) {
       continue;
     }
-    key_info->wrapped_key =
-        std::string(wrapped_key->begin(), wrapped_key->end());
+    key_info->wrapped_key = base::Base64Encode(*wrapped_key);
 
     unexportable_keys::ServiceErrorOr<
         crypto::SignatureVerifier::SignatureAlgorithm>

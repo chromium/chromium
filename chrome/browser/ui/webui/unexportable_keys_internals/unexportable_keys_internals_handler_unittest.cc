@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/check_deref.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
@@ -309,8 +310,7 @@ TEST_F(UnexportableKeysInternalsHandlerTest, GetUnexportableKeysInfoSucceeds) {
                                       Eq(key_id_1)),
                                 Field(&unexportable_keys_internals::mojom::
                                           UnexportableKeyInfo::wrapped_key,
-                                      Eq(std::string(wrapped_key_1.begin(),
-                                                     wrapped_key_1.end()))),
+                                      Eq(base::Base64Encode(wrapped_key_1))),
                                 Field(&unexportable_keys_internals::mojom::
                                           UnexportableKeyInfo::algorithm,
                                       Eq("ECDSA_SHA256")),
@@ -325,8 +325,7 @@ TEST_F(UnexportableKeysInternalsHandlerTest, GetUnexportableKeysInfoSucceeds) {
                                       Eq(key_id_2)),
                                 Field(&unexportable_keys_internals::mojom::
                                           UnexportableKeyInfo::wrapped_key,
-                                      Eq(std::string(wrapped_key_2.begin(),
-                                                     wrapped_key_2.end()))),
+                                      Eq(base::Base64Encode(wrapped_key_2))),
                                 Field(&unexportable_keys_internals::mojom::
                                           UnexportableKeyInfo::algorithm,
                                       Eq("RSA_PSS_SHA256")),
