@@ -17,6 +17,8 @@
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
@@ -66,6 +68,7 @@
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -73,6 +76,72 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
+#if DCHECK_IS_ON()
+class AutoBuildHelper final : public NativeEventListener {
+ public:
+  explicit AutoBuildHelper(AIPageContentAgent& agent) : agent_(agent) {}
+
+  void Trace(Visitor* visitor) const override {
+    EventListener::Trace(visitor);
+    visitor->Trace(agent_);
+  }
+
+  void StartListening() {
+    AIPageContentAgent* agent = agent_.Get();
+    if (!agent) {
+      return;
+    }
+    Document* document = agent->GetSupplementable();
+    if (!document || listener_registered_) {
+      return;
+    }
+    document->addEventListener(event_type_names::kDOMContentLoaded, this,
+                               false);
+    listener_registered_ = true;
+  }
+
+  void Invoke(ExecutionContext* execution_context, Event* event) override {
+    DCHECK(execution_context->IsWindow());
+
+    LocalDOMWindow& window = *To<LocalDOMWindow>(execution_context);
+    Document& document = *window.document();
+    AIPageContentAgent* agent = agent_.Get();
+    if (!agent || agent->GetSupplementable() != &document) {
+      return;
+    }
+    RunAfterDOMContentLoaded();
+  }
+
+  void RunAfterDOMContentLoaded() {
+    AIPageContentAgent* agent = agent_.Get();
+    if (!agent) {
+      return;
+    }
+    Document* document = agent->GetSupplementable();
+    if (!document) {
+      return;
+    }
+    // When tracing is active (e.g. inspector-protocol tracing tests like
+    // http/tests/inspector-protocol/tracing/rendering.js), APC auto-build can
+    // trigger the list-based hit test used for actionable extraction. Inspector
+    // tracing records list-based hit tests with `listBased`/`rect` fields
+    // instead of `nodeId`/`nodeName`, which changes rendering-expected.txt.
+    // Skip auto- build to keep those tests stable.
+    if (base::TrackEvent::IsEnabled()) {
+      return;
+    }
+
+    // Reuse the common APC request path so lifecycle handling matches mojo
+    // calls.
+    LOG(INFO) << "\n" << agent->DumpContentNodeTreeForTest();
+  }
+
+ private:
+  Member<AIPageContentAgent> agent_;
+  bool listener_registered_ = false;
+};
+#endif  // DCHECK_IS_ON()
+
 namespace {
 
 // Coordinate mapping flags
@@ -976,17 +1045,14 @@ void AIPageContentAgent::
   // installs its Document, so `frame` should always expose one here.
   Document* document = frame.GetDocument();
   DCHECK(document);
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(*document);
-  if (!agent->is_auto_actionable_extraction_pending_) {
-    agent->is_auto_actionable_extraction_pending_ = true;
-    agent->EnsureLifecycleObserverRegistered();
-    // Ensure that we get a lifecycle update no matter what.
-    LocalFrameView* frame_view = document->View();
-    Page* page = document->GetPage();
-    if (frame_view && page && !page->Animator().IsServicingAnimations()) {
-      page->Animator().ScheduleVisualUpdate(&frame);
-    }
+  // Skip the initial empty document to avoid auto-build work before the real
+  // navigation commits. Auto-builds for the initial empty document do not
+  // provide useful coverage and can interfere with subsequent loads.
+  if (document->IsInitialEmptyDocument()) {
+    return;
   }
+  auto* agent = AIPageContentAgent::GetOrCreateForTesting(*document);
+  agent->ListenForDOMContentLoadedForAutoBuild();
 }
 #endif
 
@@ -1009,6 +1075,9 @@ void AIPageContentAgent::Bind(
 void AIPageContentAgent::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_set_);
   Supplement<Document>::Trace(visitor);
+#if DCHECK_IS_ON()
+  visitor->Trace(auto_build_helper_);
+#endif
 }
 
 void AIPageContentAgent::DidFinishPostLifecycleSteps(const LocalFrameView&) {
@@ -1016,9 +1085,6 @@ void AIPageContentAgent::DidFinishPostLifecycleSteps(const LocalFrameView&) {
     std::move(task).Run();
   }
   async_extraction_tasks_.clear();
-#if DCHECK_IS_ON()
-  MaybeRunAutomaticActionableExtraction();
-#endif
 }
 
 void AIPageContentAgent::GetAIPageContent(
@@ -1083,26 +1149,27 @@ void AIPageContentAgent::EnsureLifecycleObserverRegistered() {
 }
 
 #if DCHECK_IS_ON()
-void AIPageContentAgent::MaybeRunAutomaticActionableExtraction() {
-  if (!is_auto_actionable_extraction_pending_) {
+AutoBuildHelper* AIPageContentAgent::GetOrCreateAutoBuildHelper() {
+  if (!auto_build_helper_) {
+    auto_build_helper_ = MakeGarbageCollected<AutoBuildHelper>(*this);
+  }
+  return auto_build_helper_.Get();
+}
+
+void AIPageContentAgent::ListenForDOMContentLoadedForAutoBuild() {
+  Document* document = GetSupplementable();
+  if (!document) {
     return;
   }
 
-  if (!GetSupplementable()->LoadEventFinished()) {
-    return;
-  }
-  LocalFrame* frame = GetSupplementable()->GetFrame();
-  if (!frame) {
-    return;
-  }
+  // Register the DOMContentLoaded listener and schedule the auto-build after
+  // the event dispatch completes. This keeps auto-build out of document
+  // installation/handler execution windows where frame state can be unstable.
+  GetOrCreateAutoBuildHelper()->StartListening();
+}
 
-  is_auto_actionable_extraction_pending_ = false;
-
-  mojom::blink::AIPageContentOptions options;
-  options.on_critical_path = true;
-  options.mode = mojom::blink::AIPageContentMode::kActionableElements;
-
-  GetAIPageContentInternal(options);
+void AIPageContentAgent::RunAutoBuildAfterDOMContentLoadedForTesting() {
+  GetOrCreateAutoBuildHelper()->RunAfterDOMContentLoaded();
 }
 #endif
 

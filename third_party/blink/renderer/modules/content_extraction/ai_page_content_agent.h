@@ -27,6 +27,9 @@ class Document;
 class LayoutIFrame;
 class LayoutObject;
 class LocalFrame;
+#if DCHECK_IS_ON()
+class AutoBuildHelper;
+#endif
 
 // AIPageContent is responsible for handling requests for inner-text. It calls
 // to InnerTextBuilder to handle building of the text.
@@ -68,6 +71,13 @@ class MODULES_EXPORT AIPageContentAgent final
 
   String DumpContentNodeTreeForTest();
   String DumpContentNodeForTest(Node* node);
+
+#if DCHECK_IS_ON()
+  // Called by the DOMContentLoaded listener to kick off auto-build; this is
+  // only used by tests to ensure we run cleanly without triggering crashes or
+  // checks/dchecks.
+  void RunAutoBuildAfterDOMContentLoadedForTesting();
+#endif
 
  private:
   void GetAIPageContentSync(mojom::blink::AIPageContentOptionsPtr options,
@@ -194,9 +204,10 @@ class MODULES_EXPORT AIPageContentAgent final
   Vector<base::OnceClosure> async_extraction_tasks_;
 
 #if DCHECK_IS_ON()
-  void MaybeRunAutomaticActionableExtraction();
-  // Should content extraction tree be built automatically on page load.
-  bool is_auto_actionable_extraction_pending_ = false;
+  void ListenForDOMContentLoadedForAutoBuild();
+  AutoBuildHelper* GetOrCreateAutoBuildHelper();
+  Member<AutoBuildHelper> auto_build_helper_;
+  friend class AutoBuildHelper;
 #endif
 };
 

@@ -11,15 +11,19 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/mock_log.h"
 #include "base/test/with_feature_override.h"
+#include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
-#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom-shared.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom-data-view.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -37,6 +41,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/map_coordinates_flags.h"
+#include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -1998,6 +2003,70 @@ TEST_F(AIPageContentAgentTest, HiddenUntilFoundOnIframe) {
   const auto& hidden_text_node = *iframe_root.children_nodes[0];
   CheckTextNode(hidden_text_node, "hidden text");
 }
+
+#if DCHECK_IS_ON()
+TEST_F(AIPageContentAgentTest, AutoBuildRunsDuringDOMContentLoadedDispatch) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), "<body><div>Auto build content</div></body>",
+      url_test_helpers::ToKURL("http://example.com"));
+
+  Document* document = helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  ASSERT_TRUE(document);
+  LocalFrameView* view = document->View();
+  ASSERT_TRUE(view);
+
+  // Establish a stable lifecycle baseline so the auto-build checks are not
+  // influenced by unrelated pending layout or style updates.
+  view->UpdateAllLifecyclePhasesForTest();
+
+  auto* agent = AIPageContentAgent::GetOrCreateForTesting(*document);
+  ASSERT_TRUE(agent);
+  EXPECT_EQ(AIPageContentAgent::From(*document), agent);
+  base::test::MockLog log;
+  // Allow unrelated INFO logs; we only assert on the auto-build dump below.
+  EXPECT_CALL(log, Log(logging::LOGGING_INFO, testing::_, testing::_,
+                       testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  // TODO(crbug.com/474330989): Re-enable the blink_unittests auto-build guard
+  // so this test can assert no auto-build during DOMContentLoaded.
+
+  // Simulate DOMContentLoaded dispatch still being in progress by forcing the
+  // parsing state to "in DCL".
+  document->SetParsingState(Document::kInDOMContentLoaded);
+
+  // Invoke the auto-build entry point directly to keep the test deterministic;
+  // it should run while DOMContentLoaded dispatch is in progress.
+  EXPECT_CALL(log, Log(logging::LOGGING_INFO, testing::_, testing::_,
+                       testing::_, testing::HasSubstr("<Root>")))
+      .Times(1);
+  log.StartCapturingLogs();
+  agent->RunAutoBuildAfterDOMContentLoadedForTesting();
+  test::RunPendingTasks();
+  log.StopCapturingLogs();
+  testing::Mock::VerifyAndClearExpectations(&log);
+
+  // Auto-build runs while parsing is still in the DOMContentLoaded phase.
+
+  // Once parsing is finished and lifecycle updates complete, auto-build should
+  // still run without triggering lifecycle DCHECKs.
+  document->SetParsingState(Document::kFinishedParsing);
+  view->UpdateAllLifecyclePhasesForTest();
+  test::RunPendingTasks();
+  WebViewImpl* web_view = document->GetPage()->GetChromeClient().GetWebView();
+  ASSERT_TRUE(web_view);
+  EXPECT_FALSE(web_view->GetPagePopup());
+
+  // Re-run the auto-build entry point now that parsing is finished. This should
+  // synchronously execute the auto-build path without crashing.
+  EXPECT_CALL(log, Log(logging::LOGGING_INFO, testing::_, testing::_,
+                       testing::_, testing::HasSubstr("<Root>")))
+      .Times(1);
+  log.StartCapturingLogs();
+  agent->RunAutoBuildAfterDOMContentLoadedForTesting();
+  test::RunPendingTasks();
+  log.StopCapturingLogs();
+}
+#endif  // #if DCHECK_IS_ON()
 
 TEST_F(AIPageContentAgentTest, LineBreak) {
   frame_test_helpers::LoadHTMLString(
