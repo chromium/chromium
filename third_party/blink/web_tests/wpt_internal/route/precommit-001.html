@@ -45,10 +45,10 @@
     assert_equals(getComputedStyle(document.body).color, "rgb(0, 0, 0)");
     navigation.navigate("/aaaaa");
     await nav.promise;
-    assert_equals(getComputedStyle(document.body).backgroundColor, "rgba(0, 0, 0, 0)");
+    assert_equals(getComputedStyle(document.body).backgroundColor, "rgb(0, 255, 0)");
     assert_equals(getComputedStyle(document.body).color, "rgb(0, 0, 0)");
     await precommit.resolve;
-    assert_equals(getComputedStyle(document.body).backgroundColor, "rgba(0, 0, 0, 0)");
+    assert_equals(getComputedStyle(document.body).backgroundColor, "rgb(0, 255, 0)");
     assert_equals(getComputedStyle(document.body).color, "rgb(0, 0, 0)");
     await navigation.transition.committed;
     assert_equals(getComputedStyle(document.body).backgroundColor, "rgb(0, 255, 0)");

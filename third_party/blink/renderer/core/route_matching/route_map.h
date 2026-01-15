@@ -105,6 +105,9 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
     UpdateActiveRoutes();
   }
 
+  // The current URL has changed. This is used to match @route "at" rules.
+  void OnNavigationCommitted() { UpdateActiveRoutes(); }
+
   // Clear the URL that we're navigating between when the navigation is
   // complete.
   void OnNavigationDone() {

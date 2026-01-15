@@ -42,11 +42,11 @@
     assert_equals(getComputedStyle(container).paddingLeft, "0px", "initial");
     navigation.navigate("target/foo");
     await nav.promise;
-    assert_equals(getComputedStyle(link1).paddingTop, "0px", "nav");
+    assert_equals(getComputedStyle(link1).paddingTop, "10px", "nav");
     assert_equals(getComputedStyle(link1).paddingBottom, "0px", "nav");
     assert_equals(getComputedStyle(container).paddingLeft, "0px", "nav");
     await precommit.resolve;
-    assert_equals(getComputedStyle(link1).paddingTop, "0px", "precommit");
+    assert_equals(getComputedStyle(link1).paddingTop, "10px", "precommit");
     assert_equals(getComputedStyle(link1).paddingBottom, "0px", "precommit");
     assert_equals(getComputedStyle(container).paddingLeft, "0px", "precommit");
     await navigation.transition.committed;
@@ -64,13 +64,13 @@
 
     navigation.navigate("bar");
     await nav.promise;
-    assert_equals(getComputedStyle(link1).paddingTop, "0px", "nav2");
-    assert_equals(getComputedStyle(link1).paddingBottom, "0px", "nav2");
-    assert_equals(getComputedStyle(container).paddingLeft, "0px", "nav2");
+    assert_equals(getComputedStyle(link1).paddingTop, "10px", "nav2");
+    assert_equals(getComputedStyle(link1).paddingBottom, "10px", "nav2");
+    assert_equals(getComputedStyle(container).paddingLeft, "10px", "nav2");
     await precommit.resolve;
-    assert_equals(getComputedStyle(link1).paddingTop, "0px", "precommit2");
-    assert_equals(getComputedStyle(link1).paddingBottom, "0px", "precommit2");
-    assert_equals(getComputedStyle(container).paddingLeft, "0px", "precommit2");
+    assert_equals(getComputedStyle(link1).paddingTop, "10px", "precommit2");
+    assert_equals(getComputedStyle(link1).paddingBottom, "10px", "precommit2");
+    assert_equals(getComputedStyle(container).paddingLeft, "10px", "precommit2");
     await navigation.transition.committed;
     assert_equals(getComputedStyle(link1).paddingTop, "10px", "committed2");
     assert_equals(getComputedStyle(link1).paddingBottom, "10px", "committed2");

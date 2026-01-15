@@ -307,7 +307,7 @@ void NavigationApi::UpdateForNavigation(HistoryItem& item,
   }
 
   if (auto* routemap = RouteMap::Get(window_->document())) {
-    routemap->OnNavigationStart(old_current->url(), currentEntry()->url());
+    routemap->OnNavigationCommitted();
   }
 }
 
@@ -862,6 +862,11 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
 
   CHECK(!ongoing_navigate_event_);
   ongoing_navigate_event_ = navigate_event;
+
+  if (auto* routemap = RouteMap::Get(window_->document())) {
+    routemap->OnNavigationStart(window_->Url(), params->url);
+  }
+
   has_dropped_navigation_ = false;
   DispatchEvent(*navigate_event);
 
