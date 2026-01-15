@@ -473,7 +473,8 @@ public class SettingsIndexData {
         if (entry == null) {
             throw new IllegalStateException("Existing ID cannot be found: " + id);
         }
-        String summary = ContextUtils.getApplicationContext().getString(summaryId);
+        String summary =
+                summaryId != 0 ? ContextUtils.getApplicationContext().getString(summaryId) : null;
         updateEntry(id, new Entry.Builder(entry).setSummary(summary).build());
     }
 

@@ -593,11 +593,11 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                 @Override
                 public void updateDynamicPreferences(
                         Context context, SettingsIndexData indexData, Profile profile) {
+                    String frag = PrivacySettings.class.getName();
                     PrivacySandboxBridge bridge = new PrivacySandboxBridge(profile);
                     boolean restricted = isRestrictedSandboxEnabled(bridge);
                     var summaryId = getPrivacySandboxSummaryId(restricted);
-                    updateEntrySummaryForKey(
-                            PREF_PRIVACY_SANDBOX, context.getString(summaryId), indexData);
+                    indexData.updateEntrySummaryForKey(frag, PREF_PRIVACY_SANDBOX, summaryId);
 
                     if (shouldHideSandboxPref(bridge)) {
                         indexData.removeEntry(getUniqueId(PREF_PRIVACY_SANDBOX));
@@ -608,23 +608,17 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                     } else {
                         indexData.removeEntry(getUniqueId(PREF_HTTPS_FIRST_MODE));
                         var textId = httpsFirstLegacySummaryId(isAdvancedProtectionEnabled());
-                        updateEntrySummaryForKey(
-                                PREF_HTTPS_FIRST_MODE_LEGACY, context.getString(textId), indexData);
+                        indexData.updateEntrySummaryForKey(
+                                frag, PREF_HTTPS_FIRST_MODE_LEGACY, textId);
                     }
 
                     if (shouldHideAdvancedProtectionInfoPref()) {
                         indexData.removeEntry(getUniqueId(PREF_ADVANCED_PROTECTION_INFO));
                     }
-                }
 
-                private void updateEntrySummaryForKey(
-                        String key, String summary, SettingsIndexData indexData) {
-                    var entry = indexData.getEntry(getUniqueId(key));
-                    indexData.updateEntry(
-                            getUniqueId(key),
-                            new SettingsIndexData.Entry.Builder(assumeNonNull(entry))
-                                    .setSummary(summary)
-                                    .build());
+                    // The summary in 'Safe Browsing' is a template string. Removes it.
+                    indexData.updateEntrySummaryForKey(
+                            frag, PREF_SAFE_BROWSING, /* summaryId= */ 0);
                 }
             };
 }
