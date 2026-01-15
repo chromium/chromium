@@ -622,6 +622,45 @@ TEST(ActionChipGeneratorTest,
 }
 
 TEST(ActionChipGeneratorTest,
+     DeepDiveChipGenerationFallsBackToStaticChipsWhenRemoteCallIsEmpty) {
+  EnvironmentFixture env;
+  const GURL page_url("https://en.wikipedia.org/wiki/Mathematics");
+  const std::u16string page_title(u"Mathematics - Wikipedia");
+  TabFixture tab_fixture(page_url, page_title);
+  GeneratorFixture generator_fixture;
+  generator_fixture.MakeOptimizationGuidePermissive();
+
+  EXPECT_CALL(generator_fixture.mock_service(),
+              GetActionChipSuggestionsForTab(Eq(page_title), Eq(page_url), _))
+      .WillOnce(WithArg<2>(
+          [](base::OnceCallback<void(
+                 RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&&)>
+                 callback) {
+            std::move(callback).Run(SearchSuggestionParser::SuggestResults{});
+            return nullptr;
+          }));
+
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeatureWithParameters(
+      ntp_features::kNtpNextFeatures,
+      {{ntp_features::kNtpNextShowStaticTextParam.name, "false"},
+       {ntp_features::kNtpNextShowDeepDiveSuggestionsParam.name, "true"}});
+
+  base::RunLoop run_loop;
+  std::vector<ActionChipPtr> actual;
+  generator_fixture.GenerateActionChips(&tab_fixture.mock_tab(), run_loop,
+                                        actual);
+  run_loop.Run();
+
+  ActionChipPtr most_resent_tab_chip =
+      CreateStaticRecentTabChip(CreateTabInfo(&tab_fixture.mock_tab()));
+  EXPECT_THAT(actual,
+              ElementsAre(Eq(std::cref(most_resent_tab_chip)),
+                          Eq(std::cref(GetStaticDeepSearchChip())),
+                          Eq(std::cref(GetStaticImageGenerationChip()))));
+}
+
+TEST(ActionChipGeneratorTest,
      StaticChipsAreGeneratedWhenUseOfNewEndpointIsRequestedForDeepDiveChips) {
   EnvironmentFixture env;
   const GURL page_url("https://en.wikipedia.org/wiki/Mathematics");
