@@ -832,32 +832,32 @@
     {
         "name": "paging-common",
         "group": "androidx.paging",
-        "version": "3.4.0-SNAPSHOT"
+        "version": "3.5.0-SNAPSHOT"
     },
     {
         "name": "paging-common-android",
         "group": "androidx.paging",
-        "version": "3.4.0-SNAPSHOT"
+        "version": "3.5.0-SNAPSHOT"
     },
     {
         "name": "paging-common-ktx",
         "group": "androidx.paging",
-        "version": "3.4.0-SNAPSHOT"
+        "version": "3.5.0-SNAPSHOT"
     },
     {
         "name": "paging-compose",
         "group": "androidx.paging",
-        "version": "3.4.0-SNAPSHOT"
+        "version": "3.5.0-SNAPSHOT"
     },
     {
         "name": "paging-compose-android",
         "group": "androidx.paging",
-        "version": "3.4.0-SNAPSHOT"
+        "version": "3.5.0-SNAPSHOT"
     },
     {
         "name": "paging-runtime",
         "group": "androidx.paging",
-        "version": "3.4.0-SNAPSHOT"
+        "version": "3.5.0-SNAPSHOT"
     },
     {
         "name": "palette",
@@ -1102,7 +1102,7 @@
     {
         "name": "transition",
         "group": "androidx.transition",
-        "version": "1.7.0-SNAPSHOT"
+        "version": "1.7.0"
     },
     {
         "name": "tvprovider",
