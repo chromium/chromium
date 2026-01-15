@@ -42,6 +42,11 @@ public class SetupListModuleUtils {
         return SetupListManager.getInstance().isSetupListActive();
     }
 
+    /** Returns whether the two-cell layout should be shown based on the 3-day window. */
+    public static boolean shouldShowTwoCellLayout() {
+        return SetupListManager.getInstance().shouldShowTwoCellLayout();
+    }
+
     /** Returns whether the module type belongs to the setup list. */
     public static boolean isSetupListModule(@ModuleType int moduleType) {
         switch (moduleType) {

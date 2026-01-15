@@ -5,20 +5,31 @@
 package org.chromium.chrome.browser.educational_tip;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellBuilder;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
+import org.chromium.chrome.browser.setup_list.SetupListManager;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 
 import java.util.Collection;
+import java.util.List;
 
 /** Test relating to {@link HomeTipsModulesProvider} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -26,12 +37,65 @@ import java.util.Collection;
 public class HomeTipsModulesProviderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock private ModuleRegistry mModuleRegistry;
+    @Mock private EducationTipModuleActionDelegate mActionDelegate;
+    @Mock private SetupListManager mSetupListManager;
+
+    @Before
+    public void setUp() {
+        SetupListManager.setInstanceForTesting(mSetupListManager);
+    }
+
+    @Test
+    @SmallTest
+    public void testRegisterTipModules_TwoCell() {
+        when(mSetupListManager.isSetupListActive()).thenReturn(true);
+        when(mSetupListManager.shouldShowTwoCellLayout()).thenReturn(true);
+
+        HomeTipsModulesProvider.registerTipModules(mActionDelegate, mModuleRegistry);
+
+        verify(mModuleRegistry)
+                .registerModule(
+                        eq(ModuleType.SETUP_LIST_TWO_CELL_CONTAINER),
+                        any(EducationalTipModuleTwoCellBuilder.class));
+    }
+
+    @Test
+    @SmallTest
+    public void testRegisterTipModules_SetupListSingleCell() {
+        when(mSetupListManager.isSetupListActive()).thenReturn(true);
+        when(mSetupListManager.shouldShowTwoCellLayout()).thenReturn(false);
+
+        HomeTipsModulesProvider.registerTipModules(mActionDelegate, mModuleRegistry);
+
+        List<Integer> setupListModules = SetupListModuleUtils.getRankedModuleTypes();
+        for (@ModuleType int moduleType : setupListModules) {
+            verify(mModuleRegistry)
+                    .registerModule(eq(moduleType), any(EducationalTipModuleBuilder.class));
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void testRegisterTipModules_EducationalTips() {
+        when(mSetupListManager.isSetupListActive()).thenReturn(false);
+
+        HomeTipsModulesProvider.registerTipModules(mActionDelegate, mModuleRegistry);
+
+        Collection<Integer> educationalTipModules = EducationalTipModuleUtils.getModuleTypes();
+        for (@ModuleType int moduleType : educationalTipModules) {
+            verify(mModuleRegistry)
+                    .registerModule(eq(moduleType), any(EducationalTipModuleBuilder.class));
+        }
+    }
+
     @Test
     @SmallTest
     public void testGetModulesToRegister_returnsSetupListWhenActive() {
         Collection<Integer> expectedModules = SetupListModuleUtils.getRankedModuleTypes();
         Collection<Integer> actualModules =
-                HomeTipsModulesProvider.getModuleTypesToRegister(/* isSetupListActive= */ true);
+                HomeTipsModulesProvider.getModuleTypesToRegister(
+                        /* isSetupListActive= */ true, /* showTwoCell= */ false);
 
         assertArrayEquals(expectedModules.toArray(), actualModules.toArray());
     }
@@ -41,8 +105,19 @@ public class HomeTipsModulesProviderUnitTest {
     public void testGetModulesToRegister_returnsEducationalTipsWhenInactive() {
         Collection<Integer> expectedModules = EducationalTipModuleUtils.getModuleTypes();
         Collection<Integer> actualModules =
-                HomeTipsModulesProvider.getModuleTypesToRegister(/* isSetupListActive= */ false);
+                HomeTipsModulesProvider.getModuleTypesToRegister(
+                        /* isSetupListActive= */ false, /* showTwoCell= */ false);
+        assertArrayEquals(expectedModules.toArray(), actualModules.toArray());
+    }
 
+    @Test
+    @SmallTest
+    public void
+            testGetModulesToRegister_returnsTwoCellContainerWhenSetupListActiveAndTwoCellEnabled() {
+        Collection<Integer> expectedModules = List.of(ModuleType.SETUP_LIST_TWO_CELL_CONTAINER);
+        Collection<Integer> actualModules =
+                HomeTipsModulesProvider.getModuleTypesToRegister(
+                        /* isSetupListActive= */ true, /* showTwoCell= */ true);
         assertArrayEquals(expectedModules.toArray(), actualModules.toArray());
     }
 }

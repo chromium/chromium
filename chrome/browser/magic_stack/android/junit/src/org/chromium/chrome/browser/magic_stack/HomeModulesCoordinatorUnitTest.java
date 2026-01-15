@@ -317,6 +317,30 @@ public class HomeModulesCoordinatorUnitTest {
                 expectedModuleListBeforeHidingModule,
                 mCoordinator.getFilteredEnabledModuleSetForTesting());
 
+        mHomeModulesStateListener
+                .getValue()
+                .onModuleConfigChanged(ModuleType.SETUP_LIST_TWO_CELL_CONTAINER, true);
+        assertEquals(
+                expectedModuleListBeforeHidingModule,
+                mCoordinator.getFilteredEnabledModuleSetForTesting());
+
+        mHomeModulesStateListener
+                .getValue()
+                .onModuleConfigChanged(ModuleType.SETUP_LIST_TWO_CELL_CONTAINER, false);
+        Set<Integer> expectedModuleListAfterHidingContainer =
+                new HashSet<>(expectedModuleListBeforeHidingModule);
+        expectedModuleListAfterHidingContainer.remove(ModuleType.SETUP_LIST_TWO_CELL_CONTAINER);
+        assertEquals(
+                expectedModuleListAfterHidingContainer,
+                mCoordinator.getFilteredEnabledModuleSetForTesting());
+
+        mHomeModulesStateListener
+                .getValue()
+                .onModuleConfigChanged(ModuleType.SETUP_LIST_TWO_CELL_CONTAINER, true);
+        assertEquals(
+                expectedModuleListBeforeHidingModule,
+                mCoordinator.getFilteredEnabledModuleSetForTesting());
+
         mCoordinator.destroy();
         verify(mHomeModulesConfigManager).removeListener(mHomeModulesStateListener.capture());
     }

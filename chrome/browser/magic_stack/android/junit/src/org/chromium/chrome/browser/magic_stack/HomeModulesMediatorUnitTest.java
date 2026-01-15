@@ -816,6 +816,48 @@ public class HomeModulesMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void testCreateInputContextForRanking_WithTwoCell() {
+        when(mModuleDelegateHost.getTrackingTab()).thenReturn(null);
+        when(mModuleRegistry.getAllRegisteredModuleTypes())
+                .thenReturn(
+                        List.of(
+                                ModuleType.SINGLE_TAB, // Segmentation
+                                ModuleType.SETUP_LIST_TWO_CELL_CONTAINER // Manual
+                                ));
+
+        // Mock Builders
+        ModuleProviderBuilder singleTabBuilder = Mockito.mock(ModuleProviderBuilder.class);
+        when(singleTabBuilder.hasManualOrdering()).thenReturn(false);
+        InputContext singleTabContext = new InputContext();
+        singleTabContext.addEntry("single_tab", ProcessedValue.fromString("st_value"));
+        when(singleTabBuilder.createInputContext()).thenReturn(singleTabContext);
+        when(mModuleRegistry.getModuleProviderBuilder(ModuleType.SINGLE_TAB))
+                .thenReturn(singleTabBuilder);
+
+        ModuleProviderBuilder twoCellContainerBuilder = Mockito.mock(ModuleProviderBuilder.class);
+        when(twoCellContainerBuilder.hasManualOrdering()).thenReturn(true);
+        when(mModuleRegistry.getModuleProviderBuilder(ModuleType.SETUP_LIST_TWO_CELL_CONTAINER))
+                .thenReturn(twoCellContainerBuilder);
+
+        List<Integer> manuallyRankedModules = new ArrayList<>();
+        InputContext resultContext =
+                mMediator.createInputContextForRankingAndUpdateManuallyRankedModuleList(
+                        manuallyRankedModules);
+
+        // Assertions
+        assertEquals(1, manuallyRankedModules.size());
+        assertTrue(manuallyRankedModules.contains(ModuleType.SETUP_LIST_TWO_CELL_CONTAINER));
+        assertFalse(manuallyRankedModules.contains(ModuleType.SINGLE_TAB));
+
+        assertEquals("st_value", resultContext.getEntryValue("single_tab").stringValue);
+        assertNull(resultContext.getEntryValue("SETUP_LIST_TWO_CELL_CONTAINER"));
+
+        verify(twoCellContainerBuilder, never()).createInputContext();
+        verify(singleTabBuilder).createInputContext();
+    }
+
+    @Test
+    @SmallTest
     public void testOnModuleViewCreated() {
         @ModuleType int moduleType1 = ModuleType.TAB_GROUP_PROMO;
         @ModuleType int moduleType2 = ModuleType.TAB_GROUP_SYNC_PROMO;
