@@ -66,6 +66,7 @@ void EntityInstanceToPrivateApiEntityInstanceWithLabels(
       autofill::GetLabelsForEntities(entity_instances,
                                      /*attribute_types_to_ignore=*/{},
                                      /*only_disambiguating_types=*/false,
+                                     /*obfuscate_sensitive_types=*/false,
                                      app_locale);
 
   // Step 2#

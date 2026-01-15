@@ -195,7 +195,8 @@ std::vector<std::u16string> GetLabelsForSuggestions(
 
   std::vector<EntityLabel> labels =
       GetLabelsForEntities(entities, trigger_field_attributes,
-                           /*only_disambiguating_types=*/true, app_locale);
+                           /*only_disambiguating_types=*/true,
+                           /*obfuscate_sensitive_types=*/false, app_locale);
 
   // Drop the labels for the `other_entities_that_can_fill_section`.
   if (labels.size() > entities_to_suggest.size()) {
