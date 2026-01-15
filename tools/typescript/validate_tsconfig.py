@@ -72,6 +72,9 @@ def validateTsconfigJson(tsconfig, tsconfig_file, is_base_tsconfig):
   if 'third_party/material_web_components/tsconfig_base.json' in tsconfig_file:
     return True, None
 
+  if 'third_party/cros-components/tsconfig_base.json' in tsconfig_file:
+    return True, None
+
   # TODO(b/267329383): Migrate A11y to TypeScript. Accessibility code has
   # different requirements for the migration because of this we need both
   # allowjs and a custom tsconfig.
