@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
@@ -517,8 +516,8 @@ bool CastMessageHandler::PendingRequests::AddAppAvailabilityRequest(
           base::Unretained(this), request_id));
 
   // Look for a request with the given app ID.
-  bool found = base::Contains(pending_app_availability_requests_, app_id,
-                              &GetAppAvailabilityRequest::app_id);
+  bool found = std::ranges::contains(pending_app_availability_requests_, app_id,
+                                     &GetAppAvailabilityRequest::app_id);
   pending_app_availability_requests_.emplace_back(std::move(request));
   return !found;
 }

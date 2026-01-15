@@ -4,9 +4,9 @@
 
 #include "components/performance_manager/graph/frame_node_impl.h"
 
+#include <algorithm>
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/task_traits.h"
@@ -893,7 +893,7 @@ TEST_F(FrameNodeImplTest, PublicInterface) {
 
   auto child_frame_nodes = public_frame_node->GetChildFrameNodes();
   for (FrameNodeImpl* child : frame_node->child_frame_nodes()) {
-    EXPECT_TRUE(base::Contains(child_frame_nodes, child));
+    EXPECT_TRUE(std::ranges::contains(child_frame_nodes, child));
   }
   EXPECT_EQ(child_frame_nodes.size(), frame_node->child_frame_nodes().size());
 }
@@ -942,8 +942,10 @@ TEST_F(FrameNodeImplTest, PageRelationships) {
   EXPECT_EQ(frameA1.get(), ppageB->GetEmbedderFrameNode());
   EXPECT_EQ(1u, frameA1->embedded_page_nodes().size());
   EXPECT_EQ(1u, pframeA1->GetEmbeddedPageNodes().size());
-  EXPECT_TRUE(base::Contains(frameA1->embedded_page_nodes(), pageB.get()));
-  EXPECT_TRUE(base::Contains(pframeA1->GetEmbeddedPageNodes(), pageB.get()));
+  EXPECT_TRUE(
+      std::ranges::contains(frameA1->embedded_page_nodes(), pageB.get()));
+  EXPECT_TRUE(
+      std::ranges::contains(pframeA1->GetEmbeddedPageNodes(), pageB.get()));
   testing::Mock::VerifyAndClear(&obs);
 
   // Set an opener relationship.
@@ -952,7 +954,8 @@ TEST_F(FrameNodeImplTest, PageRelationships) {
   EXPECT_EQ(frameA1.get(), pageC->opener_frame_node());
   EXPECT_EQ(1u, frameA1->embedded_page_nodes().size());
   EXPECT_EQ(1u, frameA1->opened_page_nodes().size());
-  EXPECT_TRUE(base::Contains(frameA1->embedded_page_nodes(), pageB.get()));
+  EXPECT_TRUE(
+      std::ranges::contains(frameA1->embedded_page_nodes(), pageB.get()));
   testing::Mock::VerifyAndClear(&obs);
 
   // Manually clear the embedder relationship (initiated from the page).
@@ -979,7 +982,7 @@ TEST_F(FrameNodeImplTest, PageRelationships) {
   EXPECT_TRUE(frameA1->embedded_page_nodes().empty());
   EXPECT_EQ(1u, frameA2->opened_page_nodes().size());
   EXPECT_TRUE(frameA2->embedded_page_nodes().empty());
-  EXPECT_TRUE(base::Contains(frameA2->opened_page_nodes(), pageB.get()));
+  EXPECT_TRUE(std::ranges::contains(frameA2->opened_page_nodes(), pageB.get()));
   testing::Mock::VerifyAndClear(&obs);
 
   // Clear it with the helper, and expect it to be reparented to node A1.
@@ -987,7 +990,7 @@ TEST_F(FrameNodeImplTest, PageRelationships) {
   frameA2->SeverPageRelationshipsAndMaybeReparentForTesting();
   EXPECT_EQ(frameA1.get(), pageB->opener_frame_node());
   EXPECT_EQ(1u, frameA1->opened_page_nodes().size());
-  EXPECT_TRUE(base::Contains(frameA1->opened_page_nodes(), pageB.get()));
+  EXPECT_TRUE(std::ranges::contains(frameA1->opened_page_nodes(), pageB.get()));
   EXPECT_TRUE(frameA2->opened_page_nodes().empty());
   testing::Mock::VerifyAndClear(&obs);
 
@@ -1007,7 +1010,7 @@ TEST_F(FrameNodeImplTest, PageRelationships) {
   EXPECT_EQ(frameA2.get(), pageB->opener_frame_node());
   EXPECT_TRUE(frameA1->opened_page_nodes().empty());
   EXPECT_EQ(1u, frameA2->opened_page_nodes().size());
-  EXPECT_TRUE(base::Contains(frameA2->opened_page_nodes(), pageB.get()));
+  EXPECT_TRUE(std::ranges::contains(frameA2->opened_page_nodes(), pageB.get()));
   testing::Mock::VerifyAndClear(&obs);
 
   {

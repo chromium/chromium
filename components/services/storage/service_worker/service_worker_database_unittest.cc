@@ -7,9 +7,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
@@ -970,8 +970,10 @@ TEST(ServiceWorkerDatabaseTest, Registration_Basic) {
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->GetPurgeableResourceIds(&purgeable_ids_out));
   EXPECT_EQ(2u, purgeable_ids_out.size());
-  EXPECT_TRUE(base::Contains(purgeable_ids_out, resources[0]->resource_id));
-  EXPECT_TRUE(base::Contains(purgeable_ids_out, resources[1]->resource_id));
+  EXPECT_TRUE(
+      std::ranges::contains(purgeable_ids_out, resources[0]->resource_id));
+  EXPECT_TRUE(
+      std::ranges::contains(purgeable_ids_out, resources[1]->resource_id));
 }
 
 TEST(ServiceWorkerDatabaseTest, DeleteNonExistentRegistration) {
@@ -1106,8 +1108,10 @@ TEST(ServiceWorkerDatabaseTest, Registration_Overwrite) {
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->GetPurgeableResourceIds(&purgeable_ids_out));
   EXPECT_EQ(2u, purgeable_ids_out.size());
-  EXPECT_TRUE(base::Contains(purgeable_ids_out, resources1[0]->resource_id));
-  EXPECT_TRUE(base::Contains(purgeable_ids_out, resources1[1]->resource_id));
+  EXPECT_TRUE(
+      std::ranges::contains(purgeable_ids_out, resources1[0]->resource_id));
+  EXPECT_TRUE(
+      std::ranges::contains(purgeable_ids_out, resources1[1]->resource_id));
 }
 
 TEST(ServiceWorkerDatabaseTest, Registration_Multiple) {
@@ -1199,8 +1203,10 @@ TEST(ServiceWorkerDatabaseTest, Registration_Multiple) {
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->GetPurgeableResourceIds(&purgeable_ids_out));
   EXPECT_EQ(2u, purgeable_ids_out.size());
-  EXPECT_TRUE(base::Contains(purgeable_ids_out, resources1[0]->resource_id));
-  EXPECT_TRUE(base::Contains(purgeable_ids_out, resources1[1]->resource_id));
+  EXPECT_TRUE(
+      std::ranges::contains(purgeable_ids_out, resources1[0]->resource_id));
+  EXPECT_TRUE(
+      std::ranges::contains(purgeable_ids_out, resources1[1]->resource_id));
 
   // Make sure that registration2 is still alive.
   resources_out.clear();
@@ -2586,10 +2592,10 @@ void DeleteAllDataForStorageKeyTest::TestDeleteAllDataForStorageKey(
     ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
               database->GetPurgeableResourceIds(&purgeable_ids_out));
     ASSERT_EQ(4u, purgeable_ids_out.size());
-    ASSERT_TRUE(base::Contains(purgeable_ids_out, 1));
-    ASSERT_TRUE(base::Contains(purgeable_ids_out, 2));
-    ASSERT_TRUE(base::Contains(purgeable_ids_out, 3));
-    ASSERT_TRUE(base::Contains(purgeable_ids_out, 4));
+    ASSERT_TRUE(std::ranges::contains(purgeable_ids_out, 1));
+    ASSERT_TRUE(std::ranges::contains(purgeable_ids_out, 2));
+    ASSERT_TRUE(std::ranges::contains(purgeable_ids_out, 3));
+    ASSERT_TRUE(std::ranges::contains(purgeable_ids_out, 4));
 
     // The user data associated with `registered_key` should be removed.
     std::vector<std::string> user_data_out;
@@ -2771,10 +2777,10 @@ void DeleteAllDataForStorageKeyTest::
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->GetPurgeableResourceIds(&purgeable_ids_out));
   ASSERT_EQ(4u, purgeable_ids_out.size());
-  ASSERT_TRUE(base::Contains(purgeable_ids_out, 1));
-  ASSERT_TRUE(base::Contains(purgeable_ids_out, 2));
-  ASSERT_TRUE(base::Contains(purgeable_ids_out, 3));
-  ASSERT_TRUE(base::Contains(purgeable_ids_out, 4));
+  ASSERT_TRUE(std::ranges::contains(purgeable_ids_out, 1));
+  ASSERT_TRUE(std::ranges::contains(purgeable_ids_out, 2));
+  ASSERT_TRUE(std::ranges::contains(purgeable_ids_out, 3));
+  ASSERT_TRUE(std::ranges::contains(purgeable_ids_out, 4));
 
   // The user data associated with `registered_key` should be removed.
   std::vector<std::string> user_data_out;

@@ -4,6 +4,7 @@
 
 #include "components/policy/core/browser/policy_pref_mapping_test.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <optional>
@@ -12,7 +13,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -443,15 +443,15 @@ class PolicyTestCase {
 #else
 #error "Unknown platform"
 #endif
-    return base::Contains(supported_os_, os);
+    return std::ranges::contains(supported_os_, os);
   }
 
   bool IsOsCovered() const {
 #if BUILDFLAG(IS_ANDROID)
     // Android policies that apply to desktop Android are covered as part of the
     // desktop Android build because they may invoke desktop-only code.
-    return base::Contains(supported_os_, "android") ||
-           base::Contains(supported_os_, "desktop_android");
+    return std::ranges::contains(supported_os_, "android") ||
+           std::ranges::contains(supported_os_, "desktop_android");
 #else
     return IsOsSupported();
 #endif

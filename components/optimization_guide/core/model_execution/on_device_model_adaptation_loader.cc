@@ -93,8 +93,9 @@ bool ArePerformanceHintsCompatible(
     return true;
   }
   // Check if the adaptation model supports any of the base model's hints.
-  return base::Contains(adaptation_metadata.supported_performance_hints(),
-                        base_spec.selected_performance_hint);
+  return std::ranges::contains(
+      adaptation_metadata.supported_performance_hints(),
+      base_spec.selected_performance_hint);
 }
 
 std::optional<OnDeviceModelAdaptationAvailability>

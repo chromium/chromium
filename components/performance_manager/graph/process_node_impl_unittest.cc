@@ -4,10 +4,10 @@
 
 #include "components/performance_manager/graph/process_node_impl.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/byte_count.h"
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -284,7 +284,7 @@ TEST_F(ProcessNodeImplTest, PublicInterface) {
   EXPECT_EQ(frame_nodes.size(), public_frame_nodes.size());
   for (const FrameNodeImpl* frame_node : frame_nodes) {
     const FrameNode* public_frame_node = frame_node;
-    EXPECT_TRUE(base::Contains(public_frame_nodes, public_frame_node));
+    EXPECT_TRUE(std::ranges::contains(public_frame_nodes, public_frame_node));
   }
 }
 

@@ -4,8 +4,9 @@
 
 #include "components/media_router/browser/media_sinks_observer.h"
 
+#include <algorithm>
+
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "components/media_router/browser/media_router.h"
 
 #if DCHECK_IS_ON()
@@ -52,7 +53,7 @@ void MediaSinksObserver::OnSinksUpdated(
   base::AutoReset<bool> reset_in_on_sinks_updated(&in_on_sinks_updated_, true);
 #endif
 
-  if (origins.empty() || base::Contains(origins, origin_)) {
+  if (origins.empty() || std::ranges::contains(origins, origin_)) {
     OnSinksReceived(sinks);
   } else {
     OnSinksReceived(std::vector<MediaSink>());

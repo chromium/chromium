@@ -4,10 +4,10 @@
 
 #include "components/services/storage/dom_storage/session_storage_metadata.h"
 
+#include <algorithm>
 #include <string_view>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
@@ -90,7 +90,7 @@ SessionStorageMetadata::RegisterNewMap(const std::string& namespace_id,
     CHECK_GT(old_map_locator.session_ids().size(), 1u);
 
     // Remove `namespace_id` from the source clone's sessions.
-    DCHECK(base::Contains(old_map_locator.session_ids(), namespace_id));
+    DCHECK(std::ranges::contains(old_map_locator.session_ids(), namespace_id));
     old_map_locator.RemoveSession(namespace_id);
 
     namespace_it->second = new_map_locator;
@@ -136,7 +136,7 @@ SessionStorageMetadata::TakeNamespace(const std::string& namespace_id) {
   for (const auto& storage_key_map_pair : storage_keys) {
     DomStorageDatabase::SharedMapLocator* map_locator =
         storage_key_map_pair.second.get();
-    DCHECK(base::Contains(map_locator->session_ids(), namespace_id));
+    DCHECK(std::ranges::contains(map_locator->session_ids(), namespace_id));
     map_locator->RemoveSession(namespace_id);
   }
   namespace_storage_key_map_.erase(it);
@@ -158,7 +158,7 @@ SessionStorageMetadata::TakeExistingMap(const std::string& namespace_id,
 
   scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator =
       storage_key_map_it->second.get();
-  DCHECK(base::Contains(map_locator->session_ids(), namespace_id));
+  DCHECK(std::ranges::contains(map_locator->session_ids(), namespace_id));
   map_locator->RemoveSession(namespace_id);
 
   ns_entry->second.erase(storage_key_map_it);

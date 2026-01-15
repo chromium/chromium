@@ -4,12 +4,12 @@
 
 #include "components/heap_profiling/multi_process/test_driver.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -76,7 +76,7 @@ bool RenderersAreBeingProfiled(
         base::kNullProcessHandle)
       continue;
     base::ProcessId pid = iter.GetCurrentValue()->GetProcess().Pid();
-    if (base::Contains(profiled_pids, pid)) {
+    if (std::ranges::contains(profiled_pids, pid)) {
       return true;
     }
   }
@@ -812,7 +812,7 @@ void TestDriver::WaitForProfilingToStartForBrowserUIThread() {
     Supervisor::GetInstance()->GetProfiledPids(std::move(callback));
     run_loop.Run();
 
-    if (base::Contains(profiled_pids, base::GetCurrentProcId())) {
+    if (std::ranges::contains(profiled_pids, base::GetCurrentProcId())) {
       break;
     }
   }

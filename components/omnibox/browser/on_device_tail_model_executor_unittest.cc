@@ -4,11 +4,11 @@
 
 #include "components/omnibox/browser/on_device_tail_model_executor.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
@@ -417,7 +417,7 @@ TEST_F(OnDeviceTailModelExecutorTest,
       auto words =
           base::SplitString(prediction.suggestion, base::kWhitespaceASCII,
                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-      EXPECT_FALSE(base::Contains(words, "login"));
+      EXPECT_FALSE(std::ranges::contains(words, "login"));
     }
   }
 

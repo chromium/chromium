@@ -4,12 +4,12 @@
 
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 
+#include <algorithm>
 #include <optional>
 #include <string_view>
 
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -209,7 +209,7 @@ size_t GetHostDepth(const std::string& hostname) {
 bool PathVariantsMatchCacheExpression(
     const std::vector<std::string>& generated_paths,
     const std::string& cache_expression_path) {
-  return base::Contains(generated_paths, cache_expression_path);
+  return std::ranges::contains(generated_paths, cache_expression_path);
 }
 
 bool IsCacheExpired(int cache_creation_time, int cache_duration) {
@@ -648,7 +648,7 @@ void VerdictCacheManager::CacheRealTimeUrlVerdict(
     // For the same cache_expression, threat_info is in decreasing order of
     // severity. To avoid lower severity threat being overridden by higher one,
     // only store threat info that is first seen for a cache expression.
-    if (base::Contains(visited_cache_expressions, cache_expression)) {
+    if (std::ranges::contains(visited_cache_expressions, cache_expression)) {
       continue;
     }
 

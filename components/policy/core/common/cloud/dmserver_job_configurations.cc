@@ -4,7 +4,8 @@
 
 #include "components/policy/core/common/cloud/dmserver_job_configurations.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -278,8 +279,9 @@ DMServerJobConfiguration::MapNetErrorAndResponseToDMStatus(
       // statuses depending on the contents of the response body.
       em::DeviceManagementResponse response;
       if (response.ParseFromString(response_body) &&
-          base::Contains(response.error_detail(),
-                         em::CBCM_DELETION_POLICY_PREFERENCE_DELETE_TOKEN)) {
+          std::ranges::contains(
+              response.error_detail(),
+              em::CBCM_DELETION_POLICY_PREFERENCE_DELETE_TOKEN)) {
         return DM_STATUS_SERVICE_DEVICE_NEEDS_RESET;
       }
 #endif  // !BUILDFLAG(IS_CHROMEOS)

@@ -4,13 +4,13 @@
 
 #include "components/payments/core/payment_manifest_downloader.h"
 
+#include <algorithm>
 #include <optional>
 #include <string_view>
 #include <unordered_map>
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
@@ -312,7 +312,7 @@ void PaymentManifestDownloader::OnURLLoaderCompleteInternal(
     std::vector<std::string> rel_parts =
         base::SplitString(rel->second.value_or(""), HTTP_LWS,
                           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-    if (base::Contains(rel_parts, "payment-method-manifest")) {
+    if (std::ranges::contains(rel_parts, "payment-method-manifest")) {
       GURL payment_method_manifest_url = final_url.Resolve(*link_url);
 
       if (!IsValidManifestUrl(payment_method_manifest_url, *log_,

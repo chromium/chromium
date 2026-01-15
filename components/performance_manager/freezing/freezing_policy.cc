@@ -11,7 +11,6 @@
 
 #include "base/byte_size.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -626,7 +625,7 @@ void FreezingPolicy::OnBeforePageNodeRemoved(const PageNode* page_node) {
   }
 
   CHECK(page_node->GetMainFrameNodes().empty());
-  CHECK(!base::Contains(most_recently_used_, page_node),
+  CHECK(!std::ranges::contains(most_recently_used_, page_node),
         base::NotFatalUntil::M140);
   CheckMostRecentlyUsedListSize();
 }
@@ -677,7 +676,7 @@ void FreezingPolicy::OnIsVisibleChanged(const PageNode* page_node) {
   } else {
     // Page becomes hidden.
     if (page_node->GetType() == PageType::kTab) {
-      CHECK(!base::Contains(most_recently_used_, page_node),
+      CHECK(!std::ranges::contains(most_recently_used_, page_node),
             base::NotFatalUntil::M140);
       CHECK_GT(num_visible_tabs_, 0, base::NotFatalUntil::M140);
       --num_visible_tabs_;

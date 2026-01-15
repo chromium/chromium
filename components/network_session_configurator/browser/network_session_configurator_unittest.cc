@@ -4,12 +4,12 @@
 
 #include "components/network_session_configurator/browser/network_session_configurator.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <string>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/to_string.h"
@@ -1029,7 +1029,7 @@ TEST_P(NetworkSessionConfiguratorWithQuicVersionTest,
     return;
   }
   quic::ParsedQuicVersionVector obsolete_versions = net::ObsoleteQuicVersions();
-  if (base::Contains(obsolete_versions, version_)) {
+  if (std::ranges::contains(obsolete_versions, version_)) {
     // Do not test obsolete versions here as those are covered by the
     // ObsoleteQuicVersion tests.
     return;
@@ -1049,7 +1049,7 @@ TEST_P(NetworkSessionConfiguratorWithQuicVersionTest,
 TEST_P(NetworkSessionConfiguratorWithQuicVersionTest,
        SameQuicVersionsFromFieldTrialParamsAlpn) {
   quic::ParsedQuicVersionVector obsolete_versions = net::ObsoleteQuicVersions();
-  if (base::Contains(obsolete_versions, version_)) {
+  if (std::ranges::contains(obsolete_versions, version_)) {
     // Do not test obsolete versions here as those are covered by the
     // ObsoleteQuicVersion tests.
     return;
@@ -1068,7 +1068,7 @@ TEST_P(NetworkSessionConfiguratorWithQuicVersionTest,
 TEST_P(NetworkSessionConfiguratorWithQuicVersionTest, ObsoleteQuicVersion) {
   // Test that a single obsolete version causes us to use default versions.
   quic::ParsedQuicVersionVector obsolete_versions = net::ObsoleteQuicVersions();
-  if (!base::Contains(obsolete_versions, version_)) {
+  if (!std::ranges::contains(obsolete_versions, version_)) {
     // Only test obsolete versions here.
     return;
   }
@@ -1087,7 +1087,7 @@ TEST_P(NetworkSessionConfiguratorWithQuicVersionTest,
   // Test that when using one obsolete version and a supported version, the
   // supported version is used.
   quic::ParsedQuicVersionVector obsolete_versions = net::ObsoleteQuicVersions();
-  if (!base::Contains(obsolete_versions, version_)) {
+  if (!std::ranges::contains(obsolete_versions, version_)) {
     // Only test obsolete versions here.
     return;
   }

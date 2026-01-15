@@ -4,10 +4,10 @@
 
 #include "components/performance_manager/graph/page_node_impl.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
@@ -82,7 +82,7 @@ TEST_F(PageNodeImplTest, RemoveFrame) {
   // Ensure correct page-frame relationship has been established.
   auto frame_nodes = GraphImplOperations::GetFrameNodes(page_node.get());
   EXPECT_EQ(1u, frame_nodes.size());
-  EXPECT_TRUE(base::Contains(frame_nodes, frame_node.get()));
+  EXPECT_TRUE(std::ranges::contains(frame_nodes, frame_node.get()));
   EXPECT_EQ(page_node.get(), frame_node->page_node());
 
   frame_node.reset();

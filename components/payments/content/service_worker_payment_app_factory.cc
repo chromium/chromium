@@ -4,11 +4,11 @@
 
 #include "components/payments/content/service_worker_payment_app_factory.h"
 
+#include <algorithm>
 #include <map>
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -59,7 +59,7 @@ class ServiceWorkerPaymentAppCreator {
       std::vector<std::string> enabled_methods =
           installed_app.second->enabled_methods;
       bool has_app_store_billing_method =
-          base::Contains(enabled_methods, methods::kGooglePlayBilling);
+          std::ranges::contains(enabled_methods, methods::kGooglePlayBilling);
       if (ShouldSkipAppForPartialDelegation(
               installed_app.second->supported_delegations, delegate_,
               has_app_store_billing_method)) {

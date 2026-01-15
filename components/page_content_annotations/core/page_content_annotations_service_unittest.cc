@@ -4,6 +4,7 @@
 
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 
+#include <algorithm>
 #include <array>
 
 #include "base/strings/utf_string_conversions.h"
@@ -420,10 +421,10 @@ TEST_F(PageContentAnnotationsServiceTest, RegistersType) {
   std::vector<optimization_guide::proto::OptimizationType>
       registered_optimization_types =
           optimization_guide_decider()->registered_optimization_types();
-  EXPECT_TRUE(base::Contains(registered_optimization_types,
-                             optimization_guide::proto::PAGE_ENTITIES));
-  EXPECT_TRUE(base::Contains(registered_optimization_types,
-                             optimization_guide::proto::SALIENT_IMAGE));
+  EXPECT_TRUE(std::ranges::contains(registered_optimization_types,
+                                    optimization_guide::proto::PAGE_ENTITIES));
+  EXPECT_TRUE(std::ranges::contains(registered_optimization_types,
+                                    optimization_guide::proto::SALIENT_IMAGE));
 }
 
 TEST_F(PageContentAnnotationsServiceTest, DoesNotPersistIfServerHasNoData) {

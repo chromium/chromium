@@ -4,7 +4,8 @@
 
 #include "components/media_device_salt/media_device_salt_service.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/system/system_monitor.h"
@@ -101,7 +102,7 @@ class MediaDeviceSaltServiceTest : public testing::Test {
     base::test::TestFuture<void> future;
     auto matcher = base::BindLambdaForTesting(
         [&keys](const blink::StorageKey& candidate_key) {
-          return base::Contains(keys, candidate_key);
+          return std::ranges::contains(keys, candidate_key);
         });
     service_->DeleteSalts(base::Time::Min(), base::Time::Max(), matcher,
                           future.GetCallback());

@@ -6,12 +6,12 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
@@ -122,8 +122,8 @@ TEST_F(WebPaymentsTableTest, AddAndGetSingleManifest) {
   retrieved_web_app_ids =
       web_payments_table->GetManifest("https://bobpay.test");
   ASSERT_EQ(web_app_ids.size(), retrieved_web_app_ids.size());
-  ASSERT_TRUE(base::Contains(retrieved_web_app_ids, web_app_ids[0]));
-  ASSERT_TRUE(base::Contains(retrieved_web_app_ids, web_app_ids[1]));
+  ASSERT_TRUE(std::ranges::contains(retrieved_web_app_ids, web_app_ids[0]));
+  ASSERT_TRUE(std::ranges::contains(retrieved_web_app_ids, web_app_ids[1]));
 }
 
 TEST_F(WebPaymentsTableTest, AddAndGetMultipleManifest) {
@@ -152,13 +152,13 @@ TEST_F(WebPaymentsTableTest, AddAndGetMultipleManifest) {
 
   bobpay_web_app_ids = web_payments_table->GetManifest(method_name_1);
   ASSERT_EQ(web_app_ids.size(), bobpay_web_app_ids.size());
-  ASSERT_TRUE(base::Contains(bobpay_web_app_ids, web_app_ids[0]));
-  ASSERT_TRUE(base::Contains(bobpay_web_app_ids, web_app_ids[1]));
+  ASSERT_TRUE(std::ranges::contains(bobpay_web_app_ids, web_app_ids[0]));
+  ASSERT_TRUE(std::ranges::contains(bobpay_web_app_ids, web_app_ids[1]));
 
   alicepay_web_app_ids = web_payments_table->GetManifest(method_name_1);
   ASSERT_EQ(web_app_ids.size(), alicepay_web_app_ids.size());
-  ASSERT_TRUE(base::Contains(alicepay_web_app_ids, web_app_ids[0]));
-  ASSERT_TRUE(base::Contains(alicepay_web_app_ids, web_app_ids[1]));
+  ASSERT_TRUE(std::ranges::contains(alicepay_web_app_ids, web_app_ids[0]));
+  ASSERT_TRUE(std::ranges::contains(alicepay_web_app_ids, web_app_ids[1]));
 }
 
 TEST_F(WebPaymentsTableTest, GetNonExistingCredential) {

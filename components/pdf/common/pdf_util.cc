@@ -4,7 +4,8 @@
 
 #include "components/pdf/common/pdf_util.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/metrics/histogram_macros.h"
 #include "content/public/common/url_utils.h"
 #include "extensions/buildflags/buildflags.h"
@@ -46,7 +47,7 @@ bool IsPdfInternalPluginAllowedOrigin(
   // allowlisted. See also https://crbug.com/520422 and
   // https://crbug.com/1027173.
   return IsPdfExtensionOrigin(origin) ||
-         base::Contains(additional_allowed_origins, origin);
+         std::ranges::contains(additional_allowed_origins, origin);
 }
 
 SkColor GetPdfBackgroundColor() {

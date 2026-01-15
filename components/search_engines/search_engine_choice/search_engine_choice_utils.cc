@@ -4,6 +4,7 @@
 
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -12,7 +13,6 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
@@ -180,9 +180,9 @@ ChoiceScreenData::ChoiceScreenData(
           current_default_to_highlight != nullptr,
           /*includes_non_regional_set_engine=*/
           current_default_to_highlight != nullptr &&
-              !base::Contains(search_engines_,
-                              current_default_to_highlight,
-                              &std::unique_ptr<TemplateURL>::get))),
+              !std::ranges::contains(search_engines_,
+                                     current_default_to_highlight,
+                                     &std::unique_ptr<TemplateURL>::get))),
       current_default_to_highlight_(current_default_to_highlight) {}
 
 ChoiceScreenData::~ChoiceScreenData() = default;

@@ -18,7 +18,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/i18n/case_conversion.h"
 #include "base/json/json_reader.h"
@@ -497,7 +496,8 @@ EnterpriseSearchAggregatorProvider::Request::Request(Request&&) = default;
 bool EnterpriseSearchAggregatorProvider::Request::Allowed(
     bool in_keyword_mode) const {
   // Query requests are only allowed in keyword mode.
-  return !base::Contains(types_, SuggestionType::QUERY) || in_keyword_mode;
+  return !std::ranges::contains(types_, SuggestionType::QUERY) ||
+         in_keyword_mode;
 }
 
 void EnterpriseSearchAggregatorProvider::Request::Reset(
@@ -897,17 +897,17 @@ EnterpriseSearchAggregatorProvider::
   const base::Value::List* contentResults =
       root_val.FindList("contentSuggestions");
   RequestParsed parsed{};
-  if (base::Contains(suggestion_types, SuggestionType::QUERY)) {
+  if (std::ranges::contains(suggestion_types, SuggestionType::QUERY)) {
     parsed.Append(ParseResultList(input_words, queryResults,
                                   /*suggestion_type=*/SuggestionType::QUERY,
                                   /*is_navigation=*/false));
   }
-  if (base::Contains(suggestion_types, SuggestionType::PEOPLE)) {
+  if (std::ranges::contains(suggestion_types, SuggestionType::PEOPLE)) {
     parsed.Append(ParseResultList(input_words, peopleResults,
                                   /*suggestion_type=*/SuggestionType::PEOPLE,
                                   /*is_navigation=*/true));
   }
-  if (base::Contains(suggestion_types, SuggestionType::CONTENT)) {
+  if (std::ranges::contains(suggestion_types, SuggestionType::CONTENT)) {
     parsed.Append(ParseResultList(input_words, contentResults,
                                   /*suggestion_type=*/SuggestionType::CONTENT,
                                   /*is_navigation=*/true));

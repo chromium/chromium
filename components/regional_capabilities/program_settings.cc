@@ -4,7 +4,8 @@
 
 #include "components/regional_capabilities/program_settings.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "components/country_codes/country_codes.h"
@@ -109,8 +110,8 @@ bool IsInProgramRegion(Program program,
     return true;  // All countries can be associated with the default program.
   }
 
-  return base::Contains(GetSettingsForProgram(program).associated_countries,
-                        country_id);
+  return std::ranges::contains(
+      GetSettingsForProgram(program).associated_countries, country_id);
 }
 
 bool IsClientCompatibleWithProgram(Program program) {

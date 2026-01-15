@@ -4,13 +4,13 @@
 
 #include "components/safe_browsing/core/browser/db/v4_get_hash_protocol_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
 
 #include "base/base64url.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -537,7 +537,7 @@ void V4GetHashProtocolManager::OnFullHashForApi(
   ThreatMetadata md;
   for (const FullHashInfo& full_hash_info : full_hash_infos) {
     DCHECK_EQ(GetChromeUrlApiId(), full_hash_info.list_id);
-    DCHECK(base::Contains(full_hashes, full_hash_info.full_hash));
+    DCHECK(std::ranges::contains(full_hashes, full_hash_info.full_hash));
     md.api_permissions.insert(full_hash_info.metadata.api_permissions.begin(),
                               full_hash_info.metadata.api_permissions.end());
   }
@@ -591,9 +591,10 @@ bool V4GetHashProtocolManager::ParseHashResponse(
 
     ListIdentifier list_id(match.platform_type(), match.threat_entry_type(),
                            match.threat_type());
-    if (!base::Contains(platform_types_, list_id.platform_type()) ||
-        !base::Contains(threat_entry_types_, list_id.threat_entry_type()) ||
-        !base::Contains(threat_types_, list_id.threat_type())) {
+    if (!std::ranges::contains(platform_types_, list_id.platform_type()) ||
+        !std::ranges::contains(threat_entry_types_,
+                               list_id.threat_entry_type()) ||
+        !std::ranges::contains(threat_types_, list_id.threat_type())) {
       // The server may send a ThreatMatch response for lists that we didn't ask
       // for so ignore those ThreatMatch responses.
       continue;

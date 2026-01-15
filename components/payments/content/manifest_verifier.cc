@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
@@ -40,7 +39,7 @@ void EnableMethodManifestUrlForSupportedApps(
     std::map<GURL, std::set<GURL>>* prohibited_payment_methods) {
   for (auto app_id : app_ids) {
     auto* app = (*apps)[app_id].get();
-    app->has_explicitly_verified_methods = base::Contains(
+    app->has_explicitly_verified_methods = std::ranges::contains(
         supported_origin_strings,
         url::Origin::Create(app->scope.DeprecatedGetOriginAsURL()).Serialize());
     if (app->has_explicitly_verified_methods) {

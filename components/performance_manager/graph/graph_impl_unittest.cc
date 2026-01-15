@@ -4,9 +4,9 @@
 
 #include "components/performance_manager/graph/graph_impl.h"
 
+#include <algorithm>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
@@ -121,7 +121,7 @@ TEST_F(GraphImplTest, GetAllNodes) {
   // 1 renderer and 1 browser process.
   auto process_nodes = graph()->GetAllProcessNodes().AsVector();
   EXPECT_EQ(process_nodes.size(), 2u);
-  EXPECT_TRUE(base::Contains(process_nodes, mock_graph.process.get()));
+  EXPECT_TRUE(std::ranges::contains(process_nodes, mock_graph.process.get()));
 
   // 2 pages.
   EXPECT_THAT(graph()->GetAllPageNodes().AsVector(),
@@ -146,7 +146,7 @@ TEST_F(GraphImplTest, GetAllNodeImpls) {
   // 1 renderer and 1 browser process.
   auto process_nodes = graph()->GetAllProcessNodeImpls().AsVector();
   EXPECT_EQ(process_nodes.size(), 2u);
-  EXPECT_TRUE(base::Contains(process_nodes, mock_graph.process.get()));
+  EXPECT_TRUE(std::ranges::contains(process_nodes, mock_graph.process.get()));
 
   // 2 pages.
   EXPECT_THAT(graph()->GetAllPageNodeImpls().AsVector(),

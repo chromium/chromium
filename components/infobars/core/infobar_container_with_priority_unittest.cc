@@ -4,10 +4,10 @@
 
 #include "components/infobars/core/infobar_container_with_priority.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -68,7 +68,7 @@ class TestPriorityContainer : public InfoBarContainerWithPriority {
   size_t visible_count() const { return visible_infobars_.size(); }
 
   bool IsCurrentlyVisible(const InfoBar* infobar) const {
-    return base::Contains(visible_infobars_, infobar);
+    return std::ranges::contains(visible_infobars_, infobar);
   }
 
  protected:

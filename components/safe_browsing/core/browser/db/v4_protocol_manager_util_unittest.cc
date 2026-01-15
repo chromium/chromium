@@ -4,11 +4,11 @@
 
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 
+#include <algorithm>
 #include <array>
 #include <vector>
 
 #include "base/base64.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
@@ -126,10 +126,10 @@ TEST_F(V4ProtocolManagerUtilTest, UrlParsing) {
   EXPECT_EQ(hosts[0], "b.c");
   EXPECT_EQ(hosts[1], "a.b.c");
 
-  EXPECT_TRUE(base::Contains(paths, "/1/2.html?param=1"));
-  EXPECT_TRUE(base::Contains(paths, "/1/2.html"));
-  EXPECT_TRUE(base::Contains(paths, "/1/"));
-  EXPECT_TRUE(base::Contains(paths, "/"));
+  EXPECT_TRUE(std::ranges::contains(paths, "/1/2.html?param=1"));
+  EXPECT_TRUE(std::ranges::contains(paths, "/1/2.html"));
+  EXPECT_TRUE(std::ranges::contains(paths, "/1/"));
+  EXPECT_TRUE(std::ranges::contains(paths, "/"));
 
   url = GURL("http://a.b.c.d.e.f.g/1.html");
   V4ProtocolManagerUtil::GenerateHostsToCheck(url, &hosts);
@@ -141,15 +141,15 @@ TEST_F(V4ProtocolManagerUtilTest, UrlParsing) {
   EXPECT_EQ(hosts[2], "d.e.f.g");
   EXPECT_EQ(hosts[3], "c.d.e.f.g");
   EXPECT_EQ(hosts[4], "a.b.c.d.e.f.g");
-  EXPECT_TRUE(base::Contains(paths, "/1.html"));
-  EXPECT_TRUE(base::Contains(paths, "/"));
+  EXPECT_TRUE(std::ranges::contains(paths, "/1.html"));
+  EXPECT_TRUE(std::ranges::contains(paths, "/"));
 
   url = GURL("http://a.b/saw-cgi/eBayISAPI.dll/");
   V4ProtocolManagerUtil::GeneratePathsToCheck(url, &paths);
   EXPECT_EQ(paths.size(), static_cast<size_t>(3));
-  EXPECT_TRUE(base::Contains(paths, "/saw-cgi/eBayISAPI.dll/"));
-  EXPECT_TRUE(base::Contains(paths, "/saw-cgi/"));
-  EXPECT_TRUE(base::Contains(paths, "/"));
+  EXPECT_TRUE(std::ranges::contains(paths, "/saw-cgi/eBayISAPI.dll/"));
+  EXPECT_TRUE(std::ranges::contains(paths, "/saw-cgi/"));
+  EXPECT_TRUE(std::ranges::contains(paths, "/"));
 }
 
 // Tests the url canonicalization according to the Safe Browsing spec.

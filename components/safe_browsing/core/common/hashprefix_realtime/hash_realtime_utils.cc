@@ -4,8 +4,9 @@
 
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 
+#include <algorithm>
+
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "build/branding_buildflags.h"
@@ -39,7 +40,7 @@ bool CanCheckUrl(const GURL& url) {
 }
 
 bool IsHashDetailRelevant(const V5::FullHash::FullHashDetail& detail) {
-  if (base::Contains(detail.attributes(), V5::ThreatAttribute::CANARY)) {
+  if (std::ranges::contains(detail.attributes(), V5::ThreatAttribute::CANARY)) {
 #if BUILDFLAG(IS_IOS)
     // iOS doesn't support CANARY threat attribute.
     return false;
@@ -51,7 +52,8 @@ bool IsHashDetailRelevant(const V5::FullHash::FullHashDetail& detail) {
       // are not frame URLs), so only checking SOCIAL_ENGINEERING here.
       return false;
     }
-    if (base::Contains(detail.attributes(), V5::ThreatAttribute::FRAME_ONLY)) {
+    if (std::ranges::contains(detail.attributes(),
+                              V5::ThreatAttribute::FRAME_ONLY)) {
       // CANARY and FRAME_ONLY should not be set at the same time.
       return false;
     }
@@ -80,8 +82,9 @@ bool IsHashRealTimeLookupEligibleInSession() {
 }
 bool IsHashRealTimeLookupEligibleInLocation(
     std::optional<std::string> latest_country) {
-  return (!latest_country.has_value() ||
-          !base::Contains(GetExcludedCountries(), latest_country.value()));
+  return (
+      !latest_country.has_value() ||
+      !std::ranges::contains(GetExcludedCountries(), latest_country.value()));
 }
 bool IsHashRealTimeLookupEligibleInSessionAndLocation(
     std::optional<std::string> latest_country) {

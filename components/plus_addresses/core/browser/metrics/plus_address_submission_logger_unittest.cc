@@ -4,6 +4,7 @@
 
 #include "components/plus_addresses/core/browser/metrics/plus_address_submission_logger.h"
 
+#include <algorithm>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -134,7 +135,7 @@ class PlusAddressSubmissionLoggerTest
   }
 
   bool VerifyPlusAddress(const std::string& plus_address) {
-    return base::Contains(plus_addresses_, plus_address);
+    return std::ranges::contains(plus_addresses_, plus_address);
   }
 
   signin::IdentityTestEnvironment& identity_env() { return identity_test_env_; }

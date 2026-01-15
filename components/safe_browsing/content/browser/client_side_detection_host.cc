@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -932,9 +933,9 @@ void ClientSideDetectionHost::OnPromptAdded() {
       permissions::PermissionRequestManager::FromWebContents(web_contents());
   CHECK(permission_request_manager);
 
-  if (base::Contains(permission_request_manager->Requests(),
-                     permissions::RequestType::kNotifications,
-                     &permissions::PermissionRequest::request_type)) {
+  if (std::ranges::contains(permission_request_manager->Requests(),
+                            permissions::RequestType::kNotifications,
+                            &permissions::PermissionRequest::request_type)) {
     MaybeStartPreClassification(
         ClientSideDetectionType::NOTIFICATION_PERMISSION_PROMPT);
   }

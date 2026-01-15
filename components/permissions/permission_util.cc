@@ -4,10 +4,10 @@
 
 #include "components/permissions/permission_util.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -424,12 +424,13 @@ bool PermissionUtil::IsGuardContentSetting(ContentSettingsType type) {
 }
 
 bool PermissionUtil::DoesSupportTemporaryGrants(ContentSettingsType type) {
-  return base::Contains(content_settings::GetTypesWithTemporaryGrants(), type);
+  return std::ranges::contains(content_settings::GetTypesWithTemporaryGrants(),
+                               type);
 }
 
 bool PermissionUtil::DoesStoreTemporaryGrantsInHcsm(ContentSettingsType type) {
-  return base::Contains(content_settings::GetTypesWithTemporaryGrantsInHcsm(),
-                        type);
+  return std::ranges::contains(
+      content_settings::GetTypesWithTemporaryGrantsInHcsm(), type);
 }
 
 // Due to dependency issues, this method is duplicated in

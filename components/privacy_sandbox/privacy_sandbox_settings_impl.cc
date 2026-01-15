@@ -9,7 +9,6 @@
 #include <cstdint>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
 #include "base/metrics/field_trial_params.h"
@@ -293,14 +292,14 @@ bool PrivacySandboxSettingsImpl::IsTopicAllowed(const CanonicalTopic& topic) {
     }
 
     if ((topic.topic_id() == blocked_topic->topic_id()) ||
-        (base::Contains(ancestor_topics, blocked_topic->topic_id()))) {
+        (std::ranges::contains(ancestor_topics, blocked_topic->topic_id()))) {
       return false;
     }
   }
 
   for (browsing_topics::Topic blocked_topic_id : GetFinchDisabledTopics()) {
     if ((topic.topic_id() == blocked_topic_id) ||
-        (base::Contains(ancestor_topics, blocked_topic_id))) {
+        (std::ranges::contains(ancestor_topics, blocked_topic_id))) {
       return false;
     }
   }

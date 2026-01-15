@@ -6,11 +6,11 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <functional>
 #include <optional>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -415,7 +415,7 @@ bool NoStatePrefetchContents::Matches(
       session_storage_namespace_id_ != session_storage_namespace->id()) {
     return false;
   }
-  return base::Contains(alias_urls_, url);
+  return std::ranges::contains(alias_urls_, url);
 }
 
 void NoStatePrefetchContents::PrimaryMainFrameRenderProcessGone(

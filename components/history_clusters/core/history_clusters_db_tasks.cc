@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -213,9 +212,9 @@ void GetAnnotatedVisitsToCluster::AddIncompleteVisits(
     // https://crbug.com/1252047.
     history::VisitID visit_id =
         incomplete_visit_context_annotations.visit_row.visit_id;
-    if (base::Contains(annotated_visits_, visit_id, [](const auto& visit) {
-          return visit.visit_row.visit_id;
-        })) {
+    if (std::ranges::contains(
+            annotated_visits_, visit_id,
+            [](const auto& visit) { return visit.visit_row.visit_id; })) {
       continue;
     }
 

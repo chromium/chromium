@@ -9,7 +9,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
@@ -361,7 +360,7 @@ void CoalesceRelatedSearches(std::vector<history::Cluster>& clusters) {
           return;
         }
 
-        if (!base::Contains(cluster.related_searches, search_query)) {
+        if (!std::ranges::contains(cluster.related_searches, search_query)) {
           cluster.related_searches.push_back(search_query);
         }
       }

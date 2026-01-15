@@ -4,6 +4,7 @@
 
 #include "components/regional_capabilities/regional_capabilities_service.h"
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 #include <variant>
@@ -12,7 +13,6 @@
 #include "base/callback_list.h"
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -372,8 +372,8 @@ bool RegionalCapabilitiesService::
     return true;
   }
 
-  if (!base::Contains(GetActiveProgramSettings().associated_countries,
-                      client_->GetVariationsLatestCountryId())) {
+  if (!std::ranges::contains(GetActiveProgramSettings().associated_countries,
+                             client_->GetVariationsLatestCountryId())) {
     return false;
   }
 
@@ -387,8 +387,8 @@ bool RegionalCapabilitiesService::
 
 bool RegionalCapabilitiesService::CanRecordDisplayStateForCountry(
     CountryId display_state_country_id) {
-  if (!base::Contains(GetActiveProgramSettings().associated_countries,
-                      display_state_country_id)) {
+  if (!std::ranges::contains(GetActiveProgramSettings().associated_countries,
+                             display_state_country_id)) {
     // Choice screen completions happen in context of a given regional program.
     // Based on the client state, the active program might change across
     // sessions. Since the metrics upload get tagged with the active program

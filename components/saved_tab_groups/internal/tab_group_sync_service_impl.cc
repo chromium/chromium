@@ -4,11 +4,11 @@
 
 #include "components/saved_tab_groups/internal/tab_group_sync_service_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
@@ -907,9 +907,9 @@ bool TabGroupSyncServiceImpl::ShouldExposeSavedTabGroupInList(
     }
   }
 
-  if (base::Contains(shared_tab_groups_waiting_for_collaboration_,
-                     group.saved_guid(),
-                     [](const auto& entry) { return std::get<1>(entry); })) {
+  if (std::ranges::contains(
+          shared_tab_groups_waiting_for_collaboration_, group.saved_guid(),
+          [](const auto& entry) { return std::get<1>(entry); })) {
     // The shared tab group should not be returned while its collaboration is
     // not available.
     return false;

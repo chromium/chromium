@@ -4,12 +4,12 @@
 
 #include "components/performance_manager/v8_memory/v8_detailed_memory_decorator.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
 #include "base/byte_count.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -877,7 +877,7 @@ void V8DetailedMemoryRequestQueue::AddMeasurementRequest(
       measurement_requests =
           IsMeasurementBounded(request->mode()) ? bounded_measurement_requests_
                                                 : lazy_measurement_requests_;
-  DCHECK(!base::Contains(measurement_requests, request))
+  DCHECK(!std::ranges::contains(measurement_requests, request))
       << "V8DetailedMemoryRequest object added twice";
   // Each user of the decorator is expected to issue a single
   // V8DetailedMemoryRequest, so the size of measurement_requests is too low

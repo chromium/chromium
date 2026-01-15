@@ -4,6 +4,7 @@
 
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 
+#include <algorithm>
 #include <ios>
 #include <memory>
 #include <optional>
@@ -14,7 +15,6 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -390,7 +390,8 @@ void PrivacySandboxAttestations::AddOverride(const net::SchemefulSite& site) {
 
 bool PrivacySandboxAttestations::IsOverridden(
     const net::SchemefulSite& site) const {
-  return IsOverriddenByFlags(site) || base::Contains(overridden_sites_, site);
+  return IsOverriddenByFlags(site) ||
+         std::ranges::contains(overridden_sites_, site);
 }
 
 void PrivacySandboxAttestations::SetAllPrivacySandboxAttestedForTesting(

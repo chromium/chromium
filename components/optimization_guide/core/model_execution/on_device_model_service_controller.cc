@@ -4,12 +4,12 @@
 
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -416,7 +416,7 @@ void OnDeviceModelServiceController::BaseModelController::RequireAdaptationRank(
     // Older configs may not specify rank, and should be covered by defaults.
     return;
   }
-  if (base::Contains(supported_adaptation_ranks_, required_rank)) {
+  if (std::ranges::contains(supported_adaptation_ranks_, required_rank)) {
     return;
   }
   // Add the rank and reset all remotes to force a reload.
