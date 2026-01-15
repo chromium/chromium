@@ -8,10 +8,6 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/strings/stringprintf.h"
-#include "gpu/command_buffer/common/command_buffer_id.h"
-#include "gpu/command_buffer/common/mailbox.h"
-#include "gpu/command_buffer/common/sync_token.h"
 
 // Generate param traits write methods.
 #include "ipc/param_traits_write_macros.h"
@@ -26,56 +22,6 @@ namespace IPC {
 }  // namespace IPC
 
 namespace IPC {
-
-void ParamTraits<gpu::SyncToken>::Write(base::Pickle* m, const param_type& p) {
-  DCHECK(!p.HasData() || p.verified_flush());
-
-  WriteParam(m, p.verified_flush());
-  WriteParam(m, p.namespace_id());
-  WriteParam(m, p.command_buffer_id());
-  WriteParam(m, p.release_count());
-}
-
-bool ParamTraits<gpu::SyncToken>::Read(const base::Pickle* m,
-                                       base::PickleIterator* iter,
-                                       param_type* p) {
-  bool verified_flush = false;
-  gpu::CommandBufferNamespace namespace_id =
-      gpu::CommandBufferNamespace::INVALID;
-  gpu::CommandBufferId command_buffer_id;
-  uint64_t release_count = 0;
-
-  if (!ReadParam(m, iter, &verified_flush) ||
-      !ReadParam(m, iter, &namespace_id) ||
-      !ReadParam(m, iter, &command_buffer_id) ||
-      !ReadParam(m, iter, &release_count)) {
-    return false;
-  }
-
-  p->Set(namespace_id, command_buffer_id, release_count);
-  if (p->HasData()) {
-    if (!verified_flush)
-      return false;
-    p->SetVerifyFlush();
-  }
-
-  return true;
-}
-
-void ParamTraits<gpu::Mailbox>::Write(base::Pickle* m, const param_type& p) {
-  m->WriteBytes(p.name, sizeof(p.name));
-}
-
-bool ParamTraits<gpu::Mailbox>::Read(const base::Pickle* m,
-                                     base::PickleIterator* iter,
-                                     param_type* p) {
-  const char* bytes = nullptr;
-  if (!iter->ReadBytes(&bytes, sizeof(p->name)))
-    return false;
-  DCHECK(bytes);
-  UNSAFE_TODO(memcpy(p->name, bytes, sizeof(p->name)));
-  return true;
-}
 
 void ParamTraits<gfx::GpuMemoryBufferFormatSet>::Write(base::Pickle* m,
                                                        const param_type& p) {

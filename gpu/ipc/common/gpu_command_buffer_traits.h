@@ -10,40 +10,7 @@
 #include "ipc/param_traits.h"
 #include "ipc/param_traits_utils.h"
 
-namespace gpu {
-struct Mailbox;
-struct SyncToken;
-struct VulkanYCbCrInfo;
-}
-
 namespace IPC {
-
-template <>
-struct GPU_IPC_COMMON_EXPORT ParamTraits<gpu::SyncToken> {
-  using param_type = gpu::SyncToken;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* p);
-};
-
-template <>
-struct GPU_IPC_COMMON_EXPORT ParamTraits<gpu::Mailbox> {
-  using param_type = gpu::Mailbox;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* p);
-};
-
-template <>
-struct GPU_IPC_COMMON_EXPORT ParamTraits<gpu::VulkanYCbCrInfo> {
-  using param_type = gpu::VulkanYCbCrInfo;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* p);
-};
 
 template <>
 struct GPU_IPC_COMMON_EXPORT ParamTraits<gfx::GpuMemoryBufferFormatSet> {
