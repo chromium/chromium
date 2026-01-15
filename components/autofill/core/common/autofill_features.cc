@@ -697,14 +697,6 @@ BASE_FEATURE(kAutofillImproveAddressFieldSwapping,
 // TODO(crbug.com/380273791): Cleanup when launched.
 BASE_FEATURE(kAutofillImprovedLabels, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether main text should also be improved or not.
-// TODO(crbug.com/380273791): Clean up when launched.
-BASE_FEATURE_PARAM(bool,
-                   kAutofillImprovedLabelsParamWithoutMainTextChangesParam,
-                   &kAutofillImprovedLabels,
-                   "autofill_improved_labels_without_main_text_changes",
-                   false);
-
 // TODO(crbug.com/346507576): Remove once the experiment is over.
 // When enabled, makes autocomplete label sensitive.
 BASE_FEATURE(kAutofillLabelSensitiveAutocomplete,

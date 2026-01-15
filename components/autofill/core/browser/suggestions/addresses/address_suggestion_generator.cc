@@ -631,9 +631,7 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
       GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kName &&
               !IsAlternativeNameType(trigger_field_type) &&
               suggestion_type != SuggestionType::kAddressFieldByFieldFilling &&
-              base::FeatureList::IsEnabled(features::kAutofillImprovedLabels) &&
-              !features::kAutofillImprovedLabelsParamWithoutMainTextChangesParam
-                   .Get()
+              base::FeatureList::IsEnabled(features::kAutofillImprovedLabels)
           ? NAME_FULL
           : trigger_field_type;
   for (size_t i = 0; i < profiles.size(); ++i) {
