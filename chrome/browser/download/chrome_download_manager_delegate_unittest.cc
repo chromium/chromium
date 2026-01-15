@@ -2292,6 +2292,52 @@ INSTANTIATE_TEST_SUITE_P(_,
                          ChromeDownloadManagerDelegateTestWithSafeBrowsing,
                          ::testing::ValuesIn(kSafeBrowsingTestCases));
 
+TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
+       CheckSavePackageScanningDone_ForceSaveToOneDrive) {
+  std::unique_ptr<download::MockDownloadItem> download_item =
+      CreateActiveDownloadItem(0);
+  EXPECT_CALL(*download_item, GetState())
+      .WillRepeatedly(Return(download::DownloadItem::IN_PROGRESS));
+  EXPECT_CALL(*download_item, GetDangerType())
+      .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING));
+
+  // Expect OnContentCheckCompleted with FORCE_SAVE_TO_ONEDRIVE
+  EXPECT_CALL(*download_item,
+              OnContentCheckCompleted(
+                  download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_ONEDRIVE,
+                  download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED));
+
+  delegate()->CheckSavePackageScanningDone(
+      download_item->GetId(),
+      safe_browsing::DownloadCheckResult::FORCE_SAVE_TO_ONEDRIVE);
+}
+
+TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
+       CheckClientDownload_ForceSaveToOneDrive) {
+  std::unique_ptr<download::MockDownloadItem> download_item =
+      CreateActiveDownloadItem(0);
+  EXPECT_CALL(*download_item, GetDangerType())
+      .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
+  EXPECT_CALL(*download_item, RequireSafetyChecks())
+      .WillRepeatedly(Return(true));
+
+  auto sb_state =
+      std::make_unique<ChromeDownloadManagerDelegate::SafeBrowsingState>();
+  download_item->SetUserData(&ChromeDownloadManagerDelegate::SafeBrowsingState::
+                                 kSafeBrowsingUserDataKey,
+                             std::move(sb_state));
+
+  // Expect OnContentCheckCompleted with FORCE_SAVE_TO_ONEDRIVE
+  EXPECT_CALL(*download_item,
+              OnContentCheckCompleted(
+                  download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_ONEDRIVE,
+                  download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED));
+
+  delegate()->CheckClientDownloadDone(
+      download_item->GetId(),
+      safe_browsing::DownloadCheckResult::FORCE_SAVE_TO_ONEDRIVE);
+}
+
 }  // namespace
 
 TEST_P(ChromeDownloadManagerDelegateTestWithSafeBrowsing, CheckClientDownload) {
