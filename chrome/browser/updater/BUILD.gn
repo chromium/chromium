@@ -30,12 +30,10 @@ source_set("updater") {
     ]
 
     deps = [
-      "//base",
       "//chrome/browser:buildflags",
       "//chrome/common:version_header",
       "//chrome/updater:branding_header",
       "//chrome/updater:browser_sources",
-      "//chrome/updater/mojom",
     ]
 
     if (is_win) {
@@ -73,6 +71,24 @@ source_set("updater") {
       ]
       frameworks = [ "OpenDirectory.framework" ]
     }
+  } else if (enable_updater && is_linux) {
+    # Chromium Updater is only partially supported on Linux. The browser client
+    # only supports communication with the per-user instance. Linux support in
+    # the browser exists to facilitate the implementation of cross-platform
+    # features (e.g. the chrome://updater page).
+    sources = [
+      "browser_updater_client.cc",
+      "browser_updater_client.h",
+      "browser_updater_client_linux.cc",
+      "browser_updater_client_util_linux.cc",
+      "scheduler_linux.cc",
+      "updater.cc",
+    ]
+    deps = [
+      "//chrome/browser:buildflags",
+      "//chrome/updater:browser_sources",
+      "//components/version_info",
+    ]
   } else {
     sources = [ "updater_no_updater.cc" ]
     deps = [ "//components/version_info" ]
