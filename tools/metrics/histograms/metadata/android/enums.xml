@@ -1951,7 +1951,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="SelectionHandlesActive"/>
   <int value="5" label="(Obsolete) CanTriggerBackGesture"/>
   <int value="6" label="ImeIsActive"/>
-  <int value="7" label="RequestedByEmbedder"/>
+  <int value="7" label="(Obsolete) RequestedByEmbedder"/>
   <int value="8" label="SystemServerDidNotTransfer"/>
   <int value="9" label="BrowserTokenChanged"/>
   <int value="10" label="MultipleBrowserWindowsOpen"/>
