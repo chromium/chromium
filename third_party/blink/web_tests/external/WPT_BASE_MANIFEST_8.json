@@ -467,6 +467,34 @@
          {}
         ]
        ],
+       "float-dynamic-change-1.html": [
+        "3730445977d39014819ece61c8bab9af6ca8c407",
+        [
+         null,
+         {}
+        ]
+       ],
+       "float-dynamic-change-2.html": [
+        "4e36e1b97070478ca9f56dcc5232b7635b4e9d01",
+        [
+         null,
+         {}
+        ]
+       ],
+       "float-dynamic-change-3.html": [
+        "974c2762b085406fdc9fe4bfeb6d515e57302aff",
+        [
+         null,
+         {}
+        ]
+       ],
+       "float-dynamic-change-4.html": [
+        "5560d27725cda0f383e310961b4c1d5ad533e285",
+        [
+         null,
+         {}
+        ]
+       ],
        "float-rewind-parallel-flow-1-crash.html": [
         "79d90b89b6523ccb64502d1b43b6b0a054148cd1",
         [
@@ -388450,14 +388478,6 @@
       "hyphen-limit-chars-interpolation-expected.txt": [
        "c9b7a6a3abf65c6ce391dacdc3bb7add1d623340",
        []
-      ],
-      "text-indent-composition-expected.txt": [
-       "4c51f2a04c251b2312fc94bec4d97a18c629ecb6",
-       []
-      ],
-      "text-indent-interpolation-expected.txt": [
-       "f35bb41e89ff7101ede5200663e3edba9e74cccc",
-       []
       ]
      },
      "bidi": {
@@ -423552,7 +423572,7 @@
      ],
      "render-blocking": {
       "WEB_FEATURES.yml": [
-       "36ab4f3010306b90fc1f47133087e94a3a0d445f",
+       "142ece4b8f7cee427c7702918f481427a4e9f99c",
        []
       ],
       "support": {
@@ -428713,7 +428733,7 @@
         []
        ],
        "WEB_FEATURES.yml": [
-        "bf1043d383670edffbf2fcd15b8e2c5dc7ca057d",
+        "7a3cbb4d50cdbb24cf6552cf67d5821b662b4fcd",
         []
        ],
        "all": [
@@ -444706,7 +444726,7 @@
      []
     ],
     "WEB_FEATURES.yml": [
-     "3954338844f40d3b78ee47be61109e9433fda904",
+     "d8c0fc1977d5f55f1bee8cf8a907f9938cf62fd0",
      []
     ],
     "avoid-prefetching-on-text-plain-inner.html": [
@@ -453329,7 +453349,207 @@
        "8f27533ed175e9e0f397049c37bfaebb20dc3081",
        []
       ]
-     }
+     },
+     "restriction-audio-setSinkId-with-invalid-sinkId.https.tentative.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-audio-setSinkId.https.tentative.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-background-fetch.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-background-sync.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-battery-status.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-bluetooth.tentative.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-broadcast-channel.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-dedicated-worker.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-encrypted-media-unsupported-config.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-encrypted-media.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-focus.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-idle-detection.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-local-file-system-access.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-media-auto-play-attribute.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-media-camera.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-media-capabilities-decoding-info.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-media-capabilities-encoding-info.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-media-device-info.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-media-microphone.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-media-play.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-message-boxes.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-midi-sysex.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-midi.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-notification.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-presentation-request.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-prompt-by-before-unload.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-push.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-request-picture-in-picture.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-screen-capture.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-screen-orientation-lock.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-sensor-accelerometer.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-sensor-ambient-light-sensor.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-sensor-gyroscope.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-sensor-magnetometer.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-service-worker-unregister.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-service-worker-update.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-speech-synthesis.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-storage-persist.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-wake-lock.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-web-hid.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-web-locks.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-web-nfc.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-web-serial.tentative.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-web-share.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-web-usb.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-web-xr-immersive-vr-session.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-web-xr-inline-session.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-window-move.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-window-open.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ],
+     "restriction-window-resize.https.html.ini": [
+      "03c8743cdc1d84222cd45a451274c2a8286ef27f",
+      []
+     ]
     },
     "prerender-until-script": {
      "resources": {
@@ -459693,7 +459913,7 @@
       []
      ],
      "textIndent-expected.txt": [
-      "dc93ec2f3371238404ed523d0b1e82957f01c1a2",
+      "ce7e88b728c3ce310fc148c292b4c394c1e80b92",
       []
      ],
      "toggle-animated-iframe-visibility-ref.html": [
