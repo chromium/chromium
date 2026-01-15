@@ -409,8 +409,8 @@ void CodeCacheHostTestcase::RunAction(const ProtoAction& action,
 ```
 
 The key line here in integration with MojoLPM is the last case,
-`kCodeCacheHostCall`, where we're asking MojoLPM to treat this incoming proto
-entry as a call to a method on the `CodeCacheHost` interface.
+`kCodeCacheHostRemoteAction`, where we're asking MojoLPM to treat this incoming
+proto entry as a call to a method on the `CodeCacheHost` interface.
 
 There's just a little bit more boilerplate in the bottom of the file to tidy up
 concurrency loose ends, making sure that the fuzzer components are all running
