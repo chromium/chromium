@@ -92,10 +92,6 @@ class TestingWebHistoryService : public WebHistoryService {
 
   ~TestingWebHistoryService() override = default;
 
-  // This is sorta an override but override and static don't mix.
-  // This function just calls WebHistoryService::ReadResponse.
-  static std::optional<base::Value::Dict> ReadResponse(const Request& request);
-
   void SetResponse(int response_code, const std::string& response_body) {
     response_code_ = response_code;
     response_body_ = response_body;
@@ -119,11 +115,6 @@ class TestingWebHistoryService : public WebHistoryService {
   std::string response_body_;
   GURL last_request_url_;
 };
-
-std::optional<base::Value::Dict> TestingWebHistoryService::ReadResponse(
-    const Request& request) {
-  return WebHistoryService::ReadResponse(request);
-}
 
 }  // namespace
 
@@ -168,6 +159,19 @@ class WebHistoryServiceTest : public testing::TestWithParam<bool> {
     return result;
   }
 
+  bool QueryWebAndAppActivitySynchronous() {
+    base::RunLoop run_loop;
+    bool result = false;
+    web_history_service_.QueryWebAndAppActivity(
+        base::BindLambdaForTesting([&](bool success) {
+          result = success;
+          run_loop.Quit();
+        }),
+        PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS);
+    run_loop.Run();
+    return result;
+  }
+
  protected:
   base::test::ScopedFeatureList features_;
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -182,67 +186,6 @@ INSTANTIATE_TEST_SUITE_P(,
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "NewAPI" : "OldAPI";
                          });
-
-TEST_P(WebHistoryServiceTest, VerifyReadResponse) {
-  // Test that properly formatted response with good response code returns true
-  // as expected.
-  auto request = std::make_unique<TestRequest>(base::DoNothing(), net::HTTP_OK,
-                                               R"({
-  "history_recording_enabled": true
-})");
-  auto response_value = TestingWebHistoryService::ReadResponse(*request);
-  ASSERT_TRUE(response_value);
-  bool enabled_value = false;
-  if (std::optional<bool> enabled =
-          response_value->FindBool("history_recording_enabled")) {
-    enabled_value = *enabled;
-  }
-  EXPECT_TRUE(enabled_value);
-
-  // Test that properly formatted response with good response code returns false
-  // as expected.
-  auto request2 = std::make_unique<TestRequest>(base::DoNothing(), net::HTTP_OK,
-                                                R"({
-  "history_recording_enabled": false
-})");
-  auto response_value2 = TestingWebHistoryService::ReadResponse(*request2);
-  ASSERT_TRUE(response_value2);
-  enabled_value = true;
-  if (std::optional<bool> enabled =
-          response_value2->FindBool("history_recording_enabled")) {
-    enabled_value = *enabled;
-  }
-  EXPECT_FALSE(enabled_value);
-
-  // Test that a bad response code returns false.
-  auto request3 =
-      std::make_unique<TestRequest>(base::DoNothing(), net::HTTP_UNAUTHORIZED,
-                                    R"({
-  "history_recording_enabled": true
-})");
-  auto response_value3 = TestingWebHistoryService::ReadResponse(*request3);
-  EXPECT_FALSE(response_value3);
-
-  // Test that improperly formatted response returns false.
-  // Note: we expect to see a warning when running this test similar to
-  //   "Non-JSON response received from history server".
-  // This test tests how that situation is handled.
-  auto request4 = std::make_unique<TestRequest>(base::DoNothing(), net::HTTP_OK,
-                                                R"({
-  "history_recording_enabled": not true
-})");
-  auto response_value4 = TestingWebHistoryService::ReadResponse(*request4);
-  EXPECT_FALSE(response_value4);
-
-  // Test that improperly formatted response returns false.
-  auto request5 = std::make_unique<TestRequest>(base::DoNothing(), net::HTTP_OK,
-                                                R"({
-  "history_recording": true
-})");
-  auto response_value5 = TestingWebHistoryService::ReadResponse(*request5);
-  ASSERT_TRUE(response_value5);
-  EXPECT_FALSE(response_value5->FindBool("history_recording_enabled"));
-}
 
 TEST_P(WebHistoryServiceTest, QueryHistoryValid) {
   // Test a valid response.
@@ -419,6 +362,63 @@ TEST_P(WebHistoryServiceTest, QueryHistoryUrlConstruction) {
     EXPECT_NE(std::string::npos, url.query().find("num=50"));
     EXPECT_NE(std::string::npos, url.query().find("q=search+term"));
   }
+}
+
+TEST_P(WebHistoryServiceTest, QueryWebAndAppActivityEnabled) {
+  // Test a valid response that says WAA is enabled.
+  if (IsNewAPIEnabled()) {
+    web_history_service_.SetResponse(net::HTTP_OK,
+                                     R"({"facsSetting":[{
+  "dataRecordingEnabled": true
+}]})");
+  } else {
+    web_history_service_.SetResponse(net::HTTP_OK,
+                                     R"({"history_recording_enabled": true})");
+  }
+
+  EXPECT_TRUE(QueryWebAndAppActivitySynchronous());
+}
+
+TEST_P(WebHistoryServiceTest, QueryWebAndAppActivityDisabled) {
+  // Test a valid response that says WAA is disabled.
+  if (IsNewAPIEnabled()) {
+    web_history_service_.SetResponse(net::HTTP_OK,
+                                     R"({"facsSetting":[{
+  "dataRecordingEnabled": false
+}]})");
+  } else {
+    web_history_service_.SetResponse(net::HTTP_OK,
+                                     R"({"history_recording_enabled": false})");
+  }
+
+  EXPECT_FALSE(QueryWebAndAppActivitySynchronous());
+}
+
+TEST_P(WebHistoryServiceTest, QueryWebAndAppActivityError) {
+  web_history_service_.SetResponse(net::HTTP_INTERNAL_SERVER_ERROR, "");
+
+  EXPECT_FALSE(QueryWebAndAppActivitySynchronous());
+}
+
+TEST_P(WebHistoryServiceTest, QueryWebAndAppActivityMalformedResponse) {
+  web_history_service_.SetResponse(net::HTTP_OK, "this is not json");
+
+  EXPECT_FALSE(QueryWebAndAppActivitySynchronous());
+}
+
+TEST_P(WebHistoryServiceTest, QueryWebAndAppActivityMisnamedField) {
+  // Test a response that contains differently-named response fields.
+  if (IsNewAPIEnabled()) {
+    web_history_service_.SetResponse(net::HTTP_OK,
+                                     R"({"facsSetting":[{
+  "dataRecording": true
+}]})");
+  } else {
+    web_history_service_.SetResponse(net::HTTP_OK,
+                                     R"({"history_recording": true})");
+  }
+
+  EXPECT_FALSE(QueryWebAndAppActivitySynchronous());
 }
 
 }  // namespace history

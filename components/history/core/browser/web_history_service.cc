@@ -53,9 +53,11 @@ const char kNewQueryHistoryUrl[] =
 // TODO(crbug.com/460361854): Implement history deletions based on the new API.
 const char kHistoryDeleteHistoryUrl[] =
     "https://history.google.com/history/api/delete?client=chrome";
-// TODO(crbug.com/460361854): Implement WAA queries based on the new API.
-const char kQueryWebAndAppActivityUrl[] =
+
+const char kOldQueryWebAndAppActivityUrl[] =
     "https://history.google.com/history/api/lookup?client=web_app";
+const char kNewQueryWebAndAppActivityUrl[] =
+    "https://footprints-pa.googleapis.com/v1/get_facs";
 
 const char kQueryOtherFormsOfBrowsingHistoryUrlSuffix[] = "/historystatus";
 
@@ -323,12 +325,15 @@ GURL GetQueryUrl(const std::u16string& text_query,
   return url;
 }
 
-std::string BuildQueryPostData(const std::u16string& text_query,
-                               const QueryOptions& options,
-                               std::string_view version_info) {
-  CHECK(base::FeatureList::IsEnabled(kWebHistoryUseNewApi));
+GURL GetWebAndAppActivityUrl() {
+  if (base::FeatureList::IsEnabled(kWebHistoryUseNewApi)) {
+    return GURL(kNewQueryWebAndAppActivityUrl);
+  }
+  return GURL(kOldQueryWebAndAppActivityUrl);
+}
 
-  base::DictValue request;
+base::DictValue BuildPostDataHeader(std::string_view version_info) {
+  CHECK(base::FeatureList::IsEnabled(kWebHistoryUseNewApi));
 
   base::DictValue header;
   header.Set("application_id",
@@ -336,8 +341,17 @@ std::string BuildQueryPostData(const std::u16string& text_query,
   if (!version_info.empty()) {
     header.Set("version_info", version_info);
   }
+  return header;
+}
 
-  request.Set("header", std::move(header));
+std::string BuildQueryPostData(const std::u16string& text_query,
+                               const QueryOptions& options,
+                               std::string_view version_info) {
+  CHECK(base::FeatureList::IsEnabled(kWebHistoryUseNewApi));
+
+  base::DictValue request;
+
+  request.Set("header", BuildPostDataHeader(version_info));
 
   base::ListValue lookup_list;
 
@@ -360,6 +374,18 @@ std::string BuildQueryPostData(const std::u16string& text_query,
   lookup_list.Append(std::move(lookup));
 
   request.Set("lookup", std::move(lookup_list));
+
+  return base::WriteJson(request).value_or("");
+}
+
+std::string BuildGetFacsPostData(std::string_view version_info) {
+  CHECK(base::FeatureList::IsEnabled(kWebHistoryUseNewApi));
+
+  base::DictValue request;
+
+  request.Set("header", BuildPostDataHeader(version_info));
+
+  request.Set("setting", /*WEB_AND_APP_ACTIVITY*/ 1);
 
   return base::WriteJson(request).value_or("");
 }
@@ -688,9 +714,12 @@ void WebHistoryService::QueryWebAndAppActivity(
       &WebHistoryService::QueryWebAndAppActivityCompletionCallback,
       weak_ptr_factory_.GetWeakPtr(), std::move(callback));
 
-  GURL url(kQueryWebAndAppActivityUrl);
+  GURL url = GetWebAndAppActivityUrl();
   std::unique_ptr<Request> request = CreateRequest(
       url, std::move(completion_callback), partial_traffic_annotation);
+  if (base::FeatureList::IsEnabled(kWebHistoryUseNewApi)) {
+    request->SetPostData(BuildGetFacsPostData(server_version_info_));
+  }
   Request* request_raw = request.get();
   pending_web_and_app_activity_requests_[request_raw] = std::move(request);
   request_raw->Start();
@@ -796,11 +825,28 @@ void WebHistoryService::QueryWebAndAppActivityCompletionCallback(
   }
 
   if (std::optional<base::Value::Dict> response = ReadResponse(*request)) {
-    if (std::optional<bool> enabled =
-            response->FindBool("history_recording_enabled")) {
-      std::move(callback).Run(
-          /*web_and_app_activity_enabled=*/*enabled);
-      return;
+    if (base::FeatureList::IsEnabled(kWebHistoryUseNewApi)) {
+      if (const base::ListValue* facs_setting =
+              response->FindList("facsSetting")) {
+        if (facs_setting->size() == 1) {
+          if (const base::DictValue* setting_dict =
+                  facs_setting->front().GetIfDict()) {
+            if (std::optional<bool> enabled =
+                    setting_dict->FindBool("dataRecordingEnabled")) {
+              std::move(callback).Run(
+                  /*web_and_app_activity_enabled=*/*enabled);
+              return;
+            }
+          }
+        }
+      }
+    } else {
+      if (std::optional<bool> enabled =
+              response->FindBool("history_recording_enabled")) {
+        std::move(callback).Run(
+            /*web_and_app_activity_enabled=*/*enabled);
+        return;
+      }
     }
   }
 
