@@ -1537,7 +1537,7 @@ class TouchToFillPaymentMethodMediator {
         RecordHistogram.recordEnumeratedHistogram(
                 TOUCH_TO_FILL_LOYALTY_CARD_OUTCOME_HISTOGRAM,
                 outcome,
-                TouchToFillIbanOutcome.MAX_VALUE);
+                TouchToFillLoyaltyCardOutcome.MAX_VALUE);
     }
 
     private static void recordTouchToFillLoyaltyCardSourceHistogram(
