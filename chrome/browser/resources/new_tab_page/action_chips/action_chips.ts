@@ -273,6 +273,28 @@ export class ActionChipsElement extends CrLitElement {
   protected showDashSimplifiedUI_(chip: ActionChip) {
     return chip.type !== ChipType.kDeepDive && this.showSimplifiedUI_;
   }
+
+  protected getChipTitle_(chip: ActionChip) {
+    const suggestion = chip.suggestion;
+
+    if (!chip.tab) {
+      return suggestion;
+    }
+
+    const tabTitle = chip.tab.title;
+    const url = new URL(chip.tab.url.url);
+    const domain = url.hostname.replace(/^www\./, '');
+
+    if (this.isRecentTabChip_(chip)) {
+      return `${suggestion} - ${domain}`;
+    }
+
+    if (this.isDeepDiveChip_(chip)) {
+      return `${tabTitle} - ${domain} - ${suggestion}`;
+    }
+
+    return suggestion;
+  }
 }
 
 declare global {
