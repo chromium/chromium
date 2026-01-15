@@ -198,7 +198,11 @@ source_set("browser_tests") {
   }
 
   if (is_win || is_mac || is_linux || is_chromeos) {
-    sources += [ "discards/discards_browsertest.cc" ]
+    sources += [
+      "discards/discards_browsertest.cc",
+      "skills/skills_browsertest.cc",
+    ]
+    deps += [ "//components/skills:features" ]
   }
 
   if (is_win || is_mac || is_linux) {
@@ -711,6 +715,11 @@ generate_grd("build_grd") {
       "$target_gen_dir/on_device_translation_internals/resources.grdp",
       "$target_gen_dir/whats_new/resources.grdp",
     ]
+  }
+
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    deps += [ "skills:build_grdp" ]
+    grdp_files += [ "$target_gen_dir/skills/resources.grdp" ]
   }
 
   if (enable_dice_support || is_chromeos) {

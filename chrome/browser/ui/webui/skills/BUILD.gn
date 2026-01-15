@@ -1,0 +1,24 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos,
+       "This target is only supported on Windows, Mac, Linux, or ChromeOS.")
+
+source_set("skills") {
+  public = [ "skills_ui.h" ]
+
+  sources = [ "skills_ui.cc" ]
+
+  deps = [
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/skills:resources",
+    "//chrome/common",
+    "//components/skills:features",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/webui",
+  ]
+}

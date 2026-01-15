@@ -6,8 +6,6 @@
 
 namespace features {
 
-BASE_FEATURE(kSkillsEnabled,
-             "kSkillsEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSkillsEnabled, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

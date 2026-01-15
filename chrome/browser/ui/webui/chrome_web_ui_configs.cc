@@ -223,6 +223,12 @@
 #include "chrome/browser/ui/webui/unexportable_keys_internals/unexportable_keys_internals_ui.h"
 #endif  // BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/webui/skills/skills_ui.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+        // BUILDFLAG(IS_CHROMEOS)
+
 void RegisterChromeWebUIConfigs() {
   // Don't add calls to `AddWebUIConfig()` for Ash-specific WebUIs here. Add
   // them in chrome_web_ui_configs_chromeos.cc.
@@ -458,4 +464,10 @@ void RegisterChromeWebUIConfigs() {
 #if BUILDFLAG(IS_MAC)
   map.AddWebUIConfig(std::make_unique<UnexportableKeysInternalsUIConfig>());
 #endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  map.AddWebUIConfig(std::make_unique<skills::SkillsUIConfig>());
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+        // BUILDFLAG(IS_CHROMEOS)
 }

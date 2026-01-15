@@ -454,6 +454,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".signin-internals"/>
   <variant name=".signout-confirmation"/>
   <variant name=".site-engagement"/>
+  <variant name=".skills"/>
   <variant name=".slow"/>
   <variant name=".slow_trace"/>
   <variant name=".smb-credentials-dialog"/>

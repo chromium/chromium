@@ -797,6 +797,7 @@ chromium-metrics-reviews@google.com.
   <int value="-644310325" label="chrome://os-credits/"/>
   <int value="-643868788"
       label="chrome-untrusted://companion-side-panel.top-chrome/"/>
+  <int value="-639873909" label="chrome://skills/"/>
   <int value="-634350465" label="chrome://ukm/"/>
   <int value="-631384656" label="chrome://assistant-optin/"/>
   <int value="-624584089"

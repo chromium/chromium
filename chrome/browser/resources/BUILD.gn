@@ -120,6 +120,10 @@ group("resources") {
     public_deps += [ "discards:resources" ]
   }
 
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    public_deps += [ "skills:resources" ]
+  }
+
   if (is_win || is_mac || is_linux) {
     public_deps += [
       "app_home:resources",
