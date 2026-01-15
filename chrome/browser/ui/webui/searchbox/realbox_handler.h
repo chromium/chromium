@@ -37,6 +37,10 @@ class RealboxHandler : public ContextualSearchboxHandler {
   void UpdateSelection(OmniboxPopupSelection old_selection,
                        OmniboxPopupSelection selection);
 
+  // SearchboxHandler:
+  std::string AutocompleteIconToResourceName(
+      const gfx::VectorIcon& icon) const override;
+
  protected:
   // ContextualSearchboxHandler:
   std::optional<lens::LensOverlayInvocationSource> GetInvocationSource()

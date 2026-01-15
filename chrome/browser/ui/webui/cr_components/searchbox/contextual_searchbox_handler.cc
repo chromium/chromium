@@ -650,18 +650,6 @@ void ContextualSearchboxHandler::OnFileUploadStatusChanged(
   }
 }
 
-std::string ContextualSearchboxHandler::AutocompleteIconToResourceName(
-    const gfx::VectorIcon& icon) const {
-  // The default icon for contextual suggestions is the subdirectory arrow right
-  // icon. For the Lens composebox and realbox, we want to stay consistent with
-  // the search loupe instead.
-  if (icon.name == omnibox::kSubdirectoryArrowRightIcon.name) {
-    return searchbox_internal::kSearchIconResourceName;
-  }
-
-  return SearchboxHandler::AutocompleteIconToResourceName(icon);
-}
-
 void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
     const std::string& query_text,
     WindowOpenDisposition disposition,

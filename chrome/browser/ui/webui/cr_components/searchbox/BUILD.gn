@@ -21,6 +21,7 @@ source_set("searchbox") {
     "//components/lens",
     "//components/omnibox/browser",
     "//components/omnibox/browser:mojo_bindings",
+    "//components/omnibox/browser:vector_icons",
     "//components/omnibox/composebox:mojo_bindings",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
