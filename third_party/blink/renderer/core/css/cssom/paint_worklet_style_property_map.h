@@ -54,9 +54,9 @@ class CORE_EXPORT PaintWorkletStylePropertyMap
   PaintWorkletStylePropertyMap& operator=(const PaintWorkletStylePropertyMap&) =
       delete;
 
-  CSSStyleValue* get(const ExecutionContext*,
-                     const String& property_name,
-                     ExceptionState&) const override;
+  V8UnionCSSStyleValueOrUndefined* get(const ExecutionContext*,
+                                       const String& property_name,
+                                       ExceptionState&) const override;
 
   CSSStyleValueVector getAll(const ExecutionContext*,
                              const String& property_name,

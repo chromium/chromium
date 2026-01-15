@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssstylevalue_string.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssstylevalue_undefined.h"
 #include "third_party/blink/renderer/core/css/cssom/css_keyword_value.h"
 #include "third_party/blink/renderer/core/css/cssom/cssom_keywords.h"
 #include "third_party/blink/renderer/core/css/cssom/inline_style_property_map.h"
@@ -40,9 +41,11 @@ TEST_F(StylePropertyMapTest, SetRevertWithFeatureEnabled) {
            exception_state);
 
   CSSStyleValue* top =
-      map->get(GetDocument().GetExecutionContext(), "top", exception_state);
+      map->get(GetDocument().GetExecutionContext(), "top", exception_state)
+          ->GetAsCSSStyleValue();
   CSSStyleValue* left =
-      map->get(GetDocument().GetExecutionContext(), "left", exception_state);
+      map->get(GetDocument().GetExecutionContext(), "left", exception_state)
+          ->GetAsCSSStyleValue();
 
   ASSERT_TRUE(DynamicTo<CSSKeywordValue>(top));
   EXPECT_EQ(CSSValueID::kRevert,
@@ -69,7 +72,8 @@ TEST_F(StylePropertyMapTest, SetOverflowClipString) {
            exception_state);
 
   CSSStyleValue* overflow = map->get(GetDocument().GetExecutionContext(),
-                                     "overflow-x", exception_state);
+                                     "overflow-x", exception_state)
+                                ->GetAsCSSStyleValue();
   ASSERT_TRUE(DynamicTo<CSSKeywordValue>(overflow));
   EXPECT_EQ(CSSValueID::kClip,
             DynamicTo<CSSKeywordValue>(overflow)->KeywordValueID());
@@ -91,7 +95,8 @@ TEST_F(StylePropertyMapTest, SetOverflowClipStyleValue) {
            exception_state);
 
   CSSStyleValue* overflow = map->get(GetDocument().GetExecutionContext(),
-                                     "overflow-x", exception_state);
+                                     "overflow-x", exception_state)
+                                ->GetAsCSSStyleValue();
   ASSERT_TRUE(DynamicTo<CSSKeywordValue>(overflow));
   EXPECT_EQ(CSSValueID::kClip,
             DynamicTo<CSSKeywordValue>(overflow)->KeywordValueID());

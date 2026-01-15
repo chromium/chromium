@@ -1972,6 +1972,8 @@ generated_union_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_csspseudoelement_element.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_cssstylevalue_string.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_cssstylevalue_string.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_cssstylevalue_undefined.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_cssstylevalue_undefined.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_cssvariablereferencevalue_string.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_cssvariablereferencevalue_string.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_document_element.cc",

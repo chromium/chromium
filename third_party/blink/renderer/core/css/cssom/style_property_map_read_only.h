@@ -14,15 +14,17 @@
 
 namespace blink {
 
+class V8UnionCSSStyleValueOrUndefined;
+
 class CORE_EXPORT StylePropertyMapReadOnly
     : public ScriptWrappable,
       public PairSyncIterable<StylePropertyMapReadOnly> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  virtual CSSStyleValue* get(const ExecutionContext*,
-                             const String& property_name,
-                             ExceptionState&) const = 0;
+  virtual V8UnionCSSStyleValueOrUndefined* get(const ExecutionContext*,
+                                               const String& property_name,
+                                               ExceptionState&) const = 0;
   virtual CSSStyleValueVector getAll(const ExecutionContext*,
                                      const String& property_name,
                                      ExceptionState&) const = 0;

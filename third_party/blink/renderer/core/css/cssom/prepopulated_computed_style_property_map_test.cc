@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssstylevalue_undefined.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -113,10 +114,10 @@ TEST_F(PrepopulatedComputedStylePropertyMapTest, CustomPropertyAccessors) {
 
   DummyExceptionStateForTesting exception_state;
 
-  const CSSStyleValue* foo =
+  const V8UnionCSSStyleValueOrUndefined* foo =
       map->get(GetDocument().GetExecutionContext(), "--foo", exception_state);
   ASSERT_NE(nullptr, foo);
-  ASSERT_EQ(CSSStyleValue::kUnparsedType, foo->GetType());
+  ASSERT_EQ(CSSStyleValue::kUnparsedType, foo->GetAsCSSStyleValue()->GetType());
   EXPECT_FALSE(exception_state.HadException());
 
   EXPECT_EQ(true, map->has(GetDocument().GetExecutionContext(), "--foo",
@@ -130,8 +131,9 @@ TEST_F(PrepopulatedComputedStylePropertyMapTest, CustomPropertyAccessors) {
   ASSERT_EQ(CSSStyleValue::kUnparsedType, fooAll[0]->GetType());
   EXPECT_FALSE(exception_state.HadException());
 
-  EXPECT_EQ(nullptr, map->get(GetDocument().GetExecutionContext(), "--quix",
-                              exception_state));
+  EXPECT_TRUE(
+      map->get(GetDocument().GetExecutionContext(), "--quix", exception_state)
+          ->IsUndefined());
   EXPECT_FALSE(exception_state.HadException());
 
   EXPECT_EQ(false, map->has(GetDocument().GetExecutionContext(), "--quix",
