@@ -708,7 +708,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParsePhoneNumber) {
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountPotentiallyApprovedOrigins) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmNavigationCancellation);
+  list.InitAndEnableFeature(features::kFedCmEmbedderInitiatedLogin);
   // given_name and picture fields are optional
   const auto* test_accounts_json = R"({
   "accounts": [

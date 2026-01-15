@@ -63,8 +63,8 @@ bool IsFedCmEmbedderCheckEnabled();
 // Whether navigation interception is enabled.
 bool IsNavigationInterceptionEnabled();
 
-// Whethere navigation cancellation is enabled.
-bool IsNavigationCancellationEnabled();
+// Whether embedder initiated login is enabled.
+bool IsEmbedderInitiatedLoginEnabled();
 
 }  // namespace content::webid
 

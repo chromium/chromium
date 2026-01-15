@@ -91,8 +91,8 @@ bool IsNavigationInterceptionEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmNavigationInterception);
 }
 
-bool IsNavigationCancellationEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmNavigationCancellation);
+bool IsEmbedderInitiatedLoginEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin);
 }
 
 }  // namespace content::webid

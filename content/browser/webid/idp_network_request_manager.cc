@@ -282,7 +282,7 @@ IdentityRequestAccountPtr ParseAccount(const base::Value::Dict& account,
   }
 
   std::vector<std::string> potentially_approved_origin_hashes_vector;
-  if (IsNavigationCancellationEnabled() && potentially_approved_origin_hashes) {
+  if (IsEmbedderInitiatedLoginEnabled() && potentially_approved_origin_hashes) {
     for (const base::Value& entry : *potentially_approved_origin_hashes) {
       if (entry.is_string()) {
         potentially_approved_origin_hashes_vector.push_back(entry.GetString());
@@ -646,7 +646,7 @@ void OnAccountsRequestParsed(
   }
 
   const std::string* origin_salt = response_dict.FindString(kOriginSaltKey);
-  if (IsNavigationCancellationEnabled() && origin_salt) {
+  if (IsEmbedderInitiatedLoginEnabled() && origin_salt) {
     response.origin_salt = *origin_salt;
   }
 
