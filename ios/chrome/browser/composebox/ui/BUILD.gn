@@ -116,11 +116,14 @@ source_set("eg2_tests") {
     ":eg_test_support+eg2",
     ":ui_constants",
     "//components/omnibox/browser:aim_eligibility_service_features",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/omnibox/public:constants",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/test:utils",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//net:test_support",
+    "//ui/base",
   ]
 }
 

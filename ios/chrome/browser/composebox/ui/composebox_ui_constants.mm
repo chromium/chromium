@@ -8,7 +8,6 @@ const CGFloat kOmniboxMinHeight = 44.0;
 
 NSString* const kComposeboxAccessibilityIdentifier =
     @"kComposeboxAccessibilityIdentifier";
-
 NSString* const kComposeboxPlusButtonAccessibilityIdentifier =
     @"kComposeboxPlusButtonAccessibilityIdentifier";
 NSString* const kComposeboxMicButtonAccessibilityIdentifier =
@@ -39,5 +38,5 @@ NSString* const kComposeboxAttachCurrentTabActionAccessibilityIdentifier =
 NSString* const kComposeboxSelectTabsActionAccessibilityIdentifier =
     @"kComposeboxSelectTabsActionAccessibilityIdentifier";
 
-NSString* const kComposeboxTabPickerViewAccessibilityIdentifier =
-    @"kComposeboxTabPickerAccessibilityIdentifier";
+NSString* const kComposeboxTabPickerCollectionViewAccessibilityIdentifier =
+    @"kComposeboxTabPickerCollectionViewAccessibilityIdentifier";

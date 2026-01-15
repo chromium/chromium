@@ -9,12 +9,15 @@
 #import "ios/chrome/browser/composebox/ui/composebox_ui_constants.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/test/tabs_egtest_util.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -35,6 +38,33 @@ id<GREYMatcher> ComposeboxClearButtonMatcher() {
 NSString* kLongText =
     @"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod "
     @"tempor incididunt ut labore et dolore magna aliqua.";
+
+// Opens the tab picker from the composebox.
+void OpenTabPicker() {
+  NSError* error = nil;
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+      performAction:grey_tap()
+              error:&error];
+  if (error) {
+    [ChromeEarlGreyUI focusOmnibox];
+  }
+
+  // Wait for the composebox to be visible.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ComposeboxMatcher()];
+
+  // Tap the plus button.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kComposeboxPlusButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Tap the select tabs button.
+  id<GREYMatcher> selectTabsMatcher =
+      chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+          IDS_IOS_COMPOSEBOX_SELECT_TAB_ACTION);
+  [[EarlGrey selectElementWithMatcher:selectTabsMatcher]
+      performAction:grey_tap()];
+}
 
 }  // namespace
 
@@ -297,6 +327,72 @@ NSString* kLongText =
                  grey_accessibilityID(
                      kComposeboxAttachCurrentTabActionAccessibilityIdentifier)]
       assertWithMatcher:grey_enabled()];
+}
+
+// Tests that tapping the attach tabs button opens the tab picker. Ensures that
+// the title is set correctly and buttons are correctly enabled or disabled.
+- (void)testTabPickerUI {
+  // Composebox is not available on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
+  }
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  OpenTabPicker();
+
+  // Check that the tab picker is visible.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kComposeboxTabPickerCollectionViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_COMPOSEBOX_TAB_PICKER_ADD_TABS_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Check that the current tab cell is visible.
+  NSString* pageTitle = [ChromeEarlGrey currentTabTitle];
+  id<GREYMatcher> tabMatcher = TabWithTitle(pageTitle);
+  [[EarlGrey selectElementWithMatcher:tabMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Check that the Done button is disabled.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      assertWithMatcher:grey_allOf(grey_notNil(),
+                                   grey_accessibilityTrait(
+                                       UIAccessibilityTraitNotEnabled),
+                                   nil)];
+
+  // Tap the tab to select it.
+  [[EarlGrey selectElementWithMatcher:tabMatcher] performAction:grey_tap()];
+
+  // Check that the Done button is enabled.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      assertWithMatcher:grey_enabled()];
+
+  // Ensure the tab picker title is updated correctly.
+  [[EarlGrey
+      selectElementWithMatcher:grey_text(l10n_util::GetPluralNSStringF(
+                                   IDS_IOS_TAB_GRID_SELECTED_TABS_TITLE, 1))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the tab again to deselect it.
+  [[EarlGrey selectElementWithMatcher:tabMatcher] performAction:grey_tap()];
+
+  // Check that the Done button is disabled again and the tab picker's title is
+  // back to its initial state.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      assertWithMatcher:grey_allOf(grey_notNil(),
+                                   grey_accessibilityTrait(
+                                       UIAccessibilityTraitNotEnabled),
+                                   nil)];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_COMPOSEBOX_TAB_PICKER_ADD_TABS_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end
