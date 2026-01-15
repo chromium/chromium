@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" class="reftest-wait">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="/common/reftest-wait.js"></script>
+<title>Scroll into view crash test</title>
+<style>
+.scroller {
+  overflow: scroll;
+  width: 200px;
+  height: 200px;
+}
+.menu {
+  height: 100%;
+}
+.spacer {
+  height: 40vh;
+}
+
+#menu {
+  left: 90%;
+}
+</style>
+
+<div class="scroller" overscrollcontainer>
+  <div id="menu">Menu</div>
+</div>
+<button id=button command="toggle-overscroll" commandfor="menu">Open</button>
+
+<script>
+function runTest() {
+  menu.scrollIntoView();
+  takeScreenshot();
+}
+
+onload = () => requestAnimationFrame(() => requestAnimationFrame(runTest));
+</script>
+</html>
+

@@ -4081,6 +4081,38 @@ void LayoutObject::SetNeedsPaintPropertyUpdate() {
   if (bitfields_.NeedsPaintPropertyUpdate())
     return;
 
+  // If we're an overscroll container or an ::-internal-overscroll-area-parent,
+  // then under a paint property update, we have to make sure that all of our
+  // ::-internal-overscroll-area-parent siblings/children and the container
+  // itself are also updated. This is due to the fact that we do some
+  // reparenting in PaintPropertyTreeBuilder. Without this, we can end up with
+  // cycles if only *some* of the related objects are dirtied.
+  if (IsOverscrollContainer()) {
+    auto* container = IsPseudo(kPseudoIdOverscrollAreaParent) ? Parent() : this;
+    CHECK(container);
+    CHECK(container->StyleRef().IsInternalOverscrollAreaAuto());
+    CHECK(container->GetNode());
+
+    if (auto* overscroll_area_parent_vector =
+            To<Element>(*container->GetNode())
+                .GetOverscrollAreaParentPseudoElements()) {
+      for (const auto& overscroll_area_parent :
+           *overscroll_area_parent_vector) {
+        if (auto* object = overscroll_area_parent->GetLayoutObject()) {
+          object->bitfields_.SetNeedsPaintPropertyUpdate(true);
+        }
+      }
+
+      container->bitfields_.SetNeedsPaintPropertyUpdate(true);
+      // Note that we mark descendants needing property update starting from
+      // container, as opposed to container's parent, since we invalidated the
+      // direct children of the container
+      // (::-internal-overscroll-area-parent).
+      container->SetDescendantNeedsPaintPropertyUpdate();
+      return;
+    }
+  }
+
   bitfields_.SetNeedsPaintPropertyUpdate(true);
   if (Parent())
     Parent()->SetDescendantNeedsPaintPropertyUpdate();
