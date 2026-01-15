@@ -1,10 +1,18 @@
 caption: Allow access to a list of URLs in Incognito mode.
 desc: |-
-  Setting the policy provides access to the listed URLs in Incognito mode, as exceptions to <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME">IncognitoModeUrlBlocklist</ph>. For example, setting <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME">IncognitoModeUrlBlocklist</ph> to * will block all requests in Incognito mode, and you can use this policy to allow access to a limited list of URLs. Use it to open exceptions to certain schemes, subdomains of other domains, ports, or specific paths, using the format specified at ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ). The <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME">IncognitoModeUrlAllowlist</ph> policy takes precedence over <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME">IncognitoModeUrlBlocklist</ph>. This policy is limited to 1,000 entries.
+  Setting the policy provides access to the listed URLs in Incognito mode. Use it to open exceptions to certain URL patterns defined in <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME">IncognitoModeUrlBlocklist</ph>, using the format specified at ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
 
-  Leaving the policy unset allows no exceptions to <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME">IncognitoModeUrlBlocklist</ph>.
+  If both this policy and <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME">IncognitoModeUrlBlocklist</ph> are set, the allowlist takes precedence. If a URL matches a pattern on the allowlist, it will be allowed. If it matches a pattern on the blocklist (but not the allowlist), it will be blocked. If a URL matches neither, the general <ph name="URL_BLOCKLIST_POLICY_NAME">URLBlocklist</ph>/<ph name="URL_ALLOWLIST_POLICY_NAME">URLAllowlist</ph> policies will be used as a fallback.
+
+  If this policy is set and  <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME">IncognitoModeUrlBlocklist</ph> is not, any URL not on the allowlist will be blocked in Incognito mode.
+
+  If <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME">IncognitoModeAvailability</ph> is set to disallow (value 1), but this policy is configured, Incognito mode will be available only for the URLs matching the allowlist.
+
+  Leaving the policy unset allows no exceptions to <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME">IncognitoModeUrlBlocklist</ph> and <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME">IncognitoModeAvailability</ph>.
 
   This policy only affects Incognito mode. To allow URLs for all user profiles, please use the <ph name="URL_ALLOWLIST_POLICY_NAME">URLAllowlist</ph> policy.
+
+  This policy is limited to 1000 entries.
 example_value:
 - example.com
 - https://ssl.server.com

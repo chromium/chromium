@@ -1,8 +1,16 @@
 caption: Block access to a list of URLs in Incognito mode.
 desc: |-
-  Setting the <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME">IncognitoModeUrlBlocklist</ph> policy stops web pages with prohibited URLs from loading in Incognito mode. Administrators can specify the list of URL patterns to be blocked. If left unset, no URLs are blocked in the Incognito mode. Up to 1,000 exceptions can be defined in <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME">IncognitoModeUrlAllowlist</ph>. See how to format a URL pattern ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
+  Setting the <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME">IncognitoModeUrlBlocklist</ph> policy stops web pages with prohibited URLs from loading in Incognito mode. Administrators can specify the list of URL patterns to be blocked. See how to format a URL pattern ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
+
+  If both this and the <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME">IncognitoModeUrlAllowlist</ph> are set, the allowlist takes precedence. If a URL matches a pattern on the allowlist, it will be allowed. If it matches a pattern on the blocklist but not the allowlist, it will be blocked. If a URL matches neither, the general <ph name="URL_BLOCKLIST_POLICY_NAME">URLBlocklist</ph>/<ph name="URL_ALLOWLIST_POLICY_NAME">URLAllowlist</ph> policies will be used as a fallback.
+
+  If the <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME">IncognitoModeUrlAllowlist</ph> policy is set and this policy is not, any URL not on the allowlist will be blocked in Incognito mode.
+
+  If <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME">IncognitoModeAvailability</ph> is set to disallow (value 1), but the <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME">IncognitoModeUrlAllowlist</ph> policy is configured, Incognito mode will be available only for the URLs matching the allowlist.
 
   This policy only affects Incognito mode. To block URLs for all user profiles, please use the <ph name="URL_BLOCKLIST_POLICY_NAME">URLBlocklist</ph> policy.
+
+  This policy is limited to 1000 entries.
 example_value:
 - example.com
 - https://ssl.server.com
