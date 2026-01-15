@@ -792,13 +792,8 @@ bool ScopedFocusNavigation::IsNonEntryFocusgroupItem(const Element& element) {
   // Calling this on every element is expensive. TODO(janewman): We should keep
   // track of when we enter/exit focusgroups during navigation, and only call
   // this when we are inside a focusgroup.
-  const Element* focusgroup_owner = focusgroup::FindFocusgroupOwner(&element);
-
-  // GetFocusgroupOwnerOfItem additionally checks if the element is keyboard
-  // focusable, avoid this expensive check as IsNonEntryFocusgroupItem assumes
-  // the element is already keyboard focusable.
-  DCHECK_EQ(focusgroup_owner,
-            FocusgroupControllerUtils::GetFocusgroupOwnerOfItem(&element));
+  const Element* focusgroup_owner =
+      FocusgroupControllerUtils::GetFocusgroupOwnerOfItem(&element);
   if (!focusgroup_owner) {
     // Not in a focusgroup.
     return false;

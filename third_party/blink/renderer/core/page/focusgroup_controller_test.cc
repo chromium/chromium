@@ -43,8 +43,13 @@ class FocusgroupControllerTest : public PageTestBase {
   }
 
   void SendEvent(KeyboardEvent* event) {
-    GetDocument().GetFrame()->GetEventHandler().DefaultKeyboardEventHandler(
-        event);
+    if (event->target()) {
+      event->target()->DispatchEvent(*event);
+    }
+    if (!event->DefaultHandled()) {
+      GetDocument().GetFrame()->GetEventHandler().DefaultKeyboardEventHandler(
+          event);
+    }
   }
 
  private:
@@ -2160,6 +2165,37 @@ TEST_F(FocusgroupControllerTest, DoesElementContainBarrierWithOptOut) {
   // The focusgroup contains a barrier because the opted-out subtree contains a
   // focusable element.
   EXPECT_TRUE(utils::DoesElementContainBarrier(*fg));
+}
+
+// Exercises the condition where ScopedFocusNavigation::IsNonEntryFocusgroupItem
+// is called with an element that is not focusable.
+TEST_F(FocusgroupControllerTest, FocusgroupWithSelect) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div focusgroup="toolbar inline">
+      <button id=btn1 type="button">Bold</button>
+      <select id=sel1>
+        <option>12px</option>
+        <option>14px</option>
+      </select>
+      <button id=btn2 type="button">Italic</button>
+    </div>
+    <button id=after type="button">After</button>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* sel1 = GetElementById("sel1");
+  auto* after = GetElementById("after");
+  ASSERT_TRUE(sel1);
+  ASSERT_TRUE(after);
+
+  // Focus the select and use Tab to exit the focusgroup.
+  sel1->Focus();
+  ASSERT_EQ(GetDocument().FocusedElement(), sel1);
+
+  auto* event = KeyDownEvent(ui::DomKey::TAB, sel1);
+  SendEvent(event);
+  EXPECT_EQ(GetDocument().FocusedElement(), after)
+      << "Tab from select should exit focusgroup to the button after";
 }
 
 }  // namespace blink
