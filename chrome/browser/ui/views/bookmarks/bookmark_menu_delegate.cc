@@ -188,6 +188,13 @@ class BookmarkModelDropObserver : public BookmarkMergedSurfaceServiceObserver {
       bookmark_merged_service_observation_{this};
 };
 
+int IsInvalidDragOrDropCommand(int command_id) {
+  std::unordered_set<int> invalid_command_ids = {
+      IDC_SHOW_BOOKMARK_SIDE_PANEL, IDC_BOOKMARK_BAR_OPEN_ALL,
+      IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP};
+  return invalid_command_ids.contains(command_id);
+}
+
 }  // namespace
 
 BookmarkMenuDelegate::BookmarkFolderOrURL::BookmarkFolderOrURL(
@@ -526,11 +533,7 @@ ui::mojom::DragOperation BookmarkMenuDelegate::GetDropOperation(
   // Should only get here if we have drop data.
   DCHECK(drop_data_.is_valid());
 
-  std::unordered_set<int> non_droppable_command_ids = {
-      IDC_SHOW_BOOKMARK_SIDE_PANEL, IDC_BOOKMARK_BAR_OPEN_ALL,
-      IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP};
-
-  if (non_droppable_command_ids.contains(item->GetCommand())) {
+  if (IsInvalidDragOrDropCommand(item->GetCommand())) {
     return ui::mojom::DragOperation::kNone;
   }
 
@@ -589,7 +592,7 @@ bool BookmarkMenuDelegate::ShowContextMenu(
 }
 
 bool BookmarkMenuDelegate::CanDrag(MenuItemView* menu) {
-  if (menu->GetCommand() == IDC_SHOW_BOOKMARK_SIDE_PANEL) {
+  if (IsInvalidDragOrDropCommand(menu->GetCommand())) {
     return false;
   }
   // Don't let users drag permanent nodes (managed, other or mobile folder).
