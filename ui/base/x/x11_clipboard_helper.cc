@@ -330,11 +330,14 @@ XClipboardHelper::TargetList XClipboardHelper::GetTargetList(
             selection_name, x11::GetAtom(kTargets), &data, &out_type)) {
       // Some apps return an |out_type| of "TARGETS". (crbug.com/377893)
       if (out_type == x11::Atom::ATOM || out_type == x11::GetAtom(kTargets)) {
-        const x11::Atom* atom_array =
-            UNSAFE_TODO(reinterpret_cast<const x11::Atom*>(data.data()));
-        for (size_t i = 0; i < data.size() / sizeof(x11::Atom); ++i) {
-          out.push_back(UNSAFE_TODO(atom_array[i]));
-        }
+        // SAFETY: `data` is populated by the X11 server and is expected to be a
+        // series of atoms since we already checked `out_type` is an ATOM or
+        // GetAtom(kTargets).
+        CHECK_EQ(data.size() % sizeof(x11::Atom), 0u);
+        base::span<const x11::Atom> atom_array = UNSAFE_BUFFERS(
+            base::span(reinterpret_cast<const x11::Atom*>(data.data()),
+                       data.size() / sizeof(x11::Atom)));
+        out.insert(out.end(), atom_array.begin(), atom_array.end());
       }
     } else {
       // There was no target list. Most Java apps doesn't offer a TARGETS list,
