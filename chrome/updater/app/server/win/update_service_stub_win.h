@@ -81,6 +81,7 @@ class UpdateServiceStubWin : public UpdateService {
           const base::flat_map<std::string,
                                base::flat_map<std::string, PolicyValue>>&)>)
       override;
+  void GetPoliciesJson(base::OnceCallback<void(const std::string&)>) override;
 
  private:
   ~UpdateServiceStubWin() override;

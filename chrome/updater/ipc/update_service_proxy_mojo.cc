@@ -436,6 +436,16 @@ void UpdateServiceProxyMojoImpl::GetAppPolicies(
       }).Then(ToMojoCallback(std::move(callback))));
 }
 
+void UpdateServiceProxyMojoImpl::GetPoliciesJson(
+    base::OnceCallback<void(base::expected<std::string, RpcError>)> callback) {
+  VLOG(1) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureConnecting();
+  remote_->GetPoliciesJson(base::BindOnce([](const std::string& policies_json) {
+                             return policies_json;
+                           }).Then(ToMojoCallback(std::move(callback))));
+}
+
 #if BUILDFLAG(IS_WIN)
 void UpdateServiceProxyMojoImpl::OnConnected(
     mojo::PendingReceiver<mojom::UpdateService> pending_receiver,

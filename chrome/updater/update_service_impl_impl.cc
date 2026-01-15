@@ -25,6 +25,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -1620,6 +1621,18 @@ void UpdateServiceImplImpl::GetAppPolicies(
   main_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
                                 config_->GetPolicyService()->GetAppPolicies()));
+}
+
+void UpdateServiceImplImpl::GetPoliciesJson(
+    base::OnceCallback<void(const std::string&)> callback) {
+  VLOG(1) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::string policies_json;
+  base::JSONWriter::Write(config_->GetPolicyService()->GetAllPolicies(),
+                          &policies_json);
+  main_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(policies_json)));
 }
 
 bool UpdateServiceImplImpl::IsUpdateDisabledByPolicy(const std::string& app_id,

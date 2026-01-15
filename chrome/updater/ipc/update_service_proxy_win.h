@@ -116,6 +116,8 @@ class UpdateServiceProxyWinImpl : public UpdateServiceProxyImpl {
                    std::string,
                    base::flat_map<std::string, UpdateService::PolicyValue>>,
                RpcError>)>) override;
+  void GetPoliciesJson(
+      base::OnceCallback<void(base::expected<std::string, RpcError>)>) override;
 
  private:
   ~UpdateServiceProxyWinImpl() override;

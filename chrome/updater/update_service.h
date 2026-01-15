@@ -190,6 +190,10 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
                                     base::flat_map<std::string, PolicyValue>>&)>
           callback) = 0;
 
+  // Gets the current policies for the updater and apps in a JSON string.
+  virtual void GetPoliciesJson(
+      base::OnceCallback<void(const std::string&)> callback) = 0;
+
  protected:
   friend class base::RefCountedThreadSafe<UpdateService>;
 

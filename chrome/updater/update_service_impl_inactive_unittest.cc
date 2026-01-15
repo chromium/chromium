@@ -169,6 +169,15 @@ TEST(UpdateServiceImplInactiveTest, All) {
         }));
     run_loop.Run();
   }
+  {
+    base::RunLoop run_loop;
+    update_service->GetPoliciesJson(base::BindLambdaForTesting(
+        [&run_loop](const std::string& policies_json) {
+          EXPECT_TRUE(policies_json.empty());
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
 }
 
 }  // namespace updater

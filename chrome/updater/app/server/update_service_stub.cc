@@ -218,6 +218,11 @@ class UpdateServiceStubUntrusted : public mojom::UpdateService {
     impl_->GetAppPolicies(std::move(callback));
   }
 
+  void GetPoliciesJson(GetPoliciesJsonCallback callback) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    impl_->GetPoliciesJson(std::move(callback));
+  }
+
  private:
   void OnClientDisconnected();
 
@@ -431,6 +436,13 @@ void UpdateServiceStub::GetAppPolicies(GetAppPoliciesCallback callback) {
           })
           .Then(std::move(callback))
           .Then(task_end_listener_));
+}
+
+void UpdateServiceStub::GetPoliciesJson(GetPoliciesJsonCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  task_start_listener_.Run();
+  impl_->GetPoliciesJson(
+      base::BindOnce(std::move(callback)).Then(task_end_listener_));
 }
 
 void UpdateServiceStub::CheckForUpdate(

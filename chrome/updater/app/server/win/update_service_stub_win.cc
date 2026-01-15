@@ -163,4 +163,11 @@ void UpdateServiceStubWin::GetAppPolicies(
   impl_->GetAppPolicies(std::move(callback).Then(task_end_listener_));
 }
 
+void UpdateServiceStubWin::GetPoliciesJson(
+    base::OnceCallback<void(const std::string&)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  task_start_listener_.Run();
+  impl_->GetPoliciesJson(std::move(callback).Then(task_end_listener_));
+}
+
 }  // namespace updater

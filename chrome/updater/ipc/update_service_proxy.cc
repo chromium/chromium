@@ -273,6 +273,23 @@ void UpdateServiceProxy::GetAppPolicies(
       1));
 }
 
+void UpdateServiceProxy::GetPoliciesJson(
+    base::OnceCallback<void(const std::string&)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto call =
+      base::BindRepeating(&UpdateServiceProxyImpl::GetPoliciesJson, proxy_);
+  call.Run(base::BindOnce(
+      static_cast<DoneFunc<std::string>>(&CallDone), base::WrapRefCounted(this),
+      call,
+      base::BindOnce(
+          [](base::OnceCallback<void(const std::string&)> callback,
+             std::string policies_json) {
+            std::move(callback).Run(policies_json);
+          },
+          std::move(callback)),
+      std::string(), 1));
+}
+
 UpdateServiceProxy::~UpdateServiceProxy() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }

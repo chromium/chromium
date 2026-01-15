@@ -77,6 +77,7 @@ class UpdateServiceStub : public mojom::UpdateService {
   void GetUpdaterState(GetUpdaterStateCallback callback) override;
   void GetUpdaterPolicies(GetUpdaterPoliciesCallback callback) override;
   void GetAppPolicies(GetAppPoliciesCallback callback) override;
+  void GetPoliciesJson(GetPoliciesJsonCallback callback) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(UpdaterIPCTestCase, AllRpcsComplete);

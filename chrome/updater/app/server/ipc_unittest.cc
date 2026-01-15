@@ -280,6 +280,10 @@ class UpdaterIPCTestCase : public testing::Test {
                                   base::flat_map<std::string, PolicyValue>>&)>
              callback),
         (override));
+    MOCK_METHOD(void,
+                GetPoliciesJson,
+                (base::OnceCallback<void(const std::string&)> callback),
+                (override));
 
    protected:
     ~MockUpdateService() override = default;
@@ -447,6 +451,11 @@ TEST_F(UpdaterIPCTestCase, AllRpcsComplete) {
             std::move(callback).Run(GetExampleAppPolicies());
           });
 
+  EXPECT_CALL(*mock_service, GetPoliciesJson)
+      .WillOnce([](base::OnceCallback<void(const std::string&)> callback) {
+        std::move(callback).Run("json");
+      });
+
 #if BUILDFLAG(IS_WIN)
   ASSERT_HRESULT_SUCCEEDED(
       Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::GetModule()
@@ -608,6 +617,14 @@ MULTIPROCESS_TEST_MAIN(UpdateServiceClient) {
                         UpdaterIPCTestCase::GetExampleAppPolicies());
             })
             .Then(run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+  {
+    base::RunLoop run_loop;
+    client_proxy->GetPoliciesJson(
+        base::BindOnce([](const std::string& policies_json) {
+          EXPECT_EQ(policies_json, "json");
+        }).Then(run_loop.QuitClosure()));
     run_loop.Run();
   }
 

@@ -118,6 +118,10 @@ class FakeUpdateService : public UpdateService {
         base::flat_map<std::string,
                        base::flat_map<std::string, PolicyValue>>());
   }
+  void GetPoliciesJson(
+      base::OnceCallback<void(const std::string&)> callback) override {
+    std::move(callback).Run("");
+  }
 
  private:
   ~FakeUpdateService() override = default;

@@ -197,6 +197,13 @@ void UpdateServiceImpl::GetAppPolicies(
   delegate_->GetAppPolicies(std::move(callback));
 }
 
+void UpdateServiceImpl::GetPoliciesJson(
+    base::OnceCallback<void(const std::string&)> callback) {
+  // Asking the updater for policies is always allowed.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  delegate_->GetPoliciesJson(std::move(callback));
+}
+
 void UpdateServiceImpl::AcceptEula() {
   base::MakeRefCounted<PersistedData>(scope_, config_->GetPrefService(),
                                       nullptr)

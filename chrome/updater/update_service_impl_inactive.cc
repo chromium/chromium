@@ -159,6 +159,13 @@ class UpdateServiceImplInactive : public UpdateService {
                            base::flat_map<std::string, PolicyValue>>()));
   }
 
+  void GetPoliciesJson(
+      base::OnceCallback<void(const std::string&)> callback) override {
+    VLOG(1) << __func__ << " (Inactive)";
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::string()));
+  }
+
  private:
   ~UpdateServiceImplInactive() override = default;
 };

@@ -228,7 +228,7 @@ import "chrome/enterprise_companion/mojom/policy_fetch_reason.mojom";
 
 // The UpdateService is the cross-platform core of the updater.
 // All functions and callbacks must be called on the same sequence.
-// Next version: 6
+// Next version: 7
 [Stable] interface UpdateService {
   // Defines the behavior of the update stack for over-installs.
   // Typically, same versions updates are not allowed, in which case, the update
@@ -476,6 +476,9 @@ import "chrome/enterprise_companion/mojom/policy_fetch_reason.mojom";
     // Each element in the `policy values` map is
     // `policy_name` = `policy value`.
     map<string, map<string, PolicyValue>> app_policies);
+
+  // Gets the current policies for the updater and apps in a JSON string.
+  [MinVersion=6] GetPoliciesJson@14() => (string policies_json);
 };
 
 // Callback interface for repeated state change notifications produced by

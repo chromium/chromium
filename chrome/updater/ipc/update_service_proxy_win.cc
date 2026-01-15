@@ -586,6 +586,14 @@ class UpdateServiceProxyImplImpl
                        this, std::move(callback)));
   }
 
+  void GetPoliciesJson(
+      base::OnceCallback<void(base::expected<std::string, RpcError>)>
+          callback) {
+    PostRPCTask(
+        base::BindOnce(&UpdateServiceProxyImplImpl::GetPoliciesJsonOnTaskRunner,
+                       this, std::move(callback)));
+  }
+
  private:
   friend class base::RefCountedThreadSafe<UpdateServiceProxyImplImpl>;
   virtual ~UpdateServiceProxyImplImpl() = default;
@@ -1106,6 +1114,15 @@ class UpdateServiceProxyImplImpl
     std::move(callback).Run(base::unexpected(E_NOTIMPL));
     return;
   }
+
+  void GetPoliciesJsonOnTaskRunner(
+      base::OnceCallback<void(base::expected<std::string, RpcError>)>
+          callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    VLOG(2) << __func__ << ": This method is only implemented in mojo";
+    std::move(callback).Run(base::unexpected(E_NOTIMPL));
+    return;
+  }
 };
 
 UpdateServiceProxyWinImpl::UpdateServiceProxyWinImpl(UpdaterScope updater_scope)
@@ -1278,6 +1295,14 @@ void UpdateServiceProxyWinImpl::GetAppPolicies(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
   impl_->GetAppPolicies(
+      base::BindPostTaskToCurrentDefault(std::move(callback)));
+}
+
+void UpdateServiceProxyWinImpl::GetPoliciesJson(
+    base::OnceCallback<void(base::expected<std::string, RpcError>)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
+  impl_->GetPoliciesJson(
       base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
 

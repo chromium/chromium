@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -1704,6 +1705,87 @@ TEST_F(IntegrationTest, GetAppPolicies) {
           EXPECT_EQ(test2_result.at("Update").policy_source,
                     UpdateService::PolicyValue::PolicySource::
                         kSourceExternalConstants);
+          loop.Quit();
+        }));
+    loop.Run();
+  }
+
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, GetPoliciesJson) {
+  base::Value::Dict dict_policies;
+  dict_policies.Set("autoupdatecheckperiodminutes",
+                    base::Seconds(64800).InMinutes());
+  dict_policies.Set("updatessuppressedstarthour", 15);
+  dict_policies.Set("updatessuppressedstartmin", 0);
+  dict_policies.Set("updatessuppresseddurationmin", 120);
+
+  // Set app policy for `test1` to force install.
+  dict_policies.Set("installtest1", 6);
+
+  // Set app policy for `test2` to allow automatic updates only.
+  dict_policies.Set("updatetest2", 3);
+  ASSERT_NO_FATAL_FAILURE(SetDictPolicies(dict_policies));
+  ASSERT_NO_FATAL_FAILURE(Install());
+
+  {
+    scoped_refptr<UpdateService> update_service =
+#if BUILDFLAG(IS_WIN)
+        CreateUpdateServiceProxyMojo(GetUpdaterScopeForTesting());
+#else   // BUILDFLAG(IS_WIN)
+        CreateUpdateServiceProxy(GetUpdaterScopeForTesting());
+#endif  // BUILDFLAG(IS_WIN)
+    base::RunLoop loop;
+    update_service->GetPoliciesJson(
+        base::BindLambdaForTesting([&](const std::string& result) {
+          const auto root = base::JSONReader::Read(
+              result, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+          ASSERT_TRUE(root);
+          const base::Value::Dict& app_policies = CHECK_DEREF(
+              CHECK_DEREF(root).GetDict().FindDict("policiesByAppId"));
+          const base::Value::Dict& test1_install_policy = CHECK_DEREF(
+              CHECK_DEREF(app_policies.FindDict("test1")).FindDict("Install"));
+          EXPECT_EQ(
+              CHECK_DEREF(test1_install_policy.FindString("prevailingSource")),
+              "DictValuePolicy");
+          EXPECT_EQ(CHECK_DEREF(CHECK_DEREF(test1_install_policy.FindDict(
+                                                "valuesBySource"))
+                                    .FindInt("DictValuePolicy")),
+                    6);
+          const base::Value::Dict& test2_update_policy = CHECK_DEREF(
+              CHECK_DEREF(app_policies.FindDict("test2")).FindDict("Update"));
+          EXPECT_EQ(
+              CHECK_DEREF(test2_update_policy.FindString("prevailingSource")),
+              "DictValuePolicy");
+          EXPECT_EQ(CHECK_DEREF(CHECK_DEREF(test2_update_policy.FindDict(
+                                                "valuesBySource"))
+                                    .FindInt("DictValuePolicy")),
+                    3);
+
+          const base::Value::Dict& updater_policies = CHECK_DEREF(
+              CHECK_DEREF(root).GetDict().FindDict("policiesByName"));
+          const base::Value::Dict& last_check_period_policy =
+              CHECK_DEREF(updater_policies.FindDict("LastCheckPeriod"));
+          EXPECT_EQ(CHECK_DEREF(last_check_period_policy.FindString(
+                        "prevailingSource")),
+                    "DictValuePolicy");
+          EXPECT_EQ(CHECK_DEREF(CHECK_DEREF(last_check_period_policy.FindDict(
+                                                "valuesBySource"))
+                                    .FindString("DictValuePolicy")),
+                    "64800000000");
+          const base::Value::Dict& updates_suppressed_policy =
+              CHECK_DEREF(updater_policies.FindDict("UpdatesSuppressed"));
+          EXPECT_EQ(CHECK_DEREF(updates_suppressed_policy.FindString(
+                        "prevailingSource")),
+                    "DictValuePolicy");
+          EXPECT_EQ(CHECK_DEREF(CHECK_DEREF(updates_suppressed_policy.FindDict(
+                                                "valuesBySource"))
+                                    .FindDict("DictValuePolicy")),
+                    base::Value::Dict()
+                        .Set("Duration", 120)
+                        .Set("StartHour", 15)
+                        .Set("StartMinute", 0));
           loop.Quit();
         }));
     loop.Run();

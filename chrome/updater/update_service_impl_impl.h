@@ -97,6 +97,8 @@ class UpdateServiceImplImpl : public UpdateService {
           void(const base::flat_map<std::string,
                                     base::flat_map<std::string, PolicyValue>>&)>
           callback) override;
+  void GetPoliciesJson(
+      base::OnceCallback<void(const std::string&)> callback) override;
 
  private:
   ~UpdateServiceImplImpl() override;

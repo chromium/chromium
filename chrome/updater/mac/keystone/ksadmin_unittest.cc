@@ -203,6 +203,10 @@ TEST(KSAdminTest, Register) {
                                   base::flat_map<std::string, PolicyValue>>&)>
              callback),
         (override));
+    MOCK_METHOD(void,
+                GetPoliciesJson,
+                (base::OnceCallback<void(const std::string&)> callback),
+                (override));
 
    protected:
     ~MockUpdateService() override = default;

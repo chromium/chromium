@@ -107,6 +107,8 @@ class UpdateServiceProxyImpl
                    std::string,
                    base::flat_map<std::string, UpdateService::PolicyValue>>,
                RpcError>)>) = 0;
+  virtual void GetPoliciesJson(
+      base::OnceCallback<void(base::expected<std::string, RpcError>)>) = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<UpdateServiceProxyImpl>;
