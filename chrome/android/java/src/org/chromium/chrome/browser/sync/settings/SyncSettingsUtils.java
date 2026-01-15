@@ -23,6 +23,8 @@ import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ApkInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
@@ -55,8 +57,6 @@ import java.lang.annotation.RetentionPolicy;
 @NullMarked
 public class SyncSettingsUtils {
     private static final String MY_ACCOUNT_URL = "https://myaccount.google.com/smartlink/home";
-    private static final String BOOKMARK_LIMIT_HELP_PAGE_URL =
-            "https://support.google.com/chrome/answer/165139";
     private static final String TAG = "SyncSettingsUtils";
 
     @IntDef({TitlePreference.FULL_NAME, TitlePreference.EMAIL})
@@ -392,7 +392,8 @@ public class SyncSettingsUtils {
             @BookmarksLimitExceededHelpClickedSource int source) {
         assert syncService != null;
         syncService.acknowledgeBookmarksLimitExceededError(source);
-        openCustomTabWithURL(activity, BOOKMARK_LIMIT_HELP_PAGE_URL);
+        openCustomTabWithURL(
+                activity, SyncSettingsUtilsJni.get().getBookmarksLimitExceededHelpUrl());
     }
 
     /**
@@ -635,5 +636,10 @@ public class SyncSettingsUtils {
                 assert false;
                 return "";
         }
+    }
+
+    @NativeMethods
+    interface Natives {
+        String getBookmarksLimitExceededHelpUrl();
     }
 }

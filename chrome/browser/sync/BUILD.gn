@@ -168,6 +168,7 @@ source_set("sync") {
 
   if (is_android) {
     sources += [
+      "android/sync_settings_utils_android.cc",
       "glue/synced_tab_delegate_android.cc",
       "glue/synced_tab_delegate_android.h",
       "glue/synced_window_delegate_android.cc",
@@ -178,6 +179,7 @@ source_set("sync") {
       "glue/web_contents_state_synced_tab_delegate.h",
     ]
     deps += [
+      "//chrome/android:chrome_jni_headers",
       "//chrome/browser/sync/android:jni_headers",
       "//chrome/browser/tab",
       "//chrome/browser/ui/android/tab_model",

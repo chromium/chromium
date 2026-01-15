@@ -45,11 +45,6 @@ namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
 
-// TODO(crbug.com/452968646): Update this link with a `p=...` param once it's
-// known.
-constexpr char kBookmarksLimitExceededHelpCenter[] =
-    "https://support.google.com/chrome/answer/165139";
-
 void OpenTabForSyncTrustedVaultUserAction(
     Browser* browser,
     const GURL& url,
@@ -75,6 +70,11 @@ void OpenTabForSyncTrustedVaultUserAction(
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
+
+// TODO(crbug.com/452968646): Update this link with a `p=...` param once it's
+// known.
+const char kBookmarksLimitExceededHelpCenter[] =
+    "https://support.google.com/chrome/answer/165139";
 
 #if !BUILDFLAG(IS_ANDROID)
 SyncStatusLabels GetSyncStatusLabelsForSettings(

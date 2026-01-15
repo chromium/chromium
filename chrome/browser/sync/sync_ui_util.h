@@ -61,6 +61,8 @@ struct SyncStatusLabels {
   SyncStatusActionType action_type = SyncStatusActionType::kNoAction;
 };
 
+extern const char kBookmarksLimitExceededHelpCenter[];
+
 #if !BUILDFLAG(IS_ANDROID)
 SyncStatusLabels GetSyncStatusLabelsForSettings(
     const syncer::SyncService* service);
