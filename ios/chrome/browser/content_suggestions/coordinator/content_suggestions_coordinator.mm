@@ -335,7 +335,8 @@ using segmentation_platform::TipIdentifier;
                largeIconCache:cache
        URLLoadingBrowserAgent:UrlLoadingBrowserAgent::FromBrowser(self.browser)
         accountManagerService:accountManagerService
-            engagementTracker:engagementTracker];
+            engagementTracker:engagementTracker
+            layoutGuideCenter:LayoutGuideCenterForBrowser(self.browser)];
   _mostVisitedTilesMediator.contentSuggestionsDelegate = self.delegate;
   _mostVisitedTilesMediator.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;

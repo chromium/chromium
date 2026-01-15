@@ -79,6 +79,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_test_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
@@ -161,7 +162,8 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
 
 - (MostVisitedTilesConfig*)mostVisitedConfig {
   if (!_config) {
-    _config = [[MostVisitedTilesConfig alloc] init];
+    _config = [[MostVisitedTilesConfig alloc]
+        initWithLayoutGuideCenter:[[LayoutGuideCenter alloc] init]];
     _config.mostVisitedItems = @[ [[MostVisitedItem alloc] init] ];
   }
   return _config;
@@ -331,7 +333,8 @@ class MagicStackRankingModelTest : public PlatformTest {
                  largeIconCache:cache
          URLLoadingBrowserAgent:url_loader_
           accountManagerService:nullptr
-              engagementTracker:tracker];
+              engagementTracker:tracker
+              layoutGuideCenter:nil];
 
     _safetyCheckMediator = [[SafetyCheckMagicStackMediator alloc]
         initWithSafetyCheckManager:IOSChromeSafetyCheckManagerFactory::

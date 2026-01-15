@@ -88,6 +88,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   raw_ptr<ChromeAccountManagerService, DanglingUntriaged>
       _accountManagerService;
   raw_ptr<feature_engagement::Tracker> _engagementTracker;
+  LayoutGuideCenter* _layoutGuideCenter;
 }
 
 - (instancetype)
@@ -98,7 +99,8 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
              largeIconCache:(LargeIconCache*)largeIconCache
      URLLoadingBrowserAgent:(UrlLoadingBrowserAgent*)URLLoadingBrowserAgent
       accountManagerService:(ChromeAccountManagerService*)accountManagerService
-          engagementTracker:(feature_engagement::Tracker*)engagementTracker {
+          engagementTracker:(feature_engagement::Tracker*)engagementTracker
+          layoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter {
   self = [super init];
   if (self) {
     CHECK(engagementTracker);
@@ -107,6 +109,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
     _URLLoadingBrowserAgent = URLLoadingBrowserAgent;
     _accountManagerService = accountManagerService;
     _engagementTracker = engagementTracker;
+    _layoutGuideCenter = layoutGuideCenter;
     _incognitoAvailable = !IsIncognitoModeDisabled(prefService);
     _mostVisitedAttributesProvider = [[FaviconAttributesProvider alloc]
         initWithFaviconSize:kMagicStackFaviconWidth
@@ -427,7 +430,8 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   _prefService->SetList(prefs::kIosLatestMostVisitedSites,
                         std::move(freshMostVisitedSites));
 
-  _mostVisitedConfig = [[MostVisitedTilesConfig alloc] init];
+  _mostVisitedConfig = [[MostVisitedTilesConfig alloc]
+      initWithLayoutGuideCenter:_layoutGuideCenter];
   _mostVisitedConfig.imageDataSource = self;
   _mostVisitedConfig.commandHandler = self;
   _mostVisitedConfig.mostVisitedItems = _freshMostVisitedItems;

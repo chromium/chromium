@@ -8,6 +8,17 @@
 
 @implementation MostVisitedTilesConfig
 
+@synthesize layoutGuideCenter = _layoutGuideCenter;
+
+- (instancetype)initWithLayoutGuideCenter:
+    (LayoutGuideCenter*)layoutGuideCenter {
+  self = [super init];
+  if (self) {
+    _layoutGuideCenter = layoutGuideCenter;
+  }
+  return self;
+}
+
 #pragma mark - MagicStackModule
 
 - (ContentSuggestionsModuleType)type {

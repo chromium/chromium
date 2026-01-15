@@ -15,6 +15,8 @@
 #import "ios/chrome/browser/content_suggestions/ui/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui/cells/content_suggestions_tile_layout_util.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_image_data_source.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "url/gurl.h"
 
 namespace {
@@ -123,6 +125,8 @@ UICollectionViewCompositionalLayout* GetLayoutForMostVisitedTilesCollectionView(
   NSArray<MostVisitedItem*>* _items;
   /// Data source for favicons of each site.
   id<ContentSuggestionsImageDataSource> _imageDataSource;
+  /// The layout guide center for the first cell in the collection.
+  LayoutGuideCenter* _layoutGuideCenter;
   /// Command handler for each tile.
   id<MostVisitedTilesCommands> _mostVisitedTilesHandler;
   /// Data source object powering the display of the collection view.
@@ -137,6 +141,7 @@ UICollectionViewCompositionalLayout* GetLayoutForMostVisitedTilesCollectionView(
   if (self) {
     _items = config.mostVisitedItems;
     _imageDataSource = config.imageDataSource;
+    _layoutGuideCenter = config.layoutGuideCenter;
     _mostVisitedTilesHandler = config.commandHandler;
     self.translatesAutoresizingMaskIntoConstraints = NO;
     self.backgroundColor = UIColor.clearColor;
@@ -213,6 +218,17 @@ UICollectionViewCompositionalLayout* GetLayoutForMostVisitedTilesCollectionView(
   } else {
     [self loadFaviconIfNeeded:identifier];
     cell.contentConfiguration = _items[identifier.unsignedIntValue];
+  }
+  /// Mark the first item in the tiles for layout guide
+  /// `kNTPFirstMostVisitedTile`.
+  if (identifier.intValue == 0) {
+    [_layoutGuideCenter referenceView:cell
+                            underName:kNTPFirstMostVisitedTileGuide];
+  } else if ([_layoutGuideCenter
+                 referencedViewUnderName:kNTPFirstMostVisitedTileGuide] ==
+             cell) {
+    [_layoutGuideCenter referenceView:nil
+                            underName:kNTPFirstMostVisitedTileGuide];
   }
   return cell;
 }

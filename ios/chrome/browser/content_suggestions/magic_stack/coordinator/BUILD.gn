@@ -138,6 +138,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/utils:test_support",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",

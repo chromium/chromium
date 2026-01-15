@@ -68,7 +68,8 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
                  largeIconCache:cache
          URLLoadingBrowserAgent:url_loader_
           accountManagerService:nullptr
-              engagementTracker:tracker_.get()];
+              engagementTracker:tracker_.get()
+              layoutGuideCenter:nil];
 
     metrics_recorder_ = [[ContentSuggestionsMetricsRecorder alloc]
         initWithLocalState:local_state()];
