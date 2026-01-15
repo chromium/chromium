@@ -21,11 +21,6 @@
 
 namespace blink {
 
-namespace {
-BASE_FEATURE(kTextPaintTimingFrameIndexInitializationFix,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-}  // namespace
-
 TextPaintTimingDetector::TextPaintTimingDetector(
     LocalFrameView* frame_view,
     PaintTimingDetector* paint_timing_detector)
@@ -213,9 +208,6 @@ void TextPaintTimingDetector::ReportLargestIgnoredText() {
 
   recorded_set_.insert(record->GetNode()->GetLayoutObject(),
                        TextPaintStatus::kPainted);
-  // TODO(crbug.com/455791378): Move this to `QueueToMeasurePaintTime` once
-  // `kTextPaintTimingFrameIndexInitializationFix` is removed.
-  record->SetFrameIndex(frame_index_);
   QueueToMeasurePaintTime(*record->GetNode()->GetLayoutObject(), record);
 }
 
@@ -358,12 +350,6 @@ TextRecord* TextPaintTimingDetector::MaybeRecordTextRecord(
         context);
   }
 
-  if (base::FeatureList::IsEnabled(
-          kTextPaintTimingFrameIndexInitializationFix)) {
-    // TODO(crbug.com/455791378): Move this to `QueueToMeasurePaintTime` once
-    // `kTextPaintTimingFrameIndexInitializationFix` is removed.
-    record->SetFrameIndex(frame_index_);
-  }
   QueueToMeasurePaintTime(object, record);
   return record;
 }
