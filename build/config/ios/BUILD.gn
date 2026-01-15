@@ -356,9 +356,14 @@ action("xctest_runner_without_arm64e") {
   }
 }
 
-# Allow code to detect whether it is compiler for an app extension or not
-# (extensions cannot access some APIs, e.g. UIApplication.sharedApplication).
+# Generates build flags to allow code to detect specific compilation contexts:
+# - Whether the target is an App Extension (which cannot access APIs like
+#   UIApplication.sharedApplication).
+# - Whether Swift/C++ interoperability is enabled.
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "IOS_IS_APP_EXTENSION=$ios_is_app_extension" ]
+  flags = [
+    "ENABLE_SWIFT_CXX_INTEROP=$enable_swift_cxx_interop",
+    "IOS_IS_APP_EXTENSION=$ios_is_app_extension",
+  ]
 }
