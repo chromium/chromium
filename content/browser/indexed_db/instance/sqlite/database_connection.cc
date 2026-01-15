@@ -1088,13 +1088,15 @@ StatusOr<bool> DatabaseConnection::CommitTransactionPhaseOne(
     const BackingStoreTransactionImpl& transaction,
     BlobWriteCallback callback,
     SerializeFsaCallback serialize_fsa_handle) {
+  if (transaction.mode() == blink::mojom::IDBTransactionMode::ReadOnly) {
+    return false;
+  }
+
   CHECK(blob_write_callback_.is_null());
   CHECK(blob_writers_.empty());
   CHECK_EQ(outstanding_external_object_writes_, 0U);
 
-  std::map<int64_t, IndexedDBExternalObject> blobs_to_commit =
-      std::move(blobs_staged_for_commit_);
-  for (auto& [blob_row_id, external_object] : blobs_to_commit) {
+  for (auto& [blob_row_id, external_object] : blobs_staged_for_commit_) {
     {
       // The blob may have been added and deleted in the same txn.
       sql::Statement statement(db_->GetCachedStatement(
@@ -1127,12 +1129,12 @@ StatusOr<bool> DatabaseConnection::CommitTransactionPhaseOne(
                        blob_writers_weak_factory_.GetWeakPtr(), blob_row_id));
     blob_writers_[blob_row_id] = std::move(writer);
   }
+  blobs_staged_for_commit_.clear();
 
   if (outstanding_external_object_writes_ == 0) {
     return false;
   }
 
-  CHECK_NE(transaction.mode(), blink::mojom::IDBTransactionMode::ReadOnly);
   blob_write_callback_ = std::move(callback);
   return true;
 }

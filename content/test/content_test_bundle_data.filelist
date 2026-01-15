@@ -7700,6 +7700,8 @@ data/indexeddb/bug_90635.js
 data/indexeddb/callback_accounting.html
 data/indexeddb/callback_accounting.js
 data/indexeddb/common.js
+data/indexeddb/concurrently_write_blob_and_read.html
+data/indexeddb/concurrently_write_blob_and_read.js
 data/indexeddb/corrupt_leveldb/file__0.indexeddb.leveldb/000003.log
 data/indexeddb/corrupt_leveldb/file__0.indexeddb.leveldb/CURRENT
 data/indexeddb/corrupt_leveldb/file__0.indexeddb.leveldb/LOCK
