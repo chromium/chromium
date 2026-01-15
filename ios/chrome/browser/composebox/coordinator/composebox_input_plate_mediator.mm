@@ -376,6 +376,11 @@ CreateInputDataFromAnnotatedPageContent(
                                             std::move(callback));
 }
 
+- (void)processText:(NSString*)text {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  [self.delegate refineWithText:text];
+}
+
 - (void)processPDFFileURL:(GURL)PDFFileURL {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   NSString* assetID = base::SysUTF8ToNSString(PDFFileURL.spec());

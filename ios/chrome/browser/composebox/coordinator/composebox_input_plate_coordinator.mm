@@ -465,6 +465,10 @@ const CGFloat kSnackbarBottomMargin = 10;
   [_omniboxCoordinator clearSuggestionsWithRestartAutocomplete:restart];
 }
 
+- (void)refineWithText:(NSString*)text {
+  [_omniboxCoordinator refineWithText:text];
+}
+
 - (void)showAttachmentLimitError {
   [self showMaxAttachmentSnackbarError];
 }

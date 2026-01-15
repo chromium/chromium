@@ -72,6 +72,8 @@ class OmniboxClient;
 /// Use this method to insert target URL or search terms for alternative input
 /// methods, such as QR code scanner or voice search.
 - (void)insertTextToOmnibox:(NSString*)string;
+/// Refines the omnibox query with the given text.
+- (void)refineWithText:(NSString*)text;
 /// Updates the contents and the styling of the omnibox.
 - (void)updateOmniboxState;
 /// Makes the omnibox first responder.

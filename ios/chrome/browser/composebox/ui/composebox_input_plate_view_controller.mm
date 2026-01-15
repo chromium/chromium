@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/ui/composebox_snackbar_presenter.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_constants.h"
+#import "ios/chrome/browser/omnibox/ui/omnibox_text_input.h"
 #import "ios/chrome/browser/omnibox/ui/text_field_view_containing.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
@@ -1704,13 +1705,21 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 /// Returns whether a drop action will be allowed for a given drop session.
 - (BOOL)isDropAllowed:(id<UIDropSession>)session {
   if (session.items.count > _remainingAttachmentCapacity) {
-    return NO;
+    // Text drops are always allowed even if the attachment capacity is reached.
+    return [self willAllowTextDrop:session];
   }
 
   BOOL willAllowPDFDrop = [self willAllowPDFDrop:session];
   BOOL willAllowImageDrop = [self willAllowImageDrop:session];
+  BOOL willAllowTextDrop = [self willAllowTextDrop:session];
 
-  return willAllowPDFDrop || willAllowImageDrop;
+  return willAllowPDFDrop || willAllowImageDrop || willAllowTextDrop;
+}
+
+/// Returns whether a text drop will be allowed.
+- (BOOL)willAllowTextDrop:(id<UIDropSession>)session {
+  return
+      [session hasItemsConformingToTypeIdentifiers:@[ UTTypeText.identifier ]];
 }
 
 /// Returns whether an image drop will be allowed based on the Composebox mode,
@@ -1757,10 +1766,25 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                [item.itemProvider
                    hasItemConformingToTypeIdentifier:UTTypeImage.identifier]) {
       [self performDropForImage:item.itemProvider];
+    } else if ([self willAllowTextDrop:session] &&
+               [item.itemProvider
+                   hasItemConformingToTypeIdentifier:UTTypeText.identifier]) {
+      [self performDropForText:item.itemProvider];
     }
   }
   // Drop complete.
   _dragSessionWithinInputPlate = NO;
+}
+
+/// Performs a drop for dragged text from a given `itemProvider`.
+- (void)performDropForText:(NSItemProvider*)itemProvider {
+  CHECK([itemProvider hasItemConformingToTypeIdentifier:UTTypeText.identifier]);
+
+  __weak __typeof(self) weakSelf = self;
+  [itemProvider loadObjectOfClass:[NSString class]
+                completionHandler:^(NSString* text, NSError* error) {
+                  [weakSelf handleTextDrop:text error:error];
+                }];
 }
 
 /// Performs a drop for a dragged image file from a given `itemProvider`.
@@ -1788,6 +1812,23 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                             completionHandler:^(NSURL* url, NSError* error) {
                               [weakSelf handlePDFDrop:url error:error];
                             }];
+}
+
+- (void)handleTextDrop:(NSString*)text error:(NSError*)error {
+  CHECK(self.mutator);
+
+  if (!text) {
+    return;
+  }
+
+  if (error) {
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [weakSelf.mutator processText:text];
+  });
 }
 
 /// Helper for `-performDropForPDF`. Handles a drop action for a PDF file.
@@ -1824,7 +1865,6 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   }
 
   __weak __typeof(self) weakSelf = self;
-
   dispatch_async(dispatch_get_main_queue(), ^{
     [weakSelf.mutator processPDFFileURL:pdfURL];
   });
