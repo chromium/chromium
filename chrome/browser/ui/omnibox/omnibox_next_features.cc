@@ -309,7 +309,7 @@ const base::FeatureParam<bool> kAddTabUploadDelayOnRecentTabChipClick(
 const base::FeatureParam<bool> kShowRecentTabChip(
     &internal::kWebUIOmniboxAimPopup,
     "ShowRecentTabChip",
-    false);
+    true);
 const base::FeatureParam<bool> kShowSmartCompose(
     &internal::kWebUIOmniboxAimPopup,
     "ShowSmartCompose",
@@ -333,9 +333,10 @@ const base::FeatureParam<bool> kAutoSubmitVoiceSearchQuery(
     &internal::kWebUIOmniboxAimPopup,
     "AutoSubmitVoiceSearchQuery",
     false);
-const base::FeatureParam<bool> kEnableContextDragAndDrop(&internal::kWebUIOmniboxAimPopup,
-                                                  "EnableContextDragAndDrop",
-                                                  false);
+const base::FeatureParam<bool> kEnableContextDragAndDrop(
+    &internal::kWebUIOmniboxAimPopup,
+    "EnableContextDragAndDrop",
+    true);
 const base::FeatureParam<bool>
     kUseSeparateRequestIdsForMultiContextViewportImages(
         &internal::kWebUIOmniboxAimPopup,
