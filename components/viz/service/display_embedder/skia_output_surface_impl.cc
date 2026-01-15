@@ -1041,7 +1041,7 @@ void SkiaOutputSurfaceImpl::CopyOutput(
     request->set_blit_request(
         BlitRequest{gfx::Point{}, LetterboxingBehavior::kDoNotLetterbox,
                     std::move(shared_image), sync_token,
-                    /*populates_gpu_memory_buffer=*/false});
+                    /*populates_mappable_shared_image=*/false});
   }
 
   if (request->has_blit_request()) {

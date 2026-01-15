@@ -77,7 +77,7 @@ class VIZ_COMMON_EXPORT BlitRequest {
                        LetterboxingBehavior letterboxing_behavior,
                        scoped_refptr<gpu::ClientSharedImage> shared_image,
                        const gpu::SyncToken& sync_token,
-                       bool populates_gpu_memory_buffer);
+                       bool populates_mappable_shared_image);
 
   BlitRequest(BlitRequest&& other);
   BlitRequest& operator=(BlitRequest&& other);
@@ -100,8 +100,8 @@ class VIZ_COMMON_EXPORT BlitRequest {
 
   const gpu::SyncToken& sync_token() const { return sync_token_; }
 
-  bool populates_gpu_memory_buffer() const {
-    return populates_gpu_memory_buffer_;
+  bool populates_mappable_shared_image() const {
+    return populates_mappable_shared_image_;
   }
 
   // Appends a new `BlendBitmap` request to this blit request.
@@ -136,10 +136,10 @@ class VIZ_COMMON_EXPORT BlitRequest {
   // SyncToken to wait on before accessing `shared_image_`;
   gpu::SyncToken sync_token_;
 
-  // True if `shared_image_` has been created from a `GpuMemoryBuffer`. In this
-  // case, the `CopyOutputResult` needs to be sent out only after it's safe to
-  // map the `GpuMemoryBuffer` to system memory.
-  bool populates_gpu_memory_buffer_;
+  // True if `shared_image_` is mappable. In this case, the `CopyOutputResult`
+  // needs to be sent out only after it's safe to map the SharedImage to
+  // system memory.
+  bool populates_mappable_shared_image_;
 
   // Collection of bitmaps that will be blended onto the texture.
   // They will be blended in order (so if i < j, bitmap at offset i will

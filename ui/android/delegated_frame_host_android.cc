@@ -337,7 +337,7 @@ void DelegatedFrameHostAndroid::CopySharedImageFromCompositingSurface(
   request->set_blit_request(
       viz::BlitRequest(gfx::Point(), viz::LetterboxingBehavior::kDoNotLetterbox,
                        std::move(shared_image), sync_token,
-                       /*populates_gpu_memory_buffer=*/false));
+                       /*populates_mappable_shared_image=*/false));
 
   // The callback must be executed on the UI thread. Since the result callback
   // can be dispatched on any thread by default, explicitly set the result task

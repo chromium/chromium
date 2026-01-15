@@ -1156,7 +1156,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
     blit_request =
         BlitRequest(content_rect.origin(), LetterboxingBehavior::kLetterbox,
                     frame_capture.frame->shared_image(), sync_token,
-                    /*populates_gpu_memory_buffer=*/true);
+                    /*populates_mappable_shared_image=*/true);
 
     // We haven't captured the frame yet, but let's pretend that we did for
     // the sake of blend information computation. We will be asking for an

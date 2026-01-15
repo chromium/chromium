@@ -1064,7 +1064,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInTexture(
   // contents.
   const bool should_wait_for_gpu_work =
       request->has_blit_request() &&
-      request->blit_request().populates_gpu_memory_buffer();
+      request->blit_request().populates_mappable_shared_image();
 
   std::unique_ptr<ReadbackContextTexture> readback_context;
 
@@ -1466,7 +1466,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
       request->result_destination() ==
           CopyOutputRequest::ResultDestination::kSharedImage &&
       request->has_blit_request() &&
-      request->blit_request().populates_gpu_memory_buffer();
+      request->blit_request().populates_mappable_shared_image();
 
   std::unique_ptr<ReadbackContextTexture> readback_context;
   if (should_wait_for_gpu_work) {
