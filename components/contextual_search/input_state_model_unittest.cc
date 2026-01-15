@@ -11,6 +11,7 @@
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/searchbox_config.pb.h"
 
 namespace contextual_search {
 
@@ -20,7 +21,8 @@ class InputStateModelTest : public testing::Test {
   ~InputStateModelTest() override = default;
 
   void SetUp() override {
-    input_state_model_ = std::make_unique<InputStateModel>(session_handle_);
+    input_state_model_ = std::make_unique<InputStateModel>(
+        session_handle_, omnibox::SearchboxConfig());
   }
 
  protected:
