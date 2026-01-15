@@ -87,13 +87,12 @@ constexpr gfx::Rect kMaxRect = gfx::Rect(0,
 // format. When user wants ARGB result, it requests a CopyOutputRequest with
 // ResultFormat::RGBA which gives RGBA/BGRA results depends on platform and
 // where the result is stored (buffer format preference).
-// Currently, kPreferGpuMemoryBuffer + ARGB will request BGRA as pixel format,
-// but kDefault + ARGB will be platform dependent because CopyOutputRequest
-// will use kN32_SkColorType (RGBA on Android, BGRA elsewhere) mostly, and use
-// kRGBA_8888_SkColorType on iOS.
-// This is also documented in the mojom comments (https://crrev.com/c/5418235)
-// about SetFormat, indicating the ARGB format may produce RGBA/BGRA frames
-// depends on platform.
+// Currently, kPreferMappableSharedImage + ARGB will request BGRA as pixel
+// format, but kDefault + ARGB will be platform dependent because
+// CopyOutputRequest will use kN32_SkColorType (RGBA on Android, BGRA elsewhere)
+// mostly, and use kRGBA_8888_SkColorType on iOS. This is also documented in the
+// mojom comments (https://crrev.com/c/5418235) about SetFormat, indicating the
+// ARGB format may produce RGBA/BGRA frames depends on platform.
 
 // Get the frame pool for the specific format. We need context_provider if the
 // format is NV12 or ARGB (when buffer_format_preference is kNativeTexture).
@@ -117,7 +116,7 @@ std::unique_ptr<VideoFramePool> GetVideoFramePoolForFormat(
                              ? gfx::ColorSpace::CreateSRGB()
                              : gfx::ColorSpace::CreateSRGBLinear();
       switch (buffer_format_preference) {
-        case mojom::BufferFormatPreference::kPreferGpuMemoryBuffer:
+        case mojom::BufferFormatPreference::kPreferMappableSharedImage:
         case mojom::BufferFormatPreference::kPreferSharedImageWithNativeHandle:
           return std::make_unique<GpuMemoryBufferVideoFramePool>(
               capacity, format, color_space, context_provider,
@@ -319,9 +318,9 @@ void FrameSinkVideoCapturerImpl::SetFormat(media::VideoPixelFormat format) {
       // Don't tolerate changing to NV12 mid-capture:
       CHECK(format != media::PIXEL_FORMAT_NV12);
 
-      // If we have started with kPreferGpuMemoryBuffer, we set it to kDefault
-      // as currently we probably only doing mid-capture change due to crash
-      // downgrade, and we should not try using GMB anymore.
+      // If we have started with kPreferMappableSharedImage, we set it to
+      // kDefault as currently we probably only doing mid-capture change due to
+      // crash downgrade, and we should not try using mappable SI anymore.
       // TODO: We may move buffer_format_preference from Start to SetFormat.
       buffer_format_preference_ = mojom::BufferFormatPreference::kDefault;
 
@@ -467,22 +466,22 @@ void FrameSinkVideoCapturerImpl::Start(
                     pixel_format_, "buffer_format_preference_",
                     buffer_format_preference_);
 
-  // If we should start capture for NV12 format, we can only hand out GMBs so
-  // the caller must tolerate them:
+  // If we should start capture for NV12 format, we can only hand out mappable
+  // SharedImages so the caller must tolerate them:
   CHECK(pixel_format_ != media::PIXEL_FORMAT_NV12 ||
         buffer_format_preference_ ==
-            mojom::BufferFormatPreference::kPreferGpuMemoryBuffer);
+            mojom::BufferFormatPreference::kPreferMappableSharedImage);
 
-  // Only support RGBAF16 with kPreferGpuMemoryBuffer
+  // Only support RGBAF16 with kPreferMappableSharedImage
   CHECK(pixel_format_ != media::PIXEL_FORMAT_RGBAF16 ||
         buffer_format_preference_ ==
-            mojom::BufferFormatPreference::kPreferGpuMemoryBuffer);
+            mojom::BufferFormatPreference::kPreferMappableSharedImage);
 
-  // If we are using ARGB format with GMB, we must have the pool context
+  // If we are using ARGB format with mappable SI, we must have the pool context
   CHECK((pixel_format_ != media::PIXEL_FORMAT_ARGB &&
          pixel_format_ != media::PIXEL_FORMAT_RGBAF16) ||
         buffer_format_preference_ !=
-            mojom::BufferFormatPreference::kPreferGpuMemoryBuffer ||
+            mojom::BufferFormatPreference::kPreferMappableSharedImage ||
         gmb_video_frame_pool_context_provider_);
 
   video_capture_started_ = true;
@@ -1140,7 +1139,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   // still captures software I420 frames and not textures.
   const bool capture_texture_results =
       buffer_format_preference_ ==
-          mojom::BufferFormatPreference::kPreferGpuMemoryBuffer &&
+          mojom::BufferFormatPreference::kPreferMappableSharedImage &&
       (pixel_format_ == media::PIXEL_FORMAT_NV12 ||
        pixel_format_ == media::PIXEL_FORMAT_ARGB ||
        pixel_format_ == media::PIXEL_FORMAT_RGBAF16);
@@ -1367,7 +1366,7 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
       }
     } else {
       CHECK_EQ(buffer_format_preference_,
-               mojom::BufferFormatPreference::kPreferGpuMemoryBuffer);
+               mojom::BufferFormatPreference::kPreferMappableSharedImage);
       // MappableSI ARGB results are written to the existing pool texture.
       if (result->IsEmpty()) {
         frame_capture.CaptureFailed(

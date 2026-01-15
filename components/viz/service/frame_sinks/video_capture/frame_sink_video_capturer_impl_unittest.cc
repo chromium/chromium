@@ -874,7 +874,7 @@ class FrameSinkVideoCapturerTest
 
   bool IsUsingGpuMemoryBuffer() {
     return buffer_format_preference_ ==
-           mojom::BufferFormatPreference::kPreferGpuMemoryBuffer;
+           mojom::BufferFormatPreference::kPreferMappableSharedImage;
   }
 
   base::TimeTicks GetNextVsync() const {
@@ -2261,8 +2261,8 @@ TEST_P(FrameSinkVideoCapturerTest, BufferFormatPreferencePassedToGpuFramePool) {
     return;
   }
 
-  // GpuMemoryBuffer only kicks in for the kPreferGpuMemoryBuffer and
-  // kPreferSharedImageWithNativeHandle formats.
+  // GpuMemoryBufferVideoFramePool only kicks in for the
+  // kPreferMappableSharedImage and kPreferSharedImageWithNativeHandle formats.
   if (buffer_format_preference_ == mojom::BufferFormatPreference::kDefault) {
     return;
   }
@@ -2282,11 +2282,11 @@ INSTANTIATE_TEST_SUITE_P(
                    media::PIXEL_FORMAT_I420),
         std::tuple(mojom::BufferFormatPreference::kDefault,
                    media::PIXEL_FORMAT_ARGB),
-        std::tuple(mojom::BufferFormatPreference::kPreferGpuMemoryBuffer,
+        std::tuple(mojom::BufferFormatPreference::kPreferMappableSharedImage,
                    media::PIXEL_FORMAT_NV12),
-        std::tuple(mojom::BufferFormatPreference::kPreferGpuMemoryBuffer,
+        std::tuple(mojom::BufferFormatPreference::kPreferMappableSharedImage,
                    media::PIXEL_FORMAT_ARGB),
-        std::tuple(mojom::BufferFormatPreference::kPreferGpuMemoryBuffer,
+        std::tuple(mojom::BufferFormatPreference::kPreferMappableSharedImage,
                    media::PIXEL_FORMAT_RGBAF16)));
 
 }  // namespace viz
