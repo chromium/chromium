@@ -235,6 +235,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="ContextualTasks.WebUI.OAuthError"
+    units="GoogleServiceAuthError" expires_after="2026-06-01">
+  <owner>mercerd@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Records the OAuth error when a token is requested for use in the embedded
+    page of the WebUI. &quot;None&quot; indicates that the request was
+    successful.
+  </summary>
+</histogram>
+
 <histogram name="ContextualTasks.WebUI.UserAction{ActionType}" enum="Boolean"
     expires_after="2026-03-22">
   <owner>sophiechang@chromium.org</owner>

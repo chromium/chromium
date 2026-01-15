@@ -388,6 +388,10 @@ void ContextualTasksUI::RequestOAuthToken() {
 void ContextualTasksUI::OnOAuthTokenReceived(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
+  base::UmaHistogramEnumeration("ContextualTasks.WebUI.OAuthError",
+                                error.state(),
+                                GoogleServiceAuthError::NUM_STATES);
+
   oauth_token_fetcher_.reset();
   if (!page_) {
     return;
