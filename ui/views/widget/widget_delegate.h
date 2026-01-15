@@ -233,10 +233,6 @@ class BorealisDisallowedDialog;
 class BorealisLaunchErrorDialog;
 }  // namespace borealis
 
-namespace examples {
-class ExamplesWindowContents;
-}
-
 namespace test {
 FORWARD_DECLARE_TEST(DesktopWidgetTest, LockPaintAsActiveAndCloseParent);
 }
@@ -974,7 +970,6 @@ class VIEWS_EXPORT WidgetDelegateView : public WidgetDelegate, public View {
   friend class ShapedWidgetDelegate;
   FRIEND_TEST_ALL_PREFIXES(NativeViewHostAuraTest,
                            FocusManagerUpdatedDuringDestruction);
-  friend class examples::ExamplesWindowContents;
   friend class test::GetNativeThemeFromDestructorView;
   friend class test::TestingWidgetDelegateView;
   friend class webid::TestAccountSelectionView;

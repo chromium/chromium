@@ -15,12 +15,13 @@
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
-#include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_paths.h"
 #include "ui/color/color_id.h"
 #include "ui/views/background.h"
@@ -99,12 +100,11 @@ bool CheckCommandLineUsage() {
   return false;
 }
 
-class ExamplesWindowContents : public WidgetDelegateView,
-                               public TabbedPaneListener {
+class ExamplesWindowContentsView : public View, public TabbedPaneListener {
+  METADATA_HEADER(ExamplesWindowContentsView, View)
+
  public:
-  ExamplesWindowContents(base::OnceClosure on_close, ExampleVector examples)
-      : on_close_(std::move(on_close)) {
-    SetHasWindowSizeControls(true);
+  explicit ExamplesWindowContentsView(ExampleVector examples) {
     SetBackground(CreateSolidBackground(ui::kColorDialogBackground));
 
     auto* layout = SetLayoutManager(
@@ -121,13 +121,7 @@ class ExamplesWindowContents : public WidgetDelegateView,
     status_label_ = AddChildView(std::make_unique<Label>());
     status_label_->SetVisible(false);
     tabbed_pane_->SetListener(this);
-    instance_ = this;
   }
-
-  ExamplesWindowContents(const ExamplesWindowContents&) = delete;
-  ExamplesWindowContents& operator=(const ExamplesWindowContents&) = delete;
-
-  ~ExamplesWindowContents() override = default;
 
   // Sets the status area (at the bottom of the window) to |status|.
   void SetStatus(std::string_view status) {
@@ -137,17 +131,8 @@ class ExamplesWindowContents : public WidgetDelegateView,
 
   void TabSelectedAt(int index) override { status_label_->SetVisible(false); }
 
-  static ExamplesWindowContents* instance() { return instance_; }
-
  private:
-  // WidgetDelegateView:
-  std::u16string GetWindowTitle() const override { return u"Views Examples"; }
-  void WindowClosing() override {
-    instance_ = nullptr;
-    if (on_close_) {
-      std::move(on_close_).Run();
-    }
-  }
+  // View:
   gfx::Size CalculatePreferredSize(
       const SizeBounds& /*available_size*/) const override {
     gfx::Size size(800, 300);
@@ -171,11 +156,40 @@ class ExamplesWindowContents : public WidgetDelegateView,
     examples_ = std::move(examples);
   }
 
-  static ExamplesWindowContents* instance_;
   raw_ptr<Label> status_label_ = nullptr;
-  base::OnceClosure on_close_;
   raw_ptr<TabbedPane> tabbed_pane_ = nullptr;
   ExampleVector examples_;
+};
+
+class ExamplesWindowContents : public WidgetDelegate {
+ public:
+  ExamplesWindowContents(base::OnceClosure on_close, ExampleVector examples)
+      : on_close_(std::move(on_close)) {
+    SetHasWindowSizeControls(true);
+    SetContentsView(
+        std::make_unique<ExamplesWindowContentsView>(std::move(examples)));
+    instance_ = this;
+  }
+
+  ExamplesWindowContents(const ExamplesWindowContents&) = delete;
+  ExamplesWindowContents& operator=(const ExamplesWindowContents&) = delete;
+
+  ~ExamplesWindowContents() override = default;
+
+  static ExamplesWindowContents* instance() { return instance_; }
+
+ private:
+  // WidgetDelegate:
+  std::u16string GetWindowTitle() const override { return u"Views Examples"; }
+  void WindowClosing() override {
+    instance_ = nullptr;
+    if (on_close_) {
+      std::move(on_close_).Run();
+    }
+  }
+
+  static ExamplesWindowContents* instance_;
+  base::OnceClosure on_close_;
 };
 
 // static
@@ -207,9 +221,18 @@ void ShowExamplesWindow(base::OnceClosure on_close,
 }
 
 void PrintStatus(std::string_view status) {
-  if (ExamplesWindowContents::instance()) {
-    ExamplesWindowContents::instance()->SetStatus(status);
+  if (!ExamplesWindowContents::instance()) {
+    return;
   }
+  auto* view = AsViewClass<ExamplesWindowContentsView>(
+      ExamplesWindowContents::instance()->GetContentsView());
+  if (!view) {
+    return;
+  }
+  view->SetStatus(status);
 }
+
+BEGIN_METADATA(ExamplesWindowContentsView)
+END_METADATA
 
 }  // namespace views::examples
