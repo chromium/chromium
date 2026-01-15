@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/js_test_util.h"
@@ -137,12 +138,42 @@ std::unique_ptr<base::Value> ParseFormFillResult(id wk_result) {
   return std::make_unique<base::Value>(std::move(parsed_result));
 }
 
-// Text fixture to test password controller.
+class TestChromeWebClient : public ChromeWebClient {
+ public:
+  void SetFeatures(std::vector<web::JavaScriptFeature*> features) {
+    features_ = std::move(features);
+  }
+
+  std::vector<web::JavaScriptFeature*> GetJavaScriptFeatures(
+      web::BrowserState* browser_state) const override {
+    std::vector<web::JavaScriptFeature*> features =
+        ChromeWebClient::GetJavaScriptFeatures(browser_state);
+    features.insert(features.end(), features_.begin(), features_.end());
+    return features;
+  }
+
+ private:
+  std::vector<web::JavaScriptFeature*> features_;
+};
+
 class PasswordControllerJsTest : public PlatformTest {
  public:
   PasswordControllerJsTest()
-      : web_client_(std::make_unique<ChromeWebClient>()) {
+      : web_client_(std::make_unique<TestChromeWebClient>()) {
     profile_ = TestProfileIOS::Builder().Build();
+
+    web::JavaScriptFeature::FeatureScript fill_test_script =
+        web::JavaScriptFeature::FeatureScript::CreateWithFilename(
+            "fill_util_test",
+            web::JavaScriptFeature::FeatureScript::InjectionTime::
+                kDocumentStart,
+            web::JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames);
+    fill_test_feature_ = std::make_unique<web::JavaScriptFeature>(
+        web::ContentWorld::kIsolatedWorld,
+        std::vector<web::JavaScriptFeature::FeatureScript>{fill_test_script});
+
+    static_cast<TestChromeWebClient*>(web_client_.Get())
+        ->SetFeatures({fill_test_feature_.get()});
 
     web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
@@ -253,6 +284,7 @@ class PasswordControllerJsTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
+  std::unique_ptr<web::JavaScriptFeature> fill_test_feature_;
 };
 
 // IDs used in the Username and Password <input> elements.
@@ -653,10 +685,13 @@ TEST_F(PasswordControllerJsTest, GetPasswordForms_DirectJsCall) {
 
   NSString* parameter = @"window.document.getElementsByTagName('form')[0]";
 
-  std::unique_ptr<base::Value> results = autofill::ParseJson(ExecuteJavaScript(
-      [NSString stringWithFormat:@"__gCrWeb.stringify(__gCrWeb.getRegisteredApi('passwords')."
-                                 @"getFunction('getPasswordFormData')(%@, window))",
-                                 parameter]));
+  std::unique_ptr<base::Value> results =
+      autofill::ParseJson(ExecuteJavaScript([NSString
+          stringWithFormat:@"__gCrWeb.getRegisteredApi('fill_test_api')."
+                           @"getFunction('stringify')("
+                           @"__gCrWeb.getRegisteredApi('passwords')."
+                           @"getFunction('getPasswordFormData')(%@, window))",
+                           parameter]));
   ASSERT_TRUE(results);
 
   EXPECT_EQ(expected_form, *results);

@@ -176,7 +176,7 @@ function extractUnownedFields(restrictUnownedFieldsToFormlessCheckout) {
  */
 function extractForms(restrictUnownedFieldsToFormlessCheckout) {
   const forms = extractNewForms(restrictUnownedFieldsToFormlessCheckout);
-  return __gCrWeb.stringify(forms);
+  return fillUtil.stringify(forms);
 }
 
 /**
@@ -348,7 +348,7 @@ function fillForm(data, forceFillFieldID) {
     }
   }
 
-  return __gCrWeb.stringify(filledElements);
+  return fillUtil.stringify(filledElements);
 }
 
 /**
@@ -418,7 +418,7 @@ function clearAutofilledFields(formUniqueID, fieldUniqueID) {
       clearedElements.push(fillUtil.getUniqueID(element));
     }
   }
-  return __gCrWeb.stringify(clearedElements);
+  return fillUtil.stringify(clearedElements);
 }
 
 /**

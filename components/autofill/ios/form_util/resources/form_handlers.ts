@@ -13,7 +13,7 @@ import {isAutofillableElement} from '//components/autofill/ios/form_util/resourc
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {formSubmitted, reportFormSubmissionError, wasEditedByUser} from '//components/autofill/ios/form_util/resources/fill_web_form.js';
 import {getFieldIdentifier, getFormIdentifier, reportDetectedFormSubmission} from '//components/autofill/ios/form_util/resources/form_utils.js';
-import {CrWebApi, gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
@@ -459,8 +459,8 @@ function trackFormMutations(delay: number): void {
           removedFormMessage = {
             'command': 'form.removal',
             'frameID': gCrWeb.getFrameId(),
-            'removedFormIDs': gCrWebLegacy.stringify(filteredFormIDs),
-            'removedFieldIDs': gCrWebLegacy.stringify(removedFormlessFieldsIds),
+            'removedFormIDs': fillUtil.stringify(filteredFormIDs),
+            'removedFieldIDs': fillUtil.stringify(removedFormlessFieldsIds),
           };
           continue;
         }
@@ -471,7 +471,7 @@ function trackFormMutations(delay: number): void {
         removedFormMessage = {
           'command': 'form.removal',
           'frameID': gCrWeb.getFrameId(),
-          'removedFieldIDs': gCrWebLegacy.stringify(removedFormlessFieldsIds),
+          'removedFieldIDs': fillUtil.stringify(removedFormlessFieldsIds),
         };
         continue;
       } else if (formlessFieldsWereRemoved) {

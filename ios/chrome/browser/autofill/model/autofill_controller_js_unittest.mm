@@ -1273,8 +1273,10 @@ TEST_F(AutofillControllerJsTest, GetOptionStringsFromElement) {
 
   ExecuteJavaScriptOnElementsAndCheck(
       @"var field = {};"
-       "__gCrWeb.getRegisteredApi('fill_test_api').getFunction('getOptionStringsFromElement')(%@, field);"
-       "__gCrWeb.stringify(field);",
+       "__gCrWeb.getRegisteredApi('fill_test_api').getFunction('"
+       "getOptionStringsFromElement')(%@, field);"
+       "__gCrWeb.getRegisteredApi('fill_test_api').getFunction('stringify')("
+       "field);",
       GetElementsByNameJavaScripts(kTestingElements), @[
         @("{\"option_values\":[\"CA\",\"MA\"],"
           "\"option_texts\":[\"CA\",\"MA\"]}"),
@@ -1487,11 +1489,13 @@ void AutofillControllerJsTest::TestWebFormControlElementToFormField(
                : java_script;
     NSString* actual = ExecuteJavaScript(script);
     java_script = [NSString
-        stringWithFormat:@"%@; var field = {};"
-                          "__gCrWeb.getRegisteredApi('fill_test_api')."
-                          "getFunction('webFormControlElementToFormField')"
-                          "(element, field);__gCrWeb.stringify(field);",
-                         get_element_to_test];
+        stringWithFormat:
+            @"%@; var field = {};"
+             "__gCrWeb.getRegisteredApi('fill_test_api')."
+             "getFunction('webFormControlElementToFormField')(element, field);"
+             "__gCrWeb.getRegisteredApi('fill_test_api').getFunction('"
+             "stringify')(field);",
+            get_element_to_test];
     EXPECT_NSEQ(@YES, actual) << base::SysNSStringToUTF8(
         [NSString stringWithFormat:
                       @"webFormControlElementToFormField actual results are: "
@@ -1550,7 +1554,8 @@ void AutofillControllerJsTest::TestWebFormElementToFormDataForOneForm(
                                  @"__gCrWeb.getRegisteredApi('fill_test_api')."
                                  @"getFunction('webFormElementToFormData')"
                                  @"(window, %@, null, form, null);"
-                                  "__gCrWeb.stringify(form);",
+                                  "__gCrWeb.getRegisteredApi('fill_test_api')."
+                                  "getFunction('stringify')(form);",
                                  get_form_element_javascripts];
   script = RollupJavaScriptWithUserScript(java_script, @"fill_util_test");
   EXPECT_NSEQ(@YES, actual) << base::SysNSStringToUTF8([NSString
@@ -1686,7 +1691,8 @@ void AutofillControllerJsTest::TestExtractNewForms(
                                      @"var forms = "
                                      @"__gCrWeb.getRegisteredApi('autofill')."
                                      @"getFunction('extractNewForms')(true);"
-                                     @"__gCrWeb.stringify(forms)"),
+                                     @"__gCrWeb.getRegisteredApi('fill_test_"
+                                     @"api').getFunction('stringify')(forms)"),
                                  verifying_javascripts]);
 }
 
