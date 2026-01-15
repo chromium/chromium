@@ -237,6 +237,13 @@ IN_PROC_BROWSER_TEST_P(ActorPolicyCheckerBrowserTestNonManagedBrowser,
                 ->GetPolicyChecker()
                 .CanActOnWeb(),
             TestHasChromeBenefits());
+  EXPECT_EQ(
+      ActorKeyedService::Get(browser()->profile())
+          ->GetPolicyChecker()
+          .CannotActOnWebReason(),
+      TestHasChromeBenefits()
+          ? ActorPolicyChecker::CannotActReason::kNone
+          : ActorPolicyChecker::CannotActReason::kAccountMissingChromeBenefits);
 
   // Toggle the pref to kDisabled, but won't change the capability for
   // non-managed clients.
@@ -248,6 +255,13 @@ IN_PROC_BROWSER_TEST_P(ActorPolicyCheckerBrowserTestNonManagedBrowser,
                 ->GetPolicyChecker()
                 .CanActOnWeb(),
             TestHasChromeBenefits());
+  EXPECT_THAT(
+      ActorKeyedService::Get(browser()->profile())
+          ->GetPolicyChecker()
+          .CannotActOnWebReason(),
+      TestHasChromeBenefits()
+          ? ActorPolicyChecker::CannotActReason::kNone
+          : ActorPolicyChecker::CannotActReason::kAccountMissingChromeBenefits);
 
   // Set the user pref from Allowed to Disallowed or from Disallowed to Allowed.
   browser()->profile()->GetPrefs()->SetInteger(
@@ -256,6 +270,13 @@ IN_PROC_BROWSER_TEST_P(ActorPolicyCheckerBrowserTestNonManagedBrowser,
                 ->GetPolicyChecker()
                 .CanActOnWeb(),
             TestHasChromeBenefits());
+  EXPECT_THAT(
+      ActorKeyedService::Get(browser()->profile())
+          ->GetPolicyChecker()
+          .CannotActOnWebReason(),
+      TestHasChromeBenefits()
+          ? ActorPolicyChecker::CannotActReason::kAccountMissingChromeBenefits
+          : ActorPolicyChecker::CannotActReason::kNone);
 }
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
@@ -405,6 +426,10 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManagedBrowser,
   EXPECT_TRUE(ActorKeyedService::Get(browser()->profile())
                   ->GetPolicyChecker()
                   .CanActOnWeb());
+  EXPECT_EQ(ActorKeyedService::Get(browser()->profile())
+                ->GetPolicyChecker()
+                .CannotActOnWebReason(),
+            ActorPolicyChecker::CannotActReason::kNone);
 
   GURL url = embedded_test_server()->GetURL("/empty.html");
   std::unique_ptr<ToolRequest> action =
@@ -422,6 +447,10 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManagedBrowser,
   EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
                    ->GetPolicyChecker()
                    .CanActOnWeb());
+  EXPECT_EQ(ActorKeyedService::Get(browser()->profile())
+                ->GetPolicyChecker()
+                .CannotActOnWebReason(),
+            ActorPolicyChecker::CannotActReason::kManagedOrDataProtected);
 
   ExpectErrorResult(result, mojom::ActionResultCode::kTaskPaused);
 }
@@ -677,6 +706,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
                    ->GetPolicyChecker()
                    .CanActOnWeb());
+  EXPECT_EQ(ActorKeyedService::Get(browser()->profile())
+                ->GetPolicyChecker()
+                .CannotActOnWebReason(),
+            ActorPolicyChecker::CannotActReason::kManagedOrDataProtected);
 }
 
 // Makes sure that on policy-managed clients, when the policy is unset, the
@@ -713,6 +746,10 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManagedPolicyNotSet,
   EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
                    ->GetPolicyChecker()
                    .CanActOnWeb());
+  EXPECT_EQ(ActorKeyedService::Get(browser()->profile())
+                ->GetPolicyChecker()
+                .CannotActOnWebReason(),
+            ActorPolicyChecker::CannotActReason::kManagedOrDataProtected);
 }
 
 // Makes sure that on policy-managed clients, when the default pref is not
@@ -750,6 +787,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
                    ->GetPolicyChecker()
                    .CanActOnWeb());
+  EXPECT_EQ(ActorKeyedService::Get(browser()->profile())
+                ->GetPolicyChecker()
+                .CannotActOnWebReason(),
+            ActorPolicyChecker::CannotActReason::kManagedOrDataProtected);
 }
 
 // Exercise the policy checker for managed accounts (AccountInfo::IsManaged())
@@ -785,6 +826,10 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestWithManagedAccount,
   EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
                    ->GetPolicyChecker()
                    .CanActOnWeb());
+  EXPECT_EQ(ActorKeyedService::Get(browser()->profile())
+                ->GetPolicyChecker()
+                .CannotActOnWebReason(),
+            ActorPolicyChecker::CannotActReason::kAccountCapabilityIneligible);
 
   // Still no capability, because the account is an enterprise account whose
   // domain is managed.
@@ -792,6 +837,10 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestWithManagedAccount,
   EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
                    ->GetPolicyChecker()
                    .CanActOnWeb());
+  EXPECT_EQ(ActorKeyedService::Get(browser()->profile())
+                ->GetPolicyChecker()
+                .CannotActOnWebReason(),
+            ActorPolicyChecker::CannotActReason::kManagedOrDataProtected);
 
 // Note: sign-out from enterprise account is not allowed in ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -826,6 +875,10 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestWithManagedAccount,
   EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
                    ->GetPolicyChecker()
                    .CanActOnWeb());
+  EXPECT_EQ(ActorKeyedService::Get(browser()->profile())
+                ->GetPolicyChecker()
+                .CannotActOnWebReason(),
+            ActorPolicyChecker::CannotActReason::kManagedOrDataProtected);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestWithManagedAccount,
@@ -856,6 +909,10 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestWithManagedAccount,
   EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
                    ->GetPolicyChecker()
                    .CanActOnWeb());
+  EXPECT_EQ(ActorKeyedService::Get(browser()->profile())
+                ->GetPolicyChecker()
+                .CannotActOnWebReason(),
+            ActorPolicyChecker::CannotActReason::kAccountCapabilityIneligible);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestWithManagedAccount,
@@ -889,6 +946,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
                    ->GetPolicyChecker()
                    .CanActOnWeb());
+  EXPECT_EQ(ActorKeyedService::Get(browser()->profile())
+                ->GetPolicyChecker()
+                .CannotActOnWebReason(),
+            ActorPolicyChecker::CannotActReason::kManagedOrDataProtected);
 
 // Note: sign-out from enterprise account is not allowed in ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)

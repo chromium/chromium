@@ -76,6 +76,20 @@ std::ostream& operator<<(std::ostream& os,
       return os << "kByAllowlistOnly";
   }
 }
+
+std::ostream& operator<<(std::ostream& os,
+                         ActorPolicyChecker::CannotActReason value) {
+  switch (value) {
+    case ActorPolicyChecker::CannotActReason::kNone:
+      return os << "kNone";
+    case ActorPolicyChecker::CannotActReason::kAccountCapabilityIneligible:
+      return os << "kAccountCapabilityIneligible";
+    case ActorPolicyChecker::CannotActReason::kAccountMissingChromeBenefits:
+      return os << "kAccountMissingChromeBenefits";
+    case ActorPolicyChecker::CannotActReason::kManagedOrDataProtected:
+      return os << "kManagedOrDataProtected";
+  }
+}
 }  // namespace actor
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
@@ -135,7 +149,7 @@ bool HasUrlAllowlist(Profile& profile) {
 }
 
 // Returns true if !is_enterprise_account_data_protected &&
-// !AccountInfo::IsManaged() && can_use_model_execution_features().
+// !AccountInfo::IsManaged().
 bool IsAccountEligibleForActuation(Profile& profile,
                                    AggregatedJournal& journal) {
   // Note: both `is_enterprise_account_data_protected` and
@@ -172,27 +186,15 @@ bool IsAccountEligibleForActuation(Profile& profile,
           account_info.account_id);
   auto is_managed = extended_account_info.IsManaged();
 
-  // If the main Glic check has been split to no longer use the
-  // can_use_model_execution_features capability (see
-  // kGlicEligibilitySeparateAccountCapability), then that capability must be
-  // checked here. This is because actuation currently implements stricter
-  // account checks.
-  auto can_use_model_execution_features =
-      extended_account_info.capabilities.can_use_model_execution_features();
-
-  journal.Log(
-      GURL(), TaskId(), "IsAccountEligibleForActuation",
-      JournalDetailsBuilder()
-          .Add("is_enterprise_account_data_protected",
-               base::ToString(is_enterprise_account_data_protected))
-          .Add("is_managed", signin::TriboolToString(is_managed))
-          .Add("can_use_model_execution_features",
-               signin::TriboolToString(can_use_model_execution_features))
-          .Build());
+  journal.Log(GURL(), TaskId(), "IsAccountEligibleForActuation",
+              JournalDetailsBuilder()
+                  .Add("is_enterprise_account_data_protected",
+                       base::ToString(is_enterprise_account_data_protected))
+                  .Add("is_managed", signin::TriboolToString(is_managed))
+                  .Build());
 
   return !is_enterprise_account_data_protected &&
-         (is_managed == signin::Tribool::kFalse) &&
-         (can_use_model_execution_features == signin::Tribool::kTrue);
+         (is_managed == signin::Tribool::kFalse);
 }
 
 // TODO(crbug.com/471065012): This is a consumer check so it should be moved to
@@ -242,7 +244,8 @@ ActorPolicyChecker::ActorPolicyChecker(ActorKeyedService& service)
   }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
-  can_act_on_web_ = ComputeActOnWebCapability();
+  std::tie(can_act_on_web_, cannot_act_on_web_reason_) =
+      ComputeActOnWebCapability();
 
   pref_change_registrar_.Init(service.GetProfile()->GetPrefs());
 #if BUILDFLAG(ENABLE_GLIC)
@@ -370,41 +373,77 @@ bool ActorPolicyChecker::CanActOnWeb() const {
   return can_act_on_web_for_testing_ || can_act_on_web_ != CanActOutcome::kNo;
 }
 
+ActorPolicyChecker::CannotActReason ActorPolicyChecker::CannotActOnWebReason()
+    const {
+  return cannot_act_on_web_reason_;
+}
+
 void ActorPolicyChecker::OnPrefOrAccountChanged() {
   auto old_value = can_act_on_web_;
-  can_act_on_web_ = ComputeActOnWebCapability();
+  std::tie(can_act_on_web_, cannot_act_on_web_reason_) =
+      ComputeActOnWebCapability();
   if (old_value != can_act_on_web_) {
     service_->OnActOnWebCapabilityChanged(CanActOnWeb());
   }
 }
 
-ActorPolicyChecker::CanActOutcome
+std::pair<ActorPolicyChecker::CanActOutcome,
+          ActorPolicyChecker::CannotActReason>
 ActorPolicyChecker::ComputeActOnWebCapability() {
 #if !BUILDFLAG(ENABLE_GLIC)
-  return CanActOutcome::kYes;
+  return {CanActOutcome::kYes, CannotActReason::kNone};
 #else
-  auto log_and_return = [&](CanActOutcome outcome, std::string_view reason) {
-    journal_->Log(GURL(), TaskId(),
-                  "ActorPolicyChecker::ComputeActOnWebCapability",
-                  JournalDetailsBuilder()
-                      .Add("outcome", base::ToString(outcome))
-                      .Add("reason", reason)
-                      .Build());
-    return outcome;
-  };
+  auto log_and_return =
+      [&](CanActOutcome outcome,
+          std::variant<CannotActReason, std::string_view> reason) {
+        CHECK(outcome == CanActOutcome::kYes ||
+              std::holds_alternative<CannotActReason>(reason));
+        journal_->Log(GURL(), TaskId(),
+                      "ActorPolicyChecker::ComputeActOnWebCapability",
+                      JournalDetailsBuilder()
+                          .Add("outcome", base::ToString(outcome))
+                          .Add("reasons", base::ToString(reason))
+                          .Build());
+        return std::pair{outcome,
+                         std::holds_alternative<CannotActReason>(reason)
+                             ? std::get<CannotActReason>(reason)
+                             : CannotActReason::kNone};
+      };
 
-  bool policy_exemption = features::kGlicActorPolicyControlExemption.Get();
-  bool is_likely_dogfood_client = IsLikelyDogfoodClient();
-  if (is_likely_dogfood_client || policy_exemption) {
+  if (features::kGlicActorPolicyControlExemption.Get()) {
     return log_and_return(
         CanActOutcome::kYes,
-        is_likely_dogfood_client
-            ? "is likely dogfood client"
-            : "extempted via cmdline `glic_actor_policy_control_exemption`");
+        "extempted via cmdline `glic_actor_policy_control_exemption`");
   }
 
+  // If the main Glic check has been split to no longer use the
+  // can_use_model_execution_features capability (see
+  // kGlicEligibilitySeparateAccountCapability), then that capability must be
+  // checked here. This is because actuation currently implements stricter
+  // account checks.
   auto* profile = service_->GetProfile();
   CHECK(profile);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  CHECK(identity_manager);
+  // `account_info` is empty if the user has not signed in.
+  auto can_use_model_execution_features =
+      identity_manager
+          ->FindExtendedAccountInfoByAccountId(
+              identity_manager
+                  ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                  .account_id)
+          .capabilities.can_use_model_execution_features();
+  if (can_use_model_execution_features != signin::Tribool::kTrue) {
+    return log_and_return(
+        CanActOutcome::kNo,
+        ActorPolicyChecker::CannotActReason::kAccountCapabilityIneligible);
+  }
+
+  bool is_likely_dogfood_client = IsLikelyDogfoodClient();
+  if (is_likely_dogfood_client) {
+    return log_and_return(CanActOutcome::kYes, "is likely dogfood client");
+  }
 
   bool account_eligible_for_actuation =
       IsAccountEligibleForActuation(*profile, *journal_);
@@ -413,7 +452,7 @@ ActorPolicyChecker::ComputeActOnWebCapability() {
   }
   if (!account_eligible_for_actuation) {
     return log_and_return(CanActOutcome::kNo,
-                          "Account not eligible for actuation");
+                          CannotActReason::kManagedOrDataProtected);
   }
 
   if (!IsBrowserManaged(*profile)) {
@@ -423,7 +462,7 @@ ActorPolicyChecker::ComputeActOnWebCapability() {
                             "Not managed: account has chrome benefits");
     }
     return log_and_return(CanActOutcome::kNo,
-                          "Not managed: account does not have chrome benefits");
+                          CannotActReason::kAccountMissingChromeBenefits);
   }
 
   if (ActuationEnabledForManagedUser(*profile, *journal_)) {
@@ -436,9 +475,8 @@ ActorPolicyChecker::ComputeActOnWebCapability() {
     // attempt actuation up until the point where we evaluate a URL for its
     // inclusion in the allow list. If it's not explicitly allowed by the
     // list, then we perform the blocking there.
-    return log_and_return(
-        CanActOutcome::kByAllowlistOnly,
-        "Managed: actuation disabled but URL allowlist present");
+    return log_and_return(CanActOutcome::kByAllowlistOnly,
+                          CannotActReason::kManagedOrDataProtected);
   }
   // We reach this point only if:
   // - Account is eligible for actuation
@@ -446,7 +484,7 @@ ActorPolicyChecker::ComputeActOnWebCapability() {
   //   - Actuation is disabled by policy
   //   - No URL allowlist is present
   return log_and_return(CanActOutcome::kNo,
-                        "Managed: actuation disabled by policy");
+                        CannotActReason::kManagedOrDataProtected);
 #endif  // !BUILDFLAG(ENABLE_GLIC)
 }
 
