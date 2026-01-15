@@ -473,14 +473,18 @@ bool ActorTask::CancelOngoingActions(mojom::ActionResultCode reason) {
   did_add_tabs_callback_.Cancel();
   execution_engine_->CancelOngoingActions(reason);
 
-  if (reason == mojom::ActionResultCode::kTaskWentAway) {
-    execution_engine_->RunUserTakeoverCallbackIfExists(/*should_cancel=*/true);
-  } else if (reason == mojom::ActionResultCode::kTaskPaused) {
-    execution_engine_->RunUserTakeoverCallbackIfExists(/*should_cancel=*/false);
-  } else if (reason == mojom::ActionResultCode::kActionsCancelled) {
-    // TODO(bokan): Should this also call RunUserTakeoverCallbackIfExists?
-  } else {
-    NOTREACHED();
+  switch (reason) {
+    case mojom::ActionResultCode::kTaskWentAway:
+    case mojom::ActionResultCode::kActionsCancelled:
+      execution_engine_->RunUserTakeoverCallbackIfExists(
+          /*should_cancel=*/true);
+      break;
+    case mojom::ActionResultCode::kTaskPaused:
+      execution_engine_->RunUserTakeoverCallbackIfExists(
+          /*should_cancel=*/false);
+      break;
+    default:
+      NOTREACHED();
   }
 
   return true;
