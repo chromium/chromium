@@ -553,6 +553,7 @@ TEST_P(MediaEngagementServiceTest, CleanupOriginsOnHistoryDeletion) {
         std::set<GURL>(), history::kNoAppIdFilter, yesterday, today,
         /*user_initiated*/ true, base::DoNothing(), &task_tracker);
     waiter.Wait();
+    task_environment()->RunUntilIdle();
 
     // origin1 should have a score that is not zero and is the same as the old
     // score (sometimes it may not match exactly due to rounding). origin2
@@ -582,6 +583,7 @@ TEST_P(MediaEngagementServiceTest, CleanupOriginsOnHistoryDeletion) {
     base::CancelableTaskTracker task_tracker;
     history->ExpireHistory(expire_list, base::DoNothing(), &task_tracker);
     waiter.Wait();
+    task_environment()->RunUntilIdle();
 
     // origin1's score should have changed but the rest should remain the same.
     ExpectScores(origin1, 0.55, MediaEngagementScore::GetScoreMinVisits() - 1,
@@ -605,6 +607,7 @@ TEST_P(MediaEngagementServiceTest, CleanupOriginsOnHistoryDeletion) {
     base::CancelableTaskTracker task_tracker;
     history->ExpireHistory(expire_list, base::DoNothing(), &task_tracker);
     waiter.Wait();
+    task_environment()->RunUntilIdle();
 
     // origin3's score should be removed but the rest should remain the same.
     std::map<url::Origin, double> scores = GetScoreMapForTesting();
@@ -665,6 +668,7 @@ TEST_P(MediaEngagementServiceTest, MAYBE_CleanUpDatabaseWhenHistoryIsExpired) {
   // value of kExpirationDelaySec.
   mock_time_task_runner_->FastForwardBy(base::Seconds(30));
   waiter.Wait();
+  task_environment()->RunUntilIdle();
 
   // Check the scores for the test origins.
   ExpectScores(origin1, 1.0, 20, 20, TimeNotSet());
@@ -729,6 +733,7 @@ TEST_P(MediaEngagementServiceTest, CleanUpDatabaseWhenHistoryIsDeleted) {
         std::set<GURL>(), history::kNoAppIdFilter, base::Time(), base::Time(),
         /*user_initiated*/ true, run_loop.QuitClosure(), &task_tracker);
     run_loop.Run();
+    task_environment()->RunUntilIdle();
 
     // origin1 should have a score that is not zero and is the same as the old
     // score (sometimes it may not match exactly due to rounding). origin2
@@ -778,6 +783,7 @@ TEST_P(MediaEngagementServiceTest, HistoryExpirationIsNoOp) {
         history, history::DeletionInfo(history::DeletionTimeRange::Invalid(),
                                        true, history::URLRows(),
                                        std::set<GURL>(), std::nullopt));
+    task_environment()->RunUntilIdle();
 
     // Same as above, nothing should have changed.
     ExpectScores(origin1, 7.0 / 11.0,
@@ -805,6 +811,7 @@ TEST_P(MediaEngagementServiceTest,
   SetLastMediaPlaybackTime(origin, today);
 
   ClearDataBetweenTime(today - base::Days(2), today - base::Days(1));
+  task_environment()->RunUntilIdle();
   ExpectScores(origin, 0.05, 1, 1, today);
 }
 
@@ -824,6 +831,7 @@ TEST_P(MediaEngagementServiceTest,
   SetLastMediaPlaybackTime(origin2, two_days_ago);
 
   ClearDataBetweenTime(two_days_ago, yesterday);
+  task_environment()->RunUntilIdle();
   ExpectScores(origin1, 0, 0, 0, TimeNotSet());
   ExpectScores(origin2, 0, 0, 0, TimeNotSet());
 }
@@ -837,6 +845,7 @@ TEST_P(MediaEngagementServiceTest, CleanupDataOnSiteDataCleanup_NoTimeSet) {
   SetScores(origin, 1, 0);
 
   ClearDataBetweenTime(today - base::Days(2), today - base::Days(1));
+  task_environment()->RunUntilIdle();
   ExpectScores(origin, 0.0, 1, 0, TimeNotSet());
 }
 
@@ -855,6 +864,7 @@ TEST_P(MediaEngagementServiceTest, CleanupDataOnSiteDataCleanup_All) {
   SetLastMediaPlaybackTime(origin2, two_days_ago);
 
   ClearDataBetweenTime(base::Time(), base::Time::Max());
+  task_environment()->RunUntilIdle();
   ExpectScores(origin1, 0, 0, 0, TimeNotSet());
   ExpectScores(origin2, 0, 0, 0, TimeNotSet());
 }
@@ -930,6 +940,7 @@ TEST_P(MediaEngagementServiceTest, MAYBE_HasHighEngagement_ScoreVisits) {
   // visits, and verify that the `origin` does not have high media engagement.
   SetScores(origin, MediaEngagementScore::GetScoreMinVisits() + 1, 1);
   EXPECT_FALSE(HasHighEngagement(origin));
+  task_environment()->RunUntilIdle();
 }
 
 TEST_P(MediaEngagementServiceTest, SchemaVersion_Changed) {
