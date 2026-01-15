@@ -59,3 +59,5 @@ external/wpt/html/select/options-length-too-large.html [ Skip ]
 # realistic scenario in the wild so we deem it safe to simply skip this test
 # when accessibility is enabled.
 fast/events/touch/gesture/gesture-tap-frame-move.html [ Skip ]
+
+crbug.com/40724063 external/wpt/pointerevents/pointerlock/pointerevent_movementxy_with_pointerlock.html [ Failure Pass ]
