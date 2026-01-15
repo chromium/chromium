@@ -29,24 +29,13 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSupplierObserver;
+import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.insets.InsetObserver;
 
 @NullMarked
 /** Class to consume top Insets to make supported native page (NTP) truly edge to edge. */
-public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer {
-    /** Observer to notify when a change has been made in the top inset. */
-    public interface Observer {
-        /**
-         * Notifies that a change has been made in the top inset and supplies the new inset.
-         *
-         * @param systemTopInset The system's top inset. This represents the height of the status
-         *     bar, regardless of whether the page is drawing edge-to-edge.
-         * @param consumeTopInset Whether the system's top inset will be removed.
-         */
-        void onToEdgeChange(int systemTopInset, boolean consumeTopInset);
-    }
-
+public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer, TopInsetProvider {
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final NullableObservableSupplier<Tab> mTabSupplier;
     private final TabObserver mTabObserver;
@@ -216,11 +205,13 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer {
     }
 
     /** Adds an observer. */
+    @Override
     public void addObserver(Observer observer) {
         mObservers.addObserver(observer);
     }
 
     /** Removes an observer. */
+    @Override
     public void removeObserver(Observer observer) {
         mObservers.removeObserver(observer);
     }
@@ -285,6 +276,7 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer {
     }
 
     /** Destroys the TopInsetCoordinator instance. */
+    @Override
     public void destroy() {
         mObservers.clear();
         removeObservers();
@@ -321,6 +313,7 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer {
     }
 
     /** Returns the system's top inset. */
+    @Override
     public int getSystemTopInset() {
         return mSystemInsets.top;
     }

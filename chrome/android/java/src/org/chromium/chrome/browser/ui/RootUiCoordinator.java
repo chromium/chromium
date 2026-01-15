@@ -183,6 +183,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerCreator;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.MissingNavbarInsetsReason;
+import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
@@ -396,7 +397,7 @@ public class RootUiCoordinator
     protected AdaptiveToolbarUiCoordinator mAdaptiveToolbarUiCoordinator;
     private final @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
     private final boolean mIsTablet;
-    private final ObservableSupplierImpl<TopInsetCoordinator> mTopInsetCoordinatorSupplier;
+    private final ObservableSupplierImpl<TopInsetProvider> mTopInsetProviderSupplier;
     private @Nullable ToolbarControlContainer mToolbarContainer;
     private @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private @Nullable final ExclusiveAccessManager mExclusiveAccessManager;
@@ -437,7 +438,7 @@ public class RootUiCoordinator
      * @param tabContentManagerSupplier Supplies the {@link TabContentManager}.
      * @param snackbarManagerSupplier Supplies the {@link SnackbarManager}.
      * @param edgeToEdgeControllerSupplier Supplies an {@link EdgeToEdgeController}.
-     * @param topInsetCoordinatorSupplier Suppliers an {@link TopInsetCoordinator}.
+     * @param topInsetProviderSupplier Suppliers an {@link TopInsetProvider}.
      * @param activityType The {@link ActivityType} for the activity.
      * @param isInOverviewModeSupplier Supplies whether the app is in overview mode.
      * @param appMenuDelegate The app menu delegate.
@@ -484,7 +485,7 @@ public class RootUiCoordinator
             @NonNull Supplier<TabContentManager> tabContentManagerSupplier,
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
             @NonNull ObservableSupplierImpl<EdgeToEdgeController> edgeToEdgeControllerSupplier,
-            @NonNull ObservableSupplierImpl<TopInsetCoordinator> topInsetCoordinatorSupplier,
+            @NonNull ObservableSupplierImpl<TopInsetProvider> topInsetProviderSupplier,
             @ActivityType int activityType,
             @NonNull Supplier<Boolean> isInOverviewModeSupplier,
             @NonNull AppMenuDelegate appMenuDelegate,
@@ -519,7 +520,7 @@ public class RootUiCoordinator
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
-        mTopInsetCoordinatorSupplier = topInsetCoordinatorSupplier;
+        mTopInsetProviderSupplier = topInsetProviderSupplier;
         mActivityType = activityType;
         mIsInOverviewModeSupplier = isInOverviewModeSupplier;
         mAppMenuDelegate = appMenuDelegate;
@@ -938,9 +939,9 @@ public class RootUiCoordinator
             mEdgeToEdgeBottomChin.destroy();
         }
 
-        var topInsetCoordinator = mTopInsetCoordinatorSupplier.get();
-        if (topInsetCoordinator != null) {
-            topInsetCoordinator.destroy();
+        var topInsetProvider = mTopInsetProviderSupplier.get();
+        if (topInsetProvider != null) {
+            topInsetProvider.destroy();
         }
 
         if (mBoardingPassController != null) {
@@ -1203,7 +1204,7 @@ public class RootUiCoordinator
                             mActivityTabProvider.asObservable(),
                             mWindowAndroid.getInsetObserver(),
                             mLayoutStateProviderOneShotSupplier);
-            mTopInsetCoordinatorSupplier.set(topInsetCoordinator);
+            mTopInsetProviderSupplier.set(topInsetCoordinator);
         }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.LINK_HOVER_STATUS_BAR)) {
             ViewStub statusBarStub = mActivity.findViewById(R.id.link_hover_status_bar_stub);
@@ -1805,7 +1806,7 @@ public class RootUiCoordinator
                             mTabBookmarkerSupplier,
                             getMenuButtonVisibilityDelegate(),
                             mTopControlsStacker,
-                            mTopInsetCoordinatorSupplier,
+                            mTopInsetProviderSupplier,
                             mXrSpaceModeObservableSupplier,
                             mPageZoomManager,
                             mSnackbarManagerSupplier.get());

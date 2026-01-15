@@ -16,6 +16,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeUtils.java",
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/NavigationBarColorProvider.java",
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/SimpleEdgeToEdgeController.java",
+    "java/src/org/chromium/chrome/browser/ui/edge_to_edge/TopInsetProvider.java",
   ]
   deps = [
     "//base:base_java",

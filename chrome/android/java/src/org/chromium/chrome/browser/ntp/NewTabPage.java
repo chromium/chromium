@@ -78,7 +78,6 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinatorFactory;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
-import org.chromium.chrome.browser.ntp_customization.edge_to_edge.TopInsetCoordinator;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
@@ -114,6 +113,7 @@ import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
@@ -218,10 +218,10 @@ public class NewTabPage
     private final boolean mIsInNightMode;
     private final @Nullable OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
     private final boolean mCanSupportEdgeToEdgeForCustomizedTheme;
-    private final ObservableSupplier<TopInsetCoordinator> mTopInsetCoordinatorSupplier;
-    private @Nullable Callback<TopInsetCoordinator> mTopInsetCoordinatorCallback;
+    private final ObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier;
+    private @Nullable Callback<TopInsetProvider> mTopInsetProviderCallback;
 
-    private TopInsetCoordinator.@org.chromium.build.annotations.Nullable Observer
+    private TopInsetProvider.@org.chromium.build.annotations.Nullable Observer
             mTopInsetChangeObserver;
     private NtpCustomizationConfigManager.@org.chromium.build.annotations.Nullable
             HomepageStateListener
@@ -553,7 +553,7 @@ public class NewTabPage
             NonNullObservableSupplier<Integer> tabStripHeightSupplier,
             OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
-            ObservableSupplier<TopInsetCoordinator> topInsetCoordinatorSupplier,
+            ObservableSupplier<TopInsetProvider> topInsetProviderSupplier,
             StartupMetricsTracker startupMetricsTracker,
             MultiInstanceManager multiInstanceManager) {
         mConstructedTimeNs = System.nanoTime();
@@ -573,7 +573,7 @@ public class NewTabPage
         mIsInNightMode = isInNightMode;
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mModuleRegistrySupplier = moduleRegistrySupplier;
-        mTopInsetCoordinatorSupplier = topInsetCoordinatorSupplier;
+        mTopInsetProviderSupplier = topInsetProviderSupplier;
 
         Profile profile = mTab.getProfile();
 
@@ -678,7 +678,7 @@ public class NewTabPage
                 NtpCustomizationUtils.canEnableEdgeToEdgeForCustomizedTheme(
                         windowAndroid, mIsTablet);
         if (mCanSupportEdgeToEdgeForCustomizedTheme) {
-            initTopInsetCoordinatorObserver();
+            initTopInsetProviderObserver();
             initHomepageStateListener();
             initUseLightIconTint();
         }
@@ -817,23 +817,23 @@ public class NewTabPage
         }
     }
 
-    private void initTopInsetCoordinatorObserver() {
+    private void initTopInsetProviderObserver() {
         mTopInsetChangeObserver = this::onToEdgeChange;
-        var topInsetCoordinator = mTopInsetCoordinatorSupplier.get();
-        if (topInsetCoordinator != null) {
-            topInsetCoordinator.addObserver(mTopInsetChangeObserver);
+        var topInsetProvider = mTopInsetProviderSupplier.get();
+        if (topInsetProvider != null) {
+            topInsetProvider.addObserver(mTopInsetChangeObserver);
             return;
         }
 
-        mTopInsetCoordinatorCallback =
-                coordinator -> {
-                    coordinator.addObserver(assumeNonNull(mTopInsetChangeObserver));
-                    if (mTopInsetCoordinatorCallback != null) {
-                        mTopInsetCoordinatorSupplier.removeObserver(mTopInsetCoordinatorCallback);
-                        mTopInsetCoordinatorCallback = null;
+        mTopInsetProviderCallback =
+                provider -> {
+                    provider.addObserver(assumeNonNull(mTopInsetChangeObserver));
+                    if (mTopInsetProviderCallback != null) {
+                        mTopInsetProviderSupplier.removeObserver(mTopInsetProviderCallback);
+                        mTopInsetProviderCallback = null;
                     }
                 };
-        mTopInsetCoordinatorSupplier.addObserver(mTopInsetCoordinatorCallback);
+        mTopInsetProviderSupplier.addObserver(mTopInsetProviderCallback);
     }
 
     // Called when ChromeFeatureList.sNewTabPageCustomizationV2 is enabled to add a
@@ -1228,9 +1228,9 @@ public class NewTabPage
             mHomeModulesCoordinator.destroy();
         }
 
-        var topInsetCoordinator = mTopInsetCoordinatorSupplier.get();
-        if (topInsetCoordinator != null && mTopInsetChangeObserver != null) {
-            topInsetCoordinator.removeObserver(mTopInsetChangeObserver);
+        var topInsetProvider = mTopInsetProviderSupplier.get();
+        if (topInsetProvider != null && mTopInsetChangeObserver != null) {
+            topInsetProvider.removeObserver(mTopInsetChangeObserver);
             mTopInsetChangeObserver = null;
         }
 
@@ -1239,9 +1239,9 @@ public class NewTabPage
             mHomepageStateListener = null;
         }
 
-        if (mTopInsetCoordinatorCallback != null) {
-            mTopInsetCoordinatorSupplier.removeObserver(mTopInsetCoordinatorCallback);
-            mTopInsetCoordinatorCallback = null;
+        if (mTopInsetProviderCallback != null) {
+            mTopInsetProviderSupplier.removeObserver(mTopInsetProviderCallback);
+            mTopInsetProviderCallback = null;
         }
 
         sTotalCount--;

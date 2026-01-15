@@ -110,7 +110,6 @@ import org.chromium.chrome.browser.ntp.IncognitoNtpOmniboxAutofocusManager;
 import org.chromium.chrome.browser.ntp.IncognitoNtpUtils;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
-import org.chromium.chrome.browser.ntp_customization.edge_to_edge.TopInsetCoordinator;
 import org.chromium.chrome.browser.offlinepages.OfflinePageTabData;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
@@ -194,6 +193,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.MenuButtonDelegate;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
@@ -358,9 +358,9 @@ public class ToolbarManager
     private final UserEducationHelper mUserEducationHelper;
     private final ToolbarLongPressMenuHandler mToolbarLongPressMenuHandler;
     private final OverrideUrlLoadingDelegateImpl mOverrideUrlLoadingDelegate;
-    private final ObservableSupplier<TopInsetCoordinator> mTopInsetCoordinatorSupplier;
-    private @Nullable Callback<TopInsetCoordinator> mTopInsetCoordinatorAvailableCallback;
-    private TopInsetCoordinator.@Nullable Observer mTopInsetCoordinatorObserver;
+    private final ObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier;
+    private @Nullable Callback<TopInsetProvider> mTopInsetProviderAvailableCallback;
+    private TopInsetProvider.@Nullable Observer mTopInsetChangeObserver;
     private final SettableNonNullObservableSupplier<@ControlsPosition Integer>
             mToolbarPositionSupplier = ObservableSuppliers.createNonNull(ControlsPosition.NONE);
     private final OneshotSupplier<ChromeAndroidTask> mChromeAndroidTaskSupplier;
@@ -767,7 +767,7 @@ public class ToolbarManager
      * @param tabBookmarkerSupplier Supplier of {@link TabBookmarker} for bookmarking a given tab.
      * @param menuButtonVisibilityDelegate Delegate for handling the visibility of the menu button.
      * @param topControlsStacker TopControlsStacker to manage the view's y-offset.
-     * @param topInsetCoordinatorSupplier Supplier of (@link TopInsetCoordinator}.
+     * @param topInsetProviderSupplier Supplier of (@link TopInsetProvider}.
      * @param xrSpaceModeObservableSupplier Supplies current XR space mode status. True for XR full
      *     space mode, false otherwise.
      * @param pageZoomManager The {@link PageZoomManager} used to manage the page zoom.
@@ -820,7 +820,7 @@ public class ToolbarManager
             ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             @Nullable VisibilityDelegate menuButtonVisibilityDelegate,
             TopControlsStacker topControlsStacker,
-            ObservableSupplier<TopInsetCoordinator> topInsetCoordinatorSupplier,
+            ObservableSupplier<TopInsetProvider> topInsetProviderSupplier,
             @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
             PageZoomManager pageZoomManager,
             SnackbarManager snackbarManager) {
@@ -859,7 +859,7 @@ public class ToolbarManager
         mOverrideUrlLoadingDelegate = new OverrideUrlLoadingDelegateImpl();
         mMultiInstanceManager = multiInstanceManager;
         mTabBookmarkerSupplier = tabBookmarkerSupplier;
-        mTopInsetCoordinatorSupplier = topInsetCoordinatorSupplier;
+        mTopInsetProviderSupplier = topInsetProviderSupplier;
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
         mCustomTabCount = new CustomTabCount(tabModelSelectorSupplier);
         mProfileSupplier = profileSupplier;
@@ -1896,10 +1896,10 @@ public class ToolbarManager
                                 .getSupplierForKeyboardInset(),
                         mWindowAndroid);
 
-        // Set up TopInsetCoordinator observer to handle edge-to-edge changes.
-        mTopInsetCoordinatorAvailableCallback = this::onTopInsetCoordinatorAvailable;
-        mTopInsetCoordinatorSupplier.addSyncObserverAndCallIfNonNull(
-                mTopInsetCoordinatorAvailableCallback);
+        // Set up TopInsetProvider observer to handle edge-to-edge changes.
+        mTopInsetProviderAvailableCallback = this::onTopInsetProviderAvailable;
+        mTopInsetProviderSupplier.addSyncObserverAndCallIfNonNull(
+                mTopInsetProviderAvailableCallback);
 
         mMiniOriginBarController =
                 new MiniOriginBarController(
@@ -1917,17 +1917,17 @@ public class ToolbarManager
     }
 
     /**
-     * Called when the {@link TopInsetCoordinator} becomes available.
+     * Called when the {@link TopInsetProvider} becomes available.
      *
-     * @param topInsetCoordinator The {@link TopInsetCoordinator} instance.
+     * @param topInsetProvider The {@link TopInsetProvider} instance.
      */
-    private void onTopInsetCoordinatorAvailable(TopInsetCoordinator topInsetCoordinator) {
-        mTopInsetCoordinatorObserver = this::onToEdgeChange;
-        topInsetCoordinator.addObserver(mTopInsetCoordinatorObserver);
+    private void onTopInsetProviderAvailable(TopInsetProvider topInsetProvider) {
+        mTopInsetChangeObserver = this::onToEdgeChange;
+        topInsetProvider.addObserver(mTopInsetChangeObserver);
 
-        if (mTopInsetCoordinatorAvailableCallback != null) {
-            mTopInsetCoordinatorSupplier.removeObserver(mTopInsetCoordinatorAvailableCallback);
-            mTopInsetCoordinatorAvailableCallback = null;
+        if (mTopInsetProviderAvailableCallback != null) {
+            mTopInsetProviderSupplier.removeObserver(mTopInsetProviderAvailableCallback);
+            mTopInsetProviderAvailableCallback = null;
         }
     }
 
@@ -2757,16 +2757,16 @@ public class ToolbarManager
             mToolbarPositionController = null;
         }
 
-        if (mTopInsetCoordinatorObserver != null) {
-            var topInsetCoordinator = mTopInsetCoordinatorSupplier.get();
-            if (topInsetCoordinator != null) {
-                topInsetCoordinator.removeObserver(mTopInsetCoordinatorObserver);
+        if (mTopInsetChangeObserver != null) {
+            var topInsetProvider = mTopInsetProviderSupplier.get();
+            if (topInsetProvider != null) {
+                topInsetProvider.removeObserver(mTopInsetChangeObserver);
             }
-            mTopInsetCoordinatorObserver = null;
+            mTopInsetChangeObserver = null;
         }
-        if (mTopInsetCoordinatorAvailableCallback != null) {
-            mTopInsetCoordinatorSupplier.removeObserver(mTopInsetCoordinatorAvailableCallback);
-            mTopInsetCoordinatorAvailableCallback = null;
+        if (mTopInsetProviderAvailableCallback != null) {
+            mTopInsetProviderSupplier.removeObserver(mTopInsetProviderAvailableCallback);
+            mTopInsetProviderAvailableCallback = null;
         }
 
         if (mMiniOriginBarController != null) {

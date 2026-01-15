@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThem
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.url.JUnitTestGURLs;
@@ -74,7 +75,7 @@ public class TopInsetCoordinatorUnitTest {
     @Mock private WindowInsetsCompat mWindowInsetsCompat;
     @Mock private View mView;
     @Mock private NativePage mNativePage;
-    @Mock private TopInsetCoordinator.Observer mObserver;
+    @Mock private TopInsetProvider.Observer mObserver;
     @Mock private LayoutStateProvider mLayoutStateProvider;
 
     @Captor
