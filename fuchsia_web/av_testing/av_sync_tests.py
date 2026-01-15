@@ -169,7 +169,7 @@ def run_video_perf_test(file: str, driver: ChromeDriverWrapper,
         # error and use the default value to filter them out instead of failing
         # the tests.
         # TODO(crbug.com/40935291): Revise the default value for errors.
-        monitors.average(file, key).record(results.get(key, -128))
+        monitors.average(file, 'playback', key).record(results.get(key, -128))
 
     record('smoothness')
     record('freezing')
@@ -194,6 +194,7 @@ def main() -> int:
             build_info = get_build_info()
             logging.warning('Fuchsia build info %s', build_info)
             monitors.tag(
+                'fuchsia',
                 'video_perf',
                 version.chrome_version_str(), build_info.version,
                 version.chrome_version_str() + '/' + build_info.version)
