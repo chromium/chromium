@@ -8,7 +8,10 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --drag-placeholder-font-color: rgba(86, 89, 94, 1);
+  --color-dragging-opaque-frost-backup_: rgba(240, 242, 245, 1);
+  --color-drag-placeholder-font: rgba(86, 89, 94, 1);
+  /* Backup color: */
+  --color-search-animated-glow-background: rgba(255, 255, 255, 1);
   --drag-placeholder-font-family: inherit;
   --drag-placeholder-line-height: 24px;
   --drag-placeholder-font-size: 16px;
@@ -28,7 +31,6 @@
 
   --glow-stroke-width_: 2px;
 
-  --search-animated-glow-background: rgb(255, 255, 255);
   --search-animated-glow-background-z-index: 103;
   --search-animated-glow-drag-drop-placeholder-z-index: 104;
   --search-animated-glow-gradient-after-z-index: 101;
@@ -58,7 +60,7 @@
 }
 
 #dragDropPlaceholder {
-  color: var(--drag-placeholder-font-color);
+  color: var(--color-drag-placeholder-font);
   display: none;
   font-family: var(--drag-placeholder-font-family);
   font-size: var(--drag-placeholder-font-size);
@@ -157,6 +159,12 @@
   :host([entrypoint-name='Omnibox'][animation-state='expanding']) .gradient::before {
     --gradient-spin-expand-peak-opacity_: 0.3;
   }
+  :host {
+    --color-composebox-scrim-background: rgba(16, 18, 24, 1);
+    --color-drag-placeholder-font:  rgba(230, 232, 240, 1);
+    --color-dragging-opaque-frost-backup_: rgba(44, 45, 53, 1);
+    --color-search-animated-glow-background:  rgba(31, 31, 31, 1);
+  }
 }
 
 :host([entrypoint-name='Omnibox'][animation-state='expanding']) .background,
@@ -205,7 +213,7 @@
   * in dragging mode.
   */
   background-color: var(--cr-composebox-background-color,
-      --search-animated-glow-background);
+      --color-search-animated-glow-background);
   border-radius: inherit;
   content: '';
   inset: 0px;
@@ -317,7 +325,7 @@
    * are blurred, it makes the gradient glow instead
    * of being fully solid. */
   background-color: var(--cr-composebox-background-color,
-      --search-animated-glow-background);
+      --color-search-animated-glow-background);
   border-radius: inherit;
   content: '';
   contain: paint;
@@ -426,7 +434,9 @@
 
 :host([animation-state='dragging']) .background::before {
   animation: none;
-  background-color: rgba(240, 242, 245);
+  /* Frosted glass color; overlays the actual composebox background: */
+  background-color: var(--color-search-animated-glow-dragging-opaque-frost,
+      --color-dragging-opaque-frost-backup_);
   filter: blur(28px);
   z-index: var(--search-animated-glow-background-z-index, 3);
 }

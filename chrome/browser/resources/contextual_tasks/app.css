@@ -33,6 +33,8 @@
   --color-composebox-type-ahead: rgba(117, 117, 117, 1);
   --color-composebox-type-ahead-chip: rgba(117, 117, 117, 1);
   --color-composebox-voice-lens-button: rgba(10, 10, 10, 1);
+  --color-search-animated-glow-dragging-opaque-frost:
+      rgba(240, 242, 245);
   --color-searchbox-results-background-hovered: rgba(31, 31, 31, 0.06);
   --color-zero-state-greeting: rgba(10, 10, 10, 1);
   --composebox-context-menu-entrypoint-button-color: rgba(31, 31, 31, 1);
@@ -135,6 +137,8 @@
   --composebox-context-menu-entrypoint-button-color: rgba(63, 64, 74, 1);
   --cr-color-sys-divider: var(--color-composebox-file-chip-divider);
   --cr-composebox-background-color: rgba(29, 30, 38, 1);
+  --color-search-animated-glow-dragging-opaque-frost:
+      rgba(44, 45, 53, 1);
   --color-menu-background: var(--cr-menu-background-color);
   --color-composebox-context-entrypoint-text-disabled: rgba(105, 105, 105, 1);
   --cr-composebox-file-thumbnail-remove-button-fill-color: rgba(255, 255, 255, 1);
