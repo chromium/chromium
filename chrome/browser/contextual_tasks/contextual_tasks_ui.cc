@@ -301,6 +301,9 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       "composeboxShowOnboardingTooltipSessionImpressionCap",
       contextual_tasks::
           GetContextualTasksShowOnboardingTooltipSessionImpressionCap());
+  source->AddInteger(
+      "composeboxShowOnboardingTooltipImpressionDelay",
+      contextual_tasks::GetContextualTasksOnboardingTooltipImpressionDelay());
   source->AddBoolean(
       "isOnboardingTooltipDismissCountBelowCap",
       Profile::FromWebUI(web_ui)->GetPrefs()->GetInteger(
