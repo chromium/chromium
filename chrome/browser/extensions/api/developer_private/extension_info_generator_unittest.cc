@@ -1271,6 +1271,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, IsPinnedToToolbar) {
 // Test that extensions cannot be uploaded to the user's account if they are
 // signed out or signed in with full sync consent (automatically syncs all data
 // types including extensions).
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ExtensionInfoGeneratorUnitTest, UploadAsAccountExtension_FullSync) {
   // Create two extensions: one syncable and one non-syncable.
   const scoped_refptr<const Extension> syncable_extension = CreateExtension(
@@ -1305,6 +1306,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, UploadAsAccountExtension_FullSync) {
   info = GenerateExtensionInfo(unsyncable_extension->id());
   EXPECT_FALSE(info->can_upload_as_account_extension);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Same test as above, except test that extensions CAN be uploaded if the user
 // is signed into transport mode with extensions sync enabled.
