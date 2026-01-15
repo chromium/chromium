@@ -1416,8 +1416,8 @@ policies:
   1415: DeviceLoginScreenPreferSlowCiphers
   1416: SearchContentSharingSettings
   1417: StaticStorageQuotaEnabled
-  1418: SaaSReportDomainUrlsForBrowser
-  1419: SaaSReportDomainUrlsForProfile
+  1418: SaasUsageReportingDomainUrlsForBrowsers
+  1419: SaasUsageReportingDomainUrlsForProfiles
   1420: GeminiActOnWebAllowedForURLs
   1421: GeminiActOnWebBlockedForURLs
   1422: WebAppInstallByUserEnabled

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/enterprise/browser/reporting/saas_domain/domain_reporting_aggregation_utils.h"
+#include "components/enterprise/browser/reporting/saas_usage/saas_usage_aggregation_utils.h"
 
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -36,7 +36,7 @@ void RecordNavigation(PrefService* pref_service,
                       std::string_view domain,
                       std::string_view encryption_protocol) {
   CHECK(pref_service);
-  ScopedDictPrefUpdate update(pref_service, kSaaSDomainReport);
+  ScopedDictPrefUpdate update(pref_service, kSaasUsageReport);
   base::Value::Dict& entry = GetOrCreateEntry(*update, domain);
 
   int count = entry.FindInt(kNavigationCount).value_or(0);
@@ -56,7 +56,7 @@ void RecordNavigation(PrefService* pref_service,
 
 void RecordContentTransfer(PrefService* pref_service, std::string_view domain) {
   CHECK(pref_service);
-  ScopedDictPrefUpdate update(pref_service, kSaaSDomainReport);
+  ScopedDictPrefUpdate update(pref_service, kSaasUsageReport);
   base::Value::Dict& entry = GetOrCreateEntry(*update, domain);
 
   int count = entry.FindInt(kContentTransferCount).value_or(0);

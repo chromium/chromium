@@ -2340,8 +2340,8 @@ chromium-metrics-reviews@google.com.
   <int value="1415" label="DeviceLoginScreenPreferSlowCiphers"/>
   <int value="1416" label="SearchContentSharingSettings"/>
   <int value="1417" label="StaticStorageQuotaEnabled"/>
-  <int value="1418" label="SaaSReportDomainUrlsForBrowser"/>
-  <int value="1419" label="SaaSReportDomainUrlsForProfile"/>
+  <int value="1418" label="SaasUsageReportingDomainUrlsForBrowsers"/>
+  <int value="1419" label="SaasUsageReportingDomainUrlsForProfiles"/>
   <int value="1420" label="GeminiActOnWebAllowedForURLs"/>
   <int value="1421" label="GeminiActOnWebBlockedForURLs"/>
   <int value="1422" label="WebAppInstallByUserEnabled"/>

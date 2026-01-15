@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/enterprise/browser/reporting/saas_domain/domain_reporting_aggregation_utils.h"
+#include "components/enterprise/browser/reporting/saas_usage/saas_usage_aggregation_utils.h"
 
 #include <map>
 #include <string>
@@ -50,7 +50,7 @@ class DomainReportingAggregationUtilsParameterizedTest
   ~DomainReportingAggregationUtilsParameterizedTest() override = default;
 
   void SetUp() override {
-    pref_service_.registry()->RegisterDictionaryPref(kSaaSDomainReport);
+    pref_service_.registry()->RegisterDictionaryPref(kSaasUsageReport);
   }
 
  protected:
@@ -70,7 +70,7 @@ TEST_P(DomainReportingAggregationUtilsParameterizedTest, Run) {
     }
   }
 
-  const base::Value::Dict& report = pref_service_.GetDict(kSaaSDomainReport);
+  const base::Value::Dict& report = pref_service_.GetDict(kSaasUsageReport);
   ASSERT_EQ(test_case.expected_states.size(), report.size());
 
   for (const auto& [domain, expected] : test_case.expected_states) {

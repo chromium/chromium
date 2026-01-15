@@ -1,8 +1,8 @@
-caption: Specifies a list of SaaS domains that will be reported for managed profile
+caption: Specifies a list of SaaS domains that will be reported for managed browser
 desc: |-
-  This policy controls <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> reporting of SaaS domain visits and content transfers for a managed profile.
+  This policy controls <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> reporting of SaaS domain visits and content transfers for a managed browser.
 
-  When the policy is set, the URLs matching SaaS domains will be used to generate report and uploaded. Unmatched URLs will be ignored.
+  When the policy is set, the URLs matching SaaS domains will be used to generate report. Unmatched URLs will be ignored.
 
   When the policy is not set or set to an empty list, no report will be generated.
 
@@ -14,8 +14,6 @@ desc: |-
 
    * The URL scheme, port, query are disregarded during the matching process.
 
-  This policy can only be set as a cloud user policy.
-
   This policy value is populated by the cloud policy infrastructure and admins can't set it directly.
 example_value:
 - google.com
@@ -23,8 +21,7 @@ example_value:
 default: []
 features:
   dynamic_refresh: true
-  per_profile: true
-  user_only: true
+  per_profile: false
   cloud_only: true
 future_on:
 - chrome.*

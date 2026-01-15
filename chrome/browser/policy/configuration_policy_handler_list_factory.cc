@@ -2940,12 +2940,12 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
 
   handlers->AddHandler(std::make_unique<CloudOnlyPolicyChecker>(
       std::make_unique<URLSchemeListPolicyHandler>(
-          key::kSaaSReportDomainUrlsForBrowser,
-          enterprise_reporting::kSaaSReportDomainUrlsForBrowser)));
+          key::kSaasUsageReportingDomainUrlsForBrowsers,
+          enterprise_reporting::kSaasUsageDomainUrlsForBrowser)));
   handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyChecker>(
       std::make_unique<URLSchemeListPolicyHandler>(
-          key::kSaaSReportDomainUrlsForProfile,
-          enterprise_reporting::kSaaSReportDomainUrlsForProfile)));
+          key::kSaasUsageReportingDomainUrlsForProfiles,
+          enterprise_reporting::kSaasUsageDomainUrlsForProfile)));
 
 #elif BUILDFLAG(IS_CHROMEOS)
   handlers->AddHandler(
