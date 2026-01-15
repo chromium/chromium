@@ -8,6 +8,8 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/session_service_base.h"
+#include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -33,7 +35,29 @@ TabStripInternalsPageHandler::~TabStripInternalsPageHandler() = default;
 
 void TabStripInternalsPageHandler::GetTabStripData(
     GetTabStripDataCallback callback) {
-  std::move(callback).Run(BuildSnapshot());
+  // Only one in-flight request is supported at a time.
+  if (pending_callback_) {
+    std::move(callback).Run(BuildSnapshot());
+    return;
+  }
+
+  pending_callback_ = std::move(callback);
+
+  // This feature does not support fetching cross-profile session restore
+  // metadata. Hence, session restore metadata is fetched only for the given
+  // profile instance.
+  if (!profile_->IsOffTheRecord()) {
+    SessionServiceBase* session_service =
+        SessionServiceFactory::GetForProfileForSessionRestore(profile_);
+    if (session_service) {
+      session_service->GetLastSession(
+          base::BindOnce(&TabStripInternalsPageHandler::OnGotSavedSession,
+                         weak_ptr_factory_.GetWeakPtr()));
+      return;  // Wait for async callback.
+    }
+  }
+
+  std::move(pending_callback_).Run(BuildSnapshot());
 }
 
 tab_strip_internals::mojom::ContainerPtr
@@ -41,7 +65,9 @@ TabStripInternalsPageHandler::BuildSnapshot() {
   auto data = tab_strip_internals::mojom::Container::New();
   data->tabstrip_tree = tab_strip_internals::mojom::TabStripTree::New();
   data->tab_restore = tab_strip_internals::mojom::TabRestoreData::New();
-  // TODO (crbug.com/427204855): Add session restore data.
+  data->restored_session =
+      tab_strip_internals::mojom::SessionRestoreData::New();
+  data->saved_session = tab_strip_internals::mojom::SessionRestoreData::New();
 
   for (const auto* browser : GetAllBrowserWindowInterfaces()) {
     auto window_node = tab_strip_internals::mojom::WindowNode::New();
@@ -70,6 +96,13 @@ TabStripInternalsPageHandler::BuildSnapshot() {
       data->tab_restore = tab_strip_internals::BuildTabRestoreData(
           tab_restore_service->entries());
     }
+
+    if (!saved_session_windows_.empty()) {
+      data->saved_session =
+          tab_strip_internals::BuildSessionRestoreData(saved_session_windows_);
+    }
+    data->restored_session = tab_strip_internals::BuildSessionRestoreData(
+        observer_->GetRestoredSession());
   }
 
   return data;
@@ -79,4 +112,16 @@ void TabStripInternalsPageHandler::NotifyTabStripUpdated() {
   if (page_) {
     page_->OnTabStripUpdated(BuildSnapshot());
   }
+}
+
+void TabStripInternalsPageHandler::OnGotSavedSession(
+    std::vector<std::unique_ptr<sessions::SessionWindow>> windows,
+    SessionID /*active_window_id*/,
+    bool read_error) {
+  if (!read_error) {
+    saved_session_windows_ = std::move(windows);
+  }
+
+  auto snapshot = BuildSnapshot();
+  std::move(pending_callback_).Run(std::move(snapshot));
 }

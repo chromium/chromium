@@ -196,16 +196,17 @@ void FullRestoreAppLaunchHandler::OnAppTypeInitialized(apps::AppType app_type) {
   }
 }
 
-void FullRestoreAppLaunchHandler::OnGotSession(Profile* session_profile,
-                                               bool for_app,
-                                               int window_count) {
+void FullRestoreAppLaunchHandler::OnGotSession(
+    Profile* session_profile,
+    bool for_app,
+    const std::vector<const sessions::SessionWindow*>& windows) {
   if (session_profile != profile())
     return;
 
   if (for_app)
-    browser_app_window_count_ = window_count;
+    browser_app_window_count_ = windows.size();
   else
-    browser_window_count_ = window_count;
+    browser_window_count_ = windows.size();
 }
 
 void FullRestoreAppLaunchHandler::ForceLaunchBrowserForTesting() {

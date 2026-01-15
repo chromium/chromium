@@ -8243,8 +8243,10 @@ static_library("browser") {
     ]
 
     # TODO(crbug.com/427204855): Remove this circular include once
-    # "chrome/browser/sessions/tab_restore_service_factory.h" is
-    # fully componentized.
+    # "chrome/browser/sessions/tab_restore_service_factory.h",
+    # "chrome/browser/sessions/session_service_factory.h", and
+    # "chrome/browser/sessions/session_service_base.h"
+    # are fully componentized.
     allow_circular_includes_from +=
         [ "//chrome/browser/ui/webui/tab_strip_internals:impl" ]
   }

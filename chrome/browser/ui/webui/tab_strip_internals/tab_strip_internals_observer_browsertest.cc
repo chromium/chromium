@@ -4,18 +4,31 @@
 
 #include "chrome/browser/ui/webui/tab_strip_internals/tab_strip_internals_observer.h"
 
+#include <memory>
+#include <vector>
+
+#include "base/functional/callback.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/prefs/session_startup_pref.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/sessions/core/session_id.h"
+#include "components/sessions/core/session_types.h"
 #include "components/tabs/public/tab_group.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -31,7 +44,28 @@ using ::testing::AtLeast;
 
 // Tests that the TabStripInternalsObserver correctly forwards callbacks
 // from TabStripModelObserver and BrowserListObserver.
-using TabStripInternalsObserverBrowserTest = InProcessBrowserTest;
+class TabStripInternalsObserverBrowserTest : public InProcessBrowserTest {
+ protected:
+  BrowserWindowInterface* QuitBrowserAndRestore(
+      BrowserWindowInterface* browser) {
+    Profile* const profile = browser->GetProfile();
+    // Session restore pref must be set to LAST to test browser close and
+    // restore.
+    SessionStartupPref pref(SessionStartupPref::LAST);
+    SessionStartupPref::SetStartupPref(profile, pref);
+    // Keep the browser and profile alive while closing the browser to trigger
+    // session restore.
+    ScopedKeepAlive keep_alive(KeepAliveOrigin::SESSION_RESTORE,
+                               KeepAliveRestartOption::DISABLED);
+    ScopedProfileKeepAlive profile_keep_alive(
+        profile, ProfileKeepAliveOrigin::kBrowserWindow);
+    CloseBrowserSynchronously(browser);
+
+    // Create a new window, which will trigger session restore.
+    ui_test_utils::OpenNewEmptyWindowAndWaitUntilActivated(profile, true);
+    return GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  }
+};
 
 // BrowserAdded: Observe when a browser is added to BrowserList.
 IN_PROC_BROWSER_TEST_F(TabStripInternalsObserverBrowserTest, BrowserAdded) {
@@ -395,4 +429,74 @@ IN_PROC_BROWSER_TEST_F(TabStripInternalsObserverBrowserTest,
         0, TabCloseTypes::CLOSE_USER_GESTURE);
   }
   CloseBrowserSynchronously(otr_browser);
+}
+
+// OnGotSession: Browser Test verifies that callback is fired and restored
+// session windows are returned by `GetRestoredSession()`.
+IN_PROC_BROWSER_TEST_F(
+    TabStripInternalsObserverBrowserTest,
+    SessionRestore_OnGotSession_CachesSessionWindowsAndFiresCallback) {
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_TRUE(
+      AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  base::MockCallback<base::RepeatingCallback<void()>> mock_callback;
+  {
+    TabStripInternalsObserver observer(browser()->profile(),
+                                       mock_callback.Get());
+    EXPECT_CALL(mock_callback, Run()).Times(AtLeast(1));
+    EXPECT_TRUE(observer.GetRestoredSession().empty());
+
+    // Trigger session restore.
+    BrowserWindowInterface* restored_window = QuitBrowserAndRestore(browser());
+
+    ASSERT_TRUE(restored_window);
+    TabStripModel* tab_strip = restored_window->GetTabStripModel();
+    ASSERT_TRUE(tab_strip);
+    // One additional tab gets added to the tabstrip by default on restore.
+    ASSERT_EQ(tab_strip->count(), 2 + 1);
+    const auto& restored = observer.GetRestoredSession();
+    ASSERT_EQ(restored.size(), 1u);
+    const sessions::SessionWindow* window = restored[0].get();
+    ASSERT_TRUE(window);
+    ASSERT_EQ(window->tabs.size(), 3u);
+    // Selected tab index should point to the last added tab.
+    EXPECT_EQ(window->selected_tab_index, 1);
+  }
+}
+
+// OnGotSession: Unit style test verifies that callback is fired exactly once.
+IN_PROC_BROWSER_TEST_F(
+    TabStripInternalsObserverBrowserTest,
+    SessionRestore_OnGotSession_UnitTest_CachesSessionWindowsAndFiresCallback) {
+  base::MockCallback<base::RepeatingCallback<void()>> mock_callback;
+  {
+    TabStripInternalsObserver observer(browser()->profile(),
+                                       mock_callback.Get());
+    // Unit style test has deterministic number of callback invocations.
+    EXPECT_CALL(mock_callback, Run()).Times(1);
+    EXPECT_TRUE(observer.GetRestoredSession().empty());
+
+    // Build session windows to be restored.
+    auto window = std::make_unique<sessions::SessionWindow>();
+    window->window_id = SessionID::FromSerializedValue(1);
+    auto window2 = std::make_unique<sessions::SessionWindow>();
+    window2->window_id = SessionID::FromSerializedValue(2);
+    auto window3 = std::make_unique<sessions::SessionWindow>();
+    window3->window_id = SessionID::FromSerializedValue(3);
+
+    std::vector<const sessions::SessionWindow*> windows;
+    windows.push_back(window.get());
+    windows.push_back(window2.get());
+    windows.push_back(window3.get());
+
+    observer.OnGotSession(browser()->profile(),
+                          /*for_app=*/false, windows);
+
+    const auto& restored = observer.GetRestoredSession();
+    ASSERT_EQ(restored.size(), windows.size());
+    EXPECT_EQ(restored[0]->window_id.id(), 1);
+    EXPECT_EQ(restored[1]->window_id.id(), 2);
+    EXPECT_EQ(restored[2]->window_id.id(), 3);
+  }
 }

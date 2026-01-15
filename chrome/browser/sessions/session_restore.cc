@@ -545,7 +545,14 @@ class SessionRestoreImpl : public BrowserListObserver {
     // Copy windows into windows_ so that we can combine both app and browser
     // windows together before doing a one-pass restore.
     std::ranges::move(windows, std::back_inserter(windows_));
-    SessionRestore::OnGotSession(profile(), for_apps, windows.size());
+
+    // Build a read-only view of the windows for the observers.
+    std::vector<const sessions::SessionWindow*> windows_view;
+    windows_view.reserve(windows_.size());
+    for (const auto& w : windows_) {
+      windows_view.push_back(w.get());
+    }
+    SessionRestore::OnGotSession(profile(), for_apps, windows_view);
     windows.clear();
 
     // Since we could now be possibly waiting for two |GetSession|s, we need
@@ -1550,11 +1557,12 @@ void SessionRestore::NotifySessionRestoreStartedLoadingTabs() {
 }
 
 // static
-void SessionRestore::OnGotSession(Profile* profile,
-                                  bool for_apps,
-                                  int window_count) {
+void SessionRestore::OnGotSession(
+    Profile* profile,
+    bool for_apps,
+    const std::vector<const sessions::SessionWindow*>& windows) {
   for (auto& observer : *observers()) {
-    observer.OnGotSession(profile, for_apps, window_count);
+    observer.OnGotSession(profile, for_apps, windows);
   }
 }
 

@@ -8,15 +8,20 @@ import "chrome/browser/ui/webui/tabs/tabs.mojom";
 import "components/tab_groups/public/mojom/tab_group_types.mojom";
 import "mojo/public/mojom/base/token.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
 
 // Root level data structure.
 struct Container {
   // TODO (crbug.com/427204855): Revisit the definition of entries in
-  // TabStripTree and TabRestoreData to add more fields.
+  // TabStripTree, TabRestoreData, and SessionRestoreData to add more fields.
   TabStripTree tabstrip_tree;
   TabRestoreData tab_restore;
-  // TODO (crbug.com/427204855): Add session restore data.
+  // Recently restored session data.
+  SessionRestoreData restored_session;
+  // Session data that is saved on disk to be restored on next startup after a
+  // crash.
+  SessionRestoreData saved_session;
 };
 
 // A tree structure representing the TabStrip.
@@ -49,6 +54,14 @@ struct NodeId {
     kTabRestoreGroup,
     // A tab restore Window entry.
     kTabRestoreWindow,
+    // A session restore Tab entry.
+    kSessionRestoreTab,
+    // A session restore Group entry.
+    kSessionRestoreGroup,
+    // A session restore Split Tab entry.
+    kSessionRestoreSplitTab,
+    // A session restore Window entry.
+    kSessionRestoreWindow,
   };
 
   // An opaque string that uniquely identifies the underlying resource.
@@ -87,7 +100,7 @@ union Data {
 // Metadata for an individual tab.
 struct Tab {
   NodeId id;
-  string title;
+  mojo_base.mojom.String16 title;
   url.mojom.Url url;
   bool active;
   bool visible;
@@ -123,7 +136,7 @@ struct GroupCollection {
 
 // Additional metadata for group tabs.
 struct TabGroupVisualData {
-  string title;
+  mojo_base.mojom.String16 title;
   tab_groups.mojom.Color color;
   bool is_collapsed;
 };
@@ -147,12 +160,18 @@ struct SplitTabVisualData {
 
 // Details about selected tabs.
 struct SelectionModel {
+  // Defaults to -1 when the TabStripModel is empty.
+  // This can occur when a new browser window is created
+  // with no tabs yet, or when an existing window is being torn down.
   int32 active_index = -1;
   int32 anchor_index = -1;
   array<int32> selected_indices;
 };
 
 // Contains session restore data from the TabRestoreService.
+// It contains a subset of fields from
+// `components/sessions/core/tab_restore_types.h`
+// which are required for TabStripInternals UI.
 // We will refer to it as tab restore data.
 struct TabRestoreData {
   array<TabRestoreEntry> entries;
@@ -166,9 +185,15 @@ union TabRestoreEntry {
   TabRestoreGroup group;
 };
 
+// Represents a `components/sessions/core/session_id.h`.
+// Uniquely identifies a tab or window for the duration of a session.
+struct SessionID {
+  int32 id;
+};
+
 // Represents common fields for all tab restore entries.
 struct TabRestoreEntryBase {
-  int32 original_id;
+  SessionID original_id;
   // The time when the entry was added to TabRestoreService.
   // It's not always set - can be nullptr or 0 in cases where
   // a timestamp isn't available at entry creation.
@@ -179,14 +204,17 @@ struct TabRestoreEntryBase {
 struct TabRestoreTab {
   NodeId id;
   TabRestoreEntryBase restore_entry;
-  int32 browser_id;
+  // The ID of the browser to which this tab belonged.
+  // May be 0 (an invalid SessionID) when restoring an entire session.
+  SessionID browser_id;
+  // Index of this tab within the tab strip.
   int32 tabstrip_index;
   bool pinned;
   // Could be Null if the tab is not part of a group.
   mojo_base.mojom.Token? group_id;
   TabGroupVisualData? group_visual_data;
   // Below fields represent properties of the selected navigation entry.
-  string title;
+  mojo_base.mojom.String16 title;
   url.mojom.Url url;
   // TODO (crbug.com/427204855): Add more tab metadata as needed.
 };
@@ -195,7 +223,9 @@ struct TabRestoreTab {
 struct TabRestoreGroup {
   NodeId id;
   TabRestoreEntryBase restore_entry;
-  int32 browser_id;
+  // The ID of the browser to which this tab belonged.
+  // May be 0 (an invalid SessionID) when restoring an entire session.
+  SessionID browser_id;
   mojo_base.mojom.Token group_id;
   TabGroupVisualData visual_data;
   array<TabRestoreTab> tabs;
@@ -205,8 +235,89 @@ struct TabRestoreGroup {
 struct TabRestoreWindow {
   NodeId id;
   TabRestoreEntryBase restore_entry;
+  // Index of the selected tab in the tabstrip model of this window.
   int32 selected_tab_index;
   array<TabRestoreTab> tabs;
+};
+
+// Contains session restore data from the SessionService.
+// It contains a subset of fields from
+// `components/sessions/core/session_types.h`
+// which are required for TabStripInternals UI.
+// We will refer to it as session restore data.
+struct SessionRestoreData {
+  array<SessionWindow> entries;
+};
+
+// Session restore data for a Tab.
+struct SessionTab {
+  NodeId id;
+  // Unique id of the window.
+  SessionID window_id;
+  // Unique id of the tab.
+  SessionID tab_id;
+  // Visual index of the tab within its window. There may be gaps in these
+  // values.
+  int32 tab_visual_index;
+  // Identifies the index of the current navigation in navigations.
+  int32 current_navigation_index;
+  // Could be Null if the tab is not part of a group.
+  mojo_base.mojom.Token? group_id;
+  // Could be Null if the tab is not part of a split.
+  mojo_base.mojom.Token? split_id;
+  bool pinned;
+  // Timestamp for when this tab was last modified.
+  mojo_base.mojom.Time timestamp;
+  // Timestamp for when this tab was last activated.
+  mojo_base.mojom.Time last_active_time;
+  // Persistent identifier used to reassociate sessionStorage. It represents the
+  // ID of the corresponding `SessionStorageNamespace`.
+  // It is stored as a std::string in `components/sessions/core/session_types.h`
+  // because `SessionStorageNamespace` defined in
+  // (`content/public/browser/session_storage_namespace.h`) exposes the ID as a
+  // std::string.
+  string session_storage_persistent_id;
+  // Represents the guid associated with the tab, may be empty.
+  string guid;
+  // Below fields represent properties of the selected navigation entry.
+  mojo_base.mojom.String16 title;
+  url.mojom.Url url;
+};
+
+// Session restore data for a Group referenced by a SessionTab.
+struct SessionTabGroup {
+  // Globally unique, even across different sessions.
+  mojo_base.mojom.Token group_id;
+  TabGroupVisualData visual_data;
+};
+
+// Session restore data for a Split referenced by a SessionTab.
+struct SessionSplitTab {
+  // Globally unique, even across different sessions.
+  mojo_base.mojom.Token split_id;
+  SplitTabVisualData split_visual_data;
+};
+
+// Session restore data for a Window.
+struct SessionWindow {
+  NodeId id;
+  SessionID window_id;
+  // The user-configured title for this window, may be empty.
+  mojo_base.mojom.String16 title;
+  // The workspace in which the window resides.
+  string workspace;
+  bool visible_on_all_workspaces;
+  int32 selected_tab_index;
+  // Timestamp for when this window was last modified.
+  mojo_base.mojom.Time timestamp;
+  // The tabs, ordered by visual order.
+  array<SessionTab> tabs;
+  // Tab groups in no particular order. For each group in `tab_groups`, there
+  // should be at least one tab in `tabs` in the group.
+  array<SessionTabGroup> tab_groups;
+  // Split tabs in no particular order. For each split in `split_tabs`, there
+  // should be at least one tab in `tabs` in the split.
+  array<SessionSplitTab> split_tabs;
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication

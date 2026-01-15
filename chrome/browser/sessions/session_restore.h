@@ -129,7 +129,10 @@ class SessionRestore {
   static void OnTabLoaderFinishedLoadingTabs();
 
   // Is called when windows are read from the last session restore file.
-  static void OnGotSession(Profile* profile, bool for_apps, int window_count);
+  static void OnGotSession(
+      Profile* profile,
+      bool for_apps,
+      const std::vector<const sessions::SessionWindow*>& windows);
 
  private:
   friend class SessionRestoreImpl;

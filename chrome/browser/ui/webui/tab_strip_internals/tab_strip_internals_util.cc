@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
@@ -70,8 +69,7 @@ mojom::DataPtr BuildMojoCollection(const tabs::TabCollection* collection) {
       const TabGroup* tab_group = group_collection->GetTabGroup();
       if (tab_group) {
         group_tabs->visualData = mojom::TabGroupVisualData::New();
-        group_tabs->visualData->title =
-            base::UTF16ToUTF8(tab_group->visual_data()->title());
+        group_tabs->visualData->title = tab_group->visual_data()->title();
         group_tabs->visualData->color = tab_group->visual_data()->color();
         group_tabs->visualData->is_collapsed =
             tab_group->visual_data()->is_collapsed();
@@ -112,7 +110,7 @@ mojom::DataPtr BuildMojoTab(const tabs::TabInterface* tab) {
 
   content::WebContents* data = tab->GetContents();
   if (data) {
-    mojo_tab->title = base::UTF16ToUTF8(data->GetTitle());
+    mojo_tab->title = data->GetTitle();
     mojo_tab->url = data->GetVisibleURL();
   }
   mojo_tab->active = tab->IsActivated();
@@ -127,10 +125,11 @@ mojom::DataPtr BuildMojoTab(const tabs::TabInterface* tab) {
 }
 
 // Build a TabRestoreEntryBase from an Entry.
+// i.e. maps input to corresponding mojo type.
 mojom::TabRestoreEntryBasePtr BuildTabRestoreEntryBase(
     const sessions::tab_restore::Entry& entry) {
   auto base = mojom::TabRestoreEntryBase::New();
-  base->original_id = entry.original_id.id();
+  base->original_id = mojom::SessionID::New(entry.original_id.id());
 
   if (!entry.timestamp.is_null()) {
     base->timestamp = entry.timestamp;
@@ -139,20 +138,21 @@ mojom::TabRestoreEntryBasePtr BuildTabRestoreEntryBase(
 }
 
 // Build a single TabRestoreTab entry.
+// i.e. maps input to corresponding mojo type.
 mojom::TabRestoreTabPtr BuildTabRestoreTab(
     const sessions::tab_restore::Tab& tab) {
   auto mojo_tab = mojom::TabRestoreTab::New();
   mojo_tab->id = MakeNodeId(base::NumberToString(tab.id.id()),
                             mojom::NodeId::Type::kTabRestoreTab);
   mojo_tab->restore_entry = BuildTabRestoreEntryBase(tab);
-  mojo_tab->browser_id = tab.browser_id;
+  mojo_tab->browser_id = mojom::SessionID::New(tab.browser_id);
   mojo_tab->tabstrip_index = tab.tabstrip_index;
   mojo_tab->pinned = tab.pinned;
 
   if (!tab.navigations.empty()) {
     const sessions::SerializedNavigationEntry& nav =
         tab.navigations[tab.normalized_navigation_index()];
-    mojo_tab->title = base::UTF16ToUTF8(nav.title());
+    mojo_tab->title = nav.title();
     mojo_tab->url = nav.virtual_url();
   }
 
@@ -163,23 +163,24 @@ mojom::TabRestoreTabPtr BuildTabRestoreTab(
   if (tab.group_visual_data.has_value()) {
     const auto& data = *tab.group_visual_data;
     mojo_tab->group_visual_data = mojom::TabGroupVisualData::New(
-        base::UTF16ToUTF8(data.title()), data.color(), data.is_collapsed());
+        data.title(), data.color(), data.is_collapsed());
   }
 
   return mojo_tab;
 }
 
 // Build a single TabRestoreGroup entry.
+// i.e. maps input to corresponding mojo type.
 mojom::TabRestoreGroupPtr BuildTabRestoreGroup(
     const sessions::tab_restore::Group& group) {
   auto mojo_group = mojom::TabRestoreGroup::New();
   mojo_group->id = MakeNodeId(base::NumberToString(group.id.id()),
                               mojom::NodeId::Type::kTabRestoreGroup);
   mojo_group->restore_entry = BuildTabRestoreEntryBase(group);
-  mojo_group->browser_id = group.browser_id;
+  mojo_group->browser_id = mojom::SessionID::New(group.browser_id);
   mojo_group->group_id = group.group_id.token();
   mojo_group->visual_data = mojom::TabGroupVisualData::New(
-      base::UTF16ToUTF8(group.visual_data.title()), group.visual_data.color(),
+      group.visual_data.title(), group.visual_data.color(),
       group.visual_data.is_collapsed());
 
   for (const std::unique_ptr<sessions::tab_restore::Tab>& tab : group.tabs) {
@@ -190,6 +191,7 @@ mojom::TabRestoreGroupPtr BuildTabRestoreGroup(
 }
 
 // Build a single TabRestoreWindow entry.
+// i.e. maps input to corresponding mojo type.
 mojom::TabRestoreWindowPtr BuildTabRestoreWindow(
     const sessions::tab_restore::Window& window) {
   auto mojo_window = mojom::TabRestoreWindow::New();
@@ -200,6 +202,92 @@ mojom::TabRestoreWindowPtr BuildTabRestoreWindow(
 
   for (const std::unique_ptr<sessions::tab_restore::Tab>& tab : window.tabs) {
     mojo_window->tabs.push_back(BuildTabRestoreTab(*tab));
+  }
+
+  return mojo_window;
+}
+
+// Build a single SessionTab entry.
+// i.e. maps input to corresponding mojo type.
+mojom::SessionTabPtr BuildSessionTab(const sessions::SessionTab& tab) {
+  auto mojo_tab = mojom::SessionTab::New();
+  mojo_tab->id = MakeNodeId(base::NumberToString(tab.tab_id.id()),
+                            mojom::NodeId::Type::kSessionRestoreTab);
+  mojo_tab->window_id = mojom::SessionID::New(tab.window_id.id());
+  mojo_tab->tab_id = mojom::SessionID::New(tab.tab_id.id());
+  mojo_tab->tab_visual_index = tab.tab_visual_index;
+  mojo_tab->current_navigation_index = tab.current_navigation_index;
+  mojo_tab->pinned = tab.pinned;
+  mojo_tab->timestamp = tab.timestamp;
+  mojo_tab->last_active_time = tab.last_active_time;
+  mojo_tab->session_storage_persistent_id = tab.session_storage_persistent_id;
+  mojo_tab->guid = tab.guid;
+
+  if (tab.group.has_value()) {
+    mojo_tab->group_id = tab.group->token();
+  }
+
+  if (tab.split_id.has_value()) {
+    mojo_tab->split_id = tab.split_id->token();
+  }
+
+  if (!tab.navigations.empty()) {
+    const auto& nav = tab.navigations[tab.normalized_navigation_index()];
+    mojo_tab->title = nav.title();
+    mojo_tab->url = nav.virtual_url();
+  }
+
+  return mojo_tab;
+}
+
+// Build a single SessionTabGroup entry.
+// i.e. maps input to corresponding mojo type.
+mojom::SessionTabGroupPtr BuildSessionTabGroup(
+    const sessions::SessionTabGroup& group) {
+  auto mojo_group = mojom::SessionTabGroup::New();
+  mojo_group->group_id = group.id.token();
+  mojo_group->visual_data = mojom::TabGroupVisualData::New(
+      group.visual_data.title(), group.visual_data.color(),
+      group.visual_data.is_collapsed());
+  return mojo_group;
+}
+
+// Build a single SessionSplitTab entry.
+// i.e. maps input to corresponding mojo type.
+mojom::SessionSplitTabPtr BuildSessionSplitTab(
+    const sessions::SessionSplitTab& split) {
+  auto mojo_split = mojom::SessionSplitTab::New();
+  mojo_split->split_id = split.id_.token();
+  mojo_split->split_visual_data = mojom::SplitTabVisualData::New(
+      static_cast<mojom::SplitTabVisualData::Layout>(
+          static_cast<int>(split.split_visual_data_.split_layout())),
+      split.split_visual_data_.split_ratio());
+  return mojo_split;
+}
+
+// Build a single SessionWindow entry.
+// i.e. maps input to corresponding mojo type.
+mojom::SessionWindowPtr BuildSessionWindow(
+    const sessions::SessionWindow& window) {
+  auto mojo_window = mojom::SessionWindow::New();
+  mojo_window->id = MakeNodeId(base::NumberToString(window.window_id.id()),
+                               mojom::NodeId::Type::kSessionRestoreWindow);
+  mojo_window->window_id = mojom::SessionID::New(window.window_id.id());
+  mojo_window->workspace = window.workspace;
+  mojo_window->visible_on_all_workspaces = window.visible_on_all_workspaces;
+  mojo_window->selected_tab_index = window.selected_tab_index;
+  mojo_window->timestamp = window.timestamp;
+
+  for (const auto& tab : window.tabs) {
+    mojo_window->tabs.push_back(BuildSessionTab(*tab));
+  }
+
+  for (const auto& group : window.tab_groups) {
+    mojo_window->tab_groups.push_back(BuildSessionTabGroup(*group));
+  }
+
+  for (const auto& split : window.split_tabs) {
+    mojo_window->split_tabs.push_back(BuildSessionSplitTab(*split));
   }
 
   return mojo_window;
@@ -327,6 +415,17 @@ mojom::TabRestoreDataPtr BuildTabRestoreData(
     data->entries.push_back(std::move(mojo_entry));
   }
 
+  return data;
+}
+
+mojom::SessionRestoreDataPtr BuildSessionRestoreData(
+    const std::vector<std::unique_ptr<sessions::SessionWindow>>& windows) {
+  auto data = mojom::SessionRestoreData::New();
+  for (const auto& window : windows) {
+    if (window) {
+      data->entries.push_back(BuildSessionWindow(*window));
+    }
+  }
   return data;
 }
 
