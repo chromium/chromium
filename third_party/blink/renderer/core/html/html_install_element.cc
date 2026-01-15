@@ -53,6 +53,20 @@ void HTMLInstallElement::UpdateAppearance() {
                                      WrapWeakPersistent(this)));
 }
 
+mojom::blink::EmbeddedPermissionRequestDescriptorPtr
+HTMLInstallElement::CreateEmbeddedPermissionRequestDescriptor() {
+  auto descriptor = mojom::blink::EmbeddedPermissionRequestDescriptor::New();
+  descriptor->element_position = BoundsInWidget();
+
+  auto install_descriptor =
+      mojom::blink::InstallEmbeddedPermissionRequestDescriptor::New();
+  descriptor->detail =
+      mojom::blink::EmbeddedPermissionControlDescriptorExtension::NewInstall(
+          std::move(install_descriptor));
+
+  return descriptor;
+}
+
 void HTMLInstallElement::UpdateAppearanceTask() {
   // TODO(crbug.com/467103133): Render site-specific information.
   uint16_t message_id = GetTranslatedMessageID(

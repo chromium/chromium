@@ -75,9 +75,14 @@ mojom::blink::EmbeddedPermissionRequestDescriptorPtr
 HTMLGeolocationElement::CreateEmbeddedPermissionRequestDescriptor() {
   auto descriptor = mojom::blink::EmbeddedPermissionRequestDescriptor::New();
   descriptor->element_position = BoundsInWidget();
-  descriptor->geolocation =
+
+  auto geolocation_descriptor =
       mojom::blink::GeolocationEmbeddedPermissionRequestDescriptor::New();
-  descriptor->geolocation->autolocate = autolocate();
+  geolocation_descriptor->autolocate = autolocate();
+  descriptor->detail =
+      mojom::blink::EmbeddedPermissionControlDescriptorExtension::
+          NewGeolocation(std::move(geolocation_descriptor));
+
   return descriptor;
 }
 

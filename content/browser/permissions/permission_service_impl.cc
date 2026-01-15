@@ -108,6 +108,7 @@ bool CheckPageEmbeddedPermissionTypes(
   for (const auto& permission_type : permissions) {
     auto type = blink::PermissionDescriptorToPermissionType(permission_type);
     if (type != blink::PermissionType::GEOLOCATION &&
+        type != blink::PermissionType::WEB_APP_INSTALLATION &&
         type != blink::PermissionType::AUDIO_CAPTURE &&
         type != blink::PermissionType::VIDEO_CAPTURE) {
       return false;
@@ -157,15 +158,32 @@ void PermissionServiceImpl::RegisterPageEmbeddedPermissionControl(
     std::vector<PermissionDescriptorPtr> permissions,
     blink::mojom::EmbeddedPermissionRequestDescriptorPtr descriptor,
     mojo::PendingRemote<EmbeddedPermissionControlClient> observer) {
-  if (descriptor->geolocation &&
-      !base::FeatureList::IsEnabled(blink::features::kGeolocationElement)) {
-    bad_message::ReceivedBadMessage(
-        context_->render_frame_host()->GetProcess(),
-        bad_message::PSI_REGISTER_PERMISSION_ELEMENT_WITHOUT_FEATURE);
-    return;
+  // If the control has a detail, ensure the corresponding feature is enabled.
+  if (descriptor->detail) {
+    switch (descriptor->detail->which()) {
+      case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
+          kGeolocation:
+        if (!base::FeatureList::IsEnabled(
+                blink::features::kGeolocationElement)) {
+          bad_message::ReceivedBadMessage(
+              context_->render_frame_host()->GetProcess(),
+              bad_message::PSI_REGISTER_PERMISSION_ELEMENT_WITHOUT_FEATURE);
+          return;
+        }
+        break;
+      case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
+          kInstall:
+        if (!base::FeatureList::IsEnabled(blink::features::kInstallElement)) {
+          bad_message::ReceivedBadMessage(
+              context_->render_frame_host()->GetProcess(),
+              bad_message::PSI_REGISTER_PERMISSION_ELEMENT_WITHOUT_FEATURE);
+          return;
+        }
+        break;
+    }
   }
 
-  if (!descriptor->geolocation &&
+  if (!descriptor->detail &&
       !base::FeatureList::IsEnabled(blink::features::kPermissionElement) &&
       !base::FeatureList::IsEnabled(blink::features::kUserMediaElement)) {
     bad_message::ReceivedBadMessage(
@@ -190,10 +208,20 @@ void PermissionServiceImpl::RegisterPageEmbeddedPermissionControl(
     }
   }
 
-  auto source =
-      descriptor->geolocation
-          ? EmbeddedPermissionControlChecker::Source::kGeolocationElement
-          : EmbeddedPermissionControlChecker::Source::kPermissionElement;
+  EmbeddedPermissionControlChecker::Source source =
+      EmbeddedPermissionControlChecker::Source::kPermissionElement;
+  if (descriptor->detail) {
+    switch (descriptor->detail->which()) {
+      case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
+          kGeolocation:
+        source = EmbeddedPermissionControlChecker::Source::kGeolocationElement;
+        break;
+      case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
+          kInstall:
+        source = EmbeddedPermissionControlChecker::Source::kInstallElement;
+        break;
+    }
+  }
   checker->CheckPageEmbeddedPermission(
       source, std::move(permission_names), std::move(observer),
       base::BindOnce(
@@ -229,9 +257,16 @@ void PermissionServiceImpl::RequestPageEmbeddedPermission(
     std::vector<PermissionDescriptorPtr> permissions,
     EmbeddedPermissionRequestDescriptorPtr descriptor,
     RequestPageEmbeddedPermissionCallback callback) {
-  if (!base::FeatureList::IsEnabled(
-          descriptor->geolocation ? blink::features::kGeolocationElement
-                                  : blink::features::kPermissionElement)) {
+  const base::Feature* required_feature = &blink::features::kPermissionElement;
+  if (descriptor->detail) {
+    if (descriptor->detail->is_geolocation()) {
+      required_feature = &blink::features::kGeolocationElement;
+    } else if (descriptor->detail->is_install()) {
+      required_feature = &blink::features::kInstallElement;
+    }
+  }
+
+  if (!base::FeatureList::IsEnabled(*required_feature)) {
     bad_message::ReceivedBadMessage(
         context_->render_frame_host()->GetProcess(),
         bad_message::PSI_REQUEST_EMBEDDED_PERMISSION_WITHOUT_FEATURE);

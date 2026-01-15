@@ -36,6 +36,8 @@ class CONTENT_EXPORT EmbeddedPermissionControlChecker
     kPermissionElement,
     // The request is from a <geolocation> element.
     kGeolocationElement,
+    // The request is from an <install> element.
+    kInstallElement,
   };
 
   using RegisterPageEmbeddedPermissionCallback = base::OnceCallback<void(
@@ -107,7 +109,9 @@ class CONTENT_EXPORT EmbeddedPermissionControlChecker
   void OnClientDisconnect(Client* client);
 
   // Records PEPCs per type are associated with this page. At most
-  // |kMaxPEPCPerPage| of each type is allowed.
+  // `kMaxPEPCPerPage` of each type is allowed, with the exception of install
+  // elements which are allowed up to `kMaxInstallPerPage`.
+  // See `GetMaxElementsPerPageForSource`.
   struct ClientKey {
     ClientKey(Source source,
               std::set<blink::mojom::PermissionName> permissions);

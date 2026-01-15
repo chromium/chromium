@@ -4,6 +4,7 @@
 
 #include "content/browser/permissions/embedded_permission_control_checker.h"
 
+#include <cstddef>
 #include <string>
 
 #include "base/strings/string_number_conversions.h"
@@ -22,6 +23,15 @@ namespace {
 // iframes can be intentionally disruptive by appending too many embedded
 // permission elements.
 constexpr static int kMaxPEPCPerPage = 3;
+constexpr static int kMaxInstallPerPage = 24;
+
+size_t GetMaxElementsPerPageForSource(
+    EmbeddedPermissionControlChecker::Source source) {
+  if (source == EmbeddedPermissionControlChecker::Source::kInstallElement) {
+    return kMaxInstallPerPage;
+  }
+  return kMaxPEPCPerPage;
+}
 
 }  // namespace
 
@@ -40,16 +50,18 @@ void EmbeddedPermissionControlChecker::CheckPageEmbeddedPermission(
                                std::move(pending_client), std::move(callback));
   ClientKey key(client->source(), client->permissions());
   auto& queue = client_map_[key];
-  if (queue.size() < kMaxPEPCPerPage ||
+
+  const size_t max_elements = GetMaxElementsPerPageForSource(source);
+  if (queue.size() < max_elements ||
       base::FeatureList::IsEnabled(
           blink::features::kBypassPepcSecurityForTesting)) {
     client->OnEmbeddedPermissionControlRegistered(/*allow=*/true);
   }
   queue.push_back(std::move(client));
-  if (queue.size() == kMaxPEPCPerPage) {
+  if (queue.size() == max_elements) {
     page().GetMainDocument().AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kWarning,
-        "Maximum limit of " + base::NumberToString(kMaxPEPCPerPage) +
+        "Maximum limit of " + base::NumberToString(max_elements) +
             " permission elements has been reached. More permission"
             " elements can be added but they will not be clickable");
   }
@@ -59,6 +71,10 @@ PAGE_USER_DATA_KEY_IMPL(EmbeddedPermissionControlChecker);
 
 void EmbeddedPermissionControlChecker::OnClientDisconnect(
     Client* disconnected_client) {
+  // Store the max elements for the source type before erasing the client.
+  const int max_elements =
+      GetMaxElementsPerPageForSource(disconnected_client->source());
+
   ClientKey key(disconnected_client->source(),
                 disconnected_client->permissions());
   auto client_map_it = client_map_.find(key);
@@ -72,7 +88,7 @@ void EmbeddedPermissionControlChecker::OnClientDisconnect(
   }
 
   for (auto it = queue.begin();
-       it != queue.end() && std::distance(queue.begin(), it) < kMaxPEPCPerPage;
+       it != queue.end() && std::distance(queue.begin(), it) < max_elements;
        ++it) {
     (*it)->OnEmbeddedPermissionControlRegistered(/*allow=*/true);
   }

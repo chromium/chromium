@@ -134,15 +134,28 @@ struct GeolocationEmbeddedPermissionRequestDescriptor {
   // TODO(crbug.com/442793180): Decide to support precise location request.
 };
 
+// Hold extra data of request originated from <install> element
+struct InstallEmbeddedPermissionRequestDescriptor {
+};
+
+// Union of element-specific details for embedded permission requests.
+union EmbeddedPermissionControlDescriptorExtension {
+  // Hold extra information, if the request comes from a dedicated <geolocation> element.
+  GeolocationEmbeddedPermissionRequestDescriptor geolocation;
+
+  // Hold extra information, if the request comes from a dedicated <install> element.
+  InstallEmbeddedPermissionRequestDescriptor install;
+};
+
 // Holds information about the embedded permission request
 struct EmbeddedPermissionRequestDescriptor {
   // Element position (in screen coordinates), used to calculate position where
   // the secondary prompt UI is expected to be shown.
   gfx.mojom.Rect element_position;
 
-  // Hold extra information, if the request comes from a dedicated element(
-  // <geolocation>).
-  GeolocationEmbeddedPermissionRequestDescriptor? geolocation;
+  // Element-specific details, if the request comes from a dedicated element
+  // like <geolocation>, or <install>. Null for generic <permission> element.
+  EmbeddedPermissionControlDescriptorExtension? detail;
 };
 
 // The Permission service provides permission handling capabilities by exposing

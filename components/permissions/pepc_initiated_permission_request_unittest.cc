@@ -35,6 +35,7 @@
 namespace permissions {
 
 namespace {
+using blink::mojom::EmbeddedPermissionControlDescriptorExtension;
 using blink::mojom::EmbeddedPermissionRequestDescriptor;
 using blink::mojom::EmbeddedPermissionRequestDescriptorPtr;
 using blink::mojom::GeolocationEmbeddedPermissionRequestDescriptor;
@@ -133,9 +134,12 @@ class PEPCInitiatedPermissionRequestTest
       bool autolocate = false) {
     EmbeddedPermissionRequestDescriptorPtr permission_descriptor =
         EmbeddedPermissionRequestDescriptor::New();
-    permission_descriptor->geolocation =
+    auto geolocation_descriptor =
         GeolocationEmbeddedPermissionRequestDescriptor::New();
-    permission_descriptor->geolocation->autolocate = autolocate;
+    geolocation_descriptor->autolocate = autolocate;
+    permission_descriptor->detail =
+        EmbeddedPermissionControlDescriptorExtension::NewGeolocation(
+            std::move(geolocation_descriptor));
     return permission_descriptor;
   }
 

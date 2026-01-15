@@ -33,6 +33,8 @@ class CORE_EXPORT HTMLInstallElement : public HTMLPermissionElement {
 
   // HTMLPermissionElement:
   void UpdateAppearance() override;
+  mojom::blink::EmbeddedPermissionRequestDescriptorPtr
+  CreateEmbeddedPermissionRequestDescriptor() override;
   void DefaultEventHandler(Event&) override;
 
   void UpdateAppearanceTask();
