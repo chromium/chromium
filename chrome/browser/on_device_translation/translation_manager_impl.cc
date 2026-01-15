@@ -13,7 +13,6 @@
 #include "chrome/browser/on_device_translation/service_controller.h"
 #include "chrome/browser/on_device_translation/service_controller_manager.h"
 #include "chrome/browser/on_device_translation/translation_manager_util.h"
-#include "chrome/browser/on_device_translation/translator.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -23,6 +22,7 @@
 #include "components/on_device_translation/features.h"
 #include "components/on_device_translation/metrics.h"
 #include "components/on_device_translation/public/language_pack.h"
+#include "components/on_device_translation/translator.h"
 #include "components/permissions/permissions_client.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -264,8 +264,14 @@ void TranslationManagerImpl::CreateTranslatorImpl(
   }
   mojo::PendingRemote<::blink::mojom::Translator> blink_remote;
   translators_.Add(
-      std::make_unique<Translator>(browser_context_, source_language,
-                                   target_language, std::move(result.value())),
+      std::make_unique<Translator>(
+          base::BindRepeating(
+              [](base::WeakPtr<content::BrowserContext> browser_context) {
+                return browser_context &&
+                       IsTranslatorAllowed(browser_context.get());
+              },
+              browser_context_),
+          source_language, target_language, std::move(result.value())),
       blink_remote.InitWithNewPipeAndPassReceiver());
   mojo::Remote<TranslationManagerCreateTranslatorClient>(std::move(client))
       ->OnResult(CreateTranslatorResult::NewTranslator(std::move(blink_remote)),

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/on_device_translation/translator.h"
+#include "components/on_device_translation/translator.h"
 
 #include <algorithm>
 
@@ -11,11 +11,8 @@
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/on_device_translation/features.h"
 #include "components/on_device_translation/metrics.h"
-#include "components/on_device_translation/pref_names.h"
-#include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom.h"
@@ -39,11 +36,11 @@ bool ContainsTranslatableContent(const std::string& input) {
 }  // namespace
 
 Translator::Translator(
-    base::WeakPtr<content::BrowserContext> browser_context,
+    const base::RepeatingCallback<bool()>& can_translate_callback,
     const std::string& source_lang,
     const std::string& target_lang,
     mojo::PendingRemote<on_device_translation::mojom::Translator> remote)
-    : browser_context_(browser_context),
+    : can_translate_callback_(can_translate_callback),
       source_lang_(source_lang),
       target_lang_(target_lang),
       translator_remote_(std::move(remote)) {}
@@ -53,9 +50,7 @@ Translator::~Translator() = default;
 bool Translator::VerifyPrerequisites(
     const std::string& input,
     mojo::Remote<blink::mojom::ModelStreamingResponder>& responder) {
-  if (!Profile::FromBrowserContext(browser_context_.get())
-           ->GetPrefs()
-           ->GetBoolean(prefs::kTranslatorAPIAllowed)) {
+  if (!can_translate_callback_.Run()) {
     responder->OnError(
         blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure,
         /*quota_error_info=*/nullptr);
@@ -83,7 +78,6 @@ void Translator::Translate(
     const std::string& input,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
-  CHECK(browser_context_);
   mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
       std::move(pending_responder));
 
@@ -93,24 +87,23 @@ void Translator::Translate(
 
   if (translator_remote_.is_connected()) {
     translator_remote_->Translate(
-        input,
-        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-            base::BindOnce(
-                [](mojo::Remote<blink::mojom::ModelStreamingResponder>
-                       responder,
-                   const std::optional<std::string>& output) {
-                  if (!output) {
-                    responder->OnError(
-                        blink::mojom::ModelStreamingResponseStatus::
-                            kErrorGenericFailure,
-                        /*quota_error_info=*/nullptr);
-                    return;
-                  }
-                  responder->OnStreaming(output.value());
-                  responder->OnCompletion(/*context_info=*/nullptr);
-                },
-                std::move(responder)),
-            std::nullopt));
+        input, mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                   base::BindOnce(
+                       [](mojo::Remote<blink::mojom::ModelStreamingResponder>
+                              responder,
+                          const std::optional<std::string>& output) {
+                         if (!output) {
+                           responder->OnError(
+                               blink::mojom::ModelStreamingResponseStatus::
+                                   kErrorGenericFailure,
+                               /*quota_error_info=*/nullptr);
+                           return;
+                         }
+                         responder->OnStreaming(output.value());
+                         responder->OnCompletion(/*context_info=*/nullptr);
+                       },
+                       std::move(responder)),
+                   std::nullopt));
   } else {
     responder->OnError(
         blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure,
@@ -190,7 +183,6 @@ void Translator::TranslateStreaming(
     const std::string& input,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
-  CHECK(browser_context_);
   if (!base::FeatureList::IsEnabled(kTranslateStreamingBySentence)) {
     Translate(input, std::move(pending_responder));
     return;

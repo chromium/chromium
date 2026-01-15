@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ON_DEVICE_TRANSLATION_TRANSLATOR_H_
-#define CHROME_BROWSER_ON_DEVICE_TRANSLATION_TRANSLATOR_H_
+#ifndef COMPONENTS_ON_DEVICE_TRANSLATION_TRANSLATOR_H_
+#define COMPONENTS_ON_DEVICE_TRANSLATION_TRANSLATOR_H_
 
 #include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/on_device_translation/public/mojom/translator.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -14,10 +15,6 @@
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-forward.h"
 #include "third_party/blink/public/mojom/on_device_translation/translator.mojom.h"
 
-namespace content {
-class BrowserContext;
-}  // namespace content
-
 namespace on_device_translation {
 
 // The browser-side implementation of `blink::mojom::Translator`, which
@@ -25,7 +22,7 @@ namespace on_device_translation {
 class Translator : public blink::mojom::Translator {
  public:
   Translator(
-      base::WeakPtr<content::BrowserContext> browser_context,
+      const base::RepeatingCallback<bool()>& can_translate_callback,
       const std::string& source_lang,
       const std::string& target_lang,
       mojo::PendingRemote<on_device_translation::mojom::Translator> remote);
@@ -59,7 +56,7 @@ class Translator : public blink::mojom::Translator {
       const std::string& input,
       mojo::Remote<blink::mojom::ModelStreamingResponder>& responder);
 
-  base::WeakPtr<content::BrowserContext> browser_context_;
+  base::RepeatingCallback<bool()> can_translate_callback_;
   const std::string source_lang_;
   const std::string target_lang_;
   mojo::Remote<on_device_translation::mojom::Translator> translator_remote_;
@@ -71,4 +68,4 @@ class Translator : public blink::mojom::Translator {
 
 }  // namespace on_device_translation
 
-#endif  // CHROME_BROWSER_ON_DEVICE_TRANSLATION_TRANSLATOR_H_
+#endif  // COMPONENTS_ON_DEVICE_TRANSLATION_TRANSLATOR_H_
