@@ -246,12 +246,6 @@ eliminate redundant expressions that are unavoidable with the with the operator
 overloads. (Ideally the compiler should optimize those away, but better to avoid
 them in the first place.)
 
-Type promotions are a slightly modified version of the [standard C/C++ numeric
-promotions
-](http://en.cppreference.com/w/cpp/language/implicit_conversion#Numeric_promotions)
-with the two differences being that *there is no default promotion to int*
-and *bitwise logical operations always return an unsigned of the wider type.*
-
 ### Example
 
 ```
@@ -267,6 +261,47 @@ variable--;
 variable++;
 if (variable.ValueOrDie() == 0)  // Breakpoint or configured CheckHandler
   // Does not happen as variable underflowed.
+```
+
+When performing an infix arithmetic operation, CheckedNumerics are promoted to
+the smallest CheckedNumeric type that can contain either side of the expression,
+and a CheckedNumeric of that size is returned. This is a slightly modified
+version of the
+[standard C/C++ numeric promotions](https://en.cppreference.com/w/cpp/language/implicit_conversion#Numeric_promotions).
+Two differences are that *there is no default promotion to int*
+and *bitwise logical operations always return an unsigned of the wider type.*
+
+Hence, callers may wind up with a valid CheckedNumeric of a wider type than
+what they originally started with unless a Cast<>() call is made back to the
+original type, or an assignment is made to the original type. Consequently,
+using `auto` to deduce the type of a CheckedNumeric is discouaged.
+
+This subtlety only comes play when using infix expressions. Assignment
+assignment operators back to an existing safe numeric variable (e.g. `+=`,
+`*=`, `-=`, `/=`) avoid the need to worry about promotion.
+
+### Examples
+
+```
+#include "base/numerics/checked_math.h"
+...
+// A checked numeric of uint16_t can hold the largest uint16_t value.
+static_assert(std::is_same_v<decltype(CheckedNumeric<uint16_t>(65535)),
+                             CheckedNumeric<uint16_t>>);
+
+// Adding an int to it results in a valid checked numeric of int.
+static_assert(std::is_same_v<decltype(CheckedNumeric<uint16_t>(65535) + 1),
+                             CheckedNumeric<int>>);
+
+// Adding a uint16_t to it results in an invalid checked numeric of uint16_t.
+static_assert(std::is_same_v<
+    decltype(CheckedNumeric<uint16_t>(65535) + static_cast<uint16_t>(1)),
+    CheckedNumeric<uint16_t>>);
+
+// Incrementing it by an int results in an invalid checked numeric of uint16_t.
+static_assert(std::is_same_v<
+    std::remove_reference_t<decltype(CheckedNumeric<uint16_t>(65535) += 1)>,
+    CheckedNumeric<uint16_t>>);
 ```
 
 ### Members
@@ -376,11 +411,9 @@ as they eliminate redundant expressions that are unavoidable with the operator
 overloads. (Ideally the compiler should optimize those away, but better to avoid
 them in the first place.)
 
-Type promotions are a slightly modified version of the [standard C/C++ numeric
-promotions
-](http://en.cppreference.com/w/cpp/language/implicit_conversion#Numeric_promotions)
-with the two differences being that *there is no default promotion to int*
-and *bitwise logical operations always return an unsigned of the wider type.*
+Type promotions occur in a manner analogous to those for CheckedNumeric<>. See
+the documentation for CheckedNumeric<> for details.
+
 
 *** aside
 Most arithmetic operations saturate normally, to the numeric limit in the
