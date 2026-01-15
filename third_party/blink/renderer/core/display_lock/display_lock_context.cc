@@ -704,6 +704,7 @@ bool DisplayLockContext::MarkForLayoutIfNeeded() {
 bool DisplayLockContext::MarkAncestorsForPrePaintIfNeeded() {
   // TODO(vmpstr): We should add a compositing phase for proper bookkeeping.
   bool compositing_dirtied = MarkForCompositingUpdatesIfNeeded();
+  bool visual_overflow_dirtied = MarkForVisualOverflowRecalcIfNeeded();
 
   if (IsElementDirtyForPrePaint()) {
     auto* layout_object = element_->GetLayoutObject();
@@ -737,7 +738,7 @@ bool DisplayLockContext::MarkAncestorsForPrePaintIfNeeded() {
     }
     return true;
   }
-  return compositing_dirtied;
+  return compositing_dirtied || visual_overflow_dirtied;
 }
 
 bool DisplayLockContext::MarkNeedsRepaintAndPaintArtifactCompositorUpdate() {
@@ -772,6 +773,28 @@ bool DisplayLockContext::MarkForCompositingUpdatesIfNeeded() {
     if (needs_compositing_dependent_flag_update_)
       layout_box->Layer()->SetNeedsCompositingInputsUpdate();
     needs_compositing_dependent_flag_update_ = false;
+
+    return true;
+  }
+  return false;
+}
+
+bool DisplayLockContext::MarkForVisualOverflowRecalcIfNeeded() {
+  if (!ConnectedToView() || !needs_visual_overflow_recalc_update_) {
+    return false;
+  }
+
+  auto* layout_object = element_->GetLayoutObject();
+  if (!layout_object) {
+    return false;
+  }
+
+  auto* layout_box = DynamicTo<LayoutBoxModelObject>(layout_object);
+  if (layout_box && layout_box->HasSelfPaintingLayer()) {
+    if (needs_visual_overflow_recalc_update_) {
+      layout_box->Layer()->SetNeedsVisualOverflowRecalc();
+    }
+    needs_visual_overflow_recalc_update_ = false;
 
     return true;
   }

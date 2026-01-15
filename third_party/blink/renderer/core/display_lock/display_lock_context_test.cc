@@ -3869,4 +3869,76 @@ TEST_F(SoftNavigationDisplayLockContextTest, DescendantSoftNavigationContext) {
   EXPECT_TRUE(tracker->IsAttributable(content_element, context));
 }
 
+TEST_F(DisplayLockContextRenderingTest,
+       VisualOverflowCalculateOnDescendantOfLockedSVGDoesNotCrash) {
+  SetHtmlInnerHTML(R"HTML(
+    <svg width=100 height=100>
+      <g id=outer_lock>
+        <foreignObject id=inner_lock width=100 height=100>
+          <div id=child style="width: 50px; height: 50px; background: blue;"></div>
+        </foreignObject>
+      </g>
+    </svg>
+  )HTML");
+
+  auto* outer = GetDocument().getElementById(AtomicString("outer_lock"));
+  auto* inner = GetDocument().getElementById(AtomicString("inner_lock"));
+
+  LockImmediate(&outer->EnsureDisplayLockContext());
+  LockImmediate(&inner->EnsureDisplayLockContext());
+
+  UpdateAllLifecyclePhasesForTest();
+
+  // Verify that outer doesn't have a layer, but inner does.
+  EXPECT_FALSE(outer->GetLayoutObject()->HasLayer());
+  auto* inner_layer = GetPaintLayerByElementId("inner_lock");
+  ASSERT_TRUE(inner_layer);
+
+  // Mark inner for overflow recalc.
+  inner_layer->SetNeedsVisualOverflowRecalc();
+
+  // Ensure no crash.
+  UpdateAllLifecyclePhasesForTest();
+}
+
+TEST_F(DisplayLockContextRenderingTest, VisualOverflowUpdateAfterUnlock) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      #target {
+        width: 100px;
+        height: 100px;
+        background: blue;
+        box-shadow: 10px 10px 0px red;
+        contain: style layout;
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  auto* target = GetDocument().getElementById(AtomicString("target"));
+  auto* box = target->GetLayoutBox();
+  auto* layer = box->Layer();
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(layer->GetLayoutObject().VisualOverflowRect(),
+            PhysicalRect(0, 0, 110, 110));
+
+  LockImmediate(&target->EnsureDisplayLockContext());
+  UpdateAllLifecyclePhasesForTest();
+
+  target->setAttribute(html_names::kStyleAttr,
+                       AtomicString("box-shadow: 20px 20px 0px red;"));
+  GetDocument().UpdateStyleAndLayoutTree();
+  EXPECT_TRUE(layer->NeedsVisualOverflowRecalc());
+
+  UpdateAllLifecyclePhasesForTest();
+
+  target->GetDisplayLockContext()->SetRequestedState(
+      EContentVisibility::kVisible);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(layer->GetLayoutObject().VisualOverflowRect(),
+            PhysicalRect(0, 0, 120, 120));
+}
+
 }  // namespace blink

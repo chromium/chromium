@@ -489,11 +489,18 @@ void PaintLayer::UpdateDescendantDependentFlags() {
     needs_descendant_dependent_flags_update_ = false;
 
     if (IsSelfPaintingLayer() && needs_visual_overflow_recalc_) {
-      PhysicalRect old_visual_rect =
-          PhysicalVisualOverflowRectAllowingUnset(GetLayoutObject());
-      GetLayoutObject().RecalcVisualOverflow();
-      if (old_visual_rect != GetLayoutObject().VisualOverflowRect()) {
-        MarkAncestorChainForFlagsUpdate(kDoesNotNeedDescendantDependentUpdate);
+      if (GetLayoutObject().ChildPrePaintBlockedByDisplayLock()) {
+        GetLayoutObject()
+            .GetDisplayLockContext()
+            ->NotifyVisualOverflowRecalcWasBlocked();
+      } else {
+        PhysicalRect old_visual_rect =
+            PhysicalVisualOverflowRectAllowingUnset(GetLayoutObject());
+        GetLayoutObject().RecalcVisualOverflow();
+        if (old_visual_rect != GetLayoutObject().VisualOverflowRect()) {
+          MarkAncestorChainForFlagsUpdate(
+              kDoesNotNeedDescendantDependentUpdate);
+        }
       }
     }
     needs_visual_overflow_recalc_ = false;
