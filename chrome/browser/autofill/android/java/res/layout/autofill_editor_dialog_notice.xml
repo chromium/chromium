@@ -13,5 +13,5 @@ found in the LICENSE file.
     android:paddingBottom="12dp"
     android:paddingLeft="4dp"
     android:paddingRight="4dp"
-    android:breakStrategy="high_quality"
+    android:breakStrategy="simple"
     android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
