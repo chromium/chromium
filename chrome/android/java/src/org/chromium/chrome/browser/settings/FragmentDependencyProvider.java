@@ -163,7 +163,9 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
             sandboxFragment.setCookieSettingsIntentHelper(
                     (Context context) -> {
                         SiteSettingsHelper.showCategorySettings(
-                                context, SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
+                                context,
+                                SiteSettingsCategory.Type.THIRD_PARTY_COOKIES,
+                                /* addToBackStack= */ true);
                     });
         }
         if (fragment instanceof LanguageSettings) {
