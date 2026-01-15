@@ -41,7 +41,7 @@ public class AutofillSaveCardUiInfo {
     private final String mCancelText;
     private final String mDescriptionText;
     private final String mLoadingDescription;
-    private final boolean mIsGooglePayBrandingEnabled;
+    private final boolean mIsChromeBrandingEnabled;
 
     public boolean isForUpload() {
         return mIsForUpload;
@@ -95,8 +95,8 @@ public class AutofillSaveCardUiInfo {
         return mLoadingDescription;
     }
 
-    public boolean isGooglePayBrandingEnabled() {
-        return mIsGooglePayBrandingEnabled;
+    public boolean isChromeBrandingEnabled() {
+        return mIsChromeBrandingEnabled;
     }
 
     // LINT.IfChange
@@ -126,7 +126,7 @@ public class AutofillSaveCardUiInfo {
      * @param descriptionText The bottom sheet description UI string. Must not be {@code null}.
      * @param loadingDescription An accessibility strings for the loading view. Must not be {@code
      *     null}.
-     * @param isGooglePayBrandingEnabled Whether Google Chrome branding is enabled for the build.
+     * @param isChromeBrandingEnabled Whether Google Chrome branding is enabled for the build.
      */
     @CalledByNative
     @VisibleForTesting
@@ -144,7 +144,7 @@ public class AutofillSaveCardUiInfo {
             String cancelText,
             String descriptionText,
             String loadingDescription,
-            boolean isGooglePayBrandingEnabled) {
+            boolean isChromeBrandingEnabled) {
         mIsForUpload = isForUpload;
         mLogoIcon = logoIcon;
         mLogoIconDescription = logoIconDescription;
@@ -164,7 +164,7 @@ public class AutofillSaveCardUiInfo {
                 Objects.requireNonNull(descriptionText, "Description text can't be null");
         mLoadingDescription =
                 Objects.requireNonNull(loadingDescription, "Loading description can't be null");
-        mIsGooglePayBrandingEnabled = isGooglePayBrandingEnabled;
+        mIsChromeBrandingEnabled = isChromeBrandingEnabled;
     }
 
     // LINT.ThenChange(//chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.cc)
@@ -183,7 +183,7 @@ public class AutofillSaveCardUiInfo {
         private @Nullable String mCancelText;
         private @Nullable String mDescriptionText;
         private @Nullable String mLoadingDescription;
-        private boolean mIsGooglePayBrandingEnabled;
+        private boolean mIsChromeBrandingEnabled;
 
         public Builder withIsForUpload(boolean isForUpload) {
             mIsForUpload = isForUpload;
@@ -240,8 +240,8 @@ public class AutofillSaveCardUiInfo {
             return this;
         }
 
-        public Builder withIsGooglePayBrandingEnabled(boolean isGooglePayBrandingEnabled) {
-            mIsGooglePayBrandingEnabled = isGooglePayBrandingEnabled;
+        public Builder withIsChromeBrandingEnabled(boolean isChromeBrandingEnabled) {
+            mIsChromeBrandingEnabled = isChromeBrandingEnabled;
             return this;
         }
 
@@ -261,7 +261,7 @@ public class AutofillSaveCardUiInfo {
                     assumeNonNull(mCancelText),
                     assumeNonNull(mDescriptionText),
                     assumeNonNull(mLoadingDescription),
-                    mIsGooglePayBrandingEnabled);
+                    mIsChromeBrandingEnabled);
         }
     }
 }

@@ -100,7 +100,7 @@ static AutofillSaveCardUiInfo CreateAutofillSaveCardUiInfo(
     const std::u16string& cancel_text,
     const std::u16string& description_text,
     const std::u16string& loading_description,
-    bool is_google_pay_branding_enabled,
+    bool is_chrome_branding_enabled,
     bool is_for_bottom_sheet = false) {
   AutofillSaveCardUiInfo ui_info;
   ui_info.is_for_upload = is_for_upload;
@@ -128,7 +128,7 @@ static AutofillSaveCardUiInfo CreateAutofillSaveCardUiInfo(
   ui_info.cancel_text = cancel_text;
   ui_info.description_text = description_text;
   ui_info.loading_description = loading_description;
-  ui_info.is_google_pay_branding_enabled = is_google_pay_branding_enabled;
+  ui_info.is_chrome_branding_enabled = is_chrome_branding_enabled;
   ui_info.is_for_bottom_sheet = is_for_bottom_sheet;
   return ui_info;
 }
@@ -228,7 +228,7 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForLocalSave(
       GetConfirmButtonText(options),
       l10n_util::GetStringUTF16(IDS_AUTOFILL_NO_THANKS_MOBILE_LOCAL_SAVE),
       description_text, /*loading_description=*/std::u16string(),
-      /*is_google_pay_branding_enabled=*/false, is_for_bottom_sheet);
+      /*is_chrome_branding_enabled=*/false, is_for_bottom_sheet);
 }
 
 // static
@@ -239,7 +239,7 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
     const AccountInfo& displayed_target_account) {
   return AutofillSaveCardUiInfo::CreateForUploadSave(
       options, card, legal_message_lines, displayed_target_account,
-      /*is_google_pay_branding_enabled=*/!!BUILDFLAG(GOOGLE_CHROME_BRANDING));
+      /*is_chrome_branding_enabled=*/!!BUILDFLAG(GOOGLE_CHROME_BRANDING));
 }
 
 // static
@@ -248,7 +248,7 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
     const CreditCard& card,
     const LegalMessageLines& legal_message_lines,
     const AccountInfo& displayed_target_account,
-    bool is_google_pay_branding_enabled) {
+    bool is_chrome_branding_enabled) {
   int save_card_icon_id;
   std::u16string save_card_icon_description_text;
   int save_card_prompt_title_id;
@@ -257,7 +257,7 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
 #if BUILDFLAG(IS_ANDROID)
   switch (options.card_save_type) {
     case CardSaveType::kCardSaveOnly: {
-      if (is_google_pay_branding_enabled) {
+      if (is_chrome_branding_enabled) {
         save_card_icon_id = IDR_AUTOFILL_GOOGLE_PAY;
         save_card_icon_description_text = l10n_util::GetStringUTF16(
             IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME);
@@ -273,7 +273,7 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
       break;
     }
     case CardSaveType::kCardSaveWithCvc: {
-      if (is_google_pay_branding_enabled) {
+      if (is_chrome_branding_enabled) {
         save_card_icon_id = IDR_AUTOFILL_GOOGLE_PAY;
         save_card_icon_description_text = l10n_util::GetStringUTF16(
             IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME);
@@ -311,7 +311,7 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
       [[fallthrough]];
     }
     case CardSaveType::kCardSaveOnly: {
-      if (is_google_pay_branding_enabled) {
+      if (is_chrome_branding_enabled) {
         save_card_icon_id = IDR_AUTOFILL_GOOGLE_PAY;
         save_card_icon_description_text = l10n_util::GetStringUTF16(
             IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME);
@@ -356,7 +356,7 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
       description_text,
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CARD_PROMPT_LOADING_THROBBER_ACCESSIBLE_NAME),
-      is_google_pay_branding_enabled, is_for_bottom_sheet);
+      is_chrome_branding_enabled, is_for_bottom_sheet);
 }
 
 #if BUILDFLAG(IS_IOS)

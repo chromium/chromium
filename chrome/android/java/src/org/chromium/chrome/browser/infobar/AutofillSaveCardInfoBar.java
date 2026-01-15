@@ -43,7 +43,7 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
     private int mIconDrawableId = -1;
     private final String mTitleText;
     private @Nullable String mDescriptionText;
-    private final boolean mIsGooglePayBrandingEnabled;
+    private final boolean mIsChromeBrandingEnabled;
     private final List<LegalMessageLine> mLegalMessageLines = new ArrayList<>();
 
     /**
@@ -56,6 +56,7 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
      * @param linkText Link text to display in addition to the message.
      * @param buttonOk String to display on the OK button.
      * @param buttonCancel String to display on the Cancel button.
+     * @param isChromeBrandingEnabled Whether Google Chrome branding is enabled for the build.
      * @param accountFooterEmail The email to be shown on the footer, or null. The footer is only
      *     shown if both this and |accountFooterAvatar| are provided.
      * @param accountFooterAvatar The avatar to be shown on the footer, or null. The footer is only
@@ -69,15 +70,15 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
             String linkText,
             String buttonOk,
             String buttonCancel,
-            boolean isGooglePayBrandingEnabled,
+            boolean isChromeBrandingEnabled,
             @Nullable String accountFooterEmail,
             @Nullable Bitmap accountFooterAvatar) {
-        // If Google Pay branding is enabled, no icon is specified here; it is rather added in
+        // If Google Chrome branding is enabled, no icon is specified here; it is rather added in
         // |createContent|. This hides the ImageView that normally shows the icon and gets rid of
         // the left padding of the infobar content.
         super(
-                isGooglePayBrandingEnabled ? 0 : iconId,
-                isGooglePayBrandingEnabled ? 0 : R.color.infobar_icon_drawable_color,
+                isChromeBrandingEnabled ? 0 : iconId,
+                isChromeBrandingEnabled ? 0 : R.color.infobar_icon_drawable_color,
                 iconBitmap,
                 message,
                 linkText,
@@ -85,7 +86,7 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
                 buttonCancel);
         mIconDrawableId = iconId;
         mTitleText = message;
-        mIsGooglePayBrandingEnabled = isGooglePayBrandingEnabled;
+        mIsChromeBrandingEnabled = isChromeBrandingEnabled;
         mNativeAutofillSaveCardInfoBar = nativeAutofillSaveCardInfoBar;
         mAccountFooterEmail = accountFooterEmail;
         mAccountFooterAvatar = accountFooterAvatar;
@@ -101,10 +102,11 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
      * @param linkText Link text to display in addition to the message.
      * @param buttonOk String to display on the OK button.
      * @param buttonCancel String to display on the Cancel button.
-     * @param accountFooterEmail The email to be shown on the footer, or null. The footer is
-     * only shown if both this and |accountFooterAvatar| are provided.
-     * @param accountFooterAvatar The avatar to be shown on the footer, or null. The footer is
-     * only shown if both this and |accountFooterEmail| are provided.
+     * @param isChromeBrandingEnabled Whether Google Chrome branding is enabled for the build.
+     * @param accountFooterEmail The email to be shown on the footer, or null. The footer is only
+     *     shown if both this and |accountFooterAvatar| are provided.
+     * @param accountFooterAvatar The avatar to be shown on the footer, or null. The footer is only
+     *     shown if both this and |accountFooterEmail| are provided.
      * @return A new instance of the infobar.
      */
     @CalledByNative
@@ -116,7 +118,7 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
             String linkText,
             String buttonOk,
             String buttonCancel,
-            boolean isGooglePayBrandingEnabled,
+            boolean isChromeBrandingEnabled,
             @Nullable String accountFooterEmail,
             @Nullable Bitmap accountFooterAvatar) {
         return new AutofillSaveCardInfoBar(
@@ -127,7 +129,7 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
                 linkText,
                 buttonOk,
                 buttonCancel,
-                isGooglePayBrandingEnabled,
+                isChromeBrandingEnabled,
                 accountFooterEmail,
                 accountFooterAvatar);
     }
@@ -183,9 +185,9 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
     public void createContent(InfoBarLayout layout) {
         super.createContent(layout);
 
-        // If Google Pay branding is enabled, add both the icon and the title message to the message
-        // container, since no icon was added to the ImageView that normally shows the icon.
-        if (mIsGooglePayBrandingEnabled) {
+        // If Google Chrome branding is enabled, add both the icon and the title message to the
+        // message container, since no icon was added to the ImageView that normally shows the icon.
+        if (mIsChromeBrandingEnabled) {
             UiUtils.removeViewFromParent(layout.getMessageTextView());
             layout.getMessageLayout().addIconTitle(mIconDrawableId, mTitleText);
         }

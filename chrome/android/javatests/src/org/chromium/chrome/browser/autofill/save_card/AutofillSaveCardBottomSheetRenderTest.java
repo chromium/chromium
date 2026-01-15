@@ -125,7 +125,7 @@ public class AutofillSaveCardBottomSheetRenderTest {
                         .withConfirmText("Confirm text")
                         .withCancelText("Cancel text")
                         .withDescriptionText("Description text.")
-                        .withIsGooglePayBrandingEnabled(true)
+                        .withIsChromeBrandingEnabled(true)
                         .withCardDescription("")
                         .withLoadingDescription("")
                         .build());
@@ -157,7 +157,7 @@ public class AutofillSaveCardBottomSheetRenderTest {
                         .withTitleText("Title text")
                         .withConfirmText("Confirm text")
                         .withCancelText("Cancel text")
-                        .withIsGooglePayBrandingEnabled(false)
+                        .withIsChromeBrandingEnabled(false)
                         .withDescriptionText("") // Description text is empty on local save.
                         .withCardDescription("")
                         .withLoadingDescription("")

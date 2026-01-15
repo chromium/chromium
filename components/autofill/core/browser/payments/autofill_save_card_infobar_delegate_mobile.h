@@ -77,9 +77,9 @@ class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
   // Called when a link in the legal message text was clicked.
   virtual void OnLegalMessageLinkClicked(GURL url);
 
-  // Google Pay branding is enabled with a flag and only for cards upstreamed
+  // Google Chrome branding is enabled with a flag and only for cards upstreamed
   // to Google.
-  bool IsGooglePayBrandingEnabled() const;
+  bool IsChromeBrandingEnabled() const;
 
   // Description text to be shown above the card information in the infobar.
   std::u16string GetDescriptionText() const;
