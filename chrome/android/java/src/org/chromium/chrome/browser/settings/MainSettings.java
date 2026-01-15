@@ -608,8 +608,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
                                     getContext(),
                                     AutofillOptionsFragment.class,
                                     AutofillOptionsFragment.createRequiredArgs(
-                                            AutofillOptionsReferrer.SETTINGS),
-                                    /* addToBackStack= */ true);
+                                            AutofillOptionsReferrer.SETTINGS));
                     return true; // Means event is consumed.
                 });
         findPreference(PREF_AUTOFILL_PAYMENTS)
