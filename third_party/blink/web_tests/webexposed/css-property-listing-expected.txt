@@ -200,6 +200,7 @@ All changes to this list should go through Blink's feature review process: http:
     float
     flood-color
     flood-opacity
+    flow-tolerance
     font-family
     font-feature-settings
     font-kerning
@@ -253,7 +254,6 @@ All changes to this list should go through Blink's feature review process: http:
     interest-delay-start
     interpolate-size
     isolation
-    item-tolerance
     justify-content
     justify-items
     justify-self

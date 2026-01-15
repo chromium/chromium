@@ -593,7 +593,7 @@ CSSValue* ParseGridLanesTemplateAreasValue(
 
 CSSValue* ParseGridLanesDirection(CSSParserTokenStream&);
 
-CSSValue* ConsumeItemTolerance(CSSParserTokenStream&, const CSSParserContext&);
+CSSValue* ConsumeFlowTolerance(CSSParserTokenStream&, const CSSParserContext&);
 
 bool ConsumeGapDecorationsRuleEdgeInteriorInsetShorthand(
     bool important,

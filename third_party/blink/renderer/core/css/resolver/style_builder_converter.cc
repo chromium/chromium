@@ -1840,15 +1840,15 @@ ComputedGridTrackList* StyleBuilderConverter::ConvertGridTrackList(
   return computed_grid_track_list;
 }
 
-ItemTolerance StyleBuilderConverter::ConvertItemTolerance(
+FlowTolerance StyleBuilderConverter::ConvertFlowTolerance(
     const StyleResolverState& state,
     const CSSValue& value) {
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value) {
-    return ItemTolerance(identifier_value->GetValueID());
+    return FlowTolerance(identifier_value->GetValueID());
   }
 
-  return ItemTolerance(ConvertLength(state, value));
+  return FlowTolerance(ConvertLength(state, value));
 }
 
 GridLanesDirection StyleBuilderConverter::ConvertGridLanesDirection(

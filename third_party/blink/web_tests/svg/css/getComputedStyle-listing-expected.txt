@@ -188,6 +188,7 @@ flex-wrap: nowrap
 float: none
 flood-color: rgb(0, 0, 0)
 flood-opacity: 1
+flow-tolerance: normal
 font-kerning: auto
 font-language-override: normal
 font-optical-sizing: auto
@@ -238,7 +239,6 @@ interest-delay-end: normal
 interest-delay-start: normal
 interpolate-size: numeric-only
 isolation: auto
-item-tolerance: normal
 justify-content: normal
 justify-items: normal
 justify-self: auto

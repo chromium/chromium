@@ -2240,15 +2240,15 @@ CSSValue* ComputedStyleUtils::ValueForGridPosition(
   return list;
 }
 
-CSSValue* ComputedStyleUtils::ValueForItemTolerance(
-    const ItemTolerance& item_tolerance,
+CSSValue* ComputedStyleUtils::ValueForFlowTolerance(
+    const FlowTolerance& flow_tolerance,
     const ComputedStyle& style) {
-  if (item_tolerance.IsNormal()) {
+  if (flow_tolerance.IsNormal()) {
     return CSSIdentifierValue::Create(CSSValueID::kNormal);
-  } else if (item_tolerance.IsInfinite()) {
+  } else if (flow_tolerance.IsInfinite()) {
     return CSSIdentifierValue::Create(CSSValueID::kInfinite);
   }
-  return ZoomAdjustedPixelValueForLength(item_tolerance.GetLength(), style);
+  return ZoomAdjustedPixelValueForLength(flow_tolerance.GetLength(), style);
 }
 
 CSSValue* ComputedStyleUtils::ValueForGridLanesDirection(

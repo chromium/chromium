@@ -497,6 +497,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.ForcedColorAdjust() == b.ForcedColorAdjust();
     case CSSPropertyID::kFieldSizing:
       return a.FieldSizing() == b.FieldSizing();
+    case CSSPropertyID::kFlowTolerance:
+      return a.GetFlowTolerance() == b.GetFlowTolerance();
     case CSSPropertyID::kGridAutoColumns:
       return a.GridAutoColumns() == b.GridAutoColumns();
     case CSSPropertyID::kGridAutoFlow:
@@ -590,8 +592,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.MaskType() == b.MaskType();
     case CSSPropertyID::kMaxLines:
       return a.MaxLines() == b.MaxLines();
-    case CSSPropertyID::kItemTolerance:
-      return a.GetItemTolerance() == b.GetItemTolerance();
     case CSSPropertyID::kMathShift:
       return a.MathShift() == b.MathShift();
     case CSSPropertyID::kMathStyle:

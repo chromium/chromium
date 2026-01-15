@@ -7287,7 +7287,7 @@ CSSValue* ParseGridLanesDirection(CSSParserTokenStream& stream) {
   return list;
 }
 
-CSSValue* ConsumeItemTolerance(CSSParserTokenStream& stream,
+CSSValue* ConsumeFlowTolerance(CSSParserTokenStream& stream,
                                const CSSParserContext& context) {
   if (stream.Peek().Id() == CSSValueID::kNormal ||
       stream.Peek().Id() == CSSValueID::kInfinite) {

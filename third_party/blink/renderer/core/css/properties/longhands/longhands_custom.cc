@@ -7095,18 +7095,18 @@ const CSSValue* MaskType::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.MaskType());
 }
 
-const CSSValue* ItemTolerance::ParseSingleValue(CSSParserTokenStream& stream,
+const CSSValue* FlowTolerance::ParseSingleValue(CSSParserTokenStream& stream,
                                                 const CSSParserContext& context,
                                                 CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeItemTolerance(stream, context);
+  return css_parsing_utils::ConsumeFlowTolerance(stream, context);
 }
 
-const CSSValue* ItemTolerance::CSSValueFromComputedStyleInternal(
+const CSSValue* FlowTolerance::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForItemTolerance(style.GetItemTolerance(),
+  return ComputedStyleUtils::ValueForFlowTolerance(style.GetFlowTolerance(),
                                                    style);
 }
 

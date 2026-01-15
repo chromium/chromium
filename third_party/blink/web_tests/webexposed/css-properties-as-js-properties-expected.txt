@@ -214,6 +214,7 @@ flexWrap
 float
 floodColor
 floodOpacity
+flowTolerance
 font
 fontDisplay
 fontFamily
@@ -292,7 +293,6 @@ interestDelayStart
 interpolateSize
 isolation
 item
-itemTolerance
 justifyContent
 justifyItems
 justifySelf

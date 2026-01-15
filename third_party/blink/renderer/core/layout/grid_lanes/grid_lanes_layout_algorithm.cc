@@ -105,7 +105,7 @@ MinMaxSizesResult GridLanesLayoutAlgorithm::ComputeMinMaxSizes(
 
       GridLanesRunningPositions running_positions(
           track_collection, style,
-          ResolveItemToleranceForGridLanes(style, grid_lanes_available_size_),
+          ResolveFlowToleranceForGridLanes(style, grid_lanes_available_size_),
           collapsed_track_indexes);
 
       PlaceGridLanesItems(track_collection, grid_lanes_items, start_offset,
@@ -180,7 +180,7 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
   if (!grid_lanes_items.IsEmpty()) {
     GridLanesRunningPositions running_positions(
         track_collection, Style(),
-        ResolveItemToleranceForGridLanes(Style(), grid_lanes_available_size_),
+        ResolveFlowToleranceForGridLanes(Style(), grid_lanes_available_size_),
         collapsed_track_indexes);
 
     PlaceGridLanesItems(track_collection, grid_lanes_items, start_offset,
