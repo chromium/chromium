@@ -158,7 +158,7 @@ constexpr bool IsInteractionEnd(
 std::optional<SoftNavigationHeuristics::EventScope::Type>
 EventScopeTypeFromInputEvent(const Event& event,
                              bool has_interaction_effects_monitor) {
-  if (!event.isTrusted()) {
+  if (!event.IsFullyTrusted()) {
     return std::nullopt;
   }
   if (event.IsMouseEvent() && event.type() == event_type_names::kClick) {
