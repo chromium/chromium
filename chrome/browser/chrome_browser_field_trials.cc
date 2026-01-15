@@ -159,9 +159,6 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // Enable V8 optimizations for high-end Android Desktop devices.
   // TODO(crbug.com/425860368): Remove when the feature is stable.
   feature_overrides.EnableFeature(features::kV8AndroidDesktopHighEndConfig);
-  // TODO(b/432367402): Use a new Android API to replace this hack with a proper
-  // solution.
-  feature_overrides.EnableFeature(features::kAndroidCaptureKeyEvents);
   // TODO(crbug.com/430304112): Remove when rollout is complete to all form
   // factors.
   feature_overrides.EnableFeature(
