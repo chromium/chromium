@@ -174,6 +174,7 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
     config.features_enabled_and_params.push_back({kPageActionMenu, {}});
   } else {
     config.features_disabled.push_back(kPageActionMenu);
+    config.features_enabled_and_params.push_back({kGeminiKillSwitch, {}});
   }
   if ([self isRunningTest:@selector(testOmniboxEntryPointDisabled)]) {
     config.features_disabled.push_back(kEnableReaderModeOmniboxEntryPoint);
