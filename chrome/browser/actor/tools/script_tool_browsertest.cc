@@ -147,5 +147,43 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, ClearContext) {
                     mojom::ActionResultCode::kScriptToolInvalidName);
 }
 
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DeclarativeTool) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/declarative_script_tool.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const std::string declarative_input =
+      R"JSON(
+        {
+          "text": "text #1",
+          "text2": "text #2",
+          "select": "Option 2",
+        }
+      )JSON";
+  auto action = MakeScriptToolRequest(*main_frame(), "declarative_tool",
+                                      declarative_input);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  // These should eventually pass, once form filling takes place:
+  // EXPECT_EQ("text #1", EvalJs(web_contents(),
+  // "document.getElementById('text1').textContent")); EXPECT_EQ("text #2",
+  // EvalJs(web_contents(), "document.getElementById('text2').textContent"));
+  // EXPECT_EQ("This is option 2", EvalJs(web_contents(),
+  // "document.getElementById('select').options[document.getElementById('select').selectedIndex].textContent"));
+
+  const auto& action_results = result.Get<2>();
+  ASSERT_EQ(action_results.size(), 1u);
+  ASSERT_TRUE(action_results.at(0).result->script_tool_response);
+  EXPECT_EQ(action_results.at(0).result->script_tool_response->name,
+            "declarative_tool");
+  EXPECT_EQ(action_results.at(0).result->script_tool_response->input_arguments,
+            declarative_input);
+  // This response is a placeholder until values are retrieved from the site.
+  EXPECT_EQ(action_results.at(0).result->script_tool_response->result,
+            "There are three flights tomorrow, 3pm, 4pm, and 5pm.");
+}
+
 }  // namespace
 }  // namespace actor

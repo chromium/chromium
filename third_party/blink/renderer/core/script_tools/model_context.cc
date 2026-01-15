@@ -6,6 +6,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_annotations_dict.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_tool_function.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -104,7 +105,13 @@ ModelContext::ModelContext(
 void ModelContext::ForEachScriptTool(
     base::FunctionRef<void(const mojom::blink::ScriptTool&)> func) const {
   for (const auto& tool : tool_map_) {
-    func(*tool.value->script_tool);
+    auto tool_data = tool.value;
+    // Always update the input schema, since the DOM might have changed.
+    if (auto* declarative_tool = tool_data->declarative_tool) {
+      tool_data->script_tool->input_schema =
+          declarative_tool->ComputeInputSchema();
+    }
+    func(*tool_data->script_tool);
   }
 }
 
@@ -162,8 +169,54 @@ void ModelContext::ExecuteTool(
     return;
   }
 
-  V8ToolFunction* tool_function = it->value->tool_function;
+  if (it->value->v8_tool_function) {
+    ExecuteV8Tool(it->value->v8_tool_function, name, input_arguments,
+                  std::move(tool_executed_cb));
+  } else {
+    ExecuteDeclarativeTool(it->value->declarative_tool, input_arguments,
+                           std::move(tool_executed_cb));
+  }
+}
 
+// This overload is used for declaratively-created WebMCP tools. It passes
+// the input argument JSON string to the corresponding <form> object, and
+// submits the form. The result comes back one of two ways:
+//   - if the form `submit` event is not preventDefaulted, then the browser
+//     marks the navigation as coming from an agent-initiated submission. The
+//     renderer for the navigated page will then look for a <script> with the
+//     agent response type, and pass its contents back to OnToolExecuted().
+//   - if the form `submit` event is preventDefaulted, and the
+//     responseForAgent() function is called on the event, the passed Promise
+//     will contain the response, once it resolves.
+void ModelContext::ExecuteDeclarativeTool(
+    DeclarativeWebMCPTool* tool,
+    const String& input_arguments,
+    WebDocument::ScriptToolExecutedCallback tool_executed_cb) {
+  tool->ExecuteTool(
+      input_arguments,
+      blink::BindOnce(
+          [](WebDocument::ScriptToolExecutedCallback tool_executed_cb,
+             String result) {
+            if (result.IsNull()) {
+              std::move(tool_executed_cb)
+                  .Run(base::unexpected(
+                      WebDocument::ScriptToolError::kToolInvocationFailed));
+            } else {
+              std::move(tool_executed_cb).Run(result);
+            }
+          },
+          std::move(tool_executed_cb)));
+}
+
+// This overload is used for JS-provided tool functions. It converts the input
+// argument string to a JSON object, calls the function, receives a Promise,
+// waits for the promise to resolve, JSON-stringifies the result, and passes
+// it to OnToolExecuted().
+void ModelContext::ExecuteV8Tool(
+    V8ToolFunction* tool_function,
+    const String& name,
+    const String& input_arguments,
+    WebDocument::ScriptToolExecutedCallback tool_executed_cb) {
   ScriptState* script_state = tool_function->CallbackRelevantScriptState();
   ScriptState::Scope scope(script_state);
 
@@ -248,11 +301,26 @@ bool ModelContext::RegisterTool(ScriptState* script_state,
   }
 
   tool_data->script_tool = std::move(script_tool);
-  tool_data->tool_function = params->execute();
+  tool_data->v8_tool_function = params->execute();
 
   tool_map_.insert(params->name(), std::move(tool_data));
   OnToolsChanged();
   return true;
+}
+
+void ModelContext::RegisterDeclarativeTool(String name,
+                                           String description,
+                                           DeclarativeWebMCPTool* tool) {
+  auto script_tool = mojom::blink::ScriptTool::New();
+  auto* tool_data = MakeGarbageCollected<ToolData>();
+  script_tool->name = name;
+  script_tool->description = description;
+  script_tool->input_schema = "{}";  // For now
+  tool_data->script_tool = std::move(script_tool);
+  tool_data->declarative_tool = tool;
+
+  tool_map_.insert(name, std::move(tool_data));
+  OnToolsChanged();
 }
 
 void ModelContext::OnToolExecuted(uint32_t execution_id,
@@ -281,7 +349,7 @@ void ModelContext::Trace(Visitor* visitor) const {
 }
 
 void ModelContext::ToolData::Trace(Visitor* visitor) const {
-  visitor->Trace(tool_function);
+  visitor->Trace(v8_tool_function);
 }
 
 }  // namespace blink

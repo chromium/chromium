@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_TOOLS_MODEL_CONTEXT_H_
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "third_party/blink/public/mojom/content_extraction/script_tools.mojom-blink.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_model_context.h"
@@ -17,6 +18,18 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 
 namespace blink {
+
+class DeclarativeWebMCPTool {
+ public:
+  // Executes the associated tool and invokes `done_callback` with the result
+  // when the execution is finished. The callback is invoked with a null string
+  // if the execution failed.
+  virtual void ExecuteTool(String input_arguments,
+                           base::OnceCallback<void(String)> done_callback) = 0;
+
+  // Returns the input json-schema associated with the tool.
+  virtual String ComputeInputSchema() = 0;
+};
 
 class CORE_EXPORT ModelContext : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -45,17 +58,33 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
     tools_changed_closure_ = std::move(cb);
   }
 
+  void RegisterDeclarativeTool(String name,
+                               String description,
+                               DeclarativeWebMCPTool* tool);
+
   void Trace(Visitor*) const override;
 
  private:
   class ToolFunctionFinishedCallback;
+
+  void ExecuteV8Tool(V8ToolFunction* tool_function,
+                     const String& name,
+                     const String& input_arguments,
+                     WebDocument::ScriptToolExecutedCallback tool_executed_cb);
+  void ExecuteDeclarativeTool(
+      DeclarativeWebMCPTool* tool,
+      const String& input_arguments,
+      WebDocument::ScriptToolExecutedCallback tool_executed_cb);
 
   class ToolData : public GarbageCollected<ToolData> {
    public:
     void Trace(Visitor* visitor) const;
 
     mojo::StructPtr<mojom::blink::ScriptTool> script_tool;
-    Member<V8ToolFunction> tool_function;
+    // A JS-provided MCP tool:
+    Member<V8ToolFunction> v8_tool_function;
+    // Used for declarative (form-based) MCP tools only:
+    DeclarativeWebMCPTool* declarative_tool;
   };
 
   bool RegisterTool(ScriptState* script_state,

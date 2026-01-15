@@ -71,11 +71,15 @@
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/script_tools/model_context_supplement.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -118,6 +122,7 @@ void HTMLFormElement::Trace(Visitor* visitor) const {
   visitor->Trace(listed_elements_for_autofill_);
   visitor->Trace(image_elements_);
   visitor->Trace(rel_list_);
+  visitor->Trace(active_webmcp_tool_);
   HTMLElement::Trace(visitor);
 }
 
@@ -133,6 +138,104 @@ bool HTMLFormElement::IsValidElement() {
   return true;
 }
 
+bool HTMLFormElement::IsValidWebMcpForm() const {
+  return active_webmcp_tool_ && active_webmcp_tool_->IsValidTool();
+}
+
+void HTMLFormElement::HTMLFormMcpTool::ExecuteTool(
+    String input_arguments,
+    base::OnceCallback<void(String)> done_callback) {
+  LOG(ERROR) << "Executing declarative MCP function for tool " << tool_name_
+             << ", with arguments " << input_arguments;
+  std::move(done_callback)
+      .Run("There are three flights tomorrow, 3pm, 4pm, and 5pm.");
+}
+
+String HTMLFormElement::HTMLFormMcpTool::ComputeInputSchema() {
+  // Hard-coded schema for now - this is temporary.
+  return R"({
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": [
+      "originAirportCode",
+      "destinationAirportCode",
+      "_departureDate_"
+    ],
+    "properties": {
+      "originAirportCode": {
+        "type": "string"
+      },
+      "destinationAirportCode": {
+        "type": "string"
+      },
+      "_departureDate_": {
+        "type": "string",
+        "format": "date"
+      }
+    }
+  })";
+}
+
+void HTMLFormElement::HTMLFormMcpTool::Trace(Visitor* visitor) const {
+  visitor->Trace(form_);
+}
+
+// This gets called when a <form> is added or removed from the document, or
+// when `tool-name` or `tool-description` attributes are added, removed, or
+// changed.
+// Cases:
+//  - just had last attribute added, already connected
+//  - just had last attribute added, not already connected
+//  - just had attribute removed, already connected
+//  - just had attribute removed, not already connected
+//  - just had attribute changed, already connected
+//  - just had attribute changed, not already connected
+//  - already has both attributes, just connected
+//  - already has both attributes, just removed
+void HTMLFormElement::UpdateMcpDefinitionsIfNeeded() {
+  if (!RuntimeEnabledFeatures::WebMCPEnabled()) {
+    return;
+  }
+  // The `<form>` must have *both* the `tool-name` and `tool-description`
+  // attributes, and the form must be document-connected, to qualify for
+  // declarative WebMCP inclusion.
+  String name = FastGetAttribute(html_names::kToolnameAttr);
+  String description = FastGetAttribute(html_names::kTooldescriptionAttr);
+  bool is_valid_mcp_form = isConnected() && name && description;
+  bool name_or_description_changed =
+      is_valid_mcp_form && active_webmcp_tool_ &&
+      (active_webmcp_tool_->ToolName() != name ||
+       active_webmcp_tool_->ToolDescription() != description);
+  if (is_valid_mcp_form == IsValidWebMcpForm() &&
+      !name_or_description_changed) {
+    // No change.
+    return;
+  }
+
+  ModelContext* model_context = nullptr;
+  if (auto* window = GetDocument().domWindow(); window && window->navigator()) {
+    model_context = ModelContextSupplement::modelContext(*window->navigator());
+  }
+  if (!model_context) {
+    return;
+  }
+
+  if (IsValidWebMcpForm()) {
+    CHECK(!is_valid_mcp_form || name_or_description_changed);
+    // Unregister the tool to ensure any in-flight tool executions are aborted.
+    model_context->unregisterTool(active_webmcp_tool_->ToolName(),
+                                  ASSERT_NO_EXCEPTION);
+    active_webmcp_tool_ = nullptr;
+  }
+
+  if (is_valid_mcp_form) {
+    active_webmcp_tool_ =
+        MakeGarbageCollected<HTMLFormMcpTool>(this, name, description);
+    model_context->RegisterDeclarativeTool(name, description,
+                                           active_webmcp_tool_);
+  }
+}
+
 Node::InsertionNotificationRequest HTMLFormElement::InsertedInto(
     ContainerNode& insertion_point) {
   HTMLElement::InsertedInto(insertion_point);
@@ -143,6 +246,7 @@ Node::InsertionNotificationRequest HTMLFormElement::InsertedInto(
     GetDocument().MarkTopLevelFormsDirty();
     GetDocument().DidChangeFormRelatedElementDynamically(
         this, WebFormRelatedChangeType::kAdd);
+    UpdateMcpDefinitionsIfNeeded();
   }
   return kInsertionDone;
 }
@@ -190,6 +294,7 @@ void HTMLFormElement::RemovedFrom(ContainerNode& insertion_point) {
     GetDocument().MarkTopLevelFormsDirty();
     GetDocument().DidChangeFormRelatedElementDynamically(
         this, WebFormRelatedChangeType::kRemove);
+    UpdateMcpDefinitionsIfNeeded();
   }
 }
 
@@ -659,6 +764,16 @@ void HTMLFormElement::DetachLayoutTree(bool performing_reattach) {
   }
 }
 
+void HTMLFormElement::AttributeChanged(
+    const AttributeModificationParams& params) {
+  const QualifiedName& name = params.name;
+  HTMLElement::AttributeChanged(params);
+  if (name == html_names::kToolnameAttr ||
+      name == html_names::kTooldescriptionAttr) {
+    UpdateMcpDefinitionsIfNeeded();
+  }
+}
+
 void HTMLFormElement::ParseAttribute(
     const AttributeModificationParams& params) {
   const QualifiedName& name = params.name;
@@ -702,7 +817,6 @@ void HTMLFormElement::ParseAttribute(
       rel_attribute_ |= RelAttribute::kNoOpener;
     if (rel_list_->contains(AtomicString("opener")))
       rel_attribute_ |= RelAttribute::kOpener;
-
   } else {
     HTMLElement::ParseAttribute(params);
   }
