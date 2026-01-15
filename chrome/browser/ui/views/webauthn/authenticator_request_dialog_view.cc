@@ -93,7 +93,11 @@ void AuthenticatorRequestDialogView::ReplaceCurrentSheetWith(
   DCHECK(new_sheet);
 
   if (sheet_) {
-    RemoveChildViewT(sheet_);
+    auto* old_sheet = sheet_.get();
+    // RemoveChildViewT() will delete the old sheet, so we set `sheet_` to
+    // nullptr first to prevent dangling pointer.
+    sheet_ = nullptr;
+    RemoveChildViewT(old_sheet);
   }
   CHECK(children().empty());
 
