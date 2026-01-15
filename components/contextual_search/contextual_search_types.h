@@ -138,6 +138,17 @@ enum class AimToolState {
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:AimToolState)
 
+// LINT.IfChange(ContextualSearchErrorPage)
+
+// Reasons the contextual search error page appeared.
+enum class ContextualSearchErrorPage {
+  kUnknown = 0,
+  kPageContextNotEligible = 1,
+  kMaxValue = kPageContextNotEligible,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:ContextualSearchErrorPage)
+
 }  // namespace contextual_search
 
 #endif  // COMPONENTS_CONTEXTUAL_SEARCH_CONTEXTUAL_SEARCH_TYPES_H_
