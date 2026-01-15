@@ -73,34 +73,6 @@ static const T* ValidateTable(const Vector<char>& buffer, size_t count = 1) {
   return reinterpret_cast<const T*>(buffer.data());
 }
 
-struct TableBase {
-  DISALLOW_NEW();
-
- protected:
-  static bool IsValidEnd(const Vector<char>& buffer, const void* position) {
-    if (position < buffer.data())
-      return false;
-    size_t offset = reinterpret_cast<const char*>(position) - buffer.data();
-    return offset <= buffer.size();  // "<=" because end is included as valid
-  }
-
-  template <typename T>
-  static const T* ValidatePtr(const Vector<char>& buffer,
-                              const void* position) {
-    const T* casted = reinterpret_cast<const T*>(position);
-    if (!IsValidEnd(buffer, UNSAFE_TODO(&casted[1]))) {
-      return nullptr;
-    }
-    return casted;
-  }
-
-  template <typename T>
-  const T* ValidateOffset(const Vector<char>& buffer, uint16_t offset) const {
-    return ValidatePtr<T>(
-        buffer, UNSAFE_TODO(reinterpret_cast<const int8_t*>(this) + offset));
-  }
-};
-
 }  // namespace open_type
 }  // namespace blink
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_OPEN_TYPE_TYPES_H_
