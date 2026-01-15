@@ -475,8 +475,9 @@ TEST_F(StyleRuleTest, NavigationRule) {
   // Parse the specified CSS into a rule, and extract its
   // NavigationTestExpression.
   auto GetNavigationTest =
-      [this](const char* css) -> const NavigationTestExpression* {
-    using Callback = base::FunctionRef<void(const NavigationTestExpression&)>;
+      [this](const char* css) -> const NavigationLocationTestExpression* {
+    using Callback =
+        base::FunctionRef<void(const NavigationLocationTestExpression&)>;
     class TestExtractor : public ConditionalExpNodeVisitor {
      public:
       explicit TestExtractor(Callback callback) : callback_(callback) {}
@@ -484,7 +485,11 @@ TEST_F(StyleRuleTest, NavigationRule) {
      private:
       KleeneValue EvaluateNavigationExpNode(
           const NavigationExpNode& node) override {
-        callback_(node.NavigationTest());
+        auto* exp =
+            DynamicTo<NavigationLocationTestExpression>(&node.NavigationTest());
+        if (exp) {
+          callback_(*exp);
+        }
         return KleeneValue::kFalse;
       }
 
@@ -501,16 +506,17 @@ TEST_F(StyleRuleTest, NavigationRule) {
     if (!root_exp) {
       return nullptr;
     }
-    const NavigationTestExpression* navigation_test = nullptr;
-    auto set_test = [&navigation_test](const NavigationTestExpression& test) {
-      navigation_test = &test;
-    };
+    const NavigationLocationTestExpression* navigation_test = nullptr;
+    auto set_test =
+        [&navigation_test](const NavigationLocationTestExpression& test) {
+          navigation_test = &test;
+        };
     TestExtractor extractor(set_test);
     root_exp->Evaluate(extractor);
     return navigation_test;
   };
 
-  const NavigationTestExpression* navigation_test =
+  const NavigationLocationTestExpression* navigation_test =
       GetNavigationTest("@navigation (at: pun_ruined) {}");
   ASSERT_TRUE(navigation_test);
   EXPECT_EQ(navigation_test->GetLocation().GetRouteName(), "pun_ruined");

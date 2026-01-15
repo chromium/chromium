@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<title>@navigation(history:back|forward|traverse)</title>
+<link rel="help" href="https://drafts.csswg.org/css-navigation-1/#typedef-navigation-type-test">
+<style>
+  @navigation(history: back) {
+    #elm { padding-left: 10px; }
+  }
+  @navigation(history: forward) {
+    #elm { padding-right: 11px; }
+  }
+  @navigation(history: traverse) {
+    #elm { padding-top: 12px; }
+  }
+</style>
+<div id="elm"></div>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  const no_match = "0px";
+  const match_traverse_back = "12px 0px 0px 10px";
+  const match_traverse_forward = "12px 11px 0px 0px";
+
+  promise_test(async (t) => {
+    await new Promise(r => window.onload = () => t.step_timeout(r, 0));
+
+    let nav, precommit, handler;
+    function setup() {
+      nav = Promise.withResolvers();
+      precommit = Promise.withResolvers();
+      handler = Promise.withResolvers();
+
+      navigation.addEventListener("navigate", event => {
+        nav.resolve();
+        event.intercept({
+          async precommitHandler() {
+            precommit.resolve();
+            await new Promise(r => t.step_timeout(r, 0));
+          },
+          async handler() { handler.resolve(); }
+        })
+      }, {once: true});
+    }
+    // Navigate to a URL. This is not history traversal.
+    setup();
+    assert_equals(getComputedStyle(elm).padding, no_match);
+    navigation.navigate("#aaaaa");
+    await nav.promise;
+    assert_equals(getComputedStyle(elm).padding, no_match);
+    await precommit.resolve;
+    assert_equals(getComputedStyle(elm).padding, no_match);
+    await navigation.transition.committed;
+    assert_equals(getComputedStyle(elm).padding, no_match);
+    await handler.promise;
+    assert_equals(getComputedStyle(elm).padding, no_match);
+    await new Promise(r => navigation.onnavigatesuccess = () => t.step_timeout(r, 0));
+    assert_equals(getComputedStyle(elm).padding, no_match);
+
+    // Go back in history. history:back and history:traverse should match.
+    setup();
+    navigation.back();
+    await nav.promise;
+    assert_equals(getComputedStyle(elm).padding, match_traverse_back);
+    await precommit.resolve;
+    assert_equals(getComputedStyle(elm).padding, match_traverse_back);
+    await handler.promise;
+    assert_equals(getComputedStyle(elm).padding, match_traverse_back);
+    await new Promise(r => navigation.onnavigatesuccess = () => t.step_timeout(r, 0));
+    assert_equals(getComputedStyle(elm).padding, no_match);
+
+    // Go forward in history. history:forward and history:traverse should match.
+    setup();
+    navigation.forward();
+    await nav.promise;
+    assert_equals(getComputedStyle(elm).padding, match_traverse_forward);
+    await precommit.resolve;
+    assert_equals(getComputedStyle(elm).padding, match_traverse_forward);
+    await handler.promise;
+    assert_equals(getComputedStyle(elm).padding, match_traverse_forward);
+    await new Promise(r => navigation.onnavigatesuccess = () => t.step_timeout(r, 0));
+    assert_equals(getComputedStyle(elm).padding, no_match);
+  }, "Go forward");
+</script>

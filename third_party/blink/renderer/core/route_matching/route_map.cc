@@ -228,9 +228,8 @@ void RouteMap::UpdateActiveRoutes() {
   }
 }
 
-void RouteMap::GetActiveRoutes(
-    NavigationPreposition preposition,
-    RouteMatchState::MatchCollection* collection) const {
+void RouteMap::GetActiveRoutes(NavigationPreposition preposition,
+                               MatchCollection* collection) const {
   collection->clear();
   for (const auto& entry : routes_) {
     Route& route = *entry.value;
@@ -243,6 +242,30 @@ void RouteMap::GetActiveRoutes(
     if (route.Matches(preposition)) {
       collection->insert(&route);
     }
+  }
+}
+
+void RouteMap::OnNavigationStart(const KURL& previous_url,
+                                 const KURL& next_url) {
+  previous_url_ = previous_url;
+  next_url_ = next_url;
+  UpdateActiveRoutes();
+}
+
+void RouteMap::OnNavigationTraverse(HistoryTraverseType type) {
+  history_traverse_type_ = type;
+  if (has_history_rules_) {
+    GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
+  }
+}
+
+void RouteMap::OnNavigationDone() {
+  previous_url_ = KURL();
+  next_url_ = KURL();
+  UpdateActiveRoutes();
+  history_traverse_type_ = kNotTraversing;
+  if (has_history_rules_) {
+    GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
   }
 }
 

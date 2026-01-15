@@ -79,7 +79,7 @@ TEST_F(RouteMapTest, GetActiveRoutes) {
     ]
   })");
 
-  RouteMatchState::MatchCollection collection;
+  RouteMap::MatchCollection collection;
   route_map.GetActiveRoutes(NavigationPreposition::kAt, &collection);
   EXPECT_EQ(2u, collection.size());
 

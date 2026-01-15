@@ -63,10 +63,16 @@ URLPatternParseResult ParseURLPattern(CSSParserTokenStream& stream,
 
 // https://drafts.csswg.org/css-navigation-1/#typedef-navigation-test
 //
-// <navigation-test> = <navigation-location> | <navigation-keyword> :
-// <navigation-location> <navigation-keyword> = at | from | to
+// <navigation-test> = <navigation-location-test> | <navigation-type-test>
+//
+// <navigation-location-test> =
+//   <navigation-location-keyword> : <navigation-location>
+// <navigation-location-keyword> = at | from | to
 // <navigation-location> = <route-name> | <url-pattern()>
 // <route-name> = <dashed-ident>
+//
+// <navigation-type-test> = history : <navigation-type-keyword>
+// <navigation-type-keyword> = traverse | back | forward | reload
 NavigationTestExpression* ParseNavigationTest(CSSParserTokenStream& stream,
                                               const Document& document) {
   if (stream.Peek().GetType() != kIdentToken) {
@@ -76,6 +82,7 @@ NavigationTestExpression* ParseNavigationTest(CSSParserTokenStream& stream,
   if (stream.Peek().GetType() != kColonToken) {
     return nullptr;
   }
+  stream.ConsumeIncludingWhitespace();
   NavigationPreposition preposition;
   if (ident == "at") {
     preposition = NavigationPreposition::kAt;
@@ -83,10 +90,30 @@ NavigationTestExpression* ParseNavigationTest(CSSParserTokenStream& stream,
     preposition = NavigationPreposition::kFrom;
   } else if (ident == "to") {
     preposition = NavigationPreposition::kTo;
+  } else if (ident == "history") {
+    // <navigation-type-test>
+    if (stream.Peek().GetType() != kIdentToken) {
+      return nullptr;
+    }
+    AtomicString argument(
+        stream.ConsumeIncludingWhitespace().Value().ToString());
+    NavigationTypeTestExpression::Type type;
+    if (argument == "traverse") {
+      type = NavigationTypeTestExpression::kTraverse;
+    } else if (argument == "back") {
+      type = NavigationTypeTestExpression::kBack;
+    } else if (argument == "forward") {
+      type = NavigationTypeTestExpression::kForward;
+    } else if (argument == "reload") {
+      // TODO(crbug.com/436805487): Support "reload".
+      return nullptr;
+    } else {
+      return nullptr;
+    }
+    return MakeGarbageCollected<NavigationTypeTestExpression>(type);
   } else {
     return nullptr;
   }
-  stream.ConsumeIncludingWhitespace();
 
   AtomicString route_name;
   URLPatternParseResult url_pattern_result;
@@ -112,8 +139,8 @@ NavigationTestExpression* ParseNavigationTest(CSSParserTokenStream& stream,
     navigation_location = MakeGarbageCollected<NavigationLocation>(route_name);
   }
 
-  return MakeGarbageCollected<NavigationTestExpression>(*navigation_location,
-                                                        preposition);
+  return MakeGarbageCollected<NavigationLocationTestExpression>(
+      *navigation_location, preposition);
 }
 
 }  // anonymous namespace

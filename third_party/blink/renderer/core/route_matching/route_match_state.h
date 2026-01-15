@@ -5,18 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ROUTE_MATCHING_ROUTE_MATCH_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ROUTE_MATCHING_ROUTE_MATCH_STATE_H_
 
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/core/route_matching/route_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
-class Route;
-class RouteMap;
-
 class RouteMatchState : public GarbageCollected<RouteMatchState> {
  public:
-  using MatchCollection = HeapHashSet<WeakMember<Route>>;
-
   static RouteMatchState* Create(const RouteMap&);
 
   bool Equals(const RouteMatchState&) const;
@@ -25,13 +20,15 @@ class RouteMatchState : public GarbageCollected<RouteMatchState> {
 
  private:
   // Routes we're currently at.
-  MatchCollection at_routes_;
+  RouteMap::MatchCollection at_routes_;
 
   // Routes we're navigating away from.
-  MatchCollection from_routes_;
+  RouteMap::MatchCollection from_routes_;
 
   // Routes we're navigating to.
-  MatchCollection to_routes_;
+  RouteMap::MatchCollection to_routes_;
+
+  RouteMap::HistoryTraverseType traverse_type_ = RouteMap::kNotTraversing;
 };
 
 }  // namespace blink
