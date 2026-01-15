@@ -1896,10 +1896,11 @@ void RenderWidgetHostViewAndroid::CopyFromSurface(
       base::BindOnce(
           [](base::OnceCallback<void(const content::CopyFromSurfaceResult&)>
                  callback,
-             const content::CopyFromSurfaceResult& result) {
+             const base::expected<viz::CopyOutputBitmapWithMetadata,
+                                  viz::CopyOutputResult::Error>& result) {
             TRACE_EVENT0(
                 "cc", "RenderWidgetHostViewAndroid::CopyFromSurface finished");
-            std::move(callback).Run(result);
+            std::move(callback).Run(ToCopyFromSurfaceResult(result));
           },
           std::move(callback)),
       /*capture_exact_surface_id=*/false,
@@ -1931,7 +1932,18 @@ void RenderWidgetHostViewAndroid::CopyFromExactSurfaceWithIpcDelay(
   CHECK(delegated_frame_host_);
 
   delegated_frame_host_->CopyFromCompositingSurface(
-      src_rect, output_size, base::TimeDelta(), std::move(callback),
+      src_rect, output_size, base::TimeDelta(),
+      base::BindOnce(
+          [](base::OnceCallback<void(const content::CopyFromSurfaceResult&)>
+                 callback,
+             const base::expected<viz::CopyOutputBitmapWithMetadata,
+                                  viz::CopyOutputResult::Error>& result) {
+            TRACE_EVENT0("cc",
+                         "RenderWidgetHostViewAndroid::"
+                         "CopyFromCompositingSurface finished");
+            std::move(callback).Run(ToCopyFromSurfaceResult(result));
+          },
+          std::move(callback)),
       /*capture_exact_surface_id=*/true, ipc_delay);
 }
 

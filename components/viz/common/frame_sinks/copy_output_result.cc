@@ -343,12 +343,15 @@ SkBitmap CopyOutputResult::ScopedSkBitmap::GetOutScopedBitmap() const {
   return bitmap_copy;
 }
 
-base::expected<CopyOutputBitmapWithMetadata, std::string>
+base::expected<CopyOutputBitmapWithMetadata, CopyOutputResult::Error>
 CopyOutputResult::ScopedSkBitmap::GetOutScopedBitmapAndMetadata() const {
   SkBitmap bitmap = GetOutScopedBitmap();
   if (bitmap.drawsNothing()) {
-    return base::unexpected<std::string>(
-        "SkBitmap is empty or null; no pixel data available");
+    if (result_) {
+      return base::unexpected<CopyOutputResult::Error>(result_->error());
+    }
+    return base::unexpected<CopyOutputResult::Error>(
+        CopyOutputResult::Error::kUnknown);
   }
 
   return CopyOutputBitmapWithMetadata{.bitmap = std::move(bitmap)};

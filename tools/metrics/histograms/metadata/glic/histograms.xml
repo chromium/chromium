@@ -1450,6 +1450,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.PageContextFetcher.GetScreenshotError"
+    enum="CopyFromSurfaceError" expires_after="2026-09-15">
+  <owner>bokan@google.com</owner>
+  <owner>dtapuska@google.com</owner>
+  <owner>chrome-synapse-team@google.com</owner>
+  <summary>Recorded when a page gets screenshot error from Viz.</summary>
+</histogram>
+
 <histogram name="Glic.PageContextFetcher.Total" units="ms"
     expires_after="2026-01-15">
   <owner>carlosk@chromium.org</owner>

@@ -144,6 +144,12 @@ enum class ScreenshotImageType {
   kMaxValue = kWebp,
 };
 
+// We use a timer on the viz side as well as a timer on the browser side and
+// offset them by this allowance. Hopefully having the viz timer fire always
+// as this will give us more information as to the failure.
+constexpr base::TimeDelta kScreenshotTimeoutBrowserAllowance =
+    base::Milliseconds(500);
+
 ScreenshotImageType GetScreenshotImageType() {
   if (!base::FeatureList::IsEnabled(kGlicTabScreenshotExperiment)) {
     return ScreenshotImageType::kJpeg;
@@ -202,6 +208,25 @@ SkBitmap RedactScreenshotOnWorkerThread(
   }
 
   return redacted_bitmap;
+}
+
+std::string_view ToString(content::CopyFromSurfaceError error) {
+  switch (error) {
+    case content::CopyFromSurfaceError::kUnknown:
+      return "Unknown";
+    case content::CopyFromSurfaceError::kNotImplemented:
+      return "Not implemented";
+    case content::CopyFromSurfaceError::kFrameGone:
+      return "Frame Gone";
+    case content::CopyFromSurfaceError::kTimeout:
+      return "Timeout";
+    case content::CopyFromSurfaceError::kEmbeddingTokenChanged:
+      return "EmbeddingTokenChanged";
+    case content::CopyFromSurfaceError::kVizSentEmptyBitmap:
+      return "VizSentEmptyBitmap";
+    case content::CopyFromSurfaceError::kUnknownVizError:
+      return "UnknownVizError";
+  }
 }
 
 // Combination of tracked states for when a PDF contents request is made.
@@ -416,7 +441,7 @@ class PageContextFetcher : public content::WebContentsObserver {
 
       view->CopyFromSurface(
           gfx::Rect(),  // Copy entire surface area.
-          GetScreenshotSize(view_size), base::TimeDelta(),
+          GetScreenshotSize(view_size), kScreenshotTimeout.Get(),
           base::BindOnce(&PageContextFetcher::ReceivedViewportBitmap,
                          GetWeakPtr()));
     }
@@ -434,12 +459,15 @@ class PageContextFetcher : public content::WebContentsObserver {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&PageContextFetcher::OnScreenshotTimeout, GetWeakPtr()),
-        kScreenshotTimeout.Get());
+        kScreenshotTimeout.Get() + kScreenshotTimeoutBrowserAllowance);
   }
 
   void ReceivedViewportBitmap(const content::CopyFromSurfaceResult& result) {
     if (!result.has_value()) {
-      ReceivedViewportBitmapOrError(base::unexpected(result.error()));
+      base::UmaHistogramEnumeration(
+          "Glic.PageContextFetcher.GetScreenshotError", result.error());
+      ReceivedViewportBitmapOrError(
+          base::unexpected<std::string>(ToString(result.error())));
       return;
     }
 

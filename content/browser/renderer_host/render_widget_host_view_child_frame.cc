@@ -872,8 +872,8 @@ void RenderWidgetHostViewChildFrame::CopyFromSurface(
     base::TimeDelta timeout,
     base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
   if (!IsSurfaceAvailableForCopy()) {
-    std::move(callback).Run(base::unexpected<std::string>(
-        "CopyFromSurface not implemented for this platform."));
+    std::move(callback).Run(base::unexpected<CopyFromSurfaceError>(
+        CopyFromSurfaceError::kNotImplemented));
     return;
   }
 
@@ -885,8 +885,9 @@ void RenderWidgetHostViewChildFrame::CopyFromSurface(
               [](base::OnceCallback<void(const content::CopyFromSurfaceResult&)>
                      callback,
                  std::unique_ptr<viz::CopyOutputResult> result) {
-                std::move(callback).Run(result->ScopedAccessSkBitmap()
-                                            .GetOutScopedBitmapAndMetadata());
+                std::move(callback).Run(ToCopyFromSurfaceResult(
+                    result->ScopedAccessSkBitmap()
+                        .GetOutScopedBitmapAndMetadata()));
               },
               std::move(callback)));
 

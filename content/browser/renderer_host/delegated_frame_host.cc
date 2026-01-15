@@ -169,7 +169,8 @@ void DelegatedFrameHost::CopyFromCompositingSurface(
               std::move(keep_alive).RunAndReset();
             }
             std::move(callback).Run(
-                result->ScopedAccessSkBitmap().GetOutScopedBitmapAndMetadata());
+                ToCopyFromSurfaceResult(result->ScopedAccessSkBitmap()
+                                            .GetOutScopedBitmapAndMetadata()));
           },
           std::move(callback), std::move(keep_surface_alive)));
 }
