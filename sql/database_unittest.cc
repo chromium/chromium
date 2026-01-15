@@ -34,7 +34,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
-#include "base/strings/cstring_view.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
@@ -179,9 +178,8 @@ class SQLDatabaseTest : public testing::Test,
         return false;
     }
 
-    static constexpr char kText[] = "Now is the winter of our discontent.";
-    constexpr int kTextBytes = sizeof(kText) - 1;
-    return file.Write(0, kText, kTextBytes) == kTextBytes;
+  return file.WriteAndCheck(0, base::byte_span_with_nul_from_cstring(
+                                     "Now is the winter of our discontent."));
   }
 
  protected:
