@@ -304,7 +304,8 @@ class CanvasRenderingContext2DTestBase : public ::testing::Test,
 
   HTMLCanvasElement& CanvasElement() const { return *canvas_element_; }
   cc::PaintCanvas& Canvas() {
-    return Context2D()->GetResourceProviderForTesting()->Canvas();
+    return const_cast<MemoryManagedPaintCanvas&>(
+        Context2D()->Recorder()->getRecordingCanvas());
   }
   CanvasRenderingContext2D* Context2D() const {
     return static_cast<CanvasRenderingContext2D*>(
