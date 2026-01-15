@@ -23,6 +23,7 @@
 #include "components/exo/surface.h"
 #include "components/exo/wayland/server_util.h"
 #include "components/viz/common/gpu/context_provider.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "ui/aura/env.h"
 #include "ui/compositor/compositor.h"
 #include "ui/display/manager/display_manager.h"
@@ -364,10 +365,9 @@ WaylandDmabufFeedbackManager::WaylandDmabufFeedbackManager(Display* display)
     // Fallback path, to be removed ASAP. We should not advertise the protocol
     // at all.
     gfx::GpuMemoryBufferFormatSet format_set = caps.gpu_memory_buffer_formats;
-    for (int i = 0; i <= static_cast<int>(gfx::BufferFormat::LAST); i++) {
-      gfx::BufferFormat buffer_format = static_cast<gfx::BufferFormat>(i);
-      if (format_set.Has(buffer_format)) {
-        int drm_format = ui::GetFourCCFormatFromBufferFormat(buffer_format);
+    for (auto si_format : ui::kDrmSharedImageFormats) {
+      if (format_set.Has(viz::SharedImageFormatToBufferFormat(si_format))) {
+        int drm_format = ui::GetFourCCFormatFromSharedImageFormat(si_format);
         if (ui::IsValidBufferFormat(drm_format)) {
           base::flat_map<size_t, uint64_t> modifier_entries;
           modifier_entries.emplace(format_table_index++,
