@@ -15,9 +15,13 @@ namespace wm {
 // Takes care of observing root window destruction & destroying the client.
 class DefaultActivationClient::Deleter : public aura::WindowObserver {
  public:
-  Deleter(DefaultActivationClient* client, aura::Window* root_window)
-      : client_(client),
-        root_window_(root_window) {
+  struct ClientDeleter {
+    void operator()(DefaultActivationClient* client) const { delete client; }
+  };
+
+  Deleter(std::unique_ptr<DefaultActivationClient, ClientDeleter> client,
+          aura::Window* root_window)
+      : client_(std::move(client)), root_window_(root_window) {
     root_window_->AddObserver(this);
   }
 
@@ -31,11 +35,12 @@ class DefaultActivationClient::Deleter : public aura::WindowObserver {
   void OnWindowDestroyed(aura::Window* window) override {
     DCHECK_EQ(window, root_window_);
     root_window_->RemoveObserver(this);
-    delete client_;
+    root_window_ = nullptr;
+    client_.reset();
     delete this;
   }
 
-  raw_ptr<DefaultActivationClient, DanglingUntriaged> client_;
+  std::unique_ptr<DefaultActivationClient, ClientDeleter> client_;
   raw_ptr<aura::Window> root_window_;
 };
 
@@ -45,7 +50,9 @@ class DefaultActivationClient::Deleter : public aura::WindowObserver {
 DefaultActivationClient::DefaultActivationClient(aura::Window* root_window)
     : last_active_(nullptr) {
   SetActivationClient(root_window, this);
-  new Deleter(this, root_window);
+  new Deleter(
+      std::unique_ptr<DefaultActivationClient, Deleter::ClientDeleter>(this),
+      root_window);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

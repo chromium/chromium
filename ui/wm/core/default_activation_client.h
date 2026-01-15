@@ -63,7 +63,7 @@ class COMPONENT_EXPORT(UI_WM) DefaultActivationClient
   std::vector<raw_ptr<aura::Window, VectorExperimental>> active_windows_;
 
   // The window which was active before the currently active one.
-  raw_ptr<aura::Window, DanglingUntriaged> last_active_;
+  raw_ptr<aura::Window> last_active_;
 
   base::ObserverList<ActivationChangeObserver> observers_;
 };
