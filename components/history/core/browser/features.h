@@ -85,6 +85,9 @@ bool IsBrowsingHistoryActorIntegrationM3Enabled();
 COMPONENT_EXPORT(HISTORY_FEATURES)
 BASE_DECLARE_FEATURE(kHistoryQueryOnlyLocalFirst);
 
+COMPONENT_EXPORT(HISTORY_FEATURES)
+BASE_DECLARE_FEATURE(kWebHistoryUseNewApi);
+
 }  // namespace history
 
 #endif  // COMPONENTS_HISTORY_CORE_BROWSER_FEATURES_H_

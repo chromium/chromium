@@ -158,4 +158,9 @@ bool IsBrowsingHistoryActorIntegrationM3Enabled() {
 // exhausted.
 BASE_FEATURE(kHistoryQueryOnlyLocalFirst, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the WebHistoryService will use a new API for querying browsing
+// history (https://footprints-pa.googleapis.com/...) instead of the old and
+// deprecated one (https://history.google.com/history/api/...).
+BASE_FEATURE(kWebHistoryUseNewApi, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace history

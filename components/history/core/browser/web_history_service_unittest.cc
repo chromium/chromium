@@ -15,8 +15,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_types.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -126,18 +128,22 @@ std::optional<base::Value::Dict> TestingWebHistoryService::ReadResponse(
 }  // namespace
 
 // A test class used for testing the WebHistoryService class.
-class WebHistoryServiceTest : public testing::Test {
+class WebHistoryServiceTest : public testing::TestWithParam<bool> {
  public:
   WebHistoryServiceTest()
       : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)),
-        web_history_service_(test_shared_loader_factory_) {}
+        web_history_service_(test_shared_loader_factory_) {
+    features_.InitWithFeatureState(kWebHistoryUseNewApi, IsNewAPIEnabled());
+  }
 
   WebHistoryServiceTest(const WebHistoryServiceTest&) = delete;
   WebHistoryServiceTest& operator=(const WebHistoryServiceTest&) = delete;
 
   ~WebHistoryServiceTest() override = default;
+
+  bool IsNewAPIEnabled() const { return GetParam(); }
 
   std::optional<WebHistoryService::QueryHistoryResult> QueryHistorySynchronous(
       std::string_view query,
@@ -163,13 +169,21 @@ class WebHistoryServiceTest : public testing::Test {
   }
 
  protected:
+  base::test::ScopedFeatureList features_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   TestingWebHistoryService web_history_service_;
 };
 
-TEST_F(WebHistoryServiceTest, VerifyReadResponse) {
+INSTANTIATE_TEST_SUITE_P(,
+                         WebHistoryServiceTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "NewAPI" : "OldAPI";
+                         });
+
+TEST_P(WebHistoryServiceTest, VerifyReadResponse) {
   // Test that properly formatted response with good response code returns true
   // as expected.
   auto request = std::make_unique<TestRequest>(base::DoNothing(), net::HTTP_OK,
@@ -230,15 +244,26 @@ TEST_F(WebHistoryServiceTest, VerifyReadResponse) {
   EXPECT_FALSE(response_value5->FindBool("history_recording_enabled"));
 }
 
-TEST_F(WebHistoryServiceTest, QueryHistoryValid) {
+TEST_P(WebHistoryServiceTest, QueryHistoryValid) {
   // Test a valid response.
-  web_history_service_.SetResponse(net::HTTP_OK,
-                                   R"({"event":[{"result":[{
+  if (IsNewAPIEnabled()) {
+    web_history_service_.SetResponse(net::HTTP_OK,
+                                     R"({"lookup":[{"chromeHistory":[{
+  "url":"https://www.google.com/",
+  "timestamp":"12345",
+  "title":"Google",
+  "faviconUrl":"https://www.google.com/favicon.ico",
+  "clientId":"id1"
+}]}]})");
+  } else {
+    web_history_service_.SetResponse(net::HTTP_OK,
+                                     R"({"event":[{"result":[{
   "url":"https://www.google.com/",
   "title":"Google",
   "favicon_url":"https://www.google.com/favicon.ico",
   "id":[{"timestamp_usec":"12345", "client_id":"id1"}]
 }]}]})");
+  }
 
   std::optional<WebHistoryService::QueryHistoryResult> result =
       QueryHistorySynchronous("google", QueryOptions());
@@ -254,7 +279,7 @@ TEST_F(WebHistoryServiceTest, QueryHistoryValid) {
   EXPECT_EQ("id1", result->visits[0].client_id);
 }
 
-TEST_F(WebHistoryServiceTest, QueryHistoryError) {
+TEST_P(WebHistoryServiceTest, QueryHistoryError) {
   web_history_service_.SetResponse(net::HTTP_INTERNAL_SERVER_ERROR, "");
 
   std::optional<WebHistoryService::QueryHistoryResult> result =
@@ -263,7 +288,7 @@ TEST_F(WebHistoryServiceTest, QueryHistoryError) {
   EXPECT_FALSE(result.has_value());
 }
 
-TEST_F(WebHistoryServiceTest, QueryHistoryMalformedResponse) {
+TEST_P(WebHistoryServiceTest, QueryHistoryMalformedResponse) {
   web_history_service_.SetResponse(net::HTTP_OK, "this is not json");
 
   std::optional<WebHistoryService::QueryHistoryResult> result =
@@ -272,8 +297,8 @@ TEST_F(WebHistoryServiceTest, QueryHistoryMalformedResponse) {
   EXPECT_FALSE(result.has_value());
 }
 
-TEST_F(WebHistoryServiceTest, QueryHistoryInvalidOrMissingFields) {
-  // A response with no "event" list.
+TEST_P(WebHistoryServiceTest, QueryHistoryInvalidOrMissingFields) {
+  // A response with no "event"/"lookup" list.
   {
     web_history_service_.SetResponse(net::HTTP_OK, R"({})");
 
@@ -284,9 +309,13 @@ TEST_F(WebHistoryServiceTest, QueryHistoryInvalidOrMissingFields) {
     EXPECT_TRUE(result->visits.empty());
   }
 
-  // An event with no "result" list.
+  // An event with no "result"/"chromeHistory" list.
   {
-    web_history_service_.SetResponse(net::HTTP_OK, R"({"event":[{}]})");
+    if (IsNewAPIEnabled()) {
+      web_history_service_.SetResponse(net::HTTP_OK, R"({"lookup":[{}]})");
+    } else {
+      web_history_service_.SetResponse(net::HTTP_OK, R"({"event":[{}]})");
+    }
 
     std::optional<WebHistoryService::QueryHistoryResult> result =
         QueryHistorySynchronous("", QueryOptions());
@@ -295,10 +324,15 @@ TEST_F(WebHistoryServiceTest, QueryHistoryInvalidOrMissingFields) {
     EXPECT_TRUE(result->visits.empty());
   }
 
-  // A result with no "url".
+  // An empty result.
   {
-    web_history_service_.SetResponse(net::HTTP_OK,
-                                     R"({"event":[{"result":[{}]}]})");
+    if (IsNewAPIEnabled()) {
+      web_history_service_.SetResponse(
+          net::HTTP_OK, R"({"lookup":[{"chromeHistory":[{}]}]})");
+    } else {
+      web_history_service_.SetResponse(net::HTTP_OK,
+                                       R"({"event":[{"result":[{}]}]})");
+    }
 
     std::optional<WebHistoryService::QueryHistoryResult> result =
         QueryHistorySynchronous("", QueryOptions());
@@ -308,7 +342,7 @@ TEST_F(WebHistoryServiceTest, QueryHistoryInvalidOrMissingFields) {
   }
 
   // A result with no "id" (visit) list.
-  {
+  if (!IsNewAPIEnabled()) {
     web_history_service_.SetResponse(
         net::HTTP_OK,
         R"({"event":[{"result":[{"url":"https://www.google.com/"}]}]})");
@@ -320,13 +354,21 @@ TEST_F(WebHistoryServiceTest, QueryHistoryInvalidOrMissingFields) {
     EXPECT_TRUE(result->visits.empty());
   }
 
-  // A visit with no "timestamp_usec".
+  // A visit with no timestamp.
   {
-    web_history_service_.SetResponse(net::HTTP_OK,
-                                     R"({"event":[{"result":[{
+    if (IsNewAPIEnabled()) {
+      web_history_service_.SetResponse(net::HTTP_OK,
+                                       R"({"lookup":[{"chromeHistory":[{
+  "url":"https://www.google.com/",
+  "not_a_timestamp":"12345"
+}]}]})");
+    } else {
+      web_history_service_.SetResponse(net::HTTP_OK,
+                                       R"({"event":[{"result":[{
   "url":"https://www.google.com/",
   "id":[{"not_a_timestamp":"12345"}]
 }]}]})");
+    }
 
     std::optional<WebHistoryService::QueryHistoryResult> result =
         QueryHistorySynchronous("", QueryOptions());
@@ -335,13 +377,21 @@ TEST_F(WebHistoryServiceTest, QueryHistoryInvalidOrMissingFields) {
     EXPECT_TRUE(result->visits.empty());
   }
 
-  // A visit with an invalid "timestamp_usec".
+  // A visit with an invalid timestamp.
   {
-    web_history_service_.SetResponse(net::HTTP_OK,
-                                     R"({"event":[{"result":[{
+    if (IsNewAPIEnabled()) {
+      web_history_service_.SetResponse(net::HTTP_OK,
+                                       R"({"event":[{"result":[{
+  "url":"https://www.google.com/",
+  "timestamp":"not a number"
+}]}]})");
+    } else {
+      web_history_service_.SetResponse(net::HTTP_OK,
+                                       R"({"event":[{"result":[{
   "url":"https://www.google.com/",
   "id":[{"timestamp_usec":"not a number"}]
 }]}]})");
+    }
 
     std::optional<WebHistoryService::QueryHistoryResult> result =
         QueryHistorySynchronous("", QueryOptions());
@@ -351,7 +401,7 @@ TEST_F(WebHistoryServiceTest, QueryHistoryInvalidOrMissingFields) {
   }
 }
 
-TEST_F(WebHistoryServiceTest, QueryHistoryUrlConstruction) {
+TEST_P(WebHistoryServiceTest, QueryHistoryUrlConstruction) {
   QueryOptions options;
   options.begin_time = base::Time::FromMillisecondsSinceUnixEpoch(12345000);
   options.end_time = base::Time::FromMillisecondsSinceUnixEpoch(67890000);
@@ -360,11 +410,15 @@ TEST_F(WebHistoryServiceTest, QueryHistoryUrlConstruction) {
   QueryHistorySynchronous("search term", options);
 
   const GURL& url = web_history_service_.last_request_url();
-  EXPECT_NE(std::string::npos, url.query().find("min=12345000000"));
-  // end_time is inclusive, so 1us is subtracted.
-  EXPECT_NE(std::string::npos, url.query().find("max=67889999999"));
-  EXPECT_NE(std::string::npos, url.query().find("num=50"));
-  EXPECT_NE(std::string::npos, url.query().find("q=search+term"));
+  if (IsNewAPIEnabled()) {
+    EXPECT_TRUE(url.query().empty());
+  } else {
+    EXPECT_NE(std::string::npos, url.query().find("min=12345000000"));
+    // end_time is inclusive, so 1us is subtracted.
+    EXPECT_NE(std::string::npos, url.query().find("max=67889999999"));
+    EXPECT_NE(std::string::npos, url.query().find("num=50"));
+    EXPECT_NE(std::string::npos, url.query().find("q=search+term"));
+  }
 }
 
 }  // namespace history
