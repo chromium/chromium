@@ -44,6 +44,7 @@ SANDBOX_POLICY_EXPORT extern const char kUtilityProcess[];
 SANDBOX_POLICY_EXPORT extern const char kZygoteProcessType[];
 SANDBOX_POLICY_EXPORT extern const char kRelauncherProcessType[];
 SANDBOX_POLICY_EXPORT extern const char kCodeSignCloneCleanupProcessType[];
+SANDBOX_POLICY_EXPORT extern const char kAppShimProcessType[];
 
 }  // namespace sandbox::policy::switches
 

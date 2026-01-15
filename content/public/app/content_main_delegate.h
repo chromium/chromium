@@ -174,16 +174,24 @@ class CONTENT_EXPORT ContentMainDelegate {
   virtual bool ShouldHandleConsoleControlEvents();
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-  // Called during `ContentMainRunnerImpl::RunBrowser` to determine if Perfetto
-  // should be initialized. Embedders can return `false` to indicate that they
-  // have already initialized Perfetto.
+  // Returns true if content should initialize Perfetto. Returns true by
+  // default. If this returns false, the embedder must initialize Perfetto.
+  // Embedders may wish to override this to control when Perfetto is
+  // initialized.
   virtual bool ShouldInitializePerfetto(InvokedIn invoked_in);
-#endif
 
   // Do we want to initialize feature list early?
   // This is an experimental feature and its tracking bug is crbug.com/423925400
   virtual bool IsInitFeatureListEarly();
+
+  // Returns true if PartitionAlloc should be reconfigured after the feature
+  // list has been initialized. Default is true.
+  virtual bool ShouldReconfigurePartitionAlloc();
+
+  // Returns true if content should load the V8 snapshot. The default
+  // implementation returns false for the GPU process and for the browser
+  // process unless it's in single process mode.
+  virtual bool ShouldLoadV8Snapshot(const std::string& process_type);
 
  protected:
   friend class ContentClientCreator;
