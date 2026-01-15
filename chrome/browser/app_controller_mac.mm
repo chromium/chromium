@@ -2386,7 +2386,10 @@ void OpenUrlsInBrowserWithProfile(const std::vector<GURL>& urls,
     profile = ProfileManager::MaybeForceOffTheRecordMode(
         profile->GetOriginalProfile());
   }
-  Browser* browser = chrome::FindLastActiveWithProfile(profile);
+  // Use FindTabbedBrowser to ensure URLs open in a normal tabbed browser
+  // window, not in PWA/app windows which cannot accept new tabs.
+  Browser* browser =
+      chrome::FindTabbedBrowser(profile, /*match_original_profiles=*/false);
   int startupIndex = TabStripModel::kNoTab;
   content::WebContents* startupContent = nullptr;
   if (browser && browser->tab_strip_model()->count() == 1) {
