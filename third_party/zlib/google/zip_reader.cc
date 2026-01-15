@@ -684,7 +684,9 @@ void ZipReader::ExtractChunk(base::File output_file,
     return;
   }
 
-  if (num_bytes_read != output_file.Write(offset, buffer, num_bytes_read)) {
+  if (!output_file.WriteAndCheck(
+          offset, base::as_byte_span(buffer).first(
+                      static_cast<size_t>(num_bytes_read)))) {
     LOG(ERROR) << "Cannot write " << num_bytes_read
                << " bytes to file at offset " << offset;
     std::move(failure_callback).Run();
