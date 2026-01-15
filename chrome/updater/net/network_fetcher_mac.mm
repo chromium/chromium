@@ -689,7 +689,7 @@ int OutOfProcessNetworkFetcher::DialFetchService() {
   CHECK(!remote_.is_bound()) << "Fetcher cannot be reused.";
 
   // Gets the uid of the console user.
-  std::optional<uid_t> user_id = [] -> std::optional<uid_t> {
+  std::optional<uid_t> user_id = []() -> std::optional<uid_t> {
     static constexpr char kConsoleFile[] = "/dev/console";
     struct stat stat = {};
     const int result = lstat(kConsoleFile, &stat);

@@ -1576,7 +1576,7 @@ void UpdateServiceImplImpl::GetUpdaterState(
       {base::MayBlock(), base::WithBaseSyncPrimitives(),
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})
       ->PostTaskAndReplyWithResult(
-          FROM_HERE, base::BindOnce([] {
+          FROM_HERE, base::BindOnce([]() {
             std::vector<std::string> inactive_versions;
             for (const base::FilePath& version_executable_path :
                  GetVersionExecutablePaths(GetUpdaterScope())) {
