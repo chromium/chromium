@@ -225,8 +225,13 @@ class HeightTransitionHandler {
     }
 
     private void requestTransition() {
-        mTabStripTransitionDelegateSupplier.runSyncOrOnAvailable(
-                mCallbackController.makeCancelable(delegate -> maybeUpdateTabStripVisibility()));
+        if (canForceTransitionDuringStartup()) {
+            maybeUpdateTabStripVisibility();
+        } else {
+            mTabStripTransitionDelegateSupplier.runSyncOrOnAvailable(
+                    mCallbackController.makeCancelable(
+                            delegate -> maybeUpdateTabStripVisibility()));
+        }
     }
 
     private void maybeUpdateTabStripVisibility() {
@@ -248,6 +253,12 @@ class HeightTransitionHandler {
                         + mControlContainer.getToolbarHeight()
                         + mControlContainer.getToolbarHairlineHeight();
         controlContainerView().setMinimumHeight(maxHeight);
+
+        // When we are force an transition height update during start up, skip waiting for the
+        // toolbar capture, since the native scene layer is not ready at this point.
+        if (canForceTransitionDuringStartup()) {
+            updateTabStrip(showTabStrip);
+        }
 
         // When transition kicked off by the BrowserControlsManager, the toolbar capture can be
         // stale e.g. still with the previous window width. Force invalidate the toolbar capture to
@@ -527,5 +538,20 @@ class HeightTransitionHandler {
 
     boolean isHeightTransitionBlocked() {
         return mDeferTransitionTokenHolder.hasTokens();
+    }
+
+    /** Whether we can perform a tab strip transition right away, skip waiting on the delegate. */
+    private boolean canForceTransitionDuringStartup() {
+        if (!BrowserControlsUtils.isForceTopChromeHeightAdjustmentOnStartupEnabled(
+                mControlContainer.getView().getContext())) {
+            return false;
+        }
+
+        if (mTabStripTransitionDelegateSupplier.get() != null) {
+            return false;
+        }
+
+        // Force update the transition when we are updating app header's height.
+        return !mUpdateStripVisibility && mForceUpdateHeight;
     }
 }

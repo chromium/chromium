@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
@@ -171,11 +172,12 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
      * @param desktopWindowStateManager The {@link DesktopWindowStateManager} instance.
      * @param tabStripTransitionDelegateSupplier Supplier for the {@link
      *     TabStripTransitionDelegate}.
+     * @param tabStripTransitionHandler TabStripTransitionHandler instance.
      * @param onLongClickListener OnLongClickListener for the toolbar.
      * @param homeButtonDisplay The {@link HomeButtonDisplay} to manage the display and behavior of
      *     home button(s). Should be null on custom tabs.
      * @param topControlsStacker The TopControlsStacker for child objects to check state from.
-     * @param browserControlsStateProvider BrowserControlsStateProvider instance.
+     * @param browserControlsVisibilityManager BrowserControlsStateProvider instance.
      */
     public TopToolbarCoordinator(
             ToolbarControlContainer controlContainer,
@@ -204,6 +206,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
             TabObscuringHandler tabObscuringHandler,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
             OneshotSupplier<TabStripTransitionDelegate> tabStripTransitionDelegateSupplier,
+            TabStripTransitionHandler tabStripTransitionHandler,
             @Nullable OnLongClickListener onLongClickListener,
             ToolbarProgressBar progressBar,
             NullableObservableSupplier<Tab> tabSupplier,
@@ -212,7 +215,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
             @Nullable ForwardButtonCoordinator forwardButtonCoordinator,
             @Nullable HomeButtonDisplay homeButtonDisplay,
             TopControlsStacker topControlsStacker,
-            BrowserControlsStateProvider browserControlsStateProvider,
+            BrowserControlsVisibilityManager browserControlsVisibilityManager,
             Supplier<Integer> incognitoWindowCountSupplier) {
         mToolbarLayout = toolbarLayout;
         mMenuButtonCoordinator = browsingModeMenuButtonCoordinator;
@@ -236,7 +239,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         mToolbarLayout.setOnLongClickListener(onLongClickListener);
         mLocationBarView = mToolbarLayout.findViewById(R.id.location_bar);
         mIndexOfLocationBarInToolbar = mToolbarLayout.indexOfChild(mLocationBarView);
-        mBrowserControls = browserControlsStateProvider;
+        mBrowserControls = browserControlsVisibilityManager;
         mTopControlsStacker = topControlsStacker;
 
         ImageButton reloadButton = mControlContainer.findViewById(R.id.refresh_button);
@@ -296,6 +299,23 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                 (show) -> mToolbarLayout.onHomeButtonIsEnabledUpdate(show));
         homepageNonNtpSupplier.addObserver(
                 (isNonNtp) -> mToolbarLayout.onHomepageIsNonNtpUpdate(isNonNtp));
+
+        // When we can force height adjustment on start up, we need to create tab strip transition
+        // earlier, before native is ready.
+        // TODO(crbug.com/450970998): Once launched, it's safe to always call
+        // maybeInitializeTabStripTransitionCoordinator on all form factors.
+        if (BrowserControlsUtils.isForceTopChromeHeightAdjustmentOnStartupEnabled(
+                toolbarLayout.getContext())) {
+            mTabStripTransitionCoordinator =
+                    maybeInitializeTabStripTransitionCoordinator(
+                            mToolbarLayout,
+                            browserControlsVisibilityManager,
+                            mControlContainer,
+                            mTabObscuringHandler,
+                            mDesktopWindowStateManager,
+                            mTabStripTransitionDelegateSupplier,
+                            tabStripTransitionHandler);
+        }
 
         // Add the layer after toolbar / control container is initialized.
         mTopControlsStacker.addControl(this);
@@ -385,20 +405,43 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
             mToolbarLayout.setOverlayCoordinator(mOverlayCoordinator);
         }
 
-        int tabStripHeightResource = mToolbarLayout.getTabStripHeightFromResource();
-        if (tabStripHeightResource > 0) {
+        if (mTabStripTransitionCoordinator == null) {
             mTabStripTransitionCoordinator =
-                    new TabStripTransitionCoordinator(
+                    maybeInitializeTabStripTransitionCoordinator(
+                            mToolbarLayout,
                             browserControlsVisibilityManager,
                             mControlContainer,
-                            tabStripHeightResource,
                             mTabObscuringHandler,
                             mDesktopWindowStateManager,
                             mTabStripTransitionDelegateSupplier,
                             tabStripTransitionHandler);
-            mToolbarLayout.getContext().registerComponentCallbacks(mTabStripTransitionCoordinator);
-            mToolbarLayout.setTabStripTransitionCoordinator(mTabStripTransitionCoordinator);
         }
+    }
+
+    private static @Nullable TabStripTransitionCoordinator
+            maybeInitializeTabStripTransitionCoordinator(
+                    ToolbarLayout toolbarLayout,
+                    BrowserControlsVisibilityManager browserControlsVisibilityManager,
+                    ControlContainer controlContainer,
+                    TabObscuringHandler tabObscuringHandler,
+                    @Nullable DesktopWindowStateManager desktopWindowStateManager,
+                    OneshotSupplier<TabStripTransitionDelegate> tabStripTransitionDelegateSupplier,
+                    TabStripTransitionHandler tabStripTransitionHandler) {
+        int tabStripHeightResource = toolbarLayout.getTabStripHeightFromResource();
+        if (tabStripHeightResource <= 0) return null;
+
+        var coordinator =
+                new TabStripTransitionCoordinator(
+                        browserControlsVisibilityManager,
+                        controlContainer,
+                        tabStripHeightResource,
+                        tabObscuringHandler,
+                        desktopWindowStateManager,
+                        tabStripTransitionDelegateSupplier,
+                        tabStripTransitionHandler);
+        toolbarLayout.getContext().registerComponentCallbacks(coordinator);
+        toolbarLayout.setTabStripTransitionCoordinator(coordinator);
+        return coordinator;
     }
 
     /**

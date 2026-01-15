@@ -45,6 +45,17 @@ public class BrowserControlsUtils {
                 && ChromeFeatureList.sTopControlsRefactorV2.isEnabled();
     }
 
+    /** Whether force adjusting top chrome height is allowed based on feature flags. */
+    public static boolean isForceTopChromeHeightAdjustmentOnStartupEnabled(Context context) {
+        // Note: the check for feature doSyncMinHeightWithTotalHeightV2 is not necessary once the
+        // feature flag is launched. Once we are ready to cleanup the param
+        // sLockTopControlsForceAdjustHeightOnStartup it's safe to assume this method to return
+        // true always.
+        return isTopControlsRefactorOffsetEnabled()
+                && doSyncMinHeightWithTotalHeightV2(context)
+                && ChromeFeatureList.sLockTopControlsForceAdjustHeightOnStartup.getValue();
+    }
+
     /**
      * @return True if the browser controls are completely off screen.
      */

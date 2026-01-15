@@ -1369,6 +1369,9 @@ public abstract class ChromeFeatureList {
             newBooleanCachedFeatureParam(CCT_ADAPTIVE_BUTTON, "contextual_only", false);
     public static final IntCachedFeatureParam sCctAdaptiveButtonDefaultVariant =
             newIntCachedFeatureParam(CCT_ADAPTIVE_BUTTON, "default_variant", 0);
+    public static final BooleanCachedFeatureParam sLockTopControlsForceAdjustHeightOnStartup =
+            newBooleanCachedFeatureParam(
+                    LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2, "adjust_tab_strip_on_startup", true);
     public static final IntCachedFeatureParam sLowMemoryDeviceThresholdMb =
             newIntCachedFeatureParam(
                     LOW_END_MEMORY_EXPERIMENT,
@@ -1754,6 +1757,7 @@ public abstract class ChromeFeatureList {
                     sEdgeToEdgeUseBackupNavbarInsetsOemMinVersions,
                     sEdgeToEdgeUseBackupNavbarInsetsUseGestures,
                     sInitFeatureListEarly,
+                    sLockTopControlsForceAdjustHeightOnStartup,
                     sLowMemoryDeviceThresholdMb,
                     sMagicStackAndroidShowAllModules,
                     sMaliciousApkDownloadCheckTelemetryOnly,
