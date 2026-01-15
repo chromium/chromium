@@ -21,6 +21,7 @@ class Profile;
 namespace policy {
 
 struct ExtensionIdAndVersion;
+class CloudPolicyManager;
 
 class ExtensionInstallPolicyService : public KeyedService {
  public:
@@ -61,6 +62,8 @@ class ExtensionInstallPolicyServiceImpl
   std::set<ExtensionIdAndVersion> GetExtensions() override;
 
  private:
+  CloudPolicyManager* GetUserCloudPolicyManagerIfConnected() const;
+
   // Adds or removes from CloudPolicyClient::types_to_fetch_ based on
   // the current value of the pref
   // `kExtensionInstallCloudPolicyChecksEnabled`.
