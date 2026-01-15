@@ -294,20 +294,16 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, VerifyLazyLoad) {
   // f1 should have loaded its children.
   EXPECT_EQ(next_id_before_load + 2 * AppMenuModel::kNumUnboundedMenuTypes,
             next_menu_id());
-  ASSERT_EQ(2u + RootFolderSizeOffset(),
-            f1_item->GetSubmenu()->GetMenuItems().size());
+  ASSERT_EQ(2u, f1_item->GetSubmenu()->GetMenuItems().size());
   const BookmarkNode* f1_node = bookmark_service()->GetNodeAtIndex(
       BookmarkParentFolder::BookmarkBarFolder(), 1u);
-  EXPECT_THAT(GetNodeForMenuItem(f1_item->GetSubmenu()->GetMenuItemAt(
-                  0 + RootFolderSizeOffset())),
+  EXPECT_THAT(GetNodeForMenuItem(f1_item->GetSubmenu()->GetMenuItemAt(0)),
               BookmarkVariantMatcher(f1_node->children()[0].get()));
-  EXPECT_THAT(GetNodeForMenuItem(f1_item->GetSubmenu()->GetMenuItemAt(
-                  1 + RootFolderSizeOffset())),
+  EXPECT_THAT(GetNodeForMenuItem(f1_item->GetSubmenu()->GetMenuItemAt(1)),
               BookmarkVariantMatcher(f1_node->children()[1].get()));
 
   // F11 shouldn't have loaded yet.
-  views::MenuItemView* f11_item =
-      f1_item->GetSubmenu()->GetMenuItemAt(1 + RootFolderSizeOffset());
+  views::MenuItemView* f11_item = f1_item->GetSubmenu()->GetMenuItemAt(1);
   ASSERT_TRUE(f11_item->HasSubmenu());
   EXPECT_EQ(0u, f11_item->GetSubmenu()->GetMenuItems().size());
 
@@ -805,14 +801,12 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest,
   bookmark_menu_delegate_->WillShowMenu(f1_item);
   bookmark_menu_delegate_->WillShowMenu(f2_item);
   EXPECT_EQ(1u, f1_item->GetSubmenu()->GetMenuItems().size());
-  EXPECT_EQ(1u + RootFolderSizeOffset(),
-            f2_item->GetSubmenu()->GetMenuItems().size());
+  EXPECT_EQ(1u, f2_item->GetSubmenu()->GetMenuItems().size());
 
   // Move from F2 to F1.
   model()->Move(f1a_node, f1_node, 0);
   EXPECT_EQ(2u, f1_item->GetSubmenu()->GetMenuItems().size());
-  EXPECT_EQ(0u + RootFolderSizeOffset(),
-            f2_item->GetSubmenu()->GetMenuItems().size());
+  EXPECT_EQ(0u, f2_item->GetSubmenu()->GetMenuItems().size());
 }
 
 // Tests moving a bookmark whose menu doesn't have a parent.

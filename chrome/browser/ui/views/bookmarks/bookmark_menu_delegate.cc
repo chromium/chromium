@@ -1145,7 +1145,9 @@ void BookmarkMenuDelegate::BuildMenu(const BookmarkParentFolder& folder,
     const BookmarkNode* node = folder.as_non_permanent_folder();
     if (node && node->parent() &&
         node->parent()->type() == BookmarkNode::Type::BOOKMARK_BAR) {
-      MaybeAppendOpenAllCommandItems(menu, folder);
+      if (parent_menu_item_ == nullptr) {
+        MaybeAppendOpenAllCommandItems(menu, folder);
+      }
     }
   }
   const ui::ImageModel folder_icon = chrome::GetBookmarkFolderIcon(
