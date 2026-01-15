@@ -631,25 +631,6 @@ public class ApplicationStatus {
     }
 
     /**
-     * Cleanup Activity info from an app Task that is no longer reachable.
-     *
-     * @param taskId The id of the Task that is no longer running.
-     * @return Whether any tasks were cleaned up.
-     */
-    public static boolean cleanupInvalidTask(int taskId) {
-        List<Activity> inaccessibleActivities = new ArrayList<>();
-        for (Entry<Activity, Integer> activityTaskInfo : sActivityTaskId.entrySet()) {
-            if (taskId == activityTaskInfo.getValue()) {
-                inaccessibleActivities.add(activityTaskInfo.getKey());
-            }
-        }
-        for (Activity activity : inaccessibleActivities) {
-            onStateChange(activity, ActivityState.DESTROYED);
-        }
-        return !inaccessibleActivities.isEmpty();
-    }
-
-    /**
      * Returns true if there is any activity with window focus.
      *
      * @return Whether any Activity under this Application has window focus.

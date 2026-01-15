@@ -191,7 +191,6 @@ BASE_DECLARE_FEATURE(kMediaIndicatorsAndroid);
 BASE_DECLARE_FEATURE(kMostVisitedTilesCustomization);
 BASE_DECLARE_FEATURE(kMostVisitedTilesReselect);
 BASE_DECLARE_FEATURE(kMoveToFrontInLaunchIntentDispatcher);
-BASE_DECLARE_FEATURE(kMultiInstanceApplicationStatusCleanup);
 BASE_DECLARE_FEATURE(kMvcUpdateViewWhenModelChanged);
 BASE_DECLARE_FEATURE(kNavBarColorAnimation);
 BASE_DECLARE_FEATURE(kNewTabPageCustomization);

@@ -51,7 +51,6 @@ import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabGroupTask
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabsTask;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
-import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -654,7 +653,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
 
     @Override
     public List<InstanceInfo> getInstanceInfo(@PersistedInstanceType int persistedInstanceType) {
-        removeInvalidInstanceData(/* cleanupApplicationStatus= */ false);
+        removeInvalidInstanceData();
         List<InstanceInfo> result = new ArrayList<>();
         SparseBooleanArray visibleTasks = MultiWindowUtils.getVisibleTasks();
         int currentItemPos = -1;
@@ -760,7 +759,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
 
     private AllocatedIdInfo allocInstanceIdInternal(
             int preferredInstanceId, int taskId, boolean preferNew, boolean isIncognitoIntent) {
-        removeInvalidInstanceData(/* cleanupApplicationStatus= */ true);
+        removeInvalidInstanceData();
         // Finish excess running activities / tasks after an instance limit downgrade.
         finishExcessRunningActivities();
 
@@ -1146,7 +1145,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         return getPersistedInstanceIds(PersistedInstanceType.ANY);
     }
 
-    private void removeInvalidInstanceData(boolean cleanupApplicationStatus) {
+    private void removeInvalidInstanceData() {
         // Update persisted task state based on current AppTasks.
         Set<Integer> appTaskIds = getAllAppTaskIds(mActivity);
         Map<String, Integer> taskMap = MultiInstancePersistentStore.readTaskMap();
@@ -1155,19 +1154,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             if (!appTaskIds.contains(entry.getValue())) {
                 tasksRemoved.add(entry.getKey() + " - " + entry.getValue());
                 ChromeSharedPreferences.getInstance().removeKey(entry.getKey());
-                if (ChromeFeatureList.sMultiInstanceApplicationStatusCleanup.isEnabled()
-                        && cleanupApplicationStatus) {
-                    boolean foundTasks = ApplicationStatus.cleanupInvalidTask(entry.getValue());
-                    if (foundTasks) {
-                        if (BuildConfig.ENABLE_ASSERTS) {
-                            String logMessage =
-                                    "This is not a crash. Found tracked ApplicationStatus for Task "
-                                            + " that no longer exists in #getAppTasks().";
-                            ChromePureJavaExceptionReporter.reportJavaException(
-                                    new Throwable(logMessage));
-                        }
-                    }
-                }
             }
         }
 
@@ -1581,7 +1567,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         // A point of activity destruction should be recorded as last access of the instance for a
         // more accurate ordering of inactive instances displayed on surfaces like the instance
         // switcher dialog and Recent Tabs.
-        removeInvalidInstanceData(/* cleanupApplicationStatus= */ false);
+        removeInvalidInstanceData();
 
         MultiInstancePersistentStore.writeLastAccessedTime(mInstanceId);
 

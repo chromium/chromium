@@ -526,7 +526,6 @@ public class MultiInstanceManagerApi31UnitTest {
                                 mModalDialogManagerSupplier,
                                 mMenuOrKeyboardActionController,
                                 mDesktopWindowStateManagerSupplier));
-        ApplicationStatus.setCachingEnabled(true);
 
         mTabbedActivityPool =
                 new Activity[] {
@@ -557,7 +556,6 @@ public class MultiInstanceManagerApi31UnitTest {
         TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
         ApplicationStatus.destroyForJUnitTests();
         mMultiInstanceManager.mTestBuildInstancesList = false;
-        ApplicationStatus.setCachingEnabled(false);
     }
 
     private void setupActivityForCreateNewWindowIntent(Activity activity) {
@@ -617,70 +615,6 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // New instantiation picks up the smallest available ID.
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask59));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.MULTI_INSTANCE_APPLICATION_STATUS_CLEANUP)
-    public void testAllocInstanceId_removeTaskOnRecentScreen_withoutDestroy() {
-        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
-
-        // Remove the app task without calling other methods to indicate Activity was destroyed
-        removeTaskWithoutDestroyingActivity(mActivityTask56);
-
-        // New instantiation picks up the smallest available ID.
-        // assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
-        AllocatedIdInfo instanceIdInfo =
-                mMultiInstanceManager.allocInstanceId(
-                        PASSED_ID_INVALID, TASK_ID_57, false, /* isIncognitoIntent= */ false);
-        int index = instanceIdInfo.instanceId;
-
-        // Does what TabModelOrchestrator.createTabModels() would do to simulate production code.
-        Pair<Integer, TabModelSelector> pair =
-                TabWindowManagerSingleton.getInstance()
-                        .requestSelector(
-                                mActivityTask57,
-                                mModalDialogManager,
-                                mProfileProviderSupplier,
-                                null,
-                                null,
-                                null,
-                                mMismatchedIndicesHandler,
-                                index);
-        int instanceId = pair.first;
-        assertEquals(0, instanceId);
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.MULTI_INSTANCE_APPLICATION_STATUS_CLEANUP)
-    public void testAllocInstanceId_removeTaskOnRecentScreen_withoutDestroy_fixDisabled() {
-        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
-
-        // Remove the app task without calling other methods to indicate Activity was destroyed
-        removeTaskWithoutDestroyingActivity(mActivityTask56);
-
-        // New instantiation picks up the smallest available ID.
-        // assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
-        AllocatedIdInfo instanceIdInfo =
-                mMultiInstanceManager.allocInstanceId(
-                        PASSED_ID_INVALID, TASK_ID_57, false, /* isIncognitoIntent= */ false);
-        int index = instanceIdInfo.instanceId;
-
-        // Does what TabModelOrchestrator.createTabModels() would do to simulate production code.
-        Pair<Integer, TabModelSelector> pair =
-                TabWindowManagerSingleton.getInstance()
-                        .requestSelector(
-                                mActivityTask57,
-                                mModalDialogManager,
-                                mProfileProviderSupplier,
-                                null,
-                                null,
-                                null,
-                                mMismatchedIndicesHandler,
-                                index);
-        int instanceId = pair.first;
-
-        // This is the "wrong" id, exercising code path where flag is disabled.
-        assertEquals(1, instanceId);
     }
 
     @Test
@@ -1509,11 +1443,6 @@ public class MultiInstanceManagerApi31UnitTest {
         mMultiInstanceManager.updateTasksWithoutDestroyingActivity(
                 INVALID_WINDOW_ID, activityForTask);
         destroyActivity(activityForTask);
-    }
-
-    private void removeTaskWithoutDestroyingActivity(Activity activityForTask) {
-        mMultiInstanceManager.updateTasksWithoutDestroyingActivity(
-                INVALID_WINDOW_ID, activityForTask);
     }
 
     // Simulate only an activity gets destroyed, leaving everything intact.
