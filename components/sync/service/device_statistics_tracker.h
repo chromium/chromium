@@ -49,6 +49,8 @@ class DeviceStatisticsTracker {
   // If there was no previous invocation today, sends `DeviceStatisticsRequest`s
   // for all accounts. Once they all complete, records metrics and then runs the
   // `callback`. If `this` is destroyed, `callback` is not run anymore.
+  // Must only be called after refresh tokens have been loaded (so that the list
+  // of accounts can actually be queried).
   void Start(base::OnceClosure callback);
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -66,7 +68,8 @@ class DeviceStatisticsTracker {
     kPrimaryFailedButNonPrimarySucceeded = 2,
     kAllFailed = 3,
     kPrimaryAccountChangedOrRemoved = 4,
-    kMaxValue = kPrimaryAccountChangedOrRemoved
+    kPrimaryNAAndSomeNonPrimaryFailed = 5,
+    kMaxValue = kPrimaryNAAndSomeNonPrimaryFailed
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/sync/enums.xml:SyncDeviceStatisticsSuccess)
 
@@ -80,7 +83,10 @@ class DeviceStatisticsTracker {
     kPrimaryYesNonPrimaryNo = 3,
     kPrimaryNoNonPrimaryYes = 4,
     kPrimaryNoNonPrimaryNo = 5,
-    kMaxValue = kPrimaryNoNonPrimaryNo
+    kPrimaryNANonPrimaryYes = 6,
+    kPrimaryNANonPrimaryNo = 7,
+    kNoAccounts = 8,
+    kMaxValue = kNoAccounts
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/sync/enums.xml:SyncDeviceStatisticsOutcome)
 
@@ -101,6 +107,8 @@ class DeviceStatisticsTracker {
  private:
   void RequestDoneForGaiaId(const GaiaId& gaia);
   void AllRequestsDone();
+
+  void RecordOverallOutcome() const;
 
   RequestsCompletedSuccess GetOverallSuccess() const;
   AccountsHaveOtherDevicesSummary GetOverallOutcome() const;

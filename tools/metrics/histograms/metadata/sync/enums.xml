@@ -1053,6 +1053,13 @@ chromium-metrics-reviews@google.com.
       label="Primary account does not have other devices; at least one
              non-primary account exists, but none of them have any other
              devices"/>
+  <int value="6"
+      label="Primary account does not exist; at least one non-primary account
+             has other devices"/>
+  <int value="7"
+      label="Primary account does not exist; at least one non-primary account
+             exists, but none of them have any other devices"/>
+  <int value="8" label="No accounts"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/service/device_statistics_tracker.h:SyncDeviceStatisticsOutcome) -->
@@ -1084,6 +1091,9 @@ chromium-metrics-reviews@google.com.
   <int value="4"
       label="Failure: The primary account was changed (or removed) while
              requests were ongoing"/>
+  <int value="5"
+      label="Success: Primary account does not exist; some but not all
+             non-primary succeeded"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/service/device_statistics_tracker.h:SyncDeviceStatisticsSuccess) -->

@@ -1152,7 +1152,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Device statistics: Records the number of additional syncing clients (i.e.
     not counting this client) of a non-primary account. Recorded at most once
-    per day for every non-primary account.
+    per day (30 seconds after profile initialization) for every non-primary
+    account.
   </summary>
 </histogram>
 
@@ -1165,7 +1166,8 @@ chromium-metrics-reviews@google.com.
     Device statistics: Records the platform of each additional syncing client
     (i.e. not counting this client) of each non-primary account. Multiple
     clients with the same platform are recorded individually. Recorded at most
-    once per day (but with one sample per other client).
+    once per day (30 seconds after profile initialization), but with one sample
+    per other client.
   </summary>
 </histogram>
 
@@ -1176,7 +1178,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Device statistics: Records the overall outcome, i.e. whether primary and/or
     non-primary accounts have other syncing devices. Recorded at most once per
-    day.
+    day (30 seconds after profile initialization).
   </summary>
 </histogram>
 
@@ -1188,7 +1190,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Device statistics: Records the number of additional syncing clients (i.e.
     not counting this client) of the primary account. Recorded at most once per
-    day.
+    day (30 seconds after profile initialization).
   </summary>
 </histogram>
 
@@ -1201,7 +1203,8 @@ chromium-metrics-reviews@google.com.
     Device statistics: Records the platform of each additional syncing client
     (i.e. not counting this client) of the primary account. Multiple clients
     with the same platform are recorded individually. Recorded at most once per
-    day (but with one sample per other client).
+    day (30 seconds after profile initialization), but with one sample per other
+    client.
   </summary>
 </histogram>
 
@@ -1223,8 +1226,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Device statistics: Whenever GetUpdates requests are started for the purpose
     of device statistics metrics, records the number of requests (= the number
-    of accounts in the profile). This happens on Sync startup, at most once per
-    day.
+    of accounts in the profile). This happens at most once per day, 30 seconds
+    after profile initialization.
   </summary>
 </histogram>
 

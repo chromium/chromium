@@ -56,6 +56,7 @@
 #include "components/sync/service/data_type_manager_impl.h"
 #include "components/sync/service/data_type_status_table.h"
 #include "components/sync/service/device_statistics_request_impl.h"
+#include "components/sync/service/glue/sync_transport_data_prefs.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync/service/local_data_migration_item_queue.h"
 #include "components/sync/service/sync_auth_manager.h"
@@ -88,6 +89,12 @@ namespace {
 
 BASE_FEATURE(kSyncUnsubscribeFromTypesWithPermanentErrors,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Delay before downloading device statistics and recording related metrics. The
+// exact number is somewhat arbitrary, chosen to ensure that refresh tokens are
+// loaded, the local cache GUID is up to date, and to avoid interfering with
+// general (sync or browser) startup.
+constexpr base::TimeDelta kDeviceStatisticsTrackerDelay = base::Seconds(30);
 
 #if BUILDFLAG(IS_ANDROID)
 constexpr int kMinGmsVersionCodeWithCustomPassphraseApi = 235204000;
@@ -428,6 +435,14 @@ void SyncServiceImpl::Initialize(DataTypeController::TypeVector controllers) {
   local_data_migration_item_queue_ =
       std::make_unique<LocalDataMigrationItemQueue>(this,
                                                     data_type_manager_.get());
+
+  if (base::FeatureList::IsEnabled(kSyncRecordDeviceStatisticsMetrics)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&SyncServiceImpl::MaybeStartDeviceStatisticsTracker,
+                       weak_factory_.GetWeakPtr()),
+        kDeviceStatisticsTrackerDelay);
+  }
 }
 
 void SyncServiceImpl::StartSyncingWithServer() {
@@ -446,7 +461,8 @@ void SyncServiceImpl::StartSyncingWithServer() {
         base::BindRepeating(
             &CreateDeviceStatisticsRequest, sync_client_->GetIdentityManager(),
             url_loader_factory_, MakeUserAgentForSync(channel_)),
-        engine_->GetCacheGuidsForAllGaiaIds());
+        SyncTransportDataPrefs::GetCacheGuidsForAllGaiaIds(
+            sync_client_->GetPrefService()));
     device_statistics_tracker_->Start(base::BindOnce(
         &SyncServiceImpl::DeviceStatisticsTrackerDone, base::Unretained(this)));
   }
@@ -2512,6 +2528,31 @@ void SyncServiceImpl::AcknowledgeBookmarksLimitExceededError(
   base::UmaHistogramEnumeration("Sync.BookmarksLimitExceededHelpClickedSource",
                                 source);
   bookmark_sync_error_state_.AcknowledgeError();
+}
+
+void SyncServiceImpl::MaybeStartDeviceStatisticsTracker() {
+  CHECK(base::FeatureList::IsEnabled(kSyncRecordDeviceStatisticsMetrics));
+
+  if (!sync_client_->IsMetricsAndCrashReportingEnabled()) {
+    return;
+  }
+
+  if (!auth_manager_->IsActiveAccountInfoFullyLoaded()) {
+    // It shouldn't happen in practice that the account info (refresh tokens)
+    // still aren't fully loaded at this point.
+    return;
+  }
+
+  device_statistics_tracker_ = std::make_unique<DeviceStatisticsTracker>(
+      sync_client_->GetPrefService(), sync_client_->GetIdentityManager(),
+      sync_service_url_,
+      base::BindRepeating(&CreateDeviceStatisticsRequest,
+                          sync_client_->GetIdentityManager(),
+                          url_loader_factory_, MakeUserAgentForSync(channel_)),
+      SyncTransportDataPrefs::GetCacheGuidsForAllGaiaIds(
+          sync_client_->GetPrefService()));
+  device_statistics_tracker_->Start(base::BindOnce(
+      &SyncServiceImpl::DeviceStatisticsTrackerDone, base::Unretained(this)));
 }
 
 void SyncServiceImpl::DeviceStatisticsTrackerDone() {

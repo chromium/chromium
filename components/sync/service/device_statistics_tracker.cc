@@ -28,7 +28,8 @@ namespace syncer {
 
 namespace {
 
-constexpr char kLastRecordedPref[] = "sync.device_statistics_timestamp";
+constexpr char kLastAttemptedToRecordPref[] =
+    "sync.device_statistics_timestamp";
 
 // A device is considered active if it has been used within this amount of time.
 constexpr base::TimeDelta kDeviceActivityTimeRange = base::Days(28);
@@ -46,6 +47,7 @@ bool ShouldRecordOutcomeMetrics(
   switch (success) {
     case RequestsCompletedSuccess::kAllSucceeded:
     case RequestsCompletedSuccess::kPrimarySucceededButNonPrimaryFailed:
+    case RequestsCompletedSuccess::kPrimaryNAAndSomeNonPrimaryFailed:
       return true;
     case RequestsCompletedSuccess::kPrimaryFailedButNonPrimarySucceeded:
     case RequestsCompletedSuccess::kAllFailed:
@@ -195,32 +197,50 @@ DeviceStatisticsTracker::DeviceStatisticsTracker(
 void DeviceStatisticsTracker::Start(base::OnceClosure callback) {
   CHECK(!callback_);
   CHECK(callback);
+  CHECK(identity_manager_->AreRefreshTokensLoaded());
 
   callback_ = std::move(callback);
 
   const std::vector<CoreAccountInfo> accounts =
       identity_manager_->GetAccountsWithRefreshTokens();
 
-  // Only send requests / record metrics once per day, and only if there are
-  // accounts.
-  const base::Time last_recorded_at = pref_service_->GetTime(kLastRecordedPref);
-  const base::Time now = base::Time::Now();
-  if (primary_account_.IsEmpty() || accounts.empty() ||
-      (!last_recorded_at.is_null() &&
-       last_recorded_at.LocalMidnight() >= now.LocalMidnight())) {
+  if (!primary_account_.IsEmpty() &&
+      !std::ranges::contains(accounts, primary_account_)) {
+    // The primary account must have been removed between the constructor and
+    // now, or something's wrong with the IdentityManager.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(callback_));
     return;
   }
 
-  pref_service_->SetTime(kLastRecordedPref, now);
+  // Only send requests / record metrics once per day.
+  const base::Time last_recorded_at =
+      pref_service_->GetTime(kLastAttemptedToRecordPref);
+  const base::Time now = base::Time::Now();
+  const bool can_issue_requests =
+      last_recorded_at.is_null() ||
+      last_recorded_at.LocalMidnight() < now.LocalMidnight();
+  if (!can_issue_requests) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback_));
+    return;
+  }
+
+  pref_service_->SetTime(kLastAttemptedToRecordPref, now);
+
+  // If there are no accounts, there's not much to do.
+  if (accounts.empty()) {
+    RecordOverallOutcome();
+
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback_));
+    return;
+  }
 
   GURL::Replacements path_replacement;
   std::string path = sync_server_url_.GetPath() + "/command/";
   path_replacement.SetPathStr(path);
   GURL base_url = sync_server_url_.ReplaceComponents(path_replacement);
-
-  CHECK(identity_manager_->AreRefreshTokensLoaded());
 
   for (const CoreAccountInfo& account : accounts) {
     GURL request_url =
@@ -245,7 +265,7 @@ DeviceStatisticsTracker::~DeviceStatisticsTracker() = default;
 // static
 void DeviceStatisticsTracker::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterTimePref(kLastRecordedPref, base::Time());
+  registry->RegisterTimePref(kLastAttemptedToRecordPref, base::Time());
 }
 
 void DeviceStatisticsTracker::RequestDoneForGaiaId(const GaiaId& gaia) {
@@ -276,8 +296,7 @@ void DeviceStatisticsTracker::AllRequestsDone() {
       "Sync.DeviceStatistics.RequestsCompletedSuccess", success);
 
   if (ShouldRecordOutcomeMetrics(success)) {
-    base::UmaHistogramEnumeration("Sync.DeviceStatistics.Outcome.Overall",
-                                  GetOverallOutcome());
+    RecordOverallOutcome();
 
     for (const auto& [gaia, other_devices] : other_devices_by_gaia_) {
       if (!other_devices.has_value()) {
@@ -308,6 +327,11 @@ void DeviceStatisticsTracker::AllRequestsDone() {
   // NOTE: `this` may be destroyed now; don't do anything else!
 }
 
+void DeviceStatisticsTracker::RecordOverallOutcome() const {
+  base::UmaHistogramEnumeration("Sync.DeviceStatistics.Outcome.Overall",
+                                GetOverallOutcome());
+}
+
 DeviceStatisticsTracker::RequestsCompletedSuccess
 DeviceStatisticsTracker::GetOverallSuccess() const {
   if (primary_account_.gaia !=
@@ -330,10 +354,15 @@ DeviceStatisticsTracker::GetOverallSuccess() const {
     }
   }
 
+  // TODO(crbug.com/465716865): Consider treating some types of errors
+  // specially, e.g disabled-by-admin.
+
   if (requests_succeeded == other_devices_by_gaia_.size()) {
     return RequestsCompletedSuccess::kAllSucceeded;
   } else if (requests_failed == other_devices_by_gaia_.size()) {
     return RequestsCompletedSuccess::kAllFailed;
+  } else if (primary_account_.IsEmpty()) {
+    return RequestsCompletedSuccess::kPrimaryNAAndSomeNonPrimaryFailed;
   } else if (primary_failed) {
     return RequestsCompletedSuccess::kPrimaryFailedButNonPrimarySucceeded;
   } else {
@@ -343,6 +372,10 @@ DeviceStatisticsTracker::GetOverallSuccess() const {
 
 DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary
 DeviceStatisticsTracker::GetOverallOutcome() const {
+  if (other_devices_by_gaia_.empty()) {
+    return AccountsHaveOtherDevicesSummary::kNoAccounts;
+  }
+
   bool primary_account_has_other_devices = false;
   bool non_primary_account_has_other_devices = false;
   for (const auto& [gaia, other_devices] : other_devices_by_gaia_) {
@@ -354,24 +387,31 @@ DeviceStatisticsTracker::GetOverallOutcome() const {
       }
     }
   }
-  // At least the primary account must always exist.
-  CHECK_GE(other_devices_by_gaia_.size(), 1u);
-  bool has_non_primary_account = other_devices_by_gaia_.size() > 1;
 
-  if (has_non_primary_account) {
-    if (non_primary_account_has_other_devices) {
-      return primary_account_has_other_devices
-                 ? AccountsHaveOtherDevicesSummary::kPrimaryYesNonPrimaryYes
-                 : AccountsHaveOtherDevicesSummary::kPrimaryNoNonPrimaryYes;
+  if (!primary_account_.IsEmpty()) {
+    CHECK(other_devices_by_gaia_.contains(primary_account_.gaia));
+    bool has_non_primary_account = other_devices_by_gaia_.size() > 1;
+    if (has_non_primary_account) {
+      if (non_primary_account_has_other_devices) {
+        return primary_account_has_other_devices
+                   ? AccountsHaveOtherDevicesSummary::kPrimaryYesNonPrimaryYes
+                   : AccountsHaveOtherDevicesSummary::kPrimaryNoNonPrimaryYes;
+      } else {
+        return primary_account_has_other_devices
+                   ? AccountsHaveOtherDevicesSummary::kPrimaryYesNonPrimaryNo
+                   : AccountsHaveOtherDevicesSummary::kPrimaryNoNonPrimaryNo;
+      }
     } else {
       return primary_account_has_other_devices
-                 ? AccountsHaveOtherDevicesSummary::kPrimaryYesNonPrimaryNo
-                 : AccountsHaveOtherDevicesSummary::kPrimaryNoNonPrimaryNo;
+                 ? AccountsHaveOtherDevicesSummary::kPrimaryYesNonPrimaryNA
+                 : AccountsHaveOtherDevicesSummary::kPrimaryNoNonPrimaryNA;
     }
   } else {
-    return primary_account_has_other_devices
-               ? AccountsHaveOtherDevicesSummary::kPrimaryYesNonPrimaryNA
-               : AccountsHaveOtherDevicesSummary::kPrimaryNoNonPrimaryNA;
+    if (non_primary_account_has_other_devices) {
+      return AccountsHaveOtherDevicesSummary::kPrimaryNANonPrimaryYes;
+    } else {
+      return AccountsHaveOtherDevicesSummary::kPrimaryNANonPrimaryNo;
+    }
   }
 }
 

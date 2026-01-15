@@ -410,6 +410,7 @@ class SyncServiceImpl : public SyncService,
       base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>
           callback);
 
+  void MaybeStartDeviceStatisticsTracker();
   void DeviceStatisticsTrackerDone();
 
   // This profile's SyncClient.

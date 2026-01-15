@@ -142,6 +142,35 @@ TEST_F(DeviceStatisticsTrackerTest, StartsRequestIfPrefIsOld) {
       /*expected_bucket_count=*/1);
 }
 
+TEST_F(DeviceStatisticsTrackerTest, RecordsOutcomeWhenNoAccounts) {
+  pref_service_.SetTime("sync.device_statistics_timestamp",
+                        base::Time::Now() - base::Hours(25));
+
+  identity_test_env_.WaitForRefreshTokensLoaded();
+
+  base::HistogramTester histogram_tester;
+
+  DeviceStatisticsTracker tracker(
+      &pref_service_, identity_test_env_.identity_manager(),
+      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
+
+  base::test::TestFuture<void> future;
+  tracker.Start(future.GetCallback());
+
+  ASSERT_EQ(fake_requests_.size(), 0u);
+  EXPECT_TRUE(future.Wait());
+
+  histogram_tester.ExpectTotalCount(
+      "Sync.DeviceStatistics.RequestsStartedCount", 0);
+  histogram_tester.ExpectTotalCount(
+      "Sync.DeviceStatistics.RequestsCompletedSuccess", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.Overall",
+      /*sample=*/
+      DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary::kNoAccounts,
+      /*expected_bucket_count=*/1);
+}
+
 TEST_F(DeviceStatisticsTrackerTest,
        RecordsOutcomeWhenPrimarySucceedsAndSecondaryFails) {
   AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
@@ -529,6 +558,84 @@ TEST_F(DeviceStatisticsTrackerTest, RecordsOutcomeWhenNobodyHasOtherDevices) {
       /*sample=*/
       DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary::
           kPrimaryNoNonPrimaryNo,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(DeviceStatisticsTrackerTest,
+       RecordsOutcomeWhenPrimaryDoesNotExistAndSecondarySucceeds) {
+  AccountInfo secondary =
+      identity_test_env_.MakeAccountAvailable("secondary@example.com");
+
+  pref_service_.SetTime("sync.device_statistics_timestamp",
+                        base::Time::Now() - base::Hours(25));
+
+  base::HistogramTester histogram_tester;
+
+  DeviceStatisticsTracker tracker(
+      &pref_service_, identity_test_env_.identity_manager(),
+      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
+
+  base::test::TestFuture<void> future;
+  tracker.Start(future.GetCallback());
+
+  ASSERT_EQ(fake_requests_.size(), 1u);
+  fake_requests_[secondary.gaia]->SimulateSuccess({});
+  EXPECT_TRUE(future.Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.RequestsStartedCount", /*sample=*/1,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.RequestsCompletedSuccess",
+      /*sample=*/
+      DeviceStatisticsTracker::RequestsCompletedSuccess::kAllSucceeded,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.Overall",
+      /*sample=*/
+      DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary::
+          kPrimaryNANonPrimaryNo,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(DeviceStatisticsTrackerTest,
+       RecordsOutcomeWhenPrimaryDoesNotExistAndSecondaryMixed) {
+  AccountInfo secondary1 =
+      identity_test_env_.MakeAccountAvailable("secondary1@example.com");
+  AccountInfo secondary2 =
+      identity_test_env_.MakeAccountAvailable("secondary2@example.com");
+
+  pref_service_.SetTime("sync.device_statistics_timestamp",
+                        base::Time::Now() - base::Hours(25));
+
+  base::HistogramTester histogram_tester;
+
+  DeviceStatisticsTracker tracker(
+      &pref_service_, identity_test_env_.identity_manager(),
+      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
+
+  base::test::TestFuture<void> future;
+  tracker.Start(future.GetCallback());
+
+  ASSERT_EQ(fake_requests_.size(), 2u);
+  fake_requests_[secondary1.gaia]->SimulateSuccess({});
+  fake_requests_[secondary2.gaia]->SimulateFailure();
+  EXPECT_TRUE(future.Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.RequestsStartedCount", /*sample=*/2,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.RequestsCompletedSuccess",
+      /*sample=*/
+      DeviceStatisticsTracker::RequestsCompletedSuccess::
+          kPrimaryNAAndSomeNonPrimaryFailed,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.Overall",
+      /*sample=*/
+      DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary::
+          kPrimaryNANonPrimaryNo,
       /*expected_bucket_count=*/1);
 }
 
