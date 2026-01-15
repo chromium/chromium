@@ -479,6 +479,8 @@ should be able to be added at any place in this file.
       summary="For iOSPasswordPromoDesktop feature"/>
   <variant name="_iOSPaymentPromoDesktop"
       summary="For iOSPaymentPromoDesktop feature"/>
+  <variant name="_iOSPinMostVisitedSiteFeature"
+      summary="For iOSPinMostVisitedSiteFeature feature"/>
   <variant name="_iOSPostDefaultAbandonmentPromo"
       summary="For iOSPostDefaultAbandonmentPromo feature"/>
   <variant name="_iOSPromoAllTabs"

@@ -205,6 +205,7 @@ const char kIOSGeminiFlowStartedNonPromo[] =
 const char kIOSGeminiConsentGiven[] = "ios_gemini_consent_given";
 const char kIOSGeminiImageRemixIPHTrigger[] =
     "ios_gemini_image_remix_iph_trigger";
+const char kIOSPinMVTSiteUsed[] = "ios_pin_mvt_site_used";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

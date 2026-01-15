@@ -330,7 +330,8 @@ class MagicStackRankingModelTest : public PlatformTest {
                largeIconService:large_icon_service
                  largeIconCache:cache
          URLLoadingBrowserAgent:url_loader_
-          accountManagerService:nullptr];
+          accountManagerService:nullptr
+              engagementTracker:tracker];
 
     _safetyCheckMediator = [[SafetyCheckMagicStackMediator alloc]
         initWithSafetyCheckManager:IOSChromeSafetyCheckManagerFactory::

@@ -17,6 +17,10 @@ namespace favicon {
 class LargeIconService;
 }  // namespace favicon
 
+namespace feature_engagement {
+class Tracker;
+}  // namespace feature_engagement
+
 namespace ntp_tiles {
 class MostVisitedSites;
 }  // namespace ntp_tiles
@@ -82,6 +86,7 @@ class UrlLoadingBrowserAgent;
              largeIconCache:(LargeIconCache*)largeIconCache
      URLLoadingBrowserAgent:(UrlLoadingBrowserAgent*)URLLoadingBrowserAgent
       accountManagerService:(ChromeAccountManagerService*)accountManagerService
+          engagementTracker:(feature_engagement::Tracker*)engagementTracker
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

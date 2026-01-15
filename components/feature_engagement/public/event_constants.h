@@ -402,6 +402,9 @@ extern const char kIOSGeminiFlowStartedNonPromo[];
 // Event fired when the Gemini consent is given.
 extern const char kIOSGeminiConsentGiven[];
 
+// Event fired when the user pins a site to the most visited tile.
+extern const char kIOSPinMVTSiteUsed[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

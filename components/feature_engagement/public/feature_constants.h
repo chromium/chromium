@@ -394,6 +394,9 @@ FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSGeminiFullscreenPromoFeature);
 // FET feature flag that enables omnibox Gemini contextual cue chip.
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSGeminiContextualCueChip);
 
+// FET feature flag that enables customized sites in the most visited tile.
+FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSPinMostVisitedSiteFeature);
+
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \

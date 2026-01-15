@@ -351,6 +351,9 @@ chromium-metrics-reviews@google.com.
       summary="showing the iOS password promo on desktop"/>
   <variant name="IPH_iOSPaymentPromoDesktop"
       summary="showing the iOS payment promo on desktop"/>
+  <variant name="IPH_iOSPinMostVisitedSiteFeature"
+      summary="showing the in-product help for customizing sites on the most
+               visited tiles on iOS"/>
   <variant name="IPH_iOSPostDefaultAbandonmentPromo"
       summary="showing the iOS post-default browser abandonment promo on iOS"/>
   <variant name="IPH_iOSPromoAllTabs"

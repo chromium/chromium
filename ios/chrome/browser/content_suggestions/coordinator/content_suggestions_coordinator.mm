@@ -323,6 +323,9 @@ using segmentation_platform::TipIdentifier;
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
 
+  feature_engagement::Tracker* engagementTracker =
+      feature_engagement::TrackerFactory::GetForProfile(profile);
+
   NSMutableArray* moduleMediators = [NSMutableArray array];
 
   _mostVisitedTilesMediator = [[MostVisitedTilesMediator alloc]
@@ -331,7 +334,8 @@ using segmentation_platform::TipIdentifier;
              largeIconService:largeIconService
                largeIconCache:cache
        URLLoadingBrowserAgent:UrlLoadingBrowserAgent::FromBrowser(self.browser)
-        accountManagerService:accountManagerService];
+        accountManagerService:accountManagerService
+            engagementTracker:engagementTracker];
   _mostVisitedTilesMediator.contentSuggestionsDelegate = self.delegate;
   _mostVisitedTilesMediator.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;

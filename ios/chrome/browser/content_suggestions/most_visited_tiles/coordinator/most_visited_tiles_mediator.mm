@@ -5,11 +5,14 @@
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/coordinator/most_visited_tiles_mediator.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/check.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/ntp_tiles/features.h"
 #import "components/ntp_tiles/metrics.h"
 #import "components/ntp_tiles/most_visited_sites.h"
@@ -84,6 +87,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   raw_ptr<UrlLoadingBrowserAgent, DanglingUntriaged> _URLLoadingBrowserAgent;
   raw_ptr<ChromeAccountManagerService, DanglingUntriaged>
       _accountManagerService;
+  raw_ptr<feature_engagement::Tracker> _engagementTracker;
 }
 
 - (instancetype)
@@ -93,14 +97,16 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
            largeIconService:(favicon::LargeIconService*)largeIconService
              largeIconCache:(LargeIconCache*)largeIconCache
      URLLoadingBrowserAgent:(UrlLoadingBrowserAgent*)URLLoadingBrowserAgent
-      accountManagerService:
-          (ChromeAccountManagerService*)accountManagerService {
+      accountManagerService:(ChromeAccountManagerService*)accountManagerService
+          engagementTracker:(feature_engagement::Tracker*)engagementTracker {
   self = [super init];
   if (self) {
+    CHECK(engagementTracker);
     _prefService = prefService;
     _prefChangeRegistrar.Init(_prefService);
     _URLLoadingBrowserAgent = URLLoadingBrowserAgent;
     _accountManagerService = accountManagerService;
+    _engagementTracker = engagementTracker;
     _incognitoAvailable = !IsIncognitoModeDisabled(prefService);
     _mostVisitedAttributesProvider = [[FaviconAttributesProvider alloc]
         initWithFaviconSize:kMagicStackFaviconWidth
@@ -128,6 +134,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
 }
 
 - (void)disconnect {
+  _engagementTracker = nullptr;
   _prefChangeRegistrar.RemoveAll();
   _mostVisitedBridge.reset();
   _mostVisitedSites.reset();
@@ -362,6 +369,8 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
                                         base::SysNSStringToUTF16(title))) {
     return NO;
   }
+  _engagementTracker->NotifyEvent(
+      feature_engagement::events::kIOSPinMVTSiteUsed);
   __weak MostVisitedTilesMediator* weakSelf = self;
   [self showSnackbarWithMessage:
             l10n_util::GetNSString(
@@ -510,6 +519,8 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
                                         base::SysNSStringToUTF16(item.title))) {
     return;
   }
+  _engagementTracker->NotifyEvent(
+      feature_engagement::events::kIOSPinMVTSiteUsed);
   // Show snackbar message.
   __weak MostVisitedTilesMediator* weakSelf = self;
   [self showSnackbarWithMessage:

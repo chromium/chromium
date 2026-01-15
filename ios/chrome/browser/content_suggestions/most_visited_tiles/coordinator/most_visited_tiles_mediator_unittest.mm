@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/coordinator/most_visited_tiles_mediator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "components/feature_engagement/test/mock_tracker.h"
 #import "components/ntp_tiles/icon_cacher.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
@@ -56,6 +57,7 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
+    tracker_ = std::make_unique<feature_engagement::test::MockTracker>();
     url_loader_ = FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
         UrlLoadingBrowserAgent::FromBrowser(browser_.get()));
 
@@ -65,7 +67,8 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
                largeIconService:large_icon_service
                  largeIconCache:cache
          URLLoadingBrowserAgent:url_loader_
-          accountManagerService:nullptr];
+          accountManagerService:nullptr
+              engagementTracker:tracker_.get()];
 
     metrics_recorder_ = [[ContentSuggestionsMetricsRecorder alloc]
         initWithLocalState:local_state()];
@@ -91,6 +94,7 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
+  std::unique_ptr<feature_engagement::test::MockTracker> tracker_;
   raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
   MostVisitedTilesMediator* mediator_;
   id<NewTabPageActionsDelegate> delegate_;
