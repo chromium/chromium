@@ -297,7 +297,8 @@ scoped_refptr<gfx::NativePixmap> GbmSurfaceFactory::CreateNativePixmapForVulkan(
   base::ScopedFD vk_image_fd(dup(buffer->GetPlaneFd(0)));
   DCHECK(vk_image_fd.is_valid());
 
-  // TODO(spang): Fix this for formats other than gfx::BufferFormat::BGRA_8888
+  // TODO(spang): Fix this for formats other than
+  // viz::SinglePlaneFormat::kBGRA_8888
   DCHECK_EQ(viz::SinglePlaneFormat::kBGRA_8888,
             display::DisplaySnapshot::PrimaryFormat());
   VkFormat vk_format = VK_FORMAT_B8G8R8A8_SRGB;

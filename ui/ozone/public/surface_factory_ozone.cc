@@ -22,6 +22,28 @@
 #include "gpu/vulkan/vulkan_instance.h"
 #endif
 
+namespace {
+
+inline constexpr auto kMappableSharedImageFormats = {
+    viz::SinglePlaneFormat::kR_8,
+    viz::SinglePlaneFormat::kRG_88,
+    viz::SinglePlaneFormat::kR_16,
+    viz::SinglePlaneFormat::kRG_1616,
+    viz::SinglePlaneFormat::kBGR_565,
+    viz::SinglePlaneFormat::kRGBA_4444,
+    viz::SinglePlaneFormat::kRGBA_8888,
+    viz::SinglePlaneFormat::kRGBX_8888,
+    viz::SinglePlaneFormat::kBGRA_8888,
+    viz::SinglePlaneFormat::kBGRX_8888,
+    viz::SinglePlaneFormat::kRGBA_1010102,
+    viz::SinglePlaneFormat::kBGRA_1010102,
+    viz::SinglePlaneFormat::kRGBA_F16,
+    viz::MultiPlaneFormat::kYV12,
+    viz::MultiPlaneFormat::kNV12,
+    viz::MultiPlaneFormat::kP010,
+    viz::MultiPlaneFormat::kNV12A};
+}
+
 namespace ui {
 
 SurfaceFactoryOzone::SurfaceFactoryOzone() = default;
@@ -139,9 +161,7 @@ SurfaceFactoryOzone::GetSupportedFormatsForGLNativePixmapImport() {
     return supported_formats;
   }
 
-  for (int j = 0; j <= static_cast<int>(gfx::BufferFormat::LAST); ++j) {
-    const gfx::BufferFormat buffer_format = static_cast<gfx::BufferFormat>(j);
-    auto format = viz::GetSharedImageFormat(buffer_format);
+  for (auto format : kMappableSharedImageFormats) {
     if (gl_ozone->CanImportNativePixmap(format)) {
       supported_formats.push_back(format);
     }
