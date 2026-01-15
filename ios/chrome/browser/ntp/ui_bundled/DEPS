@@ -46,6 +46,7 @@ include_rules = [
   "+ios/chrome/browser/push_notification/model/push_notification_service.h",
   "+ios/chrome/browser/push_notification/model/push_notification_settings_util.h",
   "+ios/chrome/browser/push_notification/model/push_notification_util.h",
+  "+ios/chrome/browser/safari_data_import/coordinator",
   "+ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h",
   "+ios/chrome/browser/search_engines/model/template_url_service_factory.h",
   "+ios/chrome/browser/signin/model/authentication_service.h",

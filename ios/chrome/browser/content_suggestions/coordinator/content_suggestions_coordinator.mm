@@ -1249,10 +1249,10 @@ using segmentation_platform::TipIdentifier;
     case SetUpListItemType::kAllSet:
       NOTREACHED();
     case SetUpListItemType::kSafariImport:
+      [self.delegate openSafariDataImport];
+      break;
     case SetUpListItemType::kBackgroundCustomization:
-      // TODO(crbug.com/462437008): Show UI for Safari import and background
-      // customization.
-      NOTREACHED();
+      [self.delegate openMainCustomizationMenu];
   }
 }
 

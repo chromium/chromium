@@ -21,6 +21,12 @@ class GURL;
 // Opens the Home Customization menu at the Magic Stack page.
 - (void)openMagicStackCustomizationMenu;
 
+// Opens the Home Customization menu at the Main page.
+- (void)openMainCustomizationMenu;
+
+// Opens the Safari Data import instructions.
+- (void)openSafariDataImport;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_COORDINATOR_CONTENT_SUGGESTIONS_DELEGATE_H_

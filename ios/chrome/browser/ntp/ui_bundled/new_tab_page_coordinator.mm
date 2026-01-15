@@ -95,6 +95,8 @@
 #import "ios/chrome/browser/omnibox/model/placeholder_service/placeholder_service_factory.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_child_coordinator_delegate.h"
+#import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_export_coordinator.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -170,7 +172,8 @@
                                      SceneStateObserver,
                                      TabGridStateObserver,
                                      FamilyLinkUserCapabilitiesObserving,
-                                     NewTabPageShortcutsHandler> {
+                                     NewTabPageShortcutsHandler,
+                                     SafariDataImportChildCoordinatorDelegate> {
   // Observes changes in the IdentityManager.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityObserverBridge;
@@ -288,6 +291,8 @@
   SigninCoordinator* _signinCoordinator;
   // Logo mediator to display the doodle on the NTP.
   SearchEngineLogoMediator* _searchEngineLogoMediator;
+  // The Safari data import used by the content suggestions.
+  SafariDataImportExportCoordinator* _safariDataImportExportCoordinator;
 }
 
 // Synthesize NewTabPageConfiguring properties.
@@ -464,6 +469,9 @@
 
   [_customizationCoordinator stop];
   _customizationCoordinator = nil;
+
+  [_safariDataImportExportCoordinator stop];
+  _safariDataImportExportCoordinator = nil;
 
   [_fakeboxLensIconBubblePresenter dismissAnimated:NO];
 
@@ -1060,6 +1068,19 @@
 
   [self openCustomizationMenuAtPage:CustomizationMenuPage::kMagicStack
                            animated:NO];
+}
+
+- (void)openMainCustomizationMenu {
+  [self openCustomizationMenuAtPage:CustomizationMenuPage::kMain animated:YES];
+}
+
+- (void)openSafariDataImport {
+  _safariDataImportExportCoordinator =
+      [[SafariDataImportExportCoordinator alloc]
+          initWithBaseViewController:self.NTPViewController
+                             browser:self.browser];
+  _safariDataImportExportCoordinator.delegate = self;
+  [_safariDataImportExportCoordinator start];
 }
 
 #pragma mark - FeedSignInPromoDelegate
@@ -1876,6 +1897,19 @@
 
 - (void)willExitTabGrid {
   // Do nothing.
+}
+
+#pragma mark - SafariDataImportChildCoordinatorDelegate
+
+- (void)safariDataImportCoordinatorWillDismissWorkflow:
+    (SafariDataImportExportCoordinator*)coordinator {
+  // Return early if the Safari import is not presented to avoid dismissing
+  // another view controller.
+  if (!_safariDataImportExportCoordinator) {
+    return;
+  }
+  [_safariDataImportExportCoordinator stop];
+  _safariDataImportExportCoordinator = nil;
 }
 
 @end
