@@ -7,6 +7,7 @@
 #include <overlay-prioritizer-client-protocol.h>
 
 #include <cstdint>
+#include <limits>
 #include <memory>
 
 #include "base/files/file_path.h"
@@ -683,7 +684,9 @@ TEST_P(WaylandBufferManagerTest, CommitOverlaysNonsensicalBoundsRect) {
   }
 
   const std::vector<gfx::RectF> bounds_rect_test_data = {
-      gfx::RectF(std::nanf(""), window_->GetBoundsInPixels().y(), std::nanf(""),
+      gfx::RectF(std::numeric_limits<float>::quiet_NaN(),
+                 window_->GetBoundsInPixels().y(),
+                 std::numeric_limits<float>::quiet_NaN(),
                  window_->GetBoundsInPixels().height()),
       gfx::RectF(window_->GetBoundsInPixels().x(),
                  std::numeric_limits<float>::infinity(),
@@ -784,7 +787,9 @@ TEST_P(WaylandBufferManagerTest,
   }
 
   const std::vector<gfx::RectF> bounds_rect_test_data = {
-      gfx::RectF(std::nanf(""), window_->GetBoundsInPixels().y(), std::nanf(""),
+      gfx::RectF(std::numeric_limits<float>::quiet_NaN(),
+                 window_->GetBoundsInPixels().y(),
+                 std::numeric_limits<float>::quiet_NaN(),
                  window_->GetBoundsInPixels().height()),
       gfx::RectF(window_->GetBoundsInPixels().x(),
                  std::numeric_limits<float>::infinity(),

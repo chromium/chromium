@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/mediasession/media_session.h"
 
+#include <limits>
+
 #include "base/test/simple_test_tick_clock.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -193,7 +195,8 @@ TEST_F(MediaSessionTest, PlaybackPositionState_InfiniteDuration) {
 
 TEST_F(MediaSessionTest, PlaybackPositionState_NaNDuration) {
   SetPlaybackState(V8MediaSessionPlaybackState::Enum::kNone);
-  SetPositionStateThrowsException(std::nan("10"), 5, 1.0);
+  SetPositionStateThrowsException(std::numeric_limits<double>::quiet_NaN(), 5,
+                                  1.0);
 }
 
 TEST_F(MediaSessionTest, PlaybackPositionState_Paused_Clear) {

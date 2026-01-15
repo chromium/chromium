@@ -4,8 +4,8 @@
 
 #include "base/trace_event/traced_value.h"
 
-#include <cmath>
 #include <cstddef>
+#include <limits>
 #include <memory>
 #include <string_view>
 #include <utility>
@@ -265,7 +265,7 @@ TEST(TraceEventArgumentTest, PassTracedValue) {
 
 TEST(TraceEventArgumentTest, NanAndInfinityJSON) {
   TracedValueJSON value;
-  value.SetDouble("nan", std::nan(""));
+  value.SetDouble("nan", std::numeric_limits<double>::quiet_NaN());
   value.SetDouble("infinity", INFINITY);
   value.SetDouble("negInfinity", -INFINITY);
   std::string json;

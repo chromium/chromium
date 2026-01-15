@@ -4,6 +4,8 @@
 
 #include "net/socket/socket_pool_additional_capacity.h"
 
+#include <limits>
+
 #include "base/notimplemented.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -68,9 +70,9 @@ TEST(SocketPoolAdditionalCapacityTest, InvalidCreation) {
             empty_pool);
   EXPECT_EQ(SocketPoolAdditionalCapacity::CreateForTest(1.1, 2, 0.3, 0.4),
             empty_pool);
-  EXPECT_EQ(
-      SocketPoolAdditionalCapacity::CreateForTest(std::nan(""), 2, 0.3, 0.4),
-      empty_pool);
+  EXPECT_EQ(SocketPoolAdditionalCapacity::CreateForTest(
+                std::numeric_limits<double>::quiet_NaN(), 2, 0.3, 0.4),
+            empty_pool);
 
   // capacity range
   EXPECT_EQ(SocketPoolAdditionalCapacity::CreateForTest(0.1, 2000, 0.3, 0.4),
@@ -81,18 +83,18 @@ TEST(SocketPoolAdditionalCapacityTest, InvalidCreation) {
             empty_pool);
   EXPECT_EQ(SocketPoolAdditionalCapacity::CreateForTest(0.1, 2, 1.3, 0.4),
             empty_pool);
-  EXPECT_EQ(
-      SocketPoolAdditionalCapacity::CreateForTest(0.1, 2, std::nan(""), 0.4),
-      empty_pool);
+  EXPECT_EQ(SocketPoolAdditionalCapacity::CreateForTest(
+                0.1, 2, std::numeric_limits<double>::quiet_NaN(), 0.4),
+            empty_pool);
 
   // noise range
   EXPECT_EQ(SocketPoolAdditionalCapacity::CreateForTest(0.1, 2, 0.3, -0.4),
             empty_pool);
   EXPECT_EQ(SocketPoolAdditionalCapacity::CreateForTest(0.1, 2, 0.3, 1.4),
             empty_pool);
-  EXPECT_EQ(
-      SocketPoolAdditionalCapacity::CreateForTest(0.1, 2, 0.3, std::nan("")),
-      empty_pool);
+  EXPECT_EQ(SocketPoolAdditionalCapacity::CreateForTest(
+                0.1, 2, 0.3, std::numeric_limits<double>::quiet_NaN()),
+            empty_pool);
 }
 
 TEST(SocketPoolAdditionalCapacityTest, NextStateBeforeAllocation) {
@@ -326,7 +328,9 @@ FUZZ_TEST(SocketPoolAdditionalCapacityTest, ValidateRandomizedInputs)
                  fuzztest::Arbitrary<size_t>(),
                  fuzztest::Arbitrary<size_t>())
     .WithSeeds({
-        {std::nan(""), 0, std::nan(""), std::nan(""), false, 0, 0},
+        {std::numeric_limits<double>::quiet_NaN(), 0,
+         std::numeric_limits<double>::quiet_NaN(),
+         std::numeric_limits<double>::quiet_NaN(), false, 0, 0},
         {0.0, 0, 0.0, 0.0, false, 0, 0},
         {0.3, 64, 0.1, 0.1, false, 96, 64},
         {0.6, 128, 0.2, 0.2, true, 192, 128},
