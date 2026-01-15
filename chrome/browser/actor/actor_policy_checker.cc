@@ -29,6 +29,8 @@
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include <ostream>
+#include <string_view>
+#include <variant>
 
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_user_status_code.h"
@@ -90,6 +92,15 @@ std::ostream& operator<<(std::ostream& os,
       return os << "kManagedOrDataProtected";
   }
 }
+
+std::ostream& operator<<(
+    std::ostream& os,
+    std::variant<ActorPolicyChecker::CannotActReason, std::string_view>
+        value) {
+  std::visit([&os](auto&& arg) { os << arg; }, value);
+  return os;
+}
+
 }  // namespace actor
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
