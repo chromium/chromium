@@ -18,6 +18,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -606,8 +607,12 @@ void GamepadDeviceLinux::OnOpenHidrawNodeComplete(
     OpenDeviceNodeCallback callback,
     base::ScopedFD fd) {
   DCHECK(polling_runner_->RunsTasksInCurrentSequence());
-  if (fd.is_valid())
+  if (fd.is_valid()) {
+    VLOG(1) << "Successfully opened hidraw node.";
     InitializeHidraw(std::move(fd));
+  } else {
+    VLOG(1) << "Failed to open hidraw node.";
+  }
   std::move(callback).Run(this);
 }
 
