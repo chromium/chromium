@@ -4779,6 +4779,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.TabStripMenu.NewTab">
+  <owner>mklw@google.com</owner>
+  <description>
+    User tapped 'New tab' on the tab strip context menu to open a New tab.
+  </description>
+</action>
+
 <action name="Android.TabStripMenu.SaveWindowName">
   <owner>aishwaryarj@google.com</owner>
   <description>
