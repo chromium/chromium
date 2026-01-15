@@ -29,7 +29,6 @@ group("build") {
     "chromevox/mv3:build",
     "common:build",
     "enhanced_network_tts:build",
-    "select_to_speak/mv2:build",
     "select_to_speak/mv3:build",
     "switch_access/mv2:build",
     "switch_access/mv3:build",
@@ -72,7 +71,10 @@ manifest_variants("select_to_speak_manifests") {
   output_name = "select_to_speak_manifest"
   key = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAukZ6JJWr0jHmFTkn0pcigpjI+cP0FqTo8FRIcCwy2fPeM+Ymf+7C9MK642i+Nhdr2qSsRF26AMIKbBdSDUnh04bfg5J/rKa/VO88LvXENYQMGhTo1y9mVg2OsbQJtEL9aTLU2G0SoKcr3g/+lggBKR5ydW1Qa0WGGAM9XrLm8iu/wn2uF4mfcMii6KfyEsAwWalpr/Td5WbtIoNNDpNeKO4ZSZJis1n9PZXqaOKpW7PqFDpEHw2PnPATxkcqj/wIx+Shgada0fhrzMlhXLhhj7ThSSWbuTz5n5NebuQ49/Z2ATgpBCSzYBVXEXMDe6LBBtGiZ/QR9UkA8Lz8bP6xIQIDAQAB"
   make_guest = true
-  make_v3 = true
+
+  # The manifest template for select to speak defaults to mv3, so we don't need
+  # to make a separate manifest for mv3.
+  make_v3 = false
 }
 
 manifest_variants("switch_access_manifests") {

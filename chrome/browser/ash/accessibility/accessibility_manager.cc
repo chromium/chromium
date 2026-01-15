@@ -601,8 +601,8 @@ AccessibilityManager::AccessibilityManager(
   select_to_speak_loader_ = base::WrapUnique(new AccessibilityExtensionLoader(
       extension_misc::kSelectToSpeakExtensionId,
       resources_path.Append(extension_misc::kSelectToSpeakExtensionPath),
-      extension_misc::kSelectToSpeakManifestV3Filename,
-      extension_misc::kSelectToSpeakGuestManifestV3Filename,
+      extension_misc::kSelectToSpeakManifestFilename,
+      extension_misc::kSelectToSpeakGuestManifestFilename,
       base::BindRepeating(&AccessibilityManager::PostUnloadSelectToSpeak,
                           weak_ptr_factory_.GetWeakPtr())));
 

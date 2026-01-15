@@ -240,15 +240,9 @@ inline constexpr char kSelectToSpeakExtensionPath[] = "chromeos/accessibility";
 // The manifest filename of the Select to Speak extension.
 inline constexpr char kSelectToSpeakManifestFilename[] =
     "select_to_speak_manifest.json";
-// The manifest v3 filename of the Select to Speak extension.
-inline constexpr char kSelectToSpeakManifestV3Filename[] =
-    "select_to_speak_manifest_v3.json";
 // The guest manifest filename of the Select to Speak extension.
 inline constexpr char kSelectToSpeakGuestManifestFilename[] =
     "select_to_speak_manifest_guest.json";
-// The guest manifest v3 filename of the Select to Speak extension.
-inline constexpr char kSelectToSpeakGuestManifestV3Filename[] =
-    "select_to_speak_manifest_guest_v3.json";
 // The extension id of the Switch Access extension.
 inline constexpr char kSwitchAccessExtensionId[] =
     "pmehocpgjmkenlokgjfkaichfjdhpeol";
