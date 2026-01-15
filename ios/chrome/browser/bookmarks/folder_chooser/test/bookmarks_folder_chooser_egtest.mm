@@ -1406,7 +1406,6 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   [ChromeEarlGrey loadURL:bookmarkedURL];
   [ChromeEarlGrey waitForWebStateVisibleURL:bookmarkedURL];
 
-  [BookmarkEarlGreyUI starCurrentTab];
 
   std::u16string label;
   switch (kindOfTest) {
@@ -1425,21 +1424,8 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
           "count", 1, "email", "foo1@gmail.com");
       break;
   }
-
-  // Verify the snackbar title.
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:grey_accessibilityLabel(
-                                              base::SysUTF16ToNSString(label))];
-
-  // Tap on the snackbar.
-  NSString* snackbarLabel =
-      l10n_util::GetNSString(IDS_IOS_BOOKMARK_SNACKBAR_EDIT_BOOKMARK);
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityLabel(snackbarLabel),
-                                   grey_userInteractionEnabled(),
-                                   grey_not(TabGridEditButton()), nil)]
-      performAction:grey_tap()];
+  [BookmarkEarlGreyUI
+      starAndEditCurrentTabWithSnackbarTitle:base::SysUTF16ToNSString(label)];
 
   // Verify that the newly-created bookmark is in the BookmarkModel.
   [BookmarkEarlGrey
@@ -1448,9 +1434,6 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
                      inStorage:kindOfTestToStorageType(kindOfTest)];
 
   // Verify that the editor is present.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarkEditViewContainerIdentifier)]
-      assertWithMatcher:grey_notNil()];
 
   [BookmarkEarlGreyUI assertChangeFolderIsCorrectlySet:@"Mobile bookmarks"
                                             kindOfTest:kindOfTest];

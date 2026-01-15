@@ -3504,13 +3504,14 @@ using UserFeedbackDataCallback =
   MailtoHandlerServiceFactory::GetForProfile(self.currentInterface.profile)
       ->DismissAllMailtoHandlerInterfaces();
 
-  // Then, depending on what the SSO view controller is presented on, dismiss
-  // it.
+  id<BookmarksCommands> bookmarksHandler = HandlerForProtocol(
+      self.mainInterface.browser->GetCommandDispatcher(), BookmarksCommands);
+  [bookmarksHandler dismissBookmarkModalControllerAnimated:NO];
+
   ProceduralBlock completionWithBVC = ^{
     DCHECK(self.currentInterface.viewController);
     DCHECK(!self.mainCoordinator.isTabGridActive);
     DCHECK(!self.mainCoordinator.isSigninInProgress);
-    // This will dismiss the SSO view controller.
     [self.currentInterface clearPresentedStateWithCompletion:completion
                                               dismissOmnibox:dismissOmnibox];
   };
