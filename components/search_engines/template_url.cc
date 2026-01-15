@@ -1399,6 +1399,7 @@ std::string TemplateURLRef::HandleReplacements(
           case RequestSource::SEARCHBOX:
           case RequestSource::CROS_APP_LIST:
           case RequestSource::NTP_COMPOSEBOX:
+          case RequestSource::NTP_ACTION_CHIPS:
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
             HandleReplacement("sourceid", "chrome-mobile", replacement, &url);
 #else
@@ -1471,6 +1472,11 @@ std::string TemplateURLRef::HandleReplacements(
                               &url);
             break;
           }
+          case RequestSource::NTP_ACTION_CHIPS: {
+            HandleReplacement(std::string(), "chrome-ntp-action", replacement,
+                              &url);
+            break;
+          }
           case RequestSource::LENS_OVERLAY:
             // No replacement. Lens Overlay searchboxes don't rely on
             // TemplateURL replacement and set `client=` in
@@ -1503,6 +1509,7 @@ std::string TemplateURLRef::HandleReplacements(
           case RequestSource::NTP_MODULE:
           case RequestSource::LENS_OVERLAY:
           case RequestSource::NTP_COMPOSEBOX:
+          case RequestSource::NTP_ACTION_CHIPS:
             // No replacement. `gs_ri` is longer recommended for new clients.
             // New identifiers should be based on their client names.
             break;

@@ -36,6 +36,7 @@ source_set("action_chips") {
     "//content/public/browser",
     "//content/public/common",
     "//mojo/public/cpp/bindings",
+    "//third_party/omnibox_proto",
     "//url",
   ]
 }

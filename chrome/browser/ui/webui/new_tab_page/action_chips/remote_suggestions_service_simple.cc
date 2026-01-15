@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -14,14 +15,20 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
+#include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "net/base/net_errors.h"
+#include "third_party/omnibox_proto/aim_tools.pb.h"
+#include "third_party/omnibox_proto/page_vertical.pb.h"
+#include "url/origin.h"
 #include "url/url_util.h"
 
 namespace action_chips {
@@ -79,6 +86,7 @@ HandleRawRemoteResponse(const network::SimpleURLLoader* source,
 base::expected<SearchSuggestionParser::SuggestResults,
                RemoteSuggestionsServiceSimple::Error>
 ParseZeroSuggestionsResponse(AutocompleteProviderClient* client,
+                             const bool allow_empty_suggestion,
                              std::optional<std::string> response) {
   using enum ::action_chips::RemoteSuggestionsServiceSimple::ParseError::
       ParseErrorType;
@@ -106,11 +114,40 @@ ParseZeroSuggestionsResponse(AutocompleteProviderClient* client,
           *response_data, *kInputForZeroSuggest, client->GetSchemeClassifier(),
           /*default_result_relevance=*/
           omnibox::kDefaultRemoteZeroSuggestRelevance,
-          /*is_keyword_result=*/false, &results)) {
+          /*is_keyword_result=*/false,
+          {.allow_empty_suggestion = allow_empty_suggestion}, &results)) {
     return base::unexpected(RemoteSuggestionsServiceSimple::ParseError{
         .parse_error_type = kParseFailure});
   }
   return std::move(results.suggest_results);
+}
+
+std::string CreateAdditionalQueryParams(
+    base::optional_ref<const std::u16string> title,
+    base::span<const omnibox::ToolMode> allowed_tools,
+    base::optional_ref<const omnibox::PageVertical> page_vertical) {
+  std::vector<std::string> params;
+
+  if (!allowed_tools.empty()) {
+    std::vector<std::string> allowed_tools_strings;
+    allowed_tools_strings.reserve(allowed_tools.size());
+    for (const auto& tool : allowed_tools) {
+      allowed_tools_strings.push_back(base::NumberToString(tool));
+    }
+    params.push_back(
+        base::StrCat({"ats=", base::JoinString(allowed_tools_strings, ",")}));
+  }
+
+  if (title.has_value()) {
+    params.push_back(
+        base::StrCat({"pageTitle=", GenerateTruncatedTitle(*title)}));
+  }
+
+  if (page_vertical.has_value()) {
+    params.push_back(
+        base::StrCat({"pageVertical=", base::NumberToString(*page_vertical)}));
+  }
+  return base::JoinString(params, "&");
 }
 }  // namespace
 
@@ -147,7 +184,7 @@ RemoteSuggestionsServiceSimpleImpl::GetDeepdiveChipSuggestionsForTab(
           base::BindOnce(&RemoteSuggestionsServiceSimpleImpl::
                              HandleActionChipSuggestionsResponse,
                          this->weak_ptr_factory_.GetWeakPtr(),
-                         std::move(callback)),
+                         std::move(callback), /*allow_empty_suggestion=*/false),
           kRemoteCallTimeout);
 }
 
@@ -155,15 +192,52 @@ void RemoteSuggestionsServiceSimpleImpl::HandleActionChipSuggestionsResponse(
     base::OnceCallback<
         void(RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&&)>
         callback,
+    const bool allow_empty_suggestion,
     const network::SimpleURLLoader* source,
     int response_code,
     std::optional<std::string> response_body) {
   std::move(callback).Run(
       HandleRawRemoteResponse(source, response_code, std::move(response_body))
-          .and_then([this](std::optional<std::string> response) {
-            return ParseZeroSuggestionsResponse(this->client_,
-                                                std::move(response));
+          .and_then([this, allow_empty_suggestion](
+                        std::optional<std::string> response) {
+            return ParseZeroSuggestionsResponse(
+                this->client_, allow_empty_suggestion, std::move(response));
           }));
+}
+
+std::unique_ptr<network::SimpleURLLoader>
+RemoteSuggestionsServiceSimpleImpl::GetActionChipSuggestions(
+    base::optional_ref<const std::u16string> title,
+    base::optional_ref<const GURL> url,
+    base::span<const omnibox::ToolMode> allowed_tools,
+    base::optional_ref<const omnibox::PageVertical> page_vertical,
+    base::OnceCallback<
+        void(RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&&)>
+        callback) {
+  TemplateURLRef::SearchTermsArgs search_terms_args;
+  if (url.has_value()) {
+    search_terms_args.current_page_url = url->spec();
+  }
+  search_terms_args.additional_query_params =
+      CreateAdditionalQueryParams(title, allowed_tools, page_vertical);
+  search_terms_args.page_classification =
+      metrics::OmniboxEventProto::NTP_ZPS_PREFETCH;
+  search_terms_args.request_source =
+      SearchTermsData::RequestSource::NTP_ACTION_CHIPS;
+
+  const TemplateURLService* template_url_service =
+      client_->GetTemplateURLService();
+
+  return client_->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
+      ->StartZeroPrefixSuggestionsRequest(
+          RemoteRequestType::kZeroSuggestPrefetch, client_->IsOffTheRecord(),
+          template_url_service->GetDefaultSearchProvider(), search_terms_args,
+          template_url_service->search_terms_data(),
+          base::BindOnce(&RemoteSuggestionsServiceSimpleImpl::
+                             HandleActionChipSuggestionsResponse,
+                         this->weak_ptr_factory_.GetWeakPtr(),
+                         std::move(callback), /*allow_empty_suggestion=*/true),
+          kRemoteCallTimeout);
 }
 
 }  // namespace action_chips

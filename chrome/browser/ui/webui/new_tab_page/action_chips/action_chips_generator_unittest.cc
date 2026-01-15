@@ -44,6 +44,7 @@
 #include "net/base/net_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/aim_tools.pb.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 #include "url/gurl.h"
 namespace {
@@ -105,6 +106,17 @@ class MockRemoteSuggestionsServiceSimple
                const GURL& url,
                base::OnceCallback<void(ActionChipSuggestionsResult&&)>),
               (override));
+  MOCK_METHOD(
+      std::unique_ptr<network::SimpleURLLoader>,
+      GetActionChipSuggestions,
+      (base::optional_ref<const std::u16string> title,
+       base::optional_ref<const GURL> url,
+       base::span<const omnibox::ToolMode> allowed_tools,
+       base::optional_ref<const omnibox::PageVertical> page_vertical,
+       base::OnceCallback<
+           void(RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&&)>
+           callback),
+      (override));
 };
 
 int32_t GetTabHandleId(const tabs::TabInterface* tab) {
