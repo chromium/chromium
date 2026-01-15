@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/wtf/atomic_operations.h"
 
 #include "base/compiler_specific.h"
-#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink {
@@ -14,24 +13,22 @@ class AtomicOperationsTest : public ::testing::Test {};
 
 template <size_t buffer_size, size_t alignment, typename CopyMethod>
 void TestCopyImpl(CopyMethod copy) {
-  alignas(alignment) std::array<unsigned char, buffer_size> src;
+  alignas(alignment) unsigned char src[buffer_size];
   for (size_t i = 0; i < buffer_size; ++i)
-    src[i] = static_cast<char>(i + 1);
+    UNSAFE_TODO(src[i]) = static_cast<char>(i + 1);
   // Allocating extra memory before and after the buffer to make sure the
   // atomic memcpy doesn't exceed the buffer in any direction.
-  alignas(alignment)
-      std::array<unsigned char, buffer_size + (2 * sizeof(size_t))>
-          tgt;
-  std::ranges::fill(tgt, 0);
-  auto target_span = base::span(tgt);
-  copy(target_span.subspan(sizeof(size_t)).data(), src.data());
+  alignas(alignment) unsigned char tgt[buffer_size + (2 * sizeof(size_t))];
+  UNSAFE_TODO(memset(tgt, 0, buffer_size + (2 * sizeof(size_t))));
+  copy(UNSAFE_TODO(tgt + sizeof(size_t)), src);
   // Check nothing before the buffer was changed
-  size_t v = *reinterpret_cast<size_t*>(target_span.data());
+  size_t v;
+  UNSAFE_TODO(memcpy(&v, tgt, sizeof(size_t)));
   EXPECT_EQ(0u, v);
   // Check buffer was copied correctly
-  EXPECT_EQ(src, target_span.subspan(sizeof(size_t), buffer_size));
+  UNSAFE_TODO(EXPECT_TRUE(!memcmp(src, tgt + sizeof(size_t), buffer_size)));
   // Check nothing after the buffer was changed
-  v = *reinterpret_cast<size_t*>(target_span.last(sizeof(size_t)).data());
+  UNSAFE_TODO(memcpy(&v, tgt + sizeof(size_t) + buffer_size, sizeof(size_t)));
   EXPECT_EQ(0u, v);
 }
 
@@ -122,20 +119,19 @@ template <size_t buffer_size, size_t alignment>
 void TestAtomicMemzero() {
   // Allocating extra memory before and after the buffer to make sure the
   // AtomicMemzero doesn't exceed the buffer in any direction.
-  alignas(alignment)
-      std::array<unsigned char, buffer_size + (2 * sizeof(size_t))>
-          buf;
-  std::ranges::fill(buf, ~uint8_t{0});
-  auto span = base::span(buf);
-  AtomicMemzero<buffer_size, alignment>(span.subspan(sizeof(size_t)).data());
+  alignas(alignment) unsigned char buf[buffer_size + (2 * sizeof(size_t))];
+  UNSAFE_TODO(memset(buf, ~uint8_t{0}, buffer_size + (2 * sizeof(size_t))));
+  AtomicMemzero<buffer_size, alignment>(UNSAFE_TODO(buf + sizeof(size_t)));
   // Check nothing before the buffer was changed
-  size_t v = *reinterpret_cast<size_t*>(span.data());
+  size_t v;
+  UNSAFE_TODO(memcpy(&v, buf, sizeof(size_t)));
   EXPECT_EQ(~size_t{0}, v);
   // Check buffer was copied correctly
-  static const std::array<unsigned char, buffer_size> for_comparison = {};
-  EXPECT_EQ(span.subspan(sizeof(size_t), buffer_size), for_comparison);
+  static const unsigned char for_comparison[buffer_size] = {};
+  UNSAFE_TODO(
+      EXPECT_TRUE(!memcmp(buf + sizeof(size_t), for_comparison, buffer_size)));
   // Check nothing after the buffer was changed
-  v = *reinterpret_cast<size_t*>(span.last(sizeof(size_t)).data());
+  UNSAFE_TODO(memcpy(&v, buf + sizeof(size_t) + buffer_size, sizeof(size_t)));
   EXPECT_EQ(~size_t{0}, v);
 }
 
