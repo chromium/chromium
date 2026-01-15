@@ -133,4 +133,11 @@ WebAppFilter WebAppFilter::IsAppSuggestedForMigration() {
   return filter;
 }
 
+// static
+WebAppFilter WebAppFilter::IsAppSurfaceableToUser() {
+  WebAppFilter filter;
+  filter.is_app_surfaceable_to_user_ = true;
+  return filter;
+}
+
 }  // namespace web_app

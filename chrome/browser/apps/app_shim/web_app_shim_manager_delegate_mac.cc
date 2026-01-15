@@ -177,11 +177,10 @@ bool WebAppShimManagerDelegate::AppIsInstalled(Profile* profile,
   }
   WebAppProvider* provider = WebAppProvider::GetForWebApps(profile);
   CHECK(provider);
-  return profile &&
-         provider->registrar_unsafe().IsInstallState(
-             app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                      proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION});
+  return provider->registrar_unsafe().IsInstallState(
+      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION});
 }
 
 bool WebAppShimManagerDelegate::AppCanCreateHost(Profile* profile,

@@ -116,7 +116,8 @@ void ApplyPendingManifestUpdateCommand::StartWithLock(
   CHECK_EQ(stage_, ApplyPendingManifestUpdateCommandStage::kNotStarted);
   SetStage(ApplyPendingManifestUpdateCommandStage::kAquiringAppLock);
   lock_ = std::move(lock);
-  if (!lock_->registrar().IsInRegistrar(app_id_)) {
+  if (!lock_->registrar().AppMatches(app_id_,
+                                     WebAppFilter::IsAppSurfaceableToUser())) {
     CompleteCommandAndSelfDestruct(
         ApplyPendingManifestUpdateResult::kAppNotInstalled);
     return;

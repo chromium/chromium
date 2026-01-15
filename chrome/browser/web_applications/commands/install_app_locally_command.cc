@@ -43,16 +43,8 @@ void InstallAppLocallyCommand::StartWithLock(
     std::unique_ptr<AppLock> app_lock) {
   app_lock_ = std::move(app_lock);
 
-  if (!app_lock_->registrar().IsInRegistrar(app_id_)) {
-    GetMutableDebugValue().Set("command_result", "app_not_in_registry");
-    CompleteAndSelfDestruct(CommandResult::kSuccess);
-    return;
-  }
-
-  // Apps suggested from migration shouldn't be locally installed, as they are
-  // treated as "not installed" anywhere in the system.
-  if (app_lock_->registrar().AppMatches(
-          app_id_, WebAppFilter::IsAppSuggestedForMigration())) {
+  if (!app_lock_->registrar().AppMatches(
+          app_id_, WebAppFilter::IsAppSurfaceableToUser())) {
     GetMutableDebugValue().Set("command_result", "app_not_in_registry");
     CompleteAndSelfDestruct(CommandResult::kSuccess);
     return;

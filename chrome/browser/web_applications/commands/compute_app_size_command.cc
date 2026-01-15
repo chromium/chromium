@@ -38,7 +38,7 @@ void ComputeAppSizeCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
   lock_ = std::move(lock);
 
   const WebAppRegistrar& registrar = lock_->registrar();
-  if (!registrar.IsInRegistrar(app_id_)) {
+  if (!registrar.AppMatches(app_id_, WebAppFilter::IsAppSurfaceableToUser())) {
     ReportResultAndDestroy(CommandResult::kFailure);
     return;
   }

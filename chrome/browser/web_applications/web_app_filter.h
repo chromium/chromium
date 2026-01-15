@@ -68,6 +68,11 @@ class WebAppFilter {
   // be treated rightfully so.
   static WebAppFilter IsAppSuggestedForMigration();
 
+  // Only consider web apps that can be surfaced to the user for use in various
+  // UX surfaces. Apps that are not in the registry, or are suggested for
+  // migration are not included here.
+  static WebAppFilter IsAppSurfaceableToUser();
+
   WebAppFilter(const WebAppFilter&);
   WebAppFilter& operator=(const WebAppFilter&) = default;
   ~WebAppFilter() = default;
@@ -103,6 +108,7 @@ class WebAppFilter {
   bool is_app_trusted_ = false;
   bool is_isolated_apps_including_uninstalling_ = false;
   bool is_app_suggested_from_migration_ = false;
+  bool is_app_surfaceable_to_user_ = false;
 };
 
 }  // namespace web_app

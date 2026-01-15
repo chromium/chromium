@@ -1001,6 +1001,10 @@ bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
     return false;
   }
 
+  if (filter.is_app_surfaceable_to_user_) {
+    return install_state != proto::SUGGESTED_FROM_MIGRATION;
+  }
+
   if (install_state == proto::SUGGESTED_FROM_MIGRATION) {
     return filter.is_app_suggested_from_migration_;
   }
