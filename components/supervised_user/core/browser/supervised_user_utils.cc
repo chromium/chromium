@@ -5,6 +5,7 @@
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 
 #include <optional>
+#include <string>
 #include <variant>
 #include <vector>
 
@@ -18,9 +19,9 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/supervised_user/core/browser/supervised_user_log_record.h"
 #include "components/supervised_user/core/browser/proto/parent_access_callback.pb.h"
 #include "components/supervised_user/core/browser/proto/transaction_data.pb.h"
+#include "components/supervised_user/core/browser/supervised_user_log_record.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
@@ -41,20 +42,6 @@ constexpr char kParentAccessResultQueryParameter[] = "result";
 
 // Url that contains the approval result in PACP parent approval requests.
 constexpr char kPacpOriginUrlHost[] = "families.google.com";
-
-// Parent Access widget constants, used in the local web approval
-// flow.
-// URL hosting the Parent Access widget.
-constexpr char kParentAccessBaseURL[] =
-    "https://families.google.com/parentaccess";
-// URL to which the Parent Access widget redirects on approval.
-constexpr char kParentAccessContinueURL[] = "https://families.google.com";
-// Caller Ids for Desktop and iOS platforms.
-constexpr char kParentAccessIOSCallerID[] = "qSTnVRdQ";
-constexpr char kParentAccessDesktopCallerID[] = "clwAA5XJ";
-constexpr char kPacpUrlPayloadMessageType[] =
-    "type.googleapis.com/"
-    "kids.platform.parentaccess.ui.common.proto.LocalApprovalPayload";
 
 // A templated function to merge multiple values of the same type into either:
 // * An empty optional if none of the values are set
@@ -87,7 +74,8 @@ bool HasSupervisedStatus(
     case SupervisedUserLogRecord::Segment::kUnsupervised:
     case SupervisedUserLogRecord::Segment::kParent:
       return false;
-    case SupervisedUserLogRecord::Segment::kSupervisionEnabledByFamilyLinkPolicy:
+    case SupervisedUserLogRecord::Segment::
+        kSupervisionEnabledByFamilyLinkPolicy:
     case SupervisedUserLogRecord::Segment::kSupervisionEnabledByFamilyLinkUser:
     case SupervisedUserLogRecord::Segment::kSupervisionEnabledLocally:
       return true;
@@ -152,10 +140,12 @@ std::optional<ToggleState> GetExtensionsToggleStateForHistogram(
   return GetMergedRecord(extensions_toggle_states, ToggleState::kMixed);
 }
 
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
 // Returns the text that will be shown as the PACP widget subtitle, containing
 // information about the blocked hostname and the blocking reason.
 std::string GetBlockingReasonSubtitle(
-    const std::u16string blocked_hostname,
+    const std::u16string& blocked_hostname,
     supervised_user::FilteringBehaviorReason filtering_reason) {
   int message_id = 0;
   switch (filtering_reason) {
@@ -177,8 +167,12 @@ std::string GetBlockingReasonSubtitle(
 // Returns a base64-encoded `TransactionData` proto message that encapsulates
 // the blocked url so that PACP can consume it.
 std::string GetBase64EncodedInTransactionalDataForPayload(
-    const std::u16string blocked_hostname,
+    const std::u16string& blocked_hostname,
     supervised_user::FilteringBehaviorReason filtering_reason) {
+  static constexpr char kPacpUrlPayloadMessageType[] =
+      "type.googleapis.com/"
+      "kids.platform.parentaccess.ui.common.proto.LocalApprovalPayload";
+
   CHECK(!blocked_hostname.empty());
   kids::platform::parentaccess::proto::LocalApprovalPayload approval_url;
   approval_url.set_url_approval_context(
@@ -192,38 +186,11 @@ std::string GetBase64EncodedInTransactionalDataForPayload(
   base::Base64UrlEncode(transaction_data.SerializeAsString(),
                         base::Base64UrlEncodePolicy::INCLUDE_PADDING,
                         &base_64_url_encoded_data);
-  CHECK(base_64_url_encoded_data.length() > 0);
+  CHECK_GT(base_64_url_encoded_data.length(), 0UL);
   return base_64_url_encoded_data;
 }
-
-// Returns the PACP widget url with the appropriate query parameters.
-GURL GetParentAccessURL(
-    const std::string& caller_id,
-    const std::string& locale,
-    std::optional<GURL> blocked_url,
-    supervised_user::FilteringBehaviorReason filtering_reason) {
-  GURL url(kParentAccessBaseURL);
-  GURL::Replacements replacements;
-  std::string query = base::StrCat({"callerid=", caller_id, "&hl=", locale,
-                                    "&continue=", kParentAccessContinueURL});
-  if (base::FeatureList::IsEnabled(
-          kLocalWebApprovalsWidgetSupportsUrlPayload) &&
-      blocked_url.has_value() && !blocked_url.value().GetHost().empty()) {
-    // Prepare blocked URL hostname for user-friendly display, including internationalized
-    // domain name (IDN) conversion if necessary.
-    std::u16string blocked_hostname = url_formatter::FormatUrl(
-        blocked_url.value(),
-        url_formatter::kFormatUrlOmitHTTP | url_formatter::kFormatUrlOmitHTTPS |
-            url_formatter::kFormatUrlOmitDefaults,
-        base::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
-    query += base::StrCat(
-        {"&transaction-data=", GetBase64EncodedInTransactionalDataForPayload(
-                                   blocked_hostname, filtering_reason)});
-  }
-  replacements.SetQueryStr(query);
-  return url.ReplaceComponents(replacements);
-}
-
+#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_WIN)
 }  // namespace
 
 ParentAccessCallbackParsedResult::ParentAccessCallbackParsedResult(
@@ -391,20 +358,47 @@ GURL UrlFormatter::FormatUrl(const GURL& url) const {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
-GURL GetParentAccessURLForIOS(
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+GURL GetParentAccessURL(
     const std::string& locale,
     const GURL& blocked_url,
     supervised_user::FilteringBehaviorReason filtering_reason) {
-  return GetParentAccessURL(kParentAccessIOSCallerID, locale, blocked_url,
-                            filtering_reason);
-}
+  // Parent Access widget constants, used in the local web approval
+  // flow.
+  // URL hosting the Parent Access widget.
+  static constexpr char kBaseUrl[] = "https://families.google.com/parentaccess";
+  // URL to which the Parent Access widget redirects on approval.
+  static constexpr char kContinueUrl[] = "https://families.google.com";
 
-GURL GetParentAccessURLForDesktop(
-    const std::string& locale,
-    const GURL& blocked_url,
-    supervised_user::FilteringBehaviorReason filtering_reason) {
-  return GetParentAccessURL(kParentAccessDesktopCallerID, locale, blocked_url,
-                            filtering_reason);
-}
+  // Caller Ids for Desktop and iOS platforms.
+#if BUILDFLAG(IS_IOS)
+  static constexpr char kCallerId[] = "qSTnVRdQ";
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  static constexpr char kCallerId[] = "clwAA5XJ";
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
+  GURL url(kBaseUrl);
+  GURL::Replacements replacements;
+  std::string query = base::StrCat(
+      {"callerid=", kCallerId, "&hl=", locale, "&continue=", kContinueUrl});
+  if (base::FeatureList::IsEnabled(
+          kLocalWebApprovalsWidgetSupportsUrlPayload) &&
+      !blocked_url.GetHost().empty()) {
+    // Prepare blocked URL hostname for user-friendly display, including
+    // internationalized domain name (IDN) conversion if necessary.
+    std::u16string blocked_hostname = url_formatter::FormatUrl(
+        blocked_url,
+        url_formatter::kFormatUrlOmitHTTP | url_formatter::kFormatUrlOmitHTTPS |
+            url_formatter::kFormatUrlOmitDefaults,
+        base::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
+    query += base::StrCat(
+        {"&transaction-data=", GetBase64EncodedInTransactionalDataForPayload(
+                                   blocked_hostname, filtering_reason)});
+  }
+  replacements.SetQueryStr(query);
+  return url.ReplaceComponents(replacements);
+}
+#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_WIN)
 }  // namespace supervised_user

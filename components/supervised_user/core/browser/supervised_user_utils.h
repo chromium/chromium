@@ -19,8 +19,6 @@
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "url/gurl.h"
 
-class GURL;
-
 namespace supervised_user {
 class SupervisedUserURLFilter;
 
@@ -125,28 +123,17 @@ class UrlFormatter {
   const FilteringBehaviorReason filtering_behavior_reason_;
 };
 
-// Returns the URL of the PACP widget for the iOS local web approval flow.
+// Returns the right URL of the PACP widget for iOS and Desktop platforms (other
+// platforms are undefined).
 // `locale` is the display language (go/bcp47).
 // `blocked_url` is the url subject to approval that is shown in the PACP
 // widget.
 // `filtering_reason` is the reason for blocking the url, which is reflected
 // in the subtitle of the PACP widget.
-GURL GetParentAccessURLForIOS(
+GURL GetParentAccessURL(
     const std::string& locale,
     const GURL& blocked_url,
     supervised_user::FilteringBehaviorReason filtering_reason);
-
-// Returns the URL of the PACP widget for the Desktop local web approval flow.
-// `locale` is the display language (go/bcp47).
-// `blocked_url` is the url subject to approval that is shown in the PACP
-// widget.
-// `filtering_reason` is the reason for blocking the url, which is reflected
-// in the subtitle of the PACP widget.
-GURL GetParentAccessURLForDesktop(
-    const std::string& locale,
-    const GURL& blocked_url,
-    supervised_user::FilteringBehaviorReason filtering_reason);
-
 }  // namespace supervised_user
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_UTILS_H_

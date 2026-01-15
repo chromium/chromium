@@ -60,7 +60,7 @@ constexpr gfx::Size kErrorViewPreferredSize =
 const GURL GetPacpUrl(
     const GURL& blocked_url,
     const supervised_user::FilteringBehaviorReason& filtering_reason) {
-  return supervised_user::GetParentAccessURLForDesktop(
+  return supervised_user::GetParentAccessURL(
       g_browser_process->GetApplicationLocale(), blocked_url, filtering_reason);
 }
 

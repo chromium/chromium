@@ -77,7 +77,7 @@
       ParentAccessTabHelper::FromWebState(webState.get());
   tabHelper->SetDelegate(self);
 
-  GURL parentAccessURL = supervised_user::GetParentAccessURLForIOS(
+  GURL parentAccessURL = supervised_user::GetParentAccessURL(
       GetApplicationContext()->GetApplicationLocaleStorage()->Get(), _targetURL,
       _filteringBehaviorReason);
   _mediator = [[ParentAccessMediator alloc] initWithWebState:std::move(webState)
