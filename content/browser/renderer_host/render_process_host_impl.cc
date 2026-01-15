@@ -781,11 +781,7 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
 
       if (process_reuse_policy ==
           ProcessReusePolicy::kReusePrerenderingProcessForMainFrame) {
-        // TODO(crbug.com/434845948): Avoid downcasting to
-        // RenderProcessHostImpl. This policy should not be used with
-        // MockRenderProcessHost.
-        if (!static_cast<RenderProcessHostImpl*>(host)
-                 ->IsOnlyHostingPrerenderedFramesOrEmpty()) {
+        if (!host->IsOnlyHostingPrerenderedFramesOrEmpty()) {
           continue;
         }
       }

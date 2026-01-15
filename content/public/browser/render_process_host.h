@@ -791,6 +791,11 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
   // a cost on every call.
   virtual uint64_t GetPrivateMemoryFootprint() = 0;
 
+  // Returns whether the process is only hosting RFHs in prerendered pages
+  // or no RFHs at all. This is for internal use only, and is only exposed here
+  // to support MockRenderProcessHost usage in tests.
+  virtual bool IsOnlyHostingPrerenderedFramesOrEmpty() = 0;
+
   // Static management functions -----------------------------------------------
 
   // Flag to run the renderer in process.  This is primarily

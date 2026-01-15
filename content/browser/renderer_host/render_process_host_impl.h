@@ -369,6 +369,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
 #endif
   void SetBatterySaverMode(bool battery_saver_mode_enabled) override;
   uint64_t GetPrivateMemoryFootprint() override;
+  bool IsOnlyHostingPrerenderedFramesOrEmpty() override;
 
   void PauseSocketManagerForRenderFrameHost(
       const GlobalRenderFrameHostId& render_frame_host_id) override;
@@ -894,10 +895,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   using VideoDecoderEventCB = base::RepeatingCallback<void(VideoDecoderEvent)>;
   static void SetVideoDecoderEventCBForTesting(VideoDecoderEventCB cb);
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-
-  // Returns whether the process is only hosting RFHs in prerendered pages
-  // or no RFHs at all.
-  bool IsOnlyHostingPrerenderedFramesOrEmpty();
 
   void GetBoundInterfacesForTesting(std::vector<std::string>& out);
 

@@ -700,4 +700,8 @@ base::ScopedClosureRunner MockRenderProcessHost::DelayProcessShutdown(
 
 void MockRenderProcessHost::StopTrackingProcessForShutdownDelay() {}
 
+bool MockRenderProcessHost::IsOnlyHostingPrerenderedFramesOrEmpty() {
+  return false;
+}
+
 }  // namespace content

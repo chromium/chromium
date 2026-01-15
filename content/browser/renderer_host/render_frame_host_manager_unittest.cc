@@ -599,15 +599,7 @@ class RenderFrameHostManagerTest
 // then do that same thing in another tab, that the two resulting pages have
 // different SiteInstances, BrowsingInstances, and RenderProcessHosts. This is
 // a regression test for bug 9364.
-// Disabled on linux due to flakiness.
-// TODO(crbug.com/448610762): Fix and re-enable the test.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN)
-#define MAYBE_ChromeSchemeProcesses DISABLED_ChromeSchemeProcesses
-#else
-#define MAYBE_ChromeSchemeProcesses ChromeSchemeProcesses
-#endif
-TEST_P(RenderFrameHostManagerTest, MAYBE_ChromeSchemeProcesses) {
+TEST_P(RenderFrameHostManagerTest, ChromeSchemeProcesses) {
   const GURL kChromeUrl(GetWebUIURL("foo"));
   const GURL kDestUrl("http://www.google.com/");
 
