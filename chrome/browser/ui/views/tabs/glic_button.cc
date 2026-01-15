@@ -49,6 +49,8 @@ namespace glic {
 // TODO(crbug.com/461326322): Remove this flag when crbug.com/461326322 is
 // resolved.
 BASE_FEATURE(kGlicButtonHideLabelOnTaskNudge, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicButtonUpdateIconMarginsOnLabelSuppression,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
@@ -258,6 +260,7 @@ void GlicButton::SetNudgeLabel(std::string label) {
 }
 
 void GlicButton::ShowDefaultLabel() {
+  is_label_suppressed_ = false;
   if (!base::FeatureList::IsEnabled(kGlicButtonHideLabelOnTaskNudge)) {
     return;
   }
@@ -292,6 +295,7 @@ void GlicButton::SuppressLabel() {
   }
 
   is_animating_text_ = true;
+  is_label_suppressed_ = true;
 
   StartSlidingTextAnimation(/*show=*/false);
 
@@ -300,6 +304,11 @@ void GlicButton::SuppressLabel() {
   label()->layer()->SetOpacity(0.0f);
   ApplyTextAndFadeIn(std::make_optional<std::u16string>(u""), DurationMs(0),
                      DurationMs(0));
+  if (base::FeatureList::IsEnabled(
+          kGlicButtonUpdateIconMarginsOnLabelSuppression)) {
+    // Make sure related styling is updated when the label is suppressed.
+    OnLabelVisibilityChanged();
+  }
 }
 
 void GlicButton::RestoreDefaultLabel() {
@@ -497,7 +506,10 @@ void GlicButton::AnimationEnded(const gfx::Animation* animation) {
 
     expansion_animation_done_callback_.Run();
 
-    OnLabelVisibilityChanged();
+    if (!base::FeatureList::IsEnabled(
+            kGlicButtonUpdateIconMarginsOnLabelSuppression)) {
+      OnLabelVisibilityChanged();
+    }
   }
   if (is_animating_text_) {
     is_animating_text_ = false;
@@ -506,6 +518,11 @@ void GlicButton::AnimationEnded(const gfx::Animation* animation) {
     // !is_animating_text_ in CalculatePreferredSize() is smooth.
     initial_width_ = kMinTargetWidthForAnimatingText;
     expanded_width_ = CalculateExpandedWidth();
+  }
+  if (base::FeatureList::IsEnabled(
+          kGlicButtonUpdateIconMarginsOnLabelSuppression)) {
+    // Make sure related styling is updated when the label is suppressed.
+    OnLabelVisibilityChanged();
   }
 }
 
@@ -864,9 +881,23 @@ void GlicButton::RefreshBackground() {
 }
 
 void GlicButton::OnLabelVisibilityChanged() {
-  image_container_view()->SetProperty(
-      views::kMarginsKey,
-      GetIconMargins(ShouldShowLabel() && !is_animating_text_));
+  // Updates the margins of the icon container based on whether the label should
+  // be shown, if text is currently animating, and if the label is suppressed
+  // (controlled by the kGlicButtonUpdateIconMarginsOnLabelSuppression feature).
+  // This ensures correct spacing around the icon in various states.
+  if (base::FeatureList::IsEnabled(
+          kGlicButtonUpdateIconMarginsOnLabelSuppression)) {
+    bool use_label_margins = !is_label_suppressed_;
+
+    image_container_view()->SetProperty(
+        views::kMarginsKey,
+        GetIconMargins(ShouldShowLabel() && !is_animating_text_ &&
+                       use_label_margins));
+  } else {
+    image_container_view()->SetProperty(
+        views::kMarginsKey,
+        GetIconMargins(ShouldShowLabel() && !is_animating_text_));
+  }
 }
 
 gfx::SlideAnimation* GlicButton::GetExpansionAnimationForTesting() {

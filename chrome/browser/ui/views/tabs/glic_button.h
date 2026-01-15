@@ -220,6 +220,9 @@ class GlicButton : public TabStripNudgeButton,
   // should be refactored to use the new solution in 144.
   bool is_animating_text_ = false;
   int default_label_width_ = 0;
+  // Keep track if the label is currently suppressed, for example, when the task
+  // icon is showing.
+  bool is_label_suppressed_ = false;
 
   base::WeakPtrFactory<GlicButton> weak_ptr_factory_{this};
 };
