@@ -223,9 +223,10 @@ TEST_F(AutofillAiSuggestionGeneratorTest, SuggestionMainTextIsObfuscated) {
   SetEntities({vehicle_entity});
   SetForm({VEHICLE_VIN});
 
-  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
-              SuggestionsAre(HasMainText(
-                  GetObfuscatedValue(GetVehicleVIN(vehicle_entity)))));
+  EXPECT_THAT(
+      CreateAutofillAiFillingSuggestions(field(0)),
+      SuggestionsAre(HasMainText(GetObfuscatedValue(
+          GetVehicleVIN(vehicle_entity), /*visible_suffix_length=*/4))));
 }
 
 // Tests that the suggestions's main text is NOT obfuscated when the pref is

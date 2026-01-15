@@ -69,7 +69,7 @@ std::u16string GetEntitySuggestionMainText(
           trigger_attribute.type().entity_type()),
       client.GetAppLocale(), trigger_field.field->format_string());
   if (should_obfuscate_main_text) {
-    main_text = GetObfuscatedValue(main_text);
+    main_text = GetObfuscatedValue(main_text, /*visible_suffix_length=*/4);
   }
   return main_text;
 }

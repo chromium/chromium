@@ -4,9 +4,11 @@
 
 #include "components/autofill/core/browser/filling/field_filling_util.h"
 
+#include <algorithm>
 #include <string>
 
 #include "base/i18n/case_conversion.h"
+#include "base/i18n/rtl.h"
 #include "base/i18n/string_search.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
@@ -205,7 +207,8 @@ std::optional<std::u16string> GetNumericSelectControlValue(
   return std::nullopt;
 }
 
-std::u16string GetObfuscatedValue(const std::u16string& value) {
+std::u16string GetObfuscatedValue(const std::u16string& value,
+                                  size_t visible_suffix_length) {
   // Same obfuscation symbol as used for credit cards - see also credit_card.h.
   //  - \u2022 - Bullet.
   //  - \u2006 - SIX-PER-EM SPACE (small space between bullets).
@@ -214,12 +217,26 @@ std::u16string GetObfuscatedValue(const std::u16string& value) {
   // This is only an approximation of the number of the actual unicode
   // characters - if we want to match the length exactly, we would need to use
   // `base::CountUnicodeCharacters`.
-  const size_t obfuscation_length = value.size();
+  visible_suffix_length = std::min(visible_suffix_length, value.size());
+  size_t obfuscation_length = value.size() - visible_suffix_length;
+
   std::u16string result;
-  result.reserve(sizeof(kDot) * obfuscation_length);
+  result.reserve(sizeof(kDot) * obfuscation_length + visible_suffix_length);
+
   for (size_t i = 0; i < obfuscation_length; ++i) {
     result.append(kDot);
   }
+  if (visible_suffix_length > 0) {
+    result.append(value.substr(value.size() - visible_suffix_length));
+  }
+
+  // `WrapStringWithLTRFormatting` guarantees that the following passport number
+  // 123456789 won't be rendered as 789** in RTL languaguages. It forces the
+  // browser to use LTR convention.
+  if (base::i18n::IsRTL()) {
+    base::i18n::WrapStringWithLTRFormatting(&result);
+  }
+
   return result;
 }
 
