@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/callback_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -9,30 +11,42 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
-#include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/send_tab_to_self_helper.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "chrome/browser/sync/test/integration/user_events_helper.h"
+#include "chrome/browser/sync/user_event_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
+#include "components/sync_user_events/user_event_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
 namespace {
 
-class SingleClientSendTabToSelfSyncTest : public SyncTest {
+using testing::Eq;
+
+class SingleClientSendTabToSelfSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientSendTabToSelfSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  SingleClientSendTabToSelfSyncTest() : SyncTest(SINGLE_CLIENT) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+  }
 
   SingleClientSendTabToSelfSyncTest(const SingleClientSendTabToSelfSyncTest&) =
       delete;
@@ -41,6 +55,10 @@ class SingleClientSendTabToSelfSyncTest : public SyncTest {
 
   ~SingleClientSendTabToSelfSyncTest() override = default;
 
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
+
   void SetUpInProcessBrowserTestFixture() override {
     SyncTest::SetUpInProcessBrowserTestFixture();
     test_signin_client_subscription_ =
@@ -48,10 +66,16 @@ class SingleClientSendTabToSelfSyncTest : public SyncTest {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::CallbackListSubscription test_signin_client_subscription_;
 };
 
-IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest,
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientSendTabToSelfSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
                        DownloadWhenSyncEnabled) {
   const std::string kUrl("https://www.example.com");
   const std::string kGuid("kGuid");
@@ -77,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest,
                   .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest, IsActive) {
+IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest, IsActive) {
   ASSERT_TRUE(SetupSync());
 
   EXPECT_TRUE(send_tab_to_self_helper::SendTabToSelfActiveChecker(
@@ -85,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest, IsActive) {
                   .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
                        HasValidTargetDevice) {
   ASSERT_TRUE(SetupSync());
 
@@ -94,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest,
                    ->HasValidTargetDevice());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
                        ShouldDisplayEntryPoint) {
   ASSERT_TRUE(SetupSync());
 
@@ -102,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest,
       GetBrowser(0)->tab_strip_model()->GetActiveWebContents()));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
                        DeleteSharedEntryWithHistory) {
   const std::string kUrl("https://www.example.com");
   const std::string kGuid("kGuid");
@@ -144,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest,
 
 // An unconsented primary account is not supported on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
                        ShouldCleanupOnSignout) {
   const GURL kUrl("https://www.example.com");
   const std::string kTitle("example");
@@ -170,17 +194,20 @@ IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
                        ShouldNotUploadInSyncPausedState) {
   const GURL kUrl("https://www.example.com");
   const std::string kTitle("example");
   const std::string kTargetDeviceSyncCacheGuid("target");
 
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
 
   // Enter the sync paused state.
-  GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
+  if (GetSetupSyncMode() == SetupSyncMode::kSyncTheFeature) {
+    GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
+  } else {
+    GetClient(0)->EnterSignInPendingStateForPrimaryAccount();
+  }
   ASSERT_TRUE(GetSyncService(0)->GetAuthError().IsPersistentError());
 
   send_tab_to_self::SendTabToSelfModel* model =
@@ -193,18 +220,24 @@ IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest,
       GetBrowser(0)->tab_strip_model()->GetActiveWebContents()));
 
   // Clear the "Sync paused" state again.
-  GetClient(0)->ExitSyncPausedStateForPrimaryAccount();
-  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
+  if (GetSetupSyncMode() == SetupSyncMode::kSyncTheFeature) {
+    GetClient(0)->ExitSyncPausedStateForPrimaryAccount();
+  } else {
+    GetClient(0)->ExitSignInPendingStateForPrimaryAccount();
+  }
+  ASSERT_FALSE(GetSyncService(0)->GetAuthError().IsPersistentError());
 
   // Just checking that we don't see test_event isn't very convincing yet,
   // because it may simply not have reached the server yet. So let's send
   // something else through the system that we can wait on before checking.
-  ASSERT_TRUE(
-      bookmarks_helper::AddURL(0, u"What are you syncing about?",
-                               GURL("https://google.com/synced-bookmark-1")));
-  ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::BOOKMARKS, 1).Wait());
+  syncer::UserEventService* user_event_service =
+      browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
+  user_event_service->RecordUserEvent(
+      std::make_unique<sync_pb::UserEventSpecifics>(
+          user_events_helper::CreateTestEvent(base::Time::Now())));
+  ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::USER_EVENTS, 1).Wait());
 
-  // Repurpose the deleted checker to ensure url wasnt added.
+  // Repurpose the deleted checker to ensure url wasn't added.
   EXPECT_TRUE(send_tab_to_self_helper::SendTabToSelfUrlDeletedChecker(
                   SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0)),
                   GURL(kUrl))
