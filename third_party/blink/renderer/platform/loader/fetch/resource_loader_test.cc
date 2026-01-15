@@ -815,4 +815,52 @@ TEST_F(ResourceLoaderSubresourceFilterCnameAliasTest,
   ExpectCnameAliasInfoMatching(info, loader);
 }
 
+class ResourceLoaderBlockPartialResponseWithoutRangeTest
+    : public ResourceLoaderTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ResourceLoaderBlockPartialResponseWithoutRangeTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kBlockPartialResponseWithoutRange, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(ResourceLoaderBlockPartialResponseWithoutRangeTest,
+       BlockOpaque416ResponseToNonRangeRequest) {
+  auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
+  FetchContext* context = MakeGarbageCollected<MockFetchContext>();
+  auto* fetcher = MakeResourceFetcher(properties, context);
+
+  KURL url("https://www.example.com/");
+  ResourceRequest request(url);
+  request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
+  ASSERT_FALSE(request.HttpHeaderFields().Contains(http_names::kRange));
+
+  FetchParameters params = FetchParameters::CreateForTest(std::move(request));
+  Resource* resource = RawResource::Fetch(params, fetcher, nullptr);
+  ResourceLoader* loader = resource->Loader();
+
+  ResourceResponse response(url);
+  response.SetHttpStatusCode(416);
+  response.SetType(network::mojom::FetchResponseType::kOpaque);
+  response.SetHasRangeRequested(true);
+
+  loader->DidReceiveResponse(WrappedResourceResponse(response),
+                             mojo::ScopedDataPipeConsumerHandle(),
+                             /*cached_metadata=*/std::nullopt);
+
+  if (GetParam()) {
+    EXPECT_EQ(resource->GetStatus(), ResourceStatus::kLoadError);
+  } else {
+    EXPECT_EQ(resource->GetStatus(), ResourceStatus::kPending);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ResourceLoaderBlockPartialResponseWithoutRangeTest,
+                         testing::Bool());
+
 }  // namespace blink
