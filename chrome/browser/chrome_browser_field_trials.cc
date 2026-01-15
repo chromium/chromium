@@ -159,6 +159,9 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // Enable V8 optimizations for high-end Android Desktop devices.
   // TODO(crbug.com/425860368): Remove when the feature is stable.
   feature_overrides.EnableFeature(features::kV8AndroidDesktopHighEndConfig);
+  // TODO(crbug.com/438369690): Remove when we enable DevTools frontend for all
+  // clank users.
+  feature_overrides.EnableFeature(features::kAndroidDevToolsFrontend);
   // TODO(crbug.com/430304112): Remove when rollout is complete to all form
   // factors.
   feature_overrides.EnableFeature(
