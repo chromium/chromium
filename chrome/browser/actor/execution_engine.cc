@@ -116,6 +116,23 @@ bool IsSameForNewOriginNavigationGating(const url::Origin& reference_origin,
   return reference_origin.IsSameOriginWith(navigation_url);
 }
 
+// When operating on an opaque site, we choose to use the precursor's origin
+// when judging whether a user confirmation should be triggered or not. We are
+// effictively, using `rfh.GetLastCommittedUrl()` vs
+// `rfh.GetLastCommittedOrigin()` for this "security" purpose contrary to the
+// guidance here (docs/security/origin-vs-url.md).
+//
+// This is an intentional decision since it relates to user confirmations and it
+// would be confusing to ask the user to distinguish between opaque domains.
+url::Origin OriginOrPrecursorIfOpaque(const url::Origin& origin) {
+  if (!origin.opaque()) {
+    return origin;
+  }
+
+  return url::Origin::Create(
+      origin.GetTupleOrPrecursorTupleIfOpaque().GetURL());
+}
+
 }  // namespace
 
 ToolDelegate::CredentialWithPermission::CredentialWithPermission() = default;
@@ -500,13 +517,17 @@ void ExecutionEngine::OnPromptUserToConfirmNavigationDecision(
     UMA_HISTOGRAM_BOOLEAN("Actor.NavigationGating.PermissionGranted",
                           permission_granted);
     if (permission_granted) {
-      allowed_navigation_origins_.insert(url::Origin(navigation_origin));
+      // See the comment on `OriginOrPrecursorIfOpaque` for why we do not store
+      // `navigation_origin` directly here and for the confirmed blocklist
+      // origins.
+      allowed_navigation_origins_.insert(
+          OriginOrPrecursorIfOpaque(navigation_origin));
       // We update both lists in the `for_blocklisted_origin` case so that we do
       // not have to double-confirm this origin when we invoke
       // ExecutionEngine::HandleNavigationToNewOrigin.
       if (for_blocklisted_origin) {
         user_confirmed_blocklisted_origins_.insert(
-            url::Origin(navigation_origin));
+            OriginOrPrecursorIfOpaque(navigation_origin));
       }
     }
     std::move(callback).Run(permission_granted);
@@ -677,9 +698,13 @@ void ExecutionEngine::SafetyChecksForNextAction() {
     return;
   }
 
-  // Asynchronously check if we can act on the tab.
+  // Asynchronously check if we can act on the tab. NOTE that the MayActOnTab
+  // check uses `GetLastCommittedURL()` from the tab. For opaque origins, this
+  // means that we'll get the precursor URL. For this reason, we used the
+  // precusor in `user_confirmed_blocklisted_origins_` to ensure the
+  // optimization blocklist check would be skipped as expected.
   ActorKeyedService::Get(profile_)->GetPolicyChecker().MayActOnTab(
-      *tab, *journal_, task_->id(), allowed_navigation_origins_,
+      *tab, *journal_, task_->id(), user_confirmed_blocklisted_origins_,
       base::BindOnce(
           &ExecutionEngine::OnMayActOnTabDecision, GetWeakPtr(),
           tab->GetContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin()));

@@ -572,6 +572,66 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+                       SandboxedSiteDoesNotReprompt) {
+  base::HistogramTester histogram_tester;
+  const GURL sandboxed_blocked_page = embedded_https_test_server().GetURL(
+      "blocked.example.com", "/actor/sandboxed_blank.html");
+  const GURL blocked_page = embedded_https_test_server().GetURL(
+      "blocked.example.com", "/actor/blank.html");
+  const GURL normal_page_with_link = embedded_https_test_server().GetURL(
+      "www.example.com", base::StrCat({"/actor/link_full_page.html?href=",
+                                       EncodeURI(blocked_page.spec())}));
+
+  // Start on sandboxed page.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), sandboxed_blocked_page));
+  OpenGlicAndCreateTask();
+
+  // Perform some action on the sandboxed site
+  std::unique_ptr<ToolRequest> click =
+      MakeClickRequest(*active_tab(), gfx::Point(1, 1));
+  // Try navigating away
+  std::unique_ptr<ToolRequest> navigate_to_link =
+      MakeNavigateRequest(*active_tab(), normal_page_with_link.spec());
+  // Clicks on full-page link to go back to sandboxed page.
+  std::unique_ptr<ToolRequest> click_link =
+      MakeClickRequest(*active_tab(), gfx::Point(1, 1));
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleUserConfirmationDialogTempl, true)));
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(click, navigate_to_link, click_link),
+                   result.GetCallback());
+  ExpectOkResult(result);
+
+  auto expected_request =
+      base::Value::Dict()
+          .Set("navigationOrigin",
+               url::Origin::Create(normal_page_with_link).GetDebugString())
+          .Set("forBlocklistedOrigin", true);
+  VerifyUserConfirmationDialogRequest(expected_request);
+
+  // Trigger ExecutionEngine destructor for metrics.
+  actor_keyed_service().ResetForTesting();
+
+  // Each actual navigation should not have applied the gate. The origin was
+  // confirmed when during MayActOnTab.
+  histogram_tester.ExpectBucketCount("Actor.NavigationGating.AppliedGate",
+                                     false, 2);
+  histogram_tester.ExpectTotalCount("Actor.NavigationGating.AppliedGate", 2);
+  // Permission should have been explicitly granted once during MayActOnTab. The
+  // navigation to to `www.example.com` had implicit permission via the tool
+  // request.
+  histogram_tester.ExpectUniqueSample(
+      "Actor.NavigationGating.PermissionGranted", true, 1);
+  // The allow-list should have 2 entries at the end of the task.
+  histogram_tester.ExpectUniqueSample("Actor.NavigationGating.AllowListSize", 2,
+                                      1);
+  // The list of confirmed sensitive origins should have 1 entry.
+  histogram_tester.ExpectUniqueSample(
+      "Actor.NavigationGating.ConfirmedListSize", 1, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                        NavigationNotGatedWithStaticList) {
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/actor/link.html");
