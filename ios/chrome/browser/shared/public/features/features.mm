@@ -7,7 +7,9 @@
 #import <string>
 #import <vector>
 
+#import "base/containers/contains.h"
 #import "base/metrics/field_trial_params.h"
+#import "base/strings/string_split.h"
 #import "components/country_codes/country_codes.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/sync/base/features.h"
@@ -821,9 +823,15 @@ bool IsBestOfAppFREEnabled() {
   return base::FeatureList::IsEnabled(kBestOfAppFRE);
 }
 
+std::vector<std::string> GetBestOfAppFREActiveVariants() {
+  std::string variants_string =
+      base::GetFieldTrialParamValueByFeature(kBestOfAppFRE, "variant");
+  return SplitString(variants_string, ",", base::TRIM_WHITESPACE,
+                     base::SPLIT_WANT_NONEMPTY);
+}
+
 bool IsBestOfAppGuidedTourEnabled() {
-  return base::GetFieldTrialParamValueByFeature(kBestOfAppFRE, "variant") ==
-         "4";
+  return base::Contains(GetBestOfAppFREActiveVariants(), "4");
 }
 
 bool IsManualUploadForBestOfAppEnabled() {
@@ -834,13 +842,12 @@ bool IsManualUploadForBestOfAppEnabled() {
 bool IsBestOfAppLensInteractivePromoEnabled() {
   return (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) &&
          IsBestOfAppFREEnabled() &&
-         (base::GetFieldTrialParamValueByFeature(kBestOfAppFRE, "variant") ==
-          "1");
+         base::Contains(GetBestOfAppFREActiveVariants(), "1");
 }
 
 bool IsBestOfAppLensAnimatedPromoEnabled() {
-  return IsBestOfAppFREEnabled() && (base::GetFieldTrialParamValueByFeature(
-                                         kBestOfAppFRE, "variant") == "2");
+  return IsBestOfAppFREEnabled() &&
+         base::Contains(GetBestOfAppFREActiveVariants(), "2");
 }
 
 bool IsDefaultBrowserPromoPropensityModelEnabled() {

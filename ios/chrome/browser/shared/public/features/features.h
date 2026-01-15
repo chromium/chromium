@@ -782,6 +782,9 @@ BASE_DECLARE_FEATURE(kBestOfAppFRE);
 // enabled.
 bool IsBestOfAppFREEnabled();
 
+// All currently enabled `KBestOfAppFRE` feature variants.
+std::vector<std::string> GetBestOfAppFREActiveVariants();
+
 // Whether the Guided Tour variant of `kBestOfAppFRE` is enabled.
 bool IsBestOfAppGuidedTourEnabled();
 
