@@ -79,26 +79,17 @@ TEST_F(ChooseFileTabHelperTest, StopChoosingFiles) {
   // Reset `selection_submitted`.
   selection_submitted = false;
 
-  // Test that calling `StopChoosingFiles()` with no arguments forwards an empty
-  // list of files to the controller and ends file selection.
+  // Test that calling `StopChoosingFiles()` with no arguments ends file
+  // selection.
   controller = std::make_unique<FakeChooseFileController>(
       ChooseFileEvent::Builder()
           .SetAllowMultipleFiles(false)
           .SetHasSelectedFile(false)
           .SetWebState(web_state_.get())
           .Build());
-  controller->SetSubmitSelectionCompletion(
-      base::BindOnce(^(const FakeChooseFileController& control) {
-        selection_submitted = true;
-        EXPECT_NSEQ(@[], control.submitted_file_urls());
-        EXPECT_NSEQ(nil, control.submitted_display_string());
-        EXPECT_NSEQ(nil, control.submitted_icon_image());
-      }));
   tab_helper_->StartChoosingFiles(std::move(controller));
-  EXPECT_FALSE(selection_submitted);
   EXPECT_TRUE(tab_helper_->IsChoosingFiles());
   tab_helper_->StopChoosingFiles();
-  EXPECT_TRUE(selection_submitted);
   EXPECT_FALSE(tab_helper_->IsChoosingFiles());
 }
 

@@ -9,10 +9,14 @@
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/download/model/download_app_interface.h"
+#import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
 #import "ios/chrome/browser/file_upload_panel/ui/constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/buildflags.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -133,6 +137,7 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_enabled.push_back(kIOSCustomFileUploadMenu);
+  config.features_enabled.push_back(kIOSChooseFromDrive);
   return config;
 }
 
@@ -645,6 +650,37 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
                        FileUploadPanelContextMenuActionVariant::kPhotoPicker)
       forHistogram:@"IOS.FileUploadPanel.ContextMenuActionVariant"];
   chrome_test_util::GREYAssertErrorNil(error);
+}
+
+// Tests that tapping "Google Drive" in the file upload context menu presents
+// the Drive file picker.
+- (void)testDriveFilePickerFromContextMenu {
+  // The file upload panel is only available on iOS 18.4+.
+  if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
+    EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
+  }
+
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+
+  [self loadURLAndTapInputWithPath:"" waitForText:"File input"];
+
+  // Verify "Google Drive" action is present.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                     IDS_IOS_CHOOSE_FROM_DRIVE_ACTION_NAME)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap "Google Drive".
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                     IDS_IOS_CHOOSE_FROM_DRIVE_ACTION_NAME)]
+      performAction:grey_tap()];
+
+  // Verify Drive File Picker is presented.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_accessibilityID(kDriveFilePickerAccessibilityIdentifier)];
 }
 
 // Tests that tapping the camera action logs the correct metric.
