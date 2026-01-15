@@ -25409,9 +25409,16 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_TrustAnchorIDs",
                     "enable_features": [
                         "TLSTrustAnchorIDs"
+                    ]
+                },
+                {
+                    "name": "Enabled_VerifyMTCs",
+                    "enable_features": [
+                        "TLSTrustAnchorIDs",
+                        "VerifyMTCs"
                     ]
                 }
             ]
