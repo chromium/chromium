@@ -4554,7 +4554,7 @@ class CSSMathExpressionNodeParser {
           }
           non_expr_argument = random_value_sharing;
         } else {
-          non_expr_argument = RandomValueSharing::Auto();
+          non_expr_argument = RandomValueSharing::Auto(local_context_);
         }
         break;
       }
@@ -4673,6 +4673,7 @@ class CSSMathExpressionNodeParser {
         DCHECK(RuntimeEnabledFeatures::CSSRandomFunctionEnabled());
         DCHECK_GE(nodes.size(), 2u);
         DCHECK_LE(nodes.size(), 3u);
+        local_context_.IncrementRandomValueCount();
         const auto& random_value_sharing =
             std::get<const RandomValueSharing*>(non_expr_argument);
         return CSSMathExpressionRandomFunction::Create(random_value_sharing,
@@ -5337,7 +5338,7 @@ bool RandomValueSharing::IsAuto() const {
   return !std::holds_alternative<NameAndElementShared>(value_) ||
          !std::get<NameAndElementShared>(value_).name.StartsWith("--");
 }
-AtomicString RandomValueSharing::Name() const {
+const AtomicString& RandomValueSharing::Name() const {
   if (!std::holds_alternative<NameAndElementShared>(value_)) {
     return g_null_atom;
   }
@@ -5345,7 +5346,7 @@ AtomicString RandomValueSharing::Name() const {
 }
 bool RandomValueSharing::IsElementShared() const {
   return std::holds_alternative<NameAndElementShared>(value_) &&
-         std::get<NameAndElementShared>(value_).element_shared;
+         std::get<NameAndElementShared>(value_).is_element_shared;
 }
 
 const RandomValueSharing*
@@ -5375,7 +5376,7 @@ RandomValueSharing::CopyWithPropertyValueIndexNameIfNeeded(
     str.Append(" ");
     str.AppendNumber(property_value_index);
     return MakeGarbageCollected<RandomValueSharing>(
-        str.ToAtomicString(), name_and_element_shared.element_shared);
+        str.ToAtomicString(), name_and_element_shared.is_element_shared);
   }
   return this;
 }
@@ -5424,11 +5425,11 @@ const RandomValueSharing* RandomValueSharing::Parse(
   }
 
   token = stream.Peek();
+  AtomicString name = local_context.PropertyNameAndRandomCount();
   if (stream.Peek().GetType() != kIdentToken) {
-    return MakeGarbageCollected<RandomValueSharing>(element_shared);
+    return MakeGarbageCollected<RandomValueSharing>(name, element_shared);
   }
 
-  AtomicString name = g_null_atom;
   if (token.Value() == "auto") {
     stream.ConsumeIncludingWhitespace();
   }
@@ -5454,6 +5455,12 @@ const RandomValueSharing* RandomValueSharing::Fixed(double fixed_value) {
   return MakeGarbageCollected<RandomValueSharing>(
       CSSNumericLiteralValue::Create(fixed_value,
                                      CSSPrimitiveValue::UnitType::kNumber));
+}
+
+const RandomValueSharing* RandomValueSharing::Auto(
+    const CSSParserLocalContext& local_context) {
+  return MakeGarbageCollected<RandomValueSharing>(
+      local_context.PropertyNameAndRandomCount(), ElementShared(false));
 }
 
 void RandomValueSharing::Trace(Visitor* visitor) const {

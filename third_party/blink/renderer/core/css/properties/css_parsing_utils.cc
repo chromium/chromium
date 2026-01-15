@@ -4072,21 +4072,7 @@ const CSSValue* ParseLonghand(CSSPropertyID unresolved_property,
   const CSSValue* result =
       To<Longhand>(CSSProperty::Get(property_id))
           .ParseSingleValue(stream, context, local_context);
-
-  if (!result) {
-    return nullptr;
-  }
-
-  CSSPropertyName property_name =
-      CSSProperty::Get(property_id).GetCSSPropertyName();
-  wtf_size_t property_value_index = 0;
-  if (current_shorthand != CSSPropertyID::kInvalid) {
-    property_name = CSSProperty::Get(current_shorthand).GetCSSPropertyName();
-    // TODO(crbug.com/413385732): Compute property value index correctly.
-  }
-
-  return result->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
-      property_name, property_value_index);
+  return result;
 }
 
 bool ConsumeShorthandVia2Longhands(

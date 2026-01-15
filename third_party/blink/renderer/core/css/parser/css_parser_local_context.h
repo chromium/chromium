@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -129,6 +130,24 @@ class CORE_EXPORT CSSParserLocalContext {
   }
 
   CSSPropertyID CurrentShorthand() const { return current_shorthand_; }
+
+  const AtomicString PropertyNameAndRandomCount() const {
+    StringBuilder str;
+    if (property_name_.has_value()) {
+      // Use string of form "PROPERTY {property_name} {property_value_index}"
+      // as name, this is later used for caching random values [0]. The prefix
+      // "PROPERTY" is needed since we need to make distinguish between custom
+      // property name and random value identifier, i.e. <dashed-ident> value in
+      // <random-value-sharing> [1]
+      // [0] https://drafts.csswg.org/css-values-5/#random-caching-key
+      // [1] https://drafts.csswg.org/css-values-5/#typedef-random-value-sharing
+      str.Append("PROPERTY ");
+      str.Append(property_name_->ToAtomicString());
+      str.Append(" ");
+      str.AppendNumber(random_value_count_);
+    }
+    return str.ToAtomicString();
+  }
 
   wtf_size_t RandomValueCount() const { return random_value_count_; }
 

@@ -1176,19 +1176,7 @@ class RandomValueSharing : public GarbageCollected<RandomValueSharing> {
   static const RandomValueSharing* Parse(CSSParserTokenStream& stream,
                                          const CSSParserContext&,
                                          CSSParserLocalContext&);
-  static const RandomValueSharing* Auto() {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(
-        ThreadSpecific<Persistent<RandomValueSharing>>, thread_specific_random,
-        ());
-
-    Persistent<RandomValueSharing>& random_value_sharing =
-        *thread_specific_random;
-    if (!random_value_sharing) {
-      random_value_sharing = MakeGarbageCollected<RandomValueSharing>();
-      LEAK_SANITIZER_IGNORE_OBJECT(&random_value_sharing);
-    }
-    return random_value_sharing;
-  }
+  static const RandomValueSharing* Auto(const CSSParserLocalContext&);
   static const RandomValueSharing* Fixed(double fixed_value);
   // Returns the current object if a name is already set or if it's fixed
   // value. Otherwise, returns a copy with the name bound to the specified
@@ -1197,12 +1185,9 @@ class RandomValueSharing : public GarbageCollected<RandomValueSharing> {
       const CSSPropertyName& property_name,
       wtf_size_t& property_value_index) const;
 
-  RandomValueSharing() = default;
-
+  RandomValueSharing() = delete;
   using ElementShared = base::StrongAlias<class ElementSharedTag, bool>;
-  explicit RandomValueSharing(ElementShared element_shared)
-      : value_(NameAndElementShared(element_shared)) {}
-  RandomValueSharing(AtomicString name, ElementShared element_shared)
+  RandomValueSharing(const AtomicString& name, ElementShared element_shared)
       : value_(NameAndElementShared(name, element_shared)) {}
   explicit RandomValueSharing(const CSSPrimitiveValue* fixed_value)
       : value_(fixed_value) {}
@@ -1210,7 +1195,7 @@ class RandomValueSharing : public GarbageCollected<RandomValueSharing> {
   bool IsFixed() const;
   const CSSPrimitiveValue* GetFixed() const;
   bool IsAuto() const;
-  AtomicString Name() const;
+  const AtomicString& Name() const;
   bool IsElementShared() const;
 
   bool operator==(const RandomValueSharing& other) const;
@@ -1221,23 +1206,20 @@ class RandomValueSharing : public GarbageCollected<RandomValueSharing> {
   // Used for non fixed <random-value-sharing> values, i.e.:
   // [ [ auto | <dashed-ident> ] || element-shared ]
   // "name" can refer to either the property name and property value index, or
-  // the random identifier. NameAndElementShared are created without a "name"
-  // when random identifier is not provided. But they will be replaced later
-  // populated with the property name and property value index "name".
+  // the random identifier.
   struct NameAndElementShared {
-    NameAndElementShared() = default;
-    explicit NameAndElementShared(ElementShared element_shared)
-        : element_shared(element_shared) {}
-    NameAndElementShared(AtomicString random_name, ElementShared element_shared)
-        : name(random_name), element_shared(element_shared) {}
+    NameAndElementShared() = delete;
+    explicit NameAndElementShared(
+        const AtomicString& random_name,
+        ElementShared element_shared = ElementShared(false))
+        : name(random_name), is_element_shared(element_shared) {}
     bool operator==(const NameAndElementShared& other) const {
-      return name == other.name && element_shared == other.element_shared;
+      return name == other.name && is_element_shared == other.is_element_shared;
     }
-    AtomicString name;
-    ElementShared element_shared = ElementShared(false);
+    const AtomicString name;
+    ElementShared is_element_shared;
   };
-  std::variant<NameAndElementShared, Member<const CSSPrimitiveValue>> value_ =
-      NameAndElementShared();
+  std::variant<NameAndElementShared, Member<const CSSPrimitiveValue>> value_;
 };
 
 // <random()> = random( <random-value-sharing>? , <calc-sum>, <calc-sum>,
