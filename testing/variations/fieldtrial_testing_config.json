@@ -28548,6 +28548,21 @@
             ]
         }
     ],
+    "WebViewEnableApiCallUserActions": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewEnableApiCallUserActions"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewFileSystemAccessDirectoryIterationBlocklistCheckReenable": [
         {
             "platforms": [
