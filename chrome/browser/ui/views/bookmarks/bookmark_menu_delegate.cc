@@ -59,6 +59,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/color/color_id.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -98,8 +99,27 @@ size_t SubmenuIndexOf(const MenuItemView* parent, const views::View* child) {
 ui::ImageModel GetFaviconForNode(BookmarkModel* model,
                                  const BookmarkNode* node) {
   const gfx::Image& image = model->GetFavicon(node);
-  return image.IsEmpty() ? favicon::GetDefaultFaviconModel()
-                         : ui::ImageModel::FromImage(image);
+  if (image.IsEmpty()) {
+    return favicon::GetDefaultFaviconModel();
+  }
+
+  // Only URL nodes reach here. Folders would have returned empty above.
+  DCHECK(node->is_url());
+  if (favicon::ShouldThemifyFavicon(node->url())) {
+    gfx::ImageSkia favicon_skia = *image.ToImageSkia();
+    return ui::ImageModel::FromImageGenerator(
+        base::BindRepeating(
+            [](const gfx::ImageSkia& favicon,
+               const ui::ColorProvider* provider) {
+              SkColor favicon_color = provider->GetColor(ui::kColorMenuIcon);
+              return gfx::ImageSkiaOperations::CreateColorMask(favicon,
+                                                               favicon_color);
+            },
+            favicon_skia),
+        image.Size());
+  }
+
+  return ui::ImageModel::FromImage(image);
 }
 
 // The current behavior is that the menu gets closed (see MenuController) after
