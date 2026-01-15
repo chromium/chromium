@@ -968,6 +968,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_CONNECT_TO_COMPONENT_PROVIDER_IN_BACKGROUND,
                 "Connect to the non-embedded components provider from a background thread."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_ENABLE_API_CALL_USER_ACTIONS,
+                "Enables recording user actions for API calls."),
         Flag.baseFeature("PrefetchUseContentRefactor"),
         Flag.baseFeature("LowPriorityAsyncScriptExecution"),
         Flag.baseFeature("WebViewPrefetchHighestPrefetchPriority"),
