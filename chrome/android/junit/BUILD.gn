@@ -1104,6 +1104,13 @@ if (is_android) {
     deps = [ ":chrome_junit_tests_helper" ]
   }
 
+  robolectric_library(
+      "chrome_junit_tests_org.chromium.chrome.browser.sync.synced_set_up") {
+    sources = [ "src/org/chromium/chrome/browser/sync/synced_set_up/CrossDeviceSettingImporterUnitTest.java" ]
+
+    deps = [ ":chrome_junit_tests_helper" ]
+  }
+
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.tab") {
     sources = [
       "//chrome/android/java/src/org/chromium/chrome/browser/tab/TabFaviconTest.java",

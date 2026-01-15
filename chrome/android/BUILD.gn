@@ -1064,6 +1064,7 @@ if (_is_default_toolchain) {
       "junit:chrome_junit_tests_org.chromium.chrome.browser.signin",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.suggestions",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.sync",
+      "junit:chrome_junit_tests_org.chromium.chrome.browser.sync.synced_set_up",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.tab",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.tabbed_mode",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.tabmodel",

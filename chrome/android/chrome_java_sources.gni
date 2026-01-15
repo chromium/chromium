@@ -1105,6 +1105,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/sync/settings/SignInPreference.java",
   "java/src/org/chromium/chrome/browser/sync/settings/SyncErrorCardPreference.java",
   "java/src/org/chromium/chrome/browser/sync/settings/SyncSettingsUtils.java",
+  "java/src/org/chromium/chrome/browser/sync/synced_set_up/CrossDeviceSettingImporter.java",
   "java/src/org/chromium/chrome/browser/sync/ui/PassphraseActivity.java",
   "java/src/org/chromium/chrome/browser/sync/ui/PassphraseCreationDialogFragment.java",
   "java/src/org/chromium/chrome/browser/sync/ui/PassphraseDialogFragment.java",

@@ -151,6 +151,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsService;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
+import org.chromium.chrome.browser.sync.synced_set_up.CrossDeviceSettingImporter;
 import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
@@ -297,6 +298,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final OneshotSupplier<ChromeInactivityTracker> mInactivityTrackerSupplier;
     private final InactivityObserver mInactivityObserver;
     private @Nullable NtpSyncedThemeManager mNtpSyncedThemeManager;
+    private final @NonNull CrossDeviceSettingImporter mCrossDeviceSettingImporter;
 
     // Activity tab observer that updates the current tab used by various UI components.
     private class RootUiTabObserver extends ActivityTabTabObserver {
@@ -613,6 +615,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     inactivityTracker.addObserver(mInactivityObserver);
                 });
 
+        mCrossDeviceSettingImporter =
+                new CrossDeviceSettingImporter(
+                        activityLifecycleDispatcher,
+                        mActivityTabProvider.asObservable(),
+                        modalDialogManagerSupplier,
+                        snackbarManagerSupplier);
+
         try {
             PackageManager packageManager = mActivity.getPackageManager();
             ApplicationInfo applicationInfo =
@@ -774,6 +783,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mTabBottomSheetManager.destroy();
             mTabBottomSheetManager = null;
         }
+        mCrossDeviceSettingImporter.destroy();
 
         super.onDestroy();
     }
