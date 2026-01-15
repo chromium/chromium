@@ -102,6 +102,9 @@ void GlicInstanceMetrics::RecordTabPinningStatusEvent(
   if (const auto* pin_event = std::get_if<GlicPinEvent>(&event)) {
     base::UmaHistogramEnumeration("Glic.Instance.TabPinTrigger",
                                   pin_event->trigger);
+  } else if (const auto* unpin_event = std::get_if<GlicUnpinEvent>(&event)) {
+    base::UmaHistogramEnumeration("Glic.Instance.TabUnpinTrigger",
+                                  unpin_event->trigger);
   }
 }
 

@@ -714,6 +714,23 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/glic_instance_metrics.cc:GlicTurnSource) -->
 
+<!-- LINT.IfChange(GlicUnpinTrigger) -->
+
+<enum name="GlicUnpinTrigger">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Instance Destruction"/>
+  <int value="2" label="Conversation Change Before Context Shared"/>
+  <int value="3" label="Context Menu"/>
+  <int value="4" label="Tab Close"/>
+  <int value="5" label="Background Tab Navigation"/>
+  <int value="6" label="Candidates Toggle"/>
+  <int value="7" label="Chip"/>
+  <int value="8" label="Actuation"/>
+  <int value="9" label="Web Client Unknown"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/public/context/glic_sharing_manager.h:GlicUnpinTrigger) -->
+
 <!-- LINT.IfChange(GlicWebClientMode) -->
 
 <enum name="GlicWebClientMode">
