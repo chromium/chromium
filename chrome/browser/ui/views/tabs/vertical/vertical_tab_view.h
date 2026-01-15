@@ -74,6 +74,7 @@ class VerticalTabView : public views::View,
   void OnPaint(gfx::Canvas* canvas) override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnThemeChanged() override;
 
   struct TabChildConfig {
