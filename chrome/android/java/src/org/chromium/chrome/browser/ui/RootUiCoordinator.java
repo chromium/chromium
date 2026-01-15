@@ -734,8 +734,7 @@ public class RootUiCoordinator
                 new TopControlsStacker(
                         mBrowserControlsManager, getAppBrowserControlsVisibilityDelegate());
 
-        if (BrowserControlsUtils.doSyncMinHeightWithTotalHeightV2(mActivity)
-                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
+        if (BrowserControlsUtils.doSyncMinHeightWithTotalHeightV2(mActivity)) {
             mTopControlsLockCoordinator =
                     new TopControlsLockCoordinator(
                             mActivity,
