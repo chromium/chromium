@@ -19,7 +19,7 @@ features:
 - name: read-write-pseudos
   files:
   - selector-read-write-*
-- name: scope-psuedo
+- name: scope-pseudo
   files:
   - scope-*
 - name: modal
