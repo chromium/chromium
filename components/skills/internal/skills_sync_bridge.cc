@@ -133,8 +133,31 @@ sync_pb::EntitySpecifics
 SkillsSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
     const sync_pb::EntitySpecifics& entity_specifics) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTIMPLEMENTED();
-  return {};
+
+  // LINT.IfChange(TrimAllSupportedFieldsFromRemoteSpecifics)
+  sync_pb::SkillSpecifics trimmed_specifics = entity_specifics.skill();
+  trimmed_specifics.clear_guid();
+  trimmed_specifics.clear_name();
+  trimmed_specifics.clear_icon();
+  trimmed_specifics.clear_creation_time_windows_epoch_micros();
+  trimmed_specifics.clear_last_update_time_windows_epoch_micros();
+  trimmed_specifics.clear_schema_version();
+
+  if (trimmed_specifics.has_simple_skill()) {
+    trimmed_specifics.mutable_simple_skill()->clear_prompt();
+
+    if (trimmed_specifics.simple_skill().ByteSizeLong() == 0) {
+      trimmed_specifics.clear_simple_skill();
+    }
+  }
+  // LINT.ThenChange(//components/sync/protocol/skill_specifics.proto:SkillSpecifics)
+
+  sync_pb::EntitySpecifics trimmed_entity_specifics;
+  if (trimmed_specifics.ByteSizeLong() > 0) {
+    *trimmed_entity_specifics.mutable_skill() = std::move(trimmed_specifics);
+  }
+
+  return trimmed_entity_specifics;
 }
 
 bool SkillsSyncBridge::IsEntityDataValid(

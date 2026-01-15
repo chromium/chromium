@@ -9,6 +9,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/run_loop.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
 #include "components/skills/public/skill.h"
@@ -18,11 +20,16 @@
 #include "components/sync/protocol/skill_specifics.pb.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
+#include "components/sync/test/unknown_field_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace skills {
 
 namespace {
+
+using base::test::EqualsProto;
+using ::testing::Not;
 
 constexpr char kDefaultPrompt[] = "test prompt";
 
@@ -123,6 +130,55 @@ TEST_F(SkillsSyncBridgeTest, IsEntityDataValid_MissingSimpleSkill) {
 
   entity_data.specifics.mutable_skill()->clear_simple_skill();
   EXPECT_FALSE(bridge().IsEntityDataValid(entity_data));
+}
+
+TEST_F(SkillsSyncBridgeTest, ShouldTrimAllKnownFields) {
+  sync_pb::SkillSpecifics specifics;
+  specifics.set_guid("guid");
+  specifics.set_name("name");
+  specifics.set_icon("icon");
+  specifics.mutable_simple_skill()->set_prompt("prompt");
+  specifics.set_creation_time_windows_epoch_micros(1234567890);
+  specifics.set_last_update_time_windows_epoch_micros(1234567891);
+  specifics.set_schema_version(1);
+
+  sync_pb::EntitySpecifics entity_specifics;
+  *entity_specifics.mutable_skill() = std::move(specifics);
+
+  EXPECT_THAT(
+      bridge().TrimAllSupportedFieldsFromRemoteSpecifics(entity_specifics),
+      EqualsProto(sync_pb::EntitySpecifics()));
+}
+
+TEST_F(SkillsSyncBridgeTest, ShouldPreserveUnknownFields) {
+  sync_pb::SimpleSkill simple_skill_proto;
+  simple_skill_proto.set_prompt("prompt");
+  syncer::test::AddUnknownFieldToProto(simple_skill_proto,
+                                       "simple_skill_unknown_field");
+
+  sync_pb::SkillSpecifics specifics;
+  specifics.set_guid("guid");
+  specifics.set_name("name");
+  specifics.set_icon("icon");
+  *specifics.mutable_simple_skill() = std::move(simple_skill_proto);
+  specifics.set_creation_time_windows_epoch_micros(1234567890);
+  specifics.set_last_update_time_windows_epoch_micros(1234567891);
+  specifics.set_schema_version(1);
+  syncer::test::AddUnknownFieldToProto(specifics, "specifics_unknown_field");
+
+  sync_pb::EntitySpecifics entity_specifics;
+  *entity_specifics.mutable_skill() = std::move(specifics);
+
+  sync_pb::EntitySpecifics trimmed_specifics =
+      bridge().TrimAllSupportedFieldsFromRemoteSpecifics(entity_specifics);
+
+  EXPECT_THAT(trimmed_specifics, Not(EqualsProto(sync_pb::EntitySpecifics())));
+  EXPECT_EQ(syncer::test::GetUnknownFieldValueFromProto(
+                trimmed_specifics.skill().simple_skill()),
+            "simple_skill_unknown_field");
+  EXPECT_EQ(
+      syncer::test::GetUnknownFieldValueFromProto(trimmed_specifics.skill()),
+      "specifics_unknown_field");
 }
 
 }  // namespace

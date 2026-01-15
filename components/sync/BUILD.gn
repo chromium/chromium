@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 group("sync") {
   public_deps = [
@@ -11,6 +12,12 @@ group("sync") {
     "//components/sync/nigori",
     "//components/sync/service",
   ]
+}
+
+proto_library("test_support_proto") {
+  testonly = true
+
+  sources = [ "test/unknown_fields.proto" ]
 }
 
 static_library("test_support") {
@@ -128,6 +135,8 @@ static_library("test_support") {
     "test/test_sync_user_settings.h",
     "test/trackable_mock_invalidation.cc",
     "test/trackable_mock_invalidation.h",
+    "test/unknown_field_util.cc",
+    "test/unknown_field_util.h",
   ]
 
   public_deps = [
@@ -143,6 +152,7 @@ static_library("test_support") {
   ]
 
   deps = [
+    ":test_support_proto",
     "//base",
     "//base/test:test_support",
     "//components/bookmarks/browser",

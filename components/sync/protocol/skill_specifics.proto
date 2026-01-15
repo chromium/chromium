@@ -14,6 +14,7 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
+// LINT.IfChange(SkillSpecifics)
 // Skills stored by the user.
 message SkillSpecifics {
   // The unique identifier for the skill.
@@ -42,3 +43,4 @@ message SimpleSkill {
   // The core prompt text that instructs the model.
   optional string prompt = 1;
 }
+// LINT.ThenChange(//components/skills/internal/skills_sync_bridge.cc:TrimAllSupportedFieldsFromRemoteSpecifics)
