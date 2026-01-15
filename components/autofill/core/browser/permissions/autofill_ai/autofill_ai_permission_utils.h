@@ -76,7 +76,7 @@ enum class AutofillAiOptInStatus {
 // - Feature state (`kAutofillAiWithDataSchema`, `kAutofillAiServerModel`).
 // - Pref state (prefs for address Autofill, AutofillAI and the related policy
 //   prefs.)
-// - Account state (sign-in status, model execution capabilities).
+// - Account state (sign-in status).
 // - Whether the `action` can be performed for the `entity_type`.
 //   `entity_type` is only considered to kFilling, kIphForOptIn, kImport,
 //   kImportToWallet and must be non-empty in these cases.

@@ -173,11 +173,6 @@ BASE_FEATURE(kAutofillAiFillingSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillAiIdentityAndTravelPrefs,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, no account-level capabilities are checked to determine whether
-// a user is eligible for AutofillAI.
-BASE_FEATURE(kAutofillAiIgnoreCapabilityCheck,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, no GeoIp requirements are imposed for AutofillAi.
 // Note that this feature can be modified as follows (all assuming that
 // `kAutofillAiIgnoreGeoIp` is enabled):

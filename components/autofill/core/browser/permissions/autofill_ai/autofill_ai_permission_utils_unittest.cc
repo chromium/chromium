@@ -313,26 +313,10 @@ TEST_P(AutofillAiMayPerformActionTest, SignedOut) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-// Tests that every action other than listing and editing data requires that
-// user's account capabilities include running a model.
-TEST_P(AutofillAiMayPerformActionTest, MayNotRunModel) {
-  AddEntity();
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillAiIgnoreCapabilityCheck);
-  client().SetCanUseModelExecutionFeatures(false);
-  const bool is_allowed =
-      GetParam() == AutofillAiAction::kEditAndDeleteEntityInstanceInSettings ||
-      GetParam() == AutofillAiAction::kListEntityInstancesInSettings;
-  EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
-}
-
-// Tests that enabling `kAutofillAiIgnoreCapabilityCheck` skips the check
-// whether a client can use model execution features.
-TEST_P(AutofillAiMayPerformActionTest, CapabilityCheckOverride) {
+// Tests that the check whether a client can use model execution features is
+// ignored.
+TEST_P(AutofillAiMayPerformActionTest, CapabilityCheckIgnored) {
   using enum EntityTypeName;
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillAiIgnoreCapabilityCheck};
   AddEntity();
   client().SetCanUseModelExecutionFeatures(false);
   const bool is_allowed = GetParam() != AutofillAiAction::kIphForOptIn;
@@ -341,12 +325,10 @@ TEST_P(AutofillAiMayPerformActionTest, CapabilityCheckOverride) {
       is_allowed);
 }
 
-// Tests that enabling `kAutofillAiIgnoreCapabilityCheck` skips the check
-// whether a client can use model execution features before opt-in or IPH.
-TEST_P(AutofillAiMayPerformActionTest, CapabilityCheckOverrideOptedOut) {
+// Tests that the check whether a client can use model execution features is
+// ignored before opt-in or IPH.
+TEST_P(AutofillAiMayPerformActionTest, CapabilityCheckIgnoredOptedOut) {
   using enum EntityTypeName;
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillAiIgnoreCapabilityCheck};
   SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedOut);
   client().SetCanUseModelExecutionFeatures(false);
 

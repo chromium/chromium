@@ -383,40 +383,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
 
   // All other states (sign-in and sync including their paused/error states)
   // are sufficient for us to validate the user's account information.
-  const bool result = [&]() {
-    if (identity_manager
-            ->FindExtendedAccountInfo(identity_manager->GetPrimaryAccountInfo(
-                signin::ConsentLevel::kSignin))
-            .capabilities.can_use_model_execution_features() ==
-        signin::Tribool::kTrue) {
-      return true;
-    }
-    switch (action) {
-      case AutofillAiAction::kAddLocalEntityInstanceInSettings:
-      case AutofillAiAction::kCrowdsourcingVote:
-      case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
-      case AutofillAiAction::kFilling:
-      case AutofillAiAction::kImport:
-      case AutofillAiAction::kIphForOptIn:
-      case AutofillAiAction::kListEntityInstancesInSettings:
-      case AutofillAiAction::kOptIn:
-      case AutofillAiAction::kImportToWallet:
-        return base::FeatureList::IsEnabled(
-            features::kAutofillAiIgnoreCapabilityCheck);
-      case AutofillAiAction::kLogToMqls:
-      case AutofillAiAction::kServerClassificationModel:
-      case AutofillAiAction::kUseCachedServerClassificationModelResults:
-        return base::FeatureList::IsEnabled(
-            features::kAutofillAiIgnoreCapabilityCheck);
-    }
-    NOTREACHED();
-  }();
-
-  if (!result) {
-    MaybeOutputReason(debug_message,
-                      "User cannot use model execution features.");
-  }
-  return result;
+  return true;
 }
 
 // Checks whether miscellaneous "other" requirements (OTR, app-locale, Geo-IP)
