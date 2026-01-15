@@ -239,7 +239,8 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                             getPreferenceManager().getContext(),
                             AutofillOptionsFragment.class,
                             AutofillOptionsFragment.createRequiredArgs(
-                                    AutofillOptionsReferrer.AUTOFILL_PROFILES_FRAGMENT));
+                                    AutofillOptionsReferrer.AUTOFILL_PROFILES_FRAGMENT),
+                            /* addToBackStack= */ true);
                 });
 
         screen.addPreference(disabledSettingsInfoPref);
