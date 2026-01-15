@@ -6,6 +6,7 @@
 
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/browser/payments/payments_service_url.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/grit/components_scaled_resources.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_util.h"
@@ -168,7 +169,10 @@ CGFloat const kCreditCardCellHeight = 64;
       addArrangedSubview:[[UIView alloc]
                              initWithFrame:CGRectMake(0, 0, 0, kLogoPadding)]];
 
-  [aboveTitleStackView addArrangedSubview:[self createGooglePayLogoView]];
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableWalletBranding)) {
+    [aboveTitleStackView addArrangedSubview:[self createGooglePayLogoView]];
+  }
   CGFloat logoIllustrationSpacerHeight =
       kLogoPadding + kIllustrationPadding - aboveTitleStackView.spacing;
   [aboveTitleStackView
