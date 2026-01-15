@@ -5,18 +5,14 @@
 #ifndef BASE_STRINGS_STRCAT_INTERNAL_H_
 #define BASE_STRINGS_STRCAT_INTERNAL_H_
 
+#include <ranges>
 #include <string>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/numerics/safe_conversions.h"
 
 namespace base::internal {
-
-// Trims the first `n` elements of `span`.
-template <typename T>
-void RemovePrefix(base::span<T>& span, size_t n) {
-  span = span.subspan(n);
-}
 
 // Appends `strings` to `dest`. Instead of simply calling `dest.append()`
 // `strings.size()` times, this method first resizes `dest` to be of the desired
@@ -24,7 +20,7 @@ void RemovePrefix(base::span<T>& span, size_t n) {
 // two goals:
 // 1) Allocating the desired size all at once avoids other allocations that
 //    could happen if intermediate allocations did not reserve enough capacity.
-// 2) Invoking base::span::copy_prefix_from instead of std::basic_string::append
+// 2) Invoking std::ranges::copy instead of std::basic_string::append
 //    avoids having to write the terminating '\0' character n times.
 template <typename CharT, typename StringT>
 void StrAppendT(std::basic_string<CharT>& dest, span<const StringT> strings) {
@@ -38,16 +34,15 @@ void StrAppendT(std::basic_string<CharT>& dest, span<const StringT> strings) {
     // SAFETY: `std::basic_string::resize_and_overwrite` guarantees that the
     // range `[p, p + n]` is valid.
     UNSAFE_BUFFERS(base::span to_overwrite(p, n));
+    auto write_it = to_overwrite.begin();
 
     // The first `initial_size` characters are guaranteed to be the previous
     // contents of `dest`.
-    RemovePrefix(to_overwrite, initial_size);
+    write_it += base::checked_cast<ptrdiff_t>(initial_size);
 
-    // Copy each string into the destination, trimming the written prefix after
-    // every iteration.
+    // Copy each string into the destination, resetting `write_it` as we go.
     for (const StringT& str : strings) {
-      to_overwrite.copy_prefix_from(str);
-      RemovePrefix(to_overwrite, str.size());
+      write_it = std::ranges::copy(str, write_it).out;
     }
     return n;
   });
