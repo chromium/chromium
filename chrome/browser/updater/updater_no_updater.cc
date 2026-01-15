@@ -51,4 +51,24 @@ std::optional<mojom::AppState> GetLastKnownUpdaterRegistration() {
   return std::nullopt;
 }
 
+void GetSystemUpdaterState(
+    base::OnceCallback<void(const mojom::UpdaterState&)> callback) {
+  std::move(callback).Run({});
+}
+
+void GetUserUpdaterState(
+    base::OnceCallback<void(const mojom::UpdaterState&)> callback) {
+  std::move(callback).Run({});
+}
+
+void GetSystemPoliciesJson(
+    base::OnceCallback<void(const std::string&)> callback) {
+  std::move(callback).Run({});
+}
+
+void GetUserPoliciesJson(
+    base::OnceCallback<void(const std::string&)> callback) {
+  std::move(callback).Run({});
+}
+
 }  // namespace updater

@@ -56,6 +56,19 @@ std::optional<mojom::AppState> GetLastKnownBrowserRegistration();
 
 std::optional<mojom::AppState> GetLastKnownUpdaterRegistration();
 
+// Queries the current state of the updater. Must be called on the program's
+// main sequence.
+void GetSystemUpdaterState(
+    base::OnceCallback<void(const mojom::UpdaterState&)> callback);
+void GetUserUpdaterState(
+    base::OnceCallback<void(const mojom::UpdaterState&)> callback);
+
+// Gets the enterprise policies for the updater as a JSON blob. Must be called
+// on the program's main sequence.
+void GetSystemPoliciesJson(
+    base::OnceCallback<void(const std::string&)> callback);
+void GetUserPoliciesJson(base::OnceCallback<void(const std::string&)> callback);
+
 }  // namespace updater
 
 #endif  // CHROME_BROWSER_UPDATER_UPDATER_H_

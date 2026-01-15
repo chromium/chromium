@@ -22,7 +22,7 @@
 namespace base {
 class Version;
 class FilePath;
-}
+}  // namespace base
 
 namespace updater {
 
@@ -72,6 +72,13 @@ class BrowserUpdaterClient
   // on the sequence on which the BrowserUpdaterClient was created. `callback`
   // will be run on the same sequence.
   void IsBrowserRegistered(base::OnceCallback<void(bool)> callback);
+
+  // Queries the current state of the updater.
+  void GetUpdaterState(
+      base::OnceCallback<void(const UpdateService::UpdaterState&)> callback);
+
+  // Gets the current enterprise policies for the updater as a JSON blob.
+  void GetPoliciesJson(base::OnceCallback<void(const std::string&)> callback);
 
   // Returns the browser's app ID. App IDs are case-insensitive and it may not
   // be in the same case used elsewhere in the browser.

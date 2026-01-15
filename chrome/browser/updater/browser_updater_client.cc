@@ -159,6 +159,18 @@ void BrowserUpdaterClient::IsBrowserRegistered(
                      std::move(callback))));
 }
 
+void BrowserUpdaterClient::GetUpdaterState(
+    base::OnceCallback<void(const UpdateService::UpdaterState&)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  update_service_->GetUpdaterState(std::move(callback));
+}
+
+void BrowserUpdaterClient::GetPoliciesJson(
+    base::OnceCallback<void(const std::string&)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  update_service_->GetPoliciesJson(std::move(callback));
+}
+
 void BrowserUpdaterClient::IsBrowserRegisteredCompleted(
     base::OnceCallback<void(bool)> callback,
     const std::vector<UpdateService::AppState>& apps) {

@@ -17,6 +17,21 @@
 
 namespace updater {
 
+namespace {
+
+void GetUpdaterState(
+    UpdaterScope scope,
+    base::OnceCallback<void(const mojom::UpdaterState&)> callback) {
+  BrowserUpdaterClient::Create(scope)->GetUpdaterState(std::move(callback));
+}
+
+void GetPoliciesJson(UpdaterScope scope,
+                     base::OnceCallback<void(const std::string&)> callback) {
+  BrowserUpdaterClient::Create(scope)->GetPoliciesJson(std::move(callback));
+}
+
+}  // namespace
+
 std::optional<mojom::UpdateState> GetLastOnDemandUpdateState() {
   return GetLastOnDemandUpdateStateStorage();
 }
@@ -40,6 +55,38 @@ void CheckForUpdate(
             BrowserUpdaterClient::Create(scope)->CheckForUpdate(callback);
           },
           callback));
+}
+
+void GetSystemUpdaterState(
+    base::OnceCallback<void(const mojom::UpdaterState&)> callback) {
+#if BUILDFLAG(IS_LINUX)
+  // There is no mechanism to support communication across the user/root
+  // boundary for Chromium Updater on Linux.
+  std::move(callback).Run({});
+#else
+  GetUpdaterState(UpdaterScope::kSystem, std::move(callback));
+#endif
+}
+
+void GetUserUpdaterState(
+    base::OnceCallback<void(const mojom::UpdaterState&)> callback) {
+  GetUpdaterState(UpdaterScope::kUser, std::move(callback));
+}
+
+void GetSystemPoliciesJson(
+    base::OnceCallback<void(const std::string&)> callback) {
+#if BUILDFLAG(IS_LINUX)
+  // There is no mechanism to support communication across the user/root
+  // boundary for Chromium Updater on Linux.
+  std::move(callback).Run({});
+#else
+  GetPoliciesJson(UpdaterScope::kSystem, std::move(callback));
+#endif
+}
+
+void GetUserPoliciesJson(
+    base::OnceCallback<void(const std::string&)> callback) {
+  GetPoliciesJson(UpdaterScope::kUser, std::move(callback));
 }
 
 }  // namespace updater
