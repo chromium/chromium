@@ -112,6 +112,19 @@ bool XRRenderState::HasActiveLayer() const {
   return base_layer_ || (layers_ && !layers_->empty());
 }
 
+bool XRRenderState::HasLayer(XRLayer* layer) const {
+  if (!layer) {
+    return false;
+  }
+  if (layer == base_layer_) {
+    return true;
+  }
+  if (layers_) {
+    return base::Contains(*layers_, layer);
+  }
+  return false;
+}
+
 void XRRenderState::OnFrameStart() {
   if (base_layer_) {
     base_layer_->OnFrameStart();

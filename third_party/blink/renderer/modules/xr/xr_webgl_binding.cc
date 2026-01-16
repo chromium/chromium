@@ -489,12 +489,9 @@ XRWebGLSubImage* XRWebGLBinding::getViewSubImage(
     return nullptr;
   }
 
-  // Method could be called for the layer which is not in an active render
-  // state.
-  if (!layer->HasSharedImage()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Invalid frame state. There is no shared buffer for layer.");
+  if (!session()->renderState()->HasLayer(layer)) {
+    exception_state.ThrowTypeError(
+        "Layer is not included in the active render state.");
     return nullptr;
   }
 
@@ -548,6 +545,12 @@ XRWebGLSubImage* XRWebGLBinding::getSubImage(XRCompositionLayer* layer,
     return nullptr;
   }
 
+  if (!session()->renderState()->HasLayer(layer)) {
+    exception_state.ThrowTypeError(
+        "Layer is not included in the active render state.");
+    return nullptr;
+  }
+
   if (layer->LayerType() == XRLayerType::kProjectionLayer) {
     exception_state.ThrowTypeError("Invalid layer type.");
     return nullptr;
@@ -564,15 +567,6 @@ XRWebGLSubImage* XRWebGLBinding::getSubImage(XRCompositionLayer* layer,
           "The 'eye' parameter cannot be 'none' for the stereo layout.");
       return nullptr;
     }
-  }
-
-  // There is no shared image instance if the layer is not in an active render
-  // state list.
-  if (!layer->HasSharedImage()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Invalid frame state. There is no shared buffer for layer.");
-    return nullptr;
   }
 
   // The layer passed the OwnsLayer check, confirming it can only contain
