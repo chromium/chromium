@@ -272,7 +272,8 @@
       },
       {
         "args": [
-          "--test-launcher-print-test-stdio=always"
+          "--test-launcher-print-test-stdio=always",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux.asan.browser_tests.filter"
         ],
         "ci_only": true,
         "merge": {

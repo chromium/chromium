@@ -166,6 +166,9 @@ linux_memory_builder(
                 ),
             ),
             "browser_tests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/linux.asan.browser_tests.filter",
+                ],
                 ci_only = True,
                 # These are very slow on the ASAN trybot for some reason.
                 # crbug.com/1257927
