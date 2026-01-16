@@ -56,9 +56,10 @@ if args.verbose:
   import logging
   logging.basicConfig(level=logging.DEBUG)
 
-test_app = os.path.join(
-    args.build_dir, 'ios_cwt_chromedriver_tests_module-Runner.app')
-host_app = os.path.join(args.build_dir, 'ios_cwt_chromedriver_tests.app')
+test_app = os.path.abspath(os.path.join(
+    args.build_dir, 'ios_cwt_chromedriver_tests_module-Runner.app'))
+host_app = os.path.abspath(os.path.join(
+    args.build_dir, 'ios_cwt_chromedriver_tests.app'))
 
 if args.version:
     plist_path = os.path.join(host_app, 'Info.plist')
