@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/shared/public/features/features.h"
 
+#import <algorithm>
 #import <string>
 #import <vector>
 
-#import "base/containers/contains.h"
 #import "base/metrics/field_trial_params.h"
 #import "base/strings/string_split.h"
 #import "components/country_codes/country_codes.h"
@@ -828,7 +828,7 @@ std::vector<std::string> GetBestOfAppFREActiveVariants() {
 }
 
 bool IsBestOfAppGuidedTourEnabled() {
-  return base::Contains(GetBestOfAppFREActiveVariants(), "4");
+  return std::ranges::contains(GetBestOfAppFREActiveVariants(), "4");
 }
 
 bool IsManualUploadForBestOfAppEnabled() {
@@ -839,12 +839,12 @@ bool IsManualUploadForBestOfAppEnabled() {
 bool IsBestOfAppLensInteractivePromoEnabled() {
   return (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) &&
          IsBestOfAppFREEnabled() &&
-         base::Contains(GetBestOfAppFREActiveVariants(), "1");
+         std::ranges::contains(GetBestOfAppFREActiveVariants(), "1");
 }
 
 bool IsBestOfAppLensAnimatedPromoEnabled() {
   return IsBestOfAppFREEnabled() &&
-         base::Contains(GetBestOfAppFREActiveVariants(), "2");
+         std::ranges::contains(GetBestOfAppFREActiveVariants(), "2");
 }
 
 bool IsDefaultBrowserPromoPropensityModelEnabled() {

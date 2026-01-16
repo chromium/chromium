@@ -77,7 +77,6 @@ _CONFIG = [
             'base::byte_span(_with_nul)?_from_cstring',
             'base::CheckedContiguousIterator',
             'base::ConditionVariable',
-            'base::Contains',
             'base::CPU',
             'base::Days',
             'base::DefaultTickClock',

@@ -422,8 +422,8 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
 
   const auto& child_views = root_node()->GetDirectChildren();
   ASSERT_GE(child_views.size(), 2u);
-  EXPECT_FALSE(base::Contains(child_views, non_collection_view));
-  EXPECT_FALSE(base::Contains(child_views, non_collection_view_2));
+  EXPECT_FALSE(std::ranges::contains(child_views, non_collection_view));
+  EXPECT_FALSE(std::ranges::contains(child_views, non_collection_view_2));
 }
 
 IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,

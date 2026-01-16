@@ -10,12 +10,12 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "components/cloud_devices/common/cloud_device_description.h"
 
 namespace cloud_devices {
@@ -66,7 +66,7 @@ class ListCapability {
   const Option& operator[](size_t i) const { return options_[i]; }
 
   bool Contains(const Option& option) const {
-    return base::Contains(options_, option);
+    return std::ranges::contains(options_, option);
   }
 
   void AddOption(Option&& option) { options_.emplace_back(std::move(option)); }
@@ -135,7 +135,7 @@ class SelectionCapability {
   const Option& operator[](size_t i) const { return options_[i]; }
 
   bool Contains(const Option& option) const {
-    return base::Contains(options_, option);
+    return std::ranges::contains(options_, option);
   }
 
   const Option& GetDefault() const {

@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/core/core_export.h"

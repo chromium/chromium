@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/tab_strip_internals/tab_strip_internals_handler.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/functional/bind.h"
@@ -120,8 +121,8 @@ void AssertValidSelectionModel(
   EXPECT_GE(selection->anchor_index, 0);
   EXPECT_LT(selection->anchor_index, static_cast<int>(tab_count));
   EXPECT_FALSE(selection->selected_indices.empty());
-  EXPECT_TRUE(
-      base::Contains(selection->selected_indices, selection->active_index));
+  EXPECT_TRUE(std::ranges::contains(selection->selected_indices,
+                                    selection->active_index));
 
   for (int index : selection->selected_indices) {
     EXPECT_GE(index, 0);

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "extensions/browser/extension_user_script_loader.h"

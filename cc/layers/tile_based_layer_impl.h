@@ -8,7 +8,6 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "cc/base/math_util.h"
 #include "cc/cc_export.h"
 #include "cc/debug/debug_colors.h"
@@ -85,7 +84,7 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
   }
 
   bool LastAppendQuadsScalesContains(float scale) const {
-    return base::Contains(last_append_quads_scales_, scale);
+    return std::ranges::contains(last_append_quads_scales_, scale);
   }
 
  private:

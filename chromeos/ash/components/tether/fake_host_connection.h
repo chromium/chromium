@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_TETHER_FAKE_HOST_CONNECTION_H_
 #define CHROMEOS_ASH_COMPONENTS_TETHER_FAKE_HOST_CONNECTION_H_
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"

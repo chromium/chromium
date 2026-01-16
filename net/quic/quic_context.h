@@ -5,9 +5,9 @@
 #ifndef NET_QUIC_QUIC_CONTEXT_H_
 #define NET_QUIC_QUIC_CONTEXT_H_
 
+#include <algorithm>
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "net/base/features.h"
@@ -57,7 +57,7 @@ AllSupportedQuicVersions() {
       quic::AllSupportedVersions();
   quic::ParsedQuicVersionVector filtered_versions;
   for (const auto& version : all_supported_versions) {
-    if (!base::Contains(obsolete_versions, version)) {
+    if (!std::ranges::contains(obsolete_versions, version)) {
       filtered_versions.push_back(version);
     }
   }

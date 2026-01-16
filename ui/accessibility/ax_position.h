@@ -8,6 +8,7 @@
 #include <math.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <functional>
 #include <memory>
 #include <optional>
@@ -18,7 +19,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/stack.h"
 #include "base/export_template.h"
 #include "base/functional/bind.h"
@@ -762,8 +762,8 @@ class AXPosition {
       case AXPositionKind::TEXT_POSITION: {
         const std::vector<int32_t>& word_starts =
             text_position->GetWordStartOffsets();
-        return base::Contains(word_starts,
-                              int32_t{text_position->text_offset_});
+        return std::ranges::contains(word_starts,
+                                     int32_t{text_position->text_offset_});
       }
     }
   }
@@ -789,7 +789,8 @@ class AXPosition {
       case AXPositionKind::TEXT_POSITION: {
         const std::vector<int32_t>& word_ends =
             text_position->GetWordEndOffsets();
-        return base::Contains(word_ends, int32_t{text_position->text_offset_});
+        return std::ranges::contains(word_ends,
+                                     int32_t{text_position->text_offset_});
       }
     }
   }
@@ -956,8 +957,8 @@ class AXPosition {
         if (format_starts.size() <= 1) {
           return GetFormatStartBoundaryType() != AXBoundaryType::kNone;
         }
-        return base::Contains(format_starts,
-                              int32_t{text_position->text_offset_});
+        return std::ranges::contains(format_starts,
+                                     int32_t{text_position->text_offset_});
       }
     }
   }
@@ -1009,8 +1010,8 @@ class AXPosition {
         if (format_ends.size() <= 1) {
           return GetFormatEndBoundaryType() != AXBoundaryType::kNone;
         }
-        return base::Contains(format_ends,
-                              int32_t{text_position->text_offset_});
+        return std::ranges::contains(format_ends,
+                                     int32_t{text_position->text_offset_});
       }
     }
   }
@@ -1037,8 +1038,8 @@ class AXPosition {
         const std::vector<int32_t>& sentence_starts =
             text_position->GetAnchor()->GetIntListAttribute(
                 ax::mojom::IntListAttribute::kSentenceStarts);
-        return base::Contains(sentence_starts,
-                              int32_t{text_position->text_offset_});
+        return std::ranges::contains(sentence_starts,
+                                     int32_t{text_position->text_offset_});
       }
     }
   }
@@ -1065,8 +1066,8 @@ class AXPosition {
         const std::vector<int32_t>& sentence_ends =
             text_position->GetAnchor()->GetIntListAttribute(
                 ax::mojom::IntListAttribute::kSentenceEnds);
-        return base::Contains(sentence_ends,
-                              int32_t{text_position->text_offset_});
+        return std::ranges::contains(sentence_ends,
+                                     int32_t{text_position->text_offset_});
       }
     }
   }

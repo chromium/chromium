@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FOUNDATIONS_TEST_AUTOFILL_DRIVER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FOUNDATIONS_TEST_AUTOFILL_DRIVER_H_
 
+#include <algorithm>
 #include <concepts>
 #include <map>
 #include <string>
@@ -138,7 +139,7 @@ class TestAutofillDriverTemplate : public T {
     for (const auto& [id, type] : field_type_map) {
       if ((!field_type_map_filter_ ||
            field_type_map_filter_.Run(triggered_origin, id, type)) &&
-          base::Contains(fields, id, &FormFieldData::global_id)) {
+          std::ranges::contains(fields, id, &FormFieldData::global_id)) {
         result.push_back(id);
       }
     }
