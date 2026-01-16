@@ -912,7 +912,8 @@ TEST_F(QualityMetricsTest, BasedOnAutocomplete) {
   base::HistogramTester histogram_tester;
   test_api(autofill_manager())
       .OnLoadedServerPredictions(
-          response_string, test::GetEncodedSignatures(*form_structure_ptr));
+          response_string, test::GetEncodedSignatures(*form_structure_ptr),
+          {form});
 
   // Verify that ParseServerPredictionsQueryResponse was called (here and
   // below).

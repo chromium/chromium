@@ -2470,7 +2470,8 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   test_api(autofill_manager())
       .OnLoadedServerPredictions(SerializeAndEncode(response),
-                                 test::GetEncodedSignatures({form}));
+                                 test::GetEncodedSignatures({form}),
+                                 {form_data});
   ASSERT_EQ(form.field_count(), 2U);
 
   // Validate the type predictions.
@@ -2527,7 +2528,8 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   test_api(autofill_manager())
       .OnLoadedServerPredictions(SerializeAndEncode(response),
-                                 test::GetEncodedSignatures({form}));
+                                 test::GetEncodedSignatures({form}),
+                                 {form_data});
   ASSERT_EQ(form.field_count(), 3U);
 
   // Validate the heuristic and server predictions.
@@ -2571,7 +2573,8 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   test_api(autofill_manager())
       .OnLoadedServerPredictions(SerializeAndEncode(response),
-                                 test::GetEncodedSignatures({form}));
+                                 test::GetEncodedSignatures({form}),
+                                 {form_data});
   ASSERT_EQ(form.field_count(), 4U);
 
   // Validate the heuristic and server predictions.
@@ -2615,7 +2618,8 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_JoinedTypes) {
 
   test_api(autofill_manager())
       .OnLoadedServerPredictions(SerializeAndEncode(response),
-                                 test::GetEncodedSignatures({form}));
+                                 test::GetEncodedSignatures({form}),
+                                 {form_data});
   ASSERT_EQ(form.field_count(), 2U);
 
   // Validate the heuristic and server predictions.
@@ -2659,7 +2663,8 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_NoJoinedTypes) {
 
   test_api(autofill_manager())
       .OnLoadedServerPredictions(SerializeAndEncode(response),
-                                 test::GetEncodedSignatures({form}));
+                                 test::GetEncodedSignatures({form}),
+                                 {form_data});
   ASSERT_EQ(form.field_count(), 2U);
 
   // Validate the heuristic and server predictions.
@@ -2706,7 +2711,8 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_TooManyTypes) {
 
   test_api(autofill_manager())
       .OnLoadedServerPredictions(SerializeAndEncode(response),
-                                 test::GetEncodedSignatures({form}));
+                                 test::GetEncodedSignatures({form}),
+                                 {form_data});
   ASSERT_EQ(form.field_count(), 3U);
 
   // Validate field 0.
@@ -2731,7 +2737,8 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_TooManyTypes) {
   FormStructure& empty_form = SeeAndGetParsedForm(FormData());
   test_api(autofill_manager())
       .OnLoadedServerPredictions(SerializeAndEncode(response),
-                                 test::GetEncodedSignatures({empty_form}));
+                                 test::GetEncodedSignatures({empty_form}),
+                                 {FormData()});
   ASSERT_EQ(empty_form.field_count(), 0U);
 }
 
@@ -2761,7 +2768,8 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_UnknownType) {
 
   test_api(autofill_manager())
       .OnLoadedServerPredictions(SerializeAndEncode(response),
-                                 test::GetEncodedSignatures({form}));
+                                 test::GetEncodedSignatures({form}),
+                                 {form_data});
   ASSERT_EQ(form.field_count(), 3U);
 
   // Validate field 0.
@@ -2848,7 +2856,7 @@ TEST_P(AutofillCrowdsourcingEncodingPredictionPrecedenceTest,
 
   test_api(autofill_manager())
       .OnLoadedServerPredictions(SerializeAndEncode(api_response),
-                                 encoded_signatures);
+                                 encoded_signatures, {form});
 
   ASSERT_EQ(form_structure.field_count(), 1U);
   EXPECT_EQ(form_structure.field(0)->server_type(), GetParam().expected_type);
@@ -2933,7 +2941,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   test_api(autofill_manager())
       .OnLoadedServerPredictions(SerializeAndEncode(response),
-                                 encoded_signatures);
+                                 encoded_signatures, {form_data});
   ASSERT_EQ(form.field_count(), 1U);
 
   // Validate field 0.
@@ -3017,7 +3025,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   test_api(autofill_manager())
       .OnLoadedServerPredictions(SerializeAndEncode(api_response),
-                                 encoded_signatures);
+                                 encoded_signatures, {form});
 
   // Check expected field types.
   ASSERT_GE(forms[0]->field_count(), 6U);
@@ -3071,7 +3079,8 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse) {
   AddFieldPredictionToForm(form2.fields()[1], NO_SERVER_DATA, form_suggestion);
   test_api(autofill_manager())
       .OnLoadedServerPredictions(SerializeAndEncode(api_response),
-                                 test::GetEncodedSignatures(forms));
+                                 test::GetEncodedSignatures(forms),
+                                 {form, form2});
 
   // Verify that the form fields are properly filled with data retrieved from
   // the query.
@@ -3137,7 +3146,7 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_WithManualOverrides) {
 
   test_api(autofill_manager())
       .OnLoadedServerPredictions(SerializeAndEncode(api_response),
-                                 test::GetEncodedSignatures(forms));
+                                 test::GetEncodedSignatures(forms), {form});
 
   ASSERT_EQ(forms[0]->field_count(), 2u);
 
@@ -3192,7 +3201,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   AutofillQueryResponse api_response;
   test_api(autofill_manager())
       .OnLoadedServerPredictions(SerializeAndEncode(api_response),
-                                 test::GetEncodedSignatures(forms));
+                                 test::GetEncodedSignatures(forms), {form});
 
   ASSERT_EQ(forms[0]->field_count(), 2u);
 
@@ -3267,7 +3276,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   test_api(autofill_manager())
       .OnLoadedServerPredictions(SerializeAndEncode(api_response),
-                                 test::GetEncodedSignatures(forms));
+                                 test::GetEncodedSignatures(forms), {form});
 
   ASSERT_EQ(forms[0]->field_count(), 3u);
 
@@ -3339,7 +3348,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   test_api(autofill_manager())
       .OnLoadedServerPredictions(SerializeAndEncode(api_response),
-                                 test::GetEncodedSignatures(forms));
+                                 test::GetEncodedSignatures(forms), {form});
 
   ASSERT_EQ(forms[0]->field_count(), 4u);
 
@@ -3407,7 +3416,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   test_api(autofill_manager())
       .OnLoadedServerPredictions(SerializeAndEncode(api_response),
-                                 test::GetEncodedSignatures(forms));
+                                 test::GetEncodedSignatures(forms), {form});
 
   ASSERT_EQ(forms[0]->field_count(), 2u);
 
@@ -3466,7 +3475,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   test_api(autofill_manager())
       .OnLoadedServerPredictions(SerializeAndEncode(api_response),
-                                 test::GetEncodedSignatures(forms));
+                                 test::GetEncodedSignatures(forms), {form});
 
   ASSERT_EQ(forms[0]->field_count(), 2u);
 
@@ -3519,7 +3528,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   test_api(autofill_manager())
       .OnLoadedServerPredictions(SerializeAndEncode(api_response),
-                                 test::GetEncodedSignatures(forms));
+                                 test::GetEncodedSignatures(forms), {form});
 
   ASSERT_EQ(forms[0]->field_count(), 2u);
 
@@ -3551,7 +3560,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   std::string response_string = "invalid string that cannot be parsed";
   test_api(autofill_manager())
       .OnLoadedServerPredictions(std::move(response_string),
-                                 test::GetEncodedSignatures(forms));
+                                 test::GetEncodedSignatures(forms), {form});
 
   // Verify that the form fields remain intact because we could not parse the
   // server's response because it was badly serialized.
@@ -3589,7 +3598,7 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_WhenPayloadNotBase64) {
 
   test_api(autofill_manager())
       .OnLoadedServerPredictions(std::move(response_string),
-                                 test::GetEncodedSignatures(forms));
+                                 test::GetEncodedSignatures(forms), {form});
 
   // Verify that the form fields remain intact because we could not parse the
   // server's response that was badly encoded.
@@ -3625,7 +3634,7 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_DontIgnoreSmallForms) {
   // The small forms are not ignored - the Autofill on tab is in actor mode.
   test_api(autofill_manager())
       .OnLoadedServerPredictions(SerializeAndEncode(response),
-                                 test::GetEncodedSignatures(forms));
+                                 test::GetEncodedSignatures(forms), {form});
 
   // Verify that the form fields remain intact.
   ASSERT_GE(forms[0]->field_count(), 2U);
@@ -3658,7 +3667,7 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_AuthorDefinedTypes) {
 
   test_api(autofill_manager())
       .OnLoadedServerPredictions(SerializeAndEncode(response),
-                                 test::GetEncodedSignatures(forms));
+                                 test::GetEncodedSignatures(forms), {form});
 
   ASSERT_GE(forms[0]->field_count(), 2U);
   // Server type is parsed from the response and is the end result type.
@@ -3701,7 +3710,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   std::vector<raw_ref<FormStructure>> forms = {raw_ref(form_structure)};
   test_api(autofill_manager())
       .OnLoadedServerPredictions(SerializeAndEncode(response),
-                                 test::GetEncodedSignatures(forms));
+                                 test::GetEncodedSignatures(forms), {form});
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(4U, forms[0]->field_count());
@@ -3745,7 +3754,7 @@ TEST_F(AutofillCrowdsourcingEncoding, NoServerDataCCFields_CVC_NoOverwrite) {
   std::vector<raw_ref<FormStructure>> forms = {raw_ref(form_structure)};
   test_api(autofill_manager())
       .OnLoadedServerPredictions(SerializeAndEncode(response),
-                                 test::GetEncodedSignatures(forms));
+                                 test::GetEncodedSignatures(forms), {form});
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(4U, forms[0]->field_count());
@@ -3793,7 +3802,7 @@ TEST_F(AutofillCrowdsourcingEncoding, WithServerDataCCFields_CVC_NoOverwrite) {
   std::vector<raw_ref<FormStructure>> forms = {raw_ref(form_structure)};
   test_api(autofill_manager())
       .OnLoadedServerPredictions(SerializeAndEncode(response),
-                                 test::GetEncodedSignatures(forms));
+                                 test::GetEncodedSignatures(forms), {form});
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(4U, forms[0]->field_count());
@@ -3842,7 +3851,8 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_RankEqualSignatures) {
   std::vector<raw_ref<FormStructure>> forms = {raw_ref(form)};
   test_api(autofill_manager())
       .OnLoadedServerPredictions(SerializeAndEncode(response),
-                                 test::GetEncodedSignatures(forms));
+                                 test::GetEncodedSignatures(forms),
+                                 {form_data});
   ASSERT_EQ(form.field_count(), 3U);
 
   EXPECT_EQ(form.field(0)->server_type(), NAME_FIRST);
@@ -3880,7 +3890,8 @@ TEST_F(AutofillCrowdsourcingEncoding,
   std::vector<raw_ref<FormStructure>> forms = {raw_ref(form)};
   test_api(autofill_manager())
       .OnLoadedServerPredictions(SerializeAndEncode(response),
-                                 test::GetEncodedSignatures(forms));
+                                 test::GetEncodedSignatures(forms),
+                                 {form_data});
   ASSERT_EQ(form.field_count(), 3U);
 
   EXPECT_EQ(form.field(0)->server_type(), NAME_FIRST);
@@ -3904,7 +3915,8 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseRunAutofillAiModel) {
   EXPECT_FALSE(form_structure.may_run_autofill_ai_model());
   test_api(autofill_manager())
       .OnLoadedServerPredictions(SerializeAndEncode(response),
-                                 test::GetEncodedSignatures({form_structure}));
+                                 test::GetEncodedSignatures({form_structure}),
+                                 {form});
   EXPECT_TRUE(form_structure.may_run_autofill_ai_model());
 }
 
@@ -3952,7 +3964,8 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseFormatString) {
   std::vector<raw_ref<FormStructure>> forms = {raw_ref(form)};
   test_api(autofill_manager())
       .OnLoadedServerPredictions(SerializeAndEncode(response),
-                                 test::GetEncodedSignatures(forms));
+                                 test::GetEncodedSignatures(forms),
+                                 {form_data});
   ASSERT_EQ(form.field_count(), 3U);
 
   EXPECT_THAT(form.field(1)->Type().GetTypes(),
@@ -3990,7 +4003,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   test_api(autofill_manager())
       .OnLoadedServerPredictions(SerializeAndEncode(response),
-                                 test::GetEncodedSignatures(forms));
+                                 test::GetEncodedSignatures(forms), {form});
 
   // Verify that the form fields remain intact.
   ASSERT_GE(forms[0]->field_count(), 2U);

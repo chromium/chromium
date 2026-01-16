@@ -75,6 +75,7 @@ JNI_AutofillProviderTestHelper_SimulateMainFrameAutofillServerResponseForTesting
   form_suggestion = response.add_form_suggestions();
   size_t found_fields_count = 0;
   std::vector<FormSignature> signatures;
+  std::vector<FormData> forms;
   for (const FormStructure* form_structure : form_structures) {
     FormData form_data = form_structure->ToFormData();
     for (size_t i = 0; i < field_ids.size(); ++i) {
@@ -91,6 +92,7 @@ JNI_AutofillProviderTestHelper_SimulateMainFrameAutofillServerResponseForTesting
     }
     if (found_fields_count > 0) {
       signatures = autofill::test::GetEncodedSignatures(*form_structure);
+      forms.push_back(std::move(form_data));
       break;
     }
   }
@@ -100,7 +102,7 @@ JNI_AutofillProviderTestHelper_SimulateMainFrameAutofillServerResponseForTesting
   CHECK(response.SerializeToString(&response_string));
   test_api(*autofill_manager)
       .OnLoadedServerPredictions(base::Base64Encode(response_string),
-                                 signatures);
+                                 signatures, forms);
   return true;
 }
 
@@ -129,6 +131,7 @@ JNI_AutofillProviderTestHelper_SimulateMainFramePredictionsAutofillServerRespons
   form_suggestion = response.add_form_suggestions();
   size_t found_fields_count = 0;
   std::vector<FormSignature> signatures;
+  std::vector<FormData> forms;
   for (const FormStructure* form_structure : form_structures) {
     FormData form_data = form_structure->ToFormData();
     for (size_t i = 0; i < field_ids.size(); ++i) {
@@ -147,6 +150,7 @@ JNI_AutofillProviderTestHelper_SimulateMainFramePredictionsAutofillServerRespons
     if (found_fields_count > 0) {
       signatures = autofill::test::GetEncodedSignatures(*form_structure);
       CHECK(found_fields_count == field_ids.size());
+      forms = {std::move(form_data)};
     }
   }
 
@@ -154,7 +158,7 @@ JNI_AutofillProviderTestHelper_SimulateMainFramePredictionsAutofillServerRespons
   CHECK(response.SerializeToString(&response_string));
   test_api(*autofill_manager)
       .OnLoadedServerPredictions(base::Base64Encode(response_string),
-                                 signatures);
+                                 signatures, forms);
   return true;
 }
 

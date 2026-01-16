@@ -21,6 +21,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -506,8 +507,20 @@ class AutofillManager
   void RunMlModels(AsyncContext context,
                    base::OnceCallback<void(AsyncContext)> done_callback);
 
+  // Triggers the server predictions query for all `forms` that
+  // `ShouldBeQueried()`. This is used when kAutofillServerQueryPredictionsEarly
+  // is enabled.
+  void QueryServerPredictions(base::span<const FormData> forms);
+
+  // Populates the form cache with the queried form signatures from `response`
+  // if the feature kAutofillServerQueryPredictionsEarly is enabled.
+  void PopulateCacheForQueryResponse(
+      base::span<const FormData> forms,
+      const AutofillCrowdsourcingManager::QueryResponse& response);
+
   // Invoked by `AutofillCrowdsourcingManager`.
   void OnLoadedServerPredictions(
+      base::span<const FormData> forms,
       std::optional<AutofillCrowdsourcingManager::QueryResponse> response);
 
   // Emits the metrics that result from a server query response in
@@ -574,6 +587,9 @@ class AutofillManager
   scoped_refptr<base::SequencedTaskRunner> parsing_task_runner_ =
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::USER_VISIBLE});
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
   base::WeakPtrFactory<AutofillManager> parsing_weak_ptr_factory_{this};
 };
 

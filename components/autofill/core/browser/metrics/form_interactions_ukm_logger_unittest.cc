@@ -513,7 +513,8 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsFieldType) {
   std::string response_string = SerializeAndEncode(response);
   test_api(autofill_manager())
       .OnLoadedServerPredictions(
-          response_string, test::GetEncodedSignatures(*form_structure_ptr));
+          response_string, test::GetEncodedSignatures(*form_structure_ptr),
+          {form});
 
   task_environment_.FastForwardBy(base::Milliseconds(37000));
   base::HistogramTester histogram_tester;

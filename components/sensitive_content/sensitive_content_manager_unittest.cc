@@ -298,7 +298,8 @@ TEST_F(SensitiveContentManagerTest, LatencyUntilSensitiveMetricRecorded) {
   test_api(autofill_manager())
       .OnLoadedServerPredictions(
           base::Base64Encode(response_string.value()),
-          autofill::test::GetEncodedSignatures(form_structure));
+          autofill::test::GetEncodedSignatures(form_structure),
+          {server_predictions_sensitive_form});
 
   histogram_tester.ExpectUniqueTimeSample(histogram_latency_until_sensitive,
                                           base::Milliseconds(100), 1);
