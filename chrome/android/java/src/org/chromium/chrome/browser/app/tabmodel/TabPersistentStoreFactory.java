@@ -53,7 +53,7 @@ public class TabPersistentStoreFactory {
             TabPersistencePolicy tabPersistencePolicy,
             TabPersistentStore authoritativeStore,
             String windowTag,
-            CipherFactory cipherFactory,
+            @Nullable CipherFactory cipherFactory,
             boolean recordMetrics) {
         TabCreatorManager shadowTabCreatorManager =
                 incognito -> incognito ? incognitoShadowTabCreator : regularShadowTabCreator;

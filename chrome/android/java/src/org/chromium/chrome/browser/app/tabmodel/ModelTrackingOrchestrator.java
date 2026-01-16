@@ -107,12 +107,12 @@ public class ModelTrackingOrchestrator {
             new IncognitoTabModelObserver() {
                 @Override
                 public void onIncognitoModelCreated() {
-                    mIncognitoSynchronizerManager.onModelCreated();
+                    assumeNonNull(mIncognitoSynchronizerManager).onModelCreated();
                 }
 
                 @Override
                 public void didBecomeEmpty() {
-                    mIncognitoSynchronizerManager.reset();
+                    assumeNonNull(mIncognitoSynchronizerManager).reset();
                 }
             };
 
@@ -122,8 +122,7 @@ public class ModelTrackingOrchestrator {
 
     private final SynchronizerManager mRegularSynchronizerManager =
             new RegularSynchronizerManager();
-    private final SynchronizerManager mIncognitoSynchronizerManager =
-            new IncognitoSynchronizerManager();
+    private final @Nullable SynchronizerManager mIncognitoSynchronizerManager;
 
     private final TabGroupModelFilterObserver mVisualDataUpdateObserver =
             new TabGroupModelFilterObserver() {
@@ -170,14 +169,22 @@ public class ModelTrackingOrchestrator {
     /**
      * @param windowTag The window tag to use for the window.
      * @param tabModelSelector The {@link TabModelSelector} to observe changes for.
+     * @param hasCipherFactory Whether a cipher factory was provided for OTR data.
      */
-    public ModelTrackingOrchestrator(String windowTag, TabModelSelector tabModelSelector) {
+    public ModelTrackingOrchestrator(
+            String windowTag, TabModelSelector tabModelSelector, boolean hasCipherFactory) {
         mWindowTag = windowTag;
         mTabModelSelector = tabModelSelector;
 
-        TabModel incognitoModel = tabModelSelector.getModel(true);
-        if (incognitoModel instanceof IncognitoTabModel itm) {
-            itm.addIncognitoObserver(mIncognitoTabModelObserver);
+        if (hasCipherFactory) {
+            mIncognitoSynchronizerManager = new IncognitoSynchronizerManager();
+
+            TabModel incognitoModel = tabModelSelector.getModel(true);
+            if (incognitoModel instanceof IncognitoTabModel itm) {
+                itm.addIncognitoObserver(mIncognitoTabModelObserver);
+            }
+        } else {
+            mIncognitoSynchronizerManager = null;
         }
     }
 
@@ -202,7 +209,9 @@ public class ModelTrackingOrchestrator {
         }
 
         if (incognito) {
-            mIncognitoSynchronizerManager.onDataLoaded(data);
+            if (mIncognitoSynchronizerManager != null) {
+                mIncognitoSynchronizerManager.onDataLoaded(data);
+            }
         } else {
             mRegularSynchronizerManager.onDataLoaded(data);
         }
@@ -215,7 +224,9 @@ public class ModelTrackingOrchestrator {
         ChainedTasks tasks = new ChainedTasks();
         if (ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.getValue()) {
             mRegularSynchronizerManager.onRestoreFinished();
-            mIncognitoSynchronizerManager.onRestoreFinished();
+            if (mIncognitoSynchronizerManager != null) {
+                mIncognitoSynchronizerManager.onRestoreFinished();
+            }
 
             assert mTabModelSelector.isTabStateInitialized();
             Callback<TabModel> clearUnusedNodesForModel = this::clearUnusedNodesForModel;
@@ -225,7 +236,9 @@ public class ModelTrackingOrchestrator {
             }
         } else {
             tasks.add(TaskTraits.UI_DEFAULT, mRegularSynchronizerManager::onRestoreFinished);
-            tasks.add(TaskTraits.UI_DEFAULT, mIncognitoSynchronizerManager::onRestoreFinished);
+            if (mIncognitoSynchronizerManager != null) {
+                tasks.add(TaskTraits.UI_DEFAULT, mIncognitoSynchronizerManager::onRestoreFinished);
+            }
         }
         tasks.start(/* coalesceTasks= */ false);
     }
@@ -233,7 +246,8 @@ public class ModelTrackingOrchestrator {
     /** Performs the cleanup required for the synchronizers when the TabStateStore is destroyed. */
     public void destroy() {
         TabModel incognitoModel = mTabModelSelector.getModel(true);
-        if (incognitoModel instanceof IncognitoTabModel itm) {
+        if (mIncognitoSynchronizerManager != null
+                && incognitoModel instanceof IncognitoTabModel itm) {
             itm.removeIncognitoObserver(mIncognitoTabModelObserver);
         }
 
@@ -249,7 +263,7 @@ public class ModelTrackingOrchestrator {
         }
 
         mRegularSynchronizerManager.reset();
-        mIncognitoSynchronizerManager.reset();
+        if (mIncognitoSynchronizerManager != null) mIncognitoSynchronizerManager.reset();
     }
 
     private StorageCollectionSynchronizer getSynchronizer(

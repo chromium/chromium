@@ -134,7 +134,6 @@ public class TabStateStore implements TabPersistentStore {
         mWindowTag = windowTag;
         mTabCreatorManager = tabCreatorManager;
         mTabPersistencePolicy = tabPersistencePolicy;
-        mModelTrackingManager = new ModelTrackingOrchestrator(mWindowTag, tabModelSelector);
 
         if (cipherFactory != null) {
             byte[] key = cipherFactory.getKeyForTabStateStorage();
@@ -148,6 +147,8 @@ public class TabStateStore implements TabPersistentStore {
         } else {
             mHasCipherFactory = false;
         }
+        mModelTrackingManager =
+                new ModelTrackingOrchestrator(mWindowTag, tabModelSelector, mHasCipherFactory);
 
         tabModelSelector.getModel(false).addObserver(mTabModelObserver);
         TabModel incognitoModel = tabModelSelector.getModel(true);
@@ -188,7 +189,7 @@ public class TabStateStore implements TabPersistentStore {
 
     @Override
     public void loadState(boolean ignoreIncognitoFiles) {
-        assertOtrOperationSafe(!ignoreIncognitoFiles);
+        ignoreIncognitoFiles &= !mHasCipherFactory;
         mModelTrackingManager.setLoadIncognitoTabsOnStart(!ignoreIncognitoFiles);
 
         assert mCombinedTabRestorer == null;
