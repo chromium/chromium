@@ -262,7 +262,10 @@ void WebAppDatabase::MigrateDatabase(ProtobufState& state) {
   }
 
   int expected_version = declined_to_upgrade ? 6 : GetCurrentDatabaseVersion();
-  CHECK_EQ(state.metadata.version(), expected_version);
+  CHECK_EQ(state.metadata.version(), expected_version)
+      << "Mismatch between web app database state metadata version: "
+      << state.metadata.version()
+      << " and current version: " << expected_version;
 
   if (did_change_metadata || !changed_apps.empty()) {
     std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
