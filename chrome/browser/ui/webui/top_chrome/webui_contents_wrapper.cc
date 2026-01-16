@@ -87,18 +87,11 @@ content::WebContents* WebUIContentsWrapper::Host::AddNewContents(
 bool WebUIContentsWrapper::Host::PreHandleGestureEvent(
     content::WebContents* source,
     const blink::WebGestureEvent& event) {
-  // Block gestures that will zoom on Mac devices (i.e. pinch to zoom
-  // and double tap to zoom)
-#if BUILDFLAG(IS_MAC)
-  if (blink::WebInputEvent::IsPinchGestureEventType(event.GetType())) {
-    return true;
-  }
-
-  if (event.GetType() == blink::WebInputEvent::Type::kGestureDoubleTap) {
-    return true;
-  }
-#endif
-  return false;
+  // Block gestures that will zoom.
+  // TODO(crbug.com/475836809) Disable pinch to zoom for all webcontents outside
+  // the main content area.
+  return blink::WebInputEvent::IsPinchGestureEventType(event.GetType()) ||
+         (event.GetType() == blink::WebInputEvent::Type::kGestureDoubleTap);
 }
 
 WebUIContentsWrapper::WebUIContentsWrapper(const GURL& webui_url,
