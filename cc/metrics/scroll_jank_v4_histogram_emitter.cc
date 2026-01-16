@@ -73,12 +73,7 @@ void ScrollJankV4HistogramEmitter::SingleFrameData::UpdateWith(
       std::max(max_consecutive_missed_vsyncs, missed_vsyncs_for_any_reason);
 }
 
-ScrollJankV4HistogramEmitter::ScrollJankV4HistogramEmitter() {
-  // Not initializing with 0 because the first frame in first window will be
-  // always deemed non-janky which makes the metric slightly biased. Setting
-  // it to -1 essentially ignores first frame.
-  fixed_window_.presented_frames = -1;
-}
+ScrollJankV4HistogramEmitter::ScrollJankV4HistogramEmitter() = default;
 
 ScrollJankV4HistogramEmitter::~ScrollJankV4HistogramEmitter() {
   EmitPerScrollHistogramsAndResetCounters();
