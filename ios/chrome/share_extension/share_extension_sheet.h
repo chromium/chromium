@@ -9,7 +9,7 @@
 
 #import "ios/chrome/common/ui/button_stack/button_stack_action_delegate.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_view_controller.h"
-#import "ios/chrome/share_extension/account_info.h"
+#import "ios/chrome/share_extension/share_extension_account_info.h"
 
 @protocol ShareExtensionDelegate;
 @interface ShareExtensionSheet
@@ -22,7 +22,7 @@
 @property(nonatomic, strong) NSURL* sharedURL;
 @property(nonatomic, copy) NSString* sharedTitle;
 @property(nonatomic, strong) UIImage* sharedURLPreview;
-@property(nonatomic, strong) AccountInfo* selectedAccountInfo;
+@property(nonatomic, strong) ShareExtensionAccountInfo* selectedAccountInfo;
 
 // The text to share.
 @property(nonatomic, copy) NSString* sharedText;
@@ -37,7 +37,7 @@
 // The delegate for interactions in `ShareExtensionSheet`.
 @property(nonatomic, weak) id<ShareExtensionDelegate> delegate;
 
-- (void)setAccounts:(NSArray<AccountInfo*>*)accounts;
+- (void)setAccounts:(NSArray<ShareExtensionAccountInfo*>*)accounts;
 
 @end
 

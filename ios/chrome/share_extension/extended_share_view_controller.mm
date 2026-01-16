@@ -16,7 +16,7 @@
 #import "ios/chrome/common/crash_report/crash_helper.h"
 #import "ios/chrome/common/extension_open_url.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#import "ios/chrome/share_extension/account_info.h"
+#import "ios/chrome/share_extension/share_extension_account_info.h"
 #import "ios/chrome/share_extension/share_extension_delegate.h"
 #import "ios/chrome/share_extension/share_extension_sheet.h"
 #import "ios/chrome/share_extension/ui_util.h"
@@ -364,7 +364,8 @@ const NSUInteger kSearchCharacterLimit = 1000;
                                                                @".png"]];
     UIImage* avatar = [UIImage imageWithContentsOfFile:[avatarDirectory path]];
 
-    AccountInfo* account = [[AccountInfo alloc] init];
+    ShareExtensionAccountInfo* account =
+        [[ShareExtensionAccountInfo alloc] init];
     account.gaiaIDString = gaiaID;
     account.avatar = avatar;
     account.fullName = accounts[gaiaID][app_group::kFullName];
@@ -377,7 +378,8 @@ const NSUInteger kSearchCharacterLimit = 1000;
   }
 
   if (!self.shareSheet.selectedAccountInfo) {
-    AccountInfo* accountInfo = [[AccountInfo alloc] init];
+    ShareExtensionAccountInfo* accountInfo =
+        [[ShareExtensionAccountInfo alloc] init];
     accountInfo.gaiaIDString = app_group::kNoAccount;
     self.shareSheet.selectedAccountInfo = accountInfo;
     [loadedAccounts addObject:accountInfo];

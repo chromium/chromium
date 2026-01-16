@@ -71,7 +71,7 @@ NSString* const kAccountCellIdentifier = @"kAccountCellIdentifier";
   NSString* _secondaryString;
   NSString* _appName;
   SharedItemType _sharedItemType;
-  NSArray<AccountInfo*>* _accounts;
+  NSArray<ShareExtensionAccountInfo*>* _accounts;
   UITableView* _accountTableView;
   NSLayoutConstraint* _tableViewHeightConstraint;
 }
@@ -125,7 +125,7 @@ NSString* const kAccountCellIdentifier = @"kAccountCellIdentifier";
   }
 }
 
-- (void)setAccounts:(NSArray<AccountInfo*>*)accounts {
+- (void)setAccounts:(NSArray<ShareExtensionAccountInfo*>*)accounts {
   _accounts = [accounts copy];
 }
 
@@ -167,7 +167,7 @@ NSString* const kAccountCellIdentifier = @"kAccountCellIdentifier";
 #pragma mark - AccountPickerDelegate
 
 - (void)didSelectAccountInTable:(AccountPickerTable*)table
-                selectedAccount:(AccountInfo*)selectedAccount {
+                selectedAccount:(ShareExtensionAccountInfo*)selectedAccount {
   _selectedAccountInfo = selectedAccount;
   [_accountTableView reloadData];
 }

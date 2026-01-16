@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/share_extension/account_info.h"
+#import "ios/chrome/share_extension/share_extension_account_info.h"
 
 @protocol AccountPickerDelegate;
 
@@ -19,8 +19,8 @@
 // The delegate for interactions in `AccountPickerTable`.
 @property(nonatomic, weak) id<AccountPickerDelegate> delegate;
 
-- (instancetype)initWithAccounts:(NSArray<AccountInfo*>*)accounts
-                 selectedAccount:(AccountInfo*)selectedAccount
+- (instancetype)initWithAccounts:(NSArray<ShareExtensionAccountInfo*>*)accounts
+                 selectedAccount:(ShareExtensionAccountInfo*)selectedAccount
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
