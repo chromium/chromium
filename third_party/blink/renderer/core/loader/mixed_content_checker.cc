@@ -236,6 +236,15 @@ bool IsUrlPotentiallyTrustworthy(const KURL& url) {
   return network::IsUrlPotentiallyTrustworthy(GURL(url));
 }
 
+// Check to see if URL is possibly an LNA request based solely on the URL.
+bool IsUrlLNARequest(const KURL& url) {
+  std::optional<network::mojom::IPAddressSpace> ip_address_space =
+      network::GetAddressSpaceFromUrl(GURL(url));
+  return ip_address_space &&
+         (ip_address_space == network::mojom::IPAddressSpace::kLocal ||
+          ip_address_space == network::mojom::IPAddressSpace::kLoopback);
+}
+
 }  // namespace
 
 static bool IsInsecureUrl(const KURL& url) {
@@ -605,14 +614,10 @@ bool MixedContentChecker::ShouldBlockFetch(
     //
     // TODO(crbug.com/395895368): check the IP address space for initiator, only
     // skip when the initiator is more public.
-    std::optional<network::mojom::IPAddressSpace> ip_address_space =
-        network::GetAddressSpaceFromUrl(GURL(url));
     if (target_address_space == network::mojom::blink::IPAddressSpace::kLocal ||
         target_address_space ==
             network::mojom::blink::IPAddressSpace::kLoopback ||
-        (ip_address_space &&
-         (ip_address_space == network::mojom::IPAddressSpace::kLocal ||
-          ip_address_space == network::mojom::IPAddressSpace::kLoopback))) {
+        IsUrlLNARequest(url)) {
       allowed = true;
     }
   }
@@ -751,6 +756,23 @@ bool MixedContentChecker::IsWebSocketAllowed(
         content_settings_client->AllowRunningInsecureContent(allowed, url);
   }
 
+  // Skip mixed content check when we can determine that the request is a Local
+  // Network Access (LNA) request. LNA checks later on will ensure that (a) the
+  // request is actually an LNA request, and (b) the user has given permission
+  // for the LNA request to go through.
+  //
+  // Reference:
+  // https://wicg.github.io/local-network-access/
+  if (!allowed &&
+      base::FeatureList::IsEnabled(
+          network::features::kLocalNetworkAccessChecks) &&
+      base::FeatureList::IsEnabled(
+          network::features::kLocalNetworkAccessChecksWebSockets)) {
+    if (IsUrlLNARequest(url)) {
+      allowed = true;
+    }
+  }
+
   if (allowed) {
     frame_fetch_context.GetContentSecurityNotifier().NotifyInsecureContentRan(
         KURL(security_origin->ToString()), url);
@@ -786,6 +808,23 @@ bool MixedContentChecker::IsWebSocketAllowed(
   bool allowed =
       IsWebSocketAllowedInWorker(worker_fetch_context, settings, url);
   allowed = worker_fetch_context.AllowRunningInsecureContent(allowed, url);
+
+  // Skip mixed content check when we can determine that the request is a Local
+  // Network Access (LNA) request. LNA checks later on will ensure that (a) the
+  // request is actually an LNA request, and (b) the user has given permission
+  // for the LNA request to go through.
+  //
+  // Reference:
+  // https://wicg.github.io/local-network-access/
+  if (!allowed &&
+      base::FeatureList::IsEnabled(
+          network::features::kLocalNetworkAccessChecks) &&
+      base::FeatureList::IsEnabled(
+          network::features::kLocalNetworkAccessChecksWebSockets)) {
+    if (IsUrlLNARequest(url)) {
+      allowed = true;
+    }
+  }
 
   if (allowed) {
     worker_fetch_context.GetContentSecurityNotifier().NotifyInsecureContentRan(
@@ -923,15 +962,11 @@ bool MixedContentChecker::ShouldAutoupgrade(
   // skip when the initiator is more public.
   if (base::FeatureList::IsEnabled(
           network::features::kLocalNetworkAccessChecks)) {
-    std::optional<network::mojom::IPAddressSpace> ip_address_space =
-        network::GetAddressSpaceFromUrl(GURL(request_url));
     if (resource_request.GetTargetAddressSpace() ==
             network::mojom::blink::IPAddressSpace::kLocal ||
         resource_request.GetTargetAddressSpace() ==
             network::mojom::blink::IPAddressSpace::kLoopback ||
-        (ip_address_space &&
-         (ip_address_space == network::mojom::IPAddressSpace::kLocal ||
-          ip_address_space == network::mojom::IPAddressSpace::kLoopback))) {
+        IsUrlLNARequest(request_url)) {
       if (!request_url.ProtocolIs("https")) {
         if (auto* window =
                 DynamicTo<LocalDOMWindow>(execution_context_for_logging)) {

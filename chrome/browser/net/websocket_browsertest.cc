@@ -81,6 +81,7 @@ using testing::Not;
 
 constexpr char kHostA[] = "a.test";
 constexpr char kHostB[] = "b.test";
+constexpr char kHostLocal[] = "b.local";
 
 class WebSocketBrowserTest : public InProcessBrowserTest {
  public:
@@ -308,6 +309,18 @@ class LocalNetworkAccessWebSocketsBrowserTest
               resource);
   }
 
+  // For checking that mixed content checks are bypassed properly.
+  //
+  // Note the usage of kHostLocal, as that's the only method of signaling to the
+  // mixed content checker that the websocket connection might be LNA as the
+  // WebSocket API doesn't have the fetch API's targetAddressSpace option.
+  void ConnectToInsecureLNAWebSocket(const std::string& resource) {
+    ConnectTo(kHostB,
+              net::test_server::GetWebSocketURL(ws_server_, kHostLocal,
+                                                "/echo-with-no-extension"),
+              resource);
+  }
+
  protected:
   void SetUp() override {
     // Some builders run with field_trial disabled, need to enable
@@ -332,6 +345,8 @@ class LocalNetworkAccessWebSocketsBrowserTest
     wss_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     // Launch a secure WebSocket server.
     ASSERT_TRUE(wss_server_.Start());
+
+    ASSERT_TRUE(ws_server_.Start());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -364,6 +379,20 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsBrowserTest,
+                       LNAInsecureWebSocketConnectionHasPermission) {
+  bubble_factory()->set_response_type(ACCEPT_ALL);
+  ConnectToInsecureLNAWebSocket("/websocket/connect_to_as_public_address.html");
+  EXPECT_EQ("PASS", WaitAndGetTitle());
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsBrowserTest,
+                       LNAInsecureWebSocketDeniedPermission) {
+  bubble_factory()->set_response_type(DENY_ALL);
+  ConnectToInsecureLNAWebSocket("/websocket/connect_to_as_public_address.html");
+  EXPECT_EQ("FAIL", WaitAndGetTitle());
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsBrowserTest,
                        LNAWorkerWebSocketConnectionHasPermission) {
   bubble_factory()->set_response_type(ACCEPT_ALL);
   ConnectToLNAWebSocket(
@@ -375,6 +404,22 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsBrowserTest,
                        LNAWorkerWebSocketConnectionDeniedPermission) {
   bubble_factory()->set_response_type(DENY_ALL);
   ConnectToLNAWebSocket(
+      "/websocket/connect_to_using_worker_as_public_address.html");
+  EXPECT_EQ("FAIL", WaitAndGetTitle());
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsBrowserTest,
+                       LNAWorkerInsecureWebSocketConnectionHasPermission) {
+  bubble_factory()->set_response_type(ACCEPT_ALL);
+  ConnectToInsecureLNAWebSocket(
+      "/websocket/connect_to_using_worker_as_public_address.html");
+  EXPECT_EQ("PASS", WaitAndGetTitle());
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsBrowserTest,
+                       LNAWorkerInsecureWebSocketConnectionDeniedPermission) {
+  bubble_factory()->set_response_type(DENY_ALL);
+  ConnectToInsecureLNAWebSocket(
       "/websocket/connect_to_using_worker_as_public_address.html");
   EXPECT_EQ("FAIL", WaitAndGetTitle());
 }
