@@ -465,6 +465,10 @@ export class ComposeboxElement extends I18nMixinLit
     return this.input_;
   }
 
+  get isVoiceInput(): boolean {
+    return this.isVoiceInput_;
+  }
+
   playGlowAnimation() {
     // If |animationState_| were still EXPANDING, this function would have no
     // effect because nothing changes in CSS and therefore animations wouldn't
