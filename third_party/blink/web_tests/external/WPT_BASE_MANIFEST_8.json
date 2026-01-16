@@ -358656,7 +358656,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "3e7390dffc08961086cd4a1e11495a96e29abc9f",
+      "d6ee4de6f11740bcce5ca2c2c3fc78620608f4c8",
       []
      ],
      "all-prop-001-ref.html": [
@@ -444665,7 +444665,7 @@
      []
     ],
     "pointerevent_support.js": [
-     "c3290409247d94c453e9684dba799c3ada781df8",
+     "7dd60f5a54d905f78eaa9009b9a6d327186a5a6e",
      []
     ],
     "pointerevent_touch-propagates-when-target-is-video_touch-expected.txt": [
@@ -564546,7 +564546,7 @@
       ]
      ],
      "signs-abs-invalid.html": [
-      "ccb94c21c232ebdc547f818bbbb5c4cd8935ace4",
+      "f0e88adb517b8dc1fa38c594aa39594a3e760ff4",
       [
        null,
        {}
@@ -722458,9 +722458,15 @@
      ]
     ],
     "pointerevent_attributes.html": [
-     "8a98de20e8f8947e93707dda40ae19dbfcf21b2d",
+     "7b700bf67d8d29040346ec97b5289d964f75cd32",
      [
       "pointerevents/pointerevent_attributes.html?mouse",
+      {
+       "testdriver": true
+      }
+     ],
+     [
+      "pointerevents/pointerevent_attributes.html?mouse-nonstandard",
       {
        "testdriver": true
       }
@@ -722472,7 +722478,19 @@
       }
      ],
      [
+      "pointerevents/pointerevent_attributes.html?mouse-right-nonstandard",
+      {
+       "testdriver": true
+      }
+     ],
+     [
       "pointerevents/pointerevent_attributes.html?pen",
+      {
+       "testdriver": true
+      }
+     ],
+     [
+      "pointerevents/pointerevent_attributes.html?pen-nonstandard",
       {
        "testdriver": true
       }
@@ -722484,7 +722502,19 @@
       }
      ],
      [
+      "pointerevents/pointerevent_attributes.html?pen-right-nonstandard",
+      {
+       "testdriver": true
+      }
+     ],
+     [
       "pointerevents/pointerevent_attributes.html?touch",
+      {
+       "testdriver": true
+      }
+     ],
+     [
+      "pointerevents/pointerevent_attributes.html?touch-nonstandard",
       {
        "testdriver": true
       }
