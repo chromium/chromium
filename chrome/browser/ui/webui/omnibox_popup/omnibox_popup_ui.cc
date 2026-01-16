@@ -141,7 +141,8 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   source->AddBoolean("composeboxShowImageSuggest",
                      omnibox::kShowComposeboxImageSuggestions.Get());
   source->AddBoolean("composeboxShowLensSearchChip",
-                     omnibox::kShowLensSearchChip.Get());
+                     omnibox::IsAimPopupEnabled(profile_) &&
+                         omnibox::kShowLensSearchChip.Get());
   source->AddBoolean("addTabUploadDelayOnRecentTabChipClick",
                      omnibox::kAddTabUploadDelayOnRecentTabChipClick.Get());
   source->AddBoolean("composeboxShowRecentTabChip",
