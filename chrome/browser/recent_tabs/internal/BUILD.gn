@@ -42,6 +42,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/recent_tabs/ui/RestoreTabsViewBinderHelper.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/ui/TabItemProperties.java",
     "android/java/src/org/chromium/chrome/browser/recent_tabs/ui/TabItemViewBinder.java",
+    "android/java/src/org/chromium/chrome/browser/recent_tabs/ui/UnsharableRippleDrawable.java",
   ]
 
   deps = [

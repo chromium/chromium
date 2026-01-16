@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<org.chromium.chrome.browser.ui.fast_checkout.UnsharableRippleDrawable
+<org.chromium.chrome.browser.recent_tabs.ui.UnsharableRippleDrawable
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:color="?android:attr/colorControlHighlight">
   <item>
@@ -15,4 +15,4 @@ found in the LICENSE file.
       <corners android:radius="@dimen/restore_tabs_inner_corner_radius" />
     </shape>
   </item>
-</org.chromium.chrome.browser.ui.fast_checkout.UnsharableRippleDrawable>
+</org.chromium.chrome.browser.recent_tabs.ui.UnsharableRippleDrawable>
