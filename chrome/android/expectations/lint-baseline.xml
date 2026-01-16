@@ -2,17 +2,6 @@
 <issues format="6" by="lint 9.0.0-alpha14" type="baseline" client="" dependencies="true" name="" variant="all" version="9.0.0-alpha14">
 
     <issue
-        id="ResourceType"
-        message="Expected resource of type styleable"
-        errorLine1="                        .obtainStyledAttributes(R.style.SelectPopupDialog, SELECT_DIALOG_ATTRS);"
-        errorLine2="                                                                           ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../content/public/android/java/src/org/chromium/content/browser/input/SelectPopupDialog.java"
-            line="127"
-            column="76"/>
-    </issue>
-
-    <issue
         id="DiscouragedPrivateApi"
         message="Reflective access to sPackageManager, which is not part of the public SDK and therefore likely to change in future Android releases"
         errorLine1="            Field packageManagerField = activityThreadClass.getDeclaredField(&quot;sPackageManager&quot;);"

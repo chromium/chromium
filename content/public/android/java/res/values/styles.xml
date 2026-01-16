@@ -6,10 +6,6 @@ found in the LICENSE file.
 -->
 
 <resources>
-    <style name="SelectPopupDialog">
-        <item name="select_dialog_singlechoice">@android:layout/select_dialog_singlechoice</item>
-        <item name="select_dialog_multichoice">@android:layout/select_dialog_multichoice</item>
-    </style>
     <style name="TextAppearance.SuggestionPrefixOrSuffix">
       <item name="android:textColor">?android:attr/textColorSecondary</item>
     </style>
