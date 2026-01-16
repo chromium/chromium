@@ -11453,8 +11453,21 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Dogfood",
+                    "name": "Default",
                     "params": {
+                        "glic-actor-eligible-tiers": "1,2",
+                        "glic_actor_enterprise_pref_default": "disabled_by_default",
+                        "glic_actor_policy_control_exemption": "false"
+                    },
+                    "enable_features": [
+                        "GlicActor",
+                        "GlicActorUi"
+                    ]
+                },
+                {
+                    "name": "Enabled_Dogfood_And_Allowlist",
+                    "params": {
+                        "glic-actor-eligible-tiers": "0,1,2",
                         "glic_actor_enterprise_pref_default": "enabled_by_default",
                         "glic_actor_policy_control_exemption": "false"
                     },

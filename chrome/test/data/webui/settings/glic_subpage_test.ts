@@ -842,7 +842,9 @@ suite('GlicSubpage', function() {
       // Verify initial state (enabled).
       let webActuationToggle =
           $<SettingsToggleButtonElement>('webActuationToggle')!;
-      assertTrue(isVisible(webActuationToggle));
+      assertTrue(
+          isVisible(webActuationToggle),
+          'webActuationToggle should be visible');
       assertFalse(webActuationToggle.disabled);
 
       // Simulate enterprise DISABLING the feature.

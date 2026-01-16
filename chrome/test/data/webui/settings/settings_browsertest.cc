@@ -629,8 +629,11 @@ class SettingsGlicSubPageWebActuationToggleTest
     : public SettingsGlicSubPageWebActuationToggleTestBase {
  public:
   SettingsGlicSubPageWebActuationToggleTest() {
-    scoped_feature_list_.InitWithFeatures({features::kGlicWebActuationSetting},
-                                          /*disabled_features=*/{});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicWebActuationSetting, {}},
+         {features::kGlicActor,
+          {{features::kGlicActorPolicyControlExemption.name, "true"}}}},
+        /*disabled_features=*/{});
   }
 
   void SetUpOnMainThread() override {
@@ -638,9 +641,6 @@ class SettingsGlicSubPageWebActuationToggleTest
     SigninAndEnableAccountCapability();
     GetProfile()->GetPrefs()->SetBoolean(
         glic::prefs::kGlicUserEnabledActuationOnWeb, false);
-    actor::ActorKeyedService::Get(browser()->profile())
-        ->GetPolicyChecker()
-        .set_act_on_web_for_testing(true);
   }
 
  private:
