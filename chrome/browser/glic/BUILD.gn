@@ -438,6 +438,8 @@ source_set("unit_tests") {
       "widget/glic_panel_hotkey_delegate_unittest.cc",
       "widget/local_hotkey_manager_unittest.cc",
     ]
+  } else {
+    sources += [ "common/glic_tab_observer_android_unittest.cc" ]
   }
   deps = [
     ":glic",
@@ -467,6 +469,14 @@ source_set("unit_tests") {
       "//components/live_caption",
       "//components/live_caption:constants",
       "//components/tabs:test_support",
+    ]
+  } else {
+    deps += [
+      "//chrome/browser/glic/common",
+      "//chrome/browser/ui/android/tab_model",
+      "//chrome/browser/ui/android/tab_model:test_support",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
     ]
   }
   if (is_chromeos) {

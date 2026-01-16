@@ -3600,6 +3600,7 @@ static_library("browser") {
 
     deps += [
       # TODO(crbug.com/413572035): Remove once c/b/tab_android* sources get modularized.
+      "//chrome/browser/glic/common",
       "//chrome/browser/ui/android/tab_model",
       "//chrome/browser/ui/android/tab_model:impl",
     ]
@@ -3628,6 +3629,7 @@ static_library("browser") {
 
       # TODO(crbug.com/413572035): Remove once c/b/tab_android* sources get modularized.
       "//chrome/browser/ui/android/tab_model:impl",
+      "//chrome/browser/glic/common",
 
       "//chrome/browser/ui/webui/notifications_internals:impl",
 

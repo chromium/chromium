@@ -21,8 +21,13 @@ source_set("common") {
       "glic_tab_observer_android.cc",
       "glic_tab_observer_android.h",
     ]
-    deps +=
-        [ "//chrome/browser/ui/browser_window/public/android:java_enum_srcjar" ]
+    deps += [
+      "//chrome/browser/tab",
+      "//chrome/browser/ui/android/tab_model",
+      "//chrome/browser/ui/browser_window/public/android:java_enum_srcjar",
+      "//chrome/browser/ui/tabs:tabs_public",
+      "//content/public/browser",
+    ]
   } else {
     sources += [
       "glic_tab_observer_impl.cc",
