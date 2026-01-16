@@ -36,7 +36,6 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
     private final int mLightScrimColor;
 
     private final LocationBarDataProvider mLocationBarDataProvider;
-    private final Runnable mClickDelegate;
     private final Context mContext;
     private final NonNullObservableSupplier<Integer> mTabStripHeightSupplier;
     private final Callback<Integer> mTabStripHeightChangeCallback;
@@ -64,7 +63,6 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
         mScrimManager = scrimManager;
         mLocationBarDataProvider = locationBarDataProvider;
         mBottomControlsStacker = bottomControlsStacker;
-        mClickDelegate = clickDelegate;
         mContext = context;
 
         int topMargin = tabStripHeightSupplier.get();
@@ -74,7 +72,7 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
                         .with(ScrimProperties.ANCHOR_VIEW, scrimTarget)
                         .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, true)
                         .with(ScrimProperties.TOP_MARGIN, topMargin)
-                        .with(ScrimProperties.CLICK_DELEGATE, mClickDelegate)
+                        .with(ScrimProperties.CLICK_DELEGATE, clickDelegate)
                         .with(ScrimProperties.VISIBILITY_CALLBACK, visibilityChangeCallback)
                         .build();
 
