@@ -8,7 +8,6 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabClosingSource;
@@ -147,13 +146,6 @@ class TabModelObserverJniBridge implements TabModelObserver {
     }
 
     @Override
-    public final void onTabGroupCreated(Token groupId) {
-        assert mNativeTabModelObserverJniBridge != 0;
-        TabModelObserverJniBridgeJni.get()
-                .onTabGroupCreated(mNativeTabModelObserverJniBridge, groupId);
-    }
-
-    @Override
     public void restoreCompleted() {}
 
     /**
@@ -240,8 +232,5 @@ class TabModelObserverJniBridge implements TabModelObserver {
         void allTabsClosureCommitted(long nativeTabModelObserverJniBridge);
 
         void tabRemoved(long nativeTabModelObserverJniBridge, @JniType("TabAndroid*") Tab tab);
-
-        void onTabGroupCreated(
-                long nativeTabModelObserverJniBridge, @JniType("base::Token") Token groupId);
     }
 }

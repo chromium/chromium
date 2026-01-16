@@ -42,7 +42,8 @@ source_set("tab_groups") {
   ]
 
   if (is_android) {
-    deps += [ "//chrome/browser/ui/android/tab_model" ]
+    # TODDO(crbug.com/405219902): Add Android dependencies once the Android
+    # TabHelper is written.
   } else {
     deps += [
       "//chrome/browser/ui:browser_tab_strip",

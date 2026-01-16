@@ -20,10 +20,6 @@ class TabAndroid;
 class TabModel;
 class TabAndroid;
 
-namespace base {
-class Token;
-}  // namespace base
-
 // Bridges calls between the C++ and the Java TabModelObservers. Functions in
 // this class do little more than translating between Java TabModelObserver
 // notifications to native TabModelObserver notifications.
@@ -73,8 +69,6 @@ class TabModelObserverJniBridge {
   void AllTabsClosureCommitted(JNIEnv* env);
 
   void TabRemoved(JNIEnv* env, TabAndroid* tab);
-
-  void OnTabGroupCreated(JNIEnv* env, base::Token group_id);
 
   void AddObserver(TabModelObserver* observer);
   void AddTabListInterfaceObserver(TabListInterfaceObserver* observer);
