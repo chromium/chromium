@@ -24,6 +24,13 @@ constexpr std::string_view kKeychainAccessGroup = MAC_TEAM_IDENTIFIER_STRING
 // Hex hash of "/user/data/dir"
 constexpr std::string_view kUserDataDirHash = "af935f0dbf2111a4";
 
+// Hex hash of the empty string
+constexpr std::string_view kDefaultStoragePartitionPathHash =
+    "e3b0c44298fc1c14";
+
+// Hex hash of "test_partition"
+constexpr std::string_view kTestStoragePartitionPathHash = "f5a3fbcdcfc3d919";
+
 // Hex hash of u64{0} (Unix Epoch)
 constexpr std::string_view kUnixEpochHash = "af5570f5a1810b7a";
 
@@ -101,11 +108,69 @@ TEST_F(UnexportableKeyProviderConfigTest, ForOffTheRecordProfile) {
                                         "."));
 }
 
-TEST_F(UnexportableKeyProviderConfigTest, ForProfileAndPurpose) {
+TEST_F(UnexportableKeyProviderConfigTest,
+       ForDefaultStoragePartitionPathAndPurpose) {
   TestingProfile profile(base::FilePath("/user/data/dir/test_profile"));
 
   const crypto::UnexportableKeyProvider::Config lst_config =
-      GetConfigForProfileAndPurpose(profile, KeyPurpose::kRefreshTokenBinding);
+      GetConfigForStoragePartitionPathAndPurpose(
+          profile, base::FilePath(), KeyPurpose::kRefreshTokenBinding);
+  EXPECT_EQ(lst_config.keychain_access_group, kKeychainAccessGroup);
+  EXPECT_EQ(lst_config.application_tag,
+            base::JoinString(
+                {
+                    kKeychainAccessGroup,
+                    kUserDataDirHash,
+                    "test_profile",
+                    kUnixEpochHash,
+                    kDefaultStoragePartitionPathHash,
+                    "lst",
+                },
+                "."));
+
+  const crypto::UnexportableKeyProvider::Config dbsc_config =
+      GetConfigForStoragePartitionPathAndPurpose(
+          profile, base::FilePath(),
+          KeyPurpose::kDeviceBoundSessionCredentials);
+  EXPECT_EQ(dbsc_config.keychain_access_group, kKeychainAccessGroup);
+  EXPECT_EQ(dbsc_config.application_tag,
+            base::JoinString(
+                {
+                    kKeychainAccessGroup,
+                    kUserDataDirHash,
+                    "test_profile",
+                    kUnixEpochHash,
+                    kDefaultStoragePartitionPathHash,
+                    "dbsc",
+                },
+                "."));
+
+  const crypto::UnexportableKeyProvider::Config dbsc_prototype_config =
+      GetConfigForStoragePartitionPathAndPurpose(
+          profile, base::FilePath(),
+          KeyPurpose::kDeviceBoundSessionCredentialsPrototype);
+  EXPECT_EQ(dbsc_prototype_config.keychain_access_group, kKeychainAccessGroup);
+  EXPECT_EQ(dbsc_prototype_config.application_tag,
+            base::JoinString(
+                {
+                    kKeychainAccessGroup,
+                    kUserDataDirHash,
+                    "test_profile",
+                    kUnixEpochHash,
+                    kDefaultStoragePartitionPathHash,
+                    "dbsc-prototype",
+                },
+                "."));
+}
+
+TEST_F(UnexportableKeyProviderConfigTest,
+       ForTestStoragePartitionPathAndPurpose) {
+  TestingProfile profile(base::FilePath("/user/data/dir/test_profile"));
+
+  const crypto::UnexportableKeyProvider::Config lst_config =
+      GetConfigForStoragePartitionPathAndPurpose(
+          profile, base::FilePath("test_partition"),
+          KeyPurpose::kRefreshTokenBinding);
   EXPECT_EQ(lst_config.keychain_access_group, kKeychainAccessGroup);
   EXPECT_EQ(lst_config.application_tag, base::JoinString(
                                             {
@@ -113,13 +178,15 @@ TEST_F(UnexportableKeyProviderConfigTest, ForProfileAndPurpose) {
                                                 kUserDataDirHash,
                                                 "test_profile",
                                                 kUnixEpochHash,
+                                                kTestStoragePartitionPathHash,
                                                 "lst",
                                             },
                                             "."));
 
   const crypto::UnexportableKeyProvider::Config dbsc_config =
-      GetConfigForProfileAndPurpose(profile,
-                                    KeyPurpose::kDeviceBoundSessionCredentials);
+      GetConfigForStoragePartitionPathAndPurpose(
+          profile, base::FilePath("test_partition"),
+          KeyPurpose::kDeviceBoundSessionCredentials);
   EXPECT_EQ(dbsc_config.keychain_access_group, kKeychainAccessGroup);
   EXPECT_EQ(dbsc_config.application_tag, base::JoinString(
                                              {
@@ -127,23 +194,27 @@ TEST_F(UnexportableKeyProviderConfigTest, ForProfileAndPurpose) {
                                                  kUserDataDirHash,
                                                  "test_profile",
                                                  kUnixEpochHash,
+                                                 kTestStoragePartitionPathHash,
                                                  "dbsc",
                                              },
                                              "."));
 
   const crypto::UnexportableKeyProvider::Config dbsc_prototype_config =
-      GetConfigForProfileAndPurpose(
-          profile, KeyPurpose::kDeviceBoundSessionCredentialsPrototype);
+      GetConfigForStoragePartitionPathAndPurpose(
+          profile, base::FilePath("test_partition"),
+          KeyPurpose::kDeviceBoundSessionCredentialsPrototype);
   EXPECT_EQ(dbsc_prototype_config.keychain_access_group, kKeychainAccessGroup);
-  EXPECT_EQ(dbsc_prototype_config.application_tag, base::JoinString(
-                                                       {
-                                                           kKeychainAccessGroup,
-                                                           kUserDataDirHash,
-                                                           "test_profile",
-                                                           kUnixEpochHash,
-                                                           "dbsc-prototype",
-                                                       },
-                                                       "."));
+  EXPECT_EQ(dbsc_prototype_config.application_tag,
+            base::JoinString(
+                {
+                    kKeychainAccessGroup,
+                    kUserDataDirHash,
+                    "test_profile",
+                    kUnixEpochHash,
+                    kTestStoragePartitionPathHash,
+                    "dbsc-prototype",
+                },
+                "."));
 }
 
 }  // namespace

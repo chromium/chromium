@@ -102,52 +102,57 @@ class UnexportableKeyServiceManager : public KeyedService {
       : profile_(profile),
         service_factory_for_testing_(std::move(service_factory_for_testing)) {}
 
-  unexportable_keys::UnexportableKeyService* GetOrCreateServiceForPurpose(
+  unexportable_keys::UnexportableKeyService*
+  GetOrCreateServiceForPathAndPurpose(
+      const base::FilePath& relative_partition_path,
       unexportable_keys::KeyPurpose purpose) {
-    const auto& [_, service] =
-        *services_.lazy_emplace(purpose, [&](const auto& ctor) {
-          ctor(purpose, CreateService(
-                            service_factory_for_testing_,
-                            GetTaskOriginForPurpose(purpose),
-                            GetConfigForProfileAndPurpose(*profile_, purpose)));
-        });
+    auto& service = services_[{relative_partition_path, purpose}];
+    if (service == nullptr) {
+      service = CreateService(
+          service_factory_for_testing_, GetTaskOriginForPurpose(purpose),
+          unexportable_keys::GetConfigForStoragePartitionPathAndPurpose(
+              *profile_, relative_partition_path, purpose));
+    }
     return service.get();
   }
 
   unexportable_keys::UnexportableKeyServiceProxyImpl*
   GetOrCreateMojoProxyServiceWithReceiver(
+      const base::FilePath& relative_partition_path,
       unexportable_keys::KeyPurpose purpose,
       mojo::PendingReceiver<unexportable_keys::mojom::UnexportableKeyService>
           receiver) {
     unexportable_keys::UnexportableKeyService* uks =
-        GetOrCreateServiceForPurpose(purpose);
+        GetOrCreateServiceForPathAndPurpose(relative_partition_path, purpose);
     CHECK(uks);
 
-    auto new_service =
-        std::make_unique<unexportable_keys::UnexportableKeyServiceProxyImpl>(
-            uks, std::move(receiver));
-
-    auto [it, inserted] =
-        proxy_services_.insert_or_assign(purpose, std::move(new_service));
-
-    return it->second.get();
+    return proxy_services_
+        .insert_or_assign(
+            {relative_partition_path, purpose},
+            std::make_unique<
+                unexportable_keys::UnexportableKeyServiceProxyImpl>(
+                uks, std::move(receiver)))
+        .first->second.get();
   }
 
  private:
+  using PathAndPurpose =
+      std::pair<base::FilePath, unexportable_keys::KeyPurpose>;
+
   raw_ref<const Profile> profile_;
   ServiceFactory service_factory_for_testing_;
 
   // Map to hold individual `UnexportableKeyService` instances, keyed by
-  // `KeyPurpose`.
+  // `relative_partition_path` and `KeyPurpose`.
   absl::flat_hash_map<
-      unexportable_keys::KeyPurpose,
+      PathAndPurpose,
       std::unique_ptr<unexportable_keys::UnexportableKeyService>>
       services_;
 
   // Map to hold individual `UnexportableKeyServiceProxyImpl` instances, keyed
-  // by `KeyPurpose`.
+  // by `relative_partition_path` and `KeyPurpose`.
   absl::flat_hash_map<
-      unexportable_keys::KeyPurpose,
+      PathAndPurpose,
       std::unique_ptr<unexportable_keys::UnexportableKeyServiceProxyImpl>>
       proxy_services_;
 };
@@ -169,25 +174,38 @@ unexportable_keys::UnexportableKeyService*
 UnexportableKeyServiceFactory::GetForProfileAndPurpose(
     Profile* profile,
     unexportable_keys::KeyPurpose purpose) {
+  return GetForStoragePartitionPathAndPurpose(profile, base::FilePath(),
+                                              purpose);
+}
+
+// static
+unexportable_keys::UnexportableKeyService*
+UnexportableKeyServiceFactory::GetForStoragePartitionPathAndPurpose(
+    Profile* profile,
+    const base::FilePath& relative_partition_path,
+    unexportable_keys::KeyPurpose purpose) {
   auto* manager = static_cast<UnexportableKeyServiceManager*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
-  return manager != nullptr ? manager->GetOrCreateServiceForPurpose(purpose)
+  return manager != nullptr ? manager->GetOrCreateServiceForPathAndPurpose(
+                                  relative_partition_path, purpose)
                             : nullptr;
 }
 
 // static
 unexportable_keys::UnexportableKeyServiceProxyImpl*
 UnexportableKeyServiceFactory::
-    RecreateMojoProxyForProfileAndPurposeWithReceiver(
+    RecreateMojoProxyForStoragePartitionPathAndPurposeWithReceiver(
         Profile* profile,
+        const base::FilePath& relative_partition_path,
         unexportable_keys::KeyPurpose purpose,
         mojo::PendingReceiver<unexportable_keys::mojom::UnexportableKeyService>
             receiver) {
   auto* manager = static_cast<UnexportableKeyServiceManager*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
-  return manager != nullptr ? manager->GetOrCreateMojoProxyServiceWithReceiver(
-                                  purpose, std::move(receiver))
-                            : nullptr;
+  return manager != nullptr
+             ? manager->GetOrCreateMojoProxyServiceWithReceiver(
+                   relative_partition_path, purpose, std::move(receiver))
+             : nullptr;
 }
 
 // static

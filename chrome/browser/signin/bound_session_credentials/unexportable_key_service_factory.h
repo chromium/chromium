@@ -39,11 +39,20 @@ class UnexportableKeyServiceFactory : public ProfileKeyedServiceFactory {
   static std::unique_ptr<unexportable_keys::UnexportableKeyService>
   CreateForGarbageCollection(crypto::UnexportableKeyProvider::Config config);
 
-  // Returns a handle to the service instance for the given `profile` and
-  // `purpose`. Returns nullptr if unexportable key provider is not supported by
-  // the platform.
+  // Returns a handle to the service instance for the default storage partition
+  // of the given `profile` and `purpose`. Returns nullptr if unexportable key
+  // provider is not supported by the platform.
   static unexportable_keys::UnexportableKeyService* GetForProfileAndPurpose(
       Profile* profile,
+      unexportable_keys::KeyPurpose purpose);
+
+  // Returns a handle to the service instance for the given `profile`,
+  // `relative_partition_path` and `purpose`. Returns nullptr if unexportable
+  // key provider is not supported by the platform.
+  static unexportable_keys::UnexportableKeyService*
+  GetForStoragePartitionPathAndPurpose(
+      Profile* profile,
+      const base::FilePath& relative_partition_path,
       unexportable_keys::KeyPurpose purpose);
 
   // Returns nullptr if unexportable key provider is not supported by the
@@ -53,8 +62,9 @@ class UnexportableKeyServiceFactory : public ProfileKeyedServiceFactory {
   // new instance passed. This will result in previous connections being
   // dropped.
   static unexportable_keys::UnexportableKeyServiceProxyImpl*
-  RecreateMojoProxyForProfileAndPurposeWithReceiver(
+  RecreateMojoProxyForStoragePartitionPathAndPurposeWithReceiver(
       Profile* profile,
+      const base::FilePath& relative_partition_path,
       unexportable_keys::KeyPurpose purpose,
       mojo::PendingReceiver<unexportable_keys::mojom::UnexportableKeyService>
           receiver);
