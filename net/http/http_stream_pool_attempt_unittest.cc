@@ -734,18 +734,18 @@ TEST_F(HttpStreamPoolAttemptTest, Ipv6OnlySlowOk) {
 }
 
 TEST_F(HttpStreamPoolAttemptTest, Ipv6SlowOk) {
+  // This endpoint stalls forever.
   const IPEndPoint ipv4_endpoint = MakeIPEndPoint("192.0.2.1");
+  // This endpoint succeeds slowly.
   const IPEndPoint ipv6_endpoint1 = MakeIPEndPoint("2001:db8::1");
+  // This should not be attempted.
   const IPEndPoint ipv6_endpoint2 = MakeIPEndPoint("2001:db8::2");
 
   TestAttemptDelegate delegate = CreateAttemptDelegate();
   delegate.fake_service_endpoint_request()->add_endpoint(
       ServiceEndpointBuilder()
-          // This endpoint stalls forever.
           .add_ip_endpoint(ipv4_endpoint)
-          // This endpoint succeeds slowly.
           .add_ip_endpoint(ipv6_endpoint1)
-          // This should not be attempted.
           .add_ip_endpoint(ipv6_endpoint2)
           .endpoint());
   delegate.CompleteServiceEndpointRequest(OK);
@@ -780,16 +780,19 @@ TEST_F(HttpStreamPoolAttemptTest, Ipv6SlowOk) {
 }
 
 TEST_F(HttpStreamPoolAttemptTest, Ipv6SlowFail) {
+  // This endpoint succeeds.
   const IPEndPoint ipv4_endpoint = MakeIPEndPoint("192.0.2.1");
+  // This endpoint fails slowly.
   const IPEndPoint ipv6_endpoint1 = MakeIPEndPoint("2001:db8::1");
+  // This endpoint stalls.
   const IPEndPoint ipv6_endpoint2 = MakeIPEndPoint("2001:db8::2");
 
   TestAttemptDelegate delegate = CreateAttemptDelegate();
   delegate.fake_service_endpoint_request()->add_endpoint(
       ServiceEndpointBuilder()
-          .add_ip_endpoint(ipv4_endpoint)   // This endpoint succeeds.
-          .add_ip_endpoint(ipv6_endpoint1)  // This endpoint fails slowly.
-          .add_ip_endpoint(ipv6_endpoint2)  // This endpoint stalls.
+          .add_ip_endpoint(ipv4_endpoint)
+          .add_ip_endpoint(ipv6_endpoint1)
+          .add_ip_endpoint(ipv6_endpoint2)
           .endpoint());
   delegate.CompleteServiceEndpointRequest(OK);
 
@@ -825,18 +828,18 @@ TEST_F(HttpStreamPoolAttemptTest, Ipv6SlowFail) {
 }
 
 TEST_F(HttpStreamPoolAttemptTest, Ipv6SlowIpv4Ok) {
+  // This endpoint is attempted second and succeeds.
   const IPEndPoint ipv4_endpoint = MakeIPEndPoint("192.0.2.1");
+  // This endpoint is attempted first but slow.
   const IPEndPoint ipv6_endpoint1 = MakeIPEndPoint("2001:db8::1");
+  // This should not be attempted.
   const IPEndPoint ipv6_endpoint2 = MakeIPEndPoint("2001:db8::2");
 
   TestAttemptDelegate delegate = CreateAttemptDelegate();
   delegate.fake_service_endpoint_request()->add_endpoint(
       ServiceEndpointBuilder()
-          // This endpoint is attempted second and succeeds.
           .add_ip_endpoint(ipv4_endpoint)
-          // This endpoint is attempted first but slow.
           .add_ip_endpoint(ipv6_endpoint1)
-          // This should not be attempted.
           .add_ip_endpoint(ipv6_endpoint2)
           .endpoint());
   delegate.CompleteServiceEndpointRequest(OK);
@@ -871,16 +874,17 @@ TEST_F(HttpStreamPoolAttemptTest, Ipv6SlowIpv4Ok) {
 }
 
 TEST_F(HttpStreamPoolAttemptTest, Ipv6SlowIpv4AnsweredLater) {
+  // This endpoint is attempted second and succeeds.
   const IPEndPoint ipv4_endpoint = MakeIPEndPoint("192.0.2.1");
+  // This endpoint is attempted first but slow.
   const IPEndPoint ipv6_endpoint1 = MakeIPEndPoint("2001:db8::1");
+  // This should not be attempted.
   const IPEndPoint ipv6_endpoint2 = MakeIPEndPoint("2001:db8::2");
 
   TestAttemptDelegate delegate = CreateAttemptDelegate();
   delegate.fake_service_endpoint_request()->add_endpoint(
       ServiceEndpointBuilder()
-          // This endpoint is attempted first but slow.
           .add_ip_endpoint(ipv6_endpoint1)
-          // This should not be attempted.
           .add_ip_endpoint(ipv6_endpoint2)
           .endpoint());
 
@@ -920,16 +924,17 @@ TEST_F(HttpStreamPoolAttemptTest, Ipv6SlowIpv4AnsweredLater) {
 }
 
 TEST_F(HttpStreamPoolAttemptTest, Ipv6SlowFailIpv4AnsweredLater) {
+  // This endpoint is attempted second but stalls.
   const IPEndPoint ipv4_endpoint = MakeIPEndPoint("192.0.2.1");
+  // This endpoint is attempted first but fails slowly.
   const IPEndPoint ipv6_endpoint1 = MakeIPEndPoint("2001:db8::1");
+  // This endpoints succeeds.
   const IPEndPoint ipv6_endpoint2 = MakeIPEndPoint("2001:db8::2");
 
   TestAttemptDelegate delegate = CreateAttemptDelegate();
   delegate.fake_service_endpoint_request()->add_endpoint(
       ServiceEndpointBuilder()
-          // This endpoint is attempted first but fails slowly.
           .add_ip_endpoint(ipv6_endpoint1)
-          // This endpoints succeeds.
           .add_ip_endpoint(ipv6_endpoint2)
           .endpoint());
 
@@ -979,6 +984,214 @@ TEST_F(HttpStreamPoolAttemptTest, Ipv6SlowFailIpv4AnsweredLater) {
   connect_completer_v6_2.Complete(OK);
   ASSERT_EQ(delegate.WaitForResult(), OK);
   EXPECT_EQ(delegate.GetRemoteIPEndPoint(), ipv6_endpoint2);
+}
+
+TEST_F(HttpStreamPoolAttemptTest, Ipv6FailIpv4SlowOk) {
+  // This endpoint is attempted second and succeeds slowly.
+  const IPEndPoint ipv4_endpoint = MakeIPEndPoint("192.0.2.1");
+  // This endpoint is attempted first and fails.
+  const IPEndPoint ipv6_endpoint = MakeIPEndPoint("2001:db8::1");
+
+  TestAttemptDelegate delegate = CreateAttemptDelegate();
+  delegate.fake_service_endpoint_request()->add_endpoint(
+      ServiceEndpointBuilder()
+          .add_ip_endpoint(ipv4_endpoint)
+          .add_ip_endpoint(ipv6_endpoint)
+          .endpoint());
+  delegate.CompleteServiceEndpointRequest(OK);
+
+  SequencedSocketData data_v6;
+  MockConnectCompleter connect_completer_v6;
+  data_v6.set_connect_data(MockConnect(&connect_completer_v6));
+  data_v6.set_expected_addresses(AddressList(ipv6_endpoint));
+  socket_factory()->AddSocketDataProvider(&data_v6);
+
+  SequencedSocketData data_v4;
+  MockConnectCompleter connect_completer_v4;
+  data_v4.set_connect_data(MockConnect(&connect_completer_v4));
+  data_v4.set_expected_addresses(AddressList(ipv4_endpoint));
+  socket_factory()->AddSocketDataProvider(&data_v4);
+  SSLSocketDataProvider ssl_data(SYNCHRONOUS, OK);
+  socket_factory()->AddSSLSocketDataProvider(&ssl_data);
+
+  delegate.Start();
+  EXPECT_THAT(delegate.attempt()->attempted_endpoints_for_testing(),
+              testing::UnorderedElementsAreArray({ipv6_endpoint}));
+
+  // The first attempt fails. Should trigger the second attempt.
+  connect_completer_v6.Complete(ERR_CONNECTION_REFUSED);
+  EXPECT_THAT(
+      delegate.attempt()->attempted_endpoints_for_testing(),
+      testing::UnorderedElementsAreArray({ipv6_endpoint, ipv4_endpoint}));
+  ASSERT_FALSE(delegate.result().has_value());
+
+  // The second attempt is slow. Since there is no other endpoints, no further
+  // attempts are made.
+  FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay());
+  EXPECT_THAT(
+      delegate.attempt()->attempted_endpoints_for_testing(),
+      testing::UnorderedElementsAreArray({ipv6_endpoint, ipv4_endpoint}));
+  ASSERT_FALSE(delegate.result().has_value());
+
+  connect_completer_v4.Complete(OK);
+  ASSERT_EQ(delegate.WaitForResult(), OK);
+  EXPECT_EQ(delegate.GetRemoteIPEndPoint(), ipv4_endpoint);
+}
+
+TEST_F(HttpStreamPoolAttemptTest, Ipv6FailIpv4SlowFail) {
+  // This endpoint is attempted second and fails slowly.
+  const IPEndPoint ipv4_endpoint = MakeIPEndPoint("192.0.2.1");
+  // This endpoint is attempted first and fails.
+  const IPEndPoint ipv6_endpoint = MakeIPEndPoint("2001:db8::1");
+
+  TestAttemptDelegate delegate = CreateAttemptDelegate();
+  delegate.fake_service_endpoint_request()->add_endpoint(
+      ServiceEndpointBuilder()
+          .add_ip_endpoint(ipv4_endpoint)
+          .add_ip_endpoint(ipv6_endpoint)
+          .endpoint());
+  delegate.CompleteServiceEndpointRequest(OK);
+
+  SequencedSocketData data_v6;
+  MockConnectCompleter connect_completer_v6;
+  data_v6.set_connect_data(MockConnect(&connect_completer_v6));
+  data_v6.set_expected_addresses(AddressList(ipv6_endpoint));
+  socket_factory()->AddSocketDataProvider(&data_v6);
+
+  SequencedSocketData data_v4;
+  MockConnectCompleter connect_completer_v4;
+  data_v4.set_connect_data(MockConnect(&connect_completer_v4));
+  data_v4.set_expected_addresses(AddressList(ipv4_endpoint));
+  socket_factory()->AddSocketDataProvider(&data_v4);
+
+  delegate.Start();
+  EXPECT_THAT(delegate.attempt()->attempted_endpoints_for_testing(),
+              testing::UnorderedElementsAreArray({ipv6_endpoint}));
+
+  // The first attempt fails. Should trigger the second attempt.
+  connect_completer_v6.Complete(ERR_CONNECTION_REFUSED);
+  EXPECT_THAT(
+      delegate.attempt()->attempted_endpoints_for_testing(),
+      testing::UnorderedElementsAreArray({ipv6_endpoint, ipv4_endpoint}));
+  ASSERT_FALSE(delegate.result().has_value());
+
+  // The second attempt is slow. Since there is no other endpoints, no further
+  // attempts are made.
+  FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay());
+  EXPECT_THAT(
+      delegate.attempt()->attempted_endpoints_for_testing(),
+      testing::UnorderedElementsAreArray({ipv6_endpoint, ipv4_endpoint}));
+  ASSERT_FALSE(delegate.result().has_value());
+
+  connect_completer_v4.Complete(ERR_CONNECTION_RESET);
+  ASSERT_EQ(delegate.WaitForResult(), ERR_CONNECTION_RESET);
+}
+
+TEST_F(HttpStreamPoolAttemptTest, FirstIpv6FailIpv4SlowFailSecondIpv6Ok) {
+  // This endpoint is attempted second and fails slowly.
+  const IPEndPoint ipv4_endpoint = MakeIPEndPoint("192.0.2.1");
+  // This endpoint is attempted first and fails.
+  const IPEndPoint ipv6_endpoint1 = MakeIPEndPoint("2001:db8::1");
+  // This endpoint is attempted third and succeeds.
+  const IPEndPoint ipv6_endpoint2 = MakeIPEndPoint("2001:db8::2");
+
+  TestAttemptDelegate delegate = CreateAttemptDelegate();
+  delegate.fake_service_endpoint_request()->add_endpoint(
+      ServiceEndpointBuilder()
+          .add_ip_endpoint(ipv4_endpoint)
+          .add_ip_endpoint(ipv6_endpoint1)
+          .add_ip_endpoint(ipv6_endpoint2)
+          .endpoint());
+  delegate.CompleteServiceEndpointRequest(OK);
+
+  SequencedSocketData data_v6_1;
+  MockConnectCompleter connect_completer_v6_1;
+  data_v6_1.set_connect_data(MockConnect(&connect_completer_v6_1));
+  data_v6_1.set_expected_addresses(AddressList(ipv6_endpoint1));
+  socket_factory()->AddSocketDataProvider(&data_v6_1);
+
+  SequencedSocketData data_v4;
+  MockConnectCompleter connect_completer_v4;
+  data_v4.set_connect_data(MockConnect(&connect_completer_v4));
+  data_v4.set_expected_addresses(AddressList(ipv4_endpoint));
+  socket_factory()->AddSocketDataProvider(&data_v4);
+
+  SequencedSocketData data_v6_2;
+  MockConnectCompleter connect_completer_v6_2;
+  data_v6_2.set_connect_data(MockConnect(&connect_completer_v6_2));
+  data_v6_2.set_expected_addresses(AddressList(ipv6_endpoint2));
+  SSLSocketDataProvider ssl_data(SYNCHRONOUS, OK);
+  socket_factory()->AddSocketDataProvider(&data_v6_2);
+  socket_factory()->AddSSLSocketDataProvider(&ssl_data);
+
+  delegate.Start();
+  EXPECT_THAT(delegate.attempt()->attempted_endpoints_for_testing(),
+              testing::UnorderedElementsAreArray({ipv6_endpoint1}));
+
+  // The first attempt fails. Should trigger the second attempt.
+  connect_completer_v6_1.Complete(ERR_CONNECTION_REFUSED);
+  EXPECT_THAT(
+      delegate.attempt()->attempted_endpoints_for_testing(),
+      testing::UnorderedElementsAreArray({ipv6_endpoint1, ipv4_endpoint}));
+  ASSERT_FALSE(delegate.result().has_value());
+
+  // The second attempt is slow. Should trigger the second IPv6 (the third in
+  // total) attempt.
+  FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay());
+  EXPECT_THAT(delegate.attempt()->attempted_endpoints_for_testing(),
+              testing::UnorderedElementsAreArray(
+                  {ipv6_endpoint1, ipv6_endpoint2, ipv4_endpoint}));
+  ASSERT_FALSE(delegate.result().has_value());
+
+  connect_completer_v6_2.Complete(OK);
+  ASSERT_EQ(delegate.WaitForResult(), OK);
+  EXPECT_EQ(delegate.GetRemoteIPEndPoint(), ipv6_endpoint2);
+}
+
+TEST_F(HttpStreamPoolAttemptTest, Ipv4SlowIpv6AnsweredLater) {
+  // This endpoint is attempted first and stalls.
+  const IPEndPoint ipv4_endpoint1 = MakeIPEndPoint("192.0.2.1");
+  // This endpoint should not be attempted.
+  const IPEndPoint ipv4_endpoint2 = MakeIPEndPoint("192.0.2.2");
+  // This endpoint is attempted second and succeeds.
+  const IPEndPoint ipv6_endpoint = MakeIPEndPoint("2001:db8::1");
+
+  TestAttemptDelegate delegate = CreateAttemptDelegate();
+  delegate.fake_service_endpoint_request()->add_endpoint(
+      ServiceEndpointBuilder()
+          .add_ip_endpoint(ipv4_endpoint1)
+          .add_ip_endpoint(ipv4_endpoint2)
+          .endpoint());
+
+  SequencedSocketData data_v4;
+  data_v4.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  data_v4.set_expected_addresses(AddressList(ipv4_endpoint1));
+  socket_factory()->AddSocketDataProvider(&data_v4);
+
+  SequencedSocketData data_v6;
+  data_v6.set_expected_addresses(AddressList(ipv6_endpoint));
+  socket_factory()->AddSocketDataProvider(&data_v6);
+  SSLSocketDataProvider ssl_data(ASYNC, OK);
+  socket_factory()->AddSSLSocketDataProvider(&ssl_data);
+
+  delegate.Start();
+  EXPECT_THAT(delegate.attempt()->attempted_endpoints_for_testing(),
+              testing::UnorderedElementsAreArray({ipv4_endpoint1}));
+
+  FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay());
+  ASSERT_FALSE(delegate.result().has_value());
+  EXPECT_THAT(delegate.attempt()->attempted_endpoints_for_testing(),
+              testing::UnorderedElementsAreArray({ipv4_endpoint1}));
+
+  delegate.fake_service_endpoint_request()->add_endpoint(
+      ServiceEndpointBuilder().add_ip_endpoint(ipv6_endpoint).endpoint());
+  delegate.CompleteServiceEndpointRequest(OK);
+  EXPECT_THAT(
+      delegate.attempt()->attempted_endpoints_for_testing(),
+      testing::UnorderedElementsAreArray({ipv4_endpoint1, ipv6_endpoint}));
+
+  ASSERT_EQ(delegate.WaitForResult(), OK);
+  EXPECT_EQ(delegate.GetRemoteIPEndPoint(), ipv6_endpoint);
 }
 
 TEST_F(HttpStreamPoolAttemptTest, EndpointIpv6NotUsableForTcp) {
