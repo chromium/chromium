@@ -87,8 +87,11 @@ namespace sidePanel {
     long? windowId;
 
     // The tab in which to close the side panel. If a tab-specific side panel
-    // is open in the specified tab, it will be closed for that tab.
-    // At least one of this or <code>windowId</code> must be provided.
+    // is open in the specified tab, it will be closed for that tab. If only the
+    // global side panel is open, the promise returned by the call to
+    // <code>close()</code> will reject with an error. This behavior was changed
+    // in Chrome 145, with prior versions falling back to closing the global
+    // panel. At least one of this or <code>windowId</code> must be provided.
     long? tabId;
   };
 
