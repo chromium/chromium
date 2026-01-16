@@ -91,6 +91,12 @@ TEST_F(GlicEnablingTest, GlicFeatureNotEnabledTest) {
   EXPECT_EQ(GlicGlobalEnabling(delegate_).IsEnabledByFlags(), false);
 }
 
+TEST_F(GlicEnablingTest, TabStripComboButtonFeatureNotEnabledTest) {
+  // Turn tab strip combo button feature flag off
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures({}, {features::kTabstripComboButton});
+  EXPECT_EQ(GlicGlobalEnabling(delegate_).IsEnabledByFlags(), false);
+}
 
 TEST_F(GlicEnablingTest, CountryFilteringNotEnabled) {
   base::test::ScopedFeatureList features;
