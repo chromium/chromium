@@ -28,15 +28,19 @@ struct TimestampedPrefValue;
 // Called when `prefName` is updated to `prefValue` on a remote device.
 // The `prefName` reported here is always the tracked pref name on iOS (e.g.,
 // "ios.example_pref").
-- (void)onRemotePrefChanged:(std::string_view)prefName
-                  prefValue:
-                      (const sync_preferences::TimestampedPrefValue&)prefValue
-           remoteDeviceInfo:(const syncer::DeviceInfo&)remoteDeviceInfo;
+- (void)
+    crossDevicePrefTracker:(sync_preferences::CrossDevicePrefTracker*)tracker
+       didChangeRemotePref:(std::string_view)prefName
+                   toValue:
+                       (const sync_preferences::TimestampedPrefValue&)prefValue
+                fromDevice:(const syncer::DeviceInfo&)remoteDeviceInfo;
 
 // Called when the service status changes (e.g., the tracker becomes available
 // to use).
-- (void)onServiceStatusChanged:
-    (sync_preferences::CrossDevicePrefTracker::ServiceStatus)status;
+- (void)crossDevicePrefTracker:
+            (sync_preferences::CrossDevicePrefTracker*)tracker
+        serviceStatusDidChange:
+            (sync_preferences::CrossDevicePrefTracker::ServiceStatus)status;
 
 @end
 
@@ -60,6 +64,7 @@ class CrossDevicePrefTrackerObserverBridge
 
  private:
   __weak id<CrossDevicePrefTrackerObserver> delegate_ = nil;
+  raw_ptr<sync_preferences::CrossDevicePrefTracker> tracker_ = nullptr;
 
   // Scoped observation handles the automatic registration and removal of the
   // observer from the tracker.

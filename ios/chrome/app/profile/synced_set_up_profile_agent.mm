@@ -89,10 +89,12 @@
 
 #pragma mark - CrossDevicePrefTrackerObserver
 
-- (void)onRemotePrefChanged:(std::string_view)prefName
-                  prefValue:
-                      (const sync_preferences::TimestampedPrefValue&)prefValue
-           remoteDeviceInfo:(const syncer::DeviceInfo&)remoteDeviceInfo {
+- (void)
+    crossDevicePrefTracker:(sync_preferences::CrossDevicePrefTracker*)tracker
+       didChangeRemotePref:(std::string_view)prefName
+                   toValue:
+                       (const sync_preferences::TimestampedPrefValue&)prefValue
+                fromDevice:(const syncer::DeviceInfo&)remoteDeviceInfo {
   // This trigger should happen independently of foreground activation cycles,
   // so do not check `_activationAlreadyHandled` here.
   [self maybeTriggerSyncedSetUpWithSource:SyncedSetUpTriggerSource::
