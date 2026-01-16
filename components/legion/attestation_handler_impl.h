@@ -5,19 +5,37 @@
 #ifndef COMPONENTS_LEGION_ATTESTATION_HANDLER_IMPL_H_
 #define COMPONENTS_LEGION_ATTESTATION_HANDLER_IMPL_H_
 
+#include <map>
+
+#include "base/containers/span.h"
+#include "components/legion/attestation/server_verification_key.h"
+#include "components/legion/attestation/verification_key_utils.h"
 #include "components/legion/attestation_handler.h"
 
 namespace legion {
 
 class AttestationHandlerImpl : public AttestationHandler {
  public:
+  // Default constructor: Loads verification keys based on the environment.
   AttestationHandlerImpl();
+
+  // Constructor for testing purposes, allowing injection of a pre-loaded
+  // map of verification keys.
+  explicit AttestationHandlerImpl(
+      std::map<uint32_t, VerificationKey> verification_keys);
+
   ~AttestationHandlerImpl() override;
+
+  AttestationHandlerImpl(const AttestationHandlerImpl&) = delete;
+  AttestationHandlerImpl& operator=(const AttestationHandlerImpl&) = delete;
 
   // AttestationHandler:
   std::optional<oak::session::v1::AttestRequest> GetAttestationRequest()
       override;
   bool VerifyAttestationResponse(const AttestationEvidence& evidence) override;
+
+ private:
+  std::map<uint32_t, VerificationKey> verification_keys_;
 };
 
 }  // namespace legion

@@ -12,6 +12,7 @@
 namespace legion {
 
 enum class OutputPrefixType : int {
+  TINK = 1,
   LEGACY = 2,
 };
 

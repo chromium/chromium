@@ -8,6 +8,8 @@ namespace legion {
 
 BASE_FEATURE(kLegion, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLegionSeverAttestation, base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<std::string> kLegionApiKey{&kLegion, "api-key", ""};
 
 const base::FeatureParam<std::string> kLegionUrl{&kLegion, "url", ""};
