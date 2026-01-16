@@ -29,10 +29,10 @@
 
 @implementation ResizedAvatarCache
 
-- (instancetype)initWithSize:(CGSize)size {
+- (instancetype)initWithIdentityAvatarSize:(IdentityAvatarSize)avatarSize {
   self = [super init];
   if (self) {
-    _expectedSize = size;
+    _expectedSize = GetSizeForIdentityAvatarSize(avatarSize);
     _resizedImages = [[NSCache alloc] init];
     _originalImages = [NSMapTable strongToWeakObjectsMapTable];
     [[NSNotificationCenter defaultCenter]
@@ -42,11 +42,6 @@
              object:nil];
   }
   return self;
-}
-
-- (instancetype)initWithIdentityAvatarSize:(IdentityAvatarSize)avatarSize {
-  CGSize size = GetSizeForIdentityAvatarSize(avatarSize);
-  return [self initWithSize:size];
 }
 
 - (UIImage*)resizedAvatarForIdentity:(id<SystemIdentity>)identity {
