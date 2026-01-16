@@ -334,8 +334,8 @@ external/wpt/css/css-shadow/css-scoping-shadow-slotted-nested.html
 external/wpt/css/css-shadow/css-scoping-shadow-slotted-rule.html
 external/wpt/css/css-shadow/css-scoping-shadow-with-rules.html
 external/wpt/css/css-shadow/css-scoping-shadow-with-rules-no-style-leak.html
+external/wpt/css/css-shadow/part/interaction-with-nested-pseudo-class.html
 external/wpt/css/css-shadow/shadow-host-with-before-after.html
-external/wpt/css/css-shadow-parts/interaction-with-nested-pseudo-class.html
 external/wpt/css/css-shapes/shape-outside/values/shape-margin-001.html
 external/wpt/css/css-shapes/shape-outside/values/shape-outside-circle-004.html
 external/wpt/css/css-shapes/shape-outside/values/shape-outside-circle-005.html

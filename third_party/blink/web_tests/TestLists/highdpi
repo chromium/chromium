@@ -466,7 +466,7 @@ external/wpt/css/css-scroll-snap/snap-after-initial-layout/writing-mode-horizont
 external/wpt/css/css-scroll-snap/snap-after-relayout/changing-scroll-snap-type.html
 external/wpt/css/css-scrollbars/scrollbar-width-004.html
 external/wpt/css/css-shadow/css-scoping-shadow-host-functional-rule.html
-external/wpt/css/css-shadow-parts/invalidation-complex-selector.html
+external/wpt/css/css-shadow/part/invalidation-complex-selector.html
 external/wpt/css/css-shapes/parsing/shape-image-threshold-valid.html
 external/wpt/css/css-shapes/shape-outside-invalid-ellipse-002.html
 external/wpt/css/css-shapes/shape-outside/assorted/float-should-push.html
