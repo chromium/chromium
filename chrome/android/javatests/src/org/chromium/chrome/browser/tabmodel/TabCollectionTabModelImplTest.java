@@ -1523,6 +1523,76 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
+    @UiThreadTest
+    public void testSetTabGroupVisualData() {
+        Tab tab0 = getTabAt(0);
+        mCollectionModel.createSingleTabGroup(tab0);
+        Token tabGroupId = tab0.getTabGroupId();
+        assertNotNull(tabGroupId);
+
+        final String newTitle = "Visual Data Title";
+        final int newColor = TabGroupColorId.RED;
+        final boolean newCollapsed = true;
+        // The native bridge (C++) currently passes false for animate, so we test with false here,
+        // but the Java implementation passes the parameter through.
+        final boolean newAnimate = false;
+
+        CallbackHelper titleCallback = new CallbackHelper();
+        CallbackHelper colorCallback = new CallbackHelper();
+        CallbackHelper collapsedCallback = new CallbackHelper();
+
+        TabGroupModelFilterObserver observer =
+                new TabGroupModelFilterObserver() {
+                    @Override
+                    public void didChangeTabGroupTitle(Token groupTitleId, String groupTitle) {
+                        assertEquals(tabGroupId, groupTitleId);
+                        assertEquals(newTitle, groupTitle);
+                        titleCallback.notifyCalled();
+                    }
+
+                    @Override
+                    public void didChangeTabGroupColor(Token groupColorId, int groupColor) {
+                        assertEquals(tabGroupId, groupColorId);
+                        assertEquals(newColor, groupColor);
+                        colorCallback.notifyCalled();
+                    }
+
+                    @Override
+                    public void didChangeTabGroupCollapsed(
+                            Token groupCollapsedId, boolean isCollapsed, boolean animate) {
+                        assertEquals(tabGroupId, groupCollapsedId);
+                        assertEquals(newCollapsed, isCollapsed);
+                        assertEquals(newAnimate, animate);
+                        collapsedCallback.notifyCalled();
+                    }
+                };
+
+        mCollectionModel.addTabGroupObserver(observer);
+
+        // Call the consolidated setter method
+        mCollectionModel.setTabGroupVisualData(
+                tabGroupId, newTitle, newColor, newCollapsed, newAnimate);
+
+        // Verify SharedPreferences updates
+        assertEquals(newTitle, TabGroupVisualDataStore.getTabGroupTitle(tabGroupId));
+        assertEquals(newColor, TabGroupVisualDataStore.getTabGroupColor(tabGroupId));
+        assertEquals(newCollapsed, TabGroupVisualDataStore.getTabGroupCollapsed(tabGroupId));
+
+        // Verify model getters (which may verify native state if connected)
+        assertEquals(newTitle, mCollectionModel.getTabGroupTitle(tabGroupId));
+        assertEquals(newColor, mCollectionModel.getTabGroupColor(tabGroupId));
+        assertEquals(newCollapsed, mCollectionModel.getTabGroupCollapsed(tabGroupId));
+
+        // Verify observers were notified
+        assertEquals(1, titleCallback.getCallCount());
+        assertEquals(1, colorCallback.getCallCount());
+        assertEquals(1, collapsedCallback.getCallCount());
+
+        mCollectionModel.removeTabGroupObserver(observer);
+    }
+
+    @Test
+    @MediumTest
     public void testCloseTabGroup_VisualDataRemoved() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();

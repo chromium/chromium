@@ -556,17 +556,12 @@ public abstract class TabModelJniBridge implements TabModelInternal {
             @JniType("std::vector<TabAndroid*>") List<Tab> tabs);
 
     @CalledByNative
-    protected abstract void setTabGroupTitle(
+    protected abstract void setTabGroupVisualData(
             @JniType("base::Token") Token tabGroupId,
-            @JniType("std::optional<std::u16string>") @Nullable String title);
-
-    @CalledByNative
-    protected abstract void setTabGroupColor(
-            @JniType("base::Token") Token tabGroupId, @TabGroupColorId int colorId);
-
-    @CalledByNative
-    protected abstract void setTabGroupCollapsed(
-            @JniType("base::Token") Token tabGroupId, boolean isCollapsed, boolean animate);
+            @JniType("std::optional<std::u16string>") @Nullable String title,
+            @TabGroupColorId int colorId,
+            boolean isCollapsed,
+            boolean animate);
 
     @CalledByNative
     protected abstract @JniType("std::optional<base::Token>") @Nullable Token addTabsToGroup(

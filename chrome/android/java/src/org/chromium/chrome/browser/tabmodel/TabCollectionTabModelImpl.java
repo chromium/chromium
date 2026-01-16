@@ -891,6 +891,40 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         }
     }
 
+    @Override
+    protected void setTabGroupVisualData(
+            Token tabGroupId,
+            @Nullable String title,
+            @TabGroupColorId int colorId,
+            boolean isCollapsed,
+            boolean animate) {
+        assertOnUiThread();
+
+        // 1. Update the local Android SharedPreferences backing.
+        TabGroupVisualDataStore.storeTabGroupTitle(tabGroupId, title);
+        TabGroupVisualDataStore.storeTabGroupColor(tabGroupId, colorId);
+        TabGroupVisualDataStore.storeTabGroupCollapsed(tabGroupId, isCollapsed);
+
+        // 2. Sync with the native TabStripCollection backing exactly once.
+        // (Java will auto-box colorId/isCollapsed to the required @Nullable Integer/Boolean).
+        if (mNativeTabCollectionTabModelImplPtr != 0) {
+            TabCollectionTabModelImplJni.get()
+                    .updateTabGroupVisualData(
+                            mNativeTabCollectionTabModelImplPtr,
+                            tabGroupId,
+                            title,
+                            colorId,
+                            isCollapsed);
+        }
+
+        // 3. Notify the Java UI observers.
+        for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
+            observer.didChangeTabGroupTitle(tabGroupId, title);
+            observer.didChangeTabGroupColor(tabGroupId, colorId);
+            observer.didChangeTabGroupCollapsed(tabGroupId, isCollapsed, animate);
+        }
+    }
+
     // TabGroupModelFilter overrides.
 
     @Override

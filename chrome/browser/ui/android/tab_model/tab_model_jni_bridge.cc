@@ -678,15 +678,13 @@ void TabModelJniBridge::SetTabGroupVisualData(
     const tab_groups::TabGroupVisualData& visual_data) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
-  Java_TabModelJniBridge_setTabGroupTitle(env, jobj, group_id.token(),
-                                          visual_data.title());
 
-  // The cast is safe because the enum values are synced across C++ and Java.
-  Java_TabModelJniBridge_setTabGroupColor(
-      env, jobj, group_id.token(), static_cast<int32_t>(visual_data.color()));
-  Java_TabModelJniBridge_setTabGroupCollapsed(env, jobj, group_id.token(),
-                                              visual_data.is_collapsed(),
-                                              /*animate=*/false);
+  // The color cast is safe because the enum values are synced across C++ and
+  // Java.
+  Java_TabModelJniBridge_setTabGroupVisualData(
+      env, jobj, group_id.token(), visual_data.title(),
+      static_cast<jint>(visual_data.color()), visual_data.is_collapsed(),
+      /*animate=*/false);
 }
 
 std::optional<tab_groups::TabGroupId> TabModelJniBridge::AddTabsToGroup(
