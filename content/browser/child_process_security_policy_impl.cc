@@ -70,6 +70,11 @@ namespace features {
 BASE_FEATURE(kAdditionalNavigationCommitChecks,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// TODO(crbug.com/476409377): Remove this guard once the known cases of missing
+// SecurityState have been fixed.
+BASE_FEATURE(kDumpWithoutCrashingForMissingSecurityState,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // TODO(https://crbug.com/325410297): Remove this killswitch once the new
 // sandboxed frame enforcements finish rolling out.
 BASE_FEATURE(kSandboxedFrameEnforcements, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -225,6 +230,27 @@ void LogCanCommitUrlFailureReason(const std::string& failure_reason) {
   static auto* const failure_reason_key = base::debug::AllocateCrashKeyString(
       "cpspi_can_commit_url_failure_reason", base::debug::CrashKeySize::Size64);
   base::debug::SetCrashKeyString(failure_reason_key, failure_reason);
+}
+
+// If a ChildProcessSecurityPolicy query is unable to find the SecurityState,
+// this indicates a bug in the browser process where the caller is not ensuring
+// the SecurityState is alive as long as needed (e.g., by holding a
+// ChildProcessSecurityPolicy::Handle).
+//
+// When these cases occur, possibly send a DumpWithoutCrashing report to track
+// down the caller (including in tasks posted from other threads) and fix it.
+// This function uses NOINLINE to ensure all such reports are handled from a
+// consistent and self-explanatory magic signature while they are investigated.
+//
+// TODO(crbug.com/476409377): Once all known cases are fixed, upgrade this to a
+// browser crash to prevent future regressions.
+NOINLINE void NoChildProcessSecurityPolicySecurityStateFound() {
+  // For now, gate the crash report behind a feature flag to control the number
+  // of reports while there may be many unknown causes.
+  if (base::FeatureList::IsEnabled(
+          features::kDumpWithoutCrashingForMissingSecurityState)) {
+    base::debug::DumpWithoutCrashing();
+  }
 }
 
 // Checks whether a lock mismatch should be ignored to allow most visited tiles
@@ -2492,13 +2518,24 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
     keep_alive_durations = "no durations available: on IO thread.";
   }
 
-  // Returning false here will result in a renderer kill.  Set some crash
+  // Returning false here will often result in a renderer kill.  Set some crash
   // keys that will help understand the circumstances of that kill.
+  // TODO(crbug.com/476412562): Find a way to scope these keys so that they do
+  // not appear in later unrelated crash reports.
   LogCanAccessDataForOriginCrashKeys(
       expected_process_lock.ToString(),
       GetKilledProcessOriginLock(security_state),
       url.DeprecatedGetOriginAsURL().spec(), failure_reason,
       keep_alive_durations, shutdown_delay_ref_count, process_rfh_count);
+  if (failure_reason == "no_security_state") {
+    // For the time being, log a crash report in this case with the crash keys
+    // above, to help diagnose any unknown causes.
+    // TODO(crbug.com/476409377): Once this case is fixed in practice and
+    // upgraded to a browser crash, move this call closer to where the missing
+    // SecurityState was detected.
+    NoChildProcessSecurityPolicySecurityStateFound();
+  }
+
   return false;
 }
 
