@@ -173,12 +173,16 @@ void OmniboxPopupWebUIBaseContent::LoadContent() {
   SetWebContents(contents_wrapper_->web_contents());
   extensions::SetViewType(contents_wrapper_->web_contents(),
                           extensions::mojom::ViewType::kComponent);
-  webui::SetBrowserWindowInterface(contents_wrapper_->web_contents(),
-                                   location_bar_view_->browser());
-
-  tab_selection_listener_ = std::make_unique<OmniboxPopupTabSelectionListener>(
-      weak_factory_.GetWeakPtr(),
-      location_bar_view_->browser()->tab_strip_model());
+  // LocationBarView can be instantiated in windows that do not have a
+  // Browser object (i.e Captive Portal). In that case, features depending on
+  // the browser are not supported and should be skipped.
+  if (Browser* browser = location_bar_view_->browser()) {
+    webui::SetBrowserWindowInterface(contents_wrapper_->web_contents(),
+                                     browser);
+    tab_selection_listener_ =
+        std::make_unique<OmniboxPopupTabSelectionListener>(
+            weak_factory_.GetWeakPtr(), browser->tab_strip_model());
+  }
   // Make the OmniboxController available to the OmniboxPopupUI.
   OmniboxPopupWebContentsHelper::CreateForWebContents(GetWebContents());
   OmniboxPopupWebContentsHelper::FromWebContents(GetWebContents())
