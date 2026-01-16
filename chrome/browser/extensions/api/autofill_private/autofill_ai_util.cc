@@ -60,13 +60,14 @@ using autofill::EntityTypeName;
 void EntityInstanceToPrivateApiEntityInstanceWithLabels(
     base::span<const EntityInstance*> entity_instances,
     const std::string& app_locale,
+    bool obfuscate_sensitive_types,
     std::vector<autofill_private::EntityInstanceWithLabels>& output) {
   // Step 1#, get all available labels for `entity_instances`.
   const std::vector<autofill::EntityLabel> labels_for_entities =
       autofill::GetLabelsForEntities(entity_instances,
                                      /*attribute_types_to_ignore=*/{},
                                      /*only_disambiguating_types=*/false,
-                                     /*obfuscate_sensitive_types=*/false,
+                                     /*obfuscate_sensitive_types=*/obfuscate_sensitive_types,
                                      app_locale);
 
   // Step 2#
@@ -280,6 +281,7 @@ autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
 std::vector<autofill_private::EntityInstanceWithLabels>
 EntityInstancesToPrivateApiEntityInstancesWithLabels(
     base::span<const EntityInstance> entity_instances,
+    bool obfuscate_sensitive_types,
     const std::string& app_locale) {
   // Entity labels should be generated based on other entities of the same
   // type. This is because the disambiguation values of attributes are only
@@ -291,8 +293,8 @@ EntityInstancesToPrivateApiEntityInstancesWithLabels(
   std::vector<autofill_private::EntityInstanceWithLabels> response;
   response.reserve(entity_instances.size());
   for (auto& [entity_type, entities] : entities_per_type) {
-    EntityInstanceToPrivateApiEntityInstanceWithLabels(entities, app_locale,
-                                                       response);
+    EntityInstanceToPrivateApiEntityInstanceWithLabels(
+        entities, app_locale, obfuscate_sensitive_types, response);
   }
   return response;
 }

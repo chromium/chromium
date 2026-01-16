@@ -25,6 +25,8 @@
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/common/autofill_prefs.h"
+#include "components/prefs/pref_filter.h"
 #include "components/sync/service/sync_service.h"
 #include "content/public/browser/browser_context.h"
 
@@ -98,11 +100,19 @@ void AutofillPrivateEventRouter::OnPersonalDataChanged() {
 }
 
 void AutofillPrivateEventRouter::OnEntityInstancesChanged() {
+  PrefService* pref_service = Profile::FromBrowserContext(context_)->GetPrefs();
+  const bool obfuscate_sensitive_types =
+      pref_service &&
+      autofill::prefs::IsAutofillAiReauthBeforeFillingEnabled(pref_service) &&
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAiReauthRequired);
+
   base::Value::List args;
   args.Append(ToValueList(
       extensions::autofill_ai_util::
           EntityInstancesToPrivateApiEntityInstancesWithLabels(
               entity_data_manager_observer_.GetSource()->GetEntityInstances(),
+              obfuscate_sensitive_types,
               g_browser_process->GetApplicationLocale())));
 
   std::unique_ptr<Event> extension_event = std::make_unique<Event>(

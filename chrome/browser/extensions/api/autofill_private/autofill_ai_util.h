@@ -44,6 +44,7 @@ api::autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
 std::vector<api::autofill_private::EntityInstanceWithLabels>
 EntityInstancesToPrivateApiEntityInstancesWithLabels(
     base::span<const autofill::EntityInstance> entity_instances,
+    bool obfuscate_sensitive_types,
     const std::string& app_locale);
 
 api::autofill_private::EntityType EntityTypeToPrivateApiEntityType(

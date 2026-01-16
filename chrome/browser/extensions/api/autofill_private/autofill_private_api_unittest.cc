@@ -613,6 +613,23 @@ INSTANTIATE_TEST_SUITE_P(
                              : "AuthenticationRequired_PreOff_") +
              std::string(std::get<1>(info.param) ? "FeatureOn" : "FeatureOff");
     });
+
+class AutofillPrivateApiObfuscationUnitTest
+    : public AutofillPrivateApiUnitTest {
+ public:
+  AutofillPrivateApiObfuscationUnitTest() = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      autofill::features::kAutofillAiReauthRequired};
+};
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiObfuscationUnitTest,
+                       ObfuscatedLabels) {
+  autofill::prefs::SetAutofillAiReauthBeforeFillingEnabled(
+      profile()->GetPrefs(), true);
+  ASSERT_TRUE(RunAutofillSubtest("testExpectedObfuscatedLabelsAreGenerated"));
+}
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || || BUILDFLAG(IS_ANDROID) ||
         // BUILDFLAG(IS_CHROMEOS)
 

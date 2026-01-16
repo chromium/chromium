@@ -1039,9 +1039,14 @@ AutofillPrivateLoadEntityInstancesFunction::Run() {
   if (!entity_data_manager) {
     return RespondNow(Error(kErrorAutofillAiUnavailable));
   }
+  const bool obfuscate_sensitive_types =
+      autofill::prefs::IsAutofillAiReauthBeforeFillingEnabled(
+          autofill_client()->GetPrefs()) &&
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAiReauthRequired);
   std::vector<autofill_private::EntityInstanceWithLabels> result =
       autofill_ai_util::EntityInstancesToPrivateApiEntityInstancesWithLabels(
-          entity_data_manager->GetEntityInstances(),
+          entity_data_manager->GetEntityInstances(), obfuscate_sensitive_types,
           g_browser_process->GetApplicationLocale());
   return RespondNow(ArgumentList(
       autofill_private::LoadEntityInstances::Results::Create(result)));

@@ -34,6 +34,7 @@ var MASKED_CVC = '•••';
 var NICKNAME = 'nickname';
 var IBAN_VALUE = 'AD1400080001001234567890';
 var INVALID_IBAN_VALUE = 'AD14000800010012345678900';
+var OBFUSCATION_DOT = '\u2022\u2060\u2006\u2060';
 var ENTITY_INSTANCE = {
   type: {
     typeName: 1,
@@ -219,6 +220,26 @@ function entityInstaceToEntityInstanceWithLabels(entityInstance, sublabel) {
     storedInWallet: false,
   });
 };
+
+function assertExpectedLabelsAreCorrect(actualList, expectedList) {
+  const sortByGuid = (instances) => {
+    return instances.sort((a, b) => {
+      if (a.guid < b.guid) {
+        return -1;
+      }
+      if (a.guid > b.guid) {
+        return 1;
+      }
+      return 0;
+    });
+  };
+  var expectedInstances = expectedList.map(
+      (entityWithExpectedLabels) => entityInstaceToEntityInstanceWithLabels(
+          entityWithExpectedLabels.entity,
+          entityWithExpectedLabels.expectedLabel));
+  chrome.test.assertEq(
+      sortByGuid(expectedInstances), sortByGuid(actualList));
+}
 
 var availableTests = [
   function getCountryList() {
@@ -1169,28 +1190,6 @@ var availableTests = [
         expectedLabel: 'Linea'
       },
     ];
-    const assertExpectedLabelsAreCorrect =
-        (entityInstancesWithLabelsList) => {
-          const sortByGuid = (instances) => {
-            return instances.sort((a, b) => {
-              if (a.guid < b.guid) {
-                return -1;
-              }
-              if (a.guid > b.guid) {
-                return 1;
-              }
-              return 0;
-            });
-          };
-          var expectedInstances = entityInstancesWithExpectedLabels.map(
-              (entityWithExpectedLabels) =>
-                  entityInstaceToEntityInstanceWithLabels(
-                      entityWithExpectedLabels.entity,
-                      entityWithExpectedLabels.expectedLabel));
-          chrome.test.assertEq(
-              sortByGuid(expectedInstances),
-              sortByGuid(entityInstancesWithLabelsList));
-        }
 
     var done = chrome.test.listenForever(
         chrome.autofillPrivate.onEntityInstancesChanged,
@@ -1200,7 +1199,9 @@ var availableTests = [
           if (entityInstancesWithLabelsList.length ==
               entityInstancesWithExpectedLabels.length) {
             chrome.test.callbackPass(function(entityInstancesWithLabelsList) {
-              assertExpectedLabelsAreCorrect(entityInstancesWithLabelsList);
+              assertExpectedLabelsAreCorrect(
+                  entityInstancesWithLabelsList,
+                  entityInstancesWithExpectedLabels);
               done();
             })(entityInstancesWithLabelsList);
           }
@@ -1211,6 +1212,94 @@ var availableTests = [
                 entityWithExpectedLabel.entity));
   },
 
+  async function testExpectedObfuscatedLabelsAreGenerated() {
+    // Add 2 Passports, their labels should be:
+    //
+    // Passport
+    // •⁠ ⁠•⁠ ⁠•⁠ ⁠•⁠ ⁠•⁠ ⁠•⁠ ⁠1234
+    //
+    // Passport
+    // •⁠ ⁠•⁠ ⁠•⁠ ⁠•⁠ ⁠•⁠ ⁠•⁠ ⁠5678
+    var entityInstancesWithExpectedLabels = [
+      {
+        entity: {
+          type: {
+            typeName: 0,
+            typeNameAsString: 'Passport',
+            addEntityTypeString: 'Add passport',
+            editEntityTypeString: 'Edit passport',
+            deleteEntityTypeString: 'Delete passport',
+            supportsWalletStorage: false,
+          },
+          attributeInstances: [
+            {
+              type: {
+                typeName: 2,
+                typeNameAsString: 'Number',
+                dataType: AttributeTypeDataType.STRING,
+              },
+              value: '1111111234'
+            },
+          ],
+          guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc192',
+          nickname: 'Passport 1',
+        },
+        // Obfuscated Number
+        // "...1234"
+        expectedLabel: OBFUSCATION_DOT + OBFUSCATION_DOT +
+            OBFUSCATION_DOT + OBFUSCATION_DOT + OBFUSCATION_DOT +
+            OBFUSCATION_DOT + '1234'
+      },
+      {
+        entity: {
+          type: {
+            typeName: 0,
+            typeNameAsString: 'Passport',
+            addEntityTypeString: 'Add passport',
+            editEntityTypeString: 'Edit passport',
+            deleteEntityTypeString: 'Delete passport',
+            supportsWalletStorage: false,
+          },
+          attributeInstances: [
+            {
+              type: {
+                typeName: 2,
+                typeNameAsString: 'Number',
+                dataType: AttributeTypeDataType.STRING,
+              },
+              value: '2222225678'
+            },
+          ],
+          guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc193',
+          nickname: 'Passport 2',
+        },
+        // "...5678"
+        expectedLabel: OBFUSCATION_DOT + OBFUSCATION_DOT +
+            OBFUSCATION_DOT + OBFUSCATION_DOT + OBFUSCATION_DOT +
+            OBFUSCATION_DOT + '5678'
+      },
+    ];
+
+    var done = chrome.test.listenForever(
+        chrome.autofillPrivate.onEntityInstancesChanged,
+        function(entityInstancesWithLabelsList) {
+          // The test callback should only run when all expected entities were
+          // added.
+          if (entityInstancesWithLabelsList.length ==
+              entityInstancesWithExpectedLabels.length) {
+            chrome.test.callbackPass(function(entityInstancesWithLabelsList) {
+              assertExpectedLabelsAreCorrect(
+                  entityInstancesWithLabelsList,
+                  entityInstancesWithExpectedLabels);
+              done();
+            })(entityInstancesWithLabelsList);
+          }
+        });
+    entityInstancesWithExpectedLabels.forEach(
+        async (entityWithExpectedLabel) =>
+            chrome.autofillPrivate.addOrUpdateEntityInstance(
+                entityWithExpectedLabel.entity));
+  },
 
   async function addEntityInstanceWithIncompleteDate() {
     chrome.autofillPrivate.addOrUpdateEntityInstance(
@@ -1583,6 +1672,8 @@ var TESTS_FOR_CONFIG = {
   'getAllAttributeTypesForEntityTypeName':
       ['getAllAttributeTypesForEntityTypeName'],
   'testExpectedLabelsAreGenerated': ['testExpectedLabelsAreGenerated'],
+  'testExpectedObfuscatedLabelsAreGenerated':
+      ['testExpectedObfuscatedLabelsAreGenerated'],
   'testEntityTypeInEntityInstanceWithLabels':
       ['testEntityTypeInEntityInstanceWithLabels'],
   'getEmptyPayOverTimeIssuerList': ['getEmptyPayOverTimeIssuerList'],
