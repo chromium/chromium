@@ -21,6 +21,7 @@
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -204,6 +205,56 @@ IN_PROC_BROWSER_TEST_P(
                           // TODO(b/438825957): add test coverage for the output
                           // of the CopyFromSurface screenshot.
                           _));
+}
+
+class ScreenshotTimeoutMultiSourcePageContextFetcherBrowserTest
+    : public MultiSourcePageContextFetcherBrowserTest {
+ public:
+  ScreenshotTimeoutMultiSourcePageContextFetcherBrowserTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features{
+        {kGlicTabScreenshotExperiment,
+         {
+             {"screenshot_timeout_ms", "1us"},
+         }},
+    };
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    features_.InitWithFeaturesAndParameters(enabled_features,
+                                            disabled_features);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ScreenshotTimeoutMultiSourcePageContextFetcherBrowserTest,
+    TakesScreenshot) {
+  GURL url = embedded_https_test_server().GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  SetBackground(web_contents()->GetPrimaryMainFrame(), "red");
+
+  while (true) {
+    base::HistogramTester histograms;
+    base::test::TestFuture<FetchPageContextResultCallbackArg> future;
+
+    FetchPageContextOptions options;
+    options.screenshot_options =
+        ScreenshotOptions::ViewportOnly(/*paint_preview_options=*/std::nullopt);
+    FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
+
+    ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
+                         future.Take());
+
+    ASSERT_TRUE(result);
+    if (result->screenshot_result.has_value()) {
+      continue;
+    }
+    histograms.ExpectUniqueSample("Glic.PageContextFetcher.GetScreenshotError",
+                                  content::CopyFromSurfaceError::kTimeout, 1);
+    break;
+  }
 }
 
 class RedactingMultiSourcePageContextFetcherBrowserTest

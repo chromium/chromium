@@ -36,4 +36,26 @@ viz::HostFrameSinkManager* GetHostFrameSinkManager() {
 #endif
 }
 
+CopyFromSurfaceResult ToCopyFromSurfaceResult(
+    base::expected<viz::CopyOutputBitmapWithMetadata,
+                   viz::CopyOutputResult::Error> result) {
+  if (!result.has_value()) {
+    switch (result.error()) {
+      case viz::CopyOutputResult::Error::kNone:
+        return base::unexpected<CopyFromSurfaceError>(
+            CopyFromSurfaceError::kVizSentEmptyBitmap);
+      case viz::CopyOutputResult::Error::kUnknown:
+        return base::unexpected<CopyFromSurfaceError>(
+            CopyFromSurfaceError::kUnknownVizError);
+      case viz::CopyOutputResult::Error::kTimeout:
+        return base::unexpected<CopyFromSurfaceError>(
+            CopyFromSurfaceError::kTimeout);
+      case viz::CopyOutputResult::Error::kEmbeddingTokenChanged:
+        return base::unexpected<CopyFromSurfaceError>(
+            CopyFromSurfaceError::kEmbeddingTokenChanged);
+    }
+  }
+  return std::move(result.value());
+}
+
 }  // namespace content

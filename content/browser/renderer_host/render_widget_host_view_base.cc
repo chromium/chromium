@@ -180,8 +180,8 @@ void RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
   if (!main_host || !main_frame_host) {
     if (base::FeatureList::IsEnabled(
             features::kCopyFromSurfaceAlwaysCallCallback)) {
-      std::move(callback).Run(base::unexpected<std::string>(
-          "Main Host or FrameHost is no longer available."));
+      std::move(callback).Run(base::unexpected<content::CopyFromSurfaceError>(
+          content::CopyFromSurfaceError::kFrameGone));
     }
     return;
   }
@@ -248,9 +248,7 @@ void RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
               // If main_result is not available, there is nothing to combine
               // into.
               if (!main_result.has_value()) {
-                std::move(final_callback)
-                    .Run(base::unexpected<std::string>(
-                        "Main image capture failed: " + main_result.error()));
+                std::move(final_callback).Run(main_result);
                 return;
               }
 
@@ -286,8 +284,8 @@ void RenderWidgetHostViewBase::CopyFromSurface(
     base::TimeDelta timeout,
     base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
   NOTIMPLEMENTED_LOG_ONCE();
-  std::move(callback).Run(base::unexpected<std::string>(
-      "CopyFromSurface not implemented for this platform."));
+  std::move(callback).Run(base::unexpected<content::CopyFromSurfaceError>(
+      content::CopyFromSurfaceError::kNotImplemented));
 }
 
 void RenderWidgetHostViewBase::CopyFromExactSurface(
@@ -295,8 +293,8 @@ void RenderWidgetHostViewBase::CopyFromExactSurface(
     const gfx::Size& output_size,
     base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
   NOTIMPLEMENTED_LOG_ONCE();
-  std::move(callback).Run(base::unexpected<std::string>(
-      "CopyFromExactSurface not implemented for this platform."));
+  std::move(callback).Run(base::unexpected<content::CopyFromSurfaceError>(
+      content::CopyFromSurfaceError::kNotImplemented));
 }
 
 ui::FilteredGestureProvider*
@@ -311,8 +309,8 @@ void RenderWidgetHostViewBase::CopyFromExactSurfaceWithIpcDelay(
     base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback,
     base::TimeDelta ipc_delay) {
   NOTIMPLEMENTED_LOG_ONCE();
-  std::move(callback).Run(base::unexpected<std::string>(
-      "CopyFromExactSurfaceWithIpcDelay not implemented for this platform."));
+  std::move(callback).Run(base::unexpected<content::CopyFromSurfaceError>(
+      content::CopyFromSurfaceError::kNotImplemented));
 }
 #endif
 

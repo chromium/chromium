@@ -326,12 +326,13 @@ class VIZ_COMMON_EXPORT CopyOutputResult::ScopedSkBitmap {
   // It makes a copy of the content in CopyOutputResult if it is needed.
   SkBitmap GetOutScopedBitmap() const;
 
-  // Returns a base::expected<CopyOutputBitmapWithMetadata, std::string>.
-  // On success, the expected value contains a CopyOutputBitmapWithMetadata,
-  // where the encapsulated SkBitmap is guaranteed to be non-empty.
-  // On failure, the expected value contains a std::string describing the error.
-  // This function makes a copy of the content in CopyOutputResult if needed.
-  base::expected<CopyOutputBitmapWithMetadata, std::string>
+  // Returns a base::expected<CopyOutputBitmapWithMetadata,
+  // CopyOutputResult::Error>. On success, the expected value contains a
+  // CopyOutputBitmapWithMetadata, where the encapsulated SkBitmap is guaranteed
+  // to be non-empty. On failure, the expected value contains an enum describing
+  // the error. This function makes a copy of the content in CopyOutputResult if
+  // needed.
+  base::expected<CopyOutputBitmapWithMetadata, CopyOutputResult::Error>
   GetOutScopedBitmapAndMetadata() const;
 
  private:

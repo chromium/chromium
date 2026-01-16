@@ -45,8 +45,24 @@ struct CopyOutputBitmapWithMetadata;
 
 namespace content {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(CopyFromSurfaceError)
+enum class CopyFromSurfaceError {
+  kUnknown = 0,
+  kNotImplemented = 1,
+  kFrameGone = 2,
+  kTimeout = 3,
+  kEmbeddingTokenChanged = 4,
+  kVizSentEmptyBitmap = 5,
+  kUnknownVizError = 6,
+  kMaxValue = kUnknownVizError,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:CopyFromSurfaceError)
+
 using CopyFromSurfaceResult =
-    base::expected<viz::CopyOutputBitmapWithMetadata, std::string>;
+    base::expected<viz::CopyOutputBitmapWithMetadata, CopyFromSurfaceError>;
 
 class RenderWidgetHost;
 class TouchSelectionControllerClientManager;

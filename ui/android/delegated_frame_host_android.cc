@@ -194,9 +194,9 @@ void DelegatedFrameHostAndroid::CopyFromCompositingSurface(
     const gfx::Rect& src_subrect,
     const gfx::Size& output_size,
     base::TimeDelta timeout,
-    base::OnceCallback<void(
-        const base::expected<viz::CopyOutputBitmapWithMetadata, std::string>&)>
-        callback,
+    base::OnceCallback<
+        void(const base::expected<viz::CopyOutputBitmapWithMetadata,
+                                  viz::CopyOutputResult::Error>&)> callback,
     bool capture_exact_surface_id,
     base::TimeDelta ipc_delay) {
   DCHECK(CanCopyFromCompositingSurface());
@@ -218,7 +218,8 @@ void DelegatedFrameHostAndroid::CopyFromCompositingSurface(
           base::BindOnce(
               [](base::OnceCallback<void(
                      const base::expected<viz::CopyOutputBitmapWithMetadata,
-                                          std::string>&)> copy_result,
+                                          viz::CopyOutputResult::Error>&)>
+                     copy_result,
                  ui::WindowAndroidCompositor::ScopedKeepSurfaceAliveCallback
                      keep_alive,
                  std::unique_ptr<viz::CopyOutputResult> result) {
