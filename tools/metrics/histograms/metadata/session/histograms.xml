@@ -1299,12 +1299,6 @@ chromium-metrics-reviews@google.com.
         summary="tabs with background notification permission"/>
     <variant name=".Grouped" summary="tabs that are part of tab groups"/>
     <variant name=".InternalPage" summary="tabs hosting internal WebUI pages"/>
-    <variant name=".LowSiteEngagement"
-        summary="tabs with site engagement below the restore threshold"/>
-    <variant name=".LowSiteEngagementWithBackgroundCommunication"
-        summary="tabs with LowSiteEngagement but either
-                 BackgroundNotificationPermission or
-                 UpdatesTitleOrFaviconInBackground"/>
     <variant name=".Pinned" summary="pinned tabs"/>
     <variant name=".UpdatesTitleOrFaviconInBackground"
         summary="tabs that update their title or favicon in the background"/>

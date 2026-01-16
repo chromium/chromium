@@ -79,15 +79,6 @@ class SessionRestoreStatsCollector : public content::RenderWidgetHostObserver {
     size_t pinned_tab_count = 0;
     size_t grouped_tab_count = 0;
 
-    // Count of tabs in a session whose site engagement score is below the
-    // minimum to load.
-    size_t low_site_engagement_tab_count = 0;
-
-    // Count of tabs included in `low_site_engagement_tab_count` that use
-    // background communications (notification permission or update
-    // title/favicon in background.)
-    size_t low_site_engagement_with_background_communication_tab_count = 0;
-
     // Count of tabs in a session with notification permission.
     size_t notification_permission_tab_count = 0;
 
@@ -144,8 +135,7 @@ class SessionRestoreStatsCollector : public content::RenderWidgetHostObserver {
 
   // Updates counts that depend on async lookup of UpdatesFaviconInBackground()
   // and UpdatesTitleInBackground() in SiteDataReader.
-  void OnTabUpdatesInBackground(bool low_site_engagement,
-                                bool notification_permission,
+  void OnTabUpdatesInBackground(bool notification_permission,
                                 bool updates_in_background);
 
   // Won't record time for foreground tab paint because a non-restored
