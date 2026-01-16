@@ -136,26 +136,22 @@ void* StringImpl::operator new(size_t size) {
   return Partitions::BufferMalloc(size, "blink::StringImpl");
 }
 
-void StringImpl::operator delete(void* ptr) {
-  Partitions::BufferFree(ptr);
-}
-
-void StringImpl::operator delete(void* ptr, size_t size) {
-  Partitions::BufferFreeWithSize(ptr, size);
+void StringImpl::operator delete(StringImpl* impl, std::destroying_delete_t) {
+  size_t size = impl->GetAllocatedSize();
+  impl->~StringImpl();
+  // Use sized deallocation. We explicitly pass `GetAllocatedSize()` because
+  // StringImpl instances are allocated with a dynamic size
+  Partitions::BufferFreeWithSize(impl, size);
 }
 
 inline StringImpl::~StringImpl() {
   DCHECK(!IsStatic());
 }
 
-void StringImpl::DestroyIfNeeded() const {
+void StringImpl::DestroyIfNeeded() {
   if (hash_and_flags_.load(std::memory_order_acquire) & kIsAtomic) {
-    // TODO: Remove const_cast
-    if (AtomicStringTable::Instance().ReleaseAndRemoveIfNeeded(
-            const_cast<StringImpl*>(this))) {
-      // Use sized deallocation. We explicitly pass `GetAllocatedSize()` because
-      // StringImpl instances are allocated with a dynamic size
-      operator delete(const_cast<StringImpl*>(this), GetAllocatedSize());
+    if (AtomicStringTable::Instance().ReleaseAndRemoveIfNeeded(this)) {
+      delete this;
     } else {
       // AtomicStringTable::Add() revived this before we started really
       // killing it.
@@ -166,7 +162,7 @@ void StringImpl::DestroyIfNeeded() const {
     // of changing the load memory order to minimize perf impact.
     int ref_count = ref_count_.load(std::memory_order_acquire);
     DCHECK_EQ(ref_count, 1);
-    operator delete(const_cast<StringImpl*>(this), GetAllocatedSize());
+    delete this;
   }
 }
 

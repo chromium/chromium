@@ -110,9 +110,9 @@ TEST(StringImplTest, LowerASCII) {
   static const UChar kTestWithNonASCIICapitalized[2] = {0x0041,
                                                         0x00e1};  // A\xE1
 
-  // Make sure we support scoped_refptr<const StringImpl>.
-  scoped_refptr<const StringImpl> const_ref = test_string_impl->IsolatedCopy();
-  DCHECK(const_ref->HasOneRef());
+  // Make sure we support scoped_refptr<StringImpl>.
+  scoped_refptr<StringImpl> isolated_ref = test_string_impl->IsolatedCopy();
+  DCHECK(isolated_ref->HasOneRef());
   EXPECT_TRUE(Equal(
       StringImpl::Create(kTestWithNonASCII).get(),
       StringImpl::Create(kTestWithNonASCIICapitalized)->LowerASCII().get()));
@@ -184,9 +184,9 @@ TEST(StringImplTest, UpperASCII) {
   static const UChar kTestWithNonASCIICapitalized[2] = {0x0041,
                                                         0x00e1};  // A\xE1
 
-  // Make sure we support scoped_refptr<const StringImpl>.
-  scoped_refptr<const StringImpl> const_ref = test_string_impl->IsolatedCopy();
-  DCHECK(const_ref->HasOneRef());
+  // Make sure we support scoped_refptr<StringImpl>.
+  scoped_refptr<StringImpl> isolated_ref = test_string_impl->IsolatedCopy();
+  DCHECK(isolated_ref->HasOneRef());
   EXPECT_TRUE(Equal(StringImpl::Create(kTestWithNonASCIICapitalized).get(),
                     StringImpl::Create(kTestWithNonASCII)->UpperASCII().get()));
   EXPECT_FALSE(Equal(
