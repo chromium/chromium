@@ -224,6 +224,9 @@ int QuicSessionAttempt::DoCreateSessionComplete(int rv) {
   session_creation_finished_ = true;
   if (rv != OK) {
     CHECK(!session_);
+    // Log end event with error since we're skipping DoConfirmConnection().
+    net_log().EndEventWithNetErrorCode(
+        NetLogEventType::QUIC_SESSION_POOL_JOB_CONNECT, rv);
     return rv;
   }
 
@@ -249,6 +252,9 @@ int QuicSessionAttempt::DoCreateSessionComplete(int rv) {
 
 int QuicSessionAttempt::DoCryptoConnect(int rv) {
   if (rv != OK) {
+    // Log end event with error since we're skipping DoConfirmConnection().
+    net_log().EndEventWithNetErrorCode(
+        NetLogEventType::QUIC_SESSION_POOL_JOB_CONNECT, rv);
     // Reset `session_` to avoid dangling pointer.
     ResetSession();
     return rv;
