@@ -97,7 +97,6 @@ void GlicActivePinnedFocusedTabManager::OnTabPinningStatusChanged(
 
 void GlicActivePinnedFocusedTabManager::UpdateActiveTabDataObserver(
     tabs::TabInterface* active_tab) {
-  // TODO(b:444463509): consider handling TabChangedAt() events.
   active_tab_data_observer_ = std::make_unique<TabDataObserver>(
       active_tab ? active_tab->GetContents() : nullptr,
       base::BindRepeating(
