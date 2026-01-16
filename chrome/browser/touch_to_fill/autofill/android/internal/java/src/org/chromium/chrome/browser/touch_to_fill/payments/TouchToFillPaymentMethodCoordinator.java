@@ -40,6 +40,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.ImageSize;
@@ -71,6 +72,7 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
     @Override
     public void initialize(
             Context context,
+            Profile profile,
             AutofillImageFetcher imageFetcher,
             BottomSheetController sheetController,
             Delegate delegate,
@@ -94,7 +96,7 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                                 ImageSize.LARGE,
                                 loyaltyCard.getMerchantName());
         mMediator.initialize(
-                context, delegate, mTouchToFillPaymentMethodModel, bottomSheetFocusHelper);
+                context, profile, delegate, mTouchToFillPaymentMethodModel, bottomSheetFocusHelper);
         setUpModelChangeProcessors(
                 mTouchToFillPaymentMethodModel,
                 new TouchToFillPaymentMethodView(context, sheetController));

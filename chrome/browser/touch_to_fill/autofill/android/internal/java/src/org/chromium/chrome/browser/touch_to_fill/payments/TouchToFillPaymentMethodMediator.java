@@ -109,9 +109,14 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
+import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.preferences.PrefServiceUtil;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillResourceProvider;
@@ -142,6 +147,7 @@ import org.chromium.components.autofill.payments.TouchToFillDisplayOptions;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.payments.ui.InputProtector;
+import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -447,9 +453,12 @@ class TouchToFillPaymentMethodMediator {
     private PropertyModel mBnplSuggestionModel;
     private @TouchToFillBnplSuggestionVisibility int mBnplSuggestionVisibility;
     private InputProtector mInputProtector = new InputProtector();
+    private PersonalDataManager mPersonalDataManager;
+    private PrefChangeRegistrar mPrefChangeRegistrar;
 
     void initialize(
             Context context,
+            Profile profile,
             Delegate delegate,
             PropertyModel model,
             BottomSheetFocusHelper bottomSheetFocusHelper) {
@@ -458,6 +467,27 @@ class TouchToFillPaymentMethodMediator {
         mDelegate = delegate;
         mModel = model;
         mBottomSheetFocusHelper = bottomSheetFocusHelper;
+        mPersonalDataManager = PersonalDataManagerFactory.getForProfile(profile);
+        mPrefChangeRegistrar = PrefServiceUtil.createFor(profile);
+        mPrefChangeRegistrar.addObserver(
+                Pref.AUTOFILL_BNPL_ENABLED, this::updateBnplSuggestionOnPrefChange);
+    }
+
+    void updateBnplSuggestionOnPrefChange() {
+        if (mBnplSuggestionModel == null || mBnplSuggestion == null) {
+            return;
+        }
+
+        if (mPersonalDataManager.isBuyNowPayLaterEnabled()) {
+            mBnplSuggestionModel.set(IS_ENABLED, true);
+            mBnplSuggestionModel.set(SECONDARY_TEXT, mBnplSuggestion.getSublabel());
+        } else {
+            mBnplSuggestionModel.set(IS_ENABLED, false);
+            mBnplSuggestionModel.set(
+                    SECONDARY_TEXT,
+                    mContext.getString(
+                            R.string.autofill_bnpl_suggestion_label_for_unavailable_purchase));
+        }
     }
 
     void showPaymentMethods(
@@ -1009,6 +1039,10 @@ class TouchToFillPaymentMethodMediator {
             }
             // If all possible payment methods are null, then nothing is recorded on dismissal.
         }
+        if (mPrefChangeRegistrar != null) {
+            mPrefChangeRegistrar.destroy();
+            mPrefChangeRegistrar = null;
+        }
     }
 
     /**
@@ -1025,14 +1059,16 @@ class TouchToFillPaymentMethodMediator {
         }
         recordTouchToFillBnplUserAction(ISSUER_SELECTION_SCREEN_BACK_BUTTON_SELECTED);
         boolean isBnplChipEnabled = false;
-        ModelList sheetItems = mModel.get(SHEET_ITEMS);
-        for (int i = 0; i < sheetItems.size(); ++i) {
-            // If any issuer is enabled, the home screen BNPL chip remains active. Otherwise,
-            // the chip is grayed out.
-            if (sheetItems.get(i).type == ItemType.BNPL_ISSUER
-                    && !sheetItems.get(i).model.get(APPLY_ISSUER_DEACTIVATED_STYLE)) {
-                isBnplChipEnabled = true;
-                break;
+        if (mPersonalDataManager.isBuyNowPayLaterEnabled()) {
+            ModelList sheetItems = mModel.get(SHEET_ITEMS);
+            for (int i = 0; i < sheetItems.size(); ++i) {
+                // If any issuer is enabled, the home screen BNPL chip remains active. Otherwise,
+                // the chip is grayed out.
+                if (sheetItems.get(i).type == ItemType.BNPL_ISSUER
+                        && !sheetItems.get(i).model.get(APPLY_ISSUER_DEACTIVATED_STYLE)) {
+                    isBnplChipEnabled = true;
+                    break;
+                }
             }
         }
         showHomeScreen();

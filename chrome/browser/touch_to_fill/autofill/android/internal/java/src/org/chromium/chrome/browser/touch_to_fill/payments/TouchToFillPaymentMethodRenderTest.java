@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -469,6 +470,7 @@ public class TouchToFillPaymentMethodRenderTest {
                     mCoordinator = new TouchToFillPaymentMethodCoordinator();
                     mCoordinator.initialize(
                             mActivityTestRule.getActivity(),
+                            ProfileManager.getLastUsedRegularProfile(),
                             AutofillTestHelper.getAutofillImageFetcherForLastUsedProfile(),
                             mBottomSheetController,
                             mDelegateMock,

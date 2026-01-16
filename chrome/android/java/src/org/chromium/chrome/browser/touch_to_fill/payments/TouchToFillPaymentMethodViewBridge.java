@@ -41,6 +41,7 @@ class TouchToFillPaymentMethodViewBridge {
 
     private TouchToFillPaymentMethodViewBridge(
             TouchToFillPaymentMethodComponent.Delegate delegate,
+            Profile profile,
             Context context,
             AutofillImageFetcher imageFetcher,
             BottomSheetController bottomSheetController,
@@ -48,6 +49,7 @@ class TouchToFillPaymentMethodViewBridge {
         mComponent = new TouchToFillPaymentMethodCoordinator();
         mComponent.initialize(
                 context,
+                profile,
                 imageFetcher,
                 bottomSheetController,
                 delegate,
@@ -67,6 +69,7 @@ class TouchToFillPaymentMethodViewBridge {
         if (bottomSheetController == null) return null;
         return new TouchToFillPaymentMethodViewBridge(
                 delegate,
+                profile,
                 context,
                 AutofillImageFetcherFactory.getForProfile(profile),
                 bottomSheetController,

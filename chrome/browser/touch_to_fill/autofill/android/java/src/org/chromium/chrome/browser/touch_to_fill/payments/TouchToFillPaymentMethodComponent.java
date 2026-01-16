@@ -10,6 +10,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.LoyaltyCard;
@@ -100,6 +101,7 @@ interface TouchToFillPaymentMethodComponent {
      * Initializes the component.
      *
      * @param context A {@link Context} to create views and retrieve resources.
+     * @param profile A {@link Profile} to get personal data manager from.
      * @param imageFetcher A {@link AutofillImageFetcher} associated with the profile.
      * @param sheetController A {@link BottomSheetController} used to show/hide the sheet.
      * @param delegate A {@link Delegate} that handles interaction events.
@@ -108,6 +110,7 @@ interface TouchToFillPaymentMethodComponent {
      */
     void initialize(
             Context context,
+            Profile profile,
             AutofillImageFetcher imageFetcher,
             BottomSheetController sheetController,
             Delegate delegate,
