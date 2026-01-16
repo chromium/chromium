@@ -49,7 +49,7 @@
     "enable_cloud_trace": true,
     "experiments": [],
     "limits": "fastlocal=0",
-    "profile_mode": "cloud",
+    "profile_mode": "local",
     "project": "rbe-chromium-trusted",
     "remote_jobs": 250
   },
