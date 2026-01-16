@@ -10791,6 +10791,7 @@ from previous Chrome versions.
   <int value="-1216570731" label="OfflineHome:enabled"/>
   <int value="-1215746151" label="ForestFeature:enabled"/>
   <int value="-1215340781" label="CrOSSystemVoiceIsolationOption:enabled"/>
+  <int value="-1215167587" label="EnableAndroidSidePanel:disabled"/>
   <int value="-1215163628"
       label="AccessibilityUnserializeOptimizations:disabled"/>
   <int value="-1214870820" label="EnableNewStyleLauncher:enabled"/>
@@ -11685,6 +11686,7 @@ from previous Chrome versions.
   <int value="-902227224" label="MlRelevanceScoring:disabled"/>
   <int value="-902125579" label="ImmersiveUiMode:disabled"/>
   <int value="-901418755" label="TrafficCountersForWiFiTesting:enabled"/>
+  <int value="-901386731" label="EnableAndroidSidePanel:enabled"/>
   <int value="-900976825" label="AndroidSpellcheckFullApiBlink:disabled"/>
   <int value="-900871741" label="DesktopPWAsNotificationIconAndTitle:disabled"/>
   <int value="-899969457" label="ReadAloudBackgroundPlayback:disabled"/>

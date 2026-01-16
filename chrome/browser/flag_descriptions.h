@@ -5287,6 +5287,11 @@ inline constexpr char kEducationalTipModuleName[] = "Educational Tip Module";
 inline constexpr char kEducationalTipModuleDescription[] =
     "Show educational tip module on magic stack in clank";
 
+inline constexpr char kEnableAndroidSidePanelName[] =
+    "Enable Android Side Panel";
+inline constexpr char kEnableAndroidSidePanelDescription[] =
+    "Enable the side panel container on Android.";
+
 inline constexpr char kEnableCommandLineOnNonRootedName[] =
     "Enable command line on non-rooted devices";
 inline constexpr char kEnableCommandLineOnNoRootedDescription[] =
