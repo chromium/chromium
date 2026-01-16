@@ -171,6 +171,9 @@ class TabsEventRouter : public favicon::FaviconDriverObserver,
 
   // TabListInterfaceObserver:
   void OnTabAdded(tabs::TabInterface* tab, int index) override;
+  void OnTabMoved(tabs::TabInterface* tab,
+                  int from_index,
+                  int to_index) override;
   void OnTabListDestroyed(TabListInterface& tab_list) override;
 
   // ZoomObserver:

@@ -29,10 +29,12 @@ namespace {
 
 constexpr char kAudibleKey[] = "audible";
 constexpr char kAutoDiscardableKey[] = "autoDiscardable";
+constexpr char kFromIndexKey[] = "fromIndex";
 constexpr char kMutedInfoKey[] = "mutedInfo";
 constexpr char kNewPositionKey[] = "newPosition";
 constexpr char kNewWindowIdKey[] = "newWindowId";
 constexpr char kPinnedKey[] = "pinned";
+constexpr char kToIndexKey[] = "toIndex";
 
 // Callback for the event dispatch system. Computes which tab properties have
 // changed. Builds an argument list with an entry for the changed properties and
@@ -370,6 +372,29 @@ void TabsEventRouter::OnTabAdded(tabs::TabInterface* tab, int index) {
 
   // Otherwise, dispatch the `onCreated` event.
   DispatchTabCreatedEvent(contents, tab->IsActivated());
+}
+
+void TabsEventRouter::OnTabMoved(tabs::TabInterface* tab,
+                                 int from_index,
+                                 int to_index) {
+  CHECK(tab);
+  content::WebContents* web_contents = tab->GetContents();
+  CHECK(web_contents);
+
+  base::Value::List args;
+  args.Append(ExtensionTabUtil::GetTabId(web_contents));
+
+  base::Value::Dict object_args;
+  object_args.Set(tabs_constants::kWindowIdKey,
+                  ExtensionTabUtil::GetWindowIdOfTab(web_contents));
+  object_args.Set(kFromIndexKey, from_index);
+  object_args.Set(kToIndexKey, to_index);
+  args.Append(std::move(object_args));
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  DispatchEvent(profile, events::TABS_ON_MOVED, api::tabs::OnMoved::kEventName,
+                std::move(args), EventRouter::UserGestureState::kUnknown);
 }
 
 void TabsEventRouter::OnTabListDestroyed(TabListInterface& tab_list) {

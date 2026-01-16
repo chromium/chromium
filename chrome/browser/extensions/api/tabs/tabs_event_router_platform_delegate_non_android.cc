@@ -51,7 +51,6 @@ namespace extensions {
 
 namespace {
 
-constexpr char kFromIndexKey[] = "fromIndex";
 constexpr char kGroupIdKey[] = "groupId";
 constexpr char kSplitIdKey[] = "splitViewId";
 constexpr char kOldPositionKey[] = "oldPosition";
@@ -60,7 +59,6 @@ constexpr char kFrozenKey[] = "frozen";
 constexpr char kDiscardedKey[] = "discarded";
 constexpr char kTabIdKey[] = "tabId";
 constexpr char kTabIdsKey[] = "tabIds";
-constexpr char kToIndexKey[] = "toIndex";
 
 }  // namespace
 
@@ -118,11 +116,11 @@ void TabsEventRouterPlatformDelegate::OnTabStripModelChanged(
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
   switch (change.type()) {
-    case TabStripModelChange::kInserted: {
-      // This is handled via the TabsEventRouter's observation of
+    case TabStripModelChange::kInserted:
+    case TabStripModelChange::kMoved:
+      // These are handled via the TabsEventRouter's observation of
       // TabListInterface.
       break;
-    }
     case TabStripModelChange::kRemoved: {
       for (const auto& contents : change.GetRemove()->contents) {
         if (contents.remove_reason ==
@@ -136,11 +134,6 @@ void TabsEventRouterPlatformDelegate::OnTabStripModelChanged(
         DispatchTabDetachedAt(contents.contents, contents.index,
                               selection.old_contents == contents.contents);
       }
-      break;
-    }
-    case TabStripModelChange::kMoved: {
-      auto* move = change.GetMove();
-      DispatchTabMoved(move->contents, move->from_index, move->to_index);
       break;
     }
     case TabStripModelChange::kReplaced: {
@@ -387,25 +380,6 @@ void TabsEventRouterPlatformDelegate::DispatchTabSelectionChanged(
                          args.Clone(), EventRouter::UserGestureState::kUnknown);
   router_->DispatchEvent(profile, events::TABS_ON_HIGHLIGHTED,
                          api::tabs::OnHighlighted::kEventName, std::move(args),
-                         EventRouter::UserGestureState::kUnknown);
-}
-
-void TabsEventRouterPlatformDelegate::DispatchTabMoved(WebContents* contents,
-                                                       int from_index,
-                                                       int to_index) {
-  base::Value::List args;
-  args.Append(ExtensionTabUtil::GetTabId(contents));
-
-  base::Value::Dict object_args;
-  object_args.Set(tabs_constants::kWindowIdKey,
-                  ExtensionTabUtil::GetWindowIdOfTab(contents));
-  object_args.Set(kFromIndexKey, from_index);
-  object_args.Set(kToIndexKey, to_index);
-  args.Append(std::move(object_args));
-
-  Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
-  router_->DispatchEvent(profile, events::TABS_ON_MOVED,
-                         api::tabs::OnMoved::kEventName, std::move(args),
                          EventRouter::UserGestureState::kUnknown);
 }
 
