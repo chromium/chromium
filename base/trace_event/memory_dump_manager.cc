@@ -40,6 +40,7 @@
 #include "build/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "third_party/abseil-cpp/absl/base/dynamic_annotations.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
@@ -581,14 +582,27 @@ MemoryDumpManager::ProcessMemoryDumpAsyncState::ProcessMemoryDumpAsyncState(
   // which will be executed after the provider being added.
   pending_dump_providers.reserve(dump_providers.size());
   size_t num_following_providers = 0;
+  absl::flat_hash_map<std::string, size_t> provider_counts;
   for (scoped_refptr<MemoryDumpProviderInfo> provider :
        base::Reversed(dump_providers)) {
+    ++provider_counts[provider->name.histogram_name()];
     pending_dump_providers.emplace_back(std::move(provider),
                                         num_following_providers++);
   }
   MemoryDumpArgs args = {req_args.level_of_detail, req_args.determinism,
                          req_args.dump_guid};
   process_memory_dump = std::make_unique<ProcessMemoryDump>(args);
+
+  // Log the count of objects for each provider type, and the total count
+  // without a suffix.
+  for (const auto& [provider_name, count] : provider_counts) {
+    base::UmaHistogramCounts100000(
+        base::StrCat({"Memory.DumpProvider.Count.", provider_name}),
+        static_cast<int>(count));
+  }
+  base::UmaHistogramCounts100000(
+      "Memory.DumpProvider.Count",
+      static_cast<int>(pending_dump_providers.size()));
 }
 
 MemoryDumpManager::ProcessMemoryDumpAsyncState::~ProcessMemoryDumpAsyncState() =
