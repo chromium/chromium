@@ -562,6 +562,12 @@ void TabListBridge::OnTabStripModelChanged(
       }
       break;
     case TabStripModelChange::kMoved:
+      for (auto& observer : observers_) {
+        observer.OnTabMoved(change.GetMove()->tab.get(),
+                            change.GetMove()->from_index,
+                            change.GetMove()->to_index);
+      }
+      break;
     case TabStripModelChange::kReplaced:
     case TabStripModelChange::kSelectionOnly:
       break;

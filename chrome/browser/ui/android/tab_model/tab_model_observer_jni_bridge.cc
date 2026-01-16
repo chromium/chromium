@@ -105,6 +105,9 @@ void TabModelObserverJniBridge::DidMoveTab(JNIEnv* env,
   for (auto& observer : model_observers_) {
     observer.DidMoveTab(tab, new_index, cur_index);
   }
+  for (auto& observer : interface_observers_) {
+    observer.OnTabMoved(tab, cur_index, new_index);
+  }
 }
 
 void TabModelObserverJniBridge::OnTabClosePending(

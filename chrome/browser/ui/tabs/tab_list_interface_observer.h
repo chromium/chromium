@@ -30,6 +30,12 @@ class TabListInterfaceObserver : public base::CheckedObserver {
   // Called when a tab is removed from the tab list. `tab` is the removed tab
   // and may be null after this call.
   virtual void OnTabRemoved(tabs::TabInterface* tab) {}
+
+  // Called when a tab is moved within the tab list from `from_index` to
+  // `to_index`.
+  virtual void OnTabMoved(tabs::TabInterface* tab,
+                          int from_index,
+                          int to_index) {}
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_LIST_INTERFACE_OBSERVER_H_
