@@ -18,6 +18,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -235,6 +236,9 @@ bool ShouldShowAppsShortcutInBookmarkBar(Profile* profile) {
 }
 
 bool ShouldShowTabGroupsInBookmarkBar(Profile* profile) {
+  if (tabs::IsProjectsPanelFeatureEnabled()) {
+    return false;
+  }
   return profile->GetPrefs()->GetBoolean(
       bookmarks::prefs::kShowTabGroupsInBookmarkBar);
 }
