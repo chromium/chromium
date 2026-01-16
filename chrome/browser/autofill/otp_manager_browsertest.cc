@@ -71,6 +71,41 @@ void FakeSmsOtpBackend::NotifyCallbacks(
   callbacks_.clear();
 }
 
+// This implementation is for testing. It lets us manually control and simulate
+// the moment a Gmail OTP is received for one-time passwords (OTP).
+class FakeGmailOtpBackend : public one_time_tokens::GmailOtpBackend {
+ public:
+  using CallbackType = base::RepeatingCallback<void(
+      base::expected<one_time_tokens::OneTimeToken,
+                     one_time_tokens::OneTimeTokenRetrievalError>)>;
+
+  FakeGmailOtpBackend() = default;
+  ~FakeGmailOtpBackend() override = default;
+
+  // one_time_tokens::GmailOtpBackend:
+  one_time_tokens::ExpiringSubscription Subscribe(
+      base::Time expiration,
+      CallbackType callback) override {
+    callbacks_.push_back(callback);
+    return one_time_tokens::ExpiringSubscription();
+  }
+
+  // Simulates the reception of a Gmail OTP.
+  void ProcessCallbacks(
+      base::expected<one_time_tokens::OneTimeToken,
+                     one_time_tokens::OneTimeTokenRetrievalError> reply) {
+    for (auto& callback : callbacks_) {
+      callback.Run(reply);
+    }
+    callbacks_.clear();
+  }
+
+  size_t num_callbacks() const { return callbacks_.size(); }
+
+ private:
+  std::vector<CallbackType> callbacks_;
+};
+
 // AutofillCrowdsourcingManager that classifies every field as a ONE_TIME_CODE.
 class FakeAutofillCrowdsourcingManager : public AutofillCrowdsourcingManager {
  public:
@@ -168,8 +203,7 @@ class OtpTestAutofillClient : public TestContentAutofillClient {
         std::make_unique<FakeAutofillCrowdsourcingManager>(
             this, version_info::Channel::STABLE));
     set_sms_otp_backend(std::make_unique<FakeSmsOtpBackend>());
-    gmail_otp_backend_ = nullptr;  // TODO(crbug.com/463922782): Implement an
-                                   // integration test for Gmail OTP.
+    gmail_otp_backend_ = std::make_unique<FakeGmailOtpBackend>();
     one_time_token_service_ =
         std::make_unique<one_time_tokens::OneTimeTokenServiceImpl>(
             GetSmsOtpBackend(), gmail_otp_backend_.get());
@@ -183,6 +217,10 @@ class OtpTestAutofillClient : public TestContentAutofillClient {
 
   FakeSmsOtpBackend& sms_otp_backend() {
     return *static_cast<FakeSmsOtpBackend*>(GetSmsOtpBackend());
+  }
+
+  FakeGmailOtpBackend& gmail_otp_backend() {
+    return *static_cast<FakeGmailOtpBackend*>(gmail_otp_backend_.get());
   }
 
  private:
@@ -298,6 +336,41 @@ IN_PROC_BROWSER_TEST_P(OtpManagerWithWebOtpApiBrowserTest,
     ASSERT_EQ(suggestions.size(), 1u);
     EXPECT_EQ(suggestions[0].main_text.value, u"123456");
   }
+}
+
+IN_PROC_BROWSER_TEST_F(OtpManagerBrowserTest, GmailOtpAutofillIntegrationTest) {
+  GURL url = embedded_test_server()->GetURL("/autofill/sms_otp_form.html");
+
+  // Navigate to page and wait for form to be classified
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(web_contents(), url));
+  ASSERT_TRUE(autofill_manager().WaitForFormsSeen(1));
+
+  // Immediately when a form field is classified as an OTP field, a subscription
+  // for OTPs should be started if a Gmail OTP backend exists.
+  ASSERT_EQ(autofill_client().gmail_otp_backend().num_callbacks(), 1u);
+
+  // Simulate an OTP arriving.
+  autofill_client().gmail_otp_backend().ProcessCallbacks(
+      one_time_tokens::OneTimeToken(one_time_tokens::OneTimeTokenType::kGmail,
+                                    "654321", base::Time::Now()));
+  // Simulate click on field.
+  std::vector<const FormStructure*> forms =
+      test_api(autofill_manager()).form_structures();
+  ASSERT_EQ(forms.size(), 1u);
+  const FormStructure& form = *forms.front();
+  const AutofillField& first_field = *form.fields().front();
+  autofill_manager().OnAskForValuesToFill(
+      form.ToFormData(), first_field.global_id(), gfx::Rect(),
+      AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      /*password_request=*/std::nullopt);
+  ASSERT_TRUE(autofill_manager().WaitForSuggestionsShown(1));
+
+  // Verify expectations: The OTP should be suggested by autofill.
+  const TestAutofillExternalDelegate& external_delegate =
+      autofill_manager().external_delegate();
+  const std::vector<Suggestion>& suggestions = external_delegate.suggestions();
+  ASSERT_EQ(suggestions.size(), 1u);
+  EXPECT_EQ(suggestions[0].main_text.value, u"654321");
 }
 
 }  // namespace autofill
