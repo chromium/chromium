@@ -116,6 +116,26 @@ public class OmniboxSuggestionsContainer extends FrameLayout {
         return true;
     }
 
+    /**
+     * Set whether the dropdown should be clipped to its outline.
+     *
+     * @param clip whether to clip the outline
+     */
+    public void setShouldClipToOutline(boolean clip) {
+        if (clip) {
+            var radius =
+                    getResources()
+                            .getDimensionPixelSize(
+                                    R.dimen.omnibox_suggestion_dropdown_round_corner_radius);
+            var outlineProvider = new RoundedCornerOutlineProvider(radius);
+            setOutlineProvider(outlineProvider);
+            setClipToOutline(true);
+        } else {
+            setOutlineProvider(null);
+            setClipToOutline(false);
+        }
+    }
+
     private void maybeUpdateLayoutParams(int topMargin) {
         // Update the layout params to ensure the parent correctly positions the suggestions
         // under the anchor view.

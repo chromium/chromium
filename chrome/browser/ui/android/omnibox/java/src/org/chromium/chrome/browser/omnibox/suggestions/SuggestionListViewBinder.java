@@ -106,7 +106,7 @@ class SuggestionListViewBinder {
                             .getDimensionPixelSize(R.dimen.omnibox_suggestion_list_elevation));
         } else if (SuggestionListProperties.IS_LARGE_SCREEN == propertyKey) {
             updateColorScheme(model, view);
-            view.dropdown.setShouldClipToOutline(
+            view.container.setShouldClipToOutline(
                     model.get(SuggestionListProperties.IS_LARGE_SCREEN));
         } else if (SuggestionListProperties.TOOLBAR_POSITION == propertyKey) {
             view.dropdown.setToolbarPosition(model.get(SuggestionListProperties.TOOLBAR_POSITION));

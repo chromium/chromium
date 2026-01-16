@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -245,22 +243,6 @@ public class OmniboxSuggestionsDropdownUnitTest {
 
         mDropdown.onChildDetachedFromWindow(childView);
         verify(childView).setAlpha(1.0f);
-    }
-
-    @Test
-    public void setShouldClipToOutline_clipsOutlineWhenSet() {
-        var dropdown = new OmniboxSuggestionsDropdown(mContext, null);
-        dropdown.setShouldClipToOutline(true);
-        assertTrue(dropdown.getClipToOutline());
-        assertNotNull(dropdown.getOutlineProvider());
-    }
-
-    @Test
-    public void setShouldClipToOutline_doesNotClipOutlineWhenUnset() {
-        var dropdown = new OmniboxSuggestionsDropdown(mContext, null);
-        dropdown.setShouldClipToOutline(false);
-        assertFalse(dropdown.getClipToOutline());
-        assertNull(dropdown.getOutlineProvider());
     }
 
     @Test

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -336,5 +337,19 @@ public class OmniboxSuggestionsContainerUnitTest {
 
         mContainer.onToEdgeChange(0);
         assertEquals(0, mContainer.getPaddingTop());
+    }
+
+    @Test
+    public void setShouldClipToOutline_clipsOutlineWhenSet() {
+        mContainer.setShouldClipToOutline(true);
+        assertTrue(mContainer.getClipToOutline());
+        assertNotNull(mContainer.getOutlineProvider());
+    }
+
+    @Test
+    public void setShouldClipToOutline_doesNotClipOutlineWhenUnset() {
+        mContainer.setShouldClipToOutline(false);
+        assertFalse(mContainer.getClipToOutline());
+        assertNull(mContainer.getOutlineProvider());
     }
 }
