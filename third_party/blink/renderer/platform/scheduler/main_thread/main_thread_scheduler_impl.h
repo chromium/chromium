@@ -216,6 +216,11 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
       performance_scenarios::InputScenario old_scenario,
       performance_scenarios::InputScenario new_scenario) override;
 
+  void OnLoadingScenarioChanged(
+      performance_scenarios::ScenarioScope scope,
+      performance_scenarios::LoadingScenario old_scenario,
+      performance_scenarios::LoadingScenario new_scenario) override;
+
   // WebThreadScheduler implementation:
   scoped_refptr<base::SingleThreadTaskRunner> DeprecatedDefaultTaskRunner()
       override;
@@ -607,6 +612,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   bool ComputeIsInputHandlingFromUseCase(UseCase) const;
   bool ComputeIsInputHandlingFromPerformanceScenario(
       performance_scenarios::InputScenario) const;
+  bool ComputeIsLoadingFromPerformanceScenario(
+      performance_scenarios::LoadingScenario) const;
 
   // Helper for computing the RAILMode based on the given UseCase and current
   // scheduler state.
