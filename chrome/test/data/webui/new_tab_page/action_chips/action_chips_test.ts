@@ -39,7 +39,8 @@ suite('NewTabPageActionChipsTest', () => {
         {
           type: ChipType.kRecentTab,
           title: 'Example Tab',
-          suggestion: 'Ask about this tab',
+          subtitle: 'Subtitle for recent tab',
+          suggestion: 'Suggestion for recent tab',
           tab: {
             tabId: 1,
             url: {url: 'https://example.com/test'},
@@ -50,13 +51,15 @@ suite('NewTabPageActionChipsTest', () => {
         {
           type: ChipType.kImage,
           title: 'Nano Banana',
-          suggestion: 'Create an image of a nano banana',
+          subtitle: 'Subtitle for image',
+          suggestion: 'Suggestion for image',
           tab: null,
         },
         {
           type: ChipType.kDeepSearch,
           title: 'Deep Search',
-          suggestion: 'Search for something deep',
+          subtitle: 'Subtitle for deep search',
+          suggestion: 'Suggestion for deep search',
           tab: null,
         },
       ],
@@ -118,7 +121,8 @@ suite('NewTabPageActionChipsTest', () => {
         {
           type: ChipType.kRecentTab,
           title: 'Example Tab',
-          suggestion: 'Ask about this tab',
+          subtitle: 'Subtitle for recent tab',
+          suggestion: 'Suggestion for recent tab',
           tab: fakeTab,
         },
       ],
@@ -139,6 +143,7 @@ suite('NewTabPageActionChipsTest', () => {
       origin: TabUploadOrigin.ACTION_CHIP,
     };
 
+    assertEquals('Suggestion for recent tab', event.detail.searchboxText);
     assertTrue(!!event.detail.contextFiles);
     assertEquals(1, event.detail.contextFiles.length);
     assertDeepEquals(expectedTab, event.detail.contextFiles[0]);
@@ -149,7 +154,8 @@ suite('NewTabPageActionChipsTest', () => {
       actionChips: [{
         type: ChipType.kRecentTab,
         title: 'Example Tab',
-        suggestion: 'Ask about this tab',
+        subtitle: 'Subtitle for recent tab',
+        suggestion: 'Suggestion for recent tab',
         tab: {
           url: {url: 'https://example.com'},
           tabId: 0,
@@ -168,7 +174,8 @@ suite('NewTabPageActionChipsTest', () => {
       actionChips: [{
         type: ChipType.kDeepDive,
         title: 'Example Tab',
-        suggestion: 'Ask more about this site',
+        subtitle: 'Subtitle for deep dive',
+        suggestion: 'Suggestion for deep dive',
         tab: {
           url: {url: 'https://example.com'},
           tabId: 0,
@@ -205,8 +212,9 @@ suite('NewTabPageActionChipsTest', () => {
       nanoBananaChip.click();
 
       // Assert.
-      await whenActionChipClicked;
+      const event = await whenActionChipClicked;
 
+      assertEquals('Suggestion for image', event.detail.searchboxText);
       assertEquals(1, metrics.count('NewTabPage.ActionChips.Click'));
       assertEquals(
           1, metrics.count('NewTabPage.ActionChips.Click', ChipType.kImage));
@@ -222,8 +230,9 @@ suite('NewTabPageActionChipsTest', () => {
       deepSearchChip.click();
 
       // Assert.
-      await whenActionChipClicked;
+      const event = await whenActionChipClicked;
 
+      assertEquals('Suggestion for deep search', event.detail.searchboxText);
       assertEquals(1, metrics.count('NewTabPage.ActionChips.Click'));
       assertEquals(
           1,
@@ -240,8 +249,9 @@ suite('NewTabPageActionChipsTest', () => {
       recentTabChip.click();
 
       // Assert.
-      await whenActionChipClicked;
+      const event = await whenActionChipClicked;
 
+      assertEquals('Suggestion for recent tab', event.detail.searchboxText);
       assertEquals(1, metrics.count('NewTabPage.ActionChips.Click'));
       assertEquals(
           1,
@@ -254,7 +264,8 @@ suite('NewTabPageActionChipsTest', () => {
         actionChips: [{
           type: ChipType.kDeepDive,
           title: 'Example Tab',
-          suggestion: 'Help me with this page',
+          subtitle: 'Subtitle for deep dive',
+          suggestion: 'Suggestion for deep dive',
           tab: {
             url: {url: 'https://example.com'},
             tabId: 0,
@@ -274,8 +285,9 @@ suite('NewTabPageActionChipsTest', () => {
       deepDiveChip.click();
 
       // Assert.
-      await whenActionChipClicked;
+      const event = await whenActionChipClicked;
 
+      assertEquals('Suggestion for deep dive', event.detail.searchboxText);
       assertEquals(1, metrics.count('NewTabPage.ActionChips.Click'));
       assertEquals(
           1, metrics.count('NewTabPage.ActionChips.Click', ChipType.kDeepDive));
@@ -359,15 +371,15 @@ suite('NewTabPageActionChipsTest', () => {
               [
                 {
                   title: 'Example Tab',
-                  body: 'Ask about this tab',
+                  body: 'Subtitle for recent tab',
                 },
                 {
                   title: 'Nano Banana',
-                  body: 'Create an image of a nano banana',
+                  body: 'Subtitle for image',
                 },
                 {
                   title: 'Deep Search',
-                  body: 'Search for something deep',
+                  body: 'Subtitle for deep search',
                 },
               ],
               allChips.map((chip: HTMLButtonElement) => {

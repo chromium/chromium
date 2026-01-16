@@ -138,6 +138,7 @@ struct TabInfoFields {
 
 struct ActionChipFields {
   std::string title;
+  std::string subtitle;
   std::string suggestion;
   ChipType type = ChipType::kRecentTab;
   std::optional<TabInfoFields> tab;
@@ -163,26 +164,29 @@ ActionChipPtr MakeActionChip(const ActionChipFields& fields) {
     tab = TabInfo::New(tab_fields.tab_id, tab_fields.title, tab_fields.url,
                        tab_fields.last_active_time);
   }
-  return ActionChip::New(fields.title, fields.suggestion, fields.type,
-                         std::move(tab));
+  return ActionChip::New(fields.title, fields.subtitle, fields.suggestion,
+                         fields.type, std::move(tab));
 }
 
 ActionChipFields CreateStaticRecentTabChip(const TabInfoFields tab) {
   return {.title = tab.title,
-          .suggestion = "Ask about this tab",
+          .subtitle = "Ask about this tab",
+          .suggestion = "",
           .type = ChipType::kRecentTab,
           .tab = std::move(tab)};
 }
 
 ActionChipFields CreateStaticDeepSearchChip() {
   return {.title = "Research a topic",
-          .suggestion = "Dive deep into something new",
+          .subtitle = "Dive deep into something new",
+          .suggestion = "",
           .type = ChipType::kDeepSearch};
 }
 
 ActionChipFields CreateStaticImageGenerationChip() {
   return {.title = "Create image",
-          .suggestion = "Add an image and reimagine it",
+          .subtitle = "Add an image and reimagine it",
+          .suggestion = "",
           .type = ChipType::kImage};
 }
 

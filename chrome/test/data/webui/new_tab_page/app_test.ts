@@ -1253,7 +1253,7 @@ suite('NewTabPageAppTest', () => {
 
       assertEquals('test input', composebox.$.input.value);
 
-      //First ESC: Clear Input (Content present)
+      // First ESC: Clear Input (Content present)
       const closePromise1 = eventToPromise('close-composebox', composebox);
       let closedAfterFirstEsc = false;
       closePromise1.then(() => closedAfterFirstEsc = true);
@@ -2141,18 +2141,21 @@ suite('NewTabPageAppTest', () => {
         actionChipsPageRemote.onActionChipsChanged([
           {
             title: 'TabContext',
+            subtitle: 'tab-subtitle',
             suggestion: 'tab-suggestion',
             type: ChipType.kRecentTab,
             tab: fakeTab,
           },
           {
             title: 'Nano Banana',
+            subtitle: 'image-subtitle',
             suggestion: 'image-suggestion',
             type: ChipType.kImage,
             tab: null,
           },
           {
             title: 'DeepSearch',
+            subtitle: 'ds-subtitle',
             suggestion: 'ds-suggestion',
             type: ChipType.kDeepSearch,
             tab: null,
@@ -2300,9 +2303,11 @@ suite('NewTabPageAppTest', () => {
     test(
         'Deep dive chip click opens composebox with context and suggestion',
         async () => {
-          const suggestion = 'Help me with this page';
+          const subtitle = 'Help me with this page subtitle';
+          const suggestion = 'Help me with this page suggestion';
           actionChipsPageRemote.onActionChipsChanged([{
             title: 'Deep dive',
+            subtitle: subtitle,
             suggestion: suggestion,
             type: ChipType.kDeepDive,
             tab: {
@@ -2321,6 +2326,10 @@ suite('NewTabPageAppTest', () => {
           const deepDiveChip =
               actionChipsElement.shadowRoot.getElementById('deep-dive-0');
           assertTrue(!!deepDiveChip);
+
+          const chipBody = deepDiveChip.querySelector('.chip-body');
+          assertTrue(!!chipBody);
+          assertEquals(subtitle, chipBody.textContent.trim());
 
           // Act.
           deepDiveChip.click();

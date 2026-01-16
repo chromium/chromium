@@ -116,14 +116,22 @@ ChipsGenerationScenario GetScenario(
   return ChipsGenerationScenario::kSteady;
 }
 
+// Create a recent tab chip. The chip by default (in U.S.) would look like the
+// following:
+// |-------------------------|
+// | Ask about previous tab  |
+// |  ${title of the tab}    |
+// |-------------------------|
 ActionChipPtr CreateRecentTabChip(TabInfoPtr tab, std::string_view suggestion) {
   ActionChipPtr chip = ActionChip::New();
   chip->type = ChipType::kRecentTab;
   chip->title =
       !suggestion.empty()
-          ? suggestion
+          ? std::string(suggestion)
           : l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_TAB_HEADING_1);
-  chip->suggestion = tab->title;
+  // As mentioned above, the title of the tab is displayed on the second line.
+  chip->subtitle = tab->title;
+  chip->suggestion = std::string();
   chip->tab = std::move(tab);
   return chip;
 }
@@ -132,10 +140,11 @@ ActionChipPtr CreateDeepSearchChip(std::string_view suggestion) {
   ActionChipPtr chip = ActionChip::New();
   chip->type = ChipType::kDeepSearch;
   chip->title = l10n_util::GetStringUTF8(IDS_NTP_COMPOSE_DEEP_SEARCH);
-  chip->suggestion =
+  chip->subtitle =
       !suggestion.empty()
-          ? suggestion
+          ? std::string(suggestion)
           : l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_DEEP_SEARCH_BODY);
+  chip->suggestion = std::string();
   return chip;
 }
 
@@ -153,10 +162,11 @@ ActionChipPtr CreateImageCreationChip(std::string_view suggestion) {
   ActionChipPtr chip = ActionChip::New();
   chip->type = ChipType::kImage;
   chip->title = l10n_util::GetStringUTF8(IDS_NTP_COMPOSE_CREATE_IMAGES);
-  chip->suggestion =
+  chip->subtitle =
       !suggestion.empty()
-          ? suggestion
+          ? std::string(suggestion)
           : l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_CREATE_IMAGE_BODY_1);
+  chip->suggestion = std::string();
   return chip;
 }
 
@@ -174,7 +184,9 @@ ActionChipPtr CreateDeepDiveChip(TabInfoPtr tab,
                                  const std::u16string_view suggestion) {
   ActionChipPtr chip = ActionChip::New();
   chip->type = ChipType::kDeepDive;
-  chip->suggestion = base::UTF16ToUTF8(suggestion);
+  const std::string suggestion_string = base::UTF16ToUTF8(suggestion);
+  chip->subtitle = suggestion_string;
+  chip->suggestion = suggestion_string;
   chip->tab = std::move(tab);
   return chip;
 }
@@ -472,7 +484,8 @@ void ActionChipsGeneratorImpl::GenerateActionChipsFromRemoteResponse(
     ActionChipPtr chip = ActionChip::New();
     chip->type = *chip_type;
     chip->title = base::UTF16ToUTF8(suggestion.match_contents());
-    chip->suggestion = base::UTF16ToUTF8(suggestion.annotation());
+    chip->subtitle = base::UTF16ToUTF8(suggestion.annotation());
+    chip->suggestion = base::UTF16ToUTF8(suggestion.suggestion());
     if (group_id == omnibox::GROUP_AI_MODE_CONTEXTUAL_SEARCH_ACTION) {
       chip->tab = tab->Clone();
     }
