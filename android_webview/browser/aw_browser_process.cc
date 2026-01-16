@@ -81,7 +81,7 @@ void recordCacheQuotaFreshness(CacheQuotaFreshness state) {
   base::UmaHistogramEnumeration("Android.WebView.CacheQuotaFreshness", state);
 }
 
-bool g_did_early_perfetto_initialization = false;
+bool g_init_perfetto_during_browser_main = true;
 
 }  // namespace
 
@@ -375,12 +375,16 @@ static void JNI_AwBrowserProcess_InitPerfetto(JNIEnv* env,
                        /*enable_system_backend=*/enable_system_backend ||
                            tracing::ShouldSetupSystemTracing(),
                        base::NullCallback());
-  g_did_early_perfetto_initialization = true;
+}
+
+static void JNI_AwBrowserProcess_DisablePerfettoInitDuringBrowserMain(
+    JNIEnv* env) {
+  g_init_perfetto_during_browser_main = false;
 }
 
 // static
-bool AwBrowserProcess::DidEarlyPerfettoInitialization() {
-  return g_did_early_perfetto_initialization;
+bool AwBrowserProcess::ShouldInitPerfettoDuringBrowserMain() {
+  return g_init_perfetto_during_browser_main;
 }
 
 }  // namespace android_webview

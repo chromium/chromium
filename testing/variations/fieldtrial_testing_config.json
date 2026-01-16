@@ -28576,6 +28576,33 @@
             ]
         }
     ],
+    "WebViewEarlyPerfettoInit": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "BackgroundInit",
+                    "enable_features": [
+                        "WebViewBackgroundPerfettoInit"
+                    ]
+                },
+                {
+                    "name": "EarlyInit",
+                    "enable_features": [
+                        "WebViewEarlyPerfettoInit"
+                    ]
+                },
+                {
+                    "name": "DisableInit",
+                    "enable_features": [
+                        "WebViewDisablePerfettoInit"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewEarlyStartupTracing": [
         {
             "platforms": [
@@ -28585,7 +28612,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "WebViewEarlyPerfettoInit",
                         "WebViewEarlyStartupTracing"
                     ]
                 }
