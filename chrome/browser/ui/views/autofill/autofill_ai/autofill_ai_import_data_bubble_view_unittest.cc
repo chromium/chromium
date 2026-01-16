@@ -87,9 +87,11 @@ void AutofillAiImportDataBubbleViewTest::CreateViewAndShow() {
       // they updated their name and added country data.
       EntityAttributeUpdateDetails(
           /*attribute_name=*/u"Name", /*attribute_value=*/u"Jon doe",
+          /*old_attribute_value=*/u"Seb doe",
           EntityAttributeUpdateType::kNewEntityAttributeUpdated),
       EntityAttributeUpdateDetails(
           /*attribute_name=*/u"Country", /*attribute_value=*/u"Brazil",
+          /*old_attribute_value=*/u"Ukraine",
           EntityAttributeUpdateType::kNewEntityAttributeAdded),
       // The next two values are saying:
       // 1. That the user's passport expiry date information has not changed.
@@ -97,10 +99,12 @@ void AutofillAiImportDataBubbleViewTest::CreateViewAndShow() {
       EntityAttributeUpdateDetails(
           /*attribute_name=*/u"Expiry date",
           /*attribute_value=*/u"12/12/2027",
+          /*old_attribute_value=*/std::nullopt,
           EntityAttributeUpdateType::kNewEntityAttributeUnchanged),
       EntityAttributeUpdateDetails(
           /*attribute_name=*/u"Issue date",
           /*attribute_value=*/u"12/12/2020",
+          /*old_attribute_value=*/std::nullopt,
           EntityAttributeUpdateType::kNewEntityAttributeUnchanged)};
   ON_CALL(mock_controller(), GetUpdatedAttributesDetails())
       .WillByDefault(testing::Return(details));

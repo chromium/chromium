@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/autofill_ai/entity_attribute_update_details.h"
 
 #include <optional>
+#include <ostream>
 #include <ranges>
 
 #include "base/types/optional_ref.h"
@@ -13,12 +14,27 @@
 
 namespace autofill {
 
+std::ostream& operator<<(std::ostream& os,
+                         EntityAttributeUpdateType update_type) {
+  switch (update_type) {
+    case EntityAttributeUpdateType::kNewEntityAttributeAdded:
+      return os << "NewEntityAttributeAdded";
+    case EntityAttributeUpdateType::kNewEntityAttributeUpdated:
+      return os << "NewEntityAttributeUpdated";
+    case EntityAttributeUpdateType::kNewEntityAttributeUnchanged:
+      return os << "NewEntityAttributeUnchanged";
+  }
+  return os;
+}
+
 EntityAttributeUpdateDetails::EntityAttributeUpdateDetails(
     std::u16string attribute_name,
     std::u16string attribute_value,
+    std::optional<std::u16string> old_attribute_value,
     EntityAttributeUpdateType update_type)
     : attribute_name_(std::move(attribute_name)),
       attribute_value_(std::move(attribute_value)),
+      old_attribute_value_(std::move(old_attribute_value)),
       update_type_(update_type) {}
 
 EntityAttributeUpdateDetails::EntityAttributeUpdateDetails() = default;
@@ -36,6 +52,9 @@ EntityAttributeUpdateDetails& EntityAttributeUpdateDetails::operator=(
     EntityAttributeUpdateDetails&&) = default;
 
 EntityAttributeUpdateDetails::~EntityAttributeUpdateDetails() = default;
+
+bool EntityAttributeUpdateDetails::operator==(
+    const EntityAttributeUpdateDetails& other) const = default;
 
 std::vector<EntityAttributeUpdateDetails>
 EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
@@ -70,18 +89,27 @@ EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
                    : EntityAttributeUpdateType::kNewEntityAttributeUpdated;
       };
 
+  auto get_attribute_value = [](const AttributeInstance& attribute,
+                                const std::string& app_locale) {
+    if (std::optional<std::u16string> date = MaybeGetLocalizedDate(attribute)) {
+      return *date;
+    } else {
+      return attribute.GetCompleteInfo(app_locale);
+    }
+  };
+
   for (const AttributeInstance& attribute : new_entity.attributes()) {
     EntityAttributeUpdateType update_type =
         get_attribute_update_type(attribute);
-    std::u16string attribute_value;
-    if (std::optional<std::u16string> date = MaybeGetLocalizedDate(attribute)) {
-      attribute_value = *std::move(date);
-    } else {
-      attribute_value = attribute.GetCompleteInfo(app_locale);
-    }
+    std::u16string attribute_value = get_attribute_value(attribute, app_locale);
+    std::optional<std::u16string> old_attribute_value =
+        update_type == EntityAttributeUpdateType::kNewEntityAttributeUpdated
+            ? std::optional(get_attribute_value(
+                  *old_entity->attribute(attribute.type()), app_locale))
+            : std::nullopt;
     if (!attribute_value.empty()) {
-      details.emplace_back(attribute.type().GetNameForI18n(),
-                           std::move(attribute_value), update_type);
+      details.emplace_back(attribute.type().GetNameForI18n(), attribute_value,
+                           old_attribute_value, update_type);
     }
   }
 
@@ -106,6 +134,17 @@ EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
     return false;
   });
   return details;
+}
+
+std::ostream& operator<<(std::ostream& os,
+                         const EntityAttributeUpdateDetails& details) {
+  os << "{attribute name = " << details.attribute_name()
+     << ", attribute value = " << details.attribute_value();
+  if (details.old_attribute_value()) {
+    os << ", old attribute value = " << *details.old_attribute_value();
+  }
+  os << ", update type = " << details.update_type() << "}";
+  return os;
 }
 
 }  // namespace autofill

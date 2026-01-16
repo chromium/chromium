@@ -1074,9 +1074,9 @@ EntityInstance GetKnownTravelerNumberInstance(
         /*format_string=*/std::nullopt, VerificationStatus::kNoStatus);
   }
   if (options.expiration_date) {
-    attributes.emplace_back(AttributeType(kKnownTravelerNumberNumber));
+    attributes.emplace_back(AttributeType(kKnownTravelerNumberExpirationDate));
     attributes.back().SetInfo(
-        DRIVERS_LICENSE_EXPIRATION_DATE, options.expiration_date,
+        KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE, options.expiration_date,
         std::string(options.app_locale),
         AutofillFormatString(u"YYYY-MM-DD", FormatString_Type_DATE),
         VerificationStatus::kNoStatus);

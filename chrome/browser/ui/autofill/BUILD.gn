@@ -285,6 +285,7 @@ source_set("impl") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "autofill_ai/entity_attribute_update_details_unittest.cc",
     "autofill_client_provider_unittest.cc",
     "autofill_suggestion_controller_unittest.cc",
     "chrome_autofill_client_unittest.cc",
