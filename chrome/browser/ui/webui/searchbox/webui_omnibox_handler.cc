@@ -165,9 +165,12 @@ void WebuiOmniboxHandler::OnStart(AutocompleteController* controller,
 
   const AutocompleteProviderClient* client =
       autocomplete_controller()->autocomplete_provider_client();
+  // Check if there are zero suggest (either on NTP or on web) or the
+  // input text is empty (necessary because `IsZeroSuggest()` is false on
+  // clobber).
   page_->UpdateLensSearchEligibility(
       ContextualSearchProvider::LensEntrypointEligible(input, client) &&
-      input.IsZeroSuggest());
+      (input.IsZeroSuggest() || input.text().empty()));
 }
 
 void WebuiOmniboxHandler::OnResultChanged(AutocompleteController* controller,
