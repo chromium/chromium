@@ -55,6 +55,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/commerce/ui_utils.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
+#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/organization/metrics.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
@@ -1224,10 +1225,11 @@ void TabStripModel::UpdateWebContentsStateAt(int index,
 }
 
 void TabStripModel::SetTabNeedsAttentionAt(int index, bool attention) {
-  CHECK(ContainsIndex(index));
+  tabs::TabInterface* tab = GetTabAtIndex(index);
+  TabUIHelper::From(tab)->set_needs_attention(attention);
 
   for (auto& observer : observers_) {
-    observer.OnTabNeedsAttentionChanged(index, attention);
+    observer.OnTabChangedAt(tab, index, TabChangeType::kAttentionOnly);
   }
 }
 

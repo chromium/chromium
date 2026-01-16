@@ -562,11 +562,6 @@ class TabStripModelObserver {
   // window.
   virtual void OnTabBlockedStateChanged(tabs::TabInterface* tab, int index);
 
-  // The specified tab at `index` requires the display of a UI indication to the
-  // user that it needs their attention. The UI indication is set iff
-  // `attention` is true.
-  virtual void OnTabNeedsAttentionChanged(int index, bool attention);
-
   // Called when the tab at `index` is added to the group with id `new_group` or
   // removed from a group with id `old_group`.
   virtual void TabGroupedStateChanged(
@@ -587,8 +582,9 @@ class TabStripModelObserver {
       std::optional<tab_groups::TabGroupId> new_focused_group_id,
       std::optional<tab_groups::TabGroupId> old_focused_group_id);
 
-  // Similar to OnTabNeedsAttentionChanged but for Tab Groups. The UI indication
-  // is set iff `attention` is true.
+  // The specified Tab Group requires the display of a UI indication to the user
+  // that it needs their attention. The UI indication is set iff `attention` is
+  // true.
   virtual void OnTabGroupNeedsAttentionChanged(
       const tab_groups::TabGroupId& group,
       bool attention);

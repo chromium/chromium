@@ -590,7 +590,10 @@ TEST_P(TabStripTest, TabNeedsAttentionGeneric) {
 
   Tab* tab1 = tab_strip_->tab_at(1);
 
-  tab1->SetTabNeedsAttention(true);
+  // Set needs attention.
+  TabRendererData data;
+  data.needs_attention = true;
+  tab1->SetData(data);
 
   EXPECT_TRUE(IsShowingAttentionIndicator(tab1));
   controller_->SelectTab(0, dummy_event_);

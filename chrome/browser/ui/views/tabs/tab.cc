@@ -903,7 +903,7 @@ bool Tab::IsActive() const {
 }
 
 void Tab::ActiveStateChanged() {
-  UpdateTabIconNeedsAttentionBlocked();
+  UpdateTabIconAttention();
   UpdateForegroundColors();
   icon_->SetActiveState(IsActive());
   alert_indicator_button_->OnParentTabButtonColorChanged();
@@ -992,7 +992,7 @@ void Tab::SetData(TabRendererData data) {
 
   icon_->SetData(data_);
   icon_->SetCanPaintToLayer(controller_->CanPaintThrobberToLayer());
-  UpdateTabIconNeedsAttentionBlocked();
+  UpdateTabIconAttention();
   if (ShouldUpdateAccessibleName(old, data_)) {
     UpdateAccessibleName();
   }
@@ -1045,12 +1045,6 @@ void Tab::StepLoadingAnimation(const base::TimeDelta& elapsed_time) {
   // frequent enough in other cases since the state can be updated and the tab
   // painted before the animation is stepped.
   icon_->SetCanPaintToLayer(controller_->CanPaintThrobberToLayer());
-}
-
-void Tab::SetTabNeedsAttention(bool attention) {
-  icon_->SetAttention(TabIcon::AttentionType::kTabWantsAttentionStatus,
-                      attention);
-  SchedulePaint();
 }
 
 void Tab::CreateFreezingVote(content::WebContents* contents) {
@@ -1249,16 +1243,15 @@ bool Tab::ShouldRenderAsNormalTab() const {
                                         kPinnedTabExtraWidthToRenderAsNormal));
 }
 
-void Tab::UpdateTabIconNeedsAttentionBlocked() {
+void Tab::UpdateTabIconAttention() {
   // Only show the blocked attention indicator on non-active tabs. For active
   // tabs, the user sees the dialog blocking the tab, so there's no point to it
   // and it would be distracting.
-  if (IsActive()) {
-    icon_->SetAttention(TabIcon::AttentionType::kBlockedWebContents, false);
-  } else {
-    icon_->SetAttention(TabIcon::AttentionType::kBlockedWebContents,
-                        data_.blocked);
-  }
+  icon_->SetAttention(TabIcon::AttentionType::kBlockedWebContents,
+                      !IsActive() && data_.blocked);
+
+  icon_->SetAttention(TabIcon::AttentionType::kTabWantsAttentionStatus,
+                      data_.needs_attention);
 }
 
 int Tab::GetWidthOfLargestSelectableRegion() const {

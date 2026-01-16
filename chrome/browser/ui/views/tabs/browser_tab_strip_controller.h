@@ -147,7 +147,6 @@ class BrowserTabStripController : public TabStripController,
                               std::optional<tab_groups::TabGroupId> new_group,
                               tabs::TabInterface* tab,
                               int index) override;
-  void OnTabNeedsAttentionChanged(int index, bool attention) override;
   void OnTabGroupNeedsAttentionChanged(const tab_groups::TabGroupId& group,
                                        bool attention) override;
   void OnSplitTabChanged(const SplitTabChange& change) override;

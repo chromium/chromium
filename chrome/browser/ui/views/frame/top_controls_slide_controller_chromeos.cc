@@ -524,10 +524,13 @@ void TopControlsSlideControllerChromeOS::OnTabStripModelChanged(
   UpdateBrowserControlsStateShown(new_active_contents, /*animate=*/true);
 }
 
-void TopControlsSlideControllerChromeOS::OnTabNeedsAttentionChanged(
+void TopControlsSlideControllerChromeOS::OnTabChangedAt(
+    tabs::TabInterface* tab,
     int index,
-    bool attention) {
-  UpdateBrowserControlsStateShown(/*web_contents=*/nullptr, /*animate=*/true);
+    TabChangeType change_type) {
+  if (change_type == TabChangeType::kAttentionOnly) {
+    UpdateBrowserControlsStateShown(/*web_contents=*/nullptr, /*animate=*/true);
+  }
 }
 
 void TopControlsSlideControllerChromeOS::OnDisplayMetricsChanged(

@@ -115,6 +115,16 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, IconDataChanged) {
                                ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_FALSE(icon->GetActiveStateForTesting());
   EXPECT_TRUE(icon->GetShowingAttentionIndicator());
+
+  // After setting the tab as not blocked, expect the attention indicator to not
+  // be showing.
+  browser()->tab_strip_model()->SetTabBlocked(0, false);
+  EXPECT_FALSE(icon->GetShowingAttentionIndicator());
+
+  // After setting the tab as needing attention, expect the attention indicator
+  // to be showing.
+  browser()->tab_strip_model()->SetTabNeedsAttentionAt(0, true);
+  EXPECT_TRUE(icon->GetShowingAttentionIndicator());
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, TitleDataChanged) {

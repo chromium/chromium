@@ -68,6 +68,7 @@ struct TabRendererData {
   // Contains information about how much resource a tab is using
   scoped_refptr<const TabResourceUsage> tab_resource_usage;
   bool is_monochrome_favicon = false;
+  bool needs_attention = false;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_RENDERER_DATA_H_

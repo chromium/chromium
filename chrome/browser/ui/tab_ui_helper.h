@@ -83,9 +83,13 @@ class TabUIHelper : public tabs::ContentsObservingTabFeature {
     return created_by_session_restore_;
   }
 
+  void set_needs_attention(bool attention) { needs_attention_ = attention; }
+  bool needs_attention() const { return needs_attention_; }
+
  private:
   bool was_active_at_least_once_ = false;
   bool created_by_session_restore_ = false;
+  bool needs_attention_ = false;
 
   base::TerminationStatus crashed_status_ =
       base::TERMINATION_STATUS_STILL_RUNNING;

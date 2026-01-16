@@ -164,10 +164,6 @@ class Tab : public gfx::AnimationDelegate,
   // throbbers in sync.
   void StepLoadingAnimation(const base::TimeDelta& elapsed_time);
 
-  // Sets the visibility of the indicator shown when the tab needs to indicate
-  // to the user that it needs their attention.
-  void SetTabNeedsAttention(bool attention);
-
   void CreateFreezingVote(content::WebContents* contents);
   void ReleaseFreezingVote();
   bool HasFreezingVote() const { return freezing_vote_.has_value(); }
@@ -249,9 +245,9 @@ class Tab : public gfx::AnimationDelegate,
   // pinned tab.
   bool ShouldRenderAsNormalTab() const;
 
-  // Updates the blocked attention state of the `icon_`. This only updates
-  // state; it is the responsibility of the caller to request a paint.
-  void UpdateTabIconNeedsAttentionBlocked();
+  // Updates the attention state of the `icon_`. This only updates state; it is
+  // the responsibility of the caller to request a paint.
+  void UpdateTabIconAttention();
 
   // Returns the width of the largest part of the tab that is available for the
   // user to click to select/activate the tab.

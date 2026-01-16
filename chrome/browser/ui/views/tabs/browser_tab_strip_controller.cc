@@ -834,11 +834,6 @@ void BrowserTabStripController::TabGroupedStateChanged(
   }
 }
 
-void BrowserTabStripController::OnTabNeedsAttentionChanged(int index,
-                                                           bool attention) {
-  tabstrip_->SetTabNeedsAttention(index, attention);
-}
-
 void BrowserTabStripController::OnTabGroupNeedsAttentionChanged(
     const tab_groups::TabGroupId& group,
     bool attention) {

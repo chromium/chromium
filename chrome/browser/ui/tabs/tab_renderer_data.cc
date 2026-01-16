@@ -93,6 +93,7 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
   TabUIHelper* const tab_ui_helper = TabUIHelper::From(tab);
   data.favicon = tab_ui_helper->GetFavicon();
   data.title = tab_ui_helper->GetTitle();
+  data.needs_attention = tab_ui_helper->needs_attention();
   auto* const bwi = tab->GetBrowserWindowInterface();
   Browser* browser = bwi ? bwi->GetBrowserForMigrationOnly() : nullptr;
 
@@ -201,5 +202,6 @@ bool TabRendererData::operator==(const TabRendererData& other) const {
          should_show_discard_status == other.should_show_discard_status &&
          discarded_memory_savings == other.discarded_memory_savings &&
          tab_resource_usage == other.tab_resource_usage &&
-         is_monochrome_favicon == other.is_monochrome_favicon;
+         is_monochrome_favicon == other.is_monochrome_favicon &&
+         needs_attention == other.needs_attention;
 }
