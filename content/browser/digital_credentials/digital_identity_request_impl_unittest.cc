@@ -849,9 +849,6 @@ class DigitalIdentityRequestImplWithCreationEnabledTest
         *web_contents()->GetPrimaryMainFrame(),
         request_remote_.BindNewPipeAndPassReceiver());
 
-    content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
-        ->SimulateUserActivation();
-
     command_line_.GetProcessCommandLine()->AppendSwitch(
         switches::kUseFakeUIForDigitalIdentity);
   }
@@ -991,9 +988,6 @@ class DigitalIdentityRequestImplTest : public RenderViewHostTestHarness {
     digital_identity_request_impl_ = DigitalIdentityRequestImpl::CreateInstance(
         *web_contents()->GetPrimaryMainFrame(),
         request_remote_.BindNewPipeAndPassReceiver());
-
-    content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
-        ->SimulateUserActivation();
 
     // Tests in this fixture don't test the dialog behaviour.
     scoped_feature_list_.InitAndEnableFeatureWithParameters(

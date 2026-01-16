@@ -25,6 +25,8 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/scoped_abort_state.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_proxy.h"
@@ -254,6 +256,16 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
     scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
   }
 
+  if (!LocalFrame::ConsumeTransientUserActivation(
+          To<LocalDOMWindow>(resolver->GetExecutionContext())->GetFrame(),
+          UserActivationUpdateSource::kRenderer)) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotAllowedError,
+        "The 'digital-credentials-get' feature requires transient "
+        "activation."));
+    return;
+  }
+
   auto* request =
       CredentialManagerProxy::From(script_state)->DigitalIdentityRequest();
   request->Get(std::move(requests),
@@ -327,6 +339,16 @@ void CreateDigitalIdentityCredentialInExternalSource(
     auto callback = BindOnce(&AbortRequest, WrapPersistent(script_state));
     auto* handle = signal->AddAlgorithm(std::move(callback));
     scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
+  }
+
+  if (!LocalFrame::ConsumeTransientUserActivation(
+          To<LocalDOMWindow>(resolver->GetExecutionContext())->GetFrame(),
+          UserActivationUpdateSource::kRenderer)) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotAllowedError,
+        "The 'digital-credentials-create' feature requires transient "
+        "activation."));
+    return;
   }
 
   CredentialManagerProxy::From(script_state)

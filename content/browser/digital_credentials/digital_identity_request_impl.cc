@@ -493,13 +493,6 @@ void DigitalIdentityRequestImpl::Get(
   }
 
   callback_ = std::move(callback);
-
-  if (!render_frame_host().HasTransientUserActivation()) {
-    CompleteRequestWithError(
-        RequestStatusForMetrics::kErrorNoTransientUserActivation);
-    return;
-  }
-
   if (digital_credential_requests.empty()) {
     CompleteRequestWithError(RequestStatusForMetrics::kErrorNoRequests);
     return;
@@ -591,12 +584,6 @@ void DigitalIdentityRequestImpl::Create(
   }
 
   callback_ = std::move(callback);
-
-  if (!render_frame_host().HasTransientUserActivation()) {
-    CompleteRequestWithError(
-        RequestStatusForMetrics::kErrorNoTransientUserActivation);
-    return;
-  }
 
   if (digital_credential_requests.empty()) {
     CompleteRequestWithError(RequestStatusForMetrics::kErrorNoRequests);
