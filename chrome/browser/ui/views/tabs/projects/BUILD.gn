@@ -4,12 +4,15 @@
 
 source_set("projects") {
   sources = [
+    "layout_constants.h",
     "projects_panel_controller.cc",
     "projects_panel_controller.h",
     "projects_panel_controls_view.cc",
     "projects_panel_controls_view.h",
     "projects_panel_tab_groups_view.cc",
     "projects_panel_tab_groups_view.h",
+    "projects_panel_thread_item_view.cc",
+    "projects_panel_thread_item_view.h",
     "projects_panel_view.cc",
     "projects_panel_view.h",
   ]
@@ -23,6 +26,7 @@ source_set("projects") {
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/tabs/projects",
     "//chrome/browser/ui/views/tabs/vertical",
+    "//components/contextual_tasks/public",
     "//components/saved_tab_groups/public",
     "//ui/actions",
     "//ui/base",
@@ -32,15 +36,18 @@ source_set("projects") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "projects_panel_controller_unittest.cc" ]
+  sources = [
+    "projects_panel_controller_unittest.cc",
+    "projects_panel_thread_item_view_unittest.cc",
+  ]
   deps = [
     ":projects",
     "//base/test:test_support",
+    "//build:branding_buildflags",
+    "//components/contextual_tasks/public",
     "//components/saved_tab_groups/public",
     "//components/saved_tab_groups/test_support",
+    "//ui/views",
+    "//ui/views:test_support",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

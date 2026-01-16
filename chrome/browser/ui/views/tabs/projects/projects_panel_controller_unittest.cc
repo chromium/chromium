@@ -25,16 +25,6 @@ tab_groups::SavedTabGroup CreateGroup(const std::u16string& title,
       /*created_before_syncing_tab_groups=*/false, creation_time);
 }
 
-const base::Time kNow = base::Time::Now();
-const tab_groups::SavedTabGroup kGroup1 = CreateGroup(u"Group 1", kNow);
-const tab_groups::SavedTabGroup kGroup2 =
-    CreateGroup(u"Group 2", kNow - base::Days(1));
-const tab_groups::SavedTabGroup kGroup3 =
-    CreateGroup(u"Group 3", kNow + base::Days(1));
-const tab_groups::SavedTabGroup kGroup2DaysOld =
-    CreateGroup(u"Group 4", kNow - base::Days(2));
-const tab_groups::SavedTabGroup kNewGroup = CreateGroup(u"New Group", kNow);
-
 class MockProjectsPanelControllerObserver
     : public ProjectsPanelController::Observer {
  public:
@@ -59,6 +49,16 @@ class ProjectsPanelControllerTest : public testing::Test {
  protected:
   testing::NiceMock<tab_groups::MockTabGroupSyncService>
       mock_tab_group_sync_service_;
+
+  const base::Time kNow = base::Time::Now();
+  const tab_groups::SavedTabGroup kGroup1 = CreateGroup(u"Group 1", kNow);
+  const tab_groups::SavedTabGroup kGroup2 =
+      CreateGroup(u"Group 2", kNow - base::Days(1));
+  const tab_groups::SavedTabGroup kGroup3 =
+      CreateGroup(u"Group 3", kNow + base::Days(1));
+  const tab_groups::SavedTabGroup kGroup2DaysOld =
+      CreateGroup(u"Group 4", kNow - base::Days(2));
+  const tab_groups::SavedTabGroup kNewGroup = CreateGroup(u"New Group", kNow);
 };
 
 TEST_F(ProjectsPanelControllerTest, SortsGroupsOnConstruction) {
