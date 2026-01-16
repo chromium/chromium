@@ -14,6 +14,9 @@ import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.base.test.transit.ViewElement.displayingAtLeastOption;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
+
 import android.content.res.Configuration;
 
 import androidx.appcompat.app.AppCompatDelegate;
@@ -704,7 +707,13 @@ public class SigninFirstRunFragmentRenderTest {
         ApplicationTestUtils.waitForActivityState(mActivityTestRule.getActivity(), Stage.RESUMED);
         // Parts of SigninFirstRunFragment are initialized asynchronously, so ensure the load
         // spinner is not displayed before grabbing a screenshot.
-        ViewUtils.waitForVisibleView(withId(R.id.signin_fre_continue_button));
+        //
+        // In landscape in smaller screens, the continue button may be outside the screen bounds.
+        int minDisplayedPercentage = orientation == Configuration.ORIENTATION_LANDSCAPE ? 0 : 51;
+        waitForView(
+                withId(R.id.signin_fre_continue_button),
+                displayingAtLeastOption(minDisplayedPercentage));
+
         onView(withId(R.id.fre_native_and_policy_load_progress_spinner))
                 .check(matches(not(isDisplayed())));
     }

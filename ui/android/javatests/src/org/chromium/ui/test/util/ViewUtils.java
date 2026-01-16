@@ -4,9 +4,6 @@
 
 package org.chromium.ui.test.util;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
-
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
@@ -153,7 +150,8 @@ public class ViewUtils {
      * @param viewMatcher The matcher matching the view that should be waited for.
      */
     public static void waitForVisibleView(Matcher<View> viewMatcher) {
-        onView(isRoot()).check(withEventualExpectedViewState(viewMatcher, VIEW_VISIBLE));
+        ViewFinder.waitForView(
+                viewMatcher, ViewElement.newOptions().allowDisabled().displayingAtLeast(1).build());
     }
 
     /**
