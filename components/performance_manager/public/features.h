@@ -30,10 +30,6 @@ namespace performance_manager::features {
 BASE_DECLARE_FEATURE(kUnthrottledTabProcessReporting);
 #endif
 
-// Enable background tab loading of pages (restored via session restore)
-// directly from Performance Manager rather than via TabLoader.
-BASE_DECLARE_FEATURE(kBackgroundTabLoadingFromPerformanceManager);
-
 // Make the Battery Saver Modes available to users. If this is enabled, it
 // doesn't mean the mode is enabled, just that the user has the option of
 // toggling it.

@@ -6,7 +6,6 @@
 #define CHROME_TEST_MEDIA_ROUTER_ACCESS_CODE_CAST_ACCESS_CODE_CAST_INTEGRATION_BROWSERTEST_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service_factory.h"
@@ -161,7 +160,6 @@ class AccessCodeCastIntegrationBrowserTest
   void SetAccessCodeCastSinkServiceTaskRunner();
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   base::CallbackListSubscription subscription_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
 

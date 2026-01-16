@@ -235,19 +235,13 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
           performance_manager::policies::UrgentPageDiscardingPolicy>());
 #endif  // URGENT_DISCARDING_FROM_PERFORMANCE_MANAGER()
 
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::
-              kBackgroundTabLoadingFromPerformanceManager)) {
-    graph->PassToGraph(
-        std::make_unique<
-            performance_manager::policies::BackgroundTabLoadingPolicy>(
-            base::BindRepeating([]() {
-              content::GetUIThreadTaskRunner({})->PostTask(
-                  FROM_HERE,
-                  base::BindOnce(
-                      &SessionRestore::OnTabLoaderFinishedLoadingTabs));
-            })));
-  }
+  graph->PassToGraph(std::make_unique<
+                     performance_manager::policies::BackgroundTabLoadingPolicy>(
+      base::BindRepeating([]() {
+        content::GetUIThreadTaskRunner({})->PostTask(
+            FROM_HERE,
+            base::BindOnce(&SessionRestore::OnTabLoaderFinishedLoadingTabs));
+      })));
 
   // The freezing policy isn't enabled on Android yet as it doesn't play well
   // with the freezing logic already in place in renderers. This logic should be

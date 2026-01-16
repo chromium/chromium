@@ -8,10 +8,8 @@
 #include <numeric>
 #include <optional>
 #include <utility>
-#include <vector>
 
 #include "base/check_deref.h"
-#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/token.h"
@@ -40,8 +38,6 @@
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/common/buildflags.h"
-#include "components/performance_manager/public/features.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -59,10 +55,6 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/window_open_disposition.h"
-
-#if BUILDFLAG(ENABLE_SESSION_SERVICE)
-#include "chrome/browser/sessions/tab_loader.h"
-#endif
 
 using content::NavigationController;
 using content::SessionStorageNamespace;
@@ -330,43 +322,12 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
 
   CHECK(web_contents);
 
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::
-              kBackgroundTabLoadingFromPerformanceManager)) {
-    if (performance_manager::policies::CanScheduleLoadForRestoredTabs()) {
-      performance_manager::policies::ScheduleLoadForRestoredTabs(
-          {web_contents});
-    } else {
-      // Load the tab manually if there's no BackgroundTabLoadingPolicy.
-      web_contents->GetController().LoadIfNecessary();
-    }
-    return sessions::ContentLiveTab::GetOrCreateForWebContents(web_contents);
+  if (performance_manager::policies::CanScheduleLoadForRestoredTabs()) {
+    performance_manager::policies::ScheduleLoadForRestoredTabs({web_contents});
+  } else {
+    // Load the tab manually if there's no BackgroundTabLoadingPolicy.
+    web_contents->GetController().LoadIfNecessary();
   }
-
-#if BUILDFLAG(ENABLE_SESSION_SERVICE)
-  // The tab may have been made active even if `select` is false if it is the
-  // only tab in `tab_strip_model_`.
-  const bool is_active =
-      tab_strip_model_->GetActiveWebContents() == web_contents;
-  // The active tab will be loaded by Browser, and TabLoader will load the rest.
-  if (!is_active) {
-    // Regression check: make sure that the tab hasn't started to load
-    // immediately.
-    DCHECK(web_contents->GetController().NeedsReload());
-    DCHECK(!web_contents->IsLoading());
-  }
-
-  std::vector<TabLoader::RestoredTab> restored_tabs;
-  restored_tabs.emplace_back(web_contents, is_active,
-                             !tab.extension_app_id.empty(), tab.pinned,
-                             group_id, std::nullopt);
-  TabLoader::DeprecatedRestoreTabs(restored_tabs, base::TimeTicks::Now());
-
-#else   // BUILDFLAG(ENABLE_SESSION_SERVICE)
-  // Load the tab manually if there is no TabLoader.
-  web_contents->GetController().LoadIfNecessary();
-#endif  // BUILDFLAG(ENABLE_SESSION_SERVICE)
-
   return sessions::ContentLiveTab::GetOrCreateForWebContents(web_contents);
 }
 

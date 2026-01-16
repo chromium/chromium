@@ -15,9 +15,6 @@
 namespace performance_manager::features {
 
 #if !BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kBackgroundTabLoadingFromPerformanceManager,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPerformanceControlsPPMSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(base::TimeDelta,

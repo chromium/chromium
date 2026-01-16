@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -20,7 +19,6 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -31,9 +29,6 @@ namespace performance_manager {
 class BackgroundTabLoadingBrowserTest : public InProcessBrowserTest {
  public:
   BackgroundTabLoadingBrowserTest() {
-    features_.InitAndEnableFeature(
-        performance_manager::features::
-            kBackgroundTabLoadingFromPerformanceManager);
     url_ = chrome_test_utils::GetTestUrl(
         base::FilePath().AppendASCII("session_history"),
         base::FilePath().AppendASCII("bot1.html"));
@@ -92,7 +87,6 @@ class BackgroundTabLoadingBrowserTest : public InProcessBrowserTest {
   }
 
   GURL url_;
-  base::test::ScopedFeatureList features_;
 };
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
