@@ -3,7 +3,10 @@
     "This is a manually maintained file with a list of known android cronet breakages.",
     "Each line represents a breakage and consists of:",
     "  - the bad gerrit changeId ie the gerrit change that introduced the breakage.",
-    "  - the good changeId ie the commit that fixed the breakage, typically a revert or fix forward",
+    "  - the good changeId ie the commit that fixed the breakage, typically a revert or fix forward.",
+    "  - NOTE: `good_change_ids` should be a list of IDs. The checker will pass if it",
+    "    detects any one of these IDs in the history. This accommodates multiple fixes",
+    "    across different branches (e.g., one on main and another on a release branch).",
     "  - the bug associated with the breakage",
     "  - a comment with a short description of the breakage",
     "The change id keys may be omitted for scenarios where we want to stop",
@@ -14,25 +17,25 @@
   "breakages": [
     {
       "bad_change_id": "Ic2b5cf6b19baaa298fe6bd64bd55268f85d70fa7",
-      "good_change_id": "Ia28dbc3aa037a6a9fd0cc157213f6f9aa34641f6",
+      "good_change_ids": ["Ia28dbc3aa037a6a9fd0cc157213f6f9aa34641f6"],
       "bugs": ["b/445372626"],
       "comment": "jni_zero annotations break ProGuard on the fallback impl"
     },
     {
       "bad_change_id": "Iaf91186149315066f1bf9928c4bef66015d55a46",
-      "good_change_id": "Ib13d999649a26230a09bd970a16ae04a7a1a4e68",
+      "good_change_ids": ["Ib13d999649a26230a09bd970a16ae04a7a1a4e68"],
       "bugs": ["b/425901872"],
       "comment": "Custom built protobuf runtime breaks proguard."
     },
     {
       "bad_change_id": "I4f1f32c01b708c3802e685412bac27a1d6af5258",
-      "good_change_id": "I8b928ed0807bff1b545da2da503388af7a602dd7",
+      "good_change_ids": ["I8b928ed0807bff1b545da2da503388af7a602dd7"],
       "bugs": ["b/421181925"],
       "comment": "setProxyOptions silently succeeds if the Cronet implementation does not support it (e.g., is too old)."
     },
     {
       "bad_change_id": "I47f011c59d7a238e738c18bf5b5d7e9c15676ee2",
-      "good_change_id": "Iac5a6430580e1d83aeac11bb84766027819d2895",
+      "good_change_ids": ["Iac5a6430580e1d83aeac11bb84766027819d2895"],
       "bugs": [
         "b/373373506"
       ],
@@ -40,43 +43,43 @@
     },
     {
       "bad_change_id": "Id3987d4c3662d674fab99cc92e40efdd859015d2",
-      "good_change_id": "I722bc4085cf789b85d05b962f7e8d5a984f30653",
+      "good_change_ids": ["I722bc4085cf789b85d05b962f7e8d5a984f30653"],
       "bugs": ["b/361725824"],
       "comment": "Faulty call from Impl to API through QuicException#getConnectionCloseSource."
     },
     {
       "bad_change_id": "I8c8c4e96b90675894ff49dc1ad6f8ecf23b38f1e",
-      "good_change_id": "I6f9d0e2e4b6ae864912a80f43697fbf13956f924",
+      "good_change_ids": ["I6f9d0e2e4b6ae864912a80f43697fbf13956f924"],
       "bugs": ["b/340192797"],
       "comment": "Crash in setNetworkThreadPriorityOnNetworkThread() if ProGuarded"
     },
     {
       "bad_change_id": "I206419b181c2ce20525cc00bcf21c6398a921b8b",
-      "good_change_id": "Iab6e97af48769ee45fb5bb48d71453d08f542532",
+      "good_change_ids": ["Iab6e97af48769ee45fb5bb48d71453d08f542532"],
       "bugs": ["b/329601514","b/330325607","b/331164502","b/331160704"],
       "comment": "Errors due to the telemetry related change, crrev.com/c/5171800."
     },
     {
       "bad_change_id": "Ia4f2af3242c6d2acfbc0a93538cf1896892c1745",
-      "good_change_id": "I4f5e3d17ee700e69020d3b0854ffa5d9ed5d51f8",
+      "good_change_ids": ["I4f5e3d17ee700e69020d3b0854ffa5d9ed5d51f8"],
       "bugs": ["b/326426454"],
       "comment": "Crashes on missing StatsEvent.Builder method on Android <T"
     },
     {
       "bad_change_id": "Ibd48557709ccf80d380eb2ae21cfac97d237ddb4",
-      "good_change_id": "Ie310ca912bab58eb196ef3c6e751fba685fcada9",
+      "good_change_ids": ["Ie310ca912bab58eb196ef3c6e751fba685fcada9"],
       "bugs": ["crbug/1456762"],
       "comment": "jni_zero proguard crash"
     },
     {
       "bad_change_id": "I9e28d3a0617e27614451e3b2d8e4cf3e2e6d3145",
-      "good_change_id": "Icc888cec884c77a12f47f4cd2b0fcdb3046a02b2",
+      "good_change_ids": ["Icc888cec884c77a12f47f4cd2b0fcdb3046a02b2"],
       "bugs": ["crbug/1449478"],
       "comment": "Connection migration crash"
     },
     {
       "bad_change_id": "I18c238cf073938fc1bd8bf2f9ee752d79a291e15",
-      "good_change_id": "Ic335c4142fb5d9fbf0ecf4989ef22b94fa3ee0bf",
+      "good_change_ids": ["Ic335c4142fb5d9fbf0ecf4989ef22b94fa3ee0bf"],
       "bugs": ["b/410846554"],
       "comment": "JniAndroid class not found when app is already crashing."
     }
