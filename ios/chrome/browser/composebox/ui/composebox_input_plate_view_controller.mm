@@ -86,7 +86,17 @@ const NSDirectionalEdgeInsets kInputPlateStackViewPadding = {.leading = 4.0f,
                                                              .trailing = 2.0f};
 /// The side padding for the input plate stack view content (e.g. omnibox,
 /// toolbar).
-const CGFloat kInputPlateSidePadding = 8.0f;
+const NSDirectionalEdgeInsets kInputPlatePadding = {.leading = 8.0,
+                                                    .trailing = 5.0};
+
+/// The padding of the toolbar and carousel elements.
+///
+/// Note: While padding is offset to visually align the clear button's visual
+/// bounding box, all other UI elements maintain symmetrical centering.
+const UIEdgeInsets kToolbarPadding = {.left = kInputPlatePadding.leading,
+                                      .right = kInputPlatePadding.leading};
+const UIEdgeInsets kCarouselPadding = kToolbarPadding;
+
 /// The font size for the AIM mode button title.
 const CGFloat kAIMButtonFontSize = 14.0f;
 /// The point size for the symbols in the AIM mode button.
@@ -1244,8 +1254,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
         constraintEqualToConstant:kButtonStackViewDimension]
   ]];
   buttonsStackView.layoutMarginsRelativeArrangement = YES;
-  buttonsStackView.layoutMargins =
-      UIEdgeInsetsMake(0, kInputPlateSidePadding, 0, kInputPlateSidePadding);
+  buttonsStackView.layoutMargins = kToolbarPadding;
   return buttonsStackView;
 }
 
@@ -1445,8 +1454,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   // The outer view has minimal padding to allow the carousel space for multiple
   // attachments when they overflow. This ensures that there's still some
   // padding when the carousel is scrolled to either end.
-  _carouselView.contentInset =
-      UIEdgeInsetsMake(0, kInputPlateSidePadding, 0, kInputPlateSidePadding);
+  _carouselView.contentInset = kCarouselPadding;
   _carouselView.showsHorizontalScrollIndicator = NO;
 
   _carouselContainer = [[UIView alloc] init];
@@ -1563,8 +1571,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     _bottomPaddingConstraint.constant = -kInputPlateStackViewVerticalPadding;
     _inputPlateStackView.layoutMarginsRelativeArrangement = YES;
     // Ensure we do not lose the margins on the sides when in compact mode.
-    _inputPlateStackView.layoutMargins =
-        UIEdgeInsetsMake(0, kInputPlateSidePadding, 0, kInputPlateSidePadding);
+    _inputPlateStackView.layoutMargins = UIEdgeInsetsMake(
+        0, kInputPlatePadding.leading, 0, kInputPlatePadding.trailing);
     // Margins are applied on the input plate, remove the margins on the
     // omnibox.
     _omniboxContainer.directionalLayoutMargins = NSDirectionalEdgeInsetsZero;
@@ -1582,8 +1590,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     _inputPlateInternalContainerView.layer.cornerRadius =
         kInputPlateCornerRadius;
     _inputPlateStackView.layoutMarginsRelativeArrangement = NO;
-    _omniboxContainer.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(
-        0, kInputPlateSidePadding, 0, kInputPlateSidePadding);
+    _omniboxContainer.directionalLayoutMargins = kInputPlatePadding;
   }
   [self updateInputPlateStackViewTopConstraint];
 }
