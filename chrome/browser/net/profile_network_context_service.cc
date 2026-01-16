@@ -63,6 +63,7 @@
 #include "components/embedder_support/pref_names.h"
 #include "components/embedder_support/switches.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -1271,6 +1272,25 @@ ProfileNetworkContextService::CreateClientCertStore() {
 #endif
 }
 
+#if BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
+void ProfileNetworkContextService::SaveEncryptedCacheMasterKey(
+    const std::vector<uint8_t>& encrypted_master_key) {
+  if (profile_) {
+    profile_->GetPrefs()->SetString(
+        enterprise_connectors::kEncryptedCacheMasterKey,
+        base::Base64Encode(encrypted_master_key));
+  }
+}
+
+std::vector<uint8_t>
+ProfileNetworkContextService::GetEncryptedCacheMasterKey() {
+  std::string encoded_encrypted_master_key = profile_->GetPrefs()->GetString(
+      enterprise_connectors::kEncryptedCacheMasterKey);
+  return base::Base64Decode(encoded_encrypted_master_key).value_or({});
+}
+
+#endif  // BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
+
 void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
     bool in_memory,
     const base::FilePath& relative_partition_path,
@@ -1356,9 +1376,20 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
 
 #if BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
     if (enterprise_encryption::ShouldEncryptHttpCache(profile_->GetPrefs())) {
-      g_browser_process->system_network_context_manager()
-          ->AddCacheEncryptionProviderToNetworkContextParams(
-              network_context_params);
+      if (!cache_encryption_provider_) {
+        cache_encryption_provider_ = std::make_unique<
+            enterprise_encryption::CacheEncryptionProviderImpl>(
+            g_browser_process->os_crypt_async(), GetEncryptedCacheMasterKey(),
+            base::BindRepeating(
+                &ProfileNetworkContextService::SaveEncryptedCacheMasterKey,
+                base::Unretained(this)));
+      }
+      mojo::PendingRemote<network::mojom::CacheEncryptionProvider>
+          cache_encryption_provider_remote =
+              cache_encryption_provider_->BindNewRemote();
+
+      network_context_params->encryption_provider =
+          std::move(cache_encryption_provider_remote);
     }
 #endif  // BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
 

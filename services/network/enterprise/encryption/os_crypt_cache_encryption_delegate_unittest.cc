@@ -58,6 +58,12 @@ class MockCacheEncryptionProvider
     }
   }
 
+  // Returns a dummy key, which is not encrypted.
+  void GetEncryptedCacheEncryptionKey(
+      GetEncryptedCacheEncryptionKeyCallback callback) override {
+    std::move(callback).Run(std::vector<uint8_t>(32, 2));
+  }
+
   void DoGetEncryptor(
       base::OnceCallback<void(os_crypt_async::Encryptor)> callback) {
     if (return_invalid_encryptor_) {

@@ -16,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -58,6 +59,7 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
@@ -70,6 +72,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/base/features.h"
 #include "net/base/load_flags.h"
@@ -882,6 +885,45 @@ IN_PROC_BROWSER_TEST_F(CacheEncryptionEnabledByPolicyTest,
   EXPECT_TRUE(prefs->IsManagedPreference(
       enterprise_connectors::kCacheEncryptionEnabledPref));
 }
+
+#if BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
+IN_PROC_BROWSER_TEST_F(CacheEncryptionEnabledByPolicyTest,
+                       EncryptedCacheMasterKeyIsSaved) {
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  ASSERT_TRUE(prefs);
+  EXPECT_TRUE(prefs->GetString(enterprise_connectors::kEncryptedCacheMasterKey)
+                  .empty());
+
+  ProfileNetworkContextService* service =
+      ProfileNetworkContextServiceFactory::GetForContext(browser()->profile());
+  ASSERT_TRUE(service);
+
+  network::mojom::NetworkContextParams network_context_params;
+  cert_verifier::mojom::CertVerifierCreationParams
+      cert_verifier_creation_params;
+  service->ConfigureNetworkContextParams(
+      /*in_memory=*/false, /*relative_partition_path=*/base::FilePath(),
+      &network_context_params, &cert_verifier_creation_params);
+
+  ASSERT_TRUE(network_context_params.encryption_provider);
+  mojo::Remote<network::mojom::CacheEncryptionProvider> provider(
+      std::move(network_context_params.encryption_provider));
+
+  base::RunLoop run_loop;
+  PrefChangeRegistrar pref_registrar;
+  pref_registrar.Init(prefs);
+  pref_registrar.Add(enterprise_connectors::kEncryptedCacheMasterKey,
+                     run_loop.QuitClosure());
+
+  provider->GetEncryptedCacheEncryptionKey(base::DoNothing());
+
+  run_loop.Run();
+
+  // The master key should be created and saved to the user's preferences.
+  EXPECT_FALSE(prefs->GetString(enterprise_connectors::kEncryptedCacheMasterKey)
+                   .empty());
+}
+#endif  // BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
 
 IN_PROC_BROWSER_TEST_F(CacheEncryptionDisabledByPolicyTest,
                        BackendInitializesWithPolicyDisabled) {
