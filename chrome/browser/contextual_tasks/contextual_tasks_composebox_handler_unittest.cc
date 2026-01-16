@@ -303,7 +303,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest, SubmitQuery) {
 TEST_F(ContextualTasksComposeboxHandlerTest, CreateAndSendQueryMessage) {
   std::string kQuery = "direct query";
   EXPECT_CALL(*mock_ui_, GetTaskId())
-      .WillOnce(testing::ReturnRefOfCopy(std::optional<base::Uuid>()));
+      .WillRepeatedly(testing::ReturnRefOfCopy(std::optional<base::Uuid>()));
   EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
       .WillOnce([&kQuery](std::unique_ptr<
                           contextual_search::ContextualSearchContextController::
@@ -323,7 +323,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   std::string kQuery = "recontextualize query";
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   EXPECT_CALL(*mock_ui_, GetTaskId())
-      .WillOnce(testing::ReturnRefOfCopy(std::optional<base::Uuid>(task_id)));
+      .WillRepeatedly(
+          testing::ReturnRefOfCopy(std::optional<base::Uuid>(task_id)));
 
   // Setup context with expired tab.
   contextual_tasks::ContextualTask task(task_id);
@@ -409,7 +410,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   std::string kQuery = "recontextualize query";
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   EXPECT_CALL(*mock_ui_, GetTaskId())
-      .WillOnce(testing::ReturnRefOfCopy(std::optional<base::Uuid>(task_id)));
+      .WillRepeatedly(
+          testing::ReturnRefOfCopy(std::optional<base::Uuid>(task_id)));
 
   // Setup context with uploaded tab (not expired).
   contextual_tasks::ContextualTask task(task_id);
@@ -502,7 +504,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   std::string kQuery = "valid tab query";
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   EXPECT_CALL(*mock_ui_, GetTaskId())
-      .WillOnce(testing::ReturnRefOfCopy(std::optional<base::Uuid>(task_id)));
+      .WillRepeatedly(
+          testing::ReturnRefOfCopy(std::optional<base::Uuid>(task_id)));
 
   // Setup context with uploaded tab
   contextual_tasks::ContextualTask task(task_id);
@@ -597,7 +600,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   std::string kQuery = "query with unrelated active tab";
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   EXPECT_CALL(*mock_ui_, GetTaskId())
-      .WillOnce(testing::ReturnRefOfCopy(std::optional<base::Uuid>(task_id)));
+      .WillRepeatedly(
+          testing::ReturnRefOfCopy(std::optional<base::Uuid>(task_id)));
 
   // Setup context with NO tabs (or just not the active one).
   contextual_tasks::ContextualTask task(task_id);
@@ -647,7 +651,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   std::string kQuery = "query with url mismatch";
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   EXPECT_CALL(*mock_ui_, GetTaskId())
-      .WillOnce(testing::ReturnRefOfCopy(std::optional<base::Uuid>(task_id)));
+      .WillRepeatedly(
+          testing::ReturnRefOfCopy(std::optional<base::Uuid>(task_id)));
 
   // Setup context with matching SessionID but mismatching URL.
   // Active tab is at about:blank. Resource is at http://example.com.
@@ -702,7 +707,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   std::string kQuery = "recontextualize query";
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   EXPECT_CALL(*mock_ui_, GetTaskId())
-      .WillOnce(testing::ReturnRefOfCopy(std::optional<base::Uuid>(task_id)));
+      .WillRepeatedly(
+          testing::ReturnRefOfCopy(std::optional<base::Uuid>(task_id)));
 
   // Setup context with uploaded tab.
   contextual_tasks::ContextualTask task(task_id);
@@ -799,7 +805,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   std::string kQuery = "valid tab query";
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   EXPECT_CALL(*mock_ui_, GetTaskId())
-      .WillOnce(testing::ReturnRefOfCopy(std::optional<base::Uuid>(task_id)));
+      .WillRepeatedly(
+          testing::ReturnRefOfCopy(std::optional<base::Uuid>(task_id)));
 
   // Setup context with uploaded tab
   contextual_tasks::ContextualTask task(task_id);
@@ -999,7 +1006,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest, AddTabContext_Delayed) {
   std::string kQuery = "delayed tab query";
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   EXPECT_CALL(*mock_ui_, GetTaskId())
-      .WillOnce(testing::ReturnRefOfCopy(std::optional<base::Uuid>(task_id)));
+      .WillRepeatedly(
+          testing::ReturnRefOfCopy(std::optional<base::Uuid>(task_id)));
 
   // Setup context.
   contextual_tasks::ContextualTask task(task_id);
@@ -1085,7 +1093,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest, DeleteContext_Delayed) {
   std::string kQuery = "delete context query";
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   EXPECT_CALL(*mock_ui_, GetTaskId())
-      .WillOnce(testing::ReturnRefOfCopy(std::optional<base::Uuid>(task_id)));
+      .WillRepeatedly(
+          testing::ReturnRefOfCopy(std::optional<base::Uuid>(task_id)));
 
   // Setup context.
   contextual_tasks::ContextualTask task(task_id);

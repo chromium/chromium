@@ -877,6 +877,7 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
                                task_info_delegate_->GetWebUIWebContents(),
                                new_task_id,
                                task_info_delegate_->IsShownInTab());
+    task_info_delegate_->OnTaskChanged();
     return;
   }
 
@@ -963,6 +964,7 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
                                task_info_delegate_->GetWebUIWebContents(),
                                task_info_delegate_->GetTaskId().value(),
                                task_info_delegate_->IsShownInTab());
+    task_info_delegate_->OnTaskChanged();
   }
 }
 
@@ -1026,6 +1028,10 @@ void ContextualTasksUI::CreatePageHandler(
       std::make_unique<ContextualTasksInternalsPageHandler>(
           contextual_tasks_service, optimization_guide_keyed_service,
           std::move(receiver), std::move(page));
+}
+
+void ContextualTasksUI::OnTaskChanged() {
+  composebox_handler_->OnTaskChanged();
 }
 
 // static

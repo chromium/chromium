@@ -80,6 +80,8 @@ class MockTaskInfoDelegate : public TaskInfoDelegate {
 
   MOCK_METHOD(void, OnZeroStateChange, (bool is_zero_state), (override));
 
+  MOCK_METHOD(void, OnTaskChanged, (), (override));
+
  private:
   std::optional<base::Uuid> task_id_;
   std::optional<std::string> thread_id_;

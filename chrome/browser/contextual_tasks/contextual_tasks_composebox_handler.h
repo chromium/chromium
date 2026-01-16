@@ -77,6 +77,8 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
                      bool delay_upload,
                      AddTabContextCallback callback) override;
 
+  void OnTaskChanged();
+
   // ContextualSearchboxHandler:
   void OnFileUploadStatusChanged(
       const base::UnguessableToken& file_token,
@@ -114,17 +116,21 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
   void OnContextRetrieved(
       std::string query,
       tabs::TabHandle active_tab_handle,
+      std::optional<base::Uuid> original_task_id,
       std::unique_ptr<contextual_tasks::ContextualTaskContext> context);
 
   // Called when a tab context has been re-uploaded, to continue query
   // submission.
   void OnTabContextReuploaded(std::string query,
                               base::RepeatingClosure barrier_closure,
+                              std::optional<base::Uuid> original_task_id,
                               bool success);
 
   // Called when all tabs have been re-uploaded, to continue query
   // submission.
-  void ContinueCreateAndSendQueryMessage(std::string query);
+  void ContinueCreateAndSendQueryMessage(
+      std::string query,
+      std::optional<base::Uuid> original_task_id);
 
   // Returns the tabs that need to be re-uploaded before query submission based
   // on the tabs present in the context.
@@ -144,6 +150,7 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
       std::string query,
       std::unique_ptr<contextual_tasks::ContextualTaskContext> context,
       base::RepeatingClosure barrier_closure,
+      std::optional<base::Uuid> original_task_id,
       int32_t tab_id,
       std::unique_ptr<lens::ContextualInputData> page_content_data);
 

@@ -127,6 +127,7 @@ class ContextualTasksUI : public TaskInfoDelegate,
   BrowserWindowInterface* GetBrowser() override;
   content::WebContents* GetWebUIWebContents() override;
   void OnZeroStateChange(bool is_zero_state) override;
+  void OnTaskChanged() override;
 
   // Returns whether the given URL is an AI page zero state. This is used to
   // determine if the UI should be rendered in zero state. Static so it can be
