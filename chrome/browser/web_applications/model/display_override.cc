@@ -122,7 +122,7 @@ base::Value DisplayOverride::ToDebugValue() const {
     return base::Value(blink::DisplayModeToString(display_mode_));
   }
   base::Value::Dict item_dict;
-  item_dict.Set("display_mode", blink::DisplayModeToString(display_mode_));
+  item_dict.Set("display", blink::DisplayModeToString(display_mode_));
   item_dict.Set("url_patterns",
                 base::ToValueList(url_patterns_, UrlPatternDebugValue));
   return base::Value(std::move(item_dict));

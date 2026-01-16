@@ -572,7 +572,7 @@ TEST(WebAppTest, DisplayOverrideDebugValue) {
   ASSERT_THAT(debug_display_override, testing::NotNull());
   EXPECT_THAT(*debug_display_override,
               testing::ElementsAre("standalone", base::test::IsJson(R"({
-                "display_mode": "unframed",
+                "display": "unframed",
                 "url_patterns": [{ "pathname": "/foo" }]
               })")));
 }
