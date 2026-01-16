@@ -13,6 +13,7 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
@@ -319,9 +320,8 @@ void PerformanceEvaluator::WriteMetricsToFile() const {
   base::File metrics_output_file(
       base::FilePath(metrics_file_path),
       base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  int bytes_written = metrics_output_file.WriteAtCurrentPos(
-      metrics_str.data(), metrics_str.length());
-  ASSERT_EQ(bytes_written, static_cast<int>(metrics_str.length()));
+  ASSERT_TRUE(metrics_output_file.WriteAtCurrentPosAndCheck(
+      base::as_byte_span(metrics_str)));
   VLOG(0) << "Wrote performance metrics to: " << metrics_file_path;
 }
 

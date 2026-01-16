@@ -23,6 +23,7 @@
 #include <vector>
 
 #include "base/bits.h"
+#include "base/containers/span.h"
 #include "base/cpu.h"
 #include "base/files/file.h"
 #include "base/files/scoped_file.h"
@@ -290,11 +291,10 @@ std::string GetVaInfo(std::vector<std::string> argv) {
   EXPECT_TRUE(LaunchProcess(argv, options).IsValid());
   write_pipe_fd.reset();
 
-  char buf[262144] = {};
-  int n = read_pipe.ReadAtCurrentPos(buf, sizeof(buf));
-  PCHECK(n >= 0);
-  EXPECT_LT(n, 262144);
-  std::string output(buf, n);
+  uint8_t buf[262144] = {};
+  std::optional<size_t> n = read_pipe.ReadAtCurrentPos(buf);
+  PCHECK(n);
+  auto output = std::string(base::as_string_view(base::span(buf).first(*n)));
   DVLOG(4) << output;
   return output;
 }
