@@ -1174,7 +1174,9 @@ ClientFrameElementInfo BrowserView::GetFrameElementInfo() const {
   info.tabstrip_preferred_height =
       horizontal_tab_strip_region_view_ && ShouldDrawTabStrip() &&
               !ShouldDrawVerticalTabStrip()
-          ? horizontal_tab_strip_region_view_->GetPreferredSize().height()
+          ? horizontal_tab_strip_region_view_->GetTabStripView()
+                ->GetPreferredSize()
+                .height()
           : 0;
   if (toolbar_ && ShouldDrawVerticalTabStrip()) {
     info.toolbar_minimum_height = toolbar_->GetMinimumSize().height();
