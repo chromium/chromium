@@ -39,6 +39,7 @@ include_rules = [
   "+components/webauthn/core/browser",
   "+components/webdata/common",
   "+components/webdata_services",
+  "+extensions/buildflags",
   "+google_apis/gaia",
   "+services/network/test",
   "+ui/base",

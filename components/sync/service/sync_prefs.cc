@@ -174,6 +174,8 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 kNotMigrated);
   registry->RegisterBooleanPref(
       prefs::internal::kMigrateReadingListFromLocalToAccount, false);
+  registry->RegisterBooleanPref(
+      prefs::internal::kMigrateExtensionsFromLocalToAccount, false);
 
   // The passphrase type, determined upon the first engine initialization.
   registry->RegisterIntegerPref(

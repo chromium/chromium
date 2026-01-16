@@ -134,6 +134,9 @@ inline constexpr char kSyncDataTypeStatusForSyncToSigninMigrationPrefix[] =
 inline constexpr char kMigrateReadingListFromLocalToAccount[] =
     "sync.migrate_reading_list_from_local_to_account";
 
+inline constexpr char kMigrateExtensionsFromLocalToAccount[] =
+    "sync.migrate_extensions_from_local_to_account";
+
 // State of SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1() and
 // MaybeMigratePrefsForSyncToSigninPart2(). Should be cleaned up after those
 // migration methods are gone.

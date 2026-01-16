@@ -31,6 +31,7 @@
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/sync_feature_status_for_migrations_recorder.h"
 #include "components/sync/service/sync_prefs.h"
+#include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_id.h"
 
 namespace browser_sync {
@@ -243,6 +244,12 @@ void UndoSyncToSigninMigration(PrefService* pref_service) {
   // now.
   pref_service->ClearPref(
       syncer::prefs::internal::kMigrateReadingListFromLocalToAccount);
+
+  // Extensions: The migration is asynchronous. Most likely it has been
+  // completed by this point, but in case it's still pending, stop attempting it
+  // now.
+  pref_service->ClearPref(
+      syncer::prefs::internal::kMigrateExtensionsFromLocalToAccount);
 }
 
 const char* GetHistogramMigratingOrNotInfix(bool doing_migration) {
@@ -381,6 +388,18 @@ void MaybeMigrateSyncingUserToSignedInInternal(
                     syncer::DataTypeToHistogramSuffix(syncer::READING_LIST)}),
       reading_list_decision);
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  const SyncToSigninMigrationDataTypeDecision extensions_decision =
+      GetSyncToSigninMigrationDataTypeDecision(
+          pref_service, syncer::EXTENSIONS,
+          syncer::prefs::internal::kSyncExtensions);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Sync.SyncToSigninMigrationDecision.",
+                    GetHistogramMigratingOrNotInfix(doing_migration),
+                    syncer::DataTypeToHistogramSuffix(syncer::EXTENSIONS)}),
+      extensions_decision);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
   if (!doing_migration) {
     return;
   }
@@ -476,6 +495,14 @@ void MaybeMigrateSyncingUserToSignedInInternal(
     // `migration_successful` here. The actual outcome will be recorded in other
     // histograms.
   }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (extensions_decision == SyncToSigninMigrationDataTypeDecision::kMigrate) {
+    pref_service->SetBoolean(
+        syncer::prefs::internal::kMigrateExtensionsFromLocalToAccount, true);
+    // TODO(crbug.com/328400930): Add metrics to track this migration.
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   if (!is_blocking_allowed) {
     base::ThreadPool::PostTaskAndReplyWithResult(
