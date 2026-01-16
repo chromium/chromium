@@ -69,6 +69,12 @@ class TestSearchboxBrowserProxy extends TestBrowserProxy {
   getCallbackRouter() {
     return this.callbackRouter;
   }
+
+  initVisibilityPrefs() {
+    this.page.updateAimEligibility(true);
+    this.page.onShowAiModePrefChanged(true);
+    this.page.updateContentSharingPolicy(true);
+  }
 }
 
 suite('AppTest', function() {
@@ -147,10 +153,7 @@ suite('AppTest', function() {
 
       localApp = document.createElement('omnibox-popup-app');
       document.body.appendChild(localApp);
-      testProxy.page.updateAimEligibility(true);
-      await microtasksFinished();
-
-      testProxy.page.onShowAiModePrefChanged(true);
+      testProxy.initVisibilityPrefs();
       await microtasksFinished();
     });
 
@@ -230,7 +233,6 @@ suite('AppTest', function() {
         composeboxShowRecentTabChip: true,
         addTabUploadDelayOnRecentTabChipClick: true,
       });
-      testProxy.page.updateAimEligibility(true);
       const tabInfo = {
         tabId: 1,
         title: 'Tab 1',
@@ -245,7 +247,7 @@ suite('AppTest', function() {
       testProxy.page.autocompleteResultChanged(createAutocompleteResult());
       await microtasksFinished();
 
-      testProxy.page.onShowAiModePrefChanged(true);
+      testProxy.initVisibilityPrefs();
       await microtasksFinished();
 
       const carousel = localApp.shadowRoot?.querySelector(
@@ -267,7 +269,7 @@ suite('AppTest', function() {
       localApp = document.createElement('omnibox-popup-app');
       document.body.appendChild(localApp);
 
-      testProxy.page.onShowAiModePrefChanged(true);
+      testProxy.initVisibilityPrefs();
       await microtasksFinished();
     });
 

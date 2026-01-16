@@ -89,6 +89,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       searchboxLayoutMode_: {type: String},
       showContextEntrypoint_: {type: Boolean},
       showAiModePrefEnabled_: {type: Boolean},
+      isContentSharingEnabled_: {type: Boolean},
       isLensSearchEnabled_: {type: Boolean},
       isLensSearchEligible_: {type: Boolean},
       isAimEligible_: {type: Boolean},
@@ -108,6 +109,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   protected accessor searchboxLayoutMode_: string =
       loadTimeData.getString('searchboxLayoutMode');
   protected accessor showContextEntrypoint_: boolean = false;
+  protected accessor isContentSharingEnabled_: boolean = false;
   protected accessor isLensSearchEnabled_: boolean =
       loadTimeData.getBoolean('composeboxShowLensSearchChip');
   protected accessor isRecentTabChipEnabled_: boolean =
@@ -158,6 +160,10 @@ export class OmniboxPopupAppElement extends I18nMixinLit
           (canShow: boolean) => {
             this.showAiModePrefEnabled_ = canShow;
           }),
+      this.callbackRouter_.updateContentSharingPolicy.addListener(
+          (enabled: boolean) => {
+            this.isContentSharingEnabled_ = enabled;
+          }),
     ];
     canShowSecondarySideMediaQueryList.addEventListener(
         'change', this.onCanShowSecondarySideChanged_.bind(this));
@@ -200,7 +206,8 @@ export class OmniboxPopupAppElement extends I18nMixinLit
         changedPrivateProperties.has('showAiModePrefEnabled_') ||
         changedPrivateProperties.has('tabSuggestions_') ||
         changedPrivateProperties.has('result_') ||
-        changedPrivateProperties.has('isLensSearchEligible_')) {
+        changedPrivateProperties.has('isLensSearchEligible_') ||
+        changedPrivateProperties.has('isContentSharingEnabled_')) {
       this.showContextEntrypoint_ = this.computeShowContextEntrypoint_();
     }
   }
@@ -222,9 +229,9 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     const showContextualChips = showRecentTabChip || this.isLensSearchEligible_;
     const showContextualChipsInCompactMode =
         showContextualChips && this.searchboxLayoutMode_ === 'Compact';
-    return this.isAimEligible_ && this.showAiModePrefEnabled_
-        && (isTallSearchbox || showContextualChipsInCompactMode) &&
-        !this.isInKeywordMode_;
+    return this.isAimEligible_ && this.showAiModePrefEnabled_ &&
+        (isTallSearchbox || showContextualChipsInCompactMode) &&
+        !this.isInKeywordMode_ && this.isContentSharingEnabled_;
   }
 
   private onCanShowSecondarySideChanged_(e: MediaQueryListEvent) {
