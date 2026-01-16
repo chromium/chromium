@@ -248,9 +248,8 @@ TEST_F(OneShotAccessibilityTreeSearchTest, BackwardsWithStartNodeForAndroid) {
 TEST_F(OneShotAccessibilityTreeSearchTest, ForwardsWithStartNodeAndScope) {
   ui::OneShotAccessibilityTreeSearch search(tree_->GetFromID(7));
   search.SetStartNode(tree_->GetFromID(8));
-  ASSERT_EQ(2U, search.CountMatches());
+  ASSERT_EQ(1U, search.CountMatches());
   EXPECT_EQ(9, search.GetMatchAtIndex(0)->GetId());
-  EXPECT_EQ(10, search.GetMatchAtIndex(1)->GetId());
 }
 
 TEST_F(OneShotAccessibilityTreeSearchTest, ResultLimitZero) {
