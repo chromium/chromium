@@ -790,20 +790,10 @@ const LayoutResult* LayoutGridItemForMeasure(
 LayoutUnit Baseline(const GridItemData& grid_item,
                     const GridLayoutData& layout_data,
                     GridTrackSizingDirection track_direction) {
-  // "If a box spans multiple shared alignment contexts, then it participates
-  //  in first/last baseline alignment within its start-most/end-most shared
-  //  alignment context along that axis"
-  // https://www.w3.org/TR/css-align-3/#baseline-sharing-group
   const auto& track_collection = (track_direction == kForColumns)
                                      ? layout_data.Columns()
                                      : layout_data.Rows();
-
-  const auto& [begin_set_index, end_set_index] =
-      grid_item.SetIndices(track_direction);
-
-  return (grid_item.BaselineGroup(track_direction) == BaselineGroup::kMajor)
-             ? track_collection.MajorBaseline(begin_set_index)
-             : track_collection.MinorBaseline(end_set_index - 1);
+  return GetTrackBaseline(grid_item, track_collection);
 }
 
 LayoutUnit GetExtraMarginForBaseline(const BoxStrut& margins,
@@ -825,17 +815,6 @@ LayoutUnit GetExtraMarginForBaseline(const BoxStrut& margins,
          (subgridded_item->IsLastBaselineSpecified(track_direction)
               ? margins.block_end
               : margins.block_start);
-}
-
-LayoutUnit GetLogicalBaseline(const GridItemData& grid_item,
-                              const LogicalBoxFragment& baseline_fragment,
-                              GridTrackSizingDirection track_direction) {
-  const auto font_baseline = grid_item.parent_grid_font_baseline;
-
-  return grid_item.IsLastBaselineSpecified(track_direction)
-             ? baseline_fragment.BlockSize() -
-                   baseline_fragment.LastBaselineOrSynthesize(font_baseline)
-             : baseline_fragment.FirstBaselineOrSynthesize(font_baseline);
 }
 
 LayoutUnit GetSynthesizedLogicalBaseline(
@@ -998,8 +977,9 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
         To<PhysicalBoxFragment>(result->GetPhysicalFragment()));
 
     if (grid_item->IsBaselineAligned(track_direction)) {
-      CalculateBaselineShim(
-          GetLogicalBaseline(*grid_item, baseline_fragment, track_direction));
+      CalculateBaselineShim(GetLogicalBaseline(
+          baseline_fragment, grid_item->parent_grid_font_baseline,
+          grid_item->IsLastBaselineSpecified(track_direction)));
     }
     return baseline_fragment.BlockSize() + baseline_shim;
   };
@@ -1261,21 +1241,9 @@ void GridLayoutAlgorithm::ComputeGridItemBaselines(
                           baseline_writing_direction),
         subgridded_item, track_direction, writing_mode);
 
-    const LayoutUnit baseline =
-        extra_margin +
-        GetLogicalBaseline(grid_item, baseline_fragment, track_direction);
-
-    // "If a box spans multiple shared alignment contexts, then it participates
-    //  in first/last baseline alignment within its start-most/end-most shared
-    //  alignment context along that axis"
-    // https://www.w3.org/TR/css-align-3/#baseline-sharing-group
-    const auto& [begin_set_index, end_set_index] =
-        grid_item.SetIndices(track_direction);
-    if (grid_item.BaselineGroup(track_direction) == BaselineGroup::kMajor) {
-      track_collection.SetMajorBaseline(begin_set_index, baseline);
-    } else {
-      track_collection.SetMinorBaseline(end_set_index - 1, baseline);
-    }
+    StoreItemBaseline(baseline_fragment, track_direction,
+                      grid_item.parent_grid_font_baseline, extra_margin,
+                      track_collection, grid_item);
   }
 }
 
@@ -2243,34 +2211,18 @@ void GridLayoutAlgorithm::PlaceGridItems(
         To<PhysicalBoxFragment>(result->GetPhysicalFragment());
     LogicalBoxFragment fragment(container_writing_direction, physical_fragment);
 
-    auto BaselineOffset = [&](GridTrackSizingDirection track_direction,
-                              LayoutUnit size) -> LayoutUnit {
-      if (!grid_item.IsBaselineAligned(track_direction)) {
-        return LayoutUnit();
-      }
-
-      LogicalBoxFragment baseline_fragment(
-          grid_item.BaselineWritingDirection(track_direction),
-          physical_fragment);
-      // The baseline offset is the difference between the grid item's baseline
-      // and its track baseline.
-      const LayoutUnit baseline_delta =
-          Baseline(grid_item, layout_data, track_direction) -
-          GetLogicalBaseline(grid_item, baseline_fragment, track_direction);
-      if (grid_item.BaselineGroup(track_direction) == BaselineGroup::kMajor)
-        return baseline_delta;
-
-      // BaselineGroup::kMinor
-      const LayoutUnit item_size = (track_direction == kForColumns)
-                                       ? fragment.InlineSize()
-                                       : fragment.BlockSize();
-      return size - baseline_delta - item_size;
-    };
-
-    LayoutUnit inline_baseline_offset =
-        BaselineOffset(kForColumns, containing_grid_area.size.inline_size);
-    LayoutUnit block_baseline_offset =
-        BaselineOffset(kForRows, containing_grid_area.size.block_size);
+    LayoutUnit inline_baseline_offset = ComputeBaselineOffset(
+        grid_item, layout_data.Columns(),
+        LogicalBoxFragment(grid_item.BaselineWritingDirection(kForColumns),
+                           physical_fragment),
+        fragment, grid_item.parent_grid_font_baseline, kForColumns,
+        containing_grid_area.size.inline_size);
+    LayoutUnit block_baseline_offset = ComputeBaselineOffset(
+        grid_item, layout_data.Rows(),
+        LogicalBoxFragment(grid_item.BaselineWritingDirection(kForRows),
+                           physical_fragment),
+        fragment, grid_item.parent_grid_font_baseline, kForRows,
+        containing_grid_area.size.block_size);
 
     // Apply the grid-item's alignment (if any).
     containing_grid_area.offset += LogicalOffset(
