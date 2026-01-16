@@ -10,7 +10,6 @@
 
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -48,6 +47,7 @@ decltype(&GetNetworkConnectivityHint) GetGetNetworkConnectivityHint() {
 
 NetworkChangeNotifierWin::NetworkChangeNotifierWin()
     : NetworkChangeNotifier(NetworkChangeCalculatorParamsWin()),
+      addr_overlapped_(),
       blocking_task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
       last_computed_connection_type_(RecomputeCurrentConnectionType()),
@@ -55,7 +55,6 @@ NetworkChangeNotifierWin::NetworkChangeNotifierWin()
                               CONNECTION_NONE),
       sequence_runner_for_registration_(
           base::SequencedTaskRunner::GetCurrentDefault()) {
-  UNSAFE_TODO(memset(&addr_overlapped_, 0, sizeof addr_overlapped_));
   addr_overlapped_.hEvent = WSACreateEvent();
 
   cost_change_notifier_ = NetworkCostChangeNotifierWin::CreateInstance(
