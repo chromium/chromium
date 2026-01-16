@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "base/no_destructor.h"
-#include "chrome/browser/page_content_annotations/page_content_screenshot_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "components/page_content_annotations/content/page_content_screenshot_service.h"
 
 namespace page_content_annotations {
 

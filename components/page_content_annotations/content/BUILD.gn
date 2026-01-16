@@ -1,0 +1,22 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("content") {
+  sources = [
+    "page_content_screenshot_service.cc",
+    "page_content_screenshot_service.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/paint_preview/browser",
+    "//components/paint_preview/common",
+    "//components/paint_preview/common/mojom",
+    "//components/paint_preview/public",
+  ]
+  deps = [
+    "//components/services/paint_preview_compositor/public/mojom",
+    "//content/public/browser",
+    "//ui/gfx/geometry",
+  ]
+}

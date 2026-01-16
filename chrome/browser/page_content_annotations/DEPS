@@ -3,8 +3,4 @@ specific_include_rules = {
     "+components/paint_preview/common",
     "+pdf/mojom",
   ],
-  "page_content_screenshot_service\.*": [
-    "+components/paint_preview/common",
-    "+components/paint_preview/public",
-  ],
 }

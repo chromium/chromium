@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_PAGE_CONTENT_SCREENSHOT_SERVICE_H_
-#define CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_PAGE_CONTENT_SCREENSHOT_SERVICE_H_
+#ifndef COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_PAGE_CONTENT_SCREENSHOT_SERVICE_H_
+#define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_PAGE_CONTENT_SCREENSHOT_SERVICE_H_
 
 #include <memory>
 
@@ -14,9 +14,12 @@
 #include "components/paint_preview/common/mojom/paint_preview_types.mojom.h"
 #include "components/paint_preview/common/redaction_params.h"
 #include "components/paint_preview/public/paint_preview_compositor_service.h"
-#include "content/public/browser/web_contents.h"
 
 class SkBitmap;
+
+namespace content {
+class WebContents;
+}
 
 namespace page_content_annotations {
 
@@ -83,4 +86,4 @@ class PageContentScreenshotService
 
 }  // namespace page_content_annotations
 
-#endif  // CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_PAGE_CONTENT_SCREENSHOT_SERVICE_H_
+#endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_PAGE_CONTENT_SCREENSHOT_SERVICE_H_
