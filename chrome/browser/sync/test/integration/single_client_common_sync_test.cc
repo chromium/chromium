@@ -23,6 +23,7 @@
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/committed_all_nudged_changes_checker.h"
+#include "chrome/browser/sync/test/integration/reading_list_helper.h"
 #include "chrome/browser/sync/test/integration/send_tab_to_self_helper.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -413,31 +414,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientGetUnsyncedTypesTest, SignInPendingState) {
 
 // Android doesn't currently support PRE_ tests, see crbug.com/1117345.
 #if !BUILDFLAG(IS_ANDROID)
-void WaitForReadingListModelLoaded(ReadingListModel* reading_list_model) {
-  testing::NiceMock<MockReadingListModelObserver> observer_;
-  base::RunLoop run_loop;
-  EXPECT_CALL(observer_, ReadingListModelLoaded).WillOnce([&run_loop] {
-    run_loop.Quit();
-  });
-  reading_list_model->AddObserver(&observer_);
-  run_loop.Run();
-  reading_list_model->RemoveObserver(&observer_);
-}
-
-std::unique_ptr<syncer::LoopbackServerEntity> CreateTestReadingListEntity(
-    const GURL& url,
-    const std::string& entry_title) {
-  sync_pb::EntitySpecifics specifics;
-  *specifics.mutable_reading_list() = *base::MakeRefCounted<ReadingListEntry>(
-                                           url, entry_title, base::Time::Now())
-                                           ->AsReadingListSpecifics()
-                                           .get();
-  return syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
-      "non_unique_name", url.spec(), specifics,
-      /*creation_time=*/syncer::TimeToProtoTime(base::Time::Now()),
-      /*last_modified_time=*/syncer::TimeToProtoTime(base::Time::Now()));
-}
-
 class SingleClientFeatureToTransportSyncTest : public SyncTest {
  public:
   SingleClientFeatureToTransportSyncTest() : SyncTest(SINGLE_CLIENT) {
@@ -477,7 +453,7 @@ class SingleClientFeatureToTransportSyncTest : public SyncTest {
       return false;
     }
 
-    WaitForReadingListModelLoaded(reading_list_model());
+    reading_list_helper::WaitForReadingListModelLoaded(reading_list_model());
     return true;
   }
 
@@ -495,7 +471,8 @@ class SingleClientFeatureToTransportSyncTest : public SyncTest {
 
 IN_PROC_BROWSER_TEST_F(SingleClientFeatureToTransportSyncTest,
                        PRE_ShouldFixBadMetadata) {
-  fake_server_->InjectEntity(CreateTestReadingListEntity(kUrl, "Title"));
+  fake_server_->InjectEntity(
+      reading_list_helper::CreateTestReadingListEntity(kUrl, "Title"));
 
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
