@@ -103,8 +103,8 @@ MemoryPressureListenerRegistration::MemoryPressureListenerRegistration(
       ignore_repeated_notifications_(ignore_repeated_notifications),
       registry_(MemoryPressureListenerRegistry::MaybeGet()) {
   if (!registry_) {
-    DLOG(WARNING) << "Registration of a MemoryPressureListener failed. The "
-                     "MemoryPressureListenerRegistry doesn't exist.";
+    DVLOG(1) << "Registration of a MemoryPressureListener failed. The "
+                "MemoryPressureListenerRegistry doesn't exist.";
     return;
   }
 
