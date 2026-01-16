@@ -615,6 +615,11 @@ void IdentityDialogController::UnsetActorLoginRequest(content::Page& page) {
 
 IdentityDialogController::ActorLoginRequest*
 IdentityDialogController::GetActorLoginRequest() const {
+  if (rp_web_contents_->IsBeingDestroyed()) {
+    // If the WebContents is being destroyed, don't try to access the page. See
+    // crbug.com/476409625.
+    return nullptr;
+  }
   return IdentityDialogController::ActorLoginRequest::GetForPage(
       rp_web_contents_->GetPrimaryPage());
 }
