@@ -130,19 +130,26 @@ def CheckNoExternalImportInGn(input_api, output_api):
     return errors;
 
 # partition_alloc uses C++20.
-def CheckCpp20CompatibleHeaders(input_api, output_api):
-    CPP_23_HEADERS = [
-        "expected",
-        "flat_map",
-        "flat_set",
-        "generator",
-        "mdspan",
-        "print",
-        "spanstream",
-        "stacktrace",
-        "stdatomic.h",
-        "stdfloat",
-    ]
+def CheckNoCpp23Features(input_api, output_api):
+    CPP_23_PATTERNS = (
+        r'#include <(expected|flat_map|flat_set|generator|mdspan|print|'
+        r'spanstream|stacktrace|stdatomic.h|stdfloat)>',
+        r'if !?consteval',
+        r'^#elifn?def',
+        r'std::byteswap',
+        r'#warning',
+        r'static.*operator(\(\)|\[\])',
+        r'std::from_range',
+        r'\[\[assume[^[]*\]\]',
+        r'std::move_only_function',
+        r'std::unreachable',
+        r'std::(in)?out_ptr',
+        r'std::start_lifetime_as',
+        r'std::ranges::(contains|contains_subrange|starts_with|ends_with|'
+        r'find_last|find_last_if|find_last_if_not|iota|shift_left|'
+        r'shift_right|fold_left|fold_left_first|fold_right|fold_right_last|'
+        r'fold_left_with_iter|fold_left_first_with_iter)',
+    )
 
     sources = lambda affected_file: input_api.FilterSourceFile(
         affected_file,
@@ -156,13 +163,14 @@ def CheckCpp20CompatibleHeaders(input_api, output_api):
     for f in input_api.AffectedSourceFiles(sources):
         # for line_number, line in f.ChangedContents():
         for line_number, line in enumerate(f.NewContents()):
-            for header in CPP_23_HEADERS:
-                if not "#include <%s>" % header in line:
+            for pattern in CPP_23_PATTERNS:
+                match = input_api.re.search(pattern, line)
+                if not match:
                     continue
                 errors.append(
                     output_api.PresubmitError(
-                        '%s:%d\nPartitionAlloc disallows C++23 headers: <%s>'
-                        % (f.LocalPath(), line_number + 1, header)))
+                        '%s:%d\nPartitionAlloc disallows C++23 features: `%s`'
+                        % (f.LocalPath(), line_number + 1, match.group(0))))
     return errors
 
 # Check `NDEBUG` is not used inside partition_alloc. We prefer to use the
