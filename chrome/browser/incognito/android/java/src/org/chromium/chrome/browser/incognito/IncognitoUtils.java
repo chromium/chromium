@@ -82,10 +82,6 @@ public class IncognitoUtils {
         if (!ChromeFeatureList.sAndroidOpenIncognitoAsWindow.isEnabled()) {
             return false;
         }
-        // Automotive is currently restricted to a single window.
-        if (DeviceInfo.isAutomotive() || DeviceInfo.isFoldable()) {
-            return false;
-        }
         if (BuildConfig.IS_FOR_TEST) {
             if (sShouldOpenIncognitoAsWindowForTesting == null) {
                 sShouldOpenIncognitoAsWindowForTesting =
@@ -93,6 +89,10 @@ public class IncognitoUtils {
                                 DisplayUtil::isGlobalDefaultDisplayTabletSized);
             }
             return sShouldOpenIncognitoAsWindowForTesting;
+        }
+        // Automotive is currently restricted to a single window.
+        if (DeviceInfo.isAutomotive() || DeviceInfo.isFoldable()) {
+            return false;
         }
         // Simplified check based on MultiWindowUtils#isMultiInstanceApi31Enabled. Skips the
         // Manifest launchMode check due to dependency restrictions on ChromeTabbedActivity.
