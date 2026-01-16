@@ -26625,21 +26625,6 @@
             ]
         }
     ],
-    "UseHeuristicForWindowsFullScreenPowerPoint": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseHeuristicForWindowsFullScreenPowerPoint"
-                    ]
-                }
-            ]
-        }
-    ],
     "UseLastVisitedFallbackURLFavicon": [
         {
             "platforms": [
