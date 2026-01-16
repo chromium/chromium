@@ -10,6 +10,7 @@ import android.app.Activity;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
@@ -67,11 +68,11 @@ public class SigninSurveyController implements Destroyable {
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:SigninSurveyTrigger)
 
-    // 5 second delay.
-    private static final int DELAY = 5000;
     private static final ProfileKeyedMap<SigninSurveyController> sProfileMap =
             ProfileKeyedMap.createMapOfDestroyables();
 
+    // 5 second delay.
+    private static int sDelay = 5000;
     private static boolean sEnableForTesting;
 
     private final Profile mProfile;
@@ -129,6 +130,18 @@ public class SigninSurveyController implements Destroyable {
         controller.mRegisteredTrigger = surveyType;
     }
 
+    // Enables triggering the survey in tests and a delay after which the survey will be shown.
+    public static void enableWithoutDelayForTesting() {
+        int prevDelay = sDelay;
+        sEnableForTesting = true;
+        sDelay = 0;
+        ResettersForTesting.register(
+                () -> {
+                    sEnableForTesting = false;
+                    sDelay = prevDelay;
+                });
+    }
+
     private static SigninSurveyController getForProfile(Profile profile) {
         return sProfileMap.getForProfile(profile, SigninSurveyController::buildForProfile);
     }
@@ -184,12 +197,14 @@ public class SigninSurveyController implements Destroyable {
                             assertNonNull(mActivityLifecycleDispatcher),
                             Collections.emptyMap(),
                             getSurveyPsd());
+                    // Destroy after showing the survey to not show it again.
+                    destroy();
                 };
         // Post the task to not show the survey abruptly. If the user navigates away from the
-        // ChromeTabbedActivity within DELAY then the ui message is queued to be shown the next time
+        // ChromeTabbedActivity within sDelay then the ui message is queued to be shown the next
+        // time
         // ChromeTabbedActivity activity is resumed.
-        PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, task, DELAY);
-        destroy();
+        PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, task, sDelay);
     }
 
     private @Nullable SurveyClient constructSurveyClient(@SigninSurveyType int surveyType) {
