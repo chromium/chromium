@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 3
+// Next MinVersion: 4
 //
 // NOTE: This mojom exists in two places and must be kept in sync:
 //       Chromium: chromeos/services/network_health/public/mojom/
@@ -31,7 +31,7 @@ enum RoutineType {
   kArcHttp,
   kArcDnsResolution,
   kArcPing,
-  kGoogleServicesConnectivity,
+  [MinVersion=3] kGoogleServicesConnectivity,
 };
 
 // Each routine can result in one of the possible verdicts.
@@ -369,7 +369,10 @@ union RoutineProblems {
   array<ArcHttpProblem> arc_http_problems;
   array<ArcDnsResolutionProblem> arc_dns_resolution_problems;
   array<ArcPingProblem> arc_ping_problems;
-  array<GoogleServicesConnectivityProblem> google_services_connectivity_problems;
+
+  [MinVersion=3]
+  array<GoogleServicesConnectivityProblem>
+      google_services_connectivity_problems;
 };
 
 // Result values specific to HttpsLatency routine.
@@ -488,6 +491,7 @@ interface NetworkDiagnosticsRoutines {
     => (RoutineResult result);
 
   // Tests whether Google Services can be successfully reached.
+  [MinVersion=3]
   RunGoogleServicesConnectivity@29([MinVersion=2] RoutineCallSource? source)
-    => (RoutineResult result);
+      => (RoutineResult result);
 };
