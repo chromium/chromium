@@ -47895,6 +47895,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SwitchToHorizontalTabStrip">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the user switches to horizontal tab strip mode. This user
+    action only applies to Desktop.
+  </description>
+</action>
+
+<action name="SwitchToVerticalTabStrip">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the user switches to vertical tab strip mode. This user action
+    only applies to Desktop.
+  </description>
+</action>
+
 <action name="Sync_CustomizeSync">
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
