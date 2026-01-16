@@ -42,8 +42,11 @@ source_set("export_coordinator") {
     ":coordinator_delegate",
     ":import_coordinator",
     "//base",
+    "//ios/chrome/browser/ntp/model:set_up_list_item_type",
+    "//ios/chrome/browser/ntp/model:set_up_list_prefs",
     "//ios/chrome/browser/safari_data_import/public:metrics",
     "//ios/chrome/browser/safari_data_import/ui",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/public/provider/chrome/browser/safari_data_import:safari_data_import_api",
   ]

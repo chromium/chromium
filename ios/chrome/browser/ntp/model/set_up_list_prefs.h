@@ -18,6 +18,8 @@ namespace set_up_list_prefs {
 extern const char kDefaultBrowserItemState[];
 extern const char kAutofillItemState[];
 extern const char kNotificationsItemState[];
+extern const char kSafariImportItemState[];
+extern const char kBackgroundCustomizationItemState[];
 extern const char kAllItemsComplete[];
 extern const char kDisabled[];
 

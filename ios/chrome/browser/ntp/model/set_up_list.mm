@@ -55,12 +55,11 @@ bool GetIsItemComplete(SetUpListItemType type,
       return push_notification_settings::
           IsMobileNotificationsEnabledForAnyClient(account.gaia, prefs);
     }
-    case SetUpListItemType::kAllSet:
-      NOTREACHED();
     case SetUpListItemType::kSafariImport:
+      return false;
     case SetUpListItemType::kBackgroundCustomization:
-      // TODO(crbug.com/462437008): Determine if Safari data was imported or if
-      // background customization panel was opened.
+      return false;
+    case SetUpListItemType::kAllSet:
       NOTREACHED();
   }
 }
@@ -174,6 +173,11 @@ std::vector<SetUpListItemType> GetSetUpListItemTypeOrder() {
         set_up_list_prefs::kAutofillItemState, &_prefChangeRegistrar);
     _prefObserverBridge->ObserveChangesForPreference(
         set_up_list_prefs::kNotificationsItemState, &_prefChangeRegistrar);
+    _prefObserverBridge->ObserveChangesForPreference(
+        set_up_list_prefs::kSafariImportItemState, &_prefChangeRegistrar);
+    _prefObserverBridge->ObserveChangesForPreference(
+        set_up_list_prefs::kBackgroundCustomizationItemState,
+        &_prefChangeRegistrar);
   }
   return self;
 }

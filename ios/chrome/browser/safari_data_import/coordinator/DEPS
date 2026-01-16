@@ -12,4 +12,5 @@ include_rules = [
   "+ios/chrome/browser/scoped_ui_blocker/ui_bundled",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/webauthn/model",
+  "+ios/chrome/browser/ntp/model",
 ]
