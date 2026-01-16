@@ -402,6 +402,8 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     return tab_strip_->GetModelIndexOf(view);
   }
 
+  int GetTabCount() const { return tab_strip_->GetTabCount(); }
+
   // TabDragContext:
   TabDragContext* GetContextForNewBrowser(
       BrowserView* browser_view) const override {
@@ -432,17 +434,11 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
              GetIndexOf(view) == 0);
   }
 
-  int GetTabCount() const override { return tab_strip_->GetTabCount(); }
-
   bool IsTabPinned(const TabSlotView* tab) const override {
     return tab_strip_->IsTabPinned(tab);
   }
 
-  int GetPinnedTabCount() const override {
-    return tab_strip_->NumPinnedTabsInModel();
-  }
-
-  TabGroupHeader* GetTabGroupHeader(
+  TabSlotView* GetTabGroupHeader(
       const tab_groups::TabGroupId& group) const override {
     return tab_strip_->group_header(group);
   }

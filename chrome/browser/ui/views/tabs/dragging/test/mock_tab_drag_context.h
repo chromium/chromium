@@ -33,10 +33,8 @@ class MockTabDragContext : public TabDragContext {
               IsTabDetachable,
               (const TabSlotView* view),
               (const, override));
-  MOCK_METHOD(int, GetTabCount, (), (const, override));
   MOCK_METHOD(bool, IsTabPinned, (const TabSlotView* tab), (const, override));
-  MOCK_METHOD(int, GetPinnedTabCount, (), (const, override));
-  MOCK_METHOD(TabGroupHeader*,
+  MOCK_METHOD(TabSlotView*,
               GetTabGroupHeader,
               (const tab_groups::TabGroupId& group),
               (const, override));

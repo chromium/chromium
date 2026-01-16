@@ -280,16 +280,7 @@ bool VerticalTabDragHandlerImpl::IsTabDetachable(
   return true;
 }
 
-int VerticalTabDragHandlerImpl::GetTabCount() const {
-  return dragged_tabs_.size();
-}
-
-int VerticalTabDragHandlerImpl::GetPinnedTabCount() const {
-  // TODO(crbug.com/439963720): Support dragging pinned tabs.
-  return 0;
-}
-
-TabGroupHeader* VerticalTabDragHandlerImpl::GetTabGroupHeader(
+TabSlotView* VerticalTabDragHandlerImpl::GetTabGroupHeader(
     const tab_groups::TabGroupId& group) const {
   // TODO(crbug.com/439963720): Support dragging tab groups.
   return nullptr;

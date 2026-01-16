@@ -88,9 +88,7 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
   content::WebContents* GetContentsForTab(TabSlotView* tab) override;
   bool IsTabDetachable(const TabSlotView* view) const override;
   bool IsTabPinned(const TabSlotView* tab) const override;
-  int GetTabCount() const override;
-  int GetPinnedTabCount() const override;
-  TabGroupHeader* GetTabGroupHeader(
+  TabSlotView* GetTabGroupHeader(
       const tab_groups::TabGroupId& group) const override;
   TabStripModel* GetTabStripModel() override;
   TabDragController* GetDragController() override;
