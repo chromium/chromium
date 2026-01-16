@@ -16,7 +16,6 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/syslog_logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
@@ -37,7 +36,6 @@
 #include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -497,21 +495,6 @@ void ChromeSessionManager::OnSessionCreated(bool browser_restart) {
   // session limit is defined by the policy.
   session_length_limiter_ = std::make_unique<SessionLengthLimiter>(
       /*delegate=*/nullptr, browser_restart);
-}
-
-void ChromeSessionManager::OnUsersSignInConstraintsChanged() {
-  const user_manager::UserList& logged_in_users =
-      user_manager()->GetLoggedInUsers();
-  for (user_manager::User* user : logged_in_users) {
-    if (user->IsDeviceLocalAccount()) {
-      continue;
-    }
-    if (!user_manager()->IsUserAllowed(*user)) {
-      SYSLOG(ERROR)
-          << "The current user is not allowed, terminating the session.";
-      chrome::AttemptUserExit();
-    }
-  }
 }
 
 }  // namespace ash

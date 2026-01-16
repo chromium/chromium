@@ -1163,13 +1163,6 @@ void UserManagerImpl::NotifyUserProfileImageUpdated(
   }
 }
 
-void UserManagerImpl::NotifyUsersSignInConstraintsChanged() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto& observer : observer_list_) {
-    observer.OnUsersSignInConstraintsChanged();
-  }
-}
-
 void UserManagerImpl::NotifyUserAffiliationUpdated(const User& user) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : observer_list_) {

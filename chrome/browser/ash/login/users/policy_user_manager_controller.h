@@ -69,6 +69,9 @@ class PolicyUserManagerController
   // Called when AccountsPrefShowUserNamesOnSignIn device policy is updated.
   void OnAccountsPrefShowUserNamesOnSignInUpdated();
 
+  // Called when user sign-in policy is updated.
+  void OnUsersSignInConstraintsUpdated();
+
   // Returns the display name taken from policy, expected to be used for
   // public accounts.
   std::optional<std::u16string> GetDisplayName(std::string_view user_id);

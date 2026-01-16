@@ -233,7 +233,6 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
   void NotifyUserProfileImageUpdated(
       const User& user,
       const gfx::ImageSkia& profile_image) override;
-  void NotifyUsersSignInConstraintsChanged() override;
   void NotifyUserAffiliationUpdated(const User& user) override;
   void NotifyUserToBeRemoved(const AccountId& account_id) override;
   void NotifyUserRemoved(const AccountId& account_id,
