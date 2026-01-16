@@ -770,9 +770,8 @@ def UpdateXml(original_xml: str, generated_actions_names: set[str]) -> str:
   return PrettyPrint(actions_dict, comment_nodes, variants_dict)
 
 
-def main(argv):
+def main():
   presubmit_util.DoPresubmitMain(
-      argv,
       'actions.xml',
       'actions.old.xml',
       lambda file_content: UpdateXml(file_content, _GeneratedActions()),
@@ -780,4 +779,4 @@ def main(argv):
 
 
 if '__main__' == __name__:
-  sys.exit(main(sys.argv))
+  main()
