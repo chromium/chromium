@@ -72,14 +72,9 @@ ExtensionsRequestAccessButton::ExtensionsRequestAccessButton(
   // Set button for IPH.
   SetProperty(views::kElementIdentifierKey,
               kExtensionsRequestAccessButtonElementId);
-
-  UpdateTooltipText();
-  browser_->tab_strip_model()->AddObserver(this);
 }
 
-ExtensionsRequestAccessButton::~ExtensionsRequestAccessButton() {
-  browser_->tab_strip_model()->RemoveObserver(this);
-}
+ExtensionsRequestAccessButton::~ExtensionsRequestAccessButton() = default;
 
 void ExtensionsRequestAccessButton::Update(
     std::vector<extensions::ExtensionId>& extension_ids) {
@@ -148,23 +143,6 @@ bool ExtensionsRequestAccessButton::IsShowingConfirmationFor(
 
 bool ExtensionsRequestAccessButton::ShouldShowInkdropAfterIphInteraction() {
   return false;
-}
-
-void ExtensionsRequestAccessButton::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (selection.active_tab_changed()) {
-    UpdateTooltipText();
-  }
-}
-
-void ExtensionsRequestAccessButton::OnTabChangedAt(tabs::TabInterface* tab,
-                                                   int index,
-                                                   TabChangeType change_type) {
-  if (tab->IsActivated()) {
-    UpdateTooltipText();
-  }
 }
 
 void ExtensionsRequestAccessButton::UpdateTooltipText() {
