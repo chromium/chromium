@@ -31,7 +31,6 @@ import {Router, routes} from '../router.js';
 import type {PrivacyHubBrowserProxy} from './privacy_hub_browser_proxy.js';
 import {PrivacyHubBrowserProxyImpl} from './privacy_hub_browser_proxy.js';
 import {GeolocationAccessLevel} from './privacy_hub_geolocation_subpage.js';
-import {PrivacyHubSensorSubpageUserAction} from './privacy_hub_metrics_util.js';
 import {getTemplate} from './privacy_hub_subpage.html.js';
 
 /**
@@ -254,29 +253,14 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
   }
 
   private onCameraSubpageLinkClick_(): void {
-    chrome.metricsPrivate.recordEnumerationValue(
-        'ChromeOS.PrivacyHub.CameraSubpage.UserAction',
-        PrivacyHubSensorSubpageUserAction.SUBPAGE_OPENED,
-        Object.keys(PrivacyHubSensorSubpageUserAction).length);
-
     Router.getInstance().navigateTo(routes.PRIVACY_HUB_CAMERA);
   }
 
   private onMicrophoneSubpageLinkClick_(): void {
-    chrome.metricsPrivate.recordEnumerationValue(
-        'ChromeOS.PrivacyHub.MicrophoneSubpage.UserAction',
-        PrivacyHubSensorSubpageUserAction.SUBPAGE_OPENED,
-        Object.keys(PrivacyHubSensorSubpageUserAction).length);
-
     Router.getInstance().navigateTo(routes.PRIVACY_HUB_MICROPHONE);
   }
 
   private onGeolocationAreaClick_(): void {
-    chrome.metricsPrivate.recordEnumerationValue(
-        'ChromeOS.PrivacyHub.LocationSubpage.UserAction',
-        PrivacyHubSensorSubpageUserAction.SUBPAGE_OPENED,
-        Object.keys(PrivacyHubSensorSubpageUserAction).length);
-
     Router.getInstance().navigateTo(routes.PRIVACY_HUB_GEOLOCATION);
   }
 

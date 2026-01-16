@@ -3164,21 +3164,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </token>
 </histogram>
 
-<histogram name="ChromeOS.PrivacyHub.{SensorName}Subpage.UserAction"
-    enum="PrivacyHubSensorSubpageUserAction" expires_after="2026-01-11">
-  <owner>shahinmd@google.com</owner>
-  <owner>cros-privacy-features-dev@google.com</owner>
-  <summary>
-    Records when the user interacts with the Privacy controls (aka. Privacy hub)
-    {SensorName} subpage.
-  </summary>
-  <token key="SensorName">
-    <variant name="Camera"/>
-    <variant name="Location"/>
-    <variant name="Microphone"/>
-  </token>
-</histogram>
-
 <histogram name="ChromeOS.Regmon.PolicyHandlerTime" units="ms"
     expires_after="2026-05-31">
   <owner>chiav@chromium.org</owner>

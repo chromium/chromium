@@ -7,7 +7,7 @@ import 'chrome://os-settings/lazy_load.js';
 import type {SettingsPrivacyHubCameraSubpage} from 'chrome://os-settings/lazy_load.js';
 import {MediaDevicesProxy, PrivacyHubBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
 import type {appPermissionHandlerMojom, CrLinkRowElement, CrToggleElement} from 'chrome://os-settings/os_settings.js';
-import {PrivacyHubSensorSubpageUserAction, Router, setAppPermissionProviderForTesting} from 'chrome://os-settings/os_settings.js';
+import {Router, setAppPermissionProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import {PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {DomRepeat} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -17,17 +17,15 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {FakeMediaDevices} from '../fake_media_devices.js';
-import type {FakeMetricsPrivate} from '../fake_metrics_private.js';
 
 import {FakeAppPermissionHandler} from './fake_app_permission_handler.js';
-import {createApp, createFakeMetricsPrivate, getSystemServicePermissionText, getSystemServicesFromSubpage} from './privacy_hub_app_permission_test_util.js';
+import {createApp, getSystemServicePermissionText, getSystemServicesFromSubpage} from './privacy_hub_app_permission_test_util.js';
 import {TestPrivacyHubBrowserProxy} from './test_privacy_hub_browser_proxy.js';
 
 type App = appPermissionHandlerMojom.App;
 
 suite('<settings-privacy-hub-camera-subpage>', () => {
   let fakeHandler: FakeAppPermissionHandler;
-  let metrics: FakeMetricsPrivate;
   let privacyHubCameraSubpage: SettingsPrivacyHubCameraSubpage;
   let privacyHubBrowserProxy: TestPrivacyHubBrowserProxy;
   let mediaDevices: FakeMediaDevices;
@@ -35,8 +33,6 @@ suite('<settings-privacy-hub-camera-subpage>', () => {
   setup(() => {
     fakeHandler = new FakeAppPermissionHandler();
     setAppPermissionProviderForTesting(fakeHandler);
-
-    metrics = createFakeMetricsPrivate();
 
     privacyHubBrowserProxy = new TestPrivacyHubBrowserProxy();
     PrivacyHubBrowserProxyImpl.setInstanceForTesting(privacyHubBrowserProxy);
@@ -153,11 +149,6 @@ suite('<settings-privacy-hub-camera-subpage>', () => {
       assertEquals(
           cameraToggle.checked,
           privacyHubCameraSubpage.prefs.ash.user.camera_allowed.value);
-      assertEquals(
-          i + 1,
-          metrics.countMetricValue(
-              'ChromeOS.PrivacyHub.CameraSubpage.UserAction',
-              PrivacyHubSensorSubpageUserAction.SYSTEM_ACCESS_CHANGED));
     }
   });
 
@@ -430,22 +421,6 @@ suite('<settings-privacy-hub-camera-subpage>', () => {
 
     assertNull(getManagePermissionsInChromeRow());
     assertTrue(!!getNoWebsiteHasAccessTextRow());
-  });
-
-  test('Website section metric recorded when clicked', () => {
-    assertEquals(
-        0,
-        metrics.countMetricValue(
-            'ChromeOS.PrivacyHub.CameraSubpage.UserAction',
-            PrivacyHubSensorSubpageUserAction.WEBSITE_PERMISSION_LINK_CLICKED));
-
-    getManagePermissionsInChromeRow()!.click();
-
-    assertEquals(
-        1,
-        metrics.countMetricValue(
-            'ChromeOS.PrivacyHub.CameraSubpage.UserAction',
-            PrivacyHubSensorSubpageUserAction.WEBSITE_PERMISSION_LINK_CLICKED));
   });
 
   test(

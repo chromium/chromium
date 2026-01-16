@@ -1812,14 +1812,6 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="1" label="Notification"/>
 </enum>
 
-<enum name="PrivacyHubSensorSubpageUserAction">
-  <int value="0" label="Subpage opened"/>
-  <int value="1" label="System access changed"/>
-  <int value="2" label="App permission changed"/>
-  <int value="3" label="Android settings link clicked"/>
-  <int value="4" label="Website permission link clicked"/>
-</enum>
-
 <enum name="RgbKeyboardBacklightChangeType">
   <int value="0" label="StaticBackgroundColorChanged"/>
   <int value="1" label="RainbowModeSelected"/>
