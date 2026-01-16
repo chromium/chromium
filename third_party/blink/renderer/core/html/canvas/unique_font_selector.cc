@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -84,8 +83,7 @@ void UniqueFontSelector::EvictExcessEntries() {
     // Allow the cache size to exceed `max_size` within the same frame.
     if (value.generation == frame_generation_) {
       // However, it should not exceed `max_size` * 2.
-      if (!RuntimeEnabledFeatures::CanvasTextTexImage2DFixEnabled() ||
-          lru_list_.size() <= max_size * 2) {
+      if (lru_list_.size() <= max_size * 2) {
         break;
       }
     }

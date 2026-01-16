@@ -262,8 +262,7 @@ scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
   }
   *status = image ? kNormalSourceImageStatus : kInvalidSourceImageStatus;
 
-  if (RuntimeEnabledFeatures::CanvasTextTexImage2DFixEnabled() &&
-      !RuntimeEnabledFeatures::CanvasTextSwitchFrameOnFinalizeEnabled()) {
+  if (!RuntimeEnabledFeatures::CanvasTextSwitchFrameOnFinalizeEnabled()) {
     NotifyCachesOfSwitchingFrame();
   }
   return image;
