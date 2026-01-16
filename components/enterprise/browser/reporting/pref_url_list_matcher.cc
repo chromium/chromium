@@ -1,37 +1,35 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/reporting/legacy_tech/legacy_tech_url_matcher.h"
+#include "components/enterprise/browser/reporting/pref_url_list_matcher.h"
 
 #include "base/functional/bind.h"
-#include "chrome/browser/enterprise/reporting/prefs.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/url_matcher/url_util.h"
 #include "url/gurl.h"
 
 namespace enterprise_reporting {
 
-LegacyTechURLMatcher::LegacyTechURLMatcher(Profile* profile)
-    : profile_(profile) {
-  pref_change_.Init(profile->GetPrefs());
-  pref_change_.Add(kCloudLegacyTechReportAllowlist,
-                   base::BindRepeating(&LegacyTechURLMatcher::OnPrefUpdated,
+PrefURLListMatcher::PrefURLListMatcher(PrefService* pref_service,
+                                       const char* pref_name)
+    : pref_service_(pref_service), pref_name_(pref_name) {
+  pref_change_.Init(pref_service_);
+  pref_change_.Add(pref_name_,
+                   base::BindRepeating(&PrefURLListMatcher::OnPrefUpdated,
                                        base::Unretained(this)));
 
   OnPrefUpdated();
 }
 
-LegacyTechURLMatcher::~LegacyTechURLMatcher() = default;
+PrefURLListMatcher::~PrefURLListMatcher() = default;
 
-void LegacyTechURLMatcher::OnPrefUpdated() {
+void PrefURLListMatcher::OnPrefUpdated() {
   base::MatcherStringPattern::ID id = 0;
   url_matcher::URLMatcherConditionSet::Vector conditions;
   url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
   path_length_.clear();
-  for (const auto& url :
-       profile_->GetPrefs()->GetList(kCloudLegacyTechReportAllowlist)) {
+  for (const auto& url : pref_service_->GetList(pref_name_)) {
     url_matcher::util::FilterComponents components;
     url_matcher::util::FilterToComponents(
         url.GetString(), &components.scheme, &components.host,
@@ -54,7 +52,7 @@ void LegacyTechURLMatcher::OnPrefUpdated() {
   url_matcher_->AddConditionSets(conditions);
 }
 
-std::optional<std::string> LegacyTechURLMatcher::GetMatchedURL(
+std::optional<std::string> PrefURLListMatcher::GetMatchedURL(
     const GURL& url) const {
   std::set<base::MatcherStringPattern::ID> matched_ids =
       url_matcher_->MatchURL(url);
@@ -70,9 +68,7 @@ std::optional<std::string> LegacyTechURLMatcher::GetMatchedURL(
       maximum_path_length = path_length_[id];
     }
   }
-  return profile_->GetPrefs()
-      ->GetList(kCloudLegacyTechReportAllowlist)[maximum_path_id]
-      .GetString();
+  return pref_service_->GetList(pref_name_)[maximum_path_id].GetString();
 }
 
 }  // namespace enterprise_reporting
