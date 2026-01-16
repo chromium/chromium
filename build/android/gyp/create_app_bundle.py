@@ -67,7 +67,7 @@ _COMPONENT_TYPES = ('activity', 'provider', 'receiver', 'service')
 _DEDUPE_ENTRY_TYPES = _COMPONENT_TYPES + ('activity-alias', 'meta-data')
 
 _ROTATION_METADATA_KEY = 'com.google.play.apps.signing/RotationConfig.textproto'
-_JAVALESS_SERVICE_NAME = 'org.chromium.content.app.NativeServiceSandboxedProcessService'
+_JAVALESS_SERVICE_NAME = 'org.chromium.content.app.NativeOnlySandboxedProcessService'
 
 _ALLOWLISTED_NON_BASE_SERVICES = {
     # Only on API level 33+ which is past the fix for b/169196314.

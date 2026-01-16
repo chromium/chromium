@@ -185,6 +185,7 @@ public abstract class ChildConnectionAllocator {
             Runnable freeSlotCallback,
             String packageName,
             String serviceClassName,
+            @Nullable String fallbackServiceClassName,
             boolean bindToCaller,
             boolean bindAsExternalService,
             boolean isSandboxedForHistograms) {
@@ -218,8 +219,11 @@ public abstract class ChildConnectionAllocator {
         // experimental results.
         disableZygote = SysUtils.isLowEndDevice() || disableZygote;
         String suffix = disableZygote ? NON_ZYGOTE_SUFFIX : ZYGOTE_SUFFIX;
-        String fallbackServiceClassName =
-                disableZygote ? null : serviceClassName + NON_ZYGOTE_SUFFIX;
+        if (fallbackServiceClassName != null) {
+            fallbackServiceClassName += suffix;
+        } else {
+            fallbackServiceClassName = disableZygote ? null : serviceClassName + NON_ZYGOTE_SUFFIX;
+        }
         return new VariableSizeAllocatorImpl(
                 launcherHandler,
                 freeSlotCallback,

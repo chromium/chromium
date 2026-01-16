@@ -49,7 +49,7 @@ _IGNORE_WARNINGS = (
         # https://crbug.com/1441226
         r'PaymentRequest[BH]',
         # This service is defined in Native not Java.
-        r'NativeServiceSandboxedProcessService',
+        r'NativeOnlySandboxedProcessService',
         # TODO(450243304): Temporary.
         r'DnsNameResolverProvider',
     ]) + ')',

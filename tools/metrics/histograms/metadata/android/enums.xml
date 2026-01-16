@@ -89,6 +89,13 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="FALLBACK_ON_TIMEOUT_UNSANDBOXED"/>
 </enum>
 
+<enum name="AndroidChildProcessConnectionServiceNames">
+  <int value="0" label="JavaSandboxed"/>
+  <int value="1" label="NativeOnlySandboxed"/>
+  <int value="2" label="Privileged"/>
+  <int value="3" label="Other"/>
+</enum>
+
 <!-- LINT.IfChange(AndroidDefaultBrowserState) -->
 
 <enum name="AndroidDefaultBrowserPromoOutcomeType">
