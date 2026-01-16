@@ -1045,18 +1045,9 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
   sendButton.configuration = buttonConfig;
 
-  __weak ComposeboxTheme* theme = _theme;
+  __weak __typeof(self) weakSelf = self;
   sendButton.configurationUpdateHandler = ^(UIButton* button) {
-    UIButtonConfiguration* updatedConfig = button.configuration;
-    BOOL isHighlighted = button.state == UIControlStateHighlighted;
-    updatedConfig.image = SendButtonImage(isHighlighted, theme);
-    button.configuration = updatedConfig;
-    CGFloat scale = isHighlighted ? 0.95 : 1.0;
-    [UIView animateWithDuration:0.1
-                     animations:^{
-                       button.transform =
-                           CGAffineTransformMakeScale(scale, scale);
-                     }];
+    [weakSelf sendButtonDidUpdateConfiguration];
   };
   sendButton.accessibilityIdentifier =
       kComposeboxSendButtonAccessibilityIdentifier;
@@ -1069,6 +1060,21 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   AddSizeConstraints(sendButton,
                      CGSizeMake(kSendButtonDimension, kSendButtonDimension));
   return sendButton;
+}
+
+// Called when the configuration of the send button is updated.
+- (void)sendButtonDidUpdateConfiguration {
+  UIButtonConfiguration* updatedConfig = _sendButton.configuration;
+  BOOL isHighlighted = _sendButton.state == UIControlStateHighlighted;
+  updatedConfig.image = SendButtonImage(isHighlighted, _theme);
+  _sendButton.configuration = updatedConfig;
+  CGFloat scale = isHighlighted ? 0.95 : 1.0;
+  __weak UIButton* weakSendButton = _sendButton;
+  [UIView animateWithDuration:0.1
+                   animations:^{
+                     weakSendButton.transform =
+                         CGAffineTransformMakeScale(scale, scale);
+                   }];
 }
 
 /// Returns the microphone button.
