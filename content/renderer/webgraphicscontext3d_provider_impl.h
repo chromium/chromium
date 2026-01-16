@@ -23,7 +23,6 @@ class ContextProviderCommandBuffer;
 
 namespace gpu {
 class ContextSupport;
-class GLHelper;
 }  // namespace gpu
 
 namespace content {
@@ -54,7 +53,6 @@ class WebGraphicsContext3DProviderImpl
   const gpu::Capabilities& GetCapabilities() const override;
   const gpu::GpuFeatureInfo& GetGpuFeatureInfo() const override;
   const blink::WebglPreferences& GetWebglPreferences() const override;
-  gpu::GLHelper* GetGLHelper() override;
   void SetLostContextCallback(base::RepeatingClosure) override;
   void SetErrorMessageCallback(
       base::RepeatingCallback<void(const char*, int32_t)>) override;
@@ -68,7 +66,6 @@ class WebGraphicsContext3DProviderImpl
 
   scoped_refptr<viz::ContextProviderCommandBuffer> provider_;
   scoped_refptr<base::SingleThreadTaskRunner> reply_task_runner_;
-  std::unique_ptr<gpu::GLHelper> gl_helper_;
   base::RepeatingClosure context_lost_callback_;
   base::flat_map<SkColorType, std::unique_ptr<cc::ImageDecodeCache>>
       image_decode_cache_map_;

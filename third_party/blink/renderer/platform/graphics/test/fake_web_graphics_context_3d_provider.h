@@ -70,8 +70,6 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
     return webgl_preferences_;
   }
 
-  gpu::GLHelper* GetGLHelper() override { return nullptr; }
-
   gpu::InterfaceBase* InterfaceBase() override {
     if (external_raster_interface_) {
       return external_raster_interface_;
