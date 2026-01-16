@@ -9,6 +9,8 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/login/fjord_oobe/fjord_oobe_state_manager.h"
+#include "chrome/browser/ash/login/fjord_oobe/proto/fjord_oobe_state.pb.h"
 #include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"
 
@@ -22,7 +24,8 @@ namespace ash {
 // interface. It is used by the Fjord variant of OOBE and allows for IPC to
 // control parts of OOBE that are specific to Fjord OOBE.
 class FjordOobeServiceProvider
-    : public CrosDBusService::ServiceProviderInterface {
+    : public CrosDBusService::ServiceProviderInterface,
+      FjordOobeStateManager::Observer {
  public:
   FjordOobeServiceProvider();
 
@@ -41,9 +44,18 @@ class FjordOobeServiceProvider
                   const std::string& method_name,
                   bool success);
 
+  // FjordOobeStateManager::Observer:
+  void OnFjordOobeStateChanged(
+      fjord_oobe_state::proto::FjordOobeStateInfo new_state) override;
+
   void ExitTouchControllerScreen(
       dbus::MethodCall* method_call,
       dbus::ExportedObject::ResponseSender response_sender);
+  void GetOobeState(dbus::MethodCall* method_call,
+                    dbus::ExportedObject::ResponseSender response_sender);
+
+  // A reference on ExportedObject for sending signals.
+  scoped_refptr<dbus::ExportedObject> exported_object_;
 
   base::WeakPtrFactory<FjordOobeServiceProvider> weak_ptr_factory_{this};
 };
