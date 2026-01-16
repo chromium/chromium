@@ -96,6 +96,10 @@ class BrowserUpdaterClient
   static bool AppMatches(const UpdateService::AppState& app);
   RegistrationRequest GetRegistrationRequest();
 
+  // Methods which call into updater_service_ should have a "Completed" function
+  // to ensure that the BrowserUpdaterClient outlives the request. Otherwise,
+  // sequential calls from methods in updater.h can cause multiple service
+  // proxies to be instantiated, which causes interference and dropped messages.
   void RegistrationCompleted(base::OnceClosure complete, int result);
   void GetUpdaterVersionCompleted(
       base::OnceCallback<void(const base::Version&)> callback,
@@ -107,6 +111,12 @@ class BrowserUpdaterClient
   void IsBrowserRegisteredCompleted(
       base::OnceCallback<void(bool)> callback,
       const std::vector<UpdateService::AppState>& apps);
+  void GetUpdaterStateCompleted(
+      base::OnceCallback<void(const UpdateService::UpdaterState&)> callback,
+      const UpdateService::UpdaterState& updater_state);
+  void GetPoliciesJsonCompleted(
+      base::OnceCallback<void(const std::string&)> callback,
+      const std::string& policies);
 
   template <UpdaterScope scope>
   static scoped_refptr<BrowserUpdaterClient> GetClient(

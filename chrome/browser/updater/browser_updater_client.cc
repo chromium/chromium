@@ -162,13 +162,17 @@ void BrowserUpdaterClient::IsBrowserRegistered(
 void BrowserUpdaterClient::GetUpdaterState(
     base::OnceCallback<void(const UpdateService::UpdaterState&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  update_service_->GetUpdaterState(std::move(callback));
+  update_service_->GetUpdaterState(
+      base::BindOnce(&BrowserUpdaterClient::GetUpdaterStateCompleted, this,
+                     std::move(callback)));
 }
 
 void BrowserUpdaterClient::GetPoliciesJson(
     base::OnceCallback<void(const std::string&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  update_service_->GetPoliciesJson(std::move(callback));
+  update_service_->GetPoliciesJson(
+      base::BindOnce(&BrowserUpdaterClient::GetPoliciesJsonCompleted, this,
+                     std::move(callback)));
 }
 
 void BrowserUpdaterClient::IsBrowserRegisteredCompleted(
@@ -188,6 +192,18 @@ void BrowserUpdaterClient::IsBrowserRegisteredCompleted(
     GetLastKnownBrowserRegistrationStorage() = *app;
   }
   std::move(callback).Run(app != apps.end());
+}
+
+void BrowserUpdaterClient::GetUpdaterStateCompleted(
+    base::OnceCallback<void(const UpdateService::UpdaterState&)> callback,
+    const UpdateService::UpdaterState& updater_state) {
+  std::move(callback).Run(updater_state);
+}
+
+void BrowserUpdaterClient::GetPoliciesJsonCompleted(
+    base::OnceCallback<void(const std::string&)> callback,
+    const std::string& policies) {
+  std::move(callback).Run(policies);
 }
 
 // User and System BrowserUpdaterClients must be kept separate - the template
