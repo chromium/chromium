@@ -753,7 +753,7 @@ bool DecodeBinary(std::string_view* slice, std::string* value) {
   int64_t length = 0;
   size_t size;
   if (!DecodeVarInt(slice, &length) ||
-      !base::MakeCheckedNum(length).AssignIfValid(&size)) {
+      !base::CheckedNumeric(length).AssignIfValid(&size)) {
     return false;
   }
 
@@ -773,7 +773,7 @@ bool DecodeBinary(std::string_view* slice, base::span<const uint8_t>* value) {
   int64_t length = 0;
   size_t size;
   if (!DecodeVarInt(slice, &length) ||
-      !base::MakeCheckedNum(length).AssignIfValid(&size)) {
+      !base::CheckedNumeric(length).AssignIfValid(&size)) {
     return false;
   }
 
@@ -1126,8 +1126,8 @@ int CompareEncodedBinary(std::string_view* slice1,
   }
 
   size_t size1, size2;
-  if (!base::MakeCheckedNum(len1).AssignIfValid(&size1) ||
-      !base::MakeCheckedNum(len2).AssignIfValid(&size2)) {
+  if (!base::CheckedNumeric(len1).AssignIfValid(&size1) ||
+      !base::CheckedNumeric(len2).AssignIfValid(&size2)) {
     *ok = false;
     return 0;
   }

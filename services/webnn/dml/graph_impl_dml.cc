@@ -3410,7 +3410,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGather(
                                     std::move(output_dimensions));
   }
 
-  auto expanded_axis = base::MakeCheckedNum(expanded_rank) - input_rank +
+  auto expanded_axis = base::CheckedNumeric(expanded_rank) - input_rank +
                        base::checked_cast<size_t>(axis);
   const std::string& label = gather->label;
   if (!expanded_axis.AssignIfValid<uint32_t>(&axis)) {
@@ -3945,7 +3945,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGru(
     uint32_t hidden_size = gru->hidden_size;
     // 3 * hidden_size has been verified.
     auto checked_three_times_hidden_size =
-        base::MakeCheckedNum(hidden_size) * 3;
+        base::CheckedNumeric(hidden_size) * 3;
     CHECK(checked_three_times_hidden_size.IsValid());
     // The half bias dimensions is [1, 1, num_directions, 3 * hidden_size] for
     // gru and [1, 1, 1, 3 * hidden_size] for gruCell.
@@ -3966,7 +3966,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGru(
     // hidden_size]. Ideally, 6 * hidden_size validation should be part of the
     // spec and validated for all backends. Spec issue tracked on
     // https://github.com/webmachinelearning/webnn/issues/625.
-    auto checked_six_times_hidden_size = base::MakeCheckedNum(hidden_size) * 6;
+    auto checked_six_times_hidden_size = base::CheckedNumeric(hidden_size) * 6;
     if (!checked_six_times_hidden_size.IsValid()) {
       return CreateUnexpectedError(
           mojom::Error::Code::kUnknownError,
@@ -4306,7 +4306,7 @@ CreateOperatorNodeForMeanVarianceNormalization(
   }
 
   std::string label = normalization->label;
-  if (!base::MakeCheckedNum(mean_variance_axes.size()).IsValid<uint32_t>()) {
+  if (!base::CheckedNumeric(mean_variance_axes.size()).IsValid<uint32_t>()) {
     return base::unexpected(CreateError(
         mojom::Error::Code::kUnknownError,
         OpTagToString(op) + ": The axes rank is too large.", label));
@@ -4694,7 +4694,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
   std::optional<TensorDesc> concatenated_bias_tensor_desc;
   if (bias && recurrent_bias) {
     auto checked_four_times_hidden_size =
-        base::MakeCheckedNum(lstm.hidden_size) * 4;
+        base::CheckedNumeric(lstm.hidden_size) * 4;
     // Four times hidden size should have already been validated.
     CHECK(checked_four_times_hidden_size.IsValid());
     const std::array<uint32_t, 4> bias_dimensions = {
@@ -5227,7 +5227,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForSoftmax(
     } else {
       const std::vector<uint32_t>& axis_transposed_to_last_output_dims =
           axis_transposed_to_last_output->GetTensorDesc().GetDimensions();
-      auto reshaped_2d_dim_0 = base::MakeCheckedNum<uint32_t>(1);
+      auto reshaped_2d_dim_0 = base::CheckedNumeric<uint32_t>(1);
       for (uint32_t i = 0; i < axis_transposed_to_last_output_dims.size() - 1;
            i++) {
         reshaped_2d_dim_0 *= axis_transposed_to_last_output_dims[i];
@@ -5633,7 +5633,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
 
   const auto mask_height = height;
   const auto checked_mask_width =
-      (base::MakeCheckedNum<uint32_t>(longest_dimension_length) +
+      (base::CheckedNumeric<uint32_t>(longest_dimension_length) +
        std::min(base::checked_cast<uint32_t>(std::abs(diagonal)),
                 longest_dimension_length)) *
       2;
@@ -5676,7 +5676,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
   //   1, 1, 0, 0  =>     1, 1, 0, 0
   //   1, 1, 0, 0]          1, 1, 0, 0]
   const auto checked_slice_input_width =
-      base::MakeCheckedNum<uint32_t>(mask_width) * 2;
+      base::CheckedNumeric<uint32_t>(mask_width) * 2;
   if (!checked_slice_input_width.IsValid<uint32_t>()) {
     return base::unexpected(CreateError(
         mojom::Error::Code::kUnknownError,

@@ -245,7 +245,7 @@ int64_t CalculateOutputPaddingSize(int64_t input_size,
                                    int64_t pad_end,
                                    int64_t output_size) {
   const auto output_padding =
-      base::MakeCheckedNum(output_size) - stride * (input_size - 1) -
+      base::CheckedNumeric(output_size) - stride * (input_size - 1) -
       ((filter_size - 1) * dilation + 1) + pad_begin + pad_end;
   // `output_padding` is validated by
   // `ValidateAndCalculateConvTranspose2dOutputSizes()`. Because Conv2d mojo

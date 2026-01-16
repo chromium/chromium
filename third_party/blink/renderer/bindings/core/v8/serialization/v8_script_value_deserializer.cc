@@ -607,7 +607,7 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
       size_t byte_length = 0;
       base::span<const uint8_t> pixel_data;
       if (!ReadUint64(&byte_length_64) ||
-          !base::MakeCheckedNum(byte_length_64).AssignIfValid(&byte_length) ||
+          !base::CheckedNumeric(byte_length_64).AssignIfValid(&byte_length) ||
           !ReadRawBytesToSpan(byte_length, &pixel_data)) {
         return nullptr;
       }

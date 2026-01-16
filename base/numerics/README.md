@@ -388,12 +388,6 @@ disambiguator syntax when converting a destination type.
 *   `ValueOrDieForType<>()` in place of: `a.template ValueOrDie<>()`
 *   `ValueOrDefaultForType<>()` in place of: `a.template ValueOrDefault<>()`
 
-The following general utility methods is are useful for converting from
-arithmetic types to `CheckedNumeric` types:
-
-*   `MakeCheckedNum()` - Creates a new `CheckedNumeric` from the underlying type
-    of the supplied arithmetic or directly convertible type.
-
 ## ClampedNumeric<> in clamped_math.h
 
 `ClampedNumeric<>` implements all the logic and operators for clamped

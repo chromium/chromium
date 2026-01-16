@@ -113,7 +113,7 @@ bool StructTraits<chromeos_camera::mojom::BitstreamBufferDataView,
   if (!region.IsValid())
     return false;
 
-  auto offset = base::MakeCheckedNum(input.offset()).Cast<uint64_t>();
+  auto offset = base::CheckedNumeric(input.offset()).Cast<uint64_t>();
   if (!offset.IsValid())
     return false;
 

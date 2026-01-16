@@ -214,7 +214,7 @@ std::optional<PaddingSizes> CalculateExplicitPaddingForSamePaddingMode(
     uint32_t dilation,
     bool is_transposed_conv2d) {
   base::CheckedNumeric<uint32_t> checked_dilated_filter_size =
-      (base::MakeCheckedNum(filter_size) - 1) * dilation + 1;
+      (base::CheckedNumeric(filter_size) - 1) * dilation + 1;
   base::CheckedNumeric<uint32_t> checked_input_size = input_size;
   base::CheckedNumeric<uint32_t> checked_total_padding;
   if (is_transposed_conv2d) {
@@ -235,7 +235,7 @@ std::optional<PaddingSizes> CalculateExplicitPaddingForSamePaddingMode(
     }
     checked_total_padding = checked_needed_input_size.ValueOrDie() > input_size
                                 ? checked_needed_input_size - input_size
-                                : base::MakeCheckedNum<uint32_t>(0);
+                                : base::CheckedNumeric<uint32_t>(0);
   }
 
   // Same upper padding.
@@ -1899,7 +1899,7 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(
       return std::nullopt;
     }
     base::CheckedNumeric<float> checked_rhs_output_scale =
-        base::MakeCheckedNum(rhs_scale_value) / output_scale_value;
+        base::CheckedNumeric(rhs_scale_value) / output_scale_value;
     if (!checked_rhs_output_scale.IsValid() ||
         checked_rhs_output_scale.ValueOrDie() < scale_min ||
         checked_rhs_output_scale.ValueOrDie() >= scale_max) {
@@ -1911,7 +1911,7 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(
     const float scale_min = 1.0f / 65536.0f;
     const float scale_max = 256.0f;
     base::CheckedNumeric<float> checked_product_output_scale =
-        (base::MakeCheckedNum(lhs_scale_value) * rhs_scale_value) /
+        (base::CheckedNumeric(lhs_scale_value) * rhs_scale_value) /
         output_scale_value;
     if (!checked_product_output_scale.IsValid() ||
         checked_product_output_scale.ValueOrDie() < scale_min ||
@@ -2094,7 +2094,7 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Gemm& gemm) {
     const double a_scale = static_cast<double>(a_scale_values[0]);
     const double output_scale = static_cast<double>(output_scale_values[0]);
     base::CheckedNumeric<double> a_product_b =
-        base::MakeCheckedNum(a_scale) * b_scale_values[0];
+        base::CheckedNumeric(a_scale) * b_scale_values[0];
     auto scale_diff = a_product_b - static_cast<double>(c_scale_values[0]);
     scale_diff = scale_diff.Abs() / output_scale;
     if (!scale_diff.IsValid() || scale_diff.ValueOrDie() > 0.02) {
@@ -2184,7 +2184,7 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Pool2d& pool2d) {
   base::FixedArray<float> output_scale_values =
       GetQuantizeScaleValue(output_quantize.scale_operand_id);
   base::CheckedNumeric<float> checked_sub_scale =
-      base::MakeCheckedNum(input_scale_values[0]) - output_scale_values[0];
+      base::CheckedNumeric(input_scale_values[0]) - output_scale_values[0];
   if (!checked_sub_scale.IsValid() ||
       checked_sub_scale.Abs().ValueOrDie() > 1.0e-6) {
     return std::nullopt;
@@ -2398,7 +2398,7 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Softmax& softmax) {
     base::FixedArray<float> output_scale_values =
         GetQuantizeScaleValue(output_quantize.scale_operand_id);
     base::CheckedNumeric<float> checked_scale =
-        base::MakeCheckedNum(output_scale_values[0]) - expected_scale_value;
+        base::CheckedNumeric(output_scale_values[0]) - expected_scale_value;
     if (!checked_scale.IsValid() ||
         checked_scale.Abs().ValueOrDie() > 0.001f * expected_scale_value) {
       return std::nullopt;
@@ -2539,7 +2539,7 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(
   // The `input scale / output scale` must be in the range.
   // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.cc;l=4162;drc=f667feb8a5c6f227b49328ce78a062acc4f81187
   base::CheckedNumeric<float> checked_positive_scale =
-      base::MakeCheckedNum(input_scale_values[0]) / output_scale_values[0];
+      base::CheckedNumeric(input_scale_values[0]) / output_scale_values[0];
   if (!checked_positive_scale.IsValid() ||
       checked_positive_scale.ValueOrDie() < scale_positive_min ||
       checked_positive_scale.ValueOrDie() > scale_positive_max) {
@@ -3538,10 +3538,10 @@ auto GraphBuilderTflite::InsertPadOperation(const TensorInfo& input_tensor_info,
         input_tensor_info.dimensions[i];
     // Calculate output height with padding beginning and ending height.
     if (i == 1) {
-      checked_dimension += base::MakeCheckedNum(paddings[0]) + paddings[1];
+      checked_dimension += base::CheckedNumeric(paddings[0]) + paddings[1];
     } else if (i == 2) {
       // Calculate output width with padding beginning and ending width.
-      checked_dimension += base::MakeCheckedNum(paddings[2]) + paddings[3];
+      checked_dimension += base::CheckedNumeric(paddings[2]) + paddings[3];
     }
     if (!checked_dimension.IsValid()) {
       return base::unexpected("The input dimension or padding is too large.");
@@ -6834,7 +6834,7 @@ auto GraphBuilderTflite::SerializePool2d(const mojom::Pool2d& pool2d)
     // Multiply by window size to get the sum of squares: SumPool(x^2) =
     // AveragePool(x^2) * (h * w).
     base::CheckedNumeric<float> checked_window_size =
-        base::MakeCheckedNum(pool2d.window_dimensions->height) *
+        base::CheckedNumeric(pool2d.window_dimensions->height) *
         pool2d.window_dimensions->width;
     if (!checked_window_size.IsValid()) {
       return base::unexpected("The window size is too large.");
@@ -8257,13 +8257,13 @@ auto GraphBuilderTflite::SerializeTriangular(
   const int32_t height = input_tensor_info.dimensions[input_rank - 2];
   const int32_t width = input_tensor_info.dimensions[input_rank - 1];
   base::CheckedNumeric<int32_t> checked_size =
-      base::MakeCheckedNum(height) * width;
+      base::CheckedNumeric(height) * width;
   if (!checked_size.IsValid()) {
     return base::unexpected("Triangular mask is too large.");
   }
   const std::array<int32_t, 2> mask_dimensions = {height, width};
   base::CheckedNumeric<int32_t> checked_diagonal =
-      base::MakeCheckedNum(triangular.diagonal) + std::max(height, width);
+      base::CheckedNumeric(triangular.diagonal) + std::max(height, width);
   if (!checked_diagonal.IsValid()) {
     return base::unexpected("The diagonal is too large.");
   }

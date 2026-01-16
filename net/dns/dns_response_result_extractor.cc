@@ -101,7 +101,7 @@ std::vector<HostPortPair> SortServiceTargets(
     // With (num results) <= UINT16_MAX (and in practice, much less) and
     // (weight per result) <= UINT16_MAX, then it should be the case that
     // (total weight) <= UINT32_MAX, but use CheckedNumeric for extra safety.
-    auto total_weight = base::MakeCheckedNum<uint32_t>(0);
+    auto total_weight = base::CheckedNumeric<uint32_t>(0);
     for (const SrvRecordRdata* rdata : priority.second) {
       total_weight += rdata->weight();
     }
