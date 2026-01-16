@@ -364,6 +364,11 @@ void GlicKeyedService::PrepareForOpen() {
 glic::GlicInstanceMetrics* GlicKeyedService::instance_metrics() {
   return nullptr;
 }
+
+glic::GlicInstanceMetricsBackwardsCompatibility&
+GlicKeyedService::instance_metrics_backwards_compatibility() {
+  return *metrics_;
+}
 #endif
 
 GlicWindowController& GlicKeyedService::window_controller() const {

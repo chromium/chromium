@@ -15,6 +15,8 @@
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
+#include "chrome/browser/glic/host/glic_annotation_manager.h"
+#include "chrome/browser/glic/public/glic_instance_metrics_backwards_compatibility.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -660,8 +662,20 @@ class GlicAnnotationManagerUiTest : public GlicAnnotationManagerUiTestBase,
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
     if (IsGlicMultiInstanceEnabled()) {
-      multi_instance_feature_list_.InitAndEnableFeature(
-          features::kGlicMultiInstance);
+      multi_instance_feature_list_.InitWithFeaturesAndParameters(
+          {
+              {features::kGlicMultiInstance, {}},
+              {features::kGlicMetricsSession,
+               {
+                   // The amount of time the session ends after the active
+                   // session becomes invisible.
+                   {features::kGlicMetricsSessionHiddenTimeout.name, "30ms"},
+                   // The amount of time the session enters kStarted after being
+                   // created.
+                   {features::kGlicMetricsSessionStartTimeout.name, "5ms"},
+               }},
+          },
+          {});
     } else {
       multi_instance_feature_list_.InitAndDisableFeature(
           features::kGlicMultiInstance);
@@ -670,6 +684,26 @@ class GlicAnnotationManagerUiTest : public GlicAnnotationManagerUiTestBase,
   ~GlicAnnotationManagerUiTest() override = default;
 
   bool IsGlicMultiInstanceEnabled() const { return GetParam(); }
+
+#define FORWARD_METRICS_CALL(method, ...)                               \
+  GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile()) \
+      ->metrics()                                                       \
+      ->method(__VA_ARGS__);                                            \
+  if (IsGlicMultiInstanceEnabled()) {                                   \
+    GetGlicInstanceImpl()->instance_metrics()->method(__VA_ARGS__);     \
+  }
+
+  void OnUserInputSubmitted(mojom::WebClientMode mode) {
+    FORWARD_METRICS_CALL(OnUserInputSubmitted, mode);
+  }
+
+  void OnResponseStarted() { FORWARD_METRICS_CALL(OnResponseStarted); }
+
+  void OnResponseStopped(mojom::ResponseStopCause cause) {
+    FORWARD_METRICS_CALL(OnResponseStopped, cause);
+  }
+
+#undef FORWARD_METRICS_CALL
 
   static std::string PrintTestVariant(
       const ::testing::TestParamInfo<bool>& info) {
@@ -1311,18 +1345,14 @@ IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerUiTest,
 }
 
 IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerUiTest, RecordsSessionCount) {
-  // TODO(b/470352945): Metrics recording needs to be updated to work correctly
-  // with multi-instance.
-  if (IsGlicMultiInstanceEnabled()) {
-    GTEST_SKIP() << "This test does not work with multi-instance.";
-  }
   RunTestSequence(
       InstrumentTab(kActiveTabId),
       NavigateWebContents(
           kActiveTabId,
           embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
-      OpenGlic(), SetContextAccessIndicator(true),
-      GetPageContextFromFocusedTab(),
+      ToggleGlicWindow(GlicWindowMode::kAttached),
+      WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents),
+      SetContextAccessIndicator(true), GetPageContextFromFocusedTab(),
       ScrollToWithDocumentIdExpectingError(
           ExactTextSelector("missing text"),
           mojom::ScrollToErrorReason::kNoMatchFound),
@@ -1330,11 +1360,13 @@ IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerUiTest, RecordsSessionCount) {
         histogram_tester()->ExpectTotalCount("Glic.ScrollTo.SessionCount",
                                              /*expected_count=*/0);
       }),
-      CloseGlicWindow(), Do([&]() {
-        histogram_tester()->ExpectUniqueSample("Glic.ScrollTo.SessionCount",
-                                               /*sample=*/2,
-                                               /*expected_bucket_count=*/1);
-      }));
+      CloseGlicWindow(),
+      WaitUntil(
+          [&]() {
+            return base::NumberToString(histogram_tester()->GetBucketCount(
+                "Glic.ScrollTo.SessionCount", 2));
+          },
+          "1"));
 }
 
 // Tests that "Glic.ScrollTo.UserPromptToScrollTime" is:
@@ -1347,7 +1379,6 @@ IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerUiTest, RecordsSessionCount) {
 // the method calls reflect the order of expected calls in practice.
 IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerUiTest,
                        RecordsUserPromptToScrollTime) {
-  GlicMetrics* glic_metrics;
   RunTestSequence(
       InstrumentTab(kActiveTabId),
       NavigateWebContents(
@@ -1355,16 +1386,12 @@ IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerUiTest,
           embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
       DeprecatedOpenGlicWindow(GlicWindowMode::kAttached),
       SetContextAccessIndicator(true), GetPageContextFromFocusedTab(),
-      InsertFakeAnnotationService(), Do([&]() {
-        glic_metrics = GlicKeyedServiceFactory::GetGlicKeyedService(
-                           browser()->GetProfile())
-                           ->metrics();
-        glic_metrics->OnUserInputSubmitted(mojom::WebClientMode::kAudio);
-      }),
+      InsertFakeAnnotationService(),
+      Do([&]() { OnUserInputSubmitted(mojom::WebClientMode::kAudio); }),
       ScrollToAsyncWithDocumentId(ExactTextSelector("does not matter")),
       WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived), Do([&]() {
-        glic_metrics->OnResponseStarted();
-        glic_metrics->OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+        OnResponseStarted();
+        OnResponseStopped(mojom::ResponseStopCause::kUnknown);
       }),
       Do([&]() {
         fake_service()->NotifyAttachment(
@@ -1377,13 +1404,11 @@ IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerUiTest,
             "Glic.ScrollTo.UserPromptToScrollTime.Audio",
             /*expected_count=*/0);
       }),
-      Do([&]() {
-        glic_metrics->OnUserInputSubmitted(mojom::WebClientMode::kAudio);
-      }),
+      Do([&]() { OnUserInputSubmitted(mojom::WebClientMode::kAudio); }),
       ScrollToAsyncWithDocumentId(ExactTextSelector("does not matter")),
       WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived), Do([&]() {
-        glic_metrics->OnResponseStarted();
-        glic_metrics->OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+        OnResponseStarted();
+        OnResponseStopped(mojom::ResponseStopCause::kUnknown);
       }),
       Do([&]() {
         fake_service()->NotifyAttachment(

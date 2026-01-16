@@ -25,6 +25,7 @@
 #include "chrome/browser/glic/service/glic_state_tracker.h"
 #include "chrome/browser/glic/service/metrics/glic_metrics_session_manager.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
+#include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace glic {
@@ -88,6 +89,33 @@ GlicInstanceMetrics::GlicInstanceMetrics(GlicSharingManager* sharing_manager)
 
 GlicInstanceMetrics::~GlicInstanceMetrics() {
   OnInstanceDestroyed();
+}
+
+void GlicInstanceMetrics::OnGlicScrollAttempt() {
+  CHECK(base::FeatureList::IsEnabled(features::kGlicScrollTo));
+  ++scroll_attempt_count_;
+  turn_.pending_scroll_complete_ = true;
+}
+
+void GlicInstanceMetrics::OnGlicScrollComplete(bool success) {
+  CHECK(base::FeatureList::IsEnabled(features::kGlicScrollTo));
+  auto record_scroll_metric = [&](TurnInfo& turn_info) {
+    if (success && !turn_info.input_submitted_time_.is_null()) {
+      base::TimeDelta time_to_scroll =
+          base::TimeTicks::Now() - turn_info.input_submitted_time_;
+      std::string_view mode_string = GetInputModeString(turn_info.input_mode_);
+      base::UmaHistogramMediumTimes(
+          base::StrCat({"Glic.ScrollTo.UserPromptToScrollTime.", mode_string}),
+          time_to_scroll);
+    }
+    turn_info.pending_scroll_complete_ = false;
+  };
+
+  if (last_turn_.pending_scroll_complete_) {
+    record_scroll_metric(last_turn_);
+  } else if (turn_.pending_scroll_complete_) {
+    record_scroll_metric(turn_);
+  }
 }
 
 void GlicInstanceMetrics::OnPinnedTabsChanged(
@@ -845,6 +873,11 @@ void GlicInstanceMetrics::OnSessionStarted() {
 }
 
 void GlicInstanceMetrics::OnSessionFinished() {
+  if (base::FeatureList::IsEnabled(features::kGlicScrollTo)) {
+    base::UmaHistogramCounts100("Glic.ScrollTo.SessionCount",
+                                scroll_attempt_count_);
+    scroll_attempt_count_ = 0;
+  }
   last_session_end_time_ = base::TimeTicks::Now();
 }
 

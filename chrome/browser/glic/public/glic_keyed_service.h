@@ -271,6 +271,8 @@ class GlicKeyedService : public KeyedService,
   void PrepareForOpen() override;
   void OnInteractionModeChange(mojom::WebClientMode new_mode) override;
   glic::GlicInstanceMetrics* instance_metrics() override;
+  glic::GlicInstanceMetricsBackwardsCompatibility&
+  instance_metrics_backwards_compatibility() override;
   bool IsActive() override;
 #endif
 

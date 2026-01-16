@@ -16,7 +16,9 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
+#include "chrome/browser/glic/public/glic_instance_metrics_backwards_compatibility.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
@@ -147,13 +149,16 @@ void GlicAnnotationManager::ScrollTo(
     Host* host,
     GlicWebClientAccess* access) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicScrollTo));
+  CHECK(host);
   if (annotation_task_ && annotation_task_->IsRunning()) {
     annotation_task_->FailTaskOrDropAnnotation(
         mojom::ScrollToErrorReason::kNewerScrollToCall);
   }
   annotation_task_.reset();
 
-  service_->metrics()->OnGlicScrollAttempt();
+  GlicInstanceMetricsBackwardsCompatibility& metrics =
+      host->instance_metrics_backwards_compatibility();
+  metrics.OnGlicScrollAttempt();
 
   mojom::WebClientHandler::ScrollToCallback wrapped_callback =
       base::BindOnce(&RunScrollToCallback, std::move(callback));
@@ -414,10 +419,15 @@ void GlicAnnotationManager::AnnotationTask::SetState(State new_state) {
 
   switch (new_state) {
     case State::kActive:
-    case State::kFailed:
-      annotation_manager_->service_->metrics()->OnGlicScrollComplete(
-          new_state == State::kActive);
+    case State::kFailed: {
+      bool success = new_state == State::kActive;
+      if (host_) {
+        GlicInstanceMetricsBackwardsCompatibility& metrics =
+            host_->instance_metrics_backwards_compatibility();
+        metrics.OnGlicScrollComplete(success);
+      }
       break;
+    }
     case State::kRunning:
     case State::kInactive:
       break;

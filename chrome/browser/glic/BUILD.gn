@@ -45,6 +45,7 @@ source_set("glic") {
     "public/glic_close_options.h",
     "public/glic_enabling.h",
     "public/glic_instance.h",
+    "public/glic_instance_metrics_backwards_compatibility.h",
     "public/glic_keyed_service.h",
     "public/glic_keyed_service_factory.h",
     "public/glic_side_panel_coordinator.cc",

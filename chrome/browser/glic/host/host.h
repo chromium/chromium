@@ -36,6 +36,7 @@ class GlicPageHandler;
 class GlicWindowController;
 class WebUIContentsContainer;
 class GlicInstanceMetrics;
+class GlicInstanceMetricsBackwardsCompatibility;
 
 // The host owns the WebUI that contains the main glic UI and the web client.
 // TODO(crbug.com/409332639): Better encapsulate details here.
@@ -140,6 +141,8 @@ class Host : public GlicSharingManagerProvider {
 
     virtual void OnInteractionModeChange(mojom::WebClientMode new_mode) = 0;
     virtual GlicInstanceMetrics* instance_metrics() = 0;
+    virtual GlicInstanceMetricsBackwardsCompatibility&
+    instance_metrics_backwards_compatibility() = 0;
 
     virtual bool IsActive() = 0;
   };
@@ -232,6 +235,11 @@ class Host : public GlicSharingManagerProvider {
 
   GlicInstanceMetrics* instance_metrics() {
     return instance_delegate().instance_metrics();
+  }
+
+  GlicInstanceMetricsBackwardsCompatibility&
+  instance_metrics_backwards_compatibility() {
+    return instance_delegate().instance_metrics_backwards_compatibility();
   }
 
   WebUIContentsContainer* contents_container() { return contents_.get(); }

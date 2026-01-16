@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/glic_instance_metrics_backwards_compatibility.h"
 #include "chrome/browser/glic/service/glic_state_tracker.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
 #include "chrome/browser/glic/service/metrics/glic_metrics_session_manager.h"
@@ -113,7 +114,7 @@ enum class GlicInstanceEvent {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInstanceEvent)
 
 // Tracks and logs lifecycle events for a single GlicInstance.
-class GlicInstanceMetrics {
+class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
  public:
   enum class EmbedderType {
     kUnknown,
@@ -123,10 +124,14 @@ class GlicInstanceMetrics {
 
   GlicInstanceMetrics();
   explicit GlicInstanceMetrics(GlicSharingManager* sharing_manager);
-  ~GlicInstanceMetrics();
+  ~GlicInstanceMetrics() override;
 
   GlicInstanceMetrics(const GlicInstanceMetrics&) = delete;
   GlicInstanceMetrics& operator=(const GlicInstanceMetrics&) = delete;
+
+  // `GlicInstanceMetricsBackwardsCompatibility`:
+  void OnGlicScrollAttempt() override;
+  void OnGlicScrollComplete(bool success) override;
 
   // Called when GlicInstanceImpl is destroyed.
   void OnInstanceDestroyed();
@@ -271,6 +276,7 @@ class GlicInstanceMetrics {
     bool reported_reaction_time_modelled_ = false;
     EmbedderType ui_mode_ = EmbedderType::kUnknown;
     mojom::WebClientMode input_mode_ = mojom::WebClientMode::kUnknown;
+    bool pending_scroll_complete_ = false;
   };
 
   // Logs the given event to the EventTotals histogram, and if the count is 0,
@@ -334,6 +340,12 @@ class GlicInstanceMetrics {
   base::CallbackListSubscription pinned_tabs_changed_subscription_;
   base::CallbackListSubscription tab_pinning_status_subscription_;
   raw_ptr<GlicSharingManager> sharing_manager_ = nullptr;
+
+  // The following variables are used for recording scroll related metrics.
+  //
+  // The number of scroll attempts (tracked per session and reset when the
+  // session ends).
+  int scroll_attempt_count_ = 0;
 };
 
 }  // namespace glic

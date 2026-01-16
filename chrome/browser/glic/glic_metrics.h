@@ -18,6 +18,7 @@
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_instance.h"
+#include "chrome/browser/glic/public/glic_instance_metrics_backwards_compatibility.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/display/display.h"
@@ -258,7 +259,7 @@ class BrowserActivityObserver;
 // Responsible for all glic web-client metrics, and all stateful glic metrics.
 // Some stateless glic metrics are logged inline in the relevant code for
 // convenience.
-class GlicMetrics {
+class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
  public:
   class Delegate {
    public:
@@ -276,7 +277,11 @@ class GlicMetrics {
   GlicMetrics(Profile* profile, GlicEnabling* enabling);
   GlicMetrics(const GlicMetrics&) = delete;
   GlicMetrics& operator=(const GlicMetrics&) = delete;
-  ~GlicMetrics();
+  ~GlicMetrics() override;
+
+  // `GlicInstanceMetricsBackwardsCompatibility`:
+  void OnGlicScrollAttempt() override;
+  void OnGlicScrollComplete(bool success) override;
 
   // See glic.mojom for details. These are events from the web client. The
   // lifetime of the web client is scoped to that of the window, so if these
@@ -328,12 +333,6 @@ class GlicMetrics {
   void OnGlicWindowClose(Browser* last_active_browser,
                          std::optional<display::Display> display,
                          const gfx::Rect& glic_bounds);
-  // Called when glic requests a scroll.
-  void OnGlicScrollAttempt();
-  // Called when scrolling starts (after glic requests to scroll) or if
-  // the operation fails. `success` is true if a scroll was successfully
-  // triggered.
-  void OnGlicScrollComplete(bool success);
 
   // Called when a tab is pinned for sharing with glic. `success` is true if the
   // pinning was successful.

@@ -250,6 +250,11 @@ glic::GlicInstanceMetrics* GlicInstanceImpl::instance_metrics() {
   return &instance_metrics_;
 }
 
+glic::GlicInstanceMetricsBackwardsCompatibility&
+GlicInstanceImpl::instance_metrics_backwards_compatibility() {
+  return instance_metrics_;
+}
+
 bool GlicInstanceImpl::IsShowing() const {
   return active_embedder_key_.has_value();
 }
