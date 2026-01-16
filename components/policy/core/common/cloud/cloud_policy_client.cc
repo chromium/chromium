@@ -281,6 +281,44 @@ std::string FormatMacAddress(const CloudPolicyClient::MacAddress& mac_address) {
   return mac_address_string;
 }
 
+// Returns a string representation of the given `type_to_fetch`, for logging.
+// Does not include the `extension_ids_and_version` field.
+std::string TypeToFetchToDebugString(const PolicyTypeToFetch& type_to_fetch) {
+  std::string result = "{ policy_type: '";
+  result += type_to_fetch.policy_type();
+  result += "'";
+  if (!type_to_fetch.settings_entity_id().empty()) {
+    result += ", settings_entity_id: '";
+    result += type_to_fetch.settings_entity_id();
+    result += "'";
+  }
+  result += " }";
+  return result;
+}
+
+// Returns a string representation of the given `extension_ids_and_versions`,
+// for logging.
+std::string JoinExtensionIdsAndVersions(
+    const std::set<ExtensionIdAndVersion>& extension_ids_and_versions) {
+  std::string result;
+  if (extension_ids_and_versions.empty()) {
+    return result;
+  }
+
+  auto it = extension_ids_and_versions.begin();
+  CHECK(it != extension_ids_and_versions.end());
+  result += base::StringPrintf("'%s@%s'", it->extension_id.c_str(),
+                               it->extension_version.c_str());
+  ++it;
+
+  for (; it != extension_ids_and_versions.end(); ++it) {
+    result += ", ";
+    result += base::StringPrintf("'%s@%s'", it->extension_id.c_str(),
+                                 it->extension_version.c_str());
+  }
+  return result;
+}
+
 // Returns the histogram variant for the corresponding `type`. Returns nullopt
 // if there is no variant for the type.
 std::optional<std::string_view> HistogramVariantForType(std::string_view type) {
@@ -724,15 +762,21 @@ em::PolicyFetchRequest* CloudPolicyClient::AddPolicyFetchRequest(
   em::PolicyFetchRequest* fetch_request = policy_request->add_requests();
   fetch_request->set_policy_type(type_to_fetch.policy_type());
   VLOG_POLICY(2, POLICY_FETCHING)
-      << "Fetching policy type: " << type_to_fetch.policy_type() << " -> "
-      << type_to_fetch.settings_entity_id();
+      << "Fetching policy: " << TypeToFetchToDebugString(type_to_fetch);
 
   if (!type_to_fetch.settings_entity_id().empty()) {
     fetch_request->set_settings_entity_id(type_to_fetch.settings_entity_id());
   }
 
+  std::set<ExtensionIdAndVersion> extension_ids_and_version =
+      type_to_fetch.extension_ids_and_version();
+  if (!extension_ids_and_version.empty()) {
+    VLOG_POLICY(2, POLICY_FETCHING)
+        << "extension_ids_and_version = ["
+        << JoinExtensionIdsAndVersions(extension_ids_and_version) << "]";
+  }
   for (const auto& [extension_id, extension_version] :
-       type_to_fetch.extension_ids_and_version()) {
+       extension_ids_and_version) {
     if (!extension_id.empty()) {
       em::ExtensionIdAndVersion* extension_id_and_version =
           fetch_request->add_extension_ids_and_version();
