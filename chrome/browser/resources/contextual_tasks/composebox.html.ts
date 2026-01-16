@@ -29,7 +29,6 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
       .lensButtonDisabled="${this.isLensOverlayShowing}"
       .tabSuggestions="${this.tabSuggestions_}"
       .showLensButton="${this.isSidePanel}"
-      .disableCaretColorAnimation="${true}"
       .lensButtonTriggersOverlay="${true}"
     >
     </cr-composebox>
