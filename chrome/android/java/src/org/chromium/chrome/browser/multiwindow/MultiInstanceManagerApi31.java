@@ -322,7 +322,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                             <= MultiWindowUtils.getInstanceCountWithFallback(
                                     PersistedInstanceType.ACTIVE)) {
                 assumeNonNull(mActiveTab);
-                showInstanceCreationLimitMessage();
+                showInstanceCreationLimitMessage(
+                        MessageDispatcherProvider.from(mActiveTab.getWindowAndroid()));
                 return;
             }
 
@@ -1898,21 +1899,15 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     }
 
     @Override
-    public boolean showInstanceRestorationMessage() {
+    public boolean showInstanceRestorationMessage(@Nullable MessageDispatcher messageDispatcher) {
         return MultiWindowUtils.maybeShowInstanceRestorationMessage(
-                getMessageDispatcher(), mActivity, this::showInstanceSwitcherDialog);
+                messageDispatcher, mActivity, this::showInstanceSwitcherDialog);
     }
 
     @Override
-    public void showInstanceCreationLimitMessage() {
+    public void showInstanceCreationLimitMessage(@Nullable MessageDispatcher messageDispatcher) {
         MultiWindowUtils.showInstanceCreationLimitMessage(
-                getMessageDispatcher(), mActivity, this::showInstanceSwitcherDialog);
-    }
-
-    @VisibleForTesting
-    @Nullable MessageDispatcher getMessageDispatcher() {
-        assumeNonNull(mActiveTab);
-        return MessageDispatcherProvider.from(mActiveTab.getWindowAndroid());
+                messageDispatcher, mActivity, this::showInstanceSwitcherDialog);
     }
 
     @Override

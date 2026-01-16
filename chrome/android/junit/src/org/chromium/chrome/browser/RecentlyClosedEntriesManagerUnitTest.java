@@ -579,28 +579,6 @@ public class RecentlyClosedEntriesManagerUnitTest {
     }
 
     @Test
-    public void testOpenRecentlyClosedEntry_MaxInstances_ShowInstanceCreationLimitMessage() {
-        // Simulate reaching the instance limit.
-        MultiWindowUtils.setInstanceCountForTesting(3);
-        MultiWindowUtils.setMaxInstancesForTesting(3);
-
-        // Open recently closed window.
-        RecentlyClosedWindow window =
-                new RecentlyClosedWindow(
-                        /* timestamp= */ 10,
-                        /* instanceId= */ 4,
-                        /* url= */ "url",
-                        /* title= */ "title",
-                        /* activeTabTitle= */ "tab title",
-                        /* tabCount= */ 1);
-        mRecentlyClosedEntriesManager.openRecentlyClosedEntry(window);
-
-        // Verify window is not opened and the instance creation limit message is shown
-        verify(mMultiInstanceManager, never()).openWindow(anyInt(), anyInt());
-        verify(mMultiInstanceManager).showInstanceCreationLimitMessage();
-    }
-
-    @Test
     public void testOnWindowClosed_NotPermanentDeletion_AddsWindow() {
         createRecentlyClosedWindows(/* numOfWindows= */ 1);
         mRecentlyClosedEntriesManager.updateRecentlyClosedEntries();

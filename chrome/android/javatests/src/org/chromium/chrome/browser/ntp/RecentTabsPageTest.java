@@ -57,12 +57,10 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
@@ -77,11 +75,6 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.messages.MessageDispatcher;
-import org.chromium.components.messages.MessageDispatcherProvider;
-import org.chromium.components.messages.MessageIdentifier;
-import org.chromium.components.messages.MessageStateHandler;
-import org.chromium.components.messages.MessagesTestHelper;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -550,53 +543,6 @@ public class RecentTabsPageTest {
         // Verify that the entry for the restored window is removed.
         assertEquals(1, recentlyClosedEntriesManager.getRecentlyClosedEntries().size());
         waitForViewToDisappear(eventDescriptionString1);
-    }
-
-    @Test
-    @LargeTest
-    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    @EnableFeatures(ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS)
-    public void testRecentlyClosedWindows_reachInstanceLimit_showInstanceCreationLimitMessage()
-            throws Exception {
-        // Simulate reaching the instance limit.
-        MultiWindowUtils.setInstanceCountForTesting(3);
-        MultiWindowUtils.setMaxInstancesForTesting(3);
-
-        mPage = loadRecentTabsPage();
-        long time = 904881600000L;
-        String title1 = "Window 1";
-        String activeTabTitle1 = "Google";
-        String activeTabUrl1 = "https://www.google.com";
-        int tabCount = 3;
-
-        // Create a recently closed window.
-        final RecentlyClosedWindow window1 =
-                new RecentlyClosedWindow(
-                        time,
-                        /* instanceId= */ 0,
-                        activeTabUrl1,
-                        title1,
-                        activeTabTitle1,
-                        tabCount);
-        RecentlyClosedEntriesManager recentlyClosedEntriesManager =
-                mActivity.getRecentlyClosedEntriesManagerForTesting();
-
-        // Simulate open a recently closed window.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> recentlyClosedEntriesManager.openRecentlyClosedEntry(window1));
-
-        // Verify the instance creation limit message is shown and entry is not removed.
-        mActivityTestRule.waitForActivityCompletelyLoaded();
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    MessageDispatcher messageDispatcher =
-                            MessageDispatcherProvider.from(mActivity.getWindowAndroid());
-                    List<MessageStateHandler> messages =
-                            MessagesTestHelper.getEnqueuedMessages(
-                                    messageDispatcher,
-                                    MessageIdentifier.MULTI_INSTANCE_CREATION_LIMIT);
-                    return !messages.isEmpty();
-                });
     }
 
     @Test

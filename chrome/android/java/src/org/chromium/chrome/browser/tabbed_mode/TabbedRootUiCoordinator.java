@@ -1256,7 +1256,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         boolean didTriggerPromo =
                 maybeShowRequiredPromptsAndPromos(profile, intentWithEffect)
-                        || mMultiInstanceManager.showInstanceRestorationMessage()
+                        || mMultiInstanceManager.showInstanceRestorationMessage(mMessageDispatcher)
                         || RequestDesktopUtils.maybeShowDefaultEnableGlobalSettingMessage(
                                 profile, mMessageDispatcher, mActivity);
 
