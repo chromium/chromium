@@ -12210,6 +12210,7 @@ from previous Chrome versions.
   <int value="-722635250" label="ChromeRefresh2023NTB:disabled"/>
   <int value="-722474177" label="browser-side-navigation:disabled"/>
   <int value="-722172419" label="SystemChinesePhysicalTyping:disabled"/>
+  <int value="-721759124" label="DefaultBrowserPromoEntryPoint:disabled"/>
   <int value="-721757044" label="TabbedBrowserUseNewLayout:enabled"/>
   <int value="-721685663" label="WebViewMixedContentAutoupgrades:enabled"/>
   <int value="-721649087" label="HighEfficiencyModeAvailable:enabled"/>
@@ -19018,6 +19019,7 @@ from previous Chrome versions.
   <int value="1635755615" label="ScanAppMultiPageScan:disabled"/>
   <int value="1635986352" label="ContextMenuSearchWithGoogleLens:enabled"/>
   <int value="1636029982" label="enable-benchmarking"/>
+  <int value="1636641236" label="DefaultBrowserPromoEntryPoint:enabled"/>
   <int value="1636721063"
       label="AutofillLocalCardMigrationShowFeedback:enabled"/>
   <int value="1636962093" label="disable-material-design-ntp"/>

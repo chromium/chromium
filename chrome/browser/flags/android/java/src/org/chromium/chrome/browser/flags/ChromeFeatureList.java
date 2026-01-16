@@ -390,6 +390,7 @@ public abstract class ChromeFeatureList {
     public static final String DATA_SHARING_NON_PRODUCTION_ENVIRONMENT =
             "DataSharingNonProductionEnvironment";
     public static final String DEFAULT_BROWSER_PROMO_ANDROID2 = "DefaultBrowserPromoAndroid2";
+    public static final String DEFAULT_BROWSER_PROMO_ENTRY_POINT = "DefaultBrowserPromoEntryPoint";
     public static final String DESKTOP_ANDROID_LINK_CAPTURING = "DesktopAndroidLinkCapturing";
     public static final String DESKTOP_UA_ON_CONNECTED_DISPLAY = "DesktopUAOnConnectedDisplay";
     public static final String DETAILED_LANGUAGE_SETTINGS = "DetailedLanguageSettings";
@@ -872,6 +873,8 @@ public abstract class ChromeFeatureList {
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sCrossDeviceTabPaneAndroid =
             newCachedFlag(CROSS_DEVICE_TAB_PANE_ANDROID, false);
+    public static final CachedFlag sDefaultBrowserPromoEntryPoint =
+            newCachedFlag(DEFAULT_BROWSER_PROMO_ENTRY_POINT, false);
     public static final CachedFlag sDesktopAndroidLinkCapturing =
             newCachedFlag(DESKTOP_ANDROID_LINK_CAPTURING, false);
     public static final CachedFlag sDesktopUAOnConnectedDisplay =
@@ -1174,6 +1177,7 @@ public abstract class ChromeFeatureList {
                     sContextMenuPictureInPictureAndroid,
                     sCpaTabGroupingButton,
                     sCrossDeviceTabPaneAndroid,
+                    sDefaultBrowserPromoEntryPoint,
                     sDesktopAndroidLinkCapturing,
                     sDesktopUAOnConnectedDisplay,
                     sDocumentPictureInPictureAPI,
@@ -1518,6 +1522,14 @@ public abstract class ChromeFeatureList {
             newIntCachedFeatureParam(
                     CLANK_STARTUP_LATENCY_INJECTION, "latency_injection_amount_millis", 0);
 
+    /*
+    A cached param that determines whether we show the menu item (entry point) in the app menu
+    (3-dot menu).
+    */
+    public static final BooleanCachedFeatureParam sDefaultBrowserPromoEntryPointShowAppMenu =
+            newBooleanCachedFeatureParam(
+                    DEFAULT_BROWSER_PROMO_ENTRY_POINT, "show_app_menu_item", true);
+
     /**
      * Cached param whether we disable animations for color changes to the edge-to-edge bottom chin.
      */
@@ -1739,6 +1751,7 @@ public abstract class ChromeFeatureList {
                     sCctResizableForThirdPartiesDenylistEntries,
                     sClampAutomotiveScalingMaxScalingPercentage,
                     sClankStartupLatencyInjectionAmountMs,
+                    sDefaultBrowserPromoEntryPointShowAppMenu,
                     sDesktopUAAllowedOnExternalDisplayForOem,
                     sEdgeToEdgeBottomChinOemList,
                     sEdgeToEdgeBottomChinOemMinVersions,

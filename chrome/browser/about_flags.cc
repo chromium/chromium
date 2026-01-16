@@ -5139,6 +5139,13 @@ const FeatureEntry::FeatureVariation kAndroidBookmarkBarFastFollowVariations[] =
     {{"(Standard Width - with animations)",
       kAndroidBookmarkBarFastFollowStandard,
       std::size(kAndroidBookmarkBarFastFollowStandard), nullptr}};
+const FeatureEntry::FeatureParam kDefaultBrowserPromoEntryPointSettingsOnly[] =
+    {{"show_app_menu_item", "false"}};
+const FeatureEntry::FeatureVariation
+    kDefaultBrowserPromoEntryPointVariations[] = {
+        {"(Settings Only - No App Menu)",
+         kDefaultBrowserPromoEntryPointSettingsOnly,
+         std::size(kDefaultBrowserPromoEntryPointSettingsOnly), nullptr}};
 const FeatureEntry::FeatureParam kAndroidDesktopZoomScalingFactorSmall[] = {
     {"desktop-zoom-scaling-factor", "109"},
     {"monitor-zoom-scaling-factor", "120"}};
@@ -11597,6 +11604,14 @@ const FeatureEntry kFeatureEntries[] = {
          chrome::android::kAndroidBookmarkBarFastFollow,
          kAndroidBookmarkBarFastFollowVariations,
          "AndroidBookmarkBarFastFollow")},
+
+    {"default-browser-promo-entry-point",
+     flag_descriptions::kDefaultBrowserPromoEntryPointName,
+     flag_descriptions::kDefaultBrowserPromoEntryPointDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kDefaultBrowserPromoEntryPoint,
+         kDefaultBrowserPromoEntryPointVariations,
+         "DefaultBrowserPromoEntryPoint")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"happy-eyeballs-v3", flag_descriptions::kHappyEyeballsV3Name,

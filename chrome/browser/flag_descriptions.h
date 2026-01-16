@@ -5242,6 +5242,12 @@ inline constexpr char
         "Management "
         "API to 3P password managers if 3P mode autofill is on.";
 
+inline constexpr char kDefaultBrowserPromoEntryPointName[] =
+    "DefaultBrowserPromoEntryPoint";
+inline constexpr char kDefaultBrowserPromoEntryPointDescription[] =
+    "Shows the default browser promo menu item in Settings, and depending on "
+    "the params, in App Menu.";
+
 inline constexpr char kDeprecatedExternalPickerFunctionName[] =
     "Use deprecated External Picker method";
 inline constexpr char kDeprecatedExternalPickerFunctionDescription[] =

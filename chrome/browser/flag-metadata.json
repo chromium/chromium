@@ -2095,6 +2095,11 @@
     "expiry_milestone": 143
   },
   {
+    "name": "default-browser-promo-entry-point",
+    "owners": [ "eleanorlee@google.com", "twellington@chromium.org"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "default-browser-promo-ipad-instructions",
     "owners": [ "cheickcisse@google.com", "bling-mony-pod@google.com" ],
     "expiry_milestone": 150
