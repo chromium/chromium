@@ -4,17 +4,15 @@
 
 #include "components/persistent_cache/pending_backend.h"
 
+#include <utility>
+
 namespace persistent_cache {
 
 PendingBackend::PendingBackend() = default;
+PendingBackend::PendingBackend(sqlite_vfs::PendingFileSet pending_file_set)
+    : pending_file_set(std::move(pending_file_set)) {}
 PendingBackend::PendingBackend(PendingBackend&&) = default;
 PendingBackend& PendingBackend::operator=(PendingBackend&&) = default;
 PendingBackend::~PendingBackend() = default;
-
-PendingBackend::SqliteData::SqliteData() = default;
-PendingBackend::SqliteData::~SqliteData() = default;
-PendingBackend::SqliteData::SqliteData(SqliteData&&) = default;
-PendingBackend::SqliteData& PendingBackend::SqliteData::operator=(
-    SqliteData&&) = default;
 
 }  // namespace persistent_cache

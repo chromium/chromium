@@ -8,10 +8,6 @@
 #include "base/component_export.h"
 #include "components/persistent_cache/backend_storage.h"
 
-namespace persistent_cache {
-class SqliteVfsFileSet;
-}
-
 namespace persistent_cache::sqlite {
 
 // A delegate that manages storage on behalf of SqliteBackendImpl.
@@ -45,16 +41,6 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendStorageDelegate
   // .journal files).
   int64_t DeleteFiles(const base::FilePath& directory,
                       const base::FilePath& base_name) override;
-
-  // Returns a new `PendingBackend` sharing the database connection in
-  // `directory` for the cache named `base_name` and referenced by `file_set`.
-  // The returned instance is granted read-only access if `read_write` is false;
-  // otherwise, read/write access.
-  std::optional<PendingBackend> ShareConnection(
-      const base::FilePath& directory,
-      const base::FilePath& base_name,
-      const SqliteVfsFileSet& file_set,
-      bool read_write);
 };
 
 }  // namespace persistent_cache::sqlite

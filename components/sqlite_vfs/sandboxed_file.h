@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERSISTENT_CACHE_SQLITE_VFS_SANDBOXED_FILE_H_
-#define COMPONENTS_PERSISTENT_CACHE_SQLITE_VFS_SANDBOXED_FILE_H_
+#ifndef COMPONENTS_SQLITE_VFS_SANDBOXED_FILE_H_
+#define COMPONENTS_SQLITE_VFS_SANDBOXED_FILE_H_
 
 #include <stdint.h>
 
@@ -13,10 +13,10 @@
 #include "base/files/file.h"
 #include "base/memory/shared_memory_safety_checker.h"
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "components/persistent_cache/lock_state.h"
+#include "components/sqlite_vfs/lock_state.h"
 #include "sql/sandboxed_vfs_file.h"
 
-namespace persistent_cache {
+namespace sqlite_vfs {
 
 // The lock shared state is encoded over 32-bits:
 //   3 3 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1 1 1
@@ -43,7 +43,7 @@ using SharedAtomicLock = base::subtle::SharedAtomic<uint32_t>;
 // This class can be bound to a sqlite3_file to which ownership is relinquished
 // to SQLite. It's not copyable or movable to ensure it doesn't become invalid
 // outside of SQLite's control.
-class COMPONENT_EXPORT(PERSISTENT_CACHE) SandboxedFile
+class COMPONENT_EXPORT(SQLITE_VFS) SandboxedFile
     : public sql::SandboxedVfsFile {
  public:
   enum class AccessRights { kReadWrite, kReadOnly };
@@ -164,6 +164,6 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SandboxedFile
   std::optional<FileType> file_type_;
 };
 
-}  // namespace persistent_cache
+}  // namespace sqlite_vfs
 
-#endif  // COMPONENTS_PERSISTENT_CACHE_SQLITE_VFS_SANDBOXED_FILE_H_
+#endif  // COMPONENTS_SQLITE_VFS_SANDBOXED_FILE_H_

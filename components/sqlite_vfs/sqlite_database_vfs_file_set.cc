@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/persistent_cache/sqlite/vfs/sqlite_database_vfs_file_set.h"
+#include "components/sqlite_vfs/sqlite_database_vfs_file_set.h"
 
 #include <atomic>
 #include <memory>
@@ -17,7 +17,8 @@
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "components/persistent_cache/sqlite/vfs/sandboxed_file.h"
+#include "components/sqlite_vfs/pending_file_set.h"
+#include "components/sqlite_vfs/sandboxed_file.h"
 #include "sql/database.h"
 
 namespace {
@@ -30,7 +31,43 @@ constexpr base::FilePath::StringViewType kDbFileName =
 
 }  // namespace
 
-namespace persistent_cache {
+namespace sqlite_vfs {
+
+// static
+std::optional<SqliteVfsFileSet> SqliteVfsFileSet::Bind(
+    PendingFileSet pending_file_set) {
+  // Write-ahead logging requires single connection.
+  CHECK(!pending_file_set.wal_file.IsValid() ||
+        !pending_file_set.shared_lock.IsValid());
+  // Write-ahead logging requires read-write access.
+  CHECK(!pending_file_set.wal_file.IsValid() || pending_file_set.read_write);
+
+  base::WritableSharedMemoryMapping mapped_shared_lock;
+  if (pending_file_set.shared_lock.IsValid()) {
+    mapped_shared_lock = pending_file_set.shared_lock.Map();
+    if (!mapped_shared_lock.IsValid()) {
+      return std::nullopt;  // Failed to map the shared lock.
+    }
+  }
+
+  const auto access_rights = pending_file_set.read_write
+                                 ? SandboxedFile::AccessRights::kReadWrite
+                                 : SandboxedFile::AccessRights::kReadOnly;
+
+  auto db_file = std::make_unique<SandboxedFile>(
+      std::move(pending_file_set.db_file), access_rights,
+      std::move(mapped_shared_lock));
+  auto journal_file = std::make_unique<SandboxedFile>(
+      std::move(pending_file_set.journal_file), access_rights);
+  std::unique_ptr<SandboxedFile> wal_file;
+  if (pending_file_set.wal_file.IsValid()) {
+    wal_file = std::make_unique<SandboxedFile>(
+        std::move(pending_file_set.wal_file), access_rights);
+  }
+  return SqliteVfsFileSet(std::move(db_file), std::move(journal_file),
+                          std::move(wal_file),
+                          std::move(pending_file_set.shared_lock));
+}
 
 SqliteVfsFileSet::SqliteVfsFileSet(
     std::unique_ptr<SandboxedFile> db_file,
@@ -108,4 +145,4 @@ LockState SqliteVfsFileSet::Abandon() {
   return db_file_->Abandon();
 }
 
-}  // namespace persistent_cache
+}  // namespace sqlite_vfs

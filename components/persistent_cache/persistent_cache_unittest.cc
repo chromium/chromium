@@ -28,6 +28,7 @@
 #include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
 #include "components/persistent_cache/test_utils.h"
 #include "components/persistent_cache/transaction_error.h"
+#include "components/sqlite_vfs/vfs_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
@@ -565,12 +566,13 @@ TEST_P(PersistentCacheTest, RecoveryFromTransientError) {
       HasValue());
 
   // Lock the db file in shared mode.
-  ASSERT_OK_AND_ASSIGN(
-      auto reader_vfs_file_set,
-      SqliteBackendImpl::BindToFileSet(std::move(pending_reader)));
-  SandboxedFile* reader_db_file = reader_vfs_file_set.GetSandboxedDbFile();
-  reader_db_file->OnFileOpened(
-      reader_db_file->TakeUnderlyingFile(SandboxedFile::FileType::kMainDb));
+  ASSERT_OK_AND_ASSIGN(auto reader_vfs_file_set,
+                       sqlite_vfs::SqliteVfsFileSet::Bind(
+                           std::move(pending_reader.pending_file_set)));
+  sqlite_vfs::SandboxedFile* reader_db_file =
+      reader_vfs_file_set.GetSandboxedDbFile();
+  reader_db_file->OnFileOpened(reader_db_file->TakeUnderlyingFile(
+      sqlite_vfs::SandboxedFile::FileType::kMainDb));
   ASSERT_EQ(reader_db_file->Lock(SQLITE_LOCK_SHARED), SQLITE_OK);
 
   // Held lock causes transient error.

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/persistent_cache/sqlite/vfs/sandboxed_file.h"
+#include "components/sqlite_vfs/sandboxed_file.h"
 
 #include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/sqlite/sqlite3.h"
 
-namespace persistent_cache {
+namespace sqlite_vfs {
 
 namespace {
 
@@ -467,4 +467,4 @@ TEST_F(SandboxedFileTest, GetFile) {
 
 }  // namespace
 
-}  // namespace persistent_cache
+}  // namespace sqlite_vfs

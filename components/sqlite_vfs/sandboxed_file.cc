@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/persistent_cache/sqlite/vfs/sandboxed_file.h"
+#include "components/sqlite_vfs/sandboxed_file.h"
 
 #include <utility>
 
@@ -17,7 +17,7 @@
 #include <windows.h>
 #endif
 
-namespace persistent_cache {
+namespace sqlite_vfs {
 
 namespace {
 
@@ -94,6 +94,9 @@ LockState SandboxedFile::Abandon() {
           ? LockState::kWriting
           : (((previous_state & kSharedMask) != 0) ? LockState::kReading
                                                    : LockState::kNotHeld);
+  // TODO(crbug.com/377475540): Rename the histogram name to distinguish between
+  // clients (e.g., PersistentCache, HttpCache) when this code is used by
+  // others.
   base::UmaHistogramEnumeration(
       "PersistentCache.SandboxedFile.LockStateOnAbandon", state);
   return state;
@@ -492,6 +495,9 @@ SharedAtomicLock& SandboxedFile::GetSharedAtomicLock() {
 bool SandboxedFile::AcquireSingleConnectionlock() {
   CHECK(underlying_file_.IsValid());
   const auto error = underlying_file_.Lock(base::File::LockMode::kExclusive);
+  // TODO(crbug.com/377475540): Rename the histogram name to distinguish between
+  // clients (e.g., PersistentCache, HttpCache) when this code is used by
+  // others.
   base::UmaHistogramExactLinear("PersistentCache.Sqlite.LockResult", -error,
                                 -base::File::FILE_ERROR_MAX);
   return error == base::File::FILE_OK;
@@ -502,4 +508,4 @@ void SandboxedFile::ReleaseSingleConnectionlock() {
   underlying_file_.Unlock();
 }
 
-}  // namespace persistent_cache
+}  // namespace sqlite_vfs

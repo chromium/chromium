@@ -9,8 +9,8 @@
 #include "base/files/scoped_temp_dir.h"
 #include "components/persistent_cache/backend.h"
 #include "components/persistent_cache/pending_backend.h"
-#include "components/persistent_cache/sqlite/constants.h"
 #include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
+#include "components/sqlite_vfs/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace persistent_cache::sqlite {
@@ -33,14 +33,14 @@ class SqliteBackendStorageDelegateTest : public testing::Test {
 TEST_F(SqliteBackendStorageDelegateTest, GetBaseName) {
   ASSERT_EQ(delegate().GetBaseName(base::FilePath()), base::FilePath());
   ASSERT_EQ(delegate().GetBaseName(temp_path()), base::FilePath());
-  ASSERT_EQ(delegate().GetBaseName(
-                temp_path().AppendASCII("spam").AddExtension(kDbFileExtension)),
+  ASSERT_EQ(delegate().GetBaseName(temp_path().AppendASCII("spam").AddExtension(
+                sqlite_vfs::kDbFileExtension)),
             base::FilePath::FromASCII("spam"));
   ASSERT_EQ(delegate().GetBaseName(temp_path().AppendASCII("spam").AddExtension(
-                kJournalFileExtension)),
+                sqlite_vfs::kJournalFileExtension)),
             base::FilePath());
   ASSERT_EQ(delegate().GetBaseName(temp_path().AppendASCII("spam").AddExtension(
-                kWalJournalFileExtension)),
+                sqlite_vfs::kWalJournalFileExtension)),
             base::FilePath());
 }
 

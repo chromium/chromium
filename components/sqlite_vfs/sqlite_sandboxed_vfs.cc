@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/persistent_cache/sqlite/vfs/sqlite_sandboxed_vfs.h"
+#include "components/sqlite_vfs/sqlite_sandboxed_vfs.h"
 
 #include <mutex>
 #include <optional>
@@ -17,12 +17,13 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/synchronization/lock.h"
-#include "components/persistent_cache/sqlite/vfs/sqlite_database_vfs_file_set.h"
+#include "components/sqlite_vfs/sandboxed_file.h"
+#include "components/sqlite_vfs/sqlite_database_vfs_file_set.h"
 #include "sql/sandboxed_vfs.h"
 #include "sql/sandboxed_vfs_file.h"
 #include "third_party/sqlite/sqlite3.h"
 
-namespace persistent_cache {
+namespace sqlite_vfs {
 
 namespace {
 
@@ -129,6 +130,9 @@ int SqliteSandboxedVfsDelegate::DeleteFile(const base::FilePath& file_path,
     auto& file = it->second->GetFile();
     const auto file_error = file.SetLength(0) ? base::File::FILE_OK
                                               : base::File::GetLastFileError();
+    // TODO(crbug.com/377475540): Rename the histogram name to distinguish
+    // between clients (e.g., PersistentCache, HttpCache) when this code is used
+    // by others.
     base::UmaHistogramExactLinear(
         base::StrCat(
             {"PersistentCache.Sqlite.",
@@ -210,4 +214,4 @@ SqliteSandboxedVfsDelegate::RegisterSandboxedFiles(
   return UnregisterRunner(sqlite_vfs_file_set);
 }
 
-}  // namespace persistent_cache
+}  // namespace sqlite_vfs

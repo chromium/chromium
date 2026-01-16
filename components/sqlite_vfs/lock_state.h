@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERSISTENT_CACHE_LOCK_STATE_H_
-#define COMPONENTS_PERSISTENT_CACHE_LOCK_STATE_H_
+#ifndef COMPONENTS_SQLITE_VFS_LOCK_STATE_H_
+#define COMPONENTS_SQLITE_VFS_LOCK_STATE_H_
 
-namespace persistent_cache {
+namespace sqlite_vfs {
 
-// Values of this enum represent the state of a PersistentCache lock at a set
+// Values of this enum represent the state of a SqliteVfsFileSet lock at a set
 // moment in time. These values are persisted to logs. Entries should not be
 // renumbered and numeric values should never be reused.
-// Note: This enum is currently a copy of sqlite_vfs::LockState.
 // LINT.IfChange(LockState)
 enum class LockState {
   // The lock is not held by readers or writers.
@@ -25,8 +24,8 @@ enum class LockState {
 
   kMaxValue = kWriting
 };
-// LINT.ThenChange(//components/sqlite_vfs/lock_state.h:LockState)
+// LINT.ThenChange(//components/persistent_cache/lock_state.h:LockState)
 
-}  // namespace persistent_cache
+}  // namespace sqlite_vfs
 
-#endif  // COMPONENTS_PERSISTENT_CACHE_LOCK_STATE_H_
+#endif  // COMPONENTS_SQLITE_VFS_LOCK_STATE_H_

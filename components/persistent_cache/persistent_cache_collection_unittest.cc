@@ -25,10 +25,10 @@
 #include "components/persistent_cache/mock/mock_backend_storage_delegate.h"
 #include "components/persistent_cache/pending_backend.h"
 #include "components/persistent_cache/persistent_cache.h"
-#include "components/persistent_cache/sqlite/constants.h"
 #include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
-#include "components/persistent_cache/sqlite/vfs/sqlite_database_vfs_file_set.h"
 #include "components/persistent_cache/test_utils.h"
+#include "components/sqlite_vfs/constants.h"
+#include "components/sqlite_vfs/sqlite_database_vfs_file_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -316,10 +316,10 @@ TEST_F(PersistentCacheCollectionTest, AbandonnedErrorsDoNotCauseDeletions) {
               HasValue());
   EXPECT_THAT(
       GetPathsInDir(temp_dir_.GetPath()),
-      UnorderedElementsAre(
-          Property(&base::FilePath::Extension, StrEq(sqlite::kDbFileExtension)),
-          Property(&base::FilePath::Extension,
-                   StrEq(sqlite::kJournalFileExtension))));
+      UnorderedElementsAre(Property(&base::FilePath::Extension,
+                                    StrEq(sqlite_vfs::kDbFileExtension)),
+                           Property(&base::FilePath::Extension,
+                                    StrEq(sqlite_vfs::kJournalFileExtension))));
 
   ASSERT_OK_AND_ASSIGN(auto pending_backend,
                        collection.ShareReadWriteConnection(first_cache_id));
@@ -334,10 +334,10 @@ TEST_F(PersistentCacheCollectionTest, AbandonnedErrorsDoNotCauseDeletions) {
   // Files are still there.
   EXPECT_THAT(
       GetPathsInDir(temp_dir_.GetPath()),
-      UnorderedElementsAre(
-          Property(&base::FilePath::Extension, StrEq(sqlite::kDbFileExtension)),
-          Property(&base::FilePath::Extension,
-                   StrEq(sqlite::kJournalFileExtension))));
+      UnorderedElementsAre(Property(&base::FilePath::Extension,
+                                    StrEq(sqlite_vfs::kDbFileExtension)),
+                           Property(&base::FilePath::Extension,
+                                    StrEq(sqlite_vfs::kJournalFileExtension))));
 }
 
 TEST_F(PersistentCacheCollectionTest, EvictWhileLockedDeletesFiles) {
@@ -393,10 +393,10 @@ TEST_F(PersistentCacheCollectionTest,
               Ne(std::nullopt));
   EXPECT_THAT(
       GetPathsInDir(temp_dir_.GetPath()),
-      UnorderedElementsAre(
-          Property(&base::FilePath::Extension, StrEq(sqlite::kDbFileExtension)),
-          Property(&base::FilePath::Extension,
-                   StrEq(sqlite::kJournalFileExtension))));
+      UnorderedElementsAre(Property(&base::FilePath::Extension,
+                                    StrEq(sqlite_vfs::kDbFileExtension)),
+                           Property(&base::FilePath::Extension,
+                                    StrEq(sqlite_vfs::kJournalFileExtension))));
 
   // No more files after delete.
   collection.DeleteAllFiles();
@@ -407,10 +407,10 @@ TEST_F(PersistentCacheCollectionTest,
                        collection.ShareReadWriteConnection(first_cache_id));
   EXPECT_THAT(
       GetPathsInDir(temp_dir_.GetPath()),
-      UnorderedElementsAre(
-          Property(&base::FilePath::Extension, StrEq(sqlite::kDbFileExtension)),
-          Property(&base::FilePath::Extension,
-                   StrEq(sqlite::kJournalFileExtension))));
+      UnorderedElementsAre(Property(&base::FilePath::Extension,
+                                    StrEq(sqlite_vfs::kDbFileExtension)),
+                           Property(&base::FilePath::Extension,
+                                    StrEq(sqlite_vfs::kJournalFileExtension))));
 }
 
 TEST_F(PersistentCacheCollectionTest, PermanentErrorCausesDeletion) {
@@ -425,10 +425,10 @@ TEST_F(PersistentCacheCollectionTest, PermanentErrorCausesDeletion) {
               HasValue());
   EXPECT_THAT(
       GetPathsInDir(temp_dir_.GetPath()),
-      UnorderedElementsAre(
-          Property(&base::FilePath::Extension, StrEq(sqlite::kDbFileExtension)),
-          Property(&base::FilePath::Extension,
-                   StrEq(sqlite::kJournalFileExtension))));
+      UnorderedElementsAre(Property(&base::FilePath::Extension,
+                                    StrEq(sqlite_vfs::kDbFileExtension)),
+                           Property(&base::FilePath::Extension,
+                                    StrEq(sqlite_vfs::kJournalFileExtension))));
 
   // TODO(https://crbug.com/377475540): Instead of triggering an error in a
   // backend specific way PersistentCacheCollection should have a way to inject

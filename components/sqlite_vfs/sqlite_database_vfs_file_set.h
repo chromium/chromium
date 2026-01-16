@@ -2,30 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERSISTENT_CACHE_SQLITE_VFS_SQLITE_DATABASE_VFS_FILE_SET_H_
-#define COMPONENTS_PERSISTENT_CACHE_SQLITE_VFS_SQLITE_DATABASE_VFS_FILE_SET_H_
+#ifndef COMPONENTS_SQLITE_VFS_SQLITE_DATABASE_VFS_FILE_SET_H_
+#define COMPONENTS_SQLITE_VFS_SQLITE_DATABASE_VFS_FILE_SET_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "components/persistent_cache/lock_state.h"
-#include "components/persistent_cache/sqlite/vfs/sandboxed_file.h"
+#include "components/sqlite_vfs/lock_state.h"
+#include "components/sqlite_vfs/sandboxed_file.h"
 
-namespace persistent_cache {
+namespace sqlite_vfs {
+
+struct PendingFileSet;
 
 // Contains `SanboxedFile` representations of the files necessary to the use of
 // an `sql::Database`.
 //
 // This class owns the `SandboxedFile` files and must outlive any use of them.
-class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteVfsFileSet {
+class COMPONENT_EXPORT(SQLITE_VFS) SqliteVfsFileSet {
  public:
-  SqliteVfsFileSet(std::unique_ptr<SandboxedFile> db_file,
-                   std::unique_ptr<SandboxedFile> journal_file,
-                   std::unique_ptr<SandboxedFile> wal_journal_file,
-                   base::UnsafeSharedMemoryRegion shared_lock);
+  // Returns a `SqliteVfsFileSet` holding the state from a `PendingFileSet`.
+  // Returns no value in case of error (e.g., the shared lock could not be
+  // mapped into the process's address space).
+  static std::optional<SqliteVfsFileSet> Bind(PendingFileSet pending_file_set);
+
   SqliteVfsFileSet(SqliteVfsFileSet& other) = delete;
   SqliteVfsFileSet& operator=(const SqliteVfsFileSet& other) = delete;
   SqliteVfsFileSet(SqliteVfsFileSet&& other);
@@ -66,12 +70,23 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteVfsFileSet {
 
   bool wal_journal_mode() const { return !!wal_journal_file_; }
 
-  // Marks the file as no longer suitable for use. Returns the state of the
-  // shared db file lock at the moment of abandonment. Should only be used
-  // through `Backend::Abandon()`.
+  // Permanently marks this file set's database as no longer suitable for use by
+  // any connection. Returns true if any connection to the database holds either
+  // a shared reader lock; or the reserved, pending, or exclusive lock. All
+  // subsequent attempts to lock the database by any connection will fail with
+  // SQLITE_IOERR_LOCK. Clients accessing a database by such a file set should
+  // handle this error by closing their connection. When `Abandon()` returns
+  // `kNotHeld`, it is safe to re-establish new connections to the same files.
+  // Conversely, the backing files should be deleted if a file set is abandoned
+  // while any other connection holds a lock since it is not possible to know
+  // when all outstanding connections have been closed.
   LockState Abandon();
 
  private:
+  SqliteVfsFileSet(std::unique_ptr<SandboxedFile> db_file,
+                   std::unique_ptr<SandboxedFile> journal_file,
+                   std::unique_ptr<SandboxedFile> wal_journal_file,
+                   base::UnsafeSharedMemoryRegion shared_lock);
 
   // The shared lock is absent if the file set supports only a single
   // connection.
@@ -91,6 +106,6 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteVfsFileSet {
   bool read_only_;
 };
 
-}  // namespace persistent_cache
+}  // namespace sqlite_vfs
 
-#endif  // COMPONENTS_PERSISTENT_CACHE_SQLITE_VFS_SQLITE_DATABASE_VFS_FILE_SET_H_
+#endif  // COMPONENTS_SQLITE_VFS_SQLITE_DATABASE_VFS_FILE_SET_H_

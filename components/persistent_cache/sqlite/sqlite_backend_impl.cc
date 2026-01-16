@@ -22,10 +22,12 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "components/persistent_cache/backend_type.h"
-#include "components/persistent_cache/pending_backend.h"
-#include "components/persistent_cache/sqlite/vfs/sandboxed_file.h"
-#include "components/persistent_cache/sqlite/vfs/sqlite_sandboxed_vfs.h"
 #include "components/persistent_cache/transaction_error.h"
+#include "components/sqlite_vfs/lock_state.h"
+#include "components/sqlite_vfs/pending_file_set.h"
+#include "components/sqlite_vfs/sandboxed_file.h"
+#include "components/sqlite_vfs/sqlite_sandboxed_vfs.h"
+#include "components/sqlite_vfs/vfs_utils.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -42,76 +44,36 @@ std::string GetFullHistogramName(std::string_view name, bool read_write) {
 namespace persistent_cache {
 
 // static
-std::optional<SqliteVfsFileSet> SqliteBackendImpl::BindToFileSet(
-    PendingBackend pending_backend) {
-  // Write-ahead logging requires single connection.
-  CHECK(!pending_backend.sqlite_data.wal_file.IsValid() ||
-        !pending_backend.sqlite_data.shared_lock.IsValid());
-  // Write-ahead logging requires read-write access.
-  CHECK(!pending_backend.sqlite_data.wal_file.IsValid() ||
-        pending_backend.read_write);
-
-  base::WritableSharedMemoryMapping mapped_shared_lock;
-  if (pending_backend.sqlite_data.shared_lock.IsValid()) {
-    mapped_shared_lock = pending_backend.sqlite_data.shared_lock.Map();
-    if (!mapped_shared_lock.IsValid()) {
-      return std::nullopt;  // Failed to map the shared lock.
-    }
-  }
-
-  const auto access_rights = pending_backend.read_write
-                                 ? SandboxedFile::AccessRights::kReadWrite
-                                 : SandboxedFile::AccessRights::kReadOnly;
-
-  auto db_file = std::make_unique<SandboxedFile>(
-      std::move(pending_backend.sqlite_data.db_file), access_rights,
-      std::move(mapped_shared_lock));
-  auto journal_file = std::make_unique<SandboxedFile>(
-      std::move(pending_backend.sqlite_data.journal_file), access_rights);
-  std::unique_ptr<SandboxedFile> wal_file;
-  if (pending_backend.sqlite_data.wal_file.IsValid()) {
-    wal_file = std::make_unique<SandboxedFile>(
-        std::move(pending_backend.sqlite_data.wal_file), access_rights);
-  }
-
-  return SqliteVfsFileSet(std::move(db_file), std::move(journal_file),
-                          std::move(wal_file),
-                          std::move(pending_backend.sqlite_data.shared_lock));
-}
-
-// static
 std::unique_ptr<Backend> SqliteBackendImpl::Bind(
     PendingBackend pending_backend) {
-  const auto access_rights = pending_backend.read_write
-                                 ? SandboxedFile::AccessRights::kReadWrite
-                                 : SandboxedFile::AccessRights::kReadOnly;
+  const auto access_rights =
+      pending_backend.pending_file_set.read_write
+          ? sqlite_vfs::SandboxedFile::AccessRights::kReadWrite
+          : sqlite_vfs::SandboxedFile::AccessRights::kReadOnly;
 
-  auto file_set = BindToFileSet(std::move(pending_backend));
+  auto file_set = sqlite_vfs::SqliteVfsFileSet::Bind(
+      std::move(pending_backend.pending_file_set));
   if (!file_set.has_value()) {
     return nullptr;
   }
-
   auto instance = base::WrapUnique(new SqliteBackendImpl(*std::move(file_set)));
-
   base::ElapsedTimer timer;
   if (!instance->Initialize()) {
     return nullptr;
   }
-
   base::UmaHistogramMicrosecondsTimes(
       GetFullHistogramName(
           "BackendInitialize",
-          access_rights == SandboxedFile::AccessRights::kReadWrite),
+          access_rights == sqlite_vfs::SandboxedFile::AccessRights::kReadWrite),
       timer.Elapsed());
   return instance;
 }
 
-SqliteBackendImpl::SqliteBackendImpl(SqliteVfsFileSet vfs_file_set)
+SqliteBackendImpl::SqliteBackendImpl(sqlite_vfs::SqliteVfsFileSet vfs_file_set)
     : database_path_(vfs_file_set.GetDbVirtualFilePath()),
       vfs_file_set_(std::move(vfs_file_set)),
-      unregister_runner_(
-          SqliteSandboxedVfsDelegate::GetInstance()->RegisterSandboxedFiles(
-              vfs_file_set_)),
+      unregister_runner_(sqlite_vfs::SqliteSandboxedVfsDelegate::GetInstance()
+                             ->RegisterSandboxedFiles(vfs_file_set_)),
       db_(std::in_place,
           sql::DatabaseOptions()
               .set_read_only(vfs_file_set_.read_only())
@@ -121,7 +83,7 @@ SqliteBackendImpl::SqliteBackendImpl(SqliteVfsFileSet vfs_file_set)
               // Enable write-ahead logging if such a file is provided.
               .set_wal_mode(vfs_file_set_.wal_journal_mode())
               .set_vfs_name_discouraged(
-                  SqliteSandboxedVfsDelegate::kSqliteVfsName)
+                  sqlite_vfs::SqliteSandboxedVfsDelegate::kSqliteVfsName)
               // Prevent SQLite from trying to use mmap, as SandboxedVfs does
               // not currently support this.
               .set_mmap_enabled(false),
@@ -346,7 +308,14 @@ bool SqliteBackendImpl::IsReadOnly() const {
 LockState SqliteBackendImpl::Abandon() {
   // Read only instances do not have the privilege of abandoning an instance.
   CHECK(!IsReadOnly());
-  return vfs_file_set_.Abandon();
+  switch (vfs_file_set_.Abandon()) {
+    case sqlite_vfs::LockState::kNotHeld:
+      return LockState::kNotHeld;
+    case sqlite_vfs::LockState::kReading:
+      return LockState::kReading;
+    case sqlite_vfs::LockState::kWriting:
+      return LockState::kWriting;
+  }
 }
 
 }  // namespace persistent_cache

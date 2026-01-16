@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERSISTENT_CACHE_SQLITE_VFS_SQLITE_SANDBOXED_VFS_H_
-#define COMPONENTS_PERSISTENT_CACHE_SQLITE_VFS_SQLITE_SANDBOXED_VFS_H_
+#ifndef COMPONENTS_SQLITE_VFS_SQLITE_SANDBOXED_VFS_H_
+#define COMPONENTS_SQLITE_VFS_SQLITE_SANDBOXED_VFS_H_
 
 #include <memory>
 #include <optional>
@@ -15,12 +15,12 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ref.h"
 #include "base/synchronization/lock.h"
-#include "components/persistent_cache/sqlite/vfs/sandboxed_file.h"
-#include "components/persistent_cache/sqlite/vfs/sqlite_database_vfs_file_set.h"
+#include "components/sqlite_vfs/sandboxed_file.h"
+#include "components/sqlite_vfs/sqlite_database_vfs_file_set.h"
 #include "sql/sandboxed_vfs.h"
 #include "sql/sandboxed_vfs_file.h"
 
-namespace persistent_cache {
+namespace sqlite_vfs {
 
 // Implements an sql::SandboxedVfs::Delegate which operates on registered
 // base::File objects. Use this in processes that cannot directly open files but
@@ -30,7 +30,7 @@ namespace persistent_cache {
 //
 //  // Acquire a vfs file set, for example via a Mojo call to a process
 //  // which is allowed to open files.
-//  SqliteVfsFileSet vfs_file_set = CreateFilesAndBuildVfsFileSet();
+//  DatabaseFileSet vfs_file_set = CreateFilesAndBuildVfsFileSet();
 //
 //  // Register the file set for use by any sql::Database in this process
 //  // that uses the `SqliteSandboxedVfsDelegate`.
@@ -46,7 +46,7 @@ namespace persistent_cache {
 //  // Open the database using the virtual file path obtained from the
 //  // `SqliteVfsFileSet`.
 //  db.Open(vfs_file_set.GetDbVirtualFilePath());
-class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteSandboxedVfsDelegate
+class COMPONENT_EXPORT(SQLITE_VFS) SqliteSandboxedVfsDelegate
     : public sql::SandboxedVfs::Delegate {
  public:
   // There is only one vfs registered to handle an arbitrary number of file
@@ -74,7 +74,7 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteSandboxedVfsDelegate
 
   // Object whose lifetime is tied to the registration of a VFS file set.
   // The class `vfs_file_set` must outlive `UnregisterRunner`.
-  class COMPONENT_EXPORT(PERSISTENT_CACHE) UnregisterRunner {
+  class COMPONENT_EXPORT(SQLITE_VFS) UnregisterRunner {
    public:
     explicit UnregisterRunner(const SqliteVfsFileSet& vfs_file_set);
     UnregisterRunner(UnregisterRunner& other) = delete;
@@ -108,6 +108,6 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteSandboxedVfsDelegate
       GUARDED_BY(files_map_lock_);
 };
 
-}  // namespace persistent_cache
+}  // namespace sqlite_vfs
 
-#endif  // COMPONENTS_PERSISTENT_CACHE_SQLITE_VFS_SQLITE_SANDBOXED_VFS_H_
+#endif  // COMPONENTS_SQLITE_VFS_SQLITE_SANDBOXED_VFS_H_

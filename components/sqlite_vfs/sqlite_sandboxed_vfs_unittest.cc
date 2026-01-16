@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/persistent_cache/sqlite/vfs/sqlite_sandboxed_vfs.h"
+#include "components/sqlite_vfs/sqlite_sandboxed_vfs.h"
 
 #include <memory>
 #include <utility>
@@ -14,20 +14,18 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/types/expected_macros.h"
-#include "components/persistent_cache/pending_backend.h"
-#include "components/persistent_cache/sqlite/backend_storage_delegate.h"
-#include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
-#include "components/persistent_cache/sqlite/vfs/sqlite_database_vfs_file_set.h"
+#include "components/sqlite_vfs/pending_file_set.h"
+#include "components/sqlite_vfs/sqlite_database_vfs_file_set.h"
+#include "components/sqlite_vfs/vfs_utils.h"
 #include "sql/database.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/sqlite/sqlite3.h"
 
-namespace persistent_cache {
+namespace sqlite_vfs {
 
 namespace {
 
-const base::FilePath kNonExistentVirtualFilePath =
-    base::FilePath::FromASCII("NotFound");
+const char kNonExistentVirtualFilePath[] = "NotFound";
 
 }  // namespace
 
@@ -39,14 +37,14 @@ class SqliteSandboxedVfsTest : public testing::Test {
 
   std::optional<SqliteVfsFileSet> CreateFilesAndBuildVfsFileSet() {
     std::optional<SqliteVfsFileSet> file_set;
-    if (auto pending_backend = backend_storage_delegate_.MakePendingBackend(
+    if (auto pending_file_set = MakePendingFileSet(
             temp_dir_.GetPath(), base::FilePath(kTestBaseName),
             /*single_connection=*/false, /*journal_mode_wal=*/false);
-        !pending_backend.has_value()) {
-      ADD_FAILURE() << "Failed creating pending backend";
+        !pending_file_set.has_value()) {
+      ADD_FAILURE() << "Failed creating pending file set";
     } else {
-      file_set = SqliteBackendImpl::BindToFileSet(*std::move(pending_backend));
-      EXPECT_NE(file_set, std::nullopt) << "Failed binding to pending backend";
+      file_set = SqliteVfsFileSet::Bind(*std::move(pending_file_set));
+      EXPECT_NE(file_set, std::nullopt) << "Failed binding to pending file set";
     }
     return file_set;
   }
@@ -55,16 +53,15 @@ class SqliteSandboxedVfsTest : public testing::Test {
   std::optional<SqliteVfsFileSet> GetReadOnlyVfsFileSet(
       const SqliteVfsFileSet& file_set) {
     std::optional<SqliteVfsFileSet> read_only_file_set;
-    if (auto pending_backend = backend_storage_delegate_.ShareConnection(
+    if (auto pending_file_set = ShareConnection(
             temp_dir_.GetPath(), base::FilePath(kTestBaseName), file_set,
             /*read_write=*/false);
-        !pending_backend.has_value()) {
+        !pending_file_set.has_value()) {
       ADD_FAILURE() << "Failed sharing file set";
     } else {
-      read_only_file_set =
-          SqliteBackendImpl::BindToFileSet(*std::move(pending_backend));
+      read_only_file_set = SqliteVfsFileSet::Bind(*std::move(pending_file_set));
       EXPECT_NE(read_only_file_set, std::nullopt)
-          << "Failed binding to pending backend";
+          << "Failed binding to pending file set";
     }
     return read_only_file_set;
   }
@@ -74,15 +71,16 @@ class SqliteSandboxedVfsTest : public testing::Test {
       FILE_PATH_LITERAL("TEST");
 
   base::ScopedTempDir temp_dir_;
-  sqlite::BackendStorageDelegate backend_storage_delegate_;
 };
 
 TEST_F(SqliteSandboxedVfsTest, NoAccessWithoutRegistering) {
   ASSERT_OK_AND_ASSIGN(SqliteVfsFileSet vfs_file_set,
                        CreateFilesAndBuildVfsFileSet());
-  EXPECT_FALSE(SqliteSandboxedVfsDelegate::GetInstance()
-                   ->OpenFile(kNonExistentVirtualFilePath, kOpenFlags)
-                   .IsValid());
+  EXPECT_FALSE(
+      SqliteSandboxedVfsDelegate::GetInstance()
+          ->OpenFile(base::FilePath::FromASCII(kNonExistentVirtualFilePath),
+                     kOpenFlags)
+          .IsValid());
 }
 
 TEST_F(SqliteSandboxedVfsTest, AccessAfterRegistering) {
@@ -307,4 +305,4 @@ TEST_F(SqliteSandboxedVfsTest, SqliteIntegration) {
   EXPECT_TRUE(db.Open(vfs_file_set.GetDbVirtualFilePath()));
 }
 
-}  // namespace persistent_cache
+}  // namespace sqlite_vfs
