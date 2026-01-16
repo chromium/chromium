@@ -1670,12 +1670,17 @@ TEST_F(OmniboxEditModelPopupTest, KeywordStateObserver) {
                                 std::u16string(), {});
   };
 
-  // Entering keyword mode should notify observers.
-  EXPECT_CALL(observer, OnKeywordStateChanged(true));
+  // Keyword hint is not fully in keyword mode, so state is false.
+  EXPECT_CALL(observer, OnKeywordStateChanged(false));
   changed(u"keyword", true);
   testing::Mock::VerifyAndClearExpectations(&observer);
 
-  // Leaving keyword mode should notify observers.
+  // Entering keyword mode (not hint) sets state to true.
+  EXPECT_CALL(observer, OnKeywordStateChanged(true));
+  changed(u"keyword", false);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // State is false when out of keyword mode.
   EXPECT_CALL(observer, OnKeywordStateChanged(false));
   changed(u"", false);
   testing::Mock::VerifyAndClearExpectations(&observer);

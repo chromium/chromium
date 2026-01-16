@@ -1349,11 +1349,17 @@ void OmniboxEditModel::OnPopupDataChanged(
     if (view_) {
       view_->OnKeywordPlaceholderTextChange();
     }
-    observers_.Notify(&Observer::OnKeywordStateChanged, is_keyword_hint);
 
     // |is_keyword_hint_| should always be false if |keyword_| is empty.
     DCHECK(!keyword_.empty() || !is_keyword_hint_);
   }
+  // This updates the web UI state and affects presence/absence of the '+'
+  // context menu button. This should reflect whether keyword mode is actually
+  // entered, not simply match selection state (a match with keyword may be
+  // selected but the keyword mode still not entered yet).
+  // Note, this doesn't do edge detection with `keyword_was_selected` because
+  // keyword state can be changed elsewhere, not only from here.
+  observers_.Notify(&Observer::OnKeywordStateChanged, is_keyword_selected());
 
   // Handle changes to temporary text.
   if (is_temporary_text) {
