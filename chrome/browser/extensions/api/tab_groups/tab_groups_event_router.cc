@@ -87,6 +87,17 @@ class TabGroupsEventRouter::PlatformDelegate : public TabModelListObserver,
     owner_->DispatchGroupUpdated(group_id);
   }
 
+  void OnTabGroupRemoving(tab_groups::TabGroupId group_id) override {
+    // We must dispatch this message before the group is removed (i.e. in
+    // remov*ing*) because the first thing DispatchGroupRemoved() does is look
+    // up the group to build group data for the event. This is also compatible
+    // with Win/Mac/Linux.
+    owner_->DispatchGroupRemoved(group_id);
+  }
+
+  // TODO(crbug.com/405219902): Add OnTabGroupUpdated() and OnTabGroupMoved()
+  // methods here once the JNI plumbing is built.
+
  private:
   bool ShouldTrackModel(TabModel* model) {
     // We only track tab models belonging to the same profile.

@@ -238,6 +238,14 @@ public interface TabModelObserver {
     default void onTabGroupCreated(Token groupId) {}
 
     /**
+     * Called just before a tab group is removed. Note that new code should prefer using {@link
+     * TabGroupModelFilterObserver} for tab groups over this interface and method.
+     *
+     * @param groupId The ID of the group that will be removed.
+     */
+    default void onTabGroupRemoving(Token groupId) {}
+
+    /**
      * Called when the TabModel is destroyed. Note that for the incognito tab model this may be
      * called multiple times as the observer is registered to the outer tab model, but the inner
      * delegate model will be destroyed whenever the tab count becomes zero, and recreated if the

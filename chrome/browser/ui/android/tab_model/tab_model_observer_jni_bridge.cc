@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_jni_bridge.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
+#include "components/tab_groups/tab_group_id.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/TabModelObserverJniBridge_jni.h"
@@ -166,6 +167,15 @@ void TabModelObserverJniBridge::OnTabGroupCreated(JNIEnv* env,
   CHECK(!tab_group_id.is_empty());
   for (auto& observer : model_observers_) {
     observer.OnTabGroupCreated(tab_group_id);
+  }
+}
+
+void TabModelObserverJniBridge::OnTabGroupRemoving(JNIEnv* env,
+                                                   base::Token group_id) {
+  auto tab_group_id = tab_groups::TabGroupId::FromRawToken(group_id);
+  CHECK(!tab_group_id.is_empty());
+  for (auto& observer : model_observers_) {
+    observer.OnTabGroupRemoving(tab_group_id);
   }
 }
 

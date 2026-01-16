@@ -2475,6 +2475,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                 for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
                     observer.willCloseTabGroup(tabGroupId, hiding);
                 }
+                for (TabModelObserver obs : mTabModelObservers) {
+                    obs.onTabGroupRemoving(tabGroupId);
+                }
             }
         }
         return closingTabGroupIds;

@@ -3962,4 +3962,37 @@ public class TabCollectionTabModelImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeObserver(observer));
     }
+
+    @Test
+    @MediumTest
+    public void testOnTabGroupRemovingNotification() throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        List<Tab> tabs = List.of(tab0, tab1);
+
+        AtomicReference<Token> createdTabGroupId = new AtomicReference<>();
+        CallbackHelper onTabGroupRemoving = new CallbackHelper();
+        TabModelObserver observer =
+                new TabModelObserver() {
+                    @Override
+                    public void onTabGroupRemoving(Token groupId) {
+                        assertFalse(groupId.isZero());
+                        assertEquals(groupId, createdTabGroupId.get());
+                        onTabGroupRemoving.notifyCalled();
+                    }
+                };
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.addObserver(observer);
+                    createdTabGroupId.set(mCollectionModel.createTabGroup(tabs));
+                    // Closing the tabs will remove the tab group.
+                    mCollectionModel.closeTabs(
+                            TabClosureParams.closeTabs(tabs).allowUndo(false).build());
+                });
+
+        onTabGroupRemoving.waitForOnly();
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeObserver(observer));
+    }
 }

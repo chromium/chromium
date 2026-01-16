@@ -76,6 +76,8 @@ class TabModelObserverJniBridge {
 
   void OnTabGroupCreated(JNIEnv* env, base::Token group_id);
 
+  void OnTabGroupRemoving(JNIEnv* env, base::Token group_id);
+
   void AddObserver(TabModelObserver* observer);
   void AddTabListInterfaceObserver(TabListInterfaceObserver* observer);
   void RemoveObserver(TabModelObserver* observer);
