@@ -527,6 +527,10 @@ void Scorer::AttachImageEmbeddingModel(base::File image_embedding_model) {
       return;
     }
   }
+
+  SetImageEmbeddingDimensions(
+      flatbuffer_model_->img_embedding_metadata()->input_width(),
+      flatbuffer_model_->img_embedding_metadata()->input_height());
 }
 
 void Scorer::AttachImageEmbeddingModel(int image_embedding_input_width,
