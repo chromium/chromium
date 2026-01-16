@@ -58,6 +58,12 @@
   <message name="IDS_CONTEXTUAL_TASKS_AI_SIDE_PANEL_TOOL_TIP" desc="Tool tip text displayed on the AI side panel button on the Chrome tool bar to open side panel when contextual task is enabled.">
     AI side panel
   </message>
+  <message name="IDS_CONTEXTUAL_TASKS_CONTEXT_MENU_MOST_RECENT_TABS" desc="Section header in the compose box context menu for the most recent tabs.">
+    Most recent tabs
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_CONTEXT_MENU_GEMINI_MODELS" desc="Section header in the compose box context menu for Gemini models.">
+    Gemini 3 models
+  </message>
   <message name="IDS_CONTEXTUAL_TASKS_SIDE_PANEL_NEW_THREAD_TOOL_TIP" desc="Tool tip text displayed on the create thread button on the side panel to create a new contextual task.">
     New thread
   </message>

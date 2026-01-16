@@ -379,6 +379,10 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       {"voiceDetails", IDS_NEW_TAB_VOICE_DETAILS},
       {"voiceListening", IDS_NEW_TAB_VOICE_LISTENING},
       {"voicePermissionError", IDS_NEW_TAB_VOICE_PERMISSION_ERROR},
+      {"composeboxContextMenuMostRecentTabs",
+       IDS_CONTEXTUAL_TASKS_CONTEXT_MENU_MOST_RECENT_TABS},
+      {"composeboxContextMenuGeminiModels",
+       IDS_CONTEXTUAL_TASKS_CONTEXT_MENU_GEMINI_MODELS},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddString("searchboxComposePlaceholder",
