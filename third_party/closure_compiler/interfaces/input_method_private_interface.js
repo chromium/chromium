@@ -16,7 +16,7 @@ InputMethodPrivate.prototype = {
    * @param {function({
    *   isPhysicalKeyboardAutocorrectEnabled: boolean,
    *   isImeMenuActivated: boolean
-   * }): void} callback Callback which is called with the config object.
+   * }): void} callback Resolves with the config object.
    */
   getInputMethodConfig: function(callback) {},
 
@@ -28,14 +28,14 @@ InputMethodPrivate.prototype = {
    *   id: string,
    *   name: string,
    *   indicator: string
-   * }>): void} callback Callback which is called with the input method objects.
+   * }>): void} callback Resolves with the input method objects.
    */
   getInputMethods: function(callback) {},
 
   /**
    * Gets the current input method.
-   * @param {function(string): void} callback Callback which is called with the
-   *     current input method.
+   * @param {function(string): void} callback Resolves with the current input
+   *     method.
    */
   getCurrentInputMethod: function(callback) {},
 
@@ -43,41 +43,38 @@ InputMethodPrivate.prototype = {
    * Sets the current input method.
    * @param {string} inputMethodId The input method ID to be set as current
    *     input method.
-   * @param {function(): void=} callback Callback which is called once the
-   *     current input method is set. If unsuccessful $(ref:runtime.lastError)
-   *     is set.
+   * @param {function(): void=} callback Resolves once the current input method
+   *     is set. If unsuccessful, the promise is rejected.
    */
   setCurrentInputMethod: function(inputMethodId, callback) {},
 
   /**
    * Switches to the last used input method. If no last used input method, this
    * is a no-op.
-   * @param {function(): void=} callback Callback which is called once the input
-   *     method is swapped (if applicable). If unsuccessful
-   *     $(ref:runtime.lastError) is set.
+   * @param {function(): void=} callback Resolves once the input method is
+   *     swapped (if applicable). If unsuccessful, the promise is rejected.
    */
   switchToLastUsedInputMethod: function(callback) {},
 
   /**
    * Fetches a list of all the words currently in the dictionary.
-   * @param {function(!Array<string>): void} callback Callback which is called
-   *     once the list of dictionary words are ready.
+   * @param {function(!Array<string>): void} callback Resolves once the list of
+   *     dictionary words are ready.
    */
   fetchAllDictionaryWords: function(callback) {},
 
   /**
    * Adds a single word to be stored in the dictionary.
    * @param {string} word A new word to add to the dictionary.
-   * @param {function(): void=} callback Callback which is called once the word
-   *     is added. If unsuccessful $(ref:runtime.lastError) is set.
+   * @param {function(): void=} callback Resolves once the word is added. If
+   *     unsuccessful, the promise is rejected.
    */
   addWordToDictionary: function(word, callback) {},
 
   /**
    * Sets the XKB layout for the given input method.
    * @param {string} xkb_name The XKB layout name.
-   * @param {function(): void=} callback Callback which is called when the
-   *     layout is set.
+   * @param {function(): void=} callback Resolves when the layout is set.
    */
   setXkbLayout: function(xkb_name, callback) {},
 
@@ -87,21 +84,21 @@ InputMethodPrivate.prototype = {
    * @param {{
    *   contextID: number
    * }} parameters
-   * @param {function(): void=} callback Called when the operation completes.
+   * @param {function(): void=} callback Resolves when the operation completes.
    */
   finishComposingText: function(parameters, callback) {},
 
   /**
    * Shows the input view window. If the input view window is already shown,
    * this function will do nothing.
-   * @param {function(): void=} callback Called when the operation completes.
+   * @param {function(): void=} callback Resolves when the operation completes.
    */
   showInputView: function(callback) {},
 
   /**
    * Hides the input view window. If the input view window is already hidden,
    * this function will do nothing.
-   * @param {function(): void=} callback Called when the operation completes.
+   * @param {function(): void=} callback Resolves when the operation completes.
    */
   hideInputView: function(callback) {},
 
@@ -124,7 +121,7 @@ InputMethodPrivate.prototype = {
    *   before: string,
    *   selected: string,
    *   after: string
-   * }): void} callback Callback which is called to provide the result
+   * }): void} callback Resolves to provide the result
    */
   getSurroundingText: function(beforeLength, afterLength, callback) {},
 
@@ -133,7 +130,7 @@ InputMethodPrivate.prototype = {
    * @param {string} engineID The ID of the engine (e.g. 'zh-t-i0-pinyin',
    *     'xkb:us::eng')
    * @param {function((!chrome.inputMethodPrivate.InputMethodSettings|undefined)): void}
-   *     callback Callback to receive the settings
+   *     callback Resolves with the settings
    */
   getSettings: function(engineID, callback) {},
 
@@ -143,7 +140,7 @@ InputMethodPrivate.prototype = {
    *     'xkb:us::eng')
    * @param {!chrome.inputMethodPrivate.InputMethodSettings} settings The
    *     settings to set
-   * @param {function(): void=} callback Callback to notify that the new value
+   * @param {function(): void=} callback Resolves to notify that the new value
    *     has been set
    */
   setSettings: function(engineID, settings, callback) {},
@@ -161,9 +158,9 @@ InputMethodPrivate.prototype = {
    *     style: !chrome.inputMethodPrivate.UnderlineStyle
    *   }>|undefined)
    * }} parameters
-   * @param {function(boolean): void=} callback Called when the operation
+   * @param {function(boolean): void=} callback Resolves when the operation
    *     completes with a boolean indicating if the text was accepted or not. On
-   *     failure, $(ref:runtime.lastError) is set.
+   *     failure, the promise will be rejected.
    */
   setCompositionRange: function(parameters, callback) {},
 
@@ -193,7 +190,8 @@ InputMethodPrivate.prototype = {
    * Gets the aggregate status of all language packs for a given input method.
    * @param {string} inputMethodId Fully qualified ID of the input method
    * @param {function(!chrome.inputMethodPrivate.LanguagePackStatus): void}
-   *     callback Called with a LanguagePackStatus when the operation completes.
+   *     callback Resolves with a LanguagePackStatus when the operation
+   *     completes.
    */
   getLanguagePackStatus: function(inputMethodId, callback) {},
 };
