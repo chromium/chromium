@@ -40,6 +40,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
@@ -110,8 +111,9 @@ public final class VoiceToolbarButtonControllerTest {
                         .getString(R.string.accessibility_toolbar_btn_mic);
     }
 
-    private void assertButtonMissingOrNonVoice() {
+    private void assertButtonMissingOrNonVoice(ChromeTabbedActivity activity) {
         waitForNoView(
+                activity,
                 allOf(
                         withId(R.id.optional_toolbar_button),
                         isEnabled(),
@@ -132,7 +134,7 @@ public final class VoiceToolbarButtonControllerTest {
 
         mActivityTestRule.loadUrl(getOriginalNativeNtpUrl());
 
-        assertButtonMissingOrNonVoice();
+        assertButtonMissingOrNonVoice(mActivityTestRule.getActivity());
     }
 
     @Test
@@ -143,7 +145,7 @@ public final class VoiceToolbarButtonControllerTest {
         // Reload the page so the button provider is updated based on the mock.
         mActivityTestRule.loadUrl(mTestPageUrl);
 
-        assertButtonMissingOrNonVoice();
+        assertButtonMissingOrNonVoice(mActivityTestRule.getActivity());
     }
 
     @Test
@@ -159,9 +161,9 @@ public final class VoiceToolbarButtonControllerTest {
                         isEnabled(),
                         withContentDescription(mButtonString)));
 
-        mPage.openNewIncognitoTabOrWindowFast();
+        var incognitoNtp = mPage.openNewIncognitoTabOrWindowFast();
 
-        assertButtonMissingOrNonVoice();
+        assertButtonMissingOrNonVoice(incognitoNtp.getActivity());
     }
 
     @Test

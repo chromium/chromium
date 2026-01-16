@@ -11,20 +11,19 @@ import androidx.test.espresso.Root;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 
-import org.chromium.build.annotations.Nullable;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Fulfilled when no matching Views exist and are displayed. */
 public class NotDisplayedAnymoreCondition extends UiThreadCondition {
+    private final Supplier<RootSpec> mRootSpecSupplier;
     private final Matcher<View> mMatcher;
-    private final @Nullable ViewElement<?> mViewElement;
 
     public NotDisplayedAnymoreCondition(
-            @Nullable ViewElement<?> viewElement, Matcher<View> matcher) {
+            Supplier<RootSpec> rootSpecSupplier, Matcher<View> matcher) {
         super();
-        mViewElement = viewElement;
+        mRootSpecSupplier = rootSpecSupplier;
         mMatcher = matcher;
     }
 
@@ -35,30 +34,18 @@ public class NotDisplayedAnymoreCondition extends UiThreadCondition {
 
     @Override
     protected ConditionStatus checkWithSuppliers() {
-        List<Root> rootsToSearch;
-        if (mViewElement != null) {
-            // If created by a ViewElement, search the root which it was matched.
-            Root rootMatched = mViewElement.getDisplayedCondition().getRootMatched();
-            assert rootMatched != null;
-            rootsToSearch = List.of(rootMatched);
-        } else {
-            // If not created by a ViewElement (i.e. created by declareNoView()), search
-            // the Activity related to the state, or all if there is no specific Activity
-            // to search.
-            RootSpec rootSpec;
-            if (mOwnerState == null) {
-                // If it's a TransitionCondition, mOwnerState will be null and search all roots.
-                rootSpec = RootSpec.anyRoot();
-            } else {
-                ActivityElement<?> activityElement = mOwnerState.determineActivityElement();
-                if (activityElement == null) {
-                    rootSpec = RootSpec.anyRoot();
-                } else {
-                    rootSpec = RootSpec.activityOrDialogRoot(activityElement);
-                }
-            }
-            rootsToSearch = InternalViewFinder.findRoots(rootSpec);
+        RootSpec rootSpec = mRootSpecSupplier.get();
+        String reasonToWaitToMatch = rootSpec.getReasonToWaitToMatch();
+        if (reasonToWaitToMatch != null) {
+            return awaiting(reasonToWaitToMatch);
         }
+        String reasonWillNotMatch = rootSpec.getReasonWillNotMatch();
+        if (reasonWillNotMatch != null) {
+            return fulfilled(reasonWillNotMatch);
+        }
+
+        List<Root> rootsToSearch = InternalViewFinder.findRoots(rootSpec);
+
         List<ViewAndRoot> allMatches = InternalViewFinder.findViews(rootsToSearch, mMatcher);
         List<ViewConditions.DisplayedEvaluation> allEvaluations = new ArrayList<>();
         List<ViewConditions.DisplayedEvaluation> displayedEvaluations = new ArrayList<>();

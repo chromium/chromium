@@ -128,6 +128,13 @@ public class ViewFinder {
 
     /** Waits for a View that matches |matcher| to no longer be displayed. */
     public static void waitForNoView(Matcher<View> matcher) {
-        noopTo().waitFor(new NotDisplayedAnymoreCondition(/* viewElement= */ null, matcher));
+        noopTo().waitFor(new NotDisplayedAnymoreCondition(RootSpec::anyRoot, matcher));
+    }
+
+    /** Waits for a View that matches |matcher| to no longer be displayed in an activity. */
+    public static void waitForNoView(Activity activity, Matcher<View> matcher) {
+        noopTo().waitFor(
+                        new NotDisplayedAnymoreCondition(
+                                () -> RootSpec.activityRoot(activity), matcher));
     }
 }

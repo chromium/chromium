@@ -130,7 +130,8 @@ public class OptionalViewElement<ViewT extends View> extends Element<ViewT>
     /** Create a Condition fulfilled when this OptionalViewElement is absent. */
     public Condition absent() {
         return new NotDisplayedAnymoreCondition(
-                /* viewElement= */ null, mViewSpec.getViewMatcher());
+                () -> ViewElement.calculateRootSpec(ViewElement.Options.DEFAULT, mOwner),
+                mViewSpec.getViewMatcher());
     }
 
     @Override

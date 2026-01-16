@@ -156,8 +156,14 @@ public class Elements extends BaseElements {
 
         /** See {@link ConditionalState#declareNoView(Matcher)}. */
         public void declareNoView(Matcher<View> viewMatcher) {
+            assertNotBuilt();
+            ConditionalState ownerState = mOwner.mOwnerState;
             declareEnterCondition(
-                    new NotDisplayedAnymoreCondition(/* viewElement= */ null, viewMatcher));
+                    new NotDisplayedAnymoreCondition(
+                            () ->
+                                    ViewElement.calculateRootSpec(
+                                            ViewElement.Options.DEFAULT, ownerState),
+                            viewMatcher));
         }
 
         /** See {@link ConditionalState#declareEnterCondition(Condition)}. */

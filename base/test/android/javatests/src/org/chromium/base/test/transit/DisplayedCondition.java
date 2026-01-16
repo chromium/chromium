@@ -7,7 +7,6 @@ package org.chromium.base.test.transit;
 import static org.chromium.base.test.util.ViewPrinter.Options.PRINT_SHALLOW_WITH_BOUNDS;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.app.Activity;
 import android.view.View;
 
 import androidx.test.espresso.Root;
@@ -88,21 +87,14 @@ public class DisplayedCondition<ViewT extends View> extends ConditionWithResult<
         ArrayList<String> messages = new ArrayList<>();
 
         RootSpec rootSpec = mRootSpecSupplier.get();
-        Supplier<? extends Activity> activitySupplier = rootSpec.getActivitySupplier();
 
-        if (activitySupplier != null) {
-            Activity activity = activitySupplier.get();
-            if (activity == null) {
-                return awaiting("Waiting for Activity from %s", activitySupplier).withoutResult();
-            }
-            if (activity.isDestroyed()) {
-                return notFulfilled("Activity from %s is destroyed", activitySupplier)
-                        .withoutResult();
-            }
-            if (activity.isFinishing()) {
-                return notFulfilled("Activity from %s is finishing", activitySupplier)
-                        .withoutResult();
-            }
+        String reasonToWait = rootSpec.getReasonToWaitToMatch();
+        if (reasonToWait != null) {
+            return awaiting(reasonToWait).withoutResult();
+        }
+        String reasonWillNotMatch = rootSpec.getReasonWillNotMatch();
+        if (reasonWillNotMatch != null) {
+            return notFulfilled(reasonWillNotMatch).withoutResult();
         }
 
         List<Root> roots = InternalViewFinder.findRoots(rootSpec);

@@ -116,7 +116,13 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> implements V
     @Override
     public @Nullable Condition createExitCondition() {
         if (mOptions.mScoped) {
-            return new NotDisplayedAnymoreCondition(this, mViewSpec.getViewMatcher());
+            return new NotDisplayedAnymoreCondition(
+                    () -> {
+                        Root rootMatched = getDisplayedCondition().getRootMatched();
+                        assert rootMatched != null;
+                        return RootSpec.specificRoot(rootMatched.getDecorView());
+                    },
+                    mViewSpec.getViewMatcher());
         } else {
             return null;
         }
