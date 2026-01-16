@@ -147,7 +147,7 @@ ${this.ntpRealboxNextEnabled ? html`
         </div>
         <div class="dropdownContainer">
           ${dropdown}
-          ${this.recentTabForChip_ && this.dropdownIsVisible ? html`
+          ${this.recentTabForChip_ && this.dropdownIsVisible && this.isInputEmpty() ? html`
           <div id="recentTabChipContainer">
             <composebox-recent-tab-chip
                 .recentTab="${this.recentTabForChip_}"
