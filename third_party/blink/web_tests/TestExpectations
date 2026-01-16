@@ -55,14 +55,14 @@ wpt_internal/infrastructure/fail-before-timeout.html [ Timeout ]
 
 # Short-lived expectations for --enable-blink-features=AIPageContentBuildOnLoadForTesting
 # Subpixel rendering issue on Mac only caused by activating display locks.
-crbug.com/475504307 [ Mac ] html/details_summary/details-replace-text.html [ Pass Failure ]
+crbug.com/475504307 [ Mac ] html/details_summary/details-replace-text.html [ Failure Pass ]
 # APC auto‑build forces lifecycle updates during DOMContentLoaded; this exposes a pending/error
 # mask-image timing bug where invalid masks are treated as transparent instead of ignored, causing
 # the masked element to disappear.
-crbug.com/475537047 external/wpt/css/css-masking/mask-image/bad-mask-image-svg-3.html [ Pass Failure ]
+crbug.com/475537047 external/wpt/css/css-masking/mask-image/bad-mask-image-svg-3.html [ Failure Pass ]
 # APC auto-build hits a CHECK when view-transition root offsets push geometry
 # above the viewport during DOMContentLoaded.
-crbug.com/474330989 wpt_internal/view-transition/browser-controls-root-offset-new.html [ Pass Crash ]
+crbug.com/474330989 wpt_internal/view-transition/browser-controls-root-offset-new.html [ Crash Pass ]
 
 # Reftest failure related to off-main-thread interaction (imperceptible AA differences)
 crbug.com/395909730 virtual/off-main-thread-css-paint/http/tests/csspaint/paint2d-zoom.html [ Failure ]  # Reftest image failure
@@ -2974,7 +2974,7 @@ crbug.com/440811029 [ Win ] external/wpt/bluetooth/bidi/server/getPrimaryService
 crbug.com/475042067 external/wpt/webrtc-encoded-transform/idlharness.https.window.html?include=(SFrameDecrypterStream|SFrameEncrypterStream|SFrameSenderTransform|SFrameReceiverTransform|SFrameTransform.\*) [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-[ Android ] external/wpt/webdriver/tests/classic/get_element_text/get.py [ Timeout ]
+crbug.com/476224460 [ Android ] external/wpt/webdriver/tests/classic/get_element_text/get.py [ Timeout ]
 crbug.com/475335843 [ Win ] external/wpt/html/semantics/the-button-element/command-and-commandfor/on-dialog-invalid-behavior.html [ Pass Timeout ]
 crbug.com/474480404 [ Win ] external/wpt/bluetooth/bidi/characteristic/getDescriptors/gen-descriptor-get-same-object.https.window.html [ Failure Pass Timeout ]
 crbug.com/474955261 [ Win ] external/wpt/geolocation/enabled-by-permission-policy-attribute-redirect-on-load.https.sub.html [ Pass Timeout ]
