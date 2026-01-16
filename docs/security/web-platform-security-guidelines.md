@@ -266,13 +266,13 @@ origin or security policies being applied to the document.
 > [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP),
 > [COOP](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Opener-Policy),
 > [COEP](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Embedder-Policy),
-> and [Private Network access](https://wicg.github.io/private-network-access/).
+> and [Local Network access](https://wicg.github.io/local-network-access/).
 
-* XFO, CSP, COEP and Private Network access can block document load. This
+* XFO, CSP, COEP and Local Network access can block document load. This
 should be respected.
 * COOP can trigger a browsing context group switch which should be respected as
 well.
-* CSP, COEP and Private Network access are computed when loading a document and
+* CSP, COEP and Local Network access are computed when loading a document and
 may apply to all of the document resources. Failure to integrate properly
 with them could result in the policies being bypassed.
 
@@ -287,7 +287,7 @@ with them could result in the policies being bypassed.
 > [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS),
 > [CORB](https://fetch.spec.whatwg.org/#corb),
 > [SRI](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity)
-> and [Private Network access](https://wicg.github.io/private-network-access/).
+> and [Local Network access](https://wicg.github.io/local-network-access/).
 
 * All of the policies above may block unsafe resource loads and must be
 properly applied to any subresource load.
