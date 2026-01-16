@@ -483,10 +483,10 @@ Extension::ManifestData* Extension::GetManifestData(
 
 void Extension::SetManifestData(std::string_view key,
                                 std::unique_ptr<Extension::ManifestData> data) {
-  DCHECK(!finished_parsing_manifest_);
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(!finished_parsing_manifest_);
+  CHECK(thread_checker_.CalledOnValidThread());
   bool inserted = manifest_data_.emplace(key, std::move(data)).second;
-  DCHECK(inserted);
+  CHECK(inserted);
 }
 
 void Extension::SetGUID(const ExtensionGuid& guid) {
