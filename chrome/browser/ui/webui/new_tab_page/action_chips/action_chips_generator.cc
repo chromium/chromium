@@ -234,7 +234,7 @@ std::optional<ChipType> GetChipType(omnibox::GroupId group_id,
     case omnibox::GROUP_AI_MODE_CREATE_IMAGE_ACTION:
       return ChipType::kImage;
     case omnibox::GROUP_AI_MODE_CONTEXTUAL_SEARCH_ACTION:
-      if (base::Contains(subtypes, omnibox::SUBTYPE_AI_TOOL_ACTION)) {
+      if (std::ranges::contains(subtypes, omnibox::SUBTYPE_AI_TOOL_ACTION)) {
         return ChipType::kDeepDive;
       }
       return ChipType::kRecentTab;
