@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.chromium.chrome.browser.app.tabmodel.ShadowTabStoreValidator.CUSTOM_TAG;
+import static org.chromium.chrome.browser.app.tabmodel.TabPersistentStoreFactory.buildAuthoritativeStore;
 import static org.chromium.chrome.browser.app.tabmodel.TabPersistentStoreFactory.buildShadowStore;
 
 import android.app.Activity;
@@ -79,13 +80,14 @@ public class CustomTabsTabModelOrchestrator extends TabModelOrchestrator {
         TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
         mTabPersistencePolicy = persistencePolicy;
         mTabPersistentStore =
-                new TabPersistentStoreImpl(
+                buildAuthoritativeStore(
                         TabPersistentStoreImpl.CLIENT_TAG_CUSTOM,
                         mTabPersistencePolicy,
                         mTabModelSelector,
                         tabCreatorManager,
                         tabWindowManager,
-                        cipherFactory);
+                        cipherFactory,
+                        /* recordLegacyTabCountMetrics= */ true);
 
         profileProviderSupplier.onAvailable(
                 provider -> {

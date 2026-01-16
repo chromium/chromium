@@ -16,6 +16,8 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 
 /**
  * Factory class for creating instances of {@link TabPersistentStore}.
@@ -25,6 +27,37 @@ import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
  */
 @NullMarked
 public class TabPersistentStoreFactory {
+    /**
+     * Builds an authoritative {@link TabPersistentStore}.
+     *
+     * <p>This store acts as the source of truth for tab state. It directly manages reading from and
+     * writing to the disk for the associated {@link TabModelSelector}.
+     *
+     * @param clientTag The client tag used to record metrics for this specific store instance.
+     * @param tabPersistencePolicy The {@link TabPersistencePolicy} to use for the window.
+     * @param tabModelSelector The selector to observe and manage persistence for.
+     * @param tabCreatorManager Used to create new tabs during state restoration.
+     * @param tabWindowManager Used to coordinate tab state across multiple windows.
+     * @param cipherFactory Used for encrypting and decrypting tab state files.
+     * @param recordLegacyTabCountMetrics Whether to record legacy metrics regarding tab counts.
+     */
+    public static TabPersistentStore buildAuthoritativeStore(
+            String clientTag,
+            TabPersistencePolicy tabPersistencePolicy,
+            TabModelSelector tabModelSelector,
+            TabCreatorManager tabCreatorManager,
+            TabWindowManager tabWindowManager,
+            CipherFactory cipherFactory,
+            boolean recordLegacyTabCountMetrics) {
+        return new TabPersistentStoreImpl(
+                clientTag,
+                tabPersistencePolicy,
+                tabModelSelector,
+                tabCreatorManager,
+                tabWindowManager,
+                cipherFactory,
+                recordLegacyTabCountMetrics);
+    }
 
     /**
      * Builds a shadow {@link TabPersistentStore} for validation against an authoritative store.

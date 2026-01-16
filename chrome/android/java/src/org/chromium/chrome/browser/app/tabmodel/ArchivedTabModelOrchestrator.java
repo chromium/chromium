@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.app.tabmodel;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.app.tabmodel.ShadowTabStoreValidator.ARCHIVED_TAG;
+import static org.chromium.chrome.browser.app.tabmodel.TabPersistentStoreFactory.buildAuthoritativeStore;
 import static org.chromium.chrome.browser.app.tabmodel.TabPersistentStoreFactory.buildNonOtrShadowStore;
 
 import android.content.Context;
@@ -419,18 +420,14 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                     }
                 };
         mTabPersistentStore =
-                new TabPersistentStoreImpl(
+                buildAuthoritativeStore(
                         TabPersistentStoreImpl.CLIENT_TAG_ARCHIVED,
                         mTabPersistencePolicy,
                         mTabModelSelector,
                         mArchivedTabCreatorManager,
                         mTabWindowManager,
-                        cipherFactory) {
-                    @Override
-                    protected void recordLegacyTabCountMetrics() {
-                        // Intentional no-op.
-                    }
-                };
+                        cipherFactory,
+                        /* recordLegacyTabCountMetrics= */ false);
 
         wireSelectorAndStore();
         markTabModelsInitialized();

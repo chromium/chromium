@@ -108,7 +108,8 @@ public class MultiInstanceMigrationTest {
                                     selector,
                                     null,
                                     TabWindowManagerSingleton.getInstance(),
-                                    mCipherFactory);
+                                    mCipherFactory,
+                                    /* recordLegacyTabCountMetrics= */ true);
                     store.waitForMigrationToFinish();
                 });
     }

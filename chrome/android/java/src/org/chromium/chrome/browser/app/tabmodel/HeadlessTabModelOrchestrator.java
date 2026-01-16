@@ -5,6 +5,7 @@ package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.app.tabmodel.ShadowTabStoreValidator.HEADLESS_TAG;
+import static org.chromium.chrome.browser.app.tabmodel.TabPersistentStoreFactory.buildAuthoritativeStore;
 import static org.chromium.chrome.browser.app.tabmodel.TabPersistentStoreFactory.buildShadowStore;
 
 import org.chromium.base.ContextUtils;
@@ -65,13 +66,14 @@ public class HeadlessTabModelOrchestrator implements Destroyable {
         TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
 
         mTabPersistentStore =
-                new TabPersistentStoreImpl(
+                buildAuthoritativeStore(
                         TabPersistentStoreImpl.CLIENT_TAG_HEADLESS,
                         policy,
                         mTabModelSelector,
                         tabCreatorManager,
                         tabWindowManager,
-                        sCipherInstance);
+                        sCipherInstance,
+                        /* recordLegacyTabCountMetrics= */ true);
 
         String windowTag = String.valueOf(windowId);
         AccumulatingTabCreator regularShadowTabCreator = new AccumulatingTabCreator();
