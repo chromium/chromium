@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_SESSION_PROTO_DB_SESSION_PROTO_DB_H_
 #define COMPONENTS_SESSION_PROTO_DB_SESSION_PROTO_DB_H_
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -274,7 +274,7 @@ void SessionProtoDB<T>::PerformMaintenance(
               // substring of said keys and hasn't been explicitly marked
               // not to be removed in keys_to_keep.
               return key.contains(key_substring_to_match) &&
-                     !base::Contains(keys_to_keep, key);
+                     !std::ranges::contains(keys_to_keep, key);
             },
             keys_to_keep, key_substring_to_match),
         base::BindOnce(&SessionProtoDB::OnPerformMaintenance,

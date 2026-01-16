@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation_traits.h"
 
@@ -85,7 +84,7 @@ class ScopedMultiSourceObservation {
   // Returns true if |source| is being observed.
   bool IsObservingSource(Source* source) const {
     DCHECK(source);
-    return base::Contains(sources_, source);
+    return std::ranges::contains(sources_, source);
   }
 
   // Returns the number of sources being observed.

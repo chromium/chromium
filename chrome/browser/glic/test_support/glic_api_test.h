@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_TEST_SUPPORT_GLIC_API_TEST_H_
 #define CHROME_BROWSER_GLIC_TEST_SUPPORT_GLIC_API_TEST_H_
 
+#include <algorithm>
 #include <type_traits>
 
 #include "base/json/json_writer.h"
@@ -343,8 +344,8 @@ class GlicApiTestBase : public T {
     }
     for (int i = 0; i < unit_test->total_test_suite_count(); ++i) {
       const auto* test_suite = unit_test->GetTestSuite(i);
-      if (!base::Contains(gunit_test_suite_names,
-                          std::string(test_suite->name()))) {
+      if (!std::ranges::contains(gunit_test_suite_names,
+                                 std::string(test_suite->name()))) {
         continue;
       }
       for (int j = 0; j < test_suite->total_test_count(); ++j) {

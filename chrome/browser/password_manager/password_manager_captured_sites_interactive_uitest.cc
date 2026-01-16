@@ -387,12 +387,12 @@ class CapturedSitesAutomatedPasswordChangeBrowserTest
     PasswordChangeDelegate::State expected_state =
         static_cast<PasswordChangeDelegate::State>(state);
 
-    EXPECT_TRUE(base::Contains(terminal_states, expected_state))
+    EXPECT_TRUE(std::ranges::contains(terminal_states, expected_state))
         << "Unexpected password change state. It's possible to wait only for "
            "a terminal state.";
 
     return base::test::RunUntil([&]() {
-      if (base::Contains(terminal_states, delegate->GetCurrentState())) {
+      if (std::ranges::contains(terminal_states, delegate->GetCurrentState())) {
         EXPECT_EQ(expected_state, delegate->GetCurrentState())
             << "Password change reached an unexpected terminal state";
         return true;
