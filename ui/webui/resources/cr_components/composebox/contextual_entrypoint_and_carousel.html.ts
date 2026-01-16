@@ -84,10 +84,10 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
           voiceSearchButton :
           ''}
         ${this.shouldShowToolChipsForTallMode_ ? toolChips : ''}
-        ${
-      this.searchboxLayoutMode === 'TallTopContext' && this.showVoiceSearch ?
-          voiceSearchButton :
-          ''}
+      ${(this.searchboxLayoutMode === 'TallTopContext' || !this.searchboxLayoutMode) &&
+        this.showVoiceSearch
+          ? voiceSearchButton
+          : ''}
         ${
       this.searchboxLayoutMode === 'TallTopContext' && this.submitButtonShown ?
           html`<slot name="submit-button"></slot>` :
@@ -157,7 +157,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
       @change="${this.onFileChange_}"
       hidden>
   </input>
-  ${(this.searchboxLayoutMode === 'TallBottomContext' || !this.searchboxLayoutMode) && this.showVoiceSearch ?
+  ${this.searchboxLayoutMode === 'TallBottomContext'  && this.showVoiceSearch ?
           voiceSearchButton :
           ''}
   ${this.submitButtonShown && this.searchboxLayoutMode === 'TallBottomContext' ?
