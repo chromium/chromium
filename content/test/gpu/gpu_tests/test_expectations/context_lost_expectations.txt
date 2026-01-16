@@ -246,6 +246,7 @@ crbug.com/365565140 [ angle-opengl debug graphite-disabled intel-0x3e9b arch-x86
 # Renderer Hung Possibly just Slow
 crbug.com/338574390 [ mac intel-0x3e9b angle-metal asan graphite-disabled ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
 crbug.com/338574390 [ angle-metal graphite-enabled amd-0x7340 mac ] ContextLost_WebGPUBlockedAfterJSNavigation [ Slow ]
+crbug.com/380088337 [ mac intel-0x3e9b angle-metal asan ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Failure ]
 
 # Failure since webgpu enabled via vulkan interop
 crbug.com/457303654 [ linux nvidia-0x2184 debug ] ContextLost_WebGPUStressRequestDeviceAndRemoveLoop [ Failure ]
