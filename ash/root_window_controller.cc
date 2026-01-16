@@ -501,6 +501,17 @@ class FillLayoutManager : public aura::LayoutManager {
   raw_ptr<aura::Window> container_;
 };
 
+void SetOcclusionOverrideToTrackedWindow(
+    aura::Window* subtree,
+    std::optional<aura::Window::OcclusionState> state) {
+  if (subtree->GetOcclusionState() != aura::Window::OcclusionState::UNKNOWN) {
+    subtree->SetOcclusionStateOverride(state);
+  }
+  for (auto child : subtree->children()) {
+    SetOcclusionOverrideToTrackedWindow(child, state);
+  }
+}
+
 }  // namespace
 
 // static
@@ -940,6 +951,13 @@ void RootWindowController::EndSplitViewOverviewSession(
         ->RecordSplitViewOverviewSessionExitPointMetrics(exit_point);
   }
   split_view_overview_session_.reset();
+}
+
+void RootWindowController::ForceOccludeWindowsInAlwaysOnTop(bool occlude) {
+  SetOcclusionOverrideToTrackedWindow(
+      GetContainer(kShellWindowId_AlwaysOnTopContainer),
+      occlude ? std::optional(aura::Window::OcclusionState::OCCLUDED)
+              : std::nullopt);
 }
 
 void RootWindowController::SetScreenRotationAnimatorForTest(

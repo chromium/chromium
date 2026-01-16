@@ -263,6 +263,11 @@ class ASH_EXPORT RootWindowController {
   void EndSplitViewOverviewSession(
       SplitViewOverviewSessionExitPoint exit_point);
 
+  // When set to true, all tracked windows in the always on top container will
+  // be marked as occluded.
+  // TODO(crbug.com/476220853): Remove this once the right fix is landed.
+  void ForceOccludeWindowsInAlwaysOnTop(bool occlude);
+
   void SetScreenRotationAnimatorForTest(
       std::unique_ptr<ScreenRotationAnimator> animator);
 

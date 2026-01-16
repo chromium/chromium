@@ -301,6 +301,12 @@ WindowOcclusionTracker::~WindowOcclusionTracker() = default;
 bool WindowOcclusionTracker::OcclusionStatesMatch(
     const base::flat_map<Window*, OcclusionData>& tracked_windows) {
   for (const auto& tracked_window : tracked_windows) {
+#if BUILDFLAG(IS_CHROMEOS)
+    if (tracked_window.first->has_occlusion_state_override()) {
+      continue;
+    }
+#endif
+
     if (tracked_window.second.occlusion_state !=
         tracked_window.first->GetOcclusionState())
       return false;

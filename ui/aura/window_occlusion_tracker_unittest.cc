@@ -265,6 +265,51 @@ TEST_F(WindowOcclusionTrackerTest, HiddenWindowCoversWindow) {
   EXPECT_FALSE(delegate_b->is_expecting_call());
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(WindowOcclusionTrackerTest, OverrideState) {
+  MockWindowDelegate* delegate_a = new MockWindowDelegate();
+  delegate_a->set_expectation(Window::OcclusionState::VISIBLE);
+  auto* window_a = CreateTrackedWindow(delegate_a, gfx::Rect(0, 0, 10, 10));
+  window_a->SetName("A");
+  EXPECT_FALSE(delegate_a->is_expecting_call());
+  EXPECT_EQ(window_a->GetOcclusionState(), Window::OcclusionState::VISIBLE);
+
+  // Force hidden.
+  delegate_a->set_expectation(Window::OcclusionState::HIDDEN);
+  window_a->SetOcclusionStateOverride(Window::OcclusionState::HIDDEN);
+  EXPECT_FALSE(delegate_a->is_expecting_call());
+  EXPECT_EQ(window_a->GetOcclusionState(), Window::OcclusionState::HIDDEN);
+
+  // Reset.
+  delegate_a->set_expectation(Window::OcclusionState::VISIBLE);
+  window_a->SetOcclusionStateOverride(std::nullopt);
+  EXPECT_FALSE(delegate_a->is_expecting_call());
+  EXPECT_EQ(window_a->GetOcclusionState(), Window::OcclusionState::VISIBLE);
+
+  // Force visible.
+  delegate_a->set_expectation(Window::OcclusionState::VISIBLE);
+  window_a->SetOcclusionStateOverride(Window::OcclusionState::VISIBLE);
+  EXPECT_FALSE(delegate_a->is_expecting_call());
+  EXPECT_EQ(window_a->GetOcclusionState(), Window::OcclusionState::VISIBLE);
+
+  // Hide a.
+  MockWindowDelegate* delegate_b = new MockWindowDelegate();
+  delegate_b->set_expectation(Window::OcclusionState::VISIBLE);
+  delegate_a->set_expectation(Window::OcclusionState::VISIBLE);
+  CreateTrackedWindow(delegate_b, gfx::Rect(0, 0, 10, 10));
+  // No update to a's occlusion state.
+  EXPECT_TRUE(delegate_a->is_expecting_call());
+  EXPECT_FALSE(delegate_b->is_expecting_call());
+  EXPECT_EQ(window_a->GetOcclusionState(), Window::OcclusionState::VISIBLE);
+
+  // Reset.
+  delegate_a->set_expectation(Window::OcclusionState::OCCLUDED);
+  window_a->SetOcclusionStateOverride(std::nullopt);
+  EXPECT_FALSE(delegate_a->is_expecting_call());
+  EXPECT_EQ(window_a->GetOcclusionState(), Window::OcclusionState::OCCLUDED);
+}
+#endif
+
 class WindowOcclusionTrackerOpacityTest
     : public WindowOcclusionTrackerTest,
       public testing::WithParamInterface<bool> {
