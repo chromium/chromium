@@ -1766,7 +1766,7 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureParam kShowNextRealboxTallBottomContextMultiLine[] =
     {
         {"RealboxLayoutMode", ntp_realbox::kRealboxLayoutModeTallBottomContext},
-        {"MultiLine", "true"},
+        {"MultiLineEnabled", "true"},
 };
 const FeatureEntry::FeatureParam kShowNextRealboxTallTopContext[] = {
     {"RealboxLayoutMode", ntp_realbox::kRealboxLayoutModeTallTopContext},
@@ -1778,7 +1778,7 @@ const FeatureEntry::FeatureParam
 };
 const FeatureEntry::FeatureParam kShowNextRealboxTallTopContextMultiLine[] = {
     {"RealboxLayoutMode", ntp_realbox::kRealboxLayoutModeTallTopContext},
-    {"MultiLine", "true"},
+    {"MultiLineEnabled", "true"},
 };
 const FeatureEntry::FeatureParam kShowNextRealboxCompact[] = {
     {"RealboxLayoutMode", ntp_realbox::kRealboxLayoutModeCompact},
@@ -1790,7 +1790,7 @@ const FeatureEntry::FeatureParam kShowNextRealboxCompactCyclingPlaceholders[] =
 };
 const FeatureEntry::FeatureParam kShowNextRealboxCompactMultiLine[] = {
     {"RealboxLayoutMode", ntp_realbox::kRealboxLayoutModeCompact},
-    {"MultiLine", "true"},
+    {"MultiLineEnabled", "true"},
 };
 
 const FeatureEntry::FeatureVariation kNtpRealboxNextVariations[] = {
