@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <iterator>
+
 #include "crypto/sha2.h"
 
 namespace component_updater {

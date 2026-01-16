@@ -15,6 +15,7 @@
 #include "components/component_updater/component_updater_paths.h"
 #include "components/on_device_translation/public/language_pack.h"
 #include "components/on_device_translation/public/paths.h"
+#include "components/on_device_translation/public/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"

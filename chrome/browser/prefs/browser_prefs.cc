@@ -533,7 +533,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
-#include "chrome/browser/on_device_translation/pref_names.h"
+#include "components/on_device_translation/public/pref_names.h"
 #endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
@@ -1684,6 +1684,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   NotifierStateTracker::RegisterProfilePrefs(registry);
   ntp_tiles::CustomLinksManagerImpl::RegisterProfilePrefs(registry);
   ntp_tiles::MostVisitedSites::RegisterProfilePrefs(registry);
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
+  on_device_translation::RegisterProfilePrefs(registry);
+#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
   optimization_guide::prefs::RegisterProfilePrefs(registry);
   optimization_guide::model_execution::prefs::RegisterProfilePrefs(registry);
   PageColorsController::RegisterProfilePrefs(registry);

@@ -236,7 +236,7 @@
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
-#include "components/on_device_translation/pref_names.h"
+#include "components/on_device_translation/public/pref_names.h"
 #endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
 #if BUILDFLAG(ENABLE_PDF)

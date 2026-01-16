@@ -16,8 +16,6 @@ source_set("on_device_translation") {
     "component_manager.h",
     "file_operation_proxy_impl.cc",
     "file_operation_proxy_impl.h",
-    "pref_names.cc",
-    "pref_names.h",
     "service_controller.cc",
     "service_controller.h",
     "service_controller_manager.cc",

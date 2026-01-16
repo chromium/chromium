@@ -21,6 +21,11 @@ extern const char kTranslateKitBinaryPath[];
 // initialized.
 extern const char kTranslateKitPreviouslyRegistered[];
 
+// A pref of the boolean value which indicates whether the On Device Translator
+// API is allowed. This pref is set per profile by the "TranslatorAPIAllowed"
+// Enterprise policy.
+extern const char kTranslatorAPIAllowed[];
+
 }  // namespace prefs
 
 namespace on_device_translation {
@@ -28,6 +33,8 @@ namespace on_device_translation {
 // Call once by the browser process to register on-device translation
 // preferences.
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+// Call to register the local state preferences for on-device translation.
+void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace on_device_translation
 

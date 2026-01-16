@@ -712,7 +712,6 @@
 
 #if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 #include "chrome/browser/on_device_translation/component_manager.h"
-#include "components/on_device_translation/pref_names.h"
 #endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
 #if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
@@ -1463,9 +1462,6 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterListPref(prefs::kSSLErrorOverrideAllowedForOrigins);
   registry->RegisterBooleanPref(prefs::kCompressionDictionaryTransportEnabled,
                                 true);
-#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
-  registry->RegisterBooleanPref(prefs::kTranslatorAPIAllowed, true);
-#endif
   registry->RegisterBooleanPref(
       prefs::kSuppressDifferentOriginSubframeJSDialogs, true);
 #if BUILDFLAG(IS_ANDROID)

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/on_device_translation/pref_names.h"
+#include "components/on_device_translation/public/pref_names.h"
 
 #include "base/files/file_path.h"
 #include "components/on_device_translation/public/language_pack.h"
@@ -15,6 +15,9 @@ const char kTranslateKitBinaryPath[] =
 
 const char kTranslateKitPreviouslyRegistered[] =
     "on_device_translation.translate_kit_registered";
+
+const char kTranslatorAPIAllowed[] =
+    "on_device_translation.translator_api_allowed";
 
 }  // namespace prefs
 
@@ -32,6 +35,10 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
                                    base::FilePath());
     registry->RegisterBooleanPref(GetRegisteredFlagPrefName(*it.second), false);
   }
+}
+
+void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(prefs::kTranslatorAPIAllowed, true);
 }
 
 }  // namespace on_device_translation

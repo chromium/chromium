@@ -14,8 +14,6 @@ source_set("on_device_translation") {
     "features.h",
     "metrics.cc",
     "metrics.h",
-    "pref_names.cc",
-    "pref_names.h",
     "translator.cc",
     "translator.h",
   ]
@@ -34,10 +32,13 @@ source_set("public") {
     "public/language_pack.h",
     "public/paths.cc",
     "public/paths.h",
+    "public/pref_names.cc",
+    "public/pref_names.h",
     "public/supported_languages.cc",
     "public/supported_languages.h",
   ]
   public_deps = [ "//base" ]
+  deps = [ "//components/prefs" ]
 }
 
 source_set("unit_tests") {
