@@ -39,8 +39,8 @@ const GSUITE_APP_REGEXP =
  * @param node The node to check
  * @return The root node of the GSuite app, or null if none is found.
  */
-export function getGSuiteAppRoot(node: AutomationNode|
-                                 undefined): AutomationNode|null {
+export function getGSuiteAppRoot(node: AutomationNode|undefined):
+    AutomationNode|null {
   while (node !== undefined && node.root !== undefined) {
     if (node.root.url !== undefined && GSUITE_APP_REGEXP.exec(node.root.url)) {
       return node.root;
@@ -594,8 +594,8 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
    * a user-initiated scroll is done.
    * @param root The root node to listen for events on.
    */
-  private initializeScrollingToOffscreenNodes_(root: AutomationNode|
-                                               undefined): void {
+  private initializeScrollingToOffscreenNodes_(root: AutomationNode|undefined):
+      void {
     if (!root) {
       return;
     }
@@ -1830,7 +1830,7 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
    */
   async maybeCreateOffscreenDocument_() {
     const offscreenUrl =
-        chrome.runtime.getURL('select_to_speak/mv3/offscreen.html');
+        chrome.runtime.getURL('select_to_speak/offscreen.html');
 
     const existingContexts = await chrome.runtime.getContexts({
       contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT],

@@ -422,9 +422,9 @@ export class PrefsManager {
    * Generates the basic speech options for Select-to-Speak based on user
    * preferences. Call for each chrome.tts.speak.
    */
-  getSpeechOptions(voiceSwitchingData:
-                       SelectToSpeakConstants.VoiceSwitchingData|
-                   null): chrome.tts.TtsOptions {
+  getSpeechOptions(
+      voiceSwitchingData: SelectToSpeakConstants.VoiceSwitchingData|
+      null): chrome.tts.TtsOptions {
     const options: chrome.tts.TtsOptions = {};
     const data: SelectToSpeakConstants.VoiceSwitchingData =
         voiceSwitchingData || {

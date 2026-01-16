@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
-GEN_INCLUDE(['../../common/testing/mock_accessibility_private.js']);
+GEN_INCLUDE(['../common/testing/mock_accessibility_private.js']);
 
 /** Focus ring color to use in testing. */
 const FOCUS_RING_COLOR = '#ff0';

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
-GEN_INCLUDE(['../../common/testing/mock_tts.js']);
+GEN_INCLUDE(['../common/testing/mock_tts.js']);
 
 SelectToSpeakEnhancedNetworkTtsVoicesTest = class extends SelectToSpeakE2ETest {
   constructor() {
@@ -102,18 +102,20 @@ AX_TEST_F(
       this.confirmationDialogResponse_ = true;
 
       const root = await this.runWithLoadedTree('<p>This is some text</p>');
-      this.mockTts.setOnSpeechCallbacks([this.newCallback(async function(
-          utterance) {
-        // Network voices are enabled initially because of the
-        // confirmation.
-        assertEquals(this.confirmationDialogShowCount_, 1);
-        assertTrue(selectToSpeak.prefsManager_.enhancedVoicesDialogShown());
-        assertTrue(selectToSpeak.prefsManager_.enhancedNetworkVoicesEnabled());
+      this.mockTts.setOnSpeechCallbacks(
+          [this.newCallback(async function(utterance) {
+            // Network voices are enabled initially because of the
+            // confirmation.
+            assertEquals(this.confirmationDialogShowCount_, 1);
+            assertTrue(selectToSpeak.prefsManager_.enhancedVoicesDialogShown());
+            assertTrue(
+                selectToSpeak.prefsManager_.enhancedNetworkVoicesEnabled());
 
-        // Sets the policy to disallow network voices.
-        await this.setEnhancedNetworkVoicesPolicy(/* allowed= */ false);
-        assertFalse(selectToSpeak.prefsManager_.enhancedNetworkVoicesEnabled());
-      })]);
+            // Sets the policy to disallow network voices.
+            await this.setEnhancedNetworkVoicesPolicy(/* allowed= */ false);
+            assertFalse(
+                selectToSpeak.prefsManager_.enhancedNetworkVoicesEnabled());
+          })]);
       const textNode = this.findTextNode(root, 'This is some text');
       const event = {
         screenX: textNode.location.left + 1,

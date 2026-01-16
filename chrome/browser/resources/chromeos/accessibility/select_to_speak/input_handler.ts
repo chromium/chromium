@@ -303,4 +303,3 @@ export class InputHandler {
     }
   }
 }
-

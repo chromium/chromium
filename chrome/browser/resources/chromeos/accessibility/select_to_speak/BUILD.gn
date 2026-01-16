@@ -23,7 +23,7 @@ group("build") {
 }
 
 select_to_speak_out_dir =
-    "$root_out_dir/resources/chromeos/accessibility/select_to_speak/mv3"
+    "$root_out_dir/resources/chromeos/accessibility/select_to_speak"
 
 # Directory where typescript build will occur.
 ts_build_staging_dir = "$target_gen_dir/ts_build_staging"
@@ -53,7 +53,7 @@ ts_library("build_ts") {
 
   composite = true
 
-  deps = [ "../../common:build_ts" ]
+  deps = [ "../common:build_ts" ]
 
   extra_deps = [ ":stage_ts_build" ]
 
@@ -61,20 +61,20 @@ ts_library("build_ts") {
       [ "/common/*|" + rebase_path("$common_tsc_dir/*", target_gen_dir) ]
 
   definitions = [
-    "../../definitions/accessibility_private_mv2.d.ts",
-    "../../definitions/automation.d.ts",
-    "../../definitions/clipboard_mv2.d.ts",
-    "../../definitions/extensions.d.ts",
-    "../../definitions/extension_types.d.ts",
-    "../../definitions/i18n.d.ts",
-    "../../definitions/offscreen.d.ts",
-    "../../definitions/runtime.d.ts",
-    "../../definitions/scripting.d.ts",
-    "../../definitions/settings_private_mv2.d.ts",
-    "../../definitions/storage_mv2.d.ts",
-    "../../definitions/tabs.d.ts",
-    "../../definitions/tts.d.ts",
-    "../../definitions/windows.d.ts",
+    "../definitions/accessibility_private_mv2.d.ts",
+    "../definitions/automation.d.ts",
+    "../definitions/clipboard_mv2.d.ts",
+    "../definitions/extensions.d.ts",
+    "../definitions/extension_types.d.ts",
+    "../definitions/i18n.d.ts",
+    "../definitions/offscreen.d.ts",
+    "../definitions/runtime.d.ts",
+    "../definitions/scripting.d.ts",
+    "../definitions/settings_private_mv2.d.ts",
+    "../definitions/storage_mv2.d.ts",
+    "../definitions/tabs.d.ts",
+    "../definitions/tts.d.ts",
+    "../definitions/windows.d.ts",
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/context_menus.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
@@ -82,7 +82,7 @@ ts_library("build_ts") {
 
   in_files = ts_modules
 
-  tsconfig_base = "../../tsconfig.base.json"
+  tsconfig_base = "../tsconfig.base.json"
 }
 
 bundle_js("bundle_js") {
@@ -95,7 +95,7 @@ bundle_js("bundle_js") {
 
   deps = [
     ":build_ts",
-    "../../common:copied_files",
+    "../common:copied_files",
   ]
 }
 
@@ -180,13 +180,13 @@ js2gtest("select_to_speak_extjs_tests") {
     "ui_manager_unittest.js",
   ]
   gen_include_files = [
-    "../../common/testing/accessibility_test_base.js",
-    "../../common/testing/callback_helper.js",
-    "../../common/testing/e2e_test_base.js",
-    "../../common/testing/fake_chrome_event.js",
-    "../../common/testing/fake_settings_private.js",
-    "../../common/testing/mock_storage.js",
-    "../../common/testing/mock_tts.js",
+    "../common/testing/accessibility_test_base.js",
+    "../common/testing/callback_helper.js",
+    "../common/testing/e2e_test_base.js",
+    "../common/testing/fake_chrome_event.js",
+    "../common/testing/fake_settings_private.js",
+    "../common/testing/mock_storage.js",
+    "../common/testing/mock_tts.js",
     "select_to_speak_e2e_test_base.js",
     "pipe.jpg",
   ]

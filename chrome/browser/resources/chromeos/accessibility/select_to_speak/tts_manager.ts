@@ -10,11 +10,11 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 export class TtsManager {
   private clientTtsOptions_: chrome.tts.TtsOptions;
   private currentCharIndex_: number;
-  private fallbackVoice_: string | undefined;
+  private fallbackVoice_: string|undefined;
   private isNetworkVoice_: boolean;
   private isSpeaking_: boolean;
-  private pauseCompleteCallback_: (() => void) | null;
-  private text_: string | null;
+  private pauseCompleteCallback_: (() => void)|null;
+  private text_: string|null;
 
   /** Please keep fields in alphabetical order. */
   constructor() {
@@ -71,8 +71,9 @@ export class TtsManager {
    * @param fallbackVoice A voice to use if to retry if TTS
    *     fails.
    */
-  speak(text: string, ttsOptions: chrome.tts.TtsOptions,
-        networkVoice: boolean, fallbackVoice?: string): void {
+  speak(
+      text: string, ttsOptions: chrome.tts.TtsOptions, networkVoice: boolean,
+      fallbackVoice?: string): void {
     // @ts-ignore: TODO(b/): Change to `enqueue`.
     if (ttsOptions.enqueued) {
       console.warn('TtsManager does not support a queue of utterances.');
@@ -92,8 +93,9 @@ export class TtsManager {
    * @param resume Whether it is a resume action.
    * @param ttsOptions The options for TTS.
    */
-  private startSpeakingTextWithOffset_(offset: number, resume: boolean,
-        ttsOptions: chrome.tts.TtsOptions): void {
+  private startSpeakingTextWithOffset_(
+      offset: number, resume: boolean,
+      ttsOptions: chrome.tts.TtsOptions): void {
     // @ts-ignore: TODO(b/270623046): this.text_ can be null.
     const text = this.text_.slice(offset);
     const modifiedOptions = Object.assign({}, ttsOptions);
@@ -224,7 +226,7 @@ export class TtsManager {
     chrome.tts.stop();
   }
 
-  private cleanTtsState_() : void {
+  private cleanTtsState_(): void {
     this.text_ = null;
     this.clientTtsOptions_ = {};
     this.currentCharIndex_ = 0;
@@ -238,8 +240,8 @@ export class TtsManager {
    * @param options
    * @param event
    */
-  static sendEventToOptions(options: chrome.tts.TtsOptions,
-        event: chrome.tts.TtsEvent): void {
+  static sendEventToOptions(
+      options: chrome.tts.TtsOptions, event: chrome.tts.TtsEvent): void {
     if (options.onEvent) {
       options.onEvent(event);
       return;
@@ -250,8 +252,8 @@ export class TtsManager {
 
 export namespace TtsManager {
   /**
-  * Error message for "error" events.
-  */
+   * Error message for "error" events.
+   */
   export enum ErrorMessage {
     RESUME_WITH_EMPTY_CONTENT = 'Cannot resume with empty content.',
   }
