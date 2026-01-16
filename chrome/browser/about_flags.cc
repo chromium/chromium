@@ -861,22 +861,17 @@ const FeatureEntry::FeatureVariation
          std::size(kSearchPrefetchWithHoldback), nullptr}};
 
 #if !BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kWebUIOmniboxAimPopupAddContextButtonNone[] = {
-    {"AddContextButtonVariant", "none"},
-    {"ShowVoiceSearchInSteadyComposebox", "true"},
-    {"ShowVoiceSearchInExpandedComposebox", "true"},
-};
 const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonBelowResults[] = {
         {"AddContextButtonVariant", "below_results"},
 };
-const FeatureEntry::FeatureParam
-    kWebUIOmniboxAimPopupAddContextButtonAboveResults[] = {
-        {"AddContextButtonVariant", "above_results"},
-};
 const FeatureEntry::FeatureParam kWebUIOmniboxAimPopupAddContextButtonInline[] =
     {
         {"AddContextButtonVariant", "inline"},
+};
+const FeatureEntry::FeatureParam
+    kWebUIOmniboxAimPopupAddContextButtonAboveResults[] = {
+        {"AddContextButtonVariant", "above_results"},
 };
 const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonBelowResultsNoContextualChips[] = {
@@ -890,27 +885,37 @@ const FeatureEntry::FeatureParam
         {"ShowRecentTabChip", "false"},
         {"ShowLensSearchChip", "false"},
 };
+const FeatureEntry::FeatureParam
+    kWebUIOmniboxAimPopupAddContextButtonAboveResultsNoContextualChips[] = {
+        {"AddContextButtonVariant", "above_results"},
+        {"ShowRecentTabChip", "false"},
+        {"ShowLensSearchChip", "false"},
+};
 
 const FeatureEntry::FeatureVariation kWebUIOmniboxAimPopupVariations[] = {
-    {"- No \"Add Context\" Button", kWebUIOmniboxAimPopupAddContextButtonNone,
-     std::size(kWebUIOmniboxAimPopupAddContextButtonNone), nullptr},
-    {"- \"Add Context\" Button below results (Variant 1)",
+    {"- \"Add Context\" button below results",
      kWebUIOmniboxAimPopupAddContextButtonBelowResults,
      std::size(kWebUIOmniboxAimPopupAddContextButtonBelowResults), nullptr},
-    {"- \"Add Context\" Button above results (Variant 2)",
-     kWebUIOmniboxAimPopupAddContextButtonAboveResults,
-     std::size(kWebUIOmniboxAimPopupAddContextButtonAboveResults), nullptr},
-    {"- \"Add Context\" Button inline (Variant 3)",
-     kWebUIOmniboxAimPopupAddContextButtonInline,
-     std::size(kWebUIOmniboxAimPopupAddContextButtonInline), nullptr},
-    {"- \"Add Context\" Button below results (Variant 1) [No contextual chips]",
+    {"- \"Add Context\" button below results - no contextual chips",
      kWebUIOmniboxAimPopupAddContextButtonBelowResultsNoContextualChips,
      std::size(
          kWebUIOmniboxAimPopupAddContextButtonBelowResultsNoContextualChips),
      nullptr},
-    {"- \"Add Context\" Button inline (Variant 3) [No contextual chips]",
+    {"- \"Add Context\" button inline",
+     kWebUIOmniboxAimPopupAddContextButtonInline,
+     std::size(kWebUIOmniboxAimPopupAddContextButtonInline), nullptr},
+    {"- \"Add Context\" button inline - no contextual chips",
      kWebUIOmniboxAimPopupAddContextButtonInlineNoContextualChips,
      std::size(kWebUIOmniboxAimPopupAddContextButtonInlineNoContextualChips),
+     nullptr},
+    {"- \"Add Context\" button above results [deprecated]",
+     kWebUIOmniboxAimPopupAddContextButtonAboveResults,
+     std::size(kWebUIOmniboxAimPopupAddContextButtonAboveResults), nullptr},
+    {"- \"Add Context\" button above results - no contextual chips "
+     "[deprecated]",
+     kWebUIOmniboxAimPopupAddContextButtonAboveResultsNoContextualChips,
+     std::size(
+         kWebUIOmniboxAimPopupAddContextButtonAboveResultsNoContextualChips),
      nullptr}};
 
 const FeatureEntry::FeatureParam kWebUIOmniboxPopupDebugSxS[] = {
