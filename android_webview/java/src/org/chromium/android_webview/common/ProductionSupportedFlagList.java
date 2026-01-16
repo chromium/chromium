@@ -167,6 +167,10 @@ public final class ProductionSupportedFlagList {
                 "Prune old transfer cache entries and disable pruning from client"),
         Flag.baseFeature(
                 VizFeatures.WEBVIEW_NEW_INVALIDATE_HEURISTIC,
+                "More robust heuristic for calling Invalidate. Isn't supported for TV, see"
+                        + " WebViewNewInvalidateHeuristicForTV."),
+        Flag.baseFeature(
+                VizFeatures.WEBVIEW_NEW_INVALIDATE_HEURISTIC_FOR_TV,
                 "More robust heuristic for calling Invalidate"),
         Flag.baseFeature(VizFeatures.WEBVIEW_VULKAN_INTERMEDIATE_BUFFER, "For debugging vulkan"),
         Flag.baseFeature(
