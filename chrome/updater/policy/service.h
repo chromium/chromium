@@ -145,6 +145,23 @@ class PolicyStatus {
         .Set("prevailingSource", effective_policy()->source);
   }
 
+  void AddPolicyToContainer(const std::string& name,
+                            base::Value::Dict& policies) {
+    if (!*this) {
+      return;
+    }
+    policies.Set(name, ToDict());
+  }
+
+  void AddPolicyToContainer(
+      const std::string& name,
+      base::flat_map<std::string, UpdateService::PolicyValue>& policies) {
+    if (!*this) {
+      return;
+    }
+    policies.insert({name, ToPolicyValue()});
+  }
+
   const std::optional<Entry>& effective_policy() const {
     return effective_policy_;
   }
@@ -254,11 +271,52 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
 
   // Helper methods.
   base::Value::Dict GetAllPolicies() const;
-  base::flat_map<std::string, UpdateService::PolicyValue> GetUpdaterPolicies()
-      const;
-  base::flat_map<std::string,
-                 base::flat_map<std::string, UpdateService::PolicyValue>>
-  GetAppPolicies() const;
+
+  template <typename PolicyContainer>
+  PolicyContainer GetUpdaterPolicies() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    PolicyContainer policies;
+    CloudPolicyOverridesPlatformPolicy().AddPolicyToContainer(
+        "CloudPolicyOverridesPlatformPolicy", policies);
+    GetLastCheckPeriod().AddPolicyToContainer("LastCheckPeriod", policies);
+    GetUpdatesSuppressedTimes().AddPolicyToContainer("UpdatesSuppressed",
+                                                     policies);
+    GetDownloadPreference().AddPolicyToContainer("DownloadPreference",
+                                                 policies);
+    GetPackageCacheSizeLimitMBytes().AddPolicyToContainer(
+        "PackageCacheSizeLimit", policies);
+    GetPackageCacheExpirationTimeDays().AddPolicyToContainer(
+        "PackageCacheExpires", policies);
+    GetProxyMode().AddPolicyToContainer("ProxyMode", policies);
+    GetProxyPacUrl().AddPolicyToContainer("ProxyPacURL", policies);
+    GetProxyServer().AddPolicyToContainer("ProxyServer", policies);
+    return policies;
+  }
+
+  template <typename PolicyContainer>
+  base::flat_map<std::string, PolicyContainer> GetAppPolicies() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    base::flat_map<std::string, PolicyContainer> policies;
+    for (const std::string& app_id : GetAppsWithPolicy()) {
+      PolicyContainer app_policies;
+      GetPolicyForAppInstalls(app_id).AddPolicyToContainer("Install",
+                                                           app_policies);
+      GetPolicyForAppUpdates(app_id).AddPolicyToContainer("Update",
+                                                          app_policies);
+      GetTargetChannel(app_id).AddPolicyToContainer("TargetChannel",
+                                                    app_policies);
+      GetTargetVersionPrefix(app_id).AddPolicyToContainer("TargetVersionPrefix",
+                                                          app_policies);
+      IsRollbackToTargetVersionAllowed(app_id).AddPolicyToContainer(
+          "RollbackToTargetVersionAllowed", app_policies);
+      policies.insert({app_id, std::move(app_policies)});
+    }
+
+    return policies;
+  }
+
   std::string GetAllPoliciesAsString() const;
   bool AreUpdatesSuppressedNow(base::Time now = base::Time::Now()) const;
 

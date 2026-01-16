@@ -1606,8 +1606,11 @@ void UpdateServiceImplImpl::GetUpdaterPolicies(
 
   main_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback),
-                     config_->GetPolicyService()->GetUpdaterPolicies()));
+      base::BindOnce(
+          std::move(callback),
+          config_->GetPolicyService()
+              ->GetUpdaterPolicies<
+                  base::flat_map<std::string, UpdateService::PolicyValue>>()));
 }
 
 void UpdateServiceImplImpl::GetAppPolicies(
@@ -1619,8 +1622,12 @@ void UpdateServiceImplImpl::GetAppPolicies(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   main_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback),
-                                config_->GetPolicyService()->GetAppPolicies()));
+      FROM_HERE,
+      base::BindOnce(
+          std::move(callback),
+          config_->GetPolicyService()
+              ->GetAppPolicies<
+                  base::flat_map<std::string, UpdateService::PolicyValue>>()));
 }
 
 void UpdateServiceImplImpl::GetPoliciesJson(
