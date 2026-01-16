@@ -1478,7 +1478,7 @@
     },
     {
       "id": 186,
-      "cr_bugs": [442791440],
+      "cr_bugs": [442791440, 475935650],
       "description": "Disable webgpu on vk via gl interop",
       "exceptions": [
         {
@@ -1486,6 +1486,11 @@
           "intel_gpu_generation": {
             "op": ">=",
             "value": "12"
+          },
+          "driver_vendor": "Mesa",
+          "driver_version": {
+            "op": ">=",
+            "value": "22.0"
           }
         }
       ],
