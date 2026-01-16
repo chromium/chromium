@@ -21,6 +21,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
+import org.chromium.ui.util.ColorUtils;
 
 /** The properties that can be used to describe the behavior of the scrim widget. */
 @NullMarked
@@ -30,6 +31,15 @@ public class ScrimProperties {
      * use of the default color set when the {@link ScrimManager} was constructed.
      */
     public static final @ColorInt int INVALID_COLOR = Color.TRANSPARENT;
+
+    /**
+     * TODO(https://crbug.com/476180108): Refactor invalid color usage so that this constant is not
+     * needed. Right now, INVALID_COLOR is special cased to use the default scrim color. So if a
+     * client wants a transparent scrim, they need to use a color that doesn't not have exact
+     * equality. This can be achieved by setting alpha to 0 on any other color.
+     */
+    public static final @ColorInt int TRANSPARENT_COLOR =
+            ColorUtils.setAlphaComponent(Color.WHITE, /* alpha= */ 0);
 
     /**
      * The top margin of the scrim. This can be used to shrink the scrim to show items at the top of
