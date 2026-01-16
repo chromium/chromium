@@ -9,6 +9,7 @@ import android.webkit.ValueCallback;
 import android.webkit.WebView;
 
 import com.android.webview.chromium.WebViewChromium.ApiCall;
+import com.android.webview.chromium.WebViewChromium.ApiCallUserAction;
 
 import org.chromium.android_webview.AwCookieManager;
 import org.chromium.android_webview.WebAddressParser;
@@ -39,7 +40,9 @@ public class CookieManagerAdapter extends CookieManager {
     public synchronized void setAcceptCookie(boolean accept) {
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.COOKIE_MANAGER_SET_ACCEPT_COOKIE")) {
-            WebViewChromium.recordWebViewApiCall(ApiCall.COOKIE_MANAGER_SET_ACCEPT_COOKIE);
+            WebViewChromium.recordWebViewApiCall(
+                    ApiCall.COOKIE_MANAGER_SET_ACCEPT_COOKIE,
+                    ApiCallUserAction.COOKIE_MANAGER_SET_ACCEPT_COOKIE);
             mChromeCookieManager.setAcceptCookie(accept);
         }
     }
@@ -48,7 +51,9 @@ public class CookieManagerAdapter extends CookieManager {
     public synchronized boolean acceptCookie() {
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.COOKIE_MANAGER_ACCEPT_COOKIE")) {
-            WebViewChromium.recordWebViewApiCall(ApiCall.COOKIE_MANAGER_ACCEPT_COOKIE);
+            WebViewChromium.recordWebViewApiCall(
+                    ApiCall.COOKIE_MANAGER_ACCEPT_COOKIE,
+                    ApiCallUserAction.COOKIE_MANAGER_ACCEPT_COOKIE);
             return mChromeCookieManager.acceptCookie();
         }
     }
@@ -59,7 +64,8 @@ public class CookieManagerAdapter extends CookieManager {
                 TraceEvent.scoped(
                         "WebView.ApiCall.COOKIE_MANAGER_SET_ACCEPT_THIRD_PARTY_COOKIES")) {
             WebViewChromium.recordWebViewApiCall(
-                    ApiCall.COOKIE_MANAGER_SET_ACCEPT_THIRD_PARTY_COOKIES);
+                    ApiCall.COOKIE_MANAGER_SET_ACCEPT_THIRD_PARTY_COOKIES,
+                    ApiCallUserAction.COOKIE_MANAGER_SET_ACCEPT_THIRD_PARTY_COOKIES);
             webView.getSettings().setAcceptThirdPartyCookies(accept);
         }
     }
@@ -69,7 +75,9 @@ public class CookieManagerAdapter extends CookieManager {
         try (TraceEvent event =
                 TraceEvent.scoped(
                         "WebView.APICall.Framework.COOKIE_MANAGER_ACCEPT_THIRD_PARTY_COOKIES")) {
-            WebViewChromium.recordWebViewApiCall(ApiCall.COOKIE_MANAGER_ACCEPT_THIRD_PARTY_COOKIES);
+            WebViewChromium.recordWebViewApiCall(
+                    ApiCall.COOKIE_MANAGER_ACCEPT_THIRD_PARTY_COOKIES,
+                    ApiCallUserAction.COOKIE_MANAGER_ACCEPT_THIRD_PARTY_COOKIES);
             return webView.getSettings().getAcceptThirdPartyCookies();
         }
     }
@@ -84,7 +92,9 @@ public class CookieManagerAdapter extends CookieManager {
         try {
             try (TraceEvent event =
                     TraceEvent.scoped("WebView.APICall.Framework.COOKIE_MANAGER_SET_COOKIE")) {
-                WebViewChromium.recordWebViewApiCall(ApiCall.COOKIE_MANAGER_SET_COOKIE);
+                WebViewChromium.recordWebViewApiCall(
+                        ApiCall.COOKIE_MANAGER_SET_COOKIE,
+                        ApiCallUserAction.COOKIE_MANAGER_SET_COOKIE);
                 mChromeCookieManager.setCookie(fixupUrl(url), value);
             }
         } catch (URISyntaxException e) {
@@ -102,7 +112,9 @@ public class CookieManagerAdapter extends CookieManager {
         try {
             try (TraceEvent event =
                     TraceEvent.scoped("WebView.APICall.Framework.COOKIE_MANAGER_SET_COOKIE")) {
-                WebViewChromium.recordWebViewApiCall(ApiCall.COOKIE_MANAGER_SET_COOKIE);
+                WebViewChromium.recordWebViewApiCall(
+                        ApiCall.COOKIE_MANAGER_SET_COOKIE,
+                        ApiCallUserAction.COOKIE_MANAGER_SET_COOKIE);
                 mChromeCookieManager.setCookie(
                         fixupUrl(url), value, CallbackConverter.fromValueCallback(callback));
             }
@@ -116,7 +128,9 @@ public class CookieManagerAdapter extends CookieManager {
         try {
             try (TraceEvent event =
                     TraceEvent.scoped("WebView.APICall.Framework.COOKIE_MANAGER_GET_COOKIE")) {
-                WebViewChromium.recordWebViewApiCall(ApiCall.COOKIE_MANAGER_GET_COOKIE);
+                WebViewChromium.recordWebViewApiCall(
+                        ApiCall.COOKIE_MANAGER_GET_COOKIE,
+                        ApiCallUserAction.COOKIE_MANAGER_GET_COOKIE);
                 return mChromeCookieManager.getCookie(fixupUrl(url));
             }
         } catch (URISyntaxException e) {
@@ -135,7 +149,9 @@ public class CookieManagerAdapter extends CookieManager {
         try (TraceEvent event =
                 TraceEvent.scoped(
                         "WebView.APICall.Framework.COOKIE_MANAGER_REMOVE_SESSION_COOKIE")) {
-            WebViewChromium.recordWebViewApiCall(ApiCall.COOKIE_MANAGER_REMOVE_SESSION_COOKIE);
+            WebViewChromium.recordWebViewApiCall(
+                    ApiCall.COOKIE_MANAGER_REMOVE_SESSION_COOKIE,
+                    ApiCallUserAction.COOKIE_MANAGER_REMOVE_SESSION_COOKIE);
             mChromeCookieManager.removeSessionCookies();
         }
     }
@@ -145,7 +161,9 @@ public class CookieManagerAdapter extends CookieManager {
         try (TraceEvent event =
                 TraceEvent.scoped(
                         "WebView.APICall.Framework.COOKIE_MANAGER_REMOVE_SESSION_COOKIES")) {
-            WebViewChromium.recordWebViewApiCall(ApiCall.COOKIE_MANAGER_REMOVE_SESSION_COOKIES);
+            WebViewChromium.recordWebViewApiCall(
+                    ApiCall.COOKIE_MANAGER_REMOVE_SESSION_COOKIES,
+                    ApiCallUserAction.COOKIE_MANAGER_REMOVE_SESSION_COOKIES);
             mChromeCookieManager.removeSessionCookies(
                     CallbackConverter.fromValueCallback(callback));
         }
@@ -155,7 +173,9 @@ public class CookieManagerAdapter extends CookieManager {
     public void removeAllCookie() {
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.COOKIE_MANAGER_REMOVE_ALL_COOKIE")) {
-            WebViewChromium.recordWebViewApiCall(ApiCall.COOKIE_MANAGER_REMOVE_ALL_COOKIE);
+            WebViewChromium.recordWebViewApiCall(
+                    ApiCall.COOKIE_MANAGER_REMOVE_ALL_COOKIE,
+                    ApiCallUserAction.COOKIE_MANAGER_REMOVE_ALL_COOKIE);
             mChromeCookieManager.removeAllCookies();
         }
     }
@@ -164,7 +184,9 @@ public class CookieManagerAdapter extends CookieManager {
     public void removeAllCookies(final ValueCallback<Boolean> callback) {
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.COOKIE_MANAGER_REMOVE_ALL_COOKIES")) {
-            WebViewChromium.recordWebViewApiCall(ApiCall.COOKIE_MANAGER_REMOVE_ALL_COOKIES);
+            WebViewChromium.recordWebViewApiCall(
+                    ApiCall.COOKIE_MANAGER_REMOVE_ALL_COOKIES,
+                    ApiCallUserAction.COOKIE_MANAGER_REMOVE_ALL_COOKIES);
             mChromeCookieManager.removeAllCookies(CallbackConverter.fromValueCallback(callback));
         }
     }
@@ -173,7 +195,9 @@ public class CookieManagerAdapter extends CookieManager {
     public synchronized boolean hasCookies() {
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.COOKIE_MANAGER_HAS_COOKIES")) {
-            WebViewChromium.recordWebViewApiCall(ApiCall.COOKIE_MANAGER_HAS_COOKIES);
+            WebViewChromium.recordWebViewApiCall(
+                    ApiCall.COOKIE_MANAGER_HAS_COOKIES,
+                    ApiCallUserAction.COOKIE_MANAGER_HAS_COOKIES);
             return mChromeCookieManager.hasCookies();
         }
     }
@@ -188,7 +212,9 @@ public class CookieManagerAdapter extends CookieManager {
         try (TraceEvent event =
                 TraceEvent.scoped(
                         "WebView.APICall.Framework.COOKIE_MANAGER_REMOVE_EXPIRED_COOKIE")) {
-            WebViewChromium.recordWebViewApiCall(ApiCall.COOKIE_MANAGER_REMOVE_EXPIRED_COOKIE);
+            WebViewChromium.recordWebViewApiCall(
+                    ApiCall.COOKIE_MANAGER_REMOVE_EXPIRED_COOKIE,
+                    ApiCallUserAction.COOKIE_MANAGER_REMOVE_EXPIRED_COOKIE);
             mChromeCookieManager.removeExpiredCookies();
         }
     }
@@ -197,7 +223,8 @@ public class CookieManagerAdapter extends CookieManager {
     public void flush() {
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.COOKIE_MANAGER_FLUSH")) {
-            WebViewChromium.recordWebViewApiCall(ApiCall.COOKIE_MANAGER_FLUSH);
+            WebViewChromium.recordWebViewApiCall(
+                    ApiCall.COOKIE_MANAGER_FLUSH, ApiCallUserAction.COOKIE_MANAGER_FLUSH);
             mChromeCookieManager.flushCookieStore();
         }
     }
@@ -207,7 +234,9 @@ public class CookieManagerAdapter extends CookieManager {
         try (TraceEvent event =
                 TraceEvent.scoped(
                         "WebView.APICall.Framework.COOKIE_MANAGER_ALLOW_FILE_SCHEME_COOKIES")) {
-            WebViewChromium.recordWebViewApiCall(ApiCall.COOKIE_MANAGER_ALLOW_FILE_SCHEME_COOKIES);
+            WebViewChromium.recordWebViewApiCall(
+                    ApiCall.COOKIE_MANAGER_ALLOW_FILE_SCHEME_COOKIES,
+                    ApiCallUserAction.COOKIE_MANAGER_ALLOW_FILE_SCHEME_COOKIES);
             return mChromeCookieManager.allowFileSchemeCookies();
         }
     }
@@ -218,7 +247,8 @@ public class CookieManagerAdapter extends CookieManager {
                 TraceEvent.scoped(
                         "WebView.APICall.Framework.COOKIE_MANAGER_SET_ACCEPT_FILE_SCHEME_COOKIES")) {
             WebViewChromium.recordWebViewApiCall(
-                    ApiCall.COOKIE_MANAGER_SET_ACCEPT_FILE_SCHEME_COOKIES);
+                    ApiCall.COOKIE_MANAGER_SET_ACCEPT_FILE_SCHEME_COOKIES,
+                    ApiCallUserAction.COOKIE_MANAGER_SET_ACCEPT_FILE_SCHEME_COOKIES);
             mChromeCookieManager.setAcceptFileSchemeCookies(accept);
         }
     }

@@ -262,4 +262,7 @@ BASE_FEATURE(kPrerender2WarmUpCompositorForWebView,
 BASE_FEATURE(kWebViewFetchOriginTrialsComponent,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables recording user actions for API calls.
+BASE_FEATURE(kWebViewEnableApiCallUserActions,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace android_webview::features
