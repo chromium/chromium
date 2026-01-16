@@ -84,7 +84,8 @@ void ChromeCameraSaveDelegate::PerformUpload(
     int64_t file_size,
     const gfx::Image& thumbnail,
     base::RepeatingCallback<void(int64_t)> progress_callback,
-    base::OnceCallback<void(bool)> done_callback) {
+    base::OnceCallback<void(bool, std::optional<base::FilePath>)>
+        done_callback) {
   CHECK(is_onedrive() || is_google_drive());
   Profile* profile = Profile::FromBrowserContext(context_);
   std::string file_name = upload_from_path.BaseName().AsUTF8Unsafe();
@@ -169,7 +170,6 @@ void ChromeCameraSaveDelegate::OpenFileInImageEditor(
 void ChromeCameraSaveDelegate::DeleteFileOnOneDrive(
     const base::FilePath& file_path,
     base::OnceCallback<void(bool)> callback) {
-  CHECK(GetOneDriveUploadFolder().IsParent(file_path));
   ash::cloud_upload::OdfsFileDeleter::Delete(file_path, std::move(callback));
 }
 
@@ -180,8 +180,8 @@ void ChromeCameraSaveDelegate::OpenCameraApp() {
 
 void ChromeCameraSaveDelegate::OnOnedriveUploadDone(
     const std::string& file_name,
-    base::OnceCallback<void(bool)> callback,
-    storage::FileSystemURL,
+    base::OnceCallback<void(bool, std::optional<base::FilePath>)> callback,
+    storage::FileSystemURL uploaded_file_url,
     std::optional<ash::cloud_upload::OdfsSkyvaultUploader::UploadError> error,
     base::FilePath /*upload_root_path*/) {
   if (!onedrive_uploaders_.erase(file_name)) {
@@ -189,17 +189,17 @@ void ChromeCameraSaveDelegate::OnOnedriveUploadDone(
     // callback.
     return;
   }
-  std::move(callback).Run(!error);
+  std::move(callback).Run(!error, uploaded_file_url.path() /* uploaded_path */);
 }
 
 void ChromeCameraSaveDelegate::OnGoogleDriveUploadDone(
     const std::string& file_name,
-    base::OnceCallback<void(bool)> callback,
+    base::OnceCallback<void(bool, std::optional<base::FilePath>)> callback,
     bool success) {
   if (!google_drive_uploaders_.erase(file_name)) {
     // Uploads have been cancelled by the user. So don't invoke the done
     // callback.
     return;
   }
-  std::move(callback).Run(success);
+  std::move(callback).Run(success, std::nullopt /* uploaded_path */);
 }

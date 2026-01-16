@@ -55,7 +55,8 @@ class MockCameraSaveHandlerDelegate : public CameraSaveHandler::Delegate {
                int64_t file_size,
                const gfx::Image& thumbnail,
                base::RepeatingCallback<void(int64_t)> progress_callback,
-               base::OnceCallback<void(bool)> done_callback),
+               base::OnceCallback<void(bool, std::optional<base::FilePath>)>
+                   done_callback),
               (override));
   MOCK_METHOD(void, CancelUploads, (), (override));
 
@@ -90,6 +91,7 @@ class TestConstrainedWindowViewsClient
 constexpr char kMyFilesFolder[] = "/home/user/abcdef/MyFiles";
 constexpr char kOneDriveUploadFolder[] =
     "/media/fuse/fusebox/onedrive_root/Camera";
+constexpr char kOneDriveUploadedPath[] = "/uploaded/photo.jpg";
 constexpr std::string kFileContents = "0123456789";  // 10 bytes
 
 }  // namespace
@@ -230,13 +232,15 @@ TEST_F(CameraSaveHandlerTest, UploadFile_GoogleDrive_MultiUpload_Success) {
   // Test successful upload.
   base::RepeatingCallback<void(int64_t)>
       first_progress_callback_passed_to_delegate;
-  base::OnceCallback<void(bool)> first_done_callback_passed_to_delegate;
+  base::OnceCallback<void(bool, std::optional<base::FilePath>)>
+      first_done_callback_passed_to_delegate;
   EXPECT_CALL(
       *mock_delegate_,
       PerformUpload(upload_from_path, kFileContents.size(), thumbnail_, _, _))
       .WillOnce([&](const base::FilePath&, int64_t, const gfx::Image&,
                     base::RepeatingCallback<void(int64_t)> progress_callback,
-                    base::OnceCallback<void(bool)> done_callback) {
+                    base::OnceCallback<void(
+                        bool, std::optional<base::FilePath>)> done_callback) {
         // Initially there should be no progress shown.
         ValidateUploadProgressNotification(0);
 
@@ -263,25 +267,27 @@ TEST_F(CameraSaveHandlerTest, UploadFile_GoogleDrive_MultiUpload_Success) {
   EXPECT_CALL(
       *mock_delegate_,
       PerformUpload(upload_from_path2, kFileContents.size(), thumbnail_, _, _))
-      .WillOnce([&](const base::FilePath&, int64_t, const gfx::Image&,
-                    base::RepeatingCallback<void(int64_t)> progress_callback2,
-                    base::OnceCallback<void(bool)> done_callback2) {
-        // When second upload starts, progress should drop to 25 to reflect both
-        // uploads.
-        ValidateUploadProgressNotification(25, 2);
+      .WillOnce(
+          [&](const base::FilePath&, int64_t, const gfx::Image&,
+              base::RepeatingCallback<void(int64_t)> progress_callback2,
+              base::OnceCallback<void(bool, std::optional<base::FilePath>)>
+                  done_callback2) {
+            // When second upload starts, progress should drop to 25 to reflect
+            // both uploads.
+            ValidateUploadProgressNotification(25, 2);
 
-        progress_callback2.Run(5);
-        ValidateUploadProgressNotification(50, 2);
-        progress_callback2.Run(10);
-        ValidateUploadProgressNotification(75, 2);
+            progress_callback2.Run(5);
+            ValidateUploadProgressNotification(50, 2);
+            progress_callback2.Run(10);
+            ValidateUploadProgressNotification(75, 2);
 
-        // Complete second upload.
-        std::move(done_callback2).Run(true);
+            // Complete second upload.
+            std::move(done_callback2).Run(true, std::nullopt);
 
-        // Once the second upload is complete, the progress should reflect only
-        // the first upload.
-        ValidateUploadProgressNotification(50);
-      });
+            // Once the second upload is complete, the progress should reflect
+            // only the first upload.
+            ValidateUploadProgressNotification(50);
+          });
   base::MockOnceCallback<void(bool)> done_callback2;
   EXPECT_CALL(done_callback, Run(_)).Times(0);
   EXPECT_CALL(done_callback2, Run(true));
@@ -301,7 +307,7 @@ TEST_F(CameraSaveHandlerTest, UploadFile_GoogleDrive_MultiUpload_Success) {
   first_progress_callback_passed_to_delegate.Run(10);
   ValidateUploadProgressNotification(100);
   // Complete first upload.
-  std::move(first_done_callback_passed_to_delegate).Run(true);
+  std::move(first_done_callback_passed_to_delegate).Run(true, std::nullopt);
   // No progress notification should remain after all uploads complete.
   EXPECT_FALSE(UploadProgressNotificationShown());
   // Upload done notification should be shown again after the first upload
@@ -333,8 +339,9 @@ TEST_F(CameraSaveHandlerTest, UploadFile_GoogleDrive_Failure) {
       PerformUpload(upload_from_path, kFileContents.size(), thumbnail_, _, _))
       .WillOnce([](const base::FilePath&, int64_t, const gfx::Image&,
                    base::RepeatingCallback<void(int64_t)> progress_callback,
-                   base::OnceCallback<void(bool)> done_callback) {
-        std::move(done_callback).Run(false);
+                   base::OnceCallback<void(bool, std::optional<base::FilePath>)>
+                       done_callback) {
+        std::move(done_callback).Run(false, std::nullopt);
       });
   EXPECT_CALL(done_callback, Run(false));
   camera_save_handler_->UploadFile("photo.jpg", thumbnail_,
@@ -430,9 +437,11 @@ TEST_F(CameraSaveHandlerTest, UploadFile_OneDrive_Success) {
       PerformUpload(upload_from_path, kFileContents.size(), thumbnail_, _, _))
       .WillOnce([](const base::FilePath&, int64_t, const gfx::Image&,
                    base::RepeatingCallback<void(int64_t)> progress_callback,
-                   base::OnceCallback<void(bool)> done_callback) {
+                   base::OnceCallback<void(bool, std::optional<base::FilePath>)>
+                       done_callback) {
         progress_callback.Run(5);
-        std::move(done_callback).Run(true);
+        std::move(done_callback)
+            .Run(true, base::FilePath(kOneDriveUploadedPath));
       });
   EXPECT_CALL(done_callback, Run(true));
   camera_save_handler_->UploadFile("photo.jpg", thumbnail_,
@@ -469,8 +478,10 @@ TEST_F(CameraSaveHandlerTest, UploadFile_OneDrive_Failure) {
       PerformUpload(upload_from_path, kFileContents.size(), thumbnail_, _, _))
       .WillOnce([](const base::FilePath&, int64_t, const gfx::Image&,
                    base::RepeatingCallback<void(int64_t)> progress_callback,
-                   base::OnceCallback<void(bool)> done_callback) {
-        std::move(done_callback).Run(false);
+                   base::OnceCallback<void(bool, std::optional<base::FilePath>)>
+                       done_callback) {
+        std::move(done_callback)
+            .Run(false, base::FilePath(kOneDriveUploadedPath));
       });
   EXPECT_CALL(done_callback, Run(false));
   camera_save_handler_->UploadFile("photo.jpg", thumbnail_,
@@ -526,7 +537,8 @@ TEST_F(CameraSaveHandlerTest, CancelUpload) {
       PerformUpload(upload_from_path, kFileContents.size(), thumbnail_, _, _))
       .WillOnce([&](const base::FilePath&, int64_t, const gfx::Image&,
                     base::RepeatingCallback<void(int64_t)> progress_callback,
-                    base::OnceCallback<void(bool)> done_callback) {
+                    base::OnceCallback<void(
+                        bool, std::optional<base::FilePath>)> done_callback) {
         progress_callback.Run(5);
         EXPECT_CALL(*mock_delegate_, CancelUploads());
         // Press the cancel button.
@@ -555,7 +567,8 @@ TEST_F(CameraSaveHandlerTest, CancelUpload) {
       PerformUpload(upload_from_path, kFileContents.size(), thumbnail_, _, _))
       .WillOnce([&](const base::FilePath&, int64_t, const gfx::Image&,
                     base::RepeatingCallback<void(int64_t)> progress_callback,
-                    base::OnceCallback<void(bool)> done_callback) {
+                    base::OnceCallback<void(
+                        bool, std::optional<base::FilePath>)> done_callback) {
         progress_callback.Run(5);
         EXPECT_CALL(*mock_delegate_, CancelUploads());
         // Press the cancel button.
