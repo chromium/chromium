@@ -77,6 +77,7 @@ source_set("glic") {
     "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
     "//components/content_extraction/content/browser",
     "//components/favicon/core",
+    "//components/feature_engagement/public",
     "//components/metrics",
     "//components/optimization_guide/content/browser",
     "//components/policy/core/browser",

@@ -13,6 +13,7 @@
 #include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
@@ -802,6 +803,12 @@ void GlicInstanceImpl::ClearActiveEmbedderAndNotifyStateChange() {
 }
 
 void GlicInstanceImpl::MaybeShowShortcutToastPromo() {
+  if (!g_browser_process->local_state()->GetBoolean(
+          prefs::kGlicLauncherEnabled)) {
+    // Hotkey might not be registered, skip the promo.
+    return;
+  }
+
   Browser* browser = chrome::FindTabbedBrowser(profile_, false);
   if (!browser) {
     // If there is no browser window open for the profile, skip the promo.
@@ -822,6 +829,12 @@ void GlicInstanceImpl::MaybeShowShortcutToastPromo() {
 }
 
 void GlicInstanceImpl::MaybeShowShortcutSnoozePromo() {
+  if (!g_browser_process->local_state()->GetBoolean(
+          prefs::kGlicLauncherEnabled)) {
+    // Hotkey might not be registered, skip the promo.
+    return;
+  }
+
   Browser* browser = chrome::FindTabbedBrowser(profile_, false);
   if (!browser) {
     // If there is no browser window open for the profile, skip the promo.

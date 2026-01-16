@@ -732,6 +732,10 @@ void MaybeRegisterChromeFeaturePromos(
           FeaturePromoSpecification::AcceleratorInfo(
               glic::LocalHotkeyManager::GetConfigurableAccelerator(
                   glic::LocalHotkeyManager::Hotkey::kFocusToggle)))
+          .SetAdditionalConditions(std::move(
+              AdditionalConditions().AddAdditionalCondition(AdditionalCondition{
+                  feature_engagement::events::kGlicOnboardingCompleted,
+                  AdditionalConditions::Constraint::kAtLeast, 1})))
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
           .SetMetadata(144, "zalmashni@google.com",
                        "Triggered after the Glic side panel is closed or the "
@@ -743,6 +747,10 @@ void MaybeRegisterChromeFeaturePromos(
           feature_engagement::
               kIPHGlicTrustFirstOnboardingShortcutSnoozePromoFeature,
           kGlicButtonElementId, IDS_GLIC_SHORTCUT_IPH_TEXT_TEMPLATE)
+          .SetAdditionalConditions(std::move(
+              AdditionalConditions().AddAdditionalCondition(AdditionalCondition{
+                  feature_engagement::events::kGlicOnboardingCompleted,
+                  AdditionalConditions::Constraint::kAtLeast, 1})))
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
           .SetMetadata(144, "zalmashni@google.com",
                        "Triggered after the Glic side panel is closed or the "
