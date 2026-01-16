@@ -12,5 +12,5 @@ IN_PROC_BROWSER_TEST_F(ChromeTimeTicksBrowserTest, All) {
   // Spawn the test from chrome://settings (or any WebUI surface) so that
   // the chrome.timeTicks API exists.
   set_test_loader_host(chrome::kChromeUISettingsHost);
-  RunTest("chrome_timeticks_test.js", "mocha.run()");
+  RunTest("chrome_apis/chrome_timeticks_test.js", "mocha.run()");
 }

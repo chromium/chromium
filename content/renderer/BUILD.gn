@@ -156,6 +156,8 @@ target(link_target_type, "renderer") {
     "web_ui_extension.h",
     "web_ui_extension_data.cc",
     "web_ui_extension_data.h",
+    "web_ui_histograms_extension.cc",
+    "web_ui_histograms_extension.h",
     "webgraphicscontext3d_provider_impl.cc",
     "webgraphicscontext3d_provider_impl.h",
     "worker/dedicated_worker_host_factory_client.cc",

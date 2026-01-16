@@ -133,7 +133,9 @@ void WebDialogUI::WebUIRenderFrameCreated(RenderFrameHost* render_frame_host) {
 // WebDialogUIBase::HandleRenderFrameCreated().
 MojoWebDialogUI::MojoWebDialogUI(content::WebUI* web_ui)
     : WebDialogUI(web_ui),
-      ui::EnableMojoWebUI(web_ui, /*enable_chrome_send=*/true) {}
+      ui::EnableMojoWebUI(web_ui,
+                          /*enable_chrome_send=*/true,
+                          /*enable_chrome_histograms=*/true) {}
 
 MojoWebDialogUI::~MojoWebDialogUI() = default;
 

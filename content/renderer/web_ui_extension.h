@@ -7,6 +7,11 @@
 
 #include <string>
 
+#include "content/public/common/bindings_policy.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-object.h"
+
 namespace blink {
 class WebLocalFrame;
 }
@@ -23,9 +28,12 @@ class WebUIExtension {
   WebUIExtension(const WebUIExtension&) = delete;
   WebUIExtension& operator=(const WebUIExtension&) = delete;
 
-  static void Install(blink::WebLocalFrame* frame);
+  static void Install(blink::WebLocalFrame* frame, BindingsPolicySet bindings);
 
  private:
+  static void InstallDefaultWebUIExtension(v8::Isolate* isolate,
+                                           v8::Local<v8::Context> context,
+                                           v8::Local<v8::Object> chrome);
   static void Send(gin::Arguments* args);
   static std::string GetVariableValue(const std::string& name);
 };

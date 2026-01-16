@@ -45,7 +45,8 @@ source_set("browser_tests") {
       "access_code_cast/access_code_cast_browsertest.cc",
       "actor_overlay/actor_overlay_browsertest.cc",
       "bookmarks/bookmarks_browsertest.cc",
-      "chrome_timeticks_browsertest.cc",
+      "chrome_apis/chrome_histograms_browsertest.cc",
+      "chrome_apis/chrome_timeticks_browsertest.cc",
       "contextual_tasks/contextual_tasks_browsertest.cc",
       "cr_components/cr_components_browsertest.cc",
       "css/css_browsertest.cc",
@@ -473,7 +474,6 @@ webui_ts_library("build_ts") {
 
   if (!is_android) {
     in_files += [
-      "chrome_timeticks_test.ts",
       "fake_settings_private.ts",
       "metrics_test_support.ts",
       "mocked_metrics_reporter.ts",
@@ -496,7 +496,6 @@ webui_ts_library("build_ts") {
     definitions += [
       "//tools/typescript/definitions/chrome_event.d.ts",
       "//tools/typescript/definitions/chrome_send.d.ts",
-      "//tools/typescript/definitions/chrome_timeticks.d.ts",
       "//tools/typescript/definitions/metrics_private.d.ts",
       "//tools/typescript/definitions/settings_private.d.ts",
     ]
@@ -554,6 +553,7 @@ generate_grd("build_grd") {
       "access_code_cast:build_grdp",
       "actor_overlay:build_grdp",
       "bookmarks:build_grdp",
+      "chrome_apis:build_grdp",
       "contextual_tasks:build_grdp",
       "cr_components:build_grdp",
       "cr_components/composebox:build_grdp",
@@ -606,6 +606,7 @@ generate_grd("build_grd") {
     grdp_files += [
       "$target_gen_dir/about_sys/resources.grdp",
       "$target_gen_dir/access_code_cast/resources.grdp",
+      "$target_gen_dir/chrome_apis/resources.grdp",
       "$target_gen_dir/actor_overlay/resources.grdp",
       "$target_gen_dir/webview/resources.grdp",
       "$target_gen_dir/bookmarks/resources.grdp",

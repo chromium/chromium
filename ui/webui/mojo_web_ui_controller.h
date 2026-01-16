@@ -15,7 +15,9 @@ namespace ui {
 // enable Mojo for a given WebUI page. See below for expectations.
 class EnableMojoWebUI {
  public:
-  explicit EnableMojoWebUI(content::WebUI* contents, bool enable_chrome_send);
+  explicit EnableMojoWebUI(content::WebUI* contents,
+                           bool enable_chrome_send,
+                           bool enable_chrome_histograms);
 
   EnableMojoWebUI(const EnableMojoWebUI&) = delete;
   EnableMojoWebUI& operator=(const EnableMojoWebUI&) = delete;
@@ -42,7 +44,8 @@ class MojoWebUIController : public content::WebUIController,
   // By default MojoWebUIControllers do not have normal WebUI bindings. Pass
   // |enable_chrome_send| as true if these are needed.
   explicit MojoWebUIController(content::WebUI* contents,
-                               bool enable_chrome_send = false);
+                               bool enable_chrome_send = false,
+                               bool enable_chrome_histograms = false);
 
   MojoWebUIController(const MojoWebUIController&) = delete;
   MojoWebUIController& operator=(const MojoWebUIController&) = delete;

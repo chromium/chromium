@@ -4052,8 +4052,9 @@ void RenderFrameImpl::DidCommitDocumentReplacementNavigation(
 void RenderFrameImpl::DidClearWindowObject() {
   TRACE_EVENT("navigation", "RenderFrameImpl::DidClearWindowObject",
               perfetto::Flow::FromPointer(this));
-  if (enabled_bindings_.Has(BindingsPolicyValue::kWebUi)) {
-    WebUIExtension::Install(frame_);
+  if (enabled_bindings_.Has(BindingsPolicyValue::kWebUi) ||
+      enabled_bindings_.Has(BindingsPolicyValue::kWebUiHistograms)) {
+    WebUIExtension::Install(frame_, enabled_bindings_);
   }
 
   const base::CommandLine& command_line =
