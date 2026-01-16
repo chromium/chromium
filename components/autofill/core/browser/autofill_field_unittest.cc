@@ -577,6 +577,21 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_source =
                 AutofillPredictionSource::kServerCrowdsourcing}));
 
+// Tests the kill switch: when disabled, unrecognized fields are suppressed
+// by default even if the caller suggests otherwise.
+TEST(AutocompleteUnrecognizedTypeKillSwitchTest,
+     AlwaysSuppressIfFieldEligible) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      features::kAutofillEnableSkippingUnrecognizedAttribute);
+
+  AutofillField field;
+  field.SetHtmlType(HtmlFieldType::kUnrecognized, HtmlFieldMode::kNone);
+
+  EXPECT_TRUE(field.ShouldSuppressSuggestionsAndFillingByDefault(
+      /*suppress_if_ac_unrecognized=*/false));
+}
+
 // Parameters for `AutofillLocalHeuristicsOverridesTest`
 struct AutofillLocalHeuristicsOverridesParams {
   // These values denote what type the field was classified as html, server and

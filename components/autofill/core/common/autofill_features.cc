@@ -597,6 +597,11 @@ BASE_FEATURE(kAutofillEnableSecurityTouchEventFilteringAndroid,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// Kill switch: If enabled, `AutofillField` may not suppress suggestions on
+// field that has autocomplete=unrecognized attribute.
+BASE_FEATURE(kAutofillEnableSkippingUnrecognizedAttribute,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, chrome will support home and work addresses from account.
 // TODO: crbug.com/354706653 - Clean up when launched.
 BASE_FEATURE(kAutofillEnableSupportForHomeAndWork,

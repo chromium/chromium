@@ -259,6 +259,10 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_ENABLE_EXPIRATION_DATE_IMPROVEMENTS,
                 "Enables various improvements to handling expiration dates."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_ENABLE_SKIPPING_UNRECOGNIZED_ATTRIBUTE,
+                "Allows autofill to ignore suppressing predicitons on fields with"
+                        + " autocomplete=unrecognized."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_PARSING_WITH_SHARED_LABELS,
                 "Splits Autofill labels among consecutive fields for better heuristic"
                         + " predictions."),
