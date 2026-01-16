@@ -2,5 +2,5 @@ dcastagna@chromium.org
 dnicoara@chromium.org
 oshima@chromium.org
 
-# For CADisplayLink or CVDisplaylink on Mac
-per-file *display_link*=magchen@chromium.org
+# For Displaylink on Mac
+per-file mac/*=magchen@chromium.org
