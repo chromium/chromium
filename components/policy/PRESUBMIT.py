@@ -73,18 +73,10 @@ TOTAL_DEVICE_POLICY_EXTERNAL_DATA_MAX_SIZE = 1024 * 1024 * 100
 # Instead, let the build automatically add the appropriate notices
 # when you mark a policy with sensitive: True
 SENSITIVE_POLICIES_WITH_MANUAL_NOTICE = [
-    "RestoreOnStartup",
     "RestoreOnStartupURLs",
     "FirstPartySetsOverrides",
     "AutoOpenFileTypes",
-    "CommandLineFlagSecurityWarningsEnabled",
-    "EnterpriseCustomLabelForBrowser",
-    "EnterpriseLogoUrlForBrowser",
-    "EnterpriseSearchAggregatorSettings",
     "MetricsReportingEnabled",
-    "NTPFooterManagementNoticeEnabled",
-    "SafeBrowsingForTrustedSourcesEnabled",
-    "SiteSearchSettings",
 ]
 
 
