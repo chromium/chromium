@@ -275,14 +275,17 @@ ExtensionInstallPolicyServiceImpl::GetExtensions() {
     return {};
   }
   std::set<ExtensionIdAndVersion> extensions;
+  std::string webstore_update_url =
+      extension_urls::GetWebstoreUpdateUrl().spec();
   // Include all installed extensions, even if they're already disabled.
   extensions::ExtensionSet installed_extensions =
       extension_registry->GenerateInstalledExtensionsSet();
   for (const auto& extension : installed_extensions) {
-    extensions.insert(ExtensionIdAndVersion{
-        .extension_id = extension->id(),
-        .extension_version = extension->version().GetString(),
-    });
+    if (!extension->from_webstore()) {
+      // Only check webstore extensions.
+      continue;
+    }
+    extensions.insert({extension->id(), extension->VersionString()});
   }
   return extensions;
 }
