@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -363,6 +365,82 @@ IN_PROC_BROWSER_TEST_F(ExternalAppResolutionCommandBrowserTest,
   EXPECT_EQ(
       GetAcceptEntriesForFileHandler({{"application/bar", {".bar", ".baz"}}}),
       handlers[1].accept);
+}
+
+IN_PROC_BROWSER_TEST_F(ExternalAppResolutionCommandBrowserTest,
+                       PlaceholderInstallWithCustomIconLoadSuccessful) {
+  const GURL kWebAppUrl = https_server()->GetURL(
+      "/banners/"
+      "manifest_test_page1.html");
+
+  ExternalInstallOptions install_options(
+      kWebAppUrl, mojom::UserDisplayMode::kStandalone,
+      ExternalInstallSource::kInternalDefault);
+  install_options.install_placeholder = true;
+  install_options.force_reinstall = true;
+  // Set a custom icon.
+  install_options.override_icon_url = https_server()->GetURL(
+      "/banners/"
+      "128x128-green.png");
+
+  base::test::TestFuture<ExternallyManagedAppManager::InstallResult> future;
+  provider().scheduler().InstallExternallyManagedApp(
+      install_options,
+      /*installed_placeholder_app_id=*/"someplaceholderappid",
+      future.GetCallback());
+
+  const ExternallyManagedAppManager::InstallResult& result =
+      future.Get<ExternallyManagedAppManager::InstallResult>();
+  const webapps::AppId& app_id = *result.app_id;
+  webapps::InstallResultCode install_code = result.code;
+  EXPECT_EQ(install_code, webapps::InstallResultCode::kSuccessNewInstall);
+  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
+  base::test::TestFuture<WebAppIconManager::WebAppBitmaps> icon_future;
+  provider().icon_manager().ReadAllIcons(app_id, icon_future.GetCallback());
+  const WebAppIconManager::WebAppBitmaps bitmaps = icon_future.Get();
+
+  EXPECT_FALSE(bitmaps.manifest_icons.empty());
+  EXPECT_FALSE(bitmaps.trusted_icons.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ExternalAppResolutionCommandBrowserTest,
+    PlaceholderInstallWithCustomIconLoadFailedStillSuccessful) {
+  const GURL kWebAppUrl = https_server()->GetURL(
+      "/banners/"
+      "manifest_test_page1.html");
+
+  ExternalInstallOptions install_options(
+      kWebAppUrl, mojom::UserDisplayMode::kStandalone,
+      ExternalInstallSource::kInternalDefault);
+  install_options.install_placeholder = true;
+  install_options.force_reinstall = true;
+  // Set a custom icon.
+  install_options.override_icon_url = https_server()->GetURL(
+      "/banners/"
+      "non-existing-icon.png");
+
+  base::test::TestFuture<ExternallyManagedAppManager::InstallResult> future;
+  provider().scheduler().InstallExternallyManagedApp(
+      install_options,
+      /*installed_placeholder_app_id=*/"someplaceholderappid",
+      future.GetCallback());
+
+  const ExternallyManagedAppManager::InstallResult& result =
+      future.Get<ExternallyManagedAppManager::InstallResult>();
+  const webapps::AppId& app_id = *result.app_id;
+  webapps::InstallResultCode install_code = result.code;
+  EXPECT_EQ(install_code, webapps::InstallResultCode::kSuccessNewInstall);
+  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
+
+  base::test::TestFuture<WebAppIconManager::WebAppBitmaps> icon_future;
+  provider().icon_manager().ReadAllIcons(app_id, icon_future.GetCallback());
+  const WebAppIconManager::WebAppBitmaps bitmaps = icon_future.Get();
+
+  EXPECT_TRUE(bitmaps.manifest_icons.empty());
+  EXPECT_TRUE(bitmaps.trusted_icons.empty());
 }
 
 }  // namespace web_app
