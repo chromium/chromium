@@ -28,14 +28,17 @@ import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetViewBinder;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsCoordinator;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.BackgroundCollection;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionManager;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionsCoordinator;
+import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.UploadImagePreviewCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -133,6 +136,19 @@ public class NtpThemeCoordinator {
     public void onImageSelectedForPreview(@Nullable Bitmap bitmap) {
         if (bitmap == null) return;
 
+        // Tablets bypass the preview dialog and apply the selection directly.
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
+            // Applies the background immediately for instant visual feedback.
+            // Full Activity recreation to finalize theme changes is deferred
+            // until the ntp customization bottom sheets are fully dismissed.
+            BackgroundImageInfo info =
+                    NtpCustomizationUtils.calculateInitialThemeCollectionImageMatrices(
+                            mContext, bitmap);
+            NtpCustomizationConfigManager.getInstance().onUploadedImageSelected(bitmap, info);
+            onImageSelectedForPreviewImpl();
+            return;
+        }
+
         mUploadPreviewCoordinator =
                 new UploadImagePreviewCoordinator(
                         (Activity) mContext, mProfile, bitmap, this::onPreviewClosed);
@@ -218,10 +234,21 @@ public class NtpThemeCoordinator {
         if (!isImageSelected) {
             return;
         }
+        onImageSelectedForPreviewImpl();
+        mDismissBottomSheetRunnable.run();
+    }
 
+    /**
+     * Finalizes the selection of a device-stored image by updating theme-related information.
+     *
+     * <ul>
+     *   <li>Updates the Mediator to show the selection indicator for the "Upload an image" section.
+     *   <li>Triggers the delegate callback to handle the theme changes.
+     * </ul>
+     */
+    private void onImageSelectedForPreviewImpl() {
         mMediator.updateTrailingIconVisibilityForSectionType(IMAGE_FROM_DISK);
         mBottomSheetDelegate.onNewColorSelected(/* isDifferentColor= */ true);
-        mDismissBottomSheetRunnable.run();
     }
 
     NtpThemeMediator getMediatorForTesting() {

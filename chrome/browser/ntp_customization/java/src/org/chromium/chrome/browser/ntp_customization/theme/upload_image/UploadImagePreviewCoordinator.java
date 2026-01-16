@@ -197,7 +197,8 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
         int effectiveFeedPaddingTotal = (totalFeedPaddingPerSide + compensation) * 2;
 
         // 2. Computes the margin added to the ntp.
-        // TODO(crbug.com/423579377): get boolean isTablet from DeviceFormFactor.
+        // isTablet is hardcoded to false as this coordinator is guarded against creation on
+        // tablets.
         int ntpMarginsTotal = getSearchBoxTwoSideMargin(res, mUiConfig, /* isTablet= */ false);
 
         int finalWidth = mCropImageView.getWidth() - effectiveFeedPaddingTotal - ntpMarginsTotal;
