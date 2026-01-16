@@ -7,13 +7,14 @@ import 'chrome://contextual-tasks/app.js';
 import type {ContextualTasksAppElement} from 'chrome://contextual-tasks/app.js';
 import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
-import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
 import {PageCallbackRouter as ComposeboxPageCallbackRouter, PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import {FileUploadStatus} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {AutocompleteMatch, AutocompleteResult} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, type PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -89,36 +90,68 @@ function simulateUserInput(inputElement: HTMLInputElement, value: string) {
       new Event('input', {bubbles: true, composed: true}));
 }
 
-async function setupAutocompleteResults(
-    searchboxCallbackRouterRemote: SearchboxPageRemote, testQuery: string) {
-  const matches = [
-    createAutocompleteMatch({
-      allowedToBeDefaultMatch: true,
-      contents: testQuery,
-      destinationUrl: {url: `https://google.com/search?q=${testQuery}`},
-      type: 'search-what-you-typed',
-      fillIntoEdit: testQuery,
-    }),
-    createAutocompleteMatch(),
-  ];
-  searchboxCallbackRouterRemote.autocompleteResultChanged(
-      createAutocompleteResult({
-        input: testQuery,
-        matches: matches,
-      }));
-  await microtasksFinished();
-}
 
 suite('ContextualTasksComposeboxTest', () => {
   let contextualTasksApp: ContextualTasksAppElement;
-  let composebox: ComposeboxElement;
+  let composebox: any;
   let testProxy: TestContextualTasksBrowserProxy;
   let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>;
   let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>;
   let searchboxCallbackRouterRemote: SearchboxPageRemote;
+  let mockTimer: MockTimer;
+
+  async function setupAutocompleteResults(
+      searchboxCallbackRouterRemote: SearchboxPageRemote, testQuery: string) {
+    const matches = [
+      createAutocompleteMatch({
+        allowedToBeDefaultMatch: true,
+        contents: testQuery,
+        destinationUrl: {url: `https://google.com/search?q=${testQuery}`},
+        type: 'search-what-you-typed',
+        fillIntoEdit: testQuery,
+      }),
+      createAutocompleteMatch(),
+    ];
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({
+          input: testQuery,
+          matches: matches,
+        }));
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    mockTimer.tick(0);
+  }
+
+  class MockResizeObserver {
+    static instances: MockResizeObserver[] = [];
+
+    constructor(private callback: ResizeObserverCallback) {
+      MockResizeObserver.instances.push(this);
+    }
+
+    observe(_target: Element) {}
+    unobserve(_target: Element) {}
+    disconnect() {}
+
+    trigger() {
+      // Trigger with empty entries as the component doesn't use entries
+      this.callback([], this);
+    }
+  }
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    // Mock ResizeObserver
+    window.ResizeObserver = MockResizeObserver;
+    MockResizeObserver.instances = [];
+
+    mockTimer = new MockTimer();
+
+
+    loadTimeData.overrideValues({
+      composeboxShowTypedSuggest: true,
+      composeboxShowZps: true,
+    });
 
     testProxy = new TestContextualTasksBrowserProxy('https://google.com');
     BrowserProxyImpl.setInstance(testProxy);
@@ -139,6 +172,14 @@ suite('ContextualTasksComposeboxTest', () => {
     document.body.appendChild(contextualTasksApp);
     await microtasksFinished();
     composebox = contextualTasksApp.$.composebox.$.composebox;
+
+    assertTrue(
+        MockResizeObserver.instances.length >= 1,
+        'There should be at least one ResizeObserver instance.');
+  });
+
+  teardown(() => {
+    mockTimer.uninstall();
   });
 
   /* Get file from `imageInput` if `fileType` is image;
@@ -172,9 +213,7 @@ suite('ContextualTasksComposeboxTest', () => {
           'Files should be empty and carousel should not render.');
     }
 
-    /* Reset `whenCalled` trigger for this function since await whenCalled
-     * only works on first call. Also clears number of times function called.
-     */
+
     mockSearchboxPageHandler.resetResolver(ADD_FILE_CONTEXT_FN);
     mockSearchboxPageHandler.setResultFor(
         ADD_FILE_CONTEXT_FN, Promise.resolve({token: token}));
@@ -218,7 +257,7 @@ suite('ContextualTasksComposeboxTest', () => {
     assertDeepEquals(fileData.bytes, fileArray);
   }
 
-  // Must have at least one file in carousel.
+
   async function deleteLastFile() {
     const files = composebox.$.context.$.carousel.files;
     const deletedId = files[files.length - 1]!.uuid;
@@ -258,6 +297,7 @@ suite('ContextualTasksComposeboxTest', () => {
   }
 
   test('ComposeboxSubmitSendsQueryAndClearsInput', async () => {
+    mockTimer.install();
     const TEST_QUERY = 'test query';
 
     const inputElement = composebox.$.input;
@@ -265,9 +305,16 @@ suite('ContextualTasksComposeboxTest', () => {
         isVisible(inputElement), 'Composebox input element should be visible');
 
     simulateUserInput(inputElement, TEST_QUERY);
+    mockTimer.tick(300);
     await mockSearchboxPageHandler.whenCalled('queryAutocomplete');
 
     await setupAutocompleteResults(searchboxCallbackRouterRemote, TEST_QUERY);
+
+    // Wait for the matches to be populated.
+    while (!composebox.getMatchesElement().result) {
+      mockTimer.tick(10);
+      await Promise.resolve();
+    }
 
     pressEnter(inputElement);
 
@@ -275,11 +322,14 @@ suite('ContextualTasksComposeboxTest', () => {
         await mockSearchboxPageHandler.whenCalled('openAutocompleteMatch');
     assertEquals(0, matchIndex);
     assertEquals(`https://google.com/search?q=${TEST_QUERY}`, url.url);
-    await microtasksFinished();
+    mockTimer.tick(0);
 
     assertEquals(
         '', inputElement.value,
         'Input should be cleared, but input = ' + inputElement.value);
+    assertEquals(
+        null, composebox.getMatchesElement().result,
+        'Matches should be cleared');
   });
 
   test('LensButtonTriggersOverlay', async () => {
@@ -326,9 +376,9 @@ suite('ContextualTasksComposeboxTest', () => {
     assertTrue(!!header, 'Composebox header should exist after hideInput');
 
     assertTrue(
-        !!header.hidden, 'Composebox header should be hidden after hideInput');
+        header.hidden, 'Composebox header should be hidden after hideInput');
     assertTrue(
-        !!composebox.hidden, 'Composebox should be hidden after hideInput');
+        composebox.hidden, 'Composebox should be hidden after hideInput');
 
     testProxy.callbackRouterRemote.restoreInput();
     await testProxy.callbackRouterRemote.$.flushForTesting();
@@ -336,12 +386,12 @@ suite('ContextualTasksComposeboxTest', () => {
 
     assertTrue(!!composebox, 'Composebox should exist after restoreInput');
     assertFalse(
-        !!composebox.hidden,
+        composebox.hidden,
         'Composebox should not be hidden after restoreInput');
 
     assertTrue(!!header, 'Composebox header should exist after restoreInput');
     assertFalse(
-        !!header.hidden,
+        header.hidden,
         'Composebox header should not be hidden after restoreInput');
   });
 
@@ -393,7 +443,7 @@ suite('ContextualTasksComposeboxTest', () => {
     await composebox.updateComplete;
     await microtasksFinished();
 
-    assertEquals(0, (composebox.$.context as any).files_.size);
+    assertEquals(0, composebox.$.context.files_.size);
   });
 
   test('Composebox submit button disabled when uploading files', async () => {
@@ -553,7 +603,7 @@ suite('ContextualTasksComposeboxTest', () => {
 
     composebox.clearAllInputs(false);
     await microtasksFinished();
-    assertEquals(0, (composebox.$.context as any).files_.size);
+    assertEquals(0, composebox.$.context.files_.size);
 
     const submitButton: HTMLButtonElement|null = getSubmitButton();
     assertTrue(!!submitButton, 'Submit button should exist');
@@ -579,8 +629,8 @@ suite('ContextualTasksComposeboxTest', () => {
         const token1 = FAKE_TOKEN_STRING;
         await uploadFileAndVerify(
             token1, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
-        // Make all files not deletable
-        const currentFiles = (composebox.$.context as any).files_;
+
+        const currentFiles = composebox.$.context.files_;
         currentFiles.forEach((file: ComposeboxFile) => {
           file.isDeletable = false;
         });
@@ -634,7 +684,7 @@ suite('ContextualTasksComposeboxTest', () => {
         await composebox.$.context.updateComplete;
         await microtasksFinished();
 
-        const currentFiles2 = (composebox.$.context as any).files_;
+        const currentFiles2 = composebox.$.context.files_;
         currentFiles2.forEach((file: ComposeboxFile) => {
           file.isDeletable = false;
         });
@@ -663,4 +713,139 @@ suite('ContextualTasksComposeboxTest', () => {
             'Submit button cursor should be not-allowed');
         assertEquals(2, composebox.getRemainingFilesToUpload().size);
       });
+
+  test('FocusUpdatesProperty', () => {
+    mockTimer.install();
+    const composeboxElement = contextualTasksApp.$.composebox;
+    const innerComposebox = composeboxElement.$.composebox;
+
+    innerComposebox.dispatchEvent(new CustomEvent('composebox-focus-in'));
+    mockTimer.tick(0);  // Attribute reflection is async
+    assertTrue(composeboxElement.isComposeboxFocusedForTesting);
+
+    innerComposebox.dispatchEvent(new CustomEvent('composebox-focus-out'));
+    assertTrue(!composeboxElement.isComposeboxFocusedForTesting);
+  });
+
+  test('ResizeUpdatesHeight', () => {
+    mockTimer.install();
+    const composeboxElement = contextualTasksApp.$.composebox;
+    const innerComposebox = composeboxElement.$.composebox;
+
+
+    innerComposebox.style.display = 'block';
+    innerComposebox.style.height = '100px';
+
+
+    Object.defineProperty(innerComposebox, 'offsetHeight', {
+      writable: true,
+      configurable: true,
+      value: 100,
+    });
+
+    MockResizeObserver.instances.forEach(obs => obs.trigger());
+    mockTimer.tick(100);
+
+    const height1 = composeboxElement.composeboxHeightForTesting;
+    assertTrue(typeof height1 === 'number');
+    assertTrue(height1 > 0, `height1 should be > 0, but is ${height1}`);
+
+    innerComposebox.style.height = '300px';
+
+    // Update mock
+    Object.defineProperty(innerComposebox, 'offsetHeight', {
+      writable: true,
+      configurable: true,
+      value: 300,
+    });
+
+    MockResizeObserver.instances.forEach(obs => obs.trigger());
+    mockTimer.tick(100);
+
+    const height2 = composeboxElement.composeboxHeightForTesting;
+    assertTrue(typeof height2 === 'number');
+    assertTrue(
+        height1 !== height2, `Height should change: ${height1} vs ${height2}`);
+  });
+
+  test('SelectingMatchPopulatesComposebox', async () => {
+    mockTimer.install();
+    const composebox = contextualTasksApp.$.composebox.$.composebox;
+    const inputElement = composebox.$.input;
+
+
+    const testQuery = 'test';
+    simulateUserInput(inputElement, testQuery);
+
+    const matches = [
+      createAutocompleteMatch({fillIntoEdit: 'match 1'}),
+      createAutocompleteMatch({fillIntoEdit: 'match 2'}),
+    ];
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({input: testQuery, matches: matches}));
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    mockTimer.tick(0);
+
+
+    const matchesEl = composebox.getMatchesElement();
+    assertTrue(!!matchesEl.result, 'Matches should be populated');
+    assertEquals(2, matchesEl.result.matches.length, 'Should have 2 matches');
+
+
+    inputElement.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'ArrowDown', bubbles: true, composed: true}));
+
+    // Wait for Lit updates to propagate
+    mockTimer.tick(100);
+    await composebox.getMatchesElement().updateComplete;
+    await composebox.updateComplete;
+    assertEquals(
+        0, composebox.getMatchesElement().selectedMatchIndex,
+        'Index should be 0');
+    assertEquals(
+        'match 1', inputElement.value, 'Input value should be match 1');
+    assertEquals(
+        0, (composebox as any).selectedMatchIndex_, 'Parent index should be 0');
+  });
+
+  test('TooltipVisibilityUpdatesOnResize', () => {
+    mockTimer.install();
+    const composeboxElement = contextualTasksApp.$.composebox;
+    const tooltip = composeboxElement.$.onboardingTooltip;
+
+    // Force show tooltip
+    loadTimeData.overrideValues({
+      showOnboardingTooltip: true,
+      isOnboardingTooltipDismissCountBelowCap: true,
+      composeboxShowOnboardingTooltipSessionImpressionCap: 10,
+    });
+    (composeboxElement as any).numberOfTimesTooltipShown_ = 0;
+    (composeboxElement as any).userDismissedTooltip_ = false;
+
+    // Simulate active tab chip token presence
+    const innerComposebox = composeboxElement.$.composebox;
+    innerComposebox.getHasAutomaticActiveTabChipToken = () => true;
+    innerComposebox.getAutomaticActiveTabChipElement = () =>
+        document.createElement('div');
+
+    (composeboxElement as any).updateTooltipVisibility_();
+    assertTrue(tooltip.shouldShow);
+
+    // Resize event
+    const resizeEvent = new CustomEvent('composebox-resize', {
+      detail: {carouselHeight: 50},
+      bubbles: true,
+      composed: true,
+    });
+    innerComposebox.dispatchEvent(resizeEvent);
+
+    // Tooltip should still be shown and position updated (implicitly via resize
+    // observer or logic)
+    assertTrue(tooltip.shouldShow);
+  });
+
+  test('ExpandAnimationState', function() {
+    contextualTasksApp.$.composebox.startExpandAnimation();
+    assertEquals('expanding', composebox.animationState);
+  });
 });
