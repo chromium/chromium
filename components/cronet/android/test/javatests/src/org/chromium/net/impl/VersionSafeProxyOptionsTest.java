@@ -29,6 +29,7 @@ import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.Proxy;
 import org.chromium.net.ProxyOptions;
+import org.chromium.net.VersionSafeProxyOptions;
 
 import java.util.Arrays;
 import java.util.List;

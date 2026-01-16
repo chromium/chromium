@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.ICronetEngineBuilder;
 import org.chromium.net.ProxyOptions;
+import org.chromium.net.VersionSafeProxyOptions;
 import org.chromium.net.impl.CronetLogger.CronetSource;
 
 import java.io.File;

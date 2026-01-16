@@ -16,6 +16,7 @@ import androidx.annotation.RequiresExtension;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.net.CronetEngine;
+import org.chromium.net.AndroidProxyOptions;
 import org.chromium.net.ExperimentalCronetEngine;
 import org.chromium.net.ICronetEngineBuilder;
 import org.chromium.net.impl.CronetLogger.CronetSource;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.net.impl;
+package org.chromium.net;
 
 import android.net.http.HttpEngine;
 
@@ -18,9 +18,9 @@ import org.chromium.build.annotations.Nullable;
  * the real implementation. See the comment within
  * //components/cronet/android:httpengine_native_provider_java for more information.
  */
-final class AndroidProxyOptions {
+public final class AndroidProxyOptions {
     @SuppressWarnings("DoNotCallSuggester")
-    static void apply(
+    public static void apply(
             HttpEngine.Builder backend, org.chromium.net.@Nullable ProxyOptions proxyOptions) {
         throw new UnsupportedOperationException(
                 "This Cronet implementation does not support ProxyOptions");

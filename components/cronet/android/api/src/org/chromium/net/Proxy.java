@@ -195,58 +195,27 @@ public final class Proxy {
         return new Proxy(scheme, host, port, executor, callback);
     }
 
-    /**
-     * Returns the {@link Scheme} of this proxy.
-     *
-     * @deprecated This will be made package private before Cronet proxy APIs are made
-     *     non-experimental.
-     */
-    @Deprecated
-    public @Scheme int getScheme() {
+    @Scheme
+    int getScheme() {
         return mScheme;
     }
 
-    /**
-     * Returns the hostname of this proxy.
-     *
-     * @deprecated This will be made package private before Cronet proxy APIs are made
-     *     non-experimental.
-     */
-    @Deprecated
-    public @NonNull String getHost() {
+    @NonNull
+    String getHost() {
         return mHost;
     }
 
-    /**
-     * Returns the port of this proxy.
-     *
-     * @deprecated This will be made package private before Cronet proxy APIs are made
-     *     non-experimental.
-     */
-    @Deprecated
-    public int getPort() {
+    int getPort() {
         return mPort;
     }
 
-    /**
-     * Returns the {@link Executor} of this proxy.
-     *
-     * @deprecated This will be made package private before Cronet proxy APIs are made
-     *     non-experimental.
-     */
-    @Deprecated
-    public @NonNull Executor getExecutor() {
+    @NonNull
+    Executor getExecutor() {
         return mExecutor;
     }
 
-    /**
-     * Returns the {@link HttpConnectCallback} of this proxy.
-     *
-     * @deprecated This will be made package private before Cronet proxy APIs are made
-     *     non-experimental.
-     */
-    @Deprecated
-    public @NonNull HttpConnectCallback getCallback() {
+    @NonNull
+    HttpConnectCallback getCallback() {
         return mCallback;
     }
 

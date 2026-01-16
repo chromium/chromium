@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.net.impl;
+package org.chromium.net;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.net.ProxyOptions;
+import org.chromium.net.impl.VersionSafeCallbacks;
+import org.chromium.net.impl.VersionSafeProxyCallback;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 /** Wraps a {@link org.chromium.net.ProxyOptions} in a version safe manner. */
-final class VersionSafeProxyOptions {
+public final class VersionSafeProxyOptions {
     private static final int SET_PROXY_OPTIONS_API_LEVEL = 38;
 
     private static boolean apiContainsProxyOptionsClass() {
@@ -24,7 +25,7 @@ final class VersionSafeProxyOptions {
 
     private final @NonNull ProxyOptions mBackend;
 
-    VersionSafeProxyOptions(@NonNull ProxyOptions backend) {
+    public VersionSafeProxyOptions(@NonNull ProxyOptions backend) {
         if (!apiContainsProxyOptionsClass()) {
             throw new AssertionError(
                     String.format(
@@ -40,15 +41,13 @@ final class VersionSafeProxyOptions {
         }
     }
 
-    @NonNull
-    List<VersionSafeProxyCallback> createProxyCallbackList() {
+    public @NonNull List<VersionSafeProxyCallback> createProxyCallbackList() {
         // Note: the order in which proxies are added to this list must match the order of the
         // proxies returned by {@link createProxyOptionsProto}.
         List<VersionSafeProxyCallback> proxyCallbacks = new ArrayList<VersionSafeProxyCallback>();
         for (org.chromium.net.Proxy proxy : mBackend.getProxyList()) {
             // Fallback to a direct connection (also called fail-open or "direct proxy") is
-            // represented by a null elemented in the proxy list (see
-            // org.chromium.net.ProxyOptions).
+            // represented by a null element in the proxy list (see org.chromium.net.ProxyOptions).
             boolean isDirect = proxy == null;
             // ProxyDelegate callbacks should not be called for direct connection, hence we can
             // safely store a null callback in that case.
@@ -61,8 +60,7 @@ final class VersionSafeProxyOptions {
         return Collections.unmodifiableList(proxyCallbacks);
     }
 
-    @NonNull
-    org.chromium.net.impl.proto.ProxyOptions createProxyOptionsProto() {
+    public @NonNull org.chromium.net.impl.proto.ProxyOptions createProxyOptionsProto() {
         org.chromium.net.impl.proto.ProxyOptions.Builder proxyOptionsProtoBuilder =
                 org.chromium.net.impl.proto.ProxyOptions.newBuilder();
         for (org.chromium.net.Proxy proxy : mBackend.getProxyList()) {

@@ -419,6 +419,7 @@ cronet_impl_common_java_deps_to_package = [
 # by all Cronet engine implementations.
 android_library("cronet_impl_common_java") {
   sources = [
+    "java/src/org/chromium/net/VersionSafeProxyOptions.java",
     "java/src/org/chromium/net/impl/BidirectionalStreamBuilderImpl.java",
     "java/src/org/chromium/net/impl/CallbackExceptionImpl.java",
     "java/src/org/chromium/net/impl/CronetEngineBase.java",
@@ -436,7 +437,6 @@ android_library("cronet_impl_common_java") {
     "java/src/org/chromium/net/impl/UrlResponseInfoImpl.java",
     "java/src/org/chromium/net/impl/VersionSafeCallbacks.java",
     "java/src/org/chromium/net/impl/VersionSafeProxyCallback.java",
-    "java/src/org/chromium/net/impl/VersionSafeProxyOptions.java",
     _generated_impl_version_java,
   ]
 
@@ -653,7 +653,7 @@ android_library("httpengine_native_provider_java") {
       "platform-only/org/chromium/net/AndroidProxyOptions.java",
     ]
   } else {
-    sources += [ "java/src/org/chromium/net/impl/AndroidProxyOptions.java" ]
+    sources += [ "java/src/org/chromium/net/AndroidProxyOptions.java" ]
   }
 
   deps = [
