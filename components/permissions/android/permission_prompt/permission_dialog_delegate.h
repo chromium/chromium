@@ -5,12 +5,15 @@
 #ifndef COMPONENTS_PERMISSIONS_ANDROID_PERMISSION_PROMPT_PERMISSION_DIALOG_DELEGATE_H_
 #define COMPONENTS_PERMISSIONS_ANDROID_PERMISSION_PROMPT_PERMISSION_DIALOG_DELEGATE_H_
 
+#include <variant>
+
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/favicon_base/favicon_callback.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "content/public/browser/web_contents_observer.h"
 
 using base::android::JavaRef;
@@ -132,6 +135,9 @@ class PermissionDialogDelegate : public content::WebContentsObserver {
       bool is_one_time) const;
   // `permission_prompt_` owns and outlives this object, this is safe to use.
   raw_ptr<PermissionPromptAndroid> permission_prompt_;
+
+  // Tracks the currently selected prompt options.
+  PromptOptions prompt_options_ = std::monostate();
 
   // The PermissionDialogJavaDelegate abstracts away JNI connectivity from
   // native to Java in order to facilicate unit testing.

@@ -4,12 +4,16 @@
 
 #include "components/permissions/android/permission_prompt/embedded_permission_prompt_android.h"
 
+#include <variant>
+
 #include "base/android/jni_string.h"
 #include "base/memory/weak_ptr.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/android/permission_prompt/permission_dialog_delegate.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permissions_client.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "components/resources/android/theme_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
@@ -32,12 +36,6 @@ EmbeddedPermissionPromptAndroid::EmbeddedPermissionPromptAndroid(
   prompt_model_->CalculateCurrentVariant();
   CreatePermissionDialogDelegate();
   const auto& current_prompt_variant = prompt_model_->prompt_variant();
-  // TODO(crbug.com/442793180): Plumb precise/approximate values when
-  // <geolocation> prompts support it. Hardcoding to precise now to avoid double
-  // prompting.
-  if (current_prompt_variant == Variant::kAsk) {
-    SetPromptOptions(GeolocationPromptOptions{GeolocationAccuracy::kPrecise});
-  }
   prompt_model_->RecordElementAnchoredBubbleVariantUMA(current_prompt_variant);
   if (current_prompt_variant == Variant::kOsPrompt ||
       current_prompt_variant == Variant::kOsSystemSettings) {
@@ -47,7 +45,8 @@ EmbeddedPermissionPromptAndroid::EmbeddedPermissionPromptAndroid(
 
 EmbeddedPermissionPromptAndroid::~EmbeddedPermissionPromptAndroid() {
   if (!prompt_model_->HasDelegateActionSet()) {
-    prompt_model_->SetDelegateAction(Action::kDismiss);
+    prompt_model_->SetDelegateAction(Action::kDismiss,
+                                     /*prompt_options=*/std::monostate());
   }
 }
 
@@ -95,7 +94,8 @@ Variant EmbeddedPermissionPromptAndroid::GetEmbeddedPromptVariant() const {
   return prompt_model_->prompt_variant();
 }
 
-void EmbeddedPermissionPromptAndroid::Dismiss() {
+void EmbeddedPermissionPromptAndroid::Dismiss(
+    const PromptOptions& prompt_options) {
   prompt_model_->PrecalculateVariantsForMetrics();
   // TODO(crbug.com/388408021): in Android, there will be no x button and more
   // than only one dismiss reason of clicking outside the dialog. We are
@@ -104,38 +104,61 @@ void EmbeddedPermissionPromptAndroid::Dismiss() {
   prompt_model_->RecordOsMetrics(permissions::OsScreenAction::kDismissedScrim);
   prompt_model_->RecordPermissionActionUKM(
       permissions::ElementAnchoredBubbleAction::kDismissedScrim);
-  prompt_model_->SetDelegateAction(Action::kDismiss);
+  prompt_model_->SetDelegateAction(Action::kDismiss, prompt_options);
   delegate()->FinalizeCurrentRequests();
 }
 
-void EmbeddedPermissionPromptAndroid::Accept() {
+void EmbeddedPermissionPromptAndroid::Accept(
+    const PromptOptions& prompt_options) {
   prompt_model_->PrecalculateVariantsForMetrics();
   prompt_model_->RecordPermissionActionUKM(
       permissions::ElementAnchoredBubbleAction::kGranted);
-  prompt_model_->SetDelegateAction(Action::kAllow);
+
+  // TODO(crbug.com/442793180): Plumb precise/approximate values when
+  // <geolocation> prompts support it. Hardcoding to precise now to avoid
+  // double prompting.
+  prompt_model_->SetDelegateAction(
+      Action::kAllow, delegate()->Requests()[0]->GetContentSettingsType() ==
+                              ContentSettingsType::GEOLOCATION_WITH_OPTIONS
+                          ? PromptOptions(GeolocationPromptOptions{
+                                GeolocationAccuracy::kPrecise})
+                          : std::monostate());
   MaybeUpdateDialogWithNewScreenVariant();
 }
 
-void EmbeddedPermissionPromptAndroid::Acknowledge() {
+void EmbeddedPermissionPromptAndroid::Acknowledge(
+    const PromptOptions& prompt_options) {
   prompt_model_->RecordPermissionActionUKM(
       permissions::ElementAnchoredBubbleAction::kOk);
-  prompt_model_->SetDelegateAction(Action::kDismiss);
+  prompt_model_->SetDelegateAction(Action::kDismiss, prompt_options);
   delegate()->FinalizeCurrentRequests();
 }
 
-void EmbeddedPermissionPromptAndroid::AcceptThisTime() {
+void EmbeddedPermissionPromptAndroid::AcceptThisTime(
+    const PromptOptions& prompt_options) {
   prompt_model_->PrecalculateVariantsForMetrics();
   prompt_model_->RecordPermissionActionUKM(
       permissions::ElementAnchoredBubbleAction::kGrantedOnce);
-  prompt_model_->SetDelegateAction(Action::kAllowThisTime);
+
+  // TODO(crbug.com/442793180): Plumb precise/approximate values when
+  // <geolocation> prompts support it. Hardcoding to precise now to avoid
+  // double prompting.
+  prompt_model_->SetDelegateAction(
+      Action::kAllowThisTime,
+      delegate()->Requests()[0]->GetContentSettingsType() ==
+              ContentSettingsType::GEOLOCATION_WITH_OPTIONS
+          ? PromptOptions(
+                GeolocationPromptOptions{GeolocationAccuracy::kPrecise})
+          : std::monostate());
   MaybeUpdateDialogWithNewScreenVariant();
 }
 
-void EmbeddedPermissionPromptAndroid::Deny() {
+void EmbeddedPermissionPromptAndroid::Deny(
+    const PromptOptions& prompt_options) {
   prompt_model_->PrecalculateVariantsForMetrics();
   prompt_model_->RecordPermissionActionUKM(
       permissions::ElementAnchoredBubbleAction::kDenied);
-  prompt_model_->SetDelegateAction(Action::kDeny);
+  prompt_model_->SetDelegateAction(Action::kDeny, prompt_options);
   delegate()->FinalizeCurrentRequests();
 }
 
@@ -158,7 +181,8 @@ void EmbeddedPermissionPromptAndroid::SystemPermissionResolved(bool accepted) {
     prompt_model_->PrecalculateVariantsForMetrics();
     prompt_model_->RecordOsMetrics(
         permissions::OsScreenAction::kOsPromptDenied);
-    prompt_model_->SetDelegateAction(Action::kDismiss);
+    prompt_model_->SetDelegateAction(Action::kDismiss,
+                                     /*prompt_options=*/std::monostate());
     delegate()->FinalizeCurrentRequests();
   }
 }
@@ -325,7 +349,8 @@ void EmbeddedPermissionPromptAndroid::MaybeUpdateDialogWithNewScreenVariant() {
     // simply following the action on the dialog but respecting how the
     // permission status change. Then we should translate the dismiss here to
     // "resolve" event if needed.
-    prompt_model_->SetDelegateAction(Action::kDismiss);
+    prompt_model_->SetDelegateAction(Action::kDismiss,
+                                     /*prompt_options=*/std::monostate());
     delegate()->FinalizeCurrentRequests();
     return;
   }

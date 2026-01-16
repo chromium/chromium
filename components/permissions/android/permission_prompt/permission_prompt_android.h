@@ -55,12 +55,12 @@ class PermissionPromptAndroid : public PermissionPrompt {
 
   virtual EmbeddedPermissionPromptFlowModel::Variant GetEmbeddedPromptVariant()
       const;
-  virtual void Dismiss();
-  virtual void Accept();
-  virtual void AcceptThisTime();
-  virtual void Acknowledge() {}
-  virtual void Deny();
-  virtual void Ignore();
+  virtual void Dismiss(const PromptOptions& prompt_options);
+  virtual void Accept(const PromptOptions& prompt_options);
+  virtual void AcceptThisTime(const PromptOptions& prompt_options);
+  virtual void Acknowledge(const PromptOptions& prompt_options) {}
+  virtual void Deny(const PromptOptions& prompt_options);
+  virtual void Ignore(const PromptOptions& prompt_options);
   virtual void Resumed() {}
   virtual void SystemSettingsShown() {}
   virtual void SystemPermissionResolved(bool accepted) {}
@@ -100,8 +100,6 @@ class PermissionPromptAndroid : public PermissionPrompt {
   base::android::ScopedJavaLocalRef<jintArray> GetBoldRanges(JNIEnv* env) const;
 
   bool IsShowing() const { return this == delegate()->GetCurrentPrompt(); }
-
-  void SetPromptOptions(PromptOptions prompt_options);
 
   GeolocationAccuracy GetInitialGeolocationAccuracySelection() const;
 
