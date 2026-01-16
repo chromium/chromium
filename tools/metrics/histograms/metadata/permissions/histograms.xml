@@ -632,6 +632,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Permissions.ClapperLoud.PageInfo.OsPromptResolved"
+    enum="Boolean" expires_after="2026-05-03">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records whether the OS-level notification permission prompt was granted or
+    denied when the user clicked on the Subscribe button in the PageInfo
+    Permissions subpage.
+  </summary>
+</histogram>
+
 <histogram name="Permissions.ClapperLoud.PageInfo.Reset" enum="Boolean"
     expires_after="2026-05-03">
   <owner>elklm@chromium.org</owner>
