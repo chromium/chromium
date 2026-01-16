@@ -7,6 +7,7 @@ package org.chromium.net;
 import android.util.Pair;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
 import java.lang.annotation.Retention;
@@ -189,7 +190,7 @@ public final class Proxy {
     public static @NonNull Proxy createHttpProxy(
             @Scheme int scheme,
             @NonNull String host,
-            int port,
+            @IntRange(from = 0, to = 65535) int port,
             @NonNull Executor executor,
             @NonNull HttpConnectCallback callback) {
         return new Proxy(scheme, host, port, executor, callback);
