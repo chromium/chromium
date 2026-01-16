@@ -23,6 +23,7 @@ import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -67,6 +68,26 @@ class FuseboxViewBinder {
             boolean visible = model.get(FuseboxProperties.ATTACHMENTS_VISIBLE);
             view.attachmentsView.setVisibility(visible ? View.VISIBLE : View.GONE);
             reanchorViewsForCompactFusebox(model, view);
+
+            // This fixes a flicker we see when transitioning from 0 attachments to 1 attachment.
+            // The last attachment would be shown at the start of the fade animation, and any
+            // attempt to reset the attachment View or clear out pending animations didn't help. The
+            // correct solution is probably to instead allow the fade out animation to play, but
+            // that's difficult due to how this and similar classes are set up here. We don't have
+            // control over event sequencing or good observability on RV animations. Note when
+            // trying to repro this bug, as of writing only the add current tab context is able to
+            // trigger this, all of the intent based context flows have full screen animations that
+            // hide inconsistencies. Lastly, this removeAllViews() fixes the issue when invoked on
+            // either visibility edge. Here we're running it when hidden instead of when shown.
+            // While it doesn't really matter, this kind of shows that we've given up on the fade
+            // out animation, but we're trying to avoid tampering with the fade in animation, which
+            // still works.
+            if (!visible) {
+                LayoutManager layoutManager = view.attachmentsView.getLayoutManager();
+                if (layoutManager != null) {
+                    layoutManager.removeAllViews();
+                }
+            }
         } else if (propertyKey == FuseboxProperties.BUTTON_ADD_CLICKED) {
             view.addButton.setOnClickListener(
                     v -> model.get(FuseboxProperties.BUTTON_ADD_CLICKED).run());
