@@ -9614,7 +9614,7 @@
   {
     "name": "wayland-session-management",
     "owners": [ "nickdiego@igalia.com", "fangzhoug@chromium.org", "thomasanderson@chromium.org"],
-    "expiry_milestone": 146
+    "expiry_milestone": 150
   },
   {
     "name": "web-app-installation-api",
