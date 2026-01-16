@@ -112,7 +112,7 @@ Matcher<Suggestion> EqualLabels(
 // This function is currently only used for BNPL unittests, and BNPL is
 // currently only available for desktop and android platforms.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+    BUILDFLAG(IS_CHROMEOS)
 Matcher<Suggestion> EqualsSuggestion(const Suggestion& suggestion) {
   return AllOf(Field(&Suggestion::type, suggestion.type),
                Field(&Suggestion::main_text, suggestion.main_text),
@@ -121,7 +121,7 @@ Matcher<Suggestion> EqualsSuggestion(const Suggestion& suggestion) {
                Field(&Suggestion::labels, suggestion.labels));
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+        // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_IOS)
 Matcher<Suggestion> EqualsUndoAutofillSuggestion() {
@@ -1554,6 +1554,7 @@ class PaymentsSuggestionGeneratorBnplTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+#if !BUILDFLAG(IS_ANDROID)
 // Ensures that the pay over time option is generated with expected content
 // and inserted as the last entry before the footer suggestions.
 TEST_F(PaymentsSuggestionGeneratorBnplTest,
@@ -1608,7 +1609,7 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
   ASSERT_TRUE(update_suggestions_result.is_bnpl_suggestion_added);
   std::vector<Suggestion>& updated_suggestions =
       update_suggestions_result.suggestions;
-  ASSERT_EQ(updated_suggestions.size(), 7U);
+  ASSERT_EQ(updated_suggestions.size(), 8U);
   size_t current_suggestion_index = 0;
   // Checks card suggestions stayed in the same order after the insertion.
   for (const CreditCard& card : ordered_cards_for_suggestions) {
@@ -1619,12 +1620,15 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
                         CreditCard::RecordType::kVirtualCard,
                     /*card_linked_offer_available=*/false)));
   }
+  EXPECT_THAT(updated_suggestions[current_suggestion_index++],
+              EqualsSuggestion(SuggestionType::kSeparator));
 
   // Checks BNPL suggestion is inserted.
   EXPECT_EQ(updated_suggestions[current_suggestion_index]
                 .GetPayload<Suggestion::PaymentsPayload>()
                 .extracted_amount_in_micros,
             extracted_amount_in_micros);
+  std::vector<BnplIssuer> bnpl_issuers = payments_data().GetBnplIssuers();
   EXPECT_THAT(
       updated_suggestions[current_suggestion_index++],
       EqualsSuggestion(
@@ -1632,7 +1636,9 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
           l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_PAY_LATER_OPTIONS_TEXT),
           Suggestion::Icon::kBnpl,
           {{Suggestion::Text(l10n_util::GetStringFUTF16(
-              IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL, u"$34"))}}));
+              IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL_TWO_ISSUERS,
+              bnpl_issuers[1].GetDisplayName(),
+              bnpl_issuers[0].GetDisplayName()))}}));
 
   // Checks the footer suggestions stayed in the same order after the insertion.
   EXPECT_THAT(updated_suggestions[current_suggestion_index++],
@@ -1733,120 +1739,6 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
   EXPECT_EQ(current_suggestion_index, updated_suggestions.size());
 }
 
-// Ensures that `GetBnplPriceLowerBound()` returns the minimum lower price
-// bound among all given issuers.
-TEST_F(PaymentsSuggestionGeneratorBnplTest,
-       GetBnplPriceLowerBound_ReturnLowerAmount) {
-  std::vector<BnplIssuer> bnpl_issuers = {
-      BnplIssuer(
-          /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplAffirm,
-          {BnplIssuer::EligiblePriceRange("USD",
-                                          /*price_lower_bound=*/34'666'666,
-                                          /*price_upper_bound=*/200'000'000)}),
-      BnplIssuer(
-          /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplZip,
-          {BnplIssuer::EligiblePriceRange("USD",
-                                          /*price_lower_bound=*/34'000'000,
-                                          /*price_upper_bound=*/200'000'000)}),
-      BnplIssuer(
-          /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplAfterpay,
-          {BnplIssuer::EligiblePriceRange("USD",
-                                          /*price_lower_bound=*/22'000'000,
-                                          /*price_upper_bound=*/200'000'000)})};
-
-  EXPECT_EQ(GetBnplPriceLowerBoundForTest(bnpl_issuers), u"$22");
-}
-
-// Ensures that `GetBnplPriceLowerBound()` returns the minimum lower price
-// bound in USD among all given issuers.
-TEST_F(PaymentsSuggestionGeneratorBnplTest,
-       GetBnplPriceLowerBound_ReturnLowerAmountInUsd) {
-  std::vector<BnplIssuer> bnpl_issuers = {
-      BnplIssuer(
-          /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplAffirm,
-          {BnplIssuer::EligiblePriceRange("USD",
-                                          /*price_lower_bound=*/34'000'000,
-                                          /*price_upper_bound=*/200'000'000),
-           BnplIssuer::EligiblePriceRange("GBP",
-                                          /*price_lower_bound=*/20'000'000,
-                                          /*price_upper_bound=*/200'000'000)}),
-      BnplIssuer(
-          /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplAfterpay,
-          {BnplIssuer::EligiblePriceRange("USD",
-                                          /*price_lower_bound=*/22'000'000,
-                                          /*price_upper_bound=*/200'000'000)})};
-
-  EXPECT_EQ(GetBnplPriceLowerBoundForTest(bnpl_issuers), u"$22");
-}
-
-// Ensures that `GetBnplPriceLowerBound()` returns the minimum lower price bound
-// that is in whole currency unit in integer format.
-TEST_F(PaymentsSuggestionGeneratorBnplTest,
-       GetBnplPriceLowerBound_AmountInInteger) {
-  std::vector<BnplIssuer> bnpl_issuers = {BnplIssuer(
-      /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplAffirm,
-      {BnplIssuer::EligiblePriceRange("USD",
-                                      /*price_lower_bound=*/34'000'000,
-                                      /*price_upper_bound=*/200'000'000)})};
-
-  EXPECT_EQ(GetBnplPriceLowerBoundForTest(bnpl_issuers), u"$34");
-}
-
-#if defined(GTEST_HAS_DEATH_TEST)
-// Ensures that the CHECK in `GetBnplPriceLowerBound()` catches the case when
-// no BNPL issuer has eligible price range in USD.
-TEST_F(PaymentsSuggestionGeneratorBnplTest,
-       GetBnplPriceLowerBound_NoMatchingPriceRange) {
-  std::vector<BnplIssuer> bnpl_issuers = {BnplIssuer(
-      /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplAffirm,
-      {BnplIssuer::EligiblePriceRange("GBP",
-                                      /*price_lower_bound=*/34'000'000,
-                                      /*price_upper_bound=*/200'000'000)})};
-
-  EXPECT_DEATH(GetBnplPriceLowerBoundForTest(bnpl_issuers), "");
-}
-#endif  // defined(GTEST_HAS_DEATH_TEST)
-
-// Ensures that `GetBnplPriceLowerBound` returns the minimum lower price bound
-// that has more than 2 decimal points with proper rounding.
-TEST_F(PaymentsSuggestionGeneratorBnplTest,
-       GetBnplPriceLowerBound_AmountWithMoreThanTwoDecimal) {
-  std::vector<BnplIssuer> bnpl_issuers = {BnplIssuer(
-      /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplAffirm,
-      {BnplIssuer::EligiblePriceRange("USD",
-                                      /*price_lower_bound=*/34'666'666,
-                                      /*price_upper_bound=*/200'000'000)})};
-
-  EXPECT_EQ(GetBnplPriceLowerBoundForTest(bnpl_issuers), u"$34.67");
-}
-
-// Ensures that `GetBnplPriceLowerBound` returns the minimum lower price bound
-// that has single digit cents value with 0 after the decimal point.
-TEST_F(PaymentsSuggestionGeneratorBnplTest,
-       GetBnplPriceLowerBound_AmountWithSingleDigitCents) {
-  std::vector<BnplIssuer> bnpl_issuers = {BnplIssuer(
-      /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplAffirm,
-      {BnplIssuer::EligiblePriceRange("USD",
-                                      /*price_lower_bound=*/34'070'000,
-                                      /*price_upper_bound=*/200'000'000)})};
-
-  EXPECT_EQ(GetBnplPriceLowerBoundForTest(bnpl_issuers), u"$34.07");
-}
-
-// Ensures that `GetBnplPriceLowerBound` returns the rounded up minimum lower
-// price bound if the amount has cents value higher than 99.
-TEST_F(PaymentsSuggestionGeneratorBnplTest,
-       GetBnplPriceLowerBound_AmountWithMoreThanNintyNineCents) {
-  std::vector<BnplIssuer> bnpl_issuers = {BnplIssuer(
-      /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplAffirm,
-      {BnplIssuer::EligiblePriceRange("USD",
-                                      /*price_lower_bound=*/34'996'666,
-                                      /*price_upper_bound=*/200'000'000)})};
-
-  EXPECT_EQ(GetBnplPriceLowerBoundForTest(bnpl_issuers), u"$35");
-}
-
-#if !BUILDFLAG(IS_ANDROID)
 // Ensures the pay over time option is added if `ShouldAppendBnplOption` returns
 // true.
 TEST_F(PaymentsSuggestionGeneratorBnplTest,
@@ -2032,7 +1924,6 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
                           EqualsSuggestion(SuggestionType::kSeparator),
                           EqualsSuggestion(SuggestionType::kManageCreditCard)));
 }
-#endif
 
 // Ensures that the pay over time option is not added if the suggestion list
 // is empty.
@@ -2069,6 +1960,7 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
 
   EXPECT_THAT(update_suggestions_result.suggestions,
               ElementsAre(EqualsSuggestion(SuggestionType::kCreditCardEntry),
+                          EqualsSuggestion(SuggestionType::kSeparator),
                           EqualsSuggestion(SuggestionType::kBnplEntry),
                           EqualsSuggestion(SuggestionType::kSeparator),
                           EqualsSuggestion(SuggestionType::kManageCreditCard)));
@@ -2079,7 +1971,6 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
                    .is_bnpl_suggestion_added);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(PaymentsSuggestionGeneratorBnplTest,
        MaybeUpdateDesktopSuggestionsWithBnpl_IphBubbleNotShown_IssuerMissing) {
   // Add a server card.
@@ -2223,6 +2114,120 @@ TEST_F(
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+// Ensures that `GetBnplPriceLowerBound()` returns the minimum lower price
+// bound among all given issuers.
+TEST_F(PaymentsSuggestionGeneratorBnplTest,
+       GetBnplPriceLowerBound_ReturnLowerAmount) {
+  std::vector<BnplIssuer> bnpl_issuers = {
+      BnplIssuer(
+          /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplAffirm,
+          {BnplIssuer::EligiblePriceRange("USD",
+                                          /*price_lower_bound=*/34'666'666,
+                                          /*price_upper_bound=*/200'000'000)}),
+      BnplIssuer(
+          /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplZip,
+          {BnplIssuer::EligiblePriceRange("USD",
+                                          /*price_lower_bound=*/34'000'000,
+                                          /*price_upper_bound=*/200'000'000)}),
+      BnplIssuer(
+          /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplAfterpay,
+          {BnplIssuer::EligiblePriceRange("USD",
+                                          /*price_lower_bound=*/22'000'000,
+                                          /*price_upper_bound=*/200'000'000)})};
+
+  EXPECT_EQ(GetBnplPriceLowerBoundForTest(bnpl_issuers), u"$22");
+}
+
+// Ensures that `GetBnplPriceLowerBound()` returns the minimum lower price
+// bound in USD among all given issuers.
+TEST_F(PaymentsSuggestionGeneratorBnplTest,
+       GetBnplPriceLowerBound_ReturnLowerAmountInUsd) {
+  std::vector<BnplIssuer> bnpl_issuers = {
+      BnplIssuer(
+          /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplAffirm,
+          {BnplIssuer::EligiblePriceRange("USD",
+                                          /*price_lower_bound=*/34'000'000,
+                                          /*price_upper_bound=*/200'000'000),
+           BnplIssuer::EligiblePriceRange("GBP",
+                                          /*price_lower_bound=*/20'000'000,
+                                          /*price_upper_bound=*/200'000'000)}),
+      BnplIssuer(
+          /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplAfterpay,
+          {BnplIssuer::EligiblePriceRange("USD",
+                                          /*price_lower_bound=*/22'000'000,
+                                          /*price_upper_bound=*/200'000'000)})};
+
+  EXPECT_EQ(GetBnplPriceLowerBoundForTest(bnpl_issuers), u"$22");
+}
+
+// Ensures that `GetBnplPriceLowerBound()` returns the minimum lower price bound
+// that is in whole currency unit in integer format.
+TEST_F(PaymentsSuggestionGeneratorBnplTest,
+       GetBnplPriceLowerBound_AmountInInteger) {
+  std::vector<BnplIssuer> bnpl_issuers = {BnplIssuer(
+      /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplAffirm,
+      {BnplIssuer::EligiblePriceRange("USD",
+                                      /*price_lower_bound=*/34'000'000,
+                                      /*price_upper_bound=*/200'000'000)})};
+
+  EXPECT_EQ(GetBnplPriceLowerBoundForTest(bnpl_issuers), u"$34");
+}
+
+#if defined(GTEST_HAS_DEATH_TEST)
+// Ensures that the CHECK in `GetBnplPriceLowerBound()` catches the case when
+// no BNPL issuer has eligible price range in USD.
+TEST_F(PaymentsSuggestionGeneratorBnplTest,
+       GetBnplPriceLowerBound_NoMatchingPriceRange) {
+  std::vector<BnplIssuer> bnpl_issuers = {BnplIssuer(
+      /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplAffirm,
+      {BnplIssuer::EligiblePriceRange("GBP",
+                                      /*price_lower_bound=*/34'000'000,
+                                      /*price_upper_bound=*/200'000'000)})};
+
+  EXPECT_DEATH(GetBnplPriceLowerBoundForTest(bnpl_issuers), "");
+}
+#endif  // defined(GTEST_HAS_DEATH_TEST)
+
+// Ensures that `GetBnplPriceLowerBound` returns the minimum lower price bound
+// that has more than 2 decimal points with proper rounding.
+TEST_F(PaymentsSuggestionGeneratorBnplTest,
+       GetBnplPriceLowerBound_AmountWithMoreThanTwoDecimal) {
+  std::vector<BnplIssuer> bnpl_issuers = {BnplIssuer(
+      /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplAffirm,
+      {BnplIssuer::EligiblePriceRange("USD",
+                                      /*price_lower_bound=*/34'666'666,
+                                      /*price_upper_bound=*/200'000'000)})};
+
+  EXPECT_EQ(GetBnplPriceLowerBoundForTest(bnpl_issuers), u"$34.67");
+}
+
+// Ensures that `GetBnplPriceLowerBound` returns the minimum lower price bound
+// that has single digit cents value with 0 after the decimal point.
+TEST_F(PaymentsSuggestionGeneratorBnplTest,
+       GetBnplPriceLowerBound_AmountWithSingleDigitCents) {
+  std::vector<BnplIssuer> bnpl_issuers = {BnplIssuer(
+      /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplAffirm,
+      {BnplIssuer::EligiblePriceRange("USD",
+                                      /*price_lower_bound=*/34'070'000,
+                                      /*price_upper_bound=*/200'000'000)})};
+
+  EXPECT_EQ(GetBnplPriceLowerBoundForTest(bnpl_issuers), u"$34.07");
+}
+
+// Ensures that `GetBnplPriceLowerBound` returns the rounded up minimum lower
+// price bound if the amount has cents value higher than 99.
+TEST_F(PaymentsSuggestionGeneratorBnplTest,
+       GetBnplPriceLowerBound_AmountWithMoreThanNintyNineCents) {
+  std::vector<BnplIssuer> bnpl_issuers = {BnplIssuer(
+      /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplAffirm,
+      {BnplIssuer::EligiblePriceRange("USD",
+                                      /*price_lower_bound=*/34'996'666,
+                                      /*price_upper_bound=*/200'000'000)})};
+
+  EXPECT_EQ(GetBnplPriceLowerBoundForTest(bnpl_issuers), u"$35");
+}
+
+#if BUILDFLAG(IS_ANDROID)
 // Verifies that a BNPL suggestion is added to Touch to Fill suggestions when
 // BNPL is eligible and there are credit card suggestions.
 TEST_F(PaymentsSuggestionGeneratorBnplTest,
@@ -2352,6 +2357,7 @@ TEST_F(
   GetCreditCardSuggestionsForTouchToFill(/*credit_cards=*/{CreateServerCard()},
                                          autofill_manager());
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
