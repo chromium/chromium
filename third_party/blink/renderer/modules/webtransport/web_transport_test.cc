@@ -1686,6 +1686,68 @@ TEST_F(WebTransportTest, ReceiveStreamGarbageCollectionCancel) {
   EXPECT_FALSE(receive_stream);
 }
 
+// Tests that when OnIncomingStreamClosed() arrives before the stream is
+// created (due to IPC timing), the notification is stored in
+// closed_potentially_pending_streams_ and consumed when the stream is
+// eventually created. Verifies the fix for crbug.com/358257243.
+TEST_F(WebTransportTest, PendingIncomingStreamCloseConsumedOnceStreamExists) {
+  V8TestingScope scope;
+
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+
+  constexpr uint32_t kStreamId = 0;
+  EXPECT_FALSE(web_transport->HasPendingClosedStreamForTesting(kStreamId));
+
+  web_transport->OnIncomingStreamClosed(kStreamId, /*fin_received=*/true);
+  EXPECT_TRUE(web_transport->HasPendingClosedStreamForTesting(kStreamId));
+
+  mojo::ScopedDataPipeProducerHandle producer = DoAcceptUnidirectionalStream();
+  ReceiveStream* receive_stream = ReadReceiveStream(scope, web_transport);
+  ASSERT_TRUE(receive_stream);
+
+  // Creating the ReceiveStream should consume the pending close entry.
+  EXPECT_FALSE(web_transport->HasPendingClosedStreamForTesting(kStreamId));
+
+  producer.reset();
+  test::RunPendingTasks();
+}
+
+// Tests that OnIncomingStreamClosed() notifications for a stream that was
+// locally aborted (canceled) before receiving a close notification are properly
+// ignored, preventing entries from accumulating in
+// closed_potentially_pending_streams_. Part of fix for crbug.com/358257243.
+TEST_F(WebTransportTest, CloseIgnoredAfterLocalAbort) {
+  V8TestingScope scope;
+  auto* script_state = scope.GetScriptState();
+
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+
+  constexpr uint32_t kStreamId = 0;
+  mojo::ScopedDataPipeProducerHandle producer = DoAcceptUnidirectionalStream();
+  ReceiveStream* receive_stream = ReadReceiveStream(scope, web_transport);
+  ASSERT_TRUE(receive_stream);
+
+  // Cancel the stream locally (without receiving OnIncomingStreamClosed first).
+  // This triggers ForgetIncomingStream with has_received_close=false,
+  // adding kStreamId to recently_forgotten_incoming_stream_ids_.
+  auto cancel_promise =
+      receive_stream->cancel(script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester cancel_tester(script_state, cancel_promise);
+  test::RunPendingTasks();
+  cancel_tester.WaitUntilSettled();
+  EXPECT_TRUE(cancel_tester.IsFulfilled());
+
+  // Now simulate OnIncomingStreamClosed arriving after the local abort.
+  // This should be ignored because the stream_id is in the tracking set.
+  web_transport->OnIncomingStreamClosed(kStreamId, /*fin_received=*/true);
+
+  // The close should NOT be added to closed_potentially_pending_streams_
+  // because the stream was already forgotten and tracked.
+  EXPECT_FALSE(web_transport->HasPendingClosedStreamForTesting(kStreamId));
+}
+
 TEST_F(WebTransportTest, ReceiveStreamGarbageCollectionRemoteClose) {
   V8TestingScope scope;
 

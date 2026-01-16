@@ -41,9 +41,13 @@ class MODULES_EXPORT IncomingStream final
     kClosed,
   };
 
-  IncomingStream(ScriptState*,
-                 base::OnceCallback<void(std::optional<uint8_t>)> on_abort,
-                 mojo::ScopedDataPipeConsumerHandle);
+  // |on_abort| is called when the stream is aborted. The first parameter is
+  // the stop_sending code (if any), and the second indicates whether
+  // OnIncomingStreamClosed() was called before the stream was aborted.
+  IncomingStream(
+      ScriptState*,
+      base::OnceCallback<void(std::optional<uint8_t>, bool)> on_abort,
+      mojo::ScopedDataPipeConsumerHandle);
   ~IncomingStream();
 
   // Init() or InitWithExistingReadableStream() must be called before the stream
@@ -119,7 +123,7 @@ class MODULES_EXPORT IncomingStream final
 
   const Member<ScriptState> script_state_;
 
-  base::OnceCallback<void(std::optional<uint8_t>)> on_abort_;
+  base::OnceCallback<void(std::optional<uint8_t>, bool)> on_abort_;
 
   mojo::ScopedDataPipeConsumerHandle data_pipe_;
 
