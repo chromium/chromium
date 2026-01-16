@@ -5,6 +5,7 @@
 #include "chrome/chrome_elf/pe_image_safe/pe_image_safe.h"
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
@@ -70,10 +71,8 @@ TEST(PEImageSafe, SanityTest) {
   base::File file(pe_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   ASSERT_TRUE(file.IsValid());
 
-  std::vector<char> buffer;
-  buffer.resize(kPageSize);
-  ASSERT_EQ(UNSAFE_TODO(file.Read(0, &buffer[0], kPageSize)),
-            static_cast<int>(kPageSize));
+  std::vector<char> buffer(kPageSize);
+  ASSERT_TRUE(file.ReadAndCheck(0, base::as_writable_byte_span(buffer)));
   file.Close();
 
   // Grab some key data out of the pe headers first, NOT using pe_image_safe.
