@@ -158,7 +158,8 @@ bool ReadSecretFromSharedMemory(base::ScopedFD fd,
   if (!mapping.IsValid())
     return false;
   secret->resize(secret_size);
-  UNSAFE_TODO(memcpy(secret->data(), mapping.memory(), secret->size()));
+  base::span<uint8_t>(*secret).copy_from_nonoverlapping(
+      mapping.GetMemoryAsSpan<const uint8_t>());
   return true;
 }
 
