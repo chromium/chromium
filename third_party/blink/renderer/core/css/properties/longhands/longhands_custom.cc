@@ -1212,7 +1212,7 @@ const CSSValue* BackgroundSize::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   const FillLayer& fill_layer = style.BackgroundLayers();
-  return ComputedStyleUtils::BackgroundImageOrMaskSize(style, fill_layer);
+  return ComputedStyleUtils::BackgroundSizeOrMaskSize(style, fill_layer);
 }
 
 const CSSValue* BackgroundRepeat::ParseSingleValue(
@@ -11844,7 +11844,7 @@ const CSSValue* MaskSize::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   const FillLayer& fill_layer = style.MaskLayers();
-  return ComputedStyleUtils::BackgroundImageOrMaskSize(style, fill_layer);
+  return ComputedStyleUtils::BackgroundSizeOrMaskSize(style, fill_layer);
 }
 
 const CSSValue* MaskSize::InitialValue() const {

@@ -76,8 +76,8 @@ class CORE_EXPORT ComputedStyleUtils {
                                                     CSSValuePhase value_phase);
   static const CSSValue* ValueForFillSize(const FillSize&,
                                           const ComputedStyle&);
-  static const CSSValue* BackgroundImageOrMaskSize(const ComputedStyle&,
-                                                   const FillLayer&);
+  static const CSSValue* BackgroundSizeOrMaskSize(const ComputedStyle&,
+                                                  const FillLayer&);
   static const CSSValueList* CreatePositionListForLayer(const CSSProperty&,
                                                         const FillLayer&,
                                                         const ComputedStyle&);
