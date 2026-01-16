@@ -8,15 +8,18 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
+import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.MainSettings;
@@ -130,4 +133,43 @@ public class SearchResultsPreferenceFragment extends ChromeBaseSettingsFragment 
     public @AnimationType int getAnimationType() {
         return AnimationType.PROPERTY;
     }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        getListView().addOnChildAttachStateChangeListener(mChildAttachListener);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        if (getListView() != null) {
+            getListView().removeOnChildAttachStateChangeListener(mChildAttachListener);
+        }
+    }
+
+    private final RecyclerView.OnChildAttachStateChangeListener mChildAttachListener =
+            new RecyclerView.OnChildAttachStateChangeListener() {
+                @Override
+                public void onChildViewAttachedToWindow(View view) {
+                    // Limit Title to 2 lines and append "..."
+                    TextView titleView = view.findViewById(android.R.id.title);
+                    if (titleView != null) {
+                        titleView.setMaxLines(2);
+                        titleView.setEllipsize(TextUtils.TruncateAt.END);
+                    }
+
+                    // Limit Body (Summary) to 2 lines and append "..."
+                    TextView summaryView = view.findViewById(android.R.id.summary);
+                    if (summaryView != null) {
+                        summaryView.setMaxLines(2);
+                        summaryView.setEllipsize(TextUtils.TruncateAt.END);
+                    }
+                }
+
+                @Override
+                public void onChildViewDetachedFromWindow(View view) {}
+            };
 }
