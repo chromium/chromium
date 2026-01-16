@@ -136,7 +136,7 @@ public class ContainmentViewStyler {
         }
     }
 
-    private static void recursivelyFindStyledViews(View current, List<View> list) {
+    public static void recursivelyFindStyledViews(View current, List<View> list) {
         // We are looking for views that implement ContainmentItem, which are the
         // user-perceptible items in a preference that need to be individually styled.
         if (current instanceof ContainmentItem && current.getVisibility() == View.VISIBLE) {

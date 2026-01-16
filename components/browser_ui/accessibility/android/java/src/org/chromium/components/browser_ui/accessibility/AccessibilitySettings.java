@@ -25,6 +25,7 @@ import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.search.BaseSearchIndexProvider;
+import org.chromium.components.browser_ui.settings.search.PreferenceParser;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
@@ -292,24 +293,35 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     public static void updateDynamicPreferences(
             Context context, AccessibilitySettingsDelegate delegate, SettingsIndexData indexData) {
         String prefFragment = AccessibilitySettings.class.getName();
-        indexData.addEntryForKey(
+        int subViewPos = 0;
+        addEntryForKey(
+                indexData,
                 prefFragment,
                 PREF_PAGE_ZOOM_DEFAULT_ZOOM,
+                PREF_PAGE_ZOOM_DEFAULT_ZOOM,
+                subViewPos,
                 R.string.page_zoom_title,
                 R.string.page_zoom_summary);
+        subViewPos += 1;
         // Default zoom/Text size contrast/Preview are under a single preference. Add 2 virtual
         // entries to index and make the latter 2 searchable.
-        // TODO(crbug.com/444470792): Figure out how to highlight them when selected.
         if (PageZoomPreference.shouldShowTextSizeContrastSetting()) {
-            indexData.addEntryForKey(
+            addEntryForKey(
+                    indexData,
                     prefFragment,
                     "page_zoom_text_size_contrast",
+                    PREF_PAGE_ZOOM_DEFAULT_ZOOM,
+                    subViewPos,
                     R.string.text_size_contrast_title,
                     R.string.text_size_contrast_summary);
+            subViewPos += 1;
         }
-        indexData.addEntryForKey(
+        addEntryForKey(
+                indexData,
                 prefFragment,
                 "page_zoom_preview",
+                PREF_PAGE_ZOOM_DEFAULT_ZOOM,
+                subViewPos,
                 R.string.page_zoom_preview_title,
                 R.string.page_zoom_preview_text_summary);
         if (!shouldShowJumpStartOmniboxPref()) {
@@ -327,5 +339,25 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         if (!shouldShowTouchpadOverscrollHistoryNavigationPref()) {
             indexData.removeEntryForKey(prefFragment, PREF_TOUCHPAD_OVERSCROLL_HISTORY_NAVIGATION);
         }
+    }
+
+    private static void addEntryForKey(
+            SettingsIndexData indexData,
+            String parentFragment,
+            String key,
+            String highlightKey,
+            int subViewPos,
+            int titleId,
+            int summaryId) {
+        String id = PreferenceParser.createUniqueId(parentFragment, key);
+        Context context = ContextUtils.getApplicationContext();
+        String title = context.getString(titleId);
+        indexData.addEntry(
+                id,
+                new SettingsIndexData.Entry.Builder(id, key, title, parentFragment)
+                        .setSummary(context.getString(summaryId))
+                        .setHighlightKey(highlightKey)
+                        .setSubViewPos(subViewPos)
+                        .build());
     }
 }

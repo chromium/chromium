@@ -42,9 +42,16 @@ public class SearchResultsPreferenceFragment extends ChromeBaseSettingsFragment 
          * @param key A unique key associated with the chosen setting.
          * @param extras The additional args required to launch the pref.
          * @param highlight Whether or not to highlight the item.
+         * @param highlightKey The key to highlight if it is different from {@code key}.
+         * @param subViewPos Position of the view to highlight among the child views.
          */
         void onSelected(
-                @Nullable String preferenceFragment, String key, Bundle extras, boolean highlight);
+                @Nullable String preferenceFragment,
+                String key,
+                Bundle extras,
+                boolean highlight,
+                @Nullable String highlightKey,
+                int subViewPos);
     }
 
     private final List<SettingsIndexData.Entry> mPreferenceData;
@@ -91,7 +98,13 @@ public class SearchResultsPreferenceFragment extends ChromeBaseSettingsFragment 
                         String mainSettingsFragment = MainSettings.class.getName();
                         var isMain = TextUtils.equals(info.parentFragment, mainSettingsFragment);
                         String fragment = isMain ? info.fragment : info.parentFragment;
-                        mSelectedCallback.onSelected(fragment, info.key, info.extras, !isMain);
+                        mSelectedCallback.onSelected(
+                                fragment,
+                                info.key,
+                                info.extras,
+                                !isMain,
+                                info.highlightKey,
+                                info.subViewPos);
                         return true;
                     });
             preference.setIconSpaceReserved(false);
