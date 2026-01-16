@@ -65,7 +65,7 @@
     "experiments": [
       "no-fallback"
     ],
-    "profile_mode": "local",
+    "profile_mode": "cloud",
     "project": "rbe-chromium-untrusted",
     "remote_jobs": 5120
   },
