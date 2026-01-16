@@ -129,9 +129,7 @@ class HttpStreamPool::Attempt {
   base::expected<ServiceEndpoint, TlsStreamAttempt::GetServiceEndpointError>
   GetServiceEndpointForTlsHandshake(const IPEndPoint& ip_endpoint) const;
 
-  void OnSlowTimerFired();
-
-  void OnTcpHandshakeComplete(TcpAttempt* attempt);
+  void OnTcpAttemptSlow(TcpAttempt* attempt);
 
   void OnTcpAttemptComplete(TcpAttempt* attempt, int rv);
 
@@ -150,8 +148,8 @@ class HttpStreamPool::Attempt {
   // endpoints are ready for crypto (TLS) handshake.
   bool is_crypto_ready_ = false;
 
-  base::OneShotTimer slow_timer_;
-  bool slow_timer_expired_ = false;
+  // Set to true when any of the inner attempts is observed to be slow.
+  bool observed_slow_attempt_ = false;
 
   std::optional<AttemptResult> most_recent_attempt_failure_;
 

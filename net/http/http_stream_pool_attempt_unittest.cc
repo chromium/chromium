@@ -233,6 +233,8 @@ class TestAttemptDelegate final
 
 class HttpStreamPoolAttemptTest : public TestWithTaskEnvironment {
  public:
+  static constexpr base::TimeDelta kTinyDelta = base::Milliseconds(1);
+
   HttpStreamPoolAttemptTest()
       : TestWithTaskEnvironment(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
@@ -1331,6 +1333,348 @@ TEST_F(HttpStreamPoolAttemptTest, Ipv6Ipv4TlsHandshakeFailSynchronously) {
   delegate.CompleteServiceEndpointRequest(OK);
 
   ASSERT_EQ(delegate.WaitForResult(), ERR_FAILED);
+}
+
+TEST_F(HttpStreamPoolAttemptTest, WaitForTlsHandshakeReady) {
+  const IPEndPoint ipv4_endpoint = MakeIPEndPoint("192.0.2.1");
+  const IPEndPoint ipv6_endpoint = MakeIPEndPoint("2001:db8::1");
+
+  TestAttemptDelegate delegate = CreateAttemptDelegate();
+  delegate.fake_service_endpoint_request()->add_endpoint(
+      ServiceEndpointBuilder()
+          // This endpoint is attempted and succeeds.
+          .add_ip_endpoint(ipv6_endpoint)
+          // This endpoint shouldn't be attempted.
+          .add_ip_endpoint(ipv4_endpoint)
+          .endpoint());
+
+  SequencedSocketData data;
+  MockConnectCompleter tcp_completer;
+  data.set_connect_data(MockConnect(&tcp_completer));
+  socket_factory()->AddSocketDataProvider(&data);
+  MockConnectCompleter tls_completer;
+  SSLSocketDataProvider ssl_data(&tls_completer);
+  socket_factory()->AddSSLSocketDataProvider(&ssl_data);
+
+  delegate.Start();
+  ASSERT_FALSE(delegate.result().has_value());
+
+  // Complete TCP handshake with a delay. The first attempt should wait for the
+  // endpoint to be ready for TLS handshake. This pauses the slow timer.
+  const base::TimeDelta kTcpHandshakeDelay = base::Milliseconds(50);
+  CHECK_LE(kTcpHandshakeDelay, HttpStreamPool::GetConnectionAttemptDelay());
+  FastForwardBy(kTcpHandshakeDelay);
+  tcp_completer.Complete(OK);
+  ASSERT_FALSE(delegate.result().has_value());
+
+  // Complete service endpoint request with a delay that is larger than the
+  // connection attempt delay. Since the slow timer has been paused, the
+  // second attempt should not be triggered.
+  const base::TimeDelta kServiceEndpointDelay =
+      HttpStreamPool::GetConnectionAttemptDelay() + base::Milliseconds(10);
+  FastForwardBy(kServiceEndpointDelay);
+  delegate.CompleteServiceEndpointRequest(OK);
+  EXPECT_THAT(delegate.attempt()->attempted_endpoints_for_testing(),
+              testing::UnorderedElementsAreArray({ipv6_endpoint}));
+
+  // Complete TLS handshake with a delay that is smaller than the remaining
+  // time for the slow timer. The total handshake delay (TCP + TLS) is smaller
+  // than the connection attempt delay, so the second attempt should not be
+  // triggered.
+  FastForwardBy(kTinyDelta);
+  EXPECT_THAT(delegate.attempt()->attempted_endpoints_for_testing(),
+              testing::UnorderedElementsAreArray({ipv6_endpoint}));
+
+  tls_completer.Complete(OK);
+
+  ASSERT_EQ(delegate.WaitForResult(), OK);
+  EXPECT_EQ(delegate.GetRemoteIPEndPoint(), ipv6_endpoint);
+}
+
+TEST_F(HttpStreamPoolAttemptTest, WaitForTlsHandshakeReadyIpv6Slow) {
+  const IPEndPoint ipv4_endpoint = MakeIPEndPoint("192.0.2.1");
+  const IPEndPoint ipv6_endpoint = MakeIPEndPoint("2001:db8::1");
+
+  TestAttemptDelegate delegate = CreateAttemptDelegate();
+  delegate.fake_service_endpoint_request()->add_endpoint(
+      ServiceEndpointBuilder()
+          // This endpoint is attempted but TLS handshake is slow.
+          .add_ip_endpoint(ipv6_endpoint)
+          // This endpoint is attempted and succeeds.
+          .add_ip_endpoint(ipv4_endpoint)
+          .endpoint());
+
+  SequencedSocketData data_v6;
+  MockConnectCompleter tcp_completer_v6;
+  data_v6.set_connect_data(MockConnect(&tcp_completer_v6));
+  socket_factory()->AddSocketDataProvider(&data_v6);
+  SSLSocketDataProvider ssl_data(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_factory()->AddSSLSocketDataProvider(&ssl_data);
+
+  SequencedSocketData data_v4;
+  socket_factory()->AddSocketDataProvider(&data_v4);
+  MockConnectCompleter tls_completer_v4;
+  SSLSocketDataProvider ssl_data_v4(&tls_completer_v4);
+  socket_factory()->AddSSLSocketDataProvider(&ssl_data_v4);
+
+  delegate.Start();
+  ASSERT_FALSE(delegate.result().has_value());
+
+  // Complete TCP handshake with a delay. The first attempt should wait for the
+  // endpoint to be ready for TLS handshake. This pauses the slow timer.
+  const base::TimeDelta kTcpHandshakeDelay = base::Milliseconds(50);
+  CHECK_LE(kTcpHandshakeDelay, HttpStreamPool::GetConnectionAttemptDelay());
+  FastForwardBy(kTcpHandshakeDelay);
+  tcp_completer_v6.Complete(OK);
+  ASSERT_FALSE(delegate.result().has_value());
+  EXPECT_THAT(delegate.attempt()->attempted_endpoints_for_testing(),
+              testing::UnorderedElementsAreArray({ipv6_endpoint}));
+
+  // Complete service endpoint request with a delay that is larger than the
+  // connection attempt delay. Since the slow timer has been paused, the
+  // second attempt should not be triggered yet.
+  const base::TimeDelta kServiceEndpointDelay =
+      HttpStreamPool::GetConnectionAttemptDelay() + base::Milliseconds(10);
+  FastForwardBy(kServiceEndpointDelay);
+  delegate.CompleteServiceEndpointRequest(OK);
+
+  // Simulate TLS handshake is slow. The second attempt should be triggered.
+  const base::TimeDelta kRemainingDelay =
+      HttpStreamPool::GetConnectionAttemptDelay() - kTcpHandshakeDelay;
+  FastForwardBy(kRemainingDelay);
+  EXPECT_THAT(
+      delegate.attempt()->attempted_endpoints_for_testing(),
+      testing::UnorderedElementsAreArray({ipv6_endpoint, ipv4_endpoint}));
+
+  // Complete TLS handshake for the second attempt.
+  tls_completer_v4.Complete(OK);
+  ASSERT_EQ(delegate.WaitForResult(), OK);
+  EXPECT_EQ(delegate.GetRemoteIPEndPoint(), ipv4_endpoint);
+}
+
+TEST_F(HttpStreamPoolAttemptTest,
+       WaitForTlsHandshakeReadyFirstIpv6FailIpv4SlowSecondIpv6Ok) {
+  const IPEndPoint ipv4_endpoint = MakeIPEndPoint("192.0.2.1");
+  const IPEndPoint ipv6_endpoint1 = MakeIPEndPoint("2001:db8::1");
+  const IPEndPoint ipv6_endpoint2 = MakeIPEndPoint("2001:db8::2");
+
+  TestAttemptDelegate delegate = CreateAttemptDelegate();
+  delegate.fake_service_endpoint_request()->add_endpoint(
+      ServiceEndpointBuilder()
+          // This endpoint is attempted first and TLS handshake fails.
+          .add_ip_endpoint(ipv6_endpoint1)
+          // This endpoint is attempted third and succeeds.
+          .add_ip_endpoint(ipv6_endpoint2)
+          // This endpoint is attempted second and TLS handshake is slow.
+          .add_ip_endpoint(ipv4_endpoint)
+          .endpoint());
+
+  SequencedSocketData data_v6_1;
+  MockConnectCompleter tcp_completer_v6_1;
+  data_v6_1.set_connect_data(MockConnect(&tcp_completer_v6_1));
+  socket_factory()->AddSocketDataProvider(&data_v6_1);
+  MockConnectCompleter tls_completer_v6_1;
+  SSLSocketDataProvider ssl_data_v6_1(&tls_completer_v6_1);
+  socket_factory()->AddSSLSocketDataProvider(&ssl_data_v6_1);
+
+  SequencedSocketData data_v4;
+  socket_factory()->AddSocketDataProvider(&data_v4);
+  SSLSocketDataProvider ssl_data_v4(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_factory()->AddSSLSocketDataProvider(&ssl_data_v4);
+
+  SequencedSocketData data_v6_2;
+  data_v6_2.set_connect_data(MockConnect(ASYNC, OK));
+  socket_factory()->AddSocketDataProvider(&data_v6_2);
+  MockConnectCompleter tls_completer_v6_2;
+  SSLSocketDataProvider ssl_data_v6_2(&tls_completer_v6_2);
+  socket_factory()->AddSSLSocketDataProvider(&ssl_data_v6_2);
+
+  delegate.Start();
+  ASSERT_FALSE(delegate.result().has_value());
+
+  // Complete TCP handshake with a delay. The first attempt should wait for the
+  // endpoint to be ready for TLS handshake. This pauses the slow timer.
+  const base::TimeDelta kTcpHandshakeDelay = base::Milliseconds(50);
+  CHECK_LE(kTcpHandshakeDelay, HttpStreamPool::GetConnectionAttemptDelay());
+  FastForwardBy(kTcpHandshakeDelay);
+  tcp_completer_v6_1.Complete(OK);
+  ASSERT_FALSE(delegate.result().has_value());
+  EXPECT_THAT(delegate.attempt()->attempted_endpoints_for_testing(),
+              testing::UnorderedElementsAreArray({ipv6_endpoint1}));
+
+  // Complete service endpoint request with a delay that is larger than the
+  // connection attempt delay. Since the slow timer has been paused, the
+  // second attempt should not be triggered yet.
+  const base::TimeDelta kServiceEndpointDelay =
+      HttpStreamPool::GetConnectionAttemptDelay() + base::Milliseconds(10);
+  FastForwardBy(kServiceEndpointDelay);
+  delegate.CompleteServiceEndpointRequest(OK);
+  EXPECT_THAT(delegate.attempt()->attempted_endpoints_for_testing(),
+              testing::UnorderedElementsAreArray({ipv6_endpoint1}));
+
+  // Complete TLS handshake for the first attempt. Should trigger the second
+  // attempt.
+  tls_completer_v6_1.Complete(ERR_CONNECTION_RESET);
+  ASSERT_FALSE(delegate.result().has_value());
+  EXPECT_THAT(
+      delegate.attempt()->attempted_endpoints_for_testing(),
+      testing::UnorderedElementsAreArray({ipv6_endpoint1, ipv4_endpoint}));
+
+  // Simulate TLS handshake is slow. Currently we use separate slow timers for
+  // each attempt so the delay is not cumulative. The third attempt should be
+  // triggered.
+  FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay());
+  EXPECT_THAT(delegate.attempt()->attempted_endpoints_for_testing(),
+              testing::UnorderedElementsAreArray(
+                  {ipv6_endpoint1, ipv6_endpoint2, ipv4_endpoint}));
+
+  tls_completer_v6_2.Complete(OK);
+  ASSERT_EQ(delegate.WaitForResult(), OK);
+  EXPECT_EQ(delegate.GetRemoteIPEndPoint(), ipv6_endpoint2);
+}
+
+TEST_F(HttpStreamPoolAttemptTest, WaitForTlsHandshakeReadyIpv6SlowIpv4Late) {
+  const IPEndPoint ipv4_endpoint = MakeIPEndPoint("192.0.2.1");
+  const IPEndPoint ipv6_endpoint = MakeIPEndPoint("2001:db8::1");
+
+  TestAttemptDelegate delegate = CreateAttemptDelegate();
+  delegate.fake_service_endpoint_request()->add_endpoint(
+      ServiceEndpointBuilder().add_ip_endpoint(ipv6_endpoint).endpoint());
+
+  SequencedSocketData data_v6;
+  MockConnectCompleter tcp_completer_v6;
+  data_v6.set_connect_data(MockConnect(&tcp_completer_v6));
+  socket_factory()->AddSocketDataProvider(&data_v6);
+  // IPv6 TLS handshake stalls forever.
+  SSLSocketDataProvider ssl_data_v6(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_factory()->AddSSLSocketDataProvider(&ssl_data_v6);
+
+  SequencedSocketData data_v4;
+  socket_factory()->AddSocketDataProvider(&data_v4);
+  SSLSocketDataProvider ssl_data_v4(ASYNC, OK);
+  socket_factory()->AddSSLSocketDataProvider(&ssl_data_v4);
+
+  delegate.Start();
+  ASSERT_FALSE(delegate.result().has_value());
+
+  // Complete TCP handshake with a delay. The first attempt should wait for the
+  // endpoint to be ready for TLS handshake.
+  const base::TimeDelta kTcpHandshakeDelay = base::Milliseconds(50);
+  CHECK_LE(kTcpHandshakeDelay, HttpStreamPool::GetConnectionAttemptDelay());
+  FastForwardBy(kTcpHandshakeDelay);
+  tcp_completer_v6.Complete(OK);
+  ASSERT_FALSE(delegate.result().has_value());
+
+  // Update service endpoint request with an IPv4 endpoint. This should not
+  // trigger a new attempt yet.
+  delegate.fake_service_endpoint_request()->add_endpoint(
+      ServiceEndpointBuilder().add_ip_endpoint(ipv4_endpoint).endpoint());
+  delegate.fake_service_endpoint_request()->CallOnServiceEndpointsUpdated();
+  ASSERT_FALSE(delegate.result().has_value());
+
+  // Complete service endpoint request to make endpoints ready for TLS
+  // handshake. The first attempt's TLS handshake stalls forever.
+  delegate.CompleteServiceEndpointRequest(OK);
+  ASSERT_FALSE(delegate.result().has_value());
+
+  // Fire the slow timer. This should trigger IPv4 attempt.
+  FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay() -
+                kTcpHandshakeDelay);
+
+  ASSERT_EQ(delegate.WaitForResult(), OK);
+  EXPECT_EQ(delegate.GetRemoteIPEndPoint(), ipv4_endpoint);
+}
+
+TEST_F(HttpStreamPoolAttemptTest,
+       Ipv4AnsweredWhileWaitingForTlsHandshakeReady) {
+  const IPEndPoint ipv4_endpoint = MakeIPEndPoint("192.0.2.1");
+  const IPEndPoint ipv6_endpoint = MakeIPEndPoint("2001:db8::1");
+
+  TestAttemptDelegate delegate = CreateAttemptDelegate();
+  delegate.fake_service_endpoint_request()->add_endpoint(
+      ServiceEndpointBuilder().add_ip_endpoint(ipv6_endpoint).endpoint());
+
+  SequencedSocketData data;
+  MockConnectCompleter tcp_completer;
+  data.set_connect_data(MockConnect(&tcp_completer));
+  socket_factory()->AddSocketDataProvider(&data);
+  MockConnectCompleter tls_completer;
+  SSLSocketDataProvider ssl_data(&tls_completer);
+  socket_factory()->AddSSLSocketDataProvider(&ssl_data);
+
+  delegate.Start();
+  ASSERT_FALSE(delegate.result().has_value());
+
+  // Complete TCP handshake with a delay. The first attempt should wait for the
+  // endpoint to be ready for TLS handshake.
+  const base::TimeDelta kTcpHandshakeDelay = base::Milliseconds(50);
+  CHECK_LE(kTcpHandshakeDelay, HttpStreamPool::GetConnectionAttemptDelay());
+  FastForwardBy(kTcpHandshakeDelay);
+  tcp_completer.Complete(OK);
+  ASSERT_FALSE(delegate.result().has_value());
+
+  // Update service endpoint request with an IPv4 endpoint. This should not
+  // trigger a new attempt.
+  delegate.fake_service_endpoint_request()->add_endpoint(
+      ServiceEndpointBuilder().add_ip_endpoint(ipv4_endpoint).endpoint());
+  delegate.fake_service_endpoint_request()->CallOnServiceEndpointsUpdated();
+  ASSERT_FALSE(delegate.result().has_value());
+
+  // Complete service endpoint request to make endpoints ready for TLS
+  // handshake.
+  delegate.CompleteServiceEndpointRequest(OK);
+
+  // Complete TLS handshake with a delay. The TLS delay is smaller than the
+  // connection attempt delay, so the second attempt should not be triggered.
+  const base::TimeDelta kTlsHandshakeDelay = base::Milliseconds(100);
+  CHECK_LE(kTcpHandshakeDelay + kTlsHandshakeDelay,
+           HttpStreamPool::GetConnectionAttemptDelay());
+  FastForwardBy(kTlsHandshakeDelay);
+  tls_completer.Complete(OK);
+
+  ASSERT_EQ(delegate.WaitForResult(), OK);
+  EXPECT_EQ(delegate.GetRemoteIPEndPoint(), ipv6_endpoint);
+}
+
+TEST_F(HttpStreamPoolAttemptTest,
+       SynchronousTlsHandshakeFailureAfterWaitingForTlsHandshakeReady) {
+  const IPEndPoint ipv4_endpoint = MakeIPEndPoint("192.0.2.1");
+  const IPEndPoint ipv6_endpoint = MakeIPEndPoint("2001:db8::1");
+
+  TestAttemptDelegate delegate = CreateAttemptDelegate();
+  delegate.fake_service_endpoint_request()->add_endpoint(
+      ServiceEndpointBuilder().add_ip_endpoint(ipv6_endpoint).endpoint());
+
+  // IPv6 TCP succeeds.
+  SequencedSocketData data_v6;
+  MockConnectCompleter tcp_completer_v6;
+  data_v6.set_connect_data(MockConnect(&tcp_completer_v6));
+  socket_factory()->AddSocketDataProvider(&data_v6);
+  // IPv6 TLS fails synchronously.
+  SSLSocketDataProvider ssl_data_v6(SYNCHRONOUS, ERR_FAILED);
+  socket_factory()->AddSSLSocketDataProvider(&ssl_data_v6);
+
+  // IPv4 TCP succeeds.
+  SequencedSocketData data_v4;
+  socket_factory()->AddSocketDataProvider(&data_v4);
+  // IPv4 TLS succeeds.
+  SSLSocketDataProvider ssl_data_v4(SYNCHRONOUS, OK);
+  socket_factory()->AddSSLSocketDataProvider(&ssl_data_v4);
+
+  delegate.Start();
+  ASSERT_FALSE(delegate.result().has_value());
+
+  // Complete TCP handshake for IPv6.
+  tcp_completer_v6.Complete(OK);
+  ASSERT_FALSE(delegate.result().has_value());
+
+  // Add IPv4 and complete service endpoint request.
+  delegate.fake_service_endpoint_request()->add_endpoint(
+      ServiceEndpointBuilder().add_ip_endpoint(ipv4_endpoint).endpoint());
+  delegate.CompleteServiceEndpointRequest(OK);
+
+  ASSERT_EQ(delegate.WaitForResult(), OK);
+  EXPECT_EQ(delegate.GetRemoteIPEndPoint(), ipv4_endpoint);
 }
 
 }  // namespace net

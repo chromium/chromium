@@ -71,7 +71,14 @@ class HttpStreamPool::Attempt::TcpAttempt : public TlsStreamAttempt::Delegate {
   StreamAttempt& stream_attempt() const { return *attempt_.get(); }
 
   int Start(CompletionOnceCallback callback) {
-    return attempt_->Start(std::move(callback));
+    start_time_ = base::TimeTicks::Now();
+    int rv = attempt_->Start(std::move(callback));
+    if (rv == ERR_IO_PENDING && !owner_->observed_slow_attempt_) {
+      slow_timer_.Start(FROM_HERE, HttpStreamPool::GetConnectionAttemptDelay(),
+                        base::BindOnce(&TcpAttempt::OnSlowTimerFired,
+                                       base::Unretained(this)));
+    }
+    return rv;
   }
 
   // Called when the delegate's service endpoint request is updated or finished
@@ -80,15 +87,38 @@ class HttpStreamPool::Attempt::TcpAttempt : public TlsStreamAttempt::Delegate {
   // started.
   void MaybeStartTlsHandshake() {
     DCHECK(delegate().GetServiceEndpointRequest().EndpointsCryptoReady());
-    if (tls_handshake_ready_callback_) {
-      std::move(tls_handshake_ready_callback_).Run(OK);
+    if (!tls_handshake_ready_callback_) {
+      return;
     }
+
+    // Resume the slow timer if it was stopped.
+    CHECK(!slow_timer_.IsRunning());
+    if (!owner_->observed_slow_attempt_) {
+      CHECK(!is_slow_);
+      CHECK_GE(tcp_handshake_complete_time_, start_time_);
+      // Timer is not guaranteed to fire exactly on time, so we need to check
+      // if we are already past the delay.
+      base::TimeDelta tcp_handshake_duration =
+          tcp_handshake_complete_time_ - start_time_;
+      if (HttpStreamPool::GetConnectionAttemptDelay() >
+          tcp_handshake_duration) {
+        slow_timer_.Start(FROM_HERE,
+                          HttpStreamPool::GetConnectionAttemptDelay() -
+                              tcp_handshake_duration,
+                          base::BindOnce(&TcpAttempt::OnSlowTimerFired,
+                                         base::Unretained(this)));
+      } else {
+        OnSlowTimerFired();
+      }
+    }
+
+    std::move(tls_handshake_ready_callback_).Run(OK);
   }
 
   // TlsStreamAttempt::Delegate implementation.
 
   void OnTcpHandshakeComplete() override {
-    owner_->OnTcpHandshakeComplete(this);
+    tcp_handshake_complete_time_ = base::TimeTicks::Now();
   }
 
   // Called from TlsStreamAttempt when it is ready to start the TLS handshake
@@ -99,6 +129,13 @@ class HttpStreamPool::Attempt::TcpAttempt : public TlsStreamAttempt::Delegate {
     if (owner_->is_crypto_ready_) {
       return OK;
     }
+
+    // Pause the slow timer while waiting for the endpoints to be ready for TLS
+    // handshake.
+    if (slow_timer_.IsRunning()) {
+      slow_timer_.Stop();
+    }
+
     tls_handshake_ready_callback_ = std::move(callback);
     return ERR_IO_PENDING;
   }
@@ -115,8 +152,19 @@ class HttpStreamPool::Attempt::TcpAttempt : public TlsStreamAttempt::Delegate {
  private:
   Attempt::Delegate& delegate() const { return owner_->delegate_.get(); }
 
+  void OnSlowTimerFired() {
+    is_slow_ = true;
+    owner_->OnTcpAttemptSlow(this);
+  }
+
   const raw_ref<Attempt> owner_;
   const IPEndPoint ip_endpoint_;
+
+  base::OneShotTimer slow_timer_;
+  bool is_slow_ = false;
+
+  base::TimeTicks start_time_;
+  base::TimeTicks tcp_handshake_complete_time_;
 
   std::unique_ptr<StreamAttempt> attempt_;
   CompletionOnceCallback tls_handshake_ready_callback_;
@@ -212,16 +260,6 @@ void HttpStreamPool::Attempt::StartAttempt(IPEndPoint ip_endpoint) {
                                          raw_attempt));
   if (rv != ERR_IO_PENDING) {
     OnTcpAttemptComplete(raw_attempt, rv);
-    return;
-  }
-
-  const bool should_start_slow_timer =
-      !slow_timer_expired_ && !slow_timer_.IsRunning();
-  if (should_start_slow_timer) {
-    // base::Unretained() is safe here because `this` owns `slow_timer_`.
-    slow_timer_.Start(
-        FROM_HERE, HttpStreamPool::GetConnectionAttemptDelay(),
-        base::BindOnce(&Attempt::OnSlowTimerFired, base::Unretained(this)));
   }
 }
 
@@ -250,7 +288,7 @@ std::optional<IPEndPoint> HttpStreamPool::Attempt::GetIPEndPointToAttempt()
     const {
   // Don't attempt more when the first attempt already exists and it's not slow.
   const bool has_attempt = ipv4_attempt_ || ipv6_attempt_;
-  if (has_attempt && slow_timer_.IsRunning()) {
+  if (has_attempt && !observed_slow_attempt_) {
     return std::nullopt;
   }
 
@@ -321,19 +359,10 @@ HttpStreamPool::Attempt::GetServiceEndpointForTlsHandshake(
   return base::unexpected(TlsStreamAttempt::GetServiceEndpointError::kAbort);
 }
 
-void HttpStreamPool::Attempt::OnSlowTimerFired() {
-  CHECK(!slow_timer_expired_);
-  slow_timer_expired_ = true;
-  MaybeAttempt();
-}
-
-void HttpStreamPool::Attempt::OnTcpHandshakeComplete(TcpAttempt* attempt) {
+void HttpStreamPool::Attempt::OnTcpAttemptSlow(TcpAttempt* attempt) {
   CHECK(attempt == ipv4_attempt_.get() || attempt == ipv6_attempt_.get());
-  CHECK(using_tls_);
-
-  // TODO(crbug.com/457478038): Consider pausing the timer when the endpoints
-  // are not ready for TLS handshake. The timer should be resumed when the
-  // endpoints are ready for TLS handshake.
+  observed_slow_attempt_ = true;
+  MaybeAttempt();
 }
 
 void HttpStreamPool::Attempt::OnTcpAttemptComplete(TcpAttempt* attempt,
@@ -351,11 +380,6 @@ void HttpStreamPool::Attempt::OnTcpAttemptComplete(TcpAttempt* attempt,
     // `this` may be deleted at this point.
     return;
   }
-
-  // Mark the slow timer as expired unconditionally since the slow timer may
-  // not be started if the first attempt completed synchronously.
-  slow_timer_.Stop();
-  slow_timer_expired_ = true;
 
   std::unique_ptr<StreamSocket> stream_socket =
       completed_attempt->stream_attempt().ReleaseStreamSocket();
