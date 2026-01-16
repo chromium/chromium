@@ -858,177 +858,206 @@ void SerializeLayer(LayerImpl& layer,
                     bool needs_full_sync) {
   auto& wire = *update.layers.emplace_back(viz::mojom::Layer::New());
   wire.id = layer.id();
-  wire.element_id = layer.element_id();
-  wire.type = layer.GetLayerType();
-  wire.bounds = layer.bounds();
-  wire.is_drawable = layer.draws_content();
-  wire.layer_property_changed_not_from_property_trees =
-      layer.LayerPropertyChangedNotFromPropertyTrees();
-  wire.layer_property_changed_from_property_trees =
-      layer.LayerPropertyChangedFromPropertyTrees();
-  wire.contents_opaque = layer.contents_opaque();
-  wire.contents_opaque_for_text = layer.contents_opaque_for_text();
-  wire.hit_test_opaqueness = layer.hit_test_opaqueness();
-  wire.background_color = layer.background_color();
-  wire.safe_opaque_background_color = layer.safe_opaque_background_color();
-  wire.update_rect = layer.update_rect();
-  wire.offset_to_transform_parent = layer.offset_to_transform_parent();
+
+  switch (layer.GetLayerType()) {
+    // The following layer types map directly to Viz layer types.
+    case mojom::LayerType::kLayer:
+    case mojom::LayerType::kMirror:
+    case mojom::LayerType::kNinePatch:
+    case mojom::LayerType::kNinePatchThumbScrollbar:
+    case mojom::LayerType::kPaintedScrollbar:
+    case mojom::LayerType::kSolidColorScrollbar:
+    case mojom::LayerType::kSolidColor:
+    case mojom::LayerType::kSurface:
+    case mojom::LayerType::kTexture:
+    case mojom::LayerType::kUIResource:
+    case mojom::LayerType::kViewTransitionContent:
+      wire.type = layer.GetLayerType();
+      break;
+
+    // The following layer types are mapped to different types in Viz.
+    case mojom::LayerType::kHeadsUpDisplay:
+      wire.type = mojom::LayerType::kTexture;
+      break;
+    case mojom::LayerType::kPicture:
+      wire.type = mojom::LayerType::kTileDisplay;
+      break;
+
+    // Unhandled layer types: set them to SolidColor. This is because
+    // Viz side defaults to SolidColor. Avoid a layer type mismatch
+    // in LayerContextImpl which leads to mojo error and test failure.
+    default:
+      wire.type = mojom::LayerType::kSolidColor;
+  }
+
   wire.transform_tree_index = layer.transform_tree_index();
   wire.clip_tree_index = layer.clip_tree_index();
   wire.effect_tree_index = layer.effect_tree_index();
   wire.scroll_tree_index = layer.scroll_tree_index();
-  wire.should_check_backface_visibility =
-      layer.should_check_backface_visibility();
-  if (layer.HasAnyRarePropertySet()) {
-    auto rare_properties = viz::mojom::RareProperties::New();
-    rare_properties->filter_quality = layer.GetFilterQuality();
-    rare_properties->dynamic_range_limit = layer.GetDynamicRangeLimit();
+  if (needs_full_sync ||
+      layer.GetChangeFlag(LayerImpl::kChangedGeneralProperty)) {
+    auto general = viz::mojom::LayerGeneralProperties::New();
+    general->element_id = layer.element_id();
+    general->bounds = layer.bounds();
+    general->is_drawable = layer.draws_content();
+    general->layer_property_changed_not_from_property_trees =
+        layer.LayerPropertyChangedNotFromPropertyTrees();
+    general->layer_property_changed_from_property_trees =
+        layer.LayerPropertyChangedFromPropertyTrees();
+    general->contents_opaque = layer.contents_opaque();
+    general->contents_opaque_for_text = layer.contents_opaque_for_text();
+    general->hit_test_opaqueness = layer.hit_test_opaqueness();
+    general->background_color = layer.background_color();
+    general->safe_opaque_background_color =
+        layer.safe_opaque_background_color();
+    general->update_rect = layer.update_rect();
+    general->offset_to_transform_parent = layer.offset_to_transform_parent();
+    general->should_check_backface_visibility =
+        layer.should_check_backface_visibility();
+    if (layer.HasAnyRarePropertySet()) {
+      auto rare_properties = viz::mojom::RareProperties::New();
+      rare_properties->filter_quality = layer.GetFilterQuality();
+      rare_properties->dynamic_range_limit = layer.GetDynamicRangeLimit();
 
-    // NOTE: If the layer's RareProperties is present, then `capture_bounds()`
-    // is guaranteed to be non-null.
-    rare_properties->capture_bounds = CHECK_DEREF(layer.capture_bounds());
-    wire.rare_properties = std::move(rare_properties);
-  }
-  switch (layer.GetLayerType()) {
-    case mojom::LayerType::kLayer: {
-      // This is intentionally empty, as there are no extra properties
-      // to serialize.
-      break;
+      // NOTE: If the layer's RareProperties is present, then `capture_bounds()`
+      // is guaranteed to be non-null.
+      rare_properties->capture_bounds = CHECK_DEREF(layer.capture_bounds());
+      general->rare_properties = std::move(rare_properties);
     }
-    case mojom::LayerType::kHeadsUpDisplay: {
-      // For Viz, this should look like a Texture layer.
-      wire.type = mojom::LayerType::kTexture;
-      auto texture_layer_extra = viz::mojom::TextureLayerExtra::New();
-      SerializeHudLayerExtra(static_cast<HeadsUpDisplayLayerImpl&>(layer),
-                             texture_layer_extra, resource_provider,
-                             shared_image_interface);
-      wire.layer_extra = viz::mojom::LayerExtra::NewTextureLayerExtra(
-          std::move(texture_layer_extra));
-      break;
-    }
-    case mojom::LayerType::kMirror: {
-      auto mirror_layer_extra = viz::mojom::MirrorLayerExtra::New();
-      SerializeMirrorLayerExtra(static_cast<MirrorLayerImpl&>(layer),
-                                mirror_layer_extra);
-      wire.layer_extra = viz::mojom::LayerExtra::NewMirrorLayerExtra(
-          std::move(mirror_layer_extra));
-      break;
-    }
-    case mojom::LayerType::kNinePatchThumbScrollbar: {
-      auto nine_patch_thumb_scrollbar_layer_extra =
-          viz::mojom::NinePatchThumbScrollbarLayerExtra::New();
-      SerializeNinePatchThumbScrollbarLayerExtra(
-          static_cast<NinePatchThumbScrollbarLayerImpl&>(layer),
-          nine_patch_thumb_scrollbar_layer_extra);
-      wire.layer_extra =
-          viz::mojom::LayerExtra::NewNinePatchThumbScrollbarLayerExtra(
-              std::move(nine_patch_thumb_scrollbar_layer_extra));
-      break;
-    }
-    case mojom::LayerType::kNinePatch: {
-      auto nine_patch_layer_extra = viz::mojom::NinePatchLayerExtra::New();
-      SerializeNinePatchLayerExtra(static_cast<NinePatchLayerImpl&>(layer),
-                                   nine_patch_layer_extra);
-      wire.layer_extra = viz::mojom::LayerExtra::NewNinePatchLayerExtra(
-          std::move(nine_patch_layer_extra));
-      break;
-    }
-    case mojom::LayerType::kPaintedScrollbar: {
-      auto painted_scrollbar_layer_extra =
-          viz::mojom::PaintedScrollbarLayerExtra::New();
-      SerializePaintedScrollbarLayerExtra(
-          static_cast<PaintedScrollbarLayerImpl&>(layer),
-          painted_scrollbar_layer_extra);
-      wire.layer_extra = viz::mojom::LayerExtra::NewPaintedScrollbarLayerExtra(
-          std::move(painted_scrollbar_layer_extra));
-      break;
-    }
-    case mojom::LayerType::kSolidColorScrollbar: {
-      auto solid_color_scrollbar_layer_extra =
-          viz::mojom::SolidColorScrollbarLayerExtra::New();
-      SerializeSolidColorScrollbarLayerExtra(
-          static_cast<SolidColorScrollbarLayerImpl&>(layer),
-          solid_color_scrollbar_layer_extra);
-      wire.layer_extra =
-          viz::mojom::LayerExtra::NewSolidColorScrollbarLayerExtra(
-              std::move(solid_color_scrollbar_layer_extra));
-      break;
-    }
-    case mojom::LayerType::kSolidColor: {
-      // This is intentionally empty, as there are no extra properties
-      // to serialize for SolidColorLayerImpls.
-      break;
-    }
-    case mojom::LayerType::kSurface: {
-      auto surface_layer_extra = viz::mojom::SurfaceLayerExtra::New();
-      SerializeSurfaceLayerExtra(static_cast<SurfaceLayerImpl&>(layer),
-                                 surface_layer_extra);
-      wire.layer_extra = viz::mojom::LayerExtra::NewSurfaceLayerExtra(
-          std::move(surface_layer_extra));
-      break;
-    }
-    case mojom::LayerType::kPicture: {
-      // kPicture layers become kTileDisplay layers in Viz.
-      wire.type = mojom::LayerType::kTileDisplay;
-      auto& picture_layer = static_cast<PictureLayerImpl&>(layer);
-      auto tile_display_extra = viz::mojom::TileDisplayLayerExtra::New();
-      if (picture_layer.GetRasterSource()->IsSolidColor()) {
-        tile_display_extra->solid_color =
-            picture_layer.GetRasterSource()->GetSolidColor();
+    switch (layer.GetLayerType()) {
+      case mojom::LayerType::kLayer: {
+        // This is intentionally empty, as there are no extra properties
+        // to serialize.
+        break;
       }
-      tile_display_extra->is_backdrop_filter_mask =
-          picture_layer.is_backdrop_filter_mask();
-      tile_display_extra->is_directly_composited_image =
-          picture_layer.IsDirectlyCompositedImage();
-      tile_display_extra->nearest_neighbor = picture_layer.nearest_neighbor();
-      tile_display_extra->content_color_usage =
-          picture_layer.GetContentColorUsage();
-      tile_display_extra->recorded_bounds =
-          picture_layer.GetRasterSource()->recorded_bounds();
-      tile_display_extra->proposed_tiling_scales_for_deletion =
-          picture_layer.TakeProposedTilingScalesForDeletion();
-      wire.layer_extra = viz::mojom::LayerExtra::NewTileDisplayLayerExtra(
-          std::move(tile_display_extra));
-      SerializePictureLayerTileUpdates(picture_layer, resource_provider,
-                                       shared_image_interface, update.tilings,
-                                       needs_full_sync);
-      break;
+      case mojom::LayerType::kHeadsUpDisplay: {
+        auto texture_layer_extra = viz::mojom::TextureLayerExtra::New();
+        SerializeHudLayerExtra(static_cast<HeadsUpDisplayLayerImpl&>(layer),
+                               texture_layer_extra, resource_provider,
+                               shared_image_interface);
+        general->layer_extra = viz::mojom::LayerExtra::NewTextureLayerExtra(
+            std::move(texture_layer_extra));
+        break;
+      }
+      case mojom::LayerType::kMirror: {
+        auto mirror_layer_extra = viz::mojom::MirrorLayerExtra::New();
+        SerializeMirrorLayerExtra(static_cast<MirrorLayerImpl&>(layer),
+                                  mirror_layer_extra);
+        general->layer_extra = viz::mojom::LayerExtra::NewMirrorLayerExtra(
+            std::move(mirror_layer_extra));
+        break;
+      }
+      case mojom::LayerType::kNinePatchThumbScrollbar: {
+        auto nine_patch_thumb_scrollbar_layer_extra =
+            viz::mojom::NinePatchThumbScrollbarLayerExtra::New();
+        SerializeNinePatchThumbScrollbarLayerExtra(
+            static_cast<NinePatchThumbScrollbarLayerImpl&>(layer),
+            nine_patch_thumb_scrollbar_layer_extra);
+        general->layer_extra =
+            viz::mojom::LayerExtra::NewNinePatchThumbScrollbarLayerExtra(
+                std::move(nine_patch_thumb_scrollbar_layer_extra));
+        break;
+      }
+      case mojom::LayerType::kNinePatch: {
+        auto nine_patch_layer_extra = viz::mojom::NinePatchLayerExtra::New();
+        SerializeNinePatchLayerExtra(static_cast<NinePatchLayerImpl&>(layer),
+                                     nine_patch_layer_extra);
+        general->layer_extra = viz::mojom::LayerExtra::NewNinePatchLayerExtra(
+            std::move(nine_patch_layer_extra));
+        break;
+      }
+      case mojom::LayerType::kPaintedScrollbar: {
+        auto painted_scrollbar_layer_extra =
+            viz::mojom::PaintedScrollbarLayerExtra::New();
+        SerializePaintedScrollbarLayerExtra(
+            static_cast<PaintedScrollbarLayerImpl&>(layer),
+            painted_scrollbar_layer_extra);
+        general->layer_extra =
+            viz::mojom::LayerExtra::NewPaintedScrollbarLayerExtra(
+                std::move(painted_scrollbar_layer_extra));
+        break;
+      }
+      case mojom::LayerType::kSolidColorScrollbar: {
+        auto solid_color_scrollbar_layer_extra =
+            viz::mojom::SolidColorScrollbarLayerExtra::New();
+        SerializeSolidColorScrollbarLayerExtra(
+            static_cast<SolidColorScrollbarLayerImpl&>(layer),
+            solid_color_scrollbar_layer_extra);
+        general->layer_extra =
+            viz::mojom::LayerExtra::NewSolidColorScrollbarLayerExtra(
+                std::move(solid_color_scrollbar_layer_extra));
+        break;
+      }
+      case mojom::LayerType::kSolidColor: {
+        // This is intentionally empty, as there are no extra properties
+        // to serialize for SolidColorLayerImpls.
+        break;
+      }
+      case mojom::LayerType::kSurface: {
+        auto surface_layer_extra = viz::mojom::SurfaceLayerExtra::New();
+        SerializeSurfaceLayerExtra(static_cast<SurfaceLayerImpl&>(layer),
+                                   surface_layer_extra);
+        general->layer_extra = viz::mojom::LayerExtra::NewSurfaceLayerExtra(
+            std::move(surface_layer_extra));
+        break;
+      }
+      case mojom::LayerType::kPicture: {
+        auto& picture_layer = static_cast<PictureLayerImpl&>(layer);
+        auto tile_display_extra = viz::mojom::TileDisplayLayerExtra::New();
+        if (picture_layer.GetRasterSource()->IsSolidColor()) {
+          tile_display_extra->solid_color =
+              picture_layer.GetRasterSource()->GetSolidColor();
+        }
+        tile_display_extra->is_backdrop_filter_mask =
+            picture_layer.is_backdrop_filter_mask();
+        tile_display_extra->is_directly_composited_image =
+            picture_layer.IsDirectlyCompositedImage();
+        tile_display_extra->nearest_neighbor = picture_layer.nearest_neighbor();
+        tile_display_extra->content_color_usage =
+            picture_layer.GetContentColorUsage();
+        tile_display_extra->recorded_bounds =
+            picture_layer.GetRasterSource()->recorded_bounds();
+        tile_display_extra->proposed_tiling_scales_for_deletion =
+            picture_layer.TakeProposedTilingScalesForDeletion();
+        general->layer_extra = viz::mojom::LayerExtra::NewTileDisplayLayerExtra(
+            std::move(tile_display_extra));
+        SerializePictureLayerTileUpdates(picture_layer, resource_provider,
+                                         shared_image_interface, update.tilings,
+                                         needs_full_sync);
+        break;
+      }
+      case mojom::LayerType::kTexture: {
+        auto texture_layer_extra = viz::mojom::TextureLayerExtra::New();
+        SerializeTextureLayerExtra(static_cast<TextureLayerImpl&>(layer),
+                                   texture_layer_extra, resource_provider,
+                                   shared_image_interface);
+        general->layer_extra = viz::mojom::LayerExtra::NewTextureLayerExtra(
+            std::move(texture_layer_extra));
+        break;
+      }
+      case mojom::LayerType::kUIResource: {
+        auto ui_resource_layer_extra = viz::mojom::UIResourceLayerExtra::New();
+        SerializeUIResourceLayerExtra(static_cast<UIResourceLayerImpl&>(layer),
+                                      ui_resource_layer_extra);
+        general->layer_extra = viz::mojom::LayerExtra::NewUiResourceLayerExtra(
+            std::move(ui_resource_layer_extra));
+        break;
+      }
+      case mojom::LayerType::kViewTransitionContent: {
+        auto view_transition_content_layer_extra =
+            viz::mojom::ViewTransitionContentLayerExtra::New();
+        SerializeViewTransitionContentLayerExtra(
+            static_cast<ViewTransitionContentLayerImpl&>(layer),
+            view_transition_content_layer_extra);
+        general->layer_extra =
+            viz::mojom::LayerExtra::NewViewTransitionContentLayerExtra(
+                std::move(view_transition_content_layer_extra));
+        break;
+      }
+      default:
+        // TODO(zmo): handle other types of LayerImpl.
     }
-    case mojom::LayerType::kTexture: {
-      auto texture_layer_extra = viz::mojom::TextureLayerExtra::New();
-      SerializeTextureLayerExtra(static_cast<TextureLayerImpl&>(layer),
-                                 texture_layer_extra, resource_provider,
-                                 shared_image_interface);
-      wire.layer_extra = viz::mojom::LayerExtra::NewTextureLayerExtra(
-          std::move(texture_layer_extra));
-      break;
-    }
-    case mojom::LayerType::kUIResource: {
-      auto ui_resource_layer_extra = viz::mojom::UIResourceLayerExtra::New();
-      SerializeUIResourceLayerExtra(static_cast<UIResourceLayerImpl&>(layer),
-                                    ui_resource_layer_extra);
-      wire.layer_extra = viz::mojom::LayerExtra::NewUiResourceLayerExtra(
-          std::move(ui_resource_layer_extra));
-      break;
-    }
-    case mojom::LayerType::kViewTransitionContent: {
-      auto view_transition_content_layer_extra =
-          viz::mojom::ViewTransitionContentLayerExtra::New();
-      SerializeViewTransitionContentLayerExtra(
-          static_cast<ViewTransitionContentLayerImpl&>(layer),
-          view_transition_content_layer_extra);
-      wire.layer_extra =
-          viz::mojom::LayerExtra::NewViewTransitionContentLayerExtra(
-              std::move(view_transition_content_layer_extra));
-      break;
-    }
-    default:
-      // TODO(zmo): handle other types of LayerImpl.
-      // Unhandled layer types: set it to SolidColor. This is because
-      // viz side defaults to SolidColor. Avoid a layer type mismatch
-      // in LayerContextImpl which leads to mojo error and test failure.
-      wire.type = mojom::LayerType::kSolidColor;
-      break;
+    wire.general_properties = std::move(general);
   }
 }
 

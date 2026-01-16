@@ -498,18 +498,32 @@ mojom::LayerPtr LayerContextImplTest::CreateManualLayer(
   return layer;
 }
 
+void LayerContextImplTest::EnsureGeneralProperties(mojom::Layer* layer) {
+  if (layer->general_properties) {
+    return;
+  }
+  layer->general_properties = mojom::LayerGeneralProperties::New();
+}
+
 void LayerContextImplTest::SetLayerExtra(mojom::Layer* layer,
                                          mojom::LayerExtraPtr extra) {
-  layer->layer_extra = std::move(extra);
+  EnsureGeneralProperties(layer);
+  layer->general_properties->layer_extra = std::move(extra);
 }
 
 const mojom::LayerExtra* LayerContextImplTest::GetLayerExtra(
     const mojom::Layer* layer) {
-  return layer->layer_extra.get();
+  if (!layer->general_properties) {
+    return nullptr;
+  }
+  return layer->general_properties->layer_extra.get();
 }
 
 mojom::LayerExtra* LayerContextImplTest::GetLayerExtra(mojom::Layer* layer) {
-  return layer->layer_extra.get();
+  if (!layer->general_properties) {
+    return nullptr;
+  }
+  return layer->general_properties->layer_extra.get();
 }
 
 int LayerContextImplTest::GetLayerId(const mojom::Layer* layer) {
@@ -570,79 +584,95 @@ void LayerContextImplTest::SetLayerScrollTreeIndex(mojom::Layer* layer,
 
 void LayerContextImplTest::SetLayerBounds(mojom::Layer* layer,
                                           const gfx::Size& bounds) {
-  layer->bounds = bounds;
+  EnsureGeneralProperties(layer);
+  layer->general_properties->bounds = bounds;
 }
 
 void LayerContextImplTest::SetLayerContentsOpaque(mojom::Layer* layer,
                                                   bool opaque) {
-  layer->contents_opaque = opaque;
+  EnsureGeneralProperties(layer);
+  layer->general_properties->contents_opaque = opaque;
 }
 
 void LayerContextImplTest::SetLayerContentsOpaqueForText(mojom::Layer* layer,
                                                          bool opaque) {
-  layer->contents_opaque_for_text = opaque;
+  EnsureGeneralProperties(layer);
+  layer->general_properties->contents_opaque_for_text = opaque;
 }
 
 void LayerContextImplTest::SetLayerSafeOpaqueBackgroundColor(
     mojom::Layer* layer,
     SkColor4f color) {
-  layer->safe_opaque_background_color = color;
+  EnsureGeneralProperties(layer);
+  layer->general_properties->safe_opaque_background_color = color;
 }
 
 void LayerContextImplTest::SetLayerBackgroundColor(mojom::Layer* layer,
                                                    SkColor4f color) {
-  layer->background_color = color;
+  EnsureGeneralProperties(layer);
+  layer->general_properties->background_color = color;
 }
 
 void LayerContextImplTest::SetLayerIsDrawable(mojom::Layer* layer,
                                               bool is_drawable) {
-  layer->is_drawable = is_drawable;
+  EnsureGeneralProperties(layer);
+  layer->general_properties->is_drawable = is_drawable;
 }
 
 void LayerContextImplTest::SetLayerHitTestOpaqueness(
     mojom::Layer* layer,
     cc::HitTestOpaqueness opaqueness) {
-  layer->hit_test_opaqueness = opaqueness;
+  EnsureGeneralProperties(layer);
+  layer->general_properties->hit_test_opaqueness = opaqueness;
 }
 
 void LayerContextImplTest::SetLayerElementId(mojom::Layer* layer,
                                              cc::ElementId element_id) {
-  layer->element_id = element_id;
+  EnsureGeneralProperties(layer);
+  layer->general_properties->element_id = element_id;
 }
 
 void LayerContextImplTest::SetLayerOffsetToTransformParent(
     mojom::Layer* layer,
     const gfx::Vector2dF& offset) {
-  layer->offset_to_transform_parent = offset;
+  EnsureGeneralProperties(layer);
+  layer->general_properties->offset_to_transform_parent = offset;
 }
 
 void LayerContextImplTest::SetLayerShouldCheckBackfaceVisibility(
     mojom::Layer* layer,
     bool should_check) {
-  layer->should_check_backface_visibility = should_check;
+  EnsureGeneralProperties(layer);
+  layer->general_properties->should_check_backface_visibility = should_check;
 }
 
 void LayerContextImplTest::SetLayerUpdateRect(mojom::Layer* layer,
                                               const gfx::Rect& rect) {
-  layer->update_rect = rect;
+  EnsureGeneralProperties(layer);
+  layer->general_properties->update_rect = rect;
 }
 
 void LayerContextImplTest::SetLayerRareProperties(
     mojom::Layer* layer,
     mojom::RarePropertiesPtr rare_properties) {
-  layer->rare_properties = std::move(rare_properties);
+  EnsureGeneralProperties(layer);
+  layer->general_properties->rare_properties = std::move(rare_properties);
 }
 
 void LayerContextImplTest::SetLayerPropertyChangedNotFromPropertyTrees(
     mojom::Layer* layer,
     bool changed) {
-  layer->layer_property_changed_not_from_property_trees = changed;
+  EnsureGeneralProperties(layer);
+  layer->general_properties->layer_property_changed_not_from_property_trees =
+      changed;
 }
 
 void LayerContextImplTest::SetLayerPropertyChangedFromPropertyTrees(
     mojom::Layer* layer,
     bool changed) {
-  layer->layer_property_changed_from_property_trees = changed;
+  EnsureGeneralProperties(layer);
+  layer->general_properties->layer_property_changed_from_property_trees =
+      changed;
 }
 
 }  // namespace viz

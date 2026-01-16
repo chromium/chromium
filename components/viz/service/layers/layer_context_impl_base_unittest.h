@@ -197,6 +197,8 @@ class LayerContextImplTest : public testing::Test {
   const mojom::LayerExtra* GetLayerExtra(const mojom::Layer* layer);
   mojom::LayerExtra* GetLayerExtra(mojom::Layer* layer);
 
+  void EnsureGeneralProperties(mojom::Layer* layer);
+
   int GetLayerId(const mojom::Layer* layer);
   cc::mojom::LayerType GetLayerType(const mojom::Layer* layer);
   int GetLayerTransformTreeIndex(const mojom::Layer* layer);
