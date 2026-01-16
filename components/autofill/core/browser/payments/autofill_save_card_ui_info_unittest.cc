@@ -650,11 +650,14 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
 }
 
 // Verify that AutofillSaveCardUiInfo attributes are correctly set for the
-// upload-CVC-only-save message.
+// upload-CVC-only-save message when Google Wallet branding is disabled.
 TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
-       VerifyAttributesForCvcSaveOnlyMessage) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
+       VerifyAttributesForCvcSaveOnlyMessage_WalletBrandingDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillEnableCvcStorageAndFilling},
+      /*disabled_features=*/{features::kAutofillEnableWalletBranding});
 
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
       /*options=*/{.card_save_type = CardSaveType::kCvcSaveOnly},
@@ -667,6 +670,33 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
   EXPECT_EQ(ui_info.description_text,
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_UPLOAD));
+  EXPECT_EQ(
+      ui_info.confirm_text,
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CVC_MESSAGE_SAVE_ACCEPT));
+}
+
+// Verify that AutofillSaveCardUiInfo attributes are correctly set for the
+// upload-CVC-only-save message.
+TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
+       VerifyAttributesForCvcSaveOnlyMessage) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillEnableCvcStorageAndFilling,
+       features::kAutofillEnableWalletBranding},
+      /*disabled_features=*/{});
+
+  auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
+      /*options=*/{.card_save_type = CardSaveType::kCvcSaveOnly},
+      is_chrome_branded());
+
+  EXPECT_EQ(ui_info.logo_icon_id, IDR_AUTOFILL_CC_GENERIC_PRIMARY_OLD);
+  EXPECT_EQ(
+      ui_info.title_text,
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_TO_CLOUD));
+  EXPECT_EQ(ui_info.description_text,
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CVC_TO_WALLET_PROMPT_EXPLANATION_UPLOAD));
   EXPECT_EQ(
       ui_info.confirm_text,
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CVC_MESSAGE_SAVE_ACCEPT));
