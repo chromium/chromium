@@ -3114,8 +3114,14 @@ Chromium is unable to recover your settings.
         <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_NOTIFICATION_TITLE" desc="The title for the iOS desktop Password promo notification.">
           Chromium Tip: Save Passwords
         </message>
+        <message name="IDS_IOS_DESKTOP_TAB_GROUPS_PRICE_TRACKING_DESCRIPTION_QR" desc="The description for the iOS desktop price tracking promo bubble with a QR code.">
+          Download Chromium on your phone to track prices and get alerts when the price drops on any site
+        </message>
         <message name="IDS_IOS_DESKTOP_SAFE_BROWSING_PROMO_NOTIFICATION_TITLE" desc="The title for the iOS desktop Enhanced Safe Browsing promo notification.">
           Chromium Tip: Enhanced Safe Browsing
+        </message>
+        <message name="IDS_IOS_DESKTOP_TAB_GROUPS_PROMO_BUBBLE_DESCRIPTION_QR" desc="The description for the iOS desktop Tab Groups promo bubble with a QR code.">
+          Download Chromium on your phone to open or create new tab groups on the go.
         </message>
       </if>
 
