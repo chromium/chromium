@@ -51,3 +51,6 @@ features:
 - name: font-stretch
   files:
   - font-stretch.html
+- name: pointer-events
+  files:
+  - pointer-events.html

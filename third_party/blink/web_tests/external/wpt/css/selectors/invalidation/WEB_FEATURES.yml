@@ -41,6 +41,9 @@ features:
 - name: state
   files:
   - state-in-has.html
+- name: placeholder-shown
+  files:
+  - placeholder-shown.html
 - name: shadow-parts
   files:
   - part-dir.html

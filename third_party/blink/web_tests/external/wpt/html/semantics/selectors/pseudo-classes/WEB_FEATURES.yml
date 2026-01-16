@@ -14,6 +14,9 @@ features:
   files:
   - checked-indeterminate.window.js
   - indeterminate*
+- name: placeholder-shown
+  files:
+  - placeholder-shown-type-change.html
 - name: read-write-pseudos
   files:
   - readwrite-readonly-type-change.html

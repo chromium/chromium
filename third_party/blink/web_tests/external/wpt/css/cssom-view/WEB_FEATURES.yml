@@ -7,6 +7,9 @@ features:
   - elementFromPoint*
   - elementsFromPoint*
   - negativeMargins.html
+- name: getboxquads
+  files:
+  - cssom-getBoxQuads-*
 - name: screen
   files:
   - Screen-pixelDepth-Screen-colorDepth001.html
