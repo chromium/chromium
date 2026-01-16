@@ -664,6 +664,21 @@ void RecordLinuxDistro() {
 }
 #endif  // BUILDFLAG(IS_LINUX)
 
+void RecordLinuxKernelVersion() {
+#if BUILDFLAG(IS_LINUX)
+  base::SysInfo::KernelVersionNumber version =
+      base::SysInfo::KernelVersionNumber::Current();
+
+  // Cap values to ensure correct packing.
+  if (version.major >= 0 && version.major < 100 && version.minor >= 0 &&
+      version.minor < 1000 && version.bugfix >= 0 && version.bugfix < 1000) {
+    uint32_t sample =
+        version.major * 1000000 + version.minor * 1000 + version.bugfix;
+    base::UmaHistogramSparse("Linux.KernelVersion", sample);
+  }
+#endif
+}
+
 void RecordLinuxGlibcVersion() {
 #if defined(__GLIBC__) && BUILDFLAG(IS_LINUX)
   base::Version version(gnu_get_libc_version());
@@ -1031,6 +1046,7 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
 void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
   RecordMemoryMetricsAfterDelay();
   RecordLinuxGlibcVersion();
+  RecordLinuxKernelVersion();
 
   constexpr base::TaskTraits kBestEffortTaskTraits = {
       base::MayBlock(), base::TaskPriority::BEST_EFFORT,
