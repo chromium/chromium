@@ -8,11 +8,6 @@
 
 namespace features {
 
-// Enables mitigation algorithm to prevent attempt of calibration from an
-// attacker.
-BASE_FEATURE(kComputePressureBreakCalibrationMitigation,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables an extra set of concrete sensors classes based on Generic Sensor API,
 // which expose previously unexposed platform features, e.g. ALS or Magnetometer
 BASE_FEATURE(kGenericSensorExtraClasses, base::FEATURE_DISABLED_BY_DEFAULT);
