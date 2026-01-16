@@ -60,6 +60,7 @@ chromium-metrics-reviews@google.com.
   <int value="39" label="RendererCrashed"/>
   <int value="40" label="NotImplemented"/>
   <int value="41" label="InvokeCanceled"/>
+  <int value="42" label="kInvalidTaskStateForAct"/>
   <int value="100" label="NavigateInvalidUrl"/>
   <int value="101" label="NavigateFailedToStart"/>
   <int value="102" label="NavigateCommittedErrorPage"/>

@@ -76,6 +76,8 @@ BASE_DECLARE_FEATURE(kGlicNavigateWithoutUserGesture);
 
 BASE_DECLARE_FEATURE(kGlicPerformActionsReturnsBeforeStateChange);
 
+BASE_DECLARE_FEATURE(kGlicDeferActUntilUninterrupted);
+
 // Enables a full page screenshot to be taken rather than only the viewport.
 extern const base::FeatureParam<bool> kFullPageScreenshot;
 

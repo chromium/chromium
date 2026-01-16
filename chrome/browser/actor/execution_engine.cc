@@ -13,6 +13,7 @@
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -500,6 +501,10 @@ void ExecutionEngine::SendUserConfirmationDialogRequest(
     std::move(callback).Run(/*may_continue=*/false);
     return;
   }
+
+  journal_->Log(GURL::EmptyGURL(), task_->id(),
+                "SendUserConfirmationDialogRequest", {});
+
   task_->delegate()->RequestToShowUserConfirmationDialog(
       task_->id(), navigation_origin, for_blocklisted_origin,
       base::BindOnce(&ExecutionEngine::OnPromptUserToConfirmNavigationDecision,
@@ -569,8 +574,15 @@ void ExecutionEngine::RemoveObserver(StateObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void ExecutionEngine::DidUninterruptTask() {
+  if (deferred_finish_tool_invoke_) {
+    std::move(deferred_finish_tool_invoke_).Run();
+  }
+}
+
 void ExecutionEngine::CancelOngoingActions(mojom::ActionResultCode reason) {
   TRACE_EVENT0("actor", "ExecutionEngine::CancelOngoingActions");
+  deferred_finish_tool_invoke_.Reset();
   if (tool_controller_) {
     tool_controller_->Cancel();
   }
@@ -595,6 +607,7 @@ void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
   TRACE_EVENT0("actor", "ExecutionEngine::Act");
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
   CHECK(!actions.empty());
+  CHECK(deferred_finish_tool_invoke_.is_null());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(task_->GetState(), ActorTask::State::kActing);
 
@@ -847,6 +860,23 @@ void ExecutionEngine::FinishedUiPreInvoke(mojom::ActionResultPtr result) {
 void ExecutionEngine::FinishedToolInvoke(mojom::ActionResultPtr result) {
   TRACE_EVENT0("actor", "ExecutionEngine::FinishedToolInvoke");
   DCHECK_EQ(state_, State::kToolInvoke);
+
+  if (tool_invoke_complete_callback_for_testing_) {
+    std::move(tool_invoke_complete_callback_for_testing_).Run();
+  }
+
+  // If the task is waiting on user input, defer returning a result for it. This
+  // prevents the actor state from proceeding and also allows UI to insert an
+  // `external_tool_failure_reason` to the action.
+  if (base::FeatureList::IsEnabled(kGlicDeferActUntilUninterrupted) &&
+      task_->GetState() == ActorTask::State::kWaitingOnUser) {
+    CHECK(deferred_finish_tool_invoke_.is_null());
+    deferred_finish_tool_invoke_ =
+        base::BindOnce(&ExecutionEngine::FinishedToolInvoke,
+                       base::Unretained(this), std::move(result));
+    return;
+  }
+
   // The current action errored out. Stop the chain.
   std::optional<mojom::ActionResultCode> external_tool_failure_reason;
   std::swap(external_tool_failure_reason, external_tool_failure_reason_);
@@ -861,6 +891,13 @@ void ExecutionEngine::FinishedToolInvoke(mojom::ActionResultPtr result) {
     return;
   }
 
+  // TODO(bokan): If tool completion is deferred due to interruption (e.g.
+  // waiting on a user to confirm an action) the recorded tool metrics will look
+  // inflated. This is a problem even if we record the metrics at the start of
+  // this function (before deferring) because presumably the tool itself waits
+  // on the cause of an interruption (and may reach here due to timeout or other
+  // reason). Ideally we'd split metrics based on whether or not an
+  // interruption was involved. Will file bug.
   CHECK(result->execution_end_time);
   base::TimeTicks end_time = base::TimeTicks::Now();
   RecordToolTimings(GetInProgressAction().Name(), end_time - action_start_time_,
@@ -876,6 +913,7 @@ void ExecutionEngine::FinishedUiPostInvoke(mojom::ActionResultPtr result) {
   TRACE_EVENT0("actor", "ExecutionEngine::FinishedUiPostInvoke");
   DCHECK_EQ(state_, State::kUiPostInvoke);
   CHECK(!action_sequence_.empty());
+  CHECK(deferred_finish_tool_invoke_.is_null());
 
   if (!IsOk(*result)) {
     CompleteActions(std::move(result), InProgressActionIndex());

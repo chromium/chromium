@@ -11,6 +11,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -200,6 +201,15 @@ class ExecutionEngine : public ToolDelegate {
 
   void RemoveObserver(StateObserver* observer);
 
+  void DidUninterruptTask();
+
+  void set_tool_invoke_complete_callback_for_testing(
+      base::OnceClosure callback) {
+    tool_invoke_complete_callback_for_testing_ = std::move(callback);
+  }
+
+  State state() { return state_; }
+
  private:
   class NewTabWebContentsObserver;
   // Used by tests only.
@@ -363,6 +373,12 @@ class ExecutionEngine : public ToolDelegate {
   std::optional<mojom::ActionResultCode> user_takeover_result_;
 
   base::ObserverList<StateObserver> observers_;
+
+  // If a tool finishes while the task is in a waiting state, the finish
+  // callback and processing is deferred until the task is resumed.
+  base::OnceClosure deferred_finish_tool_invoke_;
+
+  base::OnceClosure tool_invoke_complete_callback_for_testing_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -280,6 +280,16 @@ void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
     return;
   }
 
+  if (state_ == State::kWaitingOnUser) {
+    journal_->Log(
+        GURL(), id(), "ActorTask::Act",
+        JournalDetailsBuilder().AddError("Task is Waiting for User").Build());
+    std::move(callback).Run(
+        MakeResult(mojom::ActionResultCode::kInvalidTaskStateForAct),
+        std::nullopt, {});
+    return;
+  }
+
   ResetToObserveTabsSet();
 
   SetState(State::kActing);
@@ -340,6 +350,8 @@ void ActorTask::Stop(StoppedReason stop_reason) {
              /*action_results=*/{});
   }
 
+  // TODO(bokan): execution_engine_ is always passed in constructor and never
+  // reset so we should be able to CHECK and assume it's non-null.
   if (execution_engine_) {
     execution_engine_->CancelOngoingActions(
         mojom::ActionResultCode::kTaskWentAway);
@@ -388,6 +400,8 @@ void ActorTask::Pause(bool from_actor) {
              /*index_of_failed_action=*/std::nullopt, /*action_results=*/{});
   }
 
+  // TODO(bokan): execution_engine_ is always passed in constructor and never
+  // reset so we should be able to CHECK and assume it's non-null.
   if (execution_engine_) {
     execution_engine_->CancelOngoingActions(
         mojom::ActionResultCode::kTaskPaused);
@@ -421,6 +435,12 @@ void ActorTask::Uninterrupt(State resumed_state) {
     return;
   }
   SetState(resumed_state);
+
+  // TODO(bokan): execution_engine_ is always passed in constructor and never
+  // reset so we should be able to CHECK and assume it's non-null.
+  if (execution_engine_) {
+    execution_engine_->DidUninterruptTask();
+  }
 }
 
 bool ActorTask::IsUnderUserControl() const {

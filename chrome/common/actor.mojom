@@ -257,6 +257,9 @@ enum ActionResultCode {
   // The PageTool invocation was canceled.
   kInvokeCanceled = 41,
 
+  // The task is in an invalid state for an Act request.
+  kInvalidTaskStateForAct = 42,
+
   // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////
