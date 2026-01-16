@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
@@ -673,6 +674,50 @@ TEST_F(OverscrollAreaTrackerPageTest, OverscrollContainerWithElement) {
   EXPECT_EQ(overscroll_area_parent->GetLayoutObject()->Parent(),
             container->GetLayoutObject());
   EXPECT_EQ(content->GetLayoutObject()->Parent(), container->GetLayoutObject());
+}
+
+TEST_F(OverscrollAreaTrackerPageTest, OverscrollContainerNegativeScroll) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      #container {
+        width: 200px;
+        height: 200px;
+      }
+      #largeoverscrollarea {
+        width: 300%;
+        height: 300%;
+        /* Overscrolls by 100% / 200px on all sides. */
+        left: -100%;
+        top: -100%;
+      }
+    </style>
+    <div id="container" overscrollcontainer>
+      <div id="largeoverscrollarea"></div>
+      <div id="content"></div>
+    </div>
+    <button id=button command="toggle-overscroll"
+        commandfor="largeoverscrollarea"></button>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* container = GetElementById("container");
+  ASSERT_TRUE(container);
+  PseudoElement* overscroll_area_parent =
+      container->GetOverscrollAreaParentPseudoElements()->at(0);
+  Element* content = GetElementById("content");
+  ASSERT_TRUE(overscroll_area_parent);
+  ASSERT_TRUE(content);
+
+  PaintLayerScrollableArea* overscrollable_area =
+      overscroll_area_parent->GetLayoutBox()->GetScrollableArea();
+
+  // We should be able to overscroll in any direction.
+  ASSERT_TRUE(overscrollable_area);
+  ASSERT_EQ(overscrollable_area->MinimumScrollOffset().x(), -200);
+  ASSERT_EQ(overscrollable_area->MinimumScrollOffset().y(), -200);
+  ASSERT_EQ(overscrollable_area->MaximumScrollOffset().x(), 200);
+  ASSERT_EQ(overscrollable_area->MaximumScrollOffset().y(), 200);
 }
 
 }  // namespace blink

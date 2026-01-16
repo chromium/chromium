@@ -84,6 +84,9 @@ class CORE_EXPORT ScrollableOverflowCalculator {
   const WritingDirectionMode writing_direction_;
   const bool is_scroll_container_;
   const bool is_view_;
+  // If true, this scrollable overflow scrolls in all overflow directions
+  // and has_left_overflow_ and has_top_overflow_ are ignored.
+  const bool scrolls_all_directions_;
   const bool has_left_overflow_;
   const bool has_top_overflow_;
   const bool has_non_visible_overflow_;

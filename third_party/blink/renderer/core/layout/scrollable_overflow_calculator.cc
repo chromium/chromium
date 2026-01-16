@@ -79,6 +79,8 @@ ScrollableOverflowCalculator::ScrollableOverflowCalculator(
       writing_direction_(writing_direction),
       is_scroll_container_(is_css_box && node_.IsScrollContainer()),
       is_view_(node_.IsView()),
+      scrolls_all_directions_(is_css_box &&
+                              node_.IsOverscrollAreaParentPseudoElement()),
       has_left_overflow_(is_css_box && node_.HasLeftOverflow()),
       has_top_overflow_(is_css_box && node_.HasTopOverflow()),
       has_non_visible_overflow_(is_css_box && node_.HasNonVisibleOverflow()),
@@ -211,23 +213,24 @@ PhysicalRect ScrollableOverflowCalculator::AdjustOverflowForHanging(
 PhysicalRect ScrollableOverflowCalculator::AdjustOverflowForScrollOrigin(
     const PhysicalRect& overflow) {
   LayoutUnit left_offset =
-      has_left_overflow_
+      scrolls_all_directions_ || has_left_overflow_
           ? std::min(padding_rect_.Right(), overflow.offset.left)
           : std::max(padding_rect_.offset.left, overflow.offset.left);
 
   LayoutUnit right_offset =
-      has_left_overflow_
-          ? std::min(padding_rect_.Right(), overflow.Right())
-          : std::max(padding_rect_.offset.left, overflow.Right());
+      scrolls_all_directions_ || !has_left_overflow_
+          ? std::max(padding_rect_.offset.left, overflow.Right())
+          : std::min(padding_rect_.Right(), overflow.Right());
 
   LayoutUnit top_offset =
-      has_top_overflow_
+      scrolls_all_directions_ || has_top_overflow_
           ? std::min(padding_rect_.Bottom(), overflow.offset.top)
           : std::max(padding_rect_.offset.top, overflow.offset.top);
 
   LayoutUnit bottom_offset =
-      has_top_overflow_ ? std::min(padding_rect_.Bottom(), overflow.Bottom())
-                        : std::max(padding_rect_.offset.top, overflow.Bottom());
+      scrolls_all_directions_ || !has_top_overflow_
+          ? std::max(padding_rect_.offset.top, overflow.Bottom())
+          : std::min(padding_rect_.Bottom(), overflow.Bottom());
 
   return {PhysicalOffset(left_offset, top_offset),
           PhysicalSize(right_offset - left_offset, bottom_offset - top_offset)};
