@@ -76,6 +76,34 @@ class BASE_EXPORT AccessToken {
     DWORD attributes_;
   };
 
+  class BASE_EXPORT SecurityAttribute {
+   public:
+    SecurityAttribute(std::wstring_view name,
+                      ULONG type,
+                      ULONG flags,
+                      std::vector<std::wstring> values);
+    SecurityAttribute(SecurityAttribute&&);
+    ~SecurityAttribute();
+
+    // Indicates if the attribute was originally a list of strings types.
+    bool is_string() const;
+    // The attribute type of the values.
+    ULONG type() const { return type_; }
+    // The name of the attribute.
+    std::wstring_view name() const { return name_; }
+    // Get the list of string values. If `is_string` is false then these
+    // strings are the original values converted to strings.
+    const std::vector<std::wstring>& values() const { return values_; }
+    // The flags for the attribute.
+    ULONG flags() const { return flags_; }
+
+   private:
+    std::wstring name_;
+    ULONG type_;
+    ULONG flags_;
+    std::vector<std::wstring> values_;
+  };
+
   // Creates an AccessToken object from a token handle.
   // |token| the token handle. This handle will be duplicated for TOKEN_QUERY
   // access, therefore the caller must be granted that access to the token
@@ -339,9 +367,9 @@ class BASE_EXPORT AccessToken {
   // token's security attributes could not be queried.
   std::optional<bool> HasSecurityAttribute(std::wstring_view name) const;
 
-  // Returns a string value from a security attribute. Returns std::nullopt if
-  // the attribute doesn't exist or does not contain a string value.
-  std::optional<std::wstring> GetSecurityAttributeString(
+  // Looks up a security attribute. Returns std::nullopt if the attribute
+  // doesn't exist or cannot be converted to a list of string values.
+  std::optional<SecurityAttribute> GetSecurityAttribute(
       std::wstring_view name) const;
 
   // Indicates if the AccessToken object is valid.

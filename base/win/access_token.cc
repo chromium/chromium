@@ -15,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
+#include "base/strings/string_number_conversions_win.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/access_control_list.h"
@@ -36,7 +37,10 @@ typedef struct _TOKEN_SECURITY_ATTRIBUTE_V1 {
   USHORT Reserved;
   ULONG Flags;
   ULONG ValueCount;
-  PUNICODE_STRING pString;
+  union {
+    PULONG64 pUint64;
+    PUNICODE_STRING pString;
+  } Values;
 } TOKEN_SECURITY_ATTRIBUTE_V1, *PTOKEN_SECURITY_ATTRIBUTE_V1;
 
 #define TOKEN_SECURITY_ATTRIBUTES_INFORMATION_VERSION_V1 1
@@ -80,6 +84,10 @@ typedef struct _TOKEN_SECURITY_ATTRIBUTES_AND_OPERATION_INFORMATION {
   PTOKEN_SECURITY_ATTRIBUTE_OPERATION Operations;
 } TOKEN_SECURITY_ATTRIBUTES_AND_OPERATION_INFORMATION,
     *PTOKEN_SECURITY_ATTRIBUTES_AND_OPERATION_INFORMATION;
+
+#define TOKEN_SECURITY_ATTRIBUTE_TYPE_UINT64 0x02
+static_assert(TOKEN_SECURITY_ATTRIBUTE_TYPE_UINT64 ==
+              AUTHZ_SECURITY_ATTRIBUTE_TYPE_UINT64);
 
 #define TOKEN_SECURITY_ATTRIBUTE_TYPE_STRING 0x03
 static_assert(TOKEN_SECURITY_ATTRIBUTE_TYPE_STRING ==
@@ -364,6 +372,20 @@ std::optional<AccessToken> AccessToken::FromToken(HANDLE token,
     return std::nullopt;
   }
   return AccessToken(new_token);
+}
+
+AccessToken::SecurityAttribute::SecurityAttribute(
+    std::wstring_view name,
+    ULONG type,
+    ULONG flags,
+    std::vector<std::wstring> values)
+    : name_(name), type_(type), flags_(flags), values_(std::move(values)) {}
+AccessToken::SecurityAttribute::SecurityAttribute(SecurityAttribute&&) =
+    default;
+AccessToken::SecurityAttribute::~SecurityAttribute() = default;
+
+bool AccessToken::SecurityAttribute::is_string() const {
+  return type_ == TOKEN_SECURITY_ATTRIBUTE_TYPE_STRING;
 }
 
 std::optional<AccessToken> AccessToken::FromToken(ScopedHandle&& token) {
@@ -788,7 +810,7 @@ bool AccessToken::AddSecurityAttribute(std::wstring_view name,
   }
   attr.ValueCount = 1;
   attr.ValueType = TOKEN_SECURITY_ATTRIBUTE_TYPE_STRING;
-  attr.pString = &ustr_value;
+  attr.Values.pString = &ustr_value;
 
   TOKEN_SECURITY_ATTRIBUTES_INFORMATION attrs = {};
   attrs.Version = TOKEN_SECURITY_ATTRIBUTES_INFORMATION_VERSION_V1;
@@ -816,7 +838,7 @@ std::optional<bool> AccessToken::HasSecurityAttribute(
   return *attr != nullptr;
 }
 
-std::optional<std::wstring> AccessToken::GetSecurityAttributeString(
+std::optional<AccessToken::SecurityAttribute> AccessToken::GetSecurityAttribute(
     std::wstring_view name) const {
   std::optional<std::vector<char>> buffer =
       GetTokenInfo(token_.get(), TokenSecurityAttributes);
@@ -825,13 +847,30 @@ std::optional<std::wstring> AccessToken::GetSecurityAttributeString(
     return std::nullopt;
   }
   const TOKEN_SECURITY_ATTRIBUTE_V1* attr_val = *attr;
-  if (attr_val == nullptr ||
-      attr_val->ValueType != TOKEN_SECURITY_ATTRIBUTE_TYPE_STRING ||
-      attr_val->ValueCount < 1) {
+  if (attr_val == nullptr) {
     return std::nullopt;
   }
 
-  return std::wstring(UnicodeStringToView(*attr_val->pString));
+  std::vector<std::wstring> values;
+  switch (attr_val->ValueType) {
+    case TOKEN_SECURITY_ATTRIBUTE_TYPE_STRING:
+      for (const auto& value :
+           GetArraySpan(attr_val->Values.pString, attr_val->ValueCount)) {
+        values.emplace_back(UnicodeStringToView(value));
+      }
+      break;
+    case TOKEN_SECURITY_ATTRIBUTE_TYPE_UINT64:
+      for (const auto& value :
+           GetArraySpan(attr_val->Values.pUint64, attr_val->ValueCount)) {
+        values.emplace_back(NumberToWString(value));
+      }
+      break;
+    default:
+      return std::nullopt;
+  }
+
+  return SecurityAttribute(name, attr_val->ValueType, attr_val->Flags,
+                           std::move(values));
 }
 
 bool AccessToken::is_valid() const {
