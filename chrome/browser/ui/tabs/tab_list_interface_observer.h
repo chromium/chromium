@@ -11,6 +11,8 @@ namespace tabs {
 class TabInterface;
 }
 
+class TabListInterface;
+
 class TabListInterfaceObserver : public base::CheckedObserver {
  public:
   // Called when a new tab is added to the tab list. `tab` is the newly-added
@@ -36,6 +38,9 @@ class TabListInterfaceObserver : public base::CheckedObserver {
   virtual void OnTabMoved(tabs::TabInterface* tab,
                           int from_index,
                           int to_index) {}
+
+  // Called when the TabListInterface is destroyed.
+  virtual void OnTabListDestroyed(TabListInterface& tab_list) {}
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_LIST_INTERFACE_OBSERVER_H_

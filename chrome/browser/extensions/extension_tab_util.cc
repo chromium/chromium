@@ -1321,12 +1321,23 @@ bool ExtensionTabUtil::OpenOptionsPage(const Extension* extension,
                                                                open_in_tab);
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // static
 bool ExtensionTabUtil::BrowserSupportsTabs(BrowserWindowInterface* browser) {
-  return browser && browser->GetType() != BrowserWindowInterface::TYPE_DEVTOOLS;
+  if (!browser) {
+    return false;
+  }
+
+  // On non-android platforms, devtools windows are backed by a Browser
+  // instance.
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(devlin): Should we be checking for other types, too? Like PiP?
+  if (browser->GetType() == BrowserWindowInterface::TYPE_DEVTOOLS) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  return true;
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // static
 api::tabs::TabStatus ExtensionTabUtil::GetLoadingStatus(WebContents* contents) {

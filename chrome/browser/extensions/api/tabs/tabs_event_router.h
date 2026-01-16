@@ -16,6 +16,8 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
+#include "chrome/browser/ui/tabs/tab_list_interface_observer.h"
 #include "components/favicon/core/favicon_driver.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
@@ -52,6 +54,7 @@ namespace extensions {
 // pull this functionality into this class.
 class TabsEventRouter : public favicon::FaviconDriverObserver,
                         public performance_manager::PageLiveStateObserver,
+                        public TabListInterfaceObserver,
                         public zoom::ZoomObserver {
  public:
   explicit TabsEventRouter(Profile* profile);
@@ -123,6 +126,12 @@ class TabsEventRouter : public favicon::FaviconDriverObserver,
     base::WeakPtrFactory<TabEntry> weak_factory_{this};
   };
 
+  // Returns true if the event router should track the given `browser`.
+  bool ShouldTrackBrowser(BrowserWindowInterface& browser);
+
+  // Starts tracking the given `tab_list`.
+  void TrackTabList(TabListInterface& tab_list);
+
   // Registers to receive the various notifications we are interested in for a
   // tab.
   void RegisterForTabNotifications(content::WebContents& contents);
@@ -160,6 +169,10 @@ class TabsEventRouter : public favicon::FaviconDriverObserver,
                      base::Value::List args,
                      EventRouter::UserGestureState user_gesture);
 
+  // TabListInterfaceObserver:
+  void OnTabAdded(tabs::TabInterface* tab, int index) override;
+  void OnTabListDestroyed(TabListInterface& tab_list) override;
+
   // ZoomObserver:
   void OnZoomControllerDestroyed(
       zoom::ZoomController* zoom_controller) override;
@@ -180,10 +193,16 @@ class TabsEventRouter : public favicon::FaviconDriverObserver,
   void OnIsAutoDiscardableChanged(
       const performance_manager::PageNode* page_node) override;
 
+  // Whether this event router has been fully initialized.
+  bool initialized_ = false;
+
   // Observations for different state changes in tabs.
 
   using TabEntryMap = std::map<int, std::unique_ptr<TabEntry>>;
   TabEntryMap tab_entries_;
+
+  base::ScopedMultiSourceObservation<TabListInterface, TabListInterfaceObserver>
+      tab_list_observations_{this};
 
   base::ScopedMultiSourceObservation<favicon::FaviconDriver,
                                      favicon::FaviconDriverObserver>
@@ -194,7 +213,10 @@ class TabsEventRouter : public favicon::FaviconDriverObserver,
   // The profile this router is associated with.
   raw_ptr<Profile> profile_;
 
-  TabsEventRouterPlatformDelegate platform_delegate_;
+  // The associated platform delegate. This is only wrapped in an optional to
+  // allow delayed instantiation. See also comment in the constructor
+  // definition.
+  std::optional<TabsEventRouterPlatformDelegate> platform_delegate_;
 };
 
 }  // namespace extensions

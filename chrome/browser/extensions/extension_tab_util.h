@@ -318,11 +318,9 @@ class ExtensionTabUtil {
   static bool OpenOptionsPage(const Extension* extension,
                               BrowserWindowInterface* browser);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Returns true if the given Browser can report tabs to extensions.
   // Example of Browsers which don't support tabs include apps and devtools.
   static bool BrowserSupportsTabs(BrowserWindowInterface* browser);
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // Determines the loading status of the given `contents`. This needs to access
   // some non-const member functions of `contents`, but actually leaves it

@@ -55,6 +55,7 @@ class TabsEventRouterPlatformDelegate
 
   // BrowserListObserver:
   void OnBrowserSetLastActive(Browser* browser) override;
+  void OnBrowserAdded(Browser* browser) override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(

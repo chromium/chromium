@@ -39,6 +39,7 @@ TabsEventRouterPlatformDelegate::~TabsEventRouterPlatformDelegate() {
 void TabsEventRouterPlatformDelegate::OnTabModelAdded(TabModel* tab_model) {
   if (profile_->IsSameOrParent(tab_model->GetProfile())) {
     tab_model_observations_.AddObservation(tab_model);
+    router_->TrackTabList(*tab_model);
   }
 }
 
@@ -46,27 +47,6 @@ void TabsEventRouterPlatformDelegate::OnTabModelRemoved(TabModel* tab_model) {
   if (tab_model_observations_.IsObservingSource(tab_model)) {
     tab_model_observations_.RemoveObservation(tab_model);
   }
-}
-
-void TabsEventRouterPlatformDelegate::DidAddTab(TabAndroid* tab,
-                                                TabModel::TabLaunchType type) {
-  if (!tab || !tab->web_contents()) {
-    return;
-  }
-  int tab_id = ExtensionTabUtil::GetTabId(tab->web_contents());
-  if (!SessionID::IsValidValue(tab_id)) {
-    return;
-  }
-  // In the field, sometimes tabs are added with duplicate IDs. See
-  // http://crbug.com/434055707
-  if (router_->GetTabEntry(*tab->web_contents())) {
-    LOG(ERROR) << "Duplicate tab ID " << tab_id << " for "
-               << tab->GetURL().spec();
-    base::debug::DumpWithoutCrashing();
-    return;
-  }
-  router_->RegisterForTabNotifications(*tab->web_contents());
-  router_->DispatchTabCreatedEvent(tab->web_contents(), tab->IsActivated());
 }
 
 void TabsEventRouterPlatformDelegate::TabRemoved(TabAndroid* tab) {

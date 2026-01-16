@@ -82,6 +82,7 @@ class TabModelObserverJniBridge {
   void AddTabListInterfaceObserver(TabListInterfaceObserver* observer);
   void RemoveObserver(TabModelObserver* observer);
   void RemoveTabListInterfaceObserver(TabListInterfaceObserver* observer);
+  void NotifyShutdown();
 
   bool has_observers() const {
     return !model_observers_.empty() || !interface_observers_.empty();

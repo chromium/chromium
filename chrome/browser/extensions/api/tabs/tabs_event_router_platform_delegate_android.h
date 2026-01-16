@@ -44,7 +44,6 @@ class TabsEventRouterPlatformDelegate : public TabModelListObserver,
   void OnTabModelRemoved(TabModel* tab_model) override;
 
   // TabModelObserver:
-  void DidAddTab(TabAndroid* tab, TabModel::TabLaunchType type) override;
   void TabRemoved(TabAndroid* tab) override;
 
  private:

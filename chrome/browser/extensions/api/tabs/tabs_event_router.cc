@@ -12,6 +12,7 @@
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "components/favicon/content/content_favicon_driver.h"
@@ -29,6 +30,8 @@ namespace {
 constexpr char kAudibleKey[] = "audible";
 constexpr char kAutoDiscardableKey[] = "autoDiscardable";
 constexpr char kMutedInfoKey[] = "mutedInfo";
+constexpr char kNewPositionKey[] = "newPosition";
+constexpr char kNewWindowIdKey[] = "newWindowId";
 constexpr char kPinnedKey[] = "pinned";
 
 // Callback for the event dispatch system. Computes which tab properties have
@@ -194,13 +197,37 @@ void TabsEventRouter::TabEntry::OnPinnedStateChanged(tabs::TabInterface* tab,
 ////////////////////////////////////////////////////////////////////////////////
 // TabsEventRouter:
 
-TabsEventRouter::TabsEventRouter(Profile* profile)
-    : profile_(profile), platform_delegate_(*this, *profile) {
+TabsEventRouter::TabsEventRouter(Profile* profile) : profile_(profile) {
   performance_manager::PageLiveStateDecorator::AddAllPageObserver(this);
+
+  // We instantiate the platform delegate outside the member initialization
+  // list. Construction of the platform delegate might call back into this class
+  // (e.g. to add existing tabs to track), so we want to make sure all members
+  // are fully instantiated before those methods are called.
+  platform_delegate_.emplace(*this, *profile);
+
+  initialized_ = true;
 }
 
 TabsEventRouter::~TabsEventRouter() {
   performance_manager::PageLiveStateDecorator::RemoveAllPageObserver(this);
+}
+
+bool TabsEventRouter::ShouldTrackBrowser(BrowserWindowInterface& browser) {
+  return profile_->IsSameOrParent(browser.GetProfile()) &&
+         ExtensionTabUtil::BrowserSupportsTabs(&browser);
+}
+
+void TabsEventRouter::TrackTabList(TabListInterface& tab_list) {
+  tab_list_observations_.AddObservation(&tab_list);
+
+  // Bootstrap: monitor all pre-existing tabs in the tab list.
+  std::vector<tabs::TabInterface*> tabs = tab_list.GetAllTabs();
+  for (size_t i = 0u; i < tabs.size(); ++i) {
+    OnTabAdded(tabs[i], i);
+  }
+  // TODO(https://crbug.com/473593117): Do we also need to fire selection
+  // changed events? It looks like the non-Android BrowserTabStripTracker does.
 }
 
 void TabsEventRouter::RegisterForTabNotifications(
@@ -304,6 +331,49 @@ void TabsEventRouter::DispatchEvent(
                                        std::move(args), profile);
   event->user_gesture = user_gesture;
   event_router->BroadcastEvent(std::move(event));
+}
+
+void TabsEventRouter::OnTabAdded(tabs::TabInterface* tab, int index) {
+  content::WebContents* contents = tab->GetContents();
+  CHECK(contents);
+
+  // Check if we've ever seen this tab.
+  if (GetTabEntry(*contents)) {
+    // This is a known tab. Dispatch `onAttached`.
+    int tab_id = ExtensionTabUtil::GetTabId(contents);
+    base::Value::List args;
+    args.Append(tab_id);
+
+    base::Value::Dict object_args;
+    object_args.Set(kNewWindowIdKey,
+                    base::Value(ExtensionTabUtil::GetWindowIdOfTab(contents)));
+    object_args.Set(kNewPositionKey, base::Value(index));
+    args.Append(std::move(object_args));
+
+    Profile* profile =
+        Profile::FromBrowserContext(contents->GetBrowserContext());
+    DispatchEvent(profile, events::TABS_ON_ATTACHED,
+                  api::tabs::OnAttached::kEventName, std::move(args),
+                  EventRouter::UserGestureState::kUnknown);
+
+    return;
+  }
+
+  // We've never seen this tab. Begin tracking it.
+  RegisterForTabNotifications(*contents);
+
+  // If we're still initializing the event router, assume this is
+  // bootstrapping instead of a new tab.
+  if (!initialized_) {
+    return;
+  }
+
+  // Otherwise, dispatch the `onCreated` event.
+  DispatchTabCreatedEvent(contents, tab->IsActivated());
+}
+
+void TabsEventRouter::OnTabListDestroyed(TabListInterface& tab_list) {
+  tab_list_observations_.RemoveObservation(&tab_list);
 }
 
 void TabsEventRouter::OnZoomControllerDestroyed(

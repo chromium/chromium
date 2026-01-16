@@ -793,6 +793,13 @@ bool TabModelJniBridge::IsTabLaunchedInForeground(
 }
 
 TabModelJniBridge::~TabModelJniBridge() {
+  // We need to explicitly do this here (instead of e.g. in the
+  // TabModelObserverJniBridge dtor) because otherwise, callers might call back
+  // into a partially-destructed TabModel.
+  if (observer_bridge_) {
+    observer_bridge_->NotifyShutdown();
+  }
+
   if (is_archived_tab_model_) {
     TabModelList::SetArchivedTabModel(nullptr);
   } else {
