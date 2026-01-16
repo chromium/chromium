@@ -44,11 +44,6 @@ namespace safe_browsing {
 
 namespace {
 
-std::string HashToString(const flat::Hash* hash) {
-  return std::string(reinterpret_cast<const char*>(hash->data()->Data()),
-                     hash->data()->size());
-}
-
 void RecordScorerCreationStatus(ScorerCreationStatus status) {
   base::UmaHistogramExactLinear(
       "SBClientPhishing.FlatBufferScorer.CreationStatus", status,
@@ -367,17 +362,6 @@ void Scorer::ApplyImageEmbeddingTfLiteModelHelper(
 }
 #endif
 
-double Scorer::LogOdds2Prob(const double log_odds) const {
-  // 709 = floor(1023*ln(2)).  2**1023 is the largest finite double.
-  // Small log odds aren't a problem.  as the odds will be 0.  It's only
-  // when we get +infinity for the odds, that odds/(odds+1) would be NaN.
-  if (log_odds >= 709) {
-    return 1.0;
-  }
-  double odds = exp(log_odds);
-  return odds / (odds + 1.0);
-}
-
 Scorer::Scorer() = default;
 Scorer::~Scorer() = default;
 
@@ -548,53 +532,6 @@ void Scorer::AttachImageEmbeddingModel(int image_embedding_input_width,
                               image_embedding_input_height);
 }
 
-double Scorer::ComputeRuleScore(const flat::ClientSideModel_::Rule* rule,
-                                const FeatureMap& features) const {
-  if (!rule->feature()) {
-    return rule->weight();
-  }
-
-  // If the feature vector exists but there are no hashes, the weight will be 0
-  // ultimately, so we return here.
-  if (!flatbuffer_model_->hashes()) {
-    return 0.0;
-  }
-
-  const std::unordered_map<std::string, double>& feature_map =
-      features.features();
-  double rule_score = 1.0;
-  for (int32_t feature : *rule->feature()) {
-    const flat::Hash* hash = flatbuffer_model_->hashes()->Get(feature);
-
-    if (!hash || !hash->data()) {
-      return 0.0;
-    }
-
-    std::string hash_str(reinterpret_cast<const char*>(hash->data()->Data()),
-                         hash->data()->size());
-    const auto it = feature_map.find(hash_str);
-    if (it == feature_map.end() || it->second == 0.0) {
-      // If the feature of the rule does not exist in the given feature map the
-      // feature weight is considered to be zero.  If the feature weight is zero
-      // we leave early since we know that the rule score will be zero.
-      return 0.0;
-    }
-    rule_score *= it->second;
-  }
-  return rule_score * rule->weight();
-}
-
-double Scorer::ComputeScore(const FeatureMap& features) const {
-  double logodds = 0.0;
-  if (flatbuffer_model_ && flatbuffer_model_->rule()) {
-    for (const flat::ClientSideModel_::Rule* rule :
-         *flatbuffer_model_->rule()) {
-      logodds += ComputeRuleScore(rule, features);
-    }
-  }
-  return LogOdds2Prob(logodds);
-}
-
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void Scorer::ApplyVisualTfLiteModel(
     const SkBitmap& bitmap,
@@ -643,65 +580,6 @@ void Scorer::ApplyVisualTfLiteModelImageEmbedding(
 }
 #endif
 
-int Scorer::model_version() const {
-  return flatbuffer_model_->version();
-}
-
-int Scorer::dom_model_version() const {
-  return flatbuffer_model_->dom_model_version();
-}
-
-bool Scorer::has_page_term(const std::string& str) const {
-  const flatbuffers::Vector<flatbuffers::Offset<flat::Hash>>* hashes =
-      flatbuffer_model_->hashes();
-  flatbuffers::Vector<flatbuffers::Offset<flat::Hash>>::const_iterator
-      hashes_iter =
-          std::lower_bound(hashes->begin(), hashes->end(), str,
-                           [](const flat::Hash* hash, const std::string& str) {
-                             std::string hash_str = HashToString(hash);
-                             return hash_str.compare(str) < 0;
-                           });
-  if (hashes_iter == hashes->end() || HashToString(*hashes_iter) != str) {
-    return false;
-  }
-  int index = hashes_iter - hashes->begin();
-  const flatbuffers::Vector<int32_t>* page_terms =
-      flatbuffer_model_->page_term();
-  return std::binary_search(page_terms->begin(), page_terms->end(), index);
-}
-
-base::RepeatingCallback<bool(const std::string&)>
-Scorer::find_page_term_callback() const {
-  return base::BindRepeating(&Scorer::has_page_term, base::Unretained(this));
-}
-
-bool Scorer::has_page_word(uint32_t page_word_hash) const {
-  const flatbuffers::Vector<uint32_t>* page_words =
-      flatbuffer_model_->page_word();
-  return std::binary_search(page_words->begin(), page_words->end(),
-                            page_word_hash);
-}
-
-base::RepeatingCallback<bool(uint32_t)> Scorer::find_page_word_callback()
-    const {
-  return base::BindRepeating(&Scorer::has_page_word, base::Unretained(this));
-}
-
-size_t Scorer::max_words_per_term() const {
-  return flatbuffer_model_->max_words_per_term();
-}
-uint32_t Scorer::murmurhash3_seed() const {
-  return flatbuffer_model_->murmur_hash_seed();
-}
-size_t Scorer::max_shingles_per_page() const {
-  return flatbuffer_model_->max_shingles_per_page();
-}
-size_t Scorer::shingle_size() const {
-  return flatbuffer_model_->shingle_size();
-}
-float Scorer::threshold_probability() const {
-  return flatbuffer_model_->threshold_probability();
-}
 int Scorer::tflite_model_version() const {
   return flatbuffer_model_->tflite_metadata()->version();
 }
