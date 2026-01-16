@@ -4972,24 +4972,9 @@ CSSValue* ConsumeMaskMode(CSSParserTokenStream& stream) {
                       CSSValueID::kMatchSource>(stream);
 }
 
-CSSPrimitiveValue* ConsumeLengthOrPercentCountNegative(
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    CSSParserLocalContext& local_context,
-    std::optional<WebFeature> negative_size) {
-  CSSPrimitiveValue* result = ConsumeLengthOrPercent(
-      stream, context, local_context,
-      CSSPrimitiveValue::ValueRange::kNonNegative, UnitlessQuirk::kForbid);
-  if (!result && negative_size) {
-    context.Count(*negative_size);
-  }
-  return result;
-}
-
 CSSValue* ConsumeBackgroundSize(CSSParserTokenStream& stream,
                                 const CSSParserContext& context,
                                 CSSParserLocalContext& local_context,
-                                std::optional<WebFeature> negative_size,
                                 ParsingStyle parsing_style) {
   if (IdentMatches<CSSValueID::kContain, CSSValueID::kCover>(
           stream.Peek().Id())) {
@@ -4998,8 +4983,9 @@ CSSValue* ConsumeBackgroundSize(CSSParserTokenStream& stream,
 
   CSSValue* horizontal = ConsumeIdent<CSSValueID::kAuto>(stream);
   if (!horizontal) {
-    horizontal = ConsumeLengthOrPercentCountNegative(
-        stream, context, local_context, negative_size);
+    horizontal = ConsumeLengthOrPercent(
+        stream, context, local_context,
+        CSSPrimitiveValue::ValueRange::kNonNegative, UnitlessQuirk::kForbid);
   }
   if (!horizontal) {
     return nullptr;
@@ -5010,8 +4996,9 @@ CSSValue* ConsumeBackgroundSize(CSSParserTokenStream& stream,
     if (stream.Peek().Id() == CSSValueID::kAuto) {  // `auto' is the default
       stream.ConsumeIncludingWhitespace();
     } else {
-      vertical = ConsumeLengthOrPercentCountNegative(
-          stream, context, local_context, negative_size);
+      vertical = ConsumeLengthOrPercent(
+          stream, context, local_context,
+          CSSPrimitiveValue::ValueRange::kNonNegative, UnitlessQuirk::kForbid);
     }
   } else if (parsing_style == ParsingStyle::kLegacy) {
     // Legacy syntax: "-webkit-background-size: 10px" is equivalent to
@@ -5095,28 +5082,18 @@ CSSValue* ParseBackgroundBox(CSSParserTokenStream& stream,
 
 CSSValue* ParseBackgroundSize(CSSParserTokenStream& stream,
                               const CSSParserContext& context,
-                              CSSParserLocalContext& local_context,
-                              std::optional<WebFeature> negative_size) {
+                              CSSParserLocalContext& local_context) {
   return ConsumeCommaSeparatedList(
-      static_cast<CSSValue* (*)(CSSParserTokenStream&, const CSSParserContext&,
-                                CSSParserLocalContext&,
-                                std::optional<WebFeature>, ParsingStyle)>(
-          ConsumeBackgroundSize),
-      stream, context, local_context, negative_size,
+      ConsumeBackgroundSize, stream, context, local_context,
       local_context.UseAliasParsing() ? ParsingStyle::kLegacy
                                       : ParsingStyle::kNotLegacy);
 }
 
 CSSValue* ParseMaskSize(CSSParserTokenStream& stream,
                         const CSSParserContext& context,
-                        CSSParserLocalContext& local_context,
-                        std::optional<WebFeature> negative_size) {
-  return ConsumeCommaSeparatedList(
-      static_cast<CSSValue* (*)(CSSParserTokenStream&, const CSSParserContext&,
-                                CSSParserLocalContext&,
-                                std::optional<WebFeature>, ParsingStyle)>(
-          ConsumeBackgroundSize),
-      stream, context, local_context, negative_size, ParsingStyle::kNotLegacy);
+                        CSSParserLocalContext& local_context) {
+  return ConsumeCommaSeparatedList(ConsumeBackgroundSize, stream, context,
+                                   local_context, ParsingStyle::kNotLegacy);
 }
 
 CSSValue* ConsumeCoordBoxOrNoClip(CSSParserTokenStream& stream) {
@@ -5235,12 +5212,8 @@ bool ParseBackgroundOrMask(bool important,
           if (!ConsumeSlashIncludingWhitespace(stream)) {
             continue;
           }
-          value = ConsumeBackgroundSize(
-              stream, context, local_context,
-              property.IDEquals(CSSPropertyID::kBackgroundSize)
-                  ? WebFeature::kNegativeBackgroundSize
-                  : WebFeature::kNegativeMaskSize,
-              ParsingStyle::kNotLegacy);
+          value = ConsumeBackgroundSize(stream, context, local_context,
+                                        ParsingStyle::kNotLegacy);
           if (!value || !bg_position_parsed_in_current_layer) {
             return false;
           }

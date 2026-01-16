@@ -2733,8 +2733,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2399" label="ReadableStreamConstructor"/>
   <int value="2400" label="WritableStreamConstructor"/>
   <int value="2401" label="TransformStreamConstructor"/>
-  <int value="2402" label="NegativeBackgroundSize"/>
-  <int value="2403" label="NegativeMaskSize"/>
+  <int value="2402" label="OBSOLETE_NegativeBackgroundSize"/>
+  <int value="2403" label="OBSOLETE_NegativeMaskSize"/>
   <int value="2404" label="ClientHintsRtt_DEPRECATED"/>
   <int value="2405" label="ClientHintsDownlink_DEPRECATED"/>
   <int value="2406" label="ClientHintsEct_DEPRECATED"/>

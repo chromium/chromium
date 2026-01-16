@@ -1202,8 +1202,7 @@ const CSSValue* BackgroundSize::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     CSSParserLocalContext& local_context) const {
-  return css_parsing_utils::ParseBackgroundSize(
-      stream, context, local_context, WebFeature::kNegativeBackgroundSize);
+  return css_parsing_utils::ParseBackgroundSize(stream, context, local_context);
 }
 
 const CSSValue* BackgroundSize::CSSValueFromComputedStyleInternal(
@@ -11834,8 +11833,7 @@ const CSSValue* MaskSize::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     CSSParserLocalContext& local_context) const {
-  return css_parsing_utils::ParseMaskSize(stream, context, local_context,
-                                          WebFeature::kNegativeMaskSize);
+  return css_parsing_utils::ParseMaskSize(stream, context, local_context);
 }
 
 const CSSValue* MaskSize::CSSValueFromComputedStyleInternal(

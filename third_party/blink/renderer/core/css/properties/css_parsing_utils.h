@@ -493,12 +493,10 @@ CSSValue* ParseBackgroundBox(CSSParserTokenStream&,
                              AllowTextValue alias_allow_text_value);
 CSSValue* ParseBackgroundSize(CSSParserTokenStream&,
                               const CSSParserContext&,
-                              CSSParserLocalContext&,
-                              std::optional<WebFeature> negative_size);
+                              CSSParserLocalContext&);
 CSSValue* ParseMaskSize(CSSParserTokenStream&,
                         const CSSParserContext&,
-                        CSSParserLocalContext&,
-                        std::optional<WebFeature> negative_size);
+                        CSSParserLocalContext&);
 bool ParseBackgroundOrMask(bool,
                            CSSParserTokenStream&,
                            const CSSParserContext&,
