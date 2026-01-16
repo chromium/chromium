@@ -90,7 +90,7 @@ class GpuServiceTest : public testing::Test {
     io_thread_.Stop();
   }
 
-  std::optional<bool> visible_;
+  std::optional<base::Process::Priority> priority_;
 
  private:
   base::Thread io_thread_;
@@ -136,22 +136,24 @@ TEST_F(GpuServiceTest, VisibilityCallbackCalled) {
       mojom::GpuServiceCreationParams::New());
   gpu_service_remote.FlushForTesting();
 
-  gpu_service()->SetVisibilityChangedCallback(base::BindRepeating(
-      [](GpuServiceTest* test, bool visible) { test->visible_ = visible; },
+  gpu_service()->SetPriorityChangedCallback(base::BindRepeating(
+      [](GpuServiceTest* test, base::Process::Priority priority) {
+        test->priority_ = priority;
+      },
       base::Unretained(this)));
-  EXPECT_FALSE(visible_.has_value());
+  EXPECT_FALSE(priority_.has_value());
 
   gpu_service_remote->OnForegrounded();
   gpu_service_remote.FlushForTesting();
 
-  EXPECT_TRUE(visible_.has_value());
-  EXPECT_TRUE(*visible_);
+  EXPECT_TRUE(priority_.has_value());
+  EXPECT_EQ(*priority_, base::Process::Priority::kUserBlocking);
 
   gpu_service_remote->OnBackgrounded();
   gpu_service_remote.FlushForTesting();
 
-  EXPECT_TRUE(visible_.has_value());
-  EXPECT_FALSE(*visible_);
+  EXPECT_TRUE(priority_.has_value());
+  EXPECT_EQ(*priority_, base::Process::Priority::kBestEffort);
 }
 
 // Tests that when a PeakGpuMemoryTracker is destroyed, GpuService properly

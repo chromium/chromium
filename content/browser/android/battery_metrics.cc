@@ -316,7 +316,7 @@ void AndroidBatteryMetrics::InitializeOnSequence() {
       power_monitor->AddPowerStateObserverAndReturnBatteryPowerStatus(this);
   power_monitor->AddPowerThermalObserver(this);
   // The observer is never removed because this class uses base::NoDestructor.
-  content::ProcessVisibilityTracker::GetInstance()->AddObserver(this);
+  content::ProcessPriorityTracker::GetInstance()->AddObserver(this);
   // TODO(b/339859756): Update this call to take into account the unknown battery
   // status.
   UpdateMetricsEnabled();
@@ -343,9 +343,10 @@ void AndroidBatteryMetrics::TryObservePerformanceScenarios() {
   }
 }
 
-void AndroidBatteryMetrics::OnVisibilityChanged(bool visible) {
+void AndroidBatteryMetrics::OnPriorityChanged(
+    base::Process::Priority priority) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  app_visible_ = visible;
+  app_foregrounded_ = (priority != base::Process::Priority::kBestEffort);
   UpdateMetricsEnabled();
 }
 
@@ -393,8 +394,9 @@ void AndroidBatteryMetrics::UpdateMetricsEnabled() {
   // visible. Battery drain will only be reflected in remaining battery capacity
   // when the device is not on a charger.
   bool should_be_enabled =
-      app_visible_ && (battery_power_status_ ==
-                       PowerStateObserver::BatteryPowerStatus::kBatteryPower);
+      app_foregrounded_ &&
+      (battery_power_status_ ==
+       PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 
   if (should_be_enabled && !metrics_timer_.IsRunning()) {
     // Capture first capacity measurement and enable the repeating timer.

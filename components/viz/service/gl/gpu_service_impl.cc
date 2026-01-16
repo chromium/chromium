@@ -565,10 +565,10 @@ scoped_refptr<gpu::SharedContextState> GpuServiceImpl::GetContextState() {
   return gpu_channel_manager_->GetSharedContextState(&result);
 }
 
-void GpuServiceImpl::SetVisibilityChangedCallback(
-    VisibilityChangedCallback callback) {
+void GpuServiceImpl::SetPriorityChangedCallback(
+    PriorityChangedCallback callback) {
   DCHECK(main_runner_->BelongsToCurrentThread());
-  visibility_changed_callback_ = std::move(callback);
+  priority_changed_callback_ = std::move(callback);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1121,8 +1121,8 @@ void GpuServiceImpl::OnBackgrounded() {
 void GpuServiceImpl::OnBackgroundedOnMainThread() {
   gpu_channel_manager_->OnApplicationBackgrounded();
 
-  if (visibility_changed_callback_) {
-    visibility_changed_callback_.Run(false);
+  if (priority_changed_callback_) {
+    priority_changed_callback_.Run(base::Process::Priority::kBestEffort);
     if (gpu_preferences_.enable_gpu_benchmarking_extension) {
       ++gpu_info_.visibility_callback_call_count;
       UpdateGPUInfoGL();
@@ -1145,8 +1145,8 @@ void GpuServiceImpl::OnForegrounded() {
 }
 
 void GpuServiceImpl::OnForegroundedOnMainThread() {
-  if (visibility_changed_callback_) {
-    visibility_changed_callback_.Run(true);
+  if (priority_changed_callback_) {
+    priority_changed_callback_.Run(base::Process::Priority::kUserBlocking);
     if (gpu_preferences_.enable_gpu_benchmarking_extension) {
       ++gpu_info_.visibility_callback_call_count;
       UpdateGPUInfoGL();

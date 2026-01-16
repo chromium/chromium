@@ -23,7 +23,7 @@
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "content/child/child_process.h"
-#include "content/common/process_visibility_tracker.h"
+#include "content/common/process_priority_tracker.h"
 #include "content/gpu/browser_exposed_gpu_interfaces.h"
 #include "content/gpu/gpu_service_factory.h"
 #include "content/public/common/content_client.h"
@@ -198,10 +198,10 @@ void GpuChildThread::OnGpuServiceConnection(viz::GpuServiceImpl* gpu_service) {
 #endif
 
   if (!IsInBrowserProcess()) {
-    gpu_service->SetVisibilityChangedCallback(
-        base::BindRepeating([](bool visible) {
-          ProcessVisibilityTracker::GetInstance()->OnProcessVisibilityChanged(
-              visible);
+    gpu_service->SetPriorityChangedCallback(
+        base::BindRepeating([](base::Process::Priority priority) {
+          ProcessPriorityTracker::GetInstance()->OnProcessPriorityChanged(
+              priority);
         }));
   }
 

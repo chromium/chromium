@@ -17,7 +17,7 @@
 #include "components/performance_manager/scenario_api/performance_scenario_observer.h"
 #include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "content/common/content_export.h"
-#include "content/common/process_visibility_tracker.h"
+#include "content/common/process_priority_tracker.h"
 
 namespace content {
 
@@ -27,7 +27,7 @@ namespace content {
 class AndroidBatteryMetrics
     : public base::PowerStateObserver,
       public base::PowerThermalObserver,
-      public ProcessVisibilityTracker::ProcessVisibilityObserver,
+      public ProcessPriorityTracker::ProcessPriorityObserver,
       public performance_scenarios::PerformanceScenarioObserver {
  public:
   // CaptureAndReportMetrics() reports some metrics sliced by loading/input
@@ -102,8 +102,8 @@ class AndroidBatteryMetrics
   // `is_observing_peformance_scenarios_` enforces it only happens once.
   void TryObservePerformanceScenarios();
 
-  // ProcessVisibilityTracker::ProcessVisibilityObserver implementation:
-  void OnVisibilityChanged(bool visible) override;
+  // ProcessPriorityTracker::ProcessPriorityObserver implementation:
+  void OnPriorityChanged(base::Process::Priority priority) override;
 
   // PerformanceScenarioObserver implementation:
   void OnLoadingScenarioChanged(
@@ -137,7 +137,7 @@ class AndroidBatteryMetrics
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  bool app_visible_ = false;
+  bool app_foregrounded_ = false;
   PowerStateObserver::BatteryPowerStatus battery_power_status_ =
       PowerStateObserver::BatteryPowerStatus::kUnknown;
   int last_remaining_capacity_uah_ = 0;

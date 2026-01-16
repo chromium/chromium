@@ -74,7 +74,7 @@
 #include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
 #include "content/common/main_frame_counter.h"
-#include "content/common/process_visibility_tracker.h"
+#include "content/common/process_priority_tracker.h"
 #include "content/common/pseudonymization_salt.h"
 #include "content/public/common/buildflags.h"
 #include "content/public/common/content_client.h"
@@ -1243,14 +1243,16 @@ void RenderThreadImpl::SetProcessState(
     }
   }
 
+  if (!process_priority_.has_value() || process_priority != process_priority_) {
+    if (!IsInBrowserProcess()) {
+      ProcessPriorityTracker::GetInstance()->OnProcessPriorityChanged(
+          process_priority);
+    }
+  }
+
   if (visible_state != visible_state_) {
     bool is_visible =
         visible_state == mojom::RenderProcessVisibleState::kVisible;
-
-    if (!IsInBrowserProcess()) {
-      ProcessVisibilityTracker::GetInstance()->OnProcessVisibilityChanged(
-          is_visible);
-    }
 
     if (is_visible) {
       OnRendererVisible();
