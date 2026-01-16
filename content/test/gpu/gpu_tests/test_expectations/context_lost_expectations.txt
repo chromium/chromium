@@ -224,7 +224,6 @@ crbug.com/329145823 [ angle-metal graphite-enabled intel-gen-9 mac no-asan relea
 crbug.com/354748640 [ mac amd asan release ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
 crbug.com/354748640 [ mac amd no-asan graphite-disabled release ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
 
-
 # Flaky failure on Mac Intel ASAN - DevTools Serialization Crash
 crbug.com/338574390 [ angle-metal asan intel mac ] ContextLost_WebGLContextRestoredInHiddenTab [ Failure ]
 
@@ -251,11 +250,12 @@ crbug.com/338574390 [ angle-metal graphite-enabled amd-0x7340 mac ] ContextLost_
 # Failure since webgpu enabled via vulkan interop
 crbug.com/457303654 [ linux nvidia-0x2184 debug ] ContextLost_WebGPUStressRequestDeviceAndRemoveLoop [ Failure ]
 
-
-
 # WebGPU is currently not enabled on win11 qualcomm but it will be soon
 [ win11 qualcomm ] ContextLost_WebGPU* [ Failure ]
 [ memory_lt_16gb qualcomm-0x41333430 win11 ] GpuNormalTermination_WebGPUNotBlocked [ Failure ]
+
+# Flaky crashes on Samsung A23 symbols missing
+crbug.com/476406991 [ android android-sm-a236b ] ContextLost_WebGPUStressRequestDeviceAndRemoveLoop [ RetryOnFailure ]
 
 ###############################
 # Permanent Slow Expectations #
