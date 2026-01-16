@@ -383,7 +383,8 @@ void PaintManager::DoPaint() {
 
     // Blank the buffer area because Skia might read it during compositing.
     SkPaint paint;
-    paint.setColor(SK_ColorWHITE);
+    paint.setColor(SK_ColorTRANSPARENT);
+    paint.setBlendMode(SkBlendMode::kSrc);
     surface_->getCanvas()->drawRect(SkRect::Make(bottom_buffer_area), paint);
     surface_->getCanvas()->drawRect(SkRect::Make(right_buffer_area), paint);
 
