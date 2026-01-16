@@ -162,8 +162,6 @@ public class SearchBoxMediatorUnitTest {
         assertNotEquals(0, Float.compare(0f, expectedElevation));
         Drawable defaultBackground =
                 mContext.getDrawable(R.drawable.home_surface_search_box_background);
-        int originalHeight = 72;
-        mView.setLayoutParams(new ViewGroup.MarginLayoutParams(120, originalHeight));
         View searchBoxContainer = mView.findViewById(R.id.search_box_container);
 
         // Tests the case to apply a white background with shadow.
@@ -174,9 +172,6 @@ public class SearchBoxMediatorUnitTest {
         assertEquals(paddingForShadowLateralPx, mView.getPaddingEnd());
         assertEquals(paddingForShadowBottomPx, mView.getPaddingTop());
         assertEquals(paddingForShadowBottomPx, mView.getPaddingBottom());
-        ViewGroup.MarginLayoutParams marginLayoutParams =
-                (ViewGroup.MarginLayoutParams) mView.getLayoutParams();
-        assertEquals(originalHeight + 2 * paddingForShadowBottomPx, marginLayoutParams.height);
 
         // Tests the case to remove the white background with shadow.
         mMediator.applyWhiteBackgroundWithShadow(false);
@@ -186,8 +181,6 @@ public class SearchBoxMediatorUnitTest {
         assertEquals(0, mView.getPaddingEnd());
         assertEquals(0, mView.getPaddingTop());
         assertEquals(0, mView.getPaddingBottom());
-        marginLayoutParams = (ViewGroup.MarginLayoutParams) mView.getLayoutParams();
-        assertEquals(originalHeight, marginLayoutParams.height);
     }
 
     private void verifyApplyBackground(View view, float elevation) {

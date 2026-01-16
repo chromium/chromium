@@ -10,7 +10,6 @@ import android.graphics.drawable.RippleDrawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -87,7 +86,6 @@ public class SearchBoxContainerView extends LinearLayout {
      */
     void applyWhiteBackgroundWithShadow(boolean apply) {
         Context context = getContext();
-        ViewGroup.LayoutParams layoutParams = getLayoutParams();
         if (apply) {
             // Adds paddings on each sides of the view to prevent shadow from being cut.
             setPadding(
@@ -95,12 +93,9 @@ public class SearchBoxContainerView extends LinearLayout {
                     mPaddingForShadowBottomPx,
                     mPaddingForShadowLateralPx,
                     mPaddingForShadowBottomPx);
-            layoutParams.height += 2 * mPaddingForShadowBottomPx;
         } else {
             setPadding(0, 0, 0, 0);
-            layoutParams.height -= 2 * mPaddingForShadowBottomPx;
         }
-        setLayoutParams(layoutParams);
 
         View searchBoxContainerView = findViewById(R.id.search_box_container);
         if (searchBoxContainerView != null) {
