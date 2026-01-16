@@ -40,7 +40,6 @@ NSArray<FormSuggestion*>* MergePasskeyAndPasswordSuggestions(
     return passkey_suggestions;
   }
 
-  // TODO(crbug.com/463429359): Implement right merge logic.
   return
       [passkey_suggestions arrayByAddingObjectsFromArray:password_suggestions];
 }
