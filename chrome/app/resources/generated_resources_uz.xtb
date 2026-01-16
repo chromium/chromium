@@ -7528,6 +7528,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6164393601566177235">Saytlar qoʻshish</translation>
 <translation id="6164832038898943453">Avtomatik tarjima qilish uchun tillarni kiriting</translation>
 <translation id="6165508094623778733">Batafsil</translation>
+<translation id="61667940770438207"><ph name="FOCUS_TOGGLE_HOTKEY" /> bilan Chrome ichida Gemini ilovasini oson oching</translation>
 <translation id="6169040057125497443">Mikrofonni tekshiring.</translation>
 <translation id="6169967265765719844">Steam orqali oʻrnatilgan oʻyin va ilovalar uchun ruxsatlarni <ph name="LINK_BEGIN" />Steam ilovasi sozlamalari<ph name="LINK_END" /> orqali boshqarish mumkin.</translation>
 <translation id="6170313103929479668">Ajratilgan rejimni tartiblash</translation>
@@ -9742,6 +9743,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="7697109152153663933">“Parol va avtomatik kiritish” ustiga bosish</translation>
 <translation id="769824636077131955">Bu hujjat juda katta hajmdaligi uchun uni tekshirish imkonsiz. 50 MBdan katta hajmdagi hujjatlar chop etilmaydi.</translation>
 <translation id="7698507637739331665">Ayrim fayllar bloklandi</translation>
+<translation id="7700176975240938448"><ph name="FOCUS_TOGGLE_HOTKEY" /> bilan oson oching</translation>
 <translation id="7700516433658473670">Printerlar va skanerlar</translation>
 <translation id="7700873336634517379">Yoʻq, maktabda shu profildan foydalanishda davom etish</translation>
 <translation id="7701040980221191251">Hech qanday</translation>

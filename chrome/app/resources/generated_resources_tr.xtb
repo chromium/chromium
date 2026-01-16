@@ -7525,6 +7525,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6164393601566177235">Site ekle</translation>
 <translation id="6164832038898943453">Otomatik olarak çevir listesine dil ekleyin</translation>
 <translation id="6165508094623778733">Daha fazla bilgi</translation>
+<translation id="61667940770438207"><ph name="FOCUS_TOGGLE_HOTKEY" /> ile Chrome'da Gemini'ı kolayca açın</translation>
 <translation id="6169040057125497443">Lütfen mikrofonunuzu kontrol edin.</translation>
 <translation id="6169967265765719844">Steam aracılığıyla yüklenen oyunların ve uygulamaların izinleri, <ph name="LINK_BEGIN" />Steam uygulama ayarlarından<ph name="LINK_END" /> yönetilebilir.</translation>
 <translation id="6170313103929479668">Bölünmüş görünümü düzenle</translation>
@@ -9642,7 +9643,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7647403192093989392">Yeni etkinlik yok</translation>
 <translation id="7648023614017258011">Chrome, yükleme paketini doğruluyor</translation>
 <translation id="7648048654005891115">Tuş eşleme stili</translation>
-<translation id="7648180062672842917">Bu dosya, hassas veya tehlikeli veri içeriyor. Kuruluşunuz, dosyayı bulut depolama alanına kaydetmenize veya silmenize izin verir</translation>
+<translation id="7648180062672842917">Bu dosya, hassas veya tehlikeli veri içeriyor. Kuruluşunuz, dosyayı bulut depolama alanına kaydetmenize veya silmenize izin veriyor</translation>
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7649954700951153978">iOS'te hatırlat</translation>
 <translation id="7650141368285545431">Başka bir cihazdaki geçiş anahtarını kullan</translation>
@@ -9739,6 +9740,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="7697109152153663933">"Şifreler ve Otomatik Doldurma"yı tıklayın</translation>
 <translation id="769824636077131955">Bu doküman güvenlik kontrolü için çok büyük. 50 MB'a kadar dokümanları yazdırabilirsiniz.</translation>
 <translation id="7698507637739331665">Bazı öğeler engellendi</translation>
+<translation id="7700176975240938448"><ph name="FOCUS_TOGGLE_HOTKEY" /> ile kolayca açın</translation>
 <translation id="7700516433658473670">Yazıcı ve tarayıcılar</translation>
 <translation id="7700873336634517379">Hayır, bu profili okul için kullanmaya devam et</translation>
 <translation id="7701040980221191251">Yok</translation>
@@ -11059,7 +11061,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Uzantıyı yönet}other{Uzantıları yönet}}</translation>
 <translation id="8599681327221583254">Bir veya daha fazla politika doğru şekilde yapılandırılmadı. Lütfen yöneticinizle iletişime geçin</translation>
 <translation id="8599864823732014237">Kurumsal kayıt atlansın mı?</translation>
-<translation id="8600362954032151088">Şifrelerinizi ve geçiş anahtarlarınızı <ph name="GOOGLE_PASSWORD_MANAGER" /> uygulamasında yönetin</translation>
+<translation id="8600362954032151088">Şifrelerinizi ve geçiş anahtarlarınızı <ph name="GOOGLE_PASSWORD_MANAGER" /> web sitesinde yönetin</translation>
 <translation id="8601206103050338563">TLS WWW İstemci Kimlik Doğrulaması</translation>
 <translation id="8602674530529411098">Uygulamalar (Beta)</translation>
 <translation id="8602851771975208551">Bilgisayarınızdaki başka bir program, Chrome'un çalışma şeklini değiştirebilecek bir uygulama ekledi.</translation>

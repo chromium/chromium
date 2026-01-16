@@ -7514,6 +7514,7 @@
 <translation id="6164393601566177235">サイトの追加</translation>
 <translation id="6164832038898943453">自動翻訳する言語を追加</translation>
 <translation id="6165508094623778733">詳細</translation>
+<translation id="61667940770438207"><ph name="FOCUS_TOGGLE_HOTKEY" /> で Gemini in Chrome を簡単に起動できます</translation>
 <translation id="6169040057125497443">マイクを確認してください。</translation>
 <translation id="6169967265765719844">Steam 経由でインストールしたゲームやアプリの権限は、<ph name="LINK_BEGIN" />Steam アプリの設定<ph name="LINK_END" />で管理できます。</translation>
 <translation id="6170313103929479668">分割表示を変更</translation>
@@ -8933,7 +8934,7 @@
 <translation id="7159953856712257647">デフォルトでインストール</translation>
 <translation id="7160182524506337403">スマートフォンの通知を表示できるようになりました</translation>
 <translation id="7160911207516219534">サイドパネル</translation>
-<translation id="716210145227921528">削除したパスキー</translation>
+<translation id="716210145227921528">パスキーを削除しました</translation>
 <translation id="7165263843655074092">このデバイスは標準のセキュリティ機能で保護されます</translation>
 <translation id="7166017546802325772">このグループへの変更はありません</translation>
 <translation id="716640248772308851">「<ph name="EXTENSION" />」はチェックした場所にある画像、動画、音声の各ファイルを読み取ることができます。</translation>
@@ -9630,7 +9631,7 @@
 <translation id="7647403192093989392">最近のアクティビティはありません</translation>
 <translation id="7648023614017258011">Chrome がインストールするバンドルを確認しています</translation>
 <translation id="7648048654005891115">キーマップのスタイル</translation>
-<translation id="7648180062672842917">このファイルにはデリケートなデータまたは危険なデータが含まれています。組織の設定では、このデータをクラウド ストレージに保存するか破棄することができます。</translation>
+<translation id="7648180062672842917">このファイルには機密データまたは危険なデータが含まれています。組織の設定では、このデータをクラウド ストレージに保存するか破棄することができます。</translation>
 <translation id="7649070708921625228">ヘルプ</translation>
 <translation id="7649954700951153978">iOS で通知</translation>
 <translation id="7650141368285545431">別のデバイスのパスキーを使用</translation>
@@ -9727,6 +9728,7 @@
 <translation id="7697109152153663933">[パスワードと自動入力] をクリックします</translation>
 <translation id="769824636077131955">このドキュメントはセキュリティ チェックには大きすぎます。印刷できるドキュメントは 50 MB までです。</translation>
 <translation id="7698507637739331665">一部のアイテムはブロックされています</translation>
+<translation id="7700176975240938448"><ph name="FOCUS_TOGGLE_HOTKEY" /> で簡単に起動できます</translation>
 <translation id="7700516433658473670">プリンタとスキャナ</translation>
 <translation id="7700873336634517379">いいえ、このプロフィールを学校用にも使用します</translation>
 <translation id="7701040980221191251">なし</translation>

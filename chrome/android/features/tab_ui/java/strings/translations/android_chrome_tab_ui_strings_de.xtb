@@ -51,7 +51,7 @@
 <translation id="2536366509642644298">Die Tabgruppen „<ph name="TAB_GROUP_NAME_1" />“ und „<ph name="TAB_GROUP_NAME_2" />“ sind nicht mehr verfügbar</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab minimieren}other{Tabgruppe mit <ph name="TABS_COUNT_MANY" /> Tabs minimieren}}</translation>
 <translation id="2569352796411618312">Vorschlag: <ph name="NUMBER_OF_TABS" /> von deinen Tabs wurden längere Zeit nicht verwendet. Möchtest du sie schließen?</translation>
-<translation id="257674075312929031">Gruppe</translation>
+<translation id="257674075312929031">Gruppieren</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{Tabgruppe mit <ph name="TABS_COUNT_ONE" /> Tab und der Farbe <ph name="COLOR_NAME" /> wiederherstellen und öffnen.}other{Tabgruppe mit <ph name="TABS_COUNT_MANY" /> Tabs und der Farbe <ph name="COLOR_NAME" /> wiederherstellen und öffnen.}}</translation>
 <translation id="2662028055331606429">Bewertung: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Zur Website</translation>

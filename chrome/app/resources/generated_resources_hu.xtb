@@ -7541,6 +7541,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6164393601566177235">Webhelyek hozzáadása</translation>
 <translation id="6164832038898943453">Nyelvek hozzáadása az automatikus fordításhoz</translation>
 <translation id="6165508094623778733">További információ</translation>
+<translation id="61667940770438207">A(z) <ph name="FOCUS_TOGGLE_HOTKEY" /> billentyűkombinációval egyszerűen megnyithatja a Gemini a Chrome-ban szolgáltatást</translation>
 <translation id="6169040057125497443">Ellenőrizze a mikrofont.</translation>
 <translation id="6169967265765719844">A játékok és alkalmazások Steamen keresztüli telepítésére vonatkozó engedély a <ph name="LINK_BEGIN" />Steam alkalmazás beállításaiban<ph name="LINK_END" /> kezelhető.</translation>
 <translation id="6170313103929479668">Osztott nézet elrendezése</translation>
@@ -9755,6 +9756,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="7697109152153663933">Kattintson a „Passwords and Autofill” (Jelszavak és automatikus kitöltés) elemre.</translation>
 <translation id="769824636077131955">Ez a dokumentum túl nagy ahhoz, hogy biztonsági ellenőrzést lehessen végrehajtani rajta. Legfeljebb 50 MB méretű dokumentumokat nyomtathat.</translation>
 <translation id="7698507637739331665">Egyes elemek le vannak tiltva</translation>
+<translation id="7700176975240938448">Egyszerű megnyitás a következővel: <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="7700516433658473670">Nyomtatók és szkennerek</translation>
 <translation id="7700873336634517379">Nem, továbbra is ezt a profil használom az iskolához</translation>
 <translation id="7701040980221191251">Nincs</translation>

@@ -7538,6 +7538,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6164393601566177235">Lisää sivustoja</translation>
 <translation id="6164832038898943453">Lisää kieliä, jotka käännetään automaattisesti</translation>
 <translation id="6165508094623778733">Lisätietoja</translation>
+<translation id="61667940770438207">Avaa Gemini in Chrome helposti painamalla <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="6169040057125497443">Tarkista mikrofonisi.</translation>
 <translation id="6169967265765719844">Steamin kautta asennettujen pelien ja sovellusten lupia voi muokata <ph name="LINK_BEGIN" />Steamin sovellusasetuksissa<ph name="LINK_END" />.</translation>
 <translation id="6170313103929479668">Järjestä jaettu näkymä</translation>
@@ -9753,6 +9754,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="7697109152153663933">Valitse Salasanat ja automaattinen täyttö</translation>
 <translation id="769824636077131955">Dokumentti on liian iso turvatarkistukseen. Voit tulostaa korkeintaan 50 Mt:n kokoisia dokumentteja.</translation>
 <translation id="7698507637739331665">Osa kohteista on estetty</translation>
+<translation id="7700176975240938448">Avaa helposti painamalla <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="7700516433658473670">Tulostimet ja skannerit</translation>
 <translation id="7700873336634517379">Ei, jatka tämän profiilin käyttöä oppilaitoksen profiilina</translation>
 <translation id="7701040980221191251">Ei mitään</translation>

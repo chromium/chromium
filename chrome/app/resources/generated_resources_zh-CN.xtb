@@ -7513,6 +7513,7 @@
 <translation id="6164393601566177235">添加网站</translation>
 <translation id="6164832038898943453">添加可自动翻译的语言</translation>
 <translation id="6165508094623778733">了解详情</translation>
+<translation id="61667940770438207">按下 <ph name="FOCUS_TOGGLE_HOTKEY" /> 即可轻松打开 Chrome 中的 Gemini</translation>
 <translation id="6169040057125497443">请检查您的麦克风。</translation>
 <translation id="6169967265765719844">您可以在 <ph name="LINK_BEGIN" />Steam 应用设置<ph name="LINK_END" />中管理通过 Steam 安装的游戏和应用的权限。</translation>
 <translation id="6170313103929479668">调整拆分视图</translation>
@@ -9631,7 +9632,7 @@
 <translation id="7647403192093989392">近期无活动</translation>
 <translation id="7648023614017258011">Chrome 正在验证安装包</translation>
 <translation id="7648048654005891115">键盘映射样式</translation>
-<translation id="7648180062672842917">此文件包含敏感数据或危险内容。您所属的组织将允许您将此文件保存到云端存储空间或舍弃它</translation>
+<translation id="7648180062672842917">此文件包含敏感数据或危险内容。根据您的组织政策，您只能将此文件保存到云端存储空间或将其舍弃</translation>
 <translation id="7649070708921625228">帮助</translation>
 <translation id="7649954700951153978">在 iOS 设备上提醒我</translation>
 <translation id="7650141368285545431">使用另一部设备中的通行密钥</translation>
@@ -9728,6 +9729,7 @@
 <translation id="7697109152153663933">点击“密码和自动填充”</translation>
 <translation id="769824636077131955">此文档太大，无法进行安全检查。您只能打印不超过 50 MB 的文档。</translation>
 <translation id="7698507637739331665">某些内容已被屏蔽</translation>
+<translation id="7700176975240938448">使用 <ph name="FOCUS_TOGGLE_HOTKEY" /> 轻松打开</translation>
 <translation id="7700516433658473670">打印机和扫描仪</translation>
 <translation id="7700873336634517379">否，继续将此资料用作学校资料</translation>
 <translation id="7701040980221191251">无</translation>
@@ -11048,7 +11050,7 @@
 <translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{管理扩展程序}other{管理扩展程序}}</translation>
 <translation id="8599681327221583254">有一项或多项政策未正确配置。请与您的管理员联系</translation>
 <translation id="8599864823732014237">跳过企业注册？</translation>
-<translation id="8600362954032151088">在 <ph name="GOOGLE_PASSWORD_MANAGER" /> 中管理您的密码和通行密钥</translation>
+<translation id="8600362954032151088">在 <ph name="GOOGLE_PASSWORD_MANAGER" />中管理您的密码和通行密钥</translation>
 <translation id="8601206103050338563">TLS WWW 客户端身份验证</translation>
 <translation id="8602674530529411098">应用（Beta 版）</translation>
 <translation id="8602851771975208551">您计算机上的其他程序添加了一个应用，该应用可能会改变 Chrome 的工作方式。</translation>

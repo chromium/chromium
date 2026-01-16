@@ -1067,7 +1067,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1706586824377653884">Añadido por tu administrador</translation>
 <translation id="170658918174941828">Se enviará la versión de Chrome, la versión del sistema operativo, la configuración de envío, las estadísticas de rendimiento de proyección y los registros de diagnóstico de canales de comunicación, así como la información que selecciones más arriba. Tus comentarios se utilizarán para diagnosticar problemas y ayudarán a mejorar la función. La información personal que envíes, ya sea intencionadamente o por error, se protegerá de acuerdo con nuestras políticas de privacidad. Al enviar estos comentarios, aceptas que Google pueda utilizarlos para mejorar sus productos o servicios.</translation>
 <translation id="17081583771848899">tecla del menú de aplicaciones + Alt + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="170825127491242914">Guardar en almacenamiento en la nube</translation>
+<translation id="170825127491242914">Guardar en la nube</translation>
 <translation id="1708291623166985230">Punto de acceso inhabilitado</translation>
 <translation id="1708338024780164500">(Inactiva)</translation>
 <translation id="1708563369218024896">No se han seleccionado fuentes de recogida de datos. Selecciona al menos una.</translation>
@@ -3613,7 +3613,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3458451003193188688">No se ha podido instalar la máquina virtual debido a un error de red. Vuelve a intentarlo o ponte en contacto con el administrador. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">No se ha podido dejar de compartir</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{Mantener grupo}other{Mantener grupos}}</translation>
-<translation id="3459509316159669723">Imprimir</translation>
+<translation id="3459509316159669723">Imprimiendo</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 marcador eliminado}other{# marcadores eliminados}}</translation>
 <translation id="3461766685318630278">Crea y elimina contenedores adicionales.</translation>
 <translation id="3462413494201477527">¿Quieres cancelar la configuración de la cuenta?</translation>
@@ -7527,6 +7527,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6164393601566177235">Añadir sitios</translation>
 <translation id="6164832038898943453">Añadir idiomas para traducirlos automáticamente</translation>
 <translation id="6165508094623778733">Más información</translation>
+<translation id="61667940770438207">Abre fácilmente Gemini en Chrome con <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="6169040057125497443">Comprueba el micrófono.</translation>
 <translation id="6169967265765719844">Los permisos para juegos y aplicaciones instalados a través de Steam pueden gestionarse en los <ph name="LINK_BEGIN" />ajustes de la aplicación Steam<ph name="LINK_END" />.</translation>
 <translation id="6170313103929479668">Disponer vista dividida</translation>
@@ -9645,7 +9646,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7647403192093989392">Ninguna actividad reciente</translation>
 <translation id="7648023614017258011">Chrome está verificando el paquete de instalación</translation>
 <translation id="7648048654005891115">Estilo de mapa de teclado</translation>
-<translation id="7648180062672842917">Este archivo contiene datos sensibles o peligrosos. Tu organización te permitirá guardarlo en almacenamiento en la nube o descartarlo.</translation>
+<translation id="7648180062672842917">Este archivo contiene datos sensibles o peligrosos. Tu organización te permitirá almacenarlo en la nube o descartarlo.</translation>
 <translation id="7649070708921625228">Ayuda</translation>
 <translation id="7649954700951153978">Recuérdamelo en iOS</translation>
 <translation id="7650141368285545431">Usar la llave de acceso de otro dispositivo</translation>
@@ -9742,6 +9743,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="7697109152153663933">Haz clic en Contraseñas y Autocompletar.</translation>
 <translation id="769824636077131955">Este documento es demasiado grande para una comprobación de seguridad. Puedes imprimir documentos de hasta 50 MB.</translation>
 <translation id="7698507637739331665">Algunos elementos están bloqueados</translation>
+<translation id="7700176975240938448">Abre fácilmente con <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="7700516433658473670">Impresoras y escáneres</translation>
 <translation id="7700873336634517379">No, seguir con este perfil para el centro educativo</translation>
 <translation id="7701040980221191251">No hay</translation>

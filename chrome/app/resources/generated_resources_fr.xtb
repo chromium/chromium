@@ -7527,6 +7527,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6164393601566177235">Ajouter des sites</translation>
 <translation id="6164832038898943453">Ajoutez des langues à traduire automatiquement</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
+<translation id="61667940770438207">Ouvrir facilement Gemini dans Chrome avec <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="6169040057125497443">Veuillez vérifier votre micro.</translation>
 <translation id="6169967265765719844">Les autorisations pour les jeux et applis installés via Steam peuvent être gérées dans les <ph name="LINK_BEGIN" />paramètres de l'appli Steam<ph name="LINK_END" />.</translation>
 <translation id="6170313103929479668">Organiser la vue fractionnée</translation>
@@ -9744,6 +9745,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="7697109152153663933">Cliquez sur "Mots de passe et saisie automatique"</translation>
 <translation id="769824636077131955">Impossible de vérifier si ce document est sûr, car il est trop volumineux. Vous ne pouvez pas imprimer de documents de plus de 50 Mo.</translation>
 <translation id="7698507637739331665">Certains éléments sont bloqués</translation>
+<translation id="7700176975240938448">Ouvrez facilement Gemini avec <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="7700516433658473670">Imprimantes et scanners</translation>
 <translation id="7700873336634517379">Non, continuer à utiliser ce profil pour l'école</translation>
 <translation id="7701040980221191251">Désactivé</translation>
@@ -11064,7 +11066,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Gérer l'extension}one{Gérer l'extension}other{Gérer les extensions}}</translation>
 <translation id="8599681327221583254">Au moins une règle est mal configurée. Veuillez contacter votre administrateur.</translation>
 <translation id="8599864823732014237">Ignorer l'enregistrement auprès de l'entreprise ?</translation>
-<translation id="8600362954032151088">Gérez vos mots de passe et vos clés d'accès dans <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
+<translation id="8600362954032151088">Gérez vos mots de passe et vos clés d'accès dans le <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="8601206103050338563">Authentification du client WWW TLS</translation>
 <translation id="8602674530529411098">Applis (bêta)</translation>
 <translation id="8602851771975208551">Un autre programme sur votre ordinateur a ajouté une application qui risque de modifier le fonctionnement de Google Chrome.</translation>

@@ -7538,6 +7538,7 @@
 <translation id="6164393601566177235">Сайтууд нэмэх</translation>
 <translation id="6164832038898943453">Автоматаар орчуулах хэл нэмнэ үү</translation>
 <translation id="6165508094623778733">Нэмэлт мэдээлэл авах</translation>
+<translation id="61667940770438207"><ph name="FOCUS_TOGGLE_HOTKEY" />-р Chrome дахь Gemini-г хялбархан нээгээрэй</translation>
 <translation id="6169040057125497443">Микрофоноо шалгана уу.</translation>
 <translation id="6169967265765719844">Steam-р суулгасан тоглоомууд болон аппуудын зөвшөөрлийг <ph name="LINK_BEGIN" />Steam аппын тохиргоо<ph name="LINK_END" /> хэсэгт удирдах боломжтой.</translation>
 <translation id="6170313103929479668">Хуваасан харагдах байдлыг цэгцлэх</translation>
@@ -9752,6 +9753,7 @@
 <translation id="7697109152153663933">“Нууц үгнүүд болон автоматаар бөглөх хэсэг”-ийг товшино уу</translation>
 <translation id="769824636077131955">Энэ документ аюулгүй байдлын шалгалт хийхэд хэт том байна. Та 50 МБ хүртэлх документыг хэвлэх боломжтой.</translation>
 <translation id="7698507637739331665">Зарим зүйлийг блоклосон байна</translation>
+<translation id="7700176975240938448"><ph name="FOCUS_TOGGLE_HOTKEY" />-р хялбархан нээгээрэй</translation>
 <translation id="7700516433658473670">Хэвлэгч болон сканнерууд</translation>
 <translation id="7700873336634517379">Үгүй, энэ профайлд сургуульд зориулж үргэлжлүүлэн ашиглана</translation>
 <translation id="7701040980221191251">Тодорхойгүй</translation>

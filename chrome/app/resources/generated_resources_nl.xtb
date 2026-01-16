@@ -40,7 +40,7 @@
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Je apparaat wordt beheerd door <ph name="DOMAIN" />. Beheerders hebben op dit apparaat toegang tot de gegevens van elk profiel.</translation>
 <translation id="1022719295563085177">Netwerkstandaard</translation>
-<translation id="1026196234862089732">Toegangssleutel geüpdatet</translation>
+<translation id="1026196234862089732">Toegangssleutel bijgewerkt</translation>
 <translation id="1026655690966755180">Poort toevoegen</translation>
 <translation id="1026822031284433028">Afbeelding laden</translation>
 <translation id="1026959648338730078">Windows Hello of externe beveiligingssleutel</translation>
@@ -7521,6 +7521,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6164393601566177235">Sites toevoegen</translation>
 <translation id="6164832038898943453">Talen toevoegen om automatisch te vertalen</translation>
 <translation id="6165508094623778733">Meer informatie</translation>
+<translation id="61667940770438207">Open Gemini makkelijk in Chrome met <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="6169040057125497443">Controleer je microfoon</translation>
 <translation id="6169967265765719844">Je kunt de rechten voor via Steam geïnstalleerde games en apps beheren in de <ph name="LINK_BEGIN" />instellingen van de Steam-app<ph name="LINK_END" />.</translation>
 <translation id="6170313103929479668">Gesplitste weergave rangschikken</translation>
@@ -9735,6 +9736,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="7697109152153663933">Klik op Wachtwoorden en automatisch invullen</translation>
 <translation id="769824636077131955">Dit document is te groot voor een beveiligingscontrole. Je kunt documenten van maximaal 50 MB afdrukken.</translation>
 <translation id="7698507637739331665">Sommige items zijn geblokkeerd</translation>
+<translation id="7700176975240938448">Snel openen met <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="7700516433658473670">Printers en scanners</translation>
 <translation id="7700873336634517379">Nee, blijven gebruiken voor school in dit profiel</translation>
 <translation id="7701040980221191251">Geen</translation>
