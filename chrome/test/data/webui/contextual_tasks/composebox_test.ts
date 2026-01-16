@@ -819,8 +819,8 @@ suite('ContextualTasksComposeboxTest', () => {
       isOnboardingTooltipDismissCountBelowCap: true,
       composeboxShowOnboardingTooltipSessionImpressionCap: 10,
     });
-    (composeboxElement as any).numberOfTimesTooltipShown_ = 0;
-    (composeboxElement as any).userDismissedTooltip_ = false;
+    composeboxElement.numberOfTimesTooltipShownForTesting = 0;
+    composeboxElement.userDismissedTooltipForTesting = false;
 
     // Simulate active tab chip token presence
     const innerComposebox = composeboxElement.$.composebox;
@@ -828,7 +828,7 @@ suite('ContextualTasksComposeboxTest', () => {
     innerComposebox.getAutomaticActiveTabChipElement = () =>
         document.createElement('div');
 
-    (composeboxElement as any).updateTooltipVisibility_();
+    composeboxElement.updateTooltipVisibilityForTesting();
     assertTrue(tooltip.shouldShow);
 
     // Resize event
@@ -842,6 +842,81 @@ suite('ContextualTasksComposeboxTest', () => {
     // Tooltip should still be shown and position updated (implicitly via resize
     // observer or logic)
     assertTrue(tooltip.shouldShow);
+  });
+
+  test('TooltipImpressionIncrementsAfterDelay', () => {
+    mockTimer.install();
+    const composeboxElement = contextualTasksApp.$.composebox;
+    const tooltip = composeboxElement.$.onboardingTooltip;
+
+    // Force show tooltip with delay.
+    loadTimeData.overrideValues({
+      showOnboardingTooltip: true,
+      isOnboardingTooltipDismissCountBelowCap: true,
+      composeboxShowOnboardingTooltipSessionImpressionCap: 10,
+      composeboxShowOnboardingTooltipImpressionDelay: 3000,
+    });
+    composeboxElement.numberOfTimesTooltipShownForTesting = 0;
+    composeboxElement.userDismissedTooltipForTesting = false;
+
+    const innerComposebox = composeboxElement.$.composebox;
+    innerComposebox.getHasAutomaticActiveTabChipToken = () => true;
+    innerComposebox.getAutomaticActiveTabChipElement = () =>
+        document.createElement('div');
+
+    // Trigger update.
+    composeboxElement.updateTooltipVisibilityForTesting();
+    assertTrue(tooltip.shouldShow);
+
+    // Should not have incremented yet.
+    assertEquals(0, composeboxElement.numberOfTimesTooltipShownForTesting);
+
+    // Tick almost to the end.
+    mockTimer.tick(2999);
+    assertEquals(0, composeboxElement.numberOfTimesTooltipShownForTesting);
+
+    // Tick past the delay.
+    mockTimer.tick(1);
+    assertEquals(1, composeboxElement.numberOfTimesTooltipShownForTesting);
+  });
+
+  test('TooltipImpressionTimerResetsOnHide', () => {
+    mockTimer.install();
+    const composeboxElement = contextualTasksApp.$.composebox;
+    const tooltip = composeboxElement.$.onboardingTooltip;
+
+    loadTimeData.overrideValues({
+      showOnboardingTooltip: true,
+      isOnboardingTooltipDismissCountBelowCap: true,
+      composeboxShowOnboardingTooltipSessionImpressionCap: 10,
+      composeboxShowOnboardingTooltipImpressionDelay: 3000,
+    });
+    composeboxElement.numberOfTimesTooltipShownForTesting = 0;
+    composeboxElement.userDismissedTooltipForTesting = false;
+
+    const innerComposebox = composeboxElement.$.composebox;
+    // Mock existence of chip.
+    innerComposebox.getHasAutomaticActiveTabChipToken = () => true;
+    innerComposebox.getAutomaticActiveTabChipElement = () =>
+        document.createElement('div');
+
+    // Show tooltip.
+    composeboxElement.updateTooltipVisibilityForTesting();
+    assertTrue(tooltip.shouldShow);
+
+    // Advance time partially.
+    mockTimer.tick(1000);
+    assertEquals(0, composeboxElement.numberOfTimesTooltipShownForTesting);
+
+    // Hide tooltip (e.g. chip disappears).
+    innerComposebox.getHasAutomaticActiveTabChipToken = () => false;
+    composeboxElement.updateTooltipVisibilityForTesting();
+    assertFalse(tooltip.shouldShow);
+
+    // Advance past original deadline.
+    mockTimer.tick(5000);
+    // Should NOT have incremented because timer was cleared.
+    assertEquals(0, composeboxElement.numberOfTimesTooltipShownForTesting);
   });
 
   test('ExpandAnimationState', function() {

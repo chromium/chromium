@@ -157,6 +157,11 @@ const base::FeatureParam<int> kContextualTasksOnboardingTooltipDismissedCap(
     "ContextualTasksOnboardingTooltipDismissedCap",
     1);
 
+const base::FeatureParam<int> kContextualTasksOnboardingTooltipImpressionDelay(
+    &kContextualTasksShowOnboardingTooltip,
+    "ContextualTasksOnboardingTooltipImpressionDelay",
+    3000);
+
 int GetContextualTasksShowOnboardingTooltipSessionImpressionCap() {
   if (!base::FeatureList::IsEnabled(kContextualTasksShowOnboardingTooltip)) {
     return 0;
@@ -169,6 +174,10 @@ int GetContextualTasksOnboardingTooltipDismissedCap() {
     return 0;
   }
   return kContextualTasksOnboardingTooltipDismissedCap.Get();
+}
+
+int GetContextualTasksOnboardingTooltipImpressionDelay() {
+  return kContextualTasksOnboardingTooltipImpressionDelay.Get();
 }
 
 bool GetIsExpandedComposeboxVoiceSearchEnabled() {

@@ -99,6 +99,9 @@ extern int GetContextualTasksShowOnboardingTooltipSessionImpressionCap();
 // user before it no longer shows up.
 extern int GetContextualTasksOnboardingTooltipDismissedCap();
 
+// The delay in milliseconds before the onboarding tooltip is considered shown.
+extern int GetContextualTasksOnboardingTooltipImpressionDelay();
+
 // Returns if voice search is allowed in expanded composebox.
 extern bool GetIsExpandedComposeboxVoiceSearchEnabled();
 
