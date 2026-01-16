@@ -251,6 +251,9 @@ static void JNI_PermissionUtil_ResolvePermissionRequest(
     jint content_setting) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
+  if (!web_contents) {
+    return;
+  }
   permissions::PermissionRequestManager* permission_request_manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents);
   ContentSetting setting = static_cast<ContentSetting>(content_setting);
