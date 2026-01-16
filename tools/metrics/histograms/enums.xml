@@ -11999,6 +11999,7 @@ from previous Chrome versions.
   <int value="-791778534" label="LauncherQueryHighlighting:enabled"/>
   <int value="-791730714" label="NotebookLmAppPreinstall:disabled"/>
   <int value="-791590673" label="bookmarks-tree-view:enabled"/>
+  <int value="-791528799" label="PasswordUploadUiUpdate:enabled"/>
   <int value="-790900615" label="NtpShoppingTasksModule:disabled"/>
   <int value="-790764083" label="CCTResetTimeoutEnabled:disabled"/>
   <int value="-790544721"
@@ -13378,6 +13379,7 @@ from previous Chrome versions.
   <int value="-308785012"
       label="QuickIntensiveWakeUpThrottlingAfterLoading:enabled"/>
   <int value="-308671262" label="ShareCustomActionsInCCT:disabled"/>
+  <int value="-308473334" label="PasswordUploadUiUpdate:disabled"/>
   <int value="-308107781" label="OmniboxCacheSuggestionResources:disabled"/>
   <int value="-307260007" label="ExtensionsCheckup:disabled"/>
   <int value="-306935714" label="lite-video-force-override-decision"/>
