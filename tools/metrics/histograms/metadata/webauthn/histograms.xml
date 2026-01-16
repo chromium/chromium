@@ -389,6 +389,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="WebAuthentication.GPM.CachedOpportunisticallyRetrievedKeyEvent"
+    enum="WebAuthenticationGPMCachedOpportunisticallyRetrievedKeyEvent"
+    expires_after="2026-06-30">
+  <owner>ylahodiuk@google.com</owner>
+  <owner>izuzic@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records events that happen with cached opportunistically retrieved keys (a
+    retrieved key is being cached if the key is for a different Gaia ID compared
+    to the Gaia ID of the primary account or if the primary account is empty).
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.GPM.GetAssertion"
     enum="GPMGetAssertionEvents" expires_after="2026-05-24">
   <owner>natiahlyi@google.com</owner>
@@ -431,6 +445,7 @@ chromium-metrics-reviews@google.com.
     enum="WebAuthenticationGPMRecoveryEvent" expires_after="2026-06-30">
   <owner>ylahodiuk@google.com</owner>
   <owner>izuzic@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
   <summary>
     Records the type of the key retrieval flow used for retrieving the passkey
     secret.

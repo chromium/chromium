@@ -17,6 +17,9 @@ constexpr std::string_view kCombinedSelectorCredentialCountHistogram =
     "WebAuthentication.GetCredentials.Immediate.CredentialCount";
 constexpr std::string_view kRecoveryEventTypeHistogram =
     "WebAuthentication.GPM.RecoveryEvent";
+constexpr std::string_view
+    kCachedOpportunisticallyRetrievedKeyEventTypeHistogram =
+        "WebAuthentication.GPM.CachedOpportunisticallyRetrievedKeyEvent";
 
 // LINT.IfChange
 // These values are persisted to logs. Entries should not be renumbered and
@@ -61,6 +64,13 @@ void RecordCombinedSelectorCancelButtonClicked() {
 void RecordGPMRecoveryEvent(
     webauthn::metrics::WebAuthenticationGPMRecoveryEvent event) {
   base::UmaHistogramEnumeration(kRecoveryEventTypeHistogram, event);
+}
+
+void RecordGPMCachedOpportunisticallyRetrievedKeyEvent(
+    webauthn::metrics::
+        WebAuthenticationGPMCachedOpportunisticallyRetrievedKeyEvent event) {
+  base::UmaHistogramEnumeration(
+      kCachedOpportunisticallyRetrievedKeyEventTypeHistogram, event);
 }
 
 }  // namespace webauthn::metrics

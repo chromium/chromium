@@ -392,6 +392,23 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Blocked by actor task"/>
 </enum>
 
+<!-- LINT.IfChange(WebAuthenticationGPMCachedOpportunisticallyRetrievedKeyEvent) -->
+
+<enum name="WebAuthenticationGPMCachedOpportunisticallyRetrievedKeyEvent">
+  <int value="0"
+      label="The temporarily cached key from the opportunistic key retrieval
+             flow has been discarded after timeout"/>
+  <int value="1"
+      label="Storing the temporarily cached key from the opportunistic key
+             retrieval flow after profile signed-in"/>
+  <int value="2"
+      label="The temporarily cached key from the opportunistic key retrieval
+             has been overwritten by some other opportunistically retrieved
+             key"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/webauthn/webauthn_metrics_util.h:WebAuthenticationGPMCachedOpportunisticallyRetrievedKeyEvent) -->
+
 <!-- LINT.IfChange(WebAuthenticationGPMRecoveryEvent) -->
 
 <enum name="WebAuthenticationGPMRecoveryEvent">
@@ -412,6 +429,10 @@ chromium-metrics-reviews@google.com.
   <int value="6"
       label="Storing key from opportunistic key retrieval flow (failed when
              adding device to account)"/>
+  <int value="7"
+      label="Key from the opportunistic key retrieval flow has been
+             temporarily cached because profile is not signed-in or the
+             primary account does not match"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/webauthn/webauthn_metrics_util.h:WebAuthenticationGPMRecoveryEvent) -->

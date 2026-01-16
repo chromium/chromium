@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/cancelable_callback.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
@@ -547,6 +548,10 @@ class EnclaveManager : public EnclaveManagerInterface {
   void OpportunisticStoreKeysAddComplete(bool success);
   void NotifyObserversAboutOutOfContextRecoveryOutcome(
       OutOfContextRecoveryOutcome outcome);
+  void TemporarilyCachePendingOpportunisticKeys(
+      const GaiaId& gaia_id,
+      std::vector<std::vector<uint8_t>> keys,
+      int last_key_version);
 
   const base::FilePath file_path_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
@@ -570,6 +575,8 @@ class EnclaveManager : public EnclaveManagerInterface {
   base::OnceClosure write_finished_callback_;
 
   std::unique_ptr<StoreKeysArgs> pending_keys_;
+  std::unique_ptr<StoreKeysArgs> opportunistic_pending_keys_;
+  base::CancelableOnceClosure opportunistic_pending_keys_invalidation_task_;
   std::unique_ptr<StateMachine> state_machine_;
   std::vector<base::OnceClosure> load_callbacks_;
   std::deque<std::unique_ptr<PendingAction>> pending_actions_;
