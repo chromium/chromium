@@ -12,7 +12,6 @@
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/color/color_id.h"
 #include "ui/gfx/image/image.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -69,7 +68,6 @@ void CreateUploadErrorNotification(const gfx::Image& thumbnail,
       options,
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(&OnButtonPressed, std::move(retake_callback))));
-  notification->set_accent_color_id(ui::kColorSysError);
   auto* message_center = message_center::MessageCenter::Get();
   CHECK(message_center);
   message_center->RemoveNotification(kUploadErrorNotificationId,
