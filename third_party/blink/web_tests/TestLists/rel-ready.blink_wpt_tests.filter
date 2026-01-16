@@ -44,8 +44,8 @@ external/wpt/css/css-sizing
 external/wpt/css/css-writing-modes
 external/wpt/css/css-paint-api/
 external/wpt/css/css-position
-external/wpt/css/css-scoping
 external/wpt/css/css-scrollbars/
+external/wpt/css/css-shadow
 external/wpt/custom-elements
 external/wpt/custom-state-pseudo-class
 external/wpt/delegated-ink
