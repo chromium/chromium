@@ -40,6 +40,7 @@ source_set("unit_tests") {
     ":internal",
     "//base",
     "//base/test:test_support",
+    "//components/skills/proto",
     "//components/skills/public",
     "//components/sync:test_support",
     "//components/sync/base",

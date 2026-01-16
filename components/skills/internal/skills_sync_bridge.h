@@ -61,7 +61,8 @@ class SkillsSyncBridge : public syncer::DataTypeSyncBridge,
   bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
 
   // SkillsService::Observer implementation.
-  void OnSkillUpdated(const std::string& skill_id) override;
+  void OnSkillUpdated(const std::string& skill_id,
+                      SkillsService::UpdateSource update_source) override;
 
  private:
   // Loads the data already stored in the DataTypeStore.

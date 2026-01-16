@@ -15,16 +15,29 @@
 #include "base/uuid.h"
 #include "components/skills/public/skill.h"
 #include "components/sync/test/data_type_store_test_util.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace skills {
 namespace {
 
+using testing::_;
+using testing::ElementsAre;
+using testing::IsEmpty;
+using testing::Pointee;
+
+MATCHER_P4(HasSkill, id, name, icon, prompt, "") {
+  return arg.id == id && arg.name == name && arg.icon == icon &&
+         arg.prompt == prompt;
+}
+
 class MockObserver : public SkillsService::Observer {
  public:
-  MOCK_METHOD(void, OnSkillUpdated, (const std::string& skill_id), (override));
-  MOCK_METHOD(void, OnInitialized, (), (override));
+  MOCK_METHOD(void,
+              OnSkillUpdated,
+              (const std::string& skill_id,
+               SkillsService::UpdateSource update_source));
+  MOCK_METHOD(void, OnInitialized, ());
 };
 
 class SkillsServiceImplTest : public testing::Test {
@@ -32,12 +45,17 @@ class SkillsServiceImplTest : public testing::Test {
   SkillsServiceImplTest()
       : service_(
             version_info::Channel::UNKNOWN,
-            syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest()) {}
+            syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest()) {
+    observation_.Observe(&service_);
+  }
   ~SkillsServiceImplTest() override = default;
 
  protected:
   base::test::TaskEnvironment task_environment_;
   SkillsServiceImpl service_;
+  testing::NiceMock<MockObserver> mock_observer_;
+  base::ScopedObservation<SkillsService, SkillsService::Observer> observation_{
+      &mock_observer_};
 };
 
 TEST_F(SkillsServiceImplTest, LoadInitialSkills) {
@@ -87,7 +105,8 @@ TEST_F(SkillsServiceImplTest, UpdateSkill) {
   ASSERT_NE(nullptr, skill);
 
   const Skill* updated_skill =
-      service_.UpdateSkill(skill->id, "updated_name", "icon", "prompt");
+      service_.UpdateSkill(skill->id, "updated_name", "icon", "prompt",
+                           SkillsService::UpdateSource::kLocal);
 
   ASSERT_NE(nullptr, updated_skill);
   EXPECT_EQ("updated_name", updated_skill->name);
@@ -101,55 +120,97 @@ TEST_F(SkillsServiceImplTest, DeleteSkill) {
   ASSERT_NE(nullptr, skill);
   ASSERT_NE(nullptr, service_.GetSkillById(skill_id));
 
-  service_.DeleteSkill(skill_id);
+  EXPECT_CALL(mock_observer_,
+              OnSkillUpdated(skill_id, SkillsService::UpdateSource::kLocal));
+  service_.DeleteSkill(skill_id, SkillsService::UpdateSource::kLocal);
+  EXPECT_EQ(nullptr, service_.GetSkillById(skill_id));
+}
+
+TEST_F(SkillsServiceImplTest, DeleteSkillFromSync) {
+  const Skill* skill = service_.AddSkill("name", "icon", "prompt");
+  ASSERT_NE(nullptr, skill);
+
+  std::string skill_id(skill->id);
+  ASSERT_NE(nullptr, service_.GetSkillById(skill_id));
+
+  EXPECT_CALL(mock_observer_,
+              OnSkillUpdated(skill_id, SkillsService::UpdateSource::kSync));
+  service_.DeleteSkill(skill_id, SkillsService::UpdateSource::kSync);
   EXPECT_EQ(nullptr, service_.GetSkillById(skill_id));
 }
 
 TEST_F(SkillsServiceImplTest, Observer) {
-  testing::NiceMock<MockObserver> observer;
-  base::ScopedObservation<SkillsService, SkillsService::Observer> observation(
-      &observer);
-  observation.Observe(&service_);
-
-  EXPECT_CALL(observer, OnInitialized);
+  EXPECT_CALL(mock_observer_, OnInitialized);
   service_.LoadInitialSkills({});
 
-  EXPECT_CALL(observer, OnSkillUpdated(testing::_));
+  EXPECT_CALL(mock_observer_,
+              OnSkillUpdated(_, SkillsService::UpdateSource::kLocal));
   const Skill* skill = service_.AddSkill("name", "icon", "prompt");
 
-  EXPECT_CALL(observer, OnSkillUpdated(skill->id));
-  service_.UpdateSkill(skill->id, "updated_name", "icon", "prompt");
+  EXPECT_CALL(mock_observer_,
+              OnSkillUpdated(skill->id, SkillsService::UpdateSource::kLocal));
+  service_.UpdateSkill(skill->id, "updated_name", "icon", "prompt",
+                       SkillsService::UpdateSource::kLocal);
 
-  EXPECT_CALL(observer, OnSkillUpdated(skill->id));
-  service_.DeleteSkill(skill->id);
+  EXPECT_CALL(mock_observer_,
+              OnSkillUpdated(skill->id, SkillsService::UpdateSource::kLocal));
+  service_.DeleteSkill(skill->id, SkillsService::UpdateSource::kLocal);
 }
 
 TEST_F(SkillsServiceImplTest, ObserverNoNotificationForNoOps) {
-  testing::NiceMock<MockObserver> observer;
-  base::ScopedObservation<SkillsService, SkillsService::Observer> observation(
-      &observer);
-  observation.Observe(&service_);
-
-  EXPECT_CALL(observer, OnInitialized);
+  EXPECT_CALL(mock_observer_, OnInitialized);
   service_.LoadInitialSkills({});
-  testing::Mock::VerifyAndClearExpectations(&observer);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer_);
 
   // `UpdateSkill` and `DeleteSkill` on a non-existent skill should not
   // trigger notification.
   const std::string non_existent_skill_id = "non_existent_skill_id";
-  EXPECT_CALL(observer, OnSkillUpdated(testing::_)).Times(0);
-  service_.UpdateSkill(non_existent_skill_id, "name", "icon", "prompt");
-  service_.DeleteSkill(non_existent_skill_id);
-  testing::Mock::VerifyAndClearExpectations(&observer);
+  EXPECT_CALL(mock_observer_, OnSkillUpdated).Times(0);
+  service_.UpdateSkill(non_existent_skill_id, "name", "icon", "prompt",
+                       SkillsService::UpdateSource::kLocal);
+  service_.DeleteSkill(non_existent_skill_id,
+                       SkillsService::UpdateSource::kLocal);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer_);
 
   // `UpdateSkill` with the same values should not trigger notification.
-  EXPECT_CALL(observer, OnSkillUpdated(testing::_)).Times(1);
+  EXPECT_CALL(mock_observer_, OnSkillUpdated).Times(1);
   const Skill* skill = service_.AddSkill("name", "icon", "prompt");
   std::string skill_id = skill->id;
-  testing::Mock::VerifyAndClearExpectations(&observer);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer_);
 
-  EXPECT_CALL(observer, OnSkillUpdated(testing::_)).Times(0);
-  service_.UpdateSkill(skill_id, "name", "icon", "prompt");
+  EXPECT_CALL(mock_observer_, OnSkillUpdated).Times(0);
+  service_.UpdateSkill(skill_id, "name", "icon", "prompt",
+                       SkillsService::UpdateSource::kLocal);
+}
+
+TEST_F(SkillsServiceImplTest, UpdateExistingSkillFromSync) {
+  // Add an initial skill.
+  const Skill* skill = service_.AddSkill("name", "icon", "prompt");
+
+  EXPECT_CALL(mock_observer_,
+              OnSkillUpdated(skill->id, SkillsService::UpdateSource::kSync));
+  const Skill* updated_skill =
+      service_.UpdateSkill(skill->id, "sync name", "sync icon", "sync prompt",
+                           SkillsService::UpdateSource::kSync);
+
+  ASSERT_EQ(skill, updated_skill);
+  EXPECT_THAT(service_.GetSkills(),
+              ElementsAre(Pointee(HasSkill(skill->id, "sync name", "sync icon",
+                                           "sync prompt"))));
+}
+
+TEST_F(SkillsServiceImplTest, AddSkillFromSync) {
+  service_.LoadInitialSkills({});
+
+  EXPECT_CALL(mock_observer_,
+              OnSkillUpdated(_, SkillsService::UpdateSource::kSync));
+
+  const Skill* skill =
+      service_.AddSkillFromSync("id", "name", "icon", "prompt");
+  ASSERT_NE(nullptr, skill);
+
+  EXPECT_THAT(service_.GetSkills(),
+              ElementsAre(Pointee(HasSkill("id", "name", "icon", "prompt"))));
 }
 
 }  // namespace

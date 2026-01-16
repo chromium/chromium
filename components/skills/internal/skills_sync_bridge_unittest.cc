@@ -13,6 +13,7 @@
 #include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
+#include "components/skills/proto/skill_local_data.pb.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skills_service.h"
 #include "components/sync/model/data_batch.h"
@@ -30,7 +31,11 @@ namespace skills {
 namespace {
 
 using base::test::EqualsProto;
+using ::testing::_;
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 using ::testing::Not;
+using ::testing::Pair;
 using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::UnorderedElementsAre;
@@ -70,7 +75,7 @@ std::vector<syncer::EntityData> ExtractEntityDataFromBatch(
 class MockSkillsService : public SkillsService {
  public:
   MOCK_METHOD(void, LoadInitialSkills, (std::vector<std::unique_ptr<Skill>>));
-  MOCK_METHOD(const Skill*, GetSkillById, (const std::string_view&), (const));
+  MOCK_METHOD(const Skill*, GetSkillById, (std::string_view), (const));
   MOCK_METHOD(const std::vector<std::unique_ptr<Skill>>&,
               GetSkills,
               (),
@@ -78,11 +83,18 @@ class MockSkillsService : public SkillsService {
   MOCK_METHOD(const Skill*,
               AddSkill,
               (const std::string&, const std::string&, const std::string&));
+  MOCK_METHOD(
+      const Skill*,
+      AddSkillFromSync,
+      (std::string_view, std::string_view, std::string_view, std::string_view));
   MOCK_METHOD(const Skill*,
               UpdateSkill,
-              (std::string_view, std::string_view, std::string_view,
-               std::string_view));
-  MOCK_METHOD(void, DeleteSkill, (std::string_view));
+              (std::string_view,
+               std::string_view,
+               std::string_view,
+               std::string_view,
+               UpdateSource));
+  MOCK_METHOD(void, DeleteSkill, (std::string_view, UpdateSource));
   MOCK_METHOD(void, AddObserver, (Observer*));
   MOCK_METHOD(void, RemoveObserver, (Observer*));
   MOCK_METHOD(base::WeakPtr<syncer::DataTypeControllerDelegate>,
@@ -108,6 +120,21 @@ class SkillsSyncBridgeTest : public testing::Test {
         syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
         mock_skills_service_);
     run_loop.Run();
+  }
+
+  std::optional<syncer::ModelError> ApplySingleUpdate(
+      std::unique_ptr<syncer::EntityChange> entity_change) {
+    std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
+        bridge().CreateMetadataChangeList();
+    std::vector<std::unique_ptr<syncer::EntityChange>> entity_changes;
+    entity_changes.push_back(std::move(entity_change));
+    return bridge().ApplyIncrementalSyncChanges(std::move(metadata_change_list),
+                                                std::move(entity_changes));
+  }
+
+  std::map<std::string, proto::SkillLocalData> GetAllLocalDataFromStore() {
+    return syncer::DataTypeStoreTestUtil::ReadAllDataAsProtoAndWait<
+        proto::SkillLocalData>(store());
   }
 
   syncer::DataTypeStore& store() { return *store_; }
@@ -283,6 +310,94 @@ TEST_F(SkillsSyncBridgeTest, GetAllDataForDebugging) {
       UnorderedElementsAre(
           EntityDataHasSkillSpecifics(EqualsProto(expected_specifics_1)),
           EntityDataHasSkillSpecifics(EqualsProto(expected_specifics_2))));
+}
+
+TEST_F(SkillsSyncBridgeTest, ApplyIncrementalSyncChanges_Update) {
+  const std::string kPrompt = "prompt";
+  const std::string kName = "name";
+  const std::string kIcon = "icon";
+
+  syncer::EntityData entity_data = CreateSkillEntityData(kPrompt);
+  entity_data.specifics.mutable_skill()->set_name(kName);
+  entity_data.specifics.mutable_skill()->set_icon(kIcon);
+  std::string guid = entity_data.specifics.skill().guid();
+
+  // Make a copy of the expected specifics before moving `entity_data`.
+  proto::SkillLocalData expected_local_data;
+  *expected_local_data.mutable_specifics() = entity_data.specifics.skill();
+
+  std::unique_ptr<Skill> stored_skill =
+      std::make_unique<Skill>(guid, kName, kIcon, kPrompt);
+
+  ON_CALL(mock_skills_service(), GetSkillById(guid))
+      .WillByDefault(Return(stored_skill.get()));
+
+  EXPECT_CALL(mock_skills_service(),
+              UpdateSkill(guid, kName, kIcon, kPrompt,
+                          SkillsService::UpdateSource::kSync))
+      .WillOnce(Return(stored_skill.get()));
+  ASSERT_EQ(ApplySingleUpdate(syncer::EntityChange::CreateAdd(
+                /*storage_key=*/guid, std::move(entity_data))),
+            std::nullopt);
+
+  EXPECT_THAT(GetAllLocalDataFromStore(),
+              ElementsAre(Pair(guid, EqualsProto(expected_local_data))));
+}
+
+TEST_F(SkillsSyncBridgeTest, ApplyIncrementalSyncChanges_Add) {
+  const std::string kPrompt = "prompt";
+  const std::string kName = "name";
+  const std::string kIcon = "icon";
+
+  syncer::EntityData entity_data = CreateSkillEntityData(kPrompt);
+  entity_data.specifics.mutable_skill()->set_name(kName);
+  entity_data.specifics.mutable_skill()->set_icon(kIcon);
+  std::string guid = entity_data.specifics.skill().guid();
+
+  // Make a copy of the expected specifics before moving `entity_data`.
+  proto::SkillLocalData expected_local_data;
+  *expected_local_data.mutable_specifics() = entity_data.specifics.skill();
+
+  std::unique_ptr<Skill> stored_skill =
+      std::make_unique<Skill>(guid, kName, kIcon, kPrompt);
+
+  ON_CALL(mock_skills_service(), GetSkillById(guid))
+      .WillByDefault(Return(nullptr));
+
+  EXPECT_CALL(mock_skills_service(),
+              AddSkillFromSync(guid, kName, kIcon, kPrompt))
+      .WillOnce(Return(stored_skill.get()));
+  ASSERT_EQ(ApplySingleUpdate(syncer::EntityChange::CreateAdd(
+                /*storage_key=*/guid, std::move(entity_data))),
+            std::nullopt);
+
+  EXPECT_THAT(GetAllLocalDataFromStore(),
+              ElementsAre(Pair(guid, EqualsProto(expected_local_data))));
+}
+
+TEST_F(SkillsSyncBridgeTest, ApplyIncrementalSyncChanges_Delete) {
+  const std::string kPrompt = "prompt";
+  const std::string kName = "name";
+  const std::string kIcon = "icon";
+
+  std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
+
+  std::unique_ptr<Skill> stored_skill =
+      std::make_unique<Skill>(guid, kName, kIcon, kPrompt);
+  ON_CALL(mock_skills_service(), GetSkillById(guid))
+      .WillByDefault(Return(stored_skill.get()));
+
+  // Simulate creating a skill locally.
+  bridge().OnSkillUpdated(guid, SkillsService::UpdateSource::kLocal);
+  ASSERT_THAT(GetAllLocalDataFromStore(), ElementsAre(Pair(guid, _)));
+
+  EXPECT_CALL(mock_skills_service(),
+              DeleteSkill(guid, SkillsService::UpdateSource::kSync));
+  ASSERT_EQ(ApplySingleUpdate(syncer::EntityChange::CreateDelete(
+                /*storage_key=*/guid, syncer::EntityData())),
+            std::nullopt);
+
+  EXPECT_THAT(GetAllLocalDataFromStore(), IsEmpty());
 }
 
 }  // namespace

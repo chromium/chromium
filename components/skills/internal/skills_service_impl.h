@@ -39,18 +39,24 @@ class SkillsServiceImpl : public SkillsService {
                         const std::string& icon,
                         const std::string& prompt) override;
 
+  const Skill* AddSkillFromSync(std::string_view skill_id,
+                                std::string_view name,
+                                std::string_view icon,
+                                std::string_view prompt) override;
+
   // TODO(crbug.com/475863107) Add strong typing to help caller avoid swapping
   // order of arguments.
   const Skill* UpdateSkill(std::string_view skill_id,
                            std::string_view name,
                            std::string_view icon,
-                           std::string_view prompt) override;
+                           std::string_view prompt,
+                           UpdateSource update_source) override;
 
-  void DeleteSkill(std::string_view skill_id) override;
-
+  void DeleteSkill(std::string_view skill_id,
+                   UpdateSource update_source) override;
   void LoadInitialSkills(
       std::vector<std::unique_ptr<Skill>> initial_skills) override;
-  const Skill* GetSkillById(const std::string_view& skill_id) const override;
+  const Skill* GetSkillById(std::string_view skill_id) const override;
   const std::vector<std::unique_ptr<Skill>>& GetSkills() const override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
@@ -58,7 +64,15 @@ class SkillsServiceImpl : public SkillsService {
       override;
 
  private:
-  void NotifySkillChanged(const std::string& skill_id);
+  void NotifySkillChanged(const std::string& skill_id,
+                          UpdateSource update_source);
+
+  // Adds a skill to the service and returns the created skill.
+  const Skill* AddSkillImpl(std::unique_ptr<Skill> skill,
+                            UpdateSource update_source);
+
+  // Returns a mutable skill with the given ID or nullptr if not found.
+  Skill* GetMutableSkillById(std::string_view skill_id);
 
   // Whether the service is initialized.
   bool is_initialized_ = false;

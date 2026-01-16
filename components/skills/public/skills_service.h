@@ -28,10 +28,21 @@ struct Skill;
 // has one instance of this service.
 class SkillsService : public KeyedService {
  public:
+  // Source of the skill update.
+  enum class UpdateSource {
+    // The skill is updated locally, e.g. from the UI.
+    kLocal,
+
+    // The skill is updated by the sync service from the server.
+    kSync,
+  };
+
+  // Observer for the service notifications.
   class Observer : public base::CheckedObserver {
    public:
     // Called whenever a skill is created, updated or deleted.
-    virtual void OnSkillUpdated(const std::string& skill_id) {}
+    virtual void OnSkillUpdated(const std::string& skill_id,
+                                UpdateSource update_source) {}
 
     // Called when the service is ready to use and data is loaded from the disk.
     virtual void OnInitialized() {}
@@ -47,19 +58,27 @@ class SkillsService : public KeyedService {
                                 const std::string& icon,
                                 const std::string& prompt) = 0;
 
-  // Updates an existing skill.
-  // Returns a const pointer to the skill if update is successful.
-  // Returns nullptr if the skill does not exist.
+  // Adds a new skill received from sync. Returns the newly created skill. The
+  // difference from AddSkill is that this method takes a `skill_id` for the
+  // created skill ID.
+  virtual const Skill* AddSkillFromSync(std::string_view skill_id,
+                                        std::string_view name,
+                                        std::string_view icon,
+                                        std::string_view prompt) = 0;
+
+  // Updates an existing skill. Returns a skill if exists, nullptr otherwise.
   virtual const Skill* UpdateSkill(std::string_view skill_id,
                                    std::string_view name,
                                    std::string_view icon,
-                                   std::string_view prompt) = 0;
+                                   std::string_view prompt,
+                                   UpdateSource update_source) = 0;
 
   // Deletes a skill if exists.
-  virtual void DeleteSkill(std::string_view skill_id) = 0;
+  virtual void DeleteSkill(std::string_view skill_id,
+                           UpdateSource update_source) = 0;
 
   // Returns the skill with the given ID or nullptr if not found.
-  virtual const Skill* GetSkillById(const std::string_view& skill_id) const = 0;
+  virtual const Skill* GetSkillById(std::string_view skill_id) const = 0;
 
   // Loads a skill list into memory.
   virtual void LoadInitialSkills(
