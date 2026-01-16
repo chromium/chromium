@@ -2095,7 +2095,7 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateSignRelatedFunction(
     CSSValueID function_id) {
   const CSSMathExpressionNode* operand = operands.front();
 
-  if (operand->IsCalcSize()) {
+  if (operand->IsCalcSize() || CSSMathType(*operand).IsIntermediateResult()) {
     return nullptr;
   }
 
