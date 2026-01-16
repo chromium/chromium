@@ -84,6 +84,13 @@
       var(--color-searchbox-results-background-hovered));
 }
 
+@media (forced-colors: active) {
+  :host([is-top-chrome-searchbox_]) .container:not(.actions):hover,
+  :host([is-top-chrome-searchbox_]:is(:focus-visible, [selected])) .container:not(.actions) {
+    background-color: Highlight;
+  }
+}
+
 :host([enable-csb-motion-tweaks_][is-lens-searchbox_]) .container {
   height: 48px;
   padding-bottom: 0;
