@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/legion/phosphor/data_types.h"
 
 namespace legion::phosphor {
@@ -28,9 +29,8 @@ class TokenFetcher {
   //
   // On failure, the callback receives a `base::Time`, which indicates the
   // earliest time the client should attempt to call `GetAuthnTokens` again.
-  using GetAuthnTokensCallback =
-      base::OnceCallback<void(std::optional<std::vector<BlindSignedAuthToken>>,
-                              std::optional<::base::Time>)>;
+  using GetAuthnTokensCallback = base::OnceCallback<void(
+      base::expected<std::vector<BlindSignedAuthToken>, base::Time>)>;
 
   virtual ~TokenFetcher() = default;
   TokenFetcher(const TokenFetcher&) = delete;

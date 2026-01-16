@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/legion/phosphor/data_types.h"
 
 namespace base {
@@ -45,9 +46,11 @@ class FeatureTokenManager {
   std::optional<BlindSignedAuthToken> GetAuthToken();
 
  private:
-  void OnGotAuthTokens(base::TimeTicks,
-                       std::optional<std::vector<BlindSignedAuthToken>> tokens,
-                       std::optional<base::Time> try_again_after);
+  // The callback for token fetch completion. On success, this receives a
+  // vector of tokens. On failure, it receives the time after which a retry is
+  // permitted.
+  void OnGotAuthTokens(
+      base::expected<std::vector<BlindSignedAuthToken>, base::Time> result);
 
   // Removes expired tokens from the cache.
   void RemoveExpiredTokens();

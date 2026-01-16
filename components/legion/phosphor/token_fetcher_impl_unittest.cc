@@ -115,8 +115,7 @@ struct MockBlindSignAuthFactory : public BlindSignAuthFactory {
 class TokenFetcherImplTest : public testing::Test {
  protected:
   using GetAuthnTokensFuture = base::test::TestFuture<
-      const std::optional<std::vector<BlindSignedAuthToken>>,
-      std::optional<base::Time>>;
+      base::expected<std::vector<BlindSignedAuthToken>, base::Time>>;
 
   TokenFetcherImplTest()
       : expiration_time_(base::Time::Now() + base::Hours(1)),
@@ -143,18 +142,24 @@ class TokenFetcherImplTest : public testing::Test {
   // Expect that the GetAuthnTokens call returned the given tokens.
   void ExpectGetAuthnTokensResult(
       std::vector<BlindSignedAuthToken> bsa_tokens) {
-    EXPECT_EQ(std::get<0>(tokens_future_.Get()), bsa_tokens);
+    auto& result = tokens_future_.Get();
+    EXPECT_TRUE(result.has_value());
+    if (!result.has_value()) {
+      return;
+    }
+    EXPECT_EQ(result.value(), bsa_tokens);
   }
 
-  // Expect that the GetAuthnTokens call returned nullopt, with
+  // Expect that the GetAuthnTokens call returned an error, with
   // `try_again_after` within the expected range.
   void ExpectGetAuthnTokensResultFailed(base::TimeDelta try_again_delta) {
-    auto& [bsa_tokens, try_again_after] = tokens_future_.Get();
-    EXPECT_EQ(bsa_tokens, std::nullopt);
-    if (!bsa_tokens) {
-      EXPECT_THAT(*try_again_after - base::Time::Now(),
-                  IsNearWithJitter(try_again_delta));
+    auto& result = tokens_future_.Get();
+    EXPECT_FALSE(result.has_value());
+    if (result.has_value()) {
+      return;
     }
+    EXPECT_THAT(result.error() - base::Time::Now(),
+                IsNearWithJitter(try_again_delta));
     // Clear future so it can be reused and accept new tokens.
     tokens_future_.Clear();
   }

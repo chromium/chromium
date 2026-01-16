@@ -16,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/legion/features.h"
 #include "components/legion/phosphor/token_fetcher.h"
 #include "net/base/features.h"
@@ -70,7 +71,11 @@ class MockTokenFetcher : public TokenFetcher {
         << "Unexpected call to GetAuthnTokens";
     auto& exp = expected_get_authn_token_calls_.front();
     EXPECT_EQ(batch_size, exp.batch_size);
-    std::move(callback).Run(std::move(exp.bsa_tokens), exp.try_again_after);
+    if (exp.bsa_tokens) {
+      std::move(callback).Run(base::ok(*std::move(exp.bsa_tokens)));
+    } else {
+      std::move(callback).Run(base::unexpected(*exp.try_again_after));
+    }
     expected_get_authn_token_calls_.pop_front();
   }
 

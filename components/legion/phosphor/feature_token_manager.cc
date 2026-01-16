@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/expected.h"
 #include "components/legion/features.h"
 #include "components/legion/phosphor/data_types.h"
 #include "components/legion/phosphor/token_fetcher.h"
@@ -68,29 +69,25 @@ std::optional<BlindSignedAuthToken> FeatureTokenManager::GetAuthToken() {
 }
 
 void FeatureTokenManager::OnGotAuthTokens(
-    base::TimeTicks,
-    std::optional<std::vector<BlindSignedAuthToken>> tokens,
-    std::optional<base::Time> try_again_after) {
+    base::expected<std::vector<BlindSignedAuthToken>, base::Time> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!tokens.has_value()) {
-    fetching_auth_tokens_ = false;
-    VLOG(2) << "Legion ATC::OnGotAuthTokens back off until "
-            << *try_again_after;
-    try_get_auth_tokens_after_ = *try_again_after;
+  fetching_auth_tokens_ = false;
 
+  if (!result.has_value()) {
+    VLOG(2) << "Legion ATC::OnGotAuthTokens back off until " << result.error();
+    try_get_auth_tokens_after_ = result.error();
     ScheduleMaybeRefillCache();
     return;
   }
 
-  VLOG(2) << "Legion ATC::OnGotAuthTokens got " << tokens->size() << " tokens";
+  VLOG(2) << "Legion ATC::OnGotAuthTokens got " << result->size() << " tokens";
   try_get_auth_tokens_after_.reset();
 
   RemoveExpiredTokens();
 
-  if (tokens->empty()) {
+  if (result->empty()) {
     VLOG(1) << "Legion ATC::OnGotAuthTokens got an empty list of tokens. "
                "Treating as a transient error.";
-    fetching_auth_tokens_ = false;
     // TODO(b:457425177): Record a UMA metric for this case.
     try_get_auth_tokens_after_ =
         base::Time::Now() +
@@ -99,12 +96,11 @@ void FeatureTokenManager::OnGotAuthTokens(
     return;
   }
 
-  for (auto& token : *tokens) {
+  for (auto& token : *result) {
     cache_.push_back(std::move(token));
     std::push_heap(cache_.begin(), cache_.end(),
                    kBlindSignedAuthTokenComparator);
   }
-  fetching_auth_tokens_ = false;
 
   ScheduleMaybeRefillCache();
 }
@@ -133,12 +129,11 @@ void FeatureTokenManager::MaybeRefillCache() {
   if (NeedsRefill()) {
     fetching_auth_tokens_ = true;
     VLOG(2) << "Legion ATC::MaybeRefillCache calling GetAuthnTokens";
+    // base::Unretained is unsafe here, because the FeatureTokenManager can be
+    // destroyed while a token fetch is in progress.
     fetcher_->GetAuthnTokens(
-        batch_size_,
-        base::BindOnce(
-            &FeatureTokenManager::OnGotAuthTokens,
-            weak_ptr_factory_.GetWeakPtr(),
-            /*attempt_start_time_for_metrics=*/base::TimeTicks::Now()));
+        batch_size_, base::BindOnce(&FeatureTokenManager::OnGotAuthTokens,
+                                    weak_ptr_factory_.GetWeakPtr()));
   }
 
   ScheduleMaybeRefillCache();
@@ -151,26 +146,15 @@ void FeatureTokenManager::ScheduleMaybeRefillCache() {
   }
 
   base::Time now = base::Time::Now();
-  base::TimeDelta delay;
+  base::Time next_try = now;
 
   if (NeedsRefill()) {
-    if (!try_get_auth_tokens_after_.has_value()) {
-      delay = base::TimeDelta();
-    } else {
-      delay = *try_get_auth_tokens_after_ - now;
-    }
-  } else {
-    if (!cache_.empty()) {
-      delay = cache_.front().expiration - now;
-    } else {
-      refill_timer_ = nullptr;
-      return;
-    }
+    next_try = try_get_auth_tokens_after_.value_or(now);
+  } else if (!cache_.empty()) {
+    next_try = cache_.front().expiration;
   }
 
-  if (delay.is_negative()) {
-    delay = base::TimeDelta();
-  }
+  const base::TimeDelta delay = std::max(base::TimeDelta(), next_try - now);
 
   if (!refill_timer_) {
     refill_timer_ = std::make_unique<base::OneShotTimer>();

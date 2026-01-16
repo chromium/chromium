@@ -167,16 +167,17 @@ void TokenFetcherImpl::GetAuthnTokensComplete(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::optional<base::TimeDelta> backoff = CalculateBackoff(result);
-  std::optional<base::Time> try_again_after;
-  if (backoff) {
-    if (*backoff == base::TimeDelta::Max()) {
-      try_again_after = base::Time::Max();
-    } else {
-      try_again_after = base::Time::Now() + *backoff;
-    }
+  if (bsa_tokens.has_value()) {
+    DCHECK(!backoff.has_value());
+    std::move(callback).Run(base::ok(*std::move(bsa_tokens)));
+    return;
   }
-  DCHECK(bsa_tokens.has_value() || try_again_after.has_value());
-  std::move(callback).Run(std::move(bsa_tokens), try_again_after);
+
+  DCHECK(backoff.has_value());
+  const base::Time try_again_after = (*backoff == base::TimeDelta::Max())
+                                         ? base::Time::Max()
+                                         : base::Time::Now() + *backoff;
+  std::move(callback).Run(base::unexpected(try_again_after));
 }
 
 void TokenFetcherImpl::AccountStatusChanged(bool account_available) {
