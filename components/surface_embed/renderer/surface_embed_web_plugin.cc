@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/secure_embed/renderer/secure_embed_web_plugin.h"
+#include "components/surface_embed/renderer/surface_embed_web_plugin.h"
 
 #include "base/notimplemented.h"
 #include "base/notreached.h"

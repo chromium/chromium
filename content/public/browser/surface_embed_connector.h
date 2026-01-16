@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_SECURE_EMBED_CONNECTOR_H_
-#define CONTENT_PUBLIC_BROWSER_SECURE_EMBED_CONNECTOR_H_
+#ifndef CONTENT_PUBLIC_BROWSER_SURFACE_EMBED_CONNECTOR_H_
+#define CONTENT_PUBLIC_BROWSER_SURFACE_EMBED_CONNECTOR_H_
 
 #include "base/observer_list.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -86,4 +86,4 @@ class CONTENT_EXPORT SecureEmbedConnector {
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_SECURE_EMBED_CONNECTOR_H_
+#endif  // CONTENT_PUBLIC_BROWSER_SURFACE_EMBED_CONNECTOR_H_

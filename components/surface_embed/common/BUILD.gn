@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/secure_embed/buildflags/buildflags.gni")
+import("//components/surface_embed/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(enable_secure_embed)
@@ -14,7 +14,7 @@ source_set("constants") {
 mojom("mojom") {
   disable_variants = true
 
-  sources = [ "secure_embed.mojom" ]
+  sources = [ "surface_embed.mojom" ]
 
   deps = [
     "//services/viz/public/mojom",

@@ -38,10 +38,10 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/mojo_safe_browsing_impl.h"
 #include "components/safe_browsing/core/common/features.h"
-#include "components/secure_embed/buildflags/buildflags.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
+#include "components/surface_embed/buildflags/buildflags.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -133,7 +133,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_SECURE_EMBED)
-#include "components/secure_embed/browser/secure_embed_host.h"
+#include "components/surface_embed/browser/surface_embed_host.h"
 #endif
 
 namespace {

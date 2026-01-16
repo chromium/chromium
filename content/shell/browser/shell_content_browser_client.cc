@@ -47,7 +47,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service_factory.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/secure_embed/buildflags/buildflags.h"
+#include "components/surface_embed/buildflags/buildflags.h"
 #include "components/variations/platform_field_trials.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/service/safe_seed_manager.h"
@@ -144,7 +144,7 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_SECURE_EMBED)
-#include "components/secure_embed/browser/secure_embed_host.h"
+#include "components/surface_embed/browser/surface_embed_host.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #endif  // BUILDFLAG(ENABLE_SECURE_EMBED)
 

@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
-#include "content/public/browser/secure_embed_connector.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/color/color_provider_key.h"

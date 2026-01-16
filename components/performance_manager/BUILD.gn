@@ -312,7 +312,7 @@ static_library("performance_manager") {
     "//components/performance_manager/scenario_api",
     "//components/pref_registry",
     "//components/prefs",
-    "//components/secure_embed/browser",
+    "//components/surface_embed/browser",
     "//components/system_cpu",
     "//third_party/blink/public/common:headers",
   ]

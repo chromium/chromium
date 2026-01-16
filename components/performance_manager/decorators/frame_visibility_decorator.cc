@@ -7,7 +7,7 @@
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/features.h"
-#include "components/secure_embed/browser/secure_embed_utils.h"
+#include "components/surface_embed/browser/surface_embed_utils.h"
 
 namespace performance_manager {
 

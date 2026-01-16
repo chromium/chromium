@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "components/secure_embed/buildflags/buildflags.h"
+#include "components/surface_embed/buildflags/buildflags.h"
 #include "content/public/browser/content_browser_client.h"
 
 namespace webui_examples {

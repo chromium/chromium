@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/secure_embed/browser/secure_embed_host.h"
+#include "components/surface_embed/browser/surface_embed_host.h"
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -10,11 +10,10 @@
 #include "base/supports_user_data.h"
 #include "components/guest_contents/browser/guest_contents_handle.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/secure_embed_connector.h"
+#include "content/public/browser/surface_embed_connector.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
-#include "secure_embed_host.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom.h"
 

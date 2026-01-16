@@ -7,11 +7,11 @@
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "components/guest_contents/browser/guest_contents_handle.h"
-#include "components/secure_embed/browser/secure_embed_host.h"
+#include "components/surface_embed/browser/surface_embed_host.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
-#include "content/public/browser/secure_embed_connector.h"
+#include "content/public/browser/surface_embed_connector.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test.h"
@@ -30,10 +30,10 @@ namespace secure_embed {
 
 namespace {
 constexpr char kAttachHarnessUrl[] =
-    "/secure_embed/single_embed_attach_harness.html";
-constexpr char kRedBoxUrl[] = "/secure_embed/red_box.html";
-constexpr char kBlueBoxUrl[] = "/secure_embed/blue_box.html";
-constexpr char kEmptyUrl[] = "/secure_embed/empty.html";
+    "/surface_embed/single_embed_attach_harness.html";
+constexpr char kRedBoxUrl[] = "/surface_embed/red_box.html";
+constexpr char kBlueBoxUrl[] = "/surface_embed/blue_box.html";
+constexpr char kEmptyUrl[] = "/surface_embed/empty.html";
 }  // namespace
 
 class SecureEmbedBrowserTest : public content::ContentBrowserTest {

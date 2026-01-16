@@ -6,7 +6,7 @@
 
 #include "components/guest_contents/browser/guest_contents_handle.h"
 #include "components/guest_contents/browser/guest_contents_host_impl.h"
-#include "components/secure_embed/buildflags/buildflags.h"
+#include "components/surface_embed/buildflags/buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"

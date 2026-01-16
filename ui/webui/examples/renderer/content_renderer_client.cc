@@ -4,14 +4,14 @@
 
 #include "ui/webui/examples/renderer/content_renderer_client.h"
 
-#include "components/secure_embed/buildflags/buildflags.h"
+#include "components/surface_embed/buildflags/buildflags.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_custom_element.h"
 #include "ui/webui/examples/renderer/render_frame_observer.h"
 
 #if BUILDFLAG(ENABLE_SECURE_EMBED)
-#include "components/secure_embed/renderer/create_plugin.h"
+#include "components/surface_embed/renderer/create_plugin.h"
 #endif  // BUILDFLAG(ENABLE_SECURE_EMBED)
 
 namespace webui_examples {

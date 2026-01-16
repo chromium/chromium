@@ -10,8 +10,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
-#include "components/secure_embed/browser/secure_embed_host.h"
-#include "components/secure_embed/common/secure_embed.mojom.h"
+#include "components/surface_embed/browser/surface_embed_host.h"
+#include "components/surface_embed/common/surface_embed.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -27,8 +27,8 @@ namespace secure_embed {
 
 namespace {
 
-constexpr char kTestUrl[] = "/secure_embed/embed_tag.html";
-constexpr char kMultipleEmbedsUrl[] = "/secure_embed/multiple_embeds.html";
+constexpr char kTestUrl[] = "/surface_embed/embed_tag.html";
+constexpr char kMultipleEmbedsUrl[] = "/surface_embed/multiple_embeds.html";
 
 constexpr size_t kSingleEmbedCount = 1;
 constexpr size_t kMultipleEmbedCount = 3;

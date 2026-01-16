@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/secure_embed/buildflags/buildflags.gni")
+import("//components/surface_embed/buildflags/buildflags.gni")
 
 assert(enable_secure_embed)
 
@@ -14,14 +14,14 @@ component("renderer") {
   sources = [
     "create_plugin.cc",
     "create_plugin.h",
-    "secure_embed_web_plugin.cc",
-    "secure_embed_web_plugin.h",
+    "surface_embed_web_plugin.cc",
+    "surface_embed_web_plugin.h",
   ]
 
   deps = [
     "//base",
     "//cc/paint",
-    "//components/secure_embed/common:constants",
+    "//components/surface_embed/common:constants",
     "//content/public/renderer",
     "//mojo/public/cpp/bindings",
     "//skia",
@@ -30,5 +30,5 @@ component("renderer") {
     "//v8:v8_headers",
   ]
 
-  public_deps = [ "//components/secure_embed/common:mojom" ]
+  public_deps = [ "//components/surface_embed/common:mojom" ]
 }

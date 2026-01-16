@@ -17,7 +17,7 @@
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/v8_memory/web_memory.h"
-#include "components/secure_embed/browser/secure_embed_utils.h"
+#include "components/surface_embed/browser/surface_embed_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/message.h"

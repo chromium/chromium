@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/secure_embed/renderer/create_plugin.h"
+#include "components/surface_embed/renderer/create_plugin.h"
 
-#include "components/secure_embed/common/constants.h"
-#include "components/secure_embed/renderer/secure_embed_web_plugin.h"
+#include "components/surface_embed/common/constants.h"
+#include "components/surface_embed/renderer/surface_embed_web_plugin.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_SECURE_EMBED_CONNECTOR_IMPL_H_
-#define CONTENT_BROWSER_SECURE_EMBED_CONNECTOR_IMPL_H_
+#ifndef CONTENT_BROWSER_SURFACE_EMBED_CONNECTOR_IMPL_H_
+#define CONTENT_BROWSER_SURFACE_EMBED_CONNECTOR_IMPL_H_
 
 #include <memory>
 #include <optional>
@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "cc/input/touch_action.h"
 #include "content/browser/renderer_host/cross_process_frame_connector_base.h"
-#include "content/public/browser/secure_embed_connector.h"
+#include "content/public/browser/surface_embed_connector.h"
 #include "content/public/browser/visibility.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-forward.h"
@@ -232,4 +232,4 @@ class SecureEmbedConnectorImpl : public SecureEmbedConnector,
 
 }  // namespace content
 
-#endif  // #define CONTENT_BROWSER_SECURE_EMBED_CONNECTOR_IMPL_H_
+#endif  // #define CONTENT_BROWSER_SURFACE_EMBED_CONNECTOR_IMPL_H_

@@ -117,13 +117,13 @@
 #include "components/safe_browsing/content/renderer/threat_dom_details.h"
 #include "components/sampling_profiler/process_type.h"
 #include "components/sampling_profiler/thread_profiler.h"
-#include "components/secure_embed/buildflags/buildflags.h"
 #include "components/security_interstitials/content/renderer/security_interstitial_page_controller_delegate_impl.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/subresource_filter/content/renderer/subresource_filter_agent.h"
 #include "components/subresource_filter/content/renderer/unverified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/common_features.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
+#include "components/surface_embed/buildflags/buildflags.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "components/variations/variations_switches.h"
 #include "components/version_info/version_info.h"
@@ -245,7 +245,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_SECURE_EMBED)
-#include "components/secure_embed/renderer/create_plugin.h"
+#include "components/surface_embed/renderer/create_plugin.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)

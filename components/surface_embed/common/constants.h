@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SECURE_EMBED_COMMON_CONSTANTS_H_
-#define COMPONENTS_SECURE_EMBED_COMMON_CONSTANTS_H_
+#ifndef COMPONENTS_SURFACE_EMBED_COMMON_CONSTANTS_H_
+#define COMPONENTS_SURFACE_EMBED_COMMON_CONSTANTS_H_
 
 namespace secure_embed {
 
@@ -13,4 +13,4 @@ inline constexpr char kInternalPluginMimeType[] =
 
 }  // namespace secure_embed
 
-#endif  // COMPONENTS_SECURE_EMBED_COMMON_CONSTANTS_H_
+#endif  // COMPONENTS_SURFACE_EMBED_COMMON_CONSTANTS_H_

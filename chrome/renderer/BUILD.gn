@@ -8,9 +8,9 @@ import("//chrome/common/features.gni")
 import("//chrome/common/request_header_integrity/buildflags.gni")
 import("//components/offline_pages/buildflags/features.gni")
 import("//components/optimization_guide/features.gni")
-import("//components/secure_embed/buildflags/buildflags.gni")
 import("//components/signin/features.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
+import("//components/surface_embed/buildflags/buildflags.gni")
 import("//content/public/common/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
@@ -192,7 +192,6 @@ static_library("renderer") {
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:interfaces",
     "//components/search",
-    "//components/secure_embed/buildflags",
     "//components/security_interstitials/content/renderer",
     "//components/security_interstitials/core:",
     "//components/security_interstitials/core/common/mojom:",
@@ -200,6 +199,7 @@ static_library("renderer") {
     "//components/subresource_filter/content/renderer",
     "//components/subresource_filter/core/common",
     "//components/supervised_user/core/common:buildflags",
+    "//components/surface_embed/buildflags",
     "//components/translate/content/renderer",
     "//components/translate/core/common",
     "//components/translate/core/language_detection",
@@ -272,7 +272,7 @@ static_library("renderer") {
   }
 
   if (enable_secure_embed) {
-    deps += [ "//components/secure_embed/renderer" ]
+    deps += [ "//components/surface_embed/renderer" ]
   }
 
   if (enable_widevine_cdm_component) {

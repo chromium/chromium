@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/secure_embed/buildflags/buildflags.gni")
+import("//components/surface_embed/buildflags/buildflags.gni")
 
 assert(enable_secure_embed)
 
@@ -10,15 +10,15 @@ component("browser") {
   defines = [ "IS_SECURE_EMBED_IMPL" ]
 
   public = [
-    "secure_embed_host.h",
-    "secure_embed_utils.h",
+    "surface_embed_host.h",
+    "surface_embed_utils.h",
   ]
 
   sources = [
-    "secure_embed_host.cc",
-    "secure_embed_host.h",
-    "secure_embed_utils.cc",
-    "secure_embed_utils.h",
+    "surface_embed_host.cc",
+    "surface_embed_host.h",
+    "surface_embed_utils.cc",
+    "surface_embed_utils.h",
   ]
 
   deps = [
@@ -28,7 +28,7 @@ component("browser") {
     "//mojo/public/cpp/bindings",
   ]
 
-  public_deps = [ "//components/secure_embed/common:mojom" ]
+  public_deps = [ "//components/surface_embed/common:mojom" ]
 }
 
 source_set("browser_tests") {
@@ -37,8 +37,8 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
-    "secure_embed_browsertest.cc",
-    "secure_embed_web_plugin_browsertest.cc",
+    "surface_embed_browsertest.cc",
+    "surface_embed_web_plugin_browsertest.cc",
   ]
 
   deps = [
@@ -46,7 +46,7 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//components/guest_contents/browser",
-    "//components/secure_embed/common:mojom",
+    "//components/surface_embed/common:mojom",
     "//content/public/browser",
     "//content/shell:content_shell_lib",
     "//content/test:browsertest_support",

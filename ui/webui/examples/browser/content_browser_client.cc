@@ -6,7 +6,7 @@
 
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/guest_contents/common/guest_contents.mojom.h"
-#include "components/secure_embed/buildflags/buildflags.h"
+#include "components/surface_embed/buildflags/buildflags.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents_view_delegate.h"
@@ -17,7 +17,7 @@
 #include "ui/webui/examples/browser/ui/web/browser.mojom.h"
 
 #if BUILDFLAG(ENABLE_SECURE_EMBED)
-#include "components/secure_embed/browser/secure_embed_host.h"
+#include "components/surface_embed/browser/surface_embed_host.h"
 #endif  // BUILDFLAG(ENABLE_SECURE_EMBED)
 
 namespace webui_examples {

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SECURE_EMBED_BROWSER_SECURE_EMBED_HOST_H_
-#define COMPONENTS_SECURE_EMBED_BROWSER_SECURE_EMBED_HOST_H_
+#ifndef COMPONENTS_SURFACE_EMBED_BROWSER_SURFACE_EMBED_HOST_H_
+#define COMPONENTS_SURFACE_EMBED_BROWSER_SURFACE_EMBED_HOST_H_
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
-#include "components/secure_embed/common/secure_embed.mojom.h"
+#include "components/surface_embed/common/surface_embed.mojom.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/secure_embed_connector.h"
+#include "content/public/browser/surface_embed_connector.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
@@ -81,4 +81,4 @@ class COMPONENT_EXPORT(SECURE_EMBED) SecureEmbedHost
 
 }  // namespace secure_embed
 
-#endif  // COMPONENTS_SECURE_EMBED_BROWSER_SECURE_EMBED_HOST_H_
+#endif  // COMPONENTS_SURFACE_EMBED_BROWSER_SURFACE_EMBED_HOST_H_
