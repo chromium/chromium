@@ -706,9 +706,6 @@ bool ShouldCancelTouchesInViewForIPH();
 // Returns true if the IPH gesture recognition improvements are enabled.
 bool IsIPHGestureRecognitionImprovementEnabled();
 
-// Feature flag to remove section breaks when detecting addresses.
-BASE_DECLARE_FEATURE(kIOSOneTapMiniMapRemoveSectionsBreaks);
-
 // Feature flags for enhanced One Tap Minimap experiment
 // The main feature that controls of these restrictions. Different parameters
 // control the different available restrictions.

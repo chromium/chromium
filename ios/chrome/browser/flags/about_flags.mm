@@ -2168,11 +2168,7 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_WITH_PARAMS_VALUE_TYPE(kNTPMIAEntrypoint,
                                     kNTPMIAEntrypointVariations,
                                     "kNTPMIAEntrypoint")},
-    {"ios-one-tap-mini-map-remove-section-breaks",
-     flag_descriptions::kIOSOneTapMiniMapRemoveSectionBreaksName,
-     flag_descriptions::kIOSOneTapMiniMapRemoveSectionBreaksDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kIOSOneTapMiniMapRemoveSectionsBreaks)},
+
     {"autofill-enable-support-for-home-and-work",
      flag_descriptions::kAutofillEnableSupportForHomeAndWorkName,
      flag_descriptions::kAutofillEnableSupportForHomeAndWorkDescription,

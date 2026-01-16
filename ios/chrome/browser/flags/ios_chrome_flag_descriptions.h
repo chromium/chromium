@@ -489,9 +489,6 @@ extern const char kIOSOmniboxAimServerEligibilityDescription[];
 extern const char kIOSOmniboxAimShortcutName[];
 extern const char kIOSOmniboxAimShortcutDescription[];
 
-extern const char kIOSOneTapMiniMapRemoveSectionBreaksName[];
-extern const char kIOSOneTapMiniMapRemoveSectionBreaksDescription[];
-
 extern const char kIOSOneTapMiniMapRestrictionsName[];
 extern const char kIOSOneTapMiniMapRestrictionsDescription[];
 
