@@ -59,8 +59,6 @@ const String& InstallIconSVG() {
 
 }  // namespace
 
-using mojom::blink::PermissionName;
-
 HTMLPermissionIconElement::HTMLPermissionIconElement(Document& document)
     : HTMLSpanElement(document) {
   SetIdAttribute(shadow_element_names::kIdPermissionIcon);
@@ -68,45 +66,46 @@ HTMLPermissionIconElement::HTMLPermissionIconElement(Document& document)
   SetHasCustomStyleCallbacks();
 }
 
-void HTMLPermissionIconElement::SetIcon(PermissionName permission_type,
-                                        bool is_precise_location) {
+void HTMLPermissionIconElement::SetIcon(PermissionIconType icon_type) {
   // We need `PostTask` here because creating a new element (the svg instead of
   // setInnerHtml) starts dispatching events and it hits a DCHECK.
   GetDocument()
       .GetTaskRunner(TaskType::kInternalDefault)
       ->PostTask(FROM_HERE, BindOnce(&HTMLPermissionIconElement::SetIconImpl,
-                                     WrapWeakPersistent(this), permission_type,
-                                     is_precise_location));
+                                     WrapWeakPersistent(this), icon_type));
 }
 
-void HTMLPermissionIconElement::SetIconImpl(PermissionName permission_type,
-                                            bool is_precise_location) {
-  if (is_static_icon_set_) {
+void HTMLPermissionIconElement::SetIconImpl(PermissionIconType icon_type) {
+  if (current_icon_type_ == icon_type) {
     return;
   }
 
-  switch (permission_type) {
-    case PermissionName::VIDEO_CAPTURE: {
+  switch (icon_type) {
+    case PermissionIconType::kLocation: {
+      SetInnerHTMLWithoutTrustedTypes(LocationIconSVG());
+      break;
+    }
+    case PermissionIconType::kLocationPrecise: {
+      SetInnerHTMLWithoutTrustedTypes(LocationPreciseIconSVG());
+      break;
+    }
+    case PermissionIconType::kCamera: {
       SetInnerHTMLWithoutTrustedTypes(CameraIconSVG());
       break;
     }
-    case PermissionName::AUDIO_CAPTURE: {
+    case PermissionIconType::kMicrophone: {
       SetInnerHTMLWithoutTrustedTypes(MicrophoneIconSVG());
       break;
     }
-    case PermissionName::WEB_APP_INSTALLATION: {
+    case PermissionIconType::kInstall: {
       SetInnerHTMLWithoutTrustedTypes(InstallIconSVG());
       break;
     }
-    case PermissionName::GEOLOCATION: {
-      SetInnerHTMLWithoutTrustedTypes(
-          is_precise_location ? LocationPreciseIconSVG() : LocationIconSVG());
-      break;
-    }
+
     default:
       return;
   }
-  is_static_icon_set_ = true;
+  current_icon_type_ = icon_type;
 }
 
 void HTMLPermissionIconElement::AdjustStyle(ComputedStyleBuilder& builder) {

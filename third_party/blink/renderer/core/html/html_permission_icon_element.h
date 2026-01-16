@@ -9,6 +9,16 @@
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 
 namespace blink {
+
+enum class PermissionIconType {
+  kNone = 0,
+  kLocation = 1,
+  kLocationPrecise = 2,
+  kCamera = 3,
+  kMicrophone = 4,
+  kInstall = 5,
+};
+
 // Internal element for the Permission element. This element holds the icon
 // of the permission element.
 class HTMLPermissionIconElement final : public HTMLSpanElement {
@@ -19,12 +29,10 @@ class HTMLPermissionIconElement final : public HTMLSpanElement {
     // Reject all properties for which 'kValidForPermissionIcon' is false.
     return CascadeFilter(CSSProperty::kValidForPermissionIcon);
   }
-  void SetIcon(mojom::blink::PermissionName permission_type,
-               bool is_precise_location);
+  void SetIcon(PermissionIconType icon_type);
 
  private:
-  void SetIconImpl(mojom::blink::PermissionName permission_type,
-                   bool is_precise_location);
+  void SetIconImpl(PermissionIconType icon_type);
   // blink::Element overrides.
   void AdjustStyle(ComputedStyleBuilder& builder) override;
 
@@ -45,7 +53,7 @@ class HTMLPermissionIconElement final : public HTMLSpanElement {
 
   // Guard used to prevent re-setting the icon on the permission element for
   // static icons.
-  bool is_static_icon_set_ = false;
+  PermissionIconType current_icon_type_ = PermissionIconType::kNone;
 };
 }  // namespace blink
 

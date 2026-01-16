@@ -629,7 +629,25 @@ void HTMLPermissionElement::UpdateAppearance() {
 }
 
 void HTMLPermissionElement::UpdateIcon(PermissionName permnission) {
-  permission_internal_icon_->SetIcon(permnission, is_precise_location_);
+  PermissionIconType icon_type;
+  switch (permnission) {
+    case PermissionName::GEOLOCATION:
+      icon_type = is_precise_location_ ? PermissionIconType::kLocationPrecise
+                                       : PermissionIconType::kLocation;
+      break;
+    case PermissionName::VIDEO_CAPTURE:
+      icon_type = PermissionIconType::kCamera;
+      break;
+    case PermissionName::AUDIO_CAPTURE:
+      icon_type = PermissionIconType::kMicrophone;
+      break;
+    case PermissionName::WEB_APP_INSTALLATION:
+      icon_type = PermissionIconType::kInstall;
+      break;
+    default:
+      return;
+  }
+  permission_internal_icon_->SetIcon(icon_type);
 }
 
 void HTMLPermissionElement::UpdatePermissionStatusAndAppearance() {
