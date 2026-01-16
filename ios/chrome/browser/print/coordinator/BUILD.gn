@@ -2,19 +2,42 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/apple/swift_source_set.gni")
+
+if (enable_swift_cxx_interop) {
+  swift_modulemap("base_imports") {
+    modules = [
+      {
+        name = "BaseImports"
+        sources = [ "//base/metrics/user_metrics.h" ]
+      },
+    ]
+    public_deps = [ "//base" ]
+  }
+
+  swift_source_set("swift_coordinator") {
+    bridge_header = "bridge_header.h"
+    sources = [ "print_coordinator_impl.swift" ]
+    frameworks = [ "UIKit.framework" ]
+    deps = [
+      ":base_imports",
+      ":coordinator",
+      "//base",
+    ]
+  }
+}
+
 source_set("coordinator") {
   sources = [
     "print_coordinator.h",
     "print_coordinator.mm",
+    "print_coordinator_impl.h",
+    "print_coordinator_impl.mm",
   ]
-  deps = [
-    "//base",
-    "//components/strings",
+  public_deps = [
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
-    "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/web/model/print",
-    "//net",
-    "//ui/base",
   ]
+  deps = [ "//base" ]
   frameworks = [ "UIKit.framework" ]
 }

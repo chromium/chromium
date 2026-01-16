@@ -11,23 +11,30 @@
 // javascript command "window.print".
 @protocol PrintHandler <NSObject>
 
+NS_ASSUME_NONNULL_BEGIN
+
 // Shows print UI for `view` with `title`.
 // Print preview will be presented on top of the view controller that manages
 // PrintHandler.
-- (void)printView:(UIView*)view withTitle:(NSString*)title;
+- (void)printView:(UIView*)view
+        withTitle:(NSString*)title NS_SWIFT_NAME(printView(_:withTitle:));
 
 // Shows print UI for `view` with `title`.
 // Print preview will be presented on top of `baseViewController`.
 - (void)printView:(UIView*)view
              withTitle:(NSString*)title
-    baseViewController:(UIViewController*)baseViewController;
+    baseViewController:(UIViewController*)baseViewController
+    NS_SWIFT_NAME(printView(_:withTitle:baseViewController:));
 
 // Shows print UI for `image` with `title`.
 // Print preview will be presented on top of `baseViewController`.
 - (void)printImage:(UIImage*)image
                  title:(NSString*)title
-    baseViewController:(UIViewController*)baseViewController;
+    baseViewController:(UIViewController*)baseViewController
+    NS_SWIFT_NAME(printImage(_:title:baseViewController:));
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_PRINT_PRINT_HANDLER_H_

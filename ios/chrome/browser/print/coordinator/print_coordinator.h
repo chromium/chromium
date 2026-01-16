@@ -11,7 +11,8 @@
 #import "ios/chrome/browser/web/model/print/print_handler.h"
 
 // Interface for printing.
-@interface PrintCoordinator : ChromeCoordinator <PrintHandler>
+__attribute__((swift_attr("@MainActor")))
+@interface PrintCoordinator : ChromeCoordinator<PrintHandler>
 
 // Dismisses the print dialog with animation if `animated`.
 - (void)dismissAnimated:(BOOL)animated;

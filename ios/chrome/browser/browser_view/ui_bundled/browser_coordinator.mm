@@ -17,6 +17,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
+#import "build/config/ios/buildflags.h"
 #import "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #import "components/collaboration/public/collaboration_flow_type.h"
 #import "components/collaboration/public/collaboration_service.h"
@@ -172,6 +173,7 @@
 #import "ios/chrome/browser/presenters/ui_bundled/vertical_animation_container.h"
 #import "ios/chrome/browser/price_notifications/ui_bundled/price_notifications_view_coordinator.h"
 #import "ios/chrome/browser/print/coordinator/print_coordinator.h"
+#import "ios/chrome/browser/print/coordinator/print_coordinator_impl.h"
 #import "ios/chrome/browser/promos_manager/coordinator/promos_manager_coordinator.h"
 #import "ios/chrome/browser/promos_manager/model/app_store_review_swift.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
@@ -356,6 +358,11 @@
 #import "ios/web/public/web_state_id.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(ENABLE_SWIFT_CXX_INTEROP)
+#import "ios/chrome/browser/print/coordinator/swift_coordinator.h"
+#import "ios/chrome/common/swift/features.h"
+#endif  // BUILDFLAG(ENABLE_SWIFT_CXX_INTEROP)
 
 namespace {
 
@@ -1592,9 +1599,20 @@ const char kChromeAppStoreUrl[] =
                                                    browser:self.browser];
   [self.vcardCoordinator start];
 
-  self.printCoordinator =
-      [[PrintCoordinator alloc] initWithBaseViewController:self.viewController
-                                                   browser:self.browser];
+#if BUILDFLAG(ENABLE_SWIFT_CXX_INTEROP)
+  if (IsSwiftCoordinatorEnabled()) {
+    self.printCoordinator = [[SwiftPrintCoordinatorImpl alloc]
+        initWithBaseViewController:self.viewController
+                           browser:self.browser];
+  }
+#endif  // BUILDFLAG(ENABLE_SWIFT_CXX_INTEROP)
+
+  if (!self.printCoordinator) {
+    self.printCoordinator = [[PrintCoordinatorImpl alloc]
+        initWithBaseViewController:self.viewController
+                           browser:self.browser];
+  }
+
   // Updates the printControllar value inside tabLifecycleMediator.
   self.tabLifecycleMediator.printCoordinator = self.printCoordinator;
 
