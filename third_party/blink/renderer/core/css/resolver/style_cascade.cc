@@ -2084,8 +2084,11 @@ CSSVariableData* StyleCascade::ResolveTypedExpression(
   if (!type || type->IsUniversal()) {
     return data;
   }
-  const CSSValue* value = type->Parse(data->OriginalText(), context,
-                                      /*is_animation_tainted=*/false);
+  CSSParserLocalContext local_context =
+      CSSParserLocalContext::CreateWithoutPropertyForSubstitutions();
+  const CSSValue* value =
+      type->Parse(data->OriginalText(), context, local_context,
+                  /*is_animation_tainted=*/false);
   if (!value) {
     return nullptr;
   }
@@ -2534,8 +2537,10 @@ const CSSValue* StyleCascade::CoerceIntoNumericValueInternal(
 
   CSSSyntaxDefinition syntax_definition =
       CSSSyntaxDefinition::CreateNumericSyntax();
+  CSSParserLocalContext local_context =
+      CSSParserLocalContext::CreateWithoutPropertyForSubstitutions();
   const CSSValue* parsed_value = syntax_definition.Parse(
-      data->OriginalText(), context,
+      data->OriginalText(), context, local_context,
       /* is_animation_tainted= */ data->IsAnimationTainted(),
       /* is_attr_tainted= */ data->IsAttrTainted());
 

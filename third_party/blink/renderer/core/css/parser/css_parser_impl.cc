@@ -1899,10 +1899,18 @@ StyleRuleProperty* CSSParserImpl::ConsumePropertyRule(
       PropertyRegistration::ConvertSyntax(rule->GetSyntax());
   std::optional<bool> inherits =
       PropertyRegistration::ConvertInherits(rule->Inherits());
+
+  // Since random() might be element dependent, we should disallow random()
+  // values inside initial value of registered custom properties. Use
+  // CSSParserLocalContext with custom property name just to keep it consistent
+  // in case we need it in the future.
+  CSSParserLocalContext local_context =
+      CSSParserLocalContext(CSSPropertyName(AtomicString(name)));
   std::optional<const CSSValue*> initial =
-      syntax.has_value() ? PropertyRegistration::ConvertInitial(
-                               rule->GetInitialValue(), *syntax, *context_)
-                         : std::nullopt;
+      syntax.has_value()
+          ? PropertyRegistration::ConvertInitial(
+                rule->GetInitialValue(), *syntax, *context_, local_context)
+          : std::nullopt;
 
   bool invalid_rule =
       !syntax.has_value() || !inherits.has_value() || !initial.has_value();
@@ -2712,13 +2720,17 @@ CSSParserImpl::ConsumeFunctionParameters(CSSParserTokenStream& stream) {
           /*comma_ends_declaration=*/true, important_ignored, *context_);
     }
 
+    // We just check the syntax here, we don't actually parse calc()
+    // expressions, so we don't need property context for random().
+    CSSParserLocalContext local_context =
+        CSSParserLocalContext::CreateWithoutPropertyForSubstitutions();
     // If a type and a default are both provided, the default must
     // parse successfully according to that type.
     //
     // https://drafts.csswg.org/css-mixins-1/#function-rule
     if (type.has_value() && default_value) {
       if (!default_value->NeedsVariableResolution() &&
-          !type->Parse(default_value->OriginalText(), *context_,
+          !type->Parse(default_value->OriginalText(), *context_, local_context,
                        /*is_animation_tainted=*/false,
                        /*is_attr_tainted=*/false)) {
         return std::nullopt;

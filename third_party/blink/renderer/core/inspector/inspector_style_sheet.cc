@@ -831,9 +831,10 @@ bool InspectorStyle::CheckRegisteredPropertySyntaxWithVarSubstitution(
   CustomProperty p(atomic_name, empty_registry);
 
   const CSSParserContext* parser_context = ParserContextForDocument(document);
+  CSSParserLocalContext local_context =
+      CSSParserLocalContext::CreateWithoutPropertyForInspector();
   const CSSValue* result =
-      p.Parse(property.value, *parser_context,
-              CSSParserLocalContext::CreateWithoutPropertyForInspector());
+      p.Parse(property.value, *parser_context, local_context);
   if (!result) {
     return false;
   }
@@ -848,7 +849,7 @@ bool InspectorStyle::CheckRegisteredPropertySyntaxWithVarSubstitution(
 
   // Now check the substitution result against the registered syntax.
   if (!registration->Syntax().Parse(computed_value->CssText(), *parser_context,
-                                    false)) {
+                                    local_context, false)) {
     return false;
   }
   return true;
@@ -1884,9 +1885,11 @@ void InspectorStyleSheet::ParseText(const String& text) {
           if (!registration) {
             continue;
           }
+          CSSParserLocalContext local_context =
+              CSSParserLocalContext::CreateWithoutPropertyForInspector();
           if (!registration->Syntax().Parse(property_source_data.value,
                                             *style_sheet->ParserContext(),
-                                            false)) {
+                                            local_context, false)) {
             property_source_data.parsed_ok = false;
           }
         }

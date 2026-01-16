@@ -9,6 +9,7 @@
 #include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
@@ -171,13 +172,14 @@ CSSVariableData::CSSVariableData(PassKey,
 
 const CSSValue* CSSVariableData::ParseForSyntax(
     const CSSSyntaxDefinition& syntax,
-    SecureContextMode secure_context_mode) const {
+    SecureContextMode secure_context_mode,
+    CSSParserLocalContext& local_context) const {
   DCHECK(!NeedsVariableResolution());
   // TODO(timloh): This probably needs a proper parser context for
   // relative URL resolution.
   return syntax.Parse(OriginalText(),
                       *StrictCSSParserContext(secure_context_mode),
-                      is_animation_tainted_, is_attr_tainted_);
+                      local_context, is_animation_tainted_, is_attr_tainted_);
 }
 
 }  // namespace blink

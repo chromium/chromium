@@ -29,6 +29,11 @@
     inherits: true;
     initial-value: 3px;
   }
+  @property --random-in-initial {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: random(1, 30);
+  }
   #container {
     font-size: 30px;
   }
@@ -368,6 +373,7 @@ test_random_computed_value('color', 'color-mix(in srgb, rgb(random(30, 10) 0 0),
 test_random_computed_value('math-depth', 'add(random(30, 10))', '30');
 test_random_computed_value('view-transition-name', 'ident("myident" random(30, 10))', 'myident30');
 test_random_computed_value('background-image', 'image-set(url("http://example.com/image.png") calc(random(fixed 0.3, 0, 10) * 1x))', 'image-set(url("http://example.com/image.png") 3dppx)');
+test_random_computed_value('aspect-ratio', 'random(3, 1) / random(9, 6)', '3 / 9');
 test_random_computed_value('filter', 'drop-shadow(random(3px, 1px) random(6px, 1px) random(9px, 1px) black)', 'drop-shadow(rgb(0, 0, 0) 3px 6px 9px)');
 test_random_computed_value('font-variation-settings', '"wght" random(300, 100)', '"wght" 300');
 test_random_computed_value('font-feature-settings', '"liga" random(3, 1)', '"liga" 3');
@@ -397,7 +403,6 @@ test_random_shared_by_property('math-depth', 'add(random(1, 100))', 'add(random(
 test_random_shared_by_property('view-transition-name',
                                'ident("myident" random(1, 100))',
                                'ident("myident" random(element-shared, 1, 100))');
-test_random_computed_value('aspect-ratio', 'random(3, 1) / random(9, 6)', '3 / 9');
 test_random_shared_by_property('aspect-ratio', 'random(1, 3, 1) / random(3, 9, 1)', 'random(element-shared, 1, 3, 1) / random(element-shared, 3, 9, 1)');
 test_random_shared_by_property('filter', 'drop-shadow(random(1px, 3px) random(1px, 6px) random(1px, 9px) black)', 'drop-shadow(random(element-shared, 1px, 3px) random(element-shared, 1px, 6px) random(element-shared, 1px, 9px) black)');
 test_random_shared_by_property('font-variation-settings', '"wght" random(100, 900)', '"wght" random(element-shared, 100, 900)');
@@ -797,5 +802,20 @@ test(() => {
     document.body.removeChild(holder);
   }
 }, `Different between elements with same identifier random(--identifier, a, b)`);
+
+test(() => {
+  const holder = document.createElement('div');
+  document.body.appendChild(holder);
+
+  try {
+    const el = document.createElement('div');
+    el.className = 'randomNoIdentifier';
+    holder.appendChild(el);
+    const computedValue = getComputedStyle(el)['--random-in-initial'];
+    test_random_equals(computedValue, undefined);
+  } finally {
+    document.body.removeChild(holder);
+  }
+}, `random() values should not be allowed as initial values in @property`);
 
 </script>

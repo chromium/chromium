@@ -98,7 +98,7 @@ const CSSValue* CSSAttrType::Parse(StringView text,
     return nullptr;
   }
   if (IsSyntax()) {
-    return syntax_->Parse(text, context, false);
+    return syntax_->Parse(text, context, local_context, false);
   }
   return nullptr;
 }

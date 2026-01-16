@@ -1,12 +1,8 @@
 This is a testharness.js-based test.
-Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Property font-palette value 'palette-mix(in lch, --blue random(90%, 10%), --yellow 10%)'
   assert_true: 'palette-mix(in lch, --blue random(90%, 10%), --yellow 10%)' is a supported value for font-palette. expected true got false
 [FAIL] Shared by property 'font-palette' with values 'palette-mix(in lch, --blue random(10%, 90%, 10%), --yellow)', 'palette-mix(in lch, --blue random(element-shared, 10%, 90%, 10%), --yellow)'
   assert_false: palette-mix(in lch, --blue random(10%, 90%, 10%), --yellow) values on different elements should not be equal expected false got true
-[FAIL] Nested random inside custom property: 'random(a, b)'
-  assert_false: Different custom properties on the same element should not have equal values expected false got true
-[FAIL] Maximum random custom property: 'random(a, b)'
-  assert_false: Different custom properties on the same element should not have equal values expected false got true
 Harness: the test ran to completion.
 

@@ -188,8 +188,9 @@ void CustomProperty::ApplyValue(StyleResolverState& state,
   if (!registered_value) {
     DCHECK(declaration);
     CSSVariableData& data = *declaration->VariableDataValue();
-    registered_value = Parse(data.OriginalText(), *context,
-                             CSSParserLocalContext(GetCSSPropertyName()));
+    CSSParserLocalContext local_context =
+        CSSParserLocalContext(GetCSSPropertyName());
+    registered_value = Parse(data.OriginalText(), *context, local_context);
   }
 
   if (!registered_value) {
@@ -254,10 +255,9 @@ const CSSValue* CustomProperty::CSSValueFromComputedStyleInternal(
       data, /* parser_context */ nullptr);
 }
 
-const CSSValue* CustomProperty::ParseUntyped(
-    StringView text,
-    const CSSParserContext& context,
-    const CSSParserLocalContext&) const {
+const CSSValue* CustomProperty::ParseUntyped(StringView text,
+                                             const CSSParserContext& context,
+                                             CSSParserLocalContext&) const {
   return CSSVariableParser::ParseDeclarationValue(
       text, /*is_animation_tainted=*/false, context);
 }
@@ -265,12 +265,12 @@ const CSSValue* CustomProperty::ParseUntyped(
 const CSSValue* CustomProperty::Parse(
     StringView text,
     const CSSParserContext& context,
-    const CSSParserLocalContext& local_context) const {
+    CSSParserLocalContext& local_context) const {
   if (!registration_) {
     return ParseUntyped(text, context, local_context);
   }
   const CSSValue* result = registration_->Syntax().Parse(
-      text, context, /*is_animation_tainted=*/false);
+      text, context, local_context, /*is_animation_tainted=*/false);
   if (result) {
     wtf_size_t property_value_index = 0;
     result = result->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(

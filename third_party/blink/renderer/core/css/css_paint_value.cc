@@ -213,8 +213,11 @@ bool CSSPaintValue::ParseInputArguments(const Document& document) {
     DCHECK_EQ(SecureContextMode::kSecureContext,
               document.GetExecutionContext()->GetSecureContextMode());
     DCHECK(!argument_variable_data_[i]->NeedsVariableResolution());
+    CSSParserLocalContext local_context =
+        CSSParserLocalContext::CreateWithoutPropertyForPaintValue();
     const CSSValue* parsed_value = argument_variable_data_[i]->ParseForSyntax(
-        input_argument_types[i], SecureContextMode::kSecureContext);
+        input_argument_types[i], SecureContextMode::kSecureContext,
+        local_context);
     if (!parsed_value) {
       input_arguments_invalid_ = true;
       parsed_input_arguments_ = nullptr;

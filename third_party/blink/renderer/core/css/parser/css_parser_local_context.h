@@ -45,13 +45,6 @@ class CORE_EXPORT CSSParserLocalContext {
     return CSSParserLocalContext();
   }
 
-  // TODO(crbug.com/413385732): This constructor is used for registered custom
-  // properties, this should be removed once we support property-dependent
-  // random() inside registered custom functions.
-  static CSSParserLocalContext CreateWithoutPropertyForSyntax() {
-    return CSSParserLocalContext();
-  }
-
   // TODO(crbug.com/413385732): We use this constructor for at-rules and their
   // descriptors. We should probably use descriptor name as property name for
   // random and only use this constructor inside rule definition since we don't
@@ -92,6 +85,13 @@ class CORE_EXPORT CSSParserLocalContext {
   // context for all css_parsing_utils::Consume* calls from inspector classes.
   // Figure out if we actually need property context for random() in there.
   static CSSParserLocalContext CreateWithoutPropertyForInspector() {
+    return CSSParserLocalContext();
+  }
+
+  // TODO(crbug.com/413385732): Used to create a local context to parse input
+  // arguments against syntax for CSSPaintValue. Figure out if we actually need
+  // the property context for property dependent random() values there.
+  static CSSParserLocalContext CreateWithoutPropertyForPaintValue() {
     return CSSParserLocalContext();
   }
 

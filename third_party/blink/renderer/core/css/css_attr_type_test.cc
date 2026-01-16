@@ -104,7 +104,7 @@ TEST_P(DimensionUnitTypeTest, ParseDimensionUnitTypeValid) {
   String expected_value = valid_value + String(GetParam());
   const auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
   CSSParserLocalContext local_context =
-      CSSParserLocalContext::CreateWithoutPropertyForSyntax();
+      CSSParserLocalContext::CreateWithoutPropertyForTest();
   const CSSValue* parsed_value =
       type->Parse(valid_value, *context, local_context);
   EXPECT_EQ(parsed_value->CssText(), expected_value);
@@ -117,7 +117,7 @@ TEST_P(DimensionUnitTypeTest, ParseDimensionUnitTypeInvalid) {
   String valid_value("3px");
   const auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
   CSSParserLocalContext local_context =
-      CSSParserLocalContext::CreateWithoutPropertyForSyntax();
+      CSSParserLocalContext::CreateWithoutPropertyForTest();
   const CSSValue* parsed_value =
       type->Parse(valid_value, *context, local_context);
   EXPECT_FALSE(parsed_value);

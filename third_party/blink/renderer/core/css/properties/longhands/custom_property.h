@@ -51,7 +51,7 @@ class CORE_EXPORT CustomProperty : public Variable {
   // original_text, not a token stream.
   const CSSValue* Parse(StringView,
                         const CSSParserContext&,
-                        const CSSParserLocalContext&) const;
+                        CSSParserLocalContext&) const;
 
   const CSSValue* CSSValueFromComputedStyleInternal(
       const ComputedStyle&,
@@ -76,7 +76,7 @@ class CORE_EXPORT CustomProperty : public Variable {
 
   const CSSValue* ParseUntyped(StringView,
                                const CSSParserContext&,
-                               const CSSParserLocalContext&) const;
+                               CSSParserLocalContext&) const;
 
   AtomicString name_;
   const PropertyRegistration* registration_;

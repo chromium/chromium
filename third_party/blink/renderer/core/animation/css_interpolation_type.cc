@@ -375,9 +375,12 @@ InterpolationValue CSSInterpolationType::MaybeConvertCustomPropertyDeclaration(
           DynamicTo<CSSUnparsedDeclarationValue>(value)) {
     DCHECK(
         !resolved_declaration->VariableDataValue()->NeedsVariableResolution());
+    CSSParserLocalContext local_context =
+        CSSParserLocalContext::CreateWithoutPropertyForAnimations();
     value = resolved_declaration->VariableDataValue()->ParseForSyntax(
         registration_->Syntax(),
-        state.GetDocument().GetExecutionContext()->GetSecureContextMode());
+        state.GetDocument().GetExecutionContext()->GetSecureContextMode(),
+        local_context);
     if (!value)
       return nullptr;
   }
