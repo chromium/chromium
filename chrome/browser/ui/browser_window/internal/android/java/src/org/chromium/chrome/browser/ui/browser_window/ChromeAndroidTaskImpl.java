@@ -44,7 +44,10 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.ui.browser_window.PendingActionManager.PendingAction;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
@@ -69,7 +72,6 @@ final class ChromeAndroidTaskImpl
         implements ChromeAndroidTask,
                 ConfigurationChangedObserver,
                 TopResumedActivityChangedWithNativeObserver,
-                TabModelObserver,
                 TaskVisibilityListener {
 
     private static final String TAG = "ChromeAndroidTask";
@@ -184,6 +186,7 @@ final class ChromeAndroidTaskImpl
     private final @BrowserWindowType int mBrowserWindowType;
 
     private final AndroidBrowserWindow mAndroidBrowserWindow;
+    // TODO(crbug.com/475200706): Support regular + OTR for mobile.
     private final Profile mInitialProfile;
 
     /**
@@ -204,6 +207,8 @@ final class ChromeAndroidTaskImpl
      * @see #removeActivityScopedObjects
      */
     private final Deque<ActivityScopedObjects> mActivityScopedObjectsDeque = new ArrayDeque<>();
+
+    private @Nullable TabModelSelectorTabModelObserver mPreventAddTabToOtherModelObserver;
 
     private @Nullable Integer mId;
     private @Nullable Long mLastActivatedTimeMillis;
@@ -335,7 +340,8 @@ final class ChromeAndroidTaskImpl
         mId = getActivity(activityScopedObjects.mActivityWindowAndroid).getTaskId();
         mAndroidBrowserWindow = new AndroidBrowserWindow(/* chromeAndroidTask= */ this);
 
-        Profile initialProfile = activityScopedObjects.mTabModel.getProfile();
+        Profile initialProfile =
+                activityScopedObjects.mTabModelSelector.getCurrentModel().getProfile();
         assert initialProfile != null
                 : "ChromeAndroidTask must be initialized with a non-null profile";
         mInitialProfile = initialProfile;
@@ -870,22 +876,6 @@ final class ChromeAndroidTaskImpl
         }
     }
 
-    @Override
-    public void didAddTab(
-            Tab tab,
-            @TabLaunchType int type,
-            @TabCreationState int creationState,
-            boolean markedForSelection) {
-        if (isDestroyed()) return;
-
-        Profile newTabProfile = tab.getProfile();
-        assert mInitialProfile.equals(newTabProfile)
-                : "A tab with a different profile was added to this task. Initial: "
-                        + mInitialProfile
-                        + ", New: "
-                        + newTabProfile;
-    }
-
     List<ActivityScopedObjects> getActivityScopedObjectsListForTesting() {
         ThreadUtils.assertOnUiThread();
         return new ArrayList<>(mActivityScopedObjectsDeque);
@@ -970,10 +960,32 @@ final class ChromeAndroidTaskImpl
                     .addWindowInsetsAnimationListener(mWindowInsetsAnimationListener);
         }
 
-        // Register TabModel observer.
-        topActivityScopedObjects.mTabModel.addObserver(this);
-        topActivityScopedObjects.mTabModel.associateWithBrowserWindow(
-                mAndroidBrowserWindow.getOrCreateNativePtr());
+        TabModelSelector tabModelSelector = topActivityScopedObjects.mTabModelSelector;
+        assert mPreventAddTabToOtherModelObserver == null;
+        if (topActivityScopedObjects.mSupportedProfileType != SupportedProfileType.MIXED) {
+            mPreventAddTabToOtherModelObserver =
+                    new TabModelSelectorTabModelObserver(tabModelSelector) {
+                        @Override
+                        public void didAddTab(
+                                Tab tab,
+                                @TabLaunchType int type,
+                                @TabCreationState int creationState,
+                                boolean markedForSelection) {
+                            if (isDestroyed()) return;
+
+                            Profile newTabProfile = tab.getProfile();
+                            assert mInitialProfile.equals(newTabProfile)
+                                    : "A tab with a different profile was added to this task."
+                                            + " Initial: "
+                                            + mInitialProfile
+                                            + ", New: "
+                                            + newTabProfile;
+                        }
+                    };
+        }
+        // TODO(crbug.com/475200706): Associate both models in MIXED state.
+        TabModel currentTabModel = tabModelSelector.getCurrentModel();
+        currentTabModel.associateWithBrowserWindow(mAndroidBrowserWindow.getOrCreateNativePtr());
     }
 
     private void unregisterListenersForTopActivity() {
@@ -998,8 +1010,10 @@ final class ChromeAndroidTaskImpl
                     .removeWindowInsetsAnimationListener(mWindowInsetsAnimationListener);
         }
 
-        // Unregister TabModel observer
-        topActivityScopedObjects.mTabModel.removeObserver(this);
+        if (mPreventAddTabToOtherModelObserver != null) {
+            mPreventAddTabToOtherModelObserver.destroy();
+            mPreventAddTabToOtherModelObserver = null;
+        }
     }
 
     /**
@@ -1346,5 +1360,9 @@ final class ChromeAndroidTaskImpl
 
     PendingActionManager getPendingActionManagerForTesting() {
         return mPendingActionManager;
+    }
+
+    @Nullable TabModelSelectorTabModelObserver getTabModelObserverForTesting() {
+        return mPreventAddTabToOtherModelObserver;
     }
 }

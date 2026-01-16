@@ -807,15 +807,18 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             mTabModelOrchestrator.onNativeLibraryReady(getTabContentManager());
 
             mTabModelNotificationDotManager.initWithNative(mTabModelSelector);
-            TabModel currentTabModel = mTabModelSelector.getCurrentModel();
             initializeChromeAndroidTask(
-                    BrowserWindowType.NORMAL, currentTabModel, mMultiInstanceManager);
+                    BrowserWindowType.NORMAL,
+                    mTabModelSelector,
+                    mSupportedProfileType,
+                    mMultiInstanceManager);
 
             // For saving non-incognito tab closures for Recent Tabs.
             mHistoricalTabModelObserver =
                     new HistoricalTabModelObserver(mTabModelSelector.getTabGroupModelFilter(false));
             mHistoricalTabModelObserver.addSecondaryTabModelSupplier(
-                    ArchivedTabModelOrchestrator.getForProfile(currentTabModel.getProfile())
+                    ArchivedTabModelOrchestrator.getForProfile(
+                                    mTabModelSelector.getCurrentModel().getProfile())
                             ::getTabModel);
 
             // Defer creation of this helper so it triggers after TabGroupModelFilter observers.

@@ -184,6 +184,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -1046,12 +1047,14 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
      * native SessionID as the native {@code AndroidBrowserWindow}.
      *
      * @param browserWindowType Type of the browser window (normal, popup, etc.)
-     * @param currentTabModel The current {@link TabModel} for this {@code Activity}.
+     * @param tabModelSelector The {@link TabModelSelector} for this {@code Activity}.
+     * @param supportedProfileType The supported profile type for this {@code Activity}.
      * @param multiInstanceManager The {@link MultiInstanceManager} for this {@code Activity}.
      */
     protected final void initializeChromeAndroidTask(
             @BrowserWindowType int browserWindowType,
-            TabModel currentTabModel,
+            TabModelSelector tabModelSelector,
+            @SupportedProfileType int supportedProfileType,
             @Nullable MultiInstanceManager multiInstanceManager) {
         try (TraceEvent e = TraceEvent.scoped("ChromeActivity.initializeChromeAndroidTask")) {
             // 1. Initialize PopupCreator early so that ChromeAndroidTaskTracker can use it to
@@ -1085,7 +1088,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                             browserWindowType,
                             new ChromeAndroidTask.ActivityScopedObjects(
                                     activityWindowAndroid,
-                                    currentTabModel,
+                                    tabModelSelector,
+                                    supportedProfileType,
                                     desktopWindowStateManager,
                                     multiInstanceManager),
                             pendingId);

@@ -47,7 +47,9 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -290,12 +292,18 @@ public final class ChromeAndroidTaskUnitTestSupport {
         var mockTabModel = mock(TabModel.class);
         when(mockTabModel.getProfile()).thenReturn(profile);
 
+        var mockTabModelSelector = mock(TabModelSelector.class);
+        when(mockTabModelSelector.getCurrentModel()).thenReturn(mockTabModel);
+        when(mockTabModelSelector.getModels())
+                .thenReturn(java.util.Collections.singletonList(mockTabModel));
+
         var mockDesktopWindowStateManager = mock(DesktopWindowStateManager.class);
         var mockMultiInstanceManager = createMockMultiInstanceManager();
 
         return new ChromeAndroidTask.ActivityScopedObjects(
                 activityWindowAndroid,
-                mockTabModel,
+                mockTabModelSelector,
+                SupportedProfileType.REGULAR,
                 mockDesktopWindowStateManager,
                 mockMultiInstanceManager);
     }

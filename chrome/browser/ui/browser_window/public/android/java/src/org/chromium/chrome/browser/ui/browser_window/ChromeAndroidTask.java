@@ -12,7 +12,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
@@ -56,17 +57,21 @@ public interface ChromeAndroidTask {
     /** Contains objects whose lifecycle is in sync with an {@code Activity}. */
     final class ActivityScopedObjects {
         final ActivityWindowAndroid mActivityWindowAndroid;
-        final TabModel mTabModel;
+        final TabModelSelector mTabModelSelector;
+        final @SupportedProfileType int mSupportedProfileType;
         final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
         final @Nullable MultiInstanceManager mMultiInstanceManager;
 
         public ActivityScopedObjects(
                 ActivityWindowAndroid activityWindowAndroid,
-                TabModel tabModel,
+                TabModelSelector tabModelSelector,
+                @SupportedProfileType int supportedProfileType,
                 @Nullable DesktopWindowStateManager desktopWindowStateManager,
                 @Nullable MultiInstanceManager multiInstanceManager) {
             mActivityWindowAndroid = activityWindowAndroid;
-            mTabModel = tabModel;
+            mTabModelSelector = tabModelSelector;
+            assert supportedProfileType != SupportedProfileType.UNSET;
+            mSupportedProfileType = supportedProfileType;
             mDesktopWindowStateManager = desktopWindowStateManager;
             mMultiInstanceManager = multiInstanceManager;
         }

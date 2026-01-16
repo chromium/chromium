@@ -115,6 +115,7 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
+import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
@@ -1004,15 +1005,22 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
         var tabModelOrchestrator = getCustomTabActivityTabFactory().getTabModelOrchestrator();
         tabModelOrchestrator.onNativeLibraryReady(getTabContentManager());
         // This ensures that an off-the-record TabModel is the current model before it is needed.
-        tabModelOrchestrator
-                .getTabModelSelector()
-                .selectModel(mIntentDataProvider.isOffTheRecord());
+        boolean isOffTheRecord = mIntentDataProvider.isOffTheRecord();
+        tabModelOrchestrator.getTabModelSelector().selectModel(isOffTheRecord);
 
         @BrowserWindowType Integer browserWindowType = getSupportedBrowserWindowType();
         if (browserWindowType != null) {
+            // Custom tabs don't mix OTR and normal tabs in the same window, so it is fine to
+            // not pass MIXED as the supported profile type even on non-desktop form factors.
+            @SupportedProfileType
+            int supportedProfileType =
+                    isOffTheRecord
+                            ? SupportedProfileType.OFF_THE_RECORD
+                            : SupportedProfileType.REGULAR;
             initializeChromeAndroidTask(
                     browserWindowType,
-                    assumeNonNull(tabModelOrchestrator.getTabModelSelector()).getCurrentModel(),
+                    assumeNonNull(tabModelOrchestrator.getTabModelSelector()),
+                    supportedProfileType,
                     /* multiInstanceManager= */ null);
         }
     }
