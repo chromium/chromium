@@ -1174,6 +1174,49 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.IOSurface.WaitForCommandsToBeScheduledTimeUs"
+    units="microseconds" expires_after="2026-07-01">
+  <owner>magchen@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The time that it took to wait for commands to be scheduled on every
+    WGPUDevice and EGLDisplay that's pending a flush except those using the same
+    MTLDevice as `waiting_device`. Recorded when
+    IOSurfaceImageBacking::WaitForCommandsToBeScheduled() is called in
+    BeginAccess, ReadBackToMemory or UploadFromMemory. This metric is only
+    collected on Mac, which only has high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="GPU.IOSurface.WaitForCommandsToBeScheduledTimeUs.ANGLE"
+    units="microseconds" expires_after="2026-07-01">
+  <owner>magchen@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The time that it took to wait for commands to be scheduled on each
+    EGLDisplay pending a flush when synchronizing with another MTLDevice.
+    Recorded when IOSurfaceImageBacking::WaitForCommandsToBeScheduled() is
+    called in BeginAccess, ReadBackToMemory or UploadFromMemory. This metric is
+    only collected on Mac, which only has high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="GPU.IOSurface.WaitForCommandsToBeScheduledTimeUs.Dawn"
+    units="microseconds" expires_after="2026-07-01">
+  <owner>magchen@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The time that it took to wait for commands to be scheduled on each
+    WGPUDevice pending a flush when synchronizing with another MTLDevice.
+    Recorded when IOSurfaceImageBacking::WaitForCommandsToBeScheduled() is
+    called in BeginAccess, ReadBackToMemory or UploadFromMemory. This metric is
+    only collected on Mac, which only has high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Gpu.Mac.BackpressureUs" units="microseconds"
     expires_after="2026-06-28">
   <owner>magchen@chromium.org</owner>

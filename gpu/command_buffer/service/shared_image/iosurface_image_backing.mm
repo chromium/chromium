@@ -21,6 +21,7 @@
 #include "base/bits.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_policy.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -1489,6 +1490,8 @@ void IOSurfaceImageBacking::WaitForCommandsToBeScheduled(
     id<MTLDevice> waiting_device) {
   AssertLockAcquired();
   TRACE_EVENT0("gpu", "IOSurfaceImageBacking::WaitForCommandsToBeScheduled");
+  base::TimeDelta dawn_wait_time;
+  base::TimeDelta angle_wait_time;
 
   base::flat_map<wgpu::Device, wgpu::Future, WGPUDeviceCompare> futures_to_keep;
   for (const auto& [device, future] : wgpu_commands_scheduled_futures_) {
@@ -1497,13 +1500,16 @@ void IOSurfaceImageBacking::WaitForCommandsToBeScheduled(
       futures_to_keep.emplace(device, future);
       continue;
     }
+
     TRACE_EVENT0("gpu",
                  "IOSurfaceImageBacking::WaitForCommandsToBeScheduled::Dawn");
+    base::TimeTicks start_time = base::TimeTicks::Now();
     wgpu::WaitStatus status =
         device.GetAdapter().GetInstance().WaitAny(future, UINT64_MAX);
     if (status != wgpu::WaitStatus::Success) {
       LOG(ERROR) << "WaitAny on commandsScheduledFuture failed with " << status;
     }
+    dawn_wait_time += base::TimeTicks::Now() - start_time;
   }
   wgpu_commands_scheduled_futures_ = std::move(futures_to_keep);
 
@@ -1513,11 +1519,42 @@ void IOSurfaceImageBacking::WaitForCommandsToBeScheduled(
       fences_to_keep.emplace(display, std::move(fence));
       continue;
     }
+
     TRACE_EVENT0("gpu",
                  "IOSurfaceImageBacking::WaitForCommandsToBeScheduled::ANGLE");
+    base::TimeTicks start_time = base::TimeTicks::Now();
     fence->ClientWait();
+    angle_wait_time += base::TimeTicks::Now() - start_time;
   }
   egl_commands_scheduled_fences_ = std::move(fences_to_keep);
+
+  // Record the time it takes to schedule the commands on Dawn and ANGLE.
+  // Here we use the same kWaitTimeMax from Compositing.Display.DrawToSwapUs.
+  static constexpr base::TimeDelta kWaitTimeMin = base::Microseconds(5);
+  static constexpr base::TimeDelta kWaitTimeMax = base::Milliseconds(50);
+  static constexpr uint32_t kCommandsScheduledBuckets = 50;
+
+  const base::TimeDelta total_wait_time = dawn_wait_time + angle_wait_time;
+
+  if (total_wait_time.is_positive() &&
+      base::ShouldRecordSubsampledMetric(0.01)) {
+    if (dawn_wait_time.is_positive()) {
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+          "GPU.IOSurface.WaitForCommandsToBeScheduledTimeUs.Dawn",
+          dawn_wait_time, kWaitTimeMin, kWaitTimeMax,
+          kCommandsScheduledBuckets);
+    }
+    if (angle_wait_time.is_positive()) {
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+          "GPU.IOSurface.WaitForCommandsToBeScheduledTimeUs.ANGLE",
+          angle_wait_time, kWaitTimeMin, kWaitTimeMax,
+          kCommandsScheduledBuckets);
+    }
+
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "GPU.IOSurface.WaitForCommandsToBeScheduledTimeUs", total_wait_time,
+        kWaitTimeMin, kWaitTimeMax, kCommandsScheduledBuckets);
+  }
 }
 
 IOSurfaceRef IOSurfaceImageBacking::GetIOSurface() {
