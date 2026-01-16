@@ -47,8 +47,8 @@ import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -204,8 +204,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private final Activity mActivity;
     private final ProfileProvider mProfileProvider;
     private final Callback<Boolean> mOnVisibilityChanged = this::onVisibilityChanged;
-    private final ObservableSupplier<Boolean> mIsVisibleSupplier;
-    private final ObservableSupplier<Boolean> mIsAnimatingSupplier;
+    private final MonotonicObservableSupplier<Boolean> mIsVisibleSupplier;
+    private final MonotonicObservableSupplier<Boolean> mIsAnimatingSupplier;
     private final TabSwitcherPaneMediator mMediator;
     private final Supplier<Boolean> mTabGridDialogVisibilitySupplier = this::isTabGridDialogVisible;
     private final MultiThumbnailCardProvider mMultiThumbnailCardProvider;
@@ -219,16 +219,17 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private final ModalDialogManager mModalDialogManager;
     private final BottomSheetController mBottomSheetController;
     private final Runnable mOnDestroyed;
-    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
+    private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     private final TabListOnScrollListener mTabListOnScrollListener = new TabListOnScrollListener();
-    private final OneshotSupplierImpl<ObservableSupplier<Boolean>> mIsScrollingSupplier =
+    private final OneshotSupplierImpl<MonotonicObservableSupplier<Boolean>> mIsScrollingSupplier =
             new OneshotSupplierImpl<>();
     private final Callback<EdgeToEdgeController> mOnEdgeToEdgeControllerChangedCallback =
             new ValueChangedCallback<>(this::onEdgeToEdgeControllerChanged);
     private final @Nullable TabGroupLabeller mTabGroupLabeller;
-    private final ObservableSupplier<@Nullable TabGroupModelFilter> mTabGroupModelFilterSupplier;
-    private final ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
-    private final ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
+    private final MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
+            mTabGroupModelFilterSupplier;
+    private final MonotonicObservableSupplier<ShareDelegate> mShareDelegateSupplier;
+    private final MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     private final @Nullable Runnable mOnTabGroupCreation;
     private final Callback<@Nullable TabGroupModelFilter> mOnFilterChange = this::onFilterChange;
     private final ObservableSupplierImpl<Boolean> mIsContextMenuFocusableSupplier =
@@ -286,7 +287,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     public TabSwitcherPaneCoordinator(
             Activity activity,
             ProfileProvider profileProvider,
-            ObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier,
+            MonotonicObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier,
             TabContentManager tabContentManager,
             BrowserControlsStateProvider browserControlsStateProvider,
             ScrimManager scrimManager,
@@ -296,17 +297,17 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             TabSwitcherMessageManager messageManager,
             ViewGroup parentView,
             TabSwitcherResetHandler resetHandler,
-            ObservableSupplier<Boolean> isVisibleSupplier,
-            ObservableSupplier<Boolean> isAnimatingSupplier,
+            MonotonicObservableSupplier<Boolean> isVisibleSupplier,
+            MonotonicObservableSupplier<Boolean> isAnimatingSupplier,
             Callback<Integer> onTabClickCallback,
             @TabListMode int mode,
             boolean supportsEmptyState,
             @Nullable Runnable onTabGroupCreation,
             Runnable onDestroyed,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
-            ObservableSupplier<ShareDelegate> shareDelegateSupplier,
-            ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+            MonotonicObservableSupplier<ShareDelegate> shareDelegateSupplier,
+            MonotonicObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             UndoBarThrottle undoBarThrottle,
             Callback<@Nullable View> setOverlayViewCallback,
             @Nullable TabSwitcherDragHandler tabSwitcherDragHandler,
@@ -761,14 +762,15 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     }
 
     /** Provides information on whether the tab grid dialog is showing or animating. */
-    public @Nullable ObservableSupplier<Boolean> getTabGridDialogShowingOrAnimationSupplier() {
+    public @Nullable MonotonicObservableSupplier<Boolean>
+            getTabGridDialogShowingOrAnimationSupplier() {
         return mTabGridDialogCoordinator != null
                 ? mTabGridDialogCoordinator.getShowingOrAnimationSupplier()
                 : null;
     }
 
     /** Provides the tab ID for the most recently swiped tab. */
-    public ObservableSupplier<Integer> getRecentlySwipedTabIdSupplier() {
+    public MonotonicObservableSupplier<Integer> getRecentlySwipedTabIdSupplier() {
         return mTabListCoordinator.getRecentlySwipedTabSupplier();
     }
 
@@ -785,7 +787,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     }
 
     /** Indicates whether any animator for the {@link TabListRecyclerView} is running. */
-    public @Nullable ObservableSupplier<Boolean> getIsRecyclerViewAnimatorRunning() {
+    public @Nullable MonotonicObservableSupplier<Boolean> getIsRecyclerViewAnimatorRunning() {
         TabListRecyclerView containerView = mTabListCoordinator.getContainerView();
         if (containerView == null) {
             return null;
@@ -866,7 +868,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     }
 
     /** Returns a nested supplier for the scrolling state of the view. */
-    public OneshotSupplier<ObservableSupplier<Boolean>> getIsScrollingSupplier() {
+    public OneshotSupplier<MonotonicObservableSupplier<Boolean>> getIsScrollingSupplier() {
         return mIsScrollingSupplier;
     }
 

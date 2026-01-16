@@ -21,7 +21,7 @@ import androidx.core.view.ViewCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.SysUtils;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -124,7 +124,7 @@ public class StripTabHoverCardView extends FrameLayout {
      */
     public void initialize(
             TabModelSelector tabModelSelector,
-            ObservableSupplier<TabContentManager> tabContentManagerSupplier) {
+            MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier) {
         mTabModelSelector = tabModelSelector;
         mTabContentManager = tabContentManagerSupplier.get();
         mCurrentTabModelObserver =

@@ -29,7 +29,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.CallbackUtils;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -62,7 +62,7 @@ public final class ShareButtonControllerUnitTest {
     @Mock private Tab mTab;
     @Mock private Drawable mDrawable;
     @Mock private ActivityTabProvider mTabProvider;
-    @Mock private ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
+    @Mock private MonotonicObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     @Mock private ShareDelegate mShareDelegate;
     @Mock private GURL mMockGurl;
     @Mock private ModalDialogManager mModalDialogManager;

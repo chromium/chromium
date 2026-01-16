@@ -35,8 +35,8 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UserData;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneShotCallback;
@@ -125,7 +125,7 @@ public class ReadAloudController
     private static final HashSet<ReadAloudController> sInstances = new HashSet<>();
 
     private final Activity mActivity;
-    private final ObservableSupplier<Profile> mProfileSupplier;
+    private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final OneshotSupplier<LayoutStateProvider> mLayoutStateProviderSupplier;
     private LayoutStateProvider.@Nullable LayoutStateObserver mLayoutStateObserver;
 
@@ -137,7 +137,7 @@ public class ReadAloudController
     private final TabModel mTabModel;
     private final TabModel mIncognitoTabModel;
     @Nullable private Player mPlayerCoordinator;
-    private final ObservableSupplier<LayoutManager> mLayoutManagerSupplier;
+    private final MonotonicObservableSupplier<LayoutManager> mLayoutManagerSupplier;
     private final UserEducationHelper mUserEducationHelper;
 
     @Nullable private TabModelTabObserver mTabObserver;
@@ -579,12 +579,12 @@ public class ReadAloudController
 
     public ReadAloudController(
             Activity activity,
-            ObservableSupplier<Profile> profileSupplier,
+            MonotonicObservableSupplier<Profile> profileSupplier,
             TabModel tabModel,
             TabModel incognitoTabModel,
             BottomSheetController bottomSheetController,
             BottomControlsStacker bottomControlsStacker,
-            ObservableSupplier<LayoutManager> layoutManagerSupplier,
+            MonotonicObservableSupplier<LayoutManager> layoutManagerSupplier,
             ActivityWindowAndroid activityWindowAndroid,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
@@ -1643,8 +1643,8 @@ public class ReadAloudController
     }
 
     @Override
-    public ObservableSupplier<FeedbackType> getFeedbackTypeSupplier() {
-      return mFeedbackType;
+    public MonotonicObservableSupplier<FeedbackType> getFeedbackTypeSupplier() {
+        return mFeedbackType;
     }
 
     @Override
@@ -1680,17 +1680,17 @@ public class ReadAloudController
     }
 
     @Override
-    public ObservableSupplier<List<PlaybackVoice>> getCurrentLanguageVoicesSupplier() {
+    public MonotonicObservableSupplier<List<PlaybackVoice>> getCurrentLanguageVoicesSupplier() {
         return mCurrentLanguageVoices;
     }
 
     @Override
-    public ObservableSupplier<String> getVoiceIdSupplier() {
+    public MonotonicObservableSupplier<String> getVoiceIdSupplier() {
         return mSelectedVoiceId;
     }
 
     @Override
-    public ObservableSupplier<PlaybackModeSelectionEnablementStatus>
+    public MonotonicObservableSupplier<PlaybackModeSelectionEnablementStatus>
             getPlaybackModeSelectionEnabled() {
         return mPlaybackModeSelectionEnabled;
     }

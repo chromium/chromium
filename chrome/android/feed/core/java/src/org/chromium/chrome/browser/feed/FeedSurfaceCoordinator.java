@@ -43,8 +43,8 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -443,7 +443,7 @@ public class FeedSurfaceCoordinator
             @Nullable ViewGroup viewportView,
             FeedActionDelegate actionDelegate,
             NonNullObservableSupplier<Integer> tabStripHeightSupplier,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
         mActivity = activity;
         mSnackbarManager = snackbarManager;
         mNtpHeader = ntpHeader;
@@ -1484,7 +1484,7 @@ public class FeedSurfaceCoordinator
     }
 
     @Override
-    public ObservableSupplier<Integer> getRestoringStateSupplier() {
+    public MonotonicObservableSupplier<Integer> getRestoringStateSupplier() {
         return mMediator.getRestoringStateSupplier();
     }
 

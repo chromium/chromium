@@ -7,8 +7,8 @@ package org.chromium.components.browser_ui.widget.gesture;
 import androidx.activity.BackEventCompat;
 import androidx.annotation.IntDef;
 
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -138,10 +138,10 @@ public interface BackPressHandler {
     }
 
     /**
-     * A {@link ObservableSupplier<Boolean>} which notifies of whether the implementer wants to
+     * A {@link MonotonicObservableSupplier <Boolean>} which notifies of whether the implementer wants to
      * intercept the back gesture.
      *
-     * @return An {@link ObservableSupplier<Boolean>} which yields true if the implementer wants to
+     * @return An {@link MonotonicObservableSupplier <Boolean>} which yields true if the implementer wants to
      *     intercept the back gesture; otherwise, it should yield false to prevent {@link
      *     #handleBackPress()} from being called.
      */

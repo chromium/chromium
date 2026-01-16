@@ -7,12 +7,12 @@ package org.chromium.chrome.browser.browser_controls;
 import android.graphics.Rect;
 
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 
 /**
- * An implementation of {@link ObservableSupplier} that monitors changes to browser controls and
+ * An implementation of {@link MonotonicObservableSupplier} that monitors changes to browser controls and
  * updates a Rect indicating top/bottom margins for Views that should be inset by the browser
  * control(s) height(s).
  */

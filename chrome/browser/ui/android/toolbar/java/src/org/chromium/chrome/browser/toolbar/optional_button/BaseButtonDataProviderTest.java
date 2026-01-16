@@ -26,7 +26,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureOverrides;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -84,7 +84,7 @@ public class BaseButtonDataProviderTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Activity mActivity;
     @Mock private Tab mMockTab;
-    @Mock private ObservableSupplier<Tab> mMockTabSupplier;
+    @Mock private MonotonicObservableSupplier<Tab> mMockTabSupplier;
     @Mock private ModalDialogManager mMockModalDialogManager;
 
     @Before

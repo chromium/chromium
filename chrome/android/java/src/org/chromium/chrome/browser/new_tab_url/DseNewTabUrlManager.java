@@ -9,7 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -30,13 +30,13 @@ import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServ
  */
 @NullMarked
 public class DseNewTabUrlManager {
-    private ObservableSupplier<Profile> mProfileSupplier;
+    private MonotonicObservableSupplier<Profile> mProfileSupplier;
     private @Nullable Callback<Profile> mProfileCallback;
     private @MonotonicNonNull RegionalCapabilitiesService mRegionalCapabilities;
     private @MonotonicNonNull TemplateUrlService mTemplateUrlService;
     private @MonotonicNonNull TemplateUrlServiceObserver mTemplateUrlServiceObserver;
 
-    public DseNewTabUrlManager(ObservableSupplier<Profile> profileSupplier) {
+    public DseNewTabUrlManager(MonotonicObservableSupplier<Profile> profileSupplier) {
         mProfileSupplier = profileSupplier;
         mProfileCallback = this::onProfileAvailable;
         mProfileSupplier.addObserver(mProfileCallback);

@@ -9,7 +9,7 @@ import static org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionServi
 import android.app.Activity;
 
 import org.chromium.base.CallbackUtils;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -40,7 +40,8 @@ public class TabSwitcherGroupSuggestionServiceFactory {
      */
     public static TabSwitcherGroupSuggestionService build(
             Activity activity,
-            ObservableSupplier<@Nullable TabGroupModelFilter> currentTabGroupModelFilterSupplier,
+            MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
+                    currentTabGroupModelFilterSupplier,
             Profile profile,
             TabListCoordinator tabListCoordinator,
             TabGroupSuggestionMessageService messageService) {

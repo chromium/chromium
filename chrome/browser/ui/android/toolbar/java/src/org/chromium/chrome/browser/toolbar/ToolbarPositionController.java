@@ -23,8 +23,8 @@ import androidx.core.view.WindowInsetsCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -112,12 +112,12 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private static @Nullable Boolean sToolbarShouldShowOnTop;
 
     private final BrowserControlsSizer mBrowserControlsSizer;
-    private final ObservableSupplier<Boolean> mIsNtpWithFakeboxShowingSupplier;
-    private final ObservableSupplier<Boolean> mIsIncognitoNtpShowingSupplier;
-    private final ObservableSupplier<Boolean> mIsTabSwitcherFinishedShowingSupplier;
-    private final ObservableSupplier<Boolean> mIsOmniboxFocusedSupplier;
-    private final ObservableSupplier<Boolean> mIsFormFieldFocusedSupplier;
-    private final ObservableSupplier<Boolean> mIsFindInPageShowingSupplier;
+    private final MonotonicObservableSupplier<Boolean> mIsNtpWithFakeboxShowingSupplier;
+    private final MonotonicObservableSupplier<Boolean> mIsIncognitoNtpShowingSupplier;
+    private final MonotonicObservableSupplier<Boolean> mIsTabSwitcherFinishedShowingSupplier;
+    private final MonotonicObservableSupplier<Boolean> mIsOmniboxFocusedSupplier;
+    private final MonotonicObservableSupplier<Boolean> mIsFormFieldFocusedSupplier;
+    private final MonotonicObservableSupplier<Boolean> mIsFindInPageShowingSupplier;
     private final ControlContainer mControlContainer;
     private final ToolbarLayout mToolbarLayout;
     private final BottomControlsStacker mBottomControlsStacker;
@@ -125,9 +125,9 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private final View mToolbarProgressBarContainer;
     private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     private final NonNullObservableSupplier<Integer> mKeyboardAccessoryHeightSupplier;
-    private final ObservableSupplier<Integer> mControlContainerTranslationSupplier;
-    private final ObservableSupplier<Integer> mControlContainerHeightSupplier;
-    private final ObservableSupplier<Profile> mProfileSupplier;
+    private final MonotonicObservableSupplier<Integer> mControlContainerTranslationSupplier;
+    private final MonotonicObservableSupplier<Integer> mControlContainerHeightSupplier;
+    private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final Handler mHandler;
     @LayerVisibility private int mLayerVisibility;
     private int mControlContainerHeight;
@@ -184,12 +184,12 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     public ToolbarPositionController(
             BrowserControlsSizer browserControlsSizer,
             SharedPreferences sharedPreferences,
-            ObservableSupplier<Boolean> isNtpWithFakeboxShowingSupplier,
-            ObservableSupplier<Boolean> isIncognitoNtpShowingSupplier,
-            ObservableSupplier<Boolean> isTabSwitcherFinishedShowingSupplier,
-            ObservableSupplier<Boolean> isOmniboxFocusedSupplier,
-            ObservableSupplier<Boolean> isFormFieldFocusedSupplier,
-            ObservableSupplier<Boolean> isFindInPageShowingSupplier,
+            MonotonicObservableSupplier<Boolean> isNtpWithFakeboxShowingSupplier,
+            MonotonicObservableSupplier<Boolean> isIncognitoNtpShowingSupplier,
+            MonotonicObservableSupplier<Boolean> isTabSwitcherFinishedShowingSupplier,
+            MonotonicObservableSupplier<Boolean> isOmniboxFocusedSupplier,
+            MonotonicObservableSupplier<Boolean> isFormFieldFocusedSupplier,
+            MonotonicObservableSupplier<Boolean> isFindInPageShowingSupplier,
             NonNullObservableSupplier<Integer> keyboardAccessoryHeightSupplier,
             KeyboardVisibilityDelegate keyboardVisibilityDelegate,
             ControlContainer controlContainer,
@@ -197,12 +197,12 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             BottomControlsStacker bottomControlsStacker,
             ObservableSupplierImpl<Integer> browserControlsOffsetSupplier,
             View toolbarProgressBarContainer,
-            ObservableSupplier<Integer> controlContainerTranslationSupplier,
-            ObservableSupplier<Integer> controlContainerHeightSupplier,
+            MonotonicObservableSupplier<Integer> controlContainerTranslationSupplier,
+            MonotonicObservableSupplier<Integer> controlContainerHeightSupplier,
             Handler handler,
             Context context,
             SettableNonNullObservableSupplier<Integer> controlsPosition,
-            ObservableSupplier<Profile> profileSupplier,
+            MonotonicObservableSupplier<Profile> profileSupplier,
             NonNullObservableSupplier<Integer> keyboardHeightSupplier,
             WindowAndroid windowAndroid) {
         mBrowserControlsSizer = browserControlsSizer;

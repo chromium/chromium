@@ -12,16 +12,16 @@ import java.util.function.Supplier;
 
 /**
  * Helper class to handle safely querying a single instance of an object from an {@link
- * ObservableSupplier}.
+ * MonotonicObservableSupplier}.
  *
  * <p>Assuming the underlying {@link Supplier} gets set with a value, this class will guarantee only
  * a single call makes it back to the passed in {@link Callback}.
  *
- * <p>For {@link ObservableSupplier}s that already have a valid value set, this will have the same
+ * <p>For {@link MonotonicObservableSupplier}s that already have a valid value set, this will have the same
  * underlying behavior as {@link ObservableSupplierImpl}, which asynchronously triggers the callback
- * when {@link ObservableSupplier#addObserver(Callback)} is called.
+ * when {@link MonotonicObservableSupplier#addObserver(Callback)} is called.
  *
- * <p>This class does not hold a strong reference to the {@link ObservableSupplier}, but does hold a
+ * <p>This class does not hold a strong reference to the {@link MonotonicObservableSupplier}, but does hold a
  * strong reference to the {@link Callback}.
  *
  * @param <T> The type of the wrapped object.
@@ -36,7 +36,7 @@ public class OneShotCallback<T> {
      * Creates a {@link OneShotCallback} instance, automatically registering as an observer to
      * {@code supplier} and waiting to trigger {@code callback}.
      *
-     * @param supplier The {@link ObservableSupplier} to wait for.
+     * @param supplier The {@link MonotonicObservableSupplier} to wait for.
      * @param callback The {@link Callback} to notify with a valid value.
      */
     public OneShotCallback(NullableObservableSupplier<T> supplier, Callback<T> callback) {

@@ -32,8 +32,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -279,7 +279,7 @@ class ManualFillingMediator
                                 || is(FLOATING_SHEET)));
     }
 
-    ObservableSupplier<Integer> getBottomInsetSupplier() {
+    MonotonicObservableSupplier<Integer> getBottomInsetSupplier() {
         return mBottomInsetSupplier;
     }
 
@@ -1226,7 +1226,7 @@ class ManualFillingMediator
      * Returns the supplier for a {@link KeyboardAccessoryVisualStateProvider} that can be observed
      * to be notified of changes to the visual state of the keyboard accessory.
      */
-    ObservableSupplier<KeyboardAccessoryVisualStateProvider>
+    MonotonicObservableSupplier<KeyboardAccessoryVisualStateProvider>
             getKeyboardAccessoryVisualStateProvider() {
         return mKeyboardAccessoryVisualStateSupplier;
     }
@@ -1235,7 +1235,8 @@ class ManualFillingMediator
      * Returns a supplier for {@link AccessorySheetVisualStateProvider} that can be observed to be
      * notified of changes to the visual state of the accessory sheet.
      */
-    ObservableSupplier<AccessorySheetVisualStateProvider> getAccessorySheetVisualStateProvider() {
+    MonotonicObservableSupplier<AccessorySheetVisualStateProvider>
+            getAccessorySheetVisualStateProvider() {
         return mAccessorySheetVisualStateSupplier;
     }
 

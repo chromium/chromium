@@ -27,7 +27,7 @@ import java.util.function.Supplier;
 @NullMarked
 // TODO(455874046): Supplier<T> -> Supplier<@Nullable T>
 @SuppressWarnings("NullAway") // Remove "T extends @Nullable Object"
-public interface ObservableSupplier<T extends @Nullable Object>
+public interface MonotonicObservableSupplier<T extends @Nullable Object>
         extends Supplier<T>, NullableObservableSupplier<T> {
 
     /** Defines the behavior of the notification when an observer is added. */
@@ -85,8 +85,8 @@ public interface ObservableSupplier<T extends @Nullable Object>
      * Creates an ObservableSupplier that tracks an ObservableSupplier of this ObservableSupplier.
      */
     @SuppressWarnings("Unchecked")
-    default <ChildT, FuncT extends ObservableSupplier<ChildT>>
-            SettableObservableSupplier<ChildT> createTransitiveMonotonic(
+    default <ChildT, FuncT extends MonotonicObservableSupplier<ChildT>>
+            SettableMonotonicObservableSupplier<ChildT> createTransitiveMonotonic(
                     Function<T, FuncT> unwrapFunction) {
         return new TransitiveObservableSupplier<>(
                 this,

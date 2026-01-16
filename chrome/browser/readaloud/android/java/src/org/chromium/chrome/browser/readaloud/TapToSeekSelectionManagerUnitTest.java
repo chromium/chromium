@@ -18,7 +18,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -41,7 +41,7 @@ public class TapToSeekSelectionManagerUnitTest {
     @Mock private ReadAloudController mReadAloudController;
 
     private static final GURL sTestGURL = JUnitTestGURLs.EXAMPLE_URL;
-    @Mock private ObservableSupplier<Tab> mMockTabProvider;
+    @Mock private MonotonicObservableSupplier<Tab> mMockTabProvider;
     @Mock private Tab mTab;
     @Mock private Tab mTab2;
     @Mock private WebContents mWebContents;

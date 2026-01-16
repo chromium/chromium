@@ -8,13 +8,13 @@ import android.annotation.SuppressLint;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.supplier.SettableObservableSupplier;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.cc.input.BrowserControlsState;
@@ -65,7 +65,7 @@ public class BottomControlsCoordinator implements BackPressHandler {
 
     // TODO(agrieve): Rather than use two ObservableSuppliers here, create a
     // ObservableSupplier.mirror(otherSupplier) or similar.
-    private final SettableObservableSupplier<BottomControlsContentDelegate>
+    private final SettableMonotonicObservableSupplier<BottomControlsContentDelegate>
             mContentDelegateWrapper = ObservableSuppliers.createMonotonic();
     private final NonNullObservableSupplier<Boolean> mHandleBackPressChangedSupplier =
             mContentDelegateWrapper.createTransitiveNonNull(
@@ -101,11 +101,11 @@ public class BottomControlsCoordinator implements BackPressHandler {
             BottomControlsStacker controlsStacker,
             BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate,
             FullscreenManager fullscreenManager,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             ScrollingBottomViewResourceFrameLayout root,
             OneshotSupplier<BottomControlsContentDelegate> contentDelegateSupplier,
             TabObscuringHandler tabObscuringHandler,
-            ObservableSupplier<Boolean> overlayPanelVisibilitySupplier,
+            MonotonicObservableSupplier<Boolean> overlayPanelVisibilitySupplier,
             NullableObservableSupplier<@BrowserControlsState Integer> constraintsSupplier,
             Supplier<Boolean> readAloudRestoringSupplier) {
         mRootFrameLayout = root;

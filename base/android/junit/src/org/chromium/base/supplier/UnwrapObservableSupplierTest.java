@@ -48,7 +48,7 @@ public class UnwrapObservableSupplierTest {
             };
 
     private static NullableObservableSupplier<Integer> make(
-            ObservableSupplier<Object> parentSupplier) {
+            MonotonicObservableSupplier<Object> parentSupplier) {
         return parentSupplier.createDerivedNullable(UnwrapObservableSupplierTest::unwrap);
     }
 

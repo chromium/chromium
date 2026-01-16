@@ -13,7 +13,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ValueChangedCallback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -82,7 +82,7 @@ public class PriceWelcomeMessageController {
     private final Callback<@Nullable TabGroupModelFilter> mOnTabGroupModelFilterChanged =
             new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
     private final TabSwitcherMessageManager mTabSwitcherMessageManager;
-    private final ObservableSupplier<@Nullable TabGroupModelFilter>
+    private final MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
     private final MessageCardProvider mMessageCardProvider;
     private final ObservableSupplierImpl<@Nullable PriceWelcomeMessageReviewActionProvider>
@@ -94,7 +94,8 @@ public class PriceWelcomeMessageController {
     @VisibleForTesting
     PriceWelcomeMessageController(
             TabSwitcherMessageManager tabSwitcherMessageManager,
-            ObservableSupplier<@Nullable TabGroupModelFilter> currentTabGroupModelFilterSupplier,
+            MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
+                    currentTabGroupModelFilterSupplier,
             MessageCardProvider<@MessageType Integer, @UiType Integer> messageCardProvider,
             ObservableSupplierImpl<@Nullable PriceWelcomeMessageReviewActionProvider>
                     priceWelcomeMessageReviewActionProviderSupplier,
@@ -129,7 +130,8 @@ public class PriceWelcomeMessageController {
     public static PriceWelcomeMessageController build(
             Context context,
             TabSwitcherMessageManager tabSwitcherMessageManager,
-            ObservableSupplier<@Nullable TabGroupModelFilter> currentTabGroupModelFilterSupplier,
+            MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
+                    currentTabGroupModelFilterSupplier,
             MessageCardProvider<@MessageType Integer, @UiType Integer> messageCardProvider,
             ObservableSupplierImpl<@Nullable PriceWelcomeMessageReviewActionProvider>
                     priceWelcomeMessageReviewActionProviderSupplier,

@@ -32,8 +32,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.LazyOneshotSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
@@ -91,11 +91,11 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
     private final BookmarkBarItemsLayoutManager mBookmarkBarItemsLayoutManager;
     private final Callback<Boolean> mItemsOverflowSupplierObserver;
     private final PropertyModel mModel;
-    private final ObservableSupplier<Profile> mProfileSupplier;
+    private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Profile> mProfileSupplierObserver;
     private @Nullable final Tab mCurrentTab;
     private final BookmarkOpener mBookmarkOpener;
-    private final ObservableSupplier<BookmarkManagerOpener> mBookmarkManagerOpenerSupplier;
+    private final MonotonicObservableSupplier<BookmarkManagerOpener> mBookmarkManagerOpenerSupplier;
     private final RecyclerView mItemsRecyclerView;
     private final BookmarkBar mBookmarkBarView;
     @StyleRes private int mCurrentTextStyleRes = R.style.TextAppearance_TextMedium_Primary_Baseline;
@@ -135,10 +135,10 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
             ModelList itemsModel,
             BookmarkBarItemsLayoutManager bookmarkBarItemsLayoutManager,
             PropertyModel model,
-            ObservableSupplier<Profile> profileSupplier,
+            MonotonicObservableSupplier<Profile> profileSupplier,
             @Nullable Tab currentTab,
             BookmarkOpener bookmarkOpener,
-            ObservableSupplier<BookmarkManagerOpener> bookmarkManagerOpenerSupplier,
+            MonotonicObservableSupplier<BookmarkManagerOpener> bookmarkManagerOpenerSupplier,
             RecyclerView itemsRecyclerView,
             BookmarkBar bookmarkBarView) {
         mActivity = activity;

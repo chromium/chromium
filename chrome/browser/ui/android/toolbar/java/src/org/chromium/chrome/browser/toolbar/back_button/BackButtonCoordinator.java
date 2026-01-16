@@ -11,8 +11,8 @@ import android.view.View;
 
 import androidx.core.graphics.Insets;
 
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -57,7 +57,7 @@ public class BackButtonCoordinator extends ToolbarChildButton {
             ThemeColorProvider themeColorProvider,
             IncognitoStateProvider incognitoStateProvider,
             NullableObservableSupplier<Tab> tabSupplier,
-            ObservableSupplier<Boolean> enabledSupplier,
+            MonotonicObservableSupplier<Boolean> enabledSupplier,
             Runnable onNavigationPopupShown,
             NavigationPopup.HistoryDelegate historyDelegate,
             boolean isWebApp) {

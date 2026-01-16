@@ -11,19 +11,19 @@ import com.google.common.collect.ImmutableMap;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
-import org.chromium.base.supplier.SettableObservableSupplier;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 /** Implementation of {@link PaneManager} for managing {@link Pane}s. */
 @NullMarked
 public class PaneManagerImpl implements PaneManager {
-    private final SettableObservableSupplier<Pane> mCurrentPaneSupplierImpl =
+    private final SettableMonotonicObservableSupplier<Pane> mCurrentPaneSupplierImpl =
             ObservableSuppliers.createMonotonic();
     private final ImmutableMap<Integer, LazyOneshotSupplier<Pane>> mPanes;
-    private final ObservableSupplier<Boolean> mHubVisibilitySupplier;
+    private final MonotonicObservableSupplier<Boolean> mHubVisibilitySupplier;
     private final Callback<Boolean> mHubVisibilityObserver;
     private final PaneTransitionHelper mPaneTransitionHelper;
     private final PaneOrderController mPaneOrderController;
@@ -39,7 +39,7 @@ public class PaneManagerImpl implements PaneManager {
      */
     public PaneManagerImpl(
             PaneListBuilder paneListBuilder,
-            ObservableSupplier<Boolean> hubVisibilitySupplier,
+            MonotonicObservableSupplier<Boolean> hubVisibilitySupplier,
             @PaneId int defaultPaneId) {
         mPanes = paneListBuilder.build();
         mHubVisibilitySupplier = hubVisibilitySupplier;
@@ -68,7 +68,7 @@ public class PaneManagerImpl implements PaneManager {
     }
 
     @Override
-    public ObservableSupplier<Pane> getFocusedPaneSupplier() {
+    public MonotonicObservableSupplier<Pane> getFocusedPaneSupplier() {
         return mCurrentPaneSupplierImpl;
     }
 

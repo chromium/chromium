@@ -11,7 +11,7 @@ import android.view.LayoutInflater;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -75,7 +75,7 @@ public class IncognitoNewTabPage extends BasicNativePage
             Activity activity,
             NativePageHost host,
             Tab tab,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             @Nullable IncognitoNtpMetrics incognitoNtpMetrics) {
         super(host);
 

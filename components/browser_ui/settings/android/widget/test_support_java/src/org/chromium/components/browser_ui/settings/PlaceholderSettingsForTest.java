@@ -10,8 +10,8 @@ import android.os.Bundle;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 
 /** A placeholder {@link PreferenceFragmentCompat} for use in tests. */
@@ -28,7 +28,7 @@ public class PlaceholderSettingsForTest extends PreferenceFragmentCompat
     }
 
     @Override
-    public ObservableSupplier<String> getPageTitle() {
+    public MonotonicObservableSupplier<String> getPageTitle() {
         return mPageTitle;
     }
 

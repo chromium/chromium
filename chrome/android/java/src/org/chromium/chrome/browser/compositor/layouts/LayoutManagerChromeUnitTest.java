@@ -21,8 +21,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
-import org.chromium.base.supplier.SettableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -50,8 +50,8 @@ public class LayoutManagerChromeUnitTest {
             ObservableSuppliers.createNullable();
     private final SettableNullableObservableSupplier<TabModelSelector> mTabModelSelectorSupplier =
             ObservableSuppliers.createNullable();
-    private final SettableObservableSupplier<TabContentManager> mTabContentManagerSupplier =
-            ObservableSuppliers.createMonotonic();
+    private final SettableMonotonicObservableSupplier<TabContentManager>
+            mTabContentManagerSupplier = ObservableSuppliers.createMonotonic();
     private final SettableNullableObservableSupplier<TopUiThemeColorProvider>
             mTopUiThemeColorProvider = ObservableSuppliers.createNullable();
 

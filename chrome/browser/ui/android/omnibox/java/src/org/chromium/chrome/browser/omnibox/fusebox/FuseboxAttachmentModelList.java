@@ -14,7 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import com.google.errorprone.annotations.MustBeClosed;
 
 import org.chromium.base.ObserverList;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeBoxQueryControllerBridge.FileUploadObserver;
@@ -48,7 +48,7 @@ public class FuseboxAttachmentModelList implements FileUploadObserver, Iterable<
 
     static final int MAX_ATTACHMENTS = OmniboxFeatures.sMultiattachmentFusebox.getValue() ? 10 : 1;
     private final Set<Integer> mAttachedTabIds = new ArraySet<>();
-    private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final ObserverList<FuseboxAttachmentChangeListener> mAttachmentChangeListeners =
             new ObserverList<>();
     private @Nullable ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
@@ -92,7 +92,7 @@ public class FuseboxAttachmentModelList implements FileUploadObserver, Iterable<
      * @param tabModelSelectorSupplier The supplier for the {@link TabModelSelector}.
      */
     /* package */ FuseboxAttachmentModelList(
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
     }
 

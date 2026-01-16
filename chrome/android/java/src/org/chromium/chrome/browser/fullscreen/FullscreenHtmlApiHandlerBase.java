@@ -34,8 +34,8 @@ import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ApplicationStatus.WindowFocusChangedListener;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ObserverList;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -87,7 +87,7 @@ public abstract class FullscreenHtmlApiHandlerBase
     private final SettableNonNullObservableSupplier<Boolean> mPersistentModeSupplier =
             ObservableSuppliers.createNonNull(false);
 
-    private final ObservableSupplier<Boolean> mAreControlsHidden;
+    private final MonotonicObservableSupplier<Boolean> mAreControlsHidden;
     private boolean mExitFullscreenOnStop;
     private final ObserverList<FullscreenManager.Observer> mObservers = new ObserverList<>();
 
@@ -261,7 +261,7 @@ public abstract class FullscreenHtmlApiHandlerBase
      */
     public FullscreenHtmlApiHandlerBase(
             Activity activity,
-            ObservableSupplier<Boolean> areControlsHidden,
+            MonotonicObservableSupplier<Boolean> areControlsHidden,
             boolean exitFullscreenOnStop,
             MultiWindowModeStateDispatcher multiWindowDispatcher) {
         mActivity = activity;

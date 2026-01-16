@@ -35,7 +35,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -127,7 +127,7 @@ public class DataSharingTabManagerUnitTest {
     private Activity mActivity;
     private ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier;
     private Supplier<BottomSheetController> mBottomSheetControllerSupplier;
-    private ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
+    private MonotonicObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     private SyncedGroupTestHelper mSyncedGroupTestHelper;
 
     @Before

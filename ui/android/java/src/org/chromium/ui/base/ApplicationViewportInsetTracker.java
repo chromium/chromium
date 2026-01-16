@@ -6,8 +6,8 @@ package org.chromium.ui.base;
 
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -43,7 +43,7 @@ import org.chromium.ui.mojom.VirtualKeyboardMode;
  *  - Features that want to modify the inset should pass around the {@link
  *    ApplicationViewportInsetTracker} object.
  *  - Features only interested in what the current inset is should pass around an {@link
- *    ObservableSupplier<ViewportInsets>} object.
+ *    MonotonicObservableSupplier <ViewportInsets>} object.
  * </pre>
  */
 @NullMarked
@@ -51,9 +51,9 @@ public class ApplicationViewportInsetTracker implements Destroyable {
     /** Keyboard related suppliers */
     private @Nullable NonNullObservableSupplier<Integer> mKeyboardInsetSupplier;
 
-    private @Nullable ObservableSupplier<Integer> mKeyboardAccessoryInsetSupplier;
+    private @Nullable MonotonicObservableSupplier<Integer> mKeyboardAccessoryInsetSupplier;
 
-    private @Nullable ObservableSupplier<Integer> mBottomSheetInsetSupplier;
+    private @Nullable MonotonicObservableSupplier<Integer> mBottomSheetInsetSupplier;
 
     private @Nullable InsetObserver mInsetObserver;
 
@@ -154,7 +154,7 @@ public class ApplicationViewportInsetTracker implements Destroyable {
      * <p>Pass null to unset the current supplier.
      */
     public void setKeyboardAccessoryInsetSupplier(
-            @Nullable ObservableSupplier<Integer> insetSupplier) {
+            @Nullable MonotonicObservableSupplier<Integer> insetSupplier) {
         boolean didRemove = false;
         if (mKeyboardAccessoryInsetSupplier != null) {
             mKeyboardAccessoryInsetSupplier.removeObserver(mInsetSupplierObserver);
@@ -172,7 +172,7 @@ public class ApplicationViewportInsetTracker implements Destroyable {
         }
     }
 
-    public void setBottomSheetInsetSupplier(ObservableSupplier<Integer> insetSupplier) {
+    public void setBottomSheetInsetSupplier(MonotonicObservableSupplier<Integer> insetSupplier) {
         boolean didRemove = false;
         if (mBottomSheetInsetSupplier != null) {
             mBottomSheetInsetSupplier.removeObserver(mInsetSupplierObserver);
@@ -227,7 +227,7 @@ public class ApplicationViewportInsetTracker implements Destroyable {
         mInsetSupplier.set(newValues);
     }
 
-    private int intFromSupplier(@Nullable ObservableSupplier<Integer> supplier) {
+    private int intFromSupplier(@Nullable MonotonicObservableSupplier<Integer> supplier) {
         if (supplier == null || supplier.get() == null) return 0;
         return supplier.get();
     }

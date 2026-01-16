@@ -40,7 +40,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -139,9 +139,9 @@ public class SensitiveContentTest {
     @Mock private HubLayoutDependencyHolder mHubLayoutDependencyHolder;
     @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
     @Mock private TabWindowManager mTabWindowManager;
-    @Mock private ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
-    @Mock private ObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier;
-    @Mock private ObservableSupplier<Boolean> mScrimVisibilitySupplier;
+    @Mock private MonotonicObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
+    @Mock private MonotonicObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier;
+    @Mock private MonotonicObservableSupplier<Boolean> mScrimVisibilitySupplier;
     @Mock private ToolbarManager mToolbarManager;
     @Mock private ViewGroup mContentView;
 

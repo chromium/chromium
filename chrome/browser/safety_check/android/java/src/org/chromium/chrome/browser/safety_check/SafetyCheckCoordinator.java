@@ -13,7 +13,7 @@ import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
@@ -59,7 +59,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
             SafetyCheckSettingsFragment settingsFragment,
             SafetyCheckUpdatesDelegate updatesClient,
             SafetyCheckBridge bridge,
-            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+            MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             @Nullable SyncService syncService,
             PasswordStoreBridge passwordStoreBridge,
             PasswordManagerHelper passwordManagerHelper,
@@ -79,7 +79,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
             SafetyCheckSettingsFragment settingsFragment,
             SafetyCheckUpdatesDelegate updatesClient,
             SafetyCheckBridge bridge,
-            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+            MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             @Nullable SyncService syncService,
             PasswordStoreBridge passwordStoreBridge,
             PasswordManagerHelper passwordManagerHelper,

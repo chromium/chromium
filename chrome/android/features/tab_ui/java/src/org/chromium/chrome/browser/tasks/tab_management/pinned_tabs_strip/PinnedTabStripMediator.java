@@ -31,7 +31,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.ValueChangedCallback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -80,8 +80,9 @@ public class PinnedTabStripMediator {
     private final PropertyModel mStripPropertyModel;
     private final TabListItemSizeChangedObserver mTabListItemSizeChangedObserver;
     private final TabModelObserver mTabModelObserver;
-    private final ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
-    private final ObservableSupplier<@Nullable TabGroupModelFilter> mTabGroupModelFilterSupplier;
+    private final MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
+    private final MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
+            mTabGroupModelFilterSupplier;
     private @Nullable PinnedTabStripItemContextMenuCoordinator mContextMenuCoordinator;
     private final BottomSheetController mBottomSheetController;
     private @Nullable TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
@@ -130,8 +131,8 @@ public class PinnedTabStripMediator {
             TabListModel tabGridListModel,
             TabListModel pinnedTabsModelList,
             PropertyModel stripPropertyModel,
-            ObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier,
-            ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+            MonotonicObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier,
+            MonotonicObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             BottomSheetController bottomSheetController,
             ModalDialogManager modalDialogManager,
             @Nullable Runnable onTabGroupCreation) {

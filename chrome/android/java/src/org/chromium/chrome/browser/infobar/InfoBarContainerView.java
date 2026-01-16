@@ -16,7 +16,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -74,7 +74,7 @@ public class InfoBarContainerView extends SwipableOverlayView
     /** Tracks the previous event's scroll offset to determine if a scroll is up or down. */
     private int mLastScrollOffsetY;
 
-    private final @Nullable ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
+    private final @Nullable MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
 
     /**
@@ -109,7 +109,7 @@ public class InfoBarContainerView extends SwipableOverlayView
             Context context,
             ContainerViewObserver containerViewObserver,
             @Nullable BrowserControlsStateProvider browserControlsStateProvider,
-            @Nullable ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            @Nullable MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             boolean isTablet) {
         super(context, null, false);
         mContainerViewObserver = containerViewObserver;

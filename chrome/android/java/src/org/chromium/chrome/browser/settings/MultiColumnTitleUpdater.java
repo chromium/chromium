@@ -18,7 +18,7 @@ import androidx.appcompat.widget.AppCompatTextView;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -49,7 +49,7 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
                     setText(title);
                 };
 
-        private @Nullable ObservableSupplier<String> mSupplier;
+        private @Nullable MonotonicObservableSupplier<String> mSupplier;
 
         DetailedTitle(Context context) {
             super(context);
@@ -58,7 +58,7 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
             setTextAppearance(R.style.TextAppearance_Headline_Primary);
         }
 
-        void setSupplier(@Nullable ObservableSupplier<String> supplier) {
+        void setSupplier(@Nullable MonotonicObservableSupplier<String> supplier) {
             if (mSupplier == supplier) {
                 return;
             }
@@ -103,7 +103,7 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
      * Keeps tracking the current main page title supplier. Null if not tracking, e.g. in two pane
      * mode.
      */
-    private @Nullable ObservableSupplier<String> mCurrentPageTitle;
+    private @Nullable MonotonicObservableSupplier<String> mCurrentPageTitle;
 
     MultiColumnTitleUpdater(
             MultiColumnSettings multiColumnSettings,

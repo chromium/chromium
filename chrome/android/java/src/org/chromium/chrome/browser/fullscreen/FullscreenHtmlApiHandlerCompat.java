@@ -16,7 +16,7 @@ import androidx.core.view.WindowInsetsControllerCompat;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
@@ -42,7 +42,7 @@ public class FullscreenHtmlApiHandlerCompat extends FullscreenHtmlApiHandlerBase
      */
     public FullscreenHtmlApiHandlerCompat(
             Activity activity,
-            ObservableSupplier<Boolean> areControlsHidden,
+            MonotonicObservableSupplier<Boolean> areControlsHidden,
             boolean exitFullscreenOnStop,
             MultiWindowModeStateDispatcher multiWindowDispatcher) {
         super(activity, areControlsHidden, exitFullscreenOnStop, multiWindowDispatcher);

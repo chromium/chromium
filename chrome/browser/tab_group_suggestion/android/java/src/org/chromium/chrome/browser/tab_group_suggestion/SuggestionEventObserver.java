@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.tab_group_suggestion;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -45,20 +45,22 @@ public class SuggestionEventObserver {
                     @TabSelectionCause
                     int selectionType =
                             switch (type) {
+                                case org.chromium.chrome.browser.tab.TabSelectionType.FROM_CLOSE ->
+                                        TabSelectionCause.FROM_CLOSE_ACTIVE_TAB;
+                                case org.chromium.chrome.browser.tab.TabSelectionType.FROM_EXIT ->
+                                        TabSelectionCause.FROM_APP_EXIT;
+                                case org.chromium.chrome.browser.tab.TabSelectionType.FROM_NEW ->
+                                        TabSelectionCause.FROM_NEW_TAB;
+                                case org.chromium.chrome.browser.tab.TabSelectionType.FROM_USER ->
+                                        TabSelectionCause.FROM_USER;
                                 case org.chromium.chrome.browser.tab.TabSelectionType
-                                        .FROM_CLOSE -> TabSelectionCause.FROM_CLOSE_ACTIVE_TAB;
-                                case org.chromium.chrome.browser.tab.TabSelectionType
-                                        .FROM_EXIT -> TabSelectionCause.FROM_APP_EXIT;
-                                case org.chromium.chrome.browser.tab.TabSelectionType
-                                        .FROM_NEW -> TabSelectionCause.FROM_NEW_TAB;
-                                case org.chromium.chrome.browser.tab.TabSelectionType
-                                        .FROM_USER -> TabSelectionCause.FROM_USER;
-                                case org.chromium.chrome.browser.tab.TabSelectionType
-                                        .FROM_OMNIBOX -> TabSelectionCause.FROM_OMNIBOX;
-                                case org.chromium.chrome.browser.tab.TabSelectionType
-                                        .FROM_UNDO -> TabSelectionCause.FROM_UNDO_CLOSURE;
-                                default -> throw new IllegalArgumentException(
-                                        "Unknown selection typ: " + type);
+                                                .FROM_OMNIBOX ->
+                                        TabSelectionCause.FROM_OMNIBOX;
+                                case org.chromium.chrome.browser.tab.TabSelectionType.FROM_UNDO ->
+                                        TabSelectionCause.FROM_UNDO_CLOSURE;
+                                default ->
+                                        throw new IllegalArgumentException(
+                                                "Unknown selection typ: " + type);
                             };
                     mGroupSuggestionsService.didSelectTab(
                             tab.getId(), tab.getUrl(), selectionType, lastId);
@@ -91,8 +93,8 @@ public class SuggestionEventObserver {
                 }
             };
 
-    private @Nullable ObservableSupplier<Boolean> mHubVisibilitySupplier;
-    private @Nullable ObservableSupplier<Pane> mFocusedPaneSupplier;
+    private @Nullable MonotonicObservableSupplier<Boolean> mHubVisibilitySupplier;
+    private @Nullable MonotonicObservableSupplier<Pane> mFocusedPaneSupplier;
 
     /** Creates the observer. */
     public SuggestionEventObserver(

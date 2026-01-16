@@ -32,12 +32,12 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.supplier.SettableObservableSupplier;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.BuildConfig;
@@ -280,7 +280,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private TouchEventObserver mDragDropTouchObserver;
     private ViewGroup mCoordinator;
     private final OneshotSupplierImpl<SystemBarColorHelper> mSystemBarColorHelperSupplier;
-    private final ObservableSupplier<ManualFillingComponent> mManualFillingComponentSupplier;
+    private final MonotonicObservableSupplier<ManualFillingComponent>
+            mManualFillingComponentSupplier;
     private final @NonNull DataSharingTabManager mDataSharingTabManager;
     private final Supplier<Boolean> mCanAnimateBrowserControls;
     protected @Nullable InstantMessageDelegateImpl mInstantMessageDelegateImpl;
@@ -293,7 +294,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable BookmarkOpener mBookmarkOpener;
     private @Nullable TabBottomSheetManager mTabBottomSheetManager;
     private @Nullable TabBottomSheetSimpleManager mTabBottomSheetSimpleManager;
-    private final @NonNull ObservableSupplier<BookmarkManagerOpener> mBookmarkManagerOpenerSupplier;
+    private final @NonNull MonotonicObservableSupplier<BookmarkManagerOpener>
+            mBookmarkManagerOpenerSupplier;
     private @NonNull AdvancedProtectionCoordinator mAdvancedProtectionCoordinator;
     private final @NonNull KeyboardFocusRowManager mKeyboardFocusRowManager;
     private CharSequence mApplicationLabel;
@@ -410,12 +412,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     public TabbedRootUiCoordinator(
             @NonNull AppCompatActivity activity,
             @Nullable Callback<Boolean> onOmniboxFocusChangedListener,
-            @NonNull ObservableSupplier<ShareDelegate> shareDelegateSupplier,
+            @NonNull MonotonicObservableSupplier<ShareDelegate> shareDelegateSupplier,
             @NonNull ActivityTabProvider tabProvider,
-            @NonNull ObservableSupplier<Profile> profileSupplier,
-            @NonNull ObservableSupplier<BookmarkModel> bookmarkModelSupplier,
-            @NonNull ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
-            @NonNull ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            @NonNull MonotonicObservableSupplier<Profile> profileSupplier,
+            @NonNull MonotonicObservableSupplier<BookmarkModel> bookmarkModelSupplier,
+            @NonNull MonotonicObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+            @NonNull MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             @NonNull OneshotSupplier<TabSwitcher> tabSwitcherSupplier,
             @NonNull OneshotSupplier<TabSwitcher> incognitoTabSwitcherSupplier,
             @NonNull OneshotSupplier<HubManager> hubManagerSupplier,
@@ -425,10 +427,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull ActivityWindowAndroid windowAndroid,
             @NonNull OneshotSupplier chromeAndroidTaskSupplier,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            @NonNull ObservableSupplier<LayoutManagerImpl> layoutManagerSupplier,
+            @NonNull MonotonicObservableSupplier<LayoutManagerImpl> layoutManagerSupplier,
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull Supplier<Integer> activityThemeColorSupplier,
-            @NonNull ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+            @NonNull MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             @NonNull AppMenuBlocker appMenuBlocker,
             @NonNull BooleanSupplier supportsAppMenuSupplier,
             @NonNull BooleanSupplier supportsFindInPage,
@@ -445,7 +447,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull AppMenuDelegate appMenuDelegate,
             @NonNull StatusBarColorProvider statusBarColorProvider,
             @NonNull
-                    SettableObservableSupplier<EphemeralTabCoordinator>
+                    SettableMonotonicObservableSupplier<EphemeralTabCoordinator>
                             ephemeralTabCoordinatorSupplier,
             @NonNull IntentRequestTracker intentRequestTracker,
             @NonNull InsetObserver insetObserver,
@@ -456,11 +458,15 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @Nullable Bundle savedInstanceState,
             @Nullable PersistableBundle persistentState,
             @Nullable MultiInstanceManager multiInstanceManager,
-            @NonNull ObservableSupplier<Integer> overviewColorSupplier,
-            @NonNull ObservableSupplier<ManualFillingComponent> manualFillingComponentSupplier,
+            @NonNull MonotonicObservableSupplier<Integer> overviewColorSupplier,
+            @NonNull
+                    MonotonicObservableSupplier<ManualFillingComponent>
+                            manualFillingComponentSupplier,
             @NonNull EdgeToEdgeManager edgeToEdgeManager,
-            @NonNull ObservableSupplier<BookmarkManagerOpener> bookmarkManagerOpenerSupplier,
-            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
+            @NonNull
+                    MonotonicObservableSupplier<BookmarkManagerOpener>
+                            bookmarkManagerOpenerSupplier,
+            @Nullable MonotonicObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
             @NonNull OneshotSupplier<ChromeInactivityTracker> inactivityTrackerSupplier) {
         super(
                 activity,
@@ -1050,7 +1056,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mTabModelSelectorSupplier,
                 mModalDialogManagerSupplier,
                 // TODO(agrieve): See if this can be changed to a NonNullObservableSupplier.
-                (ObservableSupplier<Integer>) mTabStripVisibilitySupplier);
+                (MonotonicObservableSupplier<Integer>) mTabStripVisibilitySupplier);
     }
 
     @Override

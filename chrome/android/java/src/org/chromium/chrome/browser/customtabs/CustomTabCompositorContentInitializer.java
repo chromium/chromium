@@ -8,7 +8,7 @@ import android.app.Activity;
 import android.view.ViewGroup;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -32,7 +32,7 @@ public class CustomTabCompositorContentInitializer implements NativeInitObserver
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final Activity mActivity;
     private final Supplier<CompositorViewHolder> mCompositorViewHolder;
-    private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
+    private final MonotonicObservableSupplier<TabContentManager> mTabContentManagerSupplier;
     private final CompositorViewHolder.Initializer mCompositorViewHolderInitializer;
     private final TopUiThemeColorProvider mTopUiThemeColorProvider;
 
@@ -41,7 +41,7 @@ public class CustomTabCompositorContentInitializer implements NativeInitObserver
     public CustomTabCompositorContentInitializer(
             Activity activity,
             Supplier<CompositorViewHolder> compositorViewHolder,
-            ObservableSupplier<TabContentManager> tabContentManagerSupplier,
+            MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier,
             CompositorViewHolder.Initializer compositorViewHolderInitializer,
             TopUiThemeColorProvider topUiThemeColorProvider,
             ActivityLifecycleDispatcher lifecycleDispatcher) {

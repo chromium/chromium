@@ -15,8 +15,8 @@ import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -70,7 +70,7 @@ public class RecentTabsPage
     private boolean mIsAttachedToWindow;
 
     private final NonNullObservableSupplier<Integer> mTabStripHeightSupplier;
-    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
+    private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     private final Callback<Integer> mTabStripHeightChangeCallback;
     private @Nullable SmoothTransitionDelegate mSmoothTransitionDelegate;
     private EdgeToEdgePadAdjuster mPadAdjuster;
@@ -93,7 +93,7 @@ public class RecentTabsPage
             NativePageNavigationDelegate navigationDelegate,
             BrowserControlsStateProvider browserControlsStateProvider,
             NonNullObservableSupplier<Integer> tabStripHeightSupplier,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         mActivity = activity;
         mRecentTabsManager = recentTabsManager;
         Resources resources = activity.getResources();

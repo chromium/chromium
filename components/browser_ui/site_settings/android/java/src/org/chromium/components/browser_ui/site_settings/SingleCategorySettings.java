@@ -47,9 +47,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
-import org.chromium.base.supplier.SettableObservableSupplier;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -203,7 +203,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
 
     private @Nullable Set<String> mSelectedDomains;
 
-    private final SettableObservableSupplier<String> mPageTitle =
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
     private @MonotonicNonNull SearchViewProvider.Observer mSearchViewObserver;
 
@@ -571,7 +571,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     }
 
     @Override
-    public ObservableSupplier<String> getPageTitle() {
+    public MonotonicObservableSupplier<String> getPageTitle() {
         return mPageTitle;
     }
 

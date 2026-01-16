@@ -45,7 +45,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -71,13 +71,13 @@ public class TabListContainerViewBinderUnitTest {
     @Mock private View mViewMock2;
     @Mock Callback<Function<Integer, View>> mFetchViewByIndexCallback;
     @Mock Callback<Supplier<Pair<Integer, Integer>>> mGetVisibleRangeCallback;
-    @Mock Callback<ObservableSupplier<Boolean>> mIsScrollingSupplierCallback;
+    @Mock Callback<MonotonicObservableSupplier<Boolean>> mIsScrollingSupplierCallback;
     @Mock Callback<TabKeyEventData> mPageKeyEventDataCallback;
 
     @Captor ArgumentCaptor<Function<Integer, View>> mFetchViewByIndexCaptor;
     @Captor ArgumentCaptor<Supplier<Pair<Integer, Integer>>> mGetVisibleRangeCaptor;
     @Captor ArgumentCaptor<OnScrollListener> mOnScrollListenerCaptor;
-    @Captor ArgumentCaptor<ObservableSupplier<Boolean>> mOnScrollingSupplierCaptor;
+    @Captor ArgumentCaptor<MonotonicObservableSupplier<Boolean>> mOnScrollingSupplierCaptor;
     private TabListContainerViewBinder.ViewHolder mViewHolder;
 
     @Before
@@ -155,7 +155,8 @@ public class TabListContainerViewBinderUnitTest {
         verify(mTabListRecyclerViewMock).addOnScrollListener(mOnScrollListenerCaptor.capture());
         OnScrollListener listener = mOnScrollListenerCaptor.getValue();
         verify(mIsScrollingSupplierCallback).onResult(mOnScrollingSupplierCaptor.capture());
-        ObservableSupplier<Boolean> isScrollingSupplier = mOnScrollingSupplierCaptor.getValue();
+        MonotonicObservableSupplier<Boolean> isScrollingSupplier =
+                mOnScrollingSupplierCaptor.getValue();
 
         listener.onScrollStateChanged(mTabListRecyclerViewMock, RecyclerView.SCROLL_STATE_IDLE);
         assertFalse(isScrollingSupplier.get());

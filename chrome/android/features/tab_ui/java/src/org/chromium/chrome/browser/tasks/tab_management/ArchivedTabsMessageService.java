@@ -18,8 +18,8 @@ import android.view.ViewGroup;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.EnsuresNonNull;
@@ -112,13 +112,14 @@ public class ArchivedTabsMessageService
     private final ModalDialogManager mModalDialogManager;
     private final Tracker mTracker;
     private final Runnable mAppendMessageRunnable;
-    private final ObservableSupplier<@Nullable TabListCoordinator> mTabListCoordinatorSupplier;
+    private final MonotonicObservableSupplier<@Nullable TabListCoordinator>
+            mTabListCoordinatorSupplier;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
-    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
+    private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     private final @Nullable TabGroupSyncService mTabGroupSyncService;
     private final Supplier<PaneManager> mPaneManagerSupplier;
     private final Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
-    private final ObservableSupplier<@Nullable TabGroupModelFilter>
+    private final MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
     private final NonNullObservableSupplier<Integer> mTabCountSupplier;
     private final Supplier<LayoutStateProvider> mLayoutStateProviderSupplier;
@@ -153,13 +154,14 @@ public class ArchivedTabsMessageService
             ModalDialogManager modalDialogManager,
             Tracker tracker,
             Runnable appendMessageRunnable,
-            ObservableSupplier<@Nullable TabListCoordinator> tabListCoordinatorSupplier,
+            MonotonicObservableSupplier<@Nullable TabListCoordinator> tabListCoordinatorSupplier,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             @Nullable TabGroupSyncService tabGroupSyncService,
             Supplier<PaneManager> paneManagerSupplier,
             Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
-            ObservableSupplier<@Nullable TabGroupModelFilter> currentTabGroupModelFilterSupplier,
+            MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
+                    currentTabGroupModelFilterSupplier,
             Supplier<LayoutStateProvider> layoutStateProviderSupplier) {
         super(
                 MessageType.ARCHIVED_TABS_MESSAGE,

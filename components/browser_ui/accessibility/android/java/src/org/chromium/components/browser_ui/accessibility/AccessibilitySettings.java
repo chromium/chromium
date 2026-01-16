@@ -14,9 +14,9 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
-import org.chromium.base.supplier.SettableObservableSupplier;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -64,7 +64,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     private double mPageZoomLatestDefaultZoomPrefValue;
     private ChromeSwitchPreference mTouchpadOverscrollHistoryNavigationPref;
 
-    private final SettableObservableSupplier<String> mPageTitle =
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
 
     public void setDelegate(AccessibilitySettingsDelegate delegate) {
@@ -79,7 +79,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     }
 
     @Override
-    public ObservableSupplier<String> getPageTitle() {
+    public MonotonicObservableSupplier<String> getPageTitle() {
         return mPageTitle;
     }
 

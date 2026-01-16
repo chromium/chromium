@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -50,7 +50,7 @@ public interface TabModelSelector {
      * @return A supplier for the current tab model. This may hold a null value before the {@link
      *     TabModelSelector} is initialized.
      */
-    ObservableSupplier<TabModel> getCurrentTabModelSupplier();
+    MonotonicObservableSupplier<TabModel> getCurrentTabModelSupplier();
 
     /**
      * Convenience function to get the current tab on the current model
@@ -247,7 +247,8 @@ public interface TabModelSelector {
     @Nullable TabGroupModelFilter getCurrentTabGroupModelFilter();
 
     /** Returns an observable supplier for the current tab model filter. */
-    ObservableSupplier<@Nullable TabGroupModelFilter> getCurrentTabGroupModelFilterSupplier();
+    MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
+            getCurrentTabGroupModelFilterSupplier();
 
     /** Reset the internal filter list to allow initialization again. */
     void resetTabGroupModelFilterListForTesting(); // IN-TEST

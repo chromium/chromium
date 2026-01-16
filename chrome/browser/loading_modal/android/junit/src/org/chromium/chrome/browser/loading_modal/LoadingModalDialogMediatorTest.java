@@ -21,7 +21,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -37,7 +37,7 @@ public class LoadingModalDialogMediatorTest {
 
     @Mock private ModalDialogManager mModalDialogManager;
 
-    @Mock private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
+    @Mock private MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     @Mock private LoadingModalDialogCoordinator.Observer mDialogCoordinatorObserver;
 

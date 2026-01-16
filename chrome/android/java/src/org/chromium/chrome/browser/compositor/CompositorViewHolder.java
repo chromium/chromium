@@ -48,8 +48,8 @@ import org.chromium.base.InputHintChecker;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNullIf;
@@ -1480,7 +1480,7 @@ public class CompositorViewHolder extends FrameLayout
     public void onFinishNativeInitialization(
             TabModelSelector tabModelSelector,
             TabCreatorManager tabCreatorManager,
-            ObservableSupplier<Integer> bottomControlsOffsetSupplier) {
+            MonotonicObservableSupplier<Integer> bottomControlsOffsetSupplier) {
         assert mLayoutManager != null;
         assert mTopUiThemeColorProvider != null;
         mLayoutManager.init(

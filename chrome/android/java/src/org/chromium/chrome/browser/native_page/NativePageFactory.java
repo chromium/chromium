@@ -20,8 +20,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -96,11 +96,11 @@ public class NativePageFactory {
     private final Supplier<Toolbar> mToolbarSupplier;
     private final @Nullable HomeSurfaceTracker mHomeSurfaceTracker;
     private final ActivityResultTracker mActivityResultTracker;
-    private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
+    private final MonotonicObservableSupplier<TabContentManager> mTabContentManagerSupplier;
     private final NonNullObservableSupplier<Integer> mTabStripHeightSupplier;
     private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
-    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
-    private final ObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier;
+    private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    private final MonotonicObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier;
     private final StartupMetricsTracker mStartupMetricsTracker;
     private @Nullable NewTabPageCreationTracker mNewTabPageCreationTracker;
 
@@ -124,11 +124,11 @@ public class NativePageFactory {
             Supplier<Toolbar> toolbarSupplier,
             @Nullable HomeSurfaceTracker homeSurfaceTracker,
             ActivityResultTracker activityResultTracker,
-            ObservableSupplier<TabContentManager> tabContentManagerSupplier,
+            MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier,
             NonNullObservableSupplier<Integer> tabStripHeightSupplier,
             OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
-            ObservableSupplier<TopInsetProvider> topInsetProviderSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            MonotonicObservableSupplier<TopInsetProvider> topInsetProviderSupplier,
             StartupMetricsTracker startupMetricsTracker,
             BackPressManager backPressManager,
             MultiInstanceManager multiInstanceManager,
@@ -212,11 +212,12 @@ public class NativePageFactory {
         private final Supplier<Toolbar> mToolbarSupplier;
         private final @Nullable HomeSurfaceTracker mHomeSurfaceTracker;
         private final ActivityResultTracker mActivityResultTracker;
-        private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
+        private final MonotonicObservableSupplier<TabContentManager> mTabContentManagerSupplier;
         private final NonNullObservableSupplier<Integer> mTabStripHeightSupplier;
         private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
-        private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
-        private final ObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier;
+        private final MonotonicObservableSupplier<EdgeToEdgeController>
+                mEdgeToEdgeControllerSupplier;
+        private final MonotonicObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier;
         private final StartupMetricsTracker mStartupMetricsTracker;
         private final BackPressManager mBackPressManager;
         private final MultiInstanceManager mMultiInstanceManager;
@@ -237,11 +238,11 @@ public class NativePageFactory {
                 Supplier<Toolbar> toolbarSupplier,
                 @Nullable HomeSurfaceTracker homeSurfaceTracker,
                 ActivityResultTracker activityResultTracker,
-                ObservableSupplier<TabContentManager> tabContentManagerSupplier,
+                MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier,
                 NonNullObservableSupplier<Integer> tabStripHeightSupplier,
                 OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
-                ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
-                ObservableSupplier<TopInsetProvider> topInsetProviderSupplier,
+                MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+                MonotonicObservableSupplier<TopInsetProvider> topInsetProviderSupplier,
                 StartupMetricsTracker startupMetricsTracker,
                 BackPressManager backPressManager,
                 MultiInstanceManager multiInstanceManager,
@@ -592,14 +593,15 @@ public class NativePageFactory {
         private final Tab mTab;
         private final BrowserControlsStateProvider mBrowserControlsStateProvider;
         private final TabModelSelector mTabModelSelector;
-        private final @Nullable ObservableSupplier<EdgeToEdgeController>
+        private final @Nullable MonotonicObservableSupplier<EdgeToEdgeController>
                 mEdgeToEdgeControllerSupplier;
 
         public TabShim(
                 Tab tab,
                 BrowserControlsStateProvider browserControlsStateProvider,
                 TabModelSelector tabModelSelector,
-                @Nullable ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
+                @Nullable MonotonicObservableSupplier<EdgeToEdgeController>
+                        edgeToEdgeControllerSupplier) {
             mTab = tab;
             mBrowserControlsStateProvider = browserControlsStateProvider;
             mTabModelSelector = tabModelSelector;

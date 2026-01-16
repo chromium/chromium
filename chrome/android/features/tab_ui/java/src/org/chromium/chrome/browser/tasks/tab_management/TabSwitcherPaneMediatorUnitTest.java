@@ -44,7 +44,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -230,7 +230,7 @@ public class TabSwitcherPaneMediatorUnitTest {
 
         // Dialog visibility supplier is updated when back press internal state changes. Use this as
         // a proxy to detect that back press state updated.
-        ObservableSupplier<Boolean> dialogVisibilitySupplier =
+        MonotonicObservableSupplier<Boolean> dialogVisibilitySupplier =
                 mMediator.getIsDialogVisibleSupplier();
         assertFalse(dialogVisibilitySupplier.get());
 
@@ -301,7 +301,7 @@ public class TabSwitcherPaneMediatorUnitTest {
 
     @Test
     public void testIsDialogVisibleSupplier() {
-        ObservableSupplier<Boolean> dialogVisibilitySupplier =
+        MonotonicObservableSupplier<Boolean> dialogVisibilitySupplier =
                 mMediator.getIsDialogVisibleSupplier();
         assertFalse(dialogVisibilitySupplier.get());
 

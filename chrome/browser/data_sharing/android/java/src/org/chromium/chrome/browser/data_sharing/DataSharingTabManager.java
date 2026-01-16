@@ -19,7 +19,7 @@ import android.text.TextUtils;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -98,10 +98,10 @@ public class DataSharingTabManager {
     // Separator for description and link in share sheet.
     private static final String SHARED_TEXT_SEPARATOR = "";
 
-    private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final DataSharingTabGroupsDelegate mDataSharingTabGroupsDelegate;
     private final Supplier<BottomSheetController> mBottomSheetControllerSupplier;
-    private ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
+    private MonotonicObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     private final WindowAndroid mWindowAndroid;
     private final Resources mResources;
     private final OneshotSupplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
@@ -129,10 +129,10 @@ public class DataSharingTabManager {
      *     CollaborationControllerDelegate}
      */
     public DataSharingTabManager(
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             DataSharingTabGroupsDelegate tabGroupsDelegate,
             Supplier<BottomSheetController> bottomSheetControllerSupplier,
-            ObservableSupplier<ShareDelegate> shareDelegateSupplier,
+            MonotonicObservableSupplier<ShareDelegate> shareDelegateSupplier,
             WindowAndroid windowAndroid,
             Resources resources,
             OneshotSupplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
@@ -963,7 +963,7 @@ public class DataSharingTabManager {
 
     /** Override ShareDelegateSupplier for testing. */
     public void setShareDelegateSupplierForTesting(
-            ObservableSupplier<ShareDelegate> shareDelegateSupplier) {
+            MonotonicObservableSupplier<ShareDelegate> shareDelegateSupplier) {
         mShareDelegateSupplier = shareDelegateSupplier;
     }
 }

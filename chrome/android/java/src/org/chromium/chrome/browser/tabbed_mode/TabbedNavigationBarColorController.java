@@ -21,8 +21,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.ObserverList;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -71,8 +71,8 @@ class TabbedNavigationBarColorController
     private final @Nullable TabModelSelectorObserver mTabModelSelectorObserver;
     private final Callback<TabModel> mCurrentTabModelObserver;
     private final FullscreenManager.@Nullable Observer mFullscreenObserver;
-    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
-    private final ObservableSupplier<Integer> mOverviewColorSupplier;
+    private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    private final MonotonicObservableSupplier<Integer> mOverviewColorSupplier;
     private final Callback<Integer> mOnOverviewColorChanged = color -> updateNavigationBarColor();
     private final Callback<EdgeToEdgeController> mEdgeToEdgeRegisterChangeObserverCallback;
     private EdgeToEdgeSystemBarColorHelper mEdgeToEdgeSystemBarColorHelper;
@@ -115,7 +115,7 @@ class TabbedNavigationBarColorController
      * @param context Used to load resources.
      * @param tabModelSelector The {@link TabModelSelector} used to determine which tab model is
      *     selected.
-     * @param layoutManagerSupplier An {@link ObservableSupplier} for the {@link LayoutManager}
+     * @param layoutManagerSupplier An {@link MonotonicObservableSupplier} for the {@link LayoutManager}
      *     associated with the containing activity.
      * @param fullscreenManager The {@link FullscreenManager} used to determine if fullscreen is
      *     enabled.
@@ -141,16 +141,16 @@ class TabbedNavigationBarColorController
     TabbedNavigationBarColorController(
             Context context,
             TabModelSelector tabModelSelector,
-            ObservableSupplier<LayoutManager> layoutManagerSupplier,
+            MonotonicObservableSupplier<LayoutManager> layoutManagerSupplier,
             FullscreenManager fullscreenManager,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             BottomControlsStacker bottomControlsStacker,
             BrowserControlsStateProvider browserControlsStateProvider,
             NullableObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier,
             BottomSheetController bottomSheetController,
             @Nullable OmniboxSuggestionsVisualState omniboxSuggestionsVisualState,
             @Nullable ManualFillingComponent manualFillingComponent,
-            ObservableSupplier<Integer> overviewColorSupplier,
+            MonotonicObservableSupplier<Integer> overviewColorSupplier,
             InsetObserver insetObserver,
             EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper) {
         this(
@@ -175,10 +175,10 @@ class TabbedNavigationBarColorController
     TabbedNavigationBarColorController(
             Context context,
             TabModelSelector tabModelSelector,
-            ObservableSupplier<LayoutManager> layoutManagerSupplier,
+            MonotonicObservableSupplier<LayoutManager> layoutManagerSupplier,
             FullscreenManager fullscreenManager,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
-            ObservableSupplier<Integer> overviewColorSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            MonotonicObservableSupplier<Integer> overviewColorSupplier,
             EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper,
             BottomAttachedUiObserver bottomAttachedUiObserver) {
         mContext = context;

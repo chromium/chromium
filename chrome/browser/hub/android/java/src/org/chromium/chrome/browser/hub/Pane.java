@@ -7,9 +7,9 @@ package org.chromium.chrome.browser.hub;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
@@ -55,7 +55,7 @@ public interface Pane extends BackPressHandler {
     void notifyLoadHint(@LoadHint int loadHint);
 
     /** Returns button data for the primary action on the page, such as adding a tab. */
-    ObservableSupplier<FullButtonData> getActionButtonDataSupplier();
+    MonotonicObservableSupplier<FullButtonData> getActionButtonDataSupplier();
 
     /** Returns the visuals for creating a button to navigate to this pane. */
     NullableObservableSupplier<DisplayButtonData> getReferenceButtonDataSupplier();

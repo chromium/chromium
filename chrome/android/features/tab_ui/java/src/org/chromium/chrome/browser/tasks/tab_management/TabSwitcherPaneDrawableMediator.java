@@ -9,8 +9,8 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneDr
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
@@ -25,14 +25,14 @@ public class TabSwitcherPaneDrawableMediator {
     private final CallbackController mCallbackController = new CallbackController();
     private final Callback<TabModelDotInfo> mNotificationDotObserver = this::updateNotificationDot;
     private final Callback<Integer> mTabCountSupplierObserver = this::updateTabCount;
-    private final ObservableSupplier<TabModelDotInfo> mNotificationDotSupplier;
+    private final MonotonicObservableSupplier<TabModelDotInfo> mNotificationDotSupplier;
     private final PropertyModel mModel;
 
     private @Nullable NonNullObservableSupplier<Integer> mTabCountSupplier;
 
     public TabSwitcherPaneDrawableMediator(
             TabModelSelector tabModelSelector,
-            ObservableSupplier<TabModelDotInfo> notificationDotSupplier,
+            MonotonicObservableSupplier<TabModelDotInfo> notificationDotSupplier,
             PropertyModel model) {
         mNotificationDotSupplier = notificationDotSupplier;
         mModel = model;

@@ -21,7 +21,7 @@ import androidx.core.graphics.Insets;
 import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -250,7 +250,7 @@ class MenuButtonMediator implements AppMenuObserver {
         mAppMenuPropertiesDelegate.loadingStateChanged(isLoading);
     }
 
-    ObservableSupplier<AppMenuButtonHelper> getMenuButtonHelperSupplier() {
+    MonotonicObservableSupplier<AppMenuButtonHelper> getMenuButtonHelperSupplier() {
         return mAppMenuButtonHelperSupplier;
     }
 

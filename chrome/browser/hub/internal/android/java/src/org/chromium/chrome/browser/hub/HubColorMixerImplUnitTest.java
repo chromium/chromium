@@ -37,7 +37,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.animation.AnimationHandler;
@@ -233,7 +233,7 @@ public class HubColorMixerImplUnitTest {
         ShadowLooper.runUiThreadTasks();
         assertTrue(mHubColorMixer.getOverviewMode());
 
-        ObservableSupplier<Integer> overviewColorSupplier =
+        MonotonicObservableSupplier<Integer> overviewColorSupplier =
                 mHubColorMixer.getOverviewColorSupplier();
         @ColorInt Integer expectedColor = getBackgroundColorForTests(HubColorScheme.DEFAULT);
         assertEquals(expectedColor, overviewColorSupplier.get());
@@ -246,7 +246,7 @@ public class HubColorMixerImplUnitTest {
         ShadowLooper.runUiThreadTasks();
         assertTrue(mHubColorMixer.getOverviewMode());
 
-        ObservableSupplier<Integer> overviewColorSupplier =
+        MonotonicObservableSupplier<Integer> overviewColorSupplier =
                 mHubColorMixer.getOverviewColorSupplier();
         @ColorInt Integer expectedColor = getBackgroundColorForTests(HubColorScheme.INCOGNITO);
         assertEquals(expectedColor, overviewColorSupplier.get());
@@ -258,7 +258,7 @@ public class HubColorMixerImplUnitTest {
         ShadowLooper.runUiThreadTasks();
         assertTrue(mHubColorMixer.getOverviewMode());
 
-        ObservableSupplier<Integer> overviewColorSupplier =
+        MonotonicObservableSupplier<Integer> overviewColorSupplier =
                 mHubColorMixer.getOverviewColorSupplier();
         @ColorInt Integer expectedColor = getBackgroundColorForTests(HubColorScheme.DEFAULT);
         assertEquals(expectedColor, overviewColorSupplier.get());
@@ -299,7 +299,7 @@ public class HubColorMixerImplUnitTest {
 
     @Test
     public void testOverviewAlphaObserver_inOverviewMode() {
-        ObservableSupplier<Integer> overviewColorSupplier =
+        MonotonicObservableSupplier<Integer> overviewColorSupplier =
                 mHubColorMixer.getOverviewColorSupplier();
 
         enableOverviewMode();
@@ -314,7 +314,7 @@ public class HubColorMixerImplUnitTest {
 
     @Test
     public void testOverviewAlphaObserver_notInOverviewMode() {
-        ObservableSupplier<Integer> overviewColorSupplier =
+        MonotonicObservableSupplier<Integer> overviewColorSupplier =
                 mHubColorMixer.getOverviewColorSupplier();
 
         @ColorInt int expectedColor = overviewColorSupplier.get();

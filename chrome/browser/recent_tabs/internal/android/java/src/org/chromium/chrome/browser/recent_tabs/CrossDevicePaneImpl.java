@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.recent_tabs;
 
 import android.content.Context;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.hub.LoadHint;
@@ -24,7 +24,7 @@ import java.util.function.DoubleConsumer;
  */
 @NullMarked
 public class CrossDevicePaneImpl extends PaneBase {
-    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeController;
+    private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeController;
     private @Nullable CrossDeviceListCoordinator mCrossDeviceListCoordinator;
 
     /**
@@ -35,7 +35,7 @@ public class CrossDevicePaneImpl extends PaneBase {
     CrossDevicePaneImpl(
             Context context,
             DoubleConsumer onToolbarAlphaChange,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         super(PaneId.CROSS_DEVICE, context, onToolbarAlphaChange);
         mEdgeToEdgeController = edgeToEdgeSupplier;
         mReferenceButtonDataSupplier.set(

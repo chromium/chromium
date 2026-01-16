@@ -23,7 +23,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.SysUtils;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.blink_public.input.SelectionGranularity;
 import org.chromium.build.annotations.Initializer;
@@ -277,7 +277,7 @@ public class ContextualSearchManager
             BrowserControlsStateProvider browserControlsStateProvider,
             WindowAndroid windowAndroid,
             TabModelSelector tabModelSelector,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
         mActivity = activity;
         mProfile = profile;
         mTabPromotionDelegate = tabPromotionDelegate;
@@ -1971,7 +1971,8 @@ public class ContextualSearchManager
      * @return the {@link OverlayPanelStateProvider} for observing changes to the Overlay Panel
      *     state.
      */
-    public ObservableSupplier<OverlayPanelStateProvider> getOverlayPanelStateProviderSupplier() {
+    public MonotonicObservableSupplier<OverlayPanelStateProvider>
+            getOverlayPanelStateProviderSupplier() {
         return mOverlayPanelStateProviderSupplier;
     }
 

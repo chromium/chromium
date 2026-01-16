@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.compositor.layouts;
 import android.content.Context;
 import android.view.ViewGroup;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -38,9 +38,9 @@ import java.util.function.Supplier;
 public class LayoutManagerChromePhone extends LayoutManagerChrome {
     // TODO(crbug.com/40282469): Rename SimpleAnimationLayout to NewTabAnimationLayout once it is
     // rolled out.
-    private final ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
-    private final ObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier;
-    private final ObservableSupplier<Boolean> mScrimVisibilitySupplier;
+    private final MonotonicObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
+    private final MonotonicObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier;
+    private final MonotonicObservableSupplier<Boolean> mScrimVisibilitySupplier;
     private final ToolbarManager mToolbarManager;
     private final ViewGroup mContentView;
     private Layout mSimpleAnimationLayout;
@@ -67,14 +67,14 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             ViewGroup contentContainer,
             Supplier<TabSwitcher> tabSwitcherSupplier,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
-            ObservableSupplier<TabContentManager> tabContentManagerSupplier,
+            MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
             HubLayoutDependencyHolder hubLayoutDependencyHolder,
-            ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
+            MonotonicObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
             ViewGroup contentView,
             ToolbarManager toolbarManager,
-            ObservableSupplier<Boolean> scrimVisibilitySupplier,
-            ObservableSupplier<TopInsetProvider> topInsetProviderSupplier) {
+            MonotonicObservableSupplier<Boolean> scrimVisibilitySupplier,
+            MonotonicObservableSupplier<TopInsetProvider> topInsetProviderSupplier) {
         super(
                 host,
                 contentContainer,
@@ -104,7 +104,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             @Nullable ControlContainer controlContainer,
             DynamicResourceLoader dynamicResourceLoader,
             TopUiThemeColorProvider topUiColorProvider,
-            ObservableSupplier<Integer> bottomControlsOffsetSupplier) {
+            MonotonicObservableSupplier<Integer> bottomControlsOffsetSupplier) {
         Context context = mHost.getContext();
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
 

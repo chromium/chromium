@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.tabbed_mode;
 
 import android.view.Window;
 
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
@@ -62,16 +62,16 @@ public class TabbedSystemUiCoordinator {
     public TabbedSystemUiCoordinator(
             Window window,
             TabModelSelector tabModelSelector,
-            @Nullable ObservableSupplier<LayoutManager> layoutManagerSupplier,
+            @Nullable MonotonicObservableSupplier<LayoutManager> layoutManagerSupplier,
             FullscreenManager fullscreenManager,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             BottomControlsStacker bottomControlsStacker,
             BrowserControlsStateProvider browserControlsStateProvider,
             NullableObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier,
             BottomSheetController bottomSheetController,
             @Nullable OmniboxSuggestionsVisualState omniboxSuggestionsVisualState,
             @Nullable ManualFillingComponent manualFillingComponent,
-            ObservableSupplier<Integer> overviewColorSupplier,
+            MonotonicObservableSupplier<Integer> overviewColorSupplier,
             InsetObserver insetObserver,
             EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper) {
         assert layoutManagerSupplier != null;

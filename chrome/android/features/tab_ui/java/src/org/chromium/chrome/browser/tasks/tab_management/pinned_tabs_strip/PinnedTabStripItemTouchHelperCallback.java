@@ -14,7 +14,7 @@ import android.view.ViewConfiguration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -40,7 +40,7 @@ public class PinnedTabStripItemTouchHelperCallback extends ItemTouchHelper2.Simp
     private static final long LONGPRESS_DURATION_MS = ViewConfiguration.getLongPressTimeout();
     private final TabGridItemLongPressOrchestrator mTabGridItemLongPressOrchestrator;
     private final TabListModel mModel;
-    private final ObservableSupplier<@Nullable TabGroupModelFilter>
+    private final MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
     private final int mFixedScrollAmount;
     private int mSelectedTabIndex = TabModel.INVALID_TAB_INDEX;
@@ -53,7 +53,7 @@ public class PinnedTabStripItemTouchHelperCallback extends ItemTouchHelper2.Simp
      */
     public PinnedTabStripItemTouchHelperCallback(
             Context context,
-            ObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilter,
+            MonotonicObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilter,
             TabListModel model,
             Supplier<RecyclerView> recyclerViewSupplier,
             OnLongPressTabItemEventListener onLongPress) {

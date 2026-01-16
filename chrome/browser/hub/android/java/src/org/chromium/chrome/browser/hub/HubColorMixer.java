@@ -11,7 +11,7 @@ import static org.chromium.chrome.browser.hub.HubColorMixer.StateChange.TRANSLAT
 
 import androidx.annotation.IntDef;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -88,7 +88,7 @@ public interface HubColorMixer {
     /**
      * Supplies the current overview mode color. This will be null if overview mode is not enabled.
      */
-    ObservableSupplier<Integer> getOverviewColorSupplier();
+    MonotonicObservableSupplier<Integer> getOverviewColorSupplier();
 
     /**
      * Updates overview mode based on the provided reason for the state change.

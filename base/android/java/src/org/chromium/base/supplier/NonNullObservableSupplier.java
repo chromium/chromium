@@ -10,29 +10,29 @@ import org.chromium.build.annotations.NullMarked;
 import java.util.function.Supplier;
 
 /**
- * A specialization of {@link ObservableSupplier} that is guaranteed to not supply null.
+ * A specialization of {@link MonotonicObservableSupplier} that is guaranteed to not supply null.
  *
  * @param <T> The type of the result.
  */
 @NullMarked
 // TODO(agrieve): Add @DoNotMock
-public interface NonNullObservableSupplier<T> extends Supplier<T>, ObservableSupplier<T> {
+public interface NonNullObservableSupplier<T> extends Supplier<T>, MonotonicObservableSupplier<T> {
     @Override
     default T addSyncObserver(Callback<T> obs) {
-        return addObserver(obs, ObservableSupplier.NotifyBehavior.NONE);
+        return addObserver(obs, MonotonicObservableSupplier.NotifyBehavior.NONE);
     }
 
     @Override
     default T addSyncObserverAndCallIfNonNull(Callback<T> obs) {
-        return addObserver(obs, ObservableSupplier.NotifyBehavior.NOTIFY_ON_ADD);
+        return addObserver(obs, MonotonicObservableSupplier.NotifyBehavior.NOTIFY_ON_ADD);
     }
 
     @Override
     default T addSyncObserverAndPostIfNonNull(Callback<T> obs) {
         return addObserver(
                 obs,
-                ObservableSupplier.NotifyBehavior.NOTIFY_ON_ADD
-                        | ObservableSupplier.NotifyBehavior.POST_ON_ADD);
+                MonotonicObservableSupplier.NotifyBehavior.NOTIFY_ON_ADD
+                        | MonotonicObservableSupplier.NotifyBehavior.POST_ON_ADD);
     }
 
     @Override

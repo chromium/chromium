@@ -18,7 +18,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.Initializer;
@@ -75,14 +75,14 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
     private final Context mContext;
     private final WindowAndroid mWindowAndroid;
     private final FuseboxAttachmentModelList mModelList;
-    private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private @Nullable FuseboxMediator mMediator;
     private @Nullable ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
     private boolean mDefaultSearchEngineIsGoogle = true;
     private TemplateUrlService mTemplateUrlService;
     private final ObservableSupplierImpl<@FuseboxState Integer> mFuseboxStateSupplier =
             new ObservableSupplierImpl<>(FuseboxState.DISABLED);
-    private final ObservableSupplier<Profile> mProfileSupplier;
+    private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Profile> mProfileObserver = this::onProfileAvailable;
     private final SnackbarManager mSnackbarManager;
     private final @Nullable ViewportRectProvider mViewportRectProvider;
@@ -91,9 +91,9 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
             Context context,
             WindowAndroid windowAndroid,
             ConstraintLayout parent,
-            ObservableSupplier<Profile> profileObservableSupplier,
+            MonotonicObservableSupplier<Profile> profileObservableSupplier,
             LocationBarDataProvider locationBarDataProvider,
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
             ObservableSupplierImpl<@AutocompleteRequestType Integer>
                     autocompleteRequestTypeSupplier,
@@ -285,10 +285,10 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
     }
 
     /**
-     * @return An {@link ObservableSupplier} that notifies observers when the autocomplete request
+     * @return An {@link MonotonicObservableSupplier} that notifies observers when the autocomplete request
      *     type changes.
      */
-    public ObservableSupplier<@AutocompleteRequestType Integer>
+    public MonotonicObservableSupplier<@AutocompleteRequestType Integer>
             getAutocompleteRequestTypeSupplier() {
         return mAutocompleteRequestTypeSupplier;
     }
@@ -368,7 +368,7 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
      * Registers a callback notified when the compactness of the fusebox changes. This callback will
      * only fire if the compact mode variant is enabled and the compactness state changes.
      */
-    public ObservableSupplier<@FuseboxState Integer> getFuseboxStateSupplier() {
+    public MonotonicObservableSupplier<@FuseboxState Integer> getFuseboxStateSupplier() {
         return mFuseboxStateSupplier;
     }
 

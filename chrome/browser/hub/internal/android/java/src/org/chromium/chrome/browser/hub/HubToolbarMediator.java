@@ -28,8 +28,8 @@ import androidx.core.util.Pair;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
@@ -122,7 +122,7 @@ public class HubToolbarMediator {
             this::onHubSearchEnabledStateChange;
     private final Callback<Boolean> mOnSearchBoxVisibilityChange =
             this::onSearchBoxVisibilityChange;
-    private final ObservableSupplier<Boolean> mHairlineVisibilitySupplier;
+    private final MonotonicObservableSupplier<Boolean> mHairlineVisibilitySupplier;
 
     private final Callback<Boolean> mOnHairlineVisibilityChange = this::onHairlineVisibilityChange;
 
@@ -169,7 +169,8 @@ public class HubToolbarMediator {
                         .getFocusedPaneSupplier()
                         .createTransitiveNonNull(false, Pane::getHairlineVisibilitySupplier);
         mHairlineVisibilitySupplier.addObserver(mOnHairlineVisibilityChange);
-        ObservableSupplier<Pane> focusedPaneSupplier = paneManager.getFocusedPaneSupplier();
+        MonotonicObservableSupplier<Pane> focusedPaneSupplier =
+                paneManager.getFocusedPaneSupplier();
         focusedPaneSupplier.addObserver(mOnFocusedPaneChange);
         rebuildPaneSwitcherButtonData();
 

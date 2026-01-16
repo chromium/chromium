@@ -11,8 +11,8 @@ import android.widget.Button;
 import android.widget.ImageButton;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
@@ -38,7 +38,7 @@ public class HubToolbarCoordinator {
     private final MenuButtonCoordinator mMenuButtonCoordinator;
     private final MenuButton mMenuButton;
     private final UserEducationHelper mUserEducationHelper;
-    private final ObservableSupplier<Boolean> mIsAnimatingSupplier;
+    private final MonotonicObservableSupplier<Boolean> mIsAnimatingSupplier;
     private final @Nullable NonNullObservableSupplier<Boolean> mBottomToolbarVisibilitySupplier;
     private final HubActionButtonCoordinator mActionButtonCoordinator;
 
@@ -65,7 +65,7 @@ public class HubToolbarCoordinator {
             SearchActivityClient searchActivityClient,
             HubColorMixer hubColorMixer,
             UserEducationHelper userEducationHelper,
-            ObservableSupplier<Boolean> isHubAnimatingSupplier,
+            MonotonicObservableSupplier<Boolean> isHubAnimatingSupplier,
             @Nullable NonNullObservableSupplier<Boolean> bottomToolbarVisibilitySupplier,
             Runnable exitHubRunnable) {
         mUserEducationHelper = userEducationHelper;

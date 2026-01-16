@@ -17,7 +17,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -350,8 +350,8 @@ public class TabItemPickerCoordinator {
     }
 
     /** Creates a TabGroupModelFilter instance required by the TabListEditorCoordinator. */
-    private ObservableSupplier<@Nullable TabGroupModelFilter> createTabGroupModelFilterSupplier(
-            TabModelSelector tabModelSelector) {
+    private MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
+            createTabGroupModelFilterSupplier(TabModelSelector tabModelSelector) {
         boolean isIncognito = assumeNonNull(mProfileSupplier.get()).isIncognitoBranded();
         return new ObservableSupplierImpl<@Nullable TabGroupModelFilter>(
                 tabModelSelector.getTabGroupModelFilter(isIncognito));
@@ -384,7 +384,7 @@ public class TabItemPickerCoordinator {
     /** Creates a TabListEditorCoordinator with set configurations for the Tab Picker UI. */
     @VisibleForTesting
     TabListEditorCoordinator createTabListEditorCoordinator(TabModelSelector selector) {
-        ObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier =
+        MonotonicObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier =
                 createTabGroupModelFilterSupplier(selector);
         BrowserControlsStateProvider browserControlStateProvider =
                 new HeadlessBrowserControlsStateProvider();

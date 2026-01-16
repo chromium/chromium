@@ -15,7 +15,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -152,7 +152,7 @@ public class IncognitoReauthControllerImpl
 
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final TabModelSelector mTabModelSelector;
-    private final ObservableSupplier<Profile> mProfileObservableSupplier;
+    private final MonotonicObservableSupplier<Profile> mProfileObservableSupplier;
     private final IncognitoReauthCoordinatorFactory mIncognitoReauthCoordinatorFactory;
     private final int mTaskId;
     private final boolean mIsTabbedActivity;
@@ -213,7 +213,7 @@ public class IncognitoReauthControllerImpl
             TabModelSelector tabModelSelector,
             ActivityLifecycleDispatcher dispatcher,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderOneshotSupplier,
-            ObservableSupplier<Profile> profileSupplier,
+            MonotonicObservableSupplier<Profile> profileSupplier,
             IncognitoReauthCoordinatorFactory incognitoReauthCoordinatorFactory,
             Supplier<Boolean> incognitoReauthPendingOnRestoreSupplier,
             int taskId) {

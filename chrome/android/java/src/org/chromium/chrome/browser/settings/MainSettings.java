@@ -27,7 +27,7 @@ import androidx.preference.Preference;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -145,7 +145,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
 
     private ManagedPreferenceDelegate mManagedPreferenceDelegate;
     private ChromeBasePreference mManageSync;
-    private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     // TODO(crbug.com/354927682): This should be removed when the snackbar issue is addressed.
     // Will be true if `onSignedOut()` was called when the current activity state is not
     // `Lifecycle.State.STARTED`.
@@ -179,7 +179,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
     }
 
     @Override
-    public ObservableSupplier<String> getPageTitle() {
+    public MonotonicObservableSupplier<String> getPageTitle() {
         return mPageTitle;
     }
 
@@ -664,7 +664,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
             Profile profile,
             String key,
             Bundle extras,
-            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
+            MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         if (key.equals(PREF_PASSWORDS)) {
             MainSettings.showPasswordSettings(context, profile, modalDialogManagerSupplier);
             // Open an external activity. Keep the state as is.
@@ -684,7 +684,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
     private static void showPasswordSettings(
             Context context,
             Profile profile,
-            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
+            MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         PasswordManagerLauncher.showPasswordSettings(
                 context,
                 profile,
@@ -923,7 +923,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
 
     @Initializer
     public void setModalDialogManagerSupplier(
-            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
+            MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
 

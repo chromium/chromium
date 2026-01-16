@@ -15,7 +15,7 @@ import org.json.JSONObject;
 import org.junit.Assert;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
@@ -63,11 +63,12 @@ public class DisplayCutoutTestRule<T extends ChromeActivity> extends ChromeActiv
         private float mDipScale = 1;
 
         public static TestDisplayCutoutController create(
-                Tab tab, final ObservableSupplier<Integer> browserCutoutModeSupplier) {
+                Tab tab, final MonotonicObservableSupplier<Integer> browserCutoutModeSupplier) {
             DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate delegate =
                     new DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate(tab) {
                         @Override
-                        public ObservableSupplier<Integer> getBrowserDisplayCutoutModeSupplier() {
+                        public MonotonicObservableSupplier<Integer>
+                                getBrowserDisplayCutoutModeSupplier() {
                             return browserCutoutModeSupplier;
                         }
                     };

@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -73,9 +73,9 @@ public class TabSwitcherPaneCoordinatorFactory {
     private final DataSharingTabManager mDataSharingTabManager;
     private final BackPressManager mBackPressManager;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
-    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
-    private final ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
-    private final ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
+    private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
+    private final MonotonicObservableSupplier<ShareDelegate> mShareDelegateSupplier;
+    private final MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     private final UndoBarThrottle mUndoBarThrottle;
     private final Supplier<PaneManager> mPaneManagerSupplier;
     private final Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
@@ -127,9 +127,9 @@ public class TabSwitcherPaneCoordinatorFactory {
             DataSharingTabManager dataSharingTabManager,
             BackPressManager backPressManager,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
-            ObservableSupplier<ShareDelegate> shareDelegateSupplier,
-            ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            MonotonicObservableSupplier<ShareDelegate> shareDelegateSupplier,
+            MonotonicObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             UndoBarThrottle undoBarThrottle,
             Supplier<PaneManager> paneManagerSupplier,
             Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
@@ -181,12 +181,12 @@ public class TabSwitcherPaneCoordinatorFactory {
     TabSwitcherPaneCoordinator create(
             ViewGroup parentView,
             TabSwitcherResetHandler resetHandler,
-            ObservableSupplier<Boolean> isVisibleSupplier,
-            ObservableSupplier<Boolean> isAnimatingSupplier,
+            MonotonicObservableSupplier<Boolean> isVisibleSupplier,
+            MonotonicObservableSupplier<Boolean> isAnimatingSupplier,
             Callback<Integer> onTabClickCallback,
             boolean isIncognito,
             @Nullable Runnable onTabGroupCreation,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             Callback<@Nullable View> setOverlayViewCallback,
             SettableNonNullObservableSupplier<Boolean> hubSearchBoxVisibilitySupplier) {
         int token = mMessageManagerTokenHolder.acquireToken();
@@ -232,7 +232,7 @@ public class TabSwitcherPaneCoordinatorFactory {
     }
 
     @VisibleForTesting
-    ObservableSupplier<@Nullable TabGroupModelFilter> createTabGroupModelFilterSupplier(
+    MonotonicObservableSupplier<@Nullable TabGroupModelFilter> createTabGroupModelFilterSupplier(
             boolean isIncognito) {
         ObservableSupplierImpl<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier =
                 new ObservableSupplierImpl<>();

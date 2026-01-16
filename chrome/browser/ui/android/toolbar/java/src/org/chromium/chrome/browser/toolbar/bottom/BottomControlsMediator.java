@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.toolbar.bottom;
 
 import org.chromium.base.CallbackController;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
@@ -57,7 +57,7 @@ class BottomControlsMediator
 
     private final CallbackController mCallbackController;
 
-    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
 
     private final Supplier<Boolean> mReadAloudRestoringSupplier;
 
@@ -112,8 +112,8 @@ class BottomControlsMediator
             TabObscuringHandler tabObscuringHandler,
             int bottomControlsHeight,
             int bottomControlsShadowHeight,
-            ObservableSupplier<Boolean> overlayPanelVisibilitySupplier,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            MonotonicObservableSupplier<Boolean> overlayPanelVisibilitySupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             Supplier<Boolean> readAloudRestoringSupplier) {
         mModel = model;
 

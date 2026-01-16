@@ -38,7 +38,7 @@ import androidx.slidingpanelayout.widget.SlidingPaneLayout;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.Initializer;
@@ -93,7 +93,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
     private final Handler mHandler = new Handler();
     private final Profile mProfile;
     private final Callback<Integer> mUpdateFirstVisibleTitle;
-    private final ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     private @Nullable Fragment mResultsFragment;
     private @Nullable Runnable mSearchRunnable;
@@ -176,7 +176,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
             Map<PreferenceFragmentCompat, ContainmentItemDecoration> itemDecorations,
             Profile profile,
             Callback<Integer> updateFirstVisibleTitle,
-            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
+            MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         mActivity = activity;
         mUseMultiColumnSupplier = useMultiColumnSupplier;
         mMultiColumnSettings = multiColumnSettings;

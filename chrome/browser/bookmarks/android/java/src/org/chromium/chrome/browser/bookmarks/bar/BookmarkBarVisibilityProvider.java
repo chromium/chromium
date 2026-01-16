@@ -14,7 +14,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ObserverList;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.R;
@@ -61,7 +61,7 @@ public class BookmarkBarVisibilityProvider {
     private final Activity mActivity;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final ConfigurationChangedObserver mConfigurationChangedListener;
-    private final ObservableSupplier<Profile> mProfileSupplier;
+    private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Profile> mProfileSupplierObserver;
     private final ObserverList<BookmarkBarVisibilityObserver> mObservers;
 
@@ -78,7 +78,7 @@ public class BookmarkBarVisibilityProvider {
     public BookmarkBarVisibilityProvider(
             @NonNull Activity activity,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            @NonNull ObservableSupplier<Profile> profileSupplier) {
+            @NonNull MonotonicObservableSupplier<Profile> profileSupplier) {
         mActivity = activity;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mProfileSupplier = profileSupplier;

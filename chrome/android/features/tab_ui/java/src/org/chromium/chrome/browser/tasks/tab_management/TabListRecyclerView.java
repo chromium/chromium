@@ -24,7 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -149,8 +149,7 @@ public class TabListRecyclerView extends RecyclerView
     /**
      * Returns a boolean indicating whether any animator in {@link TabListItemAnimator} is running.
      */
-    @Nullable
-    ObservableSupplier<Boolean> getIsAnimatorRunningSupplier() {
+    @Nullable MonotonicObservableSupplier<Boolean> getIsAnimatorRunningSupplier() {
         return mIsAnimatorRunningSupplier;
     }
 

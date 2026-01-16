@@ -21,8 +21,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -83,7 +83,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     private final TabGroupUiToolbarView mToolbarView;
     private final ViewGroup mTabListContainerView;
     private final ScrimManager mScrimManager;
-    private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
+    private final MonotonicObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     private final BottomSheetController mBottomSheetController;
     private final DataSharingTabManager mDataSharingTabManager;
     private final TabModelSelector mTabModelSelector;
@@ -95,7 +95,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             ObservableSuppliers.createNullable();
     private final ThemeColorProvider mThemeColorProvider;
     private final UndoBarThrottle mUndoBarThrottle;
-    private final ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
+    private final MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
 
     private @Nullable PropertyModelChangeProcessor mModelChangeProcessor;
@@ -112,7 +112,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             ViewGroup parentView,
             BrowserControlsStateProvider browserControlsStateProvider,
             ScrimManager scrimManager,
-            ObservableSupplier<Boolean> omniboxFocusStateSupplier,
+            MonotonicObservableSupplier<Boolean> omniboxFocusStateSupplier,
             BottomSheetController bottomSheetController,
             DataSharingTabManager dataSharingTabManager,
             TabModelSelector tabModelSelector,
@@ -122,7 +122,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             ModalDialogManager modalDialogManager,
             ThemeColorProvider themeColorProvider,
             UndoBarThrottle undoBarThrottle,
-            ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+            MonotonicObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             Supplier<ShareDelegate> shareDelegateSupplier) {
         try (TraceEvent e = TraceEvent.scoped("TabGroupUiCoordinator.constructor")) {
             mActivity = activity;

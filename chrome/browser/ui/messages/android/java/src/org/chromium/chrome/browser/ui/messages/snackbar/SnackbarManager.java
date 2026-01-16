@@ -19,7 +19,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -104,7 +104,8 @@ public class SnackbarManager
     private final TokenHolder mTokenHolder = new TokenHolder(this::onTokenHolderChanged);
     private final SnackbarCollection mSnackbars = new SnackbarCollection();
 
-    private final @Nullable ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    private final @Nullable MonotonicObservableSupplier<EdgeToEdgeController>
+            mEdgeToEdgeControllerSupplier;
     private @Nullable SnackbarView mView;
     private boolean mActivityInForeground;
     private boolean mIsDisabledForTesting;
@@ -140,7 +141,8 @@ public class SnackbarManager
             Activity activity,
             ViewGroup snackbarParentView,
             @Nullable WindowAndroid windowAndroid,
-            @Nullable ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
+            @Nullable MonotonicObservableSupplier<EdgeToEdgeController>
+                    edgeToEdgeControllerSupplier) {
         mActivity = activity;
         mUiThreadHandler = new Handler();
         mOriginalParentView = snackbarParentView;
@@ -296,7 +298,7 @@ public class SnackbarManager
     /**
      * @return Supplier of whether the snackbar is showing
      */
-    public ObservableSupplier<Boolean> isShowingSupplier() {
+    public MonotonicObservableSupplier<Boolean> isShowingSupplier() {
         return mIsShowingSupplier;
     }
 

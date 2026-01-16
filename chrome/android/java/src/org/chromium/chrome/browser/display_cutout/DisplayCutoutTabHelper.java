@@ -10,7 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -103,7 +103,8 @@ public class DisplayCutoutTabHelper implements UserData {
         }
 
         @Override
-        public @Nullable ObservableSupplier<Integer> getBrowserDisplayCutoutModeSupplier() {
+        public @Nullable MonotonicObservableSupplier<Integer>
+                getBrowserDisplayCutoutModeSupplier() {
             WindowAndroid window = mTab.getWindowAndroid();
             return window == null ? null : ActivityDisplayCutoutModeSupplier.from(window);
         }

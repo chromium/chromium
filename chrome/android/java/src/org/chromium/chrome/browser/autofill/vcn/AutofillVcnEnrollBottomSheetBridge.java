@@ -20,7 +20,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeStringConstants;
@@ -57,7 +57,8 @@ import java.util.List;
     private @Nullable AutofillVcnEnrollBottomSheetCoordinator mCoordinator;
 
     private @Nullable LayoutStateProvider mLayoutStateProviderForTesting;
-    private @Nullable ObservableSupplier<TabModelSelector> mTabModelSelectorSupplierForTesting;
+    private @Nullable MonotonicObservableSupplier<TabModelSelector>
+            mTabModelSelectorSupplierForTesting;
 
     @CalledByNative
     @VisibleForTesting
@@ -172,7 +173,7 @@ import java.util.List;
                 mLayoutStateProviderForTesting != null
                         ? mLayoutStateProviderForTesting
                         : LayoutManagerProvider.from(window);
-        ObservableSupplier<TabModelSelector> selectorSupplier =
+        MonotonicObservableSupplier<TabModelSelector> selectorSupplier =
                 mTabModelSelectorSupplierForTesting != null
                         ? mTabModelSelectorSupplierForTesting
                         : TabModelSelectorSupplier.from(window);
@@ -195,7 +196,7 @@ import java.util.List;
     }
 
     void setTabModelSelectorSupplierForTesting(
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mTabModelSelectorSupplierForTesting = tabModelSelectorSupplier;
     }
 

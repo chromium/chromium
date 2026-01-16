@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.display_cutout;
 
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -21,12 +21,12 @@ import org.chromium.ui.base.WindowAndroid;
 @NullMarked
 public class ActivityDisplayCutoutModeSupplier {
     /** The key for accessing this object on an {@link org.chromium.base.UnownedUserDataHost}. */
-    private static final UnownedUserDataKey<ObservableSupplier<Integer>> KEY =
+    private static final UnownedUserDataKey<MonotonicObservableSupplier<Integer>> KEY =
             new UnownedUserDataKey<>();
 
     private static @Nullable ObservableSupplierImpl<Integer> sInstanceForTesting;
 
-    public static @Nullable ObservableSupplier<Integer> from(WindowAndroid window) {
+    public static @Nullable MonotonicObservableSupplier<Integer> from(WindowAndroid window) {
         if (sInstanceForTesting != null) return sInstanceForTesting;
         return KEY.retrieveDataFromHost(window.getUnownedUserDataHost());
     }
@@ -36,11 +36,12 @@ public class ActivityDisplayCutoutModeSupplier {
      *
      * @param host The host to attach the supplier to.
      */
-    public static void attach(UnownedUserDataHost host, ObservableSupplier<Integer> supplier) {
+    public static void attach(
+            UnownedUserDataHost host, MonotonicObservableSupplier<Integer> supplier) {
         KEY.attachToHost(host, supplier);
     }
 
-    public static void destroy(ObservableSupplier<Integer> supplier) {
+    public static void destroy(MonotonicObservableSupplier<Integer> supplier) {
         KEY.detachFromAllHosts(supplier);
     }
 

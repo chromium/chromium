@@ -30,7 +30,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -66,7 +66,7 @@ public class TopToolbarOverlayMediatorTest {
     @Mock private Tab mTab;
 
     @Mock private Tab mTab2;
-    @Mock private ObservableSupplier<Tab> mTabSupplier;
+    @Mock private MonotonicObservableSupplier<Tab> mTabSupplier;
     @Mock private ToolbarProgressBar mProgressBar;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;

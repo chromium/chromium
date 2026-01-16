@@ -11,7 +11,7 @@ import android.os.Handler;
 import android.os.PersistableBundle;
 import android.view.View;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
@@ -36,7 +36,7 @@ public class ActivityRecreationController {
 
     static final String ACTIVITY_RECREATION_UI_STATE = "activity_recreation_ui_state";
     private final OneshotSupplier<ToolbarManager> mToolbarManagerSupplier;
-    private final ObservableSupplier<LayoutManager> mLayoutManagerSupplier;
+    private final MonotonicObservableSupplier<LayoutManager> mLayoutManagerSupplier;
     private final ActivityTabProvider mActivityTabProvider;
     private final Handler mLayoutStateHandler;
     private @Nullable ActivityRecreationUiState mRetainedUiState;
@@ -53,7 +53,7 @@ public class ActivityRecreationController {
      */
     public ActivityRecreationController(
             OneshotSupplierImpl<ToolbarManager> toolbarManagerSupplier,
-            ObservableSupplier<LayoutManager> layoutManagerSupplier,
+            MonotonicObservableSupplier<LayoutManager> layoutManagerSupplier,
             ActivityTabProvider activityTabProvider,
             Handler layoutStateHandler,
             @Nullable ExclusiveAccessManager exclusiveAccessManager) {

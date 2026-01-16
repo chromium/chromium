@@ -17,7 +17,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -73,7 +73,7 @@ public class IdentityDiscController
                 ButtonDataProvider {
     // Context is used for fetching resources and launching preferences page.
     private final Context mContext;
-    private final ObservableSupplier<Profile> mProfileSupplier;
+    private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Profile> mProfileSupplierObserver = this::setProfile;
     private @Nullable Profile mProfile;
 
@@ -96,7 +96,8 @@ public class IdentityDiscController
     /**
      * @param context The Context for retrieving resources, launching preference activity, etc.
      */
-    public IdentityDiscController(Context context, ObservableSupplier<Profile> profileSupplier) {
+    public IdentityDiscController(
+            Context context, MonotonicObservableSupplier<Profile> profileSupplier) {
         mContext = context;
         mProfileSupplier = profileSupplier;
         mProfileSupplier.addObserver(mProfileSupplierObserver);

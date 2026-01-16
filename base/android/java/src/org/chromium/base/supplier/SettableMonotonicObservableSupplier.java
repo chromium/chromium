@@ -14,7 +14,8 @@ import org.chromium.build.annotations.NullMarked;
  */
 @NullMarked
 // TODO(agrieve): Add @DoNotMock
-public interface SettableObservableSupplier<T> extends ObservableSupplier<T>, Destroyable {
+public interface SettableMonotonicObservableSupplier<T>
+        extends MonotonicObservableSupplier<T>, Destroyable {
     /**
      * Sets the value of the supplier.
      *
@@ -33,6 +34,6 @@ public interface SettableObservableSupplier<T> extends ObservableSupplier<T>, De
     @Override
     default SettableNonNullObservableSupplier<T> asNonNull() {
         // Cast from monotonic non-null -> non-null.
-        return (SettableNonNullObservableSupplier<T>) ObservableSupplier.super.asNonNull();
+        return (SettableNonNullObservableSupplier<T>) MonotonicObservableSupplier.super.asNonNull();
     }
 }

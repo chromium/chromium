@@ -8,7 +8,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.version_info.Channel;
 import org.chromium.base.version_info.VersionConstants;
@@ -32,7 +32,7 @@ public class DeveloperSettings extends ChromeBaseSettingsFragment
 
     // Non-translated strings:
     private static final String MSG_DEVELOPER_OPTIONS_TITLE = "Developer options";
-    private final ObservableSupplier<String> mPageTitle =
+    private final MonotonicObservableSupplier<String> mPageTitle =
             new ObservableSupplierImpl<>(MSG_DEVELOPER_OPTIONS_TITLE);
 
     private static @Nullable Boolean sIsEnabledForTests;
@@ -71,7 +71,7 @@ public class DeveloperSettings extends ChromeBaseSettingsFragment
     }
 
     @Override
-    public ObservableSupplier<String> getPageTitle() {
+    public MonotonicObservableSupplier<String> getPageTitle() {
         return mPageTitle;
     }
 

@@ -16,7 +16,7 @@ import org.junit.Assert;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
@@ -665,7 +665,7 @@ public class ChromeTabUtils {
     /** Close all tabs and waits for all tabs pending closure to be observed. */
     public static void closeAllTabs(
             Instrumentation instrumentation,
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         final CallbackHelper closeCallback = new CallbackHelper();
         final TabModelObserver observer =
                 new TabModelObserver() {
@@ -721,7 +721,7 @@ public class ChromeTabUtils {
 
     /**
      * @deprecated Transitory method, use {@link #closeAllTabs(Instrumentation,
-     *     ObservableSupplier<TabModelSelector>)} instead. TODO(crbug.com/40191386): Remove this
+     *     MonotonicObservableSupplier <TabModelSelector>)} instead. TODO(crbug.com/40191386): Remove this
      *     after the usages are migrated.
      */
     public static void closeAllTabs(
@@ -778,7 +778,7 @@ public class ChromeTabUtils {
         Assert.assertTrue(ThreadUtils.runningOnUiThread());
         Assert.assertNotNull(windowAndroid);
 
-        final ObservableSupplier<TabModelSelector> supplier =
+        final MonotonicObservableSupplier<TabModelSelector> supplier =
                 TabModelSelectorSupplier.from(windowAndroid);
         Assert.assertNotNull(supplier);
 

@@ -28,7 +28,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
@@ -77,8 +77,8 @@ public class TabSwitcherActionMenuRenderTest {
                     .build();
 
     @Mock private Profile mProfile;
-    @Mock private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-    @Mock private ObservableSupplier<Tab> mCurrentTabSupplier;
+    @Mock private MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    @Mock private MonotonicObservableSupplier<Tab> mCurrentTabSupplier;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mModel;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;

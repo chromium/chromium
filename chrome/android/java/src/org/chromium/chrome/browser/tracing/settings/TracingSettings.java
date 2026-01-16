@@ -11,7 +11,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -64,7 +64,7 @@ public class TracingSettings extends ChromeBaseSettingsFragment
     private static final String MSG_MODE_RECORD_CONTINUOUSLY = "Record continuously";
     private static final String MSG_SHARE_TRACE = "Share trace";
 
-    private final ObservableSupplier<String> mPageTitle =
+    private final MonotonicObservableSupplier<String> mPageTitle =
             new ObservableSupplierImpl<>(MSG_TRACING_TITLE);
 
     @VisibleForTesting
@@ -231,7 +231,7 @@ public class TracingSettings extends ChromeBaseSettingsFragment
     }
 
     @Override
-    public ObservableSupplier<String> getPageTitle() {
+    public MonotonicObservableSupplier<String> getPageTitle() {
         return mPageTitle;
     }
 

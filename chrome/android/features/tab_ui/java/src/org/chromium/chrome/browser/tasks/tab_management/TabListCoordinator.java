@@ -38,7 +38,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Token;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -147,7 +147,8 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     private final boolean mAllowDragAndDrop;
     private final boolean mAllowDetachingTabsToCreateNewWindows;
     private final @Nullable TabSwitcherDragHandler mTabSwitcherDragHandler;
-    private final ObservableSupplier<@Nullable TabGroupModelFilter> mTabGroupModelFilterSupplier;
+    private final MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
+            mTabGroupModelFilterSupplier;
     private final ObserverList<DragObserver> mDragObserverList = new ObserverList<>();
     private final TabListHighlighter mTabListHighlighter;
     private final TabListMergeAnimationManager mTabListMergeAnimationManager;
@@ -208,7 +209,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
             Activity activity,
             BrowserControlsStateProvider browserControlsStateProvider,
             ModalDialogManager modalDialogManager,
-            ObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier,
+            MonotonicObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier,
             @Nullable ThumbnailProvider thumbnailProvider,
             boolean actionOnRelatedTabs,
             @Nullable DataSharingTabManager dataSharingTabManager,
@@ -1021,7 +1022,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     }
 
     /** Provides the tab ID for the most recently swiped tab. */
-    ObservableSupplier<Integer> getRecentlySwipedTabSupplier() {
+    MonotonicObservableSupplier<Integer> getRecentlySwipedTabSupplier() {
         return mMediator.getRecentlySwipedTabSupplier();
     }
 

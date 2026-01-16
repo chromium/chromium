@@ -19,7 +19,7 @@ import androidx.core.content.ContextCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -103,7 +103,7 @@ public class StatusBarColorController
     private final @ColorInt int mStandardScrolledOmniboxColor;
     private final @ColorInt int mIncognitoScrolledOmniboxColor;
     private final @ColorInt int mDefaultBackgroundColorForNtp;
-    private final ObservableSupplier<Integer> mOverviewColorSupplier;
+    private final MonotonicObservableSupplier<Integer> mOverviewColorSupplier;
     private final Callback<Integer> mOverviewColorObserver = ignored -> updateStatusBarColor();
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private boolean mToolbarColorChanged;
@@ -169,13 +169,13 @@ public class StatusBarColorController
             Activity activity,
             boolean isTablet,
             StatusBarColorProvider statusBarColorProvider,
-            ObservableSupplier<LayoutManager> layoutManagerSupplier,
+            MonotonicObservableSupplier<LayoutManager> layoutManagerSupplier,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             ActivityTabProvider tabProvider,
             TopUiThemeColorProvider topUiThemeColorProvider,
             EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
-            ObservableSupplier<Integer> overviewColorSupplier) {
+            MonotonicObservableSupplier<Integer> overviewColorSupplier) {
         mActivity = activity;
         mWindow = activity.getWindow();
         mIsTablet = isTablet;

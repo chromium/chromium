@@ -8,8 +8,8 @@ import android.content.Context;
 import android.graphics.RectF;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
@@ -54,11 +54,11 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<ResourceManager> resourceManagerSupplier,
             TopUiThemeColorProvider topUiThemeColorProvider,
-            ObservableSupplier<Integer> bottomToolbarControlsOffsetSupplier,
-            ObservableSupplier<Boolean> suppressToolbarSceneLayerSupplier,
+            MonotonicObservableSupplier<Integer> bottomToolbarControlsOffsetSupplier,
+            MonotonicObservableSupplier<Boolean> suppressToolbarSceneLayerSupplier,
             int layoutsToShowOn,
             boolean isVisibilityManuallyControlled,
-            ObservableSupplier<Long> captureResourceIdSupplier,
+            MonotonicObservableSupplier<Long> captureResourceIdSupplier,
             @Nullable ToolbarProgressBar progressBar) {
         // If BCIV is enabled, we always show the hairline on the composited
         // toolbar, and let renderer+viz control the visibility during scrolls.

@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.privacy.settings;
 
 import androidx.annotation.UiThread;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.minidump_uploader.util.CrashReportingPermissionManager;
 
@@ -110,5 +110,5 @@ public interface PrivacyPreferencesManager extends CrashReportingPermissionManag
      * Must be used on UI thread.
      */
     @UiThread
-    ObservableSupplier<Boolean> getUsageAndCrashReportingPermittedObservableSupplier();
+    MonotonicObservableSupplier<Boolean> getUsageAndCrashReportingPermittedObservableSupplier();
 }

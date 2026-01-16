@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -108,7 +108,7 @@ public class EducationalTipModuleBuilder implements ModuleProviderBuilder, Modul
     }
 
     /** Gets the regular profile if exists. */
-    private Profile getRegularProfile(ObservableSupplier<Profile> profileSupplier) {
+    private Profile getRegularProfile(MonotonicObservableSupplier<Profile> profileSupplier) {
         if (mProfile != null) {
             return mProfile;
         }

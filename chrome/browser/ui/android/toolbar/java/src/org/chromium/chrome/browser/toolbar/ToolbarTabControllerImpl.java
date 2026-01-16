@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.toolbar;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -31,7 +31,8 @@ import java.util.function.Supplier;
 public class ToolbarTabControllerImpl implements ToolbarTabController {
     private final Supplier<@Nullable Tab> mTabSupplier;
     private final Supplier<@Nullable Tracker> mTrackerSupplier;
-    private final ObservableSupplier<BottomControlsCoordinator> mBottomControlsCoordinatorSupplier;
+    private final MonotonicObservableSupplier<BottomControlsCoordinator>
+            mBottomControlsCoordinatorSupplier;
     private final Supplier<String> mHomepageUrlSupplier;
     private final Runnable mOnSuccessRunnable;
     private final Supplier<@Nullable Tab> mActivityTabSupplier;
@@ -54,7 +55,8 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
     public ToolbarTabControllerImpl(
             Supplier<@Nullable Tab> tabSupplier,
             Supplier<@Nullable Tracker> trackerSupplier,
-            ObservableSupplier<BottomControlsCoordinator> bottomControlsCoordinatorSupplier,
+            MonotonicObservableSupplier<BottomControlsCoordinator>
+                    bottomControlsCoordinatorSupplier,
             Supplier<String> homepageUrlSupplier,
             Runnable onSuccessRunnable,
             Supplier<@Nullable Tab> activityTabSupplier,

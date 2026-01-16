@@ -8,7 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 public class IncognitoRestoreAppLaunchDrawBlockerFactory {
     private final Supplier<Bundle> mSavedInstanceStateSupplier;
     private final Supplier<PersistableBundle> mPersistentStateSupplier;
-    private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final CipherFactory mCipherFactory;
 
     /**
@@ -31,14 +31,14 @@ public class IncognitoRestoreAppLaunchDrawBlockerFactory {
      * @param persistentStateSupplier A {@link Supplier<PersistableBundle>} instance to pass in the
      *     PersistableBundle that was persisted during onSaveInstanceState that allows to look for
      *     signals on whether to block the draw or not.
-     * @param tabModelSelectorSupplier A {@link ObservableSupplier<TabModelSelector>} that allows to
+     * @param tabModelSelectorSupplier A {@link MonotonicObservableSupplier <TabModelSelector>} that allows to
      *     listen for onTabStateInitialized signals which is used a fallback to unblock draw.
      * @param cipherFactory The {@link CipherFactory} used for encrypting and decrypting.
      */
     public IncognitoRestoreAppLaunchDrawBlockerFactory(
             Supplier<Bundle> savedInstanceStateSupplier,
             Supplier<PersistableBundle> persistentStateSupplier,
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             CipherFactory cipherFactory) {
         mSavedInstanceStateSupplier = savedInstanceStateSupplier;
         mPersistentStateSupplier = persistentStateSupplier;

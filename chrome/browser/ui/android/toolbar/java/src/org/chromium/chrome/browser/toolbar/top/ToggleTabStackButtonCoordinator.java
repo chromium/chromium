@@ -22,9 +22,9 @@ import androidx.core.widget.ImageViewCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -69,12 +69,12 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
     private final UserEducationHelper mUserEducationHelper;
     private final OneshotSupplier<Boolean> mPromoShownOneshotSupplier;
     private final CurrentTabObserver mPageLoadObserver;
-    private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Callback<Integer> mTabCountSupplierObserver = this::onUpdateTabCount;
     private final Callback<TabModelDotInfo> mNotificationDotObserver =
             this::onUpdateNotificationDot;
-    private @Nullable ObservableSupplier<Integer> mTabCountSupplier;
-    private @Nullable ObservableSupplier<TabModelDotInfo> mNotificationDotSupplier;
+    private @Nullable MonotonicObservableSupplier<Integer> mTabCountSupplier;
+    private @Nullable MonotonicObservableSupplier<TabModelDotInfo> mNotificationDotSupplier;
 
     private @Nullable LayoutStateProvider mLayoutStateProvider;
     private @Nullable LayoutStateObserver mLayoutStateObserver;
@@ -104,7 +104,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
             OneshotSupplier<Boolean> promoShownOneshotSupplier,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             NullableObservableSupplier<Tab> activityTabSupplier,
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             ThemeColorProvider themeColorProvider,
             IncognitoStateProvider incognitoStateProvider) {
         super(context, themeColorProvider, incognitoStateProvider);
@@ -145,9 +145,9 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
     public void initializeWithNative(
             OnClickListener onClickListener,
             OnLongClickListener onLongClickListener,
-            ObservableSupplier<Integer> tabCountSupplier,
+            MonotonicObservableSupplier<Integer> tabCountSupplier,
             @Nullable NonNullObservableSupplier<Integer> archivedTabCountSupplier,
-            ObservableSupplier<TabModelDotInfo> tabModelNotificationDotSupplier,
+            MonotonicObservableSupplier<TabModelDotInfo> tabModelNotificationDotSupplier,
             Runnable archivedTabsIphShownCallback,
             Runnable archivedTabsIphDismissedCallback) {
         mTabCountSupplier = tabCountSupplier;

@@ -10,7 +10,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -69,7 +69,7 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
     // Therefore we use suppliers to provide them once they become available.
     private final OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
     private final OneshotSupplier<BottomSheetController> mBottomSheetControllerSupplier;
-    private final ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final Supplier<SettingsSearchCoordinator> mSearchCoordinator;
 
     public FragmentDependencyProvider(
@@ -77,7 +77,7 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
             Profile profile,
             OneshotSupplier<SnackbarManager> snackbarManagerSupplier,
             OneshotSupplier<BottomSheetController> bottomSheetControllerSupplier,
-            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+            MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             Supplier<SettingsSearchCoordinator> searchCoordinator) {
         mContext = context;
         mProfile = profile;

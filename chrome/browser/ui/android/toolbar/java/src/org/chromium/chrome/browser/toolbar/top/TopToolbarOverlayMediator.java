@@ -11,8 +11,8 @@ import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
@@ -94,8 +94,8 @@ public class TopToolbarOverlayMediator {
     // TODO(crbug.com/417238089): This should have no hard dependency on Bookmark Bar.
     private @Nullable Supplier<Integer> mBookmarkBarHeightSupplier;
 
-    private final ObservableSupplier<Integer> mBottomToolbarControlsOffsetSupplier;
-    private final ObservableSupplier<Boolean> mSuppressToolbarSceneLayerSupplier;
+    private final MonotonicObservableSupplier<Integer> mBottomToolbarControlsOffsetSupplier;
+    private final MonotonicObservableSupplier<Boolean> mSuppressToolbarSceneLayerSupplier;
 
     /** Whether visibility is controlled internally or manually by the feature. */
     private boolean mIsVisibilityManuallyControlled;
@@ -113,7 +113,7 @@ public class TopToolbarOverlayMediator {
     private boolean mIsOnValidLayout;
 
     private final NullableObservableSupplier<Tab> mTabSupplier;
-    private final ObservableSupplier<Long> mCaptureResourceIdSupplier;
+    private final MonotonicObservableSupplier<Long> mCaptureResourceIdSupplier;
     private float mViewportHeight;
 
     private @Nullable BrowserControlsOffsetTagsInfo mBrowserControlsOffsetTagsInfo;
@@ -126,11 +126,11 @@ public class TopToolbarOverlayMediator {
             NullableObservableSupplier<Tab> tabSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
             TopUiThemeColorProvider topUiThemeColorProvider,
-            ObservableSupplier<Integer> bottomToolbarControlsOffsetSupplier,
-            ObservableSupplier<Boolean> suppressToolbarSceneLayerSupplier,
+            MonotonicObservableSupplier<Integer> bottomToolbarControlsOffsetSupplier,
+            MonotonicObservableSupplier<Boolean> suppressToolbarSceneLayerSupplier,
             int layoutsToShowOn,
             boolean manualVisibilityControl,
-            ObservableSupplier<Long> captureResourceIdSupplier,
+            MonotonicObservableSupplier<Long> captureResourceIdSupplier,
             @Nullable ToolbarProgressBar progressBar) {
         mContext = context;
         mLayoutStateProvider = layoutStateProvider;

@@ -8,7 +8,7 @@ import android.content.res.ColorStateList;
 import android.view.View.OnClickListener;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -36,7 +36,7 @@ public class TabSwitcherButtonCoordinator {
     private @Nullable ThemeColorProvider mThemeColorProvider;
     private @Nullable TintObserver mTintObserver;
 
-    private @Nullable ObservableSupplier<Integer> mTabCountSupplier;
+    private @Nullable MonotonicObservableSupplier<Integer> mTabCountSupplier;
 
     /**
      * Build the controller that manages the tab switcher button.
@@ -78,7 +78,7 @@ public class TabSwitcherButtonCoordinator {
                 TabSwitcherButtonProperties.TINT, mThemeColorProvider.getTint());
     }
 
-    public void setTabCountSupplier(ObservableSupplier<Integer> tabCountSupplier) {
+    public void setTabCountSupplier(MonotonicObservableSupplier<Integer> tabCountSupplier) {
         mTabCountSupplier = tabCountSupplier;
         mTabSwitcherButtonModel.set(TabSwitcherButtonProperties.IS_ENABLED, true);
         mTabCountSupplier.addObserver(mTabCountObserver);

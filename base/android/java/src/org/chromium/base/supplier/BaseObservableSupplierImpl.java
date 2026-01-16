@@ -15,7 +15,7 @@ import org.chromium.build.annotations.Nullable;
 @NullMarked
 @SuppressWarnings("NullAway")
 class BaseObservableSupplierImpl<T extends @Nullable Object>
-        implements ObservableSupplier<T>, NonNullObservableSupplier<T> {
+        implements MonotonicObservableSupplier<T>, NonNullObservableSupplier<T> {
     protected @Nullable T mObject;
     // TODO(455874046): Make this non-nullable once ObservableSupplierImpl is no longer directly
     // used.
@@ -54,6 +54,6 @@ class BaseObservableSupplierImpl<T extends @Nullable Object>
         if (thing instanceof BaseObservableSupplierImpl<T> impl) {
             return impl.mAllowSetToNull;
         }
-        return !(thing instanceof ObservableSupplier<T>);
+        return !(thing instanceof MonotonicObservableSupplier<T>);
     }
 }

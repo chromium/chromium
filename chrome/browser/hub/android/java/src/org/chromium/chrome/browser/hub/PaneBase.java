@@ -11,9 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
@@ -92,7 +92,7 @@ public abstract class PaneBase implements Pane {
     public void setPaneHubController(@Nullable PaneHubController paneHubController) {}
 
     @Override
-    public ObservableSupplier<FullButtonData> getActionButtonDataSupplier() {
+    public MonotonicObservableSupplier<FullButtonData> getActionButtonDataSupplier() {
         return ObservableSuppliers.alwaysNull();
     }
 

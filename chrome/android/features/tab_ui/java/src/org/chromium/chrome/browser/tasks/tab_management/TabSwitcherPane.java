@@ -20,7 +20,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -137,11 +137,11 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
             TabSwitcherPaneDrawableCoordinator tabSwitcherDrawableCoordinator,
             DoubleConsumer onToolbarAlphaChange,
             UserEducationHelper userEducationHelper,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
-            ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            MonotonicObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
             TabGroupCreationUiDelegate tabGroupCreationUiDelegate,
             @Nullable ArchivedTabsAutoDeletePromoManager archivedTabsAutoDeletePromoManager,
-            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
+            @Nullable MonotonicObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         super(
                 PaneId.TAB_SWITCHER,
                 context,
@@ -272,7 +272,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
             @Nullable TabSwitcherPaneCoordinator newValue,
             @Nullable TabSwitcherPaneCoordinator oldValue) {
         if (oldValue != null) {
-            OneshotSupplier<ObservableSupplier<Boolean>> wrappedSupplier =
+            OneshotSupplier<MonotonicObservableSupplier<Boolean>> wrappedSupplier =
                     oldValue.getIsScrollingSupplier();
             var wrapped = wrappedSupplier.get();
             if (wrapped != null) {
@@ -280,7 +280,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
             }
         }
         if (newValue != null) {
-            OneshotSupplier<ObservableSupplier<Boolean>> wrappedSupplier =
+            OneshotSupplier<MonotonicObservableSupplier<Boolean>> wrappedSupplier =
                     newValue.getIsScrollingSupplier();
             wrappedSupplier.onAvailable(
                     supplier -> {

@@ -29,7 +29,7 @@ import androidx.core.view.WindowInsetsCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
@@ -194,7 +194,7 @@ public class LocationBarCoordinator
     public LocationBarCoordinator(
             View locationBarLayout,
             View autocompleteAnchorView,
-            ObservableSupplier<Profile> profileObservableSupplier,
+            MonotonicObservableSupplier<Profile> profileObservableSupplier,
             LocationBarDataProvider locationBarDataProvider,
             ActionMode.@Nullable Callback actionModeCallback,
             WindowAndroid windowAndroid,
@@ -218,7 +218,7 @@ public class LocationBarCoordinator
             @Nullable BackPressManager backPressManager,
             @Nullable OmniboxSuggestionsDropdownScrollListener
                     omniboxSuggestionsDropdownScrollListener,
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             LocationBarEmbedder locationBarEmbedder,
             LocationBarEmbedderUiOverrides uiOverrides,
             @Nullable View baseChromeLayout,
@@ -1079,7 +1079,7 @@ public class LocationBarCoordinator
         mLocationBarMediator.updateButtonBackground(backgroundResId);
     }
 
-    public ObservableSupplier<@AutocompleteRequestType Integer>
+    public MonotonicObservableSupplier<@AutocompleteRequestType Integer>
             getAutocompleteRequestTypeSupplier() {
         return mLocationBarMediator.getAutocompleteRequestTypeSupplier();
     }

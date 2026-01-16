@@ -20,8 +20,8 @@ import androidx.core.view.WindowInsetsCompat;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.ui.KeyboardUtils;
@@ -290,7 +290,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
 
     /**
      * Returns a supplier that observes this {@link InsetObserver} and provides changes to the
-     * keyboard inset using the {@link ObservableSupplier} interface.
+     * keyboard inset using the {@link MonotonicObservableSupplier} interface.
      */
     public NonNullObservableSupplier<Integer> getSupplierForKeyboardInset() {
         return mKeyboardInsetSupplier;

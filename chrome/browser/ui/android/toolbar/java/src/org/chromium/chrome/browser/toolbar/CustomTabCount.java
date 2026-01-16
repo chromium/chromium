@@ -8,8 +8,8 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -23,7 +23,7 @@ import org.chromium.ui.util.TokenHolder;
  */
 @NullMarked
 public class CustomTabCount implements Destroyable {
-    private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Callback<TabModelSelector> mTabModelSelectorObserver =
             this::onTabModelSelectorAvailable;
     private final Callback<Integer> mTabCountObserver = this::onUpdateTabCount;
@@ -37,7 +37,7 @@ public class CustomTabCount implements Destroyable {
      *
      * @param tabModelSelectorSupplier Supplier for the {@link TabModelSelector}.
      */
-    public CustomTabCount(ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+    public CustomTabCount(MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mTabModelSelectorSupplier.addSyncObserverAndCallIfNonNull(mTabModelSelectorObserver);
         mTokenHolder = new TokenHolder(this::onTokenChanged);

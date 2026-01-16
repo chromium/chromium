@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.hub;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -26,8 +26,8 @@ public interface HubLayoutController {
     void selectTabAndHideHubLayout(int tabId);
 
     /** Returns a supplier of the {@link LayoutType} shown prior to entering the Hub. */
-    ObservableSupplier<Integer> getPreviousLayoutTypeSupplier();
+    MonotonicObservableSupplier<Integer> getPreviousLayoutTypeSupplier();
 
     /** Supplies whether an animation for the Hub Layout is running. */
-    ObservableSupplier<Boolean> getIsAnimatingSupplier();
+    MonotonicObservableSupplier<Boolean> getIsAnimatingSupplier();
 }

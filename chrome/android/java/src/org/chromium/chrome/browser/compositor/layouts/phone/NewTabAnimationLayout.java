@@ -25,7 +25,7 @@ import androidx.annotation.Px;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
@@ -97,10 +97,10 @@ public class NewTabAnimationLayout extends Layout {
     private final BlackHoleEventFilter mBlackHoleEventFilter;
     private final Handler mHandler;
     private final ToolbarManager mToolbarManager;
-    private final ObservableSupplier<Boolean> mScrimVisibilitySupplier;
+    private final MonotonicObservableSupplier<Boolean> mScrimVisibilitySupplier;
     private final CustomTabCount mCustomTabCount;
     private final BrowserStateBrowserControlsVisibilityDelegate mBrowserVisibilityDelegate;
-    private final ObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier;
+    private final MonotonicObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier;
     private final Callback<TopInsetProvider> mTopInsetProviderObserver =
             this::onTopInsetProviderAvailable;
 
@@ -142,12 +142,12 @@ public class NewTabAnimationLayout extends Layout {
             LayoutRenderHost renderHost,
             LayoutStateProvider layoutStateProvider,
             ViewGroup contentContainer,
-            ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
+            MonotonicObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
             ViewGroup animationHostView,
             ToolbarManager toolbarManager,
             BrowserControlsManager browserControlsManager,
-            ObservableSupplier<Boolean> scrimVisibilitySupplier,
-            ObservableSupplier<TopInsetProvider> topInsetProviderSupplier) {
+            MonotonicObservableSupplier<Boolean> scrimVisibilitySupplier,
+            MonotonicObservableSupplier<TopInsetProvider> topInsetProviderSupplier) {
         super(context, updateHost, renderHost);
         mLayoutStateProvider = layoutStateProvider;
         mContentContainer = contentContainer;
@@ -332,7 +332,7 @@ public class NewTabAnimationLayout extends Layout {
                 }
             }
 
-            ObservableSupplier<Boolean> visibilitySupplier =
+            MonotonicObservableSupplier<Boolean> visibilitySupplier =
                     data != null && !isRegularNtp
                             ? data.getTabContextMenuVisibilitySupplier()
                             : mScrimVisibilitySupplier;
@@ -690,7 +690,7 @@ public class NewTabAnimationLayout extends Layout {
             boolean isRegularNtp,
             @Px int x,
             @Px int y,
-            ObservableSupplier<Boolean> visibilitySupplier) {
+            MonotonicObservableSupplier<Boolean> visibilitySupplier) {
         boolean isIncognito = animationTab.isIncognitoBranded();
         assert assumeNonNull(mLayoutTabs).length == 1;
         mSkipForceAnimationToFinish = true;
@@ -733,7 +733,7 @@ public class NewTabAnimationLayout extends Layout {
         Rect compositorViewRect = new Rect();
         mCompositorViewHolder.getGlobalVisibleRect(compositorViewRect);
 
-        ObservableSupplier<Float> ntpSearchBoxTransitionPercentageSupplier =
+        MonotonicObservableSupplier<Float> ntpSearchBoxTransitionPercentageSupplier =
                 mToolbarManager.getNtpSearchBoxTransitionPercentageSupplier();
 
         @AnimationType

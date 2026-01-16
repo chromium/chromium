@@ -11,8 +11,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
@@ -103,7 +103,7 @@ public class BottomAttachedUiObserver
 
     private final InsetObserver mInsetObserver;
 
-    private @Nullable ObservableSupplier<KeyboardAccessoryVisualStateProvider>
+    private @Nullable MonotonicObservableSupplier<KeyboardAccessoryVisualStateProvider>
             mKeyboardAccessoryVisualStateProviderSupplier;
     private @Nullable Callback<KeyboardAccessoryVisualStateProvider>
             mKeyboardAccessoryProviderSupplierObserver;
@@ -111,7 +111,7 @@ public class BottomAttachedUiObserver
     private boolean mKeyboardAccessoryVisible;
     private @Nullable @ColorInt Integer mKeyboardAccessoryColor;
 
-    private @Nullable ObservableSupplier<AccessorySheetVisualStateProvider>
+    private @Nullable MonotonicObservableSupplier<AccessorySheetVisualStateProvider>
             mAccessorySheetVisualStateProviderSupplier;
     private @Nullable Callback<AccessorySheetVisualStateProvider>
             mAccessorySheetProviderSupplierObserver;

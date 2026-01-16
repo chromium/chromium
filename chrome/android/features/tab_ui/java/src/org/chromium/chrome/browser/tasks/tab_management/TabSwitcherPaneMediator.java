@@ -27,8 +27,8 @@ import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -157,19 +157,21 @@ public class TabSwitcherPaneMediator
 
     private final Context mContext;
     private final TabSwitcherResetHandler mResetHandler;
-    private final ObservableSupplier<@Nullable TabGroupModelFilter> mTabGroupModelFilterSupplier;
+    private final MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
+            mTabGroupModelFilterSupplier;
     private final LazyOneshotSupplier<DialogController> mTabGridDialogControllerSupplier;
     private final PropertyModel mContainerViewModel;
     private final ViewGroup mContainerView;
-    private final ObservableSupplier<Boolean> mIsVisibleSupplier;
-    private final ObservableSupplier<Boolean> mIsAnimatingSupplier;
+    private final MonotonicObservableSupplier<Boolean> mIsVisibleSupplier;
+    private final MonotonicObservableSupplier<Boolean> mIsAnimatingSupplier;
     private final Runnable mOnTabSwitcherShown;
     private final Callback<Integer> mOnTabClickCallback;
     private final TabIndexLookup mTabIndexLookup;
     private final BottomSheetController mBottomSheetController;
     private final Runnable mAddOnLayoutChangedAfterInitialScrollListener;
     private final AnimationHandler mSupplementaryContainerAnimationHandler = new AnimationHandler();
-    private @Nullable ObservableSupplier<TabListEditorController> mTabListEditorControllerSupplier;
+    private @Nullable MonotonicObservableSupplier<TabListEditorController>
+            mTabListEditorControllerSupplier;
     private final SettableNonNullObservableSupplier<Boolean> mHubSearchBoxVisibilitySupplier;
     private @Nullable NonNullObservableSupplier<Boolean>
             mCurrentTabListEditorControllerBackSupplier;
@@ -201,13 +203,13 @@ public class TabSwitcherPaneMediator
     public TabSwitcherPaneMediator(
             Context context,
             TabSwitcherResetHandler resetHandler,
-            ObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier,
+            MonotonicObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier,
             LazyOneshotSupplier<DialogController> tabGridDialogControllerSupplier,
             PropertyModel containerViewModel,
             ViewGroup containerView,
             Runnable onTabSwitcherShown,
-            ObservableSupplier<Boolean> isVisibleSupplier,
-            ObservableSupplier<Boolean> isAnimatingSupplier,
+            MonotonicObservableSupplier<Boolean> isVisibleSupplier,
+            MonotonicObservableSupplier<Boolean> isAnimatingSupplier,
             Callback<Integer> onTabClickCallback,
             TabIndexLookup tabIndexLookup,
             BottomSheetController bottomSheetController,
@@ -278,7 +280,7 @@ public class TabSwitcherPaneMediator
     }
 
     /** Returns a supplier that indicates whether any dialogs are visible. */
-    public ObservableSupplier<Boolean> getIsDialogVisibleSupplier() {
+    public MonotonicObservableSupplier<Boolean> getIsDialogVisibleSupplier() {
         return mIsDialogVisibleSupplier;
     }
 
@@ -404,7 +406,7 @@ public class TabSwitcherPaneMediator
     }
 
     void setTabListEditorControllerSupplier(
-            ObservableSupplier<TabListEditorController> tabListEditorControllerSupplier) {
+            MonotonicObservableSupplier<TabListEditorController> tabListEditorControllerSupplier) {
         assert mTabListEditorControllerSupplier == null
                 : "setTabListEditorControllerSupplier should be called only once.";
         mTabListEditorControllerSupplier = tabListEditorControllerSupplier;

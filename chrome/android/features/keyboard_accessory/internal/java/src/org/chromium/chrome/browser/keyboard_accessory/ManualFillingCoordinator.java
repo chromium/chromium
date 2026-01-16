@@ -11,8 +11,8 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
@@ -58,7 +58,7 @@ class ManualFillingCoordinator implements ManualFillingComponent {
             BooleanSupplier isContextualSearchOpened,
             SoftKeyboardDelegate keyboardDelegate,
             BackPressManager backPressManager,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             InsetObserver insetObserver,
             AsyncViewStub sheetStub,
             AsyncViewStub barStub) {
@@ -222,7 +222,7 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     }
 
     @Override
-    public ObservableSupplier<Integer> getBottomInsetSupplier() {
+    public MonotonicObservableSupplier<Integer> getBottomInsetSupplier() {
         return mMediator.getBottomInsetSupplier();
     }
 
@@ -257,13 +257,13 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     }
 
     @Override
-    public ObservableSupplier<KeyboardAccessoryVisualStateProvider>
+    public MonotonicObservableSupplier<KeyboardAccessoryVisualStateProvider>
             getKeyboardAccessoryVisualStateProvider() {
         return mMediator.getKeyboardAccessoryVisualStateProvider();
     }
 
     @Override
-    public ObservableSupplier<AccessorySheetVisualStateProvider>
+    public MonotonicObservableSupplier<AccessorySheetVisualStateProvider>
             getAccessorySheetVisualStateProvider() {
         return mMediator.getAccessorySheetVisualStateProvider();
     }

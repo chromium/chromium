@@ -310,7 +310,8 @@ public class ObservableSupplierImplTest {
 
     @Test
     public void testMonotonicNonNull() {
-        SettableObservableSupplier<String> supplier = ObservableSuppliers.createMonotonic();
+        SettableMonotonicObservableSupplier<String> supplier =
+                ObservableSuppliers.createMonotonic();
         assertThrows(AssertionError.class, () -> supplier.set(null));
         assertThrows(AssertionError.class, () -> supplier.asNonNull());
         supplier.set("some value");

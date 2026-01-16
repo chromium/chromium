@@ -16,7 +16,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
-import org.chromium.base.supplier.SettableObservableSupplier;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -53,9 +53,9 @@ public class CreatorActivity extends SnackbarActivity {
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private final ActivityLifecycleDispatcherImpl mLifecycleDispatcher =
             new ActivityLifecycleDispatcherImpl(this);
-    private final SettableObservableSupplier<ShareDelegate> mShareDelegateSupplier =
+    private final SettableMonotonicObservableSupplier<ShareDelegate> mShareDelegateSupplier =
             ObservableSuppliers.createMonotonic();
-    private final SettableObservableSupplier<ShareDelegate> mTabShareDelegateSupplier =
+    private final SettableMonotonicObservableSupplier<ShareDelegate> mTabShareDelegateSupplier =
             ObservableSuppliers.createMonotonic();
 
     private static class TabShareDelegateImpl extends ShareDelegateImpl {

@@ -13,8 +13,8 @@ import android.widget.FrameLayout.LayoutParams;
 import androidx.annotation.ColorInt;
 
 import org.chromium.base.ValueChangedCallback;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.MonotonicNonNull;
@@ -55,7 +55,7 @@ public class HubManagerImpl implements HubManager, HubController {
     private final NullableObservableSupplier<Tab> mTabSupplier;
     private final MenuButtonCoordinator mMenuButtonCoordinator;
     private final HubShowPaneHelper mHubShowPaneHelper;
-    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
+    private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     private final SearchActivityClient mSearchActivityClient;
     private final HubColorMixer mHubColorMixer;
 
@@ -65,7 +65,7 @@ public class HubManagerImpl implements HubManager, HubController {
     private int mSnackbarOverrideToken;
     private int mStatusIndicatorHeight;
     private int mAppHeaderHeight;
-    private final @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
+    private final @Nullable MonotonicObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
     private final @PaneId int mDefaultPaneId;
 
     /** See {@link HubManagerFactory#createHubManager}. */
@@ -79,9 +79,9 @@ public class HubManagerImpl implements HubManager, HubController {
             NullableObservableSupplier<Tab> tabSupplier,
             MenuButtonCoordinator menuButtonCoordinator,
             HubShowPaneHelper hubShowPaneHelper,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             SearchActivityClient searchActivityClient,
-            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
+            @Nullable MonotonicObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
             @PaneId int defaultPaneId) {
         mActivity = activity;
         mProfileProviderSupplier = profileProviderSupplier;
@@ -130,7 +130,7 @@ public class HubManagerImpl implements HubManager, HubController {
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHubVisibilitySupplier() {
+    public MonotonicObservableSupplier<Boolean> getHubVisibilitySupplier() {
         return mHubVisibilitySupplier;
     }
 
@@ -159,7 +159,7 @@ public class HubManagerImpl implements HubManager, HubController {
     }
 
     @Override
-    public ObservableSupplier<Integer> getHubOverviewColorSupplier() {
+    public MonotonicObservableSupplier<Integer> getHubOverviewColorSupplier() {
         return mHubColorMixer.getOverviewColorSupplier();
     }
 

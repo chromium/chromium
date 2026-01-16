@@ -28,7 +28,7 @@ import org.chromium.base.Token;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.EnsuresNonNull;
@@ -167,7 +167,7 @@ public class TabGridDialogMediator
         boolean isVisible();
 
         /** A supplier that returns if the dialog is currently showing or animating. */
-        ObservableSupplier<Boolean> getShowingOrAnimationSupplier();
+        MonotonicObservableSupplier<Boolean> getShowingOrAnimationSupplier();
 
         /**
          * Adds a message card to the UI.
@@ -228,7 +228,7 @@ public class TabGridDialogMediator
     private final Activity mActivity;
     private final DialogController mDialogController;
     private final PropertyModel mModel;
-    private final ObservableSupplier<@Nullable TabGroupModelFilter>
+    private final MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
     private final @Nullable TabSwitcherResetHandler mTabSwitcherResetHandler;
     private final Supplier<RecyclerViewPosition> mRecyclerViewPositionSupplier;
@@ -268,7 +268,8 @@ public class TabGridDialogMediator
             Activity activity,
             DialogController dialogController,
             PropertyModel model,
-            ObservableSupplier<@Nullable TabGroupModelFilter> currentTabGroupModelFilterSupplier,
+            MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
+                    currentTabGroupModelFilterSupplier,
             @Nullable TabSwitcherResetHandler tabSwitcherResetHandler,
             Supplier<RecyclerViewPosition> recyclerViewPositionSupplier,
             @Nullable AnimationSourceViewProvider animationSourceViewProvider,
@@ -280,7 +281,7 @@ public class TabGridDialogMediator
             Runnable showColorPickerPopupRunnable,
             @Nullable ModalDialogManager modalDialogManager,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
-            ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+            MonotonicObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             Supplier<ShareDelegate> shareDelegateSupplier) {
         mActivity = activity;
         mDialogController = dialogController;

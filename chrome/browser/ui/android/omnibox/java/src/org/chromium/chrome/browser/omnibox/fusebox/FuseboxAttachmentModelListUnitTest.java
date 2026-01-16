@@ -29,7 +29,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
@@ -53,7 +53,7 @@ public class FuseboxAttachmentModelListUnitTest {
     private Resources mResources;
     private FuseboxAttachmentModelList mFuseboxAttachmentModelList;
     private FuseboxAttachment mTestAttachment;
-    private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
 
     private FuseboxAttachment createTestAttachment(String title) {
         return FuseboxAttachment.forFile(

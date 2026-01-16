@@ -28,7 +28,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
@@ -61,7 +61,7 @@ public class StatusBarColorControllerUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock private StatusBarColorProvider mStatusBarColorProvider;
-    @Mock private ObservableSupplier<LayoutManager> mLayoutManagerSupplier;
+    @Mock private MonotonicObservableSupplier<LayoutManager> mLayoutManagerSupplier;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
     @Mock private EdgeToEdgeSystemBarColorHelper mSystemBarColorHelper;

@@ -75,7 +75,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -1903,7 +1903,7 @@ public class BookmarkTest {
         RecyclerView recyclerView = mBookmarkManagerCoordinator.getRecyclerViewForTesting();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ObservableSupplier<EdgeToEdgeController> supplier =
+                    MonotonicObservableSupplier<EdgeToEdgeController> supplier =
                             mBookmarkActivity.getEdgeToEdgeSupplier();
                     EdgeToEdgeController edgeToEdgeController =
                             supplier == null ? null : supplier.get();
@@ -1937,7 +1937,7 @@ public class BookmarkTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ScrollView scrollView = editActivity.getScrollViewForTesting();
-                    ObservableSupplier<EdgeToEdgeController> supplier =
+                    MonotonicObservableSupplier<EdgeToEdgeController> supplier =
                             editActivity.getEdgeToEdgeSupplier();
                     EdgeToEdgeController edgeToEdgeController =
                             supplier == null ? null : supplier.get();

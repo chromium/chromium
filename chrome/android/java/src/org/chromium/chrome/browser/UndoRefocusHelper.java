@@ -8,7 +8,7 @@ import static org.chromium.build.NullUtil.assertNonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
@@ -32,7 +32,7 @@ import java.util.Set;
 public class UndoRefocusHelper {
     private final Set<Integer> mTabsClosedFromTabStrip;
     private final TabModelSelector mModelSelector;
-    private final ObservableSupplier<LayoutManagerImpl> mLayoutManagerObservableSupplier;
+    private final MonotonicObservableSupplier<LayoutManagerImpl> mLayoutManagerObservableSupplier;
 
     private @Nullable LayoutManagerImpl mLayoutManager;
     private LayoutStateProvider.@Nullable LayoutStateObserver mLayoutStateObserver;
@@ -53,7 +53,7 @@ public class UndoRefocusHelper {
      */
     public UndoRefocusHelper(
             TabModelSelector modelSelector,
-            ObservableSupplier<LayoutManagerImpl> layoutManagerObservableSupplier,
+            MonotonicObservableSupplier<LayoutManagerImpl> layoutManagerObservableSupplier,
             boolean isTablet) {
         mLayoutManagerObservableSupplier = layoutManagerObservableSupplier;
         mModelSelector = modelSelector;

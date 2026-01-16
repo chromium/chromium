@@ -11,7 +11,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -56,12 +56,12 @@ class DropdownItemViewInfoListBuilder {
     private @Nullable Supplier<ShareDelegate> mShareDelegateSupplier;
     private @Nullable OmniboxImageSupplier mImageSupplier;
     private final BookmarkState mBookmarkState;
-    private final ObservableSupplier<@ControlsPosition Integer> mToolbarPositionSupplier;
+    private final MonotonicObservableSupplier<@ControlsPosition Integer> mToolbarPositionSupplier;
 
     DropdownItemViewInfoListBuilder(
             Supplier<@Nullable Tab> tabSupplier,
             BookmarkState bookmarkState,
-            ObservableSupplier<@ControlsPosition Integer> toolbarPositionSupplier) {
+            MonotonicObservableSupplier<@ControlsPosition Integer> toolbarPositionSupplier) {
         mPriorityOrderedSuggestionProcessors = new ArrayList<>();
         mActivityTabSupplier = tabSupplier;
         mImageSupplier = null;

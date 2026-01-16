@@ -46,7 +46,7 @@ import org.mockito.stubbing.Answer;
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.SettableObservableSupplier;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CloseableOnMainThread;
@@ -1222,7 +1222,7 @@ public class ContextMenuTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var supplier =
-                            (SettableObservableSupplier<ShareDelegate>)
+                            (SettableMonotonicObservableSupplier<ShareDelegate>)
                                     ShareDelegateSupplier.from(
                                             mActivityTestRule.getActivity().getWindowAndroid());
                     Mockito.doReturn(true).when(mShareDelegate).isSharingHubEnabled();
@@ -1268,7 +1268,7 @@ public class ContextMenuTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var supplier =
-                            (SettableObservableSupplier<ShareDelegate>)
+                            (SettableMonotonicObservableSupplier<ShareDelegate>)
                                     ShareDelegateSupplier.from(
                                             mActivityTestRule.getActivity().getWindowAndroid());
                     supplier.set(mShareDelegate);
@@ -1312,7 +1312,7 @@ public class ContextMenuTest {
                     // Set share delegate before triggering context menu, so the mocked share
                     // delegate is used.
                     var supplier =
-                            (SettableObservableSupplier<ShareDelegate>)
+                            (SettableMonotonicObservableSupplier<ShareDelegate>)
                                     ShareDelegateSupplier.from(
                                             mActivityTestRule.getActivity().getWindowAndroid());
                     supplier.set(mShareDelegate);
@@ -1359,7 +1359,7 @@ public class ContextMenuTest {
                     // Set share delegate before triggering context menu, so the mocked share
                     // delegate is used.
                     var supplier =
-                            (SettableObservableSupplier<ShareDelegate>)
+                            (SettableMonotonicObservableSupplier<ShareDelegate>)
                                     ShareDelegateSupplier.from(
                                             mActivityTestRule.getActivity().getWindowAndroid());
                     supplier.set(mShareDelegate);

@@ -9,7 +9,7 @@ import android.app.Activity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
@@ -52,7 +52,7 @@ public class TabBookmarker {
      */
     public TabBookmarker(
             @NonNull Activity activity,
-            @NonNull ObservableSupplier<BookmarkModel> bookmarkModelSupplier,
+            @NonNull MonotonicObservableSupplier<BookmarkModel> bookmarkModelSupplier,
             @NonNull Supplier<BottomSheetController> bottomSheetControllerSupplier,
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
             @NonNull BookmarkManagerOpener bookmarkManagerOpener,

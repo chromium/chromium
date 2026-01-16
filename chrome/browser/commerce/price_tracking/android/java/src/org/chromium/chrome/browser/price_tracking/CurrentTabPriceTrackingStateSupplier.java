@@ -7,9 +7,9 @@ package org.chromium.chrome.browser.price_tracking;
 import com.google.common.primitives.UnsignedLongs;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -43,7 +43,7 @@ public class CurrentTabPriceTrackingStateSupplier implements NonNullObservableSu
     private final SettableNonNullObservableSupplier<Boolean> mSupplier =
             ObservableSuppliers.createNonNull(false);
     private final NullableObservableSupplier<Tab> mTabSupplier;
-    private final ObservableSupplier<Profile> mProfileSupplier;
+    private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Profile> mOnProfileUpdatedCallback = this::onProfileUpdated;
     private final SubscriptionsObserver mSubscriptionObserver =
             new SubscriptionsObserver() {
@@ -71,7 +71,7 @@ public class CurrentTabPriceTrackingStateSupplier implements NonNullObservableSu
      */
     public CurrentTabPriceTrackingStateSupplier(
             NullableObservableSupplier<Tab> tabSupplier,
-            ObservableSupplier<Profile> profileSupplier) {
+            MonotonicObservableSupplier<Profile> profileSupplier) {
         mTabSupplier = tabSupplier;
         mProfileSupplier = profileSupplier;
 

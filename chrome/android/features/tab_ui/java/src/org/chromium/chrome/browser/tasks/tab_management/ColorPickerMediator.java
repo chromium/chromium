@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -38,7 +38,7 @@ public class ColorPickerMediator {
         mSelectedColorSupplier.set(selectedColor);
     }
 
-    ObservableSupplier<Integer> getSelectedColorSupplier() {
+    MonotonicObservableSupplier<Integer> getSelectedColorSupplier() {
         return mSelectedColorSupplier;
     }
 }

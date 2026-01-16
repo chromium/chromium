@@ -27,7 +27,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
@@ -55,7 +55,7 @@ public class SceneOverlayTest {
 
     @Mock private ViewGroup mContainerView;
 
-    @Mock private ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
+    @Mock private MonotonicObservableSupplier<TabContentManager> mTabContentManagerSupplier;
 
     @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
 

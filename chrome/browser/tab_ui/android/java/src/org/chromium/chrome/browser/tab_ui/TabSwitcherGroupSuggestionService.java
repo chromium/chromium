@@ -12,7 +12,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -223,7 +223,7 @@ public class TabSwitcherGroupSuggestionService {
                 }
             };
     private final @WindowId int mWindowId;
-    private final ObservableSupplier<@Nullable TabGroupModelFilter>
+    private final MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
     private final SuggestionLifecycleObserverHandler mSuggestionLifecycleObserverHandler;
     private final GroupSuggestionsService mGroupSuggestionsService;
@@ -239,7 +239,8 @@ public class TabSwitcherGroupSuggestionService {
      */
     public TabSwitcherGroupSuggestionService(
             @WindowId int windowId,
-            ObservableSupplier<@Nullable TabGroupModelFilter> currentTabGroupModelFilterSupplier,
+            MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
+                    currentTabGroupModelFilterSupplier,
             Profile profile,
             SuggestionLifecycleObserverHandler suggestionLifecycleObserverHandler) {
         mWindowId = windowId;

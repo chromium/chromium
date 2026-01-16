@@ -12,7 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -26,7 +26,7 @@ public class HubPaneHostMediator {
     private final PropertyModel mPropertyModel;
     private final PaneOrderController mPaneOrderController;
     private @PaneId int mCurrentPaneId;
-    private final ObservableSupplier<Pane> mPaneSupplier;
+    private final MonotonicObservableSupplier<Pane> mPaneSupplier;
 
     /**
      * Should be non-null after constructor finishes, cannot be final as the Java compiler can't
@@ -44,7 +44,7 @@ public class HubPaneHostMediator {
      */
     public HubPaneHostMediator(
             PropertyModel propertyModel,
-            ObservableSupplier<Pane> paneSupplier,
+            MonotonicObservableSupplier<Pane> paneSupplier,
             PaneOrderController paneOrderController,
             @PaneId int defaultPaneId) {
         mPropertyModel = propertyModel;

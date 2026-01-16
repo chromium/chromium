@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.compositor.layouts.phone;
 
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -64,9 +64,9 @@ class AnimationInterruptor implements Destroyable {
     private final LayoutStateProvider mLayoutStateProvider;
     private final NullableObservableSupplier<Tab> mCurrentTabSupplier;
     private final Tab mAnimationTab;
-    private final ObservableSupplier<Boolean> mScrimVisibilitySupplier;
+    private final MonotonicObservableSupplier<Boolean> mScrimVisibilitySupplier;
     private final SettableNonNullObservableSupplier<Boolean> mContextMenuVisibilitySupplier;
-    private final ObservableSupplier<Float> mNtpSearchBoxTransitionPercentageSupplier;
+    private final MonotonicObservableSupplier<Float> mNtpSearchBoxTransitionPercentageSupplier;
 
     private @Nullable Runnable mInterruptAnimationRunnable;
 
@@ -85,8 +85,8 @@ class AnimationInterruptor implements Destroyable {
             LayoutStateProvider layoutStateProvider,
             NullableObservableSupplier<Tab> currentTabSupplier,
             Tab animationTab,
-            ObservableSupplier<Boolean> scrimVisibilitySupplier,
-            ObservableSupplier<Float> ntpSearchBoxTransitionPercentageSupplier,
+            MonotonicObservableSupplier<Boolean> scrimVisibilitySupplier,
+            MonotonicObservableSupplier<Float> ntpSearchBoxTransitionPercentageSupplier,
             boolean isRegularNtp,
             Runnable interruptAnimationRunnable) {
         mLayoutStateProvider = layoutStateProvider;

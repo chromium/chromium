@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -60,8 +60,8 @@ public class PinnedTabStripCoordinator {
             Activity activity,
             ViewGroup parentView,
             TabListCoordinator tabListCoordinator,
-            ObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier,
-            ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+            MonotonicObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier,
+            MonotonicObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             BottomSheetController bottomSheetController,
             ModalDialogManager modalDialogManager,
             @Nullable Runnable onTabGroupCreation) {
@@ -141,7 +141,7 @@ public class PinnedTabStripCoordinator {
     }
 
     /** Returns a supplier that indicates whether the pinned tab strip is animating. */
-    public ObservableSupplier<Boolean> getIsVisibilityAnimationRunningSupplier() {
+    public MonotonicObservableSupplier<Boolean> getIsVisibilityAnimationRunningSupplier() {
         return mIsVisibilityAnimationRunningSupplier;
     }
 
@@ -162,8 +162,8 @@ public class PinnedTabStripCoordinator {
             TabListModel tabListModel,
             TabListModel pinnedTabsModelList,
             PropertyModel stripPropertyModel,
-            ObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier,
-            ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+            MonotonicObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier,
+            MonotonicObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             BottomSheetController bottomSheetController,
             ModalDialogManager modalDialogManager,
             @Nullable Runnable onTabGroupCreation) {

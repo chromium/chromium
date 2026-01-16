@@ -32,7 +32,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.Promise;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
 import org.chromium.base.task.PostTask;
@@ -88,7 +88,7 @@ import java.util.function.Supplier;
 public class HubLayout extends Layout implements HubLayoutController, AppHeaderObserver {
     /**
      * Implementation of {@link HubLayoutAnimationListener} that updates an {@link
-     * ObservableSupplier<Boolean>} to reflect the animation state.
+     * MonotonicObservableSupplier <Boolean>} to reflect the animation state.
      */
     @VisibleForTesting
     static class HubLayoutAnimationListenerImpl implements HubLayoutAnimationListener {
@@ -244,7 +244,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     }
 
     @Override
-    public ObservableSupplier<Integer> getPreviousLayoutTypeSupplier() {
+    public MonotonicObservableSupplier<Integer> getPreviousLayoutTypeSupplier() {
         return mPreviousLayoutTypeSupplier;
     }
 
@@ -705,7 +705,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     }
 
     @Override
-    public ObservableSupplier<Boolean> getIsAnimatingSupplier() {
+    public MonotonicObservableSupplier<Boolean> getIsAnimatingSupplier() {
         return mIsAnimatingSupplier;
     }
 

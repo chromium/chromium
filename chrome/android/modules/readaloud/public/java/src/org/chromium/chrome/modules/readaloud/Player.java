@@ -7,7 +7,7 @@ package org.chromium.chrome.modules.readaloud;
 import android.app.Activity;
 
 import org.chromium.base.Promise;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -45,13 +45,14 @@ public interface Player {
         ObservableSupplierImpl<Boolean> getHighlightingEnabledSupplier();
 
         /** Returns the supplier for the list of voices to show in the voice menu. */
-        ObservableSupplier<List<PlaybackVoice>> getCurrentLanguageVoicesSupplier();
+        MonotonicObservableSupplier<List<PlaybackVoice>> getCurrentLanguageVoicesSupplier();
 
         /** Returns the supplier for the current language's selected voice. */
-        ObservableSupplier<String> getVoiceIdSupplier();
+        MonotonicObservableSupplier<String> getVoiceIdSupplier();
 
         /** Whether the mode selection is enabled. */
-        ObservableSupplier<PlaybackModeSelectionEnablementStatus> getPlaybackModeSelectionEnabled();
+        MonotonicObservableSupplier<PlaybackModeSelectionEnablementStatus>
+                getPlaybackModeSelectionEnabled();
 
         /**
          * Called when the user selects a voice in the voice settings menu. Saves the new choice for
@@ -113,7 +114,7 @@ public interface Player {
         /** Negative feedback was triggered by the user. */
         void onNegativeFeedback(NegativeFeedbackReason negativeFeedbackReason);
 
-        ObservableSupplier<FeedbackType> getFeedbackTypeSupplier();
+        MonotonicObservableSupplier<FeedbackType> getFeedbackTypeSupplier();
 
         void moveToPrevious();
 

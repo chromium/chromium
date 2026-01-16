@@ -14,8 +14,8 @@ import androidx.annotation.CallSuper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -43,7 +43,8 @@ public class BottomContainer extends FrameLayout
     /** The desired Y offset if unaffected by other UI. */
     private float mBaseYOffset;
 
-    private @Nullable ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    private @Nullable MonotonicObservableSupplier<EdgeToEdgeController>
+            mEdgeToEdgeControllerSupplier;
 
     /** Constructor for XML inflation. */
     public BottomContainer(Context context, AttributeSet attrs) {
@@ -56,7 +57,7 @@ public class BottomContainer extends FrameLayout
     public void initialize(
             BrowserControlsStateProvider browserControlsStateProvider,
             NonNullObservableSupplier<ViewportInsets> viewportInsetSupplier,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mBrowserControlsStateProvider.addObserver(this);
         mViewportInsetSupplier = viewportInsetSupplier;

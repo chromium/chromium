@@ -26,7 +26,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
@@ -65,7 +65,7 @@ public class VoiceRecognitionHandler {
     private @Nullable Long mQueryStartTimeMs;
     private @Nullable WebContentsObserver mVoiceSearchWebContentsObserver;
     private CallbackController mCallbackController = new CallbackController();
-    private final ObservableSupplier<Profile> mProfileSupplier;
+    private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private @Nullable Boolean mIsVoiceSearchEnabledCached;
     private boolean mRegisteredActivityStateListener;
 
@@ -195,7 +195,8 @@ public class VoiceRecognitionHandler {
         }
     }
 
-    public VoiceRecognitionHandler(Delegate delegate, ObservableSupplier<Profile> profileSupplier) {
+    public VoiceRecognitionHandler(
+            Delegate delegate, MonotonicObservableSupplier<Profile> profileSupplier) {
         mDelegate = delegate;
         mProfileSupplier = profileSupplier;
         mProfileSupplier.addObserver(

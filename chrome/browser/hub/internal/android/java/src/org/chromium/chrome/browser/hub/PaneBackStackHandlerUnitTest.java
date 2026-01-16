@@ -23,7 +23,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
@@ -328,7 +328,7 @@ public class PaneBackStackHandlerUnitTest {
         assertEquals(mIncognitoTabSwitcherPane, mPaneManager.getFocusedPaneSupplier().get());
     }
 
-    private boolean hasObservers(ObservableSupplier<Pane> paneSupplier) {
+    private boolean hasObservers(MonotonicObservableSupplier<Pane> paneSupplier) {
         return ((ObservableSupplierImpl<Pane>) paneSupplier).hasObservers();
     }
 }

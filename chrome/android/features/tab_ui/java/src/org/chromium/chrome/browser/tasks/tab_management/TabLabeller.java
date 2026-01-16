@@ -14,7 +14,7 @@ import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -41,14 +41,14 @@ import java.util.Objects;
 public class TabLabeller extends TabObjectLabeller {
     private final Context mContext;
     private final DataSharingUIDelegate mDataSharingUiDelegate;
-    private final ObservableSupplier<@Nullable Token> mTabGroupIdSupplier;
+    private final MonotonicObservableSupplier<@Nullable Token> mTabGroupIdSupplier;
 
     public TabLabeller(
             Profile profile,
             Context context,
             DataSharingUIDelegate dataSharingUiDelegate,
             TabListNotificationHandler tabListNotificationHandler,
-            ObservableSupplier<@Nullable Token> tabGroupIdSupplier) {
+            MonotonicObservableSupplier<@Nullable Token> tabGroupIdSupplier) {
         super(profile, tabListNotificationHandler);
         mContext = context;
         mDataSharingUiDelegate = dataSharingUiDelegate;

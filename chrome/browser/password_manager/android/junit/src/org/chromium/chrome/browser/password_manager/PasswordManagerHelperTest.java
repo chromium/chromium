@@ -45,7 +45,7 @@ import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -102,7 +102,7 @@ public class PasswordManagerHelperTest {
 
     @Mock private PendingIntent mPendingIntentMock;
 
-    @Mock private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
+    @Mock private MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     // TODO(crbug.com/40854050): Use fake instead of mock
     @Mock private PasswordManagerBackendSupportHelper mBackendSupportHelperMock;

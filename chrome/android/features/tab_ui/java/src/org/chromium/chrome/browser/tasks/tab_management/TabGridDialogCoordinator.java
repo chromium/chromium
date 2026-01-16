@@ -27,8 +27,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -96,7 +96,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             ObservableSuppliers.createNonNull(false);
 
     private final Activity mActivity;
-    private final ObservableSupplier<@Nullable TabGroupModelFilter>
+    private final MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final ModalDialogManager mModalDialogManager;
@@ -125,7 +125,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             BrowserControlsStateProvider browserControlsStateProvider,
             BottomSheetController bottomSheetController,
             DataSharingTabManager dataSharingTabManager,
-            ObservableSupplier<@Nullable TabGroupModelFilter> currentTabGroupModelFilterSupplier,
+            MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
+                    currentTabGroupModelFilterSupplier,
             TabContentManager tabContentManager,
             @Nullable TabSwitcherResetHandler resetHandler,
             @Nullable GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
@@ -134,7 +135,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             ModalDialogManager modalDialogManager,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
             UndoBarThrottle undoBarThrottle,
-            ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+            MonotonicObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             Supplier<ShareDelegate> shareDelegateSupplier,
             Callback<@Nullable View> attachViewCallback) {
         try (TraceEvent e = TraceEvent.scoped("TabGridDialogCoordinator.constructor")) {
@@ -581,7 +582,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     }
 
     @Override
-    public ObservableSupplier<Boolean> getShowingOrAnimationSupplier() {
+    public MonotonicObservableSupplier<Boolean> getShowingOrAnimationSupplier() {
         return mShowingOrAnimationSupplier;
     }
 

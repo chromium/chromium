@@ -41,7 +41,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -1056,7 +1056,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                     setTitle(title);
                 };
 
-        private @Nullable ObservableSupplier<String> mCurrentPageTitle;
+        private @Nullable MonotonicObservableSupplier<String> mCurrentPageTitle;
 
         @Override
         public void onFragmentStarted(FragmentManager fragmentManager, Fragment fragment) {

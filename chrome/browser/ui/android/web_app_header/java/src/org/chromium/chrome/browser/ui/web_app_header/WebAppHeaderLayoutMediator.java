@@ -13,8 +13,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.NullMarked;
@@ -302,10 +302,10 @@ class WebAppHeaderLayoutMediator
     }
 
     /**
-     * @return {@link ObservableSupplier} that signal current width of the flexible area in which
+     * @return {@link MonotonicObservableSupplier} that signal current width of the flexible area in which
      *     the header lays out controls.
      */
-    public ObservableSupplier<Integer> getUnoccludedWidthSupplier() {
+    public MonotonicObservableSupplier<Integer> getUnoccludedWidthSupplier() {
         return mAppHeaderUnoccludedWidthSupplier;
     }
 

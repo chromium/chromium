@@ -15,7 +15,7 @@ import androidx.test.filters.SmallTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -52,10 +52,11 @@ public class MultiColumnSettingsUnitTest {
 
     // Stub fragment instance of EmbeddableSettingsPage providing a fake page title instance.
     private static class TestFragment extends Fragment implements EmbeddableSettingsPage {
-        private final ObservableSupplier<String> mTitleSupplier = new ObservableSupplierImpl();
+        private final MonotonicObservableSupplier<String> mTitleSupplier =
+                new ObservableSupplierImpl();
 
         @Override
-        public ObservableSupplier getPageTitle() {
+        public MonotonicObservableSupplier getPageTitle() {
             return mTitleSupplier;
         }
 

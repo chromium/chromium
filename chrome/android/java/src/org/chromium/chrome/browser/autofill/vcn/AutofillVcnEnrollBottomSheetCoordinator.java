@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.autofill.vcn;
 import android.content.Context;
 import android.view.View;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
@@ -53,7 +53,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
             Profile profile,
             PropertyModel.Builder modelBuilder,
             LayoutStateProvider layoutStateProvider,
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             Delegate delegate) {
         mModel =
                 modelBuilder

@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.educational_tip;
 
 import android.content.Context;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -21,7 +21,7 @@ public interface EducationTipModuleActionDelegate {
     Context getContext();
 
     /** Gets the profile supplier. */
-    ObservableSupplier<Profile> getProfileSupplier();
+    MonotonicObservableSupplier<Profile> getProfileSupplier();
 
     /** Gets the tab model selector. */
     TabModelSelector getTabModelSelector();

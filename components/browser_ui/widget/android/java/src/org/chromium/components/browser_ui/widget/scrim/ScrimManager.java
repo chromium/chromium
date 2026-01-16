@@ -24,7 +24,7 @@ import androidx.core.util.Function;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -135,7 +135,7 @@ public class ScrimManager {
     }
 
     /** Returns observable visibility information about all scrims. */
-    public ObservableSupplier<Boolean> getScrimVisibilitySupplier() {
+    public MonotonicObservableSupplier<Boolean> getScrimVisibilitySupplier() {
         return mScrimVisibilitySupplier;
     }
 
@@ -143,7 +143,7 @@ public class ScrimManager {
      * Returns observable composite color information that's the result of all scrims effecting the
      * status bar.
      */
-    public ObservableSupplier<Integer> getStatusBarColorSupplier() {
+    public MonotonicObservableSupplier<Integer> getStatusBarColorSupplier() {
         return mStatusBarColorSupplier;
     }
 
@@ -151,7 +151,7 @@ public class ScrimManager {
      * Returns observable composite color information that's the result of all scrims effecting the
      * navigation bar.
      */
-    public ObservableSupplier<Integer> getNavigationBarColorSupplier() {
+    public MonotonicObservableSupplier<Integer> getNavigationBarColorSupplier() {
         return mNavigationBarColorSupplier;
     }
 

@@ -10,7 +10,7 @@ import android.os.Handler;
 
 import androidx.annotation.StringRes;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -39,7 +39,7 @@ public class PermissionStatusHandler implements PermissionDialogController.Obser
     private final LocationBarDataProvider mLocationBarDataProvider;
     private final PermissionDialogController mPermissionDialogController;
     private final PageInfoIphController mPageInfoIphController;
-    private final ObservableSupplier<Profile> mProfileSupplier;
+    private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final WindowAndroid mWindowAndroid;
     private final Delegate mStatusDelegate;
     private final Handler mHandler;
@@ -90,7 +90,7 @@ public class PermissionStatusHandler implements PermissionDialogController.Obser
             LocationBarDataProvider locationBarDataProvider,
             PermissionDialogController permissionDialogController,
             PageInfoIphController pageInfoIphController,
-            ObservableSupplier<Profile> profileSupplier,
+            MonotonicObservableSupplier<Profile> profileSupplier,
             WindowAndroid windowAndroid,
             Delegate statusDelegate,
             Handler handler) {

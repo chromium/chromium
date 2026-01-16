@@ -13,7 +13,7 @@ import android.os.PersistableBundle;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.IntentHandler;
@@ -47,7 +47,7 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
     private final Supplier<PersistableBundle> mPersistentStateSupplier;
 
     /** A supplier of {@link TabModelSelector} instance. */
-    private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
 
     /**
      * A {@link ActivityLifecycleDispatcher} instance which allows to listen for {@link
@@ -119,7 +119,7 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
      * @param persistentStateSupplier A {@link Supplier<PersistableBundle>} instance to pass in the
      *     PersistableBundle that was persisted during onSaveInstanceState that allows to look for
      *     signals on whether to block the draw or not.
-     * @param tabModelSelectorSupplier A {@link ObservableSupplier<TabModelSelector>} that allows to
+     * @param tabModelSelectorSupplier A {@link MonotonicObservableSupplier <TabModelSelector>} that allows to
      *     listen for onTabStateInitialized signals which is used a fallback to unblock draw.
      * @param intentSupplier The {@link Supplier<Intent>} which is passed when Chrome was launched
      *     through Intent.
@@ -133,7 +133,7 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
     IncognitoRestoreAppLaunchDrawBlocker(
             Supplier<Bundle> savedInstanceStateSupplier,
             Supplier<PersistableBundle> persistentStateSupplier,
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<Intent> intentSupplier,
             Supplier<Boolean> shouldIgnoreIntentSupplier,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,

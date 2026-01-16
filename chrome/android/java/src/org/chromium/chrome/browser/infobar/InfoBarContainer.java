@@ -17,7 +17,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.UserData;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -489,7 +489,7 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
         // Note: Doing a cast and pulling off dependencies from ChromeActivity is generally a
         // pattern we try to avoid. However, InfoBar is slated for deprecation soon, so a better
         // dependency management approach won't be used.
-        ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier = null;
+        MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier = null;
         if (activity instanceof ChromeActivity) {
             edgeToEdgeSupplier = ((ChromeActivity) activity).getEdgeToEdgeSupplier();
         }

@@ -25,7 +25,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
@@ -66,7 +66,7 @@ public class AutocompleteCoordinatorUnitTest {
     @Mock private Supplier<Tab> mActivityTabSupplier;
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
     @Mock private LocationBarDataProvider mLocationBarDataProvider;
-    @Mock private ObservableSupplier<Profile> mProfileObservableSupplier;
+    @Mock private MonotonicObservableSupplier<Profile> mProfileObservableSupplier;
     @Mock private Callback<String> mBringToForegroundCallback;
     @Mock private BasicSuggestionProcessor.BookmarkState mBookmarkState;
     @Mock private OmniboxActionDelegate mOmniboxActionDelegate;

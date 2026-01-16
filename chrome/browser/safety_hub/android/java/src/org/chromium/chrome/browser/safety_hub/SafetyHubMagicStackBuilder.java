@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.magic_stack.ModuleConfigChecker;
@@ -33,13 +33,13 @@ import java.util.function.Supplier;
 @NullMarked
 public class SafetyHubMagicStackBuilder implements ModuleProviderBuilder, ModuleConfigChecker {
     private final Context mContext;
-    private final ObservableSupplier<Profile> mProfileSupplier;
+    private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final TabModelSelector mTabModelSelector;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     public SafetyHubMagicStackBuilder(
             Context context,
-            ObservableSupplier<Profile> profileSupplier,
+            MonotonicObservableSupplier<Profile> profileSupplier,
             TabModelSelector tabModelSelector,
             Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         mContext = context;

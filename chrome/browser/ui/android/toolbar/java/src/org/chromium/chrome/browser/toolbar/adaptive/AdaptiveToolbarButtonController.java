@@ -27,8 +27,8 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -114,7 +114,7 @@ public class AdaptiveToolbarButtonController
     public AdaptiveToolbarButtonController(
             Context context,
             ActivityLifecycleDispatcher lifecycleDispatcher,
-            ObservableSupplier<Profile> profileSupplier,
+            MonotonicObservableSupplier<Profile> profileSupplier,
             AdaptiveButtonActionMenuCoordinator menuCoordinator,
             AdaptiveToolbarBehavior toolbarBehavior,
             AndroidPermissionDelegate androidPermissionDelegate) {

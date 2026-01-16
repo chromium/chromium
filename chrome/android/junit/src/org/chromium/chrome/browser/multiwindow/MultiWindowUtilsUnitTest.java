@@ -46,7 +46,7 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.SysUtils;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisabledTest;
@@ -157,7 +157,7 @@ public class MultiWindowUtilsUnitTest {
 
     @Mock TabModelSelector mTabModelSelector;
     @Mock TabGroupModelFilter mTabGroupModelFilter;
-    @Mock ObservableSupplier<TabModel> mTabModelSupplier;
+    @Mock MonotonicObservableSupplier<TabModel> mTabModelSupplier;
     @Mock TabModel mNormalTabModel;
     @Mock TabModel mIncognitoTabModel;
     @Mock HomepageManager mHomepageManager;

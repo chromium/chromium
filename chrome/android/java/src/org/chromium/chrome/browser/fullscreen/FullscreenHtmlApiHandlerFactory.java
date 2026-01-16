@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.fullscreen;
 import android.app.Activity;
 
 import org.chromium.base.DeviceInfo;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
@@ -18,7 +18,7 @@ public class FullscreenHtmlApiHandlerFactory {
     /** Creates an instance of {@link FullscreenHtmlApiHandlerBase}. */
     static FullscreenHtmlApiHandlerBase createInstance(
             Activity activity,
-            ObservableSupplier<Boolean> areControlsHidden,
+            MonotonicObservableSupplier<Boolean> areControlsHidden,
             boolean exitFullscreenOnStop,
             MultiWindowModeStateDispatcher multiWindowDispatcher) {
         if (isFullscreenApiMigrationEnabled()) {

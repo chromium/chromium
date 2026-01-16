@@ -25,8 +25,8 @@ import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -147,11 +147,11 @@ public class TabGroupUiMediator implements BackPressHandler {
             mVisibilityController;
     private final @Nullable LazyOneshotSupplier<DialogController> mTabGridDialogControllerSupplier;
     private final Callback<TabModel> mCurrentTabModelObserver;
-    private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
+    private final MonotonicObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     private final SettableNonNullObservableSupplier<Boolean> mHandleBackPressChangedSupplier;
     private final ThemeColorProvider mThemeColorProvider;
     private final Callback<Object> mOnSnapshotTokenChange;
-    private final ObservableSupplier<Object> mChildTokenSupplier;
+    private final MonotonicObservableSupplier<Object> mChildTokenSupplier;
 
     // These should only be used when regular (non-incognito) tabs are set in the model.
     private final @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
@@ -178,7 +178,7 @@ public class TabGroupUiMediator implements BackPressHandler {
             TabCreatorManager tabCreatorManager,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             @Nullable LazyOneshotSupplier<DialogController> dialogControllerSupplier,
-            ObservableSupplier<Boolean> omniboxFocusStateSupplier,
+            MonotonicObservableSupplier<Boolean> omniboxFocusStateSupplier,
             @Nullable SharedImageTilesCoordinator sharedImageTilesCoordinator,
             SharedImageTilesConfig.@Nullable Builder sharedImageTilesConfigBuilder,
             ThemeColorProvider themeColorProvider,

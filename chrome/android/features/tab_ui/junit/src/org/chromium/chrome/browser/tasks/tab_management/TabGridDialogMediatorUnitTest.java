@@ -72,9 +72,9 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
-import org.chromium.base.supplier.SettableObservableSupplier;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
@@ -232,9 +232,9 @@ public class TabGridDialogMediatorUnitTest {
 
     @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
 
-    private final ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier =
+    private final MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier =
             ObservableSuppliers.alwaysNull();
-    private final SettableObservableSupplier<TabGroupModelFilter>
+    private final SettableMonotonicObservableSupplier<TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier = ObservableSuppliers.createMonotonic();
 
     private UserActionTester mActionTester;

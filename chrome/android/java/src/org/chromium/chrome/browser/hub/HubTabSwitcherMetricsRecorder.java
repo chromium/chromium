@@ -9,7 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -34,8 +34,8 @@ public class HubTabSwitcherMetricsRecorder {
             };
 
     private final TabModelSelector mTabModelSelector;
-    private final ObservableSupplier<Boolean> mHubVisibilitySupplier;
-    private final ObservableSupplier<Pane> mFocusedPaneSupplier;
+    private final MonotonicObservableSupplier<Boolean> mHubVisibilitySupplier;
+    private final MonotonicObservableSupplier<Pane> mFocusedPaneSupplier;
 
     private @Nullable TabModel mTabModelWhenShown;
     private @Nullable Integer mPaneIdWhenShown;
@@ -49,8 +49,8 @@ public class HubTabSwitcherMetricsRecorder {
      */
     public HubTabSwitcherMetricsRecorder(
             TabModelSelector tabModelSelector,
-            ObservableSupplier<Boolean> hubVisibilitySupplier,
-            ObservableSupplier<Pane> focusedPaneSupplier) {
+            MonotonicObservableSupplier<Boolean> hubVisibilitySupplier,
+            MonotonicObservableSupplier<Pane> focusedPaneSupplier) {
         mTabModelSelector = tabModelSelector;
 
         mHubVisibilitySupplier = hubVisibilitySupplier;

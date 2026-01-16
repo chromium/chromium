@@ -19,7 +19,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier.NotifyBehavior;
+import org.chromium.base.supplier.MonotonicObservableSupplier.NotifyBehavior;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.tab.LookAheadObservableSupplier;

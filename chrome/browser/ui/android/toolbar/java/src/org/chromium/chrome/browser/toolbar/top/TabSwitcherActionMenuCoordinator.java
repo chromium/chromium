@@ -18,7 +18,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -87,7 +87,7 @@ public class TabSwitcherActionMenuCoordinator {
     public static OnLongClickListener createOnLongClickListener(
             Callback<Integer> onItemClicked,
             Profile profile,
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         return createOnLongClickListener(
                 new TabSwitcherActionMenuCoordinator(profile, tabModelSelectorSupplier),
                 profile,
@@ -135,7 +135,7 @@ public class TabSwitcherActionMenuCoordinator {
         }
     }
 
-    private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Profile mProfile;
 
     // For test.
@@ -143,7 +143,8 @@ public class TabSwitcherActionMenuCoordinator {
 
     /** Construct a coordinator for the given {@link Profile}. */
     TabSwitcherActionMenuCoordinator(
-            Profile profile, ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+            Profile profile,
+            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mProfile = profile;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
     }

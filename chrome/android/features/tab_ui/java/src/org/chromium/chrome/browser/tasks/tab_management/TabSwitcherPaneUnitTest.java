@@ -50,8 +50,8 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.Token;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -175,7 +175,7 @@ public class TabSwitcherPaneUnitTest {
     @Mock private BottomSheetController mMockBottomSheetController;
     @Mock private TabArchiveSettings mMockTabArchiveSettings;
 
-    @Captor private ArgumentCaptor<ObservableSupplier<Boolean>> mIsAnimatingSupplierCaptor;
+    @Captor private ArgumentCaptor<MonotonicObservableSupplier<Boolean>> mIsAnimatingSupplierCaptor;
 
     @Captor
     private ArgumentCaptor<OnSharedPreferenceChangeListener> mPriceAnnotationsPrefListenerCaptor;
@@ -192,8 +192,8 @@ public class TabSwitcherPaneUnitTest {
             ObservableSuppliers.createNonNull(false);
     private final SettableNonNullObservableSupplier<Boolean> mIsScrollingSupplier =
             ObservableSuppliers.createNonNull(false);
-    private final OneshotSupplierImpl<ObservableSupplier<Boolean>> mIsScrollingSupplierSupplier =
-            new OneshotSupplierImpl<>();
+    private final OneshotSupplierImpl<MonotonicObservableSupplier<Boolean>>
+            mIsScrollingSupplierSupplier = new OneshotSupplierImpl<>();
     private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<CompositorViewHolder> mCompositorViewHolderSupplier =

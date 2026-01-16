@@ -23,7 +23,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceHeaderFragmentCompat;
 import androidx.slidingpanelayout.widget.SlidingPaneLayout;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -469,7 +469,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
     static class Title {
         Title(
                 String uuid,
-                ObservableSupplier<String> titleSupplier,
+                MonotonicObservableSupplier<String> titleSupplier,
                 int backStackCount,
                 @Nullable String mainMenuKey) {
             this.uuid = uuid;
@@ -480,7 +480,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
 
         public final String uuid;
 
-        public final ObservableSupplier<String> titleSupplier;
+        public final MonotonicObservableSupplier<String> titleSupplier;
 
         /** the number of back stack entries when the fragment started */
         public final int backStackCount;
@@ -563,7 +563,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
             }
 
             if (f instanceof EmbeddableSettingsPage page) {
-                ObservableSupplier<String> titleSupplier = page.getPageTitle();
+                MonotonicObservableSupplier<String> titleSupplier = page.getPageTitle();
                 String uuid = getUUID(f);
                 assert uuid != null;
                 int index = -1;

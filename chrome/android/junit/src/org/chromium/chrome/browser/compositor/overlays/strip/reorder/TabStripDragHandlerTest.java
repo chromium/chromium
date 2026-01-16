@@ -61,7 +61,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.Token;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -145,7 +145,7 @@ public class TabStripDragHandlerTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private WeakReference<Context> mWeakReferenceContext;
     @Mock private MultiWindowUtils mMultiWindowUtils;
-    @Mock private ObservableSupplier<Integer> mTabStripHeightSupplier;
+    @Mock private MonotonicObservableSupplier<Integer> mTabStripHeightSupplier;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock private FaviconHelper.Natives mFaviconHelperJniMock;
 

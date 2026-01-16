@@ -31,7 +31,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -1045,7 +1045,7 @@ public class FeedStream implements Stream {
     }
 
     @Override
-    public ObservableSupplier<Boolean> hasUnreadContent() {
+    public MonotonicObservableSupplier<Boolean> hasUnreadContent() {
         return mUnreadContentObserver != null
                 ? mUnreadContentObserver.mHasUnreadContent
                 : Stream.super.hasUnreadContent();

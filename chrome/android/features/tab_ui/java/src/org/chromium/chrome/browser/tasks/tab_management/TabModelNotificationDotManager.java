@@ -10,7 +10,7 @@ import android.content.Context;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
@@ -167,10 +167,10 @@ public class TabModelNotificationDotManager implements Destroyable {
     }
 
     /**
-     * Returns an {@link ObservableSupplier} that contains true when the notification dot should be
+     * Returns an {@link MonotonicObservableSupplier} that contains true when the notification dot should be
      * shown.
      */
-    public ObservableSupplier<TabModelDotInfo> getNotificationDotObservableSupplier() {
+    public MonotonicObservableSupplier<TabModelDotInfo> getNotificationDotObservableSupplier() {
         return mNotificationDotObservableSupplier;
     }
 

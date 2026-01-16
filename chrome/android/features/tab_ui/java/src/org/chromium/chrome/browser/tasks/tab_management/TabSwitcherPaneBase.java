@@ -32,13 +32,13 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
-import org.chromium.base.supplier.SettableObservableSupplier;
 import org.chromium.base.supplier.SyncOneshotSupplier;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
 import org.chromium.build.BuildConfig;
@@ -90,12 +90,12 @@ public abstract class TabSwitcherPaneBase extends PaneBase
 
     private static boolean sShowIphForTesting;
 
-    protected final SettableObservableSupplier<FullButtonData> mNewTabButtonDataSupplier =
+    protected final SettableMonotonicObservableSupplier<FullButtonData> mNewTabButtonDataSupplier =
             ObservableSuppliers.createMonotonic();
 
     protected final UserEducationHelper mUserEducationHelper;
-    protected final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
-    protected final ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
+    protected final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
+    protected final MonotonicObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     private final SettableNonNullObservableSupplier<Boolean> mIsVisibleSupplier =
             ObservableSuppliers.createNonNull(false);
     private final SettableNonNullObservableSupplier<Boolean> mIsAnimatingSupplier =
@@ -145,7 +145,7 @@ public abstract class TabSwitcherPaneBase extends PaneBase
     private boolean mNativeInitialized;
     private @Nullable PaneHubController mPaneHubController;
     private @Nullable Long mWaitForTabStateInitializedStartTimeMs;
-    private final @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
+    private final @Nullable MonotonicObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
 
     /**
      * @param context The activity context.
@@ -166,10 +166,10 @@ public abstract class TabSwitcherPaneBase extends PaneBase
             boolean isIncognito,
             DoubleConsumer onToolbarAlphaChange,
             UserEducationHelper userEducationHelper,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
-            ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            MonotonicObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
             TabGroupCreationUiDelegate tabGroupCreationUiDelegate,
-            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
+            @Nullable MonotonicObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         super(paneId, context, onToolbarAlphaChange);
         mMenuButtonVisible = true;
         mFactory = factory;
@@ -267,7 +267,7 @@ public abstract class TabSwitcherPaneBase extends PaneBase
     }
 
     @Override
-    public ObservableSupplier<FullButtonData> getActionButtonDataSupplier() {
+    public MonotonicObservableSupplier<FullButtonData> getActionButtonDataSupplier() {
         return mNewTabButtonDataSupplier;
     }
 
@@ -587,7 +587,7 @@ public abstract class TabSwitcherPaneBase extends PaneBase
      * Returns a supplier for whether the pane is visible onscreen. Note this is not the same as
      * being focused.
      */
-    protected ObservableSupplier<Boolean> getIsVisibleSupplier() {
+    protected MonotonicObservableSupplier<Boolean> getIsVisibleSupplier() {
         return mIsVisibleSupplier;
     }
 
@@ -596,7 +596,7 @@ public abstract class TabSwitcherPaneBase extends PaneBase
      * taken when reading this supplier as animations do not start synchronously with focus changes,
      * and a Pane may be shown before the enter animation actually starts.
      */
-    protected ObservableSupplier<Boolean> getIsAnimatingSupplier() {
+    protected MonotonicObservableSupplier<Boolean> getIsAnimatingSupplier() {
         return mIsAnimatingSupplier;
     }
 

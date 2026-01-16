@@ -38,8 +38,8 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -201,7 +201,7 @@ public class NewTabPage
     private final Supplier<Toolbar> mToolbarSupplier;
     private final TabModelSelector mTabModelSelector;
     private final TemplateUrlService mTemplateUrlService;
-    private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
+    private final MonotonicObservableSupplier<TabContentManager> mTabContentManagerSupplier;
     private final NonNullObservableSupplier<Integer> mTabStripHeightSupplier;
 
     private @Nullable SingleTabSwitcherCoordinator mSingleTabSwitcherCoordinator;
@@ -218,7 +218,7 @@ public class NewTabPage
     private final boolean mIsInNightMode;
     private final @Nullable OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
     private final boolean mCanSupportEdgeToEdgeForCustomizedTheme;
-    private final ObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier;
+    private final MonotonicObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier;
     private @Nullable Callback<TopInsetProvider> mTopInsetProviderCallback;
 
     private TopInsetProvider.@org.chromium.build.annotations.Nullable Observer
@@ -242,7 +242,7 @@ public class NewTabPage
 
         private final View mView;
         private Animator mAnimator;
-        private ObservableSupplier<Integer> mRestoringState;
+        private MonotonicObservableSupplier<Integer> mRestoringState;
         private boolean mAnimatorStarted;
         private final Handler mHandler = new Handler();
         final Callback<Integer> mOnScrollStateChanged =
@@ -269,7 +269,8 @@ public class NewTabPage
                     }
                 };
 
-        public NtpSmoothTransitionDelegate(View view, ObservableSupplier<Integer> restoringState) {
+        public NtpSmoothTransitionDelegate(
+                View view, MonotonicObservableSupplier<Integer> restoringState) {
             mView = view;
             mAnimator = buildSmoothTransition(view);
             mRestoringState = restoringState;
@@ -549,11 +550,11 @@ public class NewTabPage
             Supplier<Toolbar> toolbarSupplier,
             @Nullable HomeSurfaceTracker homeSurfaceTracker,
             ActivityResultTracker activityResultTracker,
-            ObservableSupplier<TabContentManager> tabContentManagerSupplier,
+            MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier,
             NonNullObservableSupplier<Integer> tabStripHeightSupplier,
             OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
-            ObservableSupplier<TopInsetProvider> topInsetProviderSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            MonotonicObservableSupplier<TopInsetProvider> topInsetProviderSupplier,
             StartupMetricsTracker startupMetricsTracker,
             MultiInstanceManager multiInstanceManager) {
         mConstructedTimeNs = System.nanoTime();
@@ -733,7 +734,7 @@ public class NewTabPage
             boolean isInNightMode,
             Supplier<ShareDelegate> shareDelegateSupplier,
             String url,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             StartupMetricsTracker startupMetricsTracker) {
         Profile profile = mTab.getProfile();
 
@@ -1495,7 +1496,7 @@ public class NewTabPage
                                         mNewTabPageLayout.findViewById(
                                                 R.id.home_modules_recycler_view_stub))
                                 .inflate();
-        ObservableSupplier<Profile> profileSupplier =
+        MonotonicObservableSupplier<Profile> profileSupplier =
                 new ObservableSupplierImpl<>(mTab.getProfile());
         mHomeModulesCoordinator =
                 new HomeModulesCoordinator(

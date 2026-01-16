@@ -14,7 +14,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNullIf;
@@ -156,10 +156,10 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
             @Nullable OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
             DoubleConsumer onToolbarAlphaChange,
             UserEducationHelper userEducationHelper,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
-            ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            MonotonicObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
             TabGroupCreationUiDelegate tabGroupCreationUiDelegate,
-            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
+            @Nullable MonotonicObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         super(
                 PaneId.INCOGNITO_TAB_SWITCHER,
                 context,
@@ -351,7 +351,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
     private IncognitoTabSwitcherPaneCleaner initIncognitoTabSwitcherPaneCleaner(
             TabSwitcherPaneCoordinator paneCoordinator) {
         @TabCloseMethod int finalTabCloseMethod = getFinalTabCloseMethod(paneCoordinator);
-        ObservableSupplier<Boolean> isAnimatingSupplier =
+        MonotonicObservableSupplier<Boolean> isAnimatingSupplier =
                 paneCoordinator.getIsRecyclerViewAnimatorRunning();
 
         Runnable cleanUpRunnable =
@@ -411,7 +411,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
      * have finished.
      */
     private static class IncognitoTabSwitcherPaneCleaner {
-        private final @Nullable ObservableSupplier<Boolean> mIsAnimatingSupplier;
+        private final @Nullable MonotonicObservableSupplier<Boolean> mIsAnimatingSupplier;
         private final Callback<Boolean> mOnAnimationStatusChange = this::onAnimationStatusChange;
         private final SettableNullableObservableSupplier<DisplayButtonData>
                 mReferenceButtonDataSupplier;
@@ -431,7 +431,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
          * @param finalTabCloseMethod How the final tab was closed.
          */
         public IncognitoTabSwitcherPaneCleaner(
-                @Nullable ObservableSupplier<Boolean> isAnimatingSupplier,
+                @Nullable MonotonicObservableSupplier<Boolean> isAnimatingSupplier,
                 SettableNullableObservableSupplier<DisplayButtonData> referenceButtonDataSupplier,
                 Runnable cleanUpRunnable,
                 @Nullable PaneHubController controller,

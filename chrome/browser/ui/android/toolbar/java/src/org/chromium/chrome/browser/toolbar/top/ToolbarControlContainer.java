@@ -34,8 +34,8 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.Initializer;
@@ -108,7 +108,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     private final ObserverList<TouchEventObserver> mTouchEventObservers = new ObserverList<>();
     private final Callback<Boolean> mOnXrSpaceModeChanged = this::onXrSpaceModeChanged;
     private final Callback<Resource> mOnResourceCaptureCallback = this::onToolbarCaptureUpdated;
-    private @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
+    private @Nullable MonotonicObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
     private @Nullable ObservableSupplierImpl<Integer> mHeightChangedSupplier;
     private ToolbarDataProvider mToolbarDataProvider;
 
@@ -439,7 +439,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             boolean isIncognito,
             NullableObservableSupplier<@BrowserControlsState Integer> constraintsSupplier,
             Supplier<@Nullable Tab> tabSupplier,
-            ObservableSupplier<Boolean> compositorInMotionSupplier,
+            MonotonicObservableSupplier<Boolean> compositorInMotionSupplier,
             BrowserStateBrowserControlsVisibilityDelegate
                     browserStateBrowserControlsVisibilityDelegate,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
@@ -578,7 +578,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 Toolbar toolbar,
                 NullableObservableSupplier<@BrowserControlsState Integer> constraintsSupplier,
                 Supplier<@Nullable Tab> tabSupplier,
-                ObservableSupplier<Boolean> compositorInMotionSupplier,
+                MonotonicObservableSupplier<Boolean> compositorInMotionSupplier,
                 BrowserStateBrowserControlsVisibilityDelegate
                         browserStateBrowserControlsVisibilityDelegate,
                 BooleanSupplier isVisible,
@@ -645,7 +645,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         private Toolbar mToolbar;
         private ConstraintsChecker mConstraintsObserver;
         private Supplier<@Nullable Tab> mTabSupplier;
-        private ObservableSupplier<Boolean> mCompositorInMotionSupplier;
+        private MonotonicObservableSupplier<Boolean> mCompositorInMotionSupplier;
 
         private BrowserStateBrowserControlsVisibilityDelegate
                 mBrowserStateBrowserControlsVisibilityDelegate;
@@ -687,7 +687,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 Toolbar toolbar,
                 NullableObservableSupplier<@BrowserControlsState Integer> constraintsSupplier,
                 Supplier<@Nullable Tab> tabSupplier,
-                ObservableSupplier<Boolean> compositorInMotionSupplier,
+                MonotonicObservableSupplier<Boolean> compositorInMotionSupplier,
                 BrowserStateBrowserControlsVisibilityDelegate
                         browserStateBrowserControlsVisibilityDelegate,
                 BooleanSupplier controlContainerIsVisibleSupplier,
@@ -1040,7 +1040,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     }
 
     public void setXrSpaceModeObservableSupplierMaybe(
-            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
+            @Nullable MonotonicObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         if (mXrSpaceModeObservableSupplier == null && xrSpaceModeObservableSupplier != null) {
             mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
             mXrSpaceModeObservableSupplier.addSyncObserver(mOnXrSpaceModeChanged);

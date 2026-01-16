@@ -34,7 +34,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -75,7 +75,7 @@ public class HubManagerImplUnitTest {
     @Mock private ViewGroup mIncognitoTabSwitcherPaneView;
     @Mock private MenuOrKeyboardActionHandler mIncognitoTabSwitcherMenuOrKeyboardActionHandler;
     @Mock private HubLayoutController mHubLayoutController;
-    @Mock private ObservableSupplier<Integer> mPreviousLayoutTypeSupplier;
+    @Mock private MonotonicObservableSupplier<Integer> mPreviousLayoutTypeSupplier;
     @Mock private MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private MenuButtonCoordinator mMenuButtonCoordinator;
@@ -94,7 +94,7 @@ public class HubManagerImplUnitTest {
             new ObservableSupplierImpl<>();
     private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
-    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier =
+    private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier =
             ObservableSuppliers.alwaysNull();
     private static final int SNACKBAR_OVERRIDE_TOKEN = 1;
 

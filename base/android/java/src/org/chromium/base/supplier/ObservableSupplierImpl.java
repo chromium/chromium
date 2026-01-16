@@ -31,7 +31,7 @@ public class ObservableSupplierImpl<T extends @Nullable Object>
         extends BaseObservableSupplierImpl<T>
         implements Supplier<T>,
                 SettableNullableObservableSupplier<T>,
-                SettableObservableSupplier<T>,
+                SettableMonotonicObservableSupplier<T>,
                 SettableNonNullObservableSupplier<T> {
     protected final ThreadChecker mThreadChecker = new ThreadChecker();
     protected @Nullable ObserverList<Callback<T>> mObservers = new ObserverList<>();

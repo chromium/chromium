@@ -18,8 +18,8 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -62,10 +62,10 @@ public abstract class TabDragHandlerBase
     protected final MultiInstanceManager mMultiInstanceManager;
     protected final DragAndDropDelegate mDragAndDropDelegate;
     protected final Supplier<Boolean> mIsAppInDesktopWindowSupplier;
-    protected @Nullable ObservableSupplier<Boolean> mFullSpaceModeSupplier;
+    protected @Nullable MonotonicObservableSupplier<Boolean> mFullSpaceModeSupplier;
     protected @Nullable Callback<Boolean> mFullSpaceModeObserver;
     private @Nullable TabModelSelector mTabModelSelector;
-    private @Nullable ObservableSupplier<@Nullable TabGroupModelFilter>
+    private @Nullable MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
     private @Nullable View mDragSourceView;
     private final ObservableSupplierImpl<Boolean> mDragInProgressSupplier =
@@ -120,7 +120,7 @@ public abstract class TabDragHandlerBase
         return mTabModelSelector;
     }
 
-    protected ObservableSupplier<@Nullable TabGroupModelFilter>
+    protected MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
             getCurrentTabGroupModelFilterSupplier() {
         assert mCurrentTabGroupModelFilterSupplier != null;
         return mCurrentTabGroupModelFilterSupplier;

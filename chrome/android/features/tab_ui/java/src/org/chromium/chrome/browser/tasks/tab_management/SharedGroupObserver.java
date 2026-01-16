@@ -10,7 +10,7 @@ import android.text.TextUtils;
 
 import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -146,7 +146,7 @@ public class SharedGroupObserver implements Destroyable {
      * of this class it is possible there's no value set yet. This would be because there is a
      * collaboration id and an outstanding request to read the group from the sharing service.
      */
-    public ObservableSupplier<Integer> getGroupSharedStateSupplier() {
+    public MonotonicObservableSupplier<Integer> getGroupSharedStateSupplier() {
         return mGroupSharedStateSupplier;
     }
 
@@ -154,7 +154,7 @@ public class SharedGroupObserver implements Destroyable {
      * The held value contains the list of members of the group. Upon the initial construction of
      * this class it is possible there's no value set yet.
      */
-    public ObservableSupplier<@Nullable List<GroupMember>> getGroupMembersSupplier() {
+    public MonotonicObservableSupplier<@Nullable List<GroupMember>> getGroupMembersSupplier() {
         return mGroupMembersSupplier;
     }
 
@@ -163,7 +163,7 @@ public class SharedGroupObserver implements Destroyable {
      * of this class the value will be up-to-date. May be transiently out of sync with the state
      * held by {@link #getGroupSharedStateSupplier()} if async update are in flight.
      */
-    public ObservableSupplier<@Nullable String> getCollaborationIdSupplier() {
+    public MonotonicObservableSupplier<@Nullable String> getCollaborationIdSupplier() {
         return mCurrentCollaborationIdSupplier;
     }
 

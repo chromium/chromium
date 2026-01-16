@@ -20,7 +20,7 @@ import androidx.recyclerview.widget.SnapHelper;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -45,7 +45,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     private final ModuleDelegateHost mModuleDelegateHost;
     private HomeModulesMediator mMediator;
     private final HomeModulesRecyclerView mRecyclerView;
-    private final ObservableSupplier<Profile> mProfileSupplier;
+    private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final ModuleRegistry mModuleRegistry;
 
     private ModelList mModel;
@@ -83,7 +83,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
             ModuleDelegateHost moduleDelegateHost,
             ViewGroup parentView,
             HomeModulesConfigManager homeModulesConfigManager,
-            ObservableSupplier<Profile> profileSupplier,
+            MonotonicObservableSupplier<Profile> profileSupplier,
             ModuleRegistry moduleRegistry) {
         mModuleDelegateHost = moduleDelegateHost;
         mHomeModulesConfigManager = homeModulesConfigManager;

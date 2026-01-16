@@ -18,7 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -61,7 +61,7 @@ public class TabGroupUiCoordinatorUnitTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private UndoBarThrottle mUndoBarThrottle;
-    @Mock private ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
+    @Mock private MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
 
     private Activity mActivity;

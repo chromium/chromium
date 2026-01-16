@@ -33,7 +33,7 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
@@ -71,7 +71,7 @@ public class PriceTrackingButtonControllerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Activity mActivity;
     private ObservableSupplierImpl<Profile> mProfileSupplier;
-    private ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
+    private MonotonicObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     private SettableNullableObservableSupplier<Tab> mTabSupplier;
     private ObservableSupplierImpl<Boolean> mPriceTrackingStateSupplier;
     @Mock private Tab mMockTab;

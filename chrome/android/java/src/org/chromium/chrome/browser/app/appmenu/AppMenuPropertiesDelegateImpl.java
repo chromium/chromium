@@ -33,7 +33,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
@@ -112,7 +112,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     protected final Supplier<ReadAloudController> mReadAloudControllerSupplier;
 
     private CallbackController mCallbackController = new CallbackController();
-    private ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
+    private MonotonicObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     private @Nullable ModelList mModelList;
     private int mReadAloudPos;
     protected @Nullable Runnable mReadAloudAppMenuResetter;
@@ -171,9 +171,9 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
      * @param toolbarManager The {@link ToolbarManager} for the containing activity.
      * @param decorView The decor {@link View}, e.g. from Window#getDecorView(), for the containing
      *     activity.
-     * @param layoutStateProvidersSupplier An {@link ObservableSupplier} for the {@link
+     * @param layoutStateProvidersSupplier An {@link MonotonicObservableSupplier} for the {@link
      *     LayoutStateProvider} associated with the containing activity.
-     * @param bookmarkModelSupplier An {@link ObservableSupplier} for the {@link BookmarkModel}
+     * @param bookmarkModelSupplier An {@link MonotonicObservableSupplier} for the {@link BookmarkModel}
      */
     protected AppMenuPropertiesDelegateImpl(
             Context context,
@@ -183,7 +183,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
             ToolbarManager toolbarManager,
             View decorView,
             @Nullable OneshotSupplier<LayoutStateProvider> layoutStateProvidersSupplier,
-            ObservableSupplier<BookmarkModel> bookmarkModelSupplier,
+            MonotonicObservableSupplier<BookmarkModel> bookmarkModelSupplier,
             Supplier<ReadAloudController> readAloudControllerSupplier) {
         mContext = context;
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
@@ -1225,7 +1225,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     }
 
     void setBookmarkModelSupplierForTesting(
-            ObservableSupplier<BookmarkModel> bookmarkModelSupplier) {
+            MonotonicObservableSupplier<BookmarkModel> bookmarkModelSupplier) {
         mBookmarkModelSupplier = bookmarkModelSupplier;
     }
 

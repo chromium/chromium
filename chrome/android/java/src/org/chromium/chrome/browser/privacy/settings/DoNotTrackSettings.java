@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.privacy.settings;
 
 import android.os.Bundle;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.NullUtil;
 import org.chromium.build.annotations.NullMarked;
@@ -61,7 +61,7 @@ public class DoNotTrackSettings extends ChromeBaseSettingsFragment {
     }
 
     @Override
-    public ObservableSupplier<String> getPageTitle() {
+    public MonotonicObservableSupplier<String> getPageTitle() {
         return mPageTitle;
     }
 

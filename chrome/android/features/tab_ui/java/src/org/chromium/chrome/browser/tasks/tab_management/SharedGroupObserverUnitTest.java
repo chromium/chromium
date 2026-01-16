@@ -29,7 +29,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
@@ -245,7 +245,8 @@ public class SharedGroupObserverUnitTest {
                         mCollaborationService);
         verify(mDataSharingService).addObserver(mSharingObserverCaptor.capture());
         verify(mTabGroupSyncService).addObserver(mSyncObserverCaptor.capture());
-        ObservableSupplier<Integer> sharedStateSupplier = observer.getGroupSharedStateSupplier();
+        MonotonicObservableSupplier<Integer> sharedStateSupplier =
+                observer.getGroupSharedStateSupplier();
         assertEquals(GroupSharedState.NOT_SHARED, sharedStateSupplier.get().intValue());
 
         // savedTabGroup.collaborationId is still null, cannot match up the groups yet.
@@ -275,7 +276,8 @@ public class SharedGroupObserverUnitTest {
                         mCollaborationService);
         verify(mDataSharingService).addObserver(mSharingObserverCaptor.capture());
         verify(mTabGroupSyncService).addObserver(mSyncObserverCaptor.capture());
-        ObservableSupplier<Integer> sharedStateSupplier = observer.getGroupSharedStateSupplier();
+        MonotonicObservableSupplier<Integer> sharedStateSupplier =
+                observer.getGroupSharedStateSupplier();
         assertEquals(GroupSharedState.NOT_SHARED, sharedStateSupplier.get().intValue());
 
         GroupData shareGroup =
