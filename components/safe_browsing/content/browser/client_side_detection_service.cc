@@ -782,14 +782,21 @@ void ClientSideDetectionService::ClassifyPhishingThroughThresholds(
     }
   }
 
-  verdict->set_tflite_model_version(
-      client_side_phishing_model_->GetTriggerModelVersion());
+  if (base::FeatureList::IsEnabled(kClientSideDetectionDeprecateDOMModel)) {
+    verdict->set_tflite_model_version(
+        client_side_phishing_model_->GetTriggerModelVersion());
+  }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   auto target_image_embeddings =
       client_side_phishing_model_->GetTargetImageEmbeddings();
   if (!target_image_embeddings.empty() && !verdict->is_phishing() &&
       verdict->has_image_feature_embedding()) {
+    if (base::FeatureList::IsEnabled(kClientSideDetectionDeprecateDOMModel)) {
+      verdict->mutable_image_feature_embedding()->set_embedding_model_version(
+          client_side_phishing_model_->GetImageEmbeddingModelVersion());
+    }
+
     // Create a FeatureVector from the ImageFeatureEmbedding.
     tflite::task::vision::FeatureVector feature_vector;
     for (float image_embedding_value :
@@ -840,6 +847,11 @@ bool ClientSideDetectionService::IsModelAvailable() {
 
 int ClientSideDetectionService::GetTriggerModelVersion() {
   return trigger_model_version_;
+}
+
+int ClientSideDetectionService::GetImageEmbeddingModelVersion() {
+  return client_side_phishing_model_ &&
+         client_side_phishing_model_->GetImageEmbeddingModelVersion();
 }
 
 bool ClientSideDetectionService::HasImageEmbeddingModel() {

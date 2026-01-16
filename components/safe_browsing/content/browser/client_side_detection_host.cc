@@ -1585,6 +1585,10 @@ void ClientSideDetectionHost::PhishingImageEmbeddingDone(
       embedding = image_feature_embedding->As<ImageFeatureEmbedding>();
     }
     if (embedding.has_value()) {
+      if (base::FeatureList::IsEnabled(kClientSideDetectionDeprecateDOMModel)) {
+        embedding->set_embedding_model_version(
+            csd_service_->GetImageEmbeddingModelVersion());
+      }
       *verdict->mutable_image_feature_embedding() =
           std::move(embedding.value());
     } else {

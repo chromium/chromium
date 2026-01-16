@@ -224,6 +224,10 @@ class ClientSideDetectionService
   // debugging metadata.
   int GetTriggerModelVersion();
 
+  // Returns the image embedding model version to be passed onto
+  // |ClientPhishingRequest| when image embedding is called.
+  int GetImageEmbeddingModelVersion();
+
  private:
   friend class ClientSideDetectionServiceTest;
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest,

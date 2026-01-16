@@ -372,7 +372,6 @@ void ClientSidePhishingModel::OnModelAndVisualTfLiteFileLoaded(
         if (!VerifyCSDFlatBufferIndicesAndFields(flatbuffer_model)) {
           VLOG(0) << "Failed to verify CSD Flatbuffer indices and fields";
         } else {
-          trigger_model_version_ = flatbuffer_model->version();
           if (tflite_valid) {
             thresholds_.clear();  // Clear the previous model's thresholds
                                   // before adding on the new ones
@@ -396,6 +395,7 @@ void ClientSidePhishingModel::OnModelAndVisualTfLiteFileLoaded(
                 flatbuffer_model->tflite_metadata();
             classification_input_width_ = tflite_metadata->input_width();
             classification_input_height_ = tflite_metadata->input_height();
+            trigger_model_version_ = tflite_metadata->version();
             const flat::TfLiteModelMetadata* image_embedding_metadata =
                 flatbuffer_model->img_embedding_metadata();
             if (image_embedding_metadata) {
@@ -403,6 +403,8 @@ void ClientSidePhishingModel::OnModelAndVisualTfLiteFileLoaded(
                   image_embedding_metadata->input_width();
               img_embedding_input_height_ =
                   image_embedding_metadata->input_height();
+              image_embedding_model_version_ =
+                  image_embedding_metadata->version();
             }
           }
         }
@@ -552,6 +554,12 @@ bool ClientSidePhishingModel::IsModelMetadataImageEmbeddingVersionMatching() {
 int ClientSidePhishingModel::GetTriggerModelVersion() {
   return trigger_model_version_.has_value() ? trigger_model_version_.value()
                                             : 0;
+}
+
+int ClientSidePhishingModel::GetImageEmbeddingModelVersion() {
+  return image_embedding_model_version_.has_value()
+             ? image_embedding_model_version_.value()
+             : 0;
 }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)

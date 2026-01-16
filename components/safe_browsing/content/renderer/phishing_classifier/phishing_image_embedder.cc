@@ -8,6 +8,7 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_visual_feature_extractor.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -75,7 +76,8 @@ void PhishingImageEmbedder::CancelPendingImageEmbedding() {
 
 void PhishingImageEmbedder::OnImageEmbeddingDone(
     ImageFeatureEmbedding image_feature_embedding) {
-  if (image_feature_embedding.embedding_value_size() > 0) {
+  if (!base::FeatureList::IsEnabled(kClientSideDetectionDeprecateDOMModel) &&
+      image_feature_embedding.embedding_value_size() > 0) {
     Scorer* scorer = ScorerStorage::GetInstance()->GetScorer();
     image_feature_embedding.set_embedding_model_version(
         scorer->image_embedding_tflite_model_version());

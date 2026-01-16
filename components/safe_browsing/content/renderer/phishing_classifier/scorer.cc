@@ -621,7 +621,8 @@ void Scorer::ApplyVisualTfLiteModelImageEmbedding(
     base::OnceCallback<void(ImageFeatureEmbedding)> callback) const {
   DCHECK(content::RenderThread::IsMainThread());
   if (image_embedding_model_.IsValid() &&
-      flatbuffer_model_->img_embedding_metadata()) {
+      ((base::FeatureList::IsEnabled(kClientSideDetectionDeprecateDOMModel)) ||
+       flatbuffer_model_->img_embedding_metadata())) {
     base::Time start_post_task_time = base::Time::Now();
     base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT},

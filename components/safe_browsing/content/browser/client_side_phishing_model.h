@@ -103,6 +103,7 @@ class ClientSidePhishingModel
   bool IsModelMetadataImageEmbeddingVersionMatching();
 
   int GetTriggerModelVersion();
+  int GetImageEmbeddingModelVersion();
 
   void SetVisualTfLiteModelForTesting(base::File file);
   // Overrides model type.
@@ -208,11 +209,13 @@ class ClientSidePhishingModel
   std::optional<int>
       embedding_model_opt_guide_metadata_image_embedding_version_;
 
-  // This value is set from a version set in the model file's metadata. This
+  // These values are set from a version set in the model file's metadata. This
   // value will be used to send to the CSD service class so that it can be added
   // to the debugging metadata so that we can understand what version has been
-  // sent to the renderer.
+  // sent to the renderer. In addition, whenever the respective TfLite library
+  // calls are completed, the model of the version used is attached to the ping.
   std::optional<int> trigger_model_version_;
+  std::optional<int> image_embedding_model_version_;
 
   std::optional<int> classification_input_width_;
   std::optional<int> classification_input_height_;

@@ -184,6 +184,10 @@ void PhishingClassifier::OnVisualTfLiteModelDone(
     }
   }
 
+  if (!base::FeatureList::IsEnabled(kClientSideDetectionDeprecateDOMModel)) {
+    verdict->set_tflite_model_version(scorer->tflite_model_version());
+  }
+
   for (size_t i = 0; i < result.size(); i++) {
     ClientPhishingRequest::CategoryScore* category =
         verdict->add_tflite_model_scores();
@@ -217,9 +221,11 @@ void PhishingClassifier::OnVisualTfLiteModelImageEmbeddingDone(
   bool has_image_feature_embedding =
       image_feature_embedding.embedding_value_size() > 0;
   if (has_image_feature_embedding) {
-    Scorer* scorer = ScorerStorage::GetInstance()->GetScorer();
-    image_feature_embedding.set_embedding_model_version(
-        scorer->image_embedding_tflite_model_version());
+    if (!base::FeatureList::IsEnabled(kClientSideDetectionDeprecateDOMModel)) {
+      Scorer* scorer = ScorerStorage::GetInstance()->GetScorer();
+      image_feature_embedding.set_embedding_model_version(
+          scorer->image_embedding_tflite_model_version());
+    }
     *verdict->mutable_image_feature_embedding() = image_feature_embedding;
   }
   base::UmaHistogramBoolean(
