@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.tab.StorageLoadedData.LoadedTabState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupVisualDataStore;
 
@@ -347,7 +348,11 @@ class TabRestorer {
         assert mState == State.RESTORING;
         @TabId int tabId = loadedTabState.tabId;
         Tab tab = resolveTab(loadedTabState.tabState, tabId, index);
-        if (tab == null) return;
+        if (tab == null) {
+            WebContentsState state = loadedTabState.tabState.contentsState;
+            if (state != null) state.destroy();
+            return;
+        }
 
         boolean isIncognito = mIncognito;
         mDelegate.onDetailsRead(
