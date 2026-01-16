@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_enums.h"
@@ -714,8 +715,7 @@ class QuicklyDeletedRequest : public PermissionRequest {
                     PermissionRequestGestureType::GESTURE,
                 requesting_origin),
             base::BindLambdaForTesting(
-                [](PermissionDecision decision,
-                   bool is_final_decision,
+                [](const PermissionPromptDecision& decision,
                    const PermissionRequestData&) { NOTREACHED(); })) {}
 
   static std::unique_ptr<QuicklyDeletedRequest> CreateRequest(

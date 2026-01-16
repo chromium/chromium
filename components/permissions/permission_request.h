@@ -16,6 +16,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_decision.h"
+#include "components/permissions/permission_prompt_decision.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/request_type.h"
@@ -48,10 +49,9 @@ class PermissionRequest {
   // be passed into this callback.
   // If `is_one_time` is true, the decision will last until all tabs of
   // `requesting_origin_` are closed or navigated away from.
-  using PermissionDecidedCallback = base::RepeatingCallback<void(
-      PermissionDecision /*decision*/,
-      bool /*is_final_decision*/,
-      const PermissionRequestData& /*request_data*/)>;
+  using PermissionDecidedCallback =
+      base::RepeatingCallback<void(const PermissionPromptDecision&,
+                                   const PermissionRequestData&)>;
 
   // `permission_decided_callback` is called when the permission request is
   // resolved by the user (see comment on PermissionDecidedCallback above).

@@ -13,6 +13,7 @@
 #include "chrome/browser/android/android_theme_resources.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_decision.h"
+#include "components/permissions/permission_prompt_decision.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_manager.h"
@@ -101,12 +102,13 @@ class PerDeviceProvisioningPermissionRequest final
       const PerDeviceProvisioningPermissionRequest&) = delete;
 
   void PermissionDecided(
-      PermissionDecision decision,
-      bool is_final_decision,
+      const permissions::PermissionPromptDecision& decision,
       const permissions::PermissionRequestData& request_data) {
-    DCHECK(decision != PermissionDecision::kAllowThisTime);
-    DCHECK(!is_final_decision);
-    const bool granted = decision == PermissionDecision::kAllow;
+    DCHECK(decision.overall_decision != PermissionDecision::kAllowThisTime);
+    CHECK(std::holds_alternative<std::monostate>(decision.prompt_options));
+    DCHECK(!decision.is_final);
+    const bool granted =
+        decision.overall_decision == PermissionDecision::kAllow;
     UpdateLastResponse(granted);
     std::move(callback_).Run(granted);
   }

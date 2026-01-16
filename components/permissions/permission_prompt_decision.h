@@ -20,6 +20,8 @@ namespace permissions {
 // determine and possibly persist the permission state resulting from the
 // decision.
 struct PermissionPromptDecision {
+  bool operator==(const PermissionPromptDecision&) const = default;
+
   PermissionDecision overall_decision;
   PromptOptions prompt_options;
   bool is_final;

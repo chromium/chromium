@@ -23,7 +23,7 @@ void DisplayCapturePermissionContext::DecidePermission(
                       /*persist=*/false,
                       permissions::PermissionPromptDecision{
                           .overall_decision = PermissionDecision::kNone,
-                          .prompt_options = request_data->prompt_options,
+                          .prompt_options = std::monostate(),
                           .is_final = true});
 }
 

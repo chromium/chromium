@@ -4,10 +4,13 @@
 
 #include "chrome/browser/smart_card/smart_card_permission_request.h"
 
+#include <variant>
+
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_decision.h"
+#include "components/permissions/permission_prompt_decision.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/resolvers/content_setting_permission_resolver.h"
@@ -56,12 +59,13 @@ std::optional<std::u16string> SmartCardPermissionRequest::GetBlockText() const {
 }
 
 void SmartCardPermissionRequest::OnPermissionDecided(
-    PermissionDecision decision,
-    bool is_final_decision,
+    const permissions::PermissionPromptDecision& decision,
     const permissions::PermissionRequestData& request_data) {
-  if (!is_final_decision) {
+  CHECK(std::holds_alternative<std::monostate>(decision.prompt_options));
+
+  if (!decision.is_final) {
     return;
   }
 
-  std::move(result_callback_).Run(decision);
+  std::move(result_callback_).Run(decision.overall_decision);
 }

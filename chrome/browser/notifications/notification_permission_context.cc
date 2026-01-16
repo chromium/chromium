@@ -217,26 +217,18 @@ void NotificationPermissionContext::DecidePermission(
     InstalledWebappBridge::DecidePermission(
         ContentSettingsType::NOTIFICATIONS, request_data->requesting_origin,
         web_contents->GetLastCommittedURL(),
-        base::BindOnce(
-            [](base::OnceCallback<void(
-                   const permissions::PermissionPromptDecision&)> closure,
-               PermissionDecision decision, bool is_final_decision) {
-              std::move(closure).Run(permissions::PermissionPromptDecision{
-                  decision, std::monostate(), is_final_decision});
-            },
-            base::BindOnce(
-                &NotificationPermissionContext::NotifyPermissionSet,
-                weak_factory_ui_thread_.GetWeakPtr(),
-                permissions::PermissionRequestData(
-                    this, request_data->id,
-                    content::PermissionRequestDescription(
-                        content::PermissionDescriptorUtil::
-                            CreatePermissionDescriptorForPermissionType(
-                                blink::PermissionType::NOTIFICATIONS)),
-                    request_data->requesting_origin,
-                    request_data->embedding_origin),
-                std::move(callback),
-                /*persist=*/false)));
+        base::BindOnce(&NotificationPermissionContext::NotifyPermissionSet,
+                       weak_factory_ui_thread_.GetWeakPtr(),
+                       permissions::PermissionRequestData(
+                           this, request_data->id,
+                           content::PermissionRequestDescription(
+                               content::PermissionDescriptorUtil::
+                                   CreatePermissionDescriptorForPermissionType(
+                                       blink::PermissionType::NOTIFICATIONS)),
+                           request_data->requesting_origin,
+                           request_data->embedding_origin),
+                       std::move(callback),
+                       /*persist=*/false));
     return;
   }
 #endif  // BUILDFLAG(IS_ANDROID)

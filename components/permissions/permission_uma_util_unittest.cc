@@ -111,8 +111,8 @@ std::unique_ptr<permissions::PermissionRequest> CreateRequest(
           std::make_unique<ContentSettingPermissionResolver>(
               RequestTypeToContentSettingsType(type).value()),
           /*user_gesture=*/true, GURL(url)),
-      base::BindRepeating(
-          [](PermissionDecision, bool, const PermissionRequestData&) {}));
+      base::BindRepeating([](const PermissionPromptDecision&,
+                             const PermissionRequestData&) {}));
 }
 
 }  // namespace

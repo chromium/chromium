@@ -14,6 +14,10 @@ namespace url {
 class Origin;
 }
 
+namespace permissions {
+struct PermissionPromptDecision;
+}  // namespace permissions
+
 class SmartCardPermissionRequest : public permissions::PermissionRequest {
  public:
   using ResultCallback = base::OnceCallback<void(PermissionDecision)>;
@@ -38,8 +42,7 @@ class SmartCardPermissionRequest : public permissions::PermissionRequest {
   std::optional<std::u16string> GetBlockText() const override;
 
   void OnPermissionDecided(
-      PermissionDecision decision,
-      bool is_final_decision,
+      const permissions::PermissionPromptDecision& decision,
       const permissions::PermissionRequestData& request_data);
 
   std::string reader_name_;

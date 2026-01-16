@@ -114,7 +114,7 @@ void DurableStoragePermissionContext::DecidePermission(
                         /*persist=*/true,
                         permissions::PermissionPromptDecision{
                             .overall_decision = PermissionDecision::kAllow,
-                            .prompt_options = request_data->prompt_options,
+                            .prompt_options = std::monostate(),
                             .is_final = true});
     return;
   }
@@ -132,7 +132,7 @@ void DurableStoragePermissionContext::DecidePermission(
                           /*persist=*/true,
                           permissions::PermissionPromptDecision{
                               .overall_decision = PermissionDecision::kAllow,
-                              .prompt_options = request_data->prompt_options,
+                              .prompt_options = std::monostate(),
                               .is_final = true});
       return;
     }

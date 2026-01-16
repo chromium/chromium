@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/location/android/location_settings.h"
 #include "components/location/android/location_settings_impl.h"
 #include "components/permissions/android/android_permission_util.h"
@@ -28,6 +29,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_request_description.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -136,17 +138,18 @@ void GeolocationPermissionContextAndroid::RequestPermission(
         *request_data, std::move(callback),
         /*persist=*/false,
         PermissionPromptDecision{.overall_decision = PermissionDecision::kDeny,
-                                 .prompt_options = request_data->prompt_options,
+                                 .prompt_options = std::monostate(),
                                  .is_final = true});
     return;
   }
 
   DCHECK(render_frame_host);
-  PermissionStatus status = GeolocationPermissionContext::GetPermissionStatus(
-                                *request_data, render_frame_host)
-                                .status;
+  content::PermissionResult permission_result =
+      GeolocationPermissionContext::GetPermissionStatus(*request_data,
+                                                        render_frame_host);
+
   if (!request_data->IsEmbeddedPermissionElementInitiated() &&
-      (status == PermissionStatus::GRANTED) &&
+      (permission_result.status == PermissionStatus::GRANTED) &&
       ShouldRepromptUserForPermissions(web_contents,
                                        {content_settings_type()}) ==
           PermissionRepromptState::kShow) {
@@ -161,6 +164,18 @@ void GeolocationPermissionContextAndroid::RequestPermission(
       }
     }
 
+    PromptOptions prompt_options = std::monostate();
+    if (permission_result.retrieved_permission_setting) {
+      if (GeolocationSetting* geolocation_setting =
+              std::get_if<GeolocationSetting>(
+                  &permission_result.retrieved_permission_setting.value())) {
+        prompt_options = GeolocationPromptOptions{
+            .selected_accuracy =
+                geolocation_setting->precise == PermissionOption::kAllowed
+                    ? GeolocationAccuracy::kPrecise
+                    : GeolocationAccuracy::kApproximate};
+      }
+    }
     permissions::PermissionsRepromptControllerAndroid::CreateForWebContents(
         web_contents);
     permissions::PermissionsRepromptControllerAndroid::FromWebContents(
@@ -171,8 +186,8 @@ void GeolocationPermissionContextAndroid::RequestPermission(
                                HandleUpdateAndroidPermissions,
                            weak_factory_.GetWeakPtr(), request_data->id,
                            request_data->requesting_origin,
-                           request_data->embedding_origin,
-                           request_data->prompt_options, std::move(callback)));
+                           request_data->embedding_origin, prompt_options,
+                           std::move(callback)));
     return;
   }
 
@@ -417,7 +432,7 @@ void GeolocationPermissionContextAndroid::HandleUpdateAndroidPermissions(
                                     CreatePermissionDescriptorForPermissionType(
                                         blink::PermissionType::GEOLOCATION)),
                             requesting_frame_origin, embedding_origin),
-      std::move(callback), false /* persist */,
+      std::move(callback), /*persist=*/false,
       permissions::PermissionPromptDecision{.overall_decision = result_decision,
                                             .prompt_options = prompt_options,
                                             .is_final = true});

@@ -9,6 +9,10 @@
 #include "components/permissions/permission_request.h"
 #include "url/origin.h"
 
+namespace permissions {
+struct PermissionPromptDecision;
+}  // namespace permissions
+
 class IdentityProviderPermissionRequest
     : public permissions::PermissionRequest {
  public:
@@ -24,8 +28,7 @@ class IdentityProviderPermissionRequest
 
  private:
   void PermissionDecided(
-      PermissionDecision decision,
-      bool is_final_decision,
+      const permissions::PermissionPromptDecision& decision,
       const permissions::PermissionRequestData& request_data);
 
   base::OnceCallback<void(bool accepted)> callback_;

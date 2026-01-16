@@ -12,6 +12,10 @@
 #include "components/permissions/permission_request_data.h"
 #include "url/origin.h"
 
+namespace permissions {
+struct PermissionPromptDecision;
+}  // namespace permissions
+
 // A permission request that presents the user with a choice to allow or deny
 // multiple downloads from the same site. This confirmation step protects
 // against "carpet-bombing", where a malicious site forces multiple downloads on
@@ -30,8 +34,7 @@ class DownloadPermissionRequest : public permissions::PermissionRequest {
 
  private:
   void PermissionDecided(
-      PermissionDecision decision,
-      bool is_final_decision,
+      const permissions::PermissionPromptDecision& decision,
       const permissions::PermissionRequestData& request_data);
 
   base::WeakPtr<DownloadRequestLimiter::TabDownloadState> host_;

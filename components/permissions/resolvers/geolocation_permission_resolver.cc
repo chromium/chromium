@@ -69,7 +69,6 @@ GeolocationPermissionResolver::ComputePermissionDecisionResult(
     const PermissionSetting& previous_setting,
     PermissionDecision decision,
     PromptOptions prompt_options) const {
-  CHECK(requested_precise_ || std::get_if<std::monostate>(&prompt_options));
   auto setting = std::get<GeolocationSetting>(previous_setting);
 
   switch (decision) {

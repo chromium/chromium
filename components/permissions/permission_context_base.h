@@ -292,8 +292,7 @@ class PermissionContextBase : public content_settings::Observer {
       PermissionSetting new_value);
   // This is the callback for PermissionRequest and is called once the user
   // allows/blocks/dismisses a permission prompt.
-  void PermissionDecided(PermissionDecision decision,
-                         bool is_final_decision,
+  void PermissionDecided(const permissions::PermissionPromptDecision& decision,
                          const PermissionRequestData& request_data);
 
   void NotifyObservers(const ContentSettingsPattern& primary_pattern,
