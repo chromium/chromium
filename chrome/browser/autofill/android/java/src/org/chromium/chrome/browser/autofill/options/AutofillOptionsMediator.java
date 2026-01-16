@@ -194,6 +194,8 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
         prefs().setBoolean(
                         Pref.AUTOFILL_USING_PLATFORM_AUTOFILL,
                         mModel.get(THIRD_PARTY_AUTOFILL_ENABLED));
+        AutofillClientProviderUtils.updatePackageUsedForAutofill(
+                prefs(), mModel.get(THIRD_PARTY_AUTOFILL_ENABLED));
         RecordHistogram.recordBooleanHistogram(
                 HISTOGRAM_USE_THIRD_PARTY_FILLING, mModel.get(THIRD_PARTY_AUTOFILL_ENABLED));
         mRestartRunnable.run();

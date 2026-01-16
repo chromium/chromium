@@ -185,6 +185,12 @@ inline constexpr char kAutofillUsingPlatformAutofill[] =
 // If set to false, user can only use the built-in password manager.
 inline constexpr char kAutofillThirdPartyPasswordManagersAllowed[] =
     "autofill.third_party_password_managers_allowed";
+// String storing the active autofill service when the user last decided to use
+// the virtual view structure for autofilling. Defaults to an empty string. The
+// empty string means no autofill service was selected and default built-in
+// Autofill should be used.
+inline constexpr char kAutofillThirdPartyPackageUsedForPlatformAutofill[] =
+    "autofill.third_party_package_used_for_platform_autofill";
 inline constexpr char kFacilitatedPaymentsEwallet[] =
     "facilitated_payments.ewallet";
 inline constexpr char kFacilitatedPaymentsPix[] = "facilitated_payments.pix";

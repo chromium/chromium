@@ -94,6 +94,13 @@ AutofillClientProvider::AutofillClientProvider(PrefService* prefs)
   // Ensure the pref is reset if platform autofill is restricted.
   prefs->SetBoolean(prefs::kAutofillUsingPlatformAutofill,
                     uses_platform_autofill_);
+  if (uses_platform_autofill_) {
+    // Update the package of the actively used Autofill Service while platform
+    // autofill is used. This allows restoring platform autofill later if it's
+    // temporarily unavailable. Calling this for AwG would reset the pref.
+    Java_AutofillClientProviderUtils_updatePackageUsedForAutofill(
+        base::android::AttachCurrentThread(), prefs, uses_platform_autofill_);
+  }
   SetSharedPrefForSettingsContentProvider(uses_platform_autofill_);
   SetSharedPrefForDeepLink();
 #endif  // BUILDFLAG(IS_ANDROID)

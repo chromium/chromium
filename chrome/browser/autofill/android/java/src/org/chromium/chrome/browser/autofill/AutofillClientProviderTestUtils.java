@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 
@@ -32,6 +33,23 @@ class AutofillClientProviderTestUtils {
     @CalledByNative
     private static void resetAutofillAvailability() {
         AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(null);
+    }
+
+    /**
+     * @see {@link AutofillClientProviderUtils#setAutofillAvailabilityToUseForTesting}
+     */
+    @CalledByNative
+    private static void setAutofillServicePackageName(@JniType("std::string") String packageName) {
+        AutofillClientProviderUtils.setAutofillServicePackageToUseForTesting(packageName);
+    }
+
+    /**
+     * Convenience method to call (@link #setAutofillServicePackageName) with null since the
+     * java-typic use of {@link ResettersForTesting} does not work in native tests.
+     */
+    @CalledByNative
+    private static void resetAutofillServicePackageName() {
+        AutofillClientProviderUtils.setAutofillServicePackageToUseForTesting(null);
     }
 
     private AutofillClientProviderTestUtils() {}

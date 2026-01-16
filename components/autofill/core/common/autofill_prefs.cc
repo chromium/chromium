@@ -120,6 +120,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kAutofillUsingPlatformAutofill, false);
   registry->RegisterBooleanPref(kAutofillThirdPartyPasswordManagersAllowed,
                                 true);
+  registry->RegisterStringPref(
+      kAutofillThirdPartyPackageUsedForPlatformAutofill, "");
   registry->RegisterBooleanPref(
       kFacilitatedPaymentsEwallet, /*default_value=*/true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);

@@ -131,6 +131,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillRetryImageFetchOnFailure,
     &autofill::features::kAutofillSyncEwalletAccounts,
     &autofill::features::kAutofillThirdPartyModeContentProvider,
+    &autofill::features::kAutofillThirdPartyModeRestoredOnStart,
     &base::features::kBackgroundThreadPoolFieldTrial,
     &base::features::kLowEndMemoryExperiment,
     &base::features::kPostGetMyMemoryStateToBackground,

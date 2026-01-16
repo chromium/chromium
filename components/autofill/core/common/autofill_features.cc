@@ -911,6 +911,11 @@ BASE_FEATURE(kAutofillSupportSplitZipCode, base::FEATURE_DISABLED_BY_DEFAULT);
 // virtual view structures to third party providers.
 BASE_FEATURE(kAutofillThirdPartyModeContentProvider,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, stores the last used Autofill Service in a pref. This allows to
+// restore the user's preference to use platform Autofill on restart.
+BASE_FEATURE(kAutofillThirdPartyModeRestoredOnStart,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kAutofillUKMExperimentalFields, base::FEATURE_DISABLED_BY_DEFAULT);

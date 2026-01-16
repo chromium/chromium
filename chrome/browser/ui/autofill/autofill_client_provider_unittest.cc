@@ -22,6 +22,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_string.h"
 #include "base/android/shared_preferences/shared_preferences_manager.h"
 #include "chrome/browser/autofill/android/jni_test_headers/AutofillClientProviderTestUtils_jni.h"
 #include "chrome/browser/preferences/android/chrome_shared_preferences.h"
@@ -51,6 +52,17 @@ void ResetAutofillAvailability() {
       base::android::AttachCurrentThread());
 }
 
+// This allows to set the Autofill Service Package Name.
+void SetAutofillServicePackageNameForTesting(std::string package_name) {
+  test::Java_AutofillClientProviderTestUtils_setAutofillServicePackageName(
+      base::android::AttachCurrentThread(), std::move(package_name));
+}
+
+void ResetAutofillServicePackageName() {
+  test::Java_AutofillClientProviderTestUtils_resetAutofillServicePackageName(
+      base::android::AttachCurrentThread());
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 class AutofillClientProviderBaseTest : public testing::Test {
@@ -61,6 +73,7 @@ class AutofillClientProviderBaseTest : public testing::Test {
     profile_.reset();  // Important since it also resets the prefs.
 #if BUILDFLAG(IS_ANDROID)
     ResetAutofillAvailability();
+    ResetAutofillServicePackageName();
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 
@@ -106,7 +119,8 @@ class AutofillClientProviderTest : public AutofillClientProviderBaseTest {
   AutofillClientProviderTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kAutofillThirdPartyModeContentProvider,
-         features::kAutofillDeepLinkAutofillOptions},
+         features::kAutofillDeepLinkAutofillOptions,
+         features::kAutofillThirdPartyModeRestoredOnStart},
         {});
   }
 
@@ -182,6 +196,38 @@ TEST_F(AutofillClientProviderTest,
       android::shared_preferences::GetChromeSharedPreferences();
   ASSERT_TRUE(prefs.ContainsKey(kAutofillThirdPartyModeState));
   EXPECT_FALSE(prefs.ReadBoolean(kAutofillThirdPartyModeState, false));
+}
+
+TEST_F(AutofillClientProviderTest,
+       UpdatesPackageNamePrefWhenUsingPlatformAutofill) {
+  SetAutofillAvailabilityForTesting(
+      AndroidAutofillAvailabilityStatus::kAvailable);
+  prefs().SetString(prefs::kAutofillThirdPartyPackageUsedForPlatformAutofill,
+                    "com.old.service");
+  SetAutofillServicePackageNameForTesting("com.new.service");
+
+  EXPECT_TRUE(provider().uses_platform_autofill());
+  EXPECT_EQ(prefs().GetString(
+                prefs::kAutofillThirdPartyPackageUsedForPlatformAutofill),
+            "com.new.service");
+}
+
+TEST_F(AutofillClientProviderTest,
+       KeepsPackageNamePrefWhenPlatformAutofillIsTemporarilyTurnedOff) {
+  SetAutofillAvailabilityForTesting(
+      AndroidAutofillAvailabilityStatus::kSettingTurnedOff);
+
+  // Assume some service was used before: it shouldn't be changed!
+  prefs().SetString(prefs::kAutofillThirdPartyPackageUsedForPlatformAutofill,
+                    "com.old.service");
+
+  // There could be a new service but it's currently not used.
+  SetAutofillServicePackageNameForTesting("com.new.service");
+
+  EXPECT_FALSE(provider().uses_platform_autofill());
+  EXPECT_EQ(prefs().GetString(
+                prefs::kAutofillThirdPartyPackageUsedForPlatformAutofill),
+            "com.old.service");
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)
