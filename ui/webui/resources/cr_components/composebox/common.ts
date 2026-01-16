@@ -24,11 +24,19 @@ export interface FileUpload {
   file: File;
 }
 
+export enum TabUploadOrigin {
+  CONTEXT_MENU = 0,
+  RECENT_TAB_CHIP = 1,
+  ACTION_CHIP = 2,
+  OTHER = 3,
+}
+
 export interface TabUpload {
   tabId: number;
   url: Url;
   title: string;
   delayUpload: boolean;
+  origin: TabUploadOrigin;
 }
 
 export type ContextualUpload = TabUpload|FileUpload;
