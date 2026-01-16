@@ -181,9 +181,18 @@ TEST(AboutFlagsTest, VariationIdsAreValid) {
   std::set<int> nontriggering_variation_ids;
   std::set<int> triggering_variation_ids;
 
+  struct VariationIdRange {
+    int start;
+    int end;
+
+    bool Contains(int id) const { return id >= start && id <= end; }
+    std::string ToString() const {
+      return base::StringPrintf("[%d, %d]", start, end);
+    }
+  };
   // See: go/finch-allocating-gws-ids.
-  int LOWER_VALID_VARIATION_ID = 3340000;
-  int UPPER_VALID_VARIATION_ID = 3399999;
+  const VariationIdRange kVariationIdRange1{3340000, 3399999};
+  const VariationIdRange kVariationIdRange2{101000000, 101099999};
 
   for (const std::string& variation_str : GetAllVariationIds()) {
     auto [variation_id, is_triggering] = ParseVariationId(variation_str);
@@ -195,14 +204,13 @@ TEST(AboutFlagsTest, VariationIdsAreValid) {
         // Visible, but already recorded as triggering.
         (!is_triggering && triggering_variation_ids.contains(variation_id)))
         << "Variation ID \"" << variation_id
-        << "\" used both as triggering and "
-        << "non-triggering.";
+        << "\" used both as triggering and non-triggering.";
 
-    EXPECT_TRUE(variation_id >= LOWER_VALID_VARIATION_ID &&
-                variation_id <= UPPER_VALID_VARIATION_ID)
-        << "Variation ID \"" << variation_id << "\" falls outside of range of "
-        << "valid variation IDs: [" << LOWER_VALID_VARIATION_ID << ", "
-        << UPPER_VALID_VARIATION_ID << "].";
+    EXPECT_TRUE(kVariationIdRange1.Contains(variation_id) ||
+                kVariationIdRange2.Contains(variation_id))
+        << "Variation ID \"" << variation_id << "\" falls outside of ranges of "
+        << "valid variation IDs: " << kVariationIdRange1.ToString() << " and "
+        << kVariationIdRange2.ToString() << ".";
 
     if (is_triggering) {
       triggering_variation_ids.insert(variation_id);
