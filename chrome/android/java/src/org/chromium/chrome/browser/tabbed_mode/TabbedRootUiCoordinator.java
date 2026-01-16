@@ -194,6 +194,8 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.side_panel_container.SidePanelContainerCoordinator;
+import org.chromium.chrome.browser.ui.side_panel_container.SidePanelContainerCoordinatorFactory;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninPromoLauncher;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
 import org.chromium.chrome.browser.webapps.PwaRestorePromoUtils;
@@ -304,6 +306,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final InactivityObserver mInactivityObserver;
     private @Nullable NtpSyncedThemeManager mNtpSyncedThemeManager;
     private final @NonNull CrossDeviceSettingImporter mCrossDeviceSettingImporter;
+    private @Nullable SidePanelContainerCoordinator mSidePanelContainerCoordinator;
 
     // Activity tab observer that updates the current tab used by various UI components.
     private class RootUiTabObserver extends ActivityTabTabObserver {
@@ -799,6 +802,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         mCrossDeviceSettingImporter.destroy();
 
+        if (mSidePanelContainerCoordinator != null) {
+            mSidePanelContainerCoordinator.destroy();
+            mSidePanelContainerCoordinator = null;
+        }
+
         super.onDestroy();
     }
 
@@ -1030,6 +1038,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     };
             mBookmarkBarVisibilityProvider.addObserver(mBookmarkBarVisibilityObserver);
         }
+
+        mSidePanelContainerCoordinator = SidePanelContainerCoordinatorFactory.create();
 
         initiateTabBottomSheetManagers();
     }
