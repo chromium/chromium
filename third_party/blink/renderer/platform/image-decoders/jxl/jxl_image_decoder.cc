@@ -264,11 +264,17 @@ void JXLImageDecoder::Decode(wtf_size_t index, bool only_size) {
             high_bit_depth_decoding_option_ == kHighBitDepthToHalfFloat;
 
         // Set pixel format on decoder.
-        // Use BGRA8 for 8-bit decoding (Skia's native format on little-endian).
-        // Use RGBA F16 for high bit depth (Skia's kRGBA_F16_SkColorType).
+        // Use native 8-bit ordering for kN32, and RGBA F16 for half float.
+#if SK_PMCOLOR_BYTE_ORDER(B, G, R, A)
+        constexpr JxlRsPixelFormat kNativePixelFormat = JxlRsPixelFormat::Bgra8;
+#elif SK_PMCOLOR_BYTE_ORDER(R, G, B, A)
+        constexpr JxlRsPixelFormat kNativePixelFormat = JxlRsPixelFormat::Rgba8;
+#else
+#error "Unsupported Skia pixel order"
+#endif
         JxlRsPixelFormat pixel_format = decode_to_half_float_
                                             ? JxlRsPixelFormat::RgbaF16
-                                            : JxlRsPixelFormat::Bgra8;
+                                            : kNativePixelFormat;
         (*decoder_)->set_pixel_format(pixel_format,
                                       basic_info_.num_extra_channels);
 
