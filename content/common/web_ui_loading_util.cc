@@ -6,9 +6,13 @@
 
 #include "base/check.h"
 #include "base/debug/crash_logging.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
@@ -18,6 +22,37 @@
 namespace content {
 
 namespace webui {
+
+namespace {
+
+class MemoryDataSource : public mojo::DataPipeProducer::DataSource {
+ public:
+  MemoryDataSource(scoped_refptr<base::RefCountedMemory> data,
+                   size_t offset,
+                   size_t size)
+      : data_(std::move(data)), offset_(offset), size_(size) {}
+
+  uint64_t GetLength() const override { return size_; }
+
+  ReadResult Read(uint64_t offset, base::span<char> buffer) override {
+    ReadResult result;
+    CHECK_LT(offset, size_);
+    size_t copy_size =
+        std::min(buffer.size(), size_ - static_cast<size_t>(offset));
+    base::as_writable_bytes(buffer).copy_prefix_from(base::span(*data_).subspan(
+        offset_ + static_cast<size_t>(offset), copy_size));
+    result.bytes_read = copy_size;
+    result.result = MOJO_RESULT_OK;
+    return result;
+  }
+
+ private:
+  scoped_refptr<base::RefCountedMemory> data_;
+  size_t offset_;
+  size_t size_;
+};
+
+}  // namespace
 
 void CallOnError(
     mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote,
@@ -106,7 +141,8 @@ std::pair<mojo::ScopedDataPipeConsumerHandle, size_t> GetPipe(
   options.struct_size = sizeof(MojoCreateDataPipeOptions);
   options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
   options.element_num_bytes = 1;
-  options.capacity_num_bytes = output_size;
+  // `0` means using the default capacity.
+  options.capacity_num_bytes = 0;
   mojo::ScopedDataPipeProducerHandle pipe_producer_handle;
   mojo::ScopedDataPipeConsumerHandle pipe_consumer_handle;
   MojoResult create_result = mojo::CreateDataPipe(
@@ -117,17 +153,12 @@ std::pair<mojo::ScopedDataPipeConsumerHandle, size_t> GetPipe(
     CHECK(false);
   }
 
-  base::span<uint8_t> buffer;
-  MojoResult result = pipe_producer_handle->BeginWriteData(
-      output_size, MOJO_WRITE_DATA_FLAG_NONE, buffer);
-  CHECK_EQ(result, MOJO_RESULT_OK);
-  CHECK_GE(buffer.size(), output_size);
-  CHECK_LE(output_offset + output_size, bytes->size());
-
-  buffer.copy_prefix_from(
-      base::span(*bytes).subspan(output_offset, output_size));
-  result = pipe_producer_handle->EndWriteData(output_size);
-  CHECK_EQ(result, MOJO_RESULT_OK);
+  auto producer =
+      std::make_unique<mojo::DataPipeProducer>(std::move(pipe_producer_handle));
+  auto* producer_ptr = producer.get();
+  producer_ptr->Write(
+      std::make_unique<MemoryDataSource>(bytes, output_offset, output_size),
+      base::DoNothingWithBoundArgs(std::move(producer)));
 
   return std::make_pair(std::move(pipe_consumer_handle), output_size);
 }
