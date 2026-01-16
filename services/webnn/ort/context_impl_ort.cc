@@ -533,8 +533,7 @@ ContextImplOrt::CreateTensorFromSharedImageImpl(
 
   return base::MakeRefCounted<TensorImplOrt>(
       std::move(receiver), AsWeakPtr(), std::move(tensor_info),
-      std::move(representation), size, std::move(tensor),
-      std::move(d3d12_buffer));
+      std::move(representation), size, std::move(tensor));
 }
 
 }  // namespace webnn::ort

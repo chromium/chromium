@@ -31,8 +31,7 @@ class TensorImplOrt final : public WebNNTensorImpl {
                 mojom::TensorInfoPtr tensor_info,
                 RepresentationPtr representation,
                 size_t size,
-                ScopedOrtValue tensor,
-                Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_buffer);
+                ScopedOrtValue tensor);
 
   TensorImplOrt(const TensorImplOrt&) = delete;
   TensorImplOrt& operator=(const TensorImplOrt&) = delete;
@@ -49,9 +48,6 @@ class TensorImplOrt final : public WebNNTensorImpl {
                         ExportTensorCallback callback) override;
 
   base::span<uint8_t> AsSpan() const;
-
-  // Non-null when the tensor is backed by a D3D12 resource. Null otherwise.
-  Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_buffer_;
 
   // The device allocator used for device tensor creation. May be nullptr if
   // device tensor is not supported.
