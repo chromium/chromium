@@ -1181,6 +1181,10 @@ public final class ProductionSupportedFlagList {
                 "Reduces the size of the LevelDB cache to reduce memory usage at no expected speed"
                         + " cost"),
         Flag.baseFeature(
+                "IDBDatabaseExternalMemoryAccounting",
+                "Report external memory held by IndexedDB connections, so it's taken into account"
+                    + " in GC heuristics."),
+        Flag.baseFeature(
                 "VariationsStickyPersistence",
                 "Controls how prefs are written and persisted for tracking sticky study activation."
                     + " Note: The actual behavior is controlled by a feature param, but disabling"
