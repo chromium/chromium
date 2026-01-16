@@ -139,7 +139,7 @@ class BrowserAutofillManager : public AutofillManager {
     base::TimeTicks form_submitted_timestamp;
   };
 
-  // Triggered when `GenerateSuggestionsAndMaybeShowUIPhase2` is complete.
+  // Triggered when `GenerateFooter` is complete.
   // `show_suggestions` indicates whether or not the list of `suggestions`
   // should be displayed (via the `external_delegate_`).
   using OnGenerateSuggestionsCallback =
@@ -526,8 +526,8 @@ class BrowserAutofillManager : public AutofillManager {
   //
   // Other flows that rely on the
   // `external_delegate_` to show their suggestions, pass the suggestions list
-  // to the delegate via `OnGenerateSuggestionsComplete` and request them to be
-  // shown (via `show_suggestions`).
+  // to the delegate via `GenerateFooter` and `OnGenerateSuggestionsComplete`
+  // and request them to be shown (via `show_suggestions`).
   void GenerateSuggestionsAndMaybeShowUIPhase1(
       const FormData& form,
       const FormFieldData& field,
@@ -548,6 +548,13 @@ class BrowserAutofillManager : public AutofillManager {
       base::TimeTicks suggestion_generator_start_time,
       std::vector<std::string> plus_addresses,
       std::vector<std::string> one_time_passwords);
+  void GenerateFooter(const FormData& form,
+                      const FormFieldData& field,
+                      AutofillSuggestionTriggerSource trigger_source,
+                      const SuggestionsContext& context,
+                      base::TimeTicks suggestion_generation_start_time,
+                      bool show_suggestions,
+                      std::vector<Suggestion> suggestions);
 
   // Receives the lists of plus address and single field form fill suggestions
   // and combines them. It gives priority to the plus address suggestions,
@@ -568,10 +575,9 @@ class BrowserAutofillManager : public AutofillManager {
                              const FieldGlobalId& field_id);
 
   // The function receives a the list of `suggestions` from
-  // `GenerateSuggestionsAndMaybeShowUIPhase2` and displays them if
-  // `show_suggestions` is true (via the `external_delegate_`). It also logs
-  // whether there is a suggestion for the user and whether the suggestion is
-  // shown.
+  // `GenerateFooter` and displays them if `show_suggestions` is true (via the
+  // `external_delegate_`). It also logs whether there is a suggestion for the
+  // user and whether the suggestion is shown.
   void OnGenerateSuggestionsComplete(
       const FormGlobalId& form_id,
       const FieldGlobalId& field_id,

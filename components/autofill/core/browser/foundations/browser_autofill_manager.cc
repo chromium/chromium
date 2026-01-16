@@ -804,7 +804,10 @@ void ReorderWebauthnFallbackToFooter(std::vector<Suggestion>& suggestions) {
                        &IsManagementFooterOption)
           .base();
   // Without "Manage" suggestion, ensure a separator for the footer exists.
-  if (insert_before == suggestions.end() &&
+  bool has_other_management_items =
+      insert_before != suggestions.end() &&
+      insert_before->type != SuggestionType::kWebauthnSignInWithAnotherDevice;
+  if (!has_other_management_items &&
       !std::ranges::contains(suggestions, SuggestionType::kSeparator,
                              &Suggestion::type)) {
     suggestions.emplace_back(SuggestionType::kSeparator);
@@ -1418,9 +1421,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
     std::vector<std::string> plus_addresses,
     std::vector<std::string> one_time_passwords) {
   OnGenerateSuggestionsCallback callback = base::BindOnce(
-      &BrowserAutofillManager::OnGenerateSuggestionsComplete,
-      weak_ptr_factory_.GetWeakPtr(), form.global_id(), field.global_id(),
-      trigger_source, context, suggestion_generation_start_time);
+      &BrowserAutofillManager::GenerateFooter, weak_ptr_factory_.GetWeakPtr(),
+      form, field, trigger_source, context, suggestion_generation_start_time);
 
   // If this is a mixed content form, we show a warning message and don't offer
   // autofill. The warning is shown even if there are no autofill suggestions
@@ -1464,19 +1466,6 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
     }
     std::move(callback).Run(/*show_suggestions=*/true, /*suggestions=*/{});
     return;
-  }
-
-  if (ShouldShowWebauthnHybridEntryPoint(field)) {
-    if (PasswordManagerDelegate* password_delegate =
-            client().GetPasswordManagerDelegate(field.global_id())) {
-      // If any field **on the page** allows starting the hybrid passkey flow,
-      // this suggestion becomes available.
-      if (std::optional<Suggestion> passkey_suggestion =
-              password_delegate
-                  ->GetWebauthnSignInWithAnotherDeviceSuggestion()) {
-        suggestions.push_back(*std::move(passkey_suggestion));
-      }
-    }
   }
 
   AutofillAiManager* ai_manager = client().GetAutofillAiManager();
@@ -1644,6 +1633,34 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
   client().GetAutocompleteHistoryManager()->OnGetSingleFieldSuggestions(
       form, form_structure, field, autofill_field, client(),
       std::move(on_suggestions_returned));
+}
+
+void BrowserAutofillManager::GenerateFooter(
+    const FormData& form,
+    const FormFieldData& field,
+    AutofillSuggestionTriggerSource trigger_source,
+    const SuggestionsContext& context,
+    base::TimeTicks suggestion_generation_start_time,
+    bool show_suggestions,
+    std::vector<Suggestion> suggestions) {
+  if (ShouldShowWebauthnHybridEntryPoint(field)) {
+    if (PasswordManagerDelegate* password_delegate =
+            client().GetPasswordManagerDelegate(field.global_id())) {
+      // If any field **on the page** allows starting the hybrid passkey flow,
+      // this suggestion becomes available.
+      if (std::optional<Suggestion> passkey_suggestion =
+              password_delegate
+                  ->GetWebauthnSignInWithAnotherDeviceSuggestion()) {
+        suggestions.push_back(*std::move(passkey_suggestion));
+        show_suggestions = true;
+      }
+    }
+  }
+
+  OnGenerateSuggestionsComplete(form.global_id(), field.global_id(),
+                                trigger_source, context,
+                                suggestion_generation_start_time,
+                                show_suggestions, std::move(suggestions));
 }
 
 void BrowserAutofillManager::
