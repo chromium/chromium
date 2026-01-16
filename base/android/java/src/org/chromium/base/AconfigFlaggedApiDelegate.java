@@ -6,6 +6,7 @@ package org.chromium.base;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Context.BindServiceFlags;
 import android.content.ServiceConnection;
@@ -377,5 +378,34 @@ public interface AconfigFlaggedApiDelegate {
     /** Calls Display.getFrameRateVelocityMapping if supported; returns null otherwise. */
     default @Nullable List<FrameRateVelocityPoint> getFrameRateVelocityMapping(Display display) {
         return null;
+    }
+
+    /**
+     * Takes an {@link android.app.ActivityOptions} object, copies it, applies {@link
+     * android.app.ActivityOptions#setMovableTaskRequired(boolean)} with {@code true} to the copy
+     * and returns it, if the Android SDK available on the device contains the {@link
+     * android.app.ActivityOptions#setMovableTaskRequired(boolean)} method.
+     *
+     * <p>If the Android SDK available on the device does not contain the {@link
+     * android.app.ActivityOptions#setMovableTaskRequired(boolean)}, returns {@code null}.
+     *
+     * @param activityOptions The {@link android.app.ActivityOptions} object to copy and modify.
+     */
+    default @Nullable ActivityOptions setMovableTaskRequired(ActivityOptions activityOptions) {
+        return null;
+    }
+
+    /**
+     * Checks whether an exception is of type {@link
+     * android.app.InfeasibleActivityOptionsException}, if the Android SDK available on the device
+     * contains this class's definition.
+     *
+     * <p>If the Android SDK available on the device does not contain the {@link
+     * android.app.InfeasibleActivityOptionsException} class's definition, returns {@code false}.
+     *
+     * @param e The {@link Exception} to be checked.
+     */
+    default boolean isInfeasibleActivityOptionsException(Exception e) {
+        return false;
     }
 }
