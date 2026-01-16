@@ -305,18 +305,20 @@ OidcAuthResponseCaptureNavigationThrottle::AttemptToTriggerUrlInterception() {
   if (base::FeatureList::IsEnabled(
           profile_management::features::
               kEnableGenericOidcAuthProfileManagement)) {
-    if (url_map.contains(kOidcStateHeader)) {
-      state = url_map[kOidcStateHeader];
+    if (auto it = url_map.find(kOidcStateHeader); it != url_map.end()) {
+      state = it->second;
     } else {
       LOG_POLICY(WARNING, OIDC_ENROLLMENT)
           << "OIDC state is missing from the OIDC enrollment URL.";
     }
   }
 
+  auto auth_token_it = url_map.find(kAuthTokenHeader);
   std::string auth_token =
-      url_map.contains(kAuthTokenHeader) ? url_map[kAuthTokenHeader] : "";
+      auth_token_it != url_map.end() ? auth_token_it->second : "";
+  auto id_token_it = url_map.find(kIdTokenHeader);
   std::string id_token =
-      url_map.contains(kIdTokenHeader) ? url_map[kIdTokenHeader] : "";
+      id_token_it != url_map.end() ? id_token_it->second : "";
 
   if (auth_token.empty() || id_token.empty()) {
     LOG_POLICY(ERROR, OIDC_ENROLLMENT)
@@ -325,7 +327,6 @@ OidcAuthResponseCaptureNavigationThrottle::AttemptToTriggerUrlInterception() {
     return PROCEED;
   }
 
-  std::string json_payload;
   std::vector<std::string_view> jwt_sections = base::SplitStringPiece(
       id_token, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   if (jwt_sections.size() != 3) {
@@ -335,6 +336,7 @@ OidcAuthResponseCaptureNavigationThrottle::AttemptToTriggerUrlInterception() {
     return CANCEL_AND_IGNORE;
   }
 
+  std::string json_payload;
   if (!base::Base64UrlDecode(jwt_sections[1],
                              base::Base64UrlDecodePolicy::IGNORE_PADDING,
                              &json_payload)) {
