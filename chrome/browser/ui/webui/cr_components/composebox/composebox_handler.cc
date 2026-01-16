@@ -22,6 +22,7 @@
 #include "components/lens/lens_url_utils.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/browser/vector_icons.h"
 #include "content/public/browser/page_navigator.h"
 #include "net/base/url_util.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -324,6 +325,19 @@ void ComposeboxHandler::UpdateSuggestedTabContext(
     searchbox::mojom::TabInfoPtr tab_info) {
   has_suggested_tab_context_ = !tab_info.is_null();
   SearchboxHandler::page_->UpdateAutoSuggestedTabContext(std::move(tab_info));
+}
+
+std::string ComposeboxHandler::AutocompleteIconToResourceName(
+    const gfx::VectorIcon& icon) const {
+  // TODO(crbug.com/476137316): Update vector icons returned by server.
+  // The default icon for contextual suggestions is the subdirectory arrow right
+  // icon. For the Lens composebox and realbox, we want to stay consistent with
+  // the search loupe instead.
+  if (icon.name == omnibox::kSubdirectoryArrowRightIcon.name) {
+    return searchbox_internal::kSearchIconResourceName;
+  }
+
+  return SearchboxHandler::AutocompleteIconToResourceName(icon);
 }
 
 std::optional<lens::LensOverlayInvocationSource>

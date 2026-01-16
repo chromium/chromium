@@ -134,10 +134,6 @@ class ContextualSearchboxHandler
       const std::optional<contextual_search::FileUploadErrorType>& error_type)
       override;
 
-  // SearchboxHandler:
-  std::string AutocompleteIconToResourceName(
-      const gfx::VectorIcon& icon) const override;
-
   // TabStripModelObserver:
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
