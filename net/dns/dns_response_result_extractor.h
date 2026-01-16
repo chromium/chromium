@@ -46,9 +46,6 @@ class NET_EXPORT_PRIVATE DnsResponseResultExtractor {
     kBadAliasChain,
   };
 
-  static constexpr std::string_view kHasValidCnameRecordsHistogram =
-      "Net.DNS.DnsTask.HasValidCnameRecords";
-
   using ResultsOrError =
       base::expected<std::set<std::unique_ptr<HostResolverInternalResult>>,
                      ExtractionError>;

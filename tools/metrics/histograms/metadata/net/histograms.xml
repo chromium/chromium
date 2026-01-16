@@ -2561,16 +2561,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.DNS.DnsTask.HasValidCnameRecords" enum="BooleanSuccess"
-    expires_after="2026-05-20">
-  <owner>aakallam@chromium.org</owner>
-  <owner>src/net/dns/OWNERS</owner>
-  <summary>
-    Records whether valid CNAME aliases records were found and added to results
-    returned for a DnsTask.
-  </summary>
-</histogram>
-
 <histogram name="Net.DNS.DnsTask.SvcbHttpsTransactionError"
     enum="DNS.SvcbHttpsTransactionError" expires_after="2025-08-10">
   <owner>horo@chromium.org</owner>
@@ -4242,18 +4232,6 @@ chromium-metrics-reviews@google.com.
     Measures the CPU time taken by creating a HttpStreamRequest. Recoreded every
     time the HttpNetworkTransaction::DoCreateStream() is called for HTTP stream
     request.
-  </summary>
-</histogram>
-
-<histogram name="Net.NetworkTransaction.ResetConnectionAndResendRequestTime"
-    units="ms" expires_after="2026-05-20">
-  <owner>awillia@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    The time taken for resetting the connection and request headers, and
-    creating a Stream. Recorded in
-    HttpNetworkTransaction::DoCreateStreamComplete when the stream creation
-    completes successfully.
   </summary>
 </histogram>
 

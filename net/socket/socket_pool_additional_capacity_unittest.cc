@@ -381,7 +381,6 @@ class MockClientSocketPool : public ClientSocketPool {
       ClientSocketHandle* handle,
       CompletionOnceCallback callback,
       const ProxyAuthCallback& proxy_auth_callback,
-      bool fail_if_alias_requires_proxy_override,
       const NetLogWithSource& net_log) override {
     NOTIMPLEMENTED();
     return ERR_IO_PENDING;
@@ -391,7 +390,6 @@ class MockClientSocketPool : public ClientSocketPool {
       scoped_refptr<SocketParams> params,
       const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       size_t num_sockets,
-      bool fail_if_alias_requires_proxy_override,
       CompletionOnceCallback callback,
       const NetLogWithSource& net_log) override {
     NOTIMPLEMENTED();

@@ -2218,8 +2218,6 @@ void HttpNetworkTransaction::ResetConnectionAndRequestForResend(
               "HttpNetworkTransaction::ResetConnectionAndRequestForResend",
               NetLogWithSourceToFlow(net_log_), "retry_reason", retry_reason);
 
-  reset_connection_and_request_for_resend_start_time_ = base::TimeTicks::Now();
-
   // TODO:(crbug.com/1495705): Remove this CHECK after fixing the bug.
   CHECK(request_);
   base::UmaHistogramEnumeration(
@@ -2433,13 +2431,6 @@ void HttpNetworkTransaction::RecordStreamRequestResult(int result) {
         AddressFamilyToString(endpoint.GetFamily());
     base::UmaHistogramTimes(base::StrCat({histogram_name, ".", address_suffix}),
                             create_time);
-
-    if (!reset_connection_and_request_for_resend_start_time_.is_null()) {
-      base::UmaHistogramTimes(
-          "Net.NetworkTransaction.ResetConnectionAndResendRequestTime",
-          base::TimeTicks::Now() -
-              reset_connection_and_request_for_resend_start_time_);
-    }
 
     CHECK(stream_request_completion_details_.has_value());
     if (stream_request_completion_details_->session_source.has_value()) {

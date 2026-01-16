@@ -248,16 +248,8 @@ RecordsOrError ExtractResponseRecords(
   std::string final_chain_name;
   ExtractionError name_and_alias_validation_error = ValidateNamesAndAliases(
       response.GetSingleDottedName(), aliases, data_records, final_chain_name);
-  bool has_extraction_error =
-      name_and_alias_validation_error != ExtractionError::kOk;
 
-  if (query_type == DnsQueryType::A || query_type == DnsQueryType::AAAA) {
-    UMA_HISTOGRAM_BOOLEAN(
-        DnsResponseResultExtractor::kHasValidCnameRecordsHistogram,
-        !has_extraction_error && !aliases.empty());
-  }
-
-  if (has_extraction_error) {
+  if (name_and_alias_validation_error != ExtractionError::kOk) {
     return base::unexpected(name_and_alias_validation_error);
   }
 

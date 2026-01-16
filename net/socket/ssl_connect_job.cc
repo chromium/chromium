@@ -161,16 +161,6 @@ void SSLConnectJob::OnNeedsProxyAuth(
                             std::move(restart_with_auth_callback));
 }
 
-Error SSLConnectJob::OnDestinationDnsAliasesResolved(
-    const std::set<std::string>& aliases,
-    ConnectJob* job) {
-  // Resolved DNS aliases should only be handled for direct connections.
-  if (params_->GetConnectionType() != SSLSocketParams::DIRECT) {
-    return OK;
-  }
-  return HandleDnsAliasesResolved(aliases);
-}
-
 ConnectionAttempts SSLConnectJob::GetConnectionAttempts() const {
   return connection_attempts_;
 }

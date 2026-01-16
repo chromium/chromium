@@ -295,13 +295,6 @@ class TestResolveProxyDelegate : public ProxyDelegate {
   void SetProxyResolutionService(
       ProxyResolutionService* proxy_resolution_service) override {}
 
-  bool AliasRequiresProxyOverride(
-      const std::string scheme,
-      const std::vector<std::string>& dns_aliases,
-      const net::NetworkAnonymizationKey& network_anonymization_key) override {
-    return false;
-  }
-
  private:
   int num_resolve_proxy_called_ = 0;
   bool add_proxy_ = false;
@@ -348,13 +341,6 @@ class TestProxyFallbackProxyDelegate : public ProxyDelegate {
 
   void SetProxyResolutionService(
       ProxyResolutionService* proxy_resolution_service) override {}
-
-  bool AliasRequiresProxyOverride(
-      const std::string scheme,
-      const std::vector<std::string>& dns_aliases,
-      const net::NetworkAnonymizationKey& network_anonymization_key) override {
-    return false;
-  }
 
   bool num_proxy_fallback_called() const { return num_proxy_fallback_called_; }
 

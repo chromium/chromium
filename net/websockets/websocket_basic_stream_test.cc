@@ -169,8 +169,7 @@ class WebSocketBasicStreamSocketTest : public TestWithTaskEnvironment {
     transport_socket->Init(
         group_id, null_params, std::nullopt /* proxy_annotation_tag */, MEDIUM,
         SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
-        CompletionOnceCallback(), ClientSocketPool::ProxyAuthCallback(),
-        /*fail_if_alias_requires_proxy_override=*/false, &pool_,
+        CompletionOnceCallback(), ClientSocketPool::ProxyAuthCallback(), &pool_,
         NetLogWithSource());
     return transport_socket;
   }

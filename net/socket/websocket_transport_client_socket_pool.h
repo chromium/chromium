@@ -17,7 +17,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/client_socket_pool.h"
@@ -74,14 +73,12 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
       ClientSocketHandle* handle,
       CompletionOnceCallback callback,
       const ProxyAuthCallback& proxy_auth_callback,
-      bool fail_if_alias_requires_proxy_override,
       const NetLogWithSource& net_log) override;
   int RequestSockets(
       const GroupId& group_id,
       scoped_refptr<SocketParams> params,
       const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       size_t num_sockets,
-      bool fail_if_alias_requires_proxy_override,
       CompletionOnceCallback callback,
       const NetLogWithSource& net_log) override;
   void SetPriority(const GroupId& group_id,
@@ -130,8 +127,6 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
                           HttpAuthController* auth_controller,
                           base::OnceClosure restart_with_auth_callback,
                           ConnectJob* job) override;
-    Error OnDestinationDnsAliasesResolved(const std::set<std::string>& aliases,
-                                          ConnectJob* job) override;
 
     // Calls Connect() on |connect_job|, and takes ownership. Returns Connect's
     // return value.
@@ -164,7 +159,6 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
         ClientSocketHandle* handle,
         CompletionOnceCallback callback,
         const ProxyAuthCallback& proxy_auth_callback,
-        bool fail_if_alias_requires_proxy_override,
         const NetLogWithSource& net_log);
     StalledRequest(StalledRequest&& other);
     ~StalledRequest();
@@ -176,7 +170,6 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
     const raw_ptr<ClientSocketHandle> handle;
     CompletionOnceCallback callback;
     ProxyAuthCallback proxy_auth_callback;
-    bool fail_if_alias_requires_proxy_override;
     const NetLogWithSource net_log;
   };
 

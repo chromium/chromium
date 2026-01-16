@@ -3342,8 +3342,7 @@ TEST_F(SpdySessionTest, CloseOneIdleConnection) {
           ClientSocketPool::SocketParams::CreateForHttpForTesting(),
           std::nullopt /* proxy_annotation_tag */, DEFAULT_PRIORITY,
           SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
-          callback2.callback(), ClientSocketPool::ProxyAuthCallback(),
-          /*fail_if_alias_requires_proxy_override=*/false, pool,
+          callback2.callback(), ClientSocketPool::ProxyAuthCallback(), pool,
           NetLogWithSource()));
   EXPECT_TRUE(pool->IsStalled());
 
@@ -3450,8 +3449,7 @@ TEST_F(SpdySessionTest, CloseOneIdleConnectionWithAlias) {
           ClientSocketPool::SocketParams::CreateForHttpForTesting(),
           std::nullopt /* proxy_annotation_tag */, DEFAULT_PRIORITY,
           SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
-          callback3.callback(), ClientSocketPool::ProxyAuthCallback(),
-          /*fail_if_alias_requires_proxy_override=*/false, pool,
+          callback3.callback(), ClientSocketPool::ProxyAuthCallback(), pool,
           NetLogWithSource()));
   EXPECT_TRUE(pool->IsStalled());
 
@@ -3538,8 +3536,7 @@ TEST_F(SpdySessionTest, CloseSessionOnIdleWhenPoolStalled) {
           ClientSocketPool::SocketParams::CreateForHttpForTesting(),
           std::nullopt /* proxy_annotation_tag */, DEFAULT_PRIORITY,
           SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
-          callback2.callback(), ClientSocketPool::ProxyAuthCallback(),
-          /*fail_if_alias_requires_proxy_override=*/false, pool,
+          callback2.callback(), ClientSocketPool::ProxyAuthCallback(), pool,
           NetLogWithSource()));
   EXPECT_TRUE(pool->IsStalled());
 
