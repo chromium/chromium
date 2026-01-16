@@ -72,6 +72,12 @@ PasswordReuseDetectorImpl::PasswordLengthAndMatchingCredentials::
     PasswordLengthAndMatchingCredentials() = default;
 PasswordReuseDetectorImpl::PasswordLengthAndMatchingCredentials::
     ~PasswordLengthAndMatchingCredentials() = default;
+PasswordReuseDetectorImpl::PasswordLengthAndMatchingCredentials::
+    PasswordLengthAndMatchingCredentials(
+        const PasswordLengthAndMatchingCredentials&) = default;
+PasswordReuseDetectorImpl::PasswordLengthAndMatchingCredentials&
+PasswordReuseDetectorImpl::PasswordLengthAndMatchingCredentials::operator=(
+    const PasswordLengthAndMatchingCredentials&) = default;
 
 PasswordReuseDetectorImpl::PasswordReuseDetectorImpl()
     : salt_(CreateRandomSalt()) {
