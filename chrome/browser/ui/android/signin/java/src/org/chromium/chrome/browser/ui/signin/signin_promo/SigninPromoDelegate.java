@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -25,6 +27,9 @@ import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** A delegate object that provides necessary information to customize sign-in promo. */
 @NullMarked
 public abstract class SigninPromoDelegate {
@@ -32,6 +37,7 @@ public abstract class SigninPromoDelegate {
     protected final Profile mProfile;
     protected final SigninAndHistorySyncActivityLauncher mLauncher;
     protected final Runnable mOnPromoVisibilityChange;
+    protected @PromoLoadingState int mPromoLoadingState = PromoLoadingState.NOT_LOADING;
 
     protected SigninPromoDelegate(
             Context context,
@@ -42,6 +48,14 @@ public abstract class SigninPromoDelegate {
         mProfile = profile;
         mLauncher = launcher;
         mOnPromoVisibilityChange = onPromoVisibilityChange;
+    }
+
+    /** Indicates the loading state of the seamless sign-in promo. */
+    @IntDef({PromoLoadingState.NOT_LOADING, PromoLoadingState.LOADING})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface PromoLoadingState {
+        int NOT_LOADING = 0;
+        int LOADING = 1;
     }
 
     /** Returns the title string for the promo. */
@@ -113,6 +127,11 @@ public abstract class SigninPromoDelegate {
     String getTextForPrimaryButton(@Nullable DisplayableProfileData profileData) {
         @SigninFeatureMap.SeamlessSigninStringType
         int seamlessSigninStringType = SigninFeatureMap.getInstance().getSeamlessSigninStringType();
+        if (mPromoLoadingState == PromoLoadingState.LOADING
+                && seamlessSigninStringType
+                        != SigninFeatureMap.SeamlessSigninStringType.NON_SEAMLESS) {
+            return mContext.getString(R.string.signin_account_picker_bottom_sheet_signin_title);
+        }
         if (profileData == null) {
             if (seamlessSigninStringType
                     == SigninFeatureMap.SeamlessSigninStringType.NON_SEAMLESS) {
@@ -159,6 +178,20 @@ public abstract class SigninPromoDelegate {
 
     boolean isMaxImpressionsReached() {
         return false;
+    }
+
+    /** Called by the mediator when the sign-in flow starts. */
+    void onFlowStarted() {
+        mPromoLoadingState = PromoLoadingState.LOADING;
+    }
+
+    /** Called by the mediator when the sign-in flow terminates (regardless of the outcome). */
+    void onFlowCompleted() {
+        mPromoLoadingState = PromoLoadingState.NOT_LOADING;
+    }
+
+    boolean shouldDisplayLoadingState() {
+        return mPromoLoadingState == PromoLoadingState.LOADING;
     }
 
     /**

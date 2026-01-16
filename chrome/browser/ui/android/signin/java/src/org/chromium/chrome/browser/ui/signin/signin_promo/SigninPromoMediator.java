@@ -18,6 +18,8 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConf
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -199,6 +201,18 @@ final class SigninPromoMediator
         refreshPromoContent(/* wasVisibleAccountUpdated= */ true);
     }
 
+    /** Called when sign-in flow starts. */
+    public void onFlowStarted() {
+        mPromoDelegate.onFlowStarted();
+        updateLoadingState();
+    }
+
+    /** Called when the sign-in flow terminates (regardless of the outcome). */
+    public void onFlowCompleted() {
+        mPromoDelegate.onFlowCompleted();
+        updateLoadingState();
+    }
+
     PropertyModel getModel() {
         return mModel;
     }
@@ -278,6 +292,29 @@ final class SigninPromoMediator
         mModel.set(
                 SigninPromoProperties.SHOULD_SHOW_HEADER_WITH_AVATAR,
                 mPromoDelegate.shouldDisplaySignedInLayout());
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
+            mModel.set(
+                    SigninPromoProperties.SHOULD_SHOW_LOADING_STATE,
+                    mPromoDelegate.shouldDisplayLoadingState());
+        }
+    }
+
+    private void updateLoadingState() {
+        if (!SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+                || !mPromoDelegate.canShowPromo()) {
+            return;
+        }
+        CoreAccountInfo visibleAccount = getVisibleAccount();
+        DisplayableProfileData profileData =
+                visibleAccount == null
+                        ? null
+                        : mProfileDataCache.getProfileDataOrDefault(visibleAccount.getEmail());
+        mModel.set(
+                SigninPromoProperties.SHOULD_SHOW_LOADING_STATE,
+                mPromoDelegate.shouldDisplayLoadingState());
+        mModel.set(
+                SigninPromoProperties.PRIMARY_BUTTON_TEXT,
+                mPromoDelegate.getTextForPrimaryButton(profileData));
     }
 
     private void updateVisibility() {

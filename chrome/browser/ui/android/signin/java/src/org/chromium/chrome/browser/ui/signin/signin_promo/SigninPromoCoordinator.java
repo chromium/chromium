@@ -190,15 +190,17 @@ public class SigninPromoCoordinator
     }
 
     void setLoadingStateForTesting(boolean shouldShowLoadingState) {
-        mMediator
-                .getModel()
-                .set(SigninPromoProperties.SHOULD_SHOW_LOADING_STATE, shouldShowLoadingState);
+        if (shouldShowLoadingState) {
+            mMediator.onFlowStarted();
+        } else {
+            mMediator.onFlowCompleted();
+        }
     }
 
     /** Implements {@link BottomSheetSigninAndHistorySyncCoordinator.Delegate}. */
     @Override
     public void onFlowComplete(SigninAndHistorySyncCoordinator.Result result) {
-        // TODO(https://crbug.com/437040024): Replace this class with real implementation.
+        mMediator.onFlowCompleted();
     }
 
     /** Implements {@link BottomSheetSigninAndHistorySyncCoordinator.Delegate} */
@@ -213,6 +215,7 @@ public class SigninPromoCoordinator
     public void startSigninFlow(BottomSheetSigninAndHistorySyncConfig config) {
         assert (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
                 && mSigninCoordinator != null);
+        mMediator.onFlowStarted();
         mSigninCoordinator.startSigninFlow(config);
     }
 
