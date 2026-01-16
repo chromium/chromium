@@ -2289,6 +2289,7 @@ chromium-metrics-reviews@google.com.
   <int value="28" label="Passkeys"/>
   <int value="29" label="Choose From Drive"/>
   <int value="30" label="Save To Drive"/>
+  <int value="31" label="Bling Enterprise Profiles"/>
 </enum>
 
 <enum name="WindowActivityOrigin">

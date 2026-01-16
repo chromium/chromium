@@ -7371,22 +7371,40 @@ chromium-metrics-reviews@google.com.
   <owner>bling-mony-pod@google.com</owner>
   <summary>Logs the time a user spent on each feature of What's New.</summary>
   <token key="Type">
+    <variant name="AddPasswordManually" summary="Add Password Manually"/>
+    <variant name="Autofill" summary="Autofill"/>
+    <variant name="BlingEnterpriseProfiles"
+        summary="Bling Enterprise Profiles"/>
     <variant name="BottomOmnibox" summary="Bottom Omnibox"/>
     <variant name="CalendarEvent" summary="Calendar Event"/>
+    <variant name="ChooseFromDrive" summary="Choose From Drive"/>
     <variant name="ChromeActions" summary="Chrome Actions"/>
     <variant name="CustomizableOverflowMenu"
         summary="Customizable Overflow Menu"/>
+    <variant name="DockingBling" summary="Docking Bling"/>
     <variant name="ESB" summary="Enhanced Safe Browsing"/>
     <variant name="InactiveTabs" summary="Inactive Tabs"/>
     <variant name="IncognitoLock" summary="Incognito Lock"/>
     <variant name="IncognitoTabsFromOtherApps"
         summary="Incognito Tabs From Other Apps"/>
+    <variant name="LensQuestion" summary="Lens Question"/>
     <variant name="LensSearch" summary="Lens Search"/>
+    <variant name="LensSearchWhatYouSee" summary="Lens Search What You See"/>
+    <variant name="LensTranslate" summary="Lens Translate"/>
     <variant name="MiniMaps" summary="Mini Maps"/>
+    <variant name="NewOverflowMenu" summary="New Overflow Menu"/>
+    <variant name="OtherBuyingOptions" summary="Other Buying Options"/>
     <variant name="PackageTracking" summary="Package Tracking"/>
+    <variant name="Passkeys" summary="Passkeys"/>
     <variant name="PasswordSharing" summary="Password Sharing"/>
+    <variant name="PasswordsInOtherApps" summary="Passwords In Other Apps"/>
     <variant name="PinnedTabs" summary="Pinned Tabs"/>
+    <variant name="PriceHistory" summary="Price History"/>
+    <variant name="PriceTracking" summary="Price Tracking"/>
     <variant name="PWMWidget" summary="Password Manager Widget"/>
+    <variant name="SaveToDrive" summary="Save To Drive"/>
+    <variant name="SearchTabs" summary="Search Tabs"/>
+    <variant name="SharedHighlighting" summary="Shared Highlighting"/>
     <variant name="UseChromeByDefault" summary="Use Chrome By Default"/>
   </token>
 </histogram>
