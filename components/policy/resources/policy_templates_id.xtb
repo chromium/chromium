@@ -2548,11 +2548,6 @@ Jika kebijakan ini disetel ke 2 - 'Nonaktif', integrasi Google Developer Program
 <translation id="2707733461906745082">Pemisahan Profil</translation>
 <translation id="2707873794476722903">Safe Browsing aktif dalam mode standar.</translation>
 <translation id="2709516037105925701">Isi otomatis</translation>
-<translation id="2713265653152900248">Jika kebijakan disetel, akses ke URL yang tercantum di mode Samaran akan diberikan sebagai pengecualian untuk <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />. Misalnya, menyetel <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> ke * akan memblokir semua permintaan dalam mode Samaran, dan Anda dapat menggunakan kebijakan ini untuk mengizinkan akses ke URL yang ada dalam daftar terbatas. Gunakan kebijakan ini untuk membuka pengecualian untuk skema tertentu, subdomain dari domain lain, port, atau jalur khusus, menggunakan format yang ditentukan di ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ). Kebijakan <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> lebih diprioritaskan daripada <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />. Kebijakan ini terbatas untuk 1.000 entri.
-
-Jika kebijakan tidak disetel, tidak akan ada pengecualian untuk <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />.
-
-Kebijakan ini hanya memengaruhi mode Samaran. Untuk mengizinkan URL bagi semua profil pengguna, gunakan kebijakan <ph name="URL_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="2713913573196284609">Mulai M121, nilai ini tidak digunakan lagi. Pada M121 dan selanjutnya, nilai akan diperlakukan sebagai EnabledBelowThreshold.</translation>
 <translation id="2713977837384407666">Selalu kirim metrik ke Google</translation>
 <translation id="2714359695399346815">Jika kebijakan disetel ke Aktif atau tidak disetel, penggunaan server STUN akan diizinkan sehingga klien jarak jauh dapat menemukan serta terhubung ke perangkat ini, meskipun dipisahkan oleh firewall.
@@ -3418,6 +3413,8 @@ Jika <ph name="NTPCARDSVISIBLE" /> disetel ke nonaktif, Kartu Outlook tidak akan
       Jika kebijakan disetel ke Nonaktif, perangkat yang terdaftar tidak akan melaporkan informasi sesi kios.</translation>
 <translation id="3303770131697159224">Setelan izin Pengelolaan Jendela Default</translation>
 <translation id="3303911765031636277">Kebijakan konfigurasi untuk Chrome Enterprise Connector OnFileAttached</translation>
+<translation id="3305586786770047829">Jika kebijakan ini disetel ke 0 atau tidak disetel, kebijakan <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> hanya akan diterapkan pada cakupan pengguna untuk pengguna terafiliasi.
+Jika kebijakan ini disetel ke 1, kebijakan <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> akan diterapkan pada cakupan pengguna, meskipun pengguna tersebut tidak terafiliasi.</translation>
 <translation id="3307744348419745296">Jangan izinkan konfigurasi jaringan Wi-Fi disinkronkan di seluruh perangkat <ph name="PRODUCT_OS_NAME" /> dan ponsel Android yang terhubung</translation>
 <translation id="3308724602356134956">Jika Anda menetapkan kebijakan, <ph name="PRODUCT_OS_NAME" />
 
@@ -6825,15 +6822,6 @@ Kebijakan ini tidak mencegah pengguna menyimpan file ke <ph name="GOOGLE_DRIVE_N
 
 Jika kebijakan ini disetel ke salah (false), ID konten yang dilindungi tidak diizinkan untuk digunakan.</translation>
 <translation id="5492713303272131731">Semua proses lain dapat dijadwalkan pada core CPU yang sama saat proses perender berjalan pada core tersebut.</translation>
-<translation id="5494322570831642650">Menentukan apakah pengguna dapat membuka halaman dalam mode Samaran di <ph name="PRODUCT_NAME" />.
-
-      Jika 'Enabled' dipilih atau kebijakan tidak disetel, halaman dapat dibuka dalam mode Samaran.
-
-      Jika 'Disabled' dipilih, halaman tidak dapat dibuka dalam mode Samaran.
-
-      Jika 'Forced' dipilih, halaman dapat dibuka HANYA dalam mode Samaran. Perlu diketahui bahwa 'Forced' tidak berfungsi pada Android di Chrome
-
-      Catatan: Di iOS, jika kebijakan diubah selama suatu sesi, perubahan hanya akan berpengaruh saat peluncuran kembali.</translation>
 <translation id="549471902631700911">Nonaktifkan penerimaan survei Safe Browsing</translation>
 <translation id="549625769649876757">Jika kebijakan ini disetel, Anda akan dapat menetapkan daftar pola URL yang menentukan situs yang diizinkan untuk mengakses geolokasi akurasi tinggi pengguna tanpa harus meminta izin kepada pengguna terlebih dahulu untuk melakukannya.
 
@@ -9163,9 +9151,6 @@ Jika kebijakan ini disetel ke salah (false) atau tidak disetel, tata letak tidak
 <translation id="6866755486434471318">Mengizinkan <ph name="PEPPER_NAME" /> menggunakan gambar yang dibagikan untuk decoding video.</translation>
 <translation id="6878757724611298427">Izinkan pengguna menggunakan aplikasi Android di perangkat yang tidak terafiliasi</translation>
 <translation id="6881447940489194100">Hash SHA-256 dengan enkode heksadesimal pada data.</translation>
-<translation id="688149562204519323">Jika kebijakan <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> disetel, pemuatan halaman web yang berisi URL terlarang akan dihentikan di mode Samaran. Administrator dapat menentukan daftar pola URL yang akan diblokir. Jika kebijakan ini tidak disetel, tidak ada URL yang akan diblokir dalam mode Samaran. Hingga 1.000 pengecualian dapat ditentukan di <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" />. Lihat cara memformat pola URL ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
-
-Kebijakan ini hanya memengaruhi mode Samaran. Untuk memblokir URL bagi semua profil pengguna, gunakan kebijakan <ph name="URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="68818134518270542">Menyetel kebijakan akan menentukan aplikasi yang dapat diaktifkan pengguna sebagai aplikasi pencatat di layar kunci <ph name="PRODUCT_OS_NAME" />.
 
       Jika aplikasi pilihan berada di layar kunci, elemen UI untuk meluncurkan aplikasi pencatat pilihan akan muncul di layar. Saat diluncurkan, aplikasi dapat membuat jendela di atas layar kunci dan membuat catatan dalam konteks ini. Saat sesi dibuka, aplikasi dapat mengimpor catatan yang dibuat ke sesi pengguna utama. Hanya aplikasi pencatat <ph name="PRODUCT_NAME" /> yang didukung di layar kunci.
@@ -10376,21 +10361,6 @@ Jika kebijakan ini tidak disetel, <ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_
 Pola URL tidak boleh bertentangan dengan <ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" />. Tidak ada kebijakan yang diprioritaskan jika URL cocok dengan keduanya.
 
 Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, lihat https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
-<translation id="7615612213075471065">Kebijakan ini mengontrol pelaporan <ph name="PRODUCT_NAME" /> terkait kunjungan domain SaaS dan transfer konten untuk browser terkelola.
-
-Jika kebijakan ini disetel, URL yang cocok dengan domain SaaS akan digunakan untuk membuat laporan dan diupload. URL yang tidak cocok akan diabaikan.
-
-Jika kebijakan tidak disetel atau disetel ke daftar kosong, tidak ada laporan yang akan dibuat.
-
-Pola yang cocok akan menggunakan format yang serupa dengan kebijakan '<ph name="URL_BLOCKLIST_POLICY_NAME" />' yang didokumentasikan di https://support.google.com/chrome/a?p=url_blocklist_filter_format. Dengan beberapa pengecualian di bawah:
-
- * Host URL harus cocok dengan nama host atau menjadi subdomain dari nama host salah satu domain dari daftar situs SaaS.
-
- * Jalur URL harus diawali dengan jalur dari entri daftar situs SaaS yang cocok.
-
- * Skema URL, port, kueri tidak dipertimbangkan selama proses pencocokan.
-
-Nilai kebijakan ini diisi oleh infrastruktur kebijakan cloud dan admin tidak dapat menyetelnya secara langsung.</translation>
 <translation id="7616631530432070402">Cipher suite 3DES akan diaktifkan di TLS</translation>
 <translation id="761788785484453836">Wajibkan isolasi situs untuk semua situs</translation>
 <translation id="7620869951155758729">Kebijakan ini menetapkan konfigurasi yang digunakan untuk membuat dan memverifikasi Kode Akses Orang Tua.
@@ -11919,23 +11889,6 @@ Kebijakan ini selalu berlaku untuk <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="8631437968147930597">Daftar aplikasi pencatat yang diizinkan di layar kunci <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8633550872001751090">Izinkan data <ph name="PRODUCT_NAME" /> disertakan dalam cadangan</translation>
 <translation id="8634062512783775032">Gunakan <ph name="AES_KL_NAME" /> sebagai algoritme enkripsi untuk enkripsi penyimpanan pengguna, jika didukung</translation>
-<translation id="8635783478441936474">Kebijakan ini mengontrol pelaporan <ph name="PRODUCT_NAME" /> terkait kunjungan domain SaaS dan transfer konten untuk profil terkelola.
-
-Jika kebijakan ini disetel, URL yang cocok dengan domain SaaS akan digunakan untuk membuat laporan dan diupload. URL yang tidak cocok akan diabaikan.
-
-Jika kebijakan tidak disetel atau disetel ke daftar kosong, tidak ada laporan yang akan dibuat.
-
-Pola yang cocok akan menggunakan format yang serupa dengan kebijakan '<ph name="URL_BLOCKLIST_POLICY_NAME" />' yang didokumentasikan di https://support.google.com/chrome/a?p=url_blocklist_filter_format. Dengan beberapa pengecualian di bawah:
-
- * Host URL harus cocok dengan nama host atau menjadi subdomain dari nama host salah satu domain dari daftar situs SaaS.
-
- * Jalur URL harus diawali dengan jalur dari entri daftar situs SaaS yang cocok.
-
- * Skema URL, port, kueri tidak dipertimbangkan selama proses pencocokan.
-
-Kebijakan ini hanya dapat disetel sebagai kebijakan pengguna cloud.
-
-Nilai kebijakan ini diisi oleh infrastruktur kebijakan cloud dan admin tidak dapat menyetelnya secara langsung.</translation>
 <translation id="8637566476051166626">Secara eksplisit mengizinkan port jaringan</translation>
 <translation id="8643838501942693770">Izinkan cookie pihak ketiga, tetapi izinkan pengguna mengubah setelan ini</translation>
 <translation id="864611373241249369">Setelah <ph name="LACROS_NAME" /> dinonaktifkan, kami akan mencoba memigrasikan semua data.</translation>

@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">అన్ని అజ్ఞాత ట్యాబ్‌లను మూసివేయాలా?</translation>
 <translation id="1501480321619201731">గ్రూప్‌ను తొలగించండి</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ఇన్‌యాక్టివ్ ఐటెమ్}other{<ph name="TABS_COUNT_MANY" /> ఇన్‌యాక్టివ్ ఐటెమ్‌లు}}</translation>
+<translation id="1568067597247500137">సైట్‌ను మ్యూట్ చేయండి</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లు గ్రూప్ అయ్యాయి</translation>
 <translation id="1657719826150349398">ట్యాబ్‌ని కిందికి తరలించు</translation>
 <translation id="1670942869417022142">మ్యూట్ చేసిన ఆడియో</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">ఈ ఐటెమ్ ధర ఇటీవల <ph name="PREVIOUS_PRICE" /> నుండి <ph name="NEW_PRICE" />కు తగ్గింది</translation>
 <translation id="606985262342505139">ట్యాబ్ కింద ఉన్న షీట్ పూర్తి ఎత్తులో ఉంది</translation>
 <translation id="6109251075362363230">ఇటీవల ఉపయోగించిన కాపీ మినహా అన్ని డూప్లికేట్ ట్యాబ్‌లు కూడా ఇప్పుడు ఆర్కైవ్ చేయబడతాయి.</translation>
+<translation id="612596694132302162">సైట్‌ను అన్‌మ్యూట్ చేయండి</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ఎంచుకున్న ఐటెమ్‌ను మూసివేయండి}other{<ph name="TABS_COUNT_MANY" /> ఎంచుకున్న ఐటెమ్‌లను మూసివేయండి}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{గ్రూప్‌ను కొత్త విండోకు తరలించండి}other{గ్రూప్‌ను మరొక విండోకు తరలించండి}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{ట్యాబ్‌ను కుడి వైపునకు తరలించండి}other{ట్యాబ్‌లను కుడి వైపునకు తరలించండి}}</translation>

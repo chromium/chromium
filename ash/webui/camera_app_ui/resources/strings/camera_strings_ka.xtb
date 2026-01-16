@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">სკანირების ტიპი</translation>
 <translation id="28682968802727151">სარკისებური რეჟიმის გადახედვა</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> მიერთებულია.</translation>
+<translation id="3063987824612038785">კამერის ყველა ფაილი შეინახება Google Drive-ში</translation>
 <translation id="3067436040345934772">მარჯვნივ პანირება</translation>
 <translation id="3081586908890909590">ვიდეოს ჩაწერაზე გადართვა</translation>
 <translation id="3091480460059548935">ტექსტის ამოცნობა წინასწარ ვერსიაში</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">ვიდეო მუშავდება...</translation>
 <translation id="3789724198583203151">შეტრიალება 90 გრადუსით საათის ისრის საწინააღმდეგოდ</translation>
 <translation id="3810838688059735925">ვიდეო</translation>
+<translation id="386366972082231038">კამერის ყველა ფაილი შეინახება OneDrive-ში</translation>
 <translation id="4060608699153044055">ჩაწერა ვერ მოხერხდება მოწყობილობის საცავში არასაკმარისი მეხსიერების გამო. ჩაწერის დასაწყებად მოწყობილობაზე სივრცე უნდა გაათავისუფლოთ.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> მპ</translation>
 <translation id="4118525110028899586">ჩაწერის დაპაუზება</translation>
@@ -157,6 +159,7 @@
 <translation id="7983668134180549431">აღმოჩენილია ტექსტი.</translation>
 <translation id="8079255378695216066">ჩაწერის დაწყება ვერ ხერხდება</translation>
 <translation id="8120146556401698679">პანირება/გადახრა/მასშტაბირება</translation>
+<translation id="8127459436205030819">თქვენი ფაილები შეიძლება ხილული იყოს თქვენი ადმინისტრატორისთვის</translation>
 <translation id="8131740175452115882">დაადასტურება</translation>
 <translation id="8145038249676204903">ფოტოს გადაღებაზე გადართვა</translation>
 <translation id="8167081290930651932">ფოტოს სახით შენახვა</translation>

@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Желите да затворите све картице без архивирања?</translation>
 <translation id="1501480321619201731">Избриши групу</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> неактивна ставка}one{<ph name="TABS_COUNT_MANY" /> неактивна ставка}few{<ph name="TABS_COUNT_MANY" /> неактивне ставке}other{<ph name="TABS_COUNT_MANY" /> неактивних ставки}}</translation>
+<translation id="1568067597247500137">Искључи звук сајта</translation>
 <translation id="1645759014353344461">Картице су груписане (<ph name="TABS_COUNT_MANY" />)</translation>
 <translation id="1657719826150349398">Преместите картицу надоле</translation>
 <translation id="1670942869417022142">Звук је искључен</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">Цена ове ставке је недавно снижена са <ph name="PREVIOUS_PRICE" /> на <ph name="NEW_PRICE" /></translation>
 <translation id="606985262342505139">Доња табела картице на целом екрану</translation>
 <translation id="6109251075362363230">Све дупликате картица ћемо сада архивирати, изузев последње коришћене копије.</translation>
+<translation id="612596694132302162">Укључи звук сајта</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Затворите <ph name="TABS_COUNT_ONE" /> изабрану ставку}one{Затворите <ph name="TABS_COUNT_MANY" /> изабрану ставку}few{Затворите <ph name="TABS_COUNT_MANY" /> изабране ставке}other{Затворите <ph name="TABS_COUNT_MANY" /> изабраних ставки}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Премести групу у нови прозор}one{Премести групу у други прозор}few{Премести групу у други прозор}other{Премести групу у други прозор}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Премести картицу удесно}one{Премести картице удесно}few{Премести картице удесно}other{Премести картице удесно}}</translation>

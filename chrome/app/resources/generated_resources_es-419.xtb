@@ -138,7 +138,7 @@
 <translation id="1082214733466244292">Tu administrador restringió algunas funcionalidades en este dispositivo</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> quiere restaurar la configuración de Chrome a los valores predeterminados originales. Esta acción restablecerá la página principal, la página Nueva pestaña y el motor de búsqueda, inhabilitará las extensiones y no se fijará ninguna pestaña. También se borrarán otros datos temporales y almacenados en la caché, como las cookies y los datos de contenido y de sitios.</translation>
 <translation id="1082725763867769612">Archivos sin conexión</translation>
-<translation id="1083050113196701330">La búsqueda de actualizaciones se completó correctamente. No había actualizaciones disponibles</translation>
+<translation id="1083050113196701330">La verificación de actualizaciones se completó correctamente. No había actualizaciones disponibles</translation>
 <translation id="1084026333130513768">Guardar, compartir y transmitir</translation>
 <translation id="1084096383128641877">Si quitas esta contraseña, no se borrará tu cuenta de <ph name="DOMAIN" />. Cambia la contraseña o quita la cuenta de <ph name="DOMAIN_LINK" /> para protegerla.</translation>
 <translation id="1084288067399862432">Cambiaste correctamente la contraseña hackeada.
@@ -1082,6 +1082,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1709916727352927457">Borra la llave de acceso</translation>
 <translation id="1709972045049031556">No se puede compartir</translation>
 <translation id="1712143791363119140">En curso</translation>
+<translation id="1713120794167761305">Mover las pestañas al lateral</translation>
 <translation id="1714265454085143857">Pestañas fijas</translation>
 <translation id="1714326320203665217">Se descargaron los archivos de anotaciones de nodos principales</translation>
 <translation id="1714644264617423774">Permite habilitar las funciones de accesibilidad para que tu dispositivo sea más fácil de usar. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -1874,7 +1875,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2257053455312861282">Si agregas la cuenta de una institución educativa, el estudiante podrá acceder fácilmente a sitios web, extensiones y apps, mientras se siguen aplicando los controles parentales.</translation>
 <translation id="225716114209817872">Máximo</translation>
 <translation id="2259337945538989999">Para obtener las pestañas de tus otros dispositivos, verifica tu identidad. Puedes detener la sincronización en cualquier momento desde la configuración. Es posible que Google personalice la Búsqueda y otros servicios en función de tu historial.</translation>
-<translation id="2261323523305321874">Tu administrador hizo un cambio que afecta todo el sistema e inhabilita algunos perfiles antiguos.</translation>
 <translation id="22614517036276112">Este documento o tu dispositivo no cumplen con algunas de las políticas de seguridad de tu organización. Consulta con el administrador qué tienes que corregir.</translation>
 <translation id="2262477216570151239">Tiempo para repetición</translation>
 <translation id="2263189956353037928">Salir y volver a acceder</translation>
@@ -2519,7 +2519,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2681124317993121768">Los perfiles de invitado no son compatibles</translation>
 <translation id="2682498795777673382">Actualización por parte de uno de tus padres</translation>
 <translation id="2683638487103917598">Se ordenó la carpeta</translation>
-<translation id="2684004000387153598">Para continuar, haz clic en Aceptar y, luego, en Agregar un usuario para crear un nuevo perfil para tu dirección de correo electrónico.</translation>
 <translation id="2685193395980129388">Permisos habilitados: <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687407218262674387">Condiciones del Servicio de Google</translation>
 <translation id="2688196195245426394">Se produjo un error al registrar el dispositivo en el servidor: <ph name="CLIENT_ERROR" />.</translation>
@@ -2820,6 +2819,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2885129935310217435">Hay un botón con el mismo nombre. Elige uno diferente.</translation>
 <translation id="2885378588091291677">Administrador de tareas</translation>
 <translation id="2885729872133513017">Hubo un problema cuando se intentó decodificar la respuesta del servidor.</translation>
+<translation id="2886119409731773154">Este proceso puede tardar hasta 30 minutos</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> y <ph name="NUMBER_OF_DEVICES" /> más</translation>
 <translation id="2887344147309501015">Chatea con Gemini en Chrome para obtener respuestas, información clave y mucho más mientras navegas</translation>
@@ -3223,6 +3223,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3167562202484086668">Borrar todos los datos del <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Elige el tema que se adapte a tus necesidades. Para cambiar el tema, el fondo de pantalla, el protector de pantalla y más, mantén presionado en el escritorio.</translation>
 <translation id="3170072451822350649">También puedes omitir el acceso y <ph name="LINK_START" />navegar como invitado<ph name="LINK_END" />.</translation>
+<translation id="3172642937040465677">Mover las pestañas a la parte superior</translation>
 <translation id="3175067642577044620">Cuerpo</translation>
 <translation id="3175862692832442091">Bosque</translation>
 <translation id="3176347586396987181">Usa “z” para presionar y mantener presionado un botón del mouse</translation>
@@ -3477,6 +3478,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="335581015389089642">Voz</translation>
 <translation id="335587007651175930">Busca lo que se muestra en la pantalla con Google Lens</translation>
 <translation id="3355936511340229503">Error de conexión</translation>
+<translation id="335678817537689040">Estático</translation>
 <translation id="3359256513598016054">Restricciones de directivas para certificados</translation>
 <translation id="3360297538363969800">Se produjo un error al imprimir. Revisa la impresora y vuelve a intentarlo.</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -4176,6 +4178,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
         <ph name="BREAK" />
         Puedes administrar la configuración desde el menú de la tarjeta o ver más opciones en la sección Personalizar Chrome.</translation>
 <translation id="3801449494961771207">Voz en la función de texto a voz del sistema</translation>
+<translation id="3801748538479607989">Mover las pestañas a la parte superior</translation>
 <translation id="3802486193901166966">Esta extensión no requiere permisos especiales y no tiene acceso al sitio.</translation>
 <translation id="380329542618494757">Nombre</translation>
 <translation id="3803345858388753269">Calidad del video</translation>
@@ -5990,6 +5993,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5060419232449737386">Configuración de subtítulos</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Esta carpeta contiene un marcador. ¿Seguro que deseas eliminarla?}other{Esta carpeta contiene # favoritos. ¿Seguro que deseas eliminarla?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
+<translation id="5062863364865466276">Movimiento</translation>
 <translation id="5062930723426326933">Se produjo un error al acceder. Conéctate a Internet y vuelve a intentarlo.</translation>
 <translation id="5063480226653192405">Uso</translation>
 <translation id="5064921774605267982">Abrir el perfil de <ph name="PROFILE_NAME" />. Tu madre o padre administra este perfil.</translation>
@@ -6931,6 +6935,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5722086096420375088">Verde y blanco</translation>
 <translation id="572328651809341494">Pestañas recientes</translation>
 <translation id="5723508132121499792">No se ejecutan aplicaciones de fondo</translation>
+<translation id="5724723163580775373">Enfoque amplio</translation>
 <translation id="5725112283692663422">Envía comentarios sobre Crear tema con IA</translation>
 <translation id="5727728807527375859">Las extensiones, las aplicaciones y los temas pueden dañar tu computadora. ¿Estás seguro de que deseas continuar?</translation>
 <translation id="5728072125198221967">Servicios de Google vinculados</translation>
@@ -7178,6 +7183,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5888889603768021126">Accediste con</translation>
 <translation id="5889282057229379085">Cantidad máxima de certificados intermedios: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Encripta los datos sincronizados con tu propia <ph name="BEGIN_LINK" />frase de contraseña de sincronización<ph name="END_LINK" />. No se encriptarán las formas de pago ni las direcciones de Google Pay. No se sincronizará el historial de navegación de Chrome.</translation>
+<translation id="5890072287476934834">Mover las pestañas al lateral</translation>
 <translation id="5891688036610113830">Redes Wi-Fi preferidas</translation>
 <translation id="5894056653502215961">Anular selección de la carpeta <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -8332,6 +8338,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6702639462873609204">&amp;Editar</translation>
 <translation id="6702859741546259407">Para usar <ph name="FEATURE_NAME" />, activa Bluetooth y Wi-Fi</translation>
 <translation id="6703109186846420472">,</translation>
+<translation id="670431355064244920">Enfoque pequeño</translation>
 <translation id="6707122714992751648">Ejecutar pruebas de diagnóstico de ChromeOS</translation>
 <translation id="6707389671160270963">Certificado de cliente SSL</translation>
 <translation id="6707671917294473995">Los sitios web no pueden usar la cámara</translation>
@@ -9323,6 +9330,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7389615853658756494">Cambiarla en el sitio</translation>
 <translation id="7392118418926456391">Error en el análisis antivirus</translation>
 <translation id="7392915005464253525">Volver a abrir una ventana cerrada</translation>
+<translation id="739299645392306071">Enfoque medio</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{Se copió 1 elemento}other{Se copiaron {COUNT} elementos}}</translation>
 <translation id="7393435859300249877">Recibirás notificaciones si hablas mientras el micrófono está silenciado cuando usas ciertas apps, como las de videochat. El audio nunca sale del dispositivo.</translation>
 <translation id="7395008140803590549">No se pudo borrar el certificado</translation>
@@ -9770,7 +9778,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7681757571815416227">Tu organización necesita información sobre tu dispositivo si quieres usarlo con tu perfil de <ph name="DOMAIN" />.
 
 Esto puede incluir información sobre el software instalado, los archivos, el navegador, el sistema operativo del dispositivo y las direcciones IP.</translation>
-<translation id="7683373461016844951">Para continuar, haz clic en Aceptar y, luego, en Agregar un usuario para crear un perfil nuevo para tu dirección de correo electrónico de <ph name="DOMAIN" />.</translation>
 <translation id="7683834360226457448">Herramientas de pantalla para personas con visión reducida</translation>
 <translation id="7684212569183643648">Instalado por el administrador</translation>
 <translation id="7684559058815332124">Visitar la página de acceso al portal cautivo</translation>
@@ -11198,7 +11205,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> desea hacer lo siguiente: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> y más</translation>
 <translation id="8648889679430451455">Borrar datos de personalización</translation>
 <translation id="8649026945479135076">Es normal que los sitios que visitas recuerden tus intereses, a fin de personalizar la experiencia. Los sitios también pueden almacenar información sobre tus intereses con Chrome.</translation>
-<translation id="8650543407998814195">Si bien ya no puedes acceder a tu perfil anterior, aún puedes quitarlo.</translation>
 <translation id="8651585100578802546">Volver a cargar esta página</translation>
 <translation id="8652400352452647993">Error al empaquetar extensiones</translation>
 <translation id="8654151524613148204">El archivo es demasiado grande para que tu equipo lo procese.</translation>
@@ -11254,7 +11260,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8680251145628383637">Accede para obtener tus favoritos, el historial, las contraseñas y otras opciones de configuración en todos tus dispositivos. Además, accederás de forma automática a los servicios de Google.</translation>
 <translation id="8681886425883659911">Se bloquean los anuncios en sitios conocidos por mostrar anuncios intrusivos o engañosos</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> está conectada y lista para usarse</translation>
-<translation id="8683720831806477407">Permiso del actualizador</translation>
+<translation id="8683720831806477407">Alcance del actualizador</translation>
 <translation id="8684471948980641888">Permitir la sincronización en redes de uso medido</translation>
 <translation id="8685540043423825702">Tu perfil de Chrome</translation>
 <translation id="8685882652128627032">Hacer clic para abrir el diálogo Agrega búsquedas en el sitio</translation>

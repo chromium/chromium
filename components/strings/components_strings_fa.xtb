@@ -118,6 +118,7 @@
 <translation id="1185343831726846924">درستی‌سنجی کارت مجازی روشن نشد</translation>
 <translation id="1186201132766001848">بررسی گذرواژه‌ها</translation>
 <translation id="1187430513518041110">اتومبیل و وسایل نقلیه</translation>
+<translation id="1188817995162638216">ذخیره کردن فایل لغو شود؟</translation>
 <translation id="1190491977647722791">کاغذ (سنگین)</translation>
 <translation id="1194278116501666615">‏به‌روزرسانی پیشرفت پیش‌بارگیری ArcVm</translation>
 <translation id="1195073053842921378">این نشانی از این دستگاه حذف خواهد شد</translation>
@@ -404,6 +405,7 @@
 <translation id="1639239467298939599">در حال بارگیری</translation>
 <translation id="1640180200866533862">خط‌مشی‌های کاربر</translation>
 <translation id="1640244768702815859">از<ph name="BEGIN_LINK" />صفحه اصلی سایت دیدن کنید<ph name="END_LINK" />.</translation>
+<translation id="1641962500621836664">درحال ذخیره کردن فایل دوربین</translation>
 <translation id="1641976391427233992">تأخیر خروجی تا</translation>
 <translation id="1643651787397909318">‏دکمه رفتن به بررسی ایمنی Chrome، برای بازدید از صفحه بررسی ایمنی Chrome در تنظیمات، فعال کنید</translation>
 <translation id="1644574205037202324">سابقه</translation>
@@ -433,7 +435,6 @@
 <translation id="1689333818294560261">نام مستعار</translation>
 <translation id="1692622044604477956">فهرستگان فیلم‌ها و زمان‌های پخش تئاتر</translation>
 <translation id="1697430960030447570">‏<ph name="BEGIN_BOLD" />چگونه می‌توانید داده‌هایتان را مدیریت کنید:<ph name="END_BOLD" /> Chrome موضوع‌های قدیمی‌تر از ۴ هفته را به‌طور خودکار حذف می‌کند. همان‌طور که به مرور ادامه می‌دهید، ممکن است موضوعی دوباره در فهرست پیدا شود. همچنین می‌توانید موضوع‌هایی را که نمی‌خواهید Chrome با سایت‌ها هم‌رسانی کند مسدود کنید و هر زمان بخواهید موضوع‌های آگهی را در تنظیمات Chrome خاموش کنید.</translation>
-<translation id="1697808683313379647">‏‫Google از اطلاعات صفحه تسویه‌حساب و دیگر داده‌های مربوط برای ارائه این گزینه‌ها استفاده می‌کند.</translation>
 <translation id="1699651774646344471">‏اکنون می‌توانید از نشانی‌های ذخیره‌شده در «حساب Google» خود استفاده کنید</translation>
 <translation id="1700542542921501212">می‌توانید از <ph name="SEARCH_ENGINE_NAME" /> برای جستجو در وب استفاده کنید.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -494,6 +495,7 @@
 <translation id="1777422078676229054">عکس (آرشیوی)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">برنامه‌های وب نصب شود؟</translation>
+<translation id="1791044335740781449">‏درحال بارگذاری فایل در Google Drive</translation>
 <translation id="1791415068765905273">نمایش همه جدول‌های مقایسه</translation>
 <translation id="1791820510173628507">‏<ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای مدیریت اطلاعات، حریم خصوصی، و امنیت در «حساب Google»، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="1793631236004319016">آخرین‌بار <ph name="NUM_HOURS_MINUTES_SECONDS" /> قبل استفاده شده است</translation>
@@ -560,6 +562,7 @@
 <translation id="1884843295353628214">جاز</translation>
 <translation id="1890171020361705182">بازی داینو. دایناسوری نقطه‌ای همان‌طور که در دشتی دورافتاده می‌دود، موقع رسیدن به کاکتوس‌ها و پتروداکتیل‌ها جاخالی می‌دهد. وقتی صدای نشانه صوتی را شنیدید، برای پریدن از روی موانع تک‌ضرب بزنید.</translation>
 <translation id="1898423065542865115">فیلتر کردن</translation>
+<translation id="1898678876221454577">برای ذخیره کردن اسکن، به سیستم وارد شوید</translation>
 <translation id="1901443836186977402">{1,plural, =1{این سرور نتوانست اثبات کند که <ph name="DOMAIN" /> است؛ گواهی امنیتی آن روز گذشته منقضی شده است. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجمی درحال رهگیری اتصالتان باشد. ساعت رایانه‌تان درحال‌حاضر روی <ph name="CURRENT_DATE" /> تنظیم شده است. آیا درست است؟ اگر نه، باید ساعت سیستم را درست کنید و سپس این صفحه را بازآورید.}one{این سرور نتوانست اثبات کند که <ph name="DOMAIN" /> است؛ گواهینامه امنیتی آن # روز پیش منقضی شده است. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجمی درحال رهگیری اتصالتان باشد. ساعت رایانه‌تان درحال‌حاضر روی <ph name="CURRENT_DATE" /> تنظیم شده است. آیا درست است؟ اگر نه، باید ساعت سیستم را درست کنید و سپس این صفحه را بازآورید.}other{این سرور نتوانست اثبات کند که <ph name="DOMAIN" /> است؛ گواهینامه امنیتی آن # روز پیش منقضی شده است. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجمی درحال رهگیری اتصالتان باشد. ساعت رایانه‌تان درحال‌حاضر روی <ph name="CURRENT_DATE" /> تنظیم شده است. آیا درست است؟ اگر نه، باید ساعت سیستم را درست کنید و سپس این صفحه را بازآورید.}}</translation>
 <translation id="190166348986967700">‏سرپرست شما در ‎<ph name="DATE_TIME" /> شروع به بارگذاری فایل‌هایتان در <ph name="CLOUD_PROVIDER" /> خواهد کرد. تا زمانی‌که بارگذاری فایل کامل نشده است، ارتباط دستگاه را قطع نکنید. درطول فرایند بارگذاری، فقط می‌توانید فایل‌های محلی را بخوانید.</translation>
 <translation id="1902576642799138955">مدت اعتبار</translation>
@@ -896,6 +899,7 @@
 <translation id="2413528052993050574">این سرور نتوانست اثبات کند که این <ph name="DOMAIN" /> است؛ ممکن است گواهی امنیتی آن باطل شده باشد. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجمی اتصال شما را قطع کرده است.</translation>
 <translation id="2414676293664737497">Markdown</translation>
 <translation id="2414886740292270097">تاریک</translation>
+<translation id="2429702686644080813">برای ذخیره کردن ویدیو، به سیستم وارد شوید</translation>
 <translation id="2429716554270894715">پارچه (ضدآب)</translation>
 <translation id="2436186046335138073">به <ph name="HANDLER_HOSTNAME" /> امکان داده شود همه پیوندهای <ph name="PROTOCOL" /> را باز کند؟</translation>
 <translation id="2436976580469434549">هنر نساجی و بافت</translation>
@@ -1099,6 +1103,7 @@
 <translation id="2742128390261873684">خودکارسازی خانه</translation>
 <translation id="2743512410823092182">منابع و تجهیزات دی‌جِی</translation>
 <translation id="2743934314332613923">گواهینامه رانندگی به‌روز شود؟</translation>
+<translation id="2757727729385895652">‏درحال بارگذاری <ph name="COUNT" /> فایل در Google Drive</translation>
 <translation id="2759299890026163685">پیش‌از امتحان مجدد، مطمئن شوید اتصال اینترنت پایداری دارید</translation>
 <translation id="2759825833388495838">گذرواژه‌تان را در <ph name="APP_NAME" /> وارد کنید</translation>
 <translation id="2760805590727089264">ماه/سال</translation>
@@ -1226,13 +1231,13 @@
 <translation id="2983666748527428214">باز کردن «زبانه ناشناس»</translation>
 <translation id="2985306909656435243">‏اگر فعال شود، Chromium برای پر کردن سریع‌تر فرم، یک کپی از کارت شما در این دستگاه ذخیره می‌کند.</translation>
 <translation id="2985398929374701810">نشانی معتبری وارد کنید</translation>
+<translation id="2986485254770343131">درحال ذخیره کردن فایل‌های دوربین</translation>
 <translation id="2987034854559945715">ویژگی مطابقی وجود ندارد</translation>
 <translation id="2989742184762224133">دو منگنه در بالا</translation>
 <translation id="2991174974383378012">اشتراک‌گذاری با وب‌سایت‌ها</translation>
 <translation id="299122504639061328">مدیریت موتور جستجوی پیش‌فرض و جستجوی سایت</translation>
 <translation id="2991571918955627853">‏درحال‌حاضر نمی‌توانید از <ph name="SITE" /> دیدن کنید، زیرا این وب‌سایت از HSTS استفاده می‌کند. خطاهای شبکه و حمله‌ها معمولاً موقتی هستند، بنابراین احتمالاً این صفحه بعداً کار خواهد کرد.</translation>
 <translation id="2991865971341174470">‏هویتتان را درستی‌سنجی کنید تا Chrome بتواند اطلاعات پرداخت شما را تکمیل کند.</translation>
-<translation id="2995010188916335277">‏‫Google از اطلاعات صفحه تسویه‌حساب و دیگر داده‌های مربوط برای ارائه این گزینه‌ها استفاده می‌کند. برای پنهان کردن گزینه‌های «بعداً پرداخت شود» در «تکمیل خودکار»، به <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> بروید.</translation>
 <translation id="2995121550202354573">استفاده کردن برای همه نمایه‌های «مهمان»</translation>
 <translation id="2995517112308048736">اندازه فایل:</translation>
 <translation id="299990983510665749">هاچ‌بک</translation>
@@ -1902,6 +1907,7 @@
 <translation id="4059523390906550209">درباره «حفاظت از داده‌های حساس» بیشتر بدانید</translation>
 <translation id="4060880210388108757">موسیقی آلترناتیو و ایندی</translation>
 <translation id="4060883793524802469">برداشتن از جدول‌ها</translation>
+<translation id="4061573458783426621">‏اسکن در OneDrive ذخیره نشد</translation>
 <translation id="4063063121357725926">‏به Google اجازه دهید در پیدا کردن تخفیف‌های مربوط به سبدهای خریدتان به شما کمک کند</translation>
 <translation id="406358100705415968">لوازم حفاظتی و ایمنی کار</translation>
 <translation id="4065659219963895623">رستوران‌ها</translation>
@@ -1970,6 +1976,7 @@
 <translation id="4152495263075154876">صفحه پیشرفت «حالا خرید کنید، بعداً بپردازید» بسته شده است.</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{‏۱ برگه}one{‏# برگه}other{‏# برگه}}</translation>
 <translation id="4153446078232988116">‏‫<ph name="SITE" /> از اتصال ایمن ازطریق HTTPS پشتیبانی نمی‌کند</translation>
+<translation id="4153858337812834972">آخرین زبانه‌ها</translation>
 <translation id="4154277373259957087">‏Chrome‌ اکنون پیش‌از پر کردن روش‌های پرداخت، هویت شما را به‌تأیید می‌رساند. هرزمان بخواهید می‌توانید این گزینه را در <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> به‌روز کنید.</translation>
 <translation id="415440494507469262">افزودن زبانه به جدول مقایسه</translation>
 <translation id="4159784952369912983">بنفش</translation>
@@ -2213,6 +2220,7 @@
 <translation id="4530347922939905757">پیام نوشتاری</translation>
 <translation id="4531477351494678589">شماره کارت مجازی:</translation>
 <translation id="4535523368173457420">این موتورهای جستجو در منطقه شما محبوب هستند و به‌ترتیب تصادفی نشان داده می‌شوند</translation>
+<translation id="4535602490975885745">‏عکس در OneDrive ذخیره نشد</translation>
 <translation id="4539931187424170595">{NUM_YEARS,plural, =1{‫۱ سال پیش ایجاد شده است}one{‫{NUM_YEARS} سال پیش ایجاد شده است}other{‫{NUM_YEARS} سال پیش ایجاد شده است}}</translation>
 <translation id="4541810033354695636">واقعیت افزوده</translation>
 <translation id="4542971377163063093">سینی ۶</translation>
@@ -2307,6 +2315,7 @@
 <translation id="4722547256916164131">‏<ph name="BEGIN_LINK" />اجرای Windows Network Diagnostics<ph name="END_LINK" /></translation>
 <translation id="4722735765955348426">گذرواژه <ph name="USERNAME" /></translation>
 <translation id="4724144314178270921">می‌تواند درخواست کند نوشتار و تصاویر موجود در بریده‌دان را ببیند</translation>
+<translation id="4725766358270333890">‏درحال بارگذاری <ph name="COUNT" /> فایل در Microsoft OneDrive</translation>
 <translation id="4726672564094551039">بار کردن مجدد خط مشی‌ها</translation>
 <translation id="4728558894243024398">پلت فورم</translation>
 <translation id="4729147136006144950">خیریه و نیکوکاری</translation>
@@ -2349,6 +2358,7 @@
 <translation id="4771249073710170730">کنترل رادیویی و مدل‌سازی</translation>
 <translation id="4771973620359291008">خطای ناشناخته‌ای رخ داد.</translation>
 <translation id="4774055414220872623">لوازم هنر و صنایع دستی</translation>
+<translation id="4775456404799771098">فایل را برای همیشه ازدست خواهید داد</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{پنجره بازشو مسدود شد}one{# پنجره بازشو مسدود شد}other{# پنجره بازشو مسدود شد}}</translation>
 <translation id="4780320432697076749">نرم‌افزار عکس</translation>
 <translation id="4780366598804516005">صندوق پست ۱</translation>
@@ -2801,6 +2811,7 @@
 <translation id="5509913453990750440">مد و لباس</translation>
 <translation id="5510766032865166053">ممکن است جابه‌جا یا حذف شده باشد.</translation>
 <translation id="551222491709693708">داستان مصور و پویانمایی</translation>
+<translation id="5512381366239323820">فایل‌های دوربین</translation>
 <translation id="5512812358367123529">مبلمان اداری</translation>
 <translation id="5513528801833998679">استفاده از ورود به سیستم دستگاه</translation>
 <translation id="5515388687005870733">۸۵ × ۵۵ اینچ</translation>
@@ -2936,6 +2947,7 @@
 <translation id="572328651809341494">زبانه‌های اخیر</translation>
 <translation id="5723873695528696965">‏کنترل و برنامه‌ریزی مجدد دستگاه‌های MIDI</translation>
 <translation id="5725297205162868298">میان‌بر نمی‌تواند با نویسه @ شروع شود: «<ph name="SHORTCUT_NAME" />»</translation>
+<translation id="5725797473946373607">دفعه بعد این کادر گفتگو نشان داده نشود</translation>
 <translation id="5728246486828755318">می‌تواند برای استفاده از ویژگی‌های پیشرفته چاپگر درخواست دهد</translation>
 <translation id="5729442113829771034">آموزش خردسالان</translation>
 <translation id="5730040223043577876">‏Chrome توصیه می‌کند اگر از گذرواژه‌تان در سایت‌های دیگری استفاده کردید آن را بازنشانی کنید.</translation>
@@ -3102,6 +3114,7 @@
 <translation id="6017514345406065928">سبز</translation>
 <translation id="6018650639991193045">‏سابقه مرور، کوکی‌ها، حافظه نهان، و غیره در تنظیمات Chrome حذف می‌شود</translation>
 <translation id="6019118530636932154">Google Apps Script</translation>
+<translation id="6023960830218262456">‏ویدیو در OneDrive ذخیره نشد</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />، <ph name="TYPE_2" />، <ph name="TYPE_3" /> (همگام‌سازی‌شده)</translation>
 <translation id="6025471531651464742">افزودن فایل</translation>
 <translation id="6028591542479806248">مدیریت تلفن همراه و اعلان‌های ایمیلی</translation>
@@ -3443,6 +3456,7 @@
 <translation id="6529173248185917884">رول هفتم</translation>
 <translation id="6529602333819889595">&amp;انجام مجدد حذف</translation>
 <translation id="6532101170117367231">‏‫ذخیره در Google Drive</translation>
+<translation id="6535903140035956341">فایل‌های دوربین و بارگیری‌ها</translation>
 <translation id="6536221421038631327">‏حذف اشتراک Passpoint از <ph name="DEVICE_TYPE" /> باعث می‌شود شبکه‌های مرتبط نیز حذف شوند. برای تغییر در طرح اشتراکتان، با «<ph name="FRIENDLY_NAME" />» تماس بگیرید. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">برای دیدن جدول‌های مقایسه، همگام‌سازی را روشن کنید</translation>
 <translation id="6539092367496845964">مشکلی پیش آمد. بعداً دوباره امتحان کنید.</translation>
@@ -3670,6 +3684,7 @@
 <translation id="6925267999184670015">‏B+‎ آمریکای شمالی</translation>
 <translation id="6926216138694948720">هنر بدن</translation>
 <translation id="692638818576287323">خودروهای تجاری</translation>
+<translation id="6927878187051807444">فایل‌های دوربین و نماگرفت‌ها</translation>
 <translation id="6930607614725241390">جستجو در پانل کناری</translation>
 <translation id="6934236486840930310">‏<ph name="BEGIN_BOLD" />موتور جستجوی پیش‌فرض به شما امکان می‌دهد در وب جستجو کنید و ویژگی‌های Chrome را تقویت می‌کند<ph name="END_BOLD" />، مثلاً جستجو از نوار نشانی و از تصاویر موجود در صفحه‌های وب. اگر موتور جستجوی شما از ویژگی‌ای پشتیبانی نکند، شاید آن ویژگی دردسترس نباشد.</translation>
 <translation id="6934672428414710184">‏این نام از حساب Google شما گرفته شده است</translation>
@@ -3812,6 +3827,7 @@
 <translation id="7140087718106278457">فهرست روش‌های پرداخت بسته است.</translation>
 <translation id="714064300541049402">‏روی ۲، تغییر جهت تصویر حول محور X</translation>
 <translation id="7140922144008419614">دکمه «جستجوی زبانه‌ها»، برای جستجوی زبانه‌ها، فعال کنید</translation>
+<translation id="7143668445748322952">فایل‌های دوربین، بارگیری‌ها، و نماگرفت‌ها</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">سعی مجدد</translation>
 <translation id="7150146631451105528"><ph name="DATE" /></translation>
@@ -4063,6 +4079,7 @@
 <translation id="7535087603100972091">مقدار</translation>
 <translation id="753556296624075801">‏قدرت‌گرفته از Google</translation>
 <translation id="753713322968419914">‏نشانی خانه از تکمیل خودکار Chrome برداشته شود؟</translation>
+<translation id="753714465667062283">برای ذخیره کردن عکس، به سیستم وارد شوید</translation>
 <translation id="7537536606612762813">اجباری</translation>
 <translation id="7543525346216957623">از والدینتان بخواهید این کار را انجام دهد</translation>
 <translation id="7546409722674205727">درحال راه‌اندازی <ph name="APP_NAME" /></translation>
@@ -4172,6 +4189,7 @@
 <translation id="7684928361160505327">{0,plural, =1{<ph name="FILE_NAME" /> به‌دلیل خط‌مشی مسدود شده است}one{<ph name="FILE_COUNT" /> به‌دلیل خط‌مشی مسدود شده است}other{<ph name="FILE_COUNT" /> به‌دلیل خط‌مشی مسدود شده است}}</translation>
 <translation id="7687186412095877299">فرم‌های پرداخت را با روش‌های پرداخت ذخیره‌شده‌تان پر می‌کند</translation>
 <translation id="7687305263118037187">پایان درنگ امتحان مجدد</translation>
+<translation id="7689605946980652287">‏درحال بارگذاری فایل در Microsoft OneDrive</translation>
 <translation id="7690647519407127574">کارت‌پستال اوفوکو هاگاکی</translation>
 <translation id="7693583928066320343">ترتیب صفحه دریافت شد</translation>
 <translation id="769424100851389104">اکنون به‌روزرسانی را شروع کردن</translation>
@@ -5121,6 +5139,7 @@
 <translation id="963734905955638680">‏طبق قانونی در منطقه‌تان، Chromium از شما می‌خواهد موتور جستجوی پیش‌فرضتان را انتخاب کنید. این موتورهای جستجو در منطقه شما پرطرفدار هستند و ترتیب نمایش آن‌ها تصادفی است.</translation>
 <translation id="963837307749850257">همه کاربران</translation>
 <translation id="964050462028070434">مدیریت گذرواژه‌ها و گذرکلیدها…</translation>
+<translation id="964681140808832181">بله، می‌خواهم لغو کنم</translation>
 <translation id="969892804517981540">ساخت رسمی</translation>
 <translation id="97054401902912338">درباره فیلترهای محتوا بیشتر بدانید</translation>
 <translation id="973788791897303708">این گروه زبانه پر است</translation>

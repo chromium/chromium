@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Închizi toate filele incognito?</translation>
 <translation id="1501480321619201731">Șterge grupul</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> element inactiv}few{<ph name="TABS_COUNT_MANY" /> elemente inactive}other{<ph name="TABS_COUNT_MANY" /> de elemente inactive}}</translation>
+<translation id="1568067597247500137">Dezactivează sunetul pentru site</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> file grupate</translation>
 <translation id="1657719826150349398">Mută fila mai jos</translation>
 <translation id="1670942869417022142">Sunet dezactivat</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">Prețul articolului a scăzut recent de la <ph name="PREVIOUS_PRICE" /> la <ph name="NEW_PRICE" /></translation>
 <translation id="606985262342505139">Foaia din partea de jos a filei la înălțime completă</translation>
 <translation id="6109251075362363230">Toate filele dublură vor fi acum arhivate, cu excepția copiei folosite cel mai recent.</translation>
+<translation id="612596694132302162">Activează sunetul pentru site</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Închide <ph name="TABS_COUNT_ONE" /> element selectat}few{Închide <ph name="TABS_COUNT_MANY" /> elemente selectate}other{Închide <ph name="TABS_COUNT_MANY" /> de elemente selectate}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Mută grupul într-o fereastră nouă}few{Mută grupul în altă fereastră}other{Mută grupul în altă fereastră}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Mută fila spre dreapta}few{Mută filele spre dreapta}other{Mută filele spre dreapta}}</translation>

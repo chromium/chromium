@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Loka öllum huliðsflipum?</translation>
 <translation id="1501480321619201731">Eyða hópi</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> óvirkt atriði}one{<ph name="TABS_COUNT_MANY" /> óvirkt atriði}other{<ph name="TABS_COUNT_MANY" /> óvirk atriði}}</translation>
+<translation id="1568067597247500137">Slökkva á hljóði svæðis</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> flipar flokkaðir</translation>
 <translation id="1657719826150349398">Færa flipa niður</translation>
 <translation id="1670942869417022142">Slökkt á hljóði</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">Verð á þessari vöru lækkaði nýlega úr <ph name="PREVIOUS_PRICE" /> í <ph name="NEW_PRICE" /></translation>
 <translation id="606985262342505139">Neðsta blað flipa í fullri hæð</translation>
 <translation id="6109251075362363230">Allir tvíteknir flipar verða nú einnig settir í geymslu, fyrir utan það afrit sem síðast var notað.</translation>
+<translation id="612596694132302162">Kveikja á hljóði svæðis</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Loka <ph name="TABS_COUNT_ONE" /> völdu atriði}one{Loka <ph name="TABS_COUNT_MANY" /> völdu atriði}other{Loka <ph name="TABS_COUNT_MANY" /> völdum atriðum}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Færa hóp í nýjan glugga}one{Færa hóp í annan glugga}other{Færa hóp í annan glugga}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Færa flipa til hægri}one{Færa flipa til hægri}other{Færa flipa til hægri}}</translation>

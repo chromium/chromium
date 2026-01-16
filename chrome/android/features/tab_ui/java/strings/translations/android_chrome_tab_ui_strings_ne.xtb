@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">सबै इन्कोग्निटो ट्याबहरू बन्द गर्ने हो?</translation>
 <translation id="1501480321619201731">समूह मेट्नुहोस्</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> निष्क्रिय आइटम}other{<ph name="TABS_COUNT_MANY" /> वटा निष्क्रिय आइटम}}</translation>
+<translation id="1568067597247500137">साइट म्युट गर्नुहोस्</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> वटा ट्याब समूहबद्ध गरिएका छन्</translation>
 <translation id="1657719826150349398">ट्याब सारेर तल लैजानुहोस्</translation>
 <translation id="1670942869417022142">अडियो म्युट गरिएको छ</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">यो वस्तुको मूल्य हालसालै घटेर <ph name="PREVIOUS_PRICE" /> बाट <ph name="NEW_PRICE" /> भएको छ</translation>
 <translation id="606985262342505139">ट्याबको पुछारको पाना पूरै स्क्रिनमा खोलिएको छ</translation>
 <translation id="6109251075362363230">सबैभन्दा हालसालै प्रयोग गरिएको दोहोरिएको ट्याबबाहेक दोहोरिएका सबै ट्याबहरू अब अभिलेखमा राखिने छन्।</translation>
+<translation id="612596694132302162">साइट अनम्युट गर्नुहोस्</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{चयन गरिएको <ph name="TABS_COUNT_ONE" /> ट्याब बन्द गर्नुहोस्}other{चयन गरिएका <ph name="TABS_COUNT_MANY" /> वटा ट्याब बन्द गर्नुहोस्}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{समूह सारेर नयाँ विन्डोमा लैजानुहोस्}other{समूह सारेर अर्को विन्डोमा लैजानुहोस्}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{ट्याब दायाँतिर सार्नुहोस्}other{ट्याबहरू दायाँतिर सार्नुहोस्}}</translation>

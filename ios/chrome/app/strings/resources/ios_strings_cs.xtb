@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Nové okno</translation>
 <translation id="1558391695376153246">Zavřít anonymní karty</translation>
 <translation id="1565371473877914088">Nová anonymní karta</translation>
+<translation id="1567960978791353852">Zobrazit režim čtení</translation>
 <translation id="1571780780926010134">Anonymní karty</translation>
 <translation id="1580715474678097352">Chrání vás před nebezpečnými weby</translation>
 <translation id="1580783302095112590">E-mail byl odeslán.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">Chcete-li zobrazit hesla, musíte nejdříve na zařízení nastavit heslo.</translation>
 <translation id="201759455285471444">Rozbalit skupinu karet.</translation>
 <translation id="202070562065520783">Vysvětli mi tohle</translation>
+<translation id="2023713324775943812">Přístup k režimu čtení z adresního řádku, když je k dispozici</translation>
 <translation id="2044394949148788042">Otevřít mřížku karet</translation>
 <translation id="2044681667265133332">Účet <ph name="USER_EMAIL" /> spravuje doména <ph name="HOSTED_DOMAIN" />, která může mít přístup k některým informacím. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nová položka</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Tady jsou uloženy vaše skupiny karet</translation>
 <translation id="2273327106802955778">Nabídka Další</translation>
 <translation id="2287614783861766820">{count,plural, =1{Tato adresa bude z tohoto zařízení smazána.}few{Tyto adresy budou z tohoto zařízení smazány.}many{Tyto adresy budou z tohoto zařízení smazány.}other{Tyto adresy budou z tohoto zařízení smazány.}}</translation>
+<translation id="2295236662082735391">Dlouhým stisknutím obrázku na webu ho můžete upravit pomocí Gemini</translation>
 <translation id="2297989278479054870">Po odhlášení budou z tohoto zařízení odstraněny záložky, hesla a další položky ve vašem účtu Google.</translation>
 <translation id="2299218006564889602">Hesla jsou před uložením do Správce hesel Google v zařízení zašifrována.</translation>
 <translation id="2306265833370324042">Zobrazit podrobnosti vyhledávače <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Vyfoťte, co chcete vyhledat.</translation>
 <translation id="2761898608071930085">Použít jiný účet</translation>
 <translation id="2762000892062317888">právě teď</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Přidejte maximálně 1 obrázek}few{Přidejte maximálně {COUNT} obrázky}many{Přidejte maximálně {COUNT} obrázku}other{Přidejte maximálně {COUNT} obrázků}}</translation>
 <translation id="2772667768515195373">Uložené adresy můžete používat ve službách Google. Tato adresa je uložena ve vašem účtu Google <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">E‑mailová oznámení</translation>
 <translation id="2781331604911854368">Zapnuto</translation>
@@ -1353,6 +1357,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="605721222689873409">RR</translation>
 <translation id="6058415747854995776">Natočit video</translation>
 <translation id="6059830886158432458">Zde můžete ovládat své příběhy a aktivity</translation>
+<translation id="6063802271331271857">Zremixujte obrázek</translation>
 <translation id="6066301408025741299">Stahování zrušíte klepnutím.</translation>
 <translation id="6074656473835429958">Aktivujte si oznámení</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) se nepodařilo nahrát</translation>
@@ -1871,6 +1876,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="7899199123054742721">Označit všechny nepřečtené</translation>
 <translation id="7911190106180361398">Vaše organizace nepovoluje synchronizaci všeho.</translation>
 <translation id="7918999344502274923">Skrýt podrobnosti vyhledávače <ph name="SEARCH_ENGINE_NAME" /></translation>
+<translation id="7921559948846049514">Vyberte si motiv, barvu nebo další možnosti pozadí</translation>
 <translation id="792357691529995513">Nebyly zjištěny žádné problémy</translation>
 <translation id="7925108652071887026">Data automatického vyplňování</translation>
 <translation id="7926975587469166629">Přezdívka karty</translation>

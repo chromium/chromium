@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Nytt fönster</translation>
 <translation id="1558391695376153246">Stäng inkognitoflikar</translation>
 <translation id="1565371473877914088">Ny inkognitoflik</translation>
+<translation id="1567960978791353852">Visa läsläget</translation>
 <translation id="1571780780926010134">Inkognitoflikar</translation>
 <translation id="1580715474678097352">Skydda dig mot farliga webbplatser</translation>
 <translation id="1580783302095112590">E-post skickades.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">Du måste ställa in ett lösenord på enheten om du vill kunna se lösenorden.</translation>
 <translation id="201759455285471444">Utöka flikgruppen.</translation>
 <translation id="202070562065520783">Förklara detta för mig</translation>
+<translation id="2023713324775943812">Öppna läsläget från adressfältet när det är tillgängligt</translation>
 <translation id="2044394949148788042">Öppna rutnätet med flikar</translation>
 <translation id="2044681667265133332">Kontot <ph name="USER_EMAIL" /> hanteras av <ph name="HOSTED_DOMAIN" />, som kanska kan se viss information. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nytt objekt</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Dina flikgrupper sparas här</translation>
 <translation id="2273327106802955778">Mer-menyn</translation>
 <translation id="2287614783861766820">{count,plural, =1{Adressen raderas från enheten.}other{Dessa adresser raderas från enheten.}}</translation>
+<translation id="2295236662082735391">Tryck länge på en bild på webben för att redigera den med Gemini</translation>
 <translation id="2297989278479054870">När du har loggat ut tas bokmärken, lösenord med mera i Google-kontot bort från enheten.</translation>
 <translation id="2299218006564889602">Dina lösenord krypteras på enheten innan de sparas i Google Lösenordshantering.</translation>
 <translation id="2306265833370324042">Visa information om <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Ta ett foto av sökningen</translation>
 <translation id="2761898608071930085">Använd ett annat konto</translation>
 <translation id="2762000892062317888">nyss</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Lägg till upp till 1 bild}other{Lägg till upp till {COUNT} bilder}}</translation>
 <translation id="2772667768515195373">Du kan använda sparade adresser i Googles produkter. Adressen har sparats i ditt Google-konto, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">E-postaviseringar</translation>
 <translation id="2781331604911854368">På</translation>
@@ -601,6 +605,7 @@
 <translation id="3245744387817103524">Det gick inte att spara ändringen.</translation>
 <translation id="3254806613790954367">Din senast öppna flik på alla dina enheter</translation>
 <translation id="325717987950204592">Tryck på Integritet och säkerhet</translation>
+<translation id="3265736395246760288">Logga in snabbare från alla dina synkroniserade enheter.</translation>
 <translation id="3272527697863656322">Avbryt</translation>
 <translation id="3273510436356991673">Anpassa startskärmen</translation>
 <translation id="3277021493514034324">Webbplatsens webbadress har kopierats</translation>
@@ -1353,6 +1358,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="605721222689873409">ÅÅ</translation>
 <translation id="6058415747854995776">Spela in video</translation>
 <translation id="6059830886158432458">Styr dina berättelser och din aktivitet här</translation>
+<translation id="6063802271331271857">Remixa en bild</translation>
 <translation id="6066301408025741299">Avbryt genom att trycka här.</translation>
 <translation id="6074656473835429958">Få aviseringar</translation>
 <translation id="607620096698446287">Det gick inte att ladda upp <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -1871,6 +1877,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="7899199123054742721">Markera alla som olästa</translation>
 <translation id="7911190106180361398">Organisationen tillåter inte att du synkroniserar allt.</translation>
 <translation id="7918999344502274923">Dölj information om <ph name="SEARCH_ENGINE_NAME" /></translation>
+<translation id="7921559948846049514">Välj ett tema, en färg eller annat för bakgrunden</translation>
 <translation id="792357691529995513">Inga problem hittades</translation>
 <translation id="7925108652071887026">Fyll i uppgifter automatiskt</translation>
 <translation id="7926975587469166629">Kortets namn</translation>

@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">לסגור את כל הכרטיסיות הפרטיות?</translation>
 <translation id="1501480321619201731">מחיקת קבוצה</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{פריט אחד (<ph name="TABS_COUNT_ONE" />) לא פעיל}one{‫<ph name="TABS_COUNT_MANY" /> פריטים לא פעילים}two{‫<ph name="TABS_COUNT_MANY" /> פריטים לא פעילים}other{‫<ph name="TABS_COUNT_MANY" /> פריטים לא פעילים}}</translation>
+<translation id="1568067597247500137">השתקת האתר</translation>
 <translation id="1645759014353344461">‫<ph name="TABS_COUNT_MANY" /> כרטיסיות מקובצות</translation>
 <translation id="1657719826150349398">העברת הכרטיסייה למטה</translation>
 <translation id="1670942869417022142">האודיו מושתק</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">המחיר של הפריט הזה ירד לאחרונה מ-<ph name="PREVIOUS_PRICE" /> ל-<ph name="NEW_PRICE" /></translation>
 <translation id="606985262342505139">הגיליון התחתון של הכרטיסייה בגובה מלא</translation>
 <translation id="6109251075362363230">עכשיו גם כל הכרטיסיות הכפולות יועברו לארכיון, חוץ מהעותק האחרון שנעשה בו שימוש.</translation>
+<translation id="612596694132302162">בטל את השתקת האתר</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{סגירת הפריט שנבחר (<ph name="TABS_COUNT_ONE" />)}one{סגירה של <ph name="TABS_COUNT_MANY" /> הפריטים שנבחרו}two{סגירה של <ph name="TABS_COUNT_MANY" /> הפריטים שנבחרו}other{סגירה של <ph name="TABS_COUNT_MANY" /> הפריטים שנבחרו}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{העברת קבוצת הכרטיסיות לחלון חדש}one{העברת קבוצת הכרטיסיות לחלון אחר}two{העברת קבוצת הכרטיסיות לחלון אחר}other{העברת קבוצת הכרטיסיות לחלון אחר}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{העברת הכרטיסייה שמאלה}one{העברת הכרטיסיות שמאלה}two{העברת הכרטיסיות שמאלה}other{העברת הכרטיסיות שמאלה}}</translation>

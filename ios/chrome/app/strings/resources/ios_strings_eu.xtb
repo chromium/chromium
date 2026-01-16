@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Leiho berria</translation>
 <translation id="1558391695376153246">Itxi ezkutuko moduko fitxak</translation>
 <translation id="1565371473877914088">Ezkutuko moduko fitxa berria</translation>
+<translation id="1567960978791353852">Erakutsi irakurtzeko modua</translation>
 <translation id="1571780780926010134">Ezkutuko moduko fitxak</translation>
 <translation id="1580715474678097352">Webgune arriskutsuen aurka babestuta mantentzen zaitu</translation>
 <translation id="1580783302095112590">Mezua bidali da.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">Pasahitzak ikusteko, lehenik, pasakode bat ezarri behar duzu gailuan.</translation>
 <translation id="201759455285471444">Zabaldu fitxa taldea.</translation>
 <translation id="202070562065520783">Azal iezadazu hau</translation>
+<translation id="2023713324775943812">Erabili irakurtzeko modua helbide-barratik erabilgarri dagoenean</translation>
 <translation id="2044394949148788042">Ireki fitxen sareta</translation>
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> domeinuak kudeatzen du <ph name="USER_EMAIL" /> kontua, eta agian zenbait datu ikus ditzake. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">elementu berria</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Hemen gordetzen dira fitxa taldeak</translation>
 <translation id="2273327106802955778">"Gehiago" menua</translation>
 <translation id="2287614783861766820">{count,plural, =1{Helbidea gailutik ezabatuko da.}other{Helbideak gailutik ezabatuko dira.}}</translation>
+<translation id="2295236662082735391">Sakatu luze sareko irudi bat Gemini-rekin editatzeko</translation>
 <translation id="2297989278479054870">Saioa amaitu ondoren, Google-ko kontuko laster-markak, pasahitzak eta bestelako elementuak kendu egingo dira gailu honetatik.</translation>
 <translation id="2299218006564889602">Pasahitzak gailuan bertan enkriptatzen dira Google-ren Pasahitz-kudeatzailea zerbitzuan gorde aurretik.</translation>
 <translation id="2306265833370324042">Erakutsi <ph name="SEARCH_ENGINE_NAME" /> bilatzailearen xehetasunak</translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Atera argazki bat bilaketari</translation>
 <translation id="2761898608071930085">Erabili beste kontu bat</translation>
 <translation id="2762000892062317888">oraintxe</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Gehitu irudi bat gehienez}other{Gehitu {COUNT} irudi gehienez}}</translation>
 <translation id="2772667768515195373">Gordetako helbideak Google-ren produktu guztietan erabil ditzakezu. Helbide hau Google-ko kontuan (<ph name="USER_EMAIL" />) gorde da.</translation>
 <translation id="2773344962924806829">Posta elektroniko bidezko jakinarazpenak</translation>
 <translation id="2781331604911854368">Aktibatuta</translation>
@@ -1353,6 +1357,7 @@
 <translation id="605721222689873409">UU</translation>
 <translation id="6058415747854995776">Grabatu bideo bat</translation>
 <translation id="6059830886158432458">Kontrolatu istorioak eta jarduerak hemen</translation>
+<translation id="6063802271331271857">Nahasi irudi bat</translation>
 <translation id="6066301408025741299">Sakatu bertan behera uzteko</translation>
 <translation id="6074656473835429958">Jaso jakinarazpenak</translation>
 <translation id="607620096698446287">Ezin izan da kargatu <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -1871,6 +1876,7 @@
 <translation id="7899199123054742721">Markatu guztiak irakurri gabeko gisa</translation>
 <translation id="7911190106180361398">Erakundeak ez dizu eman baimenik guztia sinkronizatzeko.</translation>
 <translation id="7918999344502274923">Ezkutatu <ph name="SEARCH_ENGINE_NAME" /> bilatzailearen xehetasunak</translation>
+<translation id="7921559948846049514">Aukeratu atzeko planorako gai, kolore edo bestelako elementu bat</translation>
 <translation id="792357691529995513">Ez da aurkitu arazorik</translation>
 <translation id="7925108652071887026">Bete datuak automatikoki</translation>
 <translation id="7926975587469166629">Txartelaren goitizena</translation>

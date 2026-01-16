@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Bütün Incognito tabları qapadılsın?</translation>
 <translation id="1501480321619201731">Qrupu silin</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> qeyri-aktiv element}other{<ph name="TABS_COUNT_MANY" /> qeyri-aktiv element}}</translation>
+<translation id="1568067597247500137">Saytı səssiz edin</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> tab qruplaşdırıldı</translation>
 <translation id="1657719826150349398">Tabı aşağıya daşıyın</translation>
 <translation id="1670942869417022142">Səssiz edilmiş audio</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">Bu element bu yaxınlarda <ph name="PREVIOUS_PRICE" /> qiymətindən <ph name="NEW_PRICE" /> qiymətinə endirilib</translation>
 <translation id="606985262342505139">Tam hündürlükdə tab üzrə aşağıdakı vərəq</translation>
 <translation id="6109251075362363230">Ən son istifadə olunan nüsxə istisna olmaqla bütün dublikat tablar da artıq arxivlənəcək.</translation>
+<translation id="612596694132302162">Saytı səssiz rejimdən çıxarın</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Seçilmiş <ph name="TABS_COUNT_ONE" /> elementi bağlayın}other{Seçilmiş <ph name="TABS_COUNT_MANY" /> elementi bağlayın}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Qrupu yeni pəncərəyə köçürün}other{Qrupu başqa pəncərəyə köçürün}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Tabı sağa köçürün}other{Tabları sağa köçürün}}</translation>

@@ -1887,7 +1887,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2257053455312861282">Kun oppilaitostili lisätään, kirjautuminen sivustoille, laajennuksiin ja sovelluksiin on helppoa oppilaille lapsilukon asettamissa rajoissa.</translation>
 <translation id="225716114209817872">Enimmäistaso</translation>
 <translation id="2259337945538989999">Vahvista henkilöllisyytesi, niin voit käyttää välilehtiä muilta laitteiltasi. Voit lopettaa synkronoinnin milloin tahansa asetuksista. Google voi personoida Hakua ja muita palveluita historiasi perusteella.</translation>
-<translation id="2261323523305321874">Järjestelmänvalvoja on tehnyt koko järjestelmän laajuisen muutoksen, joka poistaa vanhoja profiileja käytöstä.</translation>
 <translation id="22614517036276112">Dokumentti tai laite ei noudata kaikkia organisaatiosi tietoturvakäytäntöjä. Tarkista järjestelmänvalvojalta, mitä on korjattava.</translation>
 <translation id="2262477216570151239">Viive ennen toistoa</translation>
 <translation id="2263189956353037928">Kirjaudu ulos ja kirjaudu takaisin sisään</translation>
@@ -2535,7 +2534,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2681124317993121768">Vierasprofiileja ei tueta</translation>
 <translation id="2682498795777673382">Päivitys vanhemmalta</translation>
 <translation id="2683638487103917598">Kansio lajiteltu</translation>
-<translation id="2684004000387153598">Jos haluat jatkaa, valitse OK, Lisää henkilö ja luo sähköpostiosoitteellasi uusi profiili.</translation>
 <translation id="2685193395980129388">Sallittu: <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687407218262674387">Googlen käyttöehdot</translation>
 <translation id="2688196195245426394">Virhe rekisteröitäessä laitetta palvelimelle: <ph name="CLIENT_ERROR" />.</translation>
@@ -2836,6 +2834,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2885129935310217435">Sivulla on samanniminen painike. Valitse toinen.</translation>
 <translation id="2885378588091291677">Tehtävänhallinta</translation>
 <translation id="2885729872133513017">Palvelinvastauksen koodinpurku epäonnistui.</translation>
+<translation id="2886119409731773154">Tässä menee enintään 30 minuuttia</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> ja <ph name="NUMBER_OF_DEVICES" /> muuta</translation>
 <translation id="2887344147309501015">Keskustele Gemini in Chromen kanssa, niin saat esimerkiksi vastauksia ja tärkeät kohdat selatessasi</translation>
@@ -9791,7 +9790,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7681757571815416227">Organisaatiosi tarvitsee tietoja laitteesta, jotta voit käyttää sitä profiilin (<ph name="DOMAIN" />) kanssa.
 
 Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, selaimesi, laitteen käyttöjärjestelmä ja IP-osoitteet.</translation>
-<translation id="7683373461016844951">Jos haluat jatkaa, valitse OK, Lisää henkilö ja luo sähköpostiosoitteellasi (<ph name="DOMAIN" />) uusi profiili.</translation>
 <translation id="7683834360226457448">Heikkonäköisten näyttötyökalut</translation>
 <translation id="7684212569183643648">Järjestelmänvalvojasi asentama</translation>
 <translation id="7684559058815332124">Siirry captive portal -kirjautumissivulle</translation>
@@ -11219,7 +11217,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> haluaa esimerkiksi <ph name="FIRST_PERMISSION" /> ja <ph name="SECOND_PERMISSION" /></translation>
 <translation id="8648889679430451455">Tyhjennä personointidata</translation>
 <translation id="8649026945479135076">On tavallista, että avaamasi sivustot muistavat sinua kiinnostavat asiat personoidakseen käyttökokemustasi. Sivustot voivat myös tallentaa Chromeen tietoja kiinnostuksen kohteistasi.</translation>
-<translation id="8650543407998814195">Et voi enää käyttää vanhaa profiilia, mutta voit poistaa sen.</translation>
 <translation id="8651585100578802546">Lataa tämä sivu uudelleen</translation>
 <translation id="8652400352452647993">Virhe: pakattu laajennus</translation>
 <translation id="8654151524613148204">Tiedosto on liian suuri käsiteltäväksi.</translation>

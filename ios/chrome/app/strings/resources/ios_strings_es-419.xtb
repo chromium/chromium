@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Nueva ventana</translation>
 <translation id="1558391695376153246">Cerrar pestañas incógnito</translation>
 <translation id="1565371473877914088">Nueva pestaña de incógnito</translation>
+<translation id="1567960978791353852">Mostrar el Modo de lectura</translation>
 <translation id="1571780780926010134">Pestañas de incógnito</translation>
 <translation id="1580715474678097352">Protégete de sitios web peligrosos</translation>
 <translation id="1580783302095112590">Correo enviado</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">Para ver las contraseñas, primero debes establecer una en tu dispositivo.</translation>
 <translation id="201759455285471444">Expandir grupo de pestañas.</translation>
 <translation id="202070562065520783">Explícame esto</translation>
+<translation id="2023713324775943812">Accede al Modo de lectura desde la barra de direcciones cuando esté disponible</translation>
 <translation id="2044394949148788042">Abre la cuadrícula de pestañas</translation>
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> administra la cuenta <ph name="USER_EMAIL" />, por lo que es posible que pueda ver cierta información. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nuevo elemento</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Tus grupos de pestañas se guardan aquí</translation>
 <translation id="2273327106802955778">Menú Más</translation>
 <translation id="2287614783861766820">{count,plural, =1{Esta dirección se borrará de este dispositivo.}other{Estas direcciones se borrarán de este dispositivo.}}</translation>
+<translation id="2295236662082735391">Mantén presionada una imagen en la Web para editarla con Gemini</translation>
 <translation id="2297989278479054870">Después de salir, los favoritos, las contraseñas y otros datos de tu Cuenta de Google se quitarán de este dispositivo.</translation>
 <translation id="2299218006564889602">Las contraseñas se encriptan en tu dispositivo antes de guardarse en el Administrador de contraseñas de Google.</translation>
 <translation id="2306265833370324042">Mostrar detalles de <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Toma una foto de la búsqueda</translation>
 <translation id="2761898608071930085">Usar otra cuenta</translation>
 <translation id="2762000892062317888">recién</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Agrega hasta 1 imagen}other{Agrega hasta {COUNT} imágenes}}</translation>
 <translation id="2772667768515195373">Puedes usar las direcciones guardadas en todos los productos de Google. Esta dirección está guardada en tu Cuenta de Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">Notificaciones por correo electrónico</translation>
 <translation id="2781331604911854368">Sí</translation>
@@ -1353,6 +1357,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="605721222689873409">AA</translation>
 <translation id="6058415747854995776">Grabar video</translation>
 <translation id="6059830886158432458">Controla tus noticias y actividad aquí</translation>
+<translation id="6063802271331271857">Remezcla una imagen</translation>
 <translation id="6066301408025741299">Presiona para cancelar.</translation>
 <translation id="6074656473835429958">Recibe notificaciones</translation>
 <translation id="607620096698446287">No se pudo cargar <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -1871,6 +1876,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="7899199123054742721">Marcar todas como no leídas</translation>
 <translation id="7911190106180361398">Tu organización no te permite sincronizar todo el contenido.</translation>
 <translation id="7918999344502274923">Ocultar detalles de <ph name="SEARCH_ENGINE_NAME" /></translation>
+<translation id="7921559948846049514">Elige un tema, un color o más para tu fondo</translation>
 <translation id="792357691529995513">No se encontraron problemas</translation>
 <translation id="7925108652071887026">Datos de Autocompletar</translation>
 <translation id="7926975587469166629">Sobrenombre de la tarjeta</translation>

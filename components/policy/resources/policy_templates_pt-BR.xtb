@@ -1608,6 +1608,15 @@ Se a política for definida como "1", os grupos de guias não poderão ser compa
 <translation id="2144236546337326489">Permitir que a continuação da tarefa do recurso "Seu smartphone" seja ativada</translation>
 <translation id="2145735238144543545">Certificados do cliente obrigatórios</translation>
 <translation id="2146103669166779785">Cor hexadecimal que será usada para gerar e aplicar um tema ao navegador.</translation>
+<translation id="2146539033119095550">Esta política permite definir uma lista de padrões de URL que especificam as origens de nível superior em que o particionamento de armazenamento de terceiros (do iframe de origem cruzada) precisa ser desativado.
+
+Se ela não for definida ou se uma origem de nível superior não corresponder a um dos padrões de URL, a <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> será aplicada.
+
+Para informações mais detalhadas sobre padrões válidos, consulte https://chromeenterprise.google/policies/url-patterns. Os padrões listados aqui são tratados como origens, não URLs. Assim, recomendamos que você não especifique um caminho.
+
+Para conferir informações detalhadas sobre o particionamento de armazenamento de terceiros, consulte https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.
+
+Ele foi removido no Chrome 145, e é recomendável usar o método requestStorageAccess: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess (em inglês). Para enviar feedback, acesse https://crbug.com/425248669 (em inglês).</translation>
 <translation id="2148733583160916305">Permitir a API WebPrinting nesses sites</translation>
 <translation id="2148769554831004951">Forçar a ativação do WebSQL.</translation>
 <translation id="214901426630414675">Restringir o modo duplex de impressão</translation>
@@ -2533,11 +2542,6 @@ Se a política for definida como 2 ("Desativada"), a integração do Google Deve
 <translation id="2707733461906745082">Separação de perfis</translation>
 <translation id="2707873794476722903">O "Navegação segura" está ativo no modo padrão.</translation>
 <translation id="2709516037105925701">Preenchimento automático</translation>
-<translation id="2713265653152900248">A definição da política concede acesso aos URLs listados no modo de navegação anônima, como exceções a <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />. Por exemplo, se <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> for definida como *, todas as solicitações serão bloqueadas no modo de navegação anônima, e você poderá usar a política para permitir o acesso a uma lista limitada de URLs. Ela pode abrir exceções para alguns esquemas, subdomínios de outros domínios, portas ou caminhos específicos usando o formato especificado em (https://support.google.com/chrome/a?p=url_blocklist_filter_format). A política <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> tem precedência sobre <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />. Esta política tem um limite de 1.000 entradas.
-
-Se ela não for definida, nenhuma exceção a <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> será permitida.
-
-A política afeta apenas o modo de navegação anônima. Se quiser permitir URLs para todos os perfis de usuário, use a política <ph name="URL_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="2713913573196284609">Esse valor foi descontinuado na versão M121. Na versão M121 e em versões mais recentes, os valores serão tratados como EnabledBelowThreshold.</translation>
 <translation id="2713977837384407666">Sempre enviar métricas ao Google</translation>
 <translation id="2714359695399346815">Se a política for definida como "Ativada" ou deixada sem definição, o uso de servidores STUN será permitido, isso faz com que clientes remotos possam descobrir e se conectar a esta máquina, mesmo quando separados por um firewall.
@@ -3402,6 +3406,8 @@ Se a política <ph name="NTPCARDSVISIBLE" /> for desativada, o card do Outlook n
       Se a política for definida como "Desativada", os dispositivos registrados não comunicarão as informações da sessão de quiosque.</translation>
 <translation id="3303770131697159224">Configuração padrão da permissão de gerenciamento de janelas</translation>
 <translation id="3303911765031636277">Política de configuração para o conector OnFileAttached do Chrome Enterprise</translation>
+<translation id="3305586786770047829">Quando esta política for definida como 0 ou deixada sem definição, a política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> será aplicada apenas no escopo do usuário para os afiliados.
+Se for definida como 1, a política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> será aplicada no escopo do usuário, mesmo que ele não seja afiliado.</translation>
 <translation id="3307744348419745296">Não permitir que as configurações de rede Wi-Fi sejam sincronizadas entre dispositivos <ph name="PRODUCT_OS_NAME" /> e um smartphone Android conectado</translation>
 <translation id="3308724602356134956">Se você definir a política, o <ph name="PRODUCT_OS_NAME" /> fará o download e usará a imagem de plano de fundo que você definiu para a área de trabalho e a tela de login do usuário, e ela não poderá ser modificada. Especifique o URL no qual o <ph name="PRODUCT_OS_NAME" /> poderá fazer o download da imagem de plano de fundo e de um hash criptográfico para verificar a integridade. O hash deve estar em formato JPEG e ter no máximo 16 MB e o URL precisa ser acessível sem autenticação.
 
@@ -3513,6 +3519,15 @@ Se esta política for definida como desativada, o recurso de escrita preditiva n
 <translation id="33993310248354034">Permitir a detecção de entidades de texto simples em páginas da Web.</translation>
 <translation id="3399859571630358395">Forçar a desativação do pareamento rápido (pareamento rápido por Bluetooth).</translation>
 <translation id="3404681701763345449">Ativar a integração com o <ph name="GOOGLE_CALENDAR_NAME" />.</translation>
+<translation id="3405276853140830214">Esta política controla se o particionamento de armazenamento de terceiros é permitido por padrão.
+
+Se ela for definida como 1 (AllowPartitioning) ou não for definida, o particionamento de armazenamento de terceiros será permitido por padrão. Esse padrão pode ser substituído para origens de nível superior específicas por outros meios.
+
+Se ela for definida como 2 (BlockPartitioning), o particionamento de armazenamento de terceiros será desativado em todos os contextos.
+
+Use <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> para desativar o particionamento de armazenamento de terceiros para origens de nível superior específicas. Para conferir informações detalhadas sobre o particionamento de armazenamento de terceiros, consulte https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.
+
+Ele foi removido no Chrome 145, e é recomendável usar o método requestStorageAccess: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess (em inglês). Para enviar feedback, acesse https://crbug.com/425248669 (em inglês).</translation>
 <translation id="3405361833556012520">Esta política se aplica apenas ao tráfego do navegador. A Play Store, a navegação na Web em apps Android e outros tipos de tráfego de usuários, como o de VMs do Linux ou o de trabalhos de impressão, ainda respeitam as restrições impostas pela VPN sempre ativa. Esta política só é aplicada quando a VPN não está conectada e somente para o tráfego do navegador do usuário. Enquanto estiver aplicada, o tráfego do sistema também poderá ignorar a VPN sempre ativada para realizar tarefas como buscas de políticas e sincronização do relógio do sistema.
 
 Use a política para abrir exceções para alguns esquemas, subdomínios de outros domínios, portas ou caminhos específicos usando o formato especificado em https://support.google.com/chrome/a?p=url_blocklist_filter_format. O filtro mais específico vai determinar se um URL será bloqueado ou permitido.
@@ -4124,7 +4139,7 @@ Se ela for definida como 2, as origens de Apps Isolados da Web não poderão usa
           Se você definir esta política, os usuários não poderão alterá-la nem substituí-la.
 
           Se esta política não for definida, o ditado ficará inicialmente desativado na tela de login, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
-<translation id="3811407842708673996">Se a política for deixada não for definida ou for ativada, os usuários poderão ver e usar o item de menu da pesquisa por região do <ph name="GOOGLE_LENS_PRODUCT_NAME" /> no menu de contexto. Se ela for desativada, os usuários não verão a pesquisa por região do <ph name="GOOGLE_LENS_PRODUCT_NAME" /> no menu de contexto quando a pesquisa por região do <ph name="GOOGLE_LENS_PRODUCT_NAME" /> estiver disponível.
+<translation id="3811407842708673996">Se a política não for definida ou for ativada, os usuários poderão ver e usar o item de menu da pesquisa por região do <ph name="GOOGLE_LENS_PRODUCT_NAME" /> no menu de contexto. Se ela for desativada, os usuários não verão a pesquisa por região do <ph name="GOOGLE_LENS_PRODUCT_NAME" /> no menu de contexto quando a pesquisa por região do <ph name="GOOGLE_LENS_PRODUCT_NAME" /> estiver disponível.
 A partir do <ph name="PRODUCT_NAME" /> 147, esta política será descontinuada. Os admins de TI podem usar a <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> para controlar esse recurso no futuro.</translation>
 <translation id="3811562426301733860">Permitir anúncios em todos os sites</translation>
 <translation id="3816312845600780067">Ativar atalho do teclado dp plano de salvação para login automático</translation>
@@ -5339,6 +5354,21 @@ Comportamento antigo e legado: em "beforeunload", chamar "event.preventDefault()
 <translation id="46321462262887935">Tratar teclas da linha superior como teclas de função, mas permitir que os usuários façam mudanças</translation>
 <translation id="4632343302005518762">Permitir que o <ph name="PRODUCT_FRAME_NAME" /> trabalhe com os tipos de conteúdo listados</translation>
 <translation id="4636354638176939375">Desativar a criação de usuários supervisionados</translation>
+<translation id="4637701328641064644">Esta política controla se os URLs de blobs são particionados durante a busca e navegação.
+Se ela for ativada ou não for definida, os URLs de blobs serão particionados.
+Se ela for desativada, os URLs de blobs não serão particionados.
+
+Se você precisar usar a política, informe um bug em
+<ph name="BUG_URL" />
+explicando seu caso de uso. A política está programada para ser oferecida até
+a versão 146 do <ph name="PRODUCT_NAME" />. Após essa versão,
+a implementação antiga será removida.
+
+OBSERVAÇÃO: somente processos de renderizador recém-iniciados vão refletir as mudanças nesta
+política enquanto o navegador estiver em execução.
+
+Para ver detalhes sobre o particionamento de armazenamento de terceiros, consulte
+https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.</translation>
 <translation id="46383668315040154">Especifica o canal de liberação ao qual este dispositivo precisa ser vinculado.
 
 A configuração <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> só terá efeito se <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> for definida como falsa.</translation>
@@ -6776,15 +6806,6 @@ Esta política não impede que os usuários salvem arquivos no <ph name="GOOGLE_
 
 Se a política for definida como falsa, não será permitido usar identificadores de conteúdo protegido.</translation>
 <translation id="5492713303272131731">Todos os outros processos poderão ser programados no mesmo núcleo da CPU quando um processo de renderização estiver em execução nele.</translation>
-<translation id="5494322570831642650">Especifica se o usuário pode abrir páginas no modo de navegação anônima no <ph name="PRODUCT_NAME" />.
-
-      Se a política for definida como "Enabled" ou deixada sem definição, as páginas poderão ser abertas no modo de navegação anônima.
-
-      Se ela for definida como "Disabled", as páginas não poderão ser abertas no modo de navegação anônima.
-
-      Se a opção "Forced" for selecionada, as páginas poderão ser abertas SOMENTE no modo de navegação anônima. A opção "Forced" não funciona para o Android no Chrome
-
-      Observação: no iOS, se a política for alterada durante a sessão, ela só terá efeito após a reinicialização.</translation>
 <translation id="549471902631700911">Desativar o recebimento de pesquisas da Navegação segura</translation>
 <translation id="549625769649876757">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que podem acessar a geolocalização de alta precisão do usuário sem precisar pedir permissão para isso.
 
@@ -9107,9 +9128,6 @@ Se ela for definida como "false" ou deixada sem definição, o layout não ficar
 <translation id="6866755486434471318">Permitir que <ph name="PEPPER_NAME" /> use imagens compartilhadas para decodificar vídeos.</translation>
 <translation id="6878757724611298427">Permite que os usuários usem apps Android em dispositivos não afiliados</translation>
 <translation id="6881447940489194100">Hash SHA-256 dos dados codificado em hexadecimal.</translation>
-<translation id="688149562204519323">Se a política <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> for definida, as páginas da web que têm URLs proibidos não vão ser carregadas no modo de navegação anônima. Os administradores podem especificar a lista de padrões de URL a serem bloqueados. Se a política for deixada sem definição, nenhum URL será bloqueado no modo de navegação anônima. Até 1.000 exceções podem ser definidas na <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" />. Confira como formatar um padrão de URL (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
-
-A política afeta apenas o modo de navegação anônima. Se quiser bloquear URLs para todos os perfis de usuário, use a política <ph name="URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="68818134518270542">A definição da política especifica os apps que os usuários podem ativar para fazer anotações na tela de bloqueio do <ph name="PRODUCT_OS_NAME" />.
 
       Se o app preferencial for ativado na tela de bloqueio, será exibido um elemento de interface para abri-lo. Quando iniciado, o app poderá criar uma janela própria na parte superior da tela de bloqueio e anotações no contexto dessa tela. Quando a sessão do usuário principal for desbloqueada, será possível importar para ela as notas criadas. Apenas os apps de anotação do <ph name="PRODUCT_NAME" /> são compatíveis com a tela de bloqueio.
@@ -10314,21 +10332,6 @@ Se a política não tiver definição, <ph name="DEFAULT_WEB_PRINTING_SETTING_PO
 Os padrões de URL não podem entrar em conflito com <ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
 
 Para saber mais sobre padrões de URL válidos, consulte https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
-<translation id="7615612213075471065">Esta política controla os relatórios do <ph name="PRODUCT_NAME" /> sobre visitas a domínios SaaS e transferências de conteúdo para um navegador gerenciado.
-
-Quando a política for definida, os URLs correspondentes aos domínios SaaS serão usados para gerar relatórios e enviados por upload. Os URLs sem correspondência serão ignorados.
-
-Quando a política for configurada como uma lista vazia ou não for definida, nenhum relatório será gerado.
-
-Os padrões de correspondência usam um formato semelhante aos da política <ph name="URL_BLOCKLIST_POLICY_NAME" />, que estão documentados em https://support.google.com/chrome/a?p=url_blocklist_filter_format. Com algumas exceções abaixo:
-
- * O host do URL precisa corresponder ao nome do host ou ser um subdomínio do nome do host de um dos domínios da lista de sites SaaS.
-
- * O caminho do URL precisa começar com o caminho da entrada da lista de sites SaaS correspondente.
-
- O esquema de URL, a porta e a consulta são desconsiderados durante o processo de correspondência.
-
-Esse valor de política é preenchido pela infraestrutura de políticas de nuvem, e os admins não podem defini-lo diretamente.</translation>
 <translation id="7616631530432070402">Os pacotes de criptografia 3DES serão ativados em TLS</translation>
 <translation id="761788785484453836">Exigir o isolamento de todos os sites</translation>
 <translation id="7620869951155758729">Esta política especifica a configuração que é usada para gerar e verificar o código de acesso do familiar responsável.
@@ -11866,23 +11869,6 @@ Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
 <translation id="8631437968147930597">A lista de apps de anotação permitidos na tela de bloqueio do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8633550872001751090">Permitir que os dados do <ph name="PRODUCT_NAME" /> sejam incluídos em backups</translation>
 <translation id="8634062512783775032">Usar <ph name="AES_KL_NAME" /> como o algoritmo para a criptografia de armazenamento do usuário, se compatível</translation>
-<translation id="8635783478441936474">Esta política controla os relatórios do <ph name="PRODUCT_NAME" /> sobre visitas a domínios SaaS e transferências de conteúdo para um perfil gerenciado.
-
-Quando a política for definida, os URLs correspondentes aos domínios SaaS serão usados para gerar relatórios e enviados por upload. Os URLs sem correspondência serão ignorados.
-
-Quando a política for configurada como uma lista vazia ou não for definida, nenhum relatório será gerado.
-
-Os padrões de correspondência usam um formato semelhante aos da política <ph name="URL_BLOCKLIST_POLICY_NAME" />, que estão documentados em https://support.google.com/chrome/a?p=url_blocklist_filter_format. Com algumas exceções abaixo:
-
- * O host do URL precisa corresponder ao nome do host ou ser um subdomínio do nome do host de um dos domínios da lista de sites SaaS.
-
- * O caminho do URL precisa começar com o caminho da entrada da lista de sites SaaS correspondente.
-
- O esquema de URL, a porta e a consulta são desconsiderados durante o processo de correspondência.
-
-Ela só pode ser definida como uma política do usuário de nuvem.
-
-Esse valor de política é preenchido pela infraestrutura de políticas de nuvem, e os admins não podem defini-lo diretamente.</translation>
 <translation id="8637566476051166626">Portas de rede explicitamente permitidas</translation>
 <translation id="8643838501942693770">Permitir cookies de terceiros, mas deixar os usuários mudarem essa configuração</translation>
 <translation id="864611373241249369">Depois que o <ph name="LACROS_NAME" /> é desativado, tentamos migrar todos os dados.</translation>

@@ -1550,6 +1550,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="2024195579772565064">Delete search engine</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Precision click</translation>
+<translation id="2025130536872979378">view source</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> has crashed. Click this balloon to reload the extension.</translation>
 <translation id="2026367923222947564">Full page</translation>
 <translation id="2026377162111110983">Area voice</translation>
@@ -1888,7 +1889,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2257053455312861282">Adding a school account enables easy sign-in to websites, extensions and apps as a student while still operating under parental controls.</translation>
 <translation id="225716114209817872">Maximum</translation>
 <translation id="2259337945538989999">To get your tabs from your other devices, verify that it’s you. You can stop syncing at any time in settings. Google may personalise Search and other services based on your history.</translation>
-<translation id="2261323523305321874">Your administrator has made a system-wide change that disables some old profiles.</translation>
 <translation id="22614517036276112">This document or your device doesn’t meet some of your organisation’s security policies. Check with your admin on what needs to be fixed.</translation>
 <translation id="2262477216570151239">Delay before repeat</translation>
 <translation id="2263189956353037928">Sign out &amp; sign back in</translation>
@@ -2536,7 +2536,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2681124317993121768">Guest profiles are not supported</translation>
 <translation id="2682498795777673382">Update from a parent</translation>
 <translation id="2683638487103917598">Folder sorted</translation>
-<translation id="2684004000387153598">To continue, click OK, then click Add Person to create a new profile for your email address.</translation>
 <translation id="2685193395980129388">Allowed – <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687407218262674387">Google Terms of Service</translation>
 <translation id="2688196195245426394">Error when registering the device with the server: <ph name="CLIENT_ERROR" />.</translation>
@@ -2799,6 +2798,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2856776373509145513">Create a new container</translation>
 <translation id="2857047802954430547">Sign in to get your passwords, bookmarks and more on all your devices</translation>
 <translation id="2859741939921354763">Import passwords to <ph name="BRAND" /></translation>
+<translation id="2860284453253554297">Enterprise policies</translation>
 <translation id="2860710618359053450">Shift jaw right</translation>
 <translation id="2861301611394761800">System update complete. Please restart the system.</translation>
 <translation id="2861402191395139055">Passpoint subscriptions</translation>
@@ -2837,6 +2837,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2885129935310217435">There is a button with the same name. Please choose another one.</translation>
 <translation id="2885378588091291677">Task Manager</translation>
 <translation id="2885729872133513017">A problem occurred when decoding server response.</translation>
+<translation id="2886119409731773154">This may take up to 30 minutes</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> and <ph name="NUMBER_OF_DEVICES" /> others</translation>
 <translation id="2887344147309501015">Chat with Gemini in Chrome to get answers, key takeaways and more as you browse</translation>
@@ -9795,11 +9796,11 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7681757571815416227">To use your device with your <ph name="DOMAIN" /> profile, your organisation needs information about the device.
 
 This can include information about installed software, files, your browser, the device's operating system and IP addresses.</translation>
-<translation id="7683373461016844951">To continue, click OK, then click Add Person to create a new profile for your <ph name="DOMAIN" /> email address.</translation>
 <translation id="7683834360226457448">Low vision display tools</translation>
 <translation id="7684212569183643648">Installed by Your Administrator</translation>
 <translation id="7684559058815332124">Visit captive portal login page</translation>
 <translation id="7684718995427157417">To create and test your apps, enable the Android Debug Bridge (ADB). Note that this action allows installation of Android apps that haven't been verified by Google, and requires a factory reset to disable.</translation>
+<translation id="7684803937028953000">Your organisation blocked the local download of this file.</translation>
 <translation id="7684913007876670600">To show a simplified view of this page, open the side panel and select Reading mode</translation>
 <translation id="7685038817958445325">Unable to cast</translation>
 <translation id="7685049629764448582">JavaScript memory</translation>
@@ -11223,7 +11224,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> wants to: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> and more</translation>
 <translation id="8648889679430451455">Clear personalisation data</translation>
 <translation id="8649026945479135076">It's common for sites that you visit to remember things that you're interested in, to personalise your experience. Sites can also store information with Chrome about your interests.</translation>
-<translation id="8650543407998814195">Although you can no longer access your old profile, you can still remove it.</translation>
 <translation id="8651585100578802546">Force Reload This Page</translation>
 <translation id="8652400352452647993">Pack extension error</translation>
 <translation id="8654151524613148204">The file is too large for your computer to handle. Sorry.</translation>

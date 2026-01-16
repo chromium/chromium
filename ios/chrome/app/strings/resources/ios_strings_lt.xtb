@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Naujas langas</translation>
 <translation id="1558391695376153246">Uždaryti inkogn. skirtukus</translation>
 <translation id="1565371473877914088">Naujas inkognito skirtukas</translation>
+<translation id="1567960978791353852">Rodyti Teksto perskaitymo režimą</translation>
 <translation id="1571780780926010134">Inkognito skirtukai</translation>
 <translation id="1580715474678097352">Būkite apsaugoti nuo pavojingų svetainių</translation>
 <translation id="1580783302095112590">El. laiškas išsiųstas.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">Jei norite matyti slaptažodžius, pirmiausia turite nustatyti įrenginio slaptažodį.</translation>
 <translation id="201759455285471444">Išskleisti skirtukų grupę.</translation>
 <translation id="202070562065520783">Paaiškink tai man</translation>
+<translation id="2023713324775943812">Pasiekti Teksto perskaitymo režimą iš adreso juostos, kai pasiekiama</translation>
 <translation id="2044394949148788042">Atidarykite skirtuko tinklelį</translation>
 <translation id="2044681667265133332">Paskyrą <ph name="USER_EMAIL" /> tvarko svetainė <ph name="HOSTED_DOMAIN" />, kuri gali peržiūrėti tam tikrą informaciją. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">naujas elementas</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Čia išsaugomos skirtukų grupės</translation>
 <translation id="2273327106802955778">Daugiau meniu</translation>
 <translation id="2287614783861766820">{count,plural, =1{Šis adresas bus ištrintas iš šio įrenginio.}one{Šie adresai bus ištrinti iš šio įrenginio.}few{Šie adresai bus ištrinti iš šio įrenginio.}many{Šie adresai bus ištrinti iš šio įrenginio.}other{Šie adresai bus ištrinti iš šio įrenginio.}}</translation>
+<translation id="2295236662082735391">Ilgai paspauskite vaizdą žiniatinklyje, kad galėtumėte redaguoti naudodami „Gemini“</translation>
 <translation id="2297989278479054870">Kai atsijungsite, „Google“ paskyroje esantys slaptažodžiai, žymės ir kt. bus pašalinti iš šio įrenginio.</translation>
 <translation id="2299218006564889602">Jūsų slaptažodžiai šifruojami įrenginyje prieš išsaugant juos „Google“ slaptažodžių tvarkytuvėje</translation>
 <translation id="2306265833370324042">Rodyti „<ph name="SEARCH_ENGINE_NAME" />“ išsamią informaciją</translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Nufotografuokite paiešką</translation>
 <translation id="2761898608071930085">Naudoti kitą paskyrą</translation>
 <translation id="2762000892062317888">ką tik</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Pridėkite ne daugiau kaip vieną vaizdą}one{Pridėkite ne daugiau kaip {COUNT} vaizdą}few{Pridėkite ne daugiau kaip {COUNT} vaizdus}many{Pridėkite ne daugiau kaip {COUNT} vaizdo}other{Pridėkite ne daugiau kaip {COUNT} vaizdų}}</translation>
 <translation id="2772667768515195373">Išsaugotus adresus galite naudoti „Google“ produktuose. Šis adresas išsaugomas jūsų „Google“ paskyroje (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773344962924806829">El. pašto pranešimai</translation>
 <translation id="2781331604911854368">Įjungta</translation>
@@ -1353,6 +1357,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="605721222689873409">MM</translation>
 <translation id="6058415747854995776">Filmuoti</translation>
 <translation id="6059830886158432458">Čia galite valdyti savo pasakojimus ir veiklą</translation>
+<translation id="6063802271331271857">Perkurti vaizdą</translation>
 <translation id="6066301408025741299">Palieskite, jei norite atšaukti.</translation>
 <translation id="6074656473835429958">Gauti pranešimus</translation>
 <translation id="607620096698446287">Nepavyko įkelti „<ph name="FILENAME" />“ (<ph name="FILESIZE" />)</translation>
@@ -1871,6 +1876,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="7899199123054742721">Žymėti visus neskaitytus</translation>
 <translation id="7911190106180361398">Jūsų organizacija neleidžia jums visko sinchronizuoti.</translation>
 <translation id="7918999344502274923">Slėpti „<ph name="SEARCH_ENGINE_NAME" />“ išsamią informaciją</translation>
+<translation id="7921559948846049514">Pasirinkite foną, temą, spalvą ar kt.</translation>
 <translation id="792357691529995513">Problemų neaptikta</translation>
 <translation id="7925108652071887026">Automatinio pildymo duomenys</translation>
 <translation id="7926975587469166629">Kortelės slapyvardis</translation>

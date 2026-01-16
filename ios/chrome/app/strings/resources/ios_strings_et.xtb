@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Uus aken</translation>
 <translation id="1558391695376153246">Sule inkognito vahelehed</translation>
 <translation id="1565371473877914088">Uus inkognito vaheleht</translation>
+<translation id="1567960978791353852">Kuva lugemisrežiim</translation>
 <translation id="1571780780926010134">Inkognito vahelehed</translation>
 <translation id="1580715474678097352">Olge kaitstud ohtlike veebisaitide eest</translation>
 <translation id="1580783302095112590">Meil on saadetud.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">Paroolide nägemiseks peate oma seadmes esmalt pääsukoodi seadistama.</translation>
 <translation id="201759455285471444">Vahelehegrupi laiendamine.</translation>
 <translation id="202070562065520783">Selgita seda mulle</translation>
+<translation id="2023713324775943812">Juurdepääs lugemisrežiimile aadressiribalt, kui see on saadaval</translation>
 <translation id="2044394949148788042">Avage vahelehtede ruudustik</translation>
 <translation id="2044681667265133332">Kontot <ph name="USER_EMAIL" /> haldab <ph name="HOSTED_DOMAIN" />, millel võib olla võimalik teatud teavet vaadata. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">uus üksus</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Teie vahelehegrupid on salvestatud siia</translation>
 <translation id="2273327106802955778">Rohkem menüü-üksusi</translation>
 <translation id="2287614783861766820">{count,plural, =1{See aadress kustutatakse sellest seadmest.}other{Need aadressid kustutatakse sellest seadmest.}}</translation>
+<translation id="2295236662082735391">Vajutage pikalt veebis olevat pilti, et seda Gemini abil töödelda</translation>
 <translation id="2297989278479054870">Pärast väljalogimist eemaldatakse sellest seadmest järjehoidjad, paroolid ja muu Google’i kontol olev sisu.</translation>
 <translation id="2299218006564889602">Paroolid krüpteeritakse teie seadmes, enne kui need salvestatakse Google'i paroolihaldurisse.</translation>
 <translation id="2306265833370324042">Kuva üksuse <ph name="SEARCH_ENGINE_NAME" /> üksikasjad</translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Tehke oma otsingust pilt</translation>
 <translation id="2761898608071930085">Kasuta muud kontot</translation>
 <translation id="2762000892062317888">just praegu</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Lisage kuni 1 pilt.}other{Lisage kuni {COUNT} pilti.}}</translation>
 <translation id="2772667768515195373">Salvestatud aadresse saate kasutada kõigis Google'i teenustes. See aadress salvestatakse teie Google'i kontole <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">Meilimärguanded</translation>
 <translation id="2781331604911854368">Sees</translation>
@@ -601,6 +605,7 @@
 <translation id="3245744387817103524">Teie muudatust ei õnnestunud salvestada.</translation>
 <translation id="3254806613790954367">Viimane avatud vahekaart kõigis teie seadmetes</translation>
 <translation id="325717987950204592">Puudutage valikut „Privaatsus ja turvalisus”</translation>
+<translation id="3265736395246760288">Logige kiiremini sisse mis tahes sünkroonitud seadmest</translation>
 <translation id="3272527697863656322">Loobu</translation>
 <translation id="3273510436356991673">Avakuva kohandamine</translation>
 <translation id="3277021493514034324">Saidi aadress on kopeeritud</translation>
@@ -1353,6 +1358,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="605721222689873409">aa</translation>
 <translation id="6058415747854995776">Jäädvusta video</translation>
 <translation id="6059830886158432458">Hallake oma lugusid ja tegevusi siin</translation>
+<translation id="6063802271331271857">Remiksige pilti</translation>
 <translation id="6066301408025741299">Tühistamiseks puudutage.</translation>
 <translation id="6074656473835429958">Lubage märguanded</translation>
 <translation id="607620096698446287">Faili <ph name="FILENAME" /> (<ph name="FILESIZE" />) ei saanud üles laadida</translation>
@@ -1871,6 +1877,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="7899199123054742721">Märgi kõik mitteloetuks</translation>
 <translation id="7911190106180361398">Teie organisatsioon ei luba teil kõike sünkroonida.</translation>
 <translation id="7918999344502274923">Peida üksuse <ph name="SEARCH_ENGINE_NAME" /> üksikasjad</translation>
+<translation id="7921559948846049514">Valige oma taustale teema, värv või mõni muu kujunduselement.</translation>
 <translation id="792357691529995513">Ühtegi probleemi ei leitud</translation>
 <translation id="7925108652071887026">Andmete automaatne täitmine</translation>
 <translation id="7926975587469166629">Kaardi hüüdnimi</translation>

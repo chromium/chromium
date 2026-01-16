@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">ሁሉም ማንነት የማያሳውቁ ትሮች ይዘጉ?</translation>
 <translation id="1501480321619201731">ቡድን ሰርዝ</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> የቦዘነ ንጥል}one{<ph name="TABS_COUNT_MANY" /> የቦዘነ ንጥል}other{<ph name="TABS_COUNT_MANY" /> የቦዘኑ ንጥሎች}}</translation>
+<translation id="1568067597247500137">ጣቢያ ላይ ድምፀ-ከል አድርግ</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ትሮች ተሰብስበዋል</translation>
 <translation id="1657719826150349398">ትርን ወደ ታች ያንቀሳቅሱ</translation>
 <translation id="1670942869417022142">ድምፀ-ከል የተደረገ ኦዲዮ</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">የዚህ ንጥል ዋጋ በቅርቡ ከ<ph name="PREVIOUS_PRICE" /> ወደ <ph name="NEW_PRICE" /> ቀንሷል</translation>
 <translation id="606985262342505139">የትር የግርጌ ሉህ በሙሉ ቁመት</translation>
 <translation id="6109251075362363230">በጣም በቅርብ ጊዜ ጥቅም ላይ ከዋለው ቅጂ በስተቀር ሁሉም የተባዙ ትሮች አሁን በማህደር ይቀመጣሉ።</translation>
+<translation id="612596694132302162">ከጣቢያ ድምፀ-ከል አንሳ</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> የተመረጠ ንጥልን ዝጋ}one{<ph name="TABS_COUNT_MANY" /> የተመረጠ ንጥልን ዝጋ}other{<ph name="TABS_COUNT_MANY" /> የተመረጡ ንጥሎችን ዝጋ}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ስብስብን ወደ አዲስ መስኮት አንቀሳቅስ}one{ስብስብን ወደ ሌላ መስኮት አንቀሳቅስ}other{ስብስብን ወደ ሌላ መስኮት አንቀሳቅስ}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{ትርን ወደ ቀኝ አንቀሳቅስ}one{ትርን ወደ ቀኝ አንቀሳቅስ}other{ትሮችን ወደ ቀኝ አንቀሳቅስ}}</translation>

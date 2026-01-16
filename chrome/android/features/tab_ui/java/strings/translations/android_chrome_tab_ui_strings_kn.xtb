@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">ಎಲ್ಲಾ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಬೇಕೇ?</translation>
 <translation id="1501480321619201731">ಗುಂಪನ್ನು ಅಳಿಸಿ</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ನಿಷ್ಕ್ರಿಯ ಐಟಂ}one{<ph name="TABS_COUNT_MANY" /> ನಿಷ್ಕ್ರಿಯ ಐಟಂಗಳು}other{<ph name="TABS_COUNT_MANY" /> ನಿಷ್ಕ್ರಿಯ ಐಟಂಗಳು}}</translation>
+<translation id="1568067597247500137">ಸೈಟ್‌ ಅನ್ನು ಮ್ಯೂಟ್‌ ಮಾಡಿ</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಗುಂಪು ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1657719826150349398">ಟ್ಯಾಬ್ ಅನ್ನು ಕೆಳಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="1670942869417022142">ಮ್ಯೂಟ್ ಮಾಡಲಾದ ಆಡಿಯೋ</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">ಈ ಐಟಂನ ಬೆಲೆಯು ಇತ್ತೀಚೆಗೆ <ph name="PREVIOUS_PRICE" /> ದಿಂದ <ph name="NEW_PRICE" /> ಗೆ ಕುಸಿದಿದೆ</translation>
 <translation id="606985262342505139">ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ಟ್ಯಾಬ್ ಕೆಳಭಾಗದ ಶೀಟ್</translation>
 <translation id="6109251075362363230">ತೀರಾ ಇತ್ತೀಚೆಗೆ ಬಳಸಿದ ಕಾಪಿಯನ್ನು ಹೊರತುಪಡಿಸಿ, ಎಲ್ಲಾ ನಕಲಿ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಈಗ ಆರ್ಕೈವ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
+<translation id="612596694132302162">ಸೈಟ್‌ ಅನ್ನು ಅನ್‌ಮ್ಯೂಟ್‌ ಮಾಡಿ</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ಆಯ್ಕೆಮಾಡಿದ ಐಟಂ ಅನ್ನು ಮುಚ್ಚಿ}one{<ph name="TABS_COUNT_MANY" /> ಆಯ್ಕೆಮಾಡಿದ ಐಟಂಗಳನ್ನು ಮುಚ್ಚಿ}other{<ph name="TABS_COUNT_MANY" /> ಆಯ್ಕೆಮಾಡಿದ ಐಟಂಗಳನ್ನು ಮುಚ್ಚಿ}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ಹೊಸ ವಿಂಡೋಗೆ ಗುಂಪನ್ನು ಸರಿಸಿ}one{ಗುಂಪನ್ನು ಮತ್ತೊಂದು ವಿಂಡೋಗೆ ಸರಿಸಿ}other{ಗುಂಪನ್ನು ಮತ್ತೊಂದು ವಿಂಡೋಗೆ ಸರಿಸಿ}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{ಟ್ಯಾಬ್ ಅನ್ನು ಬಲಕ್ಕೆ ಸರಿಸಿ}one{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಬಲಕ್ಕೆ ಸರಿಸಿ}other{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಬಲಕ್ಕೆ ಸರಿಸಿ}}</translation>

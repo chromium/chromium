@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Vill du stänga alla inkognitoflikar?</translation>
 <translation id="1501480321619201731">Ta bort grupp</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> inaktivt objekt}other{<ph name="TABS_COUNT_MANY" /> inaktiva objekt}}</translation>
+<translation id="1568067597247500137">Stäng av webbplatsens ljud</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> flikar har grupperats</translation>
 <translation id="1657719826150349398">Flytta fliken nedåt</translation>
 <translation id="1670942869417022142">Ljudet är av</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">Priset på den här varan minskade nyligen från <ph name="PREVIOUS_PRICE" /> till <ph name="NEW_PRICE" /></translation>
 <translation id="606985262342505139">Arket för flikar på nedre delen av skärmen har öppnats över hela skärmen</translation>
 <translation id="6109251075362363230">Alla flikdubbletter arkiveras nu också, med undantag för den senast använda kopian.</translation>
+<translation id="612596694132302162">Sätt på webbplatsens ljud</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Stäng <ph name="TABS_COUNT_ONE" /> markerat objekt}other{Stäng <ph name="TABS_COUNT_MANY" /> markerade objekt}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Flytta gruppen till ett nytt fönster}other{Flytta gruppen till ett annat fönster}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Flytta flik åt höger}other{Flytta flikar åt höger}}</translation>

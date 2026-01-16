@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">დაიხუროს ყველა ინკოგნიტო ჩანართი?</translation>
 <translation id="1501480321619201731">ჯგუფის წაშლა</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არააქტიური ერთეული}other{<ph name="TABS_COUNT_MANY" /> არააქტიური ერთეული}}</translation>
+<translation id="1568067597247500137">საიტის დადუმება</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ჩანართი დაჯგუფდა</translation>
 <translation id="1657719826150349398">ჩანართის ქვემოთ გადატანა</translation>
 <translation id="1670942869417022142">აუდიო დადუმებულია</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">ამ ერთეულის ფასმა ახლახან დაიკლო <ph name="PREVIOUS_PRICE" />-დან <ph name="NEW_PRICE" />-მდე</translation>
 <translation id="606985262342505139">ჩანართის ქვედა ფურცელი სრულ სიმაღლეზე</translation>
 <translation id="6109251075362363230">ყველა დუბლირებული ჩანართი დაარქივდება, ყველაზე ხშირად გამოყენებული დუბლიკატის გარდა.</translation>
+<translation id="612596694132302162">საიტის დადუმების მოხსნა</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არჩეული ერთეულის დახურვა}other{<ph name="TABS_COUNT_MANY" /> არჩეული ერთეულის დახურვა}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ჯგუფის გადატანა ახალ ფანჯარაში}other{ჯგუფის გადატანა სხვა ფანჯარაში}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{ჩანართის მარჯვნივ გადატანა}other{ჩანართების მარჯვნივ გადატანა}}</translation>

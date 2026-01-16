@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Нов прозорец</translation>
 <translation id="1558391695376153246">Затвори картички „Инкогнито“</translation>
 <translation id="1565371473877914088">Нова инкогнито картичка</translation>
+<translation id="1567960978791353852">Прикажи Reading Mode</translation>
 <translation id="1571780780926010134">Картички „Инкогнито“</translation>
 <translation id="1580715474678097352">Заштитете се од опасни веб-сајтови</translation>
 <translation id="1580783302095112590">Поштата е испратена.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">За да ги видите лозинките, прво мора да поставите лозинка на вашиот уред.</translation>
 <translation id="201759455285471444">Прошири ја групата картички.</translation>
 <translation id="202070562065520783">Објасни ми го ова</translation>
+<translation id="2023713324775943812">Пристапувајте до Reading Mode од лентата за адреса кога е достапен</translation>
 <translation id="2044394949148788042">Отворете ја мрежата со картички</translation>
 <translation id="2044681667265133332">Со сметката <ph name="USER_EMAIL" /> управува <ph name="HOSTED_DOMAIN" />, што може да прегледува некои податоци. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">нова ставка</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Вашите групи картички се зачувани овде</translation>
 <translation id="2273327106802955778">Мени за повеќе опции</translation>
 <translation id="2287614783861766820">{count,plural, =1{Адресава ќе се избрише од уредов.}one{Адресиве ќе се избришат од уредов.}other{Адресиве ќе се избришат од уредов.}}</translation>
+<translation id="2295236662082735391">Долго притиснете некоја слика на веб за да ја измените со Gemini</translation>
 <translation id="2297989278479054870">Откако ќе се одјавите, вашите обележувачи, лозинки и друго во вашата сметка на Google ќе се отстранат од уредов.</translation>
 <translation id="2299218006564889602">Лозинките се шифрираат на уредот пред да се зачуваат во „Управникот со лозинки на Google“.</translation>
 <translation id="2306265833370324042">Прикажи ги деталите за <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Фотографирајте го вашето пребарување</translation>
 <translation id="2761898608071930085">Користете друга сметка</translation>
 <translation id="2762000892062317888">пред малку</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Додајте најмногу 1 слика}one{Додајте најмногу {COUNT} слика}other{Додајте најмногу {COUNT} слики}}</translation>
 <translation id="2772667768515195373">Може да ги користите зачуваните адреси на производите на Google. Адресава ќе се зачува во вашата сметка на Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">Известувања преку е-пошта</translation>
 <translation id="2781331604911854368">Вклучено</translation>
@@ -1353,6 +1357,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="605721222689873409">ГГ</translation>
 <translation id="6058415747854995776">Сними видео</translation>
 <translation id="6059830886158432458">Контролирајте ги сториите и активноста тука</translation>
+<translation id="6063802271331271857">Ремиксувајте слика</translation>
 <translation id="6066301408025741299">Допри за откажување.</translation>
 <translation id="6074656473835429958">Добивајте известувања</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) не можеше да се прикачи</translation>
@@ -1871,6 +1876,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7899199123054742721">Означи ги сите како непрочитани</translation>
 <translation id="7911190106180361398">Вашата организација не дозволува да синхронизирате сѐ.</translation>
 <translation id="7918999344502274923">Скриј ги деталите за <ph name="SEARCH_ENGINE_NAME" /></translation>
+<translation id="7921559948846049514">Изберете тема, боја или друго за заднината</translation>
 <translation id="792357691529995513">Не се најдени проблеми</translation>
 <translation id="7925108652071887026">Автоматски пополни податоци</translation>
 <translation id="7926975587469166629">Прекар на картичката</translation>

@@ -1871,7 +1871,6 @@
 <translation id="2257053455312861282">您只需添加一个学校账号，便能以学生身份轻松登录网站、扩展程序和应用，同时仍在家长控制下执行操作。</translation>
 <translation id="225716114209817872">最大限度</translation>
 <translation id="2259337945538989999">要访问您从其他设备打开的标签页，请验证身份。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
-<translation id="2261323523305321874">您的管理员做出了一项系统级更改，致使一些旧个人资料遭到停用。</translation>
 <translation id="22614517036276112">此文档或您的设备不符合贵组织的某些安全政策。请与您的管理员联系，了解需要修正哪些方面。</translation>
 <translation id="2262477216570151239">重复前的延迟时间</translation>
 <translation id="2263189956353037928">退出并重新登录</translation>
@@ -2515,7 +2514,6 @@
 <translation id="2681124317993121768">访客个人资料不受支持</translation>
 <translation id="2682498795777673382">您的家长已更新设置</translation>
 <translation id="2683638487103917598">文件夹内容已排序</translation>
-<translation id="2684004000387153598">要想继续，请点击“确定”，然后点击“添加用户”为您的电子邮件地址创建一份新个人资料。</translation>
 <translation id="2685193395980129388">已授权 - <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687407218262674387">Google 服务条款</translation>
 <translation id="2688196195245426394">向服务器注册设备时出错：<ph name="CLIENT_ERROR" />。</translation>
@@ -2816,6 +2814,7 @@
 <translation id="2885129935310217435">已存在具有相同名称的按钮。请选择其他名称。</translation>
 <translation id="2885378588091291677">任务管理器</translation>
 <translation id="2885729872133513017">对服务器响应进行解码时出问题了。</translation>
+<translation id="2886119409731773154">此过程最多可能需要 30 分钟</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692">设备“<ph name="DEVICE" />”以及另外 <ph name="NUMBER_OF_DEVICES" /> 部</translation>
 <translation id="2887344147309501015">与 Chrome 中的 Gemini 对话，边浏览边轻松获取答案、要点总结等</translation>
@@ -9766,7 +9765,6 @@
 <translation id="7681757571815416227">若要通过您的 <ph name="DOMAIN" /> 资料使用设备，需要向您的组织提供该设备的相关信息。
 
 这可能包括与已安装的软件、文件、浏览器、设备的操作系统和 IP 地址相关的信息。</translation>
-<translation id="7683373461016844951">要想继续，请点击“确定”，然后点击“添加用户”为您位于 <ph name="DOMAIN" /> 中的电子邮件地址创建一份新个人资料。</translation>
 <translation id="7683834360226457448">低视力显示工具</translation>
 <translation id="7684212569183643648">安装者：您的管理员</translation>
 <translation id="7684559058815332124">访问强制门户登录页面</translation>
@@ -11116,7 +11114,7 @@
 <translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{管理扩展程序}other{管理扩展程序}}</translation>
 <translation id="8599681327221583254">有一项或多项政策未正确配置。请与您的管理员联系</translation>
 <translation id="8599864823732014237">跳过企业注册？</translation>
-<translation id="8600362954032151088">在 <ph name="GOOGLE_PASSWORD_MANAGER" /> 中管理您的密码和通行密钥</translation>
+<translation id="8600362954032151088">在 <ph name="GOOGLE_PASSWORD_MANAGER" />中管理您的密码和通行密钥</translation>
 <translation id="8601206103050338563">TLS WWW 客户端身份验证</translation>
 <translation id="8602674530529411098">应用（Beta 版）</translation>
 <translation id="8602851771975208551">您计算机上的其他程序添加了一个应用，该应用可能会改变 Chrome 的工作方式。</translation>
@@ -11194,7 +11192,6 @@
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> 想获得以下权限：<ph name="FIRST_PERMISSION" />、<ph name="SECOND_PERMISSION" />，等等</translation>
 <translation id="8648889679430451455">清除个性化数据</translation>
 <translation id="8649026945479135076">您访问的网站经常会记住您感兴趣的内容，以便为您提供个性化体验。网站还可以将您的兴趣信息存储在 Chrome 中。</translation>
-<translation id="8650543407998814195">既然您已无法再访问自己的旧个人资料，不妨将其移除。</translation>
 <translation id="8651585100578802546">强制重新加载此页</translation>
 <translation id="8652400352452647993">打包扩展程序错误</translation>
 <translation id="8654151524613148204">很抱歉，文件过大，计算机无法处理。</translation>

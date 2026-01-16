@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Neues Fenster</translation>
 <translation id="1558391695376153246">Inkognitotabs schließen</translation>
 <translation id="1565371473877914088">Neuer Inkognitotab</translation>
+<translation id="1567960978791353852">Lesemodus anzeigen</translation>
 <translation id="1571780780926010134">Inkognitotabs</translation>
 <translation id="1580715474678097352">Schutz vor gefährlichen Websites</translation>
 <translation id="1580783302095112590">E-Mail gesendet</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">Um die Passwörter zu sehen, musst du zuerst einen Sicherheitscode auf deinem Gerät einrichten.</translation>
 <translation id="201759455285471444">Tabgruppe maximieren.</translation>
 <translation id="202070562065520783">Erkläre mir das</translation>
+<translation id="2023713324775943812">Über die Adressleiste auf den Lesemodus zugreifen, wenn verfügbar</translation>
 <translation id="2044394949148788042">Tabraster öffnen</translation>
 <translation id="2044681667265133332">Das Konto <ph name="USER_EMAIL" /> wird von <ph name="HOSTED_DOMAIN" /> verwaltet – bestimmte Informationen sind für diese Domain sichtbar. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">neues Element</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Hier werden deine Tabgruppen gespeichert</translation>
 <translation id="2273327106802955778">Menü "Mehr"</translation>
 <translation id="2287614783861766820">{count,plural, =1{Diese Adresse wird von diesem Gerät gelöscht.}other{Diese Adressen werden von diesem Gerät gelöscht.}}</translation>
+<translation id="2295236662082735391">Bild im Web lange gedrückt halten, um es mit Gemini zu bearbeiten</translation>
 <translation id="2297989278479054870">Nach der Abmeldung werden Lesezeichen, Passwörter und weitere Daten in deinem Google-Konto von diesem Gerät entfernt.</translation>
 <translation id="2299218006564889602">Deine Passwörter werden auf deinem Gerät verschlüsselt, bevor sie im Google Passwortmanager gespeichert werden.</translation>
 <translation id="2306265833370324042">Details für <ph name="SEARCH_ENGINE_NAME" /> anzeigen</translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Mach ein Foto von deiner Suche</translation>
 <translation id="2761898608071930085">Anderes Konto verwenden</translation>
 <translation id="2762000892062317888">gerade eben</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Du kannst maximal 1 Bild hinzufügen}other{Du kannst maximal {COUNT} Bilder hinzufügen}}</translation>
 <translation id="2772667768515195373">Du kannst gespeicherte Adressen in verschiedenen Google-Produkten verwenden. Diese Adresse ist in deinem Google-Konto (<ph name="USER_EMAIL" />) gespeichert.</translation>
 <translation id="2773344962924806829">E‑Mail-Benachrichtigungen</translation>
 <translation id="2781331604911854368">An</translation>
@@ -1353,6 +1357,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="605721222689873409">JJ</translation>
 <translation id="6058415747854995776">Video aufnehmen</translation>
 <translation id="6059830886158432458">Hier kannst du festlegen, welche Meldungen und Aktivitäten dir angezeigt werden</translation>
+<translation id="6063802271331271857">Bild neu gestalten</translation>
 <translation id="6066301408025741299">Zum Abbrechen tippen</translation>
 <translation id="6074656473835429958">Benachrichtigungen erhalten</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) konnte nicht hochgeladen werden</translation>
@@ -1871,6 +1876,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="7899199123054742721">Alle als ungelesen markieren</translation>
 <translation id="7911190106180361398">Deine Organisation lässt nicht zu, dass du alles synchronisierst.</translation>
 <translation id="7918999344502274923">Details für <ph name="SEARCH_ENGINE_NAME" /> ausblenden</translation>
+<translation id="7921559948846049514">Wähle ein Design, eine Farbe oder eine andere Option für deinen Hintergrund aus</translation>
 <translation id="792357691529995513">Keine Probleme gefunden</translation>
 <translation id="7925108652071887026">Autofill-Daten</translation>
 <translation id="7926975587469166629">Kartenalias</translation>

@@ -605,6 +605,7 @@
 <translation id="3245744387817103524">บันทึกการเปลี่ยนแปลงไม่ได้</translation>
 <translation id="3254806613790954367">แท็บที่เปิดล่าสุดในอุปกรณ์ทั้งหมดของคุณ</translation>
 <translation id="325717987950204592">แตะ "ความเป็นส่วนตัวและความปลอดภัย"</translation>
+<translation id="3265736395246760288">ลงชื่อเข้าใช้ได้เร็วขึ้นจากอุปกรณ์ที่ซิงค์ไว้</translation>
 <translation id="3272527697863656322">ยกเลิก</translation>
 <translation id="3273510436356991673">ปรับแต่งหน้าจอหลัก</translation>
 <translation id="3277021493514034324">คัดลอกที่อยู่เว็บไซต์แล้ว</translation>
@@ -871,6 +872,7 @@
 <translation id="4302061870579014542">กำหนดตำแหน่ง</translation>
 <translation id="4304713468139749426">เครื่องมือจัดการรหัสผ่าน</translation>
 <translation id="4309403553630140242">แตะสองครั้งเพื่อดูข้อมูลเพิ่มเติม</translation>
+<translation id="4310738531374808763">ปรับแต่งหน้าแรกของคุณ</translation>
 <translation id="4320848494125124980">ล่าสุด</translation>
 <translation id="4322394346347055525">ปิดแท็บอื่นๆ</translation>
 <translation id="4324735664183300693">เปิดการแจ้งเตือน</translation>
@@ -1709,6 +1711,7 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">ดาวน์โหลดแล้ว <ph name="PERCENT" /> เปอร์เซ็นต์</translation>
 <translation id="7345061034321640811">ไม่อนุญาตให้นำเข้า</translation>
+<translation id="7347998088283246662">นำเข้ารหัสผ่าน ประวัติการเข้าชม บุ๊กมาร์ก และอื่นๆ</translation>
 <translation id="7352651011704765696">มีข้อผิดพลาดเกิดขึ้น</translation>
 <translation id="7364796246159120393">เลือกไฟล์</translation>
 <translation id="736564850024123010">สลับตำแหน่งแถบที่อยู่เพื่อประสบการณ์ใช้งานที่เหมาะกับคุณ</translation>
@@ -2234,6 +2237,7 @@
 <translation id="914781932147356857">ทำเครื่องหมายทั้งหมด…</translation>
 <translation id="9148126808321036104">ลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="9149866541089851383">แก้ไข...</translation>
+<translation id="9152637745605628097">เลือกจากธีม สี หรืออัปโหลดรูปภาพ</translation>
 <translation id="9159628751968616911">ส่งหน้าเว็บ</translation>
 <translation id="9162432979321511934">เปิดการป้อนรหัสผ่านอัตโนมัติ</translation>
 <translation id="9165320910061267720">หากต้องการรับการแจ้งเตือนราคาลดลง คุณจะต้องเปิดการแจ้งเตือนในการตั้งค่า iOS</translation>

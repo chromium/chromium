@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Бардык жашыруун өтмөктөр жабылсынбы?</translation>
 <translation id="1501480321619201731">Топту жок кылуу</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> жигерсиз өтмөк}other{<ph name="TABS_COUNT_MANY" /> жигерсиз өтмөк}}</translation>
+<translation id="1568067597247500137">Сайттын үнүн өчүрүү</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> өтмөк топтолду</translation>
 <translation id="1657719826150349398">Өтмөктү төмөн жылдыруу</translation>
 <translation id="1670942869417022142">Аудионун үнү басылды</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303"><ph name="PREVIOUS_PRICE" /> турган бул нерсенин баасы <ph name="NEW_PRICE" /> болуп калды</translation>
 <translation id="606985262342505139">Өтмөктүн ылдыйкы экраны толук ачылды</translation>
 <translation id="6109251075362363230">Эми эң акыркы колдонулгандан башка бардык кайталанма өтмөктөр архивделет.</translation>
+<translation id="612596694132302162">Сайттын үнүн чыгаруу</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Тандалган <ph name="TABS_COUNT_ONE" /> өтмөктү жабуу}other{Тандалган <ph name="TABS_COUNT_MANY" /> өтмөктү жабуу}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Топту жаңы терезеге жылдыруу}other{Топту башка терезеге жылдыруу}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Өтмөктү оңго жылдыруу}other{Өтмөктөрдү оңго жылдыруу}}</translation>

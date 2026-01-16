@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">시크릿 탭을 모두 닫으시겠습니까?</translation>
 <translation id="1501480321619201731">그룹 삭제</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{비활성 항목 <ph name="TABS_COUNT_ONE" />개}other{비활성 항목 <ph name="TABS_COUNT_MANY" />개}}</translation>
+<translation id="1568067597247500137">사이트 음소거</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" />개의 탭 그룹화됨</translation>
 <translation id="1657719826150349398">탭을 아래로 이동</translation>
 <translation id="1670942869417022142">오디오 음소거됨</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">상품 가격이 최근 인하됨, 기존 가격: <ph name="PREVIOUS_PRICE" />, 인하된 가격: <ph name="NEW_PRICE" /></translation>
 <translation id="606985262342505139">탭 하단 시트가 전체 높이로 열렸습니다.</translation>
 <translation id="6109251075362363230">이제 가장 최근에 사용한 사본을 제외한 모든 중복 탭도 보관처리됩니다.</translation>
+<translation id="612596694132302162">사이트 음소거 해제</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{선택한 항목 <ph name="TABS_COUNT_ONE" />개 닫기}other{선택한 항목 <ph name="TABS_COUNT_MANY" />개 닫기}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{그룹을 새 창으로 이동}other{그룹을 다른 창으로 이동}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{탭을 오른쪽으로 이동}other{탭을 오른쪽으로 이동}}</translation>

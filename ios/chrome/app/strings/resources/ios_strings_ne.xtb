@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">नयाँ विन्डो</translation>
 <translation id="1558391695376153246">इन्कोग्निटो ट्याबहरू बन्द गर्नुहोस्</translation>
 <translation id="1565371473877914088">नयाँ इन्कोग्निटो ट्याब</translation>
+<translation id="1567960978791353852">रिडिङ मोड देखाउनुहोस्</translation>
 <translation id="1571780780926010134">इनकग्निटो ट्याबहरू</translation>
 <translation id="1580715474678097352">हानिकारक वेबसाइटहरूबाट सुरक्षित रहनुहोस्</translation>
 <translation id="1580783302095112590">पत्र पठाइयो।</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">पासवर्डहरू हेर्नका लागि सर्वप्रथम तपाईंले अनिवार्य रूपमा आफ्नो यन्त्रमा कुनै पासकोड सेट गर्नुपर्छ।</translation>
 <translation id="201759455285471444">ट्याब समूह एक्स्पान्ड गर्नुहोस्।</translation>
 <translation id="202070562065520783">यसका बारेमा वर्णन गर</translation>
+<translation id="2023713324775943812">रिडिङ मोड उपलब्ध हुँदा यो मोड एड्रेस बारबाटै एक्सेस गर्नुहोस्</translation>
 <translation id="2044394949148788042">ट्याब ग्रिड खोल्नुहोस्</translation>
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> ले <ph name="USER_EMAIL" /> खाता व्यवस्थापन गर्छ र यसले केही जानकारी हेर्न सक्ने सम्भावना हुन्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">नयाँ सामग्री</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">तपाईंका ट्याब समूहहरू यहाँ सेभ गरिएका छन्</translation>
 <translation id="2273327106802955778">थप मेनु</translation>
 <translation id="2287614783861766820">{count,plural, =1{यो डिभाइसबाट यो ठेगाना मेटाइने छ।}other{यो डिभाइसबाट यी ठेगानाहरू मेटाइने छन्।}}</translation>
+<translation id="2295236662082735391">Gemini प्रयोग गरी फोटो सम्पादन गर्न वेबमा भएको फोटो केही बेरसम्म थिच्नुहोस्</translation>
 <translation id="2297989278479054870">तपाईंले साइन आउट गरेपछि तपाईंको Google खातामा सेभ गरिएका बुकमार्क, पासवर्ड र अन्य कुराहरू यो डिभाइसबाट हटाइने छन्।</translation>
 <translation id="2299218006564889602">तपाईंका पासवर्डहरू तपाईंको डिभाइसमा इन्क्रिप्ट गरेपछि मात्र Google पासवर्ड म्यानेजरमा सेभ गरिन्छ।</translation>
 <translation id="2306265833370324042"><ph name="SEARCH_ENGINE_NAME" /> का विवरणहरू देखाउनुहोस्</translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">आफ्नो खोजको फोटो खिच्नुहोस्</translation>
 <translation id="2761898608071930085">अर्को खाता प्रयोग गर्नुहोस्</translation>
 <translation id="2762000892062317888">भर्खरै</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{बढीमा एउटा फोटो हाल्नुहोस्}other{बढीमा {COUNT} वटा फोटो हाल्नुहोस्}}</translation>
 <translation id="2772667768515195373">तपाईं सेभ गरिएका ठेगानाहरू Google का विभिन्न उत्पादनमा प्रयोग गर्न सक्नुहुन्छ। यो ठेगाना तपाईंको Google खाता (<ph name="USER_EMAIL" />) मा सेभ गरिन्छ।</translation>
 <translation id="2773344962924806829">इमेल नोटिफिकेसनहरू</translation>
 <translation id="2781331604911854368">अन छ</translation>
@@ -601,6 +605,7 @@
 <translation id="3245744387817103524">तपाईंले गरेको परिवर्तन सेभ गर्न सकिएन।</translation>
 <translation id="3254806613790954367">तपाईंका सबै डिभाइसमा खोलिएका ट्याबहरूमध्ये पछिल्लो पटक खोलिएको ट्याब</translation>
 <translation id="325717987950204592">"गोपनीयता तथा सुरक्षा" मा ट्याप गर्नुहोस्</translation>
+<translation id="3265736395246760288">सिंक गरिएका आफ्ना जुनसुकै डिभाइसबाट अझ छिटो साइन इन गर्नुहोस्।</translation>
 <translation id="3272527697863656322">रद्द गर्नुहोस्</translation>
 <translation id="3273510436356991673">आफ्नो होम स्क्रिन कस्टमाइज गर्नुहोस्</translation>
 <translation id="3277021493514034324">साइटको ठेगाना कपी गरियो</translation>
@@ -1353,6 +1358,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6058415747854995776">भिडियो खिच्नुहोस्</translation>
 <translation id="6059830886158432458">यहाँ आफ्नो समाचार फिडमा देखिने सामग्री तथा क्रियाकलाप नियन्त्रण गर्नुहोस्</translation>
+<translation id="6063802271331271857">फोटो रिमिक्स गर्नुहोस्</translation>
 <translation id="6066301408025741299">रद्द गर्न ट्याप गर्नुहोस्।</translation>
 <translation id="6074656473835429958">नोटिफिकेसनहरू प्राप्त गर्नुहोस्</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) अपलोड गर्न सकिएन</translation>
@@ -1871,6 +1877,7 @@
 <translation id="7899199123054742721">सबै सामग्नीलाई नपढिएका सामग्रीका रूपमा चिन्ह लगाउनुहोस्</translation>
 <translation id="7911190106180361398">तपाईंको सङ्गठनले तपाईंलाई सबै सामग्री सिंक गर्ने अनुमति दिएको छैन।</translation>
 <translation id="7918999344502274923"><ph name="SEARCH_ENGINE_NAME" /> का विवरणहरू लुकाउनुहोस्</translation>
+<translation id="7921559948846049514">आफ्नो ब्याकग्राउन्डका लागि कुनै थिम, रङ वा अन्य कुरा छनौट गर्नुहोस्</translation>
 <translation id="792357691529995513">कुनै पनि समस्या भेटिएन</translation>
 <translation id="7925108652071887026">अटोफिल डेटा</translation>
 <translation id="7926975587469166629">कार्डको उपनाम</translation>

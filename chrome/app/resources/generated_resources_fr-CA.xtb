@@ -1879,7 +1879,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2257053455312861282">L'ajout d'un compte scolaire permet aux élèves de se connecter aisément aux sites Web et d'utiliser les extensions et les applications, tout en étant régis par les contrôles parentaux.</translation>
 <translation id="225716114209817872">Maximum</translation>
 <translation id="2259337945538989999">Pour obtenir vos onglets à partir de vos autres appareils, confirmez qu'il s'agit bien de vous. Vous pouvez arrêter la synchronisation en tout temps dans les paramètres. Google peut personnaliser Recherche et d'autres services en fonction de votre historique.</translation>
-<translation id="2261323523305321874">Votre administrateur a apporté une modification à l'échelle du système qui désactive certains anciens profils.</translation>
 <translation id="22614517036276112">Ce document ou votre appareil ne respecte pas certaines des politiques de sécurité de votre organisation. Vérifiez auprès de votre administrateur ce qui doit être corrigé.</translation>
 <translation id="2262477216570151239">Délai avant répétition</translation>
 <translation id="2263189956353037928">Se déconnecter et se reconnecter</translation>
@@ -2525,7 +2524,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2681124317993121768">Les profils d'invités ne sont pas pris en charge</translation>
 <translation id="2682498795777673382">Demande à un parent d'effectuer la mise à jour</translation>
 <translation id="2683638487103917598">Dossier trié</translation>
-<translation id="2684004000387153598">Pour continuer, cliquez sur OK, puis sur Ajouter une personne pour créer un nouveau profil pour votre adresse de courriel.</translation>
 <translation id="2685193395980129388">Autorisée – <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687407218262674387">Conditions d'utilisation de Google</translation>
 <translation id="2688196195245426394">Erreur lors de l'enregistrement de l'appareil avec le serveur : <ph name="CLIENT_ERROR" />.</translation>
@@ -2827,6 +2825,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2885129935310217435">Il existe un bouton portant le même nom. Veuillez choisir un autre nom.</translation>
 <translation id="2885378588091291677">Moniteur d'activité</translation>
 <translation id="2885729872133513017">Un problème est survenu lors du décodage de la réponse du serveur.</translation>
+<translation id="2886119409731773154">Cela peut prendre jusqu'à 30 minutes.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> et <ph name="NUMBER_OF_DEVICES" /> autres</translation>
 <translation id="2887344147309501015">Clavardez avec Gemini dans Chrome pour obtenir des réponses, des éléments à retenir et plus encore pendant que vous naviguez</translation>
@@ -9784,7 +9783,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7681757571815416227">Pour utiliser votre appareil avec votre profil <ph name="DOMAIN" />, votre organisation doit obtenir des renseignements sur l'appareil.
 
 Cela peut inclure des renseignements sur les fichiers, les logiciels installés, votre navigateur, le système d'exploitation de l'appareil et les adresses IP.</translation>
-<translation id="7683373461016844951">Pour continuer, cliquez sur OK, puis sur Ajouter une personne pour créer un nouveau profil pour votre adresse de courriel <ph name="DOMAIN" />.</translation>
 <translation id="7683834360226457448">Outils d'affichage pour basse vision</translation>
 <translation id="7684212569183643648">Élément installé par votre administrateur</translation>
 <translation id="7684559058815332124">Consulter la page de connexion au portail captif</translation>
@@ -11211,7 +11209,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> veut : <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> et effectuer d'autres actions</translation>
 <translation id="8648889679430451455">Effacer les données de personnalisation</translation>
 <translation id="8649026945479135076">Les sites que vous visitez mémorisent couramment les sujets qui vous intéressent afin de personnaliser votre expérience. Les sites peuvent également stocker des renseignements sur vos centres d'intérêt dans Chrome.</translation>
-<translation id="8650543407998814195">Bien que vous ne puissiez plus accéder à votre ancien profil, vous pouvez toujours le supprimer.</translation>
 <translation id="8651585100578802546">Forcer l'actualisation de la page</translation>
 <translation id="8652400352452647993">Erreur concernant l'empaquetage d'extensions</translation>
 <translation id="8654151524613148204">Ce fichier est trop volumineux pour votre ordinateur.</translation>

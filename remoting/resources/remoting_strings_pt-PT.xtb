@@ -46,6 +46,7 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="3150823315463303127">O anfitrião não conseguiu ler a política.</translation>
 <translation id="3171922709365450819">Este dispositivo não é compatível com este cliente, uma vez que requer autenticação de terceiros.</translation>
 <translation id="3197730452537982411">Ambiente de Trabalho Remoto</translation>
+<translation id="3236334139428307578">Copyright 2026 The Chromium Authors. Todos os direitos reservados.</translation>
 <translation id="324272851072175193">Enviar estas instruções por email</translation>
 <translation id="3305934114213025800">O <ph name="PRODUCT_NAME" /> quer efetuar alterações.</translation>
 <translation id="3339299787263251426">Aceder ao seu computador de forma segura através da Internet</translation>
@@ -110,6 +111,7 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> pediu acesso para ver o seu ecrã e controlar o teclado e o rato. Prima "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />" se não estiver a contar com este pedido. Caso contrário, selecione ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' para permitir a ligação quando tiver tudo pronto.</translation>
 <translation id="5823658491130719298">No computador ao qual quer aceder remotamente, abra o Chrome e aceda a <ph name="INSTALLATION_LINK" />.</translation>
 <translation id="5841343754884244200">Opções de visualização</translation>
+<translation id="5965133372831030509">Copyright 2026 Google LLC. Todos os direitos reservados.</translation>
 <translation id="6033507038939587647">Opções do teclado</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6062854958530969723">Falha ao inicializar o anfitrião.</translation>

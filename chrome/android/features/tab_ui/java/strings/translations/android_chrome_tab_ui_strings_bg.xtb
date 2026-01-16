@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Да се затворят ли всички раздели в режим „инкогнито“?</translation>
 <translation id="1501480321619201731">Изтриване на групата</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> неактивен елемент}other{<ph name="TABS_COUNT_MANY" /> неактивни елемента}}</translation>
+<translation id="1568067597247500137">Заглушаване на сайта</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> раздела са групирани</translation>
 <translation id="1657719826150349398">Преместване на раздела надолу</translation>
 <translation id="1670942869417022142">Спрян звук</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">Цената на този артикул наскоро бе намалена от <ph name="PREVIOUS_PRICE" /> на <ph name="NEW_PRICE" /></translation>
 <translation id="606985262342505139">Долният лист за раздела е отворен на пълната височина</translation>
 <translation id="6109251075362363230">Всички дублиращи се раздели вече ще бъдат архивирани с изключение на най-скоро използваното копие.</translation>
+<translation id="612596694132302162">Включване на звука за сайта</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Затваряне на <ph name="TABS_COUNT_ONE" /> избран елемент}other{Затваряне на <ph name="TABS_COUNT_MANY" /> избрани елемента}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Преместване на групата в нов прозорец}other{Преместване на групата в друг прозорец}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Преместване на раздела надясно}other{Преместване на разделите надясно}}</translation>

@@ -605,6 +605,7 @@
 <translation id="3245744387817103524">Nie udało się zapisać zmiany.</translation>
 <translation id="3254806613790954367">Ostatnia otwarta karta na wszystkich Twoich urządzeniach</translation>
 <translation id="325717987950204592">Kliknij „Prywatność i bezpieczeństwo”</translation>
+<translation id="3265736395246760288">Loguj się szybciej na dowolnym z synchronizowanych urządzeń.</translation>
 <translation id="3272527697863656322">Anuluj</translation>
 <translation id="3273510436356991673">Dostosuj ekran główny</translation>
 <translation id="3277021493514034324">Skopiowano adres strony</translation>
@@ -871,6 +872,7 @@
 <translation id="4302061870579014542">Ustaw pozycję</translation>
 <translation id="4304713468139749426">Menedżer haseł</translation>
 <translation id="4309403553630140242">Kliknij dwukrotnie, by dowiedzieć się więcej</translation>
+<translation id="4310738531374808763">Dostosowywanie strony głównej</translation>
 <translation id="4320848494125124980">Ostatnie</translation>
 <translation id="4322394346347055525">Zamknij inne karty</translation>
 <translation id="4324735664183300693">Włącz powiadomienia</translation>
@@ -1709,6 +1711,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">Pobrano <ph name="PERCENT" /> procent</translation>
 <translation id="7345061034321640811">Import niedozwolony</translation>
+<translation id="7347998088283246662">Importuj hasła, historię, zakładki i inne dane</translation>
 <translation id="7352651011704765696">Coś poszło nie tak</translation>
 <translation id="7364796246159120393">Wybierz plik</translation>
 <translation id="736564850024123010">Zmień położenie paska adresu, aby dostosować przeglądanie do swoich potrzeb.</translation>
@@ -2234,6 +2237,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="914781932147356857">Oznacz wszystko…</translation>
 <translation id="9148126808321036104">Zaloguj się ponownie</translation>
 <translation id="9149866541089851383">Edytuj...</translation>
+<translation id="9152637745605628097">Wybierz motyw lub kolor albo prześlij obraz</translation>
 <translation id="9159628751968616911">Wyślij stronę internetową</translation>
 <translation id="9162432979321511934">Włącz autouzupełnianie haseł</translation>
 <translation id="9165320910061267720">Aby otrzymywać alerty o obniżkach cen, musisz włączyć powiadomienia w ustawieniach iOS.</translation>

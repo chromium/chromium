@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Vols tancar totes les pestanyes d'incògnit?</translation>
 <translation id="1501480321619201731">Suprimeix el grup</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> element inactiu}other{<ph name="TABS_COUNT_MANY" /> elements inactius}}</translation>
+<translation id="1568067597247500137">Silencia el lloc web</translation>
 <translation id="1645759014353344461">S'han agrupat <ph name="TABS_COUNT_MANY" /> pestanyes</translation>
 <translation id="1657719826150349398">Mou la pestanya cap avall</translation>
 <translation id="1670942869417022142">L'àudio està silenciat</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">El preu d'aquest article fa poc ha baixat de <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
 <translation id="606985262342505139">Full inferior de la pestanya a alçada completa</translation>
 <translation id="6109251075362363230">Ara també s'arxivaran totes les pestanyes duplicades, a excepció de la còpia que s'hagi utilitzat més recentment.</translation>
+<translation id="612596694132302162">Deixa de silenciar el lloc web</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Tanca <ph name="TABS_COUNT_ONE" /> element seleccionat}other{Tanca els <ph name="TABS_COUNT_MANY" /> elements seleccionats}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Mou el grup a una finestra nova}other{Mou el grup a una altra finestra}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Mou la pestanya cap a la dreta}other{Mou les pestanyes cap a la dreta}}</translation>

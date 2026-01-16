@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">አዲስ መስኮት</translation>
 <translation id="1558391695376153246">ማንነት የማያሳውቁ ትሮችን ዝጋ</translation>
 <translation id="1565371473877914088">አዲስ ማንነት የማያሳውቅ ትር</translation>
+<translation id="1567960978791353852">የንባብ ሁነታ አሳይ</translation>
 <translation id="1571780780926010134">ማንነት የማያሳውቁ ትሮች</translation>
 <translation id="1580715474678097352">ከአደገኛ ድር ጣቢያዎች ይጠበቁ</translation>
 <translation id="1580783302095112590">መልዕክት ተልኳል።</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">የይለፍ ቃላትን ለመመልከት በመጀመሪያ በመሣሪያዎ ላይ የይለፍ ኮድ ማዘጋጀት አለብዎት።</translation>
 <translation id="201759455285471444">የትር ቡድኑን ዘርጋ</translation>
 <translation id="202070562065520783">ይህን አብራራልኝ</translation>
+<translation id="2023713324775943812">የንባብ ሁነታ ሲገኝ ከአድራሻ አሞሌው ይድረሱ</translation>
 <translation id="2044394949148788042">የትር ፍርግርግን ይክፈቱ</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> የሚለው መለያ በ<ph name="HOSTED_DOMAIN" /> የሚተዳደር ነው፣ ይህም የተወሰነ መረጃን ሊመለከት ይችላል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">አዲስ ንጥል</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">የእርስዎ የትር ቡድኖች እዚህ ተቀምጠዋል</translation>
 <translation id="2273327106802955778">ተጨማሪ ምናሌ</translation>
 <translation id="2287614783861766820">{count,plural, =1{ይህ አድራሻ ከዚህ መሣሪያ ይሰረዛል።}one{ይህ አድራሻ ከዚህ መሣሪያ ይሰረዛል።}other{እነዚህ አድራሻዎች ከዚህ መሣሪያ ይሰረዛሉ።}}</translation>
+<translation id="2295236662082735391">በGemini ለማርትዕ በድር ላይ ያለ ምስልን በረጅሙ ይጫኑ</translation>
 <translation id="2297989278479054870">ዘግተው ከወጡ በኋላ በGoogle መለያዎ ውስጥ ዕልባቶች፣ የይለፍ ቃላት እና ሌሎች ከዚህ መሣሪያ ላይ ይወገዳል።</translation>
 <translation id="2299218006564889602">የይለፍ ቃላትዎ ወደ Google የይለፍ ቃል አስተዳዳሪ ከመቀመጣቸው በፊት በመሳሪያዎ ላይ ይመሣጠራል።</translation>
 <translation id="2306265833370324042">የ<ph name="SEARCH_ENGINE_NAME" /> ዝርዝሮችን አሳይ</translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">ፍለጋዎን ፎቶ ያንሱ</translation>
 <translation id="2761898608071930085">ሌላ መለያ ተጠቀም</translation>
 <translation id="2762000892062317888">አሁን</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{እስከ 1 ምስል ድረስ ያክሉ}one{እስከ {COUNT} ምስል ያክሉ}other{እስከ {COUNT} ምስሎች ያክሉ}}</translation>
 <translation id="2772667768515195373">በመላው Google ምርቶች ላይ የተቀመጡ አድራሻዎችን መጠቀም ይችላሉ። ይህ አድራሻ በእርስዎ Google መለያ፣ <ph name="USER_EMAIL" /> ውስጥ ተቀምጧል።</translation>
 <translation id="2773344962924806829">የኢሜይል ማሳወቂያዎች</translation>
 <translation id="2781331604911854368">አብራ</translation>
@@ -1353,6 +1357,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="605721222689873409">ዓዓ</translation>
 <translation id="6058415747854995776">ቪድዮ ቅረጽ</translation>
 <translation id="6059830886158432458">የእርስዎን ታሪክ እና እንቅስቃሴ እዚህ ይቆጣጠሩ</translation>
+<translation id="6063802271331271857">ምስልን እንደገና ይቀላቅሉ</translation>
 <translation id="6066301408025741299">ይቅር ለማለት መታ ያድርጉ።</translation>
 <translation id="6074656473835429958">ማሳወቂያዎችን ያግኙ</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) መስቀል አልተቻለም</translation>
@@ -1871,6 +1876,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7899199123054742721">ሁሉም እንዳልተነበቡ ምልክት አድርግ</translation>
 <translation id="7911190106180361398">የእርስዎ ድርጅት ሁሉንም ነገር እንዲያሰምሩ አይፈቅድልዎትም።</translation>
 <translation id="7918999344502274923"><ph name="SEARCH_ENGINE_NAME" /> ዝርዝሮችን ደብቅ</translation>
+<translation id="7921559948846049514">ለዳራዎ ገጽታ፣ ቀለም ወይም ሌላ ይምረጡ</translation>
 <translation id="792357691529995513">ምንም ችግሮች አልተገኙም</translation>
 <translation id="7925108652071887026">የራስ-ሙላ ውሂብ</translation>
 <translation id="7926975587469166629">የካርድ ቅጽል ስም</translation>

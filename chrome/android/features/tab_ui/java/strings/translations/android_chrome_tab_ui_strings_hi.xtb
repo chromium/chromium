@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">क्या सभी गुप्त टैब बंद करने हैं?</translation>
 <translation id="1501480321619201731">ग्रुप मिटाएं</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> इनऐक्टिव आइटम}one{<ph name="TABS_COUNT_MANY" /> इनऐक्टिव आइटम}other{<ph name="TABS_COUNT_MANY" /> इनऐक्टिव आइटम}}</translation>
+<translation id="1568067597247500137">साइट म्यूट करें</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> टैब ग्रुप में शामिल किए गए</translation>
 <translation id="1657719826150349398">टैब को नीचे ले जाएं</translation>
 <translation id="1670942869417022142">ऑडियो म्यूट किया गया है</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">इस आइटम की कीमत <ph name="PREVIOUS_PRICE" /> से कम होकर <ph name="NEW_PRICE" /> हो गई है</translation>
 <translation id="606985262342505139">टैब बॉटम शीट पूरी स्क्रीन पर खुली है</translation>
 <translation id="6109251075362363230">अब सभी डुप्लीकेट टैब भी संग्रहित किए जाएंगे. हालांकि, सबसे हाल ही में इस्तेमाल किए गए डुप्लीकेट टैब को संग्रहित नहीं किया जाएगा.</translation>
+<translation id="612596694132302162">साइट अनम्यूट करें</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{चुना गया <ph name="TABS_COUNT_ONE" /> आइटम बंद करें}one{चुना गया <ph name="TABS_COUNT_MANY" /> आइटम बंद करें}other{चुने गए <ph name="TABS_COUNT_MANY" /> आइटम बंद करें}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ग्रुप को दूसरी विंडो पर ले जाएं}one{ग्रुप को दूसरी विंडो पर ले जाएं}other{ग्रुप को दूसरी विंडो पर ले जाएं}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{टैब को दाईं ओर ले जाएं}one{टैब को दाईं ओर ले जाएं}other{टैब दाईं ओर ले जाएं}}</translation>

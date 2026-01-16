@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">ସମସ୍ତ ଇନକଗ୍ନିଟୋ ଟାବକୁ ବନ୍ଦ କରିବେ?</translation>
 <translation id="1501480321619201731">ଗୋଷ୍ଠୀ ଡିଲିଟ୍ କରନ୍ତୁ</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ନିଷ୍କ୍ରିୟ ଆଇଟମ}other{<ph name="TABS_COUNT_MANY" /> ନିଷ୍କ୍ରିୟ ଆଇଟମ}}</translation>
+<translation id="1568067597247500137">ସାଇଟ୍‌ ମ୍ୟୁଟ୍ କରନ୍ତୁ</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" />ଟି ଟାବ୍ ଏକତ୍ର କରାଯାଇଛି</translation>
 <translation id="1657719826150349398">ଟାବ୍‍କୁ ତଳକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
 <translation id="1670942869417022142">ମ୍ୟୁଟ କରାଯାଇଥିବା ଅଡିଓ</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">ଏହି ଆଇଟମର ମୂଲ୍ୟ ବର୍ତ୍ତମାନ <ph name="PREVIOUS_PRICE" />ରୁ <ph name="NEW_PRICE" />କୁ ହ୍ରାସ ପାଇଛି</translation>
 <translation id="606985262342505139">ଟାବ ବଟମ ସିଟ ସମ୍ପୂର୍ଣ୍ଣ ଭାବେ ଖୋଲାଯାଇଛି</translation>
 <translation id="6109251075362363230">ନିକଟରେ ବ୍ୟବହାର କରାଯାଇଥିବା କପି ବ୍ୟତୀତ ସମସ୍ତ ନକଲି ଟାବ ମଧ୍ୟ ବର୍ତ୍ତମାନ ଆର୍କାଇଭ ହେବ।</translation>
+<translation id="612596694132302162">ସାଇଟ୍ ଅନ୍‌ମ୍ୟୁଟ୍ କରନ୍ତୁ</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ଚୟନିତ ଆଇଟମକୁ ବନ୍ଦ କରନ୍ତୁ}other{<ph name="TABS_COUNT_MANY" /> ଚୟନିତ ଆଇଟମକୁ ବନ୍ଦ କରନ୍ତୁ}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ଗ୍ରୁପକୁ ନୂଆ ୱିଣ୍ଡୋକୁ ମୁଭ କରନ୍ତୁ}other{ଗ୍ରୁପକୁ ଅନ୍ୟ ଏକ ୱିଣ୍ଡୋକୁ ମୁଭ କରନ୍ତୁ}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{ଟାବକୁ ଡାହାଣକୁ ମୁଭ କରନ୍ତୁ}other{ଟାବଗୁଡ଼ିକୁ ଡାହାଣକୁ ମୁଭ କରନ୍ତୁ}}</translation>

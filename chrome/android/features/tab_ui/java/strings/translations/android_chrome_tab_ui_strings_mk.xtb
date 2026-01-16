@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Да се затворат сите картички „Инкогнито“?</translation>
 <translation id="1501480321619201731">Избриши ја групата</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> неактивна ставка}one{<ph name="TABS_COUNT_MANY" /> неактивна ставка}other{<ph name="TABS_COUNT_MANY" /> неактивни ставки}}</translation>
+<translation id="1568067597247500137">Исклучи звук за сајт</translation>
 <translation id="1645759014353344461">Создадена е група со картички (<ph name="TABS_COUNT_MANY" />)</translation>
 <translation id="1657719826150349398">Премести ја картичката надолу</translation>
 <translation id="1670942869417022142">Звукот на аудиото е исклучен</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">Цената за производов е спуштена од <ph name="PREVIOUS_PRICE" /> на <ph name="NEW_PRICE" /></translation>
 <translation id="606985262342505139">Долниот лист со картичка е отворен на целосна висина</translation>
 <translation id="6109251075362363230">Отсега ќе се архивираат сите дупликат картички, со исклучок на последната копија што се користела.</translation>
+<translation id="612596694132302162">Вклучи звук за сајт</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Затвори <ph name="TABS_COUNT_ONE" /> избрана ставка}one{Затвори <ph name="TABS_COUNT_MANY" /> избрана ставка}other{Затвори <ph name="TABS_COUNT_MANY" /> избрани ставки}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Преместете ја групата во нов прозорец}one{Преместете ја групата во друг прозорец}other{Преместете ја групата во друг прозорец}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Премести ја картичката надесно}one{Премести ги картичките надесно}other{Премести ги картичките надесно}}</translation>

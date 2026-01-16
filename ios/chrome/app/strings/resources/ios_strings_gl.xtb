@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Nova ventá</translation>
 <translation id="1558391695376153246">Pechar pestanas incógnito</translation>
 <translation id="1565371473877914088">Nova pestana do modo de incógnito</translation>
+<translation id="1567960978791353852">Mostrar modo de lectura</translation>
 <translation id="1571780780926010134">Pestanas do modo de incógnito</translation>
 <translation id="1580715474678097352">Protéxete contra sitios web perigosos</translation>
 <translation id="1580783302095112590">Correo enviado.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">Para ver os contrasinais, en primeiro lugar debes definir un código de desbloqueo no teu dispositivo.</translation>
 <translation id="201759455285471444">Despregar o grupo de pestanas.</translation>
 <translation id="202070562065520783">Explícame isto</translation>
+<translation id="2023713324775943812">Accede ao modo de lectura desde a barra de enderezos cando estea dispoñible</translation>
 <translation id="2044394949148788042">Abre a grade de pestanas</translation>
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> xestiona a conta <ph name="USER_EMAIL" />, polo que é posible que poida ver parte da información. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">novo elemento</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Os teus grupos de pestanas gárdanse aquí</translation>
 <translation id="2273327106802955778">Menú Máis</translation>
 <translation id="2287614783861766820">{count,plural, =1{Este enderezo eliminarase do dispositivo.}other{Estes enderezos eliminaranse do dispositivo.}}</translation>
+<translation id="2295236662082735391">Mantén premida unha imaxe na web para editala con Gemini</translation>
 <translation id="2297989278479054870">Cando peches a sesión, os marcadores, os contrasinais e outros datos da túa Conta de Google quitaranse deste dispositivo.</translation>
 <translation id="2299218006564889602">Os teus contrasinais encríptanse no dispositivo antes de gardarse no xestor de contrasinais de Google.</translation>
 <translation id="2306265833370324042">Mostrar os detalles de <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Tira unha foto do que queiras buscar</translation>
 <translation id="2761898608071930085">Utilizar outra conta</translation>
 <translation id="2762000892062317888">agora</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Podes engadir un máximo dunha imaxe}other{Podes engadir un máximo de {COUNT} imaxes}}</translation>
 <translation id="2772667768515195373">Podes usar nos produtos de Google os enderezos gardados. Este enderezo está gardado na túa Conta de Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773344962924806829">Notificacións por correo electrónico</translation>
 <translation id="2781331604911854368">Si</translation>
@@ -1353,6 +1357,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="605721222689873409">AA</translation>
 <translation id="6058415747854995776">Gravar vídeo</translation>
 <translation id="6059830886158432458">Controla as túas historias e a túa actividade aquí</translation>
+<translation id="6063802271331271857">Facer un remix dunha imaxe</translation>
 <translation id="6066301408025741299">Toca para cancelar.</translation>
 <translation id="6074656473835429958">Recibe notificacións</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) non se puido cargar</translation>
@@ -1871,6 +1876,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="7899199123054742721">Marcar todo como non lido</translation>
 <translation id="7911190106180361398">A túa organización non che permite sincronizalo todo.</translation>
 <translation id="7918999344502274923">Ocultar os detalles de <ph name="SEARCH_ENGINE_NAME" /></translation>
+<translation id="7921559948846049514">Escolle un tema, unha cor ou máis opcións para o fondo</translation>
 <translation id="792357691529995513">Non se atopou ningún problema</translation>
 <translation id="7925108652071887026">Datos de Autocompletar</translation>
 <translation id="7926975587469166629">Alcume da tarxeta</translation>

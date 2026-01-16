@@ -1888,7 +1888,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2257053455312861282">Việc thêm tài khoản trường học sẽ giúp bạn dễ dàng đăng nhập vào các trang web, tiện ích và ứng dụng của mình trong vai trò học viên, trong khi vẫn hoạt động theo các quyền kiểm soát của cha mẹ.</translation>
 <translation id="225716114209817872">Tối đa</translation>
 <translation id="2259337945538989999">Để truy cập các thẻ mà bạn mở trên những thiết bị khác, hãy xác minh danh tính của bạn. Bạn có thể dừng đồng bộ hoá bất cứ lúc nào trong phần cài đặt. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>
-<translation id="2261323523305321874">Quản trị viên của bạn đã thực hiện thay đổi trên toàn bộ hệ thống làm vô hiệu hóa một số hồ sơ cũ.</translation>
 <translation id="22614517036276112">Tài liệu này hoặc thiết bị của bạn không đáp ứng một số chính sách bảo mật của tổ chức. Hãy trao đổi với quản trị viên của bạn để biết những vấn đề cần khắc phục.</translation>
 <translation id="2262477216570151239">Độ trễ trước khi lặp lại</translation>
 <translation id="2263189956353037928">Đăng xuất và đăng nhập lại</translation>
@@ -2536,7 +2535,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2681124317993121768">Hồ sơ khách không được hỗ trợ</translation>
 <translation id="2682498795777673382">Thông tin mới từ cha mẹ</translation>
 <translation id="2683638487103917598">Đẵ sắp xếp thư mục</translation>
-<translation id="2684004000387153598">Để tiếp tục, hãy nhấp vào OK, sau đó nhấp vào Thêm người để tạo hồ sơ mới cho địa chỉ email của bạn.</translation>
 <translation id="2685193395980129388">Được phép – <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687407218262674387">Điều khoản dịch vụ của Google</translation>
 <translation id="2688196195245426394">Lỗi khi đăng ký thiết bị với máy chủ: <ph name="CLIENT_ERROR" />.</translation>
@@ -2837,6 +2835,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2885129935310217435">Một nút khác đã dùng tên này. Vui lòng chọn một tên khác.</translation>
 <translation id="2885378588091291677">Trình quản lý tác vụ</translation>
 <translation id="2885729872133513017">Đã xảy ra lỗi khi giải mã phản hồi của máy chủ.</translation>
+<translation id="2886119409731773154">Quá trình này có thể mất tới 30 phút</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> và <ph name="NUMBER_OF_DEVICES" /> thiết bị khác</translation>
 <translation id="2887344147309501015">Trò chuyện với Gemini trong Chrome để nhận câu trả lời, thông tin quan trọng và nhiều nội dung khác khi bạn duyệt web</translation>
@@ -9797,7 +9796,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7681757571815416227">Để sử dụng thiết bị bằng hồ sơ <ph name="DOMAIN" /> của mình, bạn cần cung cấp cho tổ chức thông tin về thiết bị.
 
 Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặt, tệp, trình duyệt, hệ điều hành của thiết bị và địa chỉ IP.</translation>
-<translation id="7683373461016844951">Để tiếp tục, hãy nhấp vào OK, sau đó nhấp vào Thêm người để tạo hồ sơ mới cho địa chỉ email <ph name="DOMAIN" /> của bạn.</translation>
 <translation id="7683834360226457448">Công cụ hiển thị dành cho người có thị lực kém</translation>
 <translation id="7684212569183643648">Do quản trị viên của bạn cài đặt</translation>
 <translation id="7684559058815332124">Truy cập trang đăng nhập cổng bị khóa</translation>
@@ -11225,7 +11223,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> muốn: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> và thực hiện các việc khác nữa</translation>
 <translation id="8648889679430451455">Xoá dữ liệu cá nhân hóa</translation>
 <translation id="8649026945479135076">Các trang web bạn truy cập thường ghi nhớ các mối quan tâm của bạn để cá nhân hoá trải nghiệm cho bạn. Các trang web cũng có thể lưu trữ thông tin trên Chrome về mối quan tâm của bạn.</translation>
-<translation id="8650543407998814195">Mặc dù không thể truy cập vào hồ sơ cũ của mình nữa, nhưng bạn vẫn có thể xóa hồ sơ đó.</translation>
 <translation id="8651585100578802546">Bắt buộc Tải lại Trang Này</translation>
 <translation id="8652400352452647993">Lỗi đóng gói tiện ích</translation>
 <translation id="8654151524613148204">Rất tiếc, tệp quá lớn để máy tính của bạn có thể xử lý.</translation>

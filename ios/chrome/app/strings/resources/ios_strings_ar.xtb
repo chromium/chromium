@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">نافذة جديدة</translation>
 <translation id="1558391695376153246">إغلاق علامات تبويب التصفح المتخفي</translation>
 <translation id="1565371473877914088">علامة تبويب جديدة في وضع التصفّح المتخفي</translation>
+<translation id="1567960978791353852">عرض "وضع القراءة"</translation>
 <translation id="1571780780926010134">علامات التبويب في وضع التصفّح المتخفي</translation>
 <translation id="1580715474678097352">الحماية من المواقع الإلكترونية الضارّة</translation>
 <translation id="1580783302095112590">تم إرسال البريد.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">للاطّلاع على كلمات المرور، يجب أولاً ضبط رمز مرور على جهازك.</translation>
 <translation id="201759455285471444">توسيع مجموعة علامات التبويب</translation>
 <translation id="202070562065520783">أريد شرحًا لهذا</translation>
+<translation id="2023713324775943812">يسمح لك بالوصول إلى "وضع القراءة" من شريط العناوين عندما يكون متاحًا</translation>
 <translation id="2044394949148788042">فتح شبكة علامات التبويب</translation>
 <translation id="2044681667265133332">يتولّى النطاق <ph name="HOSTED_DOMAIN" /> إدارة الحساب <ph name="USER_EMAIL" />، وقد يكون بإمكانه الاطّلاع على بعض البيانات. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">عنصر جديد</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">يتم حفظ مجموعات علامات التبويب هنا</translation>
 <translation id="2273327106802955778">قائمة "المزيد"</translation>
 <translation id="2287614783861766820">{count,plural, =1{سيتم حذف هذا العنوان من هذا الجهاز}zero{سيتم حذف هذه العناوين من هذا الجهاز}two{سيتم حذف هذين العنوانَين من هذا الجهاز}few{سيتم حذف هذه العناوين من هذا الجهاز}many{سيتم حذف هذه العناوين من هذا الجهاز}other{سيتم حذف هذه العناوين من هذا الجهاز}}</translation>
+<translation id="2295236662082735391">‏ما عليك سوى الضغط مع الاستمرار على صورة على الويب لتعديلها باستخدام Gemini</translation>
 <translation id="2297989278479054870">‏بعد تسجيل الخروج، ستتم إزالة الإشارات المرجعية وكلمات المرور وغيرها من البيانات في حسابك على Google من هذا الجهاز.</translation>
 <translation id="2299218006564889602">‏يتم تشفير كلمات المرور على جهازك قبل حفظها في "مدير كلمات المرور" من Google.</translation>
 <translation id="2306265833370324042">عرض تفاصيل <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">التقاط صورة لنتيجة البحث</translation>
 <translation id="2761898608071930085">استخدام حساب آخر</translation>
 <translation id="2762000892062317888">الآن</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{لا يمكن إضافة أكثر من صورة واحدة}zero{لا يمكن إضافة أكثر من {COUNT} صورة}two{لا يمكن إضافة أكثر من صورتَين ({COUNT})}few{لا يمكن إضافة أكثر من {COUNT} صور}many{لا يمكن إضافة أكثر من {COUNT} صورة}other{لا يمكن إضافة أكثر من {COUNT} صورة}}</translation>
 <translation id="2772667768515195373">‏يمكنك استخدام العناوين المحفوظة مع جميع منتجات Google. تم حفظ هذا العنوان في حسابك على Google‏، <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">الإشعارات عبر البريد الإلكتروني</translation>
 <translation id="2781331604911854368">مفعّل</translation>
@@ -1351,6 +1355,7 @@
 <translation id="605721222689873409">العام</translation>
 <translation id="6058415747854995776">تسجيل فيديو</translation>
 <translation id="6059830886158432458">يمكنك التحكُّم بقصصك ونشاطك هنا.</translation>
+<translation id="6063802271331271857">إنشاء ريمكس من صورة</translation>
 <translation id="6066301408025741299">انقر للإلغاء.</translation>
 <translation id="6074656473835429958">فعِّل الإشعارات</translation>
 <translation id="607620096698446287">تعذر تحميل <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -1869,6 +1874,7 @@
 <translation id="7899199123054742721">وضع علامة "غير مقروءة" على الكل</translation>
 <translation id="7911190106180361398">لا تسمح لك مؤسستك بمزامنة كل البيانات.</translation>
 <translation id="7918999344502274923">إخفاء تفاصيل <ph name="SEARCH_ENGINE_NAME" /></translation>
+<translation id="7921559948846049514">يمكنك اختيار مظهر أو لون أو غير ذلك لتخصيص خلفيتك</translation>
 <translation id="792357691529995513">لم يتم رصد أي مشاكل.</translation>
 <translation id="7925108652071887026">بيانات الملء التلقائي</translation>
 <translation id="7926975587469166629">لقب البطاقة</translation>

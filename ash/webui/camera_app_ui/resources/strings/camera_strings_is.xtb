@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Gerð leitar</translation>
 <translation id="28682968802727151">Forskoðun speglunar</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> er í sambandi.</translation>
+<translation id="3063987824612038785">Allar myndavélarskrár verða vistaðar á Google Drive</translation>
 <translation id="3067436040345934772">Hliðra til hægri</translation>
 <translation id="3081586908890909590">Skipta yfir í upptöku myndskeiðs</translation>
 <translation id="3091480460059548935">Textagreining í forskoðun</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">Vinnur úr myndskeiði...</translation>
 <translation id="3789724198583203151">Snúa um 90 gráður rangsælis</translation>
 <translation id="3810838688059735925">Myndskeið</translation>
+<translation id="386366972082231038">Allar myndavélarskrár verða vistaðar á OneDrive</translation>
 <translation id="4060608699153044055">Þú getur ekki tekið upp sökum of lítils geymslurýmis í tækinu. Til að hefja upptöku þarftu fyrst að losa um pláss í tækinu.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Gera hlé á upptöku</translation>
@@ -157,6 +159,7 @@ Ef ábendingin þín snýr að gæðum mynda eða myndskeiða máttu hengja við
 <translation id="7983668134180549431">Texti greindist.</translation>
 <translation id="8079255378695216066">Ekki tekst að hefja upptöku</translation>
 <translation id="8120146556401698679">Hliðrun, halli og aðdráttur</translation>
+<translation id="8127459436205030819">Kerfisstjórinn gæti séð skrárnar þínar</translation>
 <translation id="8131740175452115882">Staðfesta</translation>
 <translation id="8145038249676204903">Skipta yfir í myndatöku</translation>
 <translation id="8167081290930651932">Vista sem mynd</translation>

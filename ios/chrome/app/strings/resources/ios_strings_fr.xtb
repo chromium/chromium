@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Nouvelle fenêtre</translation>
 <translation id="1558391695376153246">Fermer onglets nav. privée</translation>
 <translation id="1565371473877914088">Nouvel onglet de navigation privée</translation>
+<translation id="1567960978791353852">Afficher le mode Lecture</translation>
 <translation id="1571780780926010134">Onglets de navigation privée</translation>
 <translation id="1580715474678097352">Pour vous protéger contre les sites Web dangereux</translation>
 <translation id="1580783302095112590">E-mail envoyé.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">Pour afficher les mots de passe, vous devez d'abord définir un code secret sur votre appareil.</translation>
 <translation id="201759455285471444">Développer le groupe d'onglets.</translation>
 <translation id="202070562065520783">Explique-moi</translation>
+<translation id="2023713324775943812">Accéder au mode Lecture depuis la barre d'adresse lorsqu'il est disponible</translation>
 <translation id="2044394949148788042">Ouvrez la grille d'onglets</translation>
 <translation id="2044681667265133332">Le compte <ph name="USER_EMAIL" /> est géré par <ph name="HOSTED_DOMAIN" />, qui pourrait voir certaines informations. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nouvel élément</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Vos groupes d'onglets sont enregistrés ici</translation>
 <translation id="2273327106802955778">Menu Plus</translation>
 <translation id="2287614783861766820">{count,plural, =1{Cette adresse sera supprimée de cet appareil.}one{Cette adresse sera supprimée de cet appareil.}other{Ces adresses seront supprimées de cet appareil.}}</translation>
+<translation id="2295236662082735391">Appuyez de manière prolongée sur une image sur le Web pour la modifier avec Gemini</translation>
 <translation id="2297989278479054870">Une fois que vous serez déconnecté, les favoris, les mots de passe et d'autres données de votre compte Google seront supprimés de cet appareil.</translation>
 <translation id="2299218006564889602">Vos mots de passe sont chiffrés sur votre appareil avant d'être enregistrés dans le Gestionnaire de mots de passe Google.</translation>
 <translation id="2306265833370324042">Afficher les détails de <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Prenez une photo de votre recherche</translation>
 <translation id="2761898608071930085">Utiliser un autre compte</translation>
 <translation id="2762000892062317888">à l'instant</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Ajoutez jusqu'à 1 image}one{Ajoutez jusqu'à {COUNT} image}other{Ajoutez jusqu'à {COUNT} images}}</translation>
 <translation id="2772667768515195373">Vous pouvez utiliser les adresses enregistrées dans l'ensemble des produits Google. Celle-ci est enregistrée dans votre compte Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773344962924806829">Notifications par e-mail</translation>
 <translation id="2781331604911854368">Activé</translation>
@@ -1353,6 +1357,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="605721222689873409">AA</translation>
 <translation id="6058415747854995776">Enregistrer une vidéo</translation>
 <translation id="6059830886158432458">Contrôlez vos articles et votre activité via ce menu</translation>
+<translation id="6063802271331271857">Remixez une image</translation>
 <translation id="6066301408025741299">Appuyez pour annuler.</translation>
 <translation id="6074656473835429958">Recevez des notifications</translation>
 <translation id="607620096698446287">Impossible d'importer <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -1871,6 +1876,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="7899199123054742721">Tout marquer comme non lu</translation>
 <translation id="7911190106180361398">Votre organisation ne vous permet pas de tout synchroniser.</translation>
 <translation id="7918999344502274923">Masquer les détails de <ph name="SEARCH_ENGINE_NAME" /></translation>
+<translation id="7921559948846049514">Choisissez un thème, une couleur ou plus pour votre arrière-plan</translation>
 <translation id="792357691529995513">Aucun problème détecté</translation>
 <translation id="7925108652071887026">Données de saisie automatique</translation>
 <translation id="7926975587469166629">Nom donné à la carte</translation>

@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">هل تريد إغلاق جميع علامات التبويب في وضع التصفُّح المتخفي؟</translation>
 <translation id="1501480321619201731">حذف مجموعة</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />) غير نشطة}zero{‫<ph name="TABS_COUNT_MANY" /> علامة تبويب غير نشطة}two{علامتا تبويب (<ph name="TABS_COUNT_MANY" />) غير نشطتَين}few{‫<ph name="TABS_COUNT_MANY" /> علامات تبويب غير نشطة}many{‫<ph name="TABS_COUNT_MANY" /> علامة تبويب غير نشطة}other{‫<ph name="TABS_COUNT_MANY" /> علامة تبويب غير نشطة}}</translation>
+<translation id="1568067597247500137">تجاهل الموقع</translation>
 <translation id="1645759014353344461">عدد علامات التبويب المجمَّعة: <ph name="TABS_COUNT_MANY" /></translation>
 <translation id="1657719826150349398">نقل علامة التبويب إلى الأسفل</translation>
 <translation id="1670942869417022142">تم كتم الصوت</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">انخفض مؤخرًا سعر هذا المنتج من <ph name="PREVIOUS_PRICE" /> إلى <ph name="NEW_PRICE" />.</translation>
 <translation id="606985262342505139">تم فتح البطاقة السفلية لعلامة التبويب بطول الشاشة</translation>
 <translation id="6109251075362363230">ستتم أرشفة جميع علامات التبويب المكرّرة أيضًا، باستثناء آخر نسخة تم استخدامها.</translation>
+<translation id="612596694132302162">إلغاء تجاهل الموقع</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{إغلاق علامة تبويب محدَّدة واحدة (<ph name="TABS_COUNT_ONE" />)}zero{إغلاق <ph name="TABS_COUNT_MANY" /> علامة تبويب محدَّدة}two{إغلاق علامتَي تبويب محدَّدتَين (<ph name="TABS_COUNT_MANY" />)}few{إغلاق <ph name="TABS_COUNT_MANY" /> علامات تبويب محدَّدة}many{إغلاق <ph name="TABS_COUNT_MANY" /> علامة تبويب محدَّدة}other{إغلاق <ph name="TABS_COUNT_MANY" /> علامة تبويب محدَّدة}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{نقل المجموعة إلى نافذة جديدة}zero{نقل المجموعة إلى نافذة أخرى}two{نقل المجموعة إلى نافذة أخرى}few{نقل المجموعة إلى نافذة أخرى}many{نقل المجموعة إلى نافذة أخرى}other{نقل المجموعة إلى نافذة أخرى}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{نقل علامة التبويب إلى اليمين}zero{نقل علامات التبويب إلى اليمين}two{نقل علامتَي التبويب إلى اليمين}few{نقل علامات التبويب إلى اليمين}many{نقل علامات التبويب إلى اليمين}other{نقل علامات التبويب إلى اليمين}}</translation>

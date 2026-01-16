@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">ประเภทการสแกน</translation>
 <translation id="28682968802727151">แสดงตัวอย่างมิเรอร์</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> เสียบอยู่</translation>
+<translation id="3063987824612038785">ไฟล์ทั้งหมดจากกล้องจะบันทึกลงใน Google ไดรฟ์</translation>
 <translation id="3067436040345934772">เลื่อนไปทางขวา</translation>
 <translation id="3081586908890909590">เปลี่ยนเป็นโหมดบันทึกวิดีโอ</translation>
 <translation id="3091480460059548935">การตรวจหาข้อความในตัวอย่าง</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">กำลังประมวลผลวิดีโอ...</translation>
 <translation id="3789724198583203151">หมุน 90 องศาทวนเข็มนาฬิกา</translation>
 <translation id="3810838688059735925">วิดีโอ</translation>
+<translation id="386366972082231038">ไฟล์ทั้งหมดจากกล้องจะบันทึกลงใน OneDrive</translation>
 <translation id="4060608699153044055">คุณบันทึกไม่ได้เนื่องจากพื้นที่เก็บข้อมูลในอุปกรณ์เหลือน้อย คุณต้องเพิ่มพื้นที่ว่างในอุปกรณ์เพื่อเริ่มบันทึก</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> ล้านพิกเซล</translation>
 <translation id="4118525110028899586">หยุดบันทึกชั่วคราว</translation>
@@ -157,6 +159,7 @@
 <translation id="7983668134180549431">ตรวจพบข้อความ</translation>
 <translation id="8079255378695216066">เริ่มบันทึกไม่ได้</translation>
 <translation id="8120146556401698679">เลื่อน เอียง ซูม</translation>
+<translation id="8127459436205030819">ผู้ดูแลระบบอาจเห็นไฟล์ของคุณ</translation>
 <translation id="8131740175452115882">ยืนยัน</translation>
 <translation id="8145038249676204903">เปลี่ยนเป็นโหมดถ่ายภาพ</translation>
 <translation id="8167081290930651932">บันทึกเป็นรูปภาพ</translation>

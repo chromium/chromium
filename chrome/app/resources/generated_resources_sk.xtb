@@ -1880,7 +1880,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2257053455312861282">Pridanie školského účtu uľahčuje prihlásenie v rámci webov, rozšírení a aplikácií študentom, ktorí majú aktívnu rodičovskú kontrolu.</translation>
 <translation id="225716114209817872">Maximálne</translation>
 <translation id="2259337945538989999">Ak chcete získať karty zo svojich ostatných zariadení, overte svoju totožnosť. Synchronizáciu môžete kedykoľvek zastaviť v nastaveniach. Google môže prispôsobovať Vyhľadávanie a ďalšie služby na základe vašej histórie.</translation>
-<translation id="2261323523305321874">Správca vykonal celosystémovú zmenu, ktorá zakazuje niektoré staré profily.</translation>
 <translation id="22614517036276112">Tento dokument alebo vaše zariadenie nespĺňa niektoré pravidlá zabezpečenia vašej organizácie. Zistite od správcu, čo je treba opraviť.</translation>
 <translation id="2262477216570151239">Oneskorenie pred opakovaním</translation>
 <translation id="2263189956353037928">Odhlásiť sa a znova prihlásiť</translation>
@@ -2525,7 +2524,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2681124317993121768">Profily hostí nie sú podporované</translation>
 <translation id="2682498795777673382">Aktualizácia od rodiča</translation>
 <translation id="2683638487103917598">Priečinok je zoradený</translation>
-<translation id="2684004000387153598">Ak chcete pokračovať, kliknite na OK a potom kliknutím na možnosť Pridať osobu vytvorte nový profil pre svoju e-mailovú adresu.</translation>
 <translation id="2685193395980129388">Povolené – <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687407218262674387">Zmluvné podmienky spoločnosti Google</translation>
 <translation id="2688196195245426394">Pri registrácii zariadenia na serveri <ph name="CLIENT_ERROR" /> sa vyskytla chyba.</translation>
@@ -2826,6 +2824,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2885129935310217435">Existuje tlačidlo s rovnakým názvom. Vyberte iné.</translation>
 <translation id="2885378588091291677">Správca úloh</translation>
 <translation id="2885729872133513017">Pri dešifrovaní odpovede servera sa vyskytol problém.</translation>
+<translation id="2886119409731773154">Môže to trvať až 30 minút</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> a ďalšie (<ph name="NUMBER_OF_DEVICES" />)</translation>
 <translation id="2887344147309501015">Četujte s Gemini v Chrome a získavajte odpovede, kľúčové poznatky a ďalší obsah počas prehliadania</translation>
@@ -9785,7 +9784,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7681757571815416227">Ak chcete používať svoje zariadenie s profilom <ph name="DOMAIN" />, vaša organizácia potrebuje informácie o danom zariadení.
 
 Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehliadači, operačnom systéme zariadenia a adresách IP.</translation>
-<translation id="7683373461016844951">Ak chcete pokračovať, kliknite na OK a potom kliknutím na možnosť Pridať osobu vytvorte nový profil pre svoju e-mailovú adresu v doméne <ph name="DOMAIN" />.</translation>
 <translation id="7683834360226457448">Nástroje na zobrazenie pre slabozrakých</translation>
 <translation id="7684212569183643648">Nainštalované vaším správcom</translation>
 <translation id="7684559058815332124">Prejsť na prihlasovaciu stránku portálu na prihlásenie</translation>
@@ -11213,7 +11211,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> vyžaduje povolenia <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> a ďalšie</translation>
 <translation id="8648889679430451455">Vymazať údaje prispôsobenia</translation>
 <translation id="8649026945479135076">Je bežné, že navštívené weby si pamätajú veci, ktoré vás zaujímajú, aby vám mohli prispôsobiť prostredie. Weby môžu v Chrome ukladať aj údaje o vašich záujmoch.</translation>
-<translation id="8650543407998814195">Aj keď už nemáte prístup k starému profilu, môžete ho stále odstrániť.</translation>
 <translation id="8651585100578802546">Vynútiť obnovenie tejto stránky</translation>
 <translation id="8652400352452647993">Chyba zbalenia rozšírenia</translation>
 <translation id="8654151524613148204">Súbor je príliš veľký a váš počítač ho nemôže spracovať. Ľutujeme.</translation>

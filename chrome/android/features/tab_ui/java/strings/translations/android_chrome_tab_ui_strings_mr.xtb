@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">सर्व गुप्त टॅब बंद करायचे आहेत का?</translation>
 <translation id="1501480321619201731">गट हटवा</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{इनॅक्टिव्ह असलेला <ph name="TABS_COUNT_ONE" /> आयटम}other{इनॅक्टिव्ह असलेले <ph name="TABS_COUNT_MANY" /> आयटम}}</translation>
+<translation id="1568067597247500137">साइट म्यूट करा</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> टॅब गटबद्ध केले आहेत</translation>
 <translation id="1657719826150349398">टॅब खाली हलवा</translation>
 <translation id="1670942869417022142">म्यूट केलेला ऑडिओ</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">या आयटमची किंमत अलीकडे <ph name="PREVIOUS_PRICE" /> वरून <ph name="NEW_PRICE" /> इतकी कमी झाली</translation>
 <translation id="606985262342505139">पूर्ण उंचीवर उघडलेली टॅबची तळाशी असलेली शीट</translation>
 <translation id="6109251075362363230">सर्वात अलीकडे वापरलेल्या कॉपीचा अपवाद वगळता, सर्व डुप्लिकेट टॅबदेखील आता संग्रहित केले जातील.</translation>
+<translation id="612596694132302162">साइट सशब्द करा</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{निवडलेला <ph name="TABS_COUNT_ONE" /> आयटम बंद करा}other{निवडलेले <ph name="TABS_COUNT_MANY" /> आयटम बंद करा}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{गट नवीन विंडोवर हलवा}other{गट दुसऱ्या विंडोवर हलवा}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{टॅब उजवीकडे हलवा}other{टॅब उजवीकडे हलवा}}</translation>

@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Θέλετε να κλείσετε όλες τις καρτέλες ανώνυμης περιήγησης;</translation>
 <translation id="1501480321619201731">Διαγραφή ομάδας</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ανενεργό στοιχείο}other{<ph name="TABS_COUNT_MANY" /> ανενεργά στοιχεία}}</translation>
+<translation id="1568067597247500137">Σίγαση ιστοτόπου</translation>
 <translation id="1645759014353344461">Ομαδοποιήθηκαν <ph name="TABS_COUNT_MANY" /> καρτέλες</translation>
 <translation id="1657719826150349398">Μετακίνηση καρτέλας κάτω</translation>
 <translation id="1670942869417022142">Ήχος σε σίγαση</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">Η τιμή αυτού του στοιχείου μειώθηκε πρόσφατα από <ph name="PREVIOUS_PRICE" /> σε <ph name="NEW_PRICE" /></translation>
 <translation id="606985262342505139">Φύλλο κάτω μέρους καρτέλας σε πλήρες ύψος</translation>
 <translation id="6109251075362363230">Από εδώ και στο εξής, όλες οι διπλότυπες καρτέλες θα αρχειοθετούνται, με εξαίρεση το αντίγραφο που χρησιμοποιήθηκε πιο πρόσφατα.</translation>
+<translation id="612596694132302162">Κατάργηση σίγασης ιστοτόπου</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Κλείσιμο <ph name="TABS_COUNT_ONE" /> επιλεγμένου στοιχείου}other{Κλείσιμο <ph name="TABS_COUNT_MANY" /> επιλεγμένων στοιχείων}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Μετακίνηση ομάδας σε νέο παράθυρο}other{Μετακίνηση ομάδας σε άλλα παράθυρα}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Μετακίνηση καρτέλας προς τα δεξιά}other{Μετακίνηση καρτελών προς τα δεξιά}}</translation>

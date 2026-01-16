@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Vala wonke amathebhu we-Incognito?</translation>
 <translation id="1501480321619201731">Susa iqembu</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{Into e-<ph name="TABS_COUNT_ONE" /> engasebenzi}one{Izinto ezingu-<ph name="TABS_COUNT_MANY" /> ezingasebenzi}other{Izinto ezingu-<ph name="TABS_COUNT_MANY" /> ezingasebenzi}}</translation>
+<translation id="1568067597247500137">Thulisa isayithi</translation>
 <translation id="1645759014353344461">Amathebhu angu-<ph name="TABS_COUNT_MANY" /> aqoqiwe</translation>
 <translation id="1657719826150349398">Yisa ithebhu phansi</translation>
 <translation id="1670942869417022142">Okulalelwayo okuthulisiwe</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">Intengo yale nto isanda kwehla kusuka ku-<ph name="PREVIOUS_PRICE" /> ukuya ku-<ph name="NEW_PRICE" /></translation>
 <translation id="606985262342505139">Ishidi Eliphansi Lethebhu ngobude obugcwele</translation>
 <translation id="6109251075362363230">Wonke amathebhu ayimpinda nawo azofakwa kungobo yomlando, kuyokwenzeka okuhlukile ngamakhophi asanda kusetshenziswa.</translation>
+<translation id="612596694132302162">Susa ukuthula kusayithi</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Vala into engu-<ph name="TABS_COUNT_ONE" /> ekhethiwe}one{Vala izinto ezingu-<ph name="TABS_COUNT_MANY" /> ezikhethiwe}other{Vala izinto ezingu-<ph name="TABS_COUNT_MANY" /> ezikhethiwe}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Hambisa iqembu ewindini elisha}one{Hambisa iqembu kwelinye iwindi}other{Hambisa iqembu kwelinye iwindi}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Yisa ithebhu kwesokudla}one{Yisa amathebhu kwesokudla}other{Yisa amathebhu kwesokudla}}</translation>

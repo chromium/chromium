@@ -1550,6 +1550,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="2024195579772565064">Padamkan enjin carian</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Klik tepat</translation>
+<translation id="2025130536872979378">lihat sumber</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> telah mengalami nahas. Klik belon ini untuk memuatkan semula sambungan.</translation>
 <translation id="2026367923222947564">Halaman penuh</translation>
 <translation id="2026377162111110983">Suara kawasan</translation>
@@ -1888,7 +1889,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2257053455312861282">Tindakan menambah akaun sekolah membolehkan anda log masuk dengan mudah ke laman web, sambungan dan apl sebagai pelajar dan dalam masa yang sama, masih beroperasi di bawah kawalan ibu bapa.</translation>
 <translation id="225716114209817872">Maksimum</translation>
 <translation id="2259337945538989999">Untuk mendapatkan tab anda daripada peranti anda yang lain, sahkan identiti anda. Anda boleh menghentikan penyegerakan pada bila-bila masa dalam tetapan ini. Google boleh memeribadikan Search dan perkhidmatan lain berdasarkan sejarah anda.</translation>
-<translation id="2261323523305321874">Pentadbir anda telah membuat perubahan pada seluruh sistem yang melumpuhkan beberapa profil lama.</translation>
 <translation id="22614517036276112">Dokumen ini atau peranti anda tidak memenuhi beberapa dasar keselamatan organisasi anda. Semak dengan pentadbir anda tentang perkara yang perlu dibetulkan.</translation>
 <translation id="2262477216570151239">Lengah sebelum mengulang</translation>
 <translation id="2263189956353037928">Log keluar &amp; log masuk semula</translation>
@@ -2536,7 +2536,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2681124317993121768">Profil tetamu tidak disokong</translation>
 <translation id="2682498795777673382">Kemas kini daripada ibu atau bapa anda</translation>
 <translation id="2683638487103917598">Folder diisih</translation>
-<translation id="2684004000387153598">Klik OK untuk meneruskan, kemudian klik Tambah Orang untuk membuat profil baharu untuk alamat e-mel anda.</translation>
 <translation id="2685193395980129388">Dibenarkan – <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687407218262674387">Syarat perkhidmatan Google</translation>
 <translation id="2688196195245426394">Ralat semasa mendaftarkan peranti dengan pelayan: <ph name="CLIENT_ERROR" />.</translation>
@@ -2799,6 +2798,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2856776373509145513">Buat bekas baharu</translation>
 <translation id="2857047802954430547">Log masuk untuk mendapatkan kata laluan dan penanda halaman anda serta pelbagai lagi pada semua peranti anda</translation>
 <translation id="2859741939921354763">Import kata laluan kepada <ph name="BRAND" /></translation>
+<translation id="2860284453253554297">Dasar Perusahaan</translation>
 <translation id="2860710618359053450">Alihkan rahang ke kanan</translation>
 <translation id="2861301611394761800">Kemas kini sistem selesai. Sila mulakan semula sistem.</translation>
 <translation id="2861402191395139055">Langganan Passpoint</translation>
@@ -2837,6 +2837,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2885129935310217435">Terdapat butang dengan nama yang sama. Sila pilih nam yang lain.</translation>
 <translation id="2885378588091291677">Pengurus Tugas</translation>
 <translation id="2885729872133513017">Masalah telah berlaku semasa menyahkod respons pelayan.</translation>
+<translation id="2886119409731773154">Proses ini mungkin mengambil masa sehingga 30 minit</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> dan <ph name="NUMBER_OF_DEVICES" /> yang lain</translation>
 <translation id="2887344147309501015">Bersembang dengan Gemini dalam Chrome untuk mendapatkan jawapan, kesimpulan utama dan pelbagai lagi semasa anda menyemak imbas</translation>
@@ -9795,11 +9796,11 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7681757571815416227">Organisasi anda memerlukan maklumat tentang peranti anda untuk anda menggunakan peranti tersebut dengan profil <ph name="DOMAIN" /> anda.
 
 Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak imbas anda, sistem pengendalian peranti dan alamat IP.</translation>
-<translation id="7683373461016844951">Klik OK untuk meneruskan, kemudian klik Tambah Orang untuk membuat profil baharu untuk alamat e-mel <ph name="DOMAIN" /> anda.</translation>
 <translation id="7683834360226457448">Alatan paparan rabun</translation>
 <translation id="7684212569183643648">Dipasang oleh Pentadbir Anda</translation>
 <translation id="7684559058815332124">Lawati halaman log masuk portal tawanan</translation>
 <translation id="7684718995427157417">Untuk membuat dan menguji apl anda, dayakan Titi Nyahpepijat Android (ADB). Harap maklum bahawa tindakan ini membolehkan pemasangan apl Android yang belum disahkan oleh Google dan memerlukan tetapan semula kilang untuk melumpuhkannya.</translation>
+<translation id="7684803937028953000">Organisasi anda menyekat muat turun setempat fail ini.</translation>
 <translation id="7684913007876670600">Untuk menunjukkan paparan ringkas halaman ini, buka panel sisi dan pilih Mod bacaan</translation>
 <translation id="7685038817958445325">Tidak dapat menghantar</translation>
 <translation id="7685049629764448582">Memori JavaScript</translation>
@@ -11224,7 +11225,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> ingin: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> dan pelbagai lagi</translation>
 <translation id="8648889679430451455">Kosongkan data keperibadian</translation>
 <translation id="8649026945479135076">Menjadi kebiasaan bagi laman yang anda lawati mengingati perkara yang anda minati, untuk memeribadikan pengalaman anda. Laman boleh menyimpan maklumat tentang minat anda menggunakan Chrome.</translation>
-<translation id="8650543407998814195">Walaupun anda tidak dapat mengakses profil lama anda lagi, anda masih boleh mengalih keluar profil tersebut.</translation>
 <translation id="8651585100578802546">Paksa Muatkan Semula Halaman Ini</translation>
 <translation id="8652400352452647993">Ralat sambungan pek</translation>
 <translation id="8654151524613148204">Fail terlalu besar untuk dikendalikan oleh komputer. Maaf.</translation>

@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Nýr gluggi</translation>
 <translation id="1558391695376153246">Loka huliðsflipum</translation>
 <translation id="1565371473877914088">Nýr huliðsflipi</translation>
+<translation id="1567960978791353852">Sýna lesstillingu</translation>
 <translation id="1571780780926010134">Huliðsflipar</translation>
 <translation id="1580715474678097352">Verðu þig fyrir hættulegum vefsvæðum</translation>
 <translation id="1580783302095112590">Póstur sendur.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">Til að sjá aðgangsorð þarftu fyrst að stilla aðgangsorð á tækinu þínu.</translation>
 <translation id="201759455285471444">Stækka flipahóp.</translation>
 <translation id="202070562065520783">Útskýrðu þetta fyrir mér</translation>
+<translation id="2023713324775943812">Opna lesstillingu á veffangastikunni þegar hún er í boði</translation>
 <translation id="2044394949148788042">Opna flipayfirlit</translation>
 <translation id="2044681667265133332">Reikningnum <ph name="USER_EMAIL" /> er stjórnað af <ph name="HOSTED_DOMAIN" />, sem getur hugsanlega skoðað tilteknar upplýsingar. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nýtt atriði</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Flipahóparnir þínir eru vistaðir hér</translation>
 <translation id="2273327106802955778">Valmynd fyrir meira</translation>
 <translation id="2287614783861766820">{count,plural, =1{Þessu heimilisfangi verður eytt úr tækinu.}one{Þessum heimilisföngum verður eytt úr tækinu.}other{Þessum heimilisföngum verður eytt úr tækinu.}}</translation>
+<translation id="2295236662082735391">Haltu inni á mynd á vefnum inni til að breyta henni með Gemini</translation>
 <translation id="2297989278479054870">Eftir að þú skráir þig út verða bókamerkin, aðgangsorðin og fleira á Google-reikningnum þínum fjarlægt úr tækinu.</translation>
 <translation id="2299218006564889602">Aðgangsorðin þín eru dulkóðuð í tækinu áður en þau eru vistuð í aðgangsorðastjórnun Google.</translation>
 <translation id="2306265833370324042">Sýna upplýsingar um <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Taktu mynd af leitarfyrirspurninni þinni</translation>
 <translation id="2761898608071930085">Nota annan reikning</translation>
 <translation id="2762000892062317888">rétt í þessu</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Bættu við allt að 1 mynd}one{Bættu við allt að {COUNT} mynd}other{Bættu við allt að {COUNT} myndum}}</translation>
 <translation id="2772667768515195373">Þú getur notað vistuð heimilisföng í Google-vörum. Þetta heimilisfang er vistað á Google-reikningnum þínum, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">Tilkynningar í tölvupósti</translation>
 <translation id="2781331604911854368">Kveikt</translation>
@@ -867,6 +871,7 @@
 <translation id="4302061870579014542">Stilla stöðu</translation>
 <translation id="4304713468139749426">Aðgangsorðastjórnun</translation>
 <translation id="4309403553630140242">Ýttu tvisvar til að fá frekari upplýsingar.</translation>
+<translation id="4310738531374808763">Sérsníddu heimasíðuna þína</translation>
 <translation id="4320848494125124980">Nýlegt</translation>
 <translation id="4322394346347055525">Loka öðrum flipum</translation>
 <translation id="4324735664183300693">Kveikja á tilkynningum</translation>
@@ -1353,6 +1358,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="605721222689873409">ÁÁ</translation>
 <translation id="6058415747854995776">Taka upp vídeó</translation>
 <translation id="6059830886158432458">Stjórnaðu sögunum þínum og virkni hér</translation>
+<translation id="6063802271331271857">Endurblanda mynd</translation>
 <translation id="6066301408025741299">Ýttu til að hætta við.</translation>
 <translation id="6074656473835429958">Fá tilkynningar</translation>
 <translation id="607620096698446287">Ekki tókst að hlaða upp <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -1704,6 +1710,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> prósent sótt</translation>
 <translation id="7345061034321640811">Innflutningur ekki leyfður</translation>
+<translation id="7347998088283246662">Flyttu inn aðgangsorð, feril, bókamerki og fleira</translation>
 <translation id="7352651011704765696">Eitthvað fór úrskeiðis</translation>
 <translation id="7364796246159120393">Veldu skrá</translation>
 <translation id="736564850024123010">Sérstilltu upplifun þína með því að breyta staðsetningu veffangastikunnar.</translation>
@@ -1871,6 +1878,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="7899199123054742721">Merkja allt sem ólesið</translation>
 <translation id="7911190106180361398">Fyrirtækið leyfir þér ekki að samstilla allt.</translation>
 <translation id="7918999344502274923">Fela upplýsingar um <ph name="SEARCH_ENGINE_NAME" /></translation>
+<translation id="7921559948846049514">Veldu þema, lit eða fleira fyrir bakgrunninn þinn</translation>
 <translation id="792357691529995513">Engin vandamál fundust</translation>
 <translation id="7925108652071887026">Gögn sjálfvirkrar útfyllingar</translation>
 <translation id="7926975587469166629">Gælunafn spjalds</translation>
@@ -2228,6 +2236,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="914781932147356857">Merkja allt…</translation>
 <translation id="9148126808321036104">Skrá inn aftur</translation>
 <translation id="9149866541089851383">Breyta...</translation>
+<translation id="9152637745605628097">Veldu úr þemum, litum eða hladdu upp mynd</translation>
 <translation id="9159628751968616911">Senda vefsíðu</translation>
 <translation id="9162432979321511934">Kveiktu á sjálfvirkri útfyllingu aðgangsorða</translation>
 <translation id="9165320910061267720">Til að fá tilkynningar um verðlækkanir þarftu að kveikja á tilkynningum í stillingum iOS.</translation>

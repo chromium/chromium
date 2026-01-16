@@ -435,7 +435,6 @@
 <translation id="1689333818294560261">ቅጽል ስም</translation>
 <translation id="1692622044604477956">የፊልም ዝርዝሮች እና የቲያትር ማሳያ ሰዓቶች</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />ውሂብዎን እንዴት ማስተዳደር እንደሚችሉ፦<ph name="END_BOLD" /> Chrome ከ4 ሳምንታት በላይ የቆዩ ርዕሶችን በራስ-ሰር ይሰርዛል። እርስዎ ማሰስ ሲቀጥሉ በዝርዝሩ ላይ አንድ ርዕስ እንደገና ሊታይ ይችላል። እንዲሁም Chrome ለጣቢያዎች እንዲያጋራቸው የማይፈልጓቸውን ርዕሶች ማገድ እና በማንኛውም ጊዜ በChrome ቅንብሮች ውስጥ የማስታወቂያ ቅንብሮችን ማጥፋት ይችላሉ።</translation>
-<translation id="1697808683313379647">Google እነዚህን አማራጮች ለማቅረብ ከክፍያ ማጠናቀቂያ ገጽ እና ሌሎች አግባብነት ያላቸው መረጃዎችን ይጠቀማል።</translation>
 <translation id="1699651774646344471">አሁን ከGoogle መለያዎ ላይ አድራሻዎችን መጠቀም ይችላሉ።</translation>
 <translation id="1700542542921501212">ድሩን ለመፈለግ <ph name="SEARCH_ENGINE_NAME" />ን መጠቀም ይችላሉ።</translation>
 <translation id="1702815194757674443">አርኦሲ 16ኬ</translation>
@@ -1133,6 +1132,7 @@
 <translation id="2794629552137076216">መስታወት (ወለል ላይ የወጣ)</translation>
 <translation id="2799223571221894425">ዳግም አስጀምር</translation>
 <translation id="2799758406651937857">የወንዶች አልባሳት</translation>
+<translation id="2803320044666896137">ተጠቃሚው አጋር ስላልሆነ ይህ የመመሪያ እሴት ችላ ይባላል።</translation>
 <translation id="2807052079800581569">የምስል Y አቀማመጥ</translation>
 <translation id="2808278141522721006"><ph name="SETTINGS" /> ውስጥ Windows Helloን ማብራት ወይም ማጥፋት ይችላሉ</translation>
 <translation id="2818338148457093657">የውበት አገልግሎቶች እና ስፓዎች</translation>
@@ -1245,7 +1245,6 @@
 <translation id="299122504639061328">ነባሪ የፍለጋ ፕሮግራምዎን እና የጣቢያ ፍለጋዎን ያቀናብሩ</translation>
 <translation id="2991571918955627853">የድር ጣቢያው HSTS ስለሚጠቀም አሁን <ph name="SITE" />ን መጎብኘት አይችሉም። የአውታረ መረብ ስህተቶች እና ጥቃቶች አብዛኛው ጊዜ ጊዜያዊ ናቸው፣ ስለዚህ ይህ ገፅ በኋላ ላይ ሳይሠራ አይቀርም።</translation>
 <translation id="2991865971341174470">Chrome የክፍያ መረጃዎን መሙላት እንዲችል እርስዎ መሆንዎን ያረጋግጡ።</translation>
-<translation id="2995010188916335277">Google እነዚህን አማራጮች ለማቅረብ ከክፍያ ማጠናቀቂያ ገጽ መረጃን እና ሌላ አግባብነት ያለው ውሂብን ይጠቀማል። በራስ-ሙላ ውስጥ የበኋላ ላይ መክፈል አማራጮችን ለመደበቅ ወደ <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> ይሂዱ።</translation>
 <translation id="2995121550202354573">ለሁሉም የእንግዳ መገለጫዎች ተጠቀም</translation>
 <translation id="2995517112308048736">የፋይል መጠን፡</translation>
 <translation id="299990983510665749">ሃችባኮች</translation>
@@ -1985,6 +1984,7 @@
 <translation id="4152495263075154876">የአሁን ይግዙ፣ በኋላ ይክፈሉ ሂደት ማያ ገጽ ተዘግቷል።</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 ትር}one{# ትሮች}other{# ትሮች}}</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> በኤችቲቲፒኤስ የተመሰጠረ ግንኙነትን አይደግፍም</translation>
+<translation id="4153858337812834972">አብዛኛዎቹ የቅርብ ጊዜ ትሮች</translation>
 <translation id="4154277373259957087">Chrome የመክፈያ ዘዴዎችን ከመሞላቱ በፊት እርስዎ መሆንዎን ያረጋግጣል። በ<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> ውስጥ በማንኛውም ጊዜ ይህ ማዘመን ይችላሉ።</translation>
 <translation id="415440494507469262">ትርን ወደ የንጽጽር ሰንጠረዥ አክል</translation>
 <translation id="4159784952369912983">ሐምራዊ</translation>

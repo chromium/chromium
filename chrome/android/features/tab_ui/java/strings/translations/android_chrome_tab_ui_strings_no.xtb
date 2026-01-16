@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Vil du lukke alle inkognitofaner?</translation>
 <translation id="1501480321619201731">Slett gruppen</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> inaktivt element}other{<ph name="TABS_COUNT_MANY" /> inaktive elementer}}</translation>
+<translation id="1568067597247500137">Kutt lyden for nettsted</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> faner er gruppert</translation>
 <translation id="1657719826150349398">Flytt fanen nedover</translation>
 <translation id="1670942869417022142">Dempet lyd</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">Prisen på denne varen falt nylig fra <ph name="PREVIOUS_PRICE" /> til <ph name="NEW_PRICE" /></translation>
 <translation id="606985262342505139">Felt nederst for faner vises i full høyde</translation>
 <translation id="6109251075362363230">Alle duplikatfaner blir nå også arkivert, med unntak av den sist brukte kopien.</translation>
+<translation id="612596694132302162">Slå på lyden for nettsted</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Lukk <ph name="TABS_COUNT_ONE" /> valgt element}other{Lukk <ph name="TABS_COUNT_MANY" /> valgte elementer}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Flytt gruppen til et nytt vindu}other{Flytt gruppen til et annet vindu}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Flytt fanen til høyre}other{Flytt fanene til høyre}}</translation>

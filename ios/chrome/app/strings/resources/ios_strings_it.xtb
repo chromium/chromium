@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Nuova finestra</translation>
 <translation id="1558391695376153246">Chiudi schede in incognito</translation>
 <translation id="1565371473877914088">Nuova scheda Incognito</translation>
+<translation id="1567960978791353852">Mostra modalità Lettura</translation>
 <translation id="1571780780926010134">Schede di navigazione in incognito</translation>
 <translation id="1580715474678097352">Proteggiti dai siti web pericolosi</translation>
 <translation id="1580783302095112590">Messaggio inviato.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">Per visualizzare le password, per prima cosa imposta un passcode sul tuo dispositivo.</translation>
 <translation id="201759455285471444">Espandi il gruppo di schede.</translation>
 <translation id="202070562065520783">Spiegami questo testo</translation>
+<translation id="2023713324775943812">Accedi alla Modalità di lettura dalla barra degli indirizzi quando disponibile</translation>
 <translation id="2044394949148788042">Apri la griglia delle schede</translation>
 <translation id="2044681667265133332">L'account <ph name="USER_EMAIL" /> è gestito da <ph name="HOSTED_DOMAIN" />, che potrebbe essere in grado di visualizzare alcune informazioni. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nuovo elemento</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">I tuoi gruppi di schede vengono salvati qui</translation>
 <translation id="2273327106802955778">Menu Altro</translation>
 <translation id="2287614783861766820">{count,plural, =1{Questo indirizzo verrà eliminato da questo dispositivo.}other{Questi indirizzi verranno eliminati da questo dispositivo.}}</translation>
+<translation id="2295236662082735391">Tieni premuta un'immagine sul web per modificarla con Gemini</translation>
 <translation id="2297989278479054870">Quando esci, i preferiti, le password e altri dati nel tuo Account Google verranno rimossi da questo dispositivo.</translation>
 <translation id="2299218006564889602">Le tue password vengono criptate sul dispositivo prima di essere salvate in Gestore delle password di Google.</translation>
 <translation id="2306265833370324042">Mostra dettagli <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Scatta una foto della tua ricerca</translation>
 <translation id="2761898608071930085">Usa un altro account</translation>
 <translation id="2762000892062317888">in questo istante</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Aggiungi fino a 1 immagine}other{Aggiungi fino a {COUNT} immagini}}</translation>
 <translation id="2772667768515195373">Puoi usare gli indirizzi salvati in tutti i prodotti Google. Questo indirizzo viene salvato nel tuo Account Google <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">Notifiche via email</translation>
 <translation id="2781331604911854368">Attiva</translation>
@@ -1353,6 +1357,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="605721222689873409">AA</translation>
 <translation id="6058415747854995776">Fai un video</translation>
 <translation id="6059830886158432458">Controlla notizie e attività qui</translation>
+<translation id="6063802271331271857">Remixa un'immagine</translation>
 <translation id="6066301408025741299">Tocca per annullare.</translation>
 <translation id="6074656473835429958">Ricevi notifiche</translation>
 <translation id="607620096698446287">Impossibile caricare <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -1871,6 +1876,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="7899199123054742721">Segna tutti come da leggere</translation>
 <translation id="7911190106180361398">La tua organizzazione non ti consente di sincronizzare tutti i dati.</translation>
 <translation id="7918999344502274923">Nascondi dettagli di <ph name="SEARCH_ENGINE_NAME" /></translation>
+<translation id="7921559948846049514">Scegli un tema, un colore o altro per lo sfondo</translation>
 <translation id="792357691529995513">Nessun problema rilevato</translation>
 <translation id="7925108652071887026">Dati della Compilazione automatica</translation>
 <translation id="7926975587469166629">Nickname carta</translation>

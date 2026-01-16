@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Yeni Pəncərə</translation>
 <translation id="1558391695376153246">Anonim tabları qapadın</translation>
 <translation id="1565371473877914088">Yeni Anonim Tab</translation>
+<translation id="1567960978791353852">Oxu rejimini göstərin</translation>
 <translation id="1571780780926010134">Anonim tablar</translation>
 <translation id="1580715474678097352">Təhlükəli veb-saytlardan qorunun</translation>
 <translation id="1580783302095112590">Məktub göndərildi.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">Parollara baxmaq üçün əvvəlcə cihazınızda parol kod ayarlamalısınız.</translation>
 <translation id="201759455285471444">Tab qrupunu genişləndirin.</translation>
 <translation id="202070562065520783">Bunu mənə izah et</translation>
+<translation id="2023713324775943812">Əlçatan olduqda ünvan panelindən Oxu rejiminə daxil olun</translation>
 <translation id="2044394949148788042">Tab torunu açın</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> hesabı <ph name="HOSTED_DOMAIN" /> tərəfindən idarə olunur və o, müəyyən məlumatlara baxa bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">yeni element</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Tab qruplarınız burada yaddaşda saxlanılır</translation>
 <translation id="2273327106802955778">Ətraflı menyu</translation>
 <translation id="2287614783861766820">{count,plural, =1{Bu ünvan bu cihazdan silinəcək.}other{Bu ünvanlar bu cihazdan silinəcək.}}</translation>
+<translation id="2295236662082735391">Gemini ilə redaktə etmək üçün vebdə şəklə basıb saxlayın</translation>
 <translation id="2297989278479054870">Çıxdıqdan sonra əlfəcin, parol və Google Hesabındakı digər data bu cihazdan silinəcək.</translation>
 <translation id="2299218006564889602">Parollarınız Google Parol Menecerində saxlanmazdan əvvəl cihazınızda şifrələnir.</translation>
 <translation id="2306265833370324042"><ph name="SEARCH_ENGINE_NAME" /> təfərrüatlarını göstərin</translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Axtarışın fotosunu çəkin</translation>
 <translation id="2761898608071930085">Başqa Hesabdan İstifadə Edin</translation>
 <translation id="2762000892062317888">indicə</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Maksimum 1 şəkil əlavə edin}other{Maksimum {COUNT} şəkil əlavə edin}}</translation>
 <translation id="2772667768515195373">Google məhsullarında yadda saxlanmış ünvanlardan istifadə edə bilərsiniz. Ünvan Google Hesabında (<ph name="USER_EMAIL" />) yadda saxlanıb.</translation>
 <translation id="2773344962924806829">E-poçt bildirişləri</translation>
 <translation id="2781331604911854368">Aktiv</translation>
@@ -1353,6 +1357,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="605721222689873409">İİ</translation>
 <translation id="6058415747854995776">Video çəkin</translation>
 <translation id="6059830886158432458">Hekayələrinizi və fəaliyyətlərinizi burada idarə edin</translation>
+<translation id="6063802271331271857">Şəkli remiks edin</translation>
 <translation id="6066301408025741299">Ləğv etmək üçün tıklayın.</translation>
 <translation id="6074656473835429958">Bildiriş alın</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) yüklənmədi</translation>
@@ -1871,6 +1876,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="7899199123054742721">Hamısını oxunmamış kimi qeyd edin</translation>
 <translation id="7911190106180361398">Təşkilatınız hər şeyi sinxronizasiya etməyinizə icazə vermir.</translation>
 <translation id="7918999344502274923"><ph name="SEARCH_ENGINE_NAME" /> təfərrüatlarını gizlədin</translation>
+<translation id="7921559948846049514">Arxa fon üçün tema, rəng və ya daha çoxunu seçin</translation>
 <translation id="792357691529995513">Problem tapılmadı</translation>
 <translation id="7925108652071887026">Datanı avtomatik doldurun</translation>
 <translation id="7926975587469166629">Kart ləqəbi</translation>

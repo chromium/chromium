@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Bezárja az összes inkognitó lapot?</translation>
 <translation id="1501480321619201731">Csoport törlése</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> inaktív elem}other{<ph name="TABS_COUNT_MANY" /> inaktív elem}}</translation>
+<translation id="1568067597247500137">Webhely némítása</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> lap csoportosítva</translation>
 <translation id="1657719826150349398">Lap mozgatása lefelé</translation>
 <translation id="1670942869417022142">Némítva van a hang</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">A tétel ára nemrég csökkent. Régi ár: <ph name="PREVIOUS_PRICE" />, új ár: <ph name="NEW_PRICE" /></translation>
 <translation id="606985262342505139">A lap alsó lapja teljes magasságban megnyitva.</translation>
 <translation id="6109251075362363230">Mostantól az összes ismétlődő lap is archiválva lesz a legutóbb használt példány kivételével.</translation>
+<translation id="612596694132302162">Webhely némításának feloldása</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kijelölt elem bezárása}other{<ph name="TABS_COUNT_MANY" /> kijelölt elem bezárása}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Csoport áthelyezése egy új ablakba}other{Csoport áthelyezése egy másik ablakba}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Lap áthelyezése jobbra}other{Lapok áthelyezése jobbra}}</translation>

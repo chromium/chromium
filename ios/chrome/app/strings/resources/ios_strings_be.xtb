@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Новае акно</translation>
 <translation id="1558391695376153246">Закрыць укладкі інкогніта</translation>
 <translation id="1565371473877914088">Новая ўкладка ў рэжыме інкогніта</translation>
+<translation id="1567960978791353852">Паказваць рэжым чытання</translation>
 <translation id="1571780780926010134">Укладкі ў рэжыме інкогніта</translation>
 <translation id="1580715474678097352">Абарона ад небяспечных вэб-сайтаў</translation>
 <translation id="1580783302095112590">Пошта адпраўлена.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">Каб убачыць паролі, на прыладзе трэба спачатку задаць пароль.</translation>
 <translation id="201759455285471444">Разгарнуць групу ўкладак.</translation>
 <translation id="202070562065520783">Растлумач гэта мне</translation>
+<translation id="2023713324775943812">Доступ да рэжыму чытання з адраснага радка (пры магчымасці)</translation>
 <translation id="2044394949148788042">Адкрыйце сетку ўкладак</translation>
 <translation id="2044681667265133332">Уліковым запісам <ph name="USER_EMAIL" /> кіруе дамен "<ph name="HOSTED_DOMAIN" />", які можа праглядаць пэўную інфармацыю. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">новы элемент</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Тут захоўваюцца групы ўкладак</translation>
 <translation id="2273327106802955778">Меню "Дадаткова"</translation>
 <translation id="2287614783861766820">{count,plural, =1{Гэты адрас будзе выдалены з прылады.}one{Гэтыя адрасы будуць выдалены з прылады.}few{Гэтыя адрасы будуць выдалены з прылады.}many{Гэтыя адрасы будуць выдалены з прылады.}other{Гэтыя адрасы будуць выдалены з прылады.}}</translation>
+<translation id="2295236662082735391">Каб змяніць відарыс з дапамогай Gemini, націсніце і ўтрымлівайце яго на вэб-старонцы</translation>
 <translation id="2297989278479054870">Пасля таго, як вы выйдзеце, з гэтай прылады будуць выдалены закладкі, паролі і іншыя даныя з вашага Уліковага запісу Google.</translation>
 <translation id="2299218006564889602">Вашы паролі шыфруюцца на прыладзе і толькі потым захоўваюцца ў Менеджары пароляў Google.</translation>
 <translation id="2306265833370324042">Паказаць падрабязныя звесткі: <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Сфатаграфуйце тое, што шукаеце</translation>
 <translation id="2761898608071930085">Выкарыстаць іншы ўліковы запіс</translation>
 <translation id="2762000892062317888">толькі што</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Дадайце максімум 1 відарыс}one{Дадайце максімум {COUNT} відарыс.}few{Дадайце максімум {COUNT} відарысы.}many{Дадайце максімум {COUNT} відарысаў.}other{Дадайце максімум {COUNT} відарыса.}}</translation>
 <translation id="2772667768515195373">Вы можаце выкарыстоўваць захаваныя адрасы ў розных прадуктах Google. Гэты адрас захоўваецца ў вашым Уліковым запісе Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773344962924806829">Апавяшчэнні па электроннай пошце</translation>
 <translation id="2781331604911854368">Уключана</translation>
@@ -1353,6 +1357,7 @@
 <translation id="605721222689873409">ГГ</translation>
 <translation id="6058415747854995776">Зняць відэа</translation>
 <translation id="6059830886158432458">Кіруйце паказам артыкулаў і гісторыяй дзеянняў тут</translation>
+<translation id="6063802271331271857">Стварайце рэміксы з відарысаў</translation>
 <translation id="6066301408025741299">Каб скасаваць, націсніце тут.</translation>
 <translation id="6074656473835429958">Атрымлівайце апавяшчэнні</translation>
 <translation id="607620096698446287">Не ўдалося запампаваць файл "<ph name="FILENAME" />" (<ph name="FILESIZE" />)</translation>
@@ -1871,6 +1876,7 @@
 <translation id="7899199123054742721">Пазначыць усе як непрачытаныя</translation>
 <translation id="7911190106180361398">Ваша арганізацыя не дазваляе сінхранізаваць усё.</translation>
 <translation id="7918999344502274923">Схаваць падрабязныя звесткі: <ph name="SEARCH_ENGINE_NAME" /></translation>
+<translation id="7921559948846049514">Выберыце тэму, колер і іншыя параметры для фону</translation>
 <translation id="792357691529995513">Праблем не знойдзена</translation>
 <translation id="7925108652071887026">Даныя аўтазапаўнення</translation>
 <translation id="7926975587469166629">Псеўданім карткі</translation>

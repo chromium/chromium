@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Vil du lukke alle inkognitofaner?</translation>
 <translation id="1501480321619201731">Slet gruppe</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> inaktivt element}one{<ph name="TABS_COUNT_MANY" /> inaktivt element}other{<ph name="TABS_COUNT_MANY" /> inaktive elementer}}</translation>
+<translation id="1568067597247500137">Slå lyden fra på et website</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> faner blev grupperet</translation>
 <translation id="1657719826150349398">Flyt fane ned</translation>
 <translation id="1670942869417022142">Lyden er slået fra</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">Prisen på denne vare er for nylig faldet fra <ph name="PREVIOUS_PRICE" /> til <ph name="NEW_PRICE" /></translation>
 <translation id="606985262342505139">Feltet i bunden med faner er åbnet i fuld højde</translation>
 <translation id="6109251075362363230">Alle dubletter af faner arkiveres nu også med undtagelse af den senest anvendte kopi.</translation>
+<translation id="612596694132302162">Slå lyden til på et website</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Luk <ph name="TABS_COUNT_ONE" /> valgt element}one{Luk <ph name="TABS_COUNT_MANY" /> valgt element}other{Luk <ph name="TABS_COUNT_MANY" /> valgte elementer}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Flyt gruppe til det nye vindue}one{Flyt gruppe til det nye vindue}other{Flyt gruppe til et andet vindue}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Flyt fane til højre}one{Flyt fane til højre}other{Flyt faner til højre}}</translation>

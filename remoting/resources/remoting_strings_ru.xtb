@@ -46,6 +46,7 @@
 <translation id="3150823315463303127">Хосту не удалось прочесть правила.</translation>
 <translation id="3171922709365450819">Клиент не поддерживает это устройство, так как оно требует аутентификации через сторонний сервис.</translation>
 <translation id="3197730452537982411">Удаленный рабочий стол</translation>
+<translation id="3236334139428307578">© The Chromium Authors, 2026. Все права защищены.</translation>
 <translation id="324272851072175193">Отправить инструкции по эл. почте</translation>
 <translation id="3305934114213025800">Приложение "<ph name="PRODUCT_NAME" />" пытается внести изменения.</translation>
 <translation id="3339299787263251426">Безопасное управление компьютером через Интернет</translation>
@@ -110,6 +111,7 @@
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> запрашивает доступ к вашему экрану, клавиатуре и мыши. Нажмите ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'', если не хотите предоставлять доступ. Чтобы разрешить доступ после установки соединения, нажмите ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />''.</translation>
 <translation id="5823658491130719298">На компьютере, к которому вы хотите получить удаленный доступ, откройте страницу <ph name="INSTALLATION_LINK" /> в браузере Chrome.</translation>
 <translation id="5841343754884244200">Настройки внешнего вида</translation>
+<translation id="5965133372831030509">© Google LLC, 2026. Все права защищены.</translation>
 <translation id="6033507038939587647">Настройки клавиатуры</translation>
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="6062854958530969723">Сбой инициализации хоста</translation>

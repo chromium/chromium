@@ -1889,7 +1889,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2257053455312861282">Jika akun sekolah ditambahkan, pengguna dapat login dengan mudah ke situs, ekstensi, dan aplikasi sebagai siswa, dan tetap dalam kontrol orang tua.</translation>
 <translation id="225716114209817872">Maksimum</translation>
 <translation id="2259337945538989999">Untuk mengakses tab Anda dari perangkat lain, verifikasi diri Anda. Anda dapat berhenti menyinkronkan kapan saja di setelan. Google dapat mempersonalisasi Penelusuran dan layanan lainnya berdasarkan histori Anda.</translation>
-<translation id="2261323523305321874">Administrator Anda telah melakukan perubahan di seluruh sistem yang menonaktifkan sebagian profil lama.</translation>
 <translation id="22614517036276112">Dokumen ini atau perangkat Anda tidak memenuhi beberapa kebijakan keamanan organisasi Anda. Hubungi admin Anda untuk mengetahui hal yang perlu diperbaiki.</translation>
 <translation id="2262477216570151239">Penundaan sebelum pengulangan</translation>
 <translation id="2263189956353037928">Logout &amp; login kembali</translation>
@@ -2537,7 +2536,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2681124317993121768">Profil tamu tidak didukung</translation>
 <translation id="2682498795777673382">Pembaruan dari orang tua</translation>
 <translation id="2683638487103917598">Folder diurutkan</translation>
-<translation id="2684004000387153598">Untuk melanjutkan, klik Oke, lalu klik Tambahkan Pengguna guna membuat profil baru untuk alamat email Anda.</translation>
 <translation id="2685193395980129388">Diizinkan – <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687407218262674387">Persyaratan layanan Google</translation>
 <translation id="2688196195245426394">Terjadi error saat mendaftarkan perangkat dengan server: <ph name="CLIENT_ERROR" />.</translation>
@@ -2839,6 +2837,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2885129935310217435">Ada tombol dengan nama yang sama. Pilih nama lain.</translation>
 <translation id="2885378588091291677">Pengelola Tugas</translation>
 <translation id="2885729872133513017">Terjadi error saat mendekode respons server.</translation>
+<translation id="2886119409731773154">Proses ini mungkin perlu waktu hingga 30 menit</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> dan <ph name="NUMBER_OF_DEVICES" /> lainnya</translation>
 <translation id="2887344147309501015">Ngobrol dengan Gemini di Chrome untuk mendapatkan jawaban, poin-poin penting, dan lainnya saat Anda menjelajah</translation>
@@ -9796,7 +9795,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7681757571815416227">Untuk menggunakan perangkat dengan profil <ph name="DOMAIN" />, organisasi Anda memerlukan informasi tentang perangkat.
 
 Informasi ini dapat mencakup informasi tentang software yang diinstal, file, browser, sistem operasi perangkat, dan alamat IP.</translation>
-<translation id="7683373461016844951">Untuk melanjutkan, klik Oke, lalu klik Tambahkan Pengguna guna membuat profil baru untuk alamat email <ph name="DOMAIN" /> Anda.</translation>
 <translation id="7683834360226457448">Alat layar bagi pengguna dengan gangguan penglihatan</translation>
 <translation id="7684212569183643648">Dipasang oleh Administrator Anda</translation>
 <translation id="7684559058815332124">Kunjungi halaman masuk portal tawanan</translation>
@@ -11225,7 +11223,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> ingin: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" />, dan lainnya</translation>
 <translation id="8648889679430451455">Hapus data personalisasi</translation>
 <translation id="8649026945479135076">Situs yang Anda buka biasanya mengingat hal-hal yang Anda minati agar dapat mempersonalisasi pengalaman Anda. Situs juga dapat menyimpan informasi tentang minat Anda ke Chrome.</translation>
-<translation id="8650543407998814195">Meskipun tidak lagi dapat mengakses profil lama, Anda tetap dapat menghapusnya.</translation>
 <translation id="8651585100578802546">Paksa Muat Ulang Halaman Ini</translation>
 <translation id="8652400352452647993">Error ekstensi pack</translation>
 <translation id="8654151524613148204">Maaf, file terlalu besar untuk ditangani komputer Anda.</translation>

@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Ffenestr Newydd</translation>
 <translation id="1558391695376153246">Cau tabiau Anhysbys</translation>
 <translation id="1565371473877914088">Tab Anhysbys Newydd</translation>
+<translation id="1567960978791353852">Dangos y Modd Darllen</translation>
 <translation id="1571780780926010134">Tabiau anhysbys</translation>
 <translation id="1580715474678097352">Aros yn ddiogel rhag gwefannau peryglus</translation>
 <translation id="1580783302095112590">Wedi anfon e-bost.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">I weld cyfrineiriau, rhaid i chi osod cod pas ar eich dyfais yn gyntaf.</translation>
 <translation id="201759455285471444">Ehangu'r grŵp tab.</translation>
 <translation id="202070562065520783">Eglurwch hyn i mi</translation>
+<translation id="2023713324775943812">Cael mynediad at y Modd Darllen o'r bar cyfeiriad pan fydd ar gael</translation>
 <translation id="2044394949148788042">Agorwch y grid tabiau</translation>
 <translation id="2044681667265133332">Mae'r cyfrif <ph name="USER_EMAIL" /> yn cael ei reoli gan <ph name="HOSTED_DOMAIN" />, a allai weld rhywfaint o wybodaeth. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">eitem newydd</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Mae eich grwpiau tabiau yn cael eu cadw yma</translation>
 <translation id="2273327106802955778">Dewislen rhagor</translation>
 <translation id="2287614783861766820">{count,plural, =1{Bydd y cyfeiriad hwn yn cael ei ddileu o'r ddyfais hon.}zero{Bydd y cyfeiriadau hyn yn cael eu dileu o'r ddyfais hon.}two{Bydd y cyfeiriadau hyn yn cael eu dileu o'r ddyfais hon.}few{Bydd y cyfeiriadau hyn yn cael eu dileu o'r ddyfais hon.}many{Bydd y cyfeiriadau hyn yn cael eu dileu o'r ddyfais hon.}other{Bydd y cyfeiriadau hyn yn cael eu dileu o'r ddyfais hon.}}</translation>
+<translation id="2295236662082735391">Pwyswch yn hir ar lun ar y we i’w olygu gyda Gemini</translation>
 <translation id="2297989278479054870">Ar ôl i chi allgofnodi, bydd y nodau tudalen, cyfrineiriau a rhagor yn eich Cyfrif Google yn cael eu tynnu o'r ddyfais hon.</translation>
 <translation id="2299218006564889602">Mae eich cyfrineiriau yn cael eu hamgryptio ar eich dyfais cyn iddynt gael eu cadw i Reolwr Cyfrineiriau Google.</translation>
 <translation id="2306265833370324042">Dangos manylion <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Tynnwch lun o'ch chwiliad</translation>
 <translation id="2761898608071930085">Defnyddio Cyfrif Arall</translation>
 <translation id="2762000892062317888">newydd ddigwydd</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Ychwanegu hyd at 1 llun}zero{Ychwanegu hyd at {COUNT} llun}two{Ychwanegu hyd at {COUNT} lun}few{Ychwanegu hyd at {COUNT} llun}many{Ychwanegu hyd at {COUNT} llun}other{Ychwanegu hyd at {COUNT} llun}}</translation>
 <translation id="2772667768515195373">Gallwch ddefnyddio cyfeiriadau sydd wedi'u cadw ar draws cynhyrchion Google. Mae'r cyfeiriad hwn wedi'i gadw yn eich Cyfrif Google <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">Hysbysiadau e-bost</translation>
 <translation id="2781331604911854368">Ymlaen</translation>
@@ -1353,6 +1357,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="605721222689873409">BB</translation>
 <translation id="6058415747854995776">Cymryd Fideo</translation>
 <translation id="6059830886158432458">Rheoli eich straeon a'ch gweithgarwch yma</translation>
+<translation id="6063802271331271857">Ailgymysgu llun</translation>
 <translation id="6066301408025741299">Tapiwch i ganslo.</translation>
 <translation id="6074656473835429958">Cael hysbysiadau</translation>
 <translation id="607620096698446287">Nid oedd modd uwchlwytho <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -1871,6 +1876,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="7899199123054742721">Marcio pob un fel heb ei ddarllen</translation>
 <translation id="7911190106180361398">Nid yw'ch sefydliad yn caniatáu i chi gysoni popeth.</translation>
 <translation id="7918999344502274923">Cuddio manylion <ph name="SEARCH_ENGINE_NAME" /></translation>
+<translation id="7921559948846049514">Dewiswch thema, lliw, neu ragor ar gyfer eich cefndir</translation>
 <translation id="792357691529995513">Ni chanfuwyd unrhyw broblemau</translation>
 <translation id="7925108652071887026">Data awtolenwi</translation>
 <translation id="7926975587469166629">Llysenw cerdyn</translation>

@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Queres pechar todas as pestanas do modo de incógnito?</translation>
 <translation id="1501480321619201731">Eliminar grupo</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> elemento inactivo}other{<ph name="TABS_COUNT_MANY" /> elementos inactivos}}</translation>
+<translation id="1568067597247500137">Silenciar sitio</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> pestanas agrupadas</translation>
 <translation id="1657719826150349398">Mover pestana cara abaixo</translation>
 <translation id="1670942869417022142">Audio silenciado</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">O prezo deste artigo baixou recentemente de <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
 <translation id="606985262342505139">Panel inferior da pestana a altura completa</translation>
 <translation id="6109251075362363230">Agora tamén se arquivarán todas as pestanas duplicadas, a excepción da copia usada máis recentemente.</translation>
+<translation id="612596694132302162">Activar son do sitio</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Pechar <ph name="TABS_COUNT_ONE" /> elemento seleccionado}other{Pechar <ph name="TABS_COUNT_MANY" /> elementos seleccionados}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Mover grupo a unha ventá nova}other{Mover grupo a outra ventá}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Mover pestana cara á dereita}other{Mover pestanas cara á dereita}}</translation>

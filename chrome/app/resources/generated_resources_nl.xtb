@@ -40,7 +40,7 @@
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Je apparaat wordt beheerd door <ph name="DOMAIN" />. Beheerders hebben op dit apparaat toegang tot de gegevens van elk profiel.</translation>
 <translation id="1022719295563085177">Netwerkstandaard</translation>
-<translation id="1026196234862089732">Toegangssleutel geüpdatet</translation>
+<translation id="1026196234862089732">Toegangssleutel bijgewerkt</translation>
 <translation id="1026655690966755180">Poort toevoegen</translation>
 <translation id="1026822031284433028">Afbeelding laden</translation>
 <translation id="1026959648338730078">Windows Hello of externe beveiligingssleutel</translation>
@@ -1540,6 +1540,7 @@ Dit is niet van invloed op apps of content op andere apparaten.</translation>
 <translation id="2024195579772565064">Zoekmachine verwijderen</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Nauwkeurig klikken</translation>
+<translation id="2025130536872979378">bron bekijken</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> is vastgelopen. Klik op deze ballon om de extensie opnieuw te laden.</translation>
 <translation id="2026367923222947564">Hele pagina</translation>
 <translation id="2026377162111110983">Omgevingsstem</translation>
@@ -1878,7 +1879,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2257053455312861282">Door een schoolaccount toe te voegen, kunnen kinderen gemakkelijk als leerling inloggen bij websites, extensies en apps terwijl ze nog steeds onder ouderlijk toezicht staan.</translation>
 <translation id="225716114209817872">Maximum</translation>
 <translation id="2259337945538989999">Bevestig dat jij het bent om de tabbladen van je andere apparaten te krijgen. Je kunt de synchronisatie op elk moment stopzetten via de instellingen. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>
-<translation id="2261323523305321874">Je beheerder heeft een wijziging in het systeem gemaakt waardoor sommige oude profielen niet meer kunnen worden gebruikt.</translation>
 <translation id="22614517036276112">Dit document of je apparaat voldoet niet aan het beveiligingsbeleid van je organisatie. Neem contact op met je beheerder over wat moet worden opgelost.</translation>
 <translation id="2262477216570151239">Vertraging vóór herhaling</translation>
 <translation id="2263189956353037928">Uitloggen en weer inloggen</translation>
@@ -2523,7 +2523,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2681124317993121768">Gastprofielen worden niet ondersteund</translation>
 <translation id="2682498795777673382">Update van je ouder</translation>
 <translation id="2683638487103917598">Map gesorteerd</translation>
-<translation id="2684004000387153598">Als je verder wilt gaan, klik je op 'OK' en vervolgens op 'Persoon toevoegen' om een nieuw profiel te maken voor je e-mailadres.</translation>
 <translation id="2685193395980129388">Rechten toegestaan: <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687407218262674387">Servicevoorwaarden van Google</translation>
 <translation id="2688196195245426394">Fout bij het registreren van het apparaat bij de server: <ph name="CLIENT_ERROR" />.</translation>
@@ -2786,6 +2785,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2856776373509145513">Een nieuwe container maken</translation>
 <translation id="2857047802954430547">Log in om onder andere je wachtwoorden en bookmarks te gebruiken op al je apparaten</translation>
 <translation id="2859741939921354763">Wachtwoorden importeren in <ph name="BRAND" /></translation>
+<translation id="2860284453253554297">Zakelijk beleid</translation>
 <translation id="2860710618359053450">Je kaak naar rechts bewegen</translation>
 <translation id="2861301611394761800">Het systeem is geüpdatet. Start het systeem opnieuw op.</translation>
 <translation id="2861402191395139055">Passpoint-abonnementen</translation>
@@ -2824,6 +2824,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2885129935310217435">Er is al een knop met dezelfde naam. Kies een andere naam.</translation>
 <translation id="2885378588091291677">Taakbeheer</translation>
 <translation id="2885729872133513017">Er is een probleem opgetreden bij het decoderen van de serverreactie.</translation>
+<translation id="2886119409731773154">Dit kan tot 30 minuten duren</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> en <ph name="NUMBER_OF_DEVICES" /> andere</translation>
 <translation id="2887344147309501015">Chat met Gemini in Chrome om onder meer antwoorden en belangrijke conclusies te krijgen terwijl je browst</translation>
@@ -9773,11 +9774,11 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7681757571815416227">Als je je apparaat wilt gebruiken met je <ph name="DOMAIN" />-profiel, heeft je organisatie informatie over het apparaat nodig.
 
 Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser, het besturingssysteem van het apparaat en IP-adressen.</translation>
-<translation id="7683373461016844951">Als je verder wilt gaan, klik je op 'OK' en vervolgens op 'Persoon toevoegen' om een nieuw profiel te maken voor je <ph name="DOMAIN" />-mailadres.</translation>
 <translation id="7683834360226457448">Weergavetools voor slechtzienden</translation>
 <translation id="7684212569183643648">Geïnstalleerd door je beheerder</translation>
 <translation id="7684559058815332124">Captive portal-loginpagina bezoeken</translation>
 <translation id="7684718995427157417">Zet Android Debug Bridge (ADB) aan om je apps te maken en te testen. Let op: Met deze actie sta je toe dat Android-apps worden geïnstalleerd die niet door Google zijn geverifieerd. Als je deze functie wilt uitzetten, moeten de fabrieksinstellingen van je apparaat worden hersteld.</translation>
+<translation id="7684803937028953000">Je organisatie heeft de lokale download van dit bestand geblokkeerd.</translation>
 <translation id="7684913007876670600">Als je een vereenvoudigde weergave van deze pagina wilt tonen, open je het zijvenster en selecteer je de leesmodus</translation>
 <translation id="7685038817958445325">Kan niet casten</translation>
 <translation id="7685049629764448582">JavaScript-geheugen</translation>
@@ -11201,7 +11202,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> wil het volgende: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> en meer</translation>
 <translation id="8648889679430451455">Personalisatiegegevens wissen</translation>
 <translation id="8649026945479135076">Door jou bezochte sites onthouden over het algemeen informatie over je interesses om zo de functionaliteit te personaliseren. Sites kunnen ook informatie over je interesses in Chrome opslaan.</translation>
-<translation id="8650543407998814195">Hoewel je geen toegang meer hebt tot je oude profiel, kun je dit nog wel verwijderen.</translation>
 <translation id="8651585100578802546">Laad pagina opnieuw</translation>
 <translation id="8652400352452647993">Fout met pakketextensie</translation>
 <translation id="8654151524613148204">Je computer kan het bestand vanwege de grootte helaas niet verwerken.</translation>

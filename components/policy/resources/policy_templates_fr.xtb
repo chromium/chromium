@@ -2422,11 +2422,6 @@ Si la règle est définie sur 2 (désactivée), l'intégration du Google Develo
 <translation id="2707733461906745082">Séparation du profil</translation>
 <translation id="2707873794476722903">La navigation sécurisée est active et en mode de protection standard.</translation>
 <translation id="2709516037105925701">Saisie automatique</translation>
-<translation id="2713265653152900248">Cette règle permet d'autoriser l'accès aux URL listées en mode navigation privée, comme exceptions à <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />. Par exemple, définir <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> sur "*" bloque toutes les requêtes en mode navigation privée, et vous pouvez appliquer cette règle pour autoriser l'accès à une liste limitée d'URL. Utilisez-la pour définir des exceptions à certains schémas, ports, chemins d'accès spécifiques ou sous-domaines d'autres domaines à l'aide du format spécifié sur ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ). La règle <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> prévaut sur <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />. Cette règle est limitée à 1 000 entrées.
-
-Si cette règle n'est pas configurée, aucune exception à <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> n'est autorisée.
-
-Cette règle ne concerne que le mode navigation privée. Pour autoriser les URL pour tous les profils utilisateur, veuillez utiliser la règle <ph name="URL_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="2713913573196284609">Cette valeur a été abandonnée dans la version M121. Dans M121 et les versions ultérieures, les valeurs seront traitées comme EnabledUnderThreshold.</translation>
 <translation id="2713977837384407666">Toujours envoyer des métriques à Google</translation>
 <translation id="2714359695399346815">Si cette règle est activée ou qu'elle n'est pas configurée, elle permet d'utiliser des serveurs STUN. Les clients distants peuvent ainsi détecter cet ordinateur et s'y connecter même s'ils sont séparés par un pare-feu.
@@ -3264,6 +3259,8 @@ Si <ph name="NTPCARDSVISIBLE" /> est désactivé, la carte Outlook ne s'affiche 
       Si cette règle est désactivée, les appareils enregistrés ne communiquent pas ces informations.</translation>
 <translation id="3303770131697159224">Paramètre d'autorisation par défaut de la gestion des fenêtres</translation>
 <translation id="3303911765031636277">Règle de configuration du connecteur Chrome Enterprise OnFileAttached</translation>
+<translation id="3305586786770047829">Si cette règle est définie sur 0 ou n'est pas configurée, la règle <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> ne s'applique qu'au niveau de l'utilisateur à condition qu'il soit affilié.
+Si cette règle est définie sur 1, la règle <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> s'applique au niveau de l'utilisateur, même si celui-ci n'est pas affilié.</translation>
 <translation id="3307744348419745296">Ne pas autoriser la synchronisation des configurations de réseau Wi-Fi entre les appareils <ph name="PRODUCT_OS_NAME" /> et un téléphone Android connecté</translation>
 <translation id="3308724602356134956">Si vous configurez cette règle, <ph name="PRODUCT_OS_NAME" /> télécharge et utilise l'image de fond d'écran que vous avez définie pour l'arrière-plan de l'écran de connexion et le bureau des utilisateurs (lesquels ne peuvent pas modifier la configuration). Spécifiez l'URL (accessible sans authentification) à laquelle <ph name="PRODUCT_OS_NAME" /> peut télécharger l'image de fond d'écran (16 Mo maximum et au format JPEG), ainsi qu'un hachage cryptographique pour vérifier l'intégrité de l'image.
 
@@ -6543,15 +6540,6 @@ Elle n'empêche pas les utilisateurs d'enregistrer des fichiers dans <ph name="G
 
 Si cette règle est définie sur "false", l'utilisation d'identifiants n'est pas autorisée pour le contenu protégé.</translation>
 <translation id="5492713303272131731">Tous les autres processus peuvent être planifiés sur le même cœur de processeur lorsque le processus de rendu y est exécuté.</translation>
-<translation id="5494322570831642650">Permet de spécifier si l'utilisateur peut ouvrir ou non des pages en mode navigation privée dans <ph name="PRODUCT_NAME" />.
-
-      Si la règle est activée ou n'est pas définie, l'utilisateur peut ouvrir des pages en mode navigation privée.
-
-      Si elle est désactivée, l'utilisateur ne peut pas ouvrir de pages en mode navigation privée.
-
-      Si elle est imposée, l'utilisateur peut ouvrir des pages UNIQUEMENT en mode navigation privée. Cette dernière option ne fonctionne pas dans Chrome pour Android.
-
-      Remarque : Sur iOS, si cette règle est modifiée en cours de session, la modification ne prend effet qu'au redémarrage du navigateur.</translation>
 <translation id="549471902631700911">Désactiver la réception d'enquêtes sur la navigation sécurisée</translation>
 <translation id="549625769649876757">Cette règle permet de lister les formats d'URL pour lesquels les sites sont autorisés à accéder à la géolocalisation haute précision de l'utilisateur sans avoir à lui demander son autorisation au préalable.
 
@@ -8757,9 +8745,6 @@ Si la règle est définie sur "false" ou si elle n'est pas configurée, cette di
 <translation id="6866755486434471318">Autorise <ph name="PEPPER_NAME" /> à utiliser des images partagées pour le décodage vidéo.</translation>
 <translation id="6878757724611298427">Autoriser les utilisateurs à se servir d'applis Android sur des appareils non affiliés</translation>
 <translation id="6881447940489194100">Hachage SHA-256 des données, encodé en hexadécimal.</translation>
-<translation id="688149562204519323">Si vous définissez la règle <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />, les pages Web dont les URL sont interdites ne peuvent pas se charger en mode navigation privée. Les administrateurs peuvent spécifier la liste des formats d'URL à bloquer. Si cette règle n'est pas configurée, aucune URL n'est bloquée en mode navigation privée. Vous pouvez définir jusqu'à 1 000 exceptions dans <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" />. Découvrez les formats d'URL à respecter ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
-
-Cette règle ne s'applique qu'au mode navigation privée. Pour bloquer des URL pour tous les profils utilisateur, veuillez utiliser la règle <ph name="URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="68818134518270542">Permet de spécifier les applications que les utilisateurs peuvent activer comme applications de prise de notes sur l'écran de verrouillage <ph name="PRODUCT_OS_NAME" />.
 
       Si l'application de prise de notes préférée est activée sur l'écran de verrouillage, un élément d'interface utilisateur destiné à la lancer s'affiche à l'écran. Une fois démarrée, l'application peut ouvrir une fenêtre au-dessus de l'écran de verrouillage et créer des notes dans ce contexte. L'application peut importer les notes créées dans la session de l'utilisateur principal (lorsque la session est déverrouillée). Seules les applications de prise de notes <ph name="PRODUCT_NAME" /> sont acceptées sur l'écran de verrouillage.
@@ -9902,21 +9887,6 @@ Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_WEB_PRINTING_
 Les formats d'URL ne doivent pas entrer en conflit avec ceux de <ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" />. Aucune règle ne prévaut si un format d'URL est listé dans les deux règles.
 
 Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
-<translation id="7615612213075471065">Cette règle permet de contrôler la création de rapports <ph name="PRODUCT_NAME" /> sur les visites de domaines SaaS et les transferts de contenu pour un navigateur géré.
-
-Lorsqu'elle est configurée, les URL correspondant aux domaines SaaS sont utilisées pour générer un rapport et importées. Les URL dont le préfixe ne correspond à aucune entrée de la liste sont ignorées.
-
-Si cette règle n'est pas configurée ou qu'aucun préfixe ne correspond, aucun rapport n'est généré.
-
-Les formats correspondants sont semblables à ceux de la règle <ph name="URL_BLOCKLIST_POLICY_NAME" /> décrite sur https://support.google.com/chrome/a?p=url_blocklist_filter_format. À quelques exceptions près ci-dessous :
-
- * L'hôte de l'URL doit correspondre au nom d'hôte ou être un sous-domaine du nom d'hôte de l'un des domaines de la liste des sites SaaS.
-
- * Le chemin de l'URL doit commencer par le chemin d'accès de l'entrée de la liste des sites SaaS correspondants.
-
- * Le schéma, le port et la requête d'URL ne sont pas pris en compte lors de la mise en correspondance.
-
-La valeur de cette règle est renseignée par l'infrastructure de règles cloud. Les administrateurs ne peuvent pas la définir directement.</translation>
 <translation id="7616631530432070402">Les suites de chiffrement 3DES seront activées dans TLS</translation>
 <translation id="761788785484453836">Exiger l'isolation pour tous les sites Web</translation>
 <translation id="7620869951155758729">Cette règle définit la configuration utilisée pour générer et valider le code d'accès parental.
@@ -11408,23 +11378,6 @@ Elle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="8631437968147930597">Liste des applications de prise de notes autorisées sur l'écran de verrouillage de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8633550872001751090">Autoriser l'inclusion des données de <ph name="PRODUCT_NAME" /> dans les sauvegardes</translation>
 <translation id="8634062512783775032">Utiliser <ph name="AES_KL_NAME" /> comme algorithme de chiffrement du stockage de l'utilisateur si celui-ci est compatible</translation>
-<translation id="8635783478441936474">Cette règle permet de contrôler la création de rapports <ph name="PRODUCT_NAME" /> sur les visites de domaines SaaS et les transferts de contenu pour un profil géré.
-
-Lorsqu'elle est configurée, les URL correspondant aux domaines SaaS sont utilisées pour générer un rapport et importées. Les URL dont le préfixe ne correspond à aucune entrée de la liste sont ignorées.
-
-Si cette règle n'est pas configurée ou qu'aucun préfixe ne correspond, aucun rapport n'est généré.
-
-Les formats correspondants sont semblables à ceux de la règle <ph name="URL_BLOCKLIST_POLICY_NAME" /> décrite sur https://support.google.com/chrome/a?p=url_blocklist_filter_format. À quelques exceptions près ci-dessous :
-
- * L'hôte de l'URL doit correspondre au nom d'hôte ou être un sous-domaine du nom d'hôte de l'un des domaines de la liste des sites SaaS.
-
- * Le chemin de l'URL doit commencer par le chemin d'accès de l'entrée de la liste des sites SaaS correspondants.
-
- * Le schéma, le port et la requête d'URL ne sont pas pris en compte lors de la mise en correspondance.
-
-Cette règle ne peut être configurée que comme règle relative aux utilisateurs du cloud.
-
-La valeur de cette règle est renseignée par l'infrastructure de règles cloud. Les administrateurs ne peuvent pas la définir directement.</translation>
 <translation id="8637566476051166626">Ports réseau explicitement autorisés</translation>
 <translation id="8643838501942693770">Autoriser les cookies tiers, mais permettre aux utilisateurs de modifier ce paramètre</translation>
 <translation id="864611373241249369">Une fois <ph name="LACROS_NAME" /> désactivé, nous tentons de migrer toutes les données.</translation>

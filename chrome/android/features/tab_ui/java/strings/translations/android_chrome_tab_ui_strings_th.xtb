@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">ปิดแท็บที่ไม่ระบุตัวตนทั้งหมดใช่ไหม</translation>
 <translation id="1501480321619201731">ลบกลุ่ม</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{รายการที่ไม่ได้ใช้งาน <ph name="TABS_COUNT_ONE" /> รายการ}other{รายการที่ไม่ได้ใช้งาน <ph name="TABS_COUNT_MANY" /> รายการ}}</translation>
+<translation id="1568067597247500137">ปิดเสียงเว็บไซต์</translation>
 <translation id="1645759014353344461">จัดกลุ่มไว้ <ph name="TABS_COUNT_MANY" /> แท็บ</translation>
 <translation id="1657719826150349398">ย้ายแท็บลงล่าง</translation>
 <translation id="1670942869417022142">เสียงปิดอยู่</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">ราคาสินค้านี้เพิ่งลดลงจาก <ph name="PREVIOUS_PRICE" /> เหลือ <ph name="NEW_PRICE" /></translation>
 <translation id="606985262342505139">Bottom Sheet ของแท็บแบบเต็มความสูง</translation>
 <translation id="6109251075362363230">ตอนนี้ระบบจะเก็บแท็บที่ซ้ำกันทั้งหมดด้วย ยกเว้นสำเนาที่ใช้ล่าสุด</translation>
+<translation id="612596694132302162">เปิดเสียงเว็บไซต์</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{ปิดรายการที่เลือก <ph name="TABS_COUNT_ONE" /> รายการ}other{ปิดรายการที่เลือก <ph name="TABS_COUNT_MANY" /> รายการ}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ย้ายกลุ่มไปยังหน้าต่างใหม่}other{ย้ายกลุ่มไปยังหน้าต่างอื่น}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{ย้ายแท็บไปทางขวา}other{ย้ายแท็บไปทางขวา}}</translation>

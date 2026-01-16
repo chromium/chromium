@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Alle incognitotabbladen sluiten?</translation>
 <translation id="1501480321619201731">Groep verwijderen</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> inactief item}other{<ph name="TABS_COUNT_MANY" /> inactieve items}}</translation>
+<translation id="1568067597247500137">Geluid van site dempen</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> tabbladen gegroepeerd</translation>
 <translation id="1657719826150349398">Tabblad naar beneden verplaatsen</translation>
 <translation id="1670942869417022142">Audio gedempt</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">De prijs van dit item is recent verlaagd van <ph name="PREVIOUS_PRICE" /> naar <ph name="NEW_PRICE" /></translation>
 <translation id="606985262342505139">Tabblad onderaan op volledige hoogte</translation>
 <translation id="6109251075362363230">Alle dubbele tabbladen worden nu ook gearchiveerd, met uitzondering van het meest recent gebruikte exemplaar.</translation>
+<translation id="612596694132302162">Geluid van site dempen opheffen</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> geselecteerd item sluiten}other{<ph name="TABS_COUNT_MANY" /> geselecteerde items sluiten}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Groep verplaatsen naar nieuw venster}other{Groep verplaatsen naar ander venster}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Tabblad naar rechts verplaatsen}other{Tabbladen naar rechts verplaatsen}}</translation>

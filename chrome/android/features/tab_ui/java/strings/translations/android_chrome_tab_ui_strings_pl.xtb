@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Zamknąć wszystkie karty incognito?</translation>
 <translation id="1501480321619201731">Usuń grupę</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> nieaktywny element}few{<ph name="TABS_COUNT_MANY" /> nieaktywne elementy}many{<ph name="TABS_COUNT_MANY" /> nieaktywnych elementów}other{<ph name="TABS_COUNT_MANY" /> nieaktywnego elementu}}</translation>
+<translation id="1568067597247500137">Wycisz stronę</translation>
 <translation id="1645759014353344461">Utworzono grupę kart. Ich liczba to <ph name="TABS_COUNT_MANY" /></translation>
 <translation id="1657719826150349398">Przesuń kartę w dół</translation>
 <translation id="1670942869417022142">Wyciszony dźwięk</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">Ostatnio cena tego elementu spadła z <ph name="PREVIOUS_PRICE" /> do <ph name="NEW_PRICE" /></translation>
 <translation id="606985262342505139">Plansza dolna karty otwarta na całą wysokość</translation>
 <translation id="6109251075362363230">Wszystkie zduplikowane karty będą teraz również archiwizowane, z wyjątkiem ostatnio używanej kopii.</translation>
+<translation id="612596694132302162">Zakończ wyciszanie strony</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Zamknij <ph name="TABS_COUNT_ONE" /> wybrany element}few{Zamknij <ph name="TABS_COUNT_MANY" /> wybrane elementy}many{Zamknij <ph name="TABS_COUNT_MANY" /> wybranych elementów}other{Zamknij <ph name="TABS_COUNT_MANY" /> wybranego elementu}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Przenieś grupę do nowego okna}few{Przenieś grupę do innego okna}many{Przenieś grupę do innego okna}other{Przenieś grupę do innego okna}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Przenieś kartę w prawo}few{Przenieś karty w prawo}many{Przenieś karty w prawo}other{Przenieś karty w prawo}}</translation>

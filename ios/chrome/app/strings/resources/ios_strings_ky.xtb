@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Жаңы Терезе</translation>
 <translation id="1558391695376153246">Жашыруун өтмөктөрдү жабуу</translation>
 <translation id="1565371473877914088">Жаңы жашыруун өтмөк</translation>
+<translation id="1567960978791353852">Окуу режимин көрсөтүү</translation>
 <translation id="1571780780926010134">Жашыруун кыстырмалар</translation>
 <translation id="1580715474678097352">Кооптуу вебсайттардан коргойт</translation>
 <translation id="1580783302095112590">Кат жөнөтүлдү.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">Сырсөздөрдү көрүү үчүн адегенде, түзмөгүңүздөгү өткөрүүчү кодду жөндөп алышыңыз керек.</translation>
 <translation id="201759455285471444">Өтмөктөр тобун жайып көрсөтүү.</translation>
 <translation id="202070562065520783">Муну түшүндүрүп бер</translation>
+<translation id="2023713324775943812">Жеткиликтүү болгондо дарек тилкесинен окуу режимине өтүү</translation>
 <translation id="2044394949148788042">Өтмөк торчосун ачуу</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> аккаунтун <ph name="HOSTED_DOMAIN" /> башкарат. Ал айрым маалыматтарды көрүшү мүмкүн. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">жаңы нерсе</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Өтмөк топтору ушул жерде сакталат</translation>
 <translation id="2273327106802955778">"Дагы" менюсу</translation>
 <translation id="2287614783861766820">{count,plural, =1{Бул дарек ушул түзмөктөн өчүрүлөт.}other{Бул даректер ушул түзмөктөн өчүрүлөт.}}</translation>
+<translation id="2295236662082735391">Gemini менен түзөтүү үчүн Интернеттеги сүрөттү коё бербей басып туруңуз</translation>
 <translation id="2297989278479054870">Google аккаунтуңуздан чыккандан кийин андагы кыстармалар, сырсөздөр жана башкалар бул түзмөктөн өчүрүлөт.</translation>
 <translation id="2299218006564889602">Google Сырсөздөрдү башкаргычка сакталганга чейин сырсөздөрүңүз түзмөгүңүздө шифрленет.</translation>
 <translation id="2306265833370324042"><ph name="SEARCH_ENGINE_NAME" /> чоо-жайын көрсөтүү</translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Издеп жаткан нерсеңизди сүрөткө тартыңыз</translation>
 <translation id="2761898608071930085">Башка аккаунтту колдонуу</translation>
 <translation id="2762000892062317888">жаңы эле</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{1 сүрөткө чейин кошуңуз}other{{COUNT} сүрөткө чейин кошуңуз}}</translation>
 <translation id="2772667768515195373">Сакталган даректериңизди Google кызматтарында колдоно аласыз. Бул дарек <ph name="USER_EMAIL" /> Google аккаунтуңузга сакталды.</translation>
 <translation id="2773344962924806829">Электрондук почта билдирмелери</translation>
 <translation id="2781331604911854368">Күйүк</translation>
@@ -1353,6 +1357,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="605721222689873409">ЖЖ</translation>
 <translation id="6058415747854995776">Видео тартуу</translation>
 <translation id="6059830886158432458">Окуяларыңызды жана аракеттериңизди бул жерден көзөмөлдөңүз</translation>
+<translation id="6063802271331271857">Сүрөттү өзгөртүү</translation>
 <translation id="6066301408025741299">Жокко чыгаруу үчүн таптаңыз.</translation>
 <translation id="6074656473835429958">Билдирмелерди алуу</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) жүктөлүп берилген жок</translation>
@@ -1871,6 +1876,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7899199123054742721">Баарын окула элек деп белгилөө</translation>
 <translation id="7911190106180361398">Уюмуңуз бардык маалыматты шайкештирүүгө тыюу салган.</translation>
 <translation id="7918999344502274923"><ph name="SEARCH_ENGINE_NAME" /> чоо-жайын жашыруу</translation>
+<translation id="7921559948846049514">Фон үчүн теманы, түстү же башка нерселерди тандаңыз</translation>
 <translation id="792357691529995513">Маселелер жок</translation>
 <translation id="7925108652071887026">Дайындарды автотолтуруу</translation>
 <translation id="7926975587469166629">Картанын ылакап аты</translation>

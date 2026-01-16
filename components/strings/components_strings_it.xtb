@@ -435,7 +435,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1689333818294560261">Nickname</translation>
 <translation id="1692622044604477956">Film in programmazione e orari dei cinema</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Come puoi gestire i tuoi dati:<ph name="END_BOLD" /> Chrome elimina automaticamente gli argomenti più vecchi di 4 settimane. Mentre continui a navigare, un argomento potrebbe riapparire nell'elenco. Puoi anche bloccare gli argomenti che non vuoi che Chrome condivida con i siti e disattivare gli argomenti degli annunci in qualsiasi momento nelle impostazioni di Chrome.</translation>
-<translation id="1697808683313379647">Per offrire queste opzioni, Google utilizza le informazioni della pagina di pagamento e altri dati pertinenti.</translation>
 <translation id="1699651774646344471">Ora puoi usare gli indirizzi presenti nel tuo Account Google</translation>
 <translation id="1700542542921501212">Puoi utilizzare <ph name="SEARCH_ENGINE_NAME" /> per eseguire ricerche sul web.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1133,6 +1132,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2794629552137076216">Vetro (rivestito)</translation>
 <translation id="2799223571221894425">Riavvia</translation>
 <translation id="2799758406651937857">Abbigliamento uomo</translation>
+<translation id="2803320044666896137">Questo valore della policy viene ignorato perché l'utente non è affiliato.</translation>
 <translation id="2807052079800581569">Posizione Y immagine</translation>
 <translation id="2808278141522721006">Puoi attivare o disattivare Windows Hello nelle <ph name="SETTINGS" /></translation>
 <translation id="2818338148457093657">Servizi di bellezza e spa</translation>
@@ -1245,7 +1245,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="299122504639061328">Gestisci il motore di ricerca predefinito e la ricerca su siti</translation>
 <translation id="2991571918955627853">Al momento non puoi visitare il sito web <ph name="SITE" /> perché utilizza HSTS. In genere gli errori di rete e gli attacchi sono temporanei, pertanto questa pagina potrebbe funzionare più tardi.</translation>
 <translation id="2991865971341174470">Verifica la tua identità per consentire a Chrome di inserire i tuoi dati di pagamento.</translation>
-<translation id="2995010188916335277">Per offrire queste opzioni, Google utilizza le informazioni della pagina di pagamento e altri dati pertinenti. Per nascondere le opzioni di pagamento posticipato nella compilazione automatica, vai alle <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2995121550202354573">Utilizza per tutti i profili ospite</translation>
 <translation id="2995517112308048736">Dimensioni file:</translation>
 <translation id="299990983510665749">Due volumi</translation>
@@ -1983,6 +1982,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4152495263075154876">Schermata di avanzamento di Buy now, pay later chiusa.</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 scheda}other{# schede}}</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> non supporta una connessione sicura con HTTPS</translation>
+<translation id="4153858337812834972">Schede più recenti</translation>
 <translation id="4154277373259957087">Ora Chrome verificherà la tua identità prima di compilare i metodi di pagamento. Puoi aggiornare la scelta in qualsiasi momento in <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="415440494507469262">Aggiungi scheda alla tabella di confronto</translation>
 <translation id="4159784952369912983">Viola</translation>

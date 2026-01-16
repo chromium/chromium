@@ -872,6 +872,7 @@
 <translation id="4302061870579014542">Tetapkan posisi</translation>
 <translation id="4304713468139749426">Pengelola Sandi</translation>
 <translation id="4309403553630140242">Ketuk dua kali untuk mengetahui informasi selengkapnya</translation>
+<translation id="4310738531374808763">Menyesuaikan halaman beranda</translation>
 <translation id="4320848494125124980">Terbaru</translation>
 <translation id="4322394346347055525">Tutup Tab Lain</translation>
 <translation id="4324735664183300693">Aktifkan notifikasi</translation>
@@ -1710,6 +1711,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> persen berhasil didownload</translation>
 <translation id="7345061034321640811">Impor tidak diizinkan</translation>
+<translation id="7347998088283246662">Impor sandi, histori, bookmark, dan lainnya</translation>
 <translation id="7352651011704765696">Terjadi error</translation>
 <translation id="7364796246159120393">Pilih File</translation>
 <translation id="736564850024123010">Ganti posisi kolom URL untuk mendapatkan pengalaman yang disesuaikan.</translation>
@@ -2235,6 +2237,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="914781932147356857">Tandai semua…</translation>
 <translation id="9148126808321036104">Login sekali lagi</translation>
 <translation id="9149866541089851383">Edit...</translation>
+<translation id="9152637745605628097">Pilih dari tema, warna, atau upload gambar</translation>
 <translation id="9159628751968616911">Kirim halaman web</translation>
 <translation id="9162432979321511934">Aktifkan Isi Otomatis Sandi</translation>
 <translation id="9165320910061267720">Untuk mendapatkan notifikasi diskon, Anda harus mengaktifkan notifikasi di setelan iOS.</translation>

@@ -2424,11 +2424,6 @@ Si se le asigna el valor 2 (inhabilitada) a la política, no se permitirá la in
 <translation id="2707733461906745082">Separación de perfiles</translation>
 <translation id="2707873794476722903">La función Navegación segura está activa en modo estándar.</translation>
 <translation id="2709516037105925701">Autocompletar</translation>
-<translation id="2713265653152900248">Si se define esta política, se permite acceder en modo Incógnito a las URLs incluidas en la lista, las cuales se consideran excepciones de <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />. Por ejemplo, si se le asigna el valor comodín (*) a <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />, se bloquearán todas las solicitudes en modo Incógnito y esta política se podrá usar para permitir el acceso a una lista limitada de URLs. También se puede usar para abrir excepciones de determinados esquemas, subdominios de otros dominios, puertos o rutas específicas usando el formato especificado en https://support.google.com/chrome/a?p=url_blocklist_filter_format. La política <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> tiene prioridad sobre <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />. Esta política está limitada a 1000 entradas.
-
-Si la política no se define, no se permitirán excepciones de <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />.
-
-Esta política solo afecta al modo Incógnito. Para permitir URLs en todos los perfiles de usuario, usa la política <ph name="URL_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="2713913573196284609">Este valor no está disponible desde la versión M121. En la versión M121 y en versiones posteriores, los valores se tratarán como EnabledBelowThreshold.</translation>
 <translation id="2713977837384407666">Enviar siempre métricas a Google</translation>
 <translation id="2714359695399346815">Si se habilita esta política o no se le asigna ningún valor, se permitirá el uso de servidores STUN, los clientes remotos podrán detectar estos equipos y establecer conexión con ellos aunque haya un cortafuegos.
@@ -6570,15 +6565,6 @@ Esta política no impide que los usuarios puedan guardar archivos en <ph name="G
 
 Si se le asigna el valor false, no se podrán usar identificadores de contenido protegido.</translation>
 <translation id="5492713303272131731">El resto de los procesos se podrán programar en el mismo núcleo de CPU cuando el proceso de renderizado se esté ejecutando en él.</translation>
-<translation id="5494322570831642650">Especifica si el usuario podrá abrir páginas en modo Incógnito en <ph name="PRODUCT_NAME" />.
-
-      Si se habilita esta política o no se le asigna ningún valor, se podrán abrir páginas en modo Incógnito.
-
-      Si se inhabilita esta política, no se podrán abrir páginas en modo Incógnito.
-
-      Si se asigna el valor "Forced" a esta política, solo se podrán abrir páginas en modo Incógnito. Ten en cuenta que el valor "Forced" no funciona en dispositivos con Android en Chrome.
-
-      Nota: En iOS, si se cambia esta política durante una sesión, los cambios se aplicarán después de reiniciar.</translation>
 <translation id="549471902631700911">Inhabilitar la recepción de encuestas sobre Navegación segura</translation>
 <translation id="549625769649876757">Si se define esta política, podrás establecer una lista de patrones de URL que especifiquen qué sitios pueden acceder a la geolocalización de alta precisión del usuario sin tener que solicitar primero su permiso para hacerlo.
 
@@ -8803,9 +8789,6 @@ Si se asigna el valor false a esta política o no se define, este diseño no est
 <translation id="6866755486434471318">Permitir que <ph name="PEPPER_NAME" /> use imágenes compartidas para decodificar vídeos.</translation>
 <translation id="6878757724611298427">Permitir que los usuarios usen aplicaciones Android en dispositivos no afiliados</translation>
 <translation id="6881447940489194100">Hash SHA-256 codificado en formato hexadecimal de los datos.</translation>
-<translation id="688149562204519323">Si se define la política <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />, se impedirá que se carguen las páginas web con URLs prohibidas en modo Incógnito. Los administradores pueden especificar una lista con patrones de URL que quieran bloquear. Si no se asigna ningún valor, no se bloqueará ninguna URL en el modo Incógnito. Se pueden definir un máximo de 1000 excepciones en <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" />. Consulta cómo aplicar formato a un patrón de URL (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
-
-Esta política solo afecta al modo Incógnito. Para bloquear URLs en todos los perfiles de usuario, usa la política <ph name="URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="68818134518270542">Si se establece esta política, se especificarán las aplicaciones que pueden activar los usuarios para tomar notas en la pantalla de bloqueo de <ph name="PRODUCT_OS_NAME" />.
 
       Si la aplicación preferida está habilitada en la pantalla de bloqueo, aparecerá en la pantalla un elemento de interfaz de usuario para iniciar la aplicación para tomar notas. Una vez iniciada, la aplicación podrá abrir una ventana sobre la pantalla de bloqueo y crear notas en este contexto. La aplicación puede importar las notas creadas a la sesión del usuario principal cuando se desbloquee la sesión. En la pantalla de bloqueo, solo se admiten las aplicaciones para tomar notas de <ph name="PRODUCT_NAME" />.
@@ -9953,21 +9936,6 @@ Si no se establece la política, <ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_N
 Los patrones de URL no deben entrar en conflicto con <ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" />. Si una URL está incluida en ambas políticas, no tendrá preferencia ninguna política.
 
 Para obtener información detallada sobre los patrones de URL válidos, consulta https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
-<translation id="7615612213075471065">Esta política controla los informes de <ph name="PRODUCT_NAME" /> sobre las visitas a dominios de SaaS y las transferencias de contenido de un navegador gestionado.
-
-Si se define esta política, las URLs que coincidan con dominios de SaaS se usarán para generar el informe y subirlo. Las URLs sin coincidencias se ignorarán.
-
-Si esta política no se define o se le asigna una lista vacía, no se generará ningún informe.
-
-Los patrones que coinciden tienen un formato similar a los de la política <ph name="URL_BLOCKLIST_POLICY_NAME" />, tal como se indica en la página https://support.google.com/chrome/a?p=url_blocklist_filter_format. Hay algunas excepciones que se indican a continuación:
-
- * El host de la URL debe coincidir con el nombre de host o ser un subdominio del nombre de host de uno de los dominios de la lista de sitios de SaaS.
-
- * La ruta de la URL debe comenzar por la ruta de la entrada de la lista de sitios de SaaS coincidentes.
-
- * El esquema, el puerto y la consulta de la URL se ignoran durante el proceso de búsqueda de coincidencias.
-
-La infraestructura de la política de nube rellena este valor de política y los administradores no pueden definirlo directamente.</translation>
 <translation id="7616631530432070402">Se habilitarán los paquetes de cifrado 3DES en TLS</translation>
 <translation id="761788785484453836">Requerir el aislamiento en todos los sitios web</translation>
 <translation id="7620869951155758729">Esta política especifica la configuración que se utiliza para generar y verificar códigos de acceso parental.
@@ -11470,23 +11438,6 @@ En el caso de <ph name="PRODUCT_OS_NAME" />, esta política siempre es efectiva.
 <translation id="8631437968147930597">La lista de aplicaciones para tomar notas que están permitidas en la pantalla de bloqueo de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8633550872001751090">Permitir que se incluyan datos de <ph name="PRODUCT_NAME" /> en copias de seguridad</translation>
 <translation id="8634062512783775032">Usa <ph name="AES_KL_NAME" /> como algoritmo de cifrado para el cifrado del almacenamiento de los datos del usuario, si se admite</translation>
-<translation id="8635783478441936474">Esta política controla los informes de <ph name="PRODUCT_NAME" /> de las visitas a dominios de SaaS y las transferencias de contenido de un perfil gestionado.
-
-Si se define esta política, las URLs que coincidan con dominios de SaaS se usarán para generar el informe y subirlo. Las URLs sin coincidencias se ignorarán.
-
-Si esta política no se define o se le asigna una lista vacía, no se generará ningún informe.
-
-Los patrones que coinciden tienen un formato similar a los de la política <ph name="URL_BLOCKLIST_POLICY_NAME" />, tal como se indica en la página https://support.google.com/chrome/a?p=url_blocklist_filter_format. Hay algunas excepciones que se indican a continuación:
-
- * El host de la URL debe coincidir con el nombre de host o ser un subdominio del nombre de host de uno de los dominios de la lista de sitios de SaaS.
-
- * La ruta de la URL debe comenzar por la ruta de la entrada de la lista de sitios de SaaS coincidentes.
-
- * El esquema, el puerto y la consulta de la URL se ignoran durante el proceso de búsqueda de coincidencias.
-
-Esta política solo se puede definir como política de usuarios basada en la nube.
-
-La infraestructura de la política de nube rellena este valor de política y los administradores no pueden definirlo directamente.</translation>
 <translation id="8637566476051166626">Puertos de red con permiso explícito</translation>
 <translation id="8643838501942693770">Habilitar las cookies de terceros, pero permitir al usuario cambiar este ajuste</translation>
 <translation id="864611373241249369">Después de inhabilitar <ph name="LACROS_NAME" />, intentaremos migrar todos los datos.</translation>

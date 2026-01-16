@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Scan type</translation>
 <translation id="28682968802727151">Mirror preview</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> is plugged in.</translation>
+<translation id="3063987824612038785">All Camera files will save to Google Drive</translation>
 <translation id="3067436040345934772">Pan right</translation>
 <translation id="3081586908890909590">Switch to record video</translation>
 <translation id="3091480460059548935">Text detection in preview</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">Processing video...</translation>
 <translation id="3789724198583203151">Rotate 90 degrees anti-clockwise</translation>
 <translation id="3810838688059735925">Video</translation>
+<translation id="386366972082231038">All camera files will save to OneDrive</translation>
 <translation id="4060608699153044055">You can't record because of low device storage space. To start recording, you need to free up space on your device.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Pause recording</translation>
@@ -157,6 +159,7 @@ If your feedback is about image or video quality, please attach a sample photo o
 <translation id="7983668134180549431">Text detected.</translation>
 <translation id="8079255378695216066">Can’t start recording</translation>
 <translation id="8120146556401698679">Pan tilt zoom</translation>
+<translation id="8127459436205030819">Your files may be visible to your administrator</translation>
 <translation id="8131740175452115882">Confirm</translation>
 <translation id="8145038249676204903">Switch to take photo</translation>
 <translation id="8167081290930651932">Save as photo</translation>

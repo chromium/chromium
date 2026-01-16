@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Նոր պատուհան</translation>
 <translation id="1558391695376153246">Փակել ինկոգնիտո ներդիրները</translation>
 <translation id="1565371473877914088">Նոր ինկոգնիտո ներդիր</translation>
+<translation id="1567960978791353852">Բացել ընթերցման ռեժիմը</translation>
 <translation id="1571780780926010134">Ինկոգնիտո ներդիրներ</translation>
 <translation id="1580715474678097352">Եղեք պաշտպանված վտանգավոր կայքերից</translation>
 <translation id="1580783302095112590">Նամակն ուղարկվեց:</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">Գաղտնաբառերը տեսնելու համար ձեր սարքում նախ պետք է անցակոդ սահմանեք:</translation>
 <translation id="201759455285471444">Ծավալել ներդիրների խումբը։</translation>
 <translation id="202070562065520783">Բացատրիր սա</translation>
+<translation id="2023713324775943812">Հասանելիության դեպքում ընթերցման ռեժիմը կարող եք միացնել հասցեագոտուց</translation>
 <translation id="2044394949148788042">Բացեք ներդիրների ցանցը</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> հաշիվը կառավարվում է <ph name="HOSTED_DOMAIN" /> տիրույթի կողմից, որին հնարավոր է, որ տեսանելի լինել որոշ տեղեկություններ։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">նոր տարր</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Ձեր ներդիրների խմբերը պահվում են այստեղ</translation>
 <translation id="2273327106802955778">Այլ ընտրանքներ</translation>
 <translation id="2287614783861766820">{count,plural, =1{Այս հասցեն կհեռացվի այս սարքից։}one{Այս հասցեն կհեռացվի այս սարքից։}other{Այս հասցեները կհեռացվեն այս սարքից։}}</translation>
+<translation id="2295236662082735391">Երկար սեղմեք պատկերի վրա՝ Gemini-ի օգնությամբ այն փոփոխելու համար</translation>
 <translation id="2297989278479054870">Երբ դուրս գաք, ձեր Google հաշվի էջանիշները, գաղտնաբառերը և այլ տվյալներ կհեռացվեն այս սարքից։</translation>
 <translation id="2299218006564889602">Գաղտնաբառերը գաղտնագրվում են ձեր սարքում, այնուհետև պահվում Google Գաղտնաբառերի կառավարիչում։</translation>
 <translation id="2306265833370324042">Ցույց տալ տեղեկություններ <ph name="SEARCH_ENGINE_NAME" />-ի մասին</translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Լուսանկարեք այն, ինչ որոնում եք</translation>
 <translation id="2761898608071930085">Օգտագործել այլ հաշիվ</translation>
 <translation id="2762000892062317888">հենց նոր</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Ավելացրեք մինչև 1 պատկեր}one{Ավելացրեք մինչև {COUNT} պատկեր}other{Ավելացրեք մինչև {COUNT} պատկեր}}</translation>
 <translation id="2772667768515195373">Դուք կարող եք օգտագործել պահված հասցեները Google-ի արտադրանքներում։ Այս հասցեն պահվում է ձեր Google հաշվում (<ph name="USER_EMAIL" />)։</translation>
 <translation id="2773344962924806829">Ծանուցումներ էլփոստով</translation>
 <translation id="2781331604911854368">Միացված է</translation>
@@ -1353,6 +1357,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="605721222689873409">տարի</translation>
 <translation id="6058415747854995776">Տեսագրել</translation>
 <translation id="6059830886158432458">Կառավարեք ձեր պատմություններն ու գործողություններն այստեղ</translation>
+<translation id="6063802271331271857">Ռեմիքսել պատկերը</translation>
 <translation id="6066301408025741299">Հպեք՝ չեղարկելու համար:</translation>
 <translation id="6074656473835429958">Ստանալ ծանուցումներ</translation>
 <translation id="607620096698446287">Չհաջողվեց վերբեռնել <ph name="FILENAME" /> ֆայլը (<ph name="FILESIZE" />)</translation>
@@ -1871,6 +1876,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7899199123054742721">Բոլորը նշել որպես չկարդացված</translation>
 <translation id="7911190106180361398">Ձեր կազմակերպությունը թույլ չի տալիս ձեզ համաժամացնել բոլոր տվյալները։</translation>
 <translation id="7918999344502274923">Թաքցնել <ph name="SEARCH_ENGINE_NAME" />-ի մասին տեղեկությունները</translation>
+<translation id="7921559948846049514">Ընտրեք թեմա, գույն կամ այլ տարրեր ձեր ֆոնի համար</translation>
 <translation id="792357691529995513">Որևէ խնդիր չի գտնվել</translation>
 <translation id="7925108652071887026">Ինքնալրացման տվյալները</translation>
 <translation id="7926975587469166629">Քարտի այլանունը</translation>

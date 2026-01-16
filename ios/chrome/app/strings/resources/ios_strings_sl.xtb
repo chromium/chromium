@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Novo okno</translation>
 <translation id="1558391695376153246">Zapri anonimne zavihke</translation>
 <translation id="1565371473877914088">Nov anonimni zavihek</translation>
+<translation id="1567960978791353852">Prikaz načina za branje</translation>
 <translation id="1571780780926010134">Anonimni zavihki</translation>
 <translation id="1580715474678097352">Bodite zaščiteni pred nevarnimi spletnimi mesti</translation>
 <translation id="1580783302095112590">Pošta je poslana.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">Če si želite ogledati gesla, morate najprej nastaviti geslo v napravi.</translation>
 <translation id="201759455285471444">Razširitev skupine zavihkov.</translation>
 <translation id="202070562065520783">Pojasni mi to</translation>
+<translation id="2023713324775943812">Dostop do načina za branje v naslovni vrstici, ko je na voljo</translation>
 <translation id="2044394949148788042">Odprite mrežo zavihkov</translation>
 <translation id="2044681667265133332">Račun <ph name="USER_EMAIL" /> upravlja <ph name="HOSTED_DOMAIN" />, ki si lahko morda ogleda nekatere podatke. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nov element</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Skupine zavihkov so shranjene tukaj</translation>
 <translation id="2273327106802955778">More menu</translation>
 <translation id="2287614783861766820">{count,plural, =1{Ta naslov bo izbrisan iz te naprave.}one{Ti naslovi bodo izbrisani iz te naprave.}two{Ti naslovi bodo izbrisani iz te naprave.}few{Ti naslovi bodo izbrisani iz te naprave.}other{Ti naslovi bodo izbrisani iz te naprave.}}</translation>
+<translation id="2295236662082735391">Pridržite sliko v spletu, če jo želite urediti z Geminijem</translation>
 <translation id="2297989278479054870">Po odjavi bodo zaznamki, gesla in drugo v računu Google odstranjeni iz te naprave.</translation>
 <translation id="2299218006564889602">Gesla se šifrirajo v napravi, preden se shranijo v Google Upravitelju gesel.</translation>
 <translation id="2306265833370324042">Prikaz podrobnosti za <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Fotografiranje iskanja</translation>
 <translation id="2761898608071930085">Uporabi drug račun</translation>
 <translation id="2762000892062317888">pravkar</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Dodajte največ 1 sliko}one{Dodajte največ {COUNT} sliko}two{Dodajte največ {COUNT} sliki}few{Dodajte največ {COUNT} slike}other{Dodajte največ {COUNT} slik}}</translation>
 <translation id="2772667768515195373">Shranjene naslove lahko uporabite v Googlovih izdelkih. Ta naslov je shranjen v računu Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">E-poštna obvestila</translation>
 <translation id="2781331604911854368">Vklopljeno</translation>
@@ -601,6 +605,7 @@
 <translation id="3245744387817103524">Spremembe ni bilo mogoče shraniti.</translation>
 <translation id="3254806613790954367">Zadnji odprti zavihek v vseh napravah</translation>
 <translation id="325717987950204592">Dotaknite se »Zasebnost in varnost«</translation>
+<translation id="3265736395246760288">Hitreje se prijavite v vseh sinhroniziranih napravah.</translation>
 <translation id="3272527697863656322">Prekliči</translation>
 <translation id="3273510436356991673">Prilagajanje začetnega zaslona</translation>
 <translation id="3277021493514034324">Kopiran naslov spletnega mesta</translation>
@@ -1353,6 +1358,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="605721222689873409">LL</translation>
 <translation id="6058415747854995776">Posnemi video</translation>
 <translation id="6059830886158432458">Nadzirajte članke in dejavnost tukaj</translation>
+<translation id="6063802271331271857">Predelava slike</translation>
 <translation id="6066301408025741299">Dotaknite se, da prekinete.</translation>
 <translation id="6074656473835429958">Prejemanje obvestil</translation>
 <translation id="607620096698446287">Datoteke <ph name="FILENAME" /> (<ph name="FILESIZE" />) ni bilo mogoče naložiti</translation>
@@ -1871,6 +1877,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7899199123054742721">Označi vse kot neprebrano</translation>
 <translation id="7911190106180361398">Vaša organizacija vam ne dovoli sinhronizirati vsega.</translation>
 <translation id="7918999344502274923">Skrivanje podrobnosti za <ph name="SEARCH_ENGINE_NAME" /></translation>
+<translation id="7921559948846049514">Izberite temo, barvo ali drugo za ozadje</translation>
 <translation id="792357691529995513">Najdena ni bila nobena težava</translation>
 <translation id="7925108652071887026">Samodejno izpolnjevanje podatkov</translation>
 <translation id="7926975587469166629">Vzdevek za kartico</translation>

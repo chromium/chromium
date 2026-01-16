@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Unataka ufunge vichupo fiche vyote?</translation>
 <translation id="1501480321619201731">Futa kikundi</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{Kipengee <ph name="TABS_COUNT_ONE" /> kisichotumika}other{Vipengee <ph name="TABS_COUNT_MANY" /> visivyotumika}}</translation>
+<translation id="1568067597247500137">Zima sauti ya tovuti</translation>
 <translation id="1645759014353344461">Vichupo <ph name="TABS_COUNT_MANY" /> vimewekwa kwenye kikundi</translation>
 <translation id="1657719826150349398">Sogeza kichupo chini</translation>
 <translation id="1670942869417022142">Sauti imezimwa</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">Hivi majuzi, bei ya kipengee hiki ilipunguzwa kutoka <ph name="PREVIOUS_PRICE" /> ikawa <ph name="NEW_PRICE" /></translation>
 <translation id="606985262342505139">Safu ya Chini ya Kichupo katika hali ya skrini nzima</translation>
 <translation id="6109251075362363230">Vichupo vyote vinavyojirudia sasa vitahifadhiwa kwenye kumbukumbu, isipokuwa nakala ulizotumia hivi majuzi.</translation>
+<translation id="612596694132302162">Washa sauti ya tovuti</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Funga kipengee <ph name="TABS_COUNT_ONE" /> ulichochagua}other{Funga vipengee <ph name="TABS_COUNT_MANY" /> ulivyochagua}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Hamishia kikundi kwenye dirisha jipya}other{Hamishia kikundi kwenye dirisha lingine}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Sogeza kichupo kulia}other{Sogeza vichupo kulia}}</translation>

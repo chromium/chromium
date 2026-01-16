@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Isara ang lahat ng tab na Incognito?</translation>
 <translation id="1501480321619201731">I-delete ang pangkat</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> hindi aktibong item}one{<ph name="TABS_COUNT_MANY" /> hindi aktibong item}other{<ph name="TABS_COUNT_MANY" /> na hindi aktibong item}}</translation>
+<translation id="1568067597247500137">I-mute ang site</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> (na) tab ang naigrupo</translation>
 <translation id="1657719826150349398">Ilipat ang tab sa ibaba</translation>
 <translation id="1670942869417022142">Naka-mute na audio</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">Kamakailang bumaba ang presyo ng item na ito sa <ph name="NEW_PRICE" /> mula sa <ph name="PREVIOUS_PRICE" /></translation>
 <translation id="606985262342505139">Binuksan nang buo ang Bottom Sheet ng Tab</translation>
 <translation id="6109251075362363230">Ia-archive na rin ngayon ang lahat ng duplicate na tab, maliban sa pinakakamakailang ginamit na duplicate.</translation>
+<translation id="612596694132302162">I-unmute ang site</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Isara ang <ph name="TABS_COUNT_ONE" /> napiling item}one{Isara ang <ph name="TABS_COUNT_MANY" /> napiling item}other{Isara ang <ph name="TABS_COUNT_MANY" /> na napiling item}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Ilipat ang grupo sa bagong window}one{Ilipat ang grupo sa ibang window}other{Ilipat ang grupo sa ibang window}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Ilipat ang tab sa kanan}one{Ilipat ang mga tab sa kanan}other{Ilipat ang mga tab sa kanan}}</translation>

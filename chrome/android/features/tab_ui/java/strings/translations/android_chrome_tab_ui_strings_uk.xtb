@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Закрити всі анонімні вкладки?</translation>
 <translation id="1501480321619201731">Видалити групу</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> неактивний об’єкт}one{<ph name="TABS_COUNT_MANY" /> неактивний об’єкт}few{<ph name="TABS_COUNT_MANY" /> неактивні об’єкти}many{<ph name="TABS_COUNT_MANY" /> неактивних об’єктів}other{<ph name="TABS_COUNT_MANY" /> неактивного об’єкта}}</translation>
+<translation id="1568067597247500137">Вимкнути звук на сайті</translation>
 <translation id="1645759014353344461">Згруповано стільки вкладок: <ph name="TABS_COUNT_MANY" /></translation>
 <translation id="1657719826150349398">Перемістити вкладку вниз</translation>
 <translation id="1670942869417022142">Аудіо вимкнено</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">Ціна на цей товар нещодавно знизилася з <ph name="PREVIOUS_PRICE" /> до <ph name="NEW_PRICE" /></translation>
 <translation id="606985262342505139">Нижній екран вкладки відкрито на всю висоту</translation>
 <translation id="6109251075362363230">Тепер також архівуватимуться всі повторювані вкладки, за винятком тієї, що використовувалась останньою.</translation>
+<translation id="612596694132302162">Увімкнути звук на сайті</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Закрити <ph name="TABS_COUNT_ONE" /> вибраний об’єкт}one{Закрити <ph name="TABS_COUNT_MANY" /> вибраний об’єкт}few{Закрити <ph name="TABS_COUNT_MANY" /> вибрані об’єкти}many{Закрити <ph name="TABS_COUNT_MANY" /> вибраних об’єктів}other{Закрити <ph name="TABS_COUNT_MANY" /> вибраного об’єкта}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Перемістити групу в нове вікно}one{Перемістити групи в інше вікно}few{Перемістити групи в інше вікно}many{Перемістити групи в інше вікно}other{Перемістити групи в інше вікно}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Перемістити вкладку праворуч}one{Перемістити вкладки праворуч}few{Перемістити вкладки праворуч}many{Перемістити вкладки праворуч}other{Перемістити вкладки праворуч}}</translation>

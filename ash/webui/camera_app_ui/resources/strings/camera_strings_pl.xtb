@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Typ skanowania</translation>
 <translation id="28682968802727151">Podgląd odbicia lustrzanego</translation>
 <translation id="2879583609344924966">Podłączono kamerę <ph name="CAMERA" />.</translation>
+<translation id="3063987824612038785">Wszystkie pliki z aparatu będą zapisywane na Dysku Google</translation>
 <translation id="3067436040345934772">Przesuń w prawo</translation>
 <translation id="3081586908890909590">Przełącz, by nagrać film</translation>
 <translation id="3091480460059548935">Wykrywanie tekstu w podglądzie</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">Przetwarzam film…</translation>
 <translation id="3789724198583203151">Obróć o 90 stopni w lewo</translation>
 <translation id="3810838688059735925">Wideo</translation>
+<translation id="386366972082231038">Wszystkie pliki z aparatu będą zapisywane w OneDrive</translation>
 <translation id="4060608699153044055">Nie możesz nagrywać, ponieważ na urządzeniu brakuje miejsca. Najpierw musisz zwolnić miejsce.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpix</translation>
 <translation id="4118525110028899586">Wstrzymaj nagrywanie</translation>
@@ -157,6 +159,7 @@ Jeśli dotyczyła ona jakości zdjęć lub filmów, zamieść tutaj przykładowe
 <translation id="7983668134180549431">Wykryto tekst.</translation>
 <translation id="8079255378695216066">Nie można rozpocząć nagrywania</translation>
 <translation id="8120146556401698679">Przesuń, przechyl, powiększ</translation>
+<translation id="8127459436205030819">Twoje pliki mogą być widoczne dla administratora</translation>
 <translation id="8131740175452115882">Potwierdź</translation>
 <translation id="8145038249676204903">Przełącz, by zrobić zdjęcie</translation>
 <translation id="8167081290930651932">Zapisz jako zdjęcie</translation>

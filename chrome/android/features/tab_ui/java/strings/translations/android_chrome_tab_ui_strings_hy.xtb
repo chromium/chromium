@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Փակե՞լ բոլոր ինկոգնիտո ներդիրները</translation>
 <translation id="1501480321619201731">Ջնջել խումբը</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ոչ ակտիվ տարր}one{<ph name="TABS_COUNT_MANY" /> ոչ ակտիվ տարր}other{<ph name="TABS_COUNT_MANY" /> ոչ ակտիվ տարր}}</translation>
+<translation id="1568067597247500137">Անջատել կայքի ձայնը</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ներդիր խմբավորվեց</translation>
 <translation id="1657719826150349398">Տեղափոխել ներդիրը ներքև</translation>
 <translation id="1670942869417022142">Ձայնն անջատված է</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">Այս ապրանքի գինը <ph name="PREVIOUS_PRICE" />-ից իջել է <ph name="NEW_PRICE" /></translation>
 <translation id="606985262342505139">Ներդիրի ներքևի էկրանը բացված է ամբողջությամբ</translation>
 <translation id="6109251075362363230">Բոլոր կրկնօրինակ ներդիրները նույնպես կարխիվացվեն՝ բացառությամբ ամենավերջին կրկնօրինակից։</translation>
+<translation id="612596694132302162">Միացնել կայքի ձայնը</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Փակել ընտրված <ph name="TABS_COUNT_ONE" /> տարր}one{Փակել ընտրված <ph name="TABS_COUNT_MANY" /> տարր}other{Փակել ընտրված <ph name="TABS_COUNT_MANY" /> տարր}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Խումբը տեղափոխել նոր պատուհան}one{Խումբը տեղափոխել այլ պատուհան}other{Խումբը տեղափոխել այլ պատուհան}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Տեղափոխել ներդիրն աջ}one{Տեղափոխել ներդիրն աջ}other{Տեղափոխել ներդիրներն աջ}}</translation>

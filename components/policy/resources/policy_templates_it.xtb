@@ -2468,11 +2468,6 @@ Se la policy viene impostata su 2 - "Disattivata", l'integrazione del Google Dev
 <translation id="2707733461906745082">Separazione profilo</translation>
 <translation id="2707873794476722903">Navigazione sicura è attiva in modalità standard.</translation>
 <translation id="2709516037105925701">Compilazione automatica</translation>
-<translation id="2713265653152900248">La configurazione della policy consente di accedere in modalità Incognito agli URL elencati, sotto forma di eccezioni a <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />. Ad esempio, se imposti <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> su *, tutte le richieste in modalità Incognito verranno bloccate e puoi utilizzare questa policy per consentire l'accesso a un elenco limitato di URL. Utilizzala per aprire le eccezioni di alcuni schemi, sottodomini di altri domini, porte o percorsi specifici utilizzando il formato specificato all'indirizzo (https://support.google.com/chrome/a?p=url_blocklist_filter_format). La policy <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> ha la precedenza su <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />. Per questa policy è possibile definire al massimo 1000 voci.
-
-Se la policy non viene configurata, non sono consentite eccezioni a <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />.
-
-Questa policy influisce solo sulla modalità Incognito. Per consentire gli URL per tutti i profili utente, utilizza la policy <ph name="URL_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="2713913573196284609">Questo valore è obsoleto a partire dalla versione M121. Nella versione M121 e successive, i valori verranno trattati come EnabledBelowThreshold.</translation>
 <translation id="2713977837384407666">Invia sempre le metriche a Google</translation>
 <translation id="2714359695399346815">Se la policy viene impostata su Attivata o se non viene configurata, viene consentito l'utilizzo di server STUN, permettendo ai client remoti di rilevare e collegarsi a questo computer anche se sono separati da un firewall.
@@ -3330,6 +3325,8 @@ Se la policy <ph name="NTPCARDSVISIBLE" /> è disattivata, la scheda di Outlook 
       Se la policy viene impostata su Disattivata, i dispositivi registrati non segnalano informazioni relative alla sessione kiosk.</translation>
 <translation id="3303770131697159224">Impostazione predefinita dell'autorizzazione per la gestione delle finestre</translation>
 <translation id="3303911765031636277">Policy di configurazione per il connettore OnFileAttached di Chrome Enterprise</translation>
+<translation id="3305586786770047829">Quando questa policy viene impostata su 0 o non viene configurata, la policy <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> verrà applicata solo all'ambito utente per gli utenti affiliati.
+Quando questa policy viene impostata su 1, la policy <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> verrà applicata all'ambito utente, anche se l'utente non è affiliato.</translation>
 <translation id="3307744348419745296">Non consentire la sincronizzazione delle configurazioni di reti Wi-Fi tra i dispositivi <ph name="PRODUCT_OS_NAME" /> e un telefono Android connesso</translation>
 <translation id="3308724602356134956">Se imposti la policy, <ph name="PRODUCT_OS_NAME" />
 
@@ -6631,15 +6628,6 @@ Questa policy non impedisce agli utenti di salvare file su <ph name="GOOGLE_DRIV
 
 Se la policy viene impostata su false, non è consentito utilizzare gli identificatori di contenuti protetti.</translation>
 <translation id="5492713303272131731">Tutti gli altri processi possono essere pianificati sullo stesso core della CPU quando il processo di rendering è in esecuzione.</translation>
-<translation id="5494322570831642650">Consente di specificare se l'utente può aprire o meno le pagine in modalità di navigazione in incognito in <ph name="PRODUCT_NAME" />.
-
-      Se viene selezionata l'opzione "Enabled" o se la policy non viene impostata, è possibile aprire le pagine in modalità di navigazione in incognito.
-
-      Se viene selezionata l'opzione "Disabled", non è possibile aprire le pagine in modalità di navigazione in incognito.
-
-      Se viene selezionata l'opzione "Forced", è possibile aprire le pagine SOLTANTO in modalità di navigazione in incognito. Tieni presente che l'opzione "Forced" non funziona per Android-on-Chrome.
-
-      Nota: su iOS, se la policy viene modificata durante una sessione, avrà effetto solamente al riavvio.</translation>
 <translation id="549471902631700911">Disattiva la ricezione di sondaggi di Navigazione sicura</translation>
 <translation id="549625769649876757">La configurazione della policy consente di impostare un elenco di pattern URL che specificano i siti autorizzati ad accedere alla localizzazione dell'utente ad alta precisione senza dover prima richiedere l'autorizzazione dell'utente per questo scopo.
 
@@ -8890,9 +8878,6 @@ Se viene impostata su False o se non viene configurata, il layout non è disponi
 <translation id="6866755486434471318">Consenti a <ph name="PEPPER_NAME" /> di usare immagini condivise per la decodifica video.</translation>
 <translation id="6878757724611298427">Consenti agli utenti di utilizzare app per Android su dispositivi non affiliati</translation>
 <translation id="6881447940489194100">Hash SHA-256 esadecimale codificato dei dati.</translation>
-<translation id="688149562204519323">Se la policy <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> viene configurata, le pagine web con URL vietati non vengono caricate in modalità Incognito. Gli amministratori possono specificare l'elenco di pattern URL da bloccare. Se la policy non viene configurata, non viene bloccato nessun URL in modalità Incognito. Nella policy <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> è possibile definire fino a 1000 eccezioni. Scopri come formattare un pattern URL (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
-
-Questa policy influisce solo sulla modalità Incognito. Per bloccare gli URL per tutti i profili utente, utilizza la policy <ph name="URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="68818134518270542">La configurazione della policy consente di specificare le app che gli utenti possono attivare come app per scrivere note nella schermata di blocco di <ph name="PRODUCT_OS_NAME" />.
 
       Se l'app preferita si trova nella schermata di blocco, sullo schermo viene visualizzato un elemento UI per l'avvio di tale app. Quando viene avviata, l'app può creare una finestra sopra la schermata di blocco e creare note in questo contesto. L'app può importare le note create nella sessione dell'utente principale quando la sessione è sbloccata. Nella schermata di blocco sono supportate solo le app per scrivere note di <ph name="PRODUCT_NAME" />.
@@ -10069,21 +10054,6 @@ Se la policy non viene configurata, <ph name="DEFAULT_WEB_PRINTING_SETTING_POLIC
 I pattern URL non devono essere in conflitto con <ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" />. Nessuna policy ha la precedenza se un URL presenta corrispondenze con entrambe.
 
 Per informazioni dettagliate sui pattern URL validi, visita la pagina https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questa policy.</translation>
-<translation id="7615612213075471065">Questa policy consente di controllare il reporting di <ph name="PRODUCT_NAME" /> relativo alle visite ai domini SaaS e ai trasferimenti dei contenuti per un browser gestito.
-
-Se la policy viene configurata, gli URL corrispondenti ai domini SaaS verranno utilizzati per generare il report e caricarlo. Gli URL senza corrispondenza verranno ignorati.
-
-Se la policy non viene configurata o se viene impostata su un elenco vuoto, non verrà generato alcun report.
-
-Per le sequenze corrispondenti viene usato un formato simile a quello utilizzato per la policy "<ph name="URL_BLOCKLIST_POLICY_NAME" />", documentati all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format. Con alcune eccezioni riportate di seguito:
-
- * L'host dell'URL deve corrispondere al nome host o essere un sottodominio del nome host di uno dei domini dell'elenco dei siti SaaS.
-
- * Il percorso dell'URL deve iniziare con il percorso della voce dell'elenco dei siti SaaS corrispondenti.
-
- * Lo schema, la porta e la query dell'URL vengono ignorati durante il processo di corrispondenza.
-
-Questo valore della policy viene compilato dall'infrastruttura della policy per il cloud e gli amministratori non possono impostarlo direttamente.</translation>
 <translation id="7616631530432070402">Le suite di crittografia 3DES saranno attivate in TLS</translation>
 <translation id="761788785484453836">Richiedi l'isolamento dei siti per tutti i siti web</translation>
 <translation id="7620869951155758729">Questa norma consente di specificare la configurazione utilizzata per generare e verificare il codice di accesso genitori.
@@ -11591,23 +11561,6 @@ Questa policy viene sempre applicata per <ph name="PRODUCT_OS_NAME" />.</transla
 <translation id="8631437968147930597">L'elenco delle app per scrivere note consentite nella schermata di blocco di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8633550872001751090">Consenti l'inclusione dei dati di <ph name="PRODUCT_NAME" /> nei backup</translation>
 <translation id="8634062512783775032">Usa <ph name="AES_KL_NAME" /> come algoritmo di crittografia per la crittografia dello spazio di archiviazione degli utenti, se è supportata</translation>
-<translation id="8635783478441936474">Questa policy consente di controllare il reporting di <ph name="PRODUCT_NAME" /> relativo alle visite ai domini SaaS e ai trasferimenti dei contenuti per un profilo gestito.
-
-Se la policy viene configurata, gli URL corrispondenti ai domini SaaS verranno utilizzati per generare il report e caricarlo. Gli URL senza corrispondenza verranno ignorati.
-
-Se la policy non viene configurata o se viene impostata su un elenco vuoto, non verrà generato alcun report.
-
-Per le sequenze corrispondenti viene usato un formato simile a quello utilizzato per la policy "<ph name="URL_BLOCKLIST_POLICY_NAME" />", documentati all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format. Con alcune eccezioni riportate di seguito:
-
- * L'host dell'URL deve corrispondere al nome host o essere un sottodominio del nome host di uno dei domini dell'elenco dei siti SaaS.
-
- * Il percorso dell'URL deve iniziare con il percorso della voce dell'elenco dei siti SaaS corrispondenti.
-
- * Lo schema, la porta e la query dell'URL vengono ignorati durante il processo di corrispondenza.
-
-Questa policy può essere impostata soltanto come policy per gli utenti cloud.
-
-Questo valore della policy viene compilato dall'infrastruttura della policy per il cloud e gli amministratori non possono impostarlo direttamente.</translation>
 <translation id="8637566476051166626">Porte di rete esplicitamente consentite</translation>
 <translation id="8643838501942693770">Consente i cookie di terze parti, ma l'utente può modificare questa impostazione</translation>
 <translation id="864611373241249369">Dopo la disattivazione di <ph name="LACROS_NAME" /> tentiamo di eseguire la migrazione di tutti i dati.</translation>

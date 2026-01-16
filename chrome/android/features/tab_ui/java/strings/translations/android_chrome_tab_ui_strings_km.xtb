@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">បិទ​ផ្ទាំងឯកជន​ទាំងអស់ឬ?</translation>
 <translation id="1501480321619201731">លុបក្រុម</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{ធាតុ​អសកម្ម <ph name="TABS_COUNT_ONE" />}other{ធាតុ​អសកម្ម <ph name="TABS_COUNT_MANY" />}}</translation>
+<translation id="1568067597247500137">បិទសំឡេង​ទំព័រ</translation>
 <translation id="1645759014353344461">បានដាក់ <ph name="TABS_COUNT_MANY" /> ផ្ទាំងជាក្រុម</translation>
 <translation id="1657719826150349398">ផ្លាស់ទី​ផ្ទាំង​ចុះក្រោម</translation>
 <translation id="1670942869417022142">បានបិទ​សំឡេង</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">តម្លៃទំនិញនេះ​បានធ្លាក់ចុះ​ថ្មីៗនេះ​ពី <ph name="PREVIOUS_PRICE" /> ទៅ <ph name="NEW_PRICE" /></translation>
 <translation id="606985262342505139">សន្លឹក​ខាងក្រោម​នៃផ្ទាំង​ពេញអេក្រង់</translation>
 <translation id="6109251075362363230">ឥឡូវនេះ ផ្ទាំងស្ទួន​ទាំងអស់​ក៏នឹង​ត្រូវបាន​ទុកក្នុង​បណ្ណសារ​ផងដែរ លើកលែងតែ​ផ្ទាំងស្ទួន​ដែលបានប្រើ​ថ្មីៗបំផុត​ប៉ុណ្ណោះ។</translation>
+<translation id="612596694132302162">បើកសំឡេង​ទំព័រ</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{បិទធាតុ <ph name="TABS_COUNT_ONE" /> ដែលបាន​ជ្រើសរើស}other{បិទធាតុ <ph name="TABS_COUNT_MANY" /> ដែលបាន​ជ្រើសរើស}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ផ្លាស់ទី​ក្រុមទៅ​វិនដូថ្មី}other{ផ្លាស់ទី​ក្រុមទៅ​វិនដូ​ផ្សេងទៀត}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{ផ្លាស់ទី​ផ្ទាំងទៅ​ខាងស្ដាំ}other{ផ្លាស់ទី​ផ្ទាំងទៅ​ខាងស្ដាំ}}</translation>

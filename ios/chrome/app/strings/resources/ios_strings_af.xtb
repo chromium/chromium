@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Nuwe venster</translation>
 <translation id="1558391695376153246">Maak Incognito-oortjies toe</translation>
 <translation id="1565371473877914088">Nuwe incognito-oortjie</translation>
+<translation id="1567960978791353852">Wys Leesmodus</translation>
 <translation id="1571780780926010134">Incognito-oortjies</translation>
 <translation id="1580715474678097352">Word deurlopend beskerm teen gevaarlike webwerwe</translation>
 <translation id="1580783302095112590">E-pos is gestuur.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">Om wagwoorde te sien, moet jy eers 'n wagkode op jou toestel stel.</translation>
 <translation id="201759455285471444">Vou oortjiegroep uit.</translation>
 <translation id="202070562065520783">Verduidelik dit vir my</translation>
+<translation id="2023713324775943812">Kry toegang tot Leesmodus vanaf die adresbalk wanneer dit beskikbaar is</translation>
 <translation id="2044394949148788042">Maak die oortjierooster oop</translation>
 <translation id="2044681667265133332">Die rekening <ph name="USER_EMAIL" /> word bestuur deur <ph name="HOSTED_DOMAIN" /> wat dalk sekere inligting kan bekyk. <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nuwe item</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Jou oortjiegroepe word hier gestoor</translation>
 <translation id="2273327106802955778">Meer-kieslys</translation>
 <translation id="2287614783861766820">{count,plural, =1{Hierdie adres sal op hierdie toestel uitgevee word.}other{Hierdie adresse sal op hierdie toestel uitgevee word.}}</translation>
+<translation id="2295236662082735391">Langdruk ’n prent op die web om met Gemini te redigeer</translation>
 <translation id="2297989278479054870">Nadat jy afgemeld het, sal die boekmerke, wagwoorde en meer in jou Google-rekening van hierdie toestel verwyder word.</translation>
 <translation id="2299218006564889602">Jou wagwoorde word op jou toestel geënkripteer voordat dit in Google Wagwoordbestuurder gestoor word.</translation>
 <translation id="2306265833370324042">Wys <ph name="SEARCH_ENGINE_NAME" />-besonderhede</translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Neem ’n foto van jou soektog</translation>
 <translation id="2761898608071930085">Gebruik 'n ander rekening</translation>
 <translation id="2762000892062317888">sopas</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Voeg tot 1 prent by}other{Voeg tot {COUNT} prente by}}</translation>
 <translation id="2772667768515195373">Jy kan gestoorde adresse in alle Google-produkte gebruik. Hierdie adres is in jou Google-rekening, <ph name="USER_EMAIL" />, gestoor.</translation>
 <translation id="2773344962924806829">E-poskennisgewings</translation>
 <translation id="2781331604911854368">Aan</translation>
@@ -1353,6 +1357,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="605721222689873409">YY</translation>
 <translation id="6058415747854995776">Neem video</translation>
 <translation id="6059830886158432458">Beheer jou stories en aktiwiteit hier</translation>
+<translation id="6063802271331271857">Hermeng ’n prent</translation>
 <translation id="6066301408025741299">Tik om te kanselleer.</translation>
 <translation id="6074656473835429958">Kry kennisgewings</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) kon nie opgelaai word nie</translation>
@@ -1871,6 +1876,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="7899199123054742721">Merk alles as ongelees</translation>
 <translation id="7911190106180361398">Jou organisasie laat jou nie toe om alles te sinkroniseer nie.</translation>
 <translation id="7918999344502274923">Versteek <ph name="SEARCH_ENGINE_NAME" />-besonderhede</translation>
+<translation id="7921559948846049514">Kies ’n tema, kleur of meer vir jou agtergrond</translation>
 <translation id="792357691529995513">Geen kwessies is gekry nie</translation>
 <translation id="7925108652071887026">Vul data outomaties in</translation>
 <translation id="7926975587469166629">Kaart se bynaam</translation>

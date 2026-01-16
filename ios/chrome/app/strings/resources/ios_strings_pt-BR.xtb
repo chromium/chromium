@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Nova janela</translation>
 <translation id="1558391695376153246">Fechar guias anônimas</translation>
 <translation id="1565371473877914088">Nova guia anônima</translation>
+<translation id="1567960978791353852">Mostrar Modo de Leitura</translation>
 <translation id="1571780780926010134">Guias anônimas</translation>
 <translation id="1580715474678097352">Proteção contra sites perigosos</translation>
 <translation id="1580783302095112590">Mensagem enviada.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">Para acessar as senhas, defina uma senha no dispositivo primeiro.</translation>
 <translation id="201759455285471444">Abrir grupo de guias.</translation>
 <translation id="202070562065520783">Explique isso</translation>
+<translation id="2023713324775943812">Acessar o Modo de Leitura na barra de endereço quando disponível</translation>
 <translation id="2044394949148788042">Abrir a grade de guias</translation>
 <translation id="2044681667265133332">A conta <ph name="USER_EMAIL" /> é gerenciada por <ph name="HOSTED_DOMAIN" />, que pode ver algumas informações. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">novo item</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Seus grupos de guias são salvos aqui</translation>
 <translation id="2273327106802955778">Menu "Mais"</translation>
 <translation id="2287614783861766820">{count,plural, =1{O endereço vai ser excluído deste dispositivo.}one{O endereço vai ser excluído deste dispositivo.}other{Os endereços vão ser excluídos deste dispositivo.}}</translation>
+<translation id="2295236662082735391">Toque e segure uma imagem na web para editar com o Gemini</translation>
 <translation id="2297989278479054870">Depois que você sair, os favoritos, as senhas e outros itens da sua Conta do Google serão removidos deste dispositivo.</translation>
 <translation id="2299218006564889602">Suas senhas são criptografadas no dispositivo antes de serem salvas no Gerenciador de senhas do Google.</translation>
 <translation id="2306265833370324042">Mostrar detalhes de <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Tire uma foto da sua pesquisa</translation>
 <translation id="2761898608071930085">Usar outra conta</translation>
 <translation id="2762000892062317888">agora mesmo</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Adicione até 1 imagem}one{Adicione até {COUNT} imagem}other{Adicione até {COUNT} imagens}}</translation>
 <translation id="2772667768515195373">Os endereços salvos podem ser usados em vários produtos do Google. Esse endereço foi salvo na sua conta <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">Notificações por e-mail</translation>
 <translation id="2781331604911854368">Ativado</translation>
@@ -601,6 +605,7 @@
 <translation id="3245744387817103524">Não foi possível salvar a mudança.</translation>
 <translation id="3254806613790954367">Mostra a última guia aberta em todos os dispositivos</translation>
 <translation id="325717987950204592">Toque em "Privacidade e segurança"</translation>
+<translation id="3265736395246760288">Faça login mais rápido em qualquer dispositivo sincronizado.</translation>
 <translation id="3272527697863656322">Cancelar</translation>
 <translation id="3273510436356991673">Personalize sua tela inicial</translation>
 <translation id="3277021493514034324">Endereço do site copiado</translation>
@@ -1353,6 +1358,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="605721222689873409">AA</translation>
 <translation id="6058415747854995776">Gravar vídeo</translation>
 <translation id="6059830886158432458">Controle suas matérias e atividade aqui</translation>
+<translation id="6063802271331271857">Transforme imagens com o Remix</translation>
 <translation id="6066301408025741299">Toque para cancelar.</translation>
 <translation id="6074656473835429958">Receber notificações</translation>
 <translation id="607620096698446287">Não foi possível fazer upload do arquivo <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -1871,6 +1877,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="7899199123054742721">Marcar tudo como não lido</translation>
 <translation id="7911190106180361398">Sua organização não permite que você sincronize tudo.</translation>
 <translation id="7918999344502274923">Ocultar detalhes de <ph name="SEARCH_ENGINE_NAME" /></translation>
+<translation id="7921559948846049514">Escolha um tema, uma cor ou mais para o plano de fundo</translation>
 <translation id="792357691529995513">Nenhum problema foi encontrado</translation>
 <translation id="7925108652071887026">Dados do preenchimento automático</translation>
 <translation id="7926975587469166629">Apelido do cartão</translation>

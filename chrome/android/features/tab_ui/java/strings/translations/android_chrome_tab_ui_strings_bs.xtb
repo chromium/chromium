@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Zatvoriti sve anonimne kartice?</translation>
 <translation id="1501480321619201731">Izbriši grupu</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> neaktivna stavka}one{<ph name="TABS_COUNT_MANY" /> neaktivna stavka}few{<ph name="TABS_COUNT_MANY" /> neaktivne stavke}other{<ph name="TABS_COUNT_MANY" /> neaktivnih stavki}}</translation>
+<translation id="1568067597247500137">Zanemari web-lokaciju</translation>
 <translation id="1645759014353344461">Grupisano je više kartica (ukupno <ph name="TABS_COUNT_MANY" />)</translation>
 <translation id="1657719826150349398">Pomjeranje kartice nadolje</translation>
 <translation id="1670942869417022142">Isključen zvuk</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">Cijena ove stavke je nedavno pala sa <ph name="PREVIOUS_PRICE" /> na <ph name="NEW_PRICE" /></translation>
 <translation id="606985262342505139">Donja tabela kartice u punoj visini</translation>
 <translation id="6109251075362363230">Svi duplikati kartica će se sada arhivirati s izuzetkom posljednje korištene kopije.</translation>
+<translation id="612596694132302162">Prestani zanemarivati web-lokaciju</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Zatvaranje <ph name="TABS_COUNT_ONE" /> odabrane stavke}one{Zatvaranje <ph name="TABS_COUNT_MANY" /> odabrane stavke}few{Zatvaranje <ph name="TABS_COUNT_MANY" /> odabrane stavke}other{Zatvaranje <ph name="TABS_COUNT_MANY" /> odabranih stavki}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Premjesti grupu u novi prozor}one{Premjesti grupu u drugi prozor}few{Premjesti grupu u drugi prozor}other{Premjesti grupu u drugi prozor}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Pomjeri karticu udesno}one{Pomjeri kartice udesno}few{Pomjeri kartice udesno}other{Pomjeri kartice udesno}}</translation>

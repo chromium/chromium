@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Nytt vindu</translation>
 <translation id="1558391695376153246">Lukk inkognitofaner</translation>
 <translation id="1565371473877914088">Ny inkognitofane</translation>
+<translation id="1567960978791353852">Vis lesemodus</translation>
 <translation id="1571780780926010134">Inkognitofaner</translation>
 <translation id="1580715474678097352">Hold deg beskyttet mot farlige nettsteder</translation>
 <translation id="1580783302095112590">E-posten er sendt.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">For å se passordene må du først angi en adgangskode på enheten din.</translation>
 <translation id="201759455285471444">Vis fanegruppen.</translation>
 <translation id="202070562065520783">Forklar dette for meg</translation>
+<translation id="2023713324775943812">Bruk Lesemodus fra adressefeltet når det er tilgjengelig</translation>
 <translation id="2044394949148788042">Åpne fanerutenettet</translation>
 <translation id="2044681667265133332">Kontoen <ph name="USER_EMAIL" /> administreres av <ph name="HOSTED_DOMAIN" />, som kan se visse typer informasjon. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nytt element</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Fanegruppene dine lagres her</translation>
 <translation id="2273327106802955778">Mer-menyen</translation>
 <translation id="2287614783861766820">{count,plural, =1{Adressen slettes fra denne enheten.}other{Disse adressene slettes fra denne enheten.}}</translation>
+<translation id="2295236662082735391">Trykk lenge på et bilde på nettet for å redigere det med Gemini</translation>
 <translation id="2297989278479054870">Når du logger av, fjernes blant annet bokmerkene og passordene i Google-kontoen din fra denne enheten.</translation>
 <translation id="2299218006564889602">Passordene dine krypteres på enheten før de lagres i Google Passordlagring.</translation>
 <translation id="2306265833370324042">Vis <ph name="SEARCH_ENGINE_NAME" />-detaljer</translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Ta et bilde av søket</translation>
 <translation id="2761898608071930085">Bruk en annen konto</translation>
 <translation id="2762000892062317888">akkurat nå</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Legg til opptil 1 bilde}other{Legg til opptil {COUNT} bilder}}</translation>
 <translation id="2772667768515195373">Du kan bruke lagrede adresser i flere Google-produkter. Denne adressen er lagret i Google-kontoen din <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">E-postvarsler</translation>
 <translation id="2781331604911854368">På</translation>
@@ -601,6 +605,7 @@
 <translation id="3245744387817103524">Kunne ikke lagre endringen.</translation>
 <translation id="3254806613790954367">Den siste åpne fanen på alle enhetene dine</translation>
 <translation id="325717987950204592">Trykk på «Personvern og sikkerhet»</translation>
+<translation id="3265736395246760288">Logg på raskere fra alle de synkroniserte enhetene dine.</translation>
 <translation id="3272527697863656322">Avbryt</translation>
 <translation id="3273510436356991673">Tilpass startskjermen</translation>
 <translation id="3277021493514034324">Nettstedsadressen er kopiert</translation>
@@ -1353,6 +1358,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="605721222689873409">ÅÅ</translation>
 <translation id="6058415747854995776">Ta opp video</translation>
 <translation id="6059830886158432458">Styr nyhetssakene dine og aktiviteten din her</translation>
+<translation id="6063802271331271857">Remiks et bilde</translation>
 <translation id="6066301408025741299">Trykk for å avbryte.</translation>
 <translation id="6074656473835429958">Få varsler</translation>
 <translation id="607620096698446287">Kunne ikke laste opp <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -1871,6 +1877,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7899199123054742721">Merk alle som ulest</translation>
 <translation id="7911190106180361398">Organisasjonen din lar deg ikke synkronisere alt.</translation>
 <translation id="7918999344502274923">Skjul <ph name="SEARCH_ENGINE_NAME" />-detaljer</translation>
+<translation id="7921559948846049514">Velg et tema, en farge eller noe annet for bakgrunnen</translation>
 <translation id="792357691529995513">Fant ingen problemer</translation>
 <translation id="7925108652071887026">Autofyll data</translation>
 <translation id="7926975587469166629">Kallenavn på kortet</translation>

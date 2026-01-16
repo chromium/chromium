@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Chiudere tutte le schede di navigazione in incognito?</translation>
 <translation id="1501480321619201731">Elimina gruppo</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> elemento non attivo}other{<ph name="TABS_COUNT_MANY" /> elementi non attivi}}</translation>
+<translation id="1568067597247500137">Disattiva l'audio del sito</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> schede raggruppate</translation>
 <translation id="1657719826150349398">Sposta scheda in basso</translation>
 <translation id="1670942869417022142">Audio disattivato</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">Il prezzo di questo articolo è recentemente sceso da <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
 <translation id="606985262342505139">Riquadro inferiore della scheda a schermo intero</translation>
 <translation id="6109251075362363230">Ora verranno archiviate anche tutte le schede duplicate, fatta eccezione per la copia utilizzata più di recente.</translation>
+<translation id="612596694132302162">Riattiva l'audio del sito</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Chiudi <ph name="TABS_COUNT_ONE" /> elemento selezionato}other{Chiudi <ph name="TABS_COUNT_MANY" /> elementi selezionati}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Sposta gruppo in una nuova finestra}other{Sposta gruppo in un'altra finestra}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Sposta scheda a destra}other{Sposta schede a destra}}</translation>

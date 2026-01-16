@@ -435,7 +435,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1689333818294560261">Egyedi név</translation>
 <translation id="1692622044604477956">Mozi- és színházműsorok</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Az adatok kezelésének módja<ph name="END_BOLD" />: A Chrome automatikusan törli a négy hétnél régebbi témákat. A böngészés során egy-egy téma újra megjelenhet a listán. Lehetősége van arra is, hogy letiltsa azokat a témákat, amelyeket nem szeretné, hogy a Chrome megosszon a webhelyekkel, valamint bármikor ki is kapcsolhatja a hirdetéstémákat a Chrome beállításaiban.</translation>
-<translation id="1697808683313379647">A Google a fizetési oldalon szereplő információkat és az egyéb releváns adatokat használja fel ezeknek a lehetőségeknek a felkínálásához.</translation>
 <translation id="1699651774646344471">Mostantól használhatja a Google-fiókjában található címeket</translation>
 <translation id="1700542542921501212">A(z) <ph name="SEARCH_ENGINE_NAME" /> segítségével kereshet az interneten.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1133,6 +1132,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2794629552137076216">Üveg (csiszolt)</translation>
 <translation id="2799223571221894425">Újraindítás</translation>
 <translation id="2799758406651937857">Férfi ruházat</translation>
+<translation id="2803320044666896137">A rendszer figyelmen kívül hagyja ezt a házirendértéket, mert a felhasználó nem köthető a szervezethez.</translation>
 <translation id="2807052079800581569">Kép Y-pozíciója</translation>
 <translation id="2808278141522721006">A Windows Hello funkciót itt kapcsolhatja be vagy ki: <ph name="SETTINGS" /></translation>
 <translation id="2818338148457093657">Szépségápolási szolgáltatások és gyógyfürdők</translation>
@@ -1245,7 +1245,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="299122504639061328">Kezelheti az alapértelmezett keresőmotort és a webhelyen való keresést</translation>
 <translation id="2991571918955627853">A(z) <ph name="SITE" /> webhelyet pillanatnyilag nem tudja felkeresni, mert a webhely HSTS-t használ. A hálózati hibák és támadások rendszerint átmenetiek, ezért az említett oldal működése később valószínűleg helyreáll.</translation>
 <translation id="2991865971341174470">Igazolja személyazonosságát, hogy a Chrome kitölthesse a fizetési adatait.</translation>
-<translation id="2995010188916335277">A Google a fizetési oldalon szereplő információkat és az egyéb releváns adatokat használja fel ezeknek a lehetőségeknek a felkínálásához. Ha el szeretné rejteni a későbbi fizetési lehetőségeket az automatikus kitöltésnél, lépjen ide: <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2995121550202354573">Használat az összes vendégprofilnál</translation>
 <translation id="2995517112308048736">Fájlméret:</translation>
 <translation id="299990983510665749">Ötajtós autók</translation>
@@ -1983,6 +1982,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4152495263075154876">A Késleltetett fizetés folyamatjelző képernyője be van zárva.</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 lap}other{# lap}}</translation>
 <translation id="4153446078232988116">A(z) <ph name="SITE" /> nem támogat biztonságos HTTPS-kapcsolatot</translation>
+<translation id="4153858337812834972">Legutóbbi lapok</translation>
 <translation id="4154277373259957087">A Chrome most ellenőrzi a személyazonosságát, mielőtt kitöltené a fizetési módokat. Ezt bármikor módosíthatja itt: <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="415440494507469262">Lap hozzáadása összehasonlító táblázathoz</translation>
 <translation id="4159784952369912983">Lila</translation>

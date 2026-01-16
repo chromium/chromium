@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Fechar todos os separadores anónimos?</translation>
 <translation id="1501480321619201731">Eliminar grupo</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> item inativo}other{<ph name="TABS_COUNT_MANY" /> itens inativos}}</translation>
+<translation id="1568067597247500137">Desativar som do site</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> separadores agrupados</translation>
 <translation id="1657719826150349398">Mover o separador para baixo</translation>
 <translation id="1670942869417022142">Áudio desativado</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">O preço deste artigo desceu recentemente de <ph name="PREVIOUS_PRICE" /> para <ph name="NEW_PRICE" /></translation>
 <translation id="606985262342505139">Secção inferior do separador à altura total</translation>
 <translation id="6109251075362363230">Agora, todos os separadores duplicados também vão ser arquivados, com exceção da cópia usada mais recentemente.</translation>
+<translation id="612596694132302162">Reativar som do site</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Fechar <ph name="TABS_COUNT_ONE" /> item selecionado}other{Fechar <ph name="TABS_COUNT_MANY" /> itens selecionados}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Mover grupo para nova janela}other{Mover grupo para outra janela}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Mover separador para a direita}other{Mover separadores para a direita}}</translation>

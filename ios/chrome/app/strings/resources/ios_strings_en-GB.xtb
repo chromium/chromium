@@ -605,6 +605,7 @@
 <translation id="3245744387817103524">Your change couldn't be saved.</translation>
 <translation id="3254806613790954367">Your last open tab across all your devices</translation>
 <translation id="325717987950204592">Tap 'Privacy and security'</translation>
+<translation id="3265736395246760288">Sign in faster from any of your synced devices.</translation>
 <translation id="3272527697863656322">Cancel</translation>
 <translation id="3273510436356991673">Customise your home screen</translation>
 <translation id="3277021493514034324">Site address copied</translation>
@@ -871,6 +872,7 @@
 <translation id="4302061870579014542">Set position</translation>
 <translation id="4304713468139749426">Password Manager</translation>
 <translation id="4309403553630140242">Double-tap for more information</translation>
+<translation id="4310738531374808763">Customise your homepage</translation>
 <translation id="4320848494125124980">Recent</translation>
 <translation id="4322394346347055525">Close other tabs</translation>
 <translation id="4324735664183300693">Turn on notifications</translation>
@@ -1709,6 +1711,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> percent downloaded</translation>
 <translation id="7345061034321640811">Import not allowed</translation>
+<translation id="7347998088283246662">Import passwords, history, bookmarks and more</translation>
 <translation id="7352651011704765696">Something went wrong</translation>
 <translation id="7364796246159120393">Choose file</translation>
 <translation id="736564850024123010">Switch the position of your address bar for a customised experience.</translation>
@@ -2234,6 +2237,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="914781932147356857">Mark all…</translation>
 <translation id="9148126808321036104">Sign in again</translation>
 <translation id="9149866541089851383">Edit...</translation>
+<translation id="9152637745605628097">Choose from themes, colours or upload an image</translation>
 <translation id="9159628751968616911">Send web page</translation>
 <translation id="9162432979321511934">Turn on Auto-fill passwords</translation>
 <translation id="9165320910061267720">To get notifications of price drop alerts, you'll need to turn on notifications in your iOS settings.</translation>

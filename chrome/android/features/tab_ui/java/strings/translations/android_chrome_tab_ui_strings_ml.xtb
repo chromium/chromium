@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">എല്ലാ അദൃശ്യ ടാബുകളും അടയ്‌ക്കണോ?</translation>
 <translation id="1501480321619201731">ഗ്രൂപ്പ് ഇല്ലാതാക്കൂ</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{നിഷ്ക്രിയമായ <ph name="TABS_COUNT_ONE" /> ഇനം}other{നിഷ്ക്രിയമായ <ph name="TABS_COUNT_MANY" /> ഇനങ്ങൾ}}</translation>
+<translation id="1568067597247500137">സൈറ്റ് മ്യൂട്ട് ചെയ്യുക</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ടാബുകൾ ഗ്രൂപ്പ് ചെയ്‌തു</translation>
 <translation id="1657719826150349398">ടാബ് താഴേക്ക് നീക്കുക</translation>
 <translation id="1670942869417022142">മ്യൂട്ട് ചെയ്ത ഓഡിയോ</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">ഈ ഇനത്തിന്റെ വില അടുത്തിടെ <ph name="PREVIOUS_PRICE" /> എന്നതിൽ നിന്ന് <ph name="NEW_PRICE" /> ആയി കുറഞ്ഞു</translation>
 <translation id="606985262342505139">ടാബ് ബോട്ടം ഷീറ്റ് മുഴുവൻ ഉയരത്തിൽ</translation>
 <translation id="6109251075362363230">ഏറ്റവും അടുത്തിടെ ഉപയോഗിച്ച പകർപ്പ് ഒഴികെ, എല്ലാ ഡ്യൂപ്ലിക്കേറ്റ് ടാബുകളും ഇപ്പോൾ ആർക്കൈവ് ചെയ്യും.</translation>
+<translation id="612596694132302162">സൈറ്റ് അൺമ്യൂട്ട് ചെയ്യുക</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_ONE" /> ഇനം അടയ്ക്കുക}other{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_MANY" /> ഇനങ്ങൾ അടയ്ക്കുക}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ഗ്രൂപ്പിനെ പുതിയ വിൻഡോയിലേക്ക് നീക്കുക}other{ഗ്രൂപ്പിനെ മറ്റൊരു വിൻഡോയിലേക്ക് നീക്കുക}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{ടാബ് വലത്തേക്ക് നീക്കുക}other{ടാബുകൾ വലത്തേക്ക് നീക്കുക}}</translation>

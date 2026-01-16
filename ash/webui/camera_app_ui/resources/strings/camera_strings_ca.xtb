@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Tipus de cerca</translation>
 <translation id="28682968802727151">Previsualització del mirall</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> està endollada.</translation>
+<translation id="3063987824612038785">Tots els fitxers de la càmera es desaran a Google Drive</translation>
 <translation id="3067436040345934772">Desplaça cap a la dreta</translation>
 <translation id="3081586908890909590">Canvia al mode per gravar vídeo</translation>
 <translation id="3091480460059548935">Detecció de text a la previsualització</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">S'està processant el vídeo...</translation>
 <translation id="3789724198583203151">Gira 90 graus en sentit antihorari</translation>
 <translation id="3810838688059735925">Vídeo</translation>
+<translation id="386366972082231038">Tots els fitxers de la càmera es desaran a OneDrive</translation>
 <translation id="4060608699153044055">No pots gravar perquè queda poc espai d'emmagatzematge al dispositiu. Per començar a gravar, has d'alliberar espai al dispositiu.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpx</translation>
 <translation id="4118525110028899586">Posa en pausa la gravació</translation>
@@ -157,6 +159,7 @@ Si els teus suggeriments fan referència a la qualitat d'imatge o de vídeo, adj
 <translation id="7983668134180549431">Text detectat.</translation>
 <translation id="8079255378695216066">No es pot iniciar la gravació</translation>
 <translation id="8120146556401698679">Panoràmica, inclinació i zoom</translation>
+<translation id="8127459436205030819">És possible que els teus fitxers siguin visibles per al teu administrador</translation>
 <translation id="8131740175452115882">Confirma</translation>
 <translation id="8145038249676204903">Canvia al mode per fer fotos</translation>
 <translation id="8167081290930651932">Desa com a foto</translation>

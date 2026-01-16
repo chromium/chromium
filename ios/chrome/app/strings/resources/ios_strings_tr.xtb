@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Yeni Pencere</translation>
 <translation id="1558391695376153246">Gizli sekmeleri kapat</translation>
 <translation id="1565371473877914088">Yeni Gizli Sekme</translation>
+<translation id="1567960978791353852">Okuma Modu'nu Göster</translation>
 <translation id="1571780780926010134">Gizli mod sekmeleri</translation>
 <translation id="1580715474678097352">Tehlikeli sitelere karşı güvende olun</translation>
 <translation id="1580783302095112590">Posta gönderildi.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">Şifreleri görmek için öncelikle cihazınızda bir şifre kodu ayarlamanız gerekir.</translation>
 <translation id="201759455285471444">Sekme grubunu genişletin.</translation>
 <translation id="202070562065520783">Şunu bana açıkla:</translation>
+<translation id="2023713324775943812">Kullanılabilir olduğunda Okuma Modu'na adres çubuğundan erişin</translation>
 <translation id="2044394949148788042">Sekme ızgarasını açın</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> hesabı, bazı bilgileri görüntüleyebilen <ph name="HOSTED_DOMAIN" /> tarafından yönetiliyor. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="20485545164632846">yeni öğe</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Sekme gruplarınız buraya kaydedilir</translation>
 <translation id="2273327106802955778">Diğer menüsü</translation>
 <translation id="2287614783861766820">{count,plural, =1{Bu adres bu cihazdan silinecek.}other{Bu adresler bu cihazdan silinecek.}}</translation>
+<translation id="2295236662082735391">Gemini ile düzenlemek için web'deki bir görüntüye uzun süre basın</translation>
 <translation id="2297989278479054870">Oturumunuzu kapattıktan sonra Google Hesabınızdaki yer işaretleri, şifreler ve diğer öğeler bu cihazdan kaldırılır.</translation>
 <translation id="2299218006564889602">Şifreleriniz Google Şifre Yöneticisi'ne kaydedilmeden önce cihazınızda şifrelenir.</translation>
 <translation id="2306265833370324042"><ph name="SEARCH_ENGINE_NAME" /> ayrıntılarını göster</translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Aramanızın fotoğrafını çekin</translation>
 <translation id="2761898608071930085">Başka Bir Hesap Kullan</translation>
 <translation id="2762000892062317888">az önce</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{En fazla 1 görüntü ekleyin}other{En fazla {COUNT} görüntü ekleyin}}</translation>
 <translation id="2772667768515195373">Kayıtlı adresleri tüm Google ürünlerinde kullanabilirsiniz. Bu adres Google Hesabınıza (<ph name="USER_EMAIL" />) kaydedilir.</translation>
 <translation id="2773344962924806829">E-posta bildirimleri</translation>
 <translation id="2781331604911854368">Açık</translation>
@@ -1353,6 +1357,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="605721222689873409">YY</translation>
 <translation id="6058415747854995776">Video çek</translation>
 <translation id="6059830886158432458">Haberlerinizi ve aktivitenizi buradan yönetin</translation>
+<translation id="6063802271331271857">Görüntü remiksleyin</translation>
 <translation id="6066301408025741299">İptal etmek için dokunun.</translation>
 <translation id="6074656473835429958">Bildirim alın</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) yüklenemedi</translation>
@@ -1871,6 +1876,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="7899199123054742721">Tümünü okunmadı olarak işaretle</translation>
 <translation id="7911190106180361398">Kuruluşunuz bazı şeyleri senkronize etmenize izin vermiyor.</translation>
 <translation id="7918999344502274923"><ph name="SEARCH_ENGINE_NAME" /> ayrıntılarını gizle</translation>
+<translation id="7921559948846049514">Arka planınız için bir tema, renk veya daha fazlasını seçin</translation>
 <translation id="792357691529995513">Sorun bulunmadı</translation>
 <translation id="7925108652071887026">Otomatik doldurma verileri</translation>
 <translation id="7926975587469166629">Kart için takma ad</translation>

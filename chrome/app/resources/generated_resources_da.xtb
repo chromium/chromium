@@ -1552,6 +1552,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="2024195579772565064">Slet søgemaskine</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Præcisionsklik</translation>
+<translation id="2025130536872979378">se kilde</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> er gået ned. Klik her for at genstarte udvidelsen.</translation>
 <translation id="2026367923222947564">Hel side</translation>
 <translation id="2026377162111110983">Områdestemme</translation>
@@ -1890,7 +1891,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2257053455312861282">Hvis du tilføjer en skolekonto, kan du nemt logge ind på websites, i udvidelser og i apps som elev, mens du stadig er underlagt indstillinger for børnesikring.</translation>
 <translation id="225716114209817872">Maksimal</translation>
 <translation id="2259337945538989999">Verificer din identitet for at få adgang til dine faner på dine andre enheder. Du kan til enhver tid stoppe med at synkronisere i indstillingerne. Google kan tilpasse Søgning og andre tjenester til dig personligt baseret på din historik.</translation>
-<translation id="2261323523305321874">Din administrator har foretaget en systemændring, der deaktiverer nogle gamle profiler.</translation>
 <translation id="22614517036276112">Dette dokument eller din enhed overholder ikke alle din organisationens sikkerhedspolitikker. Spørg din administrator, hvad der skal rettes.</translation>
 <translation id="2262477216570151239">Forsinkelse før gentagelse</translation>
 <translation id="2263189956353037928">Log ud, og log ind igen</translation>
@@ -2538,7 +2538,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2681124317993121768">Gæsteprofiler understøttes ikke</translation>
 <translation id="2682498795777673382">Opdatering fra din forælder</translation>
 <translation id="2683638487103917598">Mappen er sorteret</translation>
-<translation id="2684004000387153598">Hvis du vil fortsætte, skal du klikke på OK og derefter klikke på Tilføj person for at oprette en ny profil til din mailadresse.</translation>
 <translation id="2685193395980129388">Tilladt – <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687407218262674387">Googles servicevilkår</translation>
 <translation id="2688196195245426394">Fejl ved registrering af enheden med serveren: <ph name="CLIENT_ERROR" />.</translation>
@@ -2801,6 +2800,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2856776373509145513">Opret en ny container</translation>
 <translation id="2857047802954430547">Log ind for at få adgang til dine adgangskoder, bogmærker m.m. på alle dine enheder</translation>
 <translation id="2859741939921354763">Importér adgangskoder til <ph name="BRAND" /></translation>
+<translation id="2860284453253554297">Virksomhedspolitikker</translation>
 <translation id="2860710618359053450">Drej kæben til venstre</translation>
 <translation id="2861301611394761800">Opdateringen af systemet er fuldført. Genstart systemet.</translation>
 <translation id="2861402191395139055">Passpoint-abonnementer</translation>
@@ -2839,6 +2839,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2885129935310217435">Der er en knap med samme navn. Vælg en anden.</translation>
 <translation id="2885378588091291677">Jobliste</translation>
 <translation id="2885729872133513017">Der opstod et problem under afkodningen af serversvaret.</translation>
+<translation id="2886119409731773154">Dette kan tage op til 30 minutter</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> og <ph name="NUMBER_OF_DEVICES" /> andre</translation>
 <translation id="2887344147309501015">Chat med Gemini i Chrome for at få svar, de vigtigste pointer og meget mere, mens du browser</translation>
@@ -9799,11 +9800,11 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7681757571815416227">Din organisation skal have oplysninger om din enhed, hvis du vil bruge enheden med din <ph name="DOMAIN" />-profil.
 
 Dette kan omfatte oplysninger om installeret software, filer, din browser, enhedens operativsystem og IP-adresser.</translation>
-<translation id="7683373461016844951">Hvis du vil fortsætte, skal du klikke på Tilføj person for at oprette en ny profil til din mailadresse på <ph name="DOMAIN" />.</translation>
 <translation id="7683834360226457448">Værktøjer til visning for folk med stærkt nedsat syn</translation>
 <translation id="7684212569183643648">Installeret af din administrator</translation>
 <translation id="7684559058815332124">Gå til loginsiden for captive portal</translation>
 <translation id="7684718995427157417">Hvis du vil oprette og teste dine apps, skal du aktivere Android Debug Bridge (ADB). Bemærk! Denne handling tillader, at Android-apps, der ikke er blevet verificeret af Google, kan installeres. Du skal gendanne fabriksindstillingerne for at deaktivere dette.</translation>
+<translation id="7684803937028953000">Din organisation har blokeret den lokale download af denne fil.</translation>
 <translation id="7684913007876670600">Du kan se en enkel visning af denne side ved at åbne sidepanelet og vælge Læsetilstand</translation>
 <translation id="7685038817958445325">Det var ikke muligt at caste</translation>
 <translation id="7685049629764448582">JavaScript-hukommelse</translation>
@@ -11227,7 +11228,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> vil gerne have tilladelse til at: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> og andre ting</translation>
 <translation id="8648889679430451455">Ryd personligt tilpassede data</translation>
 <translation id="8649026945479135076">Det er almindeligt, at de websites, du besøger, husker ting, du er interesseret i, så din oplevelse personligt tilpasses. Websites kan også gemme oplysninger med Chrome om dine interesser.</translation>
-<translation id="8650543407998814195">Du kan godt fjerne din gamle profil, selvom du ikke længere har adgang til den.</translation>
 <translation id="8651585100578802546">Gennemtving genindlæsning af denne side</translation>
 <translation id="8652400352452647993">Fejl i pakkeudvidelse</translation>
 <translation id="8654151524613148204">Filen er desværre for stor til, at computeren kan håndtere den.</translation>

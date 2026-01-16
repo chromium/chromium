@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">සියලු අප්‍රකට ටැබ වසන්නද?</translation>
 <translation id="1501480321619201731">සමූහය මකන්න</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> අක්‍රිය අයිතමයක්}one{අක්‍රිය අයිතම <ph name="TABS_COUNT_MANY" />ක්}other{අක්‍රිය අයිතම <ph name="TABS_COUNT_MANY" />ක්}}</translation>
+<translation id="1568067597247500137">අඩවිය නිහඬ කරන්න</translation>
 <translation id="1645759014353344461">පටිති <ph name="TABS_COUNT_MANY" /> සමූහගත කළා</translation>
 <translation id="1657719826150349398">පටිත්ත පහළට ගෙන යන්න</translation>
 <translation id="1670942869417022142">ශ්‍රව්‍ය නිහඬ කර ඇත</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">මෙම අයිතමයෙහි මිල මෑතකදී <ph name="PREVIOUS_PRICE" /> සිට <ph name="NEW_PRICE" /> දක්වා පහත වැටී ඇත</translation>
 <translation id="606985262342505139">පටිති පහළ පත්‍රය සම්පූර්ණ උසින්</translation>
 <translation id="6109251075362363230">මෑතක දී භාවිතා කළ පිටපත ව්‍යතිරේකය හැර, සියලු ම අනුපත් පටිති දැන් ලේඛනාරක්ෂණය කරනු ලැබේ.</translation>
+<translation id="612596694132302162">අඩවිය නිහඬ නොකරන්න</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{තෝරා ගත් <ph name="TABS_COUNT_ONE" /> අයිතමයක් වසන්න}one{තෝරා ගත් අයිතම <ph name="TABS_COUNT_MANY" />ක් වසන්න}other{තෝරා ගත් අයිතම <ph name="TABS_COUNT_MANY" />ක් වසන්න}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{සමූහය නව කවුළුවට ගෙන යන්න}one{සමූහය තව කවුළුවකට ගෙන යන්න}other{සමූහය තව කවුළුවකට ගෙන යන්න}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{පටිත්ත දකුණට ගෙන යන්න}one{පටිති දකුණට ගෙන යන්න}other{පටිති දකුණට ගෙන යන්න}}</translation>

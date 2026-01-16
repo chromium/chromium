@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Нови прозор</translation>
 <translation id="1558391695376153246">Затвори картице без архив.</translation>
 <translation id="1565371473877914088">Нова картица без архивирања</translation>
+<translation id="1567960978791353852">Прикажи Режим читања</translation>
 <translation id="1571780780926010134">Картице без архивирања</translation>
 <translation id="1580715474678097352">Увек будите заштићени од опасних веб-сајтова</translation>
 <translation id="1580783302095112590">Имејл је послата.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">Да бисте видели лозинке, прво морате да подесите шифру на уређају.</translation>
 <translation id="201759455285471444">Проширите групу картица.</translation>
 <translation id="202070562065520783">Објасни ми ово</translation>
+<translation id="2023713324775943812">Приступите Режиму читања са траке за адресу ако је доступан</translation>
 <translation id="2044394949148788042">Отворите мрежу за картице</translation>
 <translation id="2044681667265133332">Налогом <ph name="USER_EMAIL" /> управља <ph name="HOSTED_DOMAIN" />, који може да прегледа одређене информације. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">нова ставка</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Групе картица се чувају овде</translation>
 <translation id="2273327106802955778">Мени Још</translation>
 <translation id="2287614783861766820">{count,plural, =1{Ова адреса ће бити избрисана са овог уређаја.}one{Ове адресе ће бити избрисане са овог уређаја.}few{Ове адресе ће бити избрисане са овог уређаја.}other{Ове адресе ће бити избрисане са овог уређаја.}}</translation>
+<translation id="2295236662082735391">Дуго притисните слику на вебу да бисте је изменили помоћу Gemini-ја</translation>
 <translation id="2297989278479054870">Када се одјавите, обележивачи, лозинке и други садржај са Google налога ће бити уклоњени са овог уређаја.</translation>
 <translation id="2299218006564889602">Лозинке се шифрују на уређају пре него што се сачувају у Google менаџеру лозинки.</translation>
 <translation id="2306265833370324042">Прикажи детаље за <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Сликајте претрагу</translation>
 <translation id="2761898608071930085">Користите други налог</translation>
 <translation id="2762000892062317888">малопре</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Додајте до 1 слику}one{Додајте до {COUNT} слику}few{Додајте до {COUNT} слике}other{Додајте до {COUNT} слика}}</translation>
 <translation id="2772667768515195373">Можете да користите сачуване адресе у свим Google производима. Ова адреса је сачувана на Google налогу, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">Обавештења имејлом</translation>
 <translation id="2781331604911854368">Укључено</translation>
@@ -867,6 +871,7 @@
 <translation id="4302061870579014542">Подеси позицију</translation>
 <translation id="4304713468139749426">Менаџер лозинки</translation>
 <translation id="4309403553630140242">Двапут додирните за више информација</translation>
+<translation id="4310738531374808763">Прилагодите страницу Почетна</translation>
 <translation id="4320848494125124980">Недавно</translation>
 <translation id="4322394346347055525">Затвори друге картице</translation>
 <translation id="4324735664183300693">Укључи обавештења</translation>
@@ -1353,6 +1358,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="605721222689873409">ГГ</translation>
 <translation id="6058415747854995776">Сними видео</translation>
 <translation id="6059830886158432458">Овде контролишите приче и активности</translation>
+<translation id="6063802271331271857">Ремиксујте слику</translation>
 <translation id="6066301408025741299">Додирните да бисте отказали.</translation>
 <translation id="6074656473835429958">Добијајте обавештења</translation>
 <translation id="607620096698446287">Отпремање фајла <ph name="FILENAME" /> (<ph name="FILESIZE" />) није успело</translation>
@@ -1704,6 +1710,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">Проценат преузимања: <ph name="PERCENT" /></translation>
 <translation id="7345061034321640811">Увоз није дозвољен</translation>
+<translation id="7347998088283246662">Увезите лозинке, историју, обележиваче и друго</translation>
 <translation id="7352651011704765696">Дошло је до грешке</translation>
 <translation id="7364796246159120393">Одабери фајл</translation>
 <translation id="736564850024123010">Промените положај траке за адресу да бисте имали прилагођени доживљај.</translation>
@@ -1871,6 +1878,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7899199123054742721">Означи све као непрочитано</translation>
 <translation id="7911190106180361398">Организација не дозвољава да синхронизујете све.</translation>
 <translation id="7918999344502274923">Сакриј детаље за <ph name="SEARCH_ENGINE_NAME" /></translation>
+<translation id="7921559948846049514">Изаберите тему, боју или друго за позадину</translation>
 <translation id="792357691529995513">Није пронађен ниједан проблем</translation>
 <translation id="7925108652071887026">Подаци Аутоматског попуњавања</translation>
 <translation id="7926975587469166629">Надимак картице</translation>
@@ -2228,6 +2236,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="914781932147356857">Означи све…</translation>
 <translation id="9148126808321036104">Пријави ме поново</translation>
 <translation id="9149866541089851383">Измени...</translation>
+<translation id="9152637745605628097">Одаберите тему, боју или отпремите слику</translation>
 <translation id="9159628751968616911">Пошаљите веб-страницу</translation>
 <translation id="9162432979321511934">Укључите Аутоматско попуњавање лозинки</translation>
 <translation id="9165320910061267720">Да бисте добијали обавештења о снижењима, треба да укључите обавештења у iOS подешавањима.</translation>

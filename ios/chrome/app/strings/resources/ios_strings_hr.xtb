@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Novi prozor</translation>
 <translation id="1558391695376153246">Zatvori anonimne kartice</translation>
 <translation id="1565371473877914088">Nova anonimna kartica</translation>
+<translation id="1567960978791353852">Prikaži čitački način</translation>
 <translation id="1571780780926010134">Anonimne kartice</translation>
 <translation id="1580715474678097352">Zaštitite se od opasnih web-lokacija</translation>
 <translation id="1580783302095112590">Poruka je poslana.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">Da biste vidjeli zaporke, najprije morate postaviti šifru zaporke na uređaju.</translation>
 <translation id="201759455285471444">Proširite grupu kartica.</translation>
 <translation id="202070562065520783">Objasni mi ovo</translation>
+<translation id="2023713324775943812">Pristupite čitačkom načinu s adresne trake kad je ta opcija dostupna</translation>
 <translation id="2044394949148788042">Otvorite rešetku kartica</translation>
 <translation id="2044681667265133332">Računom <ph name="USER_EMAIL" /> upravlja domena <ph name="HOSTED_DOMAIN" /> koja možda može pregledavati neke podatke. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nova stavka</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Ovdje se spremaju vaše grupe kartica</translation>
 <translation id="2273327106802955778">Izbornik Više</translation>
 <translation id="2287614783861766820">{count,plural, =1{Ta će se adresa izbrisati s ovog uređaja.}one{Te će se adrese izbrisati s ovog uređaja.}few{Te će se adrese izbrisati s ovog uređaja.}other{Te će se adrese izbrisati s ovog uređaja.}}</translation>
+<translation id="2295236662082735391">Dugo pritisnite sliku na webu da biste je uredili pomoću Geminija</translation>
 <translation id="2297989278479054870">Nakon što se odjavite, oznake, zaporke i drugi podaci s vašeg Google računa uklonit će se s ovog uređaja.</translation>
 <translation id="2299218006564889602">Vaše se zaporke šifriraju na uređaju prije spremanja na Google upravitelj zaporki.</translation>
 <translation id="2306265833370324042">Prikaži pojedinosti za <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Fotografirajte svoje pretraživanje</translation>
 <translation id="2761898608071930085">Upotrijebi neki drugi račun</translation>
 <translation id="2762000892062317888">upravo sada</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Dodajte najviše jednu sliku}one{Dodajte najviše {COUNT} sliku}few{Dodajte najviše {COUNT} slike}other{Dodajte najviše {COUNT} slika}}</translation>
 <translation id="2772667768515195373">Spremljene adrese možete upotrijebiti na Googleovim proizvodima. Adresa je spremljena na vašem Google računu (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773344962924806829">Obavijesti e-poštom</translation>
 <translation id="2781331604911854368">Uključeno</translation>
@@ -1353,6 +1357,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="605721222689873409">GG</translation>
 <translation id="6058415747854995776">Snimite videozapis</translation>
 <translation id="6059830886158432458">Svojim pričama i aktivnostima upravljajte ovdje</translation>
+<translation id="6063802271331271857">Remiksajte sliku</translation>
 <translation id="6066301408025741299">Dotaknite da biste otkazali.</translation>
 <translation id="6074656473835429958">Primajte obavijesti</translation>
 <translation id="607620096698446287">Prijenos datoteke <ph name="FILENAME" /> (<ph name="FILESIZE" />) nije uspio</translation>
@@ -1871,6 +1876,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="7899199123054742721">Označi sve kao nepročitano</translation>
 <translation id="7911190106180361398">Vaša organizacija ne dopušta da sinkronizirate sve.</translation>
 <translation id="7918999344502274923">Sakrij pojedinosti za <ph name="SEARCH_ENGINE_NAME" /></translation>
+<translation id="7921559948846049514">Odaberite temu, boju ili nešto drugo za svoju pozadinu</translation>
 <translation id="792357691529995513">Nije pronađena nijedna poteškoća</translation>
 <translation id="7925108652071887026">Podaci automatskog popunjavanja</translation>
 <translation id="7926975587469166629">Nadimak kartice</translation>

@@ -1540,6 +1540,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="2024195579772565064">Elimine o motor de pesquisa</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Clique de precisão</translation>
+<translation id="2025130536872979378">ver fonte</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> falhou. Clique neste balão para recarregar a extensão.</translation>
 <translation id="2026367923222947564">Página inteira</translation>
 <translation id="2026377162111110983">Voz da área</translation>
@@ -1878,7 +1879,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2257053455312861282">Adicionar uma conta escolar permite iniciar sessão facilmente em Websites, extensões e apps como aluno e continuar a trabalhar sob controlo parental.</translation>
 <translation id="225716114209817872">Máximo</translation>
 <translation id="2259337945538989999">Para ver os separadores dos seus outros dispositivos, valide a sua identidade. Pode parar a sincronização em qualquer altura nas definições. A Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
-<translation id="2261323523305321874">O administrador efetuou uma alteração ao nível do sistema que desativa alguns perfis antigos.</translation>
 <translation id="22614517036276112">Este documento ou o seu dispositivo não cumpre algumas das políticas de segurança da sua organização. Contacte o seu administrador para saber o que é preciso corrigir.</translation>
 <translation id="2262477216570151239">Atraso antes da repetição</translation>
 <translation id="2263189956353037928">Terminar sessão e voltar a iniciar sessão</translation>
@@ -2523,7 +2523,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2681124317993121768">Os perfis de convidado não são suportados</translation>
 <translation id="2682498795777673382">Atualização de um dos pais</translation>
 <translation id="2683638487103917598">Pasta ordenada</translation>
-<translation id="2684004000387153598">Para continuar, clique em OK e, de seguida, clique em Adicionar pessoa para criar um novo perfil para o seu endereço de email.</translation>
 <translation id="2685193395980129388">Permitido – <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687407218262674387">Termos de Utilização do Google</translation>
 <translation id="2688196195245426394">Erro ao registar o dispositivo no servidor: <ph name="CLIENT_ERROR" />.</translation>
@@ -2786,6 +2785,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2856776373509145513">Crie um novo contentor</translation>
 <translation id="2857047802954430547">Inicie sessão para ter acesso às suas palavras-passe, marcadores e muito mais em todos os seus dispositivos</translation>
 <translation id="2859741939921354763">Importe palavras-passe para o <ph name="BRAND" /></translation>
+<translation id="2860284453253554297">Políticas empresariais</translation>
 <translation id="2860710618359053450">Mover o maxilar para a direita</translation>
 <translation id="2861301611394761800">Actualização do sistema concluída. Reinicie o sistema.</translation>
 <translation id="2861402191395139055">Subscrições do Passpoint</translation>
@@ -2824,6 +2824,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2885129935310217435">Existe um botão com o mesmo nome. Escolha outro.</translation>
 <translation id="2885378588091291677">Gestor de tarefas</translation>
 <translation id="2885729872133513017">Ocorreu um problema ao descodificar a resposta do servidor.</translation>
+<translation id="2886119409731773154">Esta ação pode demorar até 30 minutos.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> e mais <ph name="NUMBER_OF_DEVICES" /></translation>
 <translation id="2887344147309501015">Converse com o Gemini no Chrome para receber respostas, principais conclusões e muito mais enquanto navega</translation>
@@ -9784,11 +9785,11 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7681757571815416227">Para usar o dispositivo com o perfil de <ph name="DOMAIN" />, a sua organização precisa de informações sobre o dispositivo.
 
 Pode incluir informações sobre o software instalado, os ficheiros, o navegador, o sistema operativo do dispositivo e os endereços IP.</translation>
-<translation id="7683373461016844951">Para continuar, clique em OK e, de seguida, clique em Adicionar pessoa para criar um novo perfil para o seu endereço de email de <ph name="DOMAIN" />.</translation>
 <translation id="7683834360226457448">Ferramentas de apresentação para visão reduzida</translation>
 <translation id="7684212569183643648">Instalada pelo gestor</translation>
 <translation id="7684559058815332124">Aceder à página de início de sessão do portal cativo</translation>
 <translation id="7684718995427157417">Para criar e testar aplicações, ative o Bridge de depuração do Android (adb). Tenha em atenção que esta ação permite a instalação de aplicações para Android que não foram validadas pela Google. Além disso, se pretender desativar o adb, terá de efetuar uma reposição de dados de fábrica.</translation>
+<translation id="7684803937028953000">A sua organização bloqueou a transferência local deste ficheiro.</translation>
 <translation id="7684913007876670600">Para ver uma vista simplificada desta página, abra o painel lateral e selecione Modo de leitura</translation>
 <translation id="7685038817958445325">Não é possível transmitir</translation>
 <translation id="7685049629764448582">Memória JavaScript</translation>
@@ -11212,7 +11213,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> quer: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> e mais</translation>
 <translation id="8648889679430451455">Limpar dados de personalização</translation>
 <translation id="8649026945479135076">É comum que os sites que visita se lembrem de assuntos que lhe interessam para personalizar a sua experiência. Os sites também podem armazenar informações no Chrome sobre os seus interesses.</translation>
-<translation id="8650543407998814195">Embora já não possa aceder ao seu perfil antigo, pode removê-lo.</translation>
 <translation id="8651585100578802546">Forçar o recarregamento desta página</translation>
 <translation id="8652400352452647993">Erro de extensão do pacote</translation>
 <translation id="8654151524613148204">O ficheiro é demasiado grande para o seu computador processar. Lamentamos.</translation>

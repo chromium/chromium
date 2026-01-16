@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Dritare e re</translation>
 <translation id="1558391695376153246">Mbyll skedat "e fshehta"</translation>
 <translation id="1565371473877914088">Skedë e re "e fshehtë"</translation>
+<translation id="1567960978791353852">Shfaq "Modalitetin e leximit"</translation>
 <translation id="1571780780926010134">Skedat "e fshehta"</translation>
 <translation id="1580715474678097352">Qëndro i mbrojtur nga sajtet e rrezikshme të uebit</translation>
 <translation id="1580783302095112590">Mail-i u dërgua.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">Për të parë fjalëkalimet, duhet të vendosësh në fillim një kod në pajisjen tënde.</translation>
 <translation id="201759455285471444">Zgjero grupin e skedave.</translation>
 <translation id="202070562065520783">Ma shpjego këtë</translation>
+<translation id="2023713324775943812">Qasu te "Modaliteti i leximit" nga shiriti i adresave kur ofrohet</translation>
 <translation id="2044394949148788042">Hap rrjetën e skedave</translation>
 <translation id="2044681667265133332">Llogaria <ph name="USER_EMAIL" /> menaxhohet nga <ph name="HOSTED_DOMAIN" />, që mund të jetë në gjendje të shikojë disa informacione. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">artikull i ri</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Grupet e skedave ruhen këtu</translation>
 <translation id="2273327106802955778">Menyja "Më shumë"</translation>
 <translation id="2287614783861766820">{count,plural, =1{Kjo adresë do të fshihet nga kjo pajisje.}other{Këto adresa do të fshihen nga kjo pajisje.}}</translation>
+<translation id="2295236662082735391">Mbaj shtypur gjatë një imazh në ueb për ta modifikuar me Gemini</translation>
 <translation id="2297989278479054870">Pasi të dalësh, faqeshënuesit, fjalëkalimet etj. në "Llogarinë tënde të Google" do të hiqen nga kjo pajisje.</translation>
 <translation id="2299218006564889602">Fjalëkalimet enkriptohen në pajisjen tënde para se të ruhen në "Menaxherin e fjalëkalimeve të Google".</translation>
 <translation id="2306265833370324042">Shfaq detajet për <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Nxirr një fotografi të kërkimit tënd</translation>
 <translation id="2761898608071930085">Përdor një llogari tjetër</translation>
 <translation id="2762000892062317888">pikërisht tani</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Shto deri në 1 imazh}other{Shto deri në {COUNT} imazhe}}</translation>
 <translation id="2772667768515195373">Adresat e ruajtura mund t'i përdorësh nëpër produktet e Google. Kjo adresë ruhet në "Llogarinë tënde të Google", <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">Njoftimet me email</translation>
 <translation id="2781331604911854368">Aktiv</translation>
@@ -1353,6 +1357,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="605721222689873409">VV</translation>
 <translation id="6058415747854995776">Nxirr një video</translation>
 <translation id="6059830886158432458">Kontrollo historitë dhe aktivitetin tënd këtu</translation>
+<translation id="6063802271331271857">Remikso një imazh</translation>
 <translation id="6066301408025741299">Prek lehtë për të anuluar.</translation>
 <translation id="6074656473835429958">Merr njoftime</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) nuk mund të ngarkohej</translation>
@@ -1871,6 +1876,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="7899199123054742721">Shëno të gjitha si të palexuara</translation>
 <translation id="7911190106180361398">Organizata jote nuk të lejon të sinkronizosh gjithçka.</translation>
 <translation id="7918999344502274923">Fshih detajet për <ph name="SEARCH_ENGINE_NAME" /></translation>
+<translation id="7921559948846049514">Zgjidh një temë, ngjyrë ose më shumë për sfondin</translation>
 <translation id="792357691529995513">Nuk u gjet asnjë problem</translation>
 <translation id="7925108652071887026">Plotëso automatikisht të dhënat</translation>
 <translation id="7926975587469166629">Pseudonimi i kartës</translation>

@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Új ablak</translation>
 <translation id="1558391695376153246">Inkognitó lapok bezárása</translation>
 <translation id="1565371473877914088">Új inkognitó lap</translation>
+<translation id="1567960978791353852">Olvasási mód megjelenítése</translation>
 <translation id="1571780780926010134">Inkognitó lapok</translation>
 <translation id="1580715474678097352">Védelmet kap a veszélyes webhelyekkel szemben</translation>
 <translation id="1580783302095112590">Levél elküldve.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">A jelszavak megtekintéséhez előbb be kell állítania az eszközön a biztonsági kódot.</translation>
 <translation id="201759455285471444">Lapcsoport kibontása.</translation>
 <translation id="202070562065520783">Magyarázd ezt el nekem</translation>
+<translation id="2023713324775943812">Az Olvasási módhoz a címsávról férhet hozzá, ha rendelkezésre áll</translation>
 <translation id="2044394949148788042">Nyissa meg a laprácsot</translation>
 <translation id="2044681667265133332">A(z) <ph name="USER_EMAIL" /> fiókot a(z) <ph name="HOSTED_DOMAIN" /> kezeli, amely megtekinthet bizonyos adatokat. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">új elem</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Ide menti a rendszer a lapcsoportokat</translation>
 <translation id="2273327106802955778">Továbbiak menü</translation>
 <translation id="2287614783861766820">{count,plural, =1{Ez a cím törlődni fog erről az eszközről.}other{Ezek a címek törlődni fognak az eszközről.}}</translation>
+<translation id="2295236662082735391">Nyomja meg hosszan az interneten található képeket a Geminivel való szerkesztéshez</translation>
 <translation id="2297989278479054870">Kijelentkezés után a Google-fiókjában lévő könyvjelzők, jelszavak és egyebek el lesznek távolítva erről az eszközről.</translation>
 <translation id="2299218006564889602">Jelszavai titkosításra kerülnek az eszközön, mielőtt elmenti őket a rendszer a Google Jelszókezelőbe.</translation>
 <translation id="2306265833370324042">A(z) <ph name="SEARCH_ENGINE_NAME" /> részleteinek megjelenítése</translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Készítsen fotót a keresésről.</translation>
 <translation id="2761898608071930085">Másik fiók használata</translation>
 <translation id="2762000892062317888">éppen most</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Legfeljebb 1 képet adjon hozzá}other{Legfeljebb {COUNT} képet adjon hozzá}}</translation>
 <translation id="2772667768515195373">A mentett címeket több Google-termékben is használhatja. Ezt a címet a Google-fiókjába (<ph name="USER_EMAIL" />) mentette a rendszer.</translation>
 <translation id="2773344962924806829">E-mailes értesítések</translation>
 <translation id="2781331604911854368">Be</translation>
@@ -1353,6 +1357,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="605721222689873409">ÉÉ</translation>
 <translation id="6058415747854995776">Videó készítése</translation>
 <translation id="6059830886158432458">Itt kezelheti a híreket és a tevékenységeket</translation>
+<translation id="6063802271331271857">Kép remixelése</translation>
 <translation id="6066301408025741299">Érintse meg a visszavonáshoz</translation>
 <translation id="6074656473835429958">Értesítések kérése</translation>
 <translation id="607620096698446287">A(z) <ph name="FILENAME" /> (<ph name="FILESIZE" />) feltöltése nem sikerült</translation>
@@ -1871,6 +1876,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="7899199123054742721">Az összes megjelölése olvasatlanként</translation>
 <translation id="7911190106180361398">Szervezete nem engedélyezi mindennek a szinkronizálását.</translation>
 <translation id="7918999344502274923"><ph name="SEARCH_ENGINE_NAME" /> részleteinek elrejtése</translation>
+<translation id="7921559948846049514">Válasszon témát, színt vagy egyebet a háttérhez</translation>
 <translation id="792357691529995513">Nem találtunk problémát</translation>
 <translation id="7925108652071887026">Automatikus kitöltés adatai</translation>
 <translation id="7926975587469166629">Egyéni kártyanév</translation>

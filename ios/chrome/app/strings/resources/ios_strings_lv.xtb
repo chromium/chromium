@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Jauns logs</translation>
 <translation id="1558391695376153246">Aizvērt inkognito cilnes</translation>
 <translation id="1565371473877914088">Jauna inkognito cilne</translation>
+<translation id="1567960978791353852">Rādīt lasīšanas režīmu</translation>
 <translation id="1571780780926010134">Inkognito režīma cilnes</translation>
 <translation id="1580715474678097352">Aizsardzība pret kaitīgām vietnēm</translation>
 <translation id="1580783302095112590">E-pasts nosūtīts.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">Lai skatītu paroles, vispirms ierīcei ir jāiestata piekļuves kods.</translation>
 <translation id="201759455285471444">Izvērst ciļņu grupu.</translation>
 <translation id="202070562065520783">Paskaidro man</translation>
+<translation id="2023713324775943812">Piekļūt lasīšanas režīmam no adreses joslas, kad tas ir pieejams</translation>
 <translation id="2044394949148788042">Atveriet ciļņu režģi.</translation>
 <translation id="2044681667265133332">Kontu <ph name="USER_EMAIL" /> pārvalda domēnam <ph name="HOSTED_DOMAIN" /> atbilstošā organizācija, kas, iespējams, var skatīt noteiktu informāciju. <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">jauns vienums</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Jūsu ciļņu grupas ir saglabātas šeit</translation>
 <translation id="2273327106802955778">Izvēlne Vairāk</translation>
 <translation id="2287614783861766820">{count,plural, =1{Šī adrese tiks dzēsta no šīs ierīces.}zero{Šīs adreses tiks dzēstas no šīs ierīces.}one{Šīs adreses tiks dzēstas no šīs ierīces.}other{Šīs adreses tiks dzēstas no šīs ierīces.}}</translation>
+<translation id="2295236662082735391">Nospiediet un turiet attēlu tīmeklī, lai to rediģētu, izmantojot Gemini.</translation>
 <translation id="2297989278479054870">Pēc izrakstīšanās grāmatzīmes, paroles un citi dati jūsu Google kontā tiks noņemti no šīs ierīces.</translation>
 <translation id="2299218006564889602">Jūsu paroles tiek šifrētas jūsu ierīcē, pirms tās tiek saglabātas Google paroļu pārvaldniekā.</translation>
 <translation id="2306265833370324042">Rādīt informāciju par meklētājprogrammu <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Meklējiet, uzņemot fotoattēlu.</translation>
 <translation id="2761898608071930085">Izmantot citu kontu</translation>
 <translation id="2762000892062317888">tikko</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Pievienojiet ne vairāk kā 1 attēlu.}zero{Pievienojiet ne vairāk {COUNT} attēlus.}one{Pievienojiet ne vairāk {COUNT} attēlu.}other{Pievienojiet ne vairāk {COUNT} attēlus.}}</translation>
 <translation id="2772667768515195373">Saglabātās adreses varat izmantot dažādos Google produktos. Šī adrese ir saglabāta jūsu Google kontā (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773344962924806829">E-pasta paziņojumi</translation>
 <translation id="2781331604911854368">Ieslēgts</translation>
@@ -1353,6 +1357,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="605721222689873409">GG</translation>
 <translation id="6058415747854995776">Ierakstīt video</translation>
 <translation id="6059830886158432458">Šeit varat kontrolēt jums rādītos rakstus un darbības.</translation>
+<translation id="6063802271331271857">Remiksēt attēlu</translation>
 <translation id="6066301408025741299">Pieskarieties, lai atceltu.</translation>
 <translation id="6074656473835429958">Paziņojumu saņemšana</translation>
 <translation id="607620096698446287">Nevarēja augšupielādēt failu “<ph name="FILENAME" />” (<ph name="FILESIZE" />)</translation>
@@ -1871,6 +1876,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="7899199123054742721">Atzīmēt visu kā nelasītu</translation>
 <translation id="7911190106180361398">Jūsu organizācija neatļauj jums sinhronizēt visu.</translation>
 <translation id="7918999344502274923">Slēpt meklētājprogrammas <ph name="SEARCH_ENGINE_NAME" /> informāciju</translation>
+<translation id="7921559948846049514">Izvēlieties fonam motīvu, krāsu vai citus iestatījumus.</translation>
 <translation id="792357691529995513">Problēmas netika atrastas</translation>
 <translation id="7925108652071887026">Automātiskās aizpildes dati</translation>
 <translation id="7926975587469166629">Kredītkartes apzīmējums</translation>

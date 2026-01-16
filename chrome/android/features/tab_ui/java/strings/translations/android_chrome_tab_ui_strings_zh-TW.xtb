@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">要關閉所有無痕分頁嗎？</translation>
 <translation id="1501480321619201731">刪除群組</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個閒置項目}other{<ph name="TABS_COUNT_MANY" /> 個閒置項目}}</translation>
+<translation id="1568067597247500137">關閉網站音訊</translation>
 <translation id="1645759014353344461">已將 <ph name="TABS_COUNT_MANY" /> 個分頁加入群組</translation>
 <translation id="1657719826150349398">將分頁向下移</translation>
 <translation id="1670942869417022142">音訊已設為靜音</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">這個商品的價格最近從 <ph name="PREVIOUS_PRICE" />降為 <ph name="NEW_PRICE" /></translation>
 <translation id="606985262342505139">分頁底部功能表顯示在整個畫面上</translation>
 <translation id="6109251075362363230">現在也會封存所有重複的分頁 (最近使用的重複分頁除外)。</translation>
+<translation id="612596694132302162">開啟網站音訊</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{關閉 <ph name="TABS_COUNT_ONE" /> 個所選項目}other{關閉 <ph name="TABS_COUNT_MANY" /> 個所選項目}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{將群組移到新視窗}other{將群組移到其他視窗}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{將分頁向右移}other{將分頁向右移}}</translation>

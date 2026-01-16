@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">سبھی پوشیدگی ٹیبز بند کریں؟</translation>
 <translation id="1501480321619201731">گروپ حذف کریں</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> غیر فعال آئٹم}other{<ph name="TABS_COUNT_MANY" /> غیر فعال آئٹمز}}</translation>
+<translation id="1568067597247500137">سائٹ کی آواز بند کریں</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ٹیبز کا گروپ بن گیا</translation>
 <translation id="1657719826150349398">ٹیب کو نیچے منتقل کریں</translation>
 <translation id="1670942869417022142">خاموش کردہ آڈیو</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">اس آئٹم کی قیمت حال ہی میں کم ہو کر <ph name="PREVIOUS_PRICE" /> سے <ph name="NEW_PRICE" /> ہوئی ہے</translation>
 <translation id="606985262342505139">ٹیب کی نیچے کی شیٹ مکمل طور پر کھلی ہے</translation>
 <translation id="6109251075362363230">حال ہی میں سب سے زیادہ مستعمل کاپی کے استثناء کے ساتھ تمام ڈپلیکیٹ ٹیبز کو بھی آرکائیو کیا جائے گا۔</translation>
+<translation id="612596694132302162">سائٹ کی آواز چلائیں</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{منتخب کردہ <ph name="TABS_COUNT_ONE" /> آئٹم کو بند کریں}other{منتخب کردہ <ph name="TABS_COUNT_MANY" /> آئٹمز کو بند کریں}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{گروپ کو نئی ونڈو میں منتقل کریں}other{گروپ کو دوسری ونڈو میں منتقل کریں}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{ٹیب کو دائیں طرف منتقل کریں}other{ٹیبز کو دائیں طرف منتقل کریں}}</translation>

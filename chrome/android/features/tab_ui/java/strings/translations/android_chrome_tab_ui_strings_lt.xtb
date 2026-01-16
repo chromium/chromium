@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Uždaryti visus inkognito skirtukus?</translation>
 <translation id="1501480321619201731">Ištrinti grupę</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> neaktyvus elementas}one{<ph name="TABS_COUNT_MANY" /> neaktyvus elementas}few{<ph name="TABS_COUNT_MANY" /> neaktyvūs elementai}many{<ph name="TABS_COUNT_MANY" /> neaktyvaus elemento}other{<ph name="TABS_COUNT_MANY" /> neaktyvių elementų}}</translation>
+<translation id="1568067597247500137">Nutildyti svetainę</translation>
 <translation id="1645759014353344461">Sugrupuota tiek skirtukų: <ph name="TABS_COUNT_MANY" /></translation>
 <translation id="1657719826150349398">Perkelti skirtuką į apačią</translation>
 <translation id="1670942869417022142">Nutildytas garso įrašas</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">Šios prekės kaina neseniai sumažėjo nuo <ph name="PREVIOUS_PRICE" /> iki <ph name="NEW_PRICE" /></translation>
 <translation id="606985262342505139">Skirtuko apatinis lapas per visą aukštį</translation>
 <translation id="6109251075362363230">Visos tikslios skirtukų kopijos dabar taip pat bus suarchyvuotos, išskyrus neseniai naudotą kopiją.</translation>
+<translation id="612596694132302162">Įjungti svetainės garsą</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Uždaryti <ph name="TABS_COUNT_ONE" /> pasirinktą elementą}one{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinktą elementą}few{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinktus elementus}many{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinkto elemento}other{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinktų elementų}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Perkelti grupę į naują langą}one{Perkelti grupę į kitą langą}few{Perkelti grupę į kitą langą}many{Perkelti grupę į kitą langą}other{Perkelti grupę į kitą langą}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Perkelti skirtuką dešinėn}one{Perkelti skirtukus dešinėn}few{Perkelti skirtukus dešinėn}many{Perkelti skirtukus dešinėn}other{Perkelti skirtukus dešinėn}}</translation>

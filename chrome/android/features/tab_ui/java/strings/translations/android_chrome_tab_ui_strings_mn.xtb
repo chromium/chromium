@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Бүх Нууцлалтай табыг хаах уу?</translation>
 <translation id="1501480321619201731">Бүлгийг устгах</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{Идэвхгүй <ph name="TABS_COUNT_ONE" /> зүйл}other{Идэвхгүй <ph name="TABS_COUNT_MANY" /> зүйл}}</translation>
+<translation id="1568067597247500137">Сайтын дууг хаах</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> табыг бүлэглэсэн</translation>
 <translation id="1657719826150349398">Табыг доош зөөх</translation>
 <translation id="1670942869417022142">Аудионы дууг хаасан</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">Энэ зүйлийн үнэ саяхан <ph name="PREVIOUS_PRICE" />-с <ph name="NEW_PRICE" /> болж буурсан</translation>
 <translation id="606985262342505139">Табын доод хүснэгт бүтэн өндөртэй байна</translation>
 <translation id="6109251075362363230">Хамгийн сүүлд ашигласан хуулбарыг эс тооцвол бүх давхардсан табыг одоо мөн архивлана.</translation>
+<translation id="612596694132302162">Сайтыг дуугүй болгохоо болих</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Сонгосон <ph name="TABS_COUNT_ONE" /> зүйлийг хаах}other{Сонгосон <ph name="TABS_COUNT_MANY" /> зүйлийг хаах}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Бүлгийг шинэ цонх руу зөөх}other{Бүлгийг өөр цонх руу зөөх}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Табыг баруун тийш зөөх}other{Табуудыг баруун тийш зөөх}}</translation>

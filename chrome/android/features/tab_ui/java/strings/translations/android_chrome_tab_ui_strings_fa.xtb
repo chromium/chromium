@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">همه «برگه‌های ناشناس» بسته شود؟</translation>
 <translation id="1501480321619201731">حذف گروه</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{‫<ph name="TABS_COUNT_ONE" /> مورد غیرفعال}one{‫<ph name="TABS_COUNT_MANY" /> مورد غیرفعال}other{‫<ph name="TABS_COUNT_MANY" /> مورد غیرفعال}}</translation>
+<translation id="1568067597247500137">صامت کردن سایت</translation>
 <translation id="1645759014353344461">‫<ph name="TABS_COUNT_MANY" /> زبانه گروه‌بندی شد</translation>
 <translation id="1657719826150349398">انتقال برگه به پایین</translation>
 <translation id="1670942869417022142">صدای صامت‌شده</translation>
@@ -141,6 +142,7 @@
 <translation id="6051432659151380973">گروه‌های زبانه به‌طور خودکار ذخیره می‌شود</translation>
 <translation id="6054741997831917303">قیمت این محصول اخیراً از <ph name="PREVIOUS_PRICE" /> به <ph name="NEW_PRICE" /> کاهش یافته است</translation>
 <translation id="6109251075362363230">همه برگه‌های تکراری اکنون بایگانی نیز خواهند شد، به‌غیراز نسخه‌ای که آخرین بار استفاده شده است.</translation>
+<translation id="612596694132302162">باصدا کردن سایت</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{بستن <ph name="TABS_COUNT_ONE" /> مورد انتخاب‌شده}one{بستن <ph name="TABS_COUNT_MANY" /> مورد انتخاب‌شده}other{بستن <ph name="TABS_COUNT_MANY" /> مورد انتخاب‌شده}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{انتقال گروه به پنجره جدید}one{انتقال گروه به پنجره دیگر}other{انتقال گروه به پنجره دیگر}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{انتقال زبانه به راست}one{انتقال زبانه به راست}other{انتقال زبانه‌ها به راست}}</translation>

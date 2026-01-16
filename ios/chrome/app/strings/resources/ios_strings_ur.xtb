@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">نئی ونڈو</translation>
 <translation id="1558391695376153246">پوشیدگی ٹیبز بند کریں</translation>
 <translation id="1565371473877914088">نیا پوشیدگی ٹیب</translation>
+<translation id="1567960978791353852">ریڈنگ موڈ دکھائیں</translation>
 <translation id="1571780780926010134">پوشیدگی ٹیبز</translation>
 <translation id="1580715474678097352">خطرناک ویب سائٹس سے محفوظ رہیں</translation>
 <translation id="1580783302095112590">میل بھیج دی گئی۔</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">پاسورڈز دیکھنے کے لیے، آپ کو اپنے آلے پر پہلے پاس کوڈ سیٹ کرنا چاہیے۔</translation>
 <translation id="201759455285471444">ٹیب گروپ کو پھیلائیں۔</translation>
 <translation id="202070562065520783">یہ مجھے سمجھائیں</translation>
+<translation id="2023713324775943812">دستیاب ہونے پر ایڈریس بار سے ریڈنگ موڈ تک رسائی حاصل کریں</translation>
 <translation id="2044394949148788042">ٹیب گرڈ کھولیں</translation>
 <translation id="2044681667265133332">اکاؤنٹ <ph name="USER_EMAIL" /> کا نظم <ph name="HOSTED_DOMAIN" /> کے ذریعے کیا جاتا ہے جو کچھ معلومات دیکھنے کے قابل ہو سکتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">نیا آئٹم</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">آپ کے ٹیب گروپس یہاں محفوظ کیے جاتے ہیں</translation>
 <translation id="2273327106802955778">مزید مینیو</translation>
 <translation id="2287614783861766820">{count,plural, =1{یہ پتہ اس آلے سے حذف ہو جائے گا۔}other{یہ پتے اس آلے سے حذف ہو جائیں گے۔}}</translation>
+<translation id="2295236662082735391">‏‫Gemini کے ساتھ ترمیم کرنے کے لیے ویب پر کسی تصویر کو لانگ پریس کریں</translation>
 <translation id="2297989278479054870">‏آپ کے سائن آؤٹ کرنے کے بعد، آپ کے Google اکاؤنٹ میں موجود بُک مارکس، پاس ورڈز اور بہت کچھ کو اس آلہ سے ہٹا دیا جائے گا۔</translation>
 <translation id="2299218006564889602">‏آپ کے پاس ورڈز Google پاس ورڈ مینیجر میں محفوظ ہونے سے پہلے آپ کے آلے پر مرموز ہو ہوتا ہے۔</translation>
 <translation id="2306265833370324042">‫<ph name="SEARCH_ENGINE_NAME" /> کی تفصیلات دکھائیں</translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">اپنی تلاش کی ایک تصویر لیں</translation>
 <translation id="2761898608071930085">کوئی دوسرا اکاؤنٹ استعمال کریں</translation>
 <translation id="2762000892062317888">ابھی ابھی</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{‫1 تصویر تک شامل کریں}other{‫{COUNT} تصاویر تک شامل کریں}}</translation>
 <translation id="2772667768515195373">‏آپ پورے Google پروڈکٹس میں محفوظ کردہ پتے استعمال کر سکتے ہیں۔ یہ پتہ آپ کے Google اکاؤنٹ میں محفوظ ہے، <ph name="USER_EMAIL" />۔</translation>
 <translation id="2773344962924806829">ای میل اطلاعات</translation>
 <translation id="2781331604911854368">آن</translation>
@@ -1353,6 +1357,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="605721222689873409">YY</translation>
 <translation id="6058415747854995776">ویڈیو بنائیں</translation>
 <translation id="6059830886158432458">اپنی کہانیوں اور سرگرمی کو یہاں کنٹرول کریں</translation>
+<translation id="6063802271331271857">تصویر کو ریمکس کریں</translation>
 <translation id="6066301408025741299">منسوخ کرنے کیلئے تھپتھپائیں۔</translation>
 <translation id="6074656473835429958">اطلاعات حاصل کریں</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) کو اپ لوڈ نہیں کیا جا سکا</translation>
@@ -1871,6 +1876,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7899199123054742721">سبھی کو بغیر پڑھا ہوا کے بطور نشان کریں</translation>
 <translation id="7911190106180361398">آپ کی تنظیم آپ کے لیے ہر چیز کی مطابقت پذیری کرنے کی اجازت نہیں دیتی ہے۔</translation>
 <translation id="7918999344502274923">‫<ph name="SEARCH_ENGINE_NAME" /> کی تفصیلات چھپائیں</translation>
+<translation id="7921559948846049514">اپنے پس منظر کے لیے ایک تھیم، رنگ یا مزید بہت کچھ منتخب کریں</translation>
 <translation id="792357691529995513">کوئی مسئلہ نہیں ملا</translation>
 <translation id="7925108652071887026">آٹو فل ڈیٹا</translation>
 <translation id="7926975587469166629">کارڈ کا عرفی نام</translation>

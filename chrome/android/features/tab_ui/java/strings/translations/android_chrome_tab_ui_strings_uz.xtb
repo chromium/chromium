@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Barcha Inkognito varaqlar yopilsinmi?</translation>
 <translation id="1501480321619201731">Ha</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta nofaol obyekt}other{<ph name="TABS_COUNT_MANY" /> ta nofaol obyekt}}</translation>
+<translation id="1568067597247500137">Sayt ovozini o‘chirish</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ta varaq guruhlandi</translation>
 <translation id="1657719826150349398">Varaqni pastga tushirish</translation>
 <translation id="1670942869417022142">Audio ovozsiz qilingan</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">Bu mahsulot narxi yaqinda <ph name="PREVIOUS_PRICE" /> dan <ph name="NEW_PRICE" /> ga tushdi</translation>
 <translation id="606985262342505139">Varaq quyi ekrani toʻliq hajmda ochildi</translation>
 <translation id="6109251075362363230">Barcha takroriy varaqlar ham arxivlanadi, oxirgi ishlatilgan nusxasi bundan mustasno.</translation>
+<translation id="612596694132302162">Sayt ovozini yoqish</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta tanlangan varaqni yopish}other{<ph name="TABS_COUNT_MANY" /> ta tanlangan varaqni yopish}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Guruhni yangi oynaga olish}other{Guruhni boshqa oynaga olish}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Varaqni oʻngga olish}other{Varaqlarni oʻngga olish}}</translation>

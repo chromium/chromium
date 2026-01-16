@@ -46,6 +46,7 @@ Jeśli opcja „<ph name="SERVICE_SCRIPT_NAME" />” jest już zaznaczona, odzna
 <translation id="3150823315463303127">Host nie może odczytać zasad.</translation>
 <translation id="3171922709365450819">To urządzenie nie jest obsługiwane przez tego klienta, ponieważ wymaga uwierzytelniania innej firmy.</translation>
 <translation id="3197730452537982411">Pulpit zdalny</translation>
+<translation id="3236334139428307578">Copyright 2026 Autorzy Chromium. Wszelkie prawa zastrzeżone.</translation>
 <translation id="324272851072175193">Prześlij te instrukcje e-mailem</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> chce wprowadzić zmiany.</translation>
 <translation id="3339299787263251426">Bezpieczny dostęp online do komputera</translation>
@@ -110,6 +111,7 @@ Jeśli opcja „<ph name="SERVICE_SCRIPT_NAME" />” jest już zaznaczona, odzna
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> prosi o dostęp umożliwiający wyświetlanie Twojego ekranu oraz sterowanie Twoją klawiaturą i myszą. Jeśli nie oczekujesz takiej prośby, naciśnij „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />”. W innym przypadku, gdy wszystko będzie gotowe, wybierz „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />”, aby zezwolić na połączenie.</translation>
 <translation id="5823658491130719298">Na komputerze, do którego chcesz uzyskać zdalny dostęp, otwórz Chrome i wejdź na <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Opcje wyświetlania</translation>
+<translation id="5965133372831030509">Copyright 2026 Google LLC. Wszelkie prawa zastrzeżone.</translation>
 <translation id="6033507038939587647">Opcje klawiatury</translation>
 <translation id="6040143037577758943">Zamknij</translation>
 <translation id="6062854958530969723">Nie udało się zainicjować hosta.</translation>

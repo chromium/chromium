@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Закрыть все вкладки инкогнито?</translation>
 <translation id="1501480321619201731">Удалить группу</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> неактивный объект}one{<ph name="TABS_COUNT_MANY" /> неактивный объект}few{<ph name="TABS_COUNT_MANY" /> неактивных объекта}many{<ph name="TABS_COUNT_MANY" /> неактивных объектов}other{<ph name="TABS_COUNT_MANY" /> неактивных объекта}}</translation>
+<translation id="1568067597247500137">Отключить звук на сайте</translation>
 <translation id="1645759014353344461">Вкладки (<ph name="TABS_COUNT_MANY" />) сгруппированы.</translation>
 <translation id="1657719826150349398">Переместить вкладку вниз</translation>
 <translation id="1670942869417022142">Звук отключен</translation>
@@ -144,6 +145,7 @@
 <translation id="6054741997831917303">Цена на этот товар недавно снизилась с <ph name="PREVIOUS_PRICE" /> до <ph name="NEW_PRICE" /></translation>
 <translation id="606985262342505139">Нижний экран вкладки открыт полностью</translation>
 <translation id="6109251075362363230">Все одинаковые вкладки теперь также будут архивироваться, кроме той, которую вы использовали последней</translation>
+<translation id="612596694132302162">Включить звук на сайте</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Закрыть <ph name="TABS_COUNT_ONE" /> выбранный элемент}one{Закрыть <ph name="TABS_COUNT_MANY" /> выбранный элемент}few{Закрыть <ph name="TABS_COUNT_MANY" /> выбранных элемента}many{Закрыть <ph name="TABS_COUNT_MANY" /> выбранных элементов}other{Закрыть <ph name="TABS_COUNT_MANY" /> выбранного элемента}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Переместить группу в новое окно}one{Переместить группу в другое окно}few{Переместить группу в другое окно}many{Переместить группу в другое окно}other{Переместить группу в другое окно}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Переместить вкладку вправо}one{Переместить вкладки вправо}few{Переместить вкладки вправо}many{Переместить вкладки вправо}other{Переместить вкладки вправо}}</translation>

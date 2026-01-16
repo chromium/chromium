@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Dirisha Jipya</translation>
 <translation id="1558391695376153246">Funga vichupo fiche</translation>
 <translation id="1565371473877914088">Kichupo Fiche Kipya</translation>
+<translation id="1567960978791353852">Onyesha Hali ya Kusoma</translation>
 <translation id="1571780780926010134">Vichupo vya faragha</translation>
 <translation id="1580715474678097352">Endelea kulindwa dhidi ya tovuti hatari</translation>
 <translation id="1580783302095112590">Barua imetumwa.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">Ili uone manenosiri, ni lazima kwanza uweke namba ya siri kwenye kifaa chako.</translation>
 <translation id="201759455285471444">Panua kikundi cha vichupo.</translation>
 <translation id="202070562065520783">Nifafanulie hili</translation>
+<translation id="2023713324775943812">Fikia Hali ya Kusoma kwenye sehemu ya anwani inapopatikana</translation>
 <translation id="2044394949148788042">Fungua gridi ya kichupo</translation>
 <translation id="2044681667265133332">Akaunti ya <ph name="USER_EMAIL" /> inasimamiwa na <ph name="HOSTED_DOMAIN" />, inayoweza kuangalia baadhi ya maelezo. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">kipengee kipya</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Vikundi vya vichupo vyako huhifadhiwa hapa</translation>
 <translation id="2273327106802955778">Menyu zaidi</translation>
 <translation id="2287614783861766820">{count,plural, =1{Anwani hii itafutwa kwenye kifaa hiki.}other{Anwani hizi zitafutwa kwenye kifaa hiki.}}</translation>
+<translation id="2295236662082735391">Bonyeza kwa muda mrefu picha kwenye wavuti ili uihariri ukitumia Gemini</translation>
 <translation id="2297989278479054870">Baada ya kuondoka kwenye akaunti, alamisho, manenosiri na zaidi kwenye Akaunti yako ya Google yataondolewa kwenye kifaa chako.</translation>
 <translation id="2299218006564889602">Manenosiri yako husimbwa kwa njia fiche kwenye kifaa chako kabla hayajahifadhiwa kwenye Kidhibiti cha Manenosiri cha Google.</translation>
 <translation id="2306265833370324042">Onyesha maelezo ya <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Piga picha ya utafutaji wako</translation>
 <translation id="2761898608071930085">Tumia Akaunti Nyingine</translation>
 <translation id="2762000892062317888">sasa hivi tu</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Weka hadi picha 1}other{Weka hadi picha {COUNT}}}</translation>
 <translation id="2772667768515195373">Unaweza kutumia anwani zilizohifadhiwa kwenye bidhaa zote za Google. Anwani hii imehifadhiwa kwenye Akaunti yako ya Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">Arifa za barua pepe</translation>
 <translation id="2781331604911854368">Imewashwa</translation>
@@ -1353,6 +1357,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="605721222689873409">MK</translation>
 <translation id="6058415747854995776">Rekodi Video</translation>
 <translation id="6059830886158432458">Dhibiti hadithi na shughuli zako hapa</translation>
+<translation id="6063802271331271857">Boresha picha</translation>
 <translation id="6066301408025741299">Gusa ili kughairi.</translation>
 <translation id="6074656473835429958">Pokea arifa</translation>
 <translation id="607620096698446287">Imeshindwa kupakia <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -1871,6 +1876,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="7899199123054742721">Wekea alama kuwa hujasoma zote</translation>
 <translation id="7911190106180361398">Shirika lako halikuruhusu kusawazisha kila kitu.</translation>
 <translation id="7918999344502274923">Ficha maelezo ya <ph name="SEARCH_ENGINE_NAME" /></translation>
+<translation id="7921559948846049514">Chagua mandhari, rangi au zaidi ya mandharinyuma yako</translation>
 <translation id="792357691529995513">Hakuna hitilafu iliyopatikana</translation>
 <translation id="7925108652071887026">Data ya kujaza otomatiki</translation>
 <translation id="7926975587469166629">Jina la kuwakilisha kadi</translation>
