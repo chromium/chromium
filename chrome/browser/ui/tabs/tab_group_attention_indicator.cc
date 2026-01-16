@@ -6,3 +6,14 @@
 
 TabGroupAttentionIndicator::TabGroupAttentionIndicator() = default;
 TabGroupAttentionIndicator::~TabGroupAttentionIndicator() = default;
+
+void TabGroupAttentionIndicator::SetHasAttention(bool has_attention) {
+  if (has_attention_ == has_attention) {
+    return;
+  }
+
+  has_attention_ = has_attention;
+  for (Observer& observer : observers_) {
+    observer.OnAttentionStateChanged();
+  }
+}

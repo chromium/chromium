@@ -22,6 +22,8 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/tabs/tab_group_attention_indicator.h"
+#include "chrome/browser/ui/tabs/tab_group_features.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -1605,9 +1607,14 @@ IN_PROC_BROWSER_TEST_F(TabStripSaveBrowsertest, AttentionIndicatorIsShown) {
 
   auto* group_header = tab_strip()->group_header(group);
 
-  group_header->SetTabGroupNeedsAttention(true);
+  TabGroup* tab_group =
+      browser()->tab_strip_model()->group_model()->GetTabGroup(group);
+
+  TabGroupAttentionIndicator* attention_indicator =
+      tab_group->GetTabGroupFeatures()->attention_indicator();
+  attention_indicator->SetHasAttention(true);
   EXPECT_TRUE(group_header->attention_indicator_->GetVisible());
 
-  group_header->SetTabGroupNeedsAttention(false);
+  attention_indicator->SetHasAttention(false);
   EXPECT_FALSE(group_header->attention_indicator_->GetVisible());
 }

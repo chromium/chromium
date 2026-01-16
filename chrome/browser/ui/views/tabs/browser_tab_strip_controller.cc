@@ -834,12 +834,6 @@ void BrowserTabStripController::TabGroupedStateChanged(
   }
 }
 
-void BrowserTabStripController::OnTabGroupNeedsAttentionChanged(
-    const tab_groups::TabGroupId& group,
-    bool attention) {
-  tabstrip_->SetTabGroupNeedsAttention(group, attention);
-}
-
 void BrowserTabStripController::OnSplitTabChanged(
     const SplitTabChange& change) {
   if (change.type == SplitTabChange::Type::kAdded) {

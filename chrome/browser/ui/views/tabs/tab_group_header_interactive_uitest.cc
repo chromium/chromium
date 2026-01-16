@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupHeaderInteractiveUiTest, AttentionIndicator) {
             ->GetTabGroup(group_id)
             ->GetTabGroupFeatures()
             ->attention_indicator()
-            ->set_has_attention(true);
+            ->SetHasAttention(true);
       }),
       Do([&]() {
         EXPECT_TRUE(GetTabStrip()

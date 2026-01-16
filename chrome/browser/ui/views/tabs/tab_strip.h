@@ -195,11 +195,6 @@ class TabStrip : public views::View,
   // Invoked when the selection is updated.
   void SetSelection(const ui::ListSelectionModel& new_selection);
 
-  // Invoked when a tab group needs to show UI that it needs the user's
-  // attention.
-  void SetTabGroupNeedsAttention(const tab_groups::TabGroupId& id,
-                                 bool attention);
-
   // Returns the TabGroupHeader with ID `id`.
   TabGroupHeader* group_header(const tab_groups::TabGroupId& id) const {
     return tab_container_->GetGroupViews(id)->header();

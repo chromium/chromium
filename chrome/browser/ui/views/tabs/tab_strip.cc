@@ -1512,11 +1512,6 @@ void TabStrip::OnWidgetActivationChanged(views::Widget* widget, bool active) {
   UpdateHoverCard(nullptr, HoverCardUpdateType::kEvent);
 }
 
-void TabStrip::SetTabGroupNeedsAttention(const tab_groups::TabGroupId& id,
-                                         bool attention) {
-  group_header(id)->SetTabGroupNeedsAttention(attention);
-}
-
 TabGroup* TabStrip::GetTabGroup(const tab_groups::TabGroupId& id) const {
   return controller_->GetTabGroup(id);
 }

@@ -449,8 +449,6 @@ class TabStripModel {
   // Cause a tab to display a UI indication to the user that it needs their
   // attention.
   void SetTabNeedsAttentionAt(int index, bool attention);
-  void SetTabGroupNeedsAttention(const tab_groups::TabGroupId& group,
-                                 bool attention);
 
   // Close all tabs at once. Code can use closing_all() above to defer
   // operations that might otherwise by invoked by the flurry of detach/select

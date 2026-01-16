@@ -10,7 +10,9 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/tabs/tab_group_attention_indicator.h"
 #include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_tracker.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -37,7 +39,8 @@ class View;
 // strip flow and positioned left of the leftmost tab in the group.
 class TabGroupHeader : public TabSlotView,
                        public views::ContextMenuController,
-                       public views::ViewTargeterDelegate {
+                       public views::ViewTargeterDelegate,
+                       public TabGroupAttentionIndicator::Observer {
   METADATA_HEADER(TabGroupHeader, TabSlotView)
 
  public:
@@ -51,6 +54,9 @@ class TabGroupHeader : public TabSlotView,
   ~TabGroupHeader() override;
 
   void Init(const tab_groups::TabGroupId& group);
+
+  // TabGroupAttentionIndicator::Observer:
+  void OnAttentionStateChanged() override;
 
   // TabSlotView:
   bool OnKeyPressed(const ui::KeyEvent& event) override;
@@ -85,14 +91,8 @@ class TabGroupHeader : public TabSlotView,
 
   int GetCollapsedHeaderWidth() const;
 
-  // Enables or disables attention indicator on a tab group.
-  void SetTabGroupNeedsAttention(bool needs_attention);
-
-  // Gets the intended attention indicator status for a tab group.
-  bool GetTabGroupNeedsAttention();
-
   // Returns whether the attention indicator should be shown.
-  bool ShouldShowAttentionIndicator();
+  bool ShouldShowAttentionIndicator() const;
 
   // Returns the title text for testing.
   std::u16string_view GetTitleTextForTesting() const;
@@ -167,6 +167,10 @@ class TabGroupHeader : public TabSlotView,
   TabGroupEditorBubbleTracker editor_bubble_tracker_;
   base::CallbackListSubscription editor_bubble_opened_subscription_;
   base::CallbackListSubscription editor_bubble_closed_subscription_;
+
+  base::ScopedObservation<TabGroupAttentionIndicator,
+                          TabGroupAttentionIndicator::Observer>
+      attention_indicator_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_HEADER_H_

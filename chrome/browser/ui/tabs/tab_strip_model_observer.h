@@ -582,13 +582,6 @@ class TabStripModelObserver {
       std::optional<tab_groups::TabGroupId> new_focused_group_id,
       std::optional<tab_groups::TabGroupId> old_focused_group_id);
 
-  // The specified Tab Group requires the display of a UI indication to the user
-  // that it needs their attention. The UI indication is set iff `attention` is
-  // true.
-  virtual void OnTabGroupNeedsAttentionChanged(
-      const tab_groups::TabGroupId& group,
-      bool attention);
-
   // Notfies us when a Tab Group is added to the Tab Group Model.
   virtual void OnTabGroupAdded(const tab_groups::TabGroupId& group_id);
 
