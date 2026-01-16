@@ -81,6 +81,9 @@ class TabModelObserver {
 
   // Called before a tab group will be removed.
   virtual void OnTabGroupRemoving(tab_groups::TabGroupId group_id);
+
+  // Called after a tab group has been moved to a new position.
+  virtual void OnTabGroupMoved(tab_groups::TabGroupId group_id, int old_index);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_TAB_MODEL_TAB_MODEL_OBSERVER_H_

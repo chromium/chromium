@@ -802,6 +802,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
         Tab firstTab = tabs.get(0);
         int curIndex = indexOf(firstTab);
+        int oldIndex = curIndex;
 
         for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
             observer.willMoveTabGroup(tabGroupId, curIndex);
@@ -826,6 +827,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         finalIndex += offset;
         for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
             observer.didMoveTabGroup(lastTab, curIndex, finalIndex);
+        }
+        for (TabModelObserver observer : mTabModelObservers) {
+            observer.onTabGroupMoved(tabGroupId, oldIndex);
         }
     }
 

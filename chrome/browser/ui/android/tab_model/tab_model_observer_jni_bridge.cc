@@ -179,6 +179,16 @@ void TabModelObserverJniBridge::OnTabGroupRemoving(JNIEnv* env,
   }
 }
 
+void TabModelObserverJniBridge::OnTabGroupMoved(JNIEnv* env,
+                                                base::Token group_id,
+                                                int old_index) {
+  auto tab_group_id = tab_groups::TabGroupId::FromRawToken(group_id);
+  CHECK(!tab_group_id.is_empty());
+  for (auto& observer : model_observers_) {
+    observer.OnTabGroupMoved(tab_group_id, old_index);
+  }
+}
+
 void TabModelObserverJniBridge::AddObserver(TabModelObserver* observer) {
   model_observers_.AddObserver(observer);
 }

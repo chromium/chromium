@@ -50,3 +50,6 @@ void TabModelObserver::TabRemoved(TabAndroid* tab) {}
 void TabModelObserver::OnTabGroupCreated(tab_groups::TabGroupId group_id) {}
 
 void TabModelObserver::OnTabGroupRemoving(tab_groups::TabGroupId group_id) {}
+
+void TabModelObserver::OnTabGroupMoved(tab_groups::TabGroupId group_id,
+                                       int old_index) {}

@@ -161,6 +161,13 @@ class TabModelObserverJniBridge implements TabModelObserver {
     }
 
     @Override
+    public final void onTabGroupMoved(Token groupId, int oldIndex) {
+        assert mNativeTabModelObserverJniBridge != 0;
+        TabModelObserverJniBridgeJni.get()
+                .onTabGroupMoved(mNativeTabModelObserverJniBridge, groupId, oldIndex);
+    }
+
+    @Override
     public void restoreCompleted() {}
 
     /**
@@ -253,5 +260,10 @@ class TabModelObserverJniBridge implements TabModelObserver {
 
         void onTabGroupRemoving(
                 long nativeTabModelObserverJniBridge, @JniType("base::Token") Token groupId);
+
+        void onTabGroupMoved(
+                long nativeTabModelObserverJniBridge,
+                @JniType("base::Token") Token groupId,
+                int oldIndex);
     }
 }

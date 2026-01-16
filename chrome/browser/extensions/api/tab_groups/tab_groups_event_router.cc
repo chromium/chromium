@@ -95,8 +95,13 @@ class TabGroupsEventRouter::PlatformDelegate : public TabModelListObserver,
     owner_->DispatchGroupRemoved(group_id);
   }
 
-  // TODO(crbug.com/405219902): Add OnTabGroupUpdated() and OnTabGroupMoved()
-  // methods here once the JNI plumbing is built.
+  void OnTabGroupMoved(tab_groups::TabGroupId group_id,
+                       int old_index) override {
+    owner_->DispatchGroupMoved(group_id);
+  }
+
+  // TODO(crbug.com/405219902): Add OnTabGroupUpdated() method here once the
+  // JNI plumbing is built.
 
  private:
   bool ShouldTrackModel(TabModel* model) {

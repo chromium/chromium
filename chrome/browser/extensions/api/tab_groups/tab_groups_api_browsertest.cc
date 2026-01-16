@@ -884,24 +884,19 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsOnRemoved) {
       event_observer.events().contains(api::tab_groups::OnRemoved::kEventName));
 }
 
-// TODO(crbug.com/405219902): Port to desktop Android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsOnMoved) {
-  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+  ASSERT_TRUE(SupportsTabGroups());
 
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({1, 2, 3});
+  tab_groups::TabGroupId group = CreateTabGroup({1, 2, 3});
 
   TestEventRouterObserver event_observer(EventRouter::Get(profile()));
 
-  tab_strip_model->MoveGroupTo(group, 0);
+  GetTabListInterface()->MoveGroupTo(group, 0);
 
   EXPECT_EQ(1u, event_observer.events().size());
   EXPECT_TRUE(
       event_observer.events().contains(api::tab_groups::OnMoved::kEventName));
 }
-
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 }  // namespace extensions
