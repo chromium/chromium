@@ -252,11 +252,12 @@ BASE_FEATURE_PARAM(double,
 BASE_FEATURE(kHandleNonDamagingInputsInScrollJankV4Metric,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE_PARAM(bool,
-                   kCountNonDamagingFramesTowardsHistogramFrameCount,
-                   &kHandleNonDamagingInputsInScrollJankV4Metric,
-                   "count_non_damaging_frames_towards_histogram_frame_count",
-                   false);
+constexpr const char kEmitForAllScrolls[] = "emit_for_all_scrolls";
+constexpr const char kEmitForDamagingScrolls[] = "emit_for_damaging_scrolls";
+const base::FeatureParam<std::string> kHistogramEmissionPolicy(
+    &kHandleNonDamagingInputsInScrollJankV4Metric,
+    "histogram_emission_policy",
+    kEmitForDamagingScrolls);
 
 BASE_FEATURE(kManualBeginFrame, base::FEATURE_DISABLED_BY_DEFAULT);
 
