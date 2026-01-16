@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/path_service.h"
 #include "base/task/single_thread_task_runner.h"
@@ -75,8 +76,14 @@ class BubbleLocking {
 };
 
 }  // namespace ui_devtools
-
 namespace {
+
+// This enum is used for UMA histograms and should not be renumbered.
+enum class DevToolsRemoteDebuggingServerAction {
+  kStarted = 0,
+  kStopped = 1,
+  kMaxValue = kStopped,
+};
 
 const char kInspectUiInitUICommand[] = "init-ui";
 const char kInspectUiInspectCommand[] = "inspect";
@@ -677,6 +684,17 @@ void InspectUI::SetRemoteDebuggingEnabled(bool enabled) {
           prefs::kDevToolsRemoteDebuggingAllowed)) {
     return;
   }
+
+  if (enabled) {
+    base::UmaHistogramEnumeration(
+        "DevTools.RemoteDebugging.ServerAction",
+        DevToolsRemoteDebuggingServerAction::kStarted);
+  } else {
+    base::UmaHistogramEnumeration(
+        "DevTools.RemoteDebugging.ServerAction",
+        DevToolsRemoteDebuggingServerAction::kStopped);
+  }
+
   g_browser_process->local_state()->SetBoolean(
       prefs::kDevToolsRemoteDebuggingEnabled, enabled);
   UpdateRemoteDebuggingEnabled();
