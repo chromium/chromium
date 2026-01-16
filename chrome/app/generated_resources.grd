@@ -358,6 +358,9 @@ are declared in tools/grit/grit_args.gni.
         <part file="printing_strings.grdp" />
       </if>
 
+      <!-- Skills specific strings -->
+      <part file="skills_strings.grdp" />
+
       <!-- Strings that are only used when VR devices are supported -->
       <if expr="enable_vr">
         <part file="vr_strings.grdp" />
