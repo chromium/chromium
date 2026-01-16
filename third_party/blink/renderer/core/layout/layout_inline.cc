@@ -580,9 +580,7 @@ static LayoutUnit ComputeMargin(const LayoutInline* layout_object,
     return LayoutUnit(margin.Pixels());
   if (margin.IsPercent() || margin.IsCalculated()) {
     return MinimumValueForLength(
-        margin,
-        std::max(LayoutUnit(),
-                 layout_object->ContainingBlock()->AvailableLogicalWidth()));
+        margin, layout_object->ContainingBlock()->ContentLogicalWidth());
   }
   return LayoutUnit();
 }

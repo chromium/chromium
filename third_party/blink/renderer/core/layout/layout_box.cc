@@ -2515,7 +2515,7 @@ LayoutUnit LayoutBox::ContainingBlockLogicalWidthForContent() const {
   LayoutBlock* cb = ContainingBlock();
   if (IsOutOfFlowPositioned())
     return cb->ClientLogicalWidth();
-  return cb->AvailableLogicalWidth();
+  return cb->ContentLogicalWidth();
 }
 
 PhysicalOffset LayoutBox::OffsetFromContainerInternal(

@@ -757,13 +757,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   LayoutUnit ContainingBlockLogicalWidthForContent() const override;
 
-  // Block flows subclass availableWidth/Height to handle multi column layout
-  // (shrinking the width/height available to children when laying out.)
-  LayoutUnit AvailableLogicalWidth() const {
-    NOT_DESTROYED();
-    return ContentLogicalWidth();
-  }
-
   // Return both scrollbars and scrollbar gutters (defined by scrollbar-gutter).
   inline PhysicalBoxStrut ComputeScrollbars() const {
     NOT_DESTROYED();

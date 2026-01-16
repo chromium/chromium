@@ -584,7 +584,7 @@ LayoutBoxModelObject::ComputeStickyPositionConstraints() const {
       // It's unclear whether this is totally fine.
       // Compute the container-relative area within which the sticky element is
       // allowed to move.
-      LayoutUnit max_width = sticky_container->AvailableLogicalWidth();
+      LayoutUnit max_width = sticky_container->ContentLogicalWidth();
       scroll_container_relative_containing_block_rect.ContractEdges(
           MinimumValueForLength(StyleRef().MarginTop(), max_width),
           MinimumValueForLength(StyleRef().MarginRight(), max_width),
@@ -779,7 +779,7 @@ LayoutUnit LayoutBoxModelObject::ComputedCSSPadding(
 
 LayoutUnit LayoutBoxModelObject::ContainingBlockLogicalWidthForContent() const {
   NOT_DESTROYED();
-  return ContainingBlock()->AvailableLogicalWidth();
+  return ContainingBlock()->ContentLogicalWidth();
 }
 
 LogicalRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(
