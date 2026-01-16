@@ -412,6 +412,7 @@
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{（他 1 件）}other{（他 # 件）}}</translation>
 <translation id="5403592356182871684">名前</translation>
 <translation id="5407203562970638234">セキュリティを強化</translation>
+<translation id="5436307623797390637">デバイス上のアプリ</translation>
 <translation id="5438097262470833822">これを選択すると、<ph name="WEBSITE" /> の権限がリセットされます</translation>
 <translation id="5459413148890178711">オンにすると、サイトは位置情報を要求できます。オフにすると、サイトは位置情報を参照できません。</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> のうち <ph name="ELAPSED_TIME" /> 経過しました。</translation>

@@ -1085,6 +1085,7 @@
 <translation id="1709916727352927457">წვდომის გასაღების წაშლა</translation>
 <translation id="1709972045049031556">გაზიარება ვერ ხერხდება</translation>
 <translation id="1712143791363119140">მიმდინარეობს</translation>
+<translation id="1713120794167761305">ჩანართების გვერდით გადატანა</translation>
 <translation id="1714265454085143857">ჩამაგრებული ჩანართები</translation>
 <translation id="1714326320203665217">მთავარი კვანძის ანოტაციების ფაილები ჩამოიტვირთა</translation>
 <translation id="1714644264617423774">მარტივი წვდომის ფუნქციების ჩართვა მოწყობილობის გამარტივებისთვის. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
@@ -3226,6 +3227,7 @@
 <translation id="3167562202484086668"><ph name="BRAND" />-ის ყველა მონაცემის წაშლა</translation>
 <translation id="3169930038976362151">აირჩიეთ თქვენი საჭიროებების შესაბამისი თემა. თემის, ფონის, ეკრანმზოგის და სხვა დაკავშირებული პარამეტრების შესაცვლელად ხანგრძლივად შეეხეთ დესკტოპს.</translation>
 <translation id="3170072451822350649">შეგიძლიათ ასევე გამოტოვოთ შესვლის ეტაპი და <ph name="LINK_START" />დაათვალიეროთ სტუმრის სტატუსით<ph name="LINK_END" />.</translation>
+<translation id="3172642937040465677">ჩანართების ზემოთ გადატანა</translation>
 <translation id="3175067642577044620">ძირითადი ტექსტი</translation>
 <translation id="3175862692832442091">ტყე</translation>
 <translation id="3176347586396987181">გამოიყენეთ „z“, რომ ხანგრძლივად დააჭიროთ მაუსის ღილაკს</translation>
@@ -3480,6 +3482,7 @@
 <translation id="335581015389089642">მეტყველება</translation>
 <translation id="335587007651175930">მოიძიეთ თქვენს ეკრანზე არსებული კონტენტი Google Lens-ით</translation>
 <translation id="3355936511340229503">კავშირის შეცდომა</translation>
+<translation id="335678817537689040">სტატიკური</translation>
 <translation id="3359256513598016054">სერტიფიკატის პოლიტიკის შეზღუდვები</translation>
 <translation id="3360297538363969800">ბეჭდვა ვერ მოხერხდა. შეამოწმეთ პრინტერი და ხელახლა სცადეთ.</translation>
 <translation id="3360306038446926262">ფანჯრები</translation>
@@ -4179,6 +4182,7 @@
         <ph name="BREAK" />
         სურვილისამებრ, შეგიძლიათ მართოთ პარამეტრები ბარათის მენიუდან, ან გაეცნოთ მეტ ვარიანტს „Chrome-ის მორგების“ სექციიდან.</translation>
 <translation id="3801449494961771207">ტექსტის გახმოვანების სისტემური ხმა</translation>
+<translation id="3801748538479607989">ჩანართების ზემოთ გადატანა</translation>
 <translation id="3802486193901166966">ეს გაფართოება არ საჭიროებს სპეციალურ ნებართვებს და მას არ აქვს რაიმე სახის დამატებითი წვდომა საიტზე</translation>
 <translation id="380329542618494757">სახელი</translation>
 <translation id="3803345858388753269">ვიდეოს ხარისხი</translation>
@@ -5993,6 +5997,7 @@
 <translation id="5060419232449737386">სუბტიტრების პარამეტრები</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{ეს საქაღალდე შეიცავს სანიშნეს. ნამდვილად გსურთ მისი წაშლა?}other{ეს საქაღალდე შეიცავს # სანიშნეს. ნამდვილად გსურთ მისი წაშლა?}}</translation>
 <translation id="5061531353537614467">ტუნდრა</translation>
+<translation id="5062863364865466276">მოძრაობა</translation>
 <translation id="5062930723426326933">შესვლა ვერ განხორციელდა. დაუკავშირდით ინტერნეტს და ხელახლა სცადეთ.</translation>
 <translation id="5063480226653192405">გამოყენება</translation>
 <translation id="5064921774605267982"><ph name="PROFILE_NAME" />-ის პროფილის გახსნა. ამ პროფილს მართავს თქვენი ორგანიზაცია.</translation>
@@ -6934,6 +6939,7 @@
 <translation id="5722086096420375088">მწვანე და თეთრი</translation>
 <translation id="572328651809341494">ბოლო ჩანართები</translation>
 <translation id="5723508132121499792">გაშვებული ფონური პროგრამები არ არის</translation>
+<translation id="5724723163580775373">დიდი ფოკუსი</translation>
 <translation id="5725112283692663422">გამოხმაურება ხელოვნური ინტელექტით თემის შექმნასთან დაკავშირებით</translation>
 <translation id="5727728807527375859">გაფართოებებმა, პროგრამებმა და თემებმა შეიძლება დააზიანონ თქვენი კომპიუტერი. ნამდვილად გსურთ გაგრძელდეს?</translation>
 <translation id="5728072125198221967">მიბმული Google სერვისები</translation>
@@ -7181,6 +7187,7 @@
 <translation id="5888889603768021126">შესვლისთვის გამოყენებული იყო</translation>
 <translation id="5889282057229379085">შუალედური CA-ების მაქსიმალური რაოდენობა: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">დაშიფრეთ სინქრონიზებული მონაცემები თქვენი საკუთარი <ph name="BEGIN_LINK" />საიდუმლო ფრაზის<ph name="END_LINK" /> მეშვეობით. Google Pay-ში არსებული გადახდის მეთოდები და მისამართები არ დაიშიფრება. Chrome-ში არსებული დათვალიერების ისტორია არ სინქრონიზდება.</translation>
+<translation id="5890072287476934834">ჩანართების გვერდით გადატანა</translation>
 <translation id="5891688036610113830">უპირატესი Wi-Fi ქსელები</translation>
 <translation id="5894056653502215961">საქაღალდის <ph name="FOLDER_TITLE" /> არჩევის გაუქმება</translation>
 <translation id="5895138241574237353">გადატვირთვა</translation>
@@ -8334,6 +8341,7 @@
 <translation id="6702639462873609204">&amp;რედაქტირება...</translation>
 <translation id="6702859741546259407">„<ph name="FEATURE_NAME" />“ რომ გამოიყენოთ, ჩართეთ Bluetooth და Wi-Fi</translation>
 <translation id="6703109186846420472">,</translation>
+<translation id="670431355064244920">მცირე ფოკუსი</translation>
 <translation id="6707122714992751648">ChromeOS-ის დიაგნოსტიკური ტესტების გაშვება</translation>
 <translation id="6707389671160270963">SSL კლიენტის სერთიფიკატი</translation>
 <translation id="6707671917294473995">ვებსაიტებს არ აქვს თქვენი კამერის გამოყენების უფლება</translation>
@@ -9324,6 +9332,7 @@
 <translation id="7389615853658756494">ეს საიტზე შეცვალეთ</translation>
 <translation id="7392118418926456391">ვირუსის სკანირება ვერ მოხერხდა</translation>
 <translation id="7392915005464253525">დახურული ფანჯრის ხელახლა &amp;გახსნა</translation>
+<translation id="739299645392306071">საშუალო ფოკუსი</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 ერთეული დაკოპირდა}other{{COUNT} ერთეული დაკოპირდა}}</translation>
 <translation id="7393435859300249877">შეტყობინებას მიიღებთ, თუ კონკრეტული აპების (მაგალითად, ვიდეო ჩეთის აპების) გამოყენებისას გამორთული მიკროფონის პირობებში ისაუბრებთ. ხმა არ გამოდის თქვენი მოწყობილობიდან.</translation>
 <translation id="7395008140803590549">სერტიფიკატის წაშლა შეუძლებელია</translation>

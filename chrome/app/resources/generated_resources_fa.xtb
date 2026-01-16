@@ -165,6 +165,7 @@
 <translation id="1102759278139578486">فایل‌های گزارمان گره اصلی بارگیری نشد. بعداً دوباره امتحان کنید.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> همیشه ترجمه شود</translation>
 <translation id="1104098698795583187">دسترسی به این گروه زبانه را فوراً ازدست می‌دهید و این گروه از همه دستگاه‌هایتان حذف می‌شود</translation>
+<translation id="1106270460549661906">‏لغو هم‌رسانی با Gemini</translation>
 <translation id="1106350001632362876">افزایش آستانه</translation>
 <translation id="1107482171728500359">هم‌رسانی میکروفون</translation>
 <translation id="110850812463801904">‏اتصال دستی به OneDrive</translation>
@@ -4279,6 +4280,7 @@
 <translation id="3854976556788175030">سینی خروجی پر است</translation>
 <translation id="3855441664322950881">فشرده کردن افزونه....</translation>
 <translation id="3855676282923585394">وارد کردن نشانک‌ها و تنظیمات...</translation>
+<translation id="3856023744577163821">‏زبانه‌هایی که از گپ یا زبانه هم‌رسانی‌شده باز می‌شوند نیز با Gemini هم‌رسانی می‌شوند.</translation>
 <translation id="3856096718352044181">لطفاً تأیید کنید این ارائه‌دهندهْ معتبر است یا بعداً دوباره امتحان کنید</translation>
 <translation id="3856470183388031602">‏استفاده از «حساب Google» در <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">انتخاب منطقه زمانی</translation>
@@ -4693,7 +4695,7 @@
 <translation id="41365691917097717">‏با ادامه دادن، اشکال‌زدایی ADB (پل اشکال‌زدایی Android) برای ایجاد و آزمایش برنامه‌های Android فعال می‌شود. توجه داشته باشید که این کنش نصب برنامه‌های Android را که Google تأیید نکرده است مجاز می‌کند و برای غیرفعال شدن به بازنشانی کارخانه‌ای نیاز دارد.</translation>
 <translation id="4137923333452716643">نوشتاری را که می‌خواهید در «حالت مطالعه» باز شود برجسته کنید</translation>
 <translation id="4138267921960073861">نمایش نام‌های کاربری و عکس‌ها در صفحه ورود به سیستم</translation>
-<translation id="4138598238327913711">درحال‌حاضر، بررسی دستور زبان فقط برای زبان انگلیسی دردسترس است</translation>
+<translation id="4138598238327913711">درحال‌حاضر، بازرسی دستوری فقط برای زبان انگلیسی دردسترس است</translation>
 <translation id="413915106327509564">‏<ph name="WINDOW_TITLE" /> - متصل به دستگاه HID</translation>
 <translation id="4139326893730851150">به‌روزرسانی‌های سفت‌افزار</translation>
 <translation id="4142052906269098341">قفل <ph name="DEVICE_TYPE" /> را با تلفنتان باز کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
@@ -5473,6 +5475,7 @@
 <translation id="4683629100208651599">تبدیل به حروف کوچک</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (پیش‌فرض)</translation>
 <translation id="4684427112815847243">همگام‌سازی همه</translation>
+<translation id="4685044513206555960">خط‌مشی سرپرست نصب برنامه وب را مسدود کرده است.</translation>
 <translation id="4685096503970466594">خاموش کردن <ph name="FEATURE_NAME" /></translation>
 <translation id="4687238339694011189">‏مطمئن شوید چاپگر روشن باشد و به همان شبکه‌ای متصل باشد که Chromebook متصل است یا از سیم USB استفاده کنید</translation>
 <translation id="4687613760714619596">دستگاه نامشخص (<ph name="DEVICE_ID" />)</translation>
@@ -7430,7 +7433,7 @@
 <translation id="6063284707309177505">ایجاد رمزینه پاسخ‌سریع</translation>
 <translation id="6064217302520318294">قفل صفحه</translation>
 <translation id="606449270532897041">مدیریت داده‌های سایت</translation>
-<translation id="6064764629679333574">بهبود کیفیت صدای میکروفون بلوتوث با ارتقای صدای با وضوح پایین به صدای با وضوح بالا.</translation>
+<translation id="6064764629679333574">بهبود کیفیت صدای میکروفون بلوتوث با ارتقای کیفیت صدای کم‌وضوح به صدای پروضوح.</translation>
 <translation id="6065289257230303064">ویژگی‌های دایرکتوری موضوع گواهی</translation>
 <translation id="6066649679804058181">تبدیل کردن گروه به پوشه نشانک</translation>
 <translation id="6066794465984119824">درهم‌سازی تصویر تنظیم نشده است</translation>
@@ -7582,6 +7585,7 @@
 <translation id="6164393601566177235">افزودن سایت‌ها</translation>
 <translation id="6164832038898943453">زبان‌های موردنظر را برای ترجمه خودکار اضافه کنید</translation>
 <translation id="6165508094623778733">بیشتر بدانید</translation>
+<translation id="61667940770438207">‏به‌راحتی با <ph name="FOCUS_TOGGLE_HOTKEY" /> «Gemini در Chrome» را باز کنید</translation>
 <translation id="6169040057125497443">لطفاً میکروفون را بررسی کنید.</translation>
 <translation id="6169967265765719844">‏اجازه‌های مربوط به بازی‌ها و برنامه‌های نصب‌شده ازطریق Steam را می‌توان در <ph name="LINK_BEGIN" />تنظیمات برنامه Steam<ph name="LINK_END" /> مدیریت کرد.</translation>
 <translation id="6170313103929479668">مرتب کردن «نمای تقسیم‌شده»</translation>
@@ -7763,7 +7767,7 @@
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> معمولاً بارگیری نمی‌شود و ممکن است خطرناک باشد.</translation>
 <translation id="6285770818046456882">دستگاهی که با شما هم‌رسانی می‌کرد انتقال را لغو کرد</translation>
 <translation id="628699625505156622">‏استفاده از مکان. برنامه‌ها، وب‌سایت‌ها، و سرویس‌های Android و ChromeOS که اجازه مکان دارند مجاز می‌شوند از مکان این دستگاه استفاده کنند. «دقت مکان» مکان دقیق‌تری برای برنامه‌ها و سرویس‌های Android ارائه می‌دهد. برای انجام این کار، Google به‌صورت دوره‌ای اطلاعات مربوط به حسگرهای دستگاه و سیگنال‌های بی‌سیم این دستگاه را برای انبوه‌سپاری مکان‌های سیگنال بی‌سیم پردازش می‌کند. از این اطلاعات بدون شناسایی هیچ فردی برای بهبود دقت مکان و خدمات مکان‌مبنا و همچنین بهبود، ارائه، و حفظ سرویس‌های Google براساس منافع مشروع Google و اشخاص ثالث به‌منظور برآورده کردن نیازهای کاربران استفاده می‌شود. <ph name="BEGIN_LINK1" />درباره استفاده از مکان بیشتر بدانید<ph name="END_LINK1" /></translation>
-<translation id="628705218210359422">گذرواژه‌هایتان را زیر نظر داشته باشید و آن‌ها را در یک مکان مدیریت کنید.</translation>
+<translation id="628705218210359422">گذرواژه‌هایتان را ردیابی کنید و آن‌ها را در یک مکان مدیریت کنید.</translation>
 <translation id="628726841779494414">چاپگرهایتان را در تنظیمات چاپگر مدیریت کنید</translation>
 <translation id="6287288864483377583">وارد کردن فقط برای یک گواهینامه پشتیبانی می‌شود</translation>
 <translation id="6287828400772161253">‏تلفن Android (<ph name="HOST_DEVICE_NAME" />)</translation>
@@ -9801,6 +9805,7 @@
 <translation id="7697109152153663933">روی «گذرواژه‌ها و تکمیل خودکار» کلیک کنید</translation>
 <translation id="769824636077131955">این سند برای بررسی امنیتی بسیار بزرگ است. می‌توانید اسنادی را که حداکثر ۵۰ مگابایت باشد چاپ کنید.</translation>
 <translation id="7698507637739331665">برخی موارد مسدود شده‌اند</translation>
+<translation id="7700176975240938448">به‌راحتی با <ph name="FOCUS_TOGGLE_HOTKEY" /> باز کنید</translation>
 <translation id="7700516433658473670">چاپگرها و اسکنرها</translation>
 <translation id="7700873336634517379">نه، همچنان استفاده کردن از این نمایه برای تحصیل</translation>
 <translation id="7701040980221191251">هیچ‌کدام</translation>
@@ -10348,7 +10353,7 @@
 <translation id="8061091456562007989">تغییر را لغو کنید</translation>
 <translation id="8061244502316511332">این زبانه درحال استفاده از میکروفون است</translation>
 <translation id="8061464966246066292">کنتراست بالا</translation>
-<translation id="8061970399284390013">بررسی املا و دستور زبان</translation>
+<translation id="8061970399284390013">بازرسی املایی و دستوری</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{۱ برگ کاغذ}one{{COUNT} برگ کاغذ}other{{COUNT} برگ کاغذ}}</translation>
 <translation id="8063235345342641131">چهرک پیش‌فرض سبز</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

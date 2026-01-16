@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">Erişimi yönetin</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Öğeyi kapat}other{Öğeleri kapat}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Sekme alt sayfası ekranın yarısına kadar açıldı.</translation>
 <translation id="374923079891132274">Paylaşım sayfası önizlemesinin küçük resmi.</translation>
 <translation id="3776329373944672717">Sekme grubu başlığı <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Yönet</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">Son sekmeniz</translation>
 <translation id="5380159289133845234">Kopya sekmeleri arşivle</translation>
 <translation id="5446043142172831860">Sekmeyi kaldır ve gruptan ayrıl</translation>
+<translation id="5465437530117042974">Sekme alt sayfası değişiklikleri kapatıldı.</translation>
 <translation id="5490235265819901748">Sekme grubu genişletildi</translation>
 <translation id="5494920125229734069">Tümünü seç</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{En fazla <ph name="LIMIT_COUNT_ONE" /> dosya, sekme veya resim ekleyin}other{En fazla <ph name="LIMIT_COUNT_MANY" /> dosya, sekme veya resim ekleyin}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">Kapat</translation>
 <translation id="6051432659151380973">Sekme gruplarınız otomatik olarak kaydedilir</translation>
 <translation id="6054741997831917303">Yakın zamanda bu ürünün <ph name="PREVIOUS_PRICE" /> olan fiyatı düştü ve <ph name="NEW_PRICE" /> oldu</translation>
+<translation id="606985262342505139">Sekme alt sayfası tam boyutta açıldı.</translation>
 <translation id="6109251075362363230">En son kullanılan kopya hariç tüm kopya sekmeler artık arşivlenecek.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Seçilen <ph name="TABS_COUNT_ONE" /> öğeyi kapat}other{Seçilen <ph name="TABS_COUNT_MANY" /> öğeyi kapat}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Grubu yeni pencereye taşı}other{Grubu başka bir pencereye taşı}}</translation>

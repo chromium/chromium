@@ -412,6 +412,7 @@
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(Тағы 1)}other{(Тағы #)}}</translation>
 <translation id="5403592356182871684">Атаулары</translation>
 <translation id="5407203562970638234">Қауіпсіздігіңізді жақсартыңыз</translation>
+<translation id="5436307623797390637">Құрылғыдағы қолданбалар</translation>
 <translation id="5438097262470833822"><ph name="WEBSITE" /> веб-сайтына арналған рұқсаттар бастапқы күйіне қайтарылады.</translation>
 <translation id="5459413148890178711">Қосылса, сайттар локацияңызды сұрай алады. Өшірілсе, сайттар локацияңызды көрмейді.</translation>
 <translation id="5489227211564503167">Өткен уақыт: <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" />.</translation>

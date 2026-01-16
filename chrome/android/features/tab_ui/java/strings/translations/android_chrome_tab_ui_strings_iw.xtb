@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">ניהול הרשאות הגישה</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{סגירת הפריט}one{סגירת פריטים}two{סגירת פריטים}other{סגירת פריטים}}</translation>
 <translation id="3652027618765638838"><ph name="RATING_BASELINE" />/<ph name="CURRENT_RATING" /></translation>
+<translation id="3714430408451673233">הגיליון התחתון של הכרטיסייה בחצי הגובה.</translation>
 <translation id="374923079891132274">תצוגה מקדימה ממוזערת לשיתוף גיליון.</translation>
 <translation id="3776329373944672717">השם של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">ניהול</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">הכרטיסייה האחרונה שלך</translation>
 <translation id="5380159289133845234">העברת כרטיסיות כפולות לארכיון</translation>
 <translation id="5446043142172831860">הסרת הכרטיסייה ויציאה מהקבוצה</translation>
+<translation id="5465437530117042974">השינויים בגיליון התחתון של הכרטיסייה נסגרו.</translation>
 <translation id="5490235265819901748">קבוצת כרטיסיות הורחבה</translation>
 <translation id="5494920125229734069">בחירת הכול</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{אפשר להוסיף עד קובץ, כרטיסייה או תמונה <ph name="LIMIT_COUNT_ONE" />}one{אפשר להוסיף עד <ph name="LIMIT_COUNT_MANY" /> קבצים, כרטיסיות או תמונות}two{אפשר להוסיף עד <ph name="LIMIT_COUNT_MANY" /> קבצים, כרטיסיות או תמונות}other{אפשר להוסיף עד <ph name="LIMIT_COUNT_MANY" /> קבצים, כרטיסיות או תמונות}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">סגירה</translation>
 <translation id="6051432659151380973">קבוצות הכרטיסיות נשמרות אוטומטית</translation>
 <translation id="6054741997831917303">המחיר של הפריט הזה ירד לאחרונה מ-<ph name="PREVIOUS_PRICE" /> ל-<ph name="NEW_PRICE" /></translation>
+<translation id="606985262342505139">הגיליון התחתון של הכרטיסייה בגובה מלא</translation>
 <translation id="6109251075362363230">עכשיו גם כל הכרטיסיות הכפולות יועברו לארכיון, חוץ מהעותק האחרון שנעשה בו שימוש.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{סגירת הפריט שנבחר (<ph name="TABS_COUNT_ONE" />)}one{סגירה של <ph name="TABS_COUNT_MANY" /> הפריטים שנבחרו}two{סגירה של <ph name="TABS_COUNT_MANY" /> הפריטים שנבחרו}other{סגירה של <ph name="TABS_COUNT_MANY" /> הפריטים שנבחרו}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{העברת קבוצת הכרטיסיות לחלון חדש}one{העברת קבוצת הכרטיסיות לחלון אחר}two{העברת קבוצת הכרטיסיות לחלון אחר}other{העברת קבוצת הכרטיסיות לחלון אחר}}</translation>

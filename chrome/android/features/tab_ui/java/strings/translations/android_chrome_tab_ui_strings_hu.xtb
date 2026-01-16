@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">Hozzáférés kezelése</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Elem bezárása}other{Elemek bezárása}}</translation>
 <translation id="3652027618765638838"><ph name="RATING_BASELINE" />/<ph name="CURRENT_RATING" /></translation>
+<translation id="3714430408451673233">A lap alsó lapja félmagasságban megnyitva.</translation>
 <translation id="374923079891132274">Megosztási lap előnézeti indexképe.</translation>
 <translation id="3776329373944672717">Lapcsoport címe: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Kezelés</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">A legutóbbi lap</translation>
 <translation id="5380159289133845234">Ismétlődő lapok archiválása</translation>
 <translation id="5446043142172831860">Lap eltávolítása és kilépés a csoportból</translation>
+<translation id="5465437530117042974">A lap alsó lapjának módosításai bezárva.</translation>
 <translation id="5490235265819901748">Lapcsoport kibontva</translation>
 <translation id="5494920125229734069">Összes kiválasztása</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Legfeljebb <ph name="LIMIT_COUNT_ONE" /> fájlt, lapot vagy képet adhat hozzá}other{Legfeljebb <ph name="LIMIT_COUNT_MANY" /> fájlt, lapot vagy képet adhat hozzá}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">Bezárás</translation>
 <translation id="6051432659151380973">A lapcsoportokat automatikusan menti a rendszer</translation>
 <translation id="6054741997831917303">A tétel ára nemrég csökkent. Régi ár: <ph name="PREVIOUS_PRICE" />, új ár: <ph name="NEW_PRICE" /></translation>
+<translation id="606985262342505139">A lap alsó lapja teljes magasságban megnyitva.</translation>
 <translation id="6109251075362363230">Mostantól az összes ismétlődő lap is archiválva lesz a legutóbb használt példány kivételével.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kijelölt elem bezárása}other{<ph name="TABS_COUNT_MANY" /> kijelölt elem bezárása}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Csoport áthelyezése egy új ablakba}other{Csoport áthelyezése egy másik ablakba}}</translation>

@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Nyt vindue</translation>
 <translation id="1558391695376153246">Luk inkognitofaner</translation>
 <translation id="1565371473877914088">Ny inkognitofane</translation>
+<translation id="1567960978791353852">Vis Læsetilstand</translation>
 <translation id="1571780780926010134">Inkognitofaner</translation>
 <translation id="1580715474678097352">Beskytter dig mod farlige websites</translation>
 <translation id="1580783302095112590">Email sendt.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">Angiv en adgangskode på din enhed, før du kan se adgangskoder.</translation>
 <translation id="201759455285471444">Udvid fanegruppe.</translation>
 <translation id="202070562065520783">Forklar dette til mig</translation>
+<translation id="2023713324775943812">Tilgå Læsetilstand via adresselinjen, når den er tilgængelig</translation>
 <translation id="2044394949148788042">Åbn fanegitteret</translation>
 <translation id="2044681667265133332">Kontoen <ph name="USER_EMAIL" /> administreres af <ph name="HOSTED_DOMAIN" />, som muligvis kan se visse oplysninger. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nyt element</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Dine fanegrupper gemmes her</translation>
 <translation id="2273327106802955778">Menuen Mere</translation>
 <translation id="2287614783861766820">{count,plural, =1{Adressen slettes fra denne enhed.}one{Adressen slettes fra denne enhed.}other{Adresserne slettes fra denne enhed.}}</translation>
+<translation id="2295236662082735391">Tryk længe på et billede på nettet for at redigere det med Gemini</translation>
 <translation id="2297989278479054870">Når du er logget ud, fjernes bogmærkerne, adgangskoderne m.m. på din Google-konto fra denne enhed.</translation>
 <translation id="2299218006564889602">Dine adgangskoder krypteres på din enhed, inden de gemmes i Googles Adgangs­kode­admin­istrator.</translation>
 <translation id="2306265833370324042">Se oplysninger om <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Tag et billede af din søgning</translation>
 <translation id="2761898608071930085">Brug en anden konto</translation>
 <translation id="2762000892062317888">lige nu</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Tilføj op til 1 billede}one{Tilføj op til {COUNT} billede}other{Tilføj op til {COUNT} billeder}}</translation>
 <translation id="2772667768515195373">Du kan bruge gemte adresser i alle Google-produkter. Denne adresse er gemt på din Google-konto (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773344962924806829">Mailnotifikationer</translation>
 <translation id="2781331604911854368">Til</translation>
@@ -1349,6 +1353,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="605721222689873409">ÅÅ</translation>
 <translation id="6058415747854995776">Optag video</translation>
 <translation id="6059830886158432458">Administrer dine historier og din aktivitet her</translation>
+<translation id="6063802271331271857">Remix et billede</translation>
 <translation id="6066301408025741299">Tryk for at annullere.</translation>
 <translation id="6074656473835429958">Få notifikationer</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) kunne ikke uploades</translation>
@@ -1866,6 +1871,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="7899199123054742721">Markér alle som ulæste</translation>
 <translation id="7911190106180361398">Din organisation tillader ikke, at du synkroniserer alt.</translation>
 <translation id="7918999344502274923">Skjul oplysninger om <ph name="SEARCH_ENGINE_NAME" /></translation>
+<translation id="7921559948846049514">Vælg et tema, en farve eller andet til din baggrund</translation>
 <translation id="792357691529995513">Der blev ikke fundet nogen problemer</translation>
 <translation id="7925108652071887026">AutoFyld-data</translation>
 <translation id="7926975587469166629">Kortets kaldenavn</translation>

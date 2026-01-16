@@ -3413,6 +3413,8 @@ Si inhabilitas <ph name="NTPCARDSVISIBLE" />, no se mostrará la tarjeta de Outl
       Si inhabilitas la política, los dispositivos inscritos no informarán sobre la sesión de kiosco.</translation>
 <translation id="3303770131697159224">Configuración predeterminada del permiso de Administración de ventanas</translation>
 <translation id="3303911765031636277">Política de configuración para el Conector de Chrome Enterprise OnFileAttached</translation>
+<translation id="3305586786770047829">Si estableces esta política en 0 o no la estableces, la política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> solo se aplicará en el permiso del usuario para los usuarios afiliados.
+Cuando esta política se establezca en 1, se aplicará la política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> en el permiso del usuario, incluso si no está afiliado.</translation>
 <translation id="3307744348419745296">No permitir que se sincronicen los ajustes de la red Wi-Fi entre dispositivos <ph name="PRODUCT_OS_NAME" /> y un teléfono Android conectado</translation>
 <translation id="3308724602356134956">Si estableces la política, <ph name="PRODUCT_OS_NAME" />
 
@@ -4137,7 +4139,7 @@ Si estableces la política en 2, los orígenes de apps web aisladas no podrán u
           Si la estableces, los usuarios no podrán cambiarla ni anularla.
 
           Si no la estableces, el dictado estará inicialmente inhabilitado en la pantalla de acceso, pero el usuario podrá habilitarlo en cualquier momento.</translation>
-<translation id="3811407842708673996">Si no estableces la política o la habilitas, los usuarios podrán ver y usar el elemento del menú de la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el menú contextual. Si la inhabilitas, los usuarios no verán el elemento del menú de la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> (si la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> es compatible).
+<translation id="3811407842708673996">Si no estableces la política o la habilitas, los usuarios podrán ver y usar el elemento del menú de búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el menú contextual. Si la inhabilitas, los usuarios no verán el elemento del menú de búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> (si la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> es compatible).
 A partir de <ph name="PRODUCT_NAME" /> 147, esta política dejará de estar disponible. Los administradores de TI pueden usar <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> para controlar esta función en el futuro.</translation>
 <translation id="3811562426301733860">Permitir anuncios en todos los sitios</translation>
 <translation id="3816312845600780067">Habilitar combinación de teclas para acceso directo de rescate para el acceso automático</translation>
@@ -5610,7 +5612,7 @@ Esta política se ignorará cuando <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> no s
 
 Esta política es independiente de la política <ph name="AI_MODE_SETTINGS_POLICY_NAME" />. La política <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> solo controla los puntos de entrada en el cuadro de búsqueda del cuadro multifunción o de la NTP, mientras que esta política controla el uso compartido de contexto a través del panel lateral o las pestañas.
 
-Esta política tampoco controla la integración de <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, que puede inhabilitarla la política <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+Esta política tampoco controla la integración de <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, que la política <ph name="GEMINI_SETTINGS_POLICY_NAME" /> puede inhabilitar.
 
 Si no estableces esta política, su comportamiento se determina según la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
 
@@ -9207,6 +9209,25 @@ Si inhabilitas la política o no la estableces, se aplicará
 el comportamiento predeterminado para bloquear esas solicitudes.</translation>
 <translation id="6915524162137327111">Mostrar etiquetas de administración durante 30 s</translation>
 <translation id="6919205861950516688">No permitir el Organizador de pestañas.</translation>
+<translation id="6920791385071265136">Controla si las extensiones que se quitan debido a infracciones que no son de software malicioso aún se pueden instalar de forma forzosa en entornos de baja confianza.
+
+Obtén más información sobre las infracciones que no son de software malicioso y las eliminaciones aquí: https://developer.chrome.com/docs/webstore/review-process#warning
+
+Una vez que se resuelva la infracción que no es de software malicioso, la extensión permanecerá habilitada y no se podrá inhabilitar ni quitar.
+
+En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, vinculadas a <ph name="MS_AAD_NAME" /> o inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias administradas con MDM, vinculadas a un dominio a través de MCX o inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Las extensiones instaladas de manera forzosa con incumplimientos que no sean de software malicioso permanecerán habilitadas en estos casos.
+
+Actualmente, una extensión instalada de manera automática con infracciones que no son de software malicioso permanece instalada y habilitada en Chrome.
+
+Si habilitas la política, las extensiones instaladas de forma forzosa se comportarán de la misma manera (es decir, permanecerán habilitadas) independientemente de las infracciones que no sean de software malicioso.
+
+Si inhabilitas la política o no la estableces, se inhabilitarán las extensiones instaladas de forma forzosa que tengan infracciones que no sean de software malicioso.
+
+En la versión M145, se quitó esta política. A partir de esa versión, se inhabilitarán las extensiones instaladas de manera forzosa con incumplimientos que no sean de malware en entornos de baja confianza.</translation>
 <translation id="692096803256767290">Revertir el SO a la versión de destino</translation>
 <translation id="6921241119085515674">Permitir el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> y <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6921544339867564740">Permitir que los dispositivos ejecuten máquinas virtuales en ChromeOS</translation>

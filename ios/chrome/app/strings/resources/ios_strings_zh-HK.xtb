@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">開啟新視窗</translation>
 <translation id="1558391695376153246">關閉無痕式分頁</translation>
 <translation id="1565371473877914088">新無痕式分頁</translation>
+<translation id="1567960978791353852">顯示「閱讀模式」</translation>
 <translation id="1571780780926010134">無痕式分頁</translation>
 <translation id="1580715474678097352">妥善保護資料，免受危險網站威脅</translation>
 <translation id="1580783302095112590">已傳送郵件。</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">如要查看密碼，您必須先在裝置上設定密碼。</translation>
 <translation id="201759455285471444">打開分頁群組。</translation>
 <translation id="202070562065520783">為我說明</translation>
+<translation id="2023713324775943812">適用時從網址列進入閱讀模式</translation>
 <translation id="2044394949148788042">開啟分頁網格</translation>
 <translation id="2044681667265133332">帳戶 <ph name="USER_EMAIL" /> 由 <ph name="HOSTED_DOMAIN" /> 管理，管理員可以查看某些資料。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">新項目</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">分頁群組會儲存在這裡</translation>
 <translation id="2273327106802955778">[更多] 選單</translation>
 <translation id="2287614783861766820">{count,plural, =1{此地址將會從此裝置上刪除。}other{這些地址將會從此裝置上刪除。}}</translation>
+<translation id="2295236662082735391">長按網頁上的圖片，即可使用 Gemini 編輯</translation>
 <translation id="2297989278479054870">登出後，系統會將 Google 帳戶中的書籤、密碼和其他資料從此裝置移除。</translation>
 <translation id="2299218006564889602">您的密碼會先在裝置上加密，然後才儲存至 Google 密碼管理工具。</translation>
 <translation id="2306265833370324042">顯示 <ph name="SEARCH_ENGINE_NAME" /> 詳情</translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">拍下搜尋內容</translation>
 <translation id="2761898608071930085">使用其他帳戶</translation>
 <translation id="2762000892062317888">剛剛</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{最多可加入 1 張圖片}other{最多可加入 {COUNT} 張圖片}}</translation>
 <translation id="2772667768515195373">您可在不同的 Google 產品中使用已儲存的地址。此地址已儲存在您的 Google 帳戶 (<ph name="USER_EMAIL" />)。</translation>
 <translation id="2773344962924806829">電郵通知</translation>
 <translation id="2781331604911854368">開啟</translation>
@@ -1349,6 +1353,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6058415747854995776">拍攝影片</translation>
 <translation id="6059830886158432458">請在這裡控制您的報導和活動</translation>
+<translation id="6063802271331271857">改圖</translation>
 <translation id="6066301408025741299">輕按以取消。</translation>
 <translation id="6074656473835429958">接收通知</translation>
 <translation id="607620096698446287">無法上載 <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -1866,6 +1871,7 @@
 <translation id="7899199123054742721">全部標示為未讀</translation>
 <translation id="7911190106180361398">您的機構不允許同步處理所有資料。</translation>
 <translation id="7918999344502274923">隱藏 <ph name="SEARCH_ENGINE_NAME" /> 詳情</translation>
+<translation id="7921559948846049514">選擇背景主題、顏色或其他設定</translation>
 <translation id="792357691529995513">未發現任何問題</translation>
 <translation id="7925108652071887026">自動填入數據</translation>
 <translation id="7926975587469166629">信用卡暱稱</translation>

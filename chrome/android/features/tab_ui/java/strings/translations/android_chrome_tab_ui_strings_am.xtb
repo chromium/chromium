@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">መዳረሻን ያስተዳድሩ</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{ንጥልን ዝጋ}one{ንጥልን ዝጋ}other{ንጥሎችን ዝጋ}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">የትር የግርጌ ሉህ በግማሽ ቁመት።</translation>
 <translation id="374923079891132274">ለሉህ ቅድመ ዕይታን አጋራ ጥፍር አከል</translation>
 <translation id="3776329373944672717">የትር ቡድን ርዕስ <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">አደራጅ</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">የእርስዎ የመጨረሻ ትር</translation>
 <translation id="5380159289133845234">የተባዙ ትሮችን በማህደር ያስቀምጡ</translation>
 <translation id="5446043142172831860">ትርን ያስወግዱ እና ከቡድን ይውጡ</translation>
+<translation id="5465437530117042974">የትር የግርጌ ሉህ ለውጦች ተዘግተዋል።</translation>
 <translation id="5490235265819901748">የትር ቡድን ተዘርግቷል</translation>
 <translation id="5494920125229734069">ሁሉንም ይመርጣል</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{እስከ <ph name="LIMIT_COUNT_ONE" /> ፋይል፣ ትር ወይም ምስል ድረስ ያክሉ}one{እስከ <ph name="LIMIT_COUNT_MANY" /> ድረስ ፋይሎች፣ ትሮች ወይም ምስሎች ያክሉ}other{እስከ <ph name="LIMIT_COUNT_MANY" /> ድረስ ፋይሎች፣ ትሮች ወይም ምስሎች ያክሉ}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">ዝጋ</translation>
 <translation id="6051432659151380973">የእርስዎ የትር ቡድኖች በራስ-ሰር ያስቀምጣሉ</translation>
 <translation id="6054741997831917303">የዚህ ንጥል ዋጋ በቅርቡ ከ<ph name="PREVIOUS_PRICE" /> ወደ <ph name="NEW_PRICE" /> ቀንሷል</translation>
+<translation id="606985262342505139">የትር የግርጌ ሉህ በሙሉ ቁመት</translation>
 <translation id="6109251075362363230">በጣም በቅርብ ጊዜ ጥቅም ላይ ከዋለው ቅጂ በስተቀር ሁሉም የተባዙ ትሮች አሁን በማህደር ይቀመጣሉ።</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> የተመረጠ ንጥልን ዝጋ}one{<ph name="TABS_COUNT_MANY" /> የተመረጠ ንጥልን ዝጋ}other{<ph name="TABS_COUNT_MANY" /> የተመረጡ ንጥሎችን ዝጋ}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ስብስብን ወደ አዲስ መስኮት አንቀሳቅስ}one{ስብስብን ወደ ሌላ መስኮት አንቀሳቅስ}other{ስብስብን ወደ ሌላ መስኮት አንቀሳቅስ}}</translation>

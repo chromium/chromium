@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">ଆକ୍ସେସକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{ଆଇଟମକୁ ବନ୍ଦ କରନ୍ତୁ}other{ଆଇଟମଗୁଡ଼ିକୁ ବନ୍ଦ କରନ୍ତୁ}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">ଟାବ ବଟମ ସିଟ ଅଧାରେ ଖୋଲାଯାଇଛି।</translation>
 <translation id="374923079891132274">ସିଟ ପ୍ରିଭ୍ୟୁ ସେୟାର କରିବାକୁ ଥମ୍ବନେଲ।</translation>
 <translation id="3776329373944672717">ଟାବ ଗ୍ରୁପ ଟାଇଟେଲ <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">ପରିଚାଳନା</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">ଆପଣଙ୍କ ଗତ ଟାବ</translation>
 <translation id="5380159289133845234">ନକଲି ଟାବଗୁଡ଼ିକୁ ଆର୍କାଇଭ କରନ୍ତୁ</translation>
 <translation id="5446043142172831860">ଟାବକୁ କାଢ଼ି ଦେଇ ଗୋଷ୍ଠୀରୁ ବାହାରି ଯାଆନ୍ତୁ</translation>
+<translation id="5465437530117042974">ଟାବ ବଟମ ସିଟ ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ବନ୍ଦ ହୋଇଯାଇଛି।</translation>
 <translation id="5490235265819901748">ଟାବ୍ ଗ୍ରୁପର ବିସ୍ତାର କରାଯାଇଛି</translation>
 <translation id="5494920125229734069">ସମସ୍ତ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{<ph name="LIMIT_COUNT_ONE" /> ପର୍ଯ୍ୟନ୍ତ ଫାଇଲ, ଟାବ କିମ୍ବା ଇମେଜ ଯୋଗ କରନ୍ତୁ}other{<ph name="LIMIT_COUNT_MANY" /> ପର୍ଯ୍ୟନ୍ତ ଫାଇଲ, ଟାବ କିମ୍ବା ଇମେଜ ଯୋଗ କରନ୍ତୁ}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">ବନ୍ଦ</translation>
 <translation id="6051432659151380973">ଆପଣଙ୍କ ଟାବ ଗ୍ରୁପଗୁଡ଼ିକ ସ୍ୱତଃ ସେଭ ହୁଏ</translation>
 <translation id="6054741997831917303">ଏହି ଆଇଟମର ମୂଲ୍ୟ ବର୍ତ୍ତମାନ <ph name="PREVIOUS_PRICE" />ରୁ <ph name="NEW_PRICE" />କୁ ହ୍ରାସ ପାଇଛି</translation>
+<translation id="606985262342505139">ଟାବ ବଟମ ସିଟ ସମ୍ପୂର୍ଣ୍ଣ ଭାବେ ଖୋଲାଯାଇଛି</translation>
 <translation id="6109251075362363230">ନିକଟରେ ବ୍ୟବହାର କରାଯାଇଥିବା କପି ବ୍ୟତୀତ ସମସ୍ତ ନକଲି ଟାବ ମଧ୍ୟ ବର୍ତ୍ତମାନ ଆର୍କାଇଭ ହେବ।</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ଚୟନିତ ଆଇଟମକୁ ବନ୍ଦ କରନ୍ତୁ}other{<ph name="TABS_COUNT_MANY" /> ଚୟନିତ ଆଇଟମକୁ ବନ୍ଦ କରନ୍ତୁ}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ଗ୍ରୁପକୁ ନୂଆ ୱିଣ୍ଡୋକୁ ମୁଭ କରନ୍ତୁ}other{ଗ୍ରୁପକୁ ଅନ୍ୟ ଏକ ୱିଣ୍ଡୋକୁ ମୁଭ କରନ୍ତୁ}}</translation>

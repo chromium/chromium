@@ -531,6 +531,9 @@
 <translation id="6901631050894301805">Defineix Chromium com a navegador predeterminat i fixa'l a la barra de tasques</translation>
 <translation id="6909503629704372277">&amp;Gestiona els perfils de Chromium</translation>
 <translation id="6934579572334859869">Pregunta a la cerca d'imatges sobre aquesta imatge</translation>
+<translation id="6948031725951063910">Has arribat al límit de <ph name="BOOKMARK_LIMIT" /> adreces d'interès de Chromium, de manera que algunes encara no s'han desat al teu Compte de Google.
+
+No es poden desar adreces d'interès noves al teu compte fins que no en suprimeixis algunes. Si tanques la sessió ara, se suprimiran les adreces d'interès no desades.</translation>
 <translation id="6964305034639999644">Obre l'enllaç en una finestra d'incò&amp;gnit a Chromium</translation>
 <translation id="6965382102122355670">D'acord</translation>
 <translation id="6978145336957848883">Les contrasenyes poc segures són fàcils d'endevinar. Deixa que Chromium <ph name="BEGIN_LINK" />creï i recordi contrasenyes segures en nom teu<ph name="END_LINK" />.</translation>
@@ -699,6 +702,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8880203542552872219">Si ja ho has fet, edita la contrasenya desada a Chromium perquè coincideixi amb la contrasenya nova.</translation>
 <translation id="8891709362986793894">La teva organització requereix que iniciïs la sessió a Chromium</translation>
 <translation id="8907580949721785412">Chromium està provant de mostrar contrasenyes. Escriviu la vostra contrasenya de Windows per permetre-ho.</translation>
+<translation id="8932992523185907506">Chromium ja no és el teu navegador predeterminat. Vols establir Chromium com a navegador predeterminat?</translation>
 <translation id="8941642502866065432">Chromium no es pot actualitzar</translation>
 <translation id="897581876605952338">Logotip de Chromium Enterprise</translation>
 <translation id="8981150672034878610">No es pot iniciar Chromium perquè hi ha hagut un error en obrir el teu perfil. Prova de reiniciar Chromium.</translation>

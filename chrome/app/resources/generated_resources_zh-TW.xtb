@@ -1085,6 +1085,7 @@
 <translation id="1709916727352927457">刪除密碼金鑰</translation>
 <translation id="1709972045049031556">無法分享</translation>
 <translation id="1712143791363119140">進行中</translation>
+<translation id="1713120794167761305">將分頁移至側邊</translation>
 <translation id="1714265454085143857">固定分頁</translation>
 <translation id="1714326320203665217">主節點註解檔案下載完畢</translation>
 <translation id="1714644264617423774">啟用無障礙功能，讓裝置更容易使用。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -2559,6 +2560,7 @@
 <translation id="2713444072780614174">白色</translation>
 <translation id="2714180132046334502">深色背景</translation>
 <translation id="2714393097308983682">Google Play 商店</translation>
+<translation id="2714617928488200509">模型</translation>
 <translation id="2715751256863167692">這項升級作業會重設你的 Chromebook 並移除目前的使用者資料。</translation>
 <translation id="2715934493766003251">檔案同步處理功能已開啟，因此無法清理儲存空間</translation>
 <translation id="2716986496990888774">這項設定是由家長管理。</translation>
@@ -3225,6 +3227,7 @@
 <translation id="3167562202484086668">刪除所有 <ph name="BRAND" />的資料</translation>
 <translation id="3169930038976362151">選擇符合自身需求的主題。如要變更主題、桌布、螢幕保護程式和其他設定，只要按住桌面即可。</translation>
 <translation id="3170072451822350649">你也可以略過登入程序，<ph name="LINK_START" />以訪客身分瀏覽<ph name="LINK_END" />。</translation>
+<translation id="3172642937040465677">將分頁移至頂端</translation>
 <translation id="3175067642577044620">內文</translation>
 <translation id="3175862692832442091">森林</translation>
 <translation id="3176347586396987181">按下「z」表示按住滑鼠按鍵</translation>
@@ -3476,6 +3479,7 @@
 <translation id="335581015389089642">語音</translation>
 <translation id="335587007651175930">使用 Google 智慧鏡頭搜尋畫面內容</translation>
 <translation id="3355936511340229503">連線錯誤</translation>
+<translation id="335678817537689040">靜態</translation>
 <translation id="3359256513598016054">憑證原則限制</translation>
 <translation id="3360297538363969800">列印失敗。請檢查你的印表機，然後再試一次。</translation>
 <translation id="3360306038446926262">視窗</translation>
@@ -4175,6 +4179,7 @@
         <ph name="BREAK" />
         你可以透過資訊卡選單管理設定，也可以前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="3801449494961771207">預設的文字轉語音聲音</translation>
+<translation id="3801748538479607989">將分頁移至頂端</translation>
 <translation id="3802486193901166966">這個擴充功能不需要特殊權限，且沒有其他的網站存取權</translation>
 <translation id="380329542618494757">姓名</translation>
 <translation id="3803345858388753269">視訊畫質</translation>
@@ -4594,6 +4599,7 @@
 <translation id="4078738236287221428">積極</translation>
 <translation id="4078903002989614318">排序與清單選項</translation>
 <translation id="4079140982534148664">使用進階拼字檢查功能</translation>
+<translation id="4082070466456857368">思考型 (3 Pro)</translation>
 <translation id="4084682180776658562">書籤</translation>
 <translation id="4084835346725913160">關閉 <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">系統已封鎖此網頁的 JavaScript。</translation>
@@ -4745,7 +4751,7 @@
 <translation id="4195001808989442226">無法開啟 Steam for Chromebook (Beta 版)</translation>
 <translation id="4195378859392041564">使用滑鼠點選任何按鍵，然後按下鍵盤按鍵即可自訂</translation>
 <translation id="4195643157523330669">在新分頁中開啟</translation>
-<translation id="4195814663415092787">繼續瀏覽上次開啟的網頁</translation>
+<translation id="4195814663415092787">繼續先前進度</translation>
 <translation id="4198268995694216131">其他網站</translation>
 <translation id="4198420883535766848">從清單中移除分頁</translation>
 <translation id="4200609364258658652">複製影片影格(&amp;Y)</translation>
@@ -5983,6 +5989,7 @@
 <translation id="5060419232449737386">字幕設定</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{這個資料夾內含 1 個書籤。確定要刪除該書籤嗎？}other{這個資料夾內含 # 個書籤。確定要刪除這些書籤嗎？}}</translation>
 <translation id="5061531353537614467">凍原</translation>
+<translation id="5062863364865466276">移動方式</translation>
 <translation id="5062930723426326933">無法登入，請重新連線至網際網路並再試一次。</translation>
 <translation id="5063480226653192405">用量</translation>
 <translation id="5064921774605267982">開啟<ph name="PROFILE_NAME" />的設定檔。這個設定檔是由你的家長管理。</translation>
@@ -6921,6 +6928,7 @@
 <translation id="5722086096420375088">綠色與白色</translation>
 <translation id="572328651809341494">最近開啟的分頁</translation>
 <translation id="5723508132121499792">沒有執行中的背景應用程式</translation>
+<translation id="5724723163580775373">聚焦範圍：大</translation>
 <translation id="5725112283692663422">請提供你對「使用 AI 建立主題」的意見</translation>
 <translation id="5727728807527375859">擴充功能、應用程式及主題可能損害你的電腦，確定要繼續？</translation>
 <translation id="5728072125198221967">連結的 Google 服務</translation>
@@ -7168,6 +7176,7 @@
 <translation id="5888889603768021126">目前登入身分</translation>
 <translation id="5889282057229379085">中繼 CA 數目上限：<ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">使用你的<ph name="BEGIN_LINK" />同步通關密語<ph name="END_LINK" />加密同步的資料。系統將不會加密你在 Google Pay 中的付款方式和地址，也不會同步 Chrome 中的瀏覽記錄。</translation>
+<translation id="5890072287476934834">將分頁移至側邊</translation>
 <translation id="5891688036610113830">偏好的 Wi-Fi 網路</translation>
 <translation id="5894056653502215961">取消選取資料夾：<ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">重新啟動</translation>
@@ -7831,6 +7840,7 @@
 <translation id="6350821834561350243">請詳述問題，並盡可能提供重現問題的步驟</translation>
 <translation id="6351178441572658285">應用程式語言</translation>
 <translation id="6354918092619878358">SECG 橢圓曲線 secp256r1 (亦稱為 ANSI X9.62 prime256v1、NIST P-256)</translation>
+<translation id="6355632359041940003">接手工作</translation>
 <translation id="635609604405270300">請讓裝置保持開啟</translation>
 <translation id="6356537493253478650">穩重</translation>
 <translation id="63566973648609420">只有知道通關密語的使用者可以讀取你的加密資料。系統不會將通關密語傳送給 Google，Google 也不會儲存通關密語。如果你忘記自己的通關密語，或是想變更這項設定，則必須<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" />。</translation>
@@ -8318,6 +8328,7 @@
 <translation id="6702639462873609204">編輯(&amp;E)...</translation>
 <translation id="6702859741546259407">如要使用<ph name="FEATURE_NAME" />功能，請開啟藍牙和 Wi-Fi</translation>
 <translation id="6703109186846420472">、</translation>
+<translation id="670431355064244920">聚焦範圍：小</translation>
 <translation id="6707122714992751648">執行 ChromeOS 診斷測試</translation>
 <translation id="6707389671160270963">SSL 用戶端憑證</translation>
 <translation id="6707671917294473995">未授權網站使用攝影機</translation>
@@ -8798,6 +8809,7 @@
 <translation id="7017219178341817193">新增網頁</translation>
 <translation id="7017354871202642555">無法在視窗建立之後再設定模式。</translation>
 <translation id="7019805045859631636">快</translation>
+<translation id="7020810150082302220">預設瀏覽器已變更</translation>
 <translation id="7021524108486027008">透過 <ph name="DEVICE_TYPE" /> 在貴公司管理的環境中執行工具、編輯器和 IDE。</translation>
 <translation id="7022222879220069865">所有觸控板均已中斷連線</translation>
 <translation id="7022562585984256452">首頁已設定完成。</translation>
@@ -9307,6 +9319,7 @@
 <translation id="7389615853658756494">在網站上變更</translation>
 <translation id="7392118418926456391">病毒掃描失敗</translation>
 <translation id="7392915005464253525">重新開啟已關閉視窗(&amp;E)</translation>
+<translation id="739299645392306071">聚焦範圍：中</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{已複製 1 個項目}other{已複製 {COUNT} 個項目}}</translation>
 <translation id="7393435859300249877">使用某些應用程式 (例如視訊通話應用程式) 時，如果你在麥克風設為靜音的狀態下說話，系統會通知你。音訊資料只會儲存在裝置上。</translation>
 <translation id="7395008140803590549">無法刪除憑證</translation>
@@ -10178,6 +10191,7 @@
 <translation id="7969144945436590933">瞭解詳情</translation>
 <translation id="7970673414865679092">乙太網路詳細資料</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 (使用 RSA 加密)</translation>
+<translation id="7972837668077967426">Canvas</translation>
 <translation id="7973149423217802477">按倒讚可給予負面評價。</translation>
 <translation id="7973776233567882054">下列何者最符合你的網路使用情形？</translation>
 <translation id="797394244396603170">選取你要分享檔案的裝置</translation>
@@ -10740,6 +10754,7 @@
 <translation id="8339288417038613756">顯示和文字大小</translation>
 <translation id="833986336429795709">請選擇要用來開啟這個連結的應用程式</translation>
 <translation id="8340547030807793004">可對 <ph name="DEVICE" /> 執行的其他動作</translation>
+<translation id="8341693734243413517">Chrome 更新程式</translation>
 <translation id="8341804784147620576">顯示搜尋捷徑</translation>
 <translation id="8342221978608739536">沒有試過</translation>
 <translation id="8342387517402567689">無痕模式不支援安裝網頁應用程式</translation>
@@ -11043,6 +11058,7 @@
 <translation id="8551588720239073785">日期和時間設定</translation>
 <translation id="8551647092888540776">離線時無法開啟「<ph name="FILE_NAMES" />」</translation>
 <translation id="8552102814346875916">儲存到「一律啟用這些網站」清單</translation>
+<translation id="8552947739661397736">接手工作，目前由 Gemini 控管</translation>
 <translation id="8553342806078037065">管理其他使用者</translation>
 <translation id="8554899698005018844">未指定語言</translation>
 <translation id="8555444629041783356">自動更新日落時刻表</translation>

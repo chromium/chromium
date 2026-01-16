@@ -511,6 +511,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6326175484149238433">Kendu Chrome-tik</translation>
 <translation id="6327105987658262776">Ez dago eguneratzerik erabilgarri.</translation>
 <translation id="6334815226785304306">Ezarri Google Chrome arakatzaile lehenetsi gisa eta aingura ezazu zereginen barran</translation>
+<translation id="63540178978900677">Chrome jada ez da arakatzaile lehenetsia. Chrome arakatzaile lehenetsi gisa ezarri nahi duzu?</translation>
 <translation id="6360449101159168105">Fitxa inaktibo zegoen bitartean, memorian tokia egin da Chrome-k bizkor funtzionatzen jarrai dezan. Webgune hau inoiz ez inaktibo ezartzea aukera dezakezu.</translation>
 <translation id="6388799252195623474">laguntza behar dut honekin</translation>
 <translation id="6412673304250309937">URLak Chrome-n gordetako webgune ez-seguruen zerrendan dauden ala ez egiaztatzen du. Webguneren bat pasahitza lapurtzen saiatzen bada, edo fitxategi kaltegarriren bat deskargatzen baduzu, baliteke Chrome-k URLak ere bidaltzea (orriko edukiaren zati batzuk barne) Arakatze segurua eginbideari.</translation>
@@ -712,6 +713,9 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="8418845734693287262">Chrome OS-k ezin izan ditu sinkronizatu zure datuak, kontuan saioa hasteko xehetasunak zaharkituta daudelako.</translation>
 <translation id="842386925677997438">Chrome-ren segurtasun-tresnak</translation>
 <translation id="8425765582779547329">Gurasoen aukerekin sarean seguruago egoteko, hasi saioa Chrome-n</translation>
+<translation id="842852285618875960">Google Chrome-k onartzen dituen laster-marken mugara iritsi zara (<ph name="BOOKMARK_LIMIT" />). Beraz, laster-marka batzuk ez dira gorde Google-ko kontuan oraindik.
+
+Laster-marka batzuk ezabatu arte, ezingo da beste laster-markarik gorde kontuan. Orain saioa amaitzen baduzu, gorde gabeko laster-markak ezabatuko dira.</translation>
 <translation id="8433638294851456451">Zenbaki bat hemendik Android-eko telefonora bidaltzeko, hasi Chrome-ko saioa bi gailuetan.</translation>
 <translation id="8496177819998570653">Google-ren Pasahitz-kudeatzailea</translation>
 <translation id="8498858610309223613">Google Chrome-ren segurtasun-eguneratze berezi bat aplikatu berri da. Berrabiarazi gailua, eta fitxak leheneratuko dizkizugu.</translation>

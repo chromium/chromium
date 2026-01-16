@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">പുതിയ വിന്‍ഡോ</translation>
 <translation id="1558391695376153246">അദൃശ്യ ടാബുകൾ അടയ്‌ക്കുക</translation>
 <translation id="1565371473877914088">പുതിയ അദൃശ്യ ടാബ്</translation>
+<translation id="1567960978791353852">റീഡിംഗ് മോഡ് കാണിക്കുക</translation>
 <translation id="1571780780926010134">അദൃശ്യ ടാബുകൾ</translation>
 <translation id="1580715474678097352">അപകടകരമായ വെബ്‌സൈറ്റുകളിൽ നിന്ന് പരിരക്ഷിതമായി തുടരുക</translation>
 <translation id="1580783302095112590">മെയിൽ അയച്ചു.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">പാസ്‍വേഡുകൾ കാണാൻ, ആദ്യം നിങ്ങളുടെ ഉപകരണത്തിൽ പാസ്‌കോഡ് സജ്ജീകരിക്കുക.</translation>
 <translation id="201759455285471444">ടാബ് ഗ്രൂപ്പ് വികസിപ്പിക്കുക.</translation>
 <translation id="202070562065520783">ഇത് എന്നോട് വിശദീകരിക്കുക</translation>
+<translation id="2023713324775943812">ലഭ്യമാകുമ്പോൾ വിലാസ ബാറിൽ നിന്ന് റീഡിംഗ് മോഡ് ആക്‌സസ് ചെയ്യുക</translation>
 <translation id="2044394949148788042">ടാബ് ഗ്രിഡ് തുറക്കുക</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> എന്ന അക്കൗണ്ട് മാനേജ് ചെയ്യുന്നത് <ph name="HOSTED_DOMAIN" /> ആണ്, അതിന് ചില വിവരങ്ങൾ കാണാനായേക്കാം. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">പുതിയ ഇനം</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">നിങ്ങളുടെ ടാബ് ഗ്രൂപ്പുകൾ ഇവിടെ സംരക്ഷിക്കും</translation>
 <translation id="2273327106802955778">കൂടുതൽ ഓപ്ഷൻ മെനു</translation>
 <translation id="2287614783861766820">{count,plural, =1{ഈ ഉപകരണത്തിൽ നിന്ന് ഈ വിലാസം ഇല്ലാതാക്കും.}other{ഈ ഉപകരണത്തിൽ നിന്ന് ഈ വിലാസങ്ങൾ ഇല്ലാതാക്കും.}}</translation>
+<translation id="2295236662082735391">Gemini ഉപയോഗിച്ച് എഡിറ്റ് ചെയ്യാൻ, വെബിലെ ഒരു ചിത്രം ദീർഘനേരം അമർത്തുക</translation>
 <translation id="2297989278479054870">നിങ്ങൾ സൈൻ ഔട്ട് ചെയ്തതിന് ശേഷം, നിങ്ങളുടെ Google Account-ലെ ബുക്ക്‌മാർക്കുകളും പാസ്‌വേഡുകളും മറ്റും ഈ ഉപകരണത്തിൽ നിന്ന് നീക്കം ചെയ്യും.</translation>
 <translation id="2299218006564889602">Google പാസ്‌വേഡ് മാനേജറിലേക്ക് സംരക്ഷിക്കുന്നതിന് മുമ്പ് നിങ്ങളുടെ ഉപകരണത്തിൽ പാസ്‌വേഡുകൾ എൻക്രിപ്റ്റ് ചെയ്യുന്നു.</translation>
 <translation id="2306265833370324042"><ph name="SEARCH_ENGINE_NAME" /> വിശദാംശങ്ങൾ കാണിക്കുക</translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">നിങ്ങളുടെ തിരയലിന്റെ ഒരു ഫോട്ടോ എടുക്കുക</translation>
 <translation id="2761898608071930085">മറ്റൊരു അക്കൗണ്ട് ഉപയോഗിക്കുക</translation>
 <translation id="2762000892062317888">ഇപ്പോൾ</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{ഒരു ചിത്രം വരെ ചേർക്കുക}other{{COUNT} ചിത്രങ്ങൾ വരെ ചേർക്കുക}}</translation>
 <translation id="2772667768515195373">സംരക്ഷിച്ച വിലാസങ്ങൾ നിങ്ങൾക്ക് Google ഉൽപ്പന്നങ്ങളിലുടനീളം ഉപയോഗിക്കാം. ഈ വിലാസം നിങ്ങളുടെ Google അക്കൗണ്ടിൽ <ph name="USER_EMAIL" /> സംരക്ഷിച്ചിരിക്കുന്നു.</translation>
 <translation id="2773344962924806829">ഇമെയിൽ അറിയിപ്പുകൾ</translation>
 <translation id="2781331604911854368">ഓണാണ്</translation>
@@ -1349,6 +1353,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6058415747854995776">വീഡിയോ എടുക്കുക</translation>
 <translation id="6059830886158432458">നിങ്ങളുടെ സ്‌റ്റോറികളും ആക്റ്റിവിറ്റികളും ഇവിടെ നിയന്ത്രിക്കുക</translation>
+<translation id="6063802271331271857">ഒരു ചിത്രം റീമിക്‌സ് ചെയ്യുക</translation>
 <translation id="6066301408025741299">റദ്ദാക്കുന്നതിന് ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="6074656473835429958">അറിയിപ്പുകൾ നേടുക</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) അപ്‌ലോഡ് ചെയ്യാനായില്ല</translation>
@@ -1866,6 +1871,7 @@
 <translation id="7899199123054742721">എല്ലാം വായിക്കാത്തതായി അടയാളപ്പെടുത്തുക</translation>
 <translation id="7911190106180361398">എല്ലാം സമന്വയിപ്പിക്കാൻ നിങ്ങളുടെ സ്ഥാപനം അനുവദിക്കുന്നില്ല.</translation>
 <translation id="7918999344502274923"><ph name="SEARCH_ENGINE_NAME" /> വിശദാംശങ്ങൾ മറയ്ക്കുക</translation>
+<translation id="7921559948846049514">നിങ്ങളുടെ പശ്ചാത്തലത്തിനായി തീമും നിറവും മറ്റും തിരഞ്ഞെടുക്കുക</translation>
 <translation id="792357691529995513">പ്രശ്‌നങ്ങളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="7925108652071887026">യാന്ത്രിക പൂരിപ്പിക്കൽ ഡാറ്റ</translation>
 <translation id="7926975587469166629">കാർഡിന്റെ വിളിപ്പേര്</translation>

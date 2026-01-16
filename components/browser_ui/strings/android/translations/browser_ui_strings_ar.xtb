@@ -412,6 +412,7 @@
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 آخر)}zero{(+ # آخر)}two{(+ اثنين (#) آخرين)}few{(+ # أخرى)}many{(+ # آخر)}other{(+ # آخر)}}</translation>
 <translation id="5403592356182871684">الأسماء</translation>
 <translation id="5407203562970638234">تحسين مستوى الأمان</translation>
+<translation id="5436307623797390637">التطبيقات على الجهاز</translation>
 <translation id="5438097262470833822">سيؤدي هذا الخيار إلى إعادة ضبط أذونات الموقع الإلكتروني <ph name="WEBSITE" />.</translation>
 <translation id="5459413148890178711">عندما يكون هذا الإعداد مفعَّلاً، يمكن للمواقع الإلكترونية طلب معرفة موقعك الجغرافي. وعند إيقافه، لا يمكن للمواقع الإلكترونية الاطّلاع على موقعك الجغرافي.</translation>
 <translation id="5489227211564503167">الوقت المنقضي <ph name="ELAPSED_TIME" /> من <ph name="TOTAL_TIME" /></translation>

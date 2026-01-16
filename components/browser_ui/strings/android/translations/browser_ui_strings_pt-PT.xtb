@@ -412,6 +412,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(mais 1)}other{(mais #)}}</translation>
 <translation id="5403592356182871684">Nomes</translation>
 <translation id="5407203562970638234">Melhore a sua segurança</translation>
+<translation id="5436307623797390637">Apps no dispositivo</translation>
 <translation id="5438097262470833822">Esta opção repõe as autorizações de <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Quando esta opção está ativada, os sites podem pedir a sua localização. Quando esta opção está desativada, os sites não podem ver a sua localização.</translation>
 <translation id="5489227211564503167">Tempo decorrido: <ph name="ELAPSED_TIME" /> de <ph name="TOTAL_TIME" />.</translation>

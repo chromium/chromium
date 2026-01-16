@@ -529,6 +529,9 @@
 <translation id="6901631050894301805">Állítsa be a Chromiumot alapértelmezett böngészőként, és rögzítse a tálcán</translation>
 <translation id="6909503629704372277">&amp;Chromium-profilok kezelése</translation>
 <translation id="6934579572334859869">Kérdés feltevése a Képkeresőnek erről a képről</translation>
+<translation id="6948031725951063910">Elérte a Chromium <ph name="BOOKMARK_LIMIT" /> könyvjelzős korlátját, ezért egyes könyvjelzőit még nem mentette a rendszer a Google-fiókjába.
+
+Új könyvjelzőket nem lehet menteni a fiókjába, amíg nem töröl néhányat. Ha most jelentkezik ki, a nem mentett könyvjelzők törlődnek.</translation>
 <translation id="6964305034639999644">Link megnyitása Chromium-inko&amp;gnitóablakban</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6978145336957848883">A gyenge jelszavakat könnyű kitalálni. Engedélyezze a Chromium számára, hogy <ph name="BEGIN_LINK" /> erős jelszavakat hozzon létre Önnek, és megjegyezze őket<ph name="END_LINK" />.</translation>
@@ -697,6 +700,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8880203542552872219">Ha igen, akkor módosítsa a Chromium böngészőben mentett jelszót az új jelszóra.</translation>
 <translation id="8891709362986793894">Szervezete megköveteli a Chromiumba történő bejelentkezést</translation>
 <translation id="8907580949721785412">A Chromium megkísérli megjeleníteni a jelszavakat. Ennek engedélyezéséhez írja be Windows-jelszavát.</translation>
+<translation id="8932992523185907506">Már nem a Chromium az alapértelmezett böngésző. Beállítja a Chromiumot alapértelmezett böngészőként?</translation>
 <translation id="8941642502866065432">Nem sikerült a Chromium frissítése</translation>
 <translation id="897581876605952338">A Chromium Enterprise logója</translation>
 <translation id="8981150672034878610">Nem indítható el a Chromium, mert hiba történt a profilja megnyitása során. Próbálkozzon a Chromium újraindításával.</translation>

@@ -412,6 +412,7 @@
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(อีก 1 รายการ)}other{(อีก # รายการ)}}</translation>
 <translation id="5403592356182871684">ชื่อ</translation>
 <translation id="5407203562970638234">ยกระดับการรักษาความปลอดภัย</translation>
+<translation id="5436307623797390637">แอปในอุปกรณ์</translation>
 <translation id="5438097262470833822">ตัวเลือกนี้จะรีเซ็ตสิทธิ์ของ <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">เมื่อเปิด เว็บไซต์จะขอทราบตำแหน่งของคุณได้ หากปิด เว็บไซต์จะไม่เห็นตำแหน่งของคุณ</translation>
 <translation id="5489227211564503167">เวลาผ่านไป <ph name="ELAPSED_TIME" /> จาก <ph name="TOTAL_TIME" /></translation>

@@ -412,6 +412,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 more)}other{(+ # more)}}</translation>
 <translation id="5403592356182871684">Names</translation>
 <translation id="5407203562970638234">Enhance your security</translation>
+<translation id="5436307623797390637">Apps on device</translation>
 <translation id="5438097262470833822">This choice will reset permissions for <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">When on, sites can ask for your location. When off, sites can't see your location.</translation>
 <translation id="5489227211564503167">Elapsed time <ph name="ELAPSED_TIME" /> of <ph name="TOTAL_TIME" />.</translation>

@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Jendela Baru</translation>
 <translation id="1558391695376153246">Tutup tab Samaran</translation>
 <translation id="1565371473877914088">Tab Samaran Baru</translation>
+<translation id="1567960978791353852">Tampilkan Mode Baca</translation>
 <translation id="1571780780926010134">Tab Samaran</translation>
 <translation id="1580715474678097352">Tetap terlindungi dari situs berbahaya</translation>
 <translation id="1580783302095112590">Email terkirim.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">Untuk melihat sandi, Anda harus menyetel kode sandi di perangkat terlebih dahulu.</translation>
 <translation id="201759455285471444">Luaskan grup tab.</translation>
 <translation id="202070562065520783">Jelaskan ini kepada saya</translation>
+<translation id="2023713324775943812">Akses Mode Baca dari kolom URL jika tersedia</translation>
 <translation id="2044394949148788042">Buka petak tab</translation>
 <translation id="2044681667265133332">Akun <ph name="USER_EMAIL" /> dikelola oleh <ph name="HOSTED_DOMAIN" />, yang mungkin dapat melihat beberapa informasi. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">item baru</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Grup tab Anda disimpan di sini</translation>
 <translation id="2273327106802955778">Menu lainnya</translation>
 <translation id="2287614783861766820">{count,plural, =1{Alamat ini akan dihapus dari perangkat ini.}other{Alamat ini akan dihapus dari perangkat ini.}}</translation>
+<translation id="2295236662082735391">Tekan lama gambar di web untuk mengeditnya dengan Gemini</translation>
 <translation id="2297989278479054870">Setelah Anda logout, bookmark, sandi, dan data lainnya di Akun Google Anda akan dihapus dari perangkat ini.</translation>
 <translation id="2299218006564889602">Sandi Anda dienkripsi di perangkat sebelum disimpan ke Pengelola Sandi Google.</translation>
 <translation id="2306265833370324042">Tampilkan detail <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Ambil foto penelusuran Anda</translation>
 <translation id="2761898608071930085">Gunakan Akun Lain</translation>
 <translation id="2762000892062317888">baru saja</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Tambahkan maksimal 1 gambar}other{Tambahkan maksimal {COUNT} gambar}}</translation>
 <translation id="2772667768515195373">Anda dapat menggunakan alamat tersimpan di seluruh produk Google. Alamat ini disimpan di Akun Google Anda, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">Notifikasi email</translation>
 <translation id="2781331604911854368">Aktif</translation>
@@ -1349,6 +1353,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="605721222689873409">TT</translation>
 <translation id="6058415747854995776">Rekam Video</translation>
 <translation id="6059830886158432458">Kontrol artikel dan aktivitas Anda di sini</translation>
+<translation id="6063802271331271857">Remix gambar</translation>
 <translation id="6066301408025741299">Ketuk untuk membatalkan.</translation>
 <translation id="6074656473835429958">Dapatkan notifikasi</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) tidak dapat diupload</translation>
@@ -1866,6 +1871,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="7899199123054742721">Tandai semua belum dibaca</translation>
 <translation id="7911190106180361398">Organisasi tidak mengizinkan Anda menyinkronkan semuanya.</translation>
 <translation id="7918999344502274923">Sembunyikan detail <ph name="SEARCH_ENGINE_NAME" /></translation>
+<translation id="7921559948846049514">Pilih tema, warna, atau hal lainnya untuk latar belakang Anda</translation>
 <translation id="792357691529995513">Tidak ditemukan masalah</translation>
 <translation id="7925108652071887026">Mengisi otomatis data</translation>
 <translation id="7926975587469166629">Nama panggilan kartu</translation>

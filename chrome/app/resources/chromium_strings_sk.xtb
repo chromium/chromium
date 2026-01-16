@@ -532,6 +532,9 @@ Niektoré funkcie nemusia byť k dispozícii. Zadajte iný adresár profilu aleb
 <translation id="6901631050894301805">Nastavte si Chromium ako predvolený prehliadač a pripnite ho na panel aplikácií</translation>
 <translation id="6909503629704372277">&amp;Spravovať profily prehliadača Chromium</translation>
 <translation id="6934579572334859869">Spýtať sa vyhľadávania podľa obrázkov otázku o tomto obrázku</translation>
+<translation id="6948031725951063910">Dosiahli ste limit záložiek prehliadača Chromium (<ph name="BOOKMARK_LIMIT" />), takže niektoré vaše záložky zatiaľ neboli uložené vo vašom účte Google.
+
+Nové záložky sa nebudú môcť ukladať do vášho účtu, kým niektoré neodstránite. Ak sa teraz odhlásite, neuložené záložky budú odstránené.</translation>
 <translation id="6964305034639999644">Otvoriť odkaz v okne inko&amp;gnito prehliadača Chromium</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6978145336957848883">Slabé heslá sa dajú ľahko uhádnuť. Povoľte prehliadaču Chromium, <ph name="BEGIN_LINK" />aby vám vytváral silné heslá a pamätal si ich<ph name="END_LINK" />.</translation>
@@ -700,6 +703,7 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8880203542552872219">Ak áno, upravte svoje uložené heslo v prehliadači Chromium tak, aby sa zhodovalo s týmto novým heslom.</translation>
 <translation id="8891709362986793894">Vaša organizácia vyžaduje, aby ste sa prihlásili do prehliadača Chromium</translation>
 <translation id="8907580949721785412">Prehliadač Chromium sa pokúša zobraziť heslá. Ak to chcete povoliť, zadajte svoje heslo systému Windows.</translation>
+<translation id="8932992523185907506">Chromium už nie je váš predvolený prehliadač. Chcete nastaviť Chromium ako svoj predvolený prehliadač?</translation>
 <translation id="8941642502866065432">Chromium sa nedá aktualizovať</translation>
 <translation id="897581876605952338">Logo Chromium Enterprise</translation>
 <translation id="8981150672034878610">Chromium nie je možné spustiť, pretože pri otváraní profilu nastala chyba. Skúste Chromium reštartovať.</translation>

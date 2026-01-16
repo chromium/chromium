@@ -51,7 +51,7 @@
 <translation id="2536366509642644298">Die Tabgruppen „<ph name="TAB_GROUP_NAME_1" />“ und „<ph name="TAB_GROUP_NAME_2" />“ sind nicht mehr verfügbar</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab minimieren}other{Tabgruppe mit <ph name="TABS_COUNT_MANY" /> Tabs minimieren}}</translation>
 <translation id="2569352796411618312">Vorschlag: <ph name="NUMBER_OF_TABS" /> von deinen Tabs wurden längere Zeit nicht verwendet. Möchtest du sie schließen?</translation>
-<translation id="257674075312929031">Gruppe</translation>
+<translation id="257674075312929031">Gruppieren</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{Tabgruppe mit <ph name="TABS_COUNT_ONE" /> Tab und der Farbe <ph name="COLOR_NAME" /> wiederherstellen und öffnen.}other{Tabgruppe mit <ph name="TABS_COUNT_MANY" /> Tabs und der Farbe <ph name="COLOR_NAME" /> wiederherstellen und öffnen.}}</translation>
 <translation id="2662028055331606429">Bewertung: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Zur Website</translation>
@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">Zugriff verwalten</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Element schließen}other{Elemente schließen}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Tab-Ansicht am unteren Rand ist halb geöffnet.</translation>
 <translation id="374923079891132274">Vorschau: geteilte Tabelle.</translation>
 <translation id="3776329373944672717">Titel der Tabgruppe: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Verwalten</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">Dein letzter Tab</translation>
 <translation id="5380159289133845234">Tab-Duplikate archivieren</translation>
 <translation id="5446043142172831860">Tab entfernen und Gruppe verlassen</translation>
+<translation id="5465437530117042974">Änderungen an der Tab-Ansicht am unteren Rand sind geschlossen.</translation>
 <translation id="5490235265819901748">Tabgruppe maximiert</translation>
 <translation id="5494920125229734069">Alle auswählen</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Du kannst maximal <ph name="LIMIT_COUNT_ONE" /> Datei, Tab oder Bild hinzufügen}other{Du kannst maximal <ph name="LIMIT_COUNT_MANY" /> Dateien, Tabs oder Bilder hinzufügen}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">Schließen</translation>
 <translation id="6051432659151380973">Deine Tabgruppen werden automatisch gespeichert</translation>
 <translation id="6054741997831917303">Der Preis dieses Artikels ist kürzlich von <ph name="PREVIOUS_PRICE" /> auf <ph name="NEW_PRICE" /> gefallen</translation>
+<translation id="606985262342505139">Tab-Ansicht am unteren Rand ist vollständig geöffnet</translation>
 <translation id="6109251075362363230">Alle doppelten Tabs werden jetzt ebenfalls archiviert, mit Ausnahme des zuletzt verwendeten Elements.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewähltes Element schließen}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Elemente schließen}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Gruppe in ein neues Fenster verschieben}other{Gruppe in ein anderes Fenster verschieben}}</translation>

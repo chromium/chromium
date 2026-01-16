@@ -412,6 +412,7 @@
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(외 1개)}other{(외 #개)}}</translation>
 <translation id="5403592356182871684">이름</translation>
 <translation id="5407203562970638234">보안을 강화하세요</translation>
+<translation id="5436307623797390637">기기에 있는 앱</translation>
 <translation id="5438097262470833822"><ph name="WEBSITE" />의 권한이 재설정됩니다.</translation>
 <translation id="5459413148890178711">사용 설정하면 사이트에서 내 위치를 요청할 수 있습니다. 사용 중지하면 사이트에서 내 위치를 확인할 수 없습니다.</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> 중 <ph name="ELAPSED_TIME" /> 경과</translation>

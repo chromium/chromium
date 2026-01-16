@@ -412,6 +412,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(in še 1)}one{(in še #)}two{(in še #)}few{(in še #)}other{(in še #)}}</translation>
 <translation id="5403592356182871684">Imena</translation>
 <translation id="5407203562970638234">Izboljševanje varnosti</translation>
+<translation id="5436307623797390637">Aplikacije v napravi</translation>
 <translation id="5438097262470833822">S to izbiro bodo ponastavljena dovoljenja za spletno mesto <ph name="WEBSITE" />.</translation>
 <translation id="5459413148890178711">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo vašo lokacijo. Če je ta možnost izklopljena, si spletna mesta ne smejo ogledati vaše lokacije.</translation>
 <translation id="5489227211564503167">Pretečeni čas: <ph name="ELAPSED_TIME" /> od <ph name="TOTAL_TIME" />.</translation>

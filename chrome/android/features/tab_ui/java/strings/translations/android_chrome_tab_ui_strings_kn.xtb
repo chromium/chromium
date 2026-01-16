@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{ಐಟಂ ಅನ್ನು ಮುಚ್ಚಿರಿ}one{ಐಟಂಗಳನ್ನು ಮುಚ್ಚಿರಿ}other{ಐಟಂಗಳನ್ನು ಮುಚ್ಚಿರಿ}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">ಟ್ಯಾಬ್ ಕೆಳಭಾಗದ ಶೀಟ್ ಅರ್ಧ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ.</translation>
 <translation id="374923079891132274">ಶೀಟ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳುವ ಕುರಿತ ಪೂರ್ವವೀಕ್ಷಣೆಯ ಥಂಬ್‌ನೇಲ್.</translation>
 <translation id="3776329373944672717">ಟ್ಯಾಬ್ ಗುಂಪು ಶೀರ್ಷಿಕೆ <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">ನಿರ್ವಹಿಸಿ</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">ನಿಮ್ಮ ಕೊನೆಯ ಟ್ಯಾಬ್</translation>
 <translation id="5380159289133845234">ನಕಲಿ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಆರ್ಕೈವ್ ಮಾಡಿ</translation>
 <translation id="5446043142172831860">ಟ್ಯಾಬ್ ತೆಗೆದುಹಾಕಿ ಮತ್ತು ಗುಂಪನ್ನು ತೊರೆಯಿರಿ</translation>
+<translation id="5465437530117042974">ಟ್ಯಾಬ್ ಕೆಳಭಾಗದ ಶೀಟ್ ಬದಲಾವಣೆಗಳನ್ನು ಮುಚ್ಚಲಾಗಿದೆ.</translation>
 <translation id="5490235265819901748">ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತೃತಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="5494920125229734069">ಎಲ್ಲವನ್ನೂ ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{<ph name="LIMIT_COUNT_ONE" /> ಫೈಲ್, ಟ್ಯಾಬ್ ಅಥವಾ ಚಿತ್ರದವರೆಗೆ ಸೇರಿಸಿ}one{ಗರಿಷ್ಠ <ph name="LIMIT_COUNT_MANY" /> ಫೈಲ್‌ಗಳು, ಟ್ಯಾಬ್‌ಗಳು ಅಥವಾ ಚಿತ್ರಗಳನ್ನು ಸೇರಿಸಿ}other{ಗರಿಷ್ಠ <ph name="LIMIT_COUNT_MANY" /> ಫೈಲ್‌ಗಳು, ಟ್ಯಾಬ್‌ಗಳು ಅಥವಾ ಚಿತ್ರಗಳನ್ನು ಸೇರಿಸಿ}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">ಮುಚ್ಚಿರಿ</translation>
 <translation id="6051432659151380973">ನಿಮ್ಮ ಟ್ಯಾಬ್ ಗುಂಪುಗಳು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೇವ್ ಆಗುತ್ತವೆ</translation>
 <translation id="6054741997831917303">ಈ ಐಟಂನ ಬೆಲೆಯು ಇತ್ತೀಚೆಗೆ <ph name="PREVIOUS_PRICE" /> ದಿಂದ <ph name="NEW_PRICE" /> ಗೆ ಕುಸಿದಿದೆ</translation>
+<translation id="606985262342505139">ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ಟ್ಯಾಬ್ ಕೆಳಭಾಗದ ಶೀಟ್</translation>
 <translation id="6109251075362363230">ತೀರಾ ಇತ್ತೀಚೆಗೆ ಬಳಸಿದ ಕಾಪಿಯನ್ನು ಹೊರತುಪಡಿಸಿ, ಎಲ್ಲಾ ನಕಲಿ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಈಗ ಆರ್ಕೈವ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ಆಯ್ಕೆಮಾಡಿದ ಐಟಂ ಅನ್ನು ಮುಚ್ಚಿ}one{<ph name="TABS_COUNT_MANY" /> ಆಯ್ಕೆಮಾಡಿದ ಐಟಂಗಳನ್ನು ಮುಚ್ಚಿ}other{<ph name="TABS_COUNT_MANY" /> ಆಯ್ಕೆಮಾಡಿದ ಐಟಂಗಳನ್ನು ಮುಚ್ಚಿ}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ಹೊಸ ವಿಂಡೋಗೆ ಗುಂಪನ್ನು ಸರಿಸಿ}one{ಗುಂಪನ್ನು ಮತ್ತೊಂದು ವಿಂಡೋಗೆ ಸರಿಸಿ}other{ಗುಂಪನ್ನು ಮತ್ತೊಂದು ವಿಂಡೋಗೆ ಸರಿಸಿ}}</translation>

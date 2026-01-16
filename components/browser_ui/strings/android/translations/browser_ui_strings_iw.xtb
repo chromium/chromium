@@ -413,6 +413,7 @@
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ועוד 1)}one{(ועוד #)}two{(ועוד #)}other{(ועוד #)}}</translation>
 <translation id="5403592356182871684">שמות</translation>
 <translation id="5407203562970638234">אבטחה שנותנת שקט נפשי</translation>
+<translation id="5436307623797390637">אפליקציות במכשיר</translation>
 <translation id="5438097262470833822">הבחירה הזו תגרום לאיפוס ההרשאות של <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאת גישה למיקום. כשהאפשרות מושבתת, אתרים לא יכולים לראות את מיקום המכשיר.</translation>
 <translation id="5489227211564503167">צפית ב-<ph name="ELAPSED_TIME" /> מתוך <ph name="TOTAL_TIME" />.</translation>

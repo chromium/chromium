@@ -528,6 +528,7 @@
 <translation id="1824402189105105503">Eighth Roll</translation>
 <translation id="1826516787628120939">চেক করা হচ্ছে</translation>
 <translation id="1829026591231985685">সেটিংস থেকে Google Wallet-এ তথ্য সেভ করা হচ্ছে</translation>
+<translation id="1832474362231610822">OneDrive-এ ফটো সেভ করা হয়েছে</translation>
 <translation id="1832730227369924598">ডেস্ক সিঙ্ক</translation>
 <translation id="1834452765064623979">নির্মাণ ও রক্ষণাবেক্ষণ</translation>
 <translation id="1838374766361614909">সার্চ সাফ করুন</translation>
@@ -582,6 +583,7 @@
 <translation id="1935353813610900265">AI-এর সাহায্যে সার্চ করা ইতিহাস সম্পর্কে মতামত জানান</translation>
 <translation id="1935995810530254458">যেকোনওভাবে কপি করুন</translation>
 <translation id="1938580037092872316">ঠিকানা সেভ করতে নতুন তথ্য যোগ করুন</translation>
+<translation id="1938812296371201896">ভিডিও সেভ করা যায়নি</translation>
 <translation id="1939059826036755332">অটোমেটিক 'ছবির-মধ্যে-ছবি'</translation>
 <translation id="1939175642807587452">বিজ্ঞপ্তি পাঠাতে অনুমতি চাইতে পারে</translation>
 <translation id="1940441167050915935">সেভ করা নিরাপত্তা কোড মুছুন</translation>
@@ -744,6 +746,7 @@
 <translation id="2184405333245229118">{COUNT,plural, =1{১টি ঠিকানা}one{ #টি ঠিকানা}other{ #টি ঠিকানা}}</translation>
 <translation id="2188375229972301266">নিচে মাল্টিপল পাঞ্চ</translation>
 <translation id="218940509700321686">comma-separated values</translation>
+<translation id="2191980191135734720">পরবর্তী ধাপে আপনার স্ক্রিন আনলক করুন, সাধারণত ফিঙ্গারপ্রিন্ট ব্যবহার করে করা হয়। আপনি এভাবেও করতে পারেন <ph name="LINK_TEXT" /></translation>
 <translation id="2194856509914051091">যা যা দেখে নেওয়া প্রয়োজন</translation>
 <translation id="2198183835992354675">পরিচিত পর্যটকের নম্বর</translation>
 <translation id="2198215508485017216">অপ্রত্যাশিত কিছু ঘটেছে। <ph name="BEGIN_LINK" />Drive-এ আপলোড সম্পর্কে আরও জানুন<ph name="END_LINK" /></translation>
@@ -792,6 +795,7 @@
 <translation id="2256721673839268919">টিভির সোপ অপেরা</translation>
 <translation id="2258928405015593961">ভবিষ্যতের কোনও একটি তারিখকে মেয়াদ শেষের তারিখ হিসেবে লিখুন এবং আবার চেষ্টা করুন</translation>
 <translation id="225943865679747347">ত্রুটি কোড: <ph name="ERROR_CODE" /></translation>
+<translation id="2262183267184054286">অন্যভাবে যাচাই করান</translation>
 <translation id="2262243747453050782">HTTP ত্রুটি</translation>
 <translation id="2265192657948645752">রিটেলারের চাকরি</translation>
 <translation id="2265356434276802347">এই নীতিতে <ph name="MAX_ITEMS_LIMIT" />টির বেশি ফিচার করা এন্ট্রি রাখা যাবে না।</translation>
@@ -870,6 +874,7 @@
 <translation id="2370368710215137370">আপলোড করা ফাইলের ধরন</translation>
 <translation id="2370739752330685659">হয়ত পরে</translation>
 <translation id="2371084566192454134">ট্যাব ও ট্যাব গ্রুপ</translation>
+<translation id="237379235388498999">OneDrive-এ ভিডিও সেভ করা হয়েছে</translation>
 <translation id="2374629208601905275">আপনার অঞ্চলের আইনের ভিত্তিতে, Chrome আপনাকে ডিফল্ট সার্চ ইঞ্জিন বেছে নিতে বলবে। এইসব সার্চ ইঞ্জিন আপনার অঞ্চলে জনপ্রিয় এবং র‍্যান্ডম অর্ডারে দেখানো হয়।</translation>
 <translation id="2376455483361831781">নতুন টেবিল</translation>
 <translation id="2377241607395428273">গ্রাফিক্স ও অ্যানিমেশন সফ্টওয়্যার</translation>
@@ -1129,6 +1134,7 @@
 <translation id="2794629552137076216">গ্লাস (সারফেসড)</translation>
 <translation id="2799223571221894425">পুনঃশুরু</translation>
 <translation id="2799758406651937857">পুরুষদের পোশাক</translation>
+<translation id="2803320044666896137">ব্যবহারকারী অ্যাফিলিয়েট না হওয়ায় এই নীতির মান উপেক্ষা করা হয়েছে।</translation>
 <translation id="2807052079800581569">ছবি Y পজিশন</translation>
 <translation id="2808278141522721006">আপনি <ph name="SETTINGS" />-এ Windows Hello চালু বা বন্ধ করতে পারবেন</translation>
 <translation id="2818338148457093657">সৌন্দর্য পরিষেবা ও স্পা</translation>
@@ -1148,6 +1154,7 @@
 <translation id="2859383374160668142">আপনি ট্র্যাক করেন এমন প্রোডাক্টের দাম কমে যাওয়ার তথ্য যেকোনও সময় দেখতে পারবেন।</translation>
 <translation id="2859806420264540918">এই সাইট ব্যাঘাত সৃষ্টিকারী বা বিভ্রান্তিকর বিজ্ঞাপন দেখায়।</translation>
 <translation id="28618371182701850">ইলেকট্রিক ও প্লাগ-ইন গাড়ি</translation>
+<translation id="2873317327342476681">Dino গেম, খেলতে Dino-তে ট্যাপ করুন অথবা স্পেস প্রেস করুন</translation>
 <translation id="287387905105155974">সহায়তা বাবল</translation>
 <translation id="28761159517501904">সিনেমা</translation>
 <translation id="2876489322757410363">এক্সটার্নাল অ্যাপ্লিকেশনের মাধ্যমে পেমেন্ট করার জন্য ছদ্মবেশী মোড ছেড়ে বেরিয়ে আসা হচ্ছে। চালিয়ে যেতে চান?</translation>
@@ -1384,6 +1391,7 @@
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{এখনই আপডেট করতে হবে}=2{আগামীকালের মধ্যে আপডেট করতে হবে}one{# দিনের মধ্যে আপডেট করতে হবে}other{# দিনের মধ্যে আপডেট করতে হবে}}</translation>
 <translation id="3218376667417971956">মোটর যানবাহন</translation>
 <translation id="3218388919950135939">ঝুঁকির বিষয়টি যে আপনি বোঝেন সেই সম্পর্কে নিশ্চিত হলেই শুধুমাত্র <ph name="BEGIN_LINK" />এই অসুরক্ষিত সাইট<ph name="END_LINK" /> দেখুন।</translation>
+<translation id="3219056262712778751">অজানা সমস্যার কারণে ভিডিও দেখা যাচ্ছে না</translation>
 <translation id="3220264767789936523">ফর্মাল পোশাক</translation>
 <translation id="3223287115535306850">অ্যাপ লঞ্চ হচ্ছে</translation>
 <translation id="3223425961342298674">লোকেশন ব্যবহারের অনুমতি নেই</translation>
@@ -1502,6 +1510,7 @@
 <translation id="3415471717466570460">আপনার সার্চ, মিলে যাওয়া সেরা ফলাফল ও সেই পৃষ্ঠাগুলির কন্টেন্ট Google-এ পাঠানো হয়েছে এবং তা হিউম্যান রিভিউয়াররা দেখতে পারেন, যাতে এই ফিচারের উন্নতি করা যায়। এটি হল পরীক্ষামূলক ফিচার এবং সব সময় সঠিক তথ্য দেবে না।</translation>
 <translation id="3422248202833853650">মেমরি ফাঁকা করতে অন্যান্য প্রোগ্রাম থেকে বেরিয়ে যাওয়ার চেষ্টা করুন।</translation>
 <translation id="3422472998109090673">বর্তমানে <ph name="HOST_NAME" /> পাওয়া যাচ্ছে না।</translation>
+<translation id="3422794267539320056">ডাইনো গেম খেলতে, ট্যাপ করুন অথবা স্পেস প্রেস করুন</translation>
 <translation id="3423742043356668186">সিস্টেমের নির্দিষ্ট করা</translation>
 <translation id="3427342743765426898">&amp;সম্পাদনাকে আবার করুন</translation>
 <translation id="342781501876943858">Chromium-এর নীতি অনুযায়ী আপনার পাসওয়ার্ড বদলে ফেলা উচিত যদি আপনি সেটি অন্য কোনও সাইটে ব্যবহার করে থাকেন।</translation>
@@ -2279,6 +2288,7 @@
 <translation id="4652440160515225514">আপনার সংস্থা এই সাইটটি ব্লক করেছে কারণ এটি একটি নীতি লঙ্ঘন করেছে।</translation>
 <translation id="4654457557264366314">পেমেন্ট প্ল্যান উপযুক্ততার উপর নির্ভর করে।</translation>
 <translation id="4658638640878098064">উপরে বাঁদিকে স্টেপল করুন</translation>
+<translation id="4658801711339831733">Google Drive-এ স্ক্যান সেভ করা হয়েছে</translation>
 <translation id="4660592918803576381">Drive-এ খুলুন</translation>
 <translation id="4661556981531699496">পোষ্য ও জীবজন্তু</translation>
 <translation id="4661868874067696603">কেনাকাটার আরও বিকল্প সার্চ করুন</translation>
@@ -2308,6 +2318,7 @@
 <translation id="4702656508969495934">লাইভ ক্যাপশন দেখা যাচ্ছে, ফোকাস করতে উইন্ডো পরিবর্তনকারী ব্যবহার করুন</translation>
 <translation id="4703342001883078444">পরিবার ও সম্পর্ক</translation>
 <translation id="4704745399240123930">এই ব্যবসায়ী যে কার্ড গ্রহণ করেন না তা বন্ধ করা আছে, যেমন ভার্চুয়াল কার্ড।</translation>
+<translation id="4705573018059932476">আপনি <ph name="PROVIDER_ORIGIN" /> ব্যবহার করে এমন ওয়েবসাইটে <ph name="AUTHENTICATOR" />-এর মাধ্যমে যাচাই করার বিকল্প বেছে নিয়েছেন। এই পরিষেবা প্রদানকারী আপনার পেমেন্ট পদ্ধতি সংক্রান্ত তথ্য সেভ করে রাখতে পারে, যা আপনি <ph name="LINK_TEXT" />।</translation>
 <translation id="4708268264240856090">আপনার সংযোগ বাধাপ্রাপ্ত হয়েছে</translation>
 <translation id="4708276642004148190">জল সরবরাহ ও চিকিৎসা</translation>
 <translation id="4711628883879888561">ট্যাব গ্রুপে কোলাবরেট করুন</translation>
@@ -2591,6 +2602,7 @@
 <translation id="5138014172396933048">ভার্চুয়াল কার্ড এই মুহূর্তে উপলভ্য নেই, আপনার ব্যাঙ্কের সাথে যোগাযোগ করুন</translation>
 <translation id="5138227688689900538">কম দেখুন</translation>
 <translation id="5140155249377545621">ড্রাইভিং লাইসেন্স</translation>
+<translation id="5143310416385956149">OneDrive-এ স্ক্যান সেভ করা হয়েছে</translation>
 <translation id="5144613843429436866">এই সাইটের জন্য আপনি <ph name="PERMISSION" />-এর অনুমতি দিয়েছেন</translation>
 <translation id="5145883236150621069">নীতি প্রতিক্রিয়ার মধ্যে ত্রুটি কোড উপস্থিত</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" />-এর বিজ্ঞপ্তি ব্লক করা হয়েছে</translation>
@@ -2769,6 +2781,7 @@
             <ph name="LIST_ITEM" />কুকি ও সাইট ডেটা
             <ph name="LIST_ITEM" />ফর্মে লেখা তথ্য
           <ph name="END_LIST" /></translation>
+<translation id="5436307623797390637">ডিভাইসে ইনস্টল থাকা অ্যাপ</translation>
 <translation id="5443468954631487277">রিভার্স অর্ডার, সামনের দিক উপরে</translation>
 <translation id="5447235695608032700"><ph name="SITE" />-কে আপনার সম্পর্কে সেভ তথ্য ব্যবহার করার অনুমতি দিন</translation>
 <translation id="5447973833955560753">রিকভারি পাসওয়ার্ড</translation>
@@ -3089,6 +3102,7 @@
 <translation id="5974052231147553524">Sixth Roll</translation>
 <translation id="5975083100439434680">ছোট করুন</translation>
 <translation id="5979084224081478209">পাসওয়ার্ড চেক করুন</translation>
+<translation id="5983602399618208855">আপনি এটি ক্যামেরা ফোল্ডারে দেখতে পাবেন</translation>
 <translation id="5984570616552610254">চেম্বারের আর্দ্রতা</translation>
 <translation id="598637245381783098">পেমেন্ট অ্যাপ খোলা যাচ্ছে না</translation>
 <translation id="5989320800837274978">কোনো নির্ধারিত প্রক্সি সার্ভার অথবা একটি.pac স্ক্রিপ্ট UR সুর্নিদিষ্টভাবে উল্লেখ করা হয়নি৷</translation>
@@ -3221,6 +3235,7 @@
 <translation id="6171968084616623939">"<ph name="PROXY_INVALID_SCHEME_HOST_PORT" />" সঠিক ভ্যালু নয়।</translation>
 <translation id="617256461084925519">Google Chrome আপনার পরিচয় যাচাই করার চেষ্টা করছে যাতে আপনার পেমেন্ট সংক্রান্ত তথ্য পূরণ করা যায়।</translation>
 <translation id="6173208311907792313">Windows Hello ব্যবহার করে আপনার কেনাকাটা সম্পূর্ণ করুন</translation>
+<translation id="6175423614837252320">Google Drive-এ ফটো সেভ করা হয়েছে</translation>
 <translation id="6176387967264100435">দাম বেশি আছে</translation>
 <translation id="6177128806592000436">এই সাইটে আপনার সংযোগ নিরাপদ নয়</translation>
 <translation id="6177531123306197852">এনভেলপ C2</translation>
@@ -3506,6 +3521,7 @@
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">কম্পিউটার শিক্ষা</translation>
 <translation id="6633476656216409494">ব্যবসা ও প্রোডাক্টিভিটি সফ্টওয়্যার</translation>
+<translation id="6635900375070654124">যাচাইকরণ ডিভাইস</translation>
 <translation id="6641852376826221947">আপনার কেনাকাটা কনফার্ম করুন</translation>
 <translation id="6643016212128521049">সাফ করুন</translation>
 <translation id="6645291930348198241">কুকি ও সাইট ডেটা অ্যাক্সেস করার অনুমতি দিন।</translation>
@@ -3533,6 +3549,7 @@
 <translation id="6677351035258626477">ফাস্ট ফুড</translation>
 <translation id="6677738644213083042">এই ট্যাবে পরিবর্তন করুন</translation>
 <translation id="6679354743514146922">Chrome ব্রাউজার <ph name="APP_NAME" />-এ আপনার পাসওয়ার্ড পূরণ করার চেষ্টা করছে।</translation>
+<translation id="668132230070712111">Google Drive-এ ভিডিও সেভ করা হয়েছে</translation>
 <translation id="6681790815630918386">CVC সেভ করা হয়েছে</translation>
 <translation id="6683022854667115063">হেডফোন</translation>
 <translation id="6687230248707087982">এনভেলপ (প্লেইন)</translation>
@@ -3824,6 +3841,7 @@
 <translation id="7136009930065337683">'ছদ্মবেশী' মোড সম্পর্কে আরও জানুন</translation>
 <translation id="7138472120740807366">ডেলিভারির পদ্ধতি</translation>
 <translation id="7138678301420049075">অন্যান্য</translation>
+<translation id="7139358018102157153">আবার ছবি তুলুন</translation>
 <translation id="7139892792842608322">প্রাইমারি ট্রে</translation>
 <translation id="7140087718106278457">পেমেন্ট পদ্ধতির তালিকা বন্ধ আছে।</translation>
 <translation id="714064300541049402">সাইড 2 ছবি X শিফ্ট</translation>
@@ -3903,6 +3921,7 @@
 <translation id="7260075294900977274">নতুন স্মার্ট ফোল্ডার, যা আপনাকে একই জায়গায় কেনাকাটা সম্পর্কিত সব পৃষ্ঠা সেভ করতে এবং অটোমেটিক দাম ট্র্যাক করতে, প্রাইস ইনসাইট পেতে এবং আরও অনেক কিছু করতে সাহায্য করে</translation>
 <translation id="7264942008235065057">আপনি Google-এর উন্নত সুরক্ষা প্রোগ্রামের আওতায় থাকার কারণে এই সাইটি ব্লক করা অবস্থায় থাকবে। <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">শুধু এই ডিভাইসে ঠিকানা উপলভ্য হবে</translation>
+<translation id="7266094331715305887">ডিভাইসে ইনস্টল থাকা অ্যাপ</translation>
 <translation id="7269151392155523061">শর্টকাট ও <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />-এর মাধ্যমে বেছে নেওয়া সার্চ এগ্রিগেটর কীওয়ার্ড দুটি এক হতে পারে না: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">আপনার ডাউনলোড করা ফাইল Google Cloud-এ বা থার্ড-পার্টির কাছে বিশ্লেষণ করার জন্য পাঠানো হয়। যেমন, সংবেদনশীল ব্যক্তিগত তথ্য বা ম্যালওয়্যার রয়েছে কিনা তা জানার জন্য সেগুলি স্ক্যান করা হতে পারে এবং কোম্পানির নীতির উপরে ভিত্তি করে সেভ করা হতে পারে ও আপনার অ্যাডমিনিস্ট্রেটর সেগুলি দেখতে পেতে পারেন।</translation>
 <translation id="7275334191706090484">পরিচালিত বুকমার্কগুলি</translation>
@@ -3920,6 +3939,7 @@
 <translation id="7304030187361489308">বেশি</translation>
 <translation id="7304562222803846232">Google অ্যাকাউন্টের গোপনীয়তা সেটিংস ম্যানেজ করুন</translation>
 <translation id="7305756307268530424">কম স্পিডে শুরু করুন</translation>
+<translation id="7305767780379163575">ফটো সেভ করা যায়নি</translation>
 <translation id="7307063504147610123">এই ডিভাইসে ঠিকানা সেভ করা হয়েছে</translation>
 <translation id="7308436126008021607">ব্যাকগ্রাউন্ড সিঙ্ক</translation>
 <translation id="7309058266849426521">Chrome-এ আপনার বিজ্ঞাপন সংক্রান্ত গোপনীয়তা ম্যানেজ করা সম্পর্কে আরও জানুন।</translation>
@@ -4178,6 +4198,7 @@
 <translation id="767550629621587224">প্রি-কাট ট্যাব</translation>
 <translation id="7675756033024037212">স্ক্রল ও জুম করা যাবে না</translation>
 <translation id="7676643023259824263">ক্লিপবোর্ড টেক্সট <ph name="TEXT" /> সার্চ করুন</translation>
+<translation id="7678730592635586336">পুনরায় ভিডিও নিন</translation>
 <translation id="7679287273775285018">eWallet-এর মাধ্যমে পেমেন্ট করুন</translation>
 <translation id="7679367271685653708">Chrome সেটিংস থেকে আপনার ব্রাউজিংয়ের ইতিহাস দেখুন এবং ম্যানেজ করুন</translation>
 <translation id="7679947978757153706">বেসবল</translation>
@@ -4212,6 +4233,7 @@
 <translation id="7716147886133743102">আপনার প্রশাসক ব্লক করেছে</translation>
 <translation id="7716375162095500223">এখনও আপলোড করা হয়নি অথবা এর দিকে এখনও নজর দেওয়া হয়নি</translation>
 <translation id="7716424297397655342">এই সাইটটি ক্যাশে থেকে লোড করা যাবে না</translation>
+<translation id="7718626066800460799">স্ক্যান সেভ করা যায়নি</translation>
 <translation id="7719791801330803993">ফটো ও ভিডিও সফ্টওয়্যার</translation>
 <translation id="772128550427553158">সিভিসি আপনার কার্ডের সামনে থাকে।</translation>
 <translation id="7724603315864178912">কাটুন</translation>
@@ -4219,6 +4241,7 @@
 <translation id="7734285854693414638">Google Forms-এ চটপট নতুন ফর্ম তৈরি করুন</translation>
 <translation id="773466115871691567">সব সময় <ph name="SOURCE_LANGUAGE" /> ভাষার পৃষ্ঠার অনুবাদ দেখতে চাই</translation>
 <translation id="7736959720849233795">লিঙ্ক অ্যাড্রেস কপি করুন</translation>
+<translation id="7739868470710894050">আবার স্ক্যান করুন</translation>
 <translation id="7740996059027112821">মানক</translation>
 <translation id="77424286611022110">এই সাইট ব্যাঘাত সৃষ্টিকারী বা বিভ্রান্তিকর বিজ্ঞাপন দেখায়। <ph name="LEARN_MORE_LINK_TEXT" /></translation>
 <translation id="7744505202669469867">সেভ করা ঠিকানার সারণী</translation>
@@ -4433,6 +4456,7 @@
 <translation id="809543534949702122">সার্চ ইতিহাস</translation>
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
+<translation id="8099473231501330216">মুছে দেওয়ার জন্য বলুন</translation>
 <translation id="8103161714697287722">পেমেন্টের পদ্ধতি</translation>
 <translation id="8103643211515685474">তবুও প্রিন্ট করুন</translation>
 <translation id="8105368624971345109">বন্ধ করুন</translation>
@@ -4543,6 +4567,7 @@
 <translation id="8282409409360764263">ইয়ার্ড রক্ষণাবেক্ষণ</translation>
 <translation id="8282947398454257691">আপনার অনন্য ডিভাইস সনাক্তকারীকে জানুন</translation>
 <translation id="8284769179630993263">Chrome সেটিংসে আপনার Safe Browsing ও আরও অনেক কিছু ম্যানেজ করুন</translation>
+<translation id="828558778104922222">অজানা সমস্যার কারণে ফটো হারিয়ে গেছে</translation>
 <translation id="8286036467436129157">সাইন-ইন করুন</translation>
 <translation id="8286799286781881307">আপনার অ্যাডমিনিস্ট্রেটরের অনুমোদনপ্রাপ্ত অ্যাপ্লিকেশন, ডিভাইসে অ্যাটাচ থাকা সব স্ক্রিন থেকে ক্যাপচার করতে পারবে। এই তথ্য লোকালি প্রসেস করা অথবা আপনার সংস্থার সার্ভারে আপলোড করা হতে পারে।</translation>
 <translation id="8287123726498397887">এনভেলপ (প্রিন্টেড)</translation>
@@ -4615,6 +4640,7 @@
 <translation id="8402442052798347631">আপনি যে সাইট ভিজিট করার চেষ্টা করেছেন সেখানে আক্রমণকারীরা প্রতারণার মাধ্যমে আপনাকে দিয়ে ক্ষতিকর সফ্টওয়্যার ইনস্টল করিয়ে নিতে পারে, যা আপনার ব্রাউজিং অভিজ্ঞতায় প্রভাব ফেলবে। যেমন, আপনার হোমপেজ পরিবর্তন করে দেওয়া অথবা কোনও সাইটে অতিরিক্ত বিজ্ঞাপন দেখানো। ক্ষতি এড়াতে, Chrome নিরাপদ সাইটে ফিরে যাওয়ার সাজেশন দিচ্ছে। <ph name="BEGIN_LEARN_MORE_LINK" />এই সতর্কতা সম্পর্কে আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">ফ্যান ফিকশন</translation>
 <translation id="8405579342203358118">Chrome সেটিংসে আপনি কী ধরনের তথ্য সিঙ্ক করবেন, তা ম্যানেজ করুন</translation>
+<translation id="8405621913275228683">অজানা সমস্যার কারণে স্ক্যান করা ডেটা হারিয়ে গেছে</translation>
 <translation id="8406071103346257942">পাসওয়ার্ড পূরণ করার জন্য আপনার স্ক্রিন লক ব্যবহার করা বন্ধ করুন</translation>
 <translation id="8407031780528483338">রান্নার বাসনপত্র</translation>
 <translation id="8409413588194360210">পেমেন্ট হ্যান্ডলার</translation>

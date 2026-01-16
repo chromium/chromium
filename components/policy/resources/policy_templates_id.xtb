@@ -3419,6 +3419,8 @@ Jika <ph name="NTPCARDSVISIBLE" /> disetel ke nonaktif, Kartu Outlook tidak akan
       Jika kebijakan disetel ke Nonaktif, perangkat yang terdaftar tidak akan melaporkan informasi sesi kios.</translation>
 <translation id="3303770131697159224">Setelan izin Pengelolaan Jendela Default</translation>
 <translation id="3303911765031636277">Kebijakan konfigurasi untuk Chrome Enterprise Connector OnFileAttached</translation>
+<translation id="3305586786770047829">Jika kebijakan ini disetel ke 0 atau tidak disetel, kebijakan <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> hanya akan diterapkan pada cakupan pengguna untuk pengguna terafiliasi.
+Jika kebijakan ini disetel ke 1, kebijakan <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> akan diterapkan pada cakupan pengguna, meskipun pengguna tersebut tidak terafiliasi.</translation>
 <translation id="3307744348419745296">Jangan izinkan konfigurasi jaringan Wi-Fi disinkronkan di seluruh perangkat <ph name="PRODUCT_OS_NAME" /> dan ponsel Android yang terhubung</translation>
 <translation id="3308724602356134956">Jika Anda menetapkan kebijakan, <ph name="PRODUCT_OS_NAME" />
 

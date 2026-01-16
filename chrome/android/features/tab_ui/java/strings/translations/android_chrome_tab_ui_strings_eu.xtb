@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">Kudeatu sarbidea</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Itxi elementua}other{Itxi elementuak}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Pantailaren behealdean ainguratutako fitxa altuera erdian irekita dago.</translation>
 <translation id="374923079891132274">Partekatzeko orriaren aurrebistaren irudi txikia.</translation>
 <translation id="3776329373944672717">Fitxa taldearen izena: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Kudeatu</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">Azken fitxa</translation>
 <translation id="5380159289133845234">Artxibatu fitxa bikoiztuak</translation>
 <translation id="5446043142172831860">Kendu fitxa eta irten taldetik</translation>
+<translation id="5465437530117042974">Itxi dira pantailaren behealdean ainguratutako fitxaren aldaketak.</translation>
 <translation id="5490235265819901748">Fitxa taldea zabalduta</translation>
 <translation id="5494920125229734069">Hautatu guztiak</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Gehitu <ph name="LIMIT_COUNT_ONE" /> fitxategi, fitxa edo irudi gehienez}other{Gehitu <ph name="LIMIT_COUNT_MANY" /> fitxategi, fitxa edo irudi gehienez}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">Itxi</translation>
 <translation id="6051432659151380973">Fitxa taldeak automatikoki gordetzen dira</translation>
 <translation id="6054741997831917303">Produktu honen prezioa jaitsi egin da, eta <ph name="PREVIOUS_PRICE" /> izatetik <ph name="NEW_PRICE" /> izatera pasatu</translation>
+<translation id="606985262342505139">Pantailaren behealdean ainguratutako fitxa altuera osoan irekita dago</translation>
 <translation id="6109251075362363230">Orain, fitxa bikoiztu guztiak ere artxibatuko dira, erabilitako azken kopia izan ezik.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Itxi hautatutako <ph name="TABS_COUNT_ONE" /> elementua}other{Itxi hautatutako <ph name="TABS_COUNT_MANY" /> elementuak}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Eraman taldea leiho berri batera}other{Eraman taldea beste leiho batera}}</translation>

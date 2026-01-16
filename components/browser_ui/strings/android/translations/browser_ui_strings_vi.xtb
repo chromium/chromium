@@ -411,6 +411,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 lựa chọn khác)}other{(+ # lựa chọn khác)}}</translation>
 <translation id="5403592356182871684">Tên</translation>
 <translation id="5407203562970638234">Tăng cường bảo mật</translation>
+<translation id="5436307623797390637">Ứng dụng trên thiết bị</translation>
 <translation id="5438097262470833822">Lựa chọn này sẽ đặt lại các quyền của <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu thông tin vị trí của bạn. Khi bạn tắt tuỳ chọn này, các trang web không thể xem thông tin vị trí của bạn.</translation>
 <translation id="5489227211564503167">Thời gian đã trôi qua: <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" />.</translation>

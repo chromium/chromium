@@ -412,6 +412,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 till)}other{(+ # till)}}</translation>
 <translation id="5403592356182871684">Namn</translation>
 <translation id="5407203562970638234">Förbättra säkerheten</translation>
+<translation id="5436307623797390637">Appar på enheten</translation>
 <translation id="5438097262470833822">Detta återställer behörigheter för <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">När detta är aktiverat kan webbplatser fråga efter din plats. När detta är inaktiverat får webbplatser inte se din plats.</translation>
 <translation id="5489227211564503167">Förfluten tid: <ph name="ELAPSED_TIME" /> av <ph name="TOTAL_TIME" />.</translation>

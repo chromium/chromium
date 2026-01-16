@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">打开新的窗口</translation>
 <translation id="1558391695376153246">关闭无痕式标签页</translation>
 <translation id="1565371473877914088">打开新的无痕式标签页</translation>
+<translation id="1567960978791353852">显示阅读模式</translation>
 <translation id="1571780780926010134">无痕式标签页</translation>
 <translation id="1580715474678097352">时刻保护您免受危险网站的侵害</translation>
 <translation id="1580783302095112590">邮件已发送。</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">要想查看密码，您必须先在设备上设置密码。</translation>
 <translation id="201759455285471444">展开标签页分组。</translation>
 <translation id="202070562065520783">向我解释</translation>
+<translation id="2023713324775943812">从地址栏中启用阅读模式（如果可用）</translation>
 <translation id="2044394949148788042">打开标签页网格</translation>
 <translation id="2044681667265133332">账号 <ph name="USER_EMAIL" /> 由 <ph name="HOSTED_DOMAIN" /> 管理，后者或许可以查看某些信息。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">新项</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">您的标签页分组会保存在此处</translation>
 <translation id="2273327106802955778">“更多”菜单</translation>
 <translation id="2287614783861766820">{count,plural, =1{这个地址将被从此设备中删除。}other{这些地址将被从此设备中删除。}}</translation>
+<translation id="2295236662082735391">长按网页上的图片，即可使用 Gemini 进行编辑</translation>
 <translation id="2297989278479054870">当您退出 Google 账号后，该账号中的书签、密码等信息都将从此设备中移除。</translation>
 <translation id="2299218006564889602">系统会先在设备上对您的密码进行加密，然后再将其保存到 Google 密码管理工具中。</translation>
 <translation id="2306265833370324042">显示<ph name="SEARCH_ENGINE_NAME" />详细信息</translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">拍摄要搜索的内容</translation>
 <translation id="2761898608071930085">使用其他账号</translation>
 <translation id="2762000892062317888">刚刚</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{最多可添加 1 张图片}other{最多可添加 {COUNT} 张图片}}</translation>
 <translation id="2772667768515195373">您可在各种 Google 产品中使用已保存的地址。这个地址已保存到您的 Google 账号 <ph name="USER_EMAIL" />。</translation>
 <translation id="2773344962924806829">邮件通知</translation>
 <translation id="2781331604911854368">已开启</translation>
@@ -1349,6 +1353,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6058415747854995776">拍摄视频</translation>
 <translation id="6059830886158432458">在此处控制您的报道和活动</translation>
+<translation id="6063802271331271857">为图片改换风格</translation>
 <translation id="6066301408025741299">点按可取消。</translation>
 <translation id="6074656473835429958">接收通知</translation>
 <translation id="607620096698446287">无法上传“<ph name="FILENAME" />”(<ph name="FILESIZE" />)</translation>
@@ -1866,6 +1871,7 @@
 <translation id="7899199123054742721">全部标为未读</translation>
 <translation id="7911190106180361398">贵组织不允许您同步所有内容。</translation>
 <translation id="7918999344502274923">隐藏<ph name="SEARCH_ENGINE_NAME" />详细信息</translation>
+<translation id="7921559948846049514">为背景选择主题、颜色等</translation>
 <translation id="792357691529995513">未发现任何问题</translation>
 <translation id="7925108652071887026">自动填充数据</translation>
 <translation id="7926975587469166629">卡的别名</translation>

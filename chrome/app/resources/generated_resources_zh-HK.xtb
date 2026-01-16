@@ -1093,6 +1093,7 @@
 <translation id="1709916727352927457">刪除密鑰</translation>
 <translation id="1709972045049031556">無法分享</translation>
 <translation id="1712143791363119140">進行中</translation>
+<translation id="1713120794167761305">將分頁移至側邊</translation>
 <translation id="1714265454085143857">固定分頁</translation>
 <translation id="1714326320203665217">已下載主節點註釋檔案</translation>
 <translation id="1714644264617423774">啟用無障礙功能，讓您使用裝置更輕鬆。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -3238,6 +3239,7 @@
 <translation id="3167562202484086668">刪除所有「<ph name="BRAND" />」資料</translation>
 <translation id="3169930038976362151">選擇切合您需要的主題。如要變更主題、桌布、螢幕保護程式和其他設定，只要輕觸並按住桌面即可。</translation>
 <translation id="3170072451822350649">您也可以略過登入程序，<ph name="LINK_START" />以訪客身分瀏覽<ph name="LINK_END" />。</translation>
+<translation id="3172642937040465677">將分頁移至頂部</translation>
 <translation id="3175067642577044620">內文</translation>
 <translation id="3175862692832442091">森林</translation>
 <translation id="3176347586396987181">按下「z」代表按住滑鼠按鍵</translation>
@@ -3490,6 +3492,7 @@
 <translation id="335581015389089642">語音</translation>
 <translation id="335587007651175930">使用「Google 智能鏡頭」搜尋畫面內容</translation>
 <translation id="3355936511340229503">連線錯誤</translation>
+<translation id="335678817537689040">靜態</translation>
 <translation id="3359256513598016054">憑證政策限制</translation>
 <translation id="3360297538363969800">列印失敗。請檢查您的打印機，然後再試一次。</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -4189,6 +4192,7 @@
         <ph name="BREAK" />
         你可透過資訊卡選單管理設定，或前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="3801449494961771207">預設的「文字轉語音」聲音</translation>
+<translation id="3801748538479607989">將分頁移至頂部</translation>
 <translation id="3802486193901166966">這個擴充程式不需要任何特殊權限，亦無需額外的網站存取權</translation>
 <translation id="380329542618494757">名稱</translation>
 <translation id="3803345858388753269">影片品質</translation>
@@ -5999,6 +6003,7 @@
 <translation id="5060419232449737386">字幕設定</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{此資料夾含有 1 個書籤。您確定要刪除這個書籤嗎？}other{此資料夾含有 # 個書籤。您確定要刪除這些書籤嗎？}}</translation>
 <translation id="5061531353537614467">凍原</translation>
+<translation id="5062863364865466276">移動</translation>
 <translation id="5062930723426326933">無法登入，請重新連線至互聯網，然後再試一次。</translation>
 <translation id="5063480226653192405">使用狀況</translation>
 <translation id="5064921774605267982">打開<ph name="PROFILE_NAME" />設定檔。呢個設定檔由你嘅家長管理。</translation>
@@ -6937,6 +6942,7 @@
 <translation id="5722086096420375088">綠色和白色</translation>
 <translation id="572328651809341494">最近開啟的分頁</translation>
 <translation id="5723508132121499792">沒有執行中的背景應用程式</translation>
+<translation id="5724723163580775373">大焦點</translation>
 <translation id="5725112283692663422">提供你對「以 AI 製作主題」的意見</translation>
 <translation id="5727728807527375859">擴充功能、應用程式及主題可能損害您的電腦，確定要繼續嗎？</translation>
 <translation id="5728072125198221967">連結的 Google 服務</translation>
@@ -7184,6 +7190,7 @@
 <translation id="5888889603768021126">目前登入身分</translation>
 <translation id="5889282057229379085">中繼 CA 數目上限：<ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">使用您的<ph name="BEGIN_LINK" />同步密碼短語<ph name="END_LINK" />，加密已同步處理的資料。Google Pay 上的付款方法和地址將不會加密。Chrome 上的瀏覽記錄將不會同步。</translation>
+<translation id="5890072287476934834">將分頁移至側邊</translation>
 <translation id="5891688036610113830">偏好的 Wi-Fi 網絡</translation>
 <translation id="5894056653502215961">取消揀資料夾：<ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">重新啟動</translation>
@@ -8336,6 +8343,7 @@
 <translation id="6702639462873609204">編輯(&amp;E)…</translation>
 <translation id="6702859741546259407">如要使用「<ph name="FEATURE_NAME" />」，請開啟藍牙和 Wi-Fi</translation>
 <translation id="6703109186846420472">、</translation>
+<translation id="670431355064244920">小焦點</translation>
 <translation id="6707122714992751648">執行 ChromeOS 診斷測試</translation>
 <translation id="6707389671160270963">SSL 用戶端憑證</translation>
 <translation id="6707671917294473995">未授權網站使用相機</translation>
@@ -9327,6 +9335,7 @@
 <translation id="7389615853658756494">在網站上更改</translation>
 <translation id="7392118418926456391">病毒掃描失敗</translation>
 <translation id="7392915005464253525">重新開啟已關閉視窗(&amp;E)</translation>
+<translation id="739299645392306071">中等焦點</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{已複製 1 個項目}other{已複製 {COUNT} 個項目}}</translation>
 <translation id="7393435859300249877">如果您在使用特定應用程式 (例如視像通訊應用程式) 時向已靜音的麥克風說話，系統將會顯示通知。音訊資料絕不會外洩。</translation>
 <translation id="7395008140803590549">無法刪除憑證</translation>

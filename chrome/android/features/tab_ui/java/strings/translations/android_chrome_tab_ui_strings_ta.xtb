@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">அணுகலை நிர்வகித்தல்</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{பக்கத்தை மூடு}other{பக்கங்களை மூடு}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">பக்கத்தின் கீழ்ப்புறச் சீட்டு பாதி உயரத்தில் திறக்கப்பட்டது.</translation>
 <translation id="374923079891132274">ஷேர் ஷீட் மாதிரிக்காட்சியின் சிறுபடம்.</translation>
 <translation id="3776329373944672717">பக்கக் குழுவின் தலைப்பு <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">நிர்வகி</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">உங்கள் கடைசிப் பக்கம்</translation>
 <translation id="5380159289133845234">நகல் பக்கங்களைக் காப்பிடு</translation>
 <translation id="5446043142172831860">பக்கத்தை அகற்றிவிட்டு, குழுவை விட்டு வெளியேறு</translation>
+<translation id="5465437530117042974">பக்கத்தின் கீழ்ப்புறச் சீட்டு மூடப்பட்டது.</translation>
 <translation id="5490235265819901748">பக்கக் குழு விரிவாக்கப்பட்டது</translation>
 <translation id="5494920125229734069">எல்லாவற்றையும் தேர்ந்தெடு</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{அதிகபட்சம் <ph name="LIMIT_COUNT_ONE" /> ஃபைல், பக்கம் அல்லது படத்தைச் சேர்க்கவும்}other{அதிகபட்சம் <ph name="LIMIT_COUNT_MANY" /> ஃபைல்கள், பக்கங்கள் அல்லது படங்களைச் சேர்க்கவும்}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">மூடு</translation>
 <translation id="6051432659151380973">உங்கள் பக்கக் குழுக்கள் தானாகச் சேமிக்கப்படும்</translation>
 <translation id="6054741997831917303">இந்தப் பொருளின் விலை சமீபத்தில் <ph name="PREVIOUS_PRICE" /> இல் இருந்து <ph name="NEW_PRICE" /> ஆகக் குறைந்துள்ளது</translation>
+<translation id="606985262342505139">பக்கத்தின் கீழ்ப்புறச் சீட்டு முழு உயரத்தில் திறக்கப்பட்டது</translation>
 <translation id="6109251075362363230">மிகச் சமீபத்தில் பயன்படுத்தப்பட்ட நகல் தவிர்த்து, பிற எல்லா நகல் பக்கங்களும் இப்போது காப்பிடப்படும்.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{தேர்ந்தெடுத்த <ph name="TABS_COUNT_ONE" /> பக்கத்தை மூடும்}other{தேர்ந்தெடுத்த <ph name="TABS_COUNT_MANY" /> பக்கங்களை மூடும்}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{குழுவைப் புதிய சாளரத்திற்கு நகர்த்து}other{குழுவை வேறொரு சாளரத்திற்கு நகர்த்து}}</translation>

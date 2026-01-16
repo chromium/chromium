@@ -412,6 +412,7 @@
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 ακόμη)}other{(+ # ακόμη)}}</translation>
 <translation id="5403592356182871684">Ονόματα</translation>
 <translation id="5407203562970638234">Βελτιώστε την ασφάλειά σας</translation>
+<translation id="5436307623797390637">Εφαρμογές στη συσκευή</translation>
 <translation id="5438097262470833822">Με αυτή την επιλογή θα γίνει επαναφορά των αδειών για τον ιστότοπο <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Όταν είναι ενεργοποιημένη αυτή η επιλογή, οι ιστότοποι μπορούν να ζητήσουν την τοποθεσία σας. Όταν είναι απενεργοποιημένη αυτή η επιλογή, οι ιστότοποι δεν μπορούν να δουν την τοποθεσία σας.</translation>
 <translation id="5489227211564503167">Έχουν περάσει <ph name="ELAPSED_TIME" /> από <ph name="TOTAL_TIME" />.</translation>

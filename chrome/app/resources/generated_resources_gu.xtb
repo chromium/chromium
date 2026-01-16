@@ -1083,6 +1083,7 @@
 <translation id="1709916727352927457">પાસકી ડિલીટ કરો</translation>
 <translation id="1709972045049031556">શેર કરી શકતા નથી</translation>
 <translation id="1712143791363119140">ચાલુ છે</translation>
+<translation id="1713120794167761305">ટૅબને બાજુમાં ખસેડો</translation>
 <translation id="1714265454085143857">પિન કરેલા ટૅબ</translation>
 <translation id="1714326320203665217">નોડ ટીકાટિપ્પણીની મુખ્ય ફાઇલો ડાઉનલોડ થઈ</translation>
 <translation id="1714644264617423774">તમારા ડિવાઇસને વાપરવાનું સરળ બનાવવા માટે ઍક્સેસિબિલિટી સુવિધાઓને ચાલુ કરો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
@@ -3225,6 +3226,7 @@
 <translation id="3167562202484086668"><ph name="BRAND" />નો તમામ ડેટા ડિલીટ કરો</translation>
 <translation id="3169930038976362151">તમારી જરૂરિયાત પ્રમાણે થીમ પસંદ કરો. તમારી થીમ, વૉલપેપર અને સ્ક્રીન સેવર જેવું બીજું ઘણું બધું બદલવા માટે, ડેસ્કટૉપ પર માત્ર ટચ કરીને થોડીવાર દબાવી રાખો.</translation>
 <translation id="3170072451822350649">તમે સાઇન ઇન કરવાનું છોડી અને <ph name="LINK_START" />અતિથિ તરીકે બ્રાઉઝ<ph name="LINK_END" /> પણ કરી શકો છો.</translation>
+<translation id="3172642937040465677">ટૅબને સૌથી ઉપર ખસેડો</translation>
 <translation id="3175067642577044620">મુખ્ય ભાગ</translation>
 <translation id="3175862692832442091">જંગલ</translation>
 <translation id="3176347586396987181">માઉસનું બટન દબાવી રાખવા માટે “z”નો ઉપયોગ કરો</translation>
@@ -3479,6 +3481,7 @@
 <translation id="335581015389089642">ભાષા</translation>
 <translation id="335587007651175930">Google Lens વડે તમારી સ્ક્રીન પર જે કંઈ હોય તે શોધો</translation>
 <translation id="3355936511340229503">કનેક્શન ભૂલ</translation>
+<translation id="335678817537689040">સ્થિર</translation>
 <translation id="3359256513598016054">પ્રમાણપત્ર નીતિની મર્યાદાઓ</translation>
 <translation id="3360297538363969800">છાપવાનું નિષ્ફળ થયું. કૃપા કરીને તમારું પ્રિન્ટર તપાસો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -4178,6 +4181,7 @@
         <ph name="BREAK" />
         તમે કાર્ડ મેનૂમાં જઈને સેટિંગ મેનેજ કરી શકો છો અથવા 'Chromeને કસ્ટમાઇઝ કરો'માં વધુ વિકલ્પો જોઈ શકો છો.</translation>
 <translation id="3801449494961771207">સિસ્ટમ ટેક્સ્ટ-ટૂ-સ્પીચ વૉઇસ</translation>
+<translation id="3801748538479607989">ટૅબને સૌથી ઉપર ખસેડો</translation>
 <translation id="3802486193901166966">આ એક્સ્ટેંશનને કોઈપણ વિશિષ્ટ પરવાનગીઓની જરૂર નથી અને તેને કોઈ વધારાની સાઇટનો ઍક્સેસ નથી</translation>
 <translation id="380329542618494757">નામ</translation>
 <translation id="3803345858388753269">વીડિયોની ક્વૉલિટી</translation>
@@ -5992,6 +5996,7 @@
 <translation id="5060419232449737386">કૅપ્શન સેટિંગ</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{આ ફોલ્ડર બુકમાર્ક સમાવે છે. શું તમે ખરેખર એને ડિલીટ કરવા માગો છો?}one{આ ફોલ્ડર # બુકમાર્ક સમાવે છે. શું તમે ખરેખર એને ડિલીટ કરવા માગો છો?}other{આ ફોલ્ડર # બુકમાર્ક સમાવે છે. શું તમે ખરેખર એને ડિલીટ કરવા માગો છો?}}</translation>
 <translation id="5061531353537614467">ટુંડ્ર</translation>
+<translation id="5062863364865466276">હિલચાલ</translation>
 <translation id="5062930723426326933">સાઇન-ઇન નિષ્ફળ થયું, કૃપા કરીને ઇન્ટરનેટથી કનેક્ટ કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="5063480226653192405">ઉપયોગ</translation>
 <translation id="5064921774605267982"><ph name="PROFILE_NAME" />ની પ્રોફાઇલ ખોલો. તમારા માતાપિતા દ્વારા આ પ્રોફાઇલને મેનેજ કરવામાં આવે છે.</translation>
@@ -6934,6 +6939,7 @@
 <translation id="5722086096420375088">લીલો અને સફેદ</translation>
 <translation id="572328651809341494">તાજેતરના ટેબ્સ</translation>
 <translation id="5723508132121499792">કોઈપણ બૅકગ્રાઉન્ડ ઍપ ચાલી રહી નથી</translation>
+<translation id="5724723163580775373">મોટું ફોકસ</translation>
 <translation id="5725112283692663422">AI વડે થીમ બનાવવા માટે પ્રતિસાદ મોકલો</translation>
 <translation id="5727728807527375859">એક્સટેન્શન્સ, ઍપ્લિકેશન અને થીમ્સ તમારા કમ્પ્યુટરને નુકસાન પહોંચાડી શકે છે. શું તમે ખરેખર આગળ વધવા માંગો છો?</translation>
 <translation id="5728072125198221967">લિંક કરેલી Google સેવાઓ</translation>
@@ -7174,13 +7180,14 @@
 <translation id="5885314688092915589">તમારી સંસ્થા આ પ્રોફાઇલ મેનેજ કરશે</translation>
 <translation id="5885470467814103868">સ્કૅન કરવાનું શરૂ કરો</translation>
 <translation id="5885631909150054232">ટોકન કૉપિ કરો</translation>
-<translation id="5886009770935151472">આંગળી 1</translation>
+<translation id="5886009770935151472">ફિંગરપ્રિન્ટ 1</translation>
 <translation id="5886112770923972514">નજીક હોય એવા 'ઝડપી જોડાણ' ડિવાઇસ સાથે કનેક્ટ કરો અને ઝડપથી તેમનું સેટઅપ કરો</translation>
 <translation id="5886384907280980632">હમણાં બંધ કરો</translation>
 <translation id="5888337581644150257">આંતરરાષ્ટ્રીય બેંક એકાઉન્ટ ક્રમાંક</translation>
 <translation id="5888889603768021126">આમના વડે સાઇન ઇન કરેલું</translation>
 <translation id="5889282057229379085">ઇન્ટરમિડિયેટ CA ની મહત્તમ સંખ્યા: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">તમારા પોતાના <ph name="BEGIN_LINK" />સિંક પાસફ્રેઝ<ph name="END_LINK" /> વડે સિંક કરેલો ડેટા એન્ક્રિપ્ટ કરો. Google Payમાંથી ચુકવણી પદ્ધતિઓ અને સરનામા એન્ક્રિપ્ટ કરવામાં આવશે નહીં. Chromeમાંથી બ્રાઉઝિંગ ઇતિહાસ સિંક થશે નહીં.</translation>
+<translation id="5890072287476934834">ટૅબને બાજુમાં ખસેડો</translation>
 <translation id="5891688036610113830">પસંદ કરેલા વાઇ-ફાઇ નેટવર્ક</translation>
 <translation id="5894056653502215961"><ph name="FOLDER_TITLE" /> ફોલ્ડર નાપસંદ કરો</translation>
 <translation id="5895138241574237353">પુનઃપ્રારંભ કરો</translation>
@@ -8337,6 +8344,7 @@ USB ડિવાઇસ</translation>
 <translation id="6702639462873609204">&amp;સંપાદિત કરો...</translation>
 <translation id="6702859741546259407"><ph name="FEATURE_NAME" />નો ઉપયોગ કરવા માટે, બ્લૂટૂથ અને વાઇ-ફાઇ ચાલુ કરો</translation>
 <translation id="6703109186846420472">,</translation>
+<translation id="670431355064244920">નાનું ફોકસ</translation>
 <translation id="6707122714992751648">ChromeOSના ડાયગ્નોસ્ટિક પરીક્ષણો ચલાવો</translation>
 <translation id="6707389671160270963">SSL ક્લાયંટ પ્રમાણપત્ર</translation>
 <translation id="6707671917294473995">વેબસાઇટને તમારા કૅમેરાનો ઉપયોગ કરવાની મંજૂરી આપવામાં આવી નથી</translation>
@@ -9328,6 +9336,7 @@ USB ડિવાઇસ</translation>
 <translation id="7389615853658756494">સાઇટ પર જઈને તેને બદલો</translation>
 <translation id="7392118418926456391">વાયરસ સ્કેન નિષ્ફળ થયું</translation>
 <translation id="7392915005464253525">બંધ કરેલી વિંડો ફ&amp;રીથી ખોલો</translation>
+<translation id="739299645392306071">મધ્યમ ફોકસ</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 આઇટમ કૉપિ કરી}one{{COUNT} આઇટમ કૉપિ કરી}other{{COUNT} આઇટમ કૉપિ કરી}}</translation>
 <translation id="7393435859300249877">વીડિયો ચૅટ ઍપ જેવી એપનો ઉપયોગ કરતી વખતે જો તમારું માઇક મ્યૂટ કરેલું હોય ત્યારે તમે વાત કરો છો, તો તમને સૂચિત કરવામાં આવશે. ઑડિયો તમારા ડિવાઇસમાં જ રહે છે.</translation>
 <translation id="7395008140803590549">સર્ટિફિકેટ ડિલીટ કરી શકતા નથી</translation>

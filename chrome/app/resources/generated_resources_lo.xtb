@@ -1092,6 +1092,7 @@
 <translation id="1709916727352927457">ລຶບກະແຈຜ່ານອອກ</translation>
 <translation id="1709972045049031556">ບໍ່ສາມາດແບ່ງປັນໄດ້</translation>
 <translation id="1712143791363119140">ກຳລັງດຳເນີນການ</translation>
+<translation id="1713120794167761305">ຍ້າຍແຖບໄປທາງຂ້າງ</translation>
 <translation id="1714265454085143857">ແຖບທີ່ປັກໝຸດແລ້ວ</translation>
 <translation id="1714326320203665217">ດາວໂຫຼດໄຟລ໌ການອະທິບາຍຄວາມເຫັນຂອງໂໜດຫຼັກແລ້ວ</translation>
 <translation id="1714644264617423774">ເປີດການນຳໃຊ້ຄຸນສົມບັດການຊ່ວຍເຂົ້າເຖິງເພື່ອເຮັດໃຫ້ອຸປະກອນຂອງທ່ານໃຊ້ງ່າຍຂຶ້ນ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
@@ -2571,6 +2572,7 @@
 <translation id="2713444072780614174">ສີ​ຂາວ</translation>
 <translation id="2714180132046334502">ພື້ນຫຼັງມືດ</translation>
 <translation id="2714393097308983682">ຮ້ານຄ້າ Google Play</translation>
+<translation id="2714617928488200509">ໂມເດວ</translation>
 <translation id="2715751256863167692">ການອັບເກຣດນີ້ຣີເຊັດ Chromebook ຂອງທ່ານ ແລະ ລຶບຂໍ້ມູນຜູ້ໃຊ້ປັດຈຸບັນອອກໄປ.</translation>
 <translation id="2715934493766003251">ບໍ່ສາມາດສ້າງພື້ນທີ່ຫວ່າງໄດ້ໃນລະຫວ່າງທີ່ການຊິ້ງໄຟລ໌ເປີດຢູ່</translation>
 <translation id="2716986496990888774">ການຕັ້ງຄ່ານີ້ຖືກຈັດການໂດຍພໍ່ແມ່.</translation>
@@ -3237,6 +3239,7 @@
 <translation id="3167562202484086668">ລຶບຂໍ້ມູນ <ph name="BRAND" /> ທັງໝົດ</translation>
 <translation id="3169930038976362151">ເລືອກຮູບແບບສີສັນທີ່ເໝາະກັບຄວາມຕ້ອງການຂອງທ່ານ. ເພື່ອປ່ຽນຮູບແບບສີສັນ, ຮູບພື້ນຫຼັງ, ພາບພັກໜ້າຈໍ ແລະ ອື່ນໆຂອງທ່ານ, ພຽງແຕະເດັສທັອບຄ້າງໄວ້.</translation>
 <translation id="3170072451822350649">ທ່ານຍັງອາດຈະຂ້າມການລົງຊື່ເຂົ້າ​ໃຊ້ ແລະ <ph name="LINK_START" />ທ່ອງເນັດເປັນແຂກ<ph name="LINK_END" />.</translation>
+<translation id="3172642937040465677">ຍ້າຍແຖບໄປເທິງສຸດ</translation>
 <translation id="3175067642577044620">ສ່ວນເນື້ອຫາ</translation>
 <translation id="3175862692832442091">ປ່າ</translation>
 <translation id="3176347586396987181">ໃຊ້ປຸ່ມ “z” ເພື່ອກົດປຸ່ມເມົ້າຄ້າງໄວ້</translation>
@@ -3491,6 +3494,7 @@
 <translation id="335581015389089642">ການເວົ້າ</translation>
 <translation id="335587007651175930">ຊອກຫາສິ່ງທີ່ຢູ່ໜ້າຈໍຂອງທ່ານດ້ວຍ Google Lens</translation>
 <translation id="3355936511340229503">ການເຊື່ອມຕໍ່ຜິດພາດ</translation>
+<translation id="335678817537689040">ຄົງທີ່</translation>
 <translation id="3359256513598016054">ຂໍ້ຈໍາກັດນະໂຍບາຍໃບຢັ້ງຢືນ</translation>
 <translation id="3360297538363969800">ການພິມບໍ່ສໍາເລັດ. ກະລຸນາກວດເບິ່ງເຄື່ອງພິມຂອງທ່ານ ແລະລອງໃໝ່ອີກ.</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -4190,6 +4194,7 @@
         <ph name="BREAK" />
         ທ່ານສາມາດຈັດການການຕັ້ງຄ່າຈາກເມນູບັດ ຫຼື ເບິ່ງຕົວເລືອກເພີ່ມເຕີມໄດ້ໃນ ປັບແຕ່ງ Chrome.</translation>
 <translation id="3801449494961771207">ສຽງໃນການປ່ຽນຂໍ້ຄວາມເປັນສຽງເວົ້າຂອງລະບົບ</translation>
+<translation id="3801748538479607989">ຍ້າຍແຖບໄປເທິງສຸດ</translation>
 <translation id="3802486193901166966">ສ່ວນຂະຫຍາຍນີ້ບໍ່ຈຳເປັນຕ້ອງໃຊ້ການອະນຸຍາດພິເສດ ແລະ ບໍ່ມີສິດເຂົ້າເຖິງເວັບໄຊເພີ່ມເຕີມ</translation>
 <translation id="380329542618494757">ຊື່</translation>
 <translation id="3803345858388753269">ຄຸນ​ນະ​ພາບວິ​ດີ​ໂອ​</translation>
@@ -4610,6 +4615,7 @@
 <translation id="4078738236287221428">ບັງຄັບແຄສ</translation>
 <translation id="4078903002989614318">ຕົວເລືອກການຈັດຮຽງ ແລະ ລາຍຊື່</translation>
 <translation id="4079140982534148664">ໃຊ້ການກວດການສະກົດຄຳທີ່ປັບປຸງດີຂຶ້ນແລ້ວ</translation>
+<translation id="4082070466456857368">Thinking (3 Pro)</translation>
 <translation id="4084682180776658562">ບຸກມາກຄ໌</translation>
 <translation id="4084835346725913160">ປິດ <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">JavaScript ຖືກບລັອກຢູ່ໃນໜ້ານີ້.</translation>
@@ -6003,6 +6009,7 @@
 <translation id="5060419232449737386">ການຕັ້ງຄ່າຄຳບັນຍາຍ</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{ໂຟນເດີນີ້ປະກອບມີໜຶ່ງບຸກມາກ. ທ່ານແນ່ໃຈບໍວ່າທ່ານຕ້ອງການລຶບມັນ?}other{ໂຟນເດີນີ້ປະກອບມີ # ບຸກມາກ. ທ່ານແນ່ໃຈບໍວ່າທ່ານຕ້ອງການລຶບມັນ?}}</translation>
 <translation id="5061531353537614467">ທັນດຣາ</translation>
+<translation id="5062863364865466276">ການເຄື່ອນໄຫວ</translation>
 <translation id="5062930723426326933">ລົງຊື່ເຂົ້າ​ໃຊ້ບໍ່ສໍາເລັດ, ກະລຸນາເຊື່ອມຕໍ່ກັບອິນເຕີເນັດ ແລະລອງໃໝ່ອີກ.</translation>
 <translation id="5063480226653192405">ການນໍາໃຊ້</translation>
 <translation id="5064921774605267982">ເປີດໂປຣໄຟລ໌ຂອງ <ph name="PROFILE_NAME" />. ຜູ້ປົກຄອງຂອງທ່ານເປັນຜູ້ຈັດການໂປຣໄຟລ໌ນີ້.</translation>
@@ -6943,6 +6950,7 @@
 <translation id="5722086096420375088">ສີຂຽວ ແລະ ສີຂາວ</translation>
 <translation id="572328651809341494">ແຖບບໍ່ດົນມານີ້</translation>
 <translation id="5723508132121499792">ບໍ່ມີແອັບພື້ນຫຼັງແລ່ນຢູ່</translation>
+<translation id="5724723163580775373">ໂຟກັສຂະໜາດໃຫຍ່</translation>
 <translation id="5725112283692663422">ສົ່ງຄຳຕິຊົມກ່ຽວກັບການສ້າງຮູບແບບສີສັນດ້ວຍ AI</translation>
 <translation id="5727728807527375859">ສ່ວນຂະຫຍາຍ, ແອັບ, ແລະເທມສາມາດທໍາລາຍຄອມພິວເຕີຂອງທ່ານໄດ້. ທ່ານແນ່ໃຈບໍວ່າ ທ່ານຕ້ອງການສືບຕໍ່?</translation>
 <translation id="5728072125198221967">ບໍລິການ Google ທີ່ລິ້ງໄວ້</translation>
@@ -7190,6 +7198,7 @@
 <translation id="5888889603768021126">ເຂົ້າສູ່ລະບົບດ້ວຍ</translation>
 <translation id="5889282057229379085">ຈໍານວນ CAs ປານກາງສູງສຸດ: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">ເຂົ້າລະຫັດຂໍ້ມູນທີ່ໄດ້ຊິ້ງດ້ວຍ <ph name="BEGIN_LINK" />ລະຫັດຜ່ານການຊິ້ງ<ph name="END_LINK" /> ຂອງທ່ານ. ວິທີການຈ່າຍເງິນ ແລະ ທີ່ຢູ່ຈາກ Google Pay ຈະບໍ່ໄດ້ຖືກເຂົ້າລະຫັດ. ຈະບໍ່ຊິ້ງປະຫວັດການທ່ອງເວັບຈາກ Chrome.</translation>
+<translation id="5890072287476934834">ຍ້າຍແຖບໄປທາງຂ້າງ</translation>
 <translation id="5891688036610113830">ເຄືອຂ່າຍ Wi-Fi ທີ່ຕ້ອງການ</translation>
 <translation id="5894056653502215961">ເຊົາເລືອກໂຟນເດີ <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">ເລີ່ມຕົ້ນໃໝ່</translation>
@@ -7855,6 +7864,7 @@
 <translation id="6350821834561350243">ລະບຸຄຳອະທິບາຍທີ່ຈະແຈ້ງຂອງບັນຫາ ແລະ ຂັ້ນຕອນໃນການເຮັດໃຫ້ເກີດບັນຫາຊ້ຳ (ຫາກເປັນໄປໄດ້)</translation>
 <translation id="6351178441572658285">ພາສາແອັບ</translation>
 <translation id="6354918092619878358">SECG elliptic curve secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355632359041940003">ຄວບຄຸມໜ້າວຽກ</translation>
 <translation id="635609604405270300">ຮັກສາໃຫ້ອຸປະກອນເປີດຢູ່</translation>
 <translation id="6356537493253478650">ປອດໂປ່ງ</translation>
 <translation id="63566973648609420">ສະເພາະຜູ້ທີ່ມີວະລີຜ່ານຂອງທ່ານເທົ່ານັ້ນສາມາດອ່ານຂໍ້ມູນທີ່ເຂົ້າລະຫັດໄວ້ຂອງທ່ານໄດ້. ວະລີຜ່ານຈະບໍ່ຖືກສົ່ງຫາ ຫຼື ຮັກສາໄວ້ໂດຍ Google. ຖ້າທ່ານລືມວະລີຜ່ານຂອງທ່ານ ຫຼື ຕ້ອງການປ່ຽນການຕັ້ງຄ່ານີ້, ທ່ານຈະຈຳເປັນຕ້ອງ <ph name="BEGIN_LINK" />ຣີເຊັດການຊິ້ງຂໍ້ມູນ<ph name="END_LINK" />.</translation>
@@ -8342,6 +8352,7 @@
 <translation id="6702639462873609204">ແກ້ໄຂ...</translation>
 <translation id="6702859741546259407">ເພື່ອ <ph name="FEATURE_NAME" />, ໃຫ້ເປີດ Bluetooth ແລະ Wi-Fi</translation>
 <translation id="6703109186846420472">,</translation>
+<translation id="670431355064244920">ໂຟກັສຂະໜາດນ້ອຍ</translation>
 <translation id="6707122714992751648">ເອີ້ນໃຊ້ການທົດສອບການວິນິໄສ ChromeOS</translation>
 <translation id="6707389671160270963">ໃບຢັ້ງຢືນລູກຂ່າຍ SSL</translation>
 <translation id="6707671917294473995">ເວັບໄຊບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ໃຊ້ກ້ອງຂອງທ່ານ</translation>
@@ -8822,6 +8833,7 @@
 <translation id="7017219178341817193">ເພີ່ມໜ້າໃໝ່</translation>
 <translation id="7017354871202642555">ບໍ່ສາມາດຕັ້ງໂໝດໄດ້ຫຼັງຈາກຕັ້ງໜ້າຕ່າງແລ້ວ.</translation>
 <translation id="7019805045859631636">ໄວ</translation>
+<translation id="7020810150082302220">ມີການປ່ຽນແປງໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານ</translation>
 <translation id="7021524108486027008">ໃຊ້ເຄື່ອງມື, ຕົວແກ້ໄຂ ແລະ IDE ໃນສະພາບແວດລ້ອມທີ່ຈັດການໂດຍອົງກອນຂອງທ່ານຢູ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ.</translation>
 <translation id="7022222879220069865">ແຜ່ນສຳຜັດທັງໝົດຖືກຕັດການເຊື່ອມຕໍ່ແລ້ວ</translation>
 <translation id="7022562585984256452">ໜ້າຫຼັກຂອງທ່ານຖືກຕັ້ງຂຶ້ນແລ້ວ.</translation>
@@ -9331,6 +9343,7 @@
 <translation id="7389615853658756494">ປ່ຽນຢູ່ເວັບໄຊ</translation>
 <translation id="7392118418926456391">ສະແກນໄວຣັສບໍ່ສໍາເລັດ</translation>
 <translation id="7392915005464253525">ເປີດໜ້າ​ຕ່າງທີ່ປິດແລ້ວຄືນໃໝ່</translation>
+<translation id="739299645392306071">ໂຟກັສປານກາງ</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{ສຳເນົາ 1 ລາການແລ້ວ}other{ສຳເນົາ {COUNT} ລາຍການແລ້ວ}}</translation>
 <translation id="7393435859300249877">ທ່ານຈະໄດ້ຮັບການແຈ້ງເຕືອນເມື່ອທ່ານເວົ້າໃນຂະນະທີ່ໄມຂອງທ່ານປິດສຽງໃນເວລາທີ່ໃຊ້ແອັບບາງຢ່າງ, ເຊັ່ນ: ແອັບການສົນທະນາວິດີໂອ. ໂດຍຈະບໍ່ມີການສົ່ງສຽງຜ່ານອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="7395008140803590549">ບໍ່ສາມາດລຶບໃບຮັບຮອງໄດ້</translation>
@@ -10201,6 +10214,7 @@
 <translation id="7969144945436590933">ເບິ່ງລາຍລະອຽດເພີ່ມເຕີມ</translation>
 <translation id="7970673414865679092">ລາຍລະອຽດອີເທີເນັດ</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 ດ້ວຍການໃສ່ລະຫັດ RSA</translation>
+<translation id="7972837668077967426">Canvas</translation>
 <translation id="7973149423217802477">ປິ່ນໂປ້ລົງເພື່ອສົ່ງຄຳຕິຊົມວ່າທ່ານບໍ່ຖືກໃຈສິ່ງນີ້.</translation>
 <translation id="7973776233567882054">ອັນໃດຕໍ່ໄປນີ້ອະທິບາຍເຄືອຂ່າຍຂອງທ່ານໄດ້ດີທີ່ສຸດ?</translation>
 <translation id="797394244396603170">ເລືອກອຸປະກອນທີ່ທ່ານຕ້ອງການແບ່ງປັນໄຟລ໌ກັບ</translation>
@@ -10762,6 +10776,7 @@
 <translation id="8339288417038613756">ສະແດງຜົນ ແລະ ຂະໜາດຂໍ້ຄວາມ</translation>
 <translation id="833986336429795709">ເພື່ອເປີດລິ້ງນີ້, ກະລຸນາເລືອກແອັບໃດໜຶ່ງ</translation>
 <translation id="8340547030807793004">ຄຳສັ່ງເພີ່ມເຕີມສຳລັບ <ph name="DEVICE" /></translation>
+<translation id="8341693734243413517">ຕົວອັບເດດ Chrome</translation>
 <translation id="8341804784147620576">ສະແດງທາງລັດການຊອກຫາ</translation>
 <translation id="8342221978608739536">ບໍ່ໄດ້ລອງ</translation>
 <translation id="8342387517402567689">ລະບົບບໍ່ຮອງຮັບການຕິດຕັ້ງເວັບແອັບໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
@@ -11065,6 +11080,7 @@
 <translation id="8551588720239073785">ການຕັ້ງຄ່າວັນທີ ແລະ ເວລາ</translation>
 <translation id="8551647092888540776">ບໍ່ສາມາດເປີດ <ph name="FILE_NAMES" /> ໄດ້ເມື່ອອອບລາຍ</translation>
 <translation id="8552102814346875916">ບັນທຶກໃສ່ລາຍຊື່ "ເປີດໃຊ້ເວັບໄຊເຫຼົ່ານີ້ໄວ້ຕະຫຼອດ"</translation>
+<translation id="8552947739661397736">ຄວບຄຸມໜ້າວຽກ, ປັດຈຸບັນ Gemini ກຳລັງຄວບຄຸມຢູ່</translation>
 <translation id="8553342806078037065">ຈັດການບູກຄົນອື່ນ</translation>
 <translation id="8554899698005018844">ບໍ່ມີພາສາ</translation>
 <translation id="8555444629041783356">ກຳນົດເວລາປິດຕົວອັດຕະໂນມັດ</translation>

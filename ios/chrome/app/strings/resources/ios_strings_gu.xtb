@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">નવી વિંડો</translation>
 <translation id="1558391695376153246">છૂપી ટૅબ બંધ કરો</translation>
 <translation id="1565371473877914088">નવું છૂપું ટૅબ</translation>
+<translation id="1567960978791353852">વાંચન મોડ બતાવો</translation>
 <translation id="1571780780926010134">છૂપા ટૅબ</translation>
 <translation id="1580715474678097352">જોખમકારક વેબસાઇટથી સુરક્ષિત રહો</translation>
 <translation id="1580783302095112590">મેઇલ મોકલ્યો છે.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">પાસવર્ડ જોવા માટે, તમારે સૌથી પહેલા તમારા ઉપકરણ પર એક પાસકોડ સેટ કરવો આવશ્યક છે.</translation>
 <translation id="201759455285471444">ટૅબનું ગ્રૂપ મોટું કરો.</translation>
 <translation id="202070562065520783">મને આ સમજાવો</translation>
+<translation id="2023713324775943812">જ્યારે ઉપલબ્ધ હોય ત્યારે ઍડ્રેસ બારમાંથી વાંચન મોડ ઍક્સેસ કરો</translation>
 <translation id="2044394949148788042">ટૅબ ગ્રિડ ખોલો</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> એકાઉન્ટ, <ph name="HOSTED_DOMAIN" /> દ્વારા મેનેજ કરવામાં આવે છે, જે કદાચ અમુક માહિતી જોઈ શકે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">નવી આઇટમ</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">તમારા ટૅબના ગ્રૂપ અહીં સાચવવામાં આવે છે</translation>
 <translation id="2273327106802955778">વધુ મેનૂ</translation>
 <translation id="2287614783861766820">{count,plural, =1{આ ડિવાઇસમાંથી આ સરનામું ડિલીટ કરવામાં આવશે.}one{આ ડિવાઇસમાંથી આ સરનામું ડિલીટ કરવામાં આવશે.}other{આ ડિવાઇસમાંથી આ સરનામા ડિલીટ કરવામાં આવશે.}}</translation>
+<translation id="2295236662082735391">Gemini વડે ફેરફાર કરવા માટે વેબ પર છબીને થોડીવાર દબાવી રાખો</translation>
 <translation id="2297989278479054870">તમે સાઇન આઉટ કરો ત્યારબાદ તમારા Google એકાઉન્ટમાંના બુકમાર્ક, પાસવર્ડ વગેરેને આ ડિવાઇસમાંથીકાઢી નાખવામાં આવશે.</translation>
 <translation id="2299218006564889602">તમારા પાસવર્ડને Google પાસવર્ડ મેનેજરમાં સાચવવામાં આવે એ પહેલાં તેમને તમારા ડિવાઇસમાં એન્ક્રિપ્ટ કરવામાં આવે છે.</translation>
 <translation id="2306265833370324042"><ph name="SEARCH_ENGINE_NAME" />ની વિગતો બતાવો</translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">તમારી શોધનો ફોટો લો</translation>
 <translation id="2761898608071930085">બીજા એકાઉન્ટનો ઉપયોગ કરો</translation>
 <translation id="2762000892062317888">હમણાં જ</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{વધુમાં વધુ 1 છબી ઉમેરો}one{વધુમાં વધુ {COUNT} છબી ઉમેરો}other{વધુમાં વધુ {COUNT} છબી ઉમેરો}}</translation>
 <translation id="2772667768515195373">તમે Googleની સમગ્ર પ્રોડક્ટ પર સાચવેલા સરનામાનો ઉપયોગ કરી શકો છો. આ સરનામાને તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યું છે, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">ઇમેઇલ નોટિફિકેશન</translation>
 <translation id="2781331604911854368">ચાલુ</translation>
@@ -1349,6 +1353,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6058415747854995776">વીડિયો લો</translation>
 <translation id="6059830886158432458">તમારી સ્ટોરી અને પ્રવૃત્તિને અહીં નિયંત્રિત કરો</translation>
+<translation id="6063802271331271857">છબી રિમિક્સ કરો</translation>
 <translation id="6066301408025741299">રદ કરવા માટે ટેપ કરો.</translation>
 <translation id="6074656473835429958">નોટિફિકેશન મેળવો</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) અપલોડ કરી શકાઈ નથી</translation>
@@ -1866,6 +1871,7 @@
 <translation id="7899199123054742721">બધી વાંચ્યા વગરની તરીકે માર્ક કરો</translation>
 <translation id="7911190106180361398">તમારી સંસ્થા તમને બધું જ સિંક કરવાની મંજૂરી આપતી નથી.</translation>
 <translation id="7918999344502274923"><ph name="SEARCH_ENGINE_NAME" />ની વિગતો છુપાવો</translation>
+<translation id="7921559948846049514">તમારા બૅકગ્રાઉન્ડ માટે થીમ, રંગ કે બીજું ઘણું પસંદ કરો</translation>
 <translation id="792357691529995513">કોઈ સમસ્યા મળી નથી</translation>
 <translation id="7925108652071887026">સ્વત:ભરણ ડેટા</translation>
 <translation id="7926975587469166629">કાર્ડનું ઉપનામ</translation>

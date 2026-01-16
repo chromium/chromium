@@ -1092,6 +1092,7 @@
 <translation id="1709916727352927457">পাছকী মচক</translation>
 <translation id="1709972045049031556">শ্বেয়াৰ কৰিব নোৱাৰি</translation>
 <translation id="1712143791363119140">চলি আছে</translation>
+<translation id="1713120794167761305">টেবসমূহ কাষলৈ স্থানান্তৰ কৰক</translation>
 <translation id="1714265454085143857">পিন কৰি থোৱা টেব</translation>
 <translation id="1714326320203665217">মুখ্য ন’ড এন’টেশ্বন ফাইলসমূহ ডাউনল’ড কৰা হৈছে</translation>
 <translation id="1714644264617423774">আপোনাৰ ডিভাইচটো ব্যৱহাৰৰ বাবে অধিক সুবিধাজনক কৰিবলৈ সাধ্য সুবিধাসমূহ সক্ষম কৰক। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
@@ -3237,6 +3238,7 @@
 <translation id="3167562202484086668"><ph name="BRAND" />ৰ আটাইবোৰ ডেটা মচক</translation>
 <translation id="3169930038976362151">আপোনাৰ প্ৰয়োজনীয়তাৰ সৈতে মিলা থীমটো বাছনি কৰক। আপোনাৰ থীম, ৱালপেপাৰ, স্ক্ৰীন ছেভাৰ আৰু অধিক সলনি কৰিবলৈ, মাত্ৰ ডেস্কটপত স্পৰ্শ কৰি ৰাখক।</translation>
 <translation id="3170072451822350649">আপুনি ছাইন ইন নকৰাকৈ <ph name="LINK_START" />অতিথি হিচাপে ব্ৰাউজিং<ph name="LINK_END" /> কৰিবও পাৰে।</translation>
+<translation id="3172642937040465677">টেবসমূহ একেবাৰে ওপৰলৈ স্থানান্তৰ কৰক</translation>
 <translation id="3175067642577044620">মূল অংশ</translation>
 <translation id="3175862692832442091">অৰণ্য</translation>
 <translation id="3176347586396987181">কোনো মাউছৰ বুটাম টিপি ধৰি ৰাখিবলৈ “z” ব্যৱহাৰ কৰক</translation>
@@ -3491,6 +3493,7 @@
 <translation id="335581015389089642">কথন</translation>
 <translation id="335587007651175930">Google Lensৰ জৰিয়তে আপোনাৰ স্ক্ৰীনত থকা সমলৰ সন্ধান কৰক</translation>
 <translation id="3355936511340229503">সংযোগৰ আসোঁৱাহ</translation>
+<translation id="335678817537689040">স্থিৰ</translation>
 <translation id="3359256513598016054">প্ৰমাণপত্ৰৰ নীতিৰ সীমাবদ্ধতা</translation>
 <translation id="3360297538363969800">প্ৰিণ্টিং কৰিব পৰা নগ’ল। আপোনাৰ প্ৰিণ্টাৰ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="3360306038446926262">ৱিণ্ড’</translation>
@@ -4190,6 +4193,7 @@
         <ph name="BREAK" />
         আপুনি কাৰ্ড মেনুৰ পৰা ছেটিং পৰিচালনা কৰিব পাৰে অথবা Chrome কাষ্টমাইজ কৰকত অধিক বিকল্প চাব পাৰে।</translation>
 <translation id="3801449494961771207">ছিষ্টেমৰ পাঠৰ পৰা কথনৰ কণ্ঠধ্বনি</translation>
+<translation id="3801748538479607989">টেবসমূহ একেবাৰে ওপৰলৈ স্থানান্তৰ কৰক</translation>
 <translation id="3802486193901166966">এই এক্সটেনশ্বনটোৰ বাবে কোনো বিশেষ অনুমতিৰ প্ৰয়োজন নাই আৰু ইয়াৰ কোনো অতিৰিক্ত ছাইটৰ এক্সেছ নাই</translation>
 <translation id="380329542618494757">নাম</translation>
 <translation id="3803345858388753269">ভিডিঅ’ৰ গুণগত মান</translation>
@@ -6003,6 +6007,7 @@
 <translation id="5060419232449737386">কেপশ্বনৰ ছেটিং</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{এই ফ’ল্ডাৰটোত এটা বুকমাৰ্ক আছে। আপুনি এইটো নিশ্চিতভাৱে মচিবলৈ বিচাৰেনে?}one{এই ফ’ল্ডাৰটোত #টা বুকমাৰ্ক আছে। আপুনি এইটো নিশ্চিতভাৱে মচিবলৈ বিচাৰেনে?}other{এই ফ’ল্ডাৰটোত #টা বুকমাৰ্ক আছে। আপুনি এইটো নিশ্চিতভাৱে মচিবলৈ বিচাৰেনে?}}</translation>
 <translation id="5061531353537614467">তুন্দ্ৰা</translation>
+<translation id="5062863364865466276">গতিবিধি</translation>
 <translation id="5062930723426326933">ছাইন ইন কৰিব পৰা নগ’ল, অনুগ্ৰহ কৰি ইণ্টাৰনেটৰ সৈতে সংযোগ কৰি আকৌ চেষ্টা কৰক।</translation>
 <translation id="5063480226653192405">ব্যৱহাৰ</translation>
 <translation id="5064921774605267982"><ph name="PROFILE_NAME" /> প্ৰ’ফাইলটো খোলক। এই প্ৰ’ফাইলটো আপোনাৰ অভিভাৱকে পৰিচালনা কৰে।</translation>
@@ -6944,6 +6949,7 @@
 <translation id="5722086096420375088">সেউজীয়া আৰু বগা</translation>
 <translation id="572328651809341494">শেহতীয়াকৈ বন্ধ কৰা টেব</translation>
 <translation id="5723508132121499792">নেপথ্যত কোনো এপ্ চলি থকা নাই</translation>
+<translation id="5724723163580775373">ডাঙৰ ফ’কাছ</translation>
 <translation id="5725112283692663422">AIৰ জৰিয়তে থীম সৃষ্টি কৰকৰ বাবে মতামত পঠিয়াওক</translation>
 <translation id="5727728807527375859">এক্সটেনশ্বন, এপ্ আৰু থীমসমূহে আপোনাৰ কম্পিউটাৰৰ ক্ষতিসাধন কৰিব পাৰে। আপুনি এয়া নিশ্চিতভাৱে অব্যাহত ৰাখিব বিচাৰেনে?</translation>
 <translation id="5728072125198221967">লিংক কৰি থোৱা Google সেৱা</translation>
@@ -7191,6 +7197,7 @@
 <translation id="5888889603768021126">ইয়াৰ জৰিয়তে ছাইন ইন কৰা হৈছে</translation>
 <translation id="5889282057229379085">মধ্যৱৰ্তী CAৰ সর্বাধিক সংখ্যা: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">আপোনাৰ নিজৰ <ph name="BEGIN_LINK" />ছিংক কৰা পাছফ্ৰেজ<ph name="END_LINK" />ৰ সৈতে ছিংক কৰা ডেটা এনক্ৰিপ্ট কৰক। Google Payৰ পৰা পৰিশোধ পদ্ধতি আৰু ঠিকনা এনক্ৰিপ্ট কৰা নহ’ব। Chromeৰ পৰা ব্ৰাউজিঙৰ ইতিহাস ছিংক কৰা নহ’ব।</translation>
+<translation id="5890072287476934834">টেবসমূহ কাষলৈ স্থানান্তৰ কৰক</translation>
 <translation id="5891688036610113830">অগ্ৰাধিকাৰপ্ৰাপ্ত ৱাই-ফাই নেটৱৰ্কসমূহ</translation>
 <translation id="5894056653502215961"><ph name="FOLDER_TITLE" /> ফ’ল্ডাৰটো বাছনিৰ পৰা আঁতৰাওক</translation>
 <translation id="5895138241574237353">ৰিষ্টাৰ্ট কৰক</translation>
@@ -8346,6 +8353,7 @@
 <translation id="6702639462873609204">&amp;সম্পাদনা কৰক...</translation>
 <translation id="6702859741546259407"><ph name="FEATURE_NAME" /> ব্যৱহাৰ কৰিবলৈ, ব্লুটুথ আৰু ৱাই-ফাই অন কৰক</translation>
 <translation id="6703109186846420472">,</translation>
+<translation id="670431355064244920">সৰু ফ’কাছ</translation>
 <translation id="6707122714992751648">ChromeOS ডায়েগন’ষ্টিক পৰীক্ষা চলোৱা</translation>
 <translation id="6707389671160270963">SSL ক্লায়েণ্টৰ প্ৰমাণপত্ৰ</translation>
 <translation id="6707671917294473995">আপোনাৰ কেমেৰা ব্যৱহাৰ কৰিবলৈ ৱেবছাইটসমূহক অনুমতি দিয়া নহয়</translation>
@@ -9336,6 +9344,7 @@
 <translation id="7389615853658756494">ছাইটটোত এইটো সলনি কৰক</translation>
 <translation id="7392118418926456391">ভাইৰাছ স্কেন কৰিব পৰা নগ’ল</translation>
 <translation id="7392915005464253525">বন্ধ হৈ থকা ৱিণ্ড’ &amp;পুনৰ খোলক</translation>
+<translation id="739299645392306071">মধ্যমীয়া ফ’কাছ</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{১ টা বস্তুৰ প্ৰতিলিপি কৰা হ'ল}one{{COUNT} টা বস্তুৰ প্ৰতিলিপি কৰা হ'ল}other{{COUNT} টা বস্তুৰ প্ৰতিলিপি কৰা হ'ল}}</translation>
 <translation id="7393435859300249877">ভিডিঅ’ চাট এপৰ দৰে কিছুমান বিশেষ এপ্‌ ব্যৱহাৰ কৰাৰ সময়ত আপোনাৰ মাইক মিউট হৈ থাকোঁতে আপুনি কথা ক’লে আপোনাক জনোৱা হ’ব। অডিঅ’ আপোনাৰ ডিভাইচৰ পৰা কেতিয়াও স্থানান্তৰ কৰা নহয়।</translation>
 <translation id="7395008140803590549">প্ৰমাণপত্ৰ মচিব নোৱাৰি</translation>

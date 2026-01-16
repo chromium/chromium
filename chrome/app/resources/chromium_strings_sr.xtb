@@ -533,6 +533,9 @@
 <translation id="6901631050894301805">Подесите Chromium као подразумевани прегледач и закачите га на траку задатака</translation>
 <translation id="6909503629704372277">&amp;Управљајте Chromium профилима</translation>
 <translation id="6934579572334859869">Поставите питање претрази слика о овој слици</translation>
+<translation id="6948031725951063910">Достигли сте ограничење Chromium-а за обележиваче (<ph name="BOOKMARK_LIMIT" />), па неки обележивачи још увек нису сачувани на Google налогу.
+
+Не можете да сачувате нове обележиваче на налогу док не избришете неке. Ако се одјавите одмах, избрисаћете несачуване обележиваче.</translation>
 <translation id="6964305034639999644">Отвори линк у Chromium прозору без архи&amp;вирања</translation>
 <translation id="6965382102122355670">Потврди</translation>
 <translation id="6978145336957848883">Слабе лозинке лако могу да се погоде. Дозволите да Chromium <ph name="BEGIN_LINK" />прави и памти јаке лозинке за вас<ph name="END_LINK" />.</translation>
@@ -701,6 +704,7 @@ Chromium не може да врати подешавања.</translation>
 <translation id="8880203542552872219">Ако је тако, измените сачувану лозинку у Chromium-у тако да се подудара са новом лозинком.</translation>
 <translation id="8891709362986793894">Организација захтева да се пријавите у Chromium</translation>
 <translation id="8907580949721785412">Chromium покушава да прикаже лозинке. Унесите лозинку за Windows да бисте то омогућили.</translation>
+<translation id="8932992523185907506">Chromium више није подразумевани прегледач. Желите да подесите Chromium као подразумевани прегледач?</translation>
 <translation id="8941642502866065432">Не можете да ажурирате Chromium</translation>
 <translation id="897581876605952338">Логотип Chromium-а за предузећа</translation>
 <translation id="8981150672034878610">Не можете да покренете Chromium јер је дошло до грешке при отварању профила. Пробајте да рестартујете Chromium.</translation>

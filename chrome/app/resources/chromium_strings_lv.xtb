@@ -530,6 +530,9 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="6901631050894301805">Iestatiet Chromium kā noklusējuma pārlūku un piespraudiet to uzdevumjoslai</translation>
 <translation id="6909503629704372277">&amp;Pārvaldīt Chromium profilus</translation>
 <translation id="6934579572334859869">Jautāt attēlu meklēšanas funkcijai par šo attēlu</translation>
+<translation id="6948031725951063910">Ir sasniegts Chromium grāmatzīmju skaita ierobežojums (<ph name="BOOKMARK_LIMIT" />), tāpēc noteiktas jūsu grāmatzīmes vēl nav saglabātas jūsu Google kontā.
+
+Jaunas grāmatzīmes nevar saglabāt jūsu kontā, kamēr neizdzēsīsiet dažas no tām. Ja izrakstīsieties tūlīt, nesaglabātās grāmatzīmes tiks dzēstas.</translation>
 <translation id="6964305034639999644">Atvērt saiti inko&amp;gnito režīma logā</translation>
 <translation id="6965382102122355670">Labi</translation>
 <translation id="6978145336957848883">Nedrošas paroles ir viegli uzminēt. Pārlūkā Chromium <ph name="BEGIN_LINK" />var automātiski veidot un iegaumēt drošas paroles jūsu kontiem<ph name="END_LINK" />.</translation>
@@ -696,6 +699,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="8880203542552872219">Ja tā ir, lūdzu, rediģējiet saglabāto paroli pārlūkprogrammā Chromium, lai tā atbilstu jūsu jaunajai parolei.</translation>
 <translation id="8891709362986793894">Saskaņā ar jūsu organizācijas politiku jums ir jāpierakstās pārlūkā Chromium.</translation>
 <translation id="8907580949721785412">Chromium mēģina rādīt paroles. Lai to atļautu, ierakstiet savu Windows paroli.</translation>
+<translation id="8932992523185907506">Chromium vairs nav jūsu noklusējuma pārlūks. Vai iestatīt Chromium par noklusējuma pārlūku?</translation>
 <translation id="8941642502866065432">Nevar atjaunināt Chromium</translation>
 <translation id="897581876605952338">Chromium Enterprise logotips</translation>
 <translation id="8981150672034878610">Nevar palaist pārlūku Chromium, jo radās problēma, atverot jūsu profilu. Mēģiniet restartēt pārlūku Chromium.</translation>

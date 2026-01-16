@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">Hantera åtkomst</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Stäng objekt}other{Stäng objekt}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Arket för flikar på nedre delen av skärmen har öppnats över halva skärmen.</translation>
 <translation id="374923079891132274">Miniatyr för förhandsgranskning av delningsblad.</translation>
 <translation id="3776329373944672717">Flikgruppens namn <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Hantera</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">Din senaste flik</translation>
 <translation id="5380159289133845234">Arkivera flikdubbletter</translation>
 <translation id="5446043142172831860">Ta bort fliken och lämna gruppen</translation>
+<translation id="5465437530117042974">Ändringar för arket för flikar på nedre delen av skärmen har stängts.</translation>
 <translation id="5490235265819901748">Flikgruppen har utökats</translation>
 <translation id="5494920125229734069">Markera alla</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Lägg till upp till <ph name="LIMIT_COUNT_ONE" /> fil, flik eller bild}other{Lägg till upp till <ph name="LIMIT_COUNT_MANY" /> filer, flikar eller bilder}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">Stäng</translation>
 <translation id="6051432659151380973">Dina flikgrupper sparas automatiskt</translation>
 <translation id="6054741997831917303">Priset på den här varan minskade nyligen från <ph name="PREVIOUS_PRICE" /> till <ph name="NEW_PRICE" /></translation>
+<translation id="606985262342505139">Arket för flikar på nedre delen av skärmen har öppnats över hela skärmen</translation>
 <translation id="6109251075362363230">Alla flikdubbletter arkiveras nu också, med undantag för den senast använda kopian.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Stäng <ph name="TABS_COUNT_ONE" /> markerat objekt}other{Stäng <ph name="TABS_COUNT_MANY" /> markerade objekt}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Flytta gruppen till ett nytt fönster}other{Flytta gruppen till ett annat fönster}}</translation>

@@ -512,6 +512,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6326175484149238433">Ta bort från Chrome</translation>
 <translation id="6327105987658262776">Det finns ingen tillgänglig uppdatering.</translation>
 <translation id="6334815226785304306">Ställ in Google Chrome som standardwebbläsare och fäst den på aktivitetsfältet</translation>
+<translation id="63540178978900677">Chrome är inte längre din standardwebbläsare. Vill du använda Chrome som standardwebbläsare?</translation>
 <translation id="6360449101159168105">När den här fliken var inaktiv frigjordes minne för att hålla Chrome snabbt. Du kan välja att aldrig inaktivera den här webbplatsen.</translation>
 <translation id="6388799252195623474">hjälp mig med det här</translation>
 <translation id="6412673304250309937">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chrome. Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chrome till Säker webbsökning tillsammans med delar av sidinnehållet.</translation>
@@ -713,6 +714,9 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="8418845734693287262">Det gick inte att synkronisera data med ChromeOS eftersom inloggningsuppgifterna för kontot är inaktuella.</translation>
 <translation id="842386925677997438">Säkerhetsverktyg i Chrome</translation>
 <translation id="8425765582779547329">Du kan skydda dig online med dina föräldrars val genom att logga in i Chrome</translation>
+<translation id="842852285618875960">Du har nått gränsen på <ph name="BOOKMARK_LIMIT" /> bokmärken i Google Chrome, så vissa av dina bokmärken har inte sparats i Google-kontot ännu.
+
+Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om du loggar ut nu raderas bokmärken som inte har sparats.</translation>
 <translation id="8433638294851456451">Logga in på Chrome på båda enheterna om du vill skicka ett nummer från Android-telefonen.</translation>
 <translation id="8496177819998570653">Googles Lösenordshantering</translation>
 <translation id="8498858610309223613">En särskild säkerhetsuppdatering för Google Chrome installerades precis. Starta om webbläsaren nu. Flikarna återställs efteråt.</translation>

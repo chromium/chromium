@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">Հասանելիության կառավարում</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Փակել տարրը}one{Փակել տարրը}other{Փակել տարրերը}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Ներդիրի ներքևի էկրանը բացված է կիսով չափ։</translation>
 <translation id="374923079891132274">Թերթի նախադիտ․ կիսվելու մանրապատկեր</translation>
 <translation id="3776329373944672717">Ներդիրների խմբի անվանում <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Կառավարել</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">Ձեր վերջին ներդիրը</translation>
 <translation id="5380159289133845234">Արխիվացնել կրկնօրինակ ներդիրները</translation>
 <translation id="5446043142172831860">Հեռացնել ներդիրը և լքել խումբը</translation>
+<translation id="5465437530117042974">Ներդիրի ներքևի էկրանի փոփոխությունների մասին ծանուցումը փակված է։</translation>
 <translation id="5490235265819901748">Ներդիրների խումբը ծավալվեց</translation>
 <translation id="5494920125229734069">Ընտրել բոլորը</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Ավելացրեք մինչև <ph name="LIMIT_COUNT_ONE" /> ֆայլ, ներդիր կամ պատկեր}one{Ավելացրեք մինչև <ph name="LIMIT_COUNT_MANY" /> ֆայլ, ներդիր կամ պատկեր}other{Ավելացրեք մինչև <ph name="LIMIT_COUNT_MANY" /> ֆայլ, ներդիր կամ պատկեր}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">Փակել</translation>
 <translation id="6051432659151380973">Ներդիրների խմբերն ավտոմատ պահվում են</translation>
 <translation id="6054741997831917303">Այս ապրանքի գինը <ph name="PREVIOUS_PRICE" />-ից իջել է <ph name="NEW_PRICE" /></translation>
+<translation id="606985262342505139">Ներդիրի ներքևի էկրանը բացված է ամբողջությամբ</translation>
 <translation id="6109251075362363230">Բոլոր կրկնօրինակ ներդիրները նույնպես կարխիվացվեն՝ բացառությամբ ամենավերջին կրկնօրինակից։</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Փակել ընտրված <ph name="TABS_COUNT_ONE" /> տարր}one{Փակել ընտրված <ph name="TABS_COUNT_MANY" /> տարր}other{Փակել ընտրված <ph name="TABS_COUNT_MANY" /> տարր}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Խումբը տեղափոխել նոր պատուհան}one{Խումբը տեղափոխել այլ պատուհան}other{Խումբը տեղափոխել այլ պատուհան}}</translation>

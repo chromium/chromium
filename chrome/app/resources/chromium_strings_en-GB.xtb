@@ -533,6 +533,9 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="6901631050894301805">Set Chromium as your default browser and pin it to your taskbar</translation>
 <translation id="6909503629704372277">&amp;Manage Chromium profiles</translation>
 <translation id="6934579572334859869">Ask image search about this image</translation>
+<translation id="6948031725951063910">You reached Chromium's limit of <ph name="BOOKMARK_LIMIT" /> bookmarks, so some of your bookmarks haven't been saved in your Google Account yet.
+
+New bookmarks can't be saved in your account until you delete some. If you sign out now, unsaved bookmarks will be deleted.</translation>
 <translation id="6964305034639999644">Open link in Chromium inco&amp;gnito window</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6978145336957848883">Weak passwords are easy to guess. Let Chromium <ph name="BEGIN_LINK" />create and remember strong passwords for you<ph name="END_LINK" />.</translation>
@@ -701,6 +704,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8880203542552872219">If so, please edit your saved password in Chromium so that it matches your new password.</translation>
 <translation id="8891709362986793894">Your organisation requires you to sign in to Chromium</translation>
 <translation id="8907580949721785412">Chromium is trying to show passwords. Type your Windows password to allow this.</translation>
+<translation id="8932992523185907506">Chromium is no longer your default browser. Make Chromium the default browser?</translation>
 <translation id="8941642502866065432">Can't update Chromium</translation>
 <translation id="897581876605952338">Chromium Enterprise logo</translation>
 <translation id="8981150672034878610">Cannot start Chromium because something went wrong when opening your profile. Try to restart Chromium.</translation>

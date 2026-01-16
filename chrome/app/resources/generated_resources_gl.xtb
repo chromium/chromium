@@ -1084,6 +1084,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1709916727352927457">Eliminar a clave de acceso</translation>
 <translation id="1709972045049031556">Non se puido compartir o ficheiro</translation>
 <translation id="1712143791363119140">En curso</translation>
+<translation id="1713120794167761305">Mover pestanas ao lateral</translation>
 <translation id="1714265454085143857">Pestanas fixadas</translation>
 <translation id="1714326320203665217">Descargáronse os ficheiros de anotación do nó principal</translation>
 <translation id="1714644264617423774">Activa as funcións de accesibilidade para que o dispositivo resulte máis fácil de utilizar. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
@@ -2558,6 +2559,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2713444072780614174">Branco</translation>
 <translation id="2714180132046334502">Fondo escuro</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
+<translation id="2714617928488200509">Modelos</translation>
 <translation id="2715751256863167692">Esta actualización restablece o teu dispositivo Chromebook e elimina os datos do usuario actual.</translation>
 <translation id="2715934493766003251">Non se pode liberar espazo de almacenamento cando a sincronización de ficheiros está activada</translation>
 <translation id="2716986496990888774">O teu pai ou nai xestiona esta opción de configuración.</translation>
@@ -3224,6 +3226,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3167562202484086668">Eliminar todos os datos de <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Escolle o tema axeitado para as túas necesidades. Se queres cambiar de tema, fondo e protector de pantalla, entre outras cousas, só tes que manter premido o escritorio.</translation>
 <translation id="3170072451822350649">Tamén podes <ph name="LINK_START" />navegar como invitado<ph name="LINK_END" /> sen iniciar sesión.</translation>
+<translation id="3172642937040465677">Mover pestanas á parte superior</translation>
 <translation id="3175067642577044620">Corpo</translation>
 <translation id="3175862692832442091">Bosque</translation>
 <translation id="3176347586396987181">Usa a tecla Z para manter premido un botón do rato</translation>
@@ -3478,6 +3481,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="335581015389089642">Voz</translation>
 <translation id="335587007651175930">Busca con Google Lens o que apareza na pantalla</translation>
 <translation id="3355936511340229503">Erro de conexión</translation>
+<translation id="335678817537689040">Estático</translation>
 <translation id="3359256513598016054">Restricións de políticas de certificados</translation>
 <translation id="3360297538363969800">Erro ao imprimir. Comproba a túa impresora e téntao de novo.</translation>
 <translation id="3360306038446926262">Ventás</translation>
@@ -4180,6 +4184,7 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <ph name="BREAK" />
 Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións en Personalizar Chrome.</translation>
 <translation id="3801449494961771207">Voz de conversión de texto a voz do sistema</translation>
+<translation id="3801748538479607989">Mover pestanas á parte superior</translation>
 <translation id="3802486193901166966">Esta extensión non necesita permisos especiais e non ten ningún acceso adicional a sitios</translation>
 <translation id="380329542618494757">Nome</translation>
 <translation id="3803345858388753269">Calidade do vídeo</translation>
@@ -4600,6 +4605,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4078738236287221428">Agresiva</translation>
 <translation id="4078903002989614318">Opcións de ordenación e de lista</translation>
 <translation id="4079140982534148664">Utilizar corrector ortográfico mellorado</translation>
+<translation id="4082070466456857368">Pensamento (3 Pro)</translation>
 <translation id="4084682180776658562">Marcador</translation>
 <translation id="4084835346725913160">Pechar <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">JavaScript bloqueouse nesta páxina.</translation>
@@ -5993,6 +5999,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5060419232449737386">Configuración de subtítulos</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Este cartafol contén un marcador. Seguro que queres eliminalo?}other{Este cartafol contén # marcadores. Seguro que queres eliminalos?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
+<translation id="5062863364865466276">Movemento</translation>
 <translation id="5062930723426326933">Non se puido iniciar sesión. Conéctate a Internet e téntao de novo.</translation>
 <translation id="5063480226653192405">Uso</translation>
 <translation id="5064921774605267982">Abrir o perfil: <ph name="PROFILE_NAME" />. O teu pai ou nai xestiona este perfil.</translation>
@@ -6932,6 +6939,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5722086096420375088">Verde e branco</translation>
 <translation id="572328651809341494">Pestanas recentes</translation>
 <translation id="5723508132121499792">Non hai ningunha aplicación executándose en segundo plano</translation>
+<translation id="5724723163580775373">Enfoque grande</translation>
 <translation id="5725112283692663422">Envía comentarios sobre Crear un tema con IA</translation>
 <translation id="5727728807527375859">As extensións, aplicacións e temas poden danar o teu ordenador. Seguro que queres continuar?</translation>
 <translation id="5728072125198221967">Servizos de Google vinculados</translation>
@@ -7179,6 +7187,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5888889603768021126">Iniciouse sesión con</translation>
 <translation id="5889282057229379085">Número máximo de CA intermedias: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Encriptar datos sincronizados coa túa propia <ph name="BEGIN_LINK" />frase de acceso de sincronización<ph name="END_LINK" />. Non se encriptarán os métodos de pago nin os enderezos de Google Pay. Non se sincronizará o historial de navegación de Chrome.</translation>
+<translation id="5890072287476934834">Mover pestanas ao lateral</translation>
 <translation id="5891688036610113830">Redes wifi preferidas</translation>
 <translation id="5894056653502215961">Anular a selección do cartafol <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -7843,6 +7852,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6350821834561350243">Describe claramente o problema e os pasos para reproducilo (se é posible)</translation>
 <translation id="6351178441572658285">Idiomas das aplicacións</translation>
 <translation id="6354918092619878358">SECG Elliptic Curve secp256r1 (tamén se denomina ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355632359041940003">Asumir control da tarefa</translation>
 <translation id="635609604405270300">Non apagues o dispositivo</translation>
 <translation id="6356537493253478650">Sereno</translation>
 <translation id="63566973648609420">Só alguén co teu contrasinal pode ler os teus datos encriptados. O contrasinal non se envía nin se almacena en Google. Se esqueciches o contrasinal ou queres cambiar esta configuración, deberás <ph name="BEGIN_LINK" />restablecer a sincronización<ph name="END_LINK" />.</translation>
@@ -8330,6 +8340,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6702639462873609204">&amp;Editar...</translation>
 <translation id="6702859741546259407">Para poder usar <ph name="FEATURE_NAME" />, activa o Bluetooth e a wifi</translation>
 <translation id="6703109186846420472">,</translation>
+<translation id="670431355064244920">Enfoque pequeno</translation>
 <translation id="6707122714992751648">Executar probas de diagnóstico de ChromeOS</translation>
 <translation id="6707389671160270963">Certificado de cliente SSL</translation>
 <translation id="6707671917294473995">Os sitios web non teñen permiso para usar a túa cámara</translation>
@@ -8810,6 +8821,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7017219178341817193">Engadir unha nova páxina</translation>
 <translation id="7017354871202642555">Non se pode establecer o modo unha vez establecida a ventá.</translation>
 <translation id="7019805045859631636">Rápido</translation>
+<translation id="7020810150082302220">Cambiouse o teu navegador predeterminado</translation>
 <translation id="7021524108486027008">Utiliza desde o teu <ph name="DEVICE_TYPE" /> contornos de desenvolvemento integrado, ferramentas e editores nun contorno xestionado pola túa empresa.</translation>
 <translation id="7022222879220069865">Desconectáronse todos os paneis táctiles</translation>
 <translation id="7022562585984256452">Estableceuse a túa páxina de inicio.</translation>
@@ -9319,6 +9331,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7389615853658756494">Cambiar no sitio</translation>
 <translation id="7392118418926456391">Erro na análise antivirus</translation>
 <translation id="7392915005464253525">R&amp;eabrir a ventá pechada</translation>
+<translation id="739299645392306071">Enfoque medio</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{Copiouse 1 elemento}other{Copiáronse {COUNT} elementos}}</translation>
 <translation id="7393435859300249877">Recibirás unha notificación se falas co micrófono silenciado ao usar determinadas aplicacións (como as de chat de vídeo, por exemplo). O audio non sairá do dispositivo.</translation>
 <translation id="7395008140803590549">Non se puido eliminar o certificado</translation>
@@ -10190,6 +10203,7 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7969144945436590933">Máis detalles</translation>
 <translation id="7970673414865679092">Detalles da rede Ethernet</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 con cifrado RSA</translation>
+<translation id="7972837668077967426">Lenzo</translation>
 <translation id="7973149423217802477">Coa opción Non me gusta indicas que non che gusta esta función.</translation>
 <translation id="7973776233567882054">Cal das seguintes opcións describe mellor a túa rede?</translation>
 <translation id="797394244396603170">Selecciona o dispositivo co que queiras compartir ficheiros</translation>
@@ -10627,6 +10641,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8263228331881858381">Gardouse a clave de acceso</translation>
 <translation id="8263336784344783289">Ponlle un nome a este grupo</translation>
 <translation id="8264024885325823677">O teu administrador xestiona esta opción de configuración.</translation>
+<translation id="826410575944953302">Despregar as pestanas verticais</translation>
 <translation id="8264195025773092348">Só se mostran os dispositivos compatibles. Os dispositivos USB deixarán de estar dispoñibles para as aplicacións nativas ata que se desconecten.</translation>
 <translation id="8265018477030547118">Almacenaríase só neste dispositivo</translation>
 <translation id="826511437356419340">Entraches no modo de vista xeral da ventá. Pasa o dedo para navegar ou preme o tabulador no teclado.</translation>
@@ -10724,6 +10739,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8323518750352551353">Queres separar a navegación?</translation>
 <translation id="8323744572398547859">Para obter pestanas doutros dispositivos, inicia sesión e sincroniza o historial. Tamén poderás desfrutar dos teus contrasinais e moito máis en todos os teus dispositivos. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="8324158725704657629">Non preguntar de novo</translation>
+<translation id="8324264291265547520">Despregar as pestanas verticais</translation>
 <translation id="8325413836429495820">Permiso denegado para consultar o portapapeis</translation>
 <translation id="8326478304147373412">PKCS n.º 7, cadea de certificados</translation>
 <translation id="8327386430364625757">Tipo de letra matemático</translation>
@@ -10749,6 +10765,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8339288417038613756">Tamaño da pantalla e do texto</translation>
 <translation id="833986336429795709">Para abrir esta ligazón, escoller unha aplicación</translation>
 <translation id="8340547030807793004">Máis accións para <ph name="DEVICE" /></translation>
+<translation id="8341693734243413517">Actualizador de Chrome</translation>
 <translation id="8341804784147620576">Mostrar atallos de busca</translation>
 <translation id="8342221978608739536">Non se intentou</translation>
 <translation id="8342387517402567689">As instalacións da aplicación web non se admiten no modo de incógnito</translation>
@@ -11052,6 +11069,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8551588720239073785">Configuración de data e hora</translation>
 <translation id="8551647092888540776">Non se pode abrir <ph name="FILE_NAMES" /> cando estás sen conexión</translation>
 <translation id="8552102814346875916">Gardar na lista Sitios que se manteñen sempre activos</translation>
+<translation id="8552947739661397736">Asumir o control da tarefa, Gemini ten o control neste momento</translation>
 <translation id="8553342806078037065">Xestionar outras persoas</translation>
 <translation id="8554899698005018844">Ningún idioma</translation>
 <translation id="8555444629041783356">Programación automática do solpor</translation>

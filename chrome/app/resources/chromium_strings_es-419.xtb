@@ -527,6 +527,9 @@
 <translation id="6901631050894301805">Establece Chromium como tu navegador predeterminado y fíjalo a la barra de tareas</translation>
 <translation id="6909503629704372277">&amp;Administrar perfiles de Chromium</translation>
 <translation id="6934579572334859869">Preguntar a la Búsqueda con imágenes acerca de esta imagen</translation>
+<translation id="6948031725951063910">Alcanzaste el límite de <ph name="BOOKMARK_LIMIT" /> favoritos de Chromium, por lo que aún no se guardaron algunos de tus favoritos en tu Cuenta de Google.
+
+No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si sales ahora, se borrarán los favoritos no guardados.</translation>
 <translation id="6964305034639999644">Abrir vínculo en una ventana de navegación de incó&amp;gnito de Chromium</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6978145336957848883">Las contraseñas poco seguras son fáciles de adivinar. Permite que Chromium <ph name="BEGIN_LINK" />cree y recuerde contraseñas seguras para ti<ph name="END_LINK" />.</translation>
@@ -693,6 +696,7 @@
 <translation id="8880203542552872219">En ese caso, edita la contraseña guardada en Chromium para que coincida con la nueva.</translation>
 <translation id="8891709362986793894">Tu organización requiere que accedas a Chromium</translation>
 <translation id="8907580949721785412">Chromium está intentando mostrar contraseñas. Para permitirlo, ingresa tu contraseña de Windows.</translation>
+<translation id="8932992523185907506">Chromium ya no es tu navegador predeterminado. ¿Quieres establecer Chromium como el navegador predeterminado?</translation>
 <translation id="8941642502866065432">No se puede actualizar Chromium</translation>
 <translation id="897581876605952338">Logotipo de Chromium Enterprise</translation>
 <translation id="8981150672034878610">No se puede iniciar Chromium porque se produjo un error cuando se abría tu perfil. Intenta reiniciar Chromium.</translation>

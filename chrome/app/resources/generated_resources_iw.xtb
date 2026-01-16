@@ -2571,6 +2571,7 @@
 <translation id="2713444072780614174">לבן</translation>
 <translation id="2714180132046334502">רקע כהה</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
+<translation id="2714617928488200509">מודלים</translation>
 <translation id="2715751256863167692">‏השדרוג הזה מאפס את ה-Chromebook ומסיר את נתוני המשתמש הנוכחיים.</translation>
 <translation id="2715934493766003251">אי אפשר לפנות נפח אחסון כשסנכרון הקבצים פועל</translation>
 <translation id="2716986496990888774">ההגדרה הזו מנוהלת על-ידי הורה.</translation>
@@ -4610,6 +4611,7 @@
 <translation id="4078738236287221428">תמיד</translation>
 <translation id="4078903002989614318">אפשרויות למיון ולרשימה</translation>
 <translation id="4079140982534148664">שימוש בבדיקת איות משופרת</translation>
+<translation id="4082070466456857368">‏מעמיק (‎3 Pro)</translation>
 <translation id="4084682180776658562">סימנייה</translation>
 <translation id="4084835346725913160">סגירת <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">‏JavaScript נחסם בדף זה.</translation>
@@ -7857,6 +7859,7 @@
 <translation id="6350821834561350243">צריך לתאר בקצרה את הבעיה ואת השלבים לשחזור הבעיה (אם אפשר)</translation>
 <translation id="6351178441572658285">השפות באפליקציות</translation>
 <translation id="6354918092619878358">‏עקומה אליפטית SECG מסוג secp256r1 (מוכרת גם בשם ANSI X9.62 prime256v1‏, NIST P-256)</translation>
+<translation id="6355632359041940003">השתלטות על המשימה</translation>
 <translation id="635609604405270300">אין לכבות את המכשיר</translation>
 <translation id="6356537493253478650">שלֵו</translation>
 <translation id="63566973648609420">‏רק מי שיודע את ביטוי הסיסמה יכול לקרוא את הנתונים המוצפנים. ביטוי הסיסמה לא נשלח אל Google והיא אינה מאחסנת אותו. אם לא זוכרים את ביטוי הסיסמה או אם רוצים לשנות את ההגדרה הזו, יש <ph name="BEGIN_LINK" />לאפס את הסנכרון<ph name="END_LINK" />.</translation>
@@ -8828,6 +8831,7 @@
 <translation id="7017219178341817193">הוספת דף חדש</translation>
 <translation id="7017354871202642555">לא ניתן להגדיר מצב לאחר שהחלון הוגדר.</translation>
 <translation id="7019805045859631636">מהיר</translation>
+<translation id="7020810150082302220">דפדפן ברירת המחדל שלך השתנה</translation>
 <translation id="7021524108486027008">‏הפעלת כלים, עורכים וסביבות פיתוח משולבות (IDE) בסביבה שמנוהלת על ידי הארגון שלך ב-<ph name="DEVICE_TYPE" />.</translation>
 <translation id="7022222879220069865">כל לוחות המגע נותקו</translation>
 <translation id="7022562585984256452">דף הבית שלך הוגדר.</translation>
@@ -10209,6 +10213,7 @@
 <translation id="7969144945436590933">קבלת פרטים נוספים</translation>
 <translation id="7970673414865679092">פרטים על אתרנט</translation>
 <translation id="7972714317346275248">‏PKCS #1 SHA-384 עם הצפנת RSA</translation>
+<translation id="7972837668077967426">לוח הציור</translation>
 <translation id="7973149423217802477">בסימון דיסלייק, נשלח משוב שלא אהבת את התכונה הזו.</translation>
 <translation id="7973776233567882054">איזה מהמשפטים הבאים מתאר את הרשת שלך בצורה הטובה ביותר?</translation>
 <translation id="797394244396603170">יש לבחור את המכשיר שאיתו ברצונך לשתף קבצים</translation>
@@ -10773,6 +10778,7 @@
 <translation id="8339288417038613756">גודל הטקסט והתצוגה</translation>
 <translation id="833986336429795709">צריך לבחור אפליקציה כדי לפתוח את הקישור הזה</translation>
 <translation id="8340547030807793004">עוד פעולות ב-<ph name="DEVICE" /></translation>
+<translation id="8341693734243413517">Chrome Updater</translation>
 <translation id="8341804784147620576">הצגת קיצורי הדרך לחיפוש</translation>
 <translation id="8342221978608739536">לא ניסיתי</translation>
 <translation id="8342387517402567689">התקנות של אפליקציות אינטרנט לא נתמכות במצב פרטי</translation>
@@ -11076,6 +11082,7 @@
 <translation id="8551588720239073785">הגדרות תאריך ושעה</translation>
 <translation id="8551647092888540776">לא ניתן לפתוח את <ph name="FILE_NAMES" /> במצב אופליין</translation>
 <translation id="8552102814346875916">שמירה ברשימה 'יש להשאיר תמיד את האתרים האלה פעילים'</translation>
+<translation id="8552947739661397736">‏השתלטות על המשימה, Gemini שולט כרגע</translation>
 <translation id="8553342806078037065">ניהול משתמשים אחרים</translation>
 <translation id="8554899698005018844">לא הוגדרה שפה</translation>
 <translation id="8555444629041783356">שינוי אוטומטי של המראה לפי זמני זריחה ושקיעה</translation>

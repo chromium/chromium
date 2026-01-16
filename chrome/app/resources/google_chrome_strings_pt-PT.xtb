@@ -504,6 +504,7 @@
 <translation id="6326175484149238433">Remover do Chrome</translation>
 <translation id="6327105987658262776">Nenhuma atualização disponível.</translation>
 <translation id="6334815226785304306">Defina o Google Chrome como o navegador predefinido e afixe-o à barra de tarefas</translation>
+<translation id="63540178978900677">O Chrome já não é o seu navegador predefinido. Tornar o Chrome no navegador predefinido?</translation>
 <translation id="6360449101159168105">Enquanto este separador estava inativo, foi libertada memória para manter o Chrome rápido. Pode optar por evitar sempre que este site fique inativo.</translation>
 <translation id="6388799252195623474">ajuda-me com isto</translation>
 <translation id="6412673304250309937">Verifica os URLs com listas de sites inseguros armazenados no Chrome. Se um site tentar roubar a sua palavra-passe, ou quando transferir um ficheiro prejudicial, o Chrome também pode enviar URLs, incluindo bits de conteúdo das páginas, para a Navegação segura.</translation>
@@ -705,6 +706,9 @@
 <translation id="8418845734693287262">O ChromeOS não conseguiu sincronizar os dados porque os detalhes de início de sessão da sua conta estão desatualizados.</translation>
 <translation id="842386925677997438">Ferramentas de segurança do Chrome</translation>
 <translation id="8425765582779547329">Para teres mais segurança online com as escolhas dos teus pais, inicia sessão no Chrome</translation>
+<translation id="842852285618875960">Atingiu o limite de <ph name="BOOKMARK_LIMIT" /> marcadores do Google Chrome, por isso, alguns dos seus marcadores ainda não foram guardados na sua Conta Google.
+
+Não é possível guardar novos marcadores na sua conta até eliminar alguns. Se terminar sessão agora, os marcadores não guardados são eliminados.</translation>
 <translation id="8433638294851456451">Para enviar um número daqui para o seu telemóvel Android, inicie sessão no Chrome em ambos os dispositivos.</translation>
 <translation id="8496177819998570653">Gestor de P&amp;alavras-passe da Google</translation>
 <translation id="8498858610309223613">Acabou de ser instalada uma atualização de segurança especial para o Google Chrome. Reinicie agora e iremos restaurar os seus separadores.</translation>

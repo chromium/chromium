@@ -1090,6 +1090,7 @@
 <translation id="1709916727352927457">Изтриване на кода за достъп</translation>
 <translation id="1709972045049031556">Споделянето не е възможно</translation>
 <translation id="1712143791363119140">В ход</translation>
+<translation id="1713120794167761305">Преместване на разделите отстрани</translation>
 <translation id="1714265454085143857">Фиксирани раздели</translation>
 <translation id="1714326320203665217">Файловете с пояснения за основния възел са изтеглени</translation>
 <translation id="1714644264617423774">Активирайте функциите за достъпност, за да улесните използването на устройството си. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
@@ -2568,6 +2569,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2713444072780614174">бяло</translation>
 <translation id="2714180132046334502">Тъмен фон</translation>
 <translation id="2714393097308983682">Google Play Магазин</translation>
+<translation id="2714617928488200509">Модели</translation>
 <translation id="2715751256863167692">С тази надстройка ще нулирате настройките на своя Chromebook и ще премахнете текущите потребителски данни.</translation>
 <translation id="2715934493766003251">Изчистването на хранилището не е възможно, докато синхронизирането на файловете е включено</translation>
 <translation id="2716986496990888774">Тази настройка се управлява от родител.</translation>
@@ -3234,6 +3236,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3167562202484086668">Изтриване на всички данни от <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Изберете темата, която отговаря на нуждите ви. За да промените темата, тапета, скрийнсейвъра и др., трябва само да докоснете и да задържите работния плот.</translation>
 <translation id="3170072451822350649">Може също да пропуснете влизането и <ph name="LINK_START" />да сърфирате като гост<ph name="LINK_END" />.</translation>
+<translation id="3172642937040465677">Преместване на разделите в горната част</translation>
 <translation id="3175067642577044620">Основен текст</translation>
 <translation id="3175862692832442091">Гора</translation>
 <translation id="3176347586396987181">Използвайте клавиша z, за да натиснете и задържите бутон на мишката</translation>
@@ -3488,6 +3491,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="335581015389089642">Speech</translation>
 <translation id="335587007651175930">Търсете това, което е на екрана ви, с Google Обектив</translation>
 <translation id="3355936511340229503">Грешка във връзката</translation>
+<translation id="335678817537689040">Статично</translation>
 <translation id="3359256513598016054">Ограничения на правилата за сертификата</translation>
 <translation id="3360297538363969800">Отпечатването не бе успешно. Моля, проверете принтера си и опитайте отново.</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -4187,6 +4191,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <ph name="BREAK" />
 Можете да управлявате настройките от менюто на картата или да видите още опции в „Персонализиране на Chrome“.</translation>
 <translation id="3801449494961771207">Системен глас за синтезиран говор</translation>
+<translation id="3801748538479607989">Преместване на разделите в горната част</translation>
 <translation id="3802486193901166966">Това разширение не изисква специални разрешения и няма допълнителен достъп до сайтовете</translation>
 <translation id="380329542618494757">Име</translation>
 <translation id="3803345858388753269">Качество на картината</translation>
@@ -4608,6 +4613,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4078738236287221428">Агресивно</translation>
 <translation id="4078903002989614318">Опции за сортиране и списъчен изглед</translation>
 <translation id="4079140982534148664">Използване на подобрената проверка на правописа</translation>
+<translation id="4082070466456857368">Мислене (3 Pro)</translation>
 <translation id="4084682180776658562">Отметка</translation>
 <translation id="4084835346725913160">Затваряне на „<ph name="TAB_NAME" />“</translation>
 <translation id="4085298594534903246">JavaScript е блокиран на тази страница.</translation>
@@ -6001,6 +6007,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5060419232449737386">Настройки за надписите</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Тази папка съдържа отметка. Наистина ли искате да я изтриете?}other{Тази папка съдържа # отметки. Наистина ли искате да я изтриете?}}</translation>
 <translation id="5061531353537614467">Тундра</translation>
+<translation id="5062863364865466276">Движение</translation>
 <translation id="5062930723426326933">Влизането не бе успешно. Моля, свържете се с интернет и опитайте отново.</translation>
 <translation id="5063480226653192405">Употреба</translation>
 <translation id="5064921774605267982">Отваряне на потребителския профил <ph name="PROFILE_NAME" />. Той се управлява от родителя ви.</translation>
@@ -6943,6 +6950,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5722086096420375088">Зелено и бяло</translation>
 <translation id="572328651809341494">Скорошни раздели</translation>
 <translation id="5723508132121499792">Не се изпълняват приложения на заден план</translation>
+<translation id="5724723163580775373">Голям фокус</translation>
 <translation id="5725112283692663422">Изпращане на отзиви за функцията за създаване на тема с AI</translation>
 <translation id="5727728807527375859">Разширенията, приложенията и темите могат да навредят на компютъра ви. Наистина ли искате да продължите?</translation>
 <translation id="5728072125198221967">Свързани услуги на Google</translation>
@@ -7190,6 +7198,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5888889603768021126">Влезли сте със:</translation>
 <translation id="5889282057229379085">Максимален брой междинни сертифициращи органи: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Шифроване на синхронизираните данни със собствения ви <ph name="BEGIN_LINK" />пропуск за синхронизиране<ph name="END_LINK" />. Начините на плащане и адресите от Google Pay няма да бъдат шифровани. Историята на сърфиране от Chrome няма да се синхронизира.</translation>
+<translation id="5890072287476934834">Преместване на разделите отстрани</translation>
 <translation id="5891688036610113830">Предпочитани Wi-Fi мрежи</translation>
 <translation id="5894056653502215961">Премахване на избора от папката „<ph name="FOLDER_TITLE" />“</translation>
 <translation id="5895138241574237353">Рестартиране</translation>
@@ -7855,6 +7864,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6350821834561350243">Предоставете ясно описание на проблема и стъпките за възпроизвеждането му (ако е възможно)</translation>
 <translation id="6351178441572658285">Езици за приложенията</translation>
 <translation id="6354918092619878358">Елиптична крива secp256r1 по SECG (позната и като ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355632359041940003">Поемане на задачата</translation>
 <translation id="635609604405270300">Не изключвайте устройството</translation>
 <translation id="6356537493253478650">Спокойно</translation>
 <translation id="63566973648609420">Само някой с пропуска ви може да прочете шифрованите ви данни – той не се изпраща до Google, нито се съхранява от нас. Ако го забравите или искате да промените тази настройка, ще се наложи <ph name="BEGIN_LINK" />да нулирате синхронизирането<ph name="END_LINK" />.</translation>
@@ -8342,6 +8352,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6702639462873609204">&amp;Редактиране...</translation>
 <translation id="6702859741546259407">За да използвате „<ph name="FEATURE_NAME" />“, включете Bluetooth и Wi-Fi.</translation>
 <translation id="6703109186846420472">,</translation>
+<translation id="670431355064244920">Малък фокус</translation>
 <translation id="6707122714992751648">Провеждане на диагностични тестове на ChromeOS</translation>
 <translation id="6707389671160270963">SSL сертификат на клиент</translation>
 <translation id="6707671917294473995">На уебсайтовете е забранено да използват камерата ви</translation>
@@ -8822,6 +8833,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7017219178341817193">Добавяне на нова страница</translation>
 <translation id="7017354871202642555">Не може да се зададе режим, след като е настроен прозорец.</translation>
 <translation id="7019805045859631636">Бързо</translation>
+<translation id="7020810150082302220">Основният ви браузър бе променен</translation>
 <translation id="7021524108486027008">Използвайте инструменти, редактори и интегрирани среди за програмиране в управлявана корпоративна среда на вашия <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7022222879220069865">Връзката с всички сензорни панели е прекратена</translation>
 <translation id="7022562585984256452">Началната ви страница е зададена.</translation>
@@ -9332,6 +9344,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7389615853658756494">Промяна на сайта</translation>
 <translation id="7392118418926456391">Сканирането за вируси не бе успешно</translation>
 <translation id="7392915005464253525">По&amp;вторно отваряне на затворен прозорец</translation>
+<translation id="739299645392306071">Среден фокус</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{Копирахте 1 елемент}other{Копирахте {COUNT} елемента}}</translation>
 <translation id="7393435859300249877">Ще получавате известия, ако говорите, докато микрофонът ви е заглушен, когато използвате определени приложения, като например тези за видеочат. Звукът никога не напуска устройството ви.</translation>
 <translation id="7395008140803590549">Сертификатът не може да се изтрие</translation>
@@ -10203,6 +10216,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7969144945436590933">Получаване на още подробности</translation>
 <translation id="7970673414865679092">Подробности за Ethernet</translation>
 <translation id="7972714317346275248">PKCS 1 SHA-384 с RSA шифроване</translation>
+<translation id="7972837668077967426">Canvas</translation>
 <translation id="7973149423217802477">Чрез бутона „Не ми харесва“ отбелязвате, че не харесвате това.</translation>
 <translation id="7973776233567882054">Кое от следните твърдения описва най-добре мрежата ви?</translation>
 <translation id="797394244396603170">Изберете устройството, с което искате да споделите файлове</translation>
@@ -10765,6 +10779,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8339288417038613756">Размер на текста и елементите на екрана</translation>
 <translation id="833986336429795709">За да отворите тази връзка, изберете приложение</translation>
 <translation id="8340547030807793004">Още действия за „<ph name="DEVICE" />“</translation>
+<translation id="8341693734243413517">Chrome Updater</translation>
 <translation id="8341804784147620576">Показване на преките пътища за търсене</translation>
 <translation id="8342221978608739536">Не опитах</translation>
 <translation id="8342387517402567689">Инсталирането на уеб приложения не се поддържа в режим „инкогнито“</translation>
@@ -11068,6 +11083,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8551588720239073785">Настройки за дата и час</translation>
 <translation id="8551647092888540776"><ph name="FILE_NAMES" /> не може да се отвори, когато сте офлайн</translation>
 <translation id="8552102814346875916">Запазване в списъка „Сайтове, които да са винаги активни“</translation>
+<translation id="8552947739661397736">Поемане на задачата – в момента Gemini има контрол</translation>
 <translation id="8553342806078037065">Управление на другите хора</translation>
 <translation id="8554899698005018844">Без език</translation>
 <translation id="8555444629041783356">Автоматичен график според часа на залеза</translation>

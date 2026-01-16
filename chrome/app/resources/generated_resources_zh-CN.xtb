@@ -1080,6 +1080,7 @@
 <translation id="1709916727352927457">删除通行密钥</translation>
 <translation id="1709972045049031556">无法分享</translation>
 <translation id="1712143791363119140">进行中</translation>
+<translation id="1713120794167761305">将标签页移至侧边</translation>
 <translation id="1714265454085143857">固定标签页</translation>
 <translation id="1714326320203665217">主要节点标注文件已下载</translation>
 <translation id="1714644264617423774">启用无障碍功能，让设备更易于使用。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -3218,6 +3219,7 @@
 <translation id="3167562202484086668">删除所有 <ph name="BRAND" />数据</translation>
 <translation id="3169930038976362151">选择与您的需求相符的主题。若要更改主题、壁纸、屏保等，轻触并按住桌面即可执行所需操作。</translation>
 <translation id="3170072451822350649">您也可以跳过登录步骤，<ph name="LINK_START" />以访客身份浏览<ph name="LINK_END" />。</translation>
+<translation id="3172642937040465677">将标签页移至顶部</translation>
 <translation id="3175067642577044620">正文</translation>
 <translation id="3175862692832442091">森林</translation>
 <translation id="3176347586396987181">按下“z”键表示按住鼠标按键</translation>
@@ -3470,6 +3472,7 @@
 <translation id="335581015389089642">语音</translation>
 <translation id="335587007651175930">使用 Google 智能镜头搜索屏幕上的内容</translation>
 <translation id="3355936511340229503">连接出错</translation>
+<translation id="335678817537689040">静态</translation>
 <translation id="3359256513598016054">证书政策约束</translation>
 <translation id="3360297538363969800">打印失败。请检查您的打印机，然后重试。</translation>
 <translation id="3360306038446926262">窗口</translation>
@@ -4169,6 +4172,7 @@
         <ph name="BREAK" />
         您可在卡片菜单中管理设置，或在“自定义 Chrome”部分查看更多选项。</translation>
 <translation id="3801449494961771207">系统默认文字转语音声音</translation>
+<translation id="3801748538479607989">将标签页移至顶部</translation>
 <translation id="3802486193901166966">此扩展程序无需任何特殊权限，并且无权访问其他网站</translation>
 <translation id="380329542618494757">姓名</translation>
 <translation id="3803345858388753269">视频画质</translation>
@@ -5981,6 +5985,7 @@
 <translation id="5060419232449737386">字幕设置</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{此文件夹包含 1 个书签。确定要删除此文件夹吗？}other{此文件夹包含 # 个书签。确定要删除此文件夹吗？}}</translation>
 <translation id="5061531353537614467">苔原</translation>
+<translation id="5062863364865466276">移动</translation>
 <translation id="5062930723426326933">登录失败，请连接到互联网，然后重试。</translation>
 <translation id="5063480226653192405">空间占用量</translation>
 <translation id="5064921774605267982">打开“<ph name="PROFILE_NAME" />”个人资料。这份个人资料由家长管理。</translation>
@@ -6919,6 +6924,7 @@
 <translation id="5722086096420375088">绿色和白色</translation>
 <translation id="572328651809341494">最近打开的标签页</translation>
 <translation id="5723508132121499792">没有任何后台应用在运行</translation>
+<translation id="5724723163580775373">大焦点</translation>
 <translation id="5725112283692663422">发送有关“利用 AI 创建主题”的反馈</translation>
 <translation id="5727728807527375859">扩展功能、应用和主题背景可能会损害您的计算机。您确定要继续吗？</translation>
 <translation id="5728072125198221967">关联的 Google 服务</translation>
@@ -7166,6 +7172,7 @@
 <translation id="5888889603768021126">所用登录身份</translation>
 <translation id="5889282057229379085">中级 CA 证书数目的上限为：<ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">使用您自己的<ph name="BEGIN_LINK" />同步口令<ph name="END_LINK" />加密已同步的数据。Google Pay 中的付款方式和地址不会加密。Chrome 中的浏览记录不会同步。</translation>
+<translation id="5890072287476934834">将标签页移至侧边</translation>
 <translation id="5891688036610113830">首选的 WLAN 网络</translation>
 <translation id="5894056653502215961">取消选择“<ph name="FOLDER_TITLE" />”文件夹</translation>
 <translation id="5895138241574237353">重新启动</translation>
@@ -8318,6 +8325,7 @@
 <translation id="6702639462873609204">修改(&amp;E)...</translation>
 <translation id="6702859741546259407">若要使用“<ph name="FEATURE_NAME" />”功能，请开启蓝牙和 Wi-Fi</translation>
 <translation id="6703109186846420472">、</translation>
+<translation id="670431355064244920">小焦点</translation>
 <translation id="6707122714992751648">运行 ChromeOS 诊断测试</translation>
 <translation id="6707389671160270963">SSL 客户端证书</translation>
 <translation id="6707671917294473995">不允许网站使用您的摄像头</translation>
@@ -9309,6 +9317,7 @@
 <translation id="7389615853658756494">在网站上更改</translation>
 <translation id="7392118418926456391">病毒扫描失败</translation>
 <translation id="7392915005464253525">重新打开关闭的窗口(&amp;E)</translation>
+<translation id="739299645392306071">中焦点</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{已复制 1 个条目}other{已复制 {COUNT} 个条目}}</translation>
 <translation id="7393435859300249877">使用某些应用（例如视频聊天应用）时，如果对着处于静音状态的麦克风说话，您会收到通知。音频不会从您的设备发送出去。</translation>
 <translation id="7395008140803590549">无法删除证书</translation>
@@ -11106,7 +11115,7 @@
 <translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{管理扩展程序}other{管理扩展程序}}</translation>
 <translation id="8599681327221583254">有一项或多项政策未正确配置。请与您的管理员联系</translation>
 <translation id="8599864823732014237">跳过企业注册？</translation>
-<translation id="8600362954032151088">在 <ph name="GOOGLE_PASSWORD_MANAGER" /> 中管理您的密码和通行密钥</translation>
+<translation id="8600362954032151088">在 <ph name="GOOGLE_PASSWORD_MANAGER" />中管理您的密码和通行密钥</translation>
 <translation id="8601206103050338563">TLS WWW 客户端身份验证</translation>
 <translation id="8602674530529411098">应用（Beta 版）</translation>
 <translation id="8602851771975208551">您计算机上的其他程序添加了一个应用，该应用可能会改变 Chrome 的工作方式。</translation>

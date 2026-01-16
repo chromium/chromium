@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">Manage access</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Close item}other{Close items}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Tab bottom sheet at half height.</translation>
 <translation id="374923079891132274">Thumbnail for share sheet preview.</translation>
 <translation id="3776329373944672717">Tab group title <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Manage</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">Your last tab</translation>
 <translation id="5380159289133845234">Archive duplicate tabs</translation>
 <translation id="5446043142172831860">Remove tab and leave group</translation>
+<translation id="5465437530117042974">Tab bottom sheet changes closed.</translation>
 <translation id="5490235265819901748">Tab group expanded</translation>
 <translation id="5494920125229734069">Select all</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Add up to <ph name="LIMIT_COUNT_ONE" /> file, tab or image}other{Add up to <ph name="LIMIT_COUNT_MANY" /> files, tabs or images}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">Close</translation>
 <translation id="6051432659151380973">Your tab groups automatically save</translation>
 <translation id="6054741997831917303">The price of this item recently dropped from <ph name="PREVIOUS_PRICE" /> to <ph name="NEW_PRICE" /></translation>
+<translation id="606985262342505139">Tab bottom sheet at full height</translation>
 <translation id="6109251075362363230">All duplicate tabs will now also be archived, with the exception of the most recently used copy.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Close <ph name="TABS_COUNT_ONE" /> selected item}other{Close <ph name="TABS_COUNT_MANY" /> selected items}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Move group to new window}other{Move group to another window}}</translation>

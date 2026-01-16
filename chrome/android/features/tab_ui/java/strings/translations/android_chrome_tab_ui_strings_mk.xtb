@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">Управувајте со пристапот</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Затвори ја ставката}one{Затвори ги ставките}other{Затвори ги ставките}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Долниот лист со картичка е отворен на половина висина.</translation>
 <translation id="374923079891132274">Сликичка за преглед на лист за споделување</translation>
 <translation id="3776329373944672717">Наслов на групата картички <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Управувај</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">Вашата последна картичка</translation>
 <translation id="5380159289133845234">Архивирање на дупликат картичките</translation>
 <translation id="5446043142172831860">Отстранете ја картичката и напуштете ја групата</translation>
+<translation id="5465437530117042974">Промените на долниот лист со картичка се затворени.</translation>
 <translation id="5490235265819901748">Групата картички се прошири</translation>
 <translation id="5494920125229734069">Избери сè</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Додајте најмногу <ph name="LIMIT_COUNT_ONE" /> датотека, картичка или слика}one{Додајте најмногу <ph name="LIMIT_COUNT_MANY" /> датотека, картичка или слика}other{Додајте најмногу <ph name="LIMIT_COUNT_MANY" /> датотеки, картички или слики}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="6051432659151380973">Вашите групи картички се зачувуваат автоматски</translation>
 <translation id="6054741997831917303">Цената за производов е спуштена од <ph name="PREVIOUS_PRICE" /> на <ph name="NEW_PRICE" /></translation>
+<translation id="606985262342505139">Долниот лист со картичка е отворен на целосна висина</translation>
 <translation id="6109251075362363230">Отсега ќе се архивираат сите дупликат картички, со исклучок на последната копија што се користела.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Затвори <ph name="TABS_COUNT_ONE" /> избрана ставка}one{Затвори <ph name="TABS_COUNT_MANY" /> избрана ставка}other{Затвори <ph name="TABS_COUNT_MANY" /> избрани ставки}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Преместете ја групата во нов прозорец}one{Преместете ја групата во друг прозорец}other{Преместете ја групата во друг прозорец}}</translation>

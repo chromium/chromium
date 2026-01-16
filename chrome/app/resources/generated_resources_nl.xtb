@@ -40,7 +40,7 @@
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Je apparaat wordt beheerd door <ph name="DOMAIN" />. Beheerders hebben op dit apparaat toegang tot de gegevens van elk profiel.</translation>
 <translation id="1022719295563085177">Netwerkstandaard</translation>
-<translation id="1026196234862089732">Toegangssleutel geüpdatet</translation>
+<translation id="1026196234862089732">Toegangssleutel bijgewerkt</translation>
 <translation id="1026655690966755180">Poort toevoegen</translation>
 <translation id="1026822031284433028">Afbeelding laden</translation>
 <translation id="1026959648338730078">Windows Hello of externe beveiligingssleutel</translation>
@@ -1085,6 +1085,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1709916727352927457">Toegangscode verwijderen</translation>
 <translation id="1709972045049031556">Kan niet delen</translation>
 <translation id="1712143791363119140">Bezig</translation>
+<translation id="1713120794167761305">Tabbladen aan de zijkant zetten</translation>
 <translation id="1714265454085143857">Vastgezette tabbladen</translation>
 <translation id="1714326320203665217">Annotatiebestanden voor hoofdknooppunt gedownload</translation>
 <translation id="1714644264617423774">Zet toegankelijkheidsfuncties aan om je apparaat gebruiksvriendelijker te maken. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
@@ -3226,6 +3227,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3167562202484086668">Alle gegevens uit <ph name="BRAND" /> verwijderen</translation>
 <translation id="3169930038976362151">Kies het thema dat bij je past. Als je je thema, achtergrond, screensaver en meer wilt wijzigen, tik je op het bureaublad en houd je dit vast.</translation>
 <translation id="3170072451822350649">Je kunt het inloggen ook overslaan en <ph name="LINK_START" />browsen als gast<ph name="LINK_END" />.</translation>
+<translation id="3172642937040465677">Tabbladen bovenaan zetten</translation>
 <translation id="3175067642577044620">Body</translation>
 <translation id="3175862692832442091">Bos</translation>
 <translation id="3176347586396987181">Gebruik z om een muisknop ingedrukt te houden</translation>
@@ -3478,6 +3480,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="335581015389089642">Spraak</translation>
 <translation id="335587007651175930">Zoeken naar wat er op je scherm staat met Google Lens</translation>
 <translation id="3355936511340229503">Verbindingsfout</translation>
+<translation id="335678817537689040">Statisch</translation>
 <translation id="3359256513598016054">Beleidsbeperkingen voor certificaat</translation>
 <translation id="3360297538363969800">Afdrukken is mislukt. Controleer je printer en probeer het opnieuw.</translation>
 <translation id="3360306038446926262">Vensters</translation>
@@ -4177,6 +4180,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <ph name="BREAK" />
 Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het gedeelte Chrome aanpassen.</translation>
 <translation id="3801449494961771207">Systeemstem voor tekst-naar-spraak</translation>
+<translation id="3801748538479607989">Tabbladen bovenaan zetten</translation>
 <translation id="3802486193901166966">Deze extensie vereist geen speciale rechten en heeft geen aanvullende sitetoegang nodig</translation>
 <translation id="380329542618494757">Naam</translation>
 <translation id="3803345858388753269">Videokwaliteit</translation>
@@ -5989,6 +5993,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5060419232449737386">Ondertitelingsinstellingen</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Deze map bevat een bookmark. Weet je zeker dat je deze wilt verwijderen?}other{Deze map bevat # bookmarks. Weet je zeker dat je deze wilt verwijderen?}}</translation>
 <translation id="5061531353537614467">Toendra</translation>
+<translation id="5062863364865466276">Beweging</translation>
 <translation id="5062930723426326933">Inloggen is mislukt. Maak verbinding met internet en probeer het opnieuw.</translation>
 <translation id="5063480226653192405">Gebruik</translation>
 <translation id="5064921774605267982">Profiel van <ph name="PROFILE_NAME" /> openen. Dit profiel wordt beheerd door je ouder.</translation>
@@ -6927,6 +6932,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5722086096420375088">Groen/wit</translation>
 <translation id="572328651809341494">Recente tabbladen</translation>
 <translation id="5723508132121499792">Geen actieve achtergrondapps</translation>
+<translation id="5724723163580775373">Grote focus</translation>
 <translation id="5725112283692663422">Stuur feedback voor Thema maken met AI</translation>
 <translation id="5727728807527375859">Extensies, applicaties en thema's kunnen schade toebrengen aan je computer. Weet je zeker dat je wilt doorgaan?</translation>
 <translation id="5728072125198221967">Gekoppelde Google-services</translation>
@@ -7174,6 +7180,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5888889603768021126">Ingelogd met</translation>
 <translation id="5889282057229379085">Maximum aantal tussenliggende certificeringsinstanties: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Versleutel gesynchroniseerde gegevens met je eigen <ph name="BEGIN_LINK" />wachtwoordzin voor synchronisatie<ph name="END_LINK" />. Betaalmethoden en adressen van Google Pay worden niet versleuteld. De browsegeschiedenis in Chrome wordt niet gesynchroniseerd.</translation>
+<translation id="5890072287476934834">Tabbladen aan de zijkant zetten</translation>
 <translation id="5891688036610113830">Wifi-netwerken met voorrang</translation>
 <translation id="5894056653502215961">Map <ph name="FOLDER_TITLE" /> deselecteren</translation>
 <translation id="5895138241574237353">Opnieuw starten</translation>
@@ -8326,6 +8333,7 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6702639462873609204">&amp;Bewerken...</translation>
 <translation id="6702859741546259407">Zet bluetooth en wifi aan om <ph name="FEATURE_NAME" /> te gebruiken.</translation>
 <translation id="6703109186846420472">,</translation>
+<translation id="670431355064244920">Kleine focus</translation>
 <translation id="6707122714992751648">Diagnostische tests voor ChromeOS uitvoeren</translation>
 <translation id="6707389671160270963">SSL-clientcertificaat</translation>
 <translation id="6707671917294473995">Websites mogen je camera niet gebruiken</translation>
@@ -9317,6 +9325,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7389615853658756494">Wijzigen op de site</translation>
 <translation id="7392118418926456391">Virusscan is mislukt</translation>
 <translation id="7392915005464253525">G&amp;esloten venster opnieuw openen</translation>
+<translation id="739299645392306071">Gemiddelde focus</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 item gekopieerd}other{{COUNT} items gekopieerd}}</translation>
 <translation id="7393435859300249877">In bepaalde apps krijg je een melding als je praat terwijl de microfoon uitstaat, zoals in apps voor videochats. De audio verlaat je apparaat nooit.</translation>
 <translation id="7395008140803590549">Kan certificaat niet verwijderen</translation>

@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">యాక్సెస్‌ను మేనేజ్ చేయండి</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{ఐటెమ్‌ను మూసివేయండి}other{ఐటెమ్‌లను మూసివేయండి}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">సగం ఎత్తులో ట్యాబ్ కింద ఉన్న షీట్.</translation>
 <translation id="374923079891132274">షేర్షీట్ ప్రివ్యూథంబ్నెయిల్</translation>
 <translation id="3776329373944672717">ట్యాబ్ గ్రూప్ టైటిల్ <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">మేనేజ్ చేయండి</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">మీ చివరి ట్యాబ్</translation>
 <translation id="5380159289133845234">డూప్లికేట్ ట్యాబ్‌లను ఆర్కైవ్ చేయండి</translation>
 <translation id="5446043142172831860">ట్యాబ్‌ను తీసివేసి, గ్రూప్ నుండి నిష్క్రమించండి</translation>
+<translation id="5465437530117042974">ట్యాబ్ కింద ఉన్న షీట్ మార్పులు మూసివేయబడ్డాయి.</translation>
 <translation id="5490235265819901748">ట్యాబ్ గ్రూప్ విస్తరించబడింది</translation>
 <translation id="5494920125229734069">అన్నీ ఎంచుకోండి</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{గరిష్ఠంగా <ph name="LIMIT_COUNT_ONE" /> ఫైల్‌ను, ట్యాబ్‌ను, లేదా ఇమేజ్‌ను జోడించండి}other{గరిష్ఠంగా <ph name="LIMIT_COUNT_MANY" /> ఫైల్స్‌ను, ట్యాబ్‌లను, లేదా ఇమేజ్‌లను జోడించండి}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">మూసివేయండి</translation>
 <translation id="6051432659151380973">మీ ట్యాబ్ గ్రూప్‌లు ఆటోమేటిక్‌గా సేవ్ చేయబడతాయి</translation>
 <translation id="6054741997831917303">ఈ ఐటెమ్ ధర ఇటీవల <ph name="PREVIOUS_PRICE" /> నుండి <ph name="NEW_PRICE" />కు తగ్గింది</translation>
+<translation id="606985262342505139">ట్యాబ్ కింద ఉన్న షీట్ పూర్తి ఎత్తులో ఉంది</translation>
 <translation id="6109251075362363230">ఇటీవల ఉపయోగించిన కాపీ మినహా అన్ని డూప్లికేట్ ట్యాబ్‌లు కూడా ఇప్పుడు ఆర్కైవ్ చేయబడతాయి.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ఎంచుకున్న ఐటెమ్‌ను మూసివేయండి}other{<ph name="TABS_COUNT_MANY" /> ఎంచుకున్న ఐటెమ్‌లను మూసివేయండి}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{గ్రూప్‌ను కొత్త విండోకు తరలించండి}other{గ్రూప్‌ను మరొక విండోకు తరలించండి}}</translation>

@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">Piekļuves pārvaldība</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Aizvērt vienumu}zero{Aizvērt vienumus}one{Aizvērt vienumus}other{Aizvērt vienumus}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Cilnes ekrāna apakšdaļas lapa ir atvērta pusekrāna augstumā.</translation>
 <translation id="374923079891132274">Kopīgošanas sīktēls</translation>
 <translation id="3776329373944672717">Ciļņu grupas nosaukums ir “<ph name="TITLE_OF_GROUP" />”</translation>
 <translation id="3810973564298564668">Pārvaldīt</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">Jūsu pēdējā izmantotā cilne</translation>
 <translation id="5380159289133845234">Ciļņu dublikātu arhivēšana</translation>
 <translation id="5446043142172831860">Noņemt cilni un pamest grupu</translation>
+<translation id="5465437530117042974">Cilnes ekrāna apakšdaļas lapas izmaiņas ir aizvērtas.</translation>
 <translation id="5490235265819901748">Ciļņu grupa ir izvērsta</translation>
 <translation id="5494920125229734069">Atlasīt visu</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Pievienojiet ne vairāk kā <ph name="LIMIT_COUNT_ONE" /> failu, cilni vai attēlu.}zero{Pievienojiet ne vairāk kā <ph name="LIMIT_COUNT_MANY" /> failus, cilnes vai attēlus.}one{Pievienojiet ne vairāk kā <ph name="LIMIT_COUNT_MANY" /> failu, cilni vai attēlu.}other{Pievienojiet ne vairāk kā <ph name="LIMIT_COUNT_MANY" /> failus, cilnes vai attēlus.}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">Aizvērt</translation>
 <translation id="6051432659151380973">Ciļņu grupas tiek automātiski saglabātas.</translation>
 <translation id="6054741997831917303">Šai precei nesen tika pazemināta cena no <ph name="PREVIOUS_PRICE" /> uz <ph name="NEW_PRICE" /></translation>
+<translation id="606985262342505139">Cilnes ekrāna apakšdaļas lapa pilnā augstumā.</translation>
 <translation id="6109251075362363230">Tagad tiks arhivētas arī visas dublētās cilnes, atstājot tikai to, kuru izmantojāt pēdējo.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Aizvērt <ph name="TABS_COUNT_ONE" /> atlasīto vienumu}zero{Aizvērt <ph name="TABS_COUNT_MANY" /> atlasītos vienumus}one{Aizvērt <ph name="TABS_COUNT_MANY" /> atlasīto vienumu}other{Aizvērt <ph name="TABS_COUNT_MANY" /> atlasītos vienumus}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Pārvietot grupu uz jaunu logu}zero{Pārvietot grupu uz citu logu}one{Pārvietot grupu uz citu logu}other{Pārvietot grupu uz citu logu}}</translation>

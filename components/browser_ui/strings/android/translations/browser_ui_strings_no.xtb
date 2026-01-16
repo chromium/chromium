@@ -412,6 +412,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 til)}other{(+ # til)}}</translation>
 <translation id="5403592356182871684">Navn</translation>
 <translation id="5407203562970638234">Få bedre sikkerhet</translation>
+<translation id="5436307623797390637">Apper på enheten</translation>
 <translation id="5438097262470833822">Dette valget tilbakestiller tillatelser for <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Når dette er på, kan nettsteder be om posisjonen din. Når dette er av, kan ikke nettsteder se posisjonen din.</translation>
 <translation id="5489227211564503167">Medgått tid: <ph name="ELAPSED_TIME" /> av <ph name="TOTAL_TIME" />.</translation>

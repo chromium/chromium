@@ -412,6 +412,7 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 weitere)}other{(+ # weitere)}}</translation>
 <translation id="5403592356182871684">Namen</translation>
 <translation id="5407203562970638234">Erweiterte Sicherheit</translation>
+<translation id="5436307623797390637">Apps auf dem Gerät</translation>
 <translation id="5438097262470833822">Mit dieser Option werden die Berechtigungen für <ph name="WEBSITE" /> zurückgesetzt</translation>
 <translation id="5459413148890178711">Wenn dieser Schalter aktiviert ist, können Websites nach deinem Standort fragen. Wenn er deaktiviert ist, können Websites deinen Standort nicht abrufen.</translation>
 <translation id="5489227211564503167">Verstrichene Zeit: <ph name="ELAPSED_TIME" /> von <ph name="TOTAL_TIME" />.</translation>

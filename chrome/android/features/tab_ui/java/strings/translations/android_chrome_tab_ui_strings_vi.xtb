@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">Quản lý quyền truy cập</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Đóng mục}other{Đóng các mục}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Đã mở bảng thẻ ở dưới cùng trên một nửa màn hình.</translation>
 <translation id="374923079891132274">Hình thu nhỏ để xem trước trang tính chia sẻ.</translation>
 <translation id="3776329373944672717">Tiêu đề <ph name="TITLE_OF_GROUP" /> của nhóm thẻ</translation>
 <translation id="3810973564298564668">Quản lý</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">Thẻ bạn truy cập gần đây nhất</translation>
 <translation id="5380159289133845234">Lưu trữ các thẻ trùng lặp</translation>
 <translation id="5446043142172831860">Loại bỏ thẻ và rời khỏi nhóm</translation>
+<translation id="5465437530117042974">Đã đóng bảng thẻ ở dưới cùng.</translation>
 <translation id="5490235265819901748">Đã mở rộng nhóm thẻ</translation>
 <translation id="5494920125229734069">Chọn tất cả</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Thêm tối đa <ph name="LIMIT_COUNT_ONE" /> tệp, thẻ hoặc hình ảnh}other{Thêm tối đa <ph name="LIMIT_COUNT_MANY" /> tệp, thẻ hoặc hình ảnh}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">Đóng</translation>
 <translation id="6051432659151380973">Các nhóm thẻ của bạn sẽ tự động lưu</translation>
 <translation id="6054741997831917303">Mức giá của mặt hàng này gần đây đã giảm từ <ph name="PREVIOUS_PRICE" /> xuống còn <ph name="NEW_PRICE" /></translation>
+<translation id="606985262342505139">Đã mở bảng thẻ ở dưới cùng trên toàn màn hình</translation>
 <translation id="6109251075362363230">Giờ đây, tất cả các thẻ trùng lặp cũng sẽ được lưu trữ, ngoại trừ thẻ trùng lặp được sử dụng gần đây nhất.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Đóng <ph name="TABS_COUNT_ONE" /> mục đã chọn}other{Đóng <ph name="TABS_COUNT_MANY" /> mục đã chọn}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Di chuyển nhóm sang cửa sổ mới}other{Di chuyển nhóm sang cửa sổ khác}}</translation>

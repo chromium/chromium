@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Bagong Window</translation>
 <translation id="1558391695376153246">Isara ang mga Incognito tab</translation>
 <translation id="1565371473877914088">Bagong Tab na Incognito</translation>
+<translation id="1567960978791353852">Ipakita ang Reading Mode</translation>
 <translation id="1571780780926010134">Mga tab na incognito</translation>
 <translation id="1580715474678097352">Manatiling protektado laban sa mga mapanganib na website</translation>
 <translation id="1580783302095112590">Naipadala na ang mail.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">Upang makita ang mga password, dapat ka munang magtakda ng passcode sa iyong device.</translation>
 <translation id="201759455285471444">I-expand ang grupo ng tab.</translation>
 <translation id="202070562065520783">Ipaliwanag ito sa akin</translation>
+<translation id="2023713324775943812">I-access ang Reading Mode mula sa address bar kapag available</translation>
 <translation id="2044394949148788042">Buksan ang grid ng tab</translation>
 <translation id="2044681667265133332">Ang account na <ph name="USER_EMAIL" /> ay pinapamahalaan ng <ph name="HOSTED_DOMAIN" />, na posibleng makakita ng ilang impormasyon. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">bagong item</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Nase-save dito ang iyong mga grupo ng tab</translation>
 <translation id="2273327106802955778">Higit pang menu</translation>
 <translation id="2287614783861766820">{count,plural, =1{Made-delete ang address na ito sa device na ito.}one{Made-delete ang mga address na ito sa device na ito.}other{Made-delete ang mga address na ito sa device na ito.}}</translation>
+<translation id="2295236662082735391">Matagal na pindutin ang isang larawan sa web para i-edit gamit ang Gemini</translation>
 <translation id="2297989278479054870">Pagkatapos mong mag-sign out, maaalis sa device na ito ang mga bookmark, password, at higit pa sa iyong Google Account.</translation>
 <translation id="2299218006564889602">Ine-encrypt ang iyong mga password sa device mo bago i-save ang mga ito sa Google Password Manager.</translation>
 <translation id="2306265833370324042">Ipakita ang mga detalye ng <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Kunan ng larawan ang hinahanap mo</translation>
 <translation id="2761898608071930085">Gumamit ng Ibang Account</translation>
 <translation id="2762000892062317888">ngayon lang</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Magdagdag nang hanggang 1 larawan}one{Magdagdag nang hanggang {COUNT} larawan}other{Magdagdag nang hanggang {COUNT} na larawan}}</translation>
 <translation id="2772667768515195373">Puwede kang gumamit ng mga naka-save na address sa lahat ng produkto ng Google. Naka-save ang address na ito sa iyong Google Account na <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">Mga notification sa email</translation>
 <translation id="2781331604911854368">Naka-on</translation>
@@ -1349,6 +1353,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="605721222689873409">YY</translation>
 <translation id="6058415747854995776">Kumuha ng Video</translation>
 <translation id="6059830886158432458">Kontrolin ang iyong mga kuwento at aktibidad dito</translation>
+<translation id="6063802271331271857">Mag-remix ng larawan</translation>
 <translation id="6066301408025741299">Pindutin upang kanselahin.</translation>
 <translation id="6074656473835429958">Makatanggap ng mga notification</translation>
 <translation id="607620096698446287">Hindi ma-upload ang <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -1866,6 +1871,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="7899199123054742721">Markahan ang lahat bilang hindi pa nababasa</translation>
 <translation id="7911190106180361398">Hindi ka pinapayagan ng iyong organisasyon na i-sync ang lahat.</translation>
 <translation id="7918999344502274923">I-hide ang mga detalye ng <ph name="SEARCH_ENGINE_NAME" /></translation>
+<translation id="7921559948846049514">Pumili ng tema, kulay, o higit pa para sa iyong background</translation>
 <translation id="792357691529995513">Walang nakitang isyu</translation>
 <translation id="7925108652071887026">Mag-autofill ng data</translation>
 <translation id="7926975587469166629">Nickname ng card</translation>

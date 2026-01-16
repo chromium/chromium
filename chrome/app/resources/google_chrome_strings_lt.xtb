@@ -512,6 +512,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6326175484149238433">Pašalinti iš „Chrome“</translation>
 <translation id="6327105987658262776">Naujini nėra.</translation>
 <translation id="6334815226785304306">Padaryti „Google Chrome“ numatytąja naršykle ir prisegti prie užduočių juostos</translation>
+<translation id="63540178978900677">„Chrome“ nebėra numatytoji naršyklė. Padaryti „Chrome“ numatytąja naršykle?</translation>
 <translation id="6360449101159168105">Kol šis skirtukas buvo neaktyvus, atmintis buvo atlaisvinta, kad „Chrome“ veiktų sparčiai. Galite pasirinkti visada išskirti šią svetainę, kad būtų aktyvi.</translation>
 <translation id="6388799252195623474">padėkite man tai padaryti</translation>
 <translation id="6412673304250309937">Tikrinami URL pagal nesaugių svetainių sąrašą, saugomą naršyklėje „Chrome“. Jei svetainė bando pavogti slaptažodį ar atsisiuntėte žalingą failą, „Chrome“ taip pat gali siųsti URL, įskaitant puslapio turinio dalis, Saugaus naršymo funkcijai.</translation>
@@ -713,6 +714,9 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="8418845734693287262">„Chrome“ OS nepavyko sinchronizuoti duomenų, nes išsami paskyros prisijungimo informacija pasenusi.</translation>
 <translation id="842386925677997438">„Chrome“ saugos įrankiai</translation>
 <translation id="8425765582779547329">Jei norite būti saugesni internete naudodami vieno iš tėvų pasirinkimus, prisijunkite prie „Chrome“</translation>
+<translation id="842852285618875960">Pasiekėte „Google Chrome“ žymių apribojimą (<ph name="BOOKMARK_LIMIT" />), todėl kai kurios žymės dar neišsaugotos „Google“ paskyroje.
+
+Naujų žymių negalima išsaugoti paskyroje, kol ištrinsite kai kurias žymes. Jei atsijungsite dabar, neišsaugotos žymės bus ištrintos.</translation>
 <translation id="8433638294851456451">Jei norite iš čia į „Android“ telefoną išsiųsti numerį, prisijunkite prie „Chrome“ abiejuose įrenginiuose.</translation>
 <translation id="8496177819998570653">„Google“ slaptažodžių tvarkyklė</translation>
 <translation id="8498858610309223613">Ką tik pritaikytas specialus „Google Chrome“ skirtas saugos naujinys. Dabar paleiskite naršyklę iš naujo ir atkursime visus skirtukus.</translation>

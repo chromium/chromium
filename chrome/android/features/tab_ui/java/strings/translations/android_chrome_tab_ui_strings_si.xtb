@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">ප්‍රවේශය කළමනාකරණය කරන්න</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{අයිතමය වසන්න}one{අයිතම වසන්න}other{අයිතම වසන්න}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">පටිති පහළ පත්‍රය අඩක් උසින්.</translation>
 <translation id="374923079891132274">පත්‍රය බෙදා ගැනීමේ පෙරදසුන සඳහා සිඟිති රුව.</translation>
 <translation id="3776329373944672717">පටිති-සමූහයේ මාතෘකාව <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">කළමනාකරණය</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">ඔබේ අවසන් පටිත්ත</translation>
 <translation id="5380159289133845234">අනුපත් පටිති ලේඛනාරක්ෂණය කරන්න</translation>
 <translation id="5446043142172831860">පටිත්ත ඉවත් කර සමූහය හැර යන්න</translation>
+<translation id="5465437530117042974">පටිති පහළ පත්‍ර වෙනස්කම් වසා ඇත.</translation>
 <translation id="5490235265819901748">ටැබ සමූහය දිග හරින ලදි</translation>
 <translation id="5494920125229734069">සියල්ල තෝරන්න</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{<ph name="LIMIT_COUNT_ONE" /> ගොනුවක්, පටිත්තක්, හෝ රූපයක් දක්වා එක් කරන්න}one{ගොනු, පටිති, හෝ රූප <ph name="LIMIT_COUNT_MANY" />ක් දක්වා එක් කරන්න}other{ගොනු, පටිති, හෝ රූප <ph name="LIMIT_COUNT_MANY" />ක් දක්වා එක් කරන්න}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">වසන්න</translation>
 <translation id="6051432659151380973">ඔබේ පටිති සමූහ ස්වයංක්‍රීයව සුරකියි</translation>
 <translation id="6054741997831917303">මෙම අයිතමයෙහි මිල මෑතකදී <ph name="PREVIOUS_PRICE" /> සිට <ph name="NEW_PRICE" /> දක්වා පහත වැටී ඇත</translation>
+<translation id="606985262342505139">පටිති පහළ පත්‍රය සම්පූර්ණ උසින්</translation>
 <translation id="6109251075362363230">මෑතක දී භාවිතා කළ පිටපත ව්‍යතිරේකය හැර, සියලු ම අනුපත් පටිති දැන් ලේඛනාරක්ෂණය කරනු ලැබේ.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{තෝරා ගත් <ph name="TABS_COUNT_ONE" /> අයිතමයක් වසන්න}one{තෝරා ගත් අයිතම <ph name="TABS_COUNT_MANY" />ක් වසන්න}other{තෝරා ගත් අයිතම <ph name="TABS_COUNT_MANY" />ක් වසන්න}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{සමූහය නව කවුළුවට ගෙන යන්න}one{සමූහය තව කවුළුවකට ගෙන යන්න}other{සමූහය තව කවුළුවකට ගෙන යන්න}}</translation>

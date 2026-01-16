@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">Ylläpidä pääsyoikeuksia</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Sulje kohde}other{Sulje kohteet}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Välilehden alapaneeli puoliksi avattuna.</translation>
 <translation id="374923079891132274">Jakotaulukon pikkukuva.</translation>
 <translation id="3776329373944672717">Välilehtiryhmän nimi <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Hallinnoi</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">Viimeisin välilehti</translation>
 <translation id="5380159289133845234">Arkistoi välilehtien kopiot</translation>
 <translation id="5446043142172831860">Poista välilehti ja poistu ryhmästä</translation>
+<translation id="5465437530117042974">Välilehtien alapaneelin muutokset suljettu.</translation>
 <translation id="5490235265819901748">Välilehtiryhmä laajennettu</translation>
 <translation id="5494920125229734069">Valitse kaikki</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Lisää enintään <ph name="LIMIT_COUNT_ONE" /> tiedosto, välilehti tai kuva}other{Lisää enintään <ph name="LIMIT_COUNT_MANY" /> tiedostoa, välilehteä tai kuvaa}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">Sulje</translation>
 <translation id="6051432659151380973">Välilehtiryhmät tallentuvat automaattisesti</translation>
 <translation id="6054741997831917303">Tämän tuotteen hinta on laskenut äskettäin: aiemmin <ph name="PREVIOUS_PRICE" />, nyt <ph name="NEW_PRICE" /></translation>
+<translation id="606985262342505139">Välilehden alapaneeli kokonaan avattuna</translation>
 <translation id="6109251075362363230">Myös kaikki välilehtien kopiot arkistoidaan nyt, lukuun ottamatta viimeksi käytettyä kopiota.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Sulje <ph name="TABS_COUNT_ONE" /> valittu kohde}other{Sulje <ph name="TABS_COUNT_MANY" /> valittua kohdetta}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Siirrä ryhmä uuteen ikkunaan}other{Siirrä ryhmä toiseen ikkunaan}}</translation>

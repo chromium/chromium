@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">नवीन विंडो</translation>
 <translation id="1558391695376153246">गुप्त टॅब बंद करा</translation>
 <translation id="1565371473877914088">नवीन गुप्त टॅब</translation>
+<translation id="1567960978791353852">वाचन मोड दाखवा</translation>
 <translation id="1571780780926010134">गुप्त टॅब</translation>
 <translation id="1580715474678097352">धोकादायक वेबसाइटपासून सुरक्षित राहा</translation>
 <translation id="1580783302095112590">मेल पाठवले.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">पासवर्ड पाहण्यासाठी, तुम्ही प्रथम तुमच्या डीव्हाइसवर पासकोड सेट करणे आवश्यक आहे.</translation>
 <translation id="201759455285471444">टॅब गटाचा विस्तार करा.</translation>
 <translation id="202070562065520783">मला हे समजवा</translation>
+<translation id="2023713324775943812">उपलब्ध असेल, तेव्हा अ‍ॅड्रेस बारमधून वाचन मोड अ‍ॅक्सेस करा</translation>
 <translation id="2044394949148788042">टॅब ग्रिड उघडा</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> हे खाते <ph name="HOSTED_DOMAIN" /> द्वारे व्यवस्थापित केले आहे, ज्याला काही माहिती दिसू शकते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">नवीन आयटम</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">तुमचे टॅब गट इथे सेव्ह केलेले आहेत</translation>
 <translation id="2273327106802955778">अधिक मेनू</translation>
 <translation id="2287614783861766820">{count,plural, =1{हा पत्ता या डिव्हाइसवरून हटवला जाईल.}other{हे पत्ते या डिव्हाइसवरून हटवले जातील.}}</translation>
+<translation id="2295236662082735391">Gemini वापरून संपादित करण्यासाठी वेबवरील इमेज प्रेस करून ठेवा</translation>
 <translation id="2297989278479054870">तुम्ही साइन आउट केल्यानंतर, बुकमार्क, पासवर्ड आणि तुमच्या Google खाते मधील आणखी बऱ्याच गोष्टी या डिव्हाइसवरून काढून टाकल्या जातील.</translation>
 <translation id="2299218006564889602">तुमचे पासवर्ड हे Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केले जाण्यापूर्वी ते तुमच्या डिव्हाइसवर एंक्रिप्ट केले जातात.</translation>
 <translation id="2306265833370324042"><ph name="SEARCH_ENGINE_NAME" /> चे तपशील दाखवा</translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">तुमच्या शोधाचा फोटो घ्या</translation>
 <translation id="2761898608071930085">दुसरे खाते वापरा</translation>
 <translation id="2762000892062317888">आत्ताच</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{कमाल १ इमेज जोडा}other{कमाल {COUNT} इमेज जोडा}}</translation>
 <translation id="2772667768515195373">तुम्ही संपूर्ण Google उत्पादनांवर सेव्ह केलेले पत्ते वापरू शकता. हा अ‍ॅड्रेस तुमच्या Google खाते (<ph name="USER_EMAIL" />) मध्ये सेव्ह केला आहे.</translation>
 <translation id="2773344962924806829">ईमेल नोटिफिकेशन</translation>
 <translation id="2781331604911854368">सुरू</translation>
@@ -1349,6 +1353,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6058415747854995776">व्हिडिओ घ्या</translation>
 <translation id="6059830886158432458">तुमच्या स्टोरी आणि अ‍ॅक्टिव्हिटी येथे नियंत्रित करा</translation>
+<translation id="6063802271331271857">इमेज रीमिक्स करा</translation>
 <translation id="6066301408025741299">रद्द करण्यासाठी टॅप करा.</translation>
 <translation id="6074656473835429958">नोटिफिकेशन मिळवा</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) अपलोड करता आली नाही</translation>
@@ -1867,6 +1872,7 @@
 <translation id="7899199123054742721">वाचलेल्या अशी खूण करा</translation>
 <translation id="7911190106180361398">तुमची संस्था तुम्हाला सर्व गोष्टी सिंक करण्याची परवानगी देत नाही.</translation>
 <translation id="7918999344502274923"><ph name="SEARCH_ENGINE_NAME" /> चे तपशील लपवा</translation>
+<translation id="7921559948846049514">तुमच्या बॅकग्राउंडसाठी थीम, रंग किंवा आणखी बरेच काही निवडा</translation>
 <translation id="792357691529995513">कोणत्याही समस्या आढळल्या नाहीत</translation>
 <translation id="7925108652071887026">स्वयं-भरण डेटा</translation>
 <translation id="7926975587469166629">कार्डावरील टोपणनाव</translation>

@@ -412,6 +412,7 @@
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(и още 1)}other{(и още #)}}</translation>
 <translation id="5403592356182871684">Имена</translation>
 <translation id="5407203562970638234">Подобрете сигурността си</translation>
+<translation id="5436307623797390637">Приложения на устройството</translation>
 <translation id="5438097262470833822">Така ще се нулират разрешенията за <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Когато настройката е включена, сайтовете могат да извеждат запитвания за достъп до местоположението ви. Когато е изключена, сайтовете няма да виждат местоположението ви.</translation>
 <translation id="5489227211564503167">Изминало време: <ph name="ELAPSED_TIME" /> от <ph name="TOTAL_TIME" />.</translation>

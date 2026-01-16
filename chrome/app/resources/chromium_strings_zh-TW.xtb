@@ -530,6 +530,9 @@
 <translation id="6901631050894301805">將 Chromium 設為預設瀏覽器，並釘選到工作列</translation>
 <translation id="6909503629704372277">管理 Chromium 設定檔(&amp;M)</translation>
 <translation id="6934579572334859869">向「圖片搜尋」詢問這張圖片的相關問題</translation>
+<translation id="6948031725951063910">已達到 Chromium 的書籤數量上限 (<ph name="BOOKMARK_LIMIT" /> 個)，因此部分書籤尚未儲存到 Google 帳戶。
+
+請先刪除一些書籤，才能將新書籤儲存到帳戶。如果現在登出，系統會刪除未儲存的書籤。</translation>
 <translation id="6964305034639999644">在 Chromium 無痕視窗中開啟連結(&amp;G)</translation>
 <translation id="6965382102122355670">確定</translation>
 <translation id="6978145336957848883">低強度密碼很容易讓有心人士猜中，請讓 Chromium <ph name="BEGIN_LINK" />為你建立一組高強度密碼，並儲存在 Chromium 中<ph name="END_LINK" />。</translation>
@@ -698,6 +701,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8880203542552872219">如果是的話，請編輯你儲存在 Chromium 中的密碼，使其與新密碼相符。</translation>
 <translation id="8891709362986793894">貴機構要求你登入 Chromium</translation>
 <translation id="8907580949721785412">Chromium 現在會嘗試顯示密碼。如果你同意的話，請輸入你的 Windows 密碼。</translation>
+<translation id="8932992523185907506">Chromium 已不再是預設瀏覽器。將 Chromium 設為預設瀏覽器？</translation>
 <translation id="8941642502866065432">無法更新 Chromium</translation>
 <translation id="897581876605952338">Chromium Enterprise 標誌</translation>
 <translation id="8981150672034878610">開啟設定檔時發生錯誤，無法啟動 Chromium。請試著重新啟動 Chromium。</translation>

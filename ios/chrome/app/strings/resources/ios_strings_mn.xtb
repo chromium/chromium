@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Шинэ цонх</translation>
 <translation id="1558391695376153246">Нууцлалтай табуудыг хаах</translation>
 <translation id="1565371473877914088">Нууцлалтай шинэ таб</translation>
+<translation id="1567960978791353852">Унших горимыг харуулах</translation>
 <translation id="1571780780926010134">Нууцлалтай табууд</translation>
 <translation id="1580715474678097352">Аюултай вебсайтуудаас хамгаалалттай байгаарай</translation>
 <translation id="1580783302095112590">Шуудан илгээгдсэн байна.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">Нууц үгийг харахын тулд та эхлээд төхөөрөмждөө нууц код тохируулах шаардлагатай.</translation>
 <translation id="201759455285471444">Табын бүлгийг дэлгэнэ үү.</translation>
 <translation id="202070562065520783">Үүнийг надад тайлбарлана уу</translation>
+<translation id="2023713324775943812">Боломжтой үед хаяг оруулах хэсгээс унших горимд хандах</translation>
 <translation id="2044394949148788042">Табын хүснэгтийг нээх</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> бүртгэлд <ph name="HOSTED_DOMAIN" />-с тохиргоо хийсэн бөгөөд зарим мэдээллийг үзэх боломжтой байж болзошгүй. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">шинэ зүйл</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Таны табын бүлгийг энд хадгалдаг</translation>
 <translation id="2273327106802955778">Дэлгэрэнгүй цэс</translation>
 <translation id="2287614783861766820">{count,plural, =1{Энэ хаягийг энэ төхөөрөмжөөс устгана.}other{Эдгээр хаягийг энэ төхөөрөмжөөс устгана.}}</translation>
+<translation id="2295236662082735391">Gemini-р засахын тулд веб дээрх зураг дээр удаан дарна уу</translation>
 <translation id="2297989278479054870">Таныг гарсны дараа Google Бүртгэлийн тань хавчуурга, нууц үг болон бусад зүйлийг энэ төхөөрөмжөөс хасна.</translation>
 <translation id="2299218006564889602">Таны нууц үгнүүдийг Google-н Нууц үгний менежерт хадгалахаас нь өмнө төхөөрөмж дээр тань шифрлэдэг.</translation>
 <translation id="2306265833370324042"><ph name="SEARCH_ENGINE_NAME" />-н дэлгэрэнгүйг харуулах</translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Хайлтынхаа зургийг авна уу</translation>
 <translation id="2761898608071930085">Өөр бүртгэл ашиглах</translation>
 <translation id="2762000892062317888">дөнгөж сая</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{1 хүртэлх зураг нэмэх}other{{COUNT} хүртэлх зураг нэмэх}}</translation>
 <translation id="2772667768515195373">Та Google-н бүтээгдэхүүнүүд дээр хадгалсан хаягуудыг ашиглах боломжтой. Энэ хаягийг таны <ph name="USER_EMAIL" /> Google Бүртгэлд хадгалсан.</translation>
 <translation id="2773344962924806829">Имэйл мэдэгдэл</translation>
 <translation id="2781331604911854368">Асаалттай</translation>
@@ -1349,6 +1353,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="605721222689873409">YY</translation>
 <translation id="6058415747854995776">Видео бичих</translation>
 <translation id="6059830886158432458">Мэдээ, нийтлэл болон үйл ажиллагаагаа энд хянана уу</translation>
+<translation id="6063802271331271857">Зураг ремикс хийх</translation>
 <translation id="6066301408025741299">Устгахаар дарна уу</translation>
 <translation id="6074656473835429958">Мэдэгдэл авах</translation>
 <translation id="607620096698446287"><ph name="FILENAME" />-г (<ph name="FILESIZE" />) байршуулж чадсангүй</translation>
@@ -1866,6 +1871,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7899199123054742721">Бүгдийг уншаагүй гэж тэмдэглэх</translation>
 <translation id="7911190106180361398">Танай байгууллага танд бүх зүйлийг синк хийхийг зөвшөөрдөггүй.</translation>
 <translation id="7918999344502274923"><ph name="SEARCH_ENGINE_NAME" />-н дэлгэрэнгүйг нуух</translation>
+<translation id="7921559948846049514">Дэвсгэртээ зориулж загвар, өнгө эсвэл бусад зүйлийг сонгоно уу</translation>
 <translation id="792357691529995513">Ямар ч асуудал олдсонгүй</translation>
 <translation id="7925108652071887026">Автоматаар бөглөх мэдээлэл</translation>
 <translation id="7926975587469166629">Картын хоч</translation>

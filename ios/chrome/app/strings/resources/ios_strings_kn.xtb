@@ -104,6 +104,7 @@
 <translation id="1366297852155605523">ನನ್ನೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="1369286077209859800">ಟ್ಯಾಬ್‌ ಗುಂಪಿನಲ್ಲಿ ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="136942498637440594">ನೀವು ಚಿತ್ರಗಳನ್ನು ಮತ್ತು ನೀವು ನೋಡುವುದನ್ನು ಹುಡುಕಬಹುದು.</translation>
+<translation id="1373120905936431262">Nano Banana ಮೂಲಕ ರೀಮಿಕ್ಸ್ ಮಾಡಲು ಚಿತ್ರವನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="1377508275003315939">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="1381022135873211423">{count,plural, =1{{count} ರಲ್ಲಿ {position} ವಿಳಾಸ}one{{count} ರಲ್ಲಿ {position} ವಿಳಾಸಗಳು}other{{count} ರಲ್ಲಿ {position} ವಿಳಾಸಗಳು}}</translation>
 <translation id="1383876407941801731">ಹುಡುಕಿ</translation>
@@ -161,6 +162,7 @@
 <translation id="1554477036522844996">ಹೊಸ ವಿಂಡೋ</translation>
 <translation id="1558391695376153246">ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="1565371473877914088">ಹೊಸ ಅಜ್ಞಾತ ಟ್ಯಾಬ್</translation>
+<translation id="1567960978791353852">ರೀಡಿಂಗ್ ಮೋಡ್ ಅನ್ನು ತೋರಿಸಿ</translation>
 <translation id="1571780780926010134">ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="1580715474678097352">ಅಪಾಯಕಾರಿ ವೆಬ್‌ಸೈಟ್‌ಗಳಿಂದ ಸುರಕ್ಷಿತವಾಗಿರಿ</translation>
 <translation id="1580783302095112590">ಮೇಲ್ ಕಳುಹಿಸಲಾಗಿದೆ.</translation>
@@ -235,6 +237,7 @@
 <translation id="1836891464494477513">{count,plural, =1{ಬುಕ್‌ಮಾರ್ಕ್ ಅನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ, {email}}one{ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ, {email}}other{ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ, {email}}}</translation>
 <translation id="1838089197478136166">Wallet ನಲ್ಲಿ ತೆರೆಯಬೇಕೇ?</translation>
 <translation id="183878838231635348">ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆ ನಿಮಗಾಗಿ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪತ್ತೆಯಾದ ಯಾವುದೇ ಗೌಪ್ಯತೆ ಅಥವಾ ಭದ್ರತಾ ಸಮಸ್ಯೆಗಳನ್ನು ಈ ಕಾರ್ಡ್ ತೋರಿಸುತ್ತದೆ.</translation>
+<translation id="1840320537320704887">ನಿಮ್ಮ ಹೊಸ ಟ್ಯಾಬ್ ಪುಟದ ಆದ್ಯತೆಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="1845230888742614096">ಗುಂಪನ್ನು ಇರಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="1853692000353488670">ಹೊಸ ಅದೃಶ್ಯ ವಿಂಡೋ</translation>
 <translation id="1854463785401910334">ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹುಡುಕಿ</translation>
@@ -289,6 +292,7 @@
 <translation id="2015722694326466240">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಲು, ನೀವು ಮೊದಲು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಪಾಸ್‌ವಡ್‌ ಅನ್ನು ಸೆಟ್ ಮಾಡಿ.</translation>
 <translation id="201759455285471444">ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತೃತಗೊಳಿಸಿ.</translation>
 <translation id="202070562065520783">ಇದನ್ನು ನನಗೆ ವಿವರಿಸಿ</translation>
+<translation id="2023713324775943812">ಲಭ್ಯವಿದ್ದಾಗ ವಿಳಾಸ ಪಟ್ಟಿಯಿಂದ ರೀಡಿಂಗ್ ಮೋಡ್ ಅನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಿ</translation>
 <translation id="2044394949148788042">ಟ್ಯಾಬ್‌ ಗ್ರಿಡ್‌ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="2044681667265133332">ಖಾತೆ <ph name="USER_EMAIL" /> ಅನ್ನು <ph name="HOSTED_DOMAIN" /> ನಿಂದ ನಿರ್ವಹಿಸಲಾಗುತ್ತದೆ, ಇದು ಕೆಲವು ಮಾಹಿತಿಯನ್ನು ವೀಕ್ಷಿಸಲು ಸಾಧ್ಯವಾಗಬಹುದು. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">ಹೊಸ ಐಟಂ</translation>
@@ -358,6 +362,7 @@
 <translation id="2271452184061378400">ನಿಮ್ಮ ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ಇಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2273327106802955778">ಹೆಚ್ಚಿನ ಮೆನು</translation>
 <translation id="2287614783861766820">{count,plural, =1{ಈ ಸಾಧನದಿಂದ ಈ ವಿಳಾಸವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ.}one{ಈ ಸಾಧನದಿಂದ ಈ ವಿಳಾಸಗಳನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ.}other{ಈ ಸಾಧನದಿಂದ ಈ ವಿಳಾಸಗಳನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ.}}</translation>
+<translation id="2295236662082735391">Gemini ಮೂಲಕ ಎಡಿಟ್ ಮಾಡಲು ವೆಬ್‌ನಲ್ಲಿ ಚಿತ್ರವನ್ನು ಲಾಂಗ್ ಪ್ರೆಸ್ ಮಾಡಿ</translation>
 <translation id="2297989278479054870">ನೀವು ಸೈನ್ ಔಟ್ ಮಾಡಿದ ನಂತರ, ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿರುವ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಈ ಸಾಧನದಿಂದ ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ.</translation>
 <translation id="2299218006564889602">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು Google ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕದಲ್ಲಿ ಉಳಿಸುವ ಮೊದಲು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
 <translation id="2306265833370324042"><ph name="SEARCH_ENGINE_NAME" /> ವಿವರಗಳನ್ನು ತೋರಿಸಿ</translation>
@@ -479,6 +484,7 @@
 <translation id="2761788987260570878">ನಿಮ್ಮ ಹುಡುಕಾಟದ ಫೋಟೋವನ್ನು ತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="2761898608071930085">ಮತ್ತೊಂದು ಖಾತೆಯನ್ನು ಬಳಸಿ</translation>
 <translation id="2762000892062317888">ಈಗತಾನೇ</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{ಗರಿಷ್ಠ 1 ಚಿತ್ರವನ್ನು ಸೇರಿಸಿ}one{ಗರಿಷ್ಠ {COUNT} ಚಿತ್ರಗಳನ್ನು ಸೇರಿಸಿ}other{ಗರಿಷ್ಠ {COUNT} ಚಿತ್ರಗಳನ್ನು ಸೇರಿಸಿ}}</translation>
 <translation id="2772667768515195373">ಸೇವ್ ಮಾಡಿದ ವಿಳಾಸಗಳನ್ನು ನೀವು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಬಳಸಬಹುದು. ಈ ವಿಳಾಸವನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ <ph name="USER_EMAIL" /> ಸೇವ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="2773344962924806829">ಇಮೇಲ್ ನೋಟಿಫಿಕೇಶನ್‌ಗಳು</translation>
 <translation id="2781331604911854368">ಆನ್‌ ಆಗಿದೆ</translation>
@@ -874,6 +880,7 @@
 <translation id="4338650699862464074">ನೀವು ಭೇಟಿ ನೀಡುವ ಪುಟಗಳ URL ಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಿ.</translation>
 <translation id="4342946437867096381">ನೀವು ಈಗಾಗಲೇ ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಈ ಸೈಟ್‌ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್ ಒಂದನ್ನು ಉಳಿಸಿದ್ದೀರಿ. Google ನಿಮಗಾಗಿ ಇತ್ತೀಚಿನ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಬಹುದು.</translation>
 <translation id="4365121137632832185">ಟ್ಯಾಬ್‌ ಗುಂಪು. ವಿಸ್ತೃತಗೊಳಿಸಲಾಗಿದೆ.</translation>
+<translation id="4365685757967464989">ಫೋಟೋಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಲು Gemini ಗೆ ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಲು ಅನುಮತಿಸಿ</translation>
 <translation id="4367971618859387374">ಡಿಸ್‌ಪ್ಲೇ ಹೆಸರು</translation>
 <translation id="4375772272517383391">ಎಲ್ಲ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="4378154925671717803">ಫೋನ್</translation>
@@ -957,6 +964,7 @@
 
        ಈ ಸಾಧನದಲ್ಲಿ ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಏನು ಮಾಡಬೇಕೆಂದು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="4675298276894277358">ಈ ಸೈಟ್ ಅನ್ನು ಮತ್ತೆ ತೋರಿಸಲಾಗುವುದಿಲ್ಲ</translation>
+<translation id="4676647168422678078">ನಿಮ್ಮ ಹೊಸ ಟ್ಯಾಬ್ ಪುಟದ ಆದ್ಯತೆಗಳನ್ನು ಅನ್ವಯಿಸಬೇಕೇ?</translation>
 <translation id="4682496302933121474">ಪುಟವನ್ನು ಅನುವಾದಿಸಬೇಕೇ?</translation>
 <translation id="4682686630151240767">1. iPhone ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="4691892551491778176">ನೀವು ಈ ಫೀಚರ್ ಅನ್ನು ಬಳಸುವಾಗ, ಪುಟದ ಕಂಟೆಂಟ್‌ ಮತ್ತು URL ಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ ಆದರೆ ಜನರೇಟಿವ್ AI ಮಾಡೆಲ್‌ಗಳನ್ನು ಸುಧಾರಿಸಲು ಬಳಸಲಾಗುವುದಿಲ್ಲ. ನೀವು ಇದನ್ನು ಯಾವುದೇ ಸಮಯದಲ್ಲಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಆಫ್ ಮಾಡಬಹುದು.</translation>
@@ -1005,6 +1013,7 @@
 <translation id="4840495572919996524">ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಇತಿಹಾಸ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಹೆಚ್ಚಿನವುಗಳನ್ನು ಇನ್ನು ಮುಂದೆ ನಿಮ್ಮ Google ಖಾತೆಗೆ ಸಿಂಕ್ ಮಾಡುವುದಿಲ್ಲ.</translation>
 <translation id="484280513275854557">ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗಿದೆ; ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="4850886885716139402">ವೀಕ್ಷಣೆ</translation>
+<translation id="4854068532375923088">ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಲು "Gemini" ಗೆ ಅನುಮತಿಸಿ</translation>
 <translation id="4860895144060829044">ಕರೆ</translation>
 <translation id="4861953997778766866">ನಿಮ್ಮ ಹಂಚಿಕೊಳ್ಳಲಾದ ಟ್ಯಾಬ್‌ ಗುಂಪುಗಳಿಗೆ ಪ್ರತಿಯೊಬ್ಬರೂ ಬದಲಾವಣೆಗಳನ್ನು ಮಾಡಬಹುದು</translation>
 <translation id="4865063548323785458">ಸೈಟ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳಿಗೆ ಸುಲಭವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಲು ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಿ ಮತ್ತು ಆಟೋಫಿಲ್ ಮಾಡಿ</translation>
@@ -1208,6 +1217,7 @@
 <translation id="5579012242779565775">ಓದುವ ಪಟ್ಟಿಯನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="5581786858144165447">AI ಮೋಡ್ ಅನ್ನು ಕೇಳಿ</translation>
 <translation id="5585019845078534178">ಕಾರ್ಡ್‌ಗಳು</translation>
+<translation id="5591526871732898147">ಲಗತ್ತಿಸಲಾದ ಚಿತ್ರ {index}</translation>
 <translation id="5595485650161345191">ವಿಳಾಸ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="559567008082979829">ನಿಮ್ಮ ಡೌನ್‌ಲೋಡ್‌ಗಳನ್ನು ಒಂದು ತಿಂಗಳ ನಂತರ ಅಳಿಸಲು ಸೆಟ್‌ ಮಾಡಿ.</translation>
 <translation id="5596627076506792578">ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು</translation>
@@ -1343,6 +1353,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6058415747854995776">ವೀಡಿಯೊ ತೆಗೆಯಿರಿ</translation>
 <translation id="6059830886158432458">ನಿಮ್ಮ ಕತೆಗಳು ಮತ್ತು ಚಟುವಟಿಕೆಯನ್ನು ಇಲ್ಲಿ ನಿರ್ವಹಿಸಿ</translation>
+<translation id="6063802271331271857">ಚಿತ್ರವನ್ನು ರೀಮಿಕ್ಸ್ ಮಾಡಿ</translation>
 <translation id="6066301408025741299">ರದ್ದುಮಾಡಲು ಟ್ಯಾಪ್‌ ಮಾಡಿ</translation>
 <translation id="6074656473835429958">ಅನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) ಅಪ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
@@ -1860,6 +1871,7 @@
 <translation id="7899199123054742721">ಎಲ್ಲಾ ಓದದೇ ಇರುವವುಗಳನ್ನು ಗುರುತಿಸಿ</translation>
 <translation id="7911190106180361398">ಎಲ್ಲವನ್ನೂ ಸಿಂಕ್ ಮಾಡಲು ನಿಮ್ಮ ಸಂಸ್ಥೆ ನಿಮಗೆ ಅನುಮತಿಸುವುದಿಲ್ಲ.</translation>
 <translation id="7918999344502274923"><ph name="SEARCH_ENGINE_NAME" /> ವಿವರಗಳನ್ನು ಮರೆಮಾಡಿ</translation>
+<translation id="7921559948846049514">ನಿಮ್ಮ ಹಿನ್ನೆಲೆಗಾಗಿ ಥೀಮ್, ಬಣ್ಣ ಅಥವಾ ಇತ್ಯಾದಿಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="792357691529995513">ಯಾವುದೇ ಸಮಸ್ಯೆಗಳು ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="7925108652071887026">ಸ್ವಯಂಭರ್ತಿ ಡೇಟಾ</translation>
 <translation id="7926975587469166629">ಕಾರ್ಡ್ ಅಡ್ಡ ಹೆಸರು</translation>
@@ -1908,6 +1920,7 @@
 <translation id="8059312861912872211">{count,plural, =1{{count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು}one{{count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು}other{{count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು}}</translation>
 <translation id="8059533439631660104">ವಿಭಾಗವನ್ನು ಕುಗ್ಗಿಸುತ್ತದೆ.</translation>
 <translation id="8061584726507121204">ಇತಿಹಾಸ</translation>
+<translation id="8064946459644399612">ನಿಮ್ಮ ಹೊಸ ಟ್ಯಾಬ್ ಪುಟದ ಆದ್ಯತೆಗಳನ್ನು ಅನ್ವಯಿಸಲಾಗಿದೆ</translation>
 <translation id="8069168488983557089">ಯಾವುದೇ ವಿಷಯವನ್ನು ಅರ್ಥಮಾಡಿಕೊಳ್ಳಲು ನಿಮಗೆ ಸಹಾಯ ಮಾಡುವ ಪ್ರಮುಖ ತೀರ್ಮಾನಗಳು ಮತ್ತು ಒಳನೋಟಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="8069394452933076548">ಇತ್ತೀಚೆಗೆ ಬಳಸಲಾಗಿರದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ನಿಷ್ಕ್ರಿಯ ಟ್ಯಾಬ್ ವಿಭಾಗಕ್ಕೆ ಯಾವಾಗ ಸರಿಸಬೇಕು ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="8073670137947914548">ಡೌನ್‌ಲೋಡ್‌ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
@@ -1938,6 +1951,7 @@
 <translation id="8161614462829037225"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ಬಳಸಿಕೊಂಡು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="8173034266693057059">ಉದ್ದ</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} ಗಾಗಿ}=2{{website_1}, {website_2} ಗಾಗಿ}=3{{website_1}, {website_2} ಮತ್ತು ಇನ್ನೂ 1 ಕ್ಕಾಗಿ}one{{website_1}, {website_2}, ಮತ್ತು ಇನ್ನೂ {more_count} ಕ್ಕಾಗಿ}other{{website_1}, {website_2}, ಮತ್ತು ಇನ್ನೂ {more_count} ಕ್ಕಾಗಿ}}</translation>
+<translation id="8184895727539791845">ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಲು Gemini ಗೆ ಅನುಮತಿಸಲು, iOS ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಕ್ಯಾಮರಾವನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="8185076488803799132">ಇಂಪೋರ್ಟ್ ಮಾಡಿಕೊಳ್ಳಿ</translation>
 <translation id="8189615296021678665">ಮುಂದಿನ ಬಾರಿ ನೀವು ಸೈನ್‌ ಇನ್‌ ಮಾಡಿದಾಗ ಈ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸುಲಭವಾಗಿ ಆ್ಯಕ್ಸೆಸ್‌ ಮಾಡಲು "ಸೇವ್‌ ಮಾಡಿ" ಎಂಬುದನ್ನು ಟ್ಯಾಪ್‌ ಮಾಡಿ.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />ನಿಮ್ಮ ಸಾಧನಗಳು<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -2006,6 +2020,7 @@
 <translation id="8428045167754449968">ನಗರ / ಪಟ್ಟಣ</translation>
 <translation id="8428213095426709021">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="8428634594422941299">ಅರ್ಥವಾಯಿತು</translation>
+<translation id="8429455911440977338">ಕ್ಯಾಮರಾ ಆನ್ ಮಾಡಿ</translation>
 <translation id="8434837876193928924">ಟ್ಯಾಬ್ ಗುಂಪಿನ ವಿವರಗಳು</translation>
 <translation id="8438566539970814960">ಹುಡುಕಾಟಗಳನ್ನು ಮತ್ತು ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಉತ್ತಮಗೊಳಿಸುವಂತೆ ಮಾಡಿ</translation>
 <translation id="8439758443371991593">ಓದುವ ಪಟ್ಟಿಗೆ ಸೇರಿಸಿ ಎಂಬುದನ್ನು ಮರೆಮಾಡಿ</translation>
@@ -2247,6 +2262,7 @@
 <translation id="956218893102219091">ಅತ್ಯಂತ ನಿಖರವಾದ Gemini ಫಲಿತಾಂಶಗಳಿಗಾಗಿ ನಿಮ್ಮ IP ವಿಳಾಸವನ್ನು ಆಧರಿಸಿದ ಅಂದಾಜು ಮಾಡಿದ ಸ್ಥಳದ ಬದಲಾಗಿ ನಿಮ್ಮ ನಿಖರವಾದ ಸ್ಥಳವನ್ನು ಬಳಸಿ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಿ</translation>
 <translation id="963102227019621224">ವೆಬ್‌ ಮತ್ತು ಆ್ಯಪ್‌ ಚಟುವಟಿಕೆ</translation>
+<translation id="965259330007686240">Gemini ಮೂಲಕ ಚಿತ್ರವನ್ನು ರಚಿಸಿ</translation>
 <translation id="965879457362663186">ಲಗತ್ತನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="966593914872420832">ಧ್ವನಿ ಹುಡುಕಾಟ</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{<ph name="OWNER_NAME" /> ಅವರೊಂದಿಗೆ ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಸೇರಿಕೊಳ್ಳಿ}=1{<ph name="OWNER_NAME" /> ಮತ್ತು {COUNT} ಇತರ ಸದಸ್ಯರೊಂದಿಗೆ ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಸೇರಿಕೊಳ್ಳಿ}one{<ph name="OWNER_NAME" /> ಮತ್ತು {COUNT} ಇತರ ಸದಸ್ಯರೊಂದಿಗೆ ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಸೇರಿಕೊಳ್ಳಿ}other{<ph name="OWNER_NAME" /> ಮತ್ತು {COUNT} ಇತರ ಸದಸ್ಯರೊಂದಿಗೆ ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಸೇರಿಕೊಳ್ಳಿ}}</translation>

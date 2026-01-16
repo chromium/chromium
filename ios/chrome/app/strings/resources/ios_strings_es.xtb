@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">Nueva ventana</translation>
 <translation id="1558391695376153246">Cerrar pestañas incógnito</translation>
 <translation id="1565371473877914088">Nueva pestaña de Incógnito</translation>
+<translation id="1567960978791353852">Mostrar modo Lectura</translation>
 <translation id="1571780780926010134">Pestañas de Incógnito</translation>
 <translation id="1580715474678097352">Protégete contra sitios web peligrosos</translation>
 <translation id="1580783302095112590">Correo enviado</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">Para ver las contraseñas, primero debes configurar una contraseña en tu dispositivo.</translation>
 <translation id="201759455285471444">Desplegar grupo de pestañas.</translation>
 <translation id="202070562065520783">Explícame esto</translation>
+<translation id="2023713324775943812">Accede al modo Lectura desde la barra de direcciones cuando esté disponible</translation>
 <translation id="2044394949148788042">Abre la cuadrícula de pestañas</translation>
 <translation id="2044681667265133332">La cuenta <ph name="USER_EMAIL" /> la gestiona <ph name="HOSTED_DOMAIN" />, que podría ver cierta información. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nuevo elemento</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">Tus grupos de pestañas se guardan aquí</translation>
 <translation id="2273327106802955778">Menú más</translation>
 <translation id="2287614783861766820">{count,plural, =1{Esta dirección se eliminará de este dispositivo.}other{Estas direcciones se eliminarán de este dispositivo.}}</translation>
+<translation id="2295236662082735391">Mantén pulsada una imagen en la Web para editarla con Gemini</translation>
 <translation id="2297989278479054870">Cuando cierres sesión, los marcadores, las contraseñas y otros datos de tu cuenta de Google se eliminarán de este dispositivo.</translation>
 <translation id="2299218006564889602">Tus contraseñas se cifran en tu dispositivo antes de que se guarden en el Gestor de contraseñas de Google.</translation>
 <translation id="2306265833370324042">Mostrar detalles de <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">Haz una foto de tu búsqueda</translation>
 <translation id="2761898608071930085">Usar otra cuenta</translation>
 <translation id="2762000892062317888">justo ahora</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Añade 1 imagen como máximo}other{Añade {COUNT} imágenes como máximo}}</translation>
 <translation id="2772667768515195373">Puedes usar las direcciones guardadas en todos los productos de Google. Esta dirección está guardada en tu cuenta de Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">Notificaciones por correo electrónico</translation>
 <translation id="2781331604911854368">Activado</translation>
@@ -1349,6 +1353,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="605721222689873409">AA</translation>
 <translation id="6058415747854995776">Grabar vídeo</translation>
 <translation id="6059830886158432458">Controla tus noticias y tu actividad aquí</translation>
+<translation id="6063802271331271857">Haz un remix con una imagen</translation>
 <translation id="6066301408025741299">Toca para cancelar.</translation>
 <translation id="6074656473835429958">Recibir notificaciones</translation>
 <translation id="607620096698446287">No se ha podido subir <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -1640,7 +1645,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="7029809446516969842">Contraseñas</translation>
 <translation id="7035825883570480307">¿Activar las notificaciones?</translation>
 <translation id="7039345315346323556">Recientes</translation>
-<translation id="704692552158601232">Aplicación de navegador predeterminada</translation>
+<translation id="704692552158601232">Navegador predeterminado</translation>
 <translation id="7055240621761583113">Autocompletar la contraseña</translation>
 <translation id="7057567173736333354">Describe la imagen</translation>
 <translation id="7063811929043357292">Tu padre o madre gestiona tu cuenta.
@@ -1866,6 +1871,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="7899199123054742721">Marcar todo como no leído</translation>
 <translation id="7911190106180361398">Tu organización no te permite sincronizar todo.</translation>
 <translation id="7918999344502274923">Ocultar detalles de <ph name="SEARCH_ENGINE_NAME" /></translation>
+<translation id="7921559948846049514">Elige un tema, un color u otras opciones para tu fondo</translation>
 <translation id="792357691529995513">No se han detectado problemas</translation>
 <translation id="7925108652071887026">Datos de Autocompletar</translation>
 <translation id="7926975587469166629">Nombre de la tarjeta</translation>

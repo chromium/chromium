@@ -512,6 +512,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="6326175484149238433">Ukloni iz Chrome-a</translation>
 <translation id="6327105987658262776">Nema dostupnih ažuriranja.</translation>
 <translation id="6334815226785304306">Podesite Google Chrome kao podrazumevani pregledač i zakačite ga na traku zadataka</translation>
+<translation id="63540178978900677">Chrome više nije podrazumevani pregledač. Želite da podesite Chrome kao podrazumevani pregledač?</translation>
 <translation id="6360449101159168105">Dok je ova kartica bila neaktivna, memorija je oslobođena da bi Chrome bio brz. Možete da odaberete da uvek izuzmete ovaj sajt iz neaktivnosti.</translation>
 <translation id="6388799252195623474">pomoć u vezi sa ovim</translation>
 <translation id="6412673304250309937">Proverava URL-ove sa listom nebezbednih sajtova koji se čuvaju u Chrome-u. Ako neki sajt pokuša da ukrade vašu lozinku ili probate da preuzmete štetnu datoteku, Chrome može da pošalje URL-ove, uključujući delove sadržaja stranice, u Bezbedno pregledanje.</translation>
@@ -713,6 +714,9 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="8418845734693287262">Chrome OS ne može da sinhronizuje podatke zato što su podaci za prijavljivanje na nalog zastareli.</translation>
 <translation id="842386925677997438">Chrome alatke za bezbednost</translation>
 <translation id="8425765582779547329">Ako želiš veću bezbednost onlajn uz izbore roditelja, prijavi se u Chrome</translation>
+<translation id="842852285618875960">Dostigli ste ograničenje Google Chrome-a za obeleživače (<ph name="BOOKMARK_LIMIT" />), pa neki obeleživači još uvek nisu sačuvani na Google nalogu.
+
+Ne možete da sačuvate nove obeleživače na nalogu dok ne izbrišete neke. Ako se odjavite odmah, izbrisaćete nesačuvane obeleživače.</translation>
 <translation id="8433638294851456451">Da biste poslali broj sa ovog uređaja na Android telefon, prijavite se u Chrome na oba uređaja.</translation>
 <translation id="8496177819998570653">Google menadžer lozinki</translation>
 <translation id="8498858610309223613">Posebno bezbednosno ažuriranje za Google Chrome je upravo primenjeno. Restartujte ga i vratićemo vam kartice.</translation>

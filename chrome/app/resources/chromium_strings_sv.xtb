@@ -533,6 +533,9 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog elle
 <translation id="6901631050894301805">Ställ in Chromium som standardwebbläsare och fäst den på aktivitetsfältet</translation>
 <translation id="6909503629704372277">&amp;Hantera Chromium-profiler</translation>
 <translation id="6934579572334859869">Fråga bildsökning om den här bilden</translation>
+<translation id="6948031725951063910">Du har nått gränsen på <ph name="BOOKMARK_LIMIT" /> bokmärken i Chromium, så vissa av dina bokmärken har inte sparats i Google-kontot ännu.
+
+Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om du loggar ut nu raderas bokmärken som inte har sparats.</translation>
 <translation id="6964305034639999644">Öppna länken i ett inko&amp;gnitofönster i Chromium.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6978145336957848883">Svaga lösenord är lätta att lista ut. Låt Chromium <ph name="BEGIN_LINK" />skapa och spara starka lösenord åt dig<ph name="END_LINK" />.</translation>
@@ -701,6 +704,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8880203542552872219">Om så är fallet ska du redigera det sparade lösenordet i Chromium så att det matchar det nya lösenordet.</translation>
 <translation id="8891709362986793894">Organisationen kräver att du loggar in i Chromium</translation>
 <translation id="8907580949721785412">Skriv ditt lösenord i Windows om du vill tillåta att lösenord visas i Chromium.</translation>
+<translation id="8932992523185907506">Chromium är inte längre din standardwebbläsare. Vill du använda Chromium som standardwebbläsare?</translation>
 <translation id="8941642502866065432">Det gick inte att uppdatera Chromium</translation>
 <translation id="897581876605952338">Logotypen för Chromium Enterprise</translation>
 <translation id="8981150672034878610">Det går inte att starta Chromium eftersom något gick fel när profilen öppnades. Testa att starta om Chromium.</translation>

@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">Управление на достъпа</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Затваряне на елемента}other{Затваряне на елементите}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Долният лист за раздела е отворен на половината височина.</translation>
 <translation id="374923079891132274">Миниизобр. на опции за споделяне.</translation>
 <translation id="3776329373944672717">Заглавие на групата раздели „<ph name="TITLE_OF_GROUP" />“</translation>
 <translation id="3810973564298564668">Управление</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">Последният ви раздел</translation>
 <translation id="5380159289133845234">Архивиране на дублиращите се раздели</translation>
 <translation id="5446043142172831860">Премахване на раздела и напускане на групата</translation>
+<translation id="5465437530117042974">Долният лист за раздела е затворен.</translation>
 <translation id="5490235265819901748">Групата с раздели е разгъната</translation>
 <translation id="5494920125229734069">Избиране на всички</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Добавете до <ph name="LIMIT_COUNT_ONE" /> файл, раздел или изображение}other{Добавете до <ph name="LIMIT_COUNT_MANY" /> файла, раздела или изображения}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">Затваряне</translation>
 <translation id="6051432659151380973">Групите раздели се запазват автоматично</translation>
 <translation id="6054741997831917303">Цената на този артикул наскоро бе намалена от <ph name="PREVIOUS_PRICE" /> на <ph name="NEW_PRICE" /></translation>
+<translation id="606985262342505139">Долният лист за раздела е отворен на пълната височина</translation>
 <translation id="6109251075362363230">Всички дублиращи се раздели вече ще бъдат архивирани с изключение на най-скоро използваното копие.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Затваряне на <ph name="TABS_COUNT_ONE" /> избран елемент}other{Затваряне на <ph name="TABS_COUNT_MANY" /> избрани елемента}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Преместване на групата в нов прозорец}other{Преместване на групата в друг прозорец}}</translation>

@@ -104,6 +104,7 @@
 <translation id="1366297852155605523">แชร์กับฉัน</translation>
 <translation id="1369286077209859800">แสดงแท็บทั้งหมดในกลุ่มแท็บ</translation>
 <translation id="136942498637440594">คุณค้นหารูปภาพและสิ่งที่คุณเห็นได้</translation>
+<translation id="1373120905936431262">อัปโหลดรูปภาพเพื่อรีมิกซ์ด้วย Nano Banana</translation>
 <translation id="1377508275003315939">รหัสผ่าน</translation>
 <translation id="1381022135873211423">{count,plural, =1{ที่อยู่ที่ {position} จาก {count} รายการ}other{ที่อยู่ที่ {position} จาก {count} รายการ}}</translation>
 <translation id="1383876407941801731">ค้นหา</translation>
@@ -161,6 +162,7 @@
 <translation id="1554477036522844996">หน้าต่างใหม่</translation>
 <translation id="1558391695376153246">ปิดแท็บที่ไม่ระบุตัวตน</translation>
 <translation id="1565371473877914088">แท็บใหม่ที่ไม่ระบุตัวตน</translation>
+<translation id="1567960978791353852">แสดงโหมดการอ่าน</translation>
 <translation id="1571780780926010134">แท็บที่ไม่ระบุตัวตน</translation>
 <translation id="1580715474678097352">รับการปกป้องให้พ้นจากเว็บไซต์ที่เป็นอันตราย</translation>
 <translation id="1580783302095112590">ส่งอีเมลแล้ว</translation>
@@ -235,6 +237,7 @@
 <translation id="1836891464494477513">{count,plural, =1{บันทึกบุ๊กมาร์กไว้ในบัญชี Google ของคุณ {email} แล้ว}other{บันทึกบุ๊กมาร์กไว้ในบัญชี Google ของคุณ {email} แล้ว}}</translation>
 <translation id="1838089197478136166">เปิดใน Wallet ใช่ไหม</translation>
 <translation id="183878838231635348">การ์ดนี้แสดงปัญหาด้านความเป็นส่วนตัวหรือความปลอดภัยที่การตรวจสอบความปลอดภัยตรวจหาให้คุณโดยอัตโนมัติ</translation>
+<translation id="1840320537320704887">นำค่ากำหนดหน้าแท็บใหม่ออกแล้ว</translation>
 <translation id="1845230888742614096">เก็บกลุ่มไว้</translation>
 <translation id="1853692000353488670">แท็บใหม่ที่ไม่ระบุตัวตน</translation>
 <translation id="1854463785401910334">ค้นหาในแท็บที่เปิดอยู่</translation>
@@ -289,6 +292,7 @@
 <translation id="2015722694326466240">หากต้องการดูรหัสผ่าน คุณต้องตั้งพาสโค้ดในอุปกรณ์ก่อน</translation>
 <translation id="201759455285471444">ขยายกลุ่มแท็บ</translation>
 <translation id="202070562065520783">อธิบายให้ฉันฟังหน่อย</translation>
+<translation id="2023713324775943812">เข้าถึงโหมดการอ่านจากแถบที่อยู่เมื่อพร้อมใช้งาน</translation>
 <translation id="2044394949148788042">เปิดตารางกริดของแท็บ</translation>
 <translation id="2044681667265133332">บัญชี <ph name="USER_EMAIL" /> จัดการโดย <ph name="HOSTED_DOMAIN" /> ซึ่งอาจดูข้อมูลบางอย่างได้ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">รายการใหม่</translation>
@@ -358,6 +362,7 @@
 <translation id="2271452184061378400">กลุ่มแท็บจะบันทึกไว้ที่นี่</translation>
 <translation id="2273327106802955778">เมนูเพิ่มเติม</translation>
 <translation id="2287614783861766820">{count,plural, =1{ระบบจะลบที่อยู่นี้ออกจากอุปกรณ์เครื่องนี้}other{ระบบจะลบที่อยู่เหล่านี้ออกจากอุปกรณ์เครื่องนี้}}</translation>
+<translation id="2295236662082735391">กดรูปภาพบนเว็บค้างไว้เพื่อแก้ไขด้วย Gemini</translation>
 <translation id="2297989278479054870">หลังจากที่คุณออกจากระบบ บุ๊กมาร์ก รหัสผ่าน และข้อมูลอื่นๆ ในบัญชี Google จะถูกนำออกจากอุปกรณ์นี้</translation>
 <translation id="2299218006564889602">ระบบจะเข้ารหัสให้แก่รหัสผ่านในอุปกรณ์ก่อนบันทึกลงในเครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="2306265833370324042">แสดงรายละเอียด <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -479,6 +484,7 @@
 <translation id="2761788987260570878">ถ่ายรูปสิ่งที่คุณค้นหา</translation>
 <translation id="2761898608071930085">ใช้บัญชีอื่น</translation>
 <translation id="2762000892062317888">เมื่อสักครู่</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{เพิ่มรูปภาพได้สูงสุด 1 รูป}other{เพิ่มรูปภาพได้สูงสุด {COUNT} รูป}}</translation>
 <translation id="2772667768515195373">คุณใช้ที่อยู่ที่บันทึกไว้ในผลิตภัณฑ์ต่างๆ ของ Google ได้ ระบบจะบันทึกที่อยู่นี้ไว้ในบัญชี Google <ph name="USER_EMAIL" /></translation>
 <translation id="2773344962924806829">การแจ้งเตือนทางอีเมล</translation>
 <translation id="2781331604911854368">เปิด</translation>
@@ -874,6 +880,7 @@
 <translation id="4338650699862464074">ส่ง URL ของหน้าที่คุณเข้าชมไปยัง Google</translation>
 <translation id="4342946437867096381">คุณบันทึกรหัสผ่านสำหรับเว็บไซต์นี้ในบัญชี Google แล้ว Google จะเลือกรหัสผ่านล่าสุดให้คุณได้</translation>
 <translation id="4365121137632832185">กลุ่มแท็บ ขยายอยู่</translation>
+<translation id="4365685757967464989">อนุญาตให้ Gemini ใช้กล้องเพื่อถ่ายรูป</translation>
 <translation id="4367971618859387374">ชื่อที่แสดง</translation>
 <translation id="4375772272517383391">ปิดแท็บทั้งหมด</translation>
 <translation id="4378154925671717803">โทรศัพท์</translation>
@@ -957,6 +964,7 @@
 
        เลือกว่าจะทำอย่างไรกับข้อมูลการท่องเว็บที่มีอยู่ในอุปกรณ์นี้</translation>
 <translation id="4675298276894277358">เว็บไซต์นี้จะไม่แสดงอีก</translation>
+<translation id="4676647168422678078">ใช้ค่ากำหนดหน้าแท็บใหม่ไหม</translation>
 <translation id="4682496302933121474">แปลหน้าเว็บไหม</translation>
 <translation id="4682686630151240767">1. เปิดการตั้งค่า iPhone</translation>
 <translation id="4691892551491778176">เมื่อคุณใช้ฟีเจอร์นี้ ระบบจะส่งเนื้อหาและ URL ของหน้าเว็บไปยัง Google แต่จะไม่นำไปใช้สำหรับการปรับปรุงโมเดล Generative AI คุณปิดได้ทุกเมื่อในการตั้งค่า</translation>
@@ -1005,6 +1013,7 @@
 <translation id="4840495572919996524">บุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และอื่นๆ จะไม่ซิงค์กับบัญชี Google อีกต่อไป</translation>
 <translation id="484280513275854557">คุณออกจากระบบแล้ว ลบข้อมูลการท่องเว็บแล้ว</translation>
 <translation id="4850886885716139402">ดู</translation>
+<translation id="4854068532375923088">อนุญาตให้ "Gemini" ใช้กล้อง</translation>
 <translation id="4860895144060829044">โทร</translation>
 <translation id="4861953997778766866">ทุกคนจะเปลี่ยนแปลงกลุ่มแท็บที่แชร์ของคุณได้</translation>
 <translation id="4865063548323785458">บันทึกและป้อนรหัสผ่านอัตโนมัติเพื่อลงชื่อเข้าใช้เว็บไซต์และแอปต่างๆ ได้อย่างง่ายดาย</translation>
@@ -1208,6 +1217,7 @@
 <translation id="5579012242779565775">ซ่อน "เรื่องรออ่าน"</translation>
 <translation id="5581786858144165447">ถามโหมด AI</translation>
 <translation id="5585019845078534178">การ์ด</translation>
+<translation id="5591526871732898147">รูปภาพที่แนบ {index}</translation>
 <translation id="5595485650161345191">แก้ไขที่อยู่</translation>
 <translation id="559567008082979829">ตั้งค่าให้ระบบลบการดาวน์โหลดของคุณหลังจากผ่านไป 1 เดือน</translation>
 <translation id="5596627076506792578">ตัวเลือกเพิ่มเติม</translation>
@@ -1343,6 +1353,7 @@
 <translation id="605721222689873409">ปป</translation>
 <translation id="6058415747854995776">ถ่ายวิดีโอ</translation>
 <translation id="6059830886158432458">ควบคุมเรื่องราวและกิจกรรมของคุณได้ที่นี่</translation>
+<translation id="6063802271331271857">รีมิกซ์รูปภาพ</translation>
 <translation id="6066301408025741299">แตะเพื่อยกเลิก</translation>
 <translation id="6074656473835429958">รับการแจ้งเตือน</translation>
 <translation id="607620096698446287">อัปโหลด <ph name="FILENAME" /> (<ph name="FILESIZE" />) ไม่ได้</translation>
@@ -1860,6 +1871,7 @@
 <translation id="7899199123054742721">ทำเครื่องหมายทั้งหมดว่ายังไม่ได้อ่าน</translation>
 <translation id="7911190106180361398">องค์กรของคุณไม่อนุญาตให้ซิงค์ทุกอย่าง</translation>
 <translation id="7918999344502274923">ซ่อนรายละเอียด <ph name="SEARCH_ENGINE_NAME" /></translation>
+<translation id="7921559948846049514">เลือกธีม สี หรืออื่นๆ สำหรับพื้นหลัง</translation>
 <translation id="792357691529995513">ไม่พบปัญหา</translation>
 <translation id="7925108652071887026">ป้อนข้อมูลอัตโนมัติ</translation>
 <translation id="7926975587469166629">ชื่อเล่นของบัตร</translation>
@@ -1908,6 +1920,7 @@
 <translation id="8059312861912872211">{count,plural, =1{บุ๊กมาร์ก {count} รายการ}other{บุ๊กมาร์ก {count} รายการ}}</translation>
 <translation id="8059533439631660104">ยุบส่วนนี้</translation>
 <translation id="8061584726507121204">ประวัติการเข้าชม</translation>
+<translation id="8064946459644399612">ใช้ค่ากำหนดหน้าแท็บใหม่แล้ว</translation>
 <translation id="8069168488983557089">รับข้อมูลสำคัญและข้อมูลเชิงลึกที่จะช่วยให้คุณเข้าใจหัวข้อต่างๆ</translation>
 <translation id="8069394452933076548">เลือกว่าตอนไหนที่จะย้ายแท็บที่ไม่ได้ใช้งานเมื่อเร็วๆ นี้ไปไว้ในส่วนแท็บที่ไม่ได้ใช้งาน</translation>
 <translation id="8073670137947914548">ดาวน์โหลดเสร็จแล้ว</translation>
@@ -1938,6 +1951,7 @@
 <translation id="8161614462829037225">ปลดล็อกด้วย <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">ความยาว</translation>
 <translation id="8182037667962849780">{count,plural, =1{สำหรับ {website_1}}=2{สำหรับ {website_1}, {website_2}}=3{สำหรับ {website_1}, {website_2} และอีก 1 เว็บไซต์}other{สำหรับ {website_1}, {website_2} และอีก {more_count} เว็บไซต์}}</translation>
+<translation id="8184895727539791845">หากต้องการอนุญาตให้ Gemini ใช้กล้อง ให้เปิดใช้กล้องในการตั้งค่า iOS</translation>
 <translation id="8185076488803799132">นำเข้า</translation>
 <translation id="8189615296021678665">แตะ "บันทึก" เพื่อเข้าถึงรหัสผ่านนี้ได้อย่างง่ายดายเมื่อลงชื่อเข้าใช้ครั้งถัดไป</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />อุปกรณ์ของคุณ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -2006,6 +2020,7 @@
 <translation id="8428045167754449968">อำเภอ</translation>
 <translation id="8428213095426709021">การตั้งค่า</translation>
 <translation id="8428634594422941299">รับทราบ</translation>
+<translation id="8429455911440977338">เปิดกล้อง</translation>
 <translation id="8434837876193928924">รายละเอียดกลุ่มแท็บ</translation>
 <translation id="8438566539970814960">ปรับปรุงการค้นหาและการท่องเว็บให้ดียิ่งขึ้น</translation>
 <translation id="8439758443371991593">ซ่อน "เพิ่มไปยังเรื่องรออ่าน"</translation>
@@ -2247,6 +2262,7 @@
 <translation id="956218893102219091">ใช้ตำแหน่งที่แน่นอนเพื่อให้ Gemini แสดงผลลัพธ์ที่แม่นยำที่สุด แทนที่จะใช้ตำแหน่งโดยประมาณตามที่อยู่ IP ของคุณ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">ลบข้อมูลการท่องเว็บ</translation>
 <translation id="963102227019621224">กิจกรรมบนเว็บและแอป</translation>
+<translation id="965259330007686240">สร้างรูปภาพด้วย Gemini</translation>
 <translation id="965879457362663186">เพิ่มไฟล์แนบ</translation>
 <translation id="966593914872420832">ค้นหาด้วยเสียง</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{เข้าร่วมกลุ่มแท็บกับ <ph name="OWNER_NAME" />}=1{เข้าร่วมกลุ่มแท็บกับ <ph name="OWNER_NAME" /> และอีก {COUNT} คน}other{เข้าร่วมกลุ่มแท็บกับ <ph name="OWNER_NAME" /> และอีก {COUNT} คน}}</translation>

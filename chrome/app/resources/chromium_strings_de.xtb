@@ -530,6 +530,9 @@ Einige Funktionen stehen möglicherweise nicht zur Verfügung. Gib bitte ein and
 <translation id="6901631050894301805">Chromium als Standardbrowser festlegen und an die Taskleiste anheften</translation>
 <translation id="6909503629704372277">&amp;Chromium-Profile verwalten</translation>
 <translation id="6934579572334859869">Bildersuche nach Infos zu diesem Bild fragen</translation>
+<translation id="6948031725951063910">Du hast das Chromium-Limit von <ph name="BOOKMARK_LIMIT" /> Lesezeichen erreicht. Einige deiner Lesezeichen wurden daher noch nicht in deinem Google-Konto gespeichert.
+
+Du kannst erst neue Lesezeichen in deinem Konto speichern, wenn du einige gelöscht hast. Wenn du dich jetzt abmeldest, werden nicht gespeicherte Lesezeichen gelöscht.</translation>
 <translation id="6964305034639999644">Link in Chromium-Inkognitofenster öffnen</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6978145336957848883">Schwache Passwörter sind einfach zu erraten. Erlaube Chromium, ein <ph name="BEGIN_LINK" />sicheres Passwort für deine Onlinekonten zu erstellen und zu speichern<ph name="END_LINK" />.</translation>
@@ -698,6 +701,7 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="8880203542552872219">Falls ja, ändere dein gespeichertes Passwort in Chromium, damit es mit dem neuen Passwort übereinstimmt.</translation>
 <translation id="8891709362986793894">Deine Organisation verlangt, dass du dich in Chromium anmeldest</translation>
 <translation id="8907580949721785412">Chromium möchte Passwörter anzeigen. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
+<translation id="8932992523185907506">Chromium ist nicht mehr dein Standardbrowser. Chromium als Standardbrowser verwenden?</translation>
 <translation id="8941642502866065432">Chromium kann nicht aktualisiert werden</translation>
 <translation id="897581876605952338">Chromium Enterprise-Logo</translation>
 <translation id="8981150672034878610">Chromium kann nicht gestartet werden, da beim Öffnen deines Profils ein Fehler aufgetreten ist. Versuche, Chromium neu zu starten.</translation>

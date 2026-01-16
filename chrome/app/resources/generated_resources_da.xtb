@@ -1095,6 +1095,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1709916727352927457">Slet adgangsnøgle</translation>
 <translation id="1709972045049031556">Delingen lykkedes ikke</translation>
 <translation id="1712143791363119140">I gang</translation>
+<translation id="1713120794167761305">Flyt faner til siden</translation>
 <translation id="1714265454085143857">Fastgjorte faner</translation>
 <translation id="1714326320203665217">Annoteringsfilerne for den primære node er downloadet</translation>
 <translation id="1714644264617423774">Aktivér hjælpefunktioner for at gøre din enhed nemmere at bruge. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
@@ -3241,6 +3242,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3167562202484086668">Slet alle data fra <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Vælg det tema, der passer til dine behov. Du kan ændre dit tema, din baggrund, din pauseskærm og meget mere ved at holde fingeren nede på skrivebordet.</translation>
 <translation id="3170072451822350649">Du kan også springe login over og <ph name="LINK_START" />anvende som gæst<ph name="LINK_END" />.</translation>
+<translation id="3172642937040465677">Flyt faner til toppen</translation>
 <translation id="3175067642577044620">Brødtekst</translation>
 <translation id="3175862692832442091">Skov</translation>
 <translation id="3176347586396987181">Brug “z” til at holde en museknap nede</translation>
@@ -3495,6 +3497,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="335581015389089642">Tale</translation>
 <translation id="335587007651175930">Søg efter det, der vises på din skærm, med Google Lens</translation>
 <translation id="3355936511340229503">Forbindelsesfejl</translation>
+<translation id="335678817537689040">Statisk</translation>
 <translation id="3359256513598016054">Begrænsninger for certifikatpolitik</translation>
 <translation id="3360297538363969800">Udskrivning mislykkedes. Kontrollér din printer, og prøv igen.</translation>
 <translation id="3360306038446926262">Windows</translation>
@@ -4194,6 +4197,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
         <ph name="BREAK" />
         Du kan administrere indstillingerne i kortmenuen eller se flere valgmuligheder under Tilpas Chrome.</translation>
 <translation id="3801449494961771207">Systemstemme for oplæsning</translation>
+<translation id="3801748538479607989">Flyt faner til toppen</translation>
 <translation id="3802486193901166966">Denne udvidelse kræver ikke nogen særlige tilladelser og har ingen yderligere adgang til websites</translation>
 <translation id="380329542618494757">Navn</translation>
 <translation id="3803345858388753269">Videokvalitet</translation>
@@ -6008,6 +6012,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5060419232449737386">Indstillinger for undertekster</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Denne mappe indeholder et bogmærke. Er du sikker på, at du vil slette det?}one{Denne mappe indeholder # bogmærke. Er du sikker på, at du vil slette det?}other{Denne mappe indeholder # bogmærker. Er du sikker på, at du vil slette dem?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
+<translation id="5062863364865466276">Bevægelse</translation>
 <translation id="5062930723426326933">Login mislykkedes. Opret forbindelse til internettet, og prøv igen.</translation>
 <translation id="5063480226653192405">Databrug</translation>
 <translation id="5064921774605267982">Åbn profilen <ph name="PROFILE_NAME" />. Denne profil administreres af din forælder.</translation>
@@ -6949,6 +6954,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5722086096420375088">Grøn og hvid</translation>
 <translation id="572328651809341494">Seneste faner</translation>
 <translation id="5723508132121499792">Ingen apps kører i baggrunden</translation>
+<translation id="5724723163580775373">Bredt fokus</translation>
 <translation id="5725112283692663422">Send feedback om Opret tema ved hjælp af AI</translation>
 <translation id="5727728807527375859">Udvidelser, programmer og temaer kan beskadige din computer. Er du sikker på, at du vil fortsætte?</translation>
 <translation id="5728072125198221967">Tilknyttede Google-tjenester</translation>
@@ -7196,6 +7202,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5888889603768021126">Du er logget ind med</translation>
 <translation id="5889282057229379085">Maksimalt antal mellemliggende CA'er: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Kryptér synkroniserede data med din egen <ph name="BEGIN_LINK" />adgangssætning til synkronisering<ph name="END_LINK" />. Betalingsmetoder og adresser fra Google Pay krypteres ikke. Browserhistorik fra Chrome synkroniseres ikke.</translation>
+<translation id="5890072287476934834">Flyt faner til siden</translation>
 <translation id="5891688036610113830">Foretrukne Wi-Fi-netværk</translation>
 <translation id="5894056653502215961">Fravælg mappen <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">Genstart</translation>
@@ -8351,6 +8358,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6702639462873609204">&amp;Rediger...</translation>
 <translation id="6702859741546259407">For at bruge <ph name="FEATURE_NAME" /> skal du aktivere Bluetooth og Wi-Fi</translation>
 <translation id="6703109186846420472">,</translation>
+<translation id="670431355064244920">Smalt fokus</translation>
 <translation id="6707122714992751648">Kør diagnostiktest for ChromeOS.</translation>
 <translation id="6707389671160270963">SSL-klientcertifikat</translation>
 <translation id="6707671917294473995">Websites har ikke tilladelse til at bruge dit kamera</translation>
@@ -9342,6 +9350,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7389615853658756494">Skift det på websitet</translation>
 <translation id="7392118418926456391">Virusscanningen mislykkedes</translation>
 <translation id="7392915005464253525">G&amp;enåbn lukkede faner</translation>
+<translation id="739299645392306071">Mellem fokus</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 element blev kopieret}one{{COUNT} element blev kopieret}other{{COUNT} elementer blev kopieret}}</translation>
 <translation id="7393435859300249877">Du får besked, hvis du taler, mens mikrofonen er slået fra, når du bruger bestemte apps, f.eks. apps til videochat. Lyden forlader aldrig din enhed.</translation>
 <translation id="7395008140803590549">Certifikatet kunne ikke slettes</translation>

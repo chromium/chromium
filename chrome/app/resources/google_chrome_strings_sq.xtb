@@ -511,6 +511,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6326175484149238433">Hiqe nga Chrome</translation>
 <translation id="6327105987658262776">Nuk ofrohet asnjë përditësim.</translation>
 <translation id="6334815226785304306">Bëje Google Chrome shfletuesin e parazgjedhur dhe gozhdoje te shiriti i veglave</translation>
+<translation id="63540178978900677">Chrome nuk është më shfletuesi yt i parazgjedhur. Të bëhet Chrome shfletuesi i parazgjedhur?</translation>
 <translation id="6360449101159168105">Kur kjo skedë ishte joaktive, memoria u lirua që Chrome të vazhdojë të jetë i shpejtë. Mund të zgjedhësh që ta përjashtosh gjithmonë këtë sajt nga caktimi si joaktiv.</translation>
 <translation id="6388799252195623474">më ndihmo me këtë</translation>
 <translation id="6412673304250309937">Kontrollon URL-të kundrejt një liste sajtesh të pasigurta të ruajtur në Chrome. Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd, ose kur shkarkon një skedar të dëmshëm, Chrome mund t'i dërgojë po ashtu "Shfletimit të sigurt" URL-të, duke përfshirë pjesë të përmbajtjes së faqes.</translation>
@@ -712,6 +713,9 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8418845734693287262">ChromeOS nuk mund t'i sinkronizonte të dhënat e tua sepse detajet e identifikimit të llogarisë nuk janë të përditësuara.</translation>
 <translation id="842386925677997438">Veglat e sigurisë të Chrome</translation>
 <translation id="8425765582779547329">Për të qëndruar më i sigurt online me zgjedhjet e prindit tënd, identifikohu në Chrome</translation>
+<translation id="842852285618875960">Ke arritur kufirin e Google Chrome prej <ph name="BOOKMARK_LIMIT" /> faqeshënuesish, prandaj disa nga faqeshënuesit e tu nuk janë ruajtur ende në "Llogarinë tënde të Google".
+
+Faqeshënuesit e rinj nuk mund të ruhen në llogarinë tënde derisa të fshish disa. Nëse del tani, faqeshënuesit e paruajtur do të fshihen.</translation>
 <translation id="8433638294851456451">Për të dërguar një numër nga këtu te telefoni yt Android, identifikohu në Chrome në të dyja pajisjet.</translation>
 <translation id="8496177819998570653">Men&amp;axheri i fjalëkalimeve i Google</translation>
 <translation id="8498858610309223613">Sapo është zbatuar një përditësim special i sigurisë për Google Chrome. Rinise tani dhe do të restaurojmë skedat e tua.</translation>

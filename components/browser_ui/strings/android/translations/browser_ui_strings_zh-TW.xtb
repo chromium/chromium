@@ -412,6 +412,7 @@
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(還有 1 個)}other{(還有 # 個)}}</translation>
 <translation id="5403592356182871684">名稱</translation>
 <translation id="5407203562970638234">強化安全防護</translation>
+<translation id="5436307623797390637">裝置上的應用程式</translation>
 <translation id="5438097262470833822">這會重設 <ph name="WEBSITE" /> 的權限</translation>
 <translation id="5459413148890178711">如果啟用，網站就可以要求取得你的位置資訊。如果停用，網站將無法查看你的位置資訊。</translation>
 <translation id="5489227211564503167">經過時間：<ph name="ELAPSED_TIME" />，影片總長：<ph name="TOTAL_TIME" />。</translation>

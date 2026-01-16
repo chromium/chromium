@@ -528,6 +528,9 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6901631050894301805">Chromium'u varsayılan tarayıcınız olarak ayarlayın ve görev çubuğunuza sabitleyin</translation>
 <translation id="6909503629704372277">&amp;Chromium profillerini yönetin</translation>
 <translation id="6934579572334859869">Görsel aramaya bu görsel hakkında soru sorun</translation>
+<translation id="6948031725951063910">Chromium'un <ph name="BOOKMARK_LIMIT" /> yer işareti sınırına ulaştınız. Bu nedenle, yer işaretlerinizden bazıları henüz Google Hesabınıza kaydedilmedi.
+
+Bazı yer işaretlerini silene kadar hesabınıza yeni yer işaretleri kaydedilemez. Oturumu şimdi kapatırsanız kaydedilmemiş yer işaretleri silinir.</translation>
 <translation id="6964305034639999644">Bağlantıyı Chromium &amp;gizli penceresinde aç</translation>
 <translation id="6965382102122355670">Tamam</translation>
 <translation id="6978145336957848883">Zayıf şifrelerin tahmin edilmesi kolaydır. Chromium'un <ph name="BEGIN_LINK" />sizin için güçlü şifreler oluşturup bu şifreleri hatırlamasına<ph name="END_LINK" /> izin verin.</translation>
@@ -696,6 +699,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="8880203542552872219">Değiştirdiyseniz Chromium'da kayıtlı şifrenizi, lütfen yeni şifrenizle aynı olacak şekilde düzenleyin.</translation>
 <translation id="8891709362986793894">Kuruluşunuz, Chromium'da oturum açmanızı zorunlu kılıyor</translation>
 <translation id="8907580949721785412">Chromium şifreleri göstermeye çalışıyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
+<translation id="8932992523185907506">Chromium artık varsayılan tarayıcınız değil. Chromium varsayılan tarayıcı olsun mu?</translation>
 <translation id="8941642502866065432">Chromium güncellenemiyor</translation>
 <translation id="897581876605952338">Chromium Enterprise logosu</translation>
 <translation id="8981150672034878610">Profiliniz açılırken bir hata oluştuğundan Chromium başlatılamıyor. Chromium'u yeniden başlatmayı deneyin.</translation>

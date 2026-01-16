@@ -412,6 +412,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(i 1 més)}other{(i # més)}}</translation>
 <translation id="5403592356182871684">Noms</translation>
 <translation id="5407203562970638234">Millora la seguretat</translation>
+<translation id="5436307623797390637">Aplicacions al dispositiu</translation>
 <translation id="5438097262470833822">Amb aquesta opció, es restabliran els permisos per a <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Quan aquesta opció està activada, els llocs web poden demanar la teva ubicació. Quan aquesta opció està desactivada, els llocs web no poden veure la teva ubicació.</translation>
 <translation id="5489227211564503167">Temps transcorregut: <ph name="ELAPSED_TIME" /> de <ph name="TOTAL_TIME" />.</translation>

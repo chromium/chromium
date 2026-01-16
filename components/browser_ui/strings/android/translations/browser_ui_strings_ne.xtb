@@ -412,6 +412,7 @@
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ १ थप)}other{(+ # थप)}}</translation>
 <translation id="5403592356182871684">नामहरू</translation>
 <translation id="5407203562970638234">सुरक्षा बढाउनुहोस्</translation>
+<translation id="5436307623797390637">यो डिभाइसमा इन्स्टल गरिएका एपहरू</translation>
 <translation id="5438097262470833822">तपाईंले यो विकल्प रोज्नुभयो भने <ph name="WEBSITE" /> लाई दिइएका अनुमतिहरू रिसेट गरिने छन्</translation>
 <translation id="5459413148890178711">यो सेटिङ अन भएका बेला साइटहरूले तपाईंको लोकेसन प्रयोग गर्ने अनुमति माग्न सक्छन्। यो सेटिङ अफ भएका बेला साइटहरूले तपाईंको लोकेसन हेर्न सक्दैनन्।</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> मध्ये <ph name="ELAPSED_TIME" /> समय बित्यो।</translation>

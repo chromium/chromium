@@ -527,6 +527,9 @@
 <translation id="6901631050894301805">Definir o Chromium como navegador padrão e fixá-lo na barra de tarefas</translation>
 <translation id="6909503629704372277">&amp;Gerenciar perfis do Chromium</translation>
 <translation id="6934579572334859869">Pergunte à pesquisa por imagens sobre esta imagem</translation>
+<translation id="6948031725951063910">Você atingiu o limite de <ph name="BOOKMARK_LIMIT" /> favoritos no Chromium. Por isso, alguns favoritos ainda não foram salvos na sua Conta do Google.
+
+Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair agora, os favoritos que não foram salvos serão excluídos.</translation>
 <translation id="6964305034639999644">Abrir link na janela &amp;sem rastros do Chromium</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6978145336957848883">Senhas fracas são fáceis de adivinhar. Deixe o Chromium <ph name="BEGIN_LINK" />criar e guardar senhas fortes para você<ph name="END_LINK" />.</translation>
@@ -693,6 +696,7 @@
 <translation id="8880203542552872219">Se tiver mudado, edite a senha salva no Chromium para que ela seja igual à nova senha.</translation>
 <translation id="8891709362986793894">Sua organização exige que você faça login no Chromium</translation>
 <translation id="8907580949721785412">O Chromium está tentando mostrar senhas. Digite sua senha do Windows para permitir isso.</translation>
+<translation id="8932992523185907506">O Chromium não é mais seu navegador padrão. Definir o Chromium como navegador padrão?</translation>
 <translation id="8941642502866065432">Não é possível atualizar o Chromium</translation>
 <translation id="897581876605952338">Logotipo do Chromium Enterprise</translation>
 <translation id="8981150672034878610">Não é possível iniciar o Chromium porque algo deu errado ao abrir seu perfil. Tente reiniciar o Chromium.</translation>

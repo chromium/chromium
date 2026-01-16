@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">ຈັດການສິດເຂົ້າເຖິງ</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{ປິດລາຍການ}other{ປິດລາຍການ}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">ແຖບຂອງຊີດລຸ່ມສຸດແບບຄວາມສູງເຄິ່ງໜ້າຈໍ.</translation>
 <translation id="374923079891132274">ຮູບຫຍໍ້ຕົວຢ່າງຊີດທີ່ແບ່ງປັນ.</translation>
 <translation id="3776329373944672717">ຊື່ກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">ຈັດການ</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">ແຖບສຸດທ້າຍຂອງທ່ານ</translation>
 <translation id="5380159289133845234">ເກັບແຖບທີ່ຊ້ຳກັນໄວ້ໃນແຟ້ມ</translation>
 <translation id="5446043142172831860">ລຶບແຖບອອກ ແລະ ອອກຈາກກຸ່ມ</translation>
+<translation id="5465437530117042974">ປິດການປ່ຽນແປງແຖບຂອງຊີດລຸ່ມສຸດແລ້ວ.</translation>
 <translation id="5490235265819901748">ຂະຫຍາຍກຸ່ມແຖບແລ້ວ</translation>
 <translation id="5494920125229734069">ເລືອກ​ທັງ​ຫມົດ</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{ເພີ່ມໄຟລ໌, ແຖບ ຫຼື ຮູບໄດ້ສູງສຸດ <ph name="LIMIT_COUNT_ONE" /> ລາຍການ}other{ເພີ່ມໄຟລ໌, ແຖບ ຫຼື ຮູບໄດ້ສູງສຸດ <ph name="LIMIT_COUNT_MANY" /> ລາຍການ}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">ປິດ</translation>
 <translation id="6051432659151380973">ກຸ່ມແຖບຂອງທ່ານຈະບັນທຶກໂດຍອັດຕະໂນມັດ</translation>
 <translation id="6054741997831917303">ລາຄາຂອງສິນຄ້ານນີ້ຫຼຸດລົງຈາກ <ph name="PREVIOUS_PRICE" /> ເປັນ <ph name="NEW_PRICE" /> ເມື່ອບໍ່ດົນມານີ້</translation>
+<translation id="606985262342505139">ແຖບຂອງຊີດລຸ່ມສຸດແບບຄວາມສູງເຕັມໜ້າຈໍ</translation>
 <translation id="6109251075362363230">ຕອນນີ້ລະບົບຍັງຈະເກັບແຖບທີ່ຊ້ຳກັນທັງໝົດໄວ້ໃນແຟ້ມນຳ, ຍົກເວັ້ນສຳເນົາທີ່ໃຊ້ຫຼ້າສຸດ.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{ປິດລາຍການທີ່ເລືອກ <ph name="TABS_COUNT_ONE" /> ລາຍການ}other{ປິດລາຍການທີ່ເລືອກ <ph name="TABS_COUNT_MANY" /> ລາຍການ}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ຍ້າຍກຸ່ມໄປໃສ່ໜ້າຈໍໃໝ່}other{ຍ້າຍກຸ່ມໄປໃສ່ໜ້າຈໍອື່ນ}}</translation>

@@ -532,6 +532,9 @@
 <translation id="6901631050894301805">Chromium을 기본 브라우저로 설정하고 태스크 바에 고정하세요.</translation>
 <translation id="6909503629704372277">Chromium 프로필 관리(&amp;M)</translation>
 <translation id="6934579572334859869">이미지 검색에 이 이미지에 관해 질문하기</translation>
+<translation id="6948031725951063910">Chromium의 북마크 한도인 <ph name="BOOKMARK_LIMIT" />개에 도달하여 북마크 중 일부가 아직 Google 계정에 저장되지 않았습니다.
+
+일부 북마크를 삭제할 때까지 계정에 새 북마크를 저장할 수 없습니다. 지금 로그아웃하면 저장되지 않은 북마크가 삭제됩니다.</translation>
 <translation id="6964305034639999644">Chromium 시크릿 창에서 링크 열기(&amp;G)</translation>
 <translation id="6965382102122355670">확인</translation>
 <translation id="6978145336957848883">취약한 비밀번호는 추측하기 쉽습니다. Chromium에서 <ph name="BEGIN_LINK" />안전한 비밀번호를 생성하고 기억하도록 설정<ph name="END_LINK" />하세요.</translation>
@@ -700,6 +703,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8880203542552872219">그렇다면 Chromium에 저장된 비밀번호가 새로운 비밀번호와 일치하도록 수정해 주세요.</translation>
 <translation id="8891709362986793894">조직에서 Chromium에 로그인할 것을 요구합니다</translation>
 <translation id="8907580949721785412">Chromium에서 비밀번호를 표시하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
+<translation id="8932992523185907506">Chromium이 더 이상 기본 브라우저가 아닙니다. Chromium을 기본 브라우저로 설정하시겠습니까?</translation>
 <translation id="8941642502866065432">Chromium을 업데이트하지 못함</translation>
 <translation id="897581876605952338">Chromium Enterprise 로고</translation>
 <translation id="8981150672034878610">프로필을 여는 중에 문제가 발생하여 Chromium을 시작할 수 없습니다. Chromium을 다시 시작해 보세요.</translation>

@@ -412,6 +412,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(e 1 máis)}other{(e # máis)}}</translation>
 <translation id="5403592356182871684">Nomes</translation>
 <translation id="5407203562970638234">Mellora a túa seguranza</translation>
+<translation id="5436307623797390637">Aplicacións instaladas no dispositivo</translation>
 <translation id="5438097262470833822">Con esta opción restableceranse os permisos de <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Cando esta opción está activada, os sitios poden pedirche permiso para acceder á túa localización. Cando esta opción está desactivada, os sitios non poden acceder á túa localización.</translation>
 <translation id="5489227211564503167">Tempo transcorrido: <ph name="ELAPSED_TIME" /> de <ph name="TOTAL_TIME" />.</translation>

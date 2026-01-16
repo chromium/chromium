@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">Bestuur toegang</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Maak item toe}other{Maak items toe}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Oortjie se onderste blad teen halwe hoogte.</translation>
 <translation id="374923079891132274">Miniprent vir deelbladvoorskou.</translation>
 <translation id="3776329373944672717">Oortjiegroeptitel <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Bestuur</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">Jou jongste oortjie</translation>
 <translation id="5380159289133845234">Argiveer duplikaatoortjies</translation>
 <translation id="5446043142172831860">Verwyder oortjie en verlaat groep</translation>
+<translation id="5465437530117042974">Oortjie se onderste bladveranderinge is toegemaak.</translation>
 <translation id="5490235265819901748">Oortjiegroep is uitgevou</translation>
 <translation id="5494920125229734069">Kies almal</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Voeg tot <ph name="LIMIT_COUNT_ONE" /> lêer, oortjie of prent by}other{Voeg tot <ph name="LIMIT_COUNT_MANY" /> lêers, oortjies of prente by}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">Maak toe</translation>
 <translation id="6051432659151380973">Jou oortjiegroepe stoor outomaties</translation>
 <translation id="6054741997831917303">Hierdie item se prys het onlangs van <ph name="PREVIOUS_PRICE" /> na <ph name="NEW_PRICE" /> gedaal</translation>
+<translation id="606985262342505139">Oortjie se onderste blad teen volle hoogte</translation>
 <translation id="6109251075362363230">Alle duplikaatoortjies sal nou ook geargiveer word, met die uitsondering van die mees onlangse kopie.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Maak <ph name="TABS_COUNT_ONE" /> gekose item toe}other{Maak <ph name="TABS_COUNT_MANY" /> gekose items toe}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Skuif groep na nuwe venster}other{Skuif groep na ’n ander venster}}</translation>

@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">Prieigos tvarkymas</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Uždaryti elementą}one{Uždaryti elementus}few{Uždaryti elementus}many{Uždaryti elementus}other{Uždaryti elementus}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" /> iš <ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Skirtuko apatinis lapas atidarytas iki pusės ekrano aukščio.</translation>
 <translation id="374923079891132274">Bendrinimo lapo peržiūros miniatiūra.</translation>
 <translation id="3776329373944672717">Skirtukų grupės pavadinimas „<ph name="TITLE_OF_GROUP" />“</translation>
 <translation id="3810973564298564668">Tvarkyti</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">Jūsų paskutinis skirtukas</translation>
 <translation id="5380159289133845234">Archyvuoti tikslias skirtukų kopijas</translation>
 <translation id="5446043142172831860">Pašalinti skirtuką ir išeiti iš grupės</translation>
+<translation id="5465437530117042974">Skirtuko apatinio lapo pakeitimai uždaryti.</translation>
 <translation id="5490235265819901748">Skirtukų grupė išskleista</translation>
 <translation id="5494920125229734069">Pasirinkti viską</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Pridėkite ne daugiau kaip <ph name="LIMIT_COUNT_ONE" /> failą, skirtuką arba vaizdą}one{Pridėkite ne daugiau kaip <ph name="LIMIT_COUNT_MANY" /> failą, skirtuką arba vaizdą}few{Pridėkite ne daugiau kaip <ph name="LIMIT_COUNT_MANY" /> failus, skirtukus arba vaizdus}many{Pridėkite ne daugiau kaip <ph name="LIMIT_COUNT_MANY" /> failo, skirtuko arba vaizdo}other{Pridėkite ne daugiau kaip <ph name="LIMIT_COUNT_MANY" /> failų, skirtukų arba vaizdų}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">Uždaryti</translation>
 <translation id="6051432659151380973">Skirtukų grupės išsaugomos automatiškai</translation>
 <translation id="6054741997831917303">Šios prekės kaina neseniai sumažėjo nuo <ph name="PREVIOUS_PRICE" /> iki <ph name="NEW_PRICE" /></translation>
+<translation id="606985262342505139">Skirtuko apatinis lapas per visą aukštį</translation>
 <translation id="6109251075362363230">Visos tikslios skirtukų kopijos dabar taip pat bus suarchyvuotos, išskyrus neseniai naudotą kopiją.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Uždaryti <ph name="TABS_COUNT_ONE" /> pasirinktą elementą}one{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinktą elementą}few{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinktus elementus}many{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinkto elemento}other{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinktų elementų}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Perkelti grupę į naują langą}one{Perkelti grupę į kitą langą}few{Perkelti grupę į kitą langą}many{Perkelti grupę į kitą langą}other{Perkelti grupę į kitą langą}}</translation>
