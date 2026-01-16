@@ -16,6 +16,11 @@ export interface LineFocusListener {
   onNeedScrollToTop(): void;
 }
 
+// Used to prevent microadjustments of the line focus window when adjusting to
+// new line heights as it can be distracting for no functional difference.
+// Determined by experimentation and should be tweaked as needed.
+const WINDOW_DIFF_THRESHOLD = 5;
+
 // Handles the business logic for managing the line focus feature.
 export class LineFocusController {
   private readonly listeners_: LineFocusListener[] = [];
@@ -80,6 +85,17 @@ export class LineFocusController {
 
       if (this.model_.getInitiatedScroll()) {
         this.model_.setInitiatedScroll(false);
+        const oldHeight = this.getHeight();
+        const oldTop = this.getTop();
+        this.calculateHeight_();
+        const heightDiff = (oldHeight === null || this.getHeight() === null) ?
+            null :
+            Math.abs(oldHeight - this.getHeight()!);
+        const topDiff = Math.abs(oldTop - this.getTop());
+        if (heightDiff === null || heightDiff > WINDOW_DIFF_THRESHOLD ||
+            topDiff > WINDOW_DIFF_THRESHOLD) {
+          this.listeners_.forEach(l => l.onLineFocusMove());
+        }
       } else {
         // If the scroll is user-initiated then reset the line index for the
         // purpose of line-by-line keyboard movement.
@@ -183,8 +199,7 @@ export class LineFocusController {
       this.model_.setY(0);
       this.model_.setTop(0);
       this.model_.setWindowHeight(0);
-      this.model_.setDefaultWindowHeight(0);
-      this.model_.setTextLineBottoms([]);
+      this.model_.setTextBounds([]);
       this.model_.setCurrentLineIndex(null);
       this.model_.setLastScrollTop(0);
       this.highlightObserver_.disconnect();
@@ -231,58 +246,97 @@ export class LineFocusController {
       return;
     }
 
-    const lines = this.model_.getTextLineBottoms();
+    const lines = this.model_.getTextBounds();
     if (!lines.length) {
       return;
     }
 
     // If this is the first time snapping after mouse movement, move to the
     // closest line to the current Y.
-    const currentLineIndex = this.model_.getCurrentLineIndex();
-    if (currentLineIndex === null) {
-      const firstIndex =
-          this.clampLineIndex_(this.getFirstLineIndex_(isForward));
-      this.model_.setCurrentLineIndex(firstIndex);
-      this.setyOrScroll_(lines[firstIndex]!);
-      for (let i = 0; i < this.getCurrentLineFocusLines_(); i++) {
-        chrome.readingMode.incrementLineFocusKeyboardLines();
-      }
+    const currentIndex = this.model_.getCurrentLineIndex();
+    if (currentIndex === null) {
+      this.initializeSnapIndex_(lines, isForward);
       return;
     }
 
-    const diff = isForward ? 1 : -1;
-    const previousLineIndex = currentLineIndex;
-    const newIndex = currentLineIndex + diff;
-    if (newIndex >= 0 && newIndex < lines.length) {
-      this.model_.setCurrentLineIndex(this.clampLineIndex_(newIndex));
-      const lineFocusTop =
-          this.getCurrentLineFocusType() === LineFocusType.LINE ?
-          lines[newIndex]! :
-          lines[newIndex - this.getCurrentLineFocusLines_()]!;
+    this.updateSnapIndex_(lines, currentIndex, isForward);
+  }
+
+  private initializeSnapIndex_(lines: DOMRect[], isForward: boolean) {
+    const rawIndex = this.getFirstLineIndex_(isForward);
+    const safeIndex = this.clampLineIndex_(rawIndex);
+
+    this.model_.setCurrentLineIndex(safeIndex);
+    this.setyOrScroll_(lines[safeIndex]!);
+
+    const linesToLog = this.getCurrentLineFocusLines_();
+    for (let i = 0; i < linesToLog; i++) {
+      chrome.readingMode.incrementLineFocusKeyboardLines();
+    }
+  }
+
+  private updateSnapIndex_(
+      lines: DOMRect[], currentIndex: number, isForward: boolean) {
+    const direction = isForward ? 1 : -1;
+    const nextIndex = currentIndex + direction;
+    const bottomIndex =
+        nextIndex + ((this.getCurrentLineFocusLines_() - 1) / 2);
+
+    if (nextIndex < 0 || bottomIndex >= lines.length) {
+      return;
+    }
+
+    const clampedIndex = this.clampLineIndex_(nextIndex);
+    this.model_.setCurrentLineIndex(clampedIndex);
+
+    // Calculate visibility bounds to see if we need to scroll.
+    const {topRect, bottomRect} = this.getFocusWindowRects_(lines, nextIndex);
+
+    const isOutOfView = bottomRect.bottom > this.model_.getMaxY() ||
+        topRect.top < this.model_.getMinY();
+
+    if (isOutOfView) {
       // Scroll the container to keep line focus in view if it would go out of
       // view.
-      if (lines[newIndex]! > this.model_.getMaxY() ||
-          lineFocusTop < this.model_.getMinY()) {
-        chrome.readingMode.incrementLineFocusKeyboardLines();
-        // TODO(crbug.com/447427066): Consider whether to instead scroll one
-        // line at a time. If so, uncomment the code below and remove the center
-        // logic below.
-        // const scrollDiff = lines[newIndex]! - lines[currentLineIndex]!;
+      chrome.readingMode.incrementLineFocusKeyboardLines();
+      // TODO(crbug.com/447427066): Consider whether to instead scroll one
+      // line at a time. If so, uncomment the code below and remove the center
+      // logic below.
+      // const scrollDiff = lines[newIndex]! - lines[currentLineIndex]!;
 
-        // Center it vertically.
-        const scrollDiff = (lines.at(newIndex)! - (this.model_.getMaxY() / 2));
-        this.scroll_(scrollDiff);
-      } else if (this.model_.getCurrentLineIndex() !== previousLineIndex) {
-        chrome.readingMode.incrementLineFocusKeyboardLines();
-        this.setyOrScroll_(lines[newIndex]!);
-      }
-
-      // If the user has navigated back to the top of the panel, but there's
-      // still a little bit left to scroll, scroll to the top.
-      if (this.model_.getCurrentLineIndex() === previousLineIndex) {
-        this.listeners_.forEach(l => l.onNeedScrollToTop());
-      }
+      // Center it vertically.
+      const scrollDiff = bottomRect.bottom - (this.model_.getMaxY() / 2);
+      this.scroll_(scrollDiff);
+    } else if (this.model_.getCurrentLineIndex() !== currentIndex) {
+      chrome.readingMode.incrementLineFocusKeyboardLines();
+      this.setyOrScroll_(lines[nextIndex]!);
     }
+
+    // If the user has navigated back to the top of the panel, but there's
+    // still a little bit left to scroll, scroll to the top.
+    if (this.model_.getCurrentLineIndex() === currentIndex) {
+      this.listeners_.forEach(l => l.onNeedScrollToTop());
+    }
+  }
+
+  // Gets the DOMRects for the top and bottom of the focus window for a given
+  // center line index
+  private getFocusWindowRects_(lines: DOMRect[], targetIndex: number) {
+    const numLines = this.getCurrentLineFocusLines_();
+    const isLineMode = this.getCurrentLineFocusType() === LineFocusType.LINE;
+
+    // In Line Mode, the "window" is just the line itself.
+    // In Window Mode, the "window" spans multiple lines around the center.
+    const topIndex =
+        isLineMode ? targetIndex : Math.max(0, targetIndex - (numLines / 2));
+    const bottomIndex = isLineMode ?
+        targetIndex :
+        Math.min(lines.length - 1, topIndex + numLines);
+
+    return {
+      topRect: lines[Math.floor(topIndex)]!,
+      bottomRect: lines[Math.floor(bottomIndex)] || lines[lines.length - 1]!,
+    };
   }
 
   private getCurrentLineFocusLines_(): number {
@@ -294,7 +348,7 @@ export class LineFocusController {
   private clampLineIndex_(index: number): number {
     return this.getCurrentLineFocusType() === LineFocusType.LINE ?
         index :
-        Math.max(index, this.getCurrentLineFocusLines_() - 1);
+        Math.max(index, (this.getCurrentLineFocusLines_() - 1) / 2);
   }
 
   private isStatic_(): boolean {
@@ -303,7 +357,10 @@ export class LineFocusController {
 
   // When the current line focus mode is static, scroll the content instead of
   // moving the line focus element.
-  private setyOrScroll_(newY: number) {
+  private setyOrScroll_(newBounds: DOMRect) {
+    const newY = this.getCurrentLineFocusType() === LineFocusType.LINE ?
+        newBounds.bottom :
+        (newBounds.top + newBounds.bottom) / 2;
     if (this.isStatic_()) {
       const scrollDiff = newY - this.model_.getY();
       this.scroll_(scrollDiff);
@@ -331,33 +388,31 @@ export class LineFocusController {
       return;
     }
 
-    // If the line focus is a window being controlled with smooth mouse movement
-    // then use the default window height.
-    const currentLineIndex = this.model_.getCurrentLineIndex();
-    if (currentLineIndex === null) {
-      this.model_.setWindowHeight(this.model_.getDefaultWindowHeight());
-      this.model_.setTop(Math.max(
-          this.model_.getMinY(),
-          this.model_.getY() - this.model_.getWindowHeight()));
+    // In window mode, always use the calculated line locations to set the top
+    // and height of the window.
+    const bounds = this.model_.getTextBounds();
+    if (bounds.length === 0) {
       return;
     }
 
-    // If the line focus is a window being controlled with discrete keyboard
-    // presses, then use the calculated line locations to set the top and height
-    // of the window.
-    const currentLineFocus = this.getCurrentLineFocusStyle();
-    const topIndex = currentLineIndex - currentLineFocus.lines;
-    const index = Math.max(
-        0, Math.min(this.model_.getTextLineBottoms().length - 1, topIndex));
-    const shouldUseMinY = topIndex < 0 ||
-        this.model_.getTextLineBottoms()[index]! < this.model_.getMinY();
-    this.model_.setTop(
-        shouldUseMinY ? this.model_.getMinY() :
-                        this.model_.getTextLineBottoms()[index]!);
-    if (!shouldUseMinY || topIndex === -1) {
-      this.model_.setWindowHeight(
-          this.model_.getTextLineBottoms()[currentLineIndex]! - this.getTop());
-    }
+    const currentLineIndex =
+        this.model_.getCurrentLineIndex() || this.getFirstLineIndex_(true);
+    console.error(
+        'currentLineIndex:', currentLineIndex,
+        this.model_.getCurrentLineIndex());
+
+    const numLines = this.getCurrentLineFocusStyle().lines;
+    const topIndex = currentLineIndex - ((numLines - 1) / 2);
+    const maxTopIndex = bounds.length - numLines;
+    console.error('bounds', bounds.length, 'numLines', numLines);
+    const validTopIndex = Math.max(0, Math.min(maxTopIndex, topIndex));
+    const topLine = bounds[validTopIndex]!;
+    console.error('top', topIndex, maxTopIndex, validTopIndex, topLine.top);
+    this.model_.setTop(topLine.top);
+    const bottomIndex = (validTopIndex + numLines - 1);
+    const bottom = bottomIndex < bounds.length ? bounds[bottomIndex]!.bottom :
+                                                 this.model_.getMaxY();
+    this.model_.setWindowHeight(bottom - this.getTop());
   }
 
   private calculateNewPositions_(container: HTMLElement, height: number) {
@@ -369,18 +424,13 @@ export class LineFocusController {
     const range = document.createRange();
     range.selectNodeContents(container);
 
-    const newLines =
-        this.combineIntersectingRects_(Array.from(range.getClientRects()))
-            .map(rect => rect.bottom);
-    this.model_.setTextLineBottoms(newLines);
-    const visibleLines = newLines.filter(
-        y => y >= this.model_.getMinY() && y <= this.model_.getMaxY());
-    this.model_.setDefaultWindowHeight(
-        currentLineFocus.lines * (visibleLines.at(-1)! - visibleLines.at(0)!) /
-        (visibleLines.length - 1));
+    const newBounds =
+        this.combineIntersectingRects_(Array.from(range.getClientRects()));
+    this.model_.setTextBounds(newBounds);
 
     // Adjust line focus to remain at the same text line even if it's moved,
     // due to font or other spacing changes.
+    const newLines = newBounds.map(rect => rect.bottom);
     const currentLineIndex = this.model_.getCurrentLineIndex();
     if (!this.isStatic_() && currentLineIndex && currentLineIndex >= 0 &&
         currentLineIndex < newLines.length - 1) {
@@ -415,9 +465,14 @@ export class LineFocusController {
 
   private moveBelowHighlights_(highlights: HTMLElement[]) {
     if (highlights.length > 0) {
-      const maxY =
-          Math.max(...highlights.map(h => h.getBoundingClientRect().bottom));
-      this.setyOrScroll_(maxY);
+      const bounds = highlights.map(h => h.getBoundingClientRect());
+      // TODO(crbug.com/447427066): Follow speech better with the line focus
+      // window. We should encompass the highlights, and if the highlights go
+      // beyond the window, use word boundaries to determine when to move line
+      // focus to the next line.
+      const maxBounds = bounds.reduce(
+          (max, rect) => rect.bottom > max.bottom ? rect : max, bounds[0]!);
+      this.setyOrScroll_(maxBounds);
       chrome.readingMode.incrementLineFocusSpeechLines();
     }
   }
@@ -459,27 +514,21 @@ export class LineFocusController {
 
   // Returns the closest line index based on the current Y position.
   private getFirstLineIndex_(isForward: boolean): number {
-    let previousLine = 0;
-    const lines = this.model_.getTextLineBottoms();
+    let previousY = 0;
+    const lines = this.model_.getTextBounds();
     for (let index = 0; index < lines.length; index++) {
-      const line = lines[index]!;
-      if (this.model_.getY() >= previousLine && this.model_.getY() < line) {
+      const line = lines[index]!.bottom;
+      if (this.model_.getY() >= previousY && this.model_.getY() < line) {
         return (isForward || (index <= 0)) ? index : index - 1;
       }
-      previousLine = line;
+      previousY = line;
     }
 
-    return 0;
+    return lines.length - 1;
   }
 
   private setCenterY_() {
-    let centerY = (this.model_.getMinY() + this.model_.getMaxY() / 2);
-    if (this.getCurrentLineFocusType() === LineFocusType.WINDOW) {
-      this.calculateHeight_();
-      const windowHeight = this.getHeight();
-      centerY += windowHeight ? windowHeight / 2 : 0;
-    }
-    this.setY_(centerY);
+    this.setY_(this.model_.getMinY() + this.model_.getMaxY() / 2);
   }
 
   static getInstance(): LineFocusController {

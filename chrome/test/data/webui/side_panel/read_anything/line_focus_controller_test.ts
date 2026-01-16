@@ -432,6 +432,40 @@ suite('LineFocusController', () => {
     assertEquals(top2 - top3, scrollDistance);
   });
 
+  test('onScrollEnd initiated by line focus, recalculates window', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    const height = 100;
+    const scroller = document.createElement('div');
+    scroller.style.height = `${height}px`;
+    scroller.style.overflow = 'auto';
+    const header = document.createElement('h1');
+    header.innerText = 'Wicked: For Good';
+    const container = document.createElement('p');
+    container.innerText =
+        'Like a siege rocked by a sky bird\nin a distant wood\n' +
+        'in a distant wood\nin a distant wood\nin a distant wood\n' +
+        'in a distant wood\nin a distant wood\nin a distant wood\n';
+    scroller.appendChild(header);
+    scroller.appendChild(container);
+    document.body.appendChild(scroller);
+    lineFocusController.onMovementChange(
+        LineFocusMovement.STATIC, container, height);
+    lineFocusController.onStyleChange(
+        LineFocusStyle.SMALL_WINDOW, container, height);
+    lineFocusMoved = false;
+    const startingTop = lineFocusController.getTop();
+
+    lineFocusController.snapToNextLine(true);
+    lineFocusController.onScrollEnd(height);
+    assertFalse(lineFocusMoved);
+    assertEquals(startingTop, lineFocusController.getTop());
+
+    lineFocusController.snapToNextLine(true);
+    lineFocusController.onScrollEnd(height);
+    assertTrue(lineFocusMoved);
+    assertLT(startingTop, lineFocusController.getTop());
+  });
+
   test('onMouseMove adds mouse distance', () => {
     chrome.readingMode.isLineFocusEnabled = true;
     lineFocusController.onMovementChange(
@@ -600,14 +634,16 @@ suite('LineFocusController', () => {
     lineFocusController.onMovementChange(
         LineFocusMovement.CURSOR, container, defaultHeight);
     chrome.readingMode.isLineFocusEnabled = true;
-    const newPos = container.offsetTop + 100;
+    const newPos = container.offsetTop + 50;
 
     lineFocusController.onMouseMove(newPos);
 
     const height = lineFocusController.getHeight();
     assertTrue(!!height);
     assertLT(0, height);
-    assertEquals(newPos - height, lineFocusController.getTop());
+    // The window should be approximately centered around the mouse position.
+    assertGT(newPos, lineFocusController.getTop());
+    assertLT(newPos, lineFocusController.getTop() + height);
   });
 
   test('onMouseMove honors container top with height', () => {
@@ -718,14 +754,15 @@ suite('LineFocusController', () => {
     lineFocusController.onMovementChange(
         LineFocusMovement.CURSOR, container, defaultHeight);
     chrome.readingMode.isLineFocusEnabled = true;
-    const newPos = container.offsetTop + 100;
+    const newPos = container.offsetTop + 50;
 
     lineFocusController.onMouseMoveInToolbar(newPos);
 
     const height = lineFocusController.getHeight();
     assertTrue(!!height);
     assertLT(0, height);
-    assertEquals(newPos - height, lineFocusController.getTop());
+    assertGT(newPos, lineFocusController.getTop());
+    assertLT(newPos, lineFocusController.getTop() + height);
   });
 
   test('onMouseMoveInToolbar honors container top with height', () => {
@@ -786,7 +823,7 @@ suite('LineFocusController', () => {
     const container = document.createElement('p');
     const text =
         setContent(
-            'It well may be\nthat we will never meet again\nin this lifetime' +
+            'It well may be\nthat we will never meet again\nin this lifetime.' +
                 '\nso let me say before we part\nso much of me\n' +
                 'is made from what I learned from you\nyou\'ll be with me\n' +
                 'like a handprint on my heart\n' +
@@ -800,7 +837,7 @@ suite('LineFocusController', () => {
     container.appendChild(text);
     document.body.appendChild(container);
     lineFocusController.onStyleChange(
-        LineFocusStyle.MEDIUM_WINDOW, container, 100);
+        LineFocusStyle.SMALL_WINDOW, container, 100);
     lineFocusController.onMovementChange(
         LineFocusMovement.CURSOR, container, 100);
     lineFocusController.onMouseMove(100);
@@ -817,9 +854,6 @@ suite('LineFocusController', () => {
     assertEquals(1, highlights.length);
     const newHeight = lineFocusController.getHeight();
     assertTrue(!!newHeight);
-    assertEquals(
-        highlights.item(0).getBoundingClientRect().bottom,
-        lineFocusController.getTop() + newHeight);
     assertNotEquals(oldTop, lineFocusController.getTop());
     assertEquals(oldHeight, newHeight);
     assertTrue(lineFocusMoved);
@@ -1143,7 +1177,7 @@ suite('LineFocusController', () => {
         LineFocusStyle.MEDIUM_WINDOW, container, defaultHeight);
     let oldTop = lineFocusController.getTop();
 
-    // Snap to the third line.
+    // Snap to the second line.
     lineFocusController.snapToNextLine(true);
     let newTop = lineFocusController.getTop();
     assertEquals(oldTop, newTop);
@@ -1163,7 +1197,7 @@ suite('LineFocusController', () => {
     assertEquals(oldTop, newTop);
     assertEquals(4, keyboardLines);
 
-    // Snap back to the third line.
+    // Snap back to the second line.
     oldTop = newTop;
     lineFocusController.snapToNextLine(false);
     newTop = lineFocusController.getTop();
@@ -1171,7 +1205,7 @@ suite('LineFocusController', () => {
     assertEquals(5, keyboardLines);
 
     // Moving back again should not change position since the window is 3 lines
-    // long and we are already at the third line.
+    // long and we are already surrounding the second line.
     oldTop = newTop;
     lineFocusController.snapToNextLine(false);
     newTop = lineFocusController.getTop();

@@ -22,10 +22,6 @@ export class LineFocusModel {
   // The height of the line focus element if it is a window. This should be 0
   // otherwise.
   private windowHeight_: number = 0;
-  // The default window height to use if the window is being moved with the
-  // mouse. Since mouse movement has to be continuous, we can't measure the
-  // exact window height based on location.
-  private defaultWindowHeight_: number = 0;
 
   // The current line focus mode.
   private currentLineFocusStyle_: LineFocusStyle = LineFocusStyle.OFF;
@@ -39,8 +35,8 @@ export class LineFocusModel {
   // The index of the current line in textLineBottoms_ being focused. Null if
   // line focus is moving continuously with the mouse instead of discretely.
   private currentLineIndex_: number|null = null;
-  // The precomputed bottom positions of each line of text.
-  private textLineBottoms_: number[] = [];
+  // The precomputed bounding boxes of each line of text.
+  private textBounds_: DOMRect[] = [];
 
   // Used for logging line focus session scroll distance.
   private lastScrollTop_: number = 0;
@@ -88,14 +84,6 @@ export class LineFocusModel {
     this.windowHeight_ = height;
   }
 
-  getDefaultWindowHeight(): number {
-    return this.defaultWindowHeight_;
-  }
-
-  setDefaultWindowHeight(height: number): void {
-    this.defaultWindowHeight_ = height;
-  }
-
   getCurrentLineFocusStyle(): LineFocusStyle {
     return this.currentLineFocusStyle_;
   }
@@ -128,12 +116,12 @@ export class LineFocusModel {
     this.currentLineIndex_ = index;
   }
 
-  getTextLineBottoms(): number[] {
-    return this.textLineBottoms_;
+  getTextBounds(): DOMRect[] {
+    return this.textBounds_;
   }
 
-  setTextLineBottoms(bottoms: number[]): void {
-    this.textLineBottoms_ = bottoms;
+  setTextBounds(bounds: DOMRect[]): void {
+    this.textBounds_ = bounds;
   }
 
   getLastScrollTop(): number {
