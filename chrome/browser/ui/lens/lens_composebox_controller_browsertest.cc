@@ -366,6 +366,110 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
+                       IssueComposeboxQueryWithParamsSendsPostMessage) {
+  WaitForPaint();
+
+  auto* lens_controller = GetLensSearchController();
+  ASSERT_TRUE(lens_controller);
+
+  // Open the overlay directly to the side panel so composebox is visible.
+  SkBitmap initial_bitmap = CreateNonEmptyBitmap(100, 100);
+  lens_controller->OpenLensOverlayWithPendingRegion(
+      lens::LensOverlayInvocationSource::kContentAreaContextMenuImage,
+      kTestRegion->Clone(), initial_bitmap);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return IsResultsSidePanelShowing(); }));
+
+  // Wait for the composebox handler to be set.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetLensComposeboxController()->composebox_handler_for_testing() !=
+           nullptr;
+  }));
+
+  // Mock a handshake call so the composebox controller can send query messages.
+  lens::AimToClientMessage aim_to_client_message;
+  aim_to_client_message.mutable_handshake_response()->add_capabilities(
+      lens::FeatureCapability::DEFAULT);
+  MockAimToClientMessage(aim_to_client_message);
+
+  // Send a query with params.
+  std::map<std::string, std::string> additional_params;
+  additional_params["gs_lcrp"] = "test_value";
+  GetLensComposeboxController()->IssueComposeboxQuery("test query",
+                                                      additional_params);
+
+  // Verify the client message sent.
+  auto* test_side_panel_coordinator = GetLensSidePanelCoordinator();
+  ASSERT_TRUE(test_side_panel_coordinator);
+  ASSERT_TRUE(test_side_panel_coordinator->last_sent_client_message_to_aim_
+                  .has_submit_query());
+
+  // Verify the submit query message.
+  auto submit_query = test_side_panel_coordinator
+                          ->last_sent_client_message_to_aim_.submit_query();
+  ASSERT_EQ(submit_query.payload().query_text(), "test query");
+
+  // Verify additional params.
+  auto sent_params = submit_query.payload().additional_cgi_params();
+  ASSERT_EQ(sent_params.size(), 1ul);
+  ASSERT_EQ(sent_params.at("gs_lcrp"), "test_value");
+}
+
+IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
+                       IssueComposeboxQueryWithParamsBeforeHandshakeIsQueued) {
+  WaitForPaint();
+
+  auto* lens_controller = GetLensSearchController();
+  ASSERT_TRUE(lens_controller);
+
+  // Open the overlay directly to the side panel so composebox is visible.
+  SkBitmap initial_bitmap = CreateNonEmptyBitmap(100, 100);
+  lens_controller->OpenLensOverlayWithPendingRegion(
+      lens::LensOverlayInvocationSource::kContentAreaContextMenuImage,
+      kTestRegion->Clone(), initial_bitmap);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return IsResultsSidePanelShowing(); }));
+
+  // Wait for the composebox handler to be set.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetLensComposeboxController()->composebox_handler_for_testing() !=
+           nullptr;
+  }));
+
+  // Send a query with params before handshake.
+  std::map<std::string, std::string> additional_params;
+  additional_params["gs_lcrp"] = "test_value";
+  GetLensComposeboxController()->IssueComposeboxQuery("test query",
+                                                      additional_params);
+
+  // Verify the client message was not sent.
+  auto* test_side_panel_coordinator = GetLensSidePanelCoordinator();
+  ASSERT_TRUE(test_side_panel_coordinator);
+  ASSERT_FALSE(test_side_panel_coordinator->last_sent_client_message_to_aim_
+                   .has_submit_query());
+
+  // Mock a handshake call so the composebox controller can send query messages.
+  lens::AimToClientMessage aim_to_client_message;
+  aim_to_client_message.mutable_handshake_response()->add_capabilities(
+      lens::FeatureCapability::DEFAULT);
+  MockAimToClientMessage(aim_to_client_message);
+
+  // Verify the client message sent.
+  ASSERT_TRUE(test_side_panel_coordinator->last_sent_client_message_to_aim_
+                  .has_submit_query());
+
+  // Verify the submit query message.
+  auto submit_query = test_side_panel_coordinator
+                          ->last_sent_client_message_to_aim_.submit_query();
+  ASSERT_EQ(submit_query.payload().query_text(), "test query");
+
+  // Verify additional params.
+  auto sent_params = submit_query.payload().additional_cgi_params();
+  ASSERT_EQ(sent_params.size(), 1ul);
+  ASSERT_EQ(sent_params.at("gs_lcrp"), "test_value");
+}
+
+IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
                        LogsComposeboxMetrics) {
   base::HistogramTester histogram_tester;
   WaitForPaint();
