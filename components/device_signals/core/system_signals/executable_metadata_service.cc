@@ -57,8 +57,9 @@ ExecutableMetadataServiceImpl::GetAllExecutableMetadata(
   for (const auto& file_path : file_paths) {
     ExecutableMetadata executable_metadata;
 
-    if (files_are_running_map.contains(file_path)) {
-      executable_metadata.is_running = files_are_running_map[file_path];
+    if (auto it = files_are_running_map.find(file_path);
+        it != files_are_running_map.end()) {
+      executable_metadata.is_running = it->second;
     }
 
     auto product_metadata = platform_delegate_->GetProductMetadata(file_path);
