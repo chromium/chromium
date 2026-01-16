@@ -3074,6 +3074,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
     bool is_form_submission,
     const std::optional<blink::Impression>& impression,
+    bool has_user_gesture,
     blink::mojom::NavigationInitiatorActivationAndAdStatus
         initiator_activation_and_ad_status,
     base::TimeTicks actual_navigation_start_time,
@@ -3192,8 +3193,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
   params.can_load_local_resources = false;
   /* params.should_replace_current_entry: skip */
   /* params.frame_name: skip */
-  // TODO(clamy): See if user gesture should be propagated to this function.
-  params.has_user_gesture = false;
+  params.has_user_gesture = has_user_gesture;
   params.should_clear_history_list = false;
   params.started_from_context_menu = false;
   /* params.navigation_ui_data: skip */
@@ -3210,9 +3210,10 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
   std::unique_ptr<NavigationRequest> request =
       CreateNavigationRequestFromLoadParams(
           node, params, override_user_agent, should_replace_current_entry,
-          false /* has_user_gesture */, std::move(source_location),
-          ReloadType::NONE, entry.get(), frame_entry.get(),
-          actual_navigation_start_time, navigation_start_time,
+          std::move(source_location), ReloadType::NONE, entry.get(),
+          frame_entry.get(), actual_navigation_start_time,
+          navigation_start_time,
+          /*from_frame_proxy=*/true,
           is_embedder_initiated_fenced_frame_navigation,
           is_unfenced_top_navigation, is_container_initiated,
           storage_access_api_status, embedder_shared_storage_context);
@@ -4107,9 +4108,9 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
   std::unique_ptr<NavigationRequest> request =
       CreateNavigationRequestFromLoadParams(
           node, params, override_user_agent, should_replace_current_entry,
-          params.has_user_gesture, network::mojom::SourceLocation::New(),
-          reload_type, pending_entry_, pending_entry_->GetFrameEntry(node),
-          actual_navigation_start, navigation_start_time);
+          network::mojom::SourceLocation::New(), reload_type, pending_entry_,
+          pending_entry_->GetFrameEntry(node), actual_navigation_start,
+          navigation_start_time, /*from_frame_proxy=*/false);
 
   // If the navigation couldn't start, return immediately and discard the
   // pending NavigationEntry.
@@ -4299,13 +4300,13 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
     const LoadURLParams& params,
     bool override_user_agent,
     bool should_replace_current_entry,
-    bool has_user_gesture,
     network::mojom::SourceLocationPtr source_location,
     ReloadType reload_type,
     NavigationEntryImpl* entry,
     FrameNavigationEntry* frame_entry,
     base::TimeTicks actual_navigation_start_time,
     base::TimeTicks navigation_start_time,
+    bool from_frame_proxy,
     bool is_embedder_initiated_fenced_frame_navigation,
     bool is_unfenced_top_navigation,
     bool is_container_initiated,
@@ -4410,6 +4411,10 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
   std::string page_state_data =
       frame_entry ? frame_entry->page_state().ToEncodedData() : std::string();
 
+  // TODO(clamy): See if user gesture should be propagated to `common_params`.
+  bool has_user_gesture_for_common_params =
+      from_frame_proxy ? false : params.has_user_gesture;
+
   blink::mojom::CommonNavigationParamsPtr common_params =
       blink::mojom::CommonNavigationParams::New(
           url_to_load, params.initiator_origin, params.initiator_base_url,
@@ -4420,7 +4425,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           actual_navigation_start_time, navigation_start_time,
           params.load_type == LOAD_TYPE_HTTP_POST ? "POST" : "GET",
           params.post_data, std::move(source_location),
-          params.started_from_context_menu, has_user_gesture,
+          params.started_from_context_menu, has_user_gesture_for_common_params,
           false /* has_text_fragment_token */,
           network::mojom::CSPDisposition::CHECK, std::vector<int>(),
           params.href_translate,

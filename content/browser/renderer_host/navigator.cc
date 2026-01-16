@@ -1191,11 +1191,11 @@ void Navigator::NavigateFromFrameProxy(
       should_replace_current_entry, download_policy, method, post_body,
       extra_headers, std::move(source_location),
       std::move(blob_url_loader_factory), is_form_submission, impression,
-      initiator_activation_and_ad_status, actual_navigation_start_time,
-      navigation_start_time, is_embedder_initiated_fenced_frame_navigation,
-      is_unfenced_top_navigation, force_new_browsing_instance,
-      is_container_initiated, has_rel_opener, storage_access_api_status,
-      embedder_shared_storage_context);
+      has_user_gesture, initiator_activation_and_ad_status,
+      actual_navigation_start_time, navigation_start_time,
+      is_embedder_initiated_fenced_frame_navigation, is_unfenced_top_navigation,
+      force_new_browsing_instance, is_container_initiated, has_rel_opener,
+      storage_access_api_status, embedder_shared_storage_context);
 }
 
 void Navigator::SetWillNavigateFromFrameProxyCallbackForTesting(
