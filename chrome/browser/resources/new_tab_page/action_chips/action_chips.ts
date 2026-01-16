@@ -1,6 +1,8 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+
 import type {ContextualUpload, TabUpload} from 'chrome://resources/cr_components/composebox/common.js';
 import {TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
 import {ComposeboxMode} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
@@ -69,6 +71,10 @@ export class ActionChipsElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
+      showDismissalUI_: {
+        type: Boolean,
+        reflect: true,
+      },
       themeHasBackgroundImage: {type: Boolean, reflect: true},
     };
   }
@@ -79,6 +85,8 @@ export class ActionChipsElement extends CrLitElement {
   accessor themeHasBackgroundImage: boolean = false;
   protected accessor showSimplifiedUI_: boolean =
       loadTimeData.getBoolean('ntpNextShowSimplificationUIEnabled');
+  protected accessor showDismissalUI_: boolean =
+      loadTimeData.getBoolean('ntpNextShowDismissalUIEnabled');
   private onActionChipChangedListenerId_: number|null = null;
   private initialLoadStartTime_: number|null = null;
 
@@ -218,6 +226,13 @@ export class ActionChipsElement extends CrLitElement {
       default:
         // Do nothing yet...
     }
+  }
+
+  protected removeChip_(chip: ActionChip, e: MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.actionChips_ =
+        this.actionChips_.filter((c) => c.suggestion !== chip.suggestion);
   }
 
   protected getFaviconUrl_(url: string): string {
