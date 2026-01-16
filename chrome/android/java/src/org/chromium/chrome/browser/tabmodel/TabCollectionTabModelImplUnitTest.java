@@ -502,6 +502,21 @@ public class TabCollectionTabModelImplUnitTest {
         assertEquals(5L, mTabModel.getMostRecentClosureTime());
     }
 
+    @Test
+    public void testAddTab_NotifyPendingTabClosureManager() {
+        @TabId int tabId = 789;
+        MockTab tab = MockTab.createAndInitialize(tabId, mProfile);
+        tab.setIsInitialized(true);
+        when(mPendingTabClosureManager.getRewoundList()).thenReturn(mock(TabList.class));
+        mTabModel.setPendingTabClosureManagerForTesting(mPendingTabClosureManager);
+
+        mTabModel.addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+
+        verify(mPendingTabClosureManager).notifyTabAdded(eq(tab), eq(0));
+        verify(mPendingTabClosureManager, never()).resetState();
+        verifyBatchedAndReset();
+    }
+
     private void verifyBatchedAndReset() {
         verify(mTabStateStorageService).createBatch();
         verify(mScopedStorageBatch).close();

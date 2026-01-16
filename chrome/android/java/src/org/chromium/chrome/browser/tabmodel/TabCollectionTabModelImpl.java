@@ -1427,7 +1427,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         }
 
         if (supportsPendingClosures()) {
-            mPendingTabClosureManager.resetState();
+            mPendingTabClosureManager.notifyTabAdded(tab, finalIndex);
         }
 
         tabAddedToModel(tab);

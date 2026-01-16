@@ -209,6 +209,16 @@ public class PendingTabClosureManager {
         }
 
         /**
+         * Adds a {@link Tab} to this internal list.
+         *
+         * @param tab The {@link Tab} to add.
+         * @param index The index to add the tab at.
+         */
+        public void addTab(Tab tab, int index) {
+            mRewoundTabs.add(index, tab);
+        }
+
+        /**
          * Removes a {@link Tab} from this internal list.
          *
          * @param tab The {@link Tab} to remove.
@@ -294,6 +304,22 @@ public class PendingTabClosureManager {
 
         assert mTabClosureEvents.isEmpty();
         mRewoundList.resetRewoundState();
+    }
+
+    /**
+     * Notifies the manager that a tab was added to the model, so the rewound list can be updated.
+     * This is an optimization to avoid a full reset of the rewound list.
+     *
+     * @param tab The tab that was added.
+     * @param index The index where the tab was added.
+     */
+    public void notifyTabAdded(Tab tab, int index) {
+        mThreadChecker.assertOnValidThread();
+        assert !mIsCommittingAllTabClosures
+                : "Modifying mTabClosureEvents while committing all tab closures.";
+
+        assert mTabClosureEvents.isEmpty();
+        mRewoundList.addTab(tab, index);
     }
 
     /**
