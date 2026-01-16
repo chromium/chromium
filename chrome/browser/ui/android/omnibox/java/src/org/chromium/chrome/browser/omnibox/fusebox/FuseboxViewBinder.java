@@ -18,7 +18,6 @@ import android.view.View;
 import android.widget.Button;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.DimenRes;
 import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
@@ -418,13 +417,13 @@ class FuseboxViewBinder {
     }
 
     static void reanchorViewsForCompactFusebox(PropertyModel model, FuseboxViewHolder views) {
-        Resources res = views.parentView.getResources();
         boolean shouldShowCompactUi =
                 model.get(FuseboxProperties.COMPACT_UI)
                         || !model.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE);
 
         int topToTop = shouldShowCompactUi ? R.id.url_bar : ConstraintSet.UNSET;
         int topToBottom = shouldShowCompactUi ? ConstraintSet.UNSET : R.id.url_bar;
+        int bottomToBottom = shouldShowCompactUi ? ConstraintSet.UNSET : ConstraintSet.PARENT_ID;
 
         var cs = new ConstraintSet();
         cs.clone(views.parentView);
@@ -440,47 +439,9 @@ class FuseboxViewBinder {
         if (topToBottom != ConstraintSet.UNSET) {
             cs.connect(id, ConstraintSet.TOP, topToBottom, ConstraintSet.BOTTOM);
         }
-        cs.connect(id, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM);
-
-        @DimenRes int urlBarMinHeightRes;
-        @DimenRes int urlBarTopMarginRes;
-        if (shouldShowCompactUi) {
-            // Restore the non-expanded fusebox min height.
-            urlBarMinHeightRes = R.dimen.location_bar_height;
-            // Supposed to have 4dp of gap on the top and bottom here for to account for the inset
-            // of the background, but it causes problems as the toolbar also has a min height. Using
-            // 0 will work instead.
-            urlBarTopMarginRes = R.dimen.fusebox_url_bar_top_margin_compact;
-        } else {
-            // Override the min height being used to allow fusebox elements to squish closer to the
-            // url bar. Visual white space is still maintained by these other elements instead of
-            // the url bar, as they need to be larger than they visually appear for min touch sizes.
-            urlBarMinHeightRes = R.dimen.fusebox_expanded_location_bar_height;
-            cs.setMargin(
-                    id,
-                    ConstraintSet.BOTTOM,
-                    res.getDimensionPixelSize(R.dimen.fusebox_button_bottom_margin));
-            boolean hasAttachments = model.get(FuseboxProperties.ATTACHMENTS_VISIBLE);
-            urlBarTopMarginRes =
-                    hasAttachments
-                            ? R.dimen.fusebox_url_bar_top_margin_with_attachments
-                            : R.dimen.fusebox_url_bar_top_margin_expanded;
+        if (bottomToBottom != ConstraintSet.UNSET) {
+            cs.connect(id, ConstraintSet.BOTTOM, bottomToBottom, ConstraintSet.BOTTOM);
         }
-
-        // TODO(https://crbug.com/470120691): Modifications to the url bar is a layering violation.
-        View urlBar = views.parentView.findViewById(R.id.url_bar);
-        if (urlBar != null) {
-            urlBar.setMinimumHeight(res.getDimensionPixelSize(urlBarMinHeightRes));
-        }
-
-        cs.setMargin(
-                id,
-                ConstraintSet.START,
-                res.getDimensionPixelSize(R.dimen.fusebox_button_start_margin));
-        @Px int urlBarTopMarginPx = res.getDimensionPixelSize(urlBarTopMarginRes);
-        cs.setMargin(R.id.url_bar, ConstraintSet.TOP, urlBarTopMarginPx);
-        cs.setMargin(R.id.delete_button, ConstraintSet.TOP, urlBarTopMarginPx);
-        cs.setMargin(R.id.location_bar_status, ConstraintSet.TOP, urlBarTopMarginPx);
 
         cs.connect(
                 R.id.url_bar,

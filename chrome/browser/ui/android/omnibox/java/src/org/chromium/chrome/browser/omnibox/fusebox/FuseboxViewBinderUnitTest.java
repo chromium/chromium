@@ -249,7 +249,7 @@ public class FuseboxViewBinderUnitTest {
         var lp = (ConstraintLayout.LayoutParams) mViewHolder.addButton.getLayoutParams();
         assertEquals(R.id.url_bar, lp.topToTop);
         assertEquals(ConstraintSet.UNSET, lp.topToBottom);
-        assertEquals(ConstraintSet.PARENT_ID, lp.bottomToBottom);
+        assertEquals(ConstraintSet.UNSET, lp.bottomToBottom);
     }
 
     @Test
