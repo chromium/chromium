@@ -2053,6 +2053,8 @@ void DocumentLoader::StartLoadingInternal() {
 
   InitializePrefetchedSignedExchangeManager();
 
+  // https://crbug.com/471268403 implies that this is sometimes null.
+  CHECK(body_loader_);
   body_loader_->SetDefersLoading(freeze_mode_);
 }
 
