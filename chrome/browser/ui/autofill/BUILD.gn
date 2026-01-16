@@ -8,7 +8,17 @@ import("//components/compose/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//components/signin/features.gni")
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+if (is_android) {
+  java_cpp_enum("autofill_ai_ui_java_enums") {
+    sources = [ "autofill_ai/entity_attribute_update_details.h" ]
+  }
+}
 
 source_set("autofill_ai_ui_utils") {
   sources = [

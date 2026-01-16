@@ -44,6 +44,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill/SubKeyRequesterFactory.java",
     "java/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiSaveUpdateEntityPrompt.java",
     "java/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiSaveUpdateEntityPromptController.java",
+    "java/src/org/chromium/chrome/browser/autofill/autofill_ai/EntityAttributeUpdateDetails.java",
     "java/src/org/chromium/chrome/browser/autofill/autofill_ai/EntityDataManager.java",
     "java/src/org/chromium/chrome/browser/autofill/autofill_ai/EntityDataManagerFactory.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/AddressEditorCoordinator.java",
@@ -139,6 +140,7 @@ android_library("java") {
   srcjar_deps = [
     ":autofill_generated_enums",
     ":jni_headers",
+    "//chrome/browser/ui/autofill:autofill_ai_ui_java_enums",
   ]
 }
 
@@ -178,6 +180,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/autofill/SubKeyRequesterFactory.java",
     "java/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiSaveUpdateEntityPrompt.java",
     "java/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiSaveUpdateEntityPromptController.java",
+    "java/src/org/chromium/chrome/browser/autofill/autofill_ai/EntityAttributeUpdateDetails.java",
     "java/src/org/chromium/chrome/browser/autofill/autofill_ai/EntityDataManager.java",
   ]
 }

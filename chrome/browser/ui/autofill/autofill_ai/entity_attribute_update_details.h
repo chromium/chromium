@@ -15,6 +15,7 @@
 
 namespace autofill {
 
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.autofill.autofill_ai
 enum class EntityAttributeUpdateType {
   // A new attribute has been added to the entity. For example, the vehicle
   // make attribute (`kVehicleMake`) has been added to the vehicle info entity.
