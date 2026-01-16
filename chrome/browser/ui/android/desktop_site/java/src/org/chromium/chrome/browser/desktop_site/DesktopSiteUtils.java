@@ -235,7 +235,7 @@ public class DesktopSiteUtils {
     }
 
     /**
-     * Check if Request Desktop Site global setting is enabled.
+     * Check if Request Desktop Site Content Setting is enabled.
      *
      * @param profile The profile of the tab. Content settings have separate storage for incognito
      *     profiles. For site-specific exceptions the actual profile is needed.
