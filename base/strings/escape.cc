@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/third_party/icu/icu_utf.h"
@@ -233,19 +234,17 @@ bool UnescapeUTF8CharacterAtIndex(std::string_view escaped_text,
     }
   }
 
-  base::span<char> bytes_span = base::as_writable_chars(base::span(bytes));
+  std::string_view bytes_view = base::as_string_view(base::span(bytes));
   size_t char_index = 0;
   // Check if the unicode "character" that was just unescaped is valid.
-  if (!ReadUnicodeCharacter(bytes_span.data(), num_bytes, &char_index,
-                            code_point_out)) {
+  if (!ReadUnicodeCharacter(bytes_view, &char_index, code_point_out)) {
     return false;
   }
 
   // It's possible that a prefix of |bytes| forms a valid UTF-8 character,
   // and the rest are not valid UTF-8, so need to update |num_bytes| based
   // on the result of ReadUnicodeCharacter().
-  bytes_span = bytes_span.first(char_index + 1);
-  *unescaped_out = std::string(bytes_span.begin(), bytes_span.end());
+  *unescaped_out = bytes_view.substr(0, char_index + 1);
   return true;
 }
 
@@ -524,8 +523,7 @@ std::u16string UnescapeAndDecodeUTF8URLComponentWithAdjustments(
   OffsetAdjuster::Adjustments unescape_adjustments;
   std::string unescaped_url(
       UnescapeURLWithAdjustmentsImpl(text, rules, &unescape_adjustments));
-  if (UTF8ToUTF16WithAdjustments(unescaped_url.data(), unescaped_url.length(),
-                                 &result, adjustments)) {
+  if (UTF8ToUTF16WithAdjustments(unescaped_url, &result, adjustments)) {
     // Character set looks like it's valid.
     if (adjustments) {
       OffsetAdjuster::MergeSequentialAdjustments(unescape_adjustments,

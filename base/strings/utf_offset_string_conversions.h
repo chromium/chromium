@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/containers/span.h"
 
 namespace base {
 
@@ -91,8 +92,7 @@ class BASE_EXPORT OffsetAdjuster {
 // |adjustments| parameter that reflects the alterations done to the string.
 // It may be NULL.
 BASE_EXPORT bool UTF8ToUTF16WithAdjustments(
-    const char* src,
-    size_t src_len,
+    std::string_view src,
     std::u16string* output,
     base::OffsetAdjuster::Adjustments* adjustments);
 [[nodiscard]] BASE_EXPORT std::u16string UTF8ToUTF16WithAdjustments(
