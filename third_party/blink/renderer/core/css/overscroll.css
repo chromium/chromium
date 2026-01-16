@@ -3,6 +3,7 @@
   inset: 0;
   overflow: auto;
   pointer-events: none;
+  scroll-behavior: inherit;
   scrollbar-width: none;
   position: absolute;
 }
