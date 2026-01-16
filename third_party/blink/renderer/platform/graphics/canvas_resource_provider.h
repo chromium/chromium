@@ -287,8 +287,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   void EnsureSkiaCanvas();
 
-  void Clear();
-
  private:
   friend class FlushForImageListener;
 
