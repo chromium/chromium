@@ -13,6 +13,7 @@ import './shared_style.css.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
+import {htmlEscape} from 'chrome://resources/js/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './password_list_item.html.js';
@@ -178,7 +179,7 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
     if (this.shouldShowDeviceOnlyCredentialsIcon_()) {
       return this.deviceOnlyCredentialsAccessibilityLabelText_;
     }
-    return this.i18n('viewPasswordAriaDescription', this.item.name);
+    return this.i18n('viewPasswordAriaDescription', htmlEscape(this.item.name));
   }
 }
 

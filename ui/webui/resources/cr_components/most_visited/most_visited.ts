@@ -21,7 +21,7 @@ import {EventTracker} from '//resources/js/event_tracker.js';
 import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {isMac} from '//resources/js/platform.js';
-import {hasKeyModifiers} from '//resources/js/util.js';
+import {hasKeyModifiers, htmlEscape} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {TileSource} from '//resources/mojo/components/ntp_tiles/tile_source.mojom-webui.js';
@@ -1202,6 +1202,10 @@ export class MostVisitedElement extends MostVisitedElementBase {
     return loadTimeData.getString('shortcutMoreActions') ?
         loadTimeData.getStringF('shortcutMoreActions', title) :
         '';
+  }
+
+  protected getRemoveButtonText_(title: string): string {
+    return this.i18n('linkRemoveA11y', htmlEscape(title));
   }
 
   protected isFromEnterpriseShortcut_(source: number) {
