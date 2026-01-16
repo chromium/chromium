@@ -2911,12 +2911,6 @@
       name: "HTMLCommandForScrollCommands",
       status: "experimental",
     },
-    // Adds support for the 'request-close' command.
-    // https://open-ui.org/components/invokers.explainer/
-    {
-      name: "HTMLCommandRequestClose",
-      status: "stable",
-    },
     {
       name: "HTMLElementScrollParent",
       status: "experimental",

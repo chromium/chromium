@@ -2752,9 +2752,7 @@ CommandEventType HTMLElement::GetCommandEventType(
   if (EqualIgnoringASCIICase(action, keywords::kShowModal)) {
     return CommandEventType::kShowModal;
   }
-
-  if (RuntimeEnabledFeatures::HTMLCommandRequestCloseEnabled() &&
-      EqualIgnoringASCIICase(action, keywords::kRequestClose)) {
+  if (EqualIgnoringASCIICase(action, keywords::kRequestClose)) {
     return CommandEventType::kRequestClose;
   }
 
