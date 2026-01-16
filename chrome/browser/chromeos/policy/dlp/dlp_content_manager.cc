@@ -132,10 +132,11 @@ DlpContentManager* DlpContentManager::Get() {
 
 DlpContentRestrictionSet DlpContentManager::GetConfidentialRestrictions(
     content::WebContents* web_contents) const {
-  if (!confidential_web_contents_.contains(web_contents)) {
-    return DlpContentRestrictionSet();
+  if (auto it = confidential_web_contents_.find(web_contents);
+      it != confidential_web_contents_.end()) {
+    return it->second;
   }
-  return confidential_web_contents_.at(web_contents);
+  return DlpContentRestrictionSet();
 }
 
 bool DlpContentManager::IsScreenShareBlocked(
@@ -586,8 +587,9 @@ void DlpContentManager::OnConfidentialityChanged(
     content::WebContents* web_contents,
     const DlpContentRestrictionSet& restriction_set) {
   DlpContentRestrictionSet old_restriction_set;
-  if (confidential_web_contents_.contains(web_contents)) {
-    old_restriction_set = confidential_web_contents_[web_contents];
+  if (auto it = confidential_web_contents_.find(web_contents);
+      it != confidential_web_contents_.end()) {
+    old_restriction_set = it->second;
   }
   UpdateConfidentiality(web_contents, restriction_set);
   NotifyOnConfidentialityChanged(old_restriction_set, restriction_set,
