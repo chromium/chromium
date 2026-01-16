@@ -337,7 +337,3 @@ std::string ComposeboxHandler::AutocompleteIconToResourceName(
   return SearchboxHandler::AutocompleteIconToResourceName(icon);
 }
 
-std::optional<lens::LensOverlayInvocationSource>
-ComposeboxHandler::GetInvocationSource() const {
-  return lens::LensOverlayInvocationSource::kNtpContextualQuery;
-}

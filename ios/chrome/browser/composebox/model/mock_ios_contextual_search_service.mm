@@ -52,7 +52,9 @@ MockIOSContextualSearchService::MockIOSContextualSearchService(
           [](std::unique_ptr<
                  contextual_search::ContextualSearchContextController::
                      ConfigParams> config,
-             contextual_search::ContextualSearchSource source) {
+             contextual_search::ContextualSearchSource source,
+             std::optional<lens::LensOverlayInvocationSource>
+                 invocation_source) {
             auto controller = std::make_unique<testing::NiceMock<
                 contextual_search::MockContextualSearchContextController>>();
 

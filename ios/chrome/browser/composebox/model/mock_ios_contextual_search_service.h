@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_COMPOSEBOX_MODEL_MOCK_IOS_CONTEXTUAL_SEARCH_SERVICE_H_
 
 #import "components/contextual_search/mock_contextual_search_context_controller.h"
+#import "components/lens/lens_overlay_invocation_source.h"
 #import "ios/chrome/browser/composebox/model/ios_contextual_search_service.h"
 #import "testing/gmock/include/gmock/gmock.h"
 
@@ -39,7 +40,8 @@ class MockIOSContextualSearchService : public IOSContextualSearchService {
       CreateSession,
       (std::unique_ptr<
            contextual_search::ContextualSearchContextController::ConfigParams>,
-       contextual_search::ContextualSearchSource),
+       contextual_search::ContextualSearchSource,
+       std::optional<lens::LensOverlayInvocationSource>),
       (override));
 };
 

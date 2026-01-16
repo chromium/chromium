@@ -650,7 +650,8 @@ ContextualTasksUI::GetOrCreateContextualSessionHandle() {
     if (contextual_search_service) {
       auto session_handle = contextual_search_service->CreateSession(
           ntp_composebox::CreateQueryControllerConfigParams(),
-          contextual_search::ContextualSearchSource::kContextualTasks);
+          contextual_search::ContextualSearchSource::kContextualTasks,
+          lens::LensOverlayInvocationSource::kContextualTasksComposebox);
       // TODO(crbug.com/469875164): Determine what to do with the return value
       // of this call, or move this call to a different location.
       session_handle->CheckSearchContentSharingSettings(

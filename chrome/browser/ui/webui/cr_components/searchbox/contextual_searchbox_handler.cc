@@ -675,7 +675,6 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
     search_url_request_info->query_text = query_text;
     search_url_request_info->additional_params = additional_params;
     search_url_request_info->aim_entry_point = aim_entry_point;
-    search_url_request_info->invocation_source = GetInvocationSource();
 
     contextual_session_handle->CreateSearchUrl(
         std::move(search_url_request_info),
@@ -772,7 +771,8 @@ void ContextualSearchboxHandler::OpenUrl(
       ContextualSearchServiceFactory::GetForProfile(profile_);
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       new_contextual_session_handle = contextual_session_service->GetSession(
-          contextual_session_handle->session_id());
+          contextual_session_handle->session_id(),
+          contextual_session_handle->invocation_source());
   new_contextual_session_handle->set_submitted_context_tokens(
       contextual_session_handle->GetSubmittedContextTokens());
 

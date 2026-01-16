@@ -85,12 +85,13 @@ void UpdateContextualSearchWebContentsHelperForTask(
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       session_handle;
   if (existing_session) {
-    session_handle =
-        contextual_search_service->GetSession(existing_session->session_id());
+    session_handle = contextual_search_service->GetSession(
+        existing_session->session_id(), existing_session->invocation_source());
   } else {
     session_handle = contextual_search_service->CreateSession(
         ntp_composebox::CreateQueryControllerConfigParams(),
-        contextual_search::ContextualSearchSource::kContextualTasks);
+        contextual_search::ContextualSearchSource::kContextualTasks,
+        lens::LensOverlayInvocationSource::kContextualTasksComposebox);
     session_handle->NotifySessionStarted();
   }
 

@@ -312,7 +312,8 @@ LensQueryFlowRouter::CreateContextualSearchSessionHandle() {
   // requests.
   auto session_handle = contextual_search_service->CreateSession(
       ntp_composebox::CreateQueryControllerConfigParams(),
-      contextual_search::ContextualSearchSource::kLens);
+      contextual_search::ContextualSearchSource::kLens,
+      lens_search_controller_->invocation_source());
   // TODO(crbug.com/469875837): Determine what to do with the return value
   // of this call, or move this call to a different location.
   session_handle->CheckSearchContentSharingSettings(profile()->GetPrefs());

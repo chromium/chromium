@@ -85,7 +85,8 @@ std::unique_ptr<ContextualSearchSessionHandle>
 ContextualSearchService::CreateSession(
     std::unique_ptr<ContextualSearchContextController::ConfigParams>
         query_controller_config_params,
-    ContextualSearchSource source) {
+    ContextualSearchSource source,
+    std::optional<lens::LensOverlayInvocationSource> invocation_source) {
   base::UnguessableToken session_id = base::UnguessableToken::Create();
   std::unique_ptr<ContextualSearchContextController> controller =
       CreateComposeboxQueryController(
@@ -96,15 +97,17 @@ ContextualSearchService::CreateSession(
       ContextualSearchSessionEntry(std::move(controller), std::move(recorder)));
 
   return base::WrapUnique(new ContextualSearchSessionHandle(
-      weak_ptr_factory_.GetWeakPtr(), session_id));
+      weak_ptr_factory_.GetWeakPtr(), session_id, invocation_source));
 }
 
 std::unique_ptr<ContextualSearchSessionHandle>
-ContextualSearchService::GetSession(const base::UnguessableToken& session_id) {
+ContextualSearchService::GetSession(
+    const base::UnguessableToken& session_id,
+    std::optional<lens::LensOverlayInvocationSource> invocation_source) {
   if (auto it = sessions_.find(session_id); it != sessions_.end()) {
     it->second.ref_count_++;
     return base::WrapUnique(new ContextualSearchSessionHandle(
-        weak_ptr_factory_.GetWeakPtr(), session_id));
+        weak_ptr_factory_.GetWeakPtr(), session_id, invocation_source));
   }
   return nullptr;
 }
@@ -119,7 +122,8 @@ ContextualSearchService::CreateSessionForTesting(
                                                  std::move(metrics_recorder)));
 
   return base::WrapUnique(new ContextualSearchSessionHandle(
-      weak_ptr_factory_.GetWeakPtr(), session_id));
+      weak_ptr_factory_.GetWeakPtr(), session_id,
+      /*invocation_source=*/std::nullopt));
 }
 
 ContextualSearchContextController*

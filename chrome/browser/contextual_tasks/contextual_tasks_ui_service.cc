@@ -163,7 +163,8 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
         // in a new tab (and would therefore leave the source tab without a
         // handle).
         session_handle =
-            service->GetSession(helper->session_handle()->session_id());
+            service->GetSession(helper->session_handle()->session_id(),
+                                helper->session_handle()->invocation_source());
         if (session_handle) {
           session_handle->set_submitted_context_tokens(
               helper->session_handle()->GetSubmittedContextTokens());

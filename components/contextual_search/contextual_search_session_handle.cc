@@ -44,8 +44,11 @@ std::vector<FileInfo> TokensToFileInfos(
 
 ContextualSearchSessionHandle::ContextualSearchSessionHandle(
     base::WeakPtr<ContextualSearchService> service,
-    const base::UnguessableToken& session_id)
-    : service_(service), session_id_(session_id) {}
+    const base::UnguessableToken& session_id,
+    std::optional<lens::LensOverlayInvocationSource> invocation_source)
+    : service_(service),
+      session_id_(session_id),
+      invocation_source_(invocation_source) {}
 
 ContextualSearchSessionHandle::~ContextualSearchSessionHandle() {
   if (service_) {
@@ -275,6 +278,9 @@ void ContextualSearchSessionHandle::CreateSearchUrl(
   submitted_context_tokens_.insert(submitted_context_tokens_.end(),
                                    search_url_request_info->file_tokens.begin(),
                                    search_url_request_info->file_tokens.end());
+
+  // Set the invocation source on the search URL request info.
+  search_url_request_info->invocation_source = invocation_source_;
 
   context_controller->CreateSearchUrl(std::move(search_url_request_info),
                                       std::move(callback));

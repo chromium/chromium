@@ -14,6 +14,7 @@
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/channel.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -59,11 +60,13 @@ class ContextualSearchService : public KeyedService {
   virtual std::unique_ptr<ContextualSearchSessionHandle> CreateSession(
       std::unique_ptr<ContextualSearchContextController::ConfigParams>
           query_controller_config_params,
-      ContextualSearchSource source);
+      ContextualSearchSource source,
+      std::optional<lens::LensOverlayInvocationSource> invocation_source);
   // Returns a new handle for an existing session. Returns nullptr if the
   // session does not exist (e.g. has been released).
   std::unique_ptr<ContextualSearchSessionHandle> GetSession(
-      const SessionId& session_id);
+      const SessionId& session_id,
+      std::optional<lens::LensOverlayInvocationSource> invocation_source);
 
   std::unique_ptr<ContextualSearchSessionHandle> CreateSessionForTesting(
       std::unique_ptr<ContextualSearchContextController> controller,
