@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "net/base/load_states.h"
 #include "net/base/net_error_details.h"
@@ -239,13 +238,6 @@ void HttpStreamPool::Job::OnPreconnectComplete(int status) {
   CHECK(!result_.has_value());
   OnDone(status);
   delegate_->OnPreconnectComplete(this, status);
-}
-
-void HttpStreamPool::Job::CallOnPreconnectCompleteLater(int status) {
-  // Currently the notification is only used for testing so using IDLE priority.
-  TaskRunner(IDLE)->PostTask(
-      FROM_HERE, base::BindOnce(&Job::OnPreconnectComplete,
-                                weak_ptr_factory_.GetWeakPtr(), status));
 }
 
 void HttpStreamPool::Job::OnDone(std::optional<int> result) {

@@ -139,11 +139,6 @@ class HttpStreamPool::Job {
   // Called by the associated AttemptManager when the preconnect completed.
   void OnPreconnectComplete(int status);
 
-  // Helper method to call OnPreconnectComplete asynchronously. Used to avoid
-  // a dangling pointer since calling `delegate_->OnPreconnectComplete()`
-  // deletes `this` synchronously.
-  void CallOnPreconnectCompleteLater(int status);
-
   RequestPriority priority() const { return delegate_->priority(); }
 
   RespectLimits respect_limits() const { return delegate_->respect_limits(); }
