@@ -155,6 +155,7 @@ void PaintManager::SetSize(const gfx::Size& new_size, float device_scale) {
 
     view_size_changed_waiting_for_paint_ = true;
     previous_frame_.reset();
+    flush_pending_ = false;
     aggregator_.InvalidateRect(gfx::Rect(new_size));
     EnsureCallbackPending();
   } else {
