@@ -28,7 +28,7 @@ class WebAppContentSettingsContainer;
 class BrowserView;
 class ToolbarButtonProvider;
 class PinnedToolbarActionsContainer;
-class ExtensionsToolbarContainer;
+class ExtensionsToolbarDesktop;
 class WebAppMenuButton;
 class WebAppOriginText;
 class WindowControlsOverlayToggleButton;
@@ -83,7 +83,7 @@ class WebAppToolbarButtonContainer : public views::View,
     return page_action_container_.get();
   }
 
-  ExtensionsToolbarContainer* extensions_container() {
+  ExtensionsToolbarDesktop* extensions_container() {
     return extensions_container_;
   }
 
@@ -183,7 +183,7 @@ class WebAppToolbarButtonContainer : public views::View,
   raw_ptr<WindowControlsOverlayToggleButton>
       window_controls_overlay_toggle_button_ = nullptr;
   raw_ptr<WebAppContentSettingsContainer> content_settings_container_ = nullptr;
-  raw_ptr<ExtensionsToolbarContainer> extensions_container_ = nullptr;
+  raw_ptr<ExtensionsToolbarDesktop> extensions_container_ = nullptr;
   raw_ptr<PinnedToolbarActionsContainer> pinned_toolbar_actions_container_ =
       nullptr;
   raw_ptr<WebAppMenuButton> web_app_menu_button_ = nullptr;

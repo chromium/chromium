@@ -76,7 +76,7 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   }
 
   // ToolbarButtonProvider:
-  ExtensionsToolbarContainer* GetExtensionsToolbarContainer() override;
+  ExtensionsToolbarDesktop* GetExtensionsToolbarDesktop() override;
   PinnedToolbarActionsContainer* GetPinnedToolbarActionsContainer() override;
   gfx::Size GetToolbarButtonSize() const override;
   views::View* GetDefaultExtensionDialogAnchorView() override;

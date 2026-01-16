@@ -46,7 +46,7 @@ class BatterySaverButton;
 class BrowserAppMenuButton;
 class Browser;
 class ExtensionsToolbarButton;
-class ExtensionsToolbarContainer;
+class ExtensionsToolbarDesktop;
 class HomeButton;
 class IntentChipButton;
 class ExtensionsToolbarCoordinator;
@@ -138,7 +138,7 @@ class ToolbarView : public views::AccessiblePaneView,
   // Accessors.
   Browser* browser() const { return browser_; }
   views::Button* GetChromeLabsButton() const;
-  ExtensionsToolbarContainer* extensions_container() const {
+  ExtensionsToolbarDesktop* extensions_container() const {
     return extensions_container_;
   }
   ToolbarButton* forward_button() const { return forward_; }
@@ -224,7 +224,7 @@ class ToolbarView : public views::AccessiblePaneView,
       AppMenuIconController::TypeAndSeverity type_and_severity) override;
 
   // ToolbarButtonProvider:
-  ExtensionsToolbarContainer* GetExtensionsToolbarContainer() override;
+  ExtensionsToolbarDesktop* GetExtensionsToolbarDesktop() override;
   PinnedToolbarActionsContainer* GetPinnedToolbarActionsContainer() override;
   gfx::Size GetToolbarButtonSize() const override;
   views::View* GetDefaultExtensionDialogAnchorView() override;
@@ -281,7 +281,7 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<CustomTabBarView> custom_tab_bar_ = nullptr;
   raw_ptr<LocationBarView> location_bar_view_ = nullptr;
   raw_ptr<LocationBar> location_bar_ = nullptr;
-  raw_ptr<ExtensionsToolbarContainer> extensions_container_ = nullptr;
+  raw_ptr<ExtensionsToolbarDesktop> extensions_container_ = nullptr;
   raw_ptr<views::View> toolbar_divider_ = nullptr;
   raw_ptr<BatterySaverButton> battery_saver_button_ = nullptr;
   raw_ptr<PerformanceInterventionButton> performance_intervention_button_ =

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 
 #include <algorithm>
 #include <string>
@@ -44,14 +44,14 @@ constexpr base::TimeDelta kConfirmationDisplayDuration = base::Seconds(4);
 
 }  // namespace
 
-class ExtensionsToolbarContainerUnitTest : public ExtensionsToolbarUnitTest {
+class ExtensionsToolbarDesktopUnitTest : public ExtensionsToolbarUnitTest {
  public:
-  ExtensionsToolbarContainerUnitTest();
-  ~ExtensionsToolbarContainerUnitTest() override = default;
-  ExtensionsToolbarContainerUnitTest(
-      const ExtensionsToolbarContainerUnitTest&) = delete;
-  ExtensionsToolbarContainerUnitTest& operator=(
-      const ExtensionsToolbarContainerUnitTest&) = delete;
+  ExtensionsToolbarDesktopUnitTest();
+  ~ExtensionsToolbarDesktopUnitTest() override = default;
+  ExtensionsToolbarDesktopUnitTest(const ExtensionsToolbarDesktopUnitTest&) =
+      delete;
+  ExtensionsToolbarDesktopUnitTest& operator=(
+      const ExtensionsToolbarDesktopUnitTest&) = delete;
 
   // Navigates to `url`.
   void NavigateAndCommit(const GURL& URL);
@@ -83,19 +83,19 @@ class ExtensionsToolbarContainerUnitTest : public ExtensionsToolbarUnitTest {
   }
 };
 
-ExtensionsToolbarContainerUnitTest::ExtensionsToolbarContainerUnitTest()
+ExtensionsToolbarDesktopUnitTest::ExtensionsToolbarDesktopUnitTest()
     : ExtensionsToolbarUnitTest(
           base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
   scoped_feature_list_.InitAndEnableFeature(
       extensions_features::kExtensionsMenuAccessControl);
 }
 
-void ExtensionsToolbarContainerUnitTest::NavigateAndCommit(const GURL& url) {
+void ExtensionsToolbarDesktopUnitTest::NavigateAndCommit(const GURL& url) {
   web_contents_tester_->NavigateAndCommit(url);
   WaitForAnimation();
 }
 
-ToolbarActionView* ExtensionsToolbarContainerUnitTest::GetPinnedExtensionView(
+ToolbarActionView* ExtensionsToolbarDesktopUnitTest::GetPinnedExtensionView(
     const extensions::ExtensionId& extension_id) {
   std::vector<ToolbarActionView*> actions = GetPinnedExtensionViews();
   auto it = std::ranges::find(
@@ -107,21 +107,21 @@ ToolbarActionView* ExtensionsToolbarContainerUnitTest::GetPinnedExtensionView(
   return *it;
 }
 
-bool ExtensionsToolbarContainerUnitTest::IsRequestAccessButtonVisible() {
+bool ExtensionsToolbarDesktopUnitTest::IsRequestAccessButtonVisible() {
   return request_access_button()->GetVisible();
 }
 
-void ExtensionsToolbarContainerUnitTest::SetUp() {
+void ExtensionsToolbarDesktopUnitTest::SetUp() {
   ExtensionsToolbarUnitTest::SetUp();
   web_contents_tester_ = AddWebContentsAndGetTester();
 }
 
-void ExtensionsToolbarContainerUnitTest::TearDown() {
+void ExtensionsToolbarDesktopUnitTest::TearDown() {
   web_contents_tester_ = nullptr;
   ExtensionsToolbarUnitTest::TearDown();
 }
 
-TEST_F(ExtensionsToolbarContainerUnitTest, ReorderPinnedExtensions) {
+TEST_F(ExtensionsToolbarDesktopUnitTest, ReorderPinnedExtensions) {
   constexpr char kExtensionAName[] = "A Extension";
   auto extensionA = InstallExtension(kExtensionAName);
   constexpr char kExtensionBName[] = "B Extension";
@@ -165,7 +165,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest, ReorderPinnedExtensions) {
       testing::ElementsAre(kExtensionCName, kExtensionAName, kExtensionBName));
 }
 
-TEST_F(ExtensionsToolbarContainerUnitTest, ForcePinnedExtensionsCannotReorder) {
+TEST_F(ExtensionsToolbarDesktopUnitTest, ForcePinnedExtensionsCannotReorder) {
   constexpr char kExtensionAName[] = "A Extension";
   auto extensionA = InstallExtension(kExtensionAName);
   constexpr char kExtensionBName[] = "B Extension";
@@ -210,7 +210,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest, ForcePinnedExtensionsCannotReorder) {
 }
 
 // Tests that when an extension is reloaded it remains visible in the toolbar.
-TEST_F(ExtensionsToolbarContainerUnitTest, ReloadExtensionKeepsPinnedState) {
+TEST_F(ExtensionsToolbarDesktopUnitTest, ReloadExtensionKeepsPinnedState) {
   // The extension must have a manifest to be reloaded.
   extensions::TestExtensionDir extension_directory;
   constexpr char kManifest[] = R"({
@@ -248,7 +248,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest, ReloadExtensionKeepsPinnedState) {
 
 // Tests that a when an extension is reloaded with manifest errors, and
 // therefore fails to be loaded into Chrome, it's removed from the toolbar.
-TEST_F(ExtensionsToolbarContainerUnitTest, ReloadExtensionFailed) {
+TEST_F(ExtensionsToolbarDesktopUnitTest, ReloadExtensionFailed) {
   extensions::TestExtensionDir extension_directory;
   constexpr char kManifest[] = R"({
         "name": "Test Extension",
@@ -289,7 +289,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest, ReloadExtensionFailed) {
       extensions_container()->IsActionVisibleOnToolbar(extension->id()));
 }
 
-TEST_F(ExtensionsToolbarContainerUnitTest,
+TEST_F(ExtensionsToolbarDesktopUnitTest,
        PinnedExtensionAppearsInAnotherWindow) {
   const std::string& extension_id = InstallExtension("Extension")->id();
   const auto is_action_visible_on_toolbar = [&extension_id](Browser* browser) {
@@ -322,8 +322,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
   EXPECT_TRUE(is_action_visible_on_toolbar(browser3));
 }
 
-TEST_F(ExtensionsToolbarContainerUnitTest,
-       PinnedExtensionsReorderOnPrefChange) {
+TEST_F(ExtensionsToolbarDesktopUnitTest, PinnedExtensionsReorderOnPrefChange) {
   constexpr char kExtensionAName[] = "A Extension";
   auto extensionA = InstallExtension(kExtensionAName);
   constexpr char kExtensionBName[] = "B Extension";
@@ -355,7 +354,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
       testing::ElementsAre(kExtensionBName, kExtensionCName, kExtensionAName));
 }
 
-TEST_F(ExtensionsToolbarContainerUnitTest, RunDropCallback) {
+TEST_F(ExtensionsToolbarDesktopUnitTest, RunDropCallback) {
   constexpr char kExtensionAName[] = "A Extension";
   auto extensionA = InstallExtension(kExtensionAName);
   constexpr char kExtensionBName[] = "B Extension";
@@ -398,7 +397,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest, RunDropCallback) {
   EXPECT_EQ(output_drag_op, ui::mojom::DragOperation::kMove);
 }
 
-TEST_F(ExtensionsToolbarContainerUnitTest, ResetDropCallback) {
+TEST_F(ExtensionsToolbarDesktopUnitTest, ResetDropCallback) {
   constexpr char kExtensionAName[] = "A Extension";
   auto extensionA = InstallExtension(kExtensionAName);
   constexpr char kExtensionBName[] = "B Extension";
@@ -446,8 +445,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest, ResetDropCallback) {
       testing::ElementsAre(kExtensionAName, kExtensionBName, kExtensionCName));
 }
 
-TEST_F(ExtensionsToolbarContainerUnitTest,
-       InvalidateDropCallbackOnActionAdded) {
+TEST_F(ExtensionsToolbarDesktopUnitTest, InvalidateDropCallbackOnActionAdded) {
   constexpr char kExtensionAName[] = "A Extension";
   auto extensionA = InstallExtension(kExtensionAName);
   constexpr char kExtensionBName[] = "B Extension";
@@ -498,7 +496,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
 }
 
 // Tests reordering pinned actions with MovePinnedActionsBy().
-TEST_F(ExtensionsToolbarContainerUnitTest, TestMovePinnedActionBy) {
+TEST_F(ExtensionsToolbarDesktopUnitTest, TestMovePinnedActionBy) {
   constexpr char kExtensionAName[] = "A Extension";
   auto extensionA = InstallExtension(kExtensionAName);
   constexpr char kExtensionBName[] = "B Extension";
@@ -558,7 +556,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest, TestMovePinnedActionBy) {
 // ToolbarActionsModel::MovePinnedAction crashes if pinned extensions changes
 // while the drop callback isn't invalidated. This test makes sure this doesn't
 // happen anymore. https://crbug.com/1268239.
-TEST_F(ExtensionsToolbarContainerUnitTest, InvalidateDropCallbackOnPrefChange) {
+TEST_F(ExtensionsToolbarDesktopUnitTest, InvalidateDropCallbackOnPrefChange) {
   constexpr char kExtensionAName[] = "A Extension";
   auto extensionA = InstallExtension(kExtensionAName);
   constexpr char kExtensionBName[] = "B Extension";
@@ -609,7 +607,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest, InvalidateDropCallbackOnPrefChange) {
 // extensions_toolbar_view_model_unittest.cc once it's created.
 
 // Test that the extension button state changes after site permissions updates.
-TEST_F(ExtensionsToolbarContainerUnitTest,
+TEST_F(ExtensionsToolbarDesktopUnitTest,
        ExtensionsButton_SitePermissionsUpdates) {
   // Install an extension that requests host permissions.
   auto extension =
@@ -660,7 +658,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
 
 // Test that the extension button state takes into account chrome restricted
 // sites.
-TEST_F(ExtensionsToolbarContainerUnitTest,
+TEST_F(ExtensionsToolbarDesktopUnitTest,
        ExtensionsButton_ChromeRestrictedSite) {
   InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
 
@@ -676,7 +674,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
 
 // Tests that extensions appear in the request access button iff they have a
 // site access request.
-TEST_F(ExtensionsToolbarContainerUnitTest, RequestAccessButton_Extensions) {
+TEST_F(ExtensionsToolbarDesktopUnitTest, RequestAccessButton_Extensions) {
   auto extension_A =
       InstallExtensionWithPermissions("Extension A", {"activeTab"});
   auto extension_B =
@@ -751,7 +749,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest, RequestAccessButton_Extensions) {
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 }
 
-TEST_F(ExtensionsToolbarContainerUnitTest, RequestAccessButton_TooltipText) {
+TEST_F(ExtensionsToolbarDesktopUnitTest, RequestAccessButton_TooltipText) {
   auto extension_A = InstallExtensionWithHostPermissions(
       "Extension A", {"*://www.example.com/*"});
   auto extension_B =
@@ -794,7 +792,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest, RequestAccessButton_TooltipText) {
             expected_tooltip);
 }
 
-TEST_F(ExtensionsToolbarContainerUnitTest,
+TEST_F(ExtensionsToolbarDesktopUnitTest,
        RequestAccessButton_TooltipTextAccessibility) {
   auto extension_A = InstallExtensionWithHostPermissions(
       "Extension A", {"*://www.example.com/*"});
@@ -837,7 +835,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
 
 // Tests that an extension appears in the request access button iff it has a
 // site access request that matches the given pattern filter.
-TEST_F(ExtensionsToolbarContainerUnitTest,
+TEST_F(ExtensionsToolbarDesktopUnitTest,
        RequestAccessButton_RequestWithPattern) {
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
@@ -878,7 +876,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
 
 // Tests that an extension's site access request is removed when the extension
 // is granted site access.
-TEST_F(ExtensionsToolbarContainerUnitTest,
+TEST_F(ExtensionsToolbarDesktopUnitTest,
        RequestAccessButton_ExtensionGrantedSiteAccess) {
   auto extension_A = InstallExtensionWithHostPermissions(
       "Extension A", {"*://www.example.com/*"});
@@ -912,7 +910,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
 }
 
 // Tests that requests are reset on cross-origin navigations.
-TEST_F(ExtensionsToolbarContainerUnitTest,
+TEST_F(ExtensionsToolbarDesktopUnitTest,
        RequestAccessButtonVisibility_NavigationBetweenPages) {
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
@@ -945,7 +943,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
 
 // Tests that the request access button is visible for matched patterns on
 // same-origin navigations.
-TEST_F(ExtensionsToolbarContainerUnitTest,
+TEST_F(ExtensionsToolbarDesktopUnitTest,
        RequestAccessButton_NavigationBetweenPages_RequestWithPattern) {
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
@@ -989,8 +987,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
 
 // Test that request access button is visible based on the user site setting
 // selected.
-TEST_F(ExtensionsToolbarContainerUnitTest,
-       RequestAccessButton_UserSiteSetting) {
+TEST_F(ExtensionsToolbarDesktopUnitTest, RequestAccessButton_UserSiteSetting) {
   const GURL url("http://www.url.com");
   auto url_origin = url::Origin::Create(url);
 
@@ -1034,7 +1031,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
 
 // Tests that an extension with a site access request but not allowed to show
 // requests in the toolbar is not shown in the request access button.
-TEST_F(ExtensionsToolbarContainerUnitTest,
+TEST_F(ExtensionsToolbarDesktopUnitTest,
        RequestAccessButton_ExtensionsNotAllowedInButton) {
   // Add two extensions that request access to all urls, and withhold their
   // site access.
@@ -1086,8 +1083,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
 
 // Test that an extension's request which is dismissed is not visible in the
 // request access button.
-TEST_F(ExtensionsToolbarContainerUnitTest,
-       RequestAccessButton_RequestDismissed) {
+TEST_F(ExtensionsToolbarDesktopUnitTest, RequestAccessButton_RequestDismissed) {
   // Add two extensions that request access to all urls, and withhold their
   // site access.
   auto extension_a =
@@ -1140,7 +1136,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 }
 
-TEST_F(ExtensionsToolbarContainerUnitTest,
+TEST_F(ExtensionsToolbarDesktopUnitTest,
        RequestAccessButton_OnPressedExecuteAction) {
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
@@ -1205,7 +1201,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
 // Tests that if an update comes in between the request access button is clicked
 // and the confirmation is collapsed, the button is updated afterwards with the
 // correct information.
-TEST_F(ExtensionsToolbarContainerUnitTest,
+TEST_F(ExtensionsToolbarDesktopUnitTest,
        RequestAccessButton_UpdateInBetweenClickAndConfirmationCollapse) {
   auto extension_A =
       InstallExtensionWithHostPermissions("Extension A", {"<all_urls>"});
@@ -1265,21 +1261,21 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
               testing::ElementsAre(extension_C->id()));
 }
 
-class ExtensionsToolbarContainerWithPermittedSitesUnitTest
-    : public ExtensionsToolbarContainerUnitTest {
+class ExtensionsToolbarDesktopWithPermittedSitesUnitTest
+    : public ExtensionsToolbarDesktopUnitTest {
  public:
-  ExtensionsToolbarContainerWithPermittedSitesUnitTest() {
+  ExtensionsToolbarDesktopWithPermittedSitesUnitTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
         extensions_features::kExtensionsMenuAccessControl,
         extensions_features::kExtensionsMenuAccessControlWithPermittedSites};
     std::vector<base::test::FeatureRef> disabled_features;
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
-  ExtensionsToolbarContainerWithPermittedSitesUnitTest(
-      const ExtensionsToolbarContainerWithPermittedSitesUnitTest&) = delete;
-  const ExtensionsToolbarContainerWithPermittedSitesUnitTest& operator=(
-      const ExtensionsToolbarContainerWithPermittedSitesUnitTest&) = delete;
-  ~ExtensionsToolbarContainerWithPermittedSitesUnitTest() override = default;
+  ExtensionsToolbarDesktopWithPermittedSitesUnitTest(
+      const ExtensionsToolbarDesktopWithPermittedSitesUnitTest&) = delete;
+  const ExtensionsToolbarDesktopWithPermittedSitesUnitTest& operator=(
+      const ExtensionsToolbarDesktopWithPermittedSitesUnitTest&) = delete;
+  ~ExtensionsToolbarDesktopWithPermittedSitesUnitTest() override = default;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -1287,7 +1283,7 @@ class ExtensionsToolbarContainerWithPermittedSitesUnitTest
 
 // Test that request access button is visible based on the user site setting
 // selected.
-TEST_F(ExtensionsToolbarContainerWithPermittedSitesUnitTest,
+TEST_F(ExtensionsToolbarDesktopWithPermittedSitesUnitTest,
        RequestAccessButtonVisibilityOnPermittedSites) {
   const GURL url("http://www.url.com");
   auto url_origin = url::Origin::Create(url);

@@ -21,7 +21,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -193,8 +193,7 @@ ExtensionsMenuMainPageViewInteractiveUITest::
 }
 
 void ExtensionsMenuMainPageViewInteractiveUITest::ShowMenu() {
-  menu_coordinator()->Show(extensions_button(),
-                           GetExtensionsToolbarContainer());
+  menu_coordinator()->Show(extensions_button(), GetExtensionsToolbarDesktop());
   DCHECK(main_page());
 }
 
@@ -223,7 +222,7 @@ ExtensionsMenuMainPageViewInteractiveUITest::
 std::vector<extensions::ExtensionId>
 ExtensionsMenuMainPageViewInteractiveUITest::
     GetExtensionsInRequestAccessButton() {
-  return GetExtensionsToolbarContainer()
+  return GetExtensionsToolbarDesktop()
       ->GetRequestAccessButton()
       ->GetExtensionIdsForTesting();
 }
@@ -499,7 +498,7 @@ class ExtensionsMenuMainPageViewInteractiveTest
     return extension;
   }
 
-  ExtensionsToolbarContainer* extensions_container() {
+  ExtensionsToolbarDesktop* extensions_container() {
     return browser()->GetBrowserView().toolbar()->extensions_container();
   }
 

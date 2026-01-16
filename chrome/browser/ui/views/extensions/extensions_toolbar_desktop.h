@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_CONTAINER_H_
-#define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_CONTAINER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_DESKTOP_H_
+#define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_DESKTOP_H_
 
 #include <map>
 #include <memory>
@@ -36,13 +36,13 @@ class ExtensionsMenuCoordinator;
 // Container for extensions shown in the toolbar. These include pinned
 // extensions and extensions that are 'popped out' transitively to show dialogs
 // or be called out to the user.
-class ExtensionsToolbarContainer : public ToolbarIconContainerView,
-                                   public ExtensionsContainerViews,
-                                   public ToolbarActionView::Delegate,
-                                   public views::WidgetObserver,
-                                   public ExtensionsToolbarViewModel::Delegate,
-                                   public ExtensionsToolbarViewModel::Observer {
-  METADATA_HEADER(ExtensionsToolbarContainer, ToolbarIconContainerView)
+class ExtensionsToolbarDesktop : public ToolbarIconContainerView,
+                                 public ExtensionsContainerViews,
+                                 public ToolbarActionView::Delegate,
+                                 public views::WidgetObserver,
+                                 public ExtensionsToolbarViewModel::Delegate,
+                                 public ExtensionsToolbarViewModel::Observer {
+  METADATA_HEADER(ExtensionsToolbarDesktop, ToolbarIconContainerView)
 
  public:
   using ToolbarIcons =
@@ -75,13 +75,12 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
     return extensions_menu_coordinator_.get();
   }
 
-  explicit ExtensionsToolbarContainer(
+  explicit ExtensionsToolbarDesktop(
       Browser* browser,
       DisplayMode display_mode = DisplayMode::kNormal);
-  ExtensionsToolbarContainer(const ExtensionsToolbarContainer&) = delete;
-  ExtensionsToolbarContainer& operator=(const ExtensionsToolbarContainer&) =
-      delete;
-  ~ExtensionsToolbarContainer() override;
+  ExtensionsToolbarDesktop(const ExtensionsToolbarDesktop&) = delete;
+  ExtensionsToolbarDesktop& operator=(const ExtensionsToolbarDesktop&) = delete;
+  ~ExtensionsToolbarDesktop() override;
 
   // Creates toolbar actions and icons corresponding to the model. This is only
   // called in the constructor or when the model initializes and should not be
@@ -377,9 +376,9 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
                           ExtensionsToolbarViewModel::Observer>
       toolbar_view_model_observation_{this};
 
-  base::WeakPtrFactory<ExtensionsToolbarContainer> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ExtensionsToolbarDesktop> weak_ptr_factory_{this};
 
-  base::WeakPtrFactory<ExtensionsToolbarContainer> drop_weak_ptr_factory_{this};
+  base::WeakPtrFactory<ExtensionsToolbarDesktop> drop_weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_CONTAINER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_DESKTOP_H_

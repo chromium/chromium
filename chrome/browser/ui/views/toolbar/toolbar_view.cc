@@ -53,8 +53,8 @@
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_button.h"
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_coordinator.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_contextual_menu.h"
@@ -291,14 +291,13 @@ void ToolbarView::Init() {
   std::unique_ptr<HomeButton> home = std::make_unique<HomeButton>(
       browser_, base::BindRepeating(callback, browser_, IDC_HOME));
 
-  std::unique_ptr<ExtensionsToolbarContainer> extensions_container;
+  std::unique_ptr<ExtensionsToolbarDesktop> extensions_container;
   std::unique_ptr<views::View> toolbar_divider;
 
   // Do not create the extensions or browser actions container if it is a guest
   // profile (only regular and incognito profiles host extensions).
   if (!browser_->profile()->IsGuestSession()) {
-    extensions_container =
-        std::make_unique<ExtensionsToolbarContainer>(browser_);
+    extensions_container = std::make_unique<ExtensionsToolbarDesktop>(browser_);
 
     toolbar_divider = std::make_unique<views::View>();
   }
@@ -969,7 +968,7 @@ void ToolbarView::UpdateTypeAndSeverity(
   app_menu_button_->SetTypeAndSeverity(type_and_severity);
 }
 
-ExtensionsToolbarContainer* ToolbarView::GetExtensionsToolbarContainer() {
+ExtensionsToolbarDesktop* ToolbarView::GetExtensionsToolbarDesktop() {
   return extensions_container_;
 }
 

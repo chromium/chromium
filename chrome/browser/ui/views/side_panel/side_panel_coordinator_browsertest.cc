@@ -40,7 +40,7 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
@@ -207,7 +207,7 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
 
  protected:
   void WaitForExtensionsContainerAnimation() {
-    views::test::WaitForAnimatingLayoutManager(GetExtensionsToolbarContainer());
+    views::test::WaitForAnimatingLayoutManager(GetExtensionsToolbarDesktop());
   }
 
   void ClickButton(views::Button* button) {
@@ -220,7 +220,7 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
     return SidePanelEntry::Key(SidePanelEntry::Id::kExtension, id);
   }
 
-  ExtensionsToolbarContainer* GetExtensionsToolbarContainer() const {
+  ExtensionsToolbarDesktop* GetExtensionsToolbarDesktop() const {
     return BrowserView::GetBrowserViewForBrowser(browser())
         ->toolbar()
         ->extensions_container();

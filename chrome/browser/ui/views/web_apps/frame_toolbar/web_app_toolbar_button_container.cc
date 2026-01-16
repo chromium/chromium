@@ -14,8 +14,8 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_coordinator.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/action_ids.h"
@@ -190,8 +190,8 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
                            features::kDesktopPWAsElidedExtensionsMenu) ||
                        // Extensions are not supported inside Isolated Web Apps.
                        app_controller->IsIsolatedWebApp())
-                          ? ExtensionsToolbarContainer::DisplayMode::kAutoHide
-                          : ExtensionsToolbarContainer::DisplayMode::kCompact;
+                          ? ExtensionsToolbarDesktop::DisplayMode::kAutoHide
+                          : ExtensionsToolbarDesktop::DisplayMode::kCompact;
 #if BUILDFLAG(IS_CHROMEOS)
   // Let the system web app decide if it needs to show the extensions container.
   // Use compact display mode because we do not render the app menu for system
@@ -199,7 +199,7 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
   if (app_controller->system_app()) {
     create_extensions_container =
         app_controller->system_app()->ShouldHaveExtensionsContainerInToolbar();
-    display_mode = ExtensionsToolbarContainer::DisplayMode::kCompact;
+    display_mode = ExtensionsToolbarDesktop::DisplayMode::kCompact;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -209,7 +209,7 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
     // extensions should hide before other toolbar buttons.
     constexpr int kLowPriorityFlexOrder = 2;
     extensions_container_ =
-        AddChildView(std::make_unique<ExtensionsToolbarContainer>(
+        AddChildView(std::make_unique<ExtensionsToolbarDesktop>(
             browser_view_->browser(), display_mode));
     extensions_toolbar_coordinator_ =
         std::make_unique<ExtensionsToolbarCoordinator>(browser_view_->browser(),

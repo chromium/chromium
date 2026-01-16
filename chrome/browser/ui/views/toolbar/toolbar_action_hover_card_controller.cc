@@ -12,7 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
 #include "content/public/browser/web_contents.h"
@@ -72,7 +72,7 @@ class ToolbarActionHoverCardController::EventSniffer
 // ToolbarActionHoverCardController
 
 ToolbarActionHoverCardController::ToolbarActionHoverCardController(
-    ExtensionsToolbarContainer* extensions_container)
+    ExtensionsToolbarDesktop* extensions_container)
     : extensions_container_(extensions_container) {}
 
 ToolbarActionHoverCardController::~ToolbarActionHoverCardController() = default;

@@ -132,7 +132,7 @@
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views_context.h"
 #include "chrome/browser/ui/views/extensions/extension_keybinding_registry_views.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/eye_dropper/eye_dropper.h"
 #include "chrome/browser/ui/views/find_bar_host.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
@@ -2316,8 +2316,8 @@ void BrowserView::FocusToolbar() {
 }
 
 ExtensionsContainer* BrowserView::GetExtensionsContainer() {
-  ExtensionsToolbarContainer* container =
-      toolbar_button_provider_->GetExtensionsToolbarContainer();
+  ExtensionsToolbarDesktop* container =
+      toolbar_button_provider_->GetExtensionsToolbarDesktop();
   return container ? container->GetToolbarViewModel() : nullptr;
 }
 

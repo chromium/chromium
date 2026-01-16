@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
@@ -66,11 +66,11 @@ std::u16string GetAccessibleText(
 
 ExtensionsToolbarButton::ExtensionsToolbarButton(
     BrowserWindowInterface* browser,
-    ExtensionsToolbarContainer* extensions_container,
+    ExtensionsToolbarDesktop* extensions_container,
     ExtensionsMenuCoordinator* extensions_menu_coordinator)
     : ToolbarChipButton(PressedCallback()),
       browser_(browser),
-      extensions_toolbar_container_(extensions_container),
+      extensions_toolbar_(extensions_container),
       extensions_menu_coordinator_(extensions_menu_coordinator) {
   std::unique_ptr<views::MenuButtonController> menu_button_controller =
       std::make_unique<views::MenuButtonController>(
@@ -125,7 +125,7 @@ ExtensionsToolbarButton::~ExtensionsToolbarButton() {
 
 gfx::Size ExtensionsToolbarButton::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  return extensions_toolbar_container_->GetToolbarActionSize();
+  return extensions_toolbar_->GetToolbarActionSize();
 }
 
 gfx::Size ExtensionsToolbarButton::GetMinimumSize() const {
@@ -164,7 +164,7 @@ void ExtensionsToolbarButton::OnBoundsChanged(
 void ExtensionsToolbarButton::UpdateState(
     ExtensionsToolbarViewModel::ExtensionsToolbarButtonState state) {
   // this check can probably be removed since UpdateState() is called from
-  // ExtensionsToolbarContainer::UpdateExtensionsButton() which already does
+  // ExtensionsToolbarDesktop::UpdateExtensionsButton() which already does
   // this check
   CHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
@@ -177,7 +177,7 @@ void ExtensionsToolbarButton::UpdateState(
 void ExtensionsToolbarButton::OnWidgetDestroying(views::Widget* widget) {
   extension_menu_observation_.Reset();
   pressed_lock_.reset();
-  extensions_toolbar_container_->OnMenuClosed();
+  extensions_toolbar_->OnMenuClosed();
 }
 
 bool ExtensionsToolbarButton::ShouldShowInkdropAfterIphInteraction() {
@@ -195,16 +195,16 @@ void ExtensionsToolbarButton::ToggleExtensionsMenu() {
   }
 
   pressed_lock_ = menu_button_controller_->TakeLock();
-  extensions_toolbar_container_->OnMenuOpening();
+  extensions_toolbar_->OnMenuOpening();
   base::RecordAction(base::UserMetricsAction("Extensions.Toolbar.MenuOpened"));
   views::Widget* menu;
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
-    if (extensions_toolbar_container_->GetRequestAccessButton()->GetVisible()) {
+    if (extensions_toolbar_->GetRequestAccessButton()->GetVisible()) {
       base::RecordAction(base::UserMetricsAction(
           "Extensions.Toolbar.MenuOpenedWhenExtensionsAreRequestingAccess"));
     }
-    extensions_menu_coordinator_->Show(this, extensions_toolbar_container_);
+    extensions_menu_coordinator_->Show(this, extensions_toolbar_);
     menu = extensions_menu_coordinator_->GetExtensionsMenuWidget();
   } else {
     // Desktop Android will use the
@@ -212,8 +212,7 @@ void ExtensionsToolbarButton::ToggleExtensionsMenu() {
     // use Browser for the other menu until the feature is rolled out.
     menu = ExtensionsMenuView::ShowBubble(
         this, browser_->GetBrowserForMigrationOnly(),
-        extensions_toolbar_container_->GetToolbarViewModel(),
-        extensions_toolbar_container_);
+        extensions_toolbar_->GetToolbarViewModel(), extensions_toolbar_);
   }
   extensions_menu_widget_ = menu->GetWeakPtr();
   extension_menu_observation_.Observe(menu);

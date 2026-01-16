@@ -41,7 +41,7 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -612,7 +612,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ElidedExtensionsMenu,
                                  /*event_flags=*/0);
 
   // Extensions icon and menu should be visible.
-  ExtensionsToolbarContainer* extensions_container =
+  ExtensionsToolbarDesktop* extensions_container =
       toolbar_button_container->extensions_container();
   EXPECT_TRUE(extensions_container->GetVisible());
   EXPECT_TRUE(extensions_container->IsExtensionsMenuShowing());
@@ -684,7 +684,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_NoElidedExtensionsMenu,
 
   // Install Extension and wait for Extensions toolbar to appear.
   base::RunLoop run_loop;
-  ExtensionsToolbarContainer::SetOnVisibleCallbackForTesting(
+  ExtensionsToolbarDesktop::SetOnVisibleCallbackForTesting(
       run_loop.QuitClosure());
   LoadTestPopUpExtension(browser()->profile());
   run_loop.Run();

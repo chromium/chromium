@@ -14,7 +14,7 @@ namespace extensions {
 class Extension;
 }
 
-class ExtensionsToolbarContainer;
+class ExtensionsToolbarDesktop;
 
 class ExtensionsDialogBrowserTest : public DialogBrowserTest {
  public:
@@ -27,7 +27,7 @@ class ExtensionsDialogBrowserTest : public DialogBrowserTest {
   scoped_refptr<const extensions::Extension> InstallExtension(
       const std::string& name);
 
-  ExtensionsToolbarContainer* extensions_container();
+  ExtensionsToolbarDesktop* extensions_container();
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_DIALOGS_BROWSERTEST_H_

@@ -11,9 +11,9 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_coordinator.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop_view_controller.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
@@ -262,8 +262,8 @@ void WebAppFrameToolbarView::LayoutForWindowControlsOverlay(
   SetBounds(x, available_space.y(), width, available_space.height());
 }
 
-ExtensionsToolbarContainer*
-WebAppFrameToolbarView::GetExtensionsToolbarContainer() {
+ExtensionsToolbarDesktop*
+WebAppFrameToolbarView::GetExtensionsToolbarDesktop() {
   return right_container_->extensions_container();
 }
 
@@ -278,8 +278,8 @@ gfx::Size WebAppFrameToolbarView::GetToolbarButtonSize() const {
 }
 
 views::View* WebAppFrameToolbarView::GetDefaultExtensionDialogAnchorView() {
-  ExtensionsToolbarContainer* extensions_container =
-      GetExtensionsToolbarContainer();
+  ExtensionsToolbarDesktop* extensions_container =
+      GetExtensionsToolbarDesktop();
   if (extensions_container && extensions_container->GetVisible()) {
     return extensions_container->GetExtensionsButton();
   }

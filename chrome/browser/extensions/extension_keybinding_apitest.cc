@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -341,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, Basic) {
   ASSERT_TRUE(RunExtensionTest("keybinding/conflicting")) << message_;
 
   // Test that there are two browser actions in the toolbar.
-  ExtensionsToolbarContainer* extensions_container =
+  ExtensionsToolbarDesktop* extensions_container =
       browser()->GetBrowserView().toolbar()->extensions_container();
   ASSERT_EQ(2, extensions_container->GetNumberOfActionsForTesting());
 
@@ -409,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, UnpinnedPageActionTriggers) {
   // initial hidden/disabled state.
   DisableActionGlobally(profile(), *extension);
 
-  ExtensionsToolbarContainer* extensions_container =
+  ExtensionsToolbarDesktop* extensions_container =
       browser()->GetBrowserView().toolbar()->extensions_container();
   RunScheduledLayouts();
   EXPECT_FALSE(extensions_container->IsActionVisibleOnToolbar(extension->id()));
@@ -836,7 +836,7 @@ IN_PROC_BROWSER_TEST_P(ActionCommandsApiTest, TriggeringCommandTriggersPopup) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 
   // Verify popup is shown.
-  ExtensionsToolbarContainer* extensions_container =
+  ExtensionsToolbarDesktop* extensions_container =
       browser()->GetBrowserView().toolbar()->extensions_container();
   ToolbarActionViewModel* popup_owner =
       extensions_container->popup_owner_for_testing();

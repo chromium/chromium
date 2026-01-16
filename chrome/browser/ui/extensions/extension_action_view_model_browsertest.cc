@@ -31,7 +31,7 @@
 #include "chrome/browser/ui/extensions/icon_with_badge_image_source.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/extensions/api/side_panel.h"
@@ -170,7 +170,7 @@ class ExtensionActionViewModelBrowserTest : public InProcessBrowserTest {
     return ToolbarActionsModel::Get(browser()->profile());
   }
 
-  ExtensionsToolbarContainer* container() {
+  ExtensionsToolbarDesktop* container() {
     return browser()->GetBrowserView().toolbar()->extensions_container();
   }
 

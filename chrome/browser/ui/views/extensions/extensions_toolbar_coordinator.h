@@ -7,21 +7,21 @@
 
 #include "ui/views/view_tracker.h"
 
-class ExtensionsToolbarContainer;
-class ExtensionsToolbarContainerViewController;
+class ExtensionsToolbarDesktop;
+class ExtensionsToolbarDesktopViewController;
 class Browser;
 
 class ExtensionsToolbarCoordinator final {
  public:
   explicit ExtensionsToolbarCoordinator(
       Browser* browser,
-      ExtensionsToolbarContainer* extensions_container);
+      ExtensionsToolbarDesktop* extensions_container);
   ExtensionsToolbarCoordinator(const ExtensionsToolbarCoordinator&) = delete;
   const ExtensionsToolbarCoordinator& operator=(
       const ExtensionsToolbarCoordinator&) = delete;
   ~ExtensionsToolbarCoordinator();
 
-  ExtensionsToolbarContainerViewController*
+  ExtensionsToolbarDesktopViewController*
   GetExtensionsContainerViewController() {
     return extensions_container_controller_.get();
   }
@@ -30,7 +30,7 @@ class ExtensionsToolbarCoordinator final {
   void ResetCoordinatorState();
 
   views::ViewTracker extensions_container_tracker_;
-  std::unique_ptr<ExtensionsToolbarContainerViewController>
+  std::unique_ptr<ExtensionsToolbarDesktopViewController>
       extensions_container_controller_;
 };
 

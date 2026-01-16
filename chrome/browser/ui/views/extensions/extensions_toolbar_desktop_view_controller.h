@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_CONTAINER_VIEW_CONTROLLER_H_
-#define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_CONTAINER_VIEW_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_DESKTOP_VIEW_CONTROLLER_H_
+#define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_DESKTOP_VIEW_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 
 class Browser;
-class ExtensionsToolbarContainer;
+class ExtensionsToolbarDesktop;
 
-class ExtensionsToolbarContainerViewController final
+class ExtensionsToolbarDesktopViewController final
     : public TabStripModelObserver,
       public extensions::PermissionsManager::Observer {
  public:
@@ -28,14 +28,14 @@ class ExtensionsToolbarContainerViewController final
   // show immediately.
   static void WakeZeroStatePromoForTesting();
 
-  ExtensionsToolbarContainerViewController(
+  ExtensionsToolbarDesktopViewController(
       Browser* browser,
-      ExtensionsToolbarContainer* extensions_container);
-  ExtensionsToolbarContainerViewController(
-      const ExtensionsToolbarContainerViewController&) = delete;
-  const ExtensionsToolbarContainerViewController& operator=(
-      const ExtensionsToolbarContainerViewController&) = delete;
-  ~ExtensionsToolbarContainerViewController() override;
+      ExtensionsToolbarDesktop* extensions_container);
+  ExtensionsToolbarDesktopViewController(
+      const ExtensionsToolbarDesktopViewController&) = delete;
+  const ExtensionsToolbarDesktopViewController& operator=(
+      const ExtensionsToolbarDesktopViewController&) = delete;
+  ~ExtensionsToolbarDesktopViewController() override;
 
   // Updates the flex layout rules for the extension toolbar container to have
   // views::MinimumFlexSizeRule::kPreferred when WindowControlsOverlay (WCO) is
@@ -80,10 +80,10 @@ class ExtensionsToolbarContainerViewController final
 
   const raw_ptr<Browser> browser_;
 
-  raw_ptr<ExtensionsToolbarContainer> extensions_container_;
+  raw_ptr<ExtensionsToolbarDesktop> extensions_container_;
 
   base::ScopedObservation<extensions::PermissionsManager,
                           extensions::PermissionsManager::Observer>
       permissions_manager_observation_{this};
 };
-#endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_CONTAINER_VIEW_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_DESKTOP_VIEW_CONTROLLER_H_

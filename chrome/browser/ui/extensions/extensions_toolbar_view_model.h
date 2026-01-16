@@ -15,7 +15,7 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
-// ViewModel for the ExtensionsToolbarContainer. This class manages the business
+// ViewModel for the ExtensionsToolbarDesktop. This class manages the business
 // logic for the order and state of extension actions in the toolbar. It serves
 // as the single source of truth for the ordering of the list of actions.
 class ExtensionsToolbarViewModel : public ExtensionsContainer,

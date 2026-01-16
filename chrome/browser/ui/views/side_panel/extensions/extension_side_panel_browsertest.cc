@@ -25,7 +25,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
@@ -250,12 +250,12 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
     return action_item;
   }
 
-  ExtensionsToolbarContainer* GetExtensionsToolbarContainer() const {
+  ExtensionsToolbarDesktop* GetExtensionsToolbarDesktop() const {
     return browser()->GetBrowserView().toolbar()->extensions_container();
   }
 
   void WaitForSidePanelToolbarCloseButtonVisibility(bool visible) {
-    auto* container = GetExtensionsToolbarContainer();
+    auto* container = GetExtensionsToolbarDesktop();
     auto* button = container->GetCloseSidePanelButtonForTesting();
     if (visible == false && !container->GetVisible()) {
       return;
@@ -287,7 +287,7 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
   extensions::ExtensionContextMenuModel* GetContextMenuForExtension(
       const ExtensionId& extension_id) {
     return static_cast<extensions::ExtensionContextMenuModel*>(
-        GetExtensionsToolbarContainer()
+        GetExtensionsToolbarDesktop()
             ->GetToolbarViewModel()
             ->GetActionForId(extension_id)
             ->GetContextMenu(extensions::ExtensionContextMenuModel::
@@ -1251,7 +1251,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   // The key for the extension should be registered, but the side panel isn't
   // shown yet and the close side panel button is not visible.
   EXPECT_FALSE(side_panel_ui->IsSidePanelShowing(extension_entry->type()));
-  EXPECT_FALSE(GetExtensionsToolbarContainer()
+  EXPECT_FALSE(GetExtensionsToolbarDesktop()
                    ->GetCloseSidePanelButtonForTesting()
                    ->GetVisible());
 
@@ -1262,7 +1262,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   // visible.
   ASSERT_TRUE(default_path_listener.WaitUntilSatisfied());
   EXPECT_TRUE(side_panel_ui->IsSidePanelEntryShowing(extension_key));
-  EXPECT_TRUE(GetExtensionsToolbarContainer()
+  EXPECT_TRUE(GetExtensionsToolbarDesktop()
                   ->GetCloseSidePanelButtonForTesting()
                   ->GetVisible());
 

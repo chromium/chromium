@@ -5,19 +5,19 @@
 #include "chrome/browser/ui/views/extensions/extension_view_utils.h"
 
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "content/public/browser/web_contents.h"
 
-ExtensionsToolbarContainer* GetExtensionsToolbarContainer(
+ExtensionsToolbarDesktop* GetExtensionsToolbarDesktop(
     gfx::NativeWindow parent) {
   CHECK(parent);
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForNativeWindow(parent);
 
   return browser_view ? browser_view->toolbar_button_provider()
-                            ->GetExtensionsToolbarContainer()
+                            ->GetExtensionsToolbarDesktop()
                       : nullptr;
 }
 

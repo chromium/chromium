@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_button.h"
 #include "extensions/common/extension.h"
 
-class ExtensionsToolbarContainer;
+class ExtensionsToolbarDesktop;
 class ToolbarActionView;
 class ExtensionsToolbarButton;
 class ExtensionsMenuCoordinator;
@@ -29,8 +29,8 @@ class Button;
 
 // Base class for interactive ui tests that use the toolbar area. This is used
 // for browser test fixtures that are generally related to the
-// ExtensionsToolbarContainer in the ToolbarView area. For example, this is used
-// by ExtensionsToolbarContainer and ExtensionsMenuView separately to clarify
+// ExtensionsToolbarDesktop in the ToolbarView area. For example, this is used
+// by ExtensionsToolbarDesktop and ExtensionsMenuView separately to clarify
 // what the suite is primarily trying to test.
 class ExtensionsToolbarUITest : public DialogBrowserTest {
  public:
@@ -83,13 +83,13 @@ class ExtensionsToolbarUITest : public DialogBrowserTest {
   void SetUpIncognitoBrowser();
 
   // Gets the extensions toolbar container from the browser() toolbar.
-  ExtensionsToolbarContainer* GetExtensionsToolbarContainer() const;
+  ExtensionsToolbarDesktop* GetExtensionsToolbarDesktop() const;
   // Returns the extensions toolbar container for the given `browser`.
-  ExtensionsToolbarContainer* GetExtensionsToolbarContainerForBrowser(
+  ExtensionsToolbarDesktop* GetExtensionsToolbarDesktopForBrowser(
       Browser* browser) const;
 
   // Gets the ToolbarActionView instances inside
-  // GetExtensionsToolbarContainer().
+  // GetExtensionsToolbarDesktop().
   std::vector<ToolbarActionView*> GetToolbarActionViews() const;
   // Returns the ToolbarActionView instances within the extensions toolbar for
   // the given `browser`.

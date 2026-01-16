@@ -14,7 +14,7 @@
 class AppMenuButton;
 class AvatarToolbarButton;
 class PinnedToolbarActionsContainer;
-class ExtensionsToolbarContainer;
+class ExtensionsToolbarDesktop;
 class IconLabelBubbleView;
 class IntentChipButton;
 class PageActionIconView;
@@ -37,8 +37,8 @@ class View;
 // buttons in a BrowserView.
 class ToolbarButtonProvider {
  public:
-  // Gets the ExtensionsToolbarContainer.
-  virtual ExtensionsToolbarContainer* GetExtensionsToolbarContainer() = 0;
+  // Gets the ExtensionsToolbarDesktop.
+  virtual ExtensionsToolbarDesktop* GetExtensionsToolbarDesktop() = 0;
 
   // Gets the PinnedToolbarActionsContainer.
   virtual PinnedToolbarActionsContainer* GetPinnedToolbarActionsContainer() = 0;

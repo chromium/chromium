@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_UNITTEST_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -21,7 +21,7 @@ class ExtensionService;
 }  // namespace extensions
 
 // Base class for unit tests that use the toolbar area. This is used for unit
-// tests that are generally related to the ExtensionsToolbarContainer in the
+// tests that are generally related to the ExtensionsToolbarDesktop in the
 // ToolbarView area (e.g ExtensionsToolbarControls).
 // When possible, prefer creating a unit test with browser view instead of a
 // interactive ui or browser test since they are faster and less flaky.
@@ -43,7 +43,7 @@ class ExtensionsToolbarUnitTest : public TestWithBrowserView {
     return extensions::ExtensionRegistrar::Get(profile());
   }
 
-  ExtensionsToolbarContainer* extensions_container() {
+  ExtensionsToolbarDesktop* extensions_container() {
     return browser_view()->toolbar()->extensions_container();
   }
 
@@ -155,7 +155,7 @@ class ExtensionsToolbarUnitTest : public TestWithBrowserView {
   // etc.)
   void WaitForAnimation();
 
-  // Since this is a unittest, the ExtensionsToolbarContainer sometimes needs a
+  // Since this is a unittest, the ExtensionsToolbarDesktop sometimes needs a
   // nudge to re-layout the views.
   void LayoutContainerIfNecessary();
 

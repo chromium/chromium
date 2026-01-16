@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container_view_controller.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop_view_controller.h"
 
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/common/pref_names.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "extensions/browser/extension_util.h"
@@ -41,27 +41,26 @@ bool ArePromotionsEnabled() {
 }
 
 // static
-void ExtensionsToolbarContainerViewController::WakeZeroStatePromoForTesting() {
+void ExtensionsToolbarDesktopViewController::WakeZeroStatePromoForTesting() {
   g_zero_state_promo_next_show_time_opt = base::TimeTicks::Now();
 }
 
-ExtensionsToolbarContainerViewController::
-    ExtensionsToolbarContainerViewController(
-        Browser* browser,
-        ExtensionsToolbarContainer* extensions_container)
+ExtensionsToolbarDesktopViewController::ExtensionsToolbarDesktopViewController(
+    Browser* browser,
+    ExtensionsToolbarDesktop* extensions_container)
     : browser_(browser), extensions_container_(extensions_container) {
   permissions_manager_observation_.Observe(
       extensions::PermissionsManager::Get(browser_->profile()));
   browser_->tab_strip_model()->AddObserver(this);
 }
 
-ExtensionsToolbarContainerViewController::
-    ~ExtensionsToolbarContainerViewController() {
+ExtensionsToolbarDesktopViewController::
+    ~ExtensionsToolbarDesktopViewController() {
   extensions_container_ = nullptr;
   permissions_manager_observation_.Reset();
 }
 
-void ExtensionsToolbarContainerViewController::
+void ExtensionsToolbarDesktopViewController::
     WindowControlsOverlayEnabledChanged(bool enabled) {
   if (!extensions_container_->main_item()) {
     return;
@@ -77,11 +76,11 @@ void ExtensionsToolbarContainerViewController::
       views::kFlexBehaviorKey,
       views::FlexSpecification(min_flex_rule,
                                views::MaximumFlexSizeRule::kPreferred)
-          .WithOrder(ExtensionsToolbarContainerViewController::
+          .WithOrder(ExtensionsToolbarDesktopViewController::
                          kFlexOrderExtensionsButton));
 }
 
-void ExtensionsToolbarContainerViewController::MaybeShowIPH() {
+void ExtensionsToolbarDesktopViewController::MaybeShowIPH() {
   // Extensions menu IPH, with priority order. These depend on the new access
   // control feature.
   if (base::FeatureList::IsEnabled(
@@ -128,7 +127,7 @@ void ExtensionsToolbarContainerViewController::MaybeShowIPH() {
   }
 }
 
-void ExtensionsToolbarContainerViewController::UpdateRequestAccessButton() {
+void ExtensionsToolbarDesktopViewController::UpdateRequestAccessButton() {
   CHECK(extensions_container_);
 
   if (!base::FeatureList::IsEnabled(
@@ -144,7 +143,7 @@ void ExtensionsToolbarContainerViewController::UpdateRequestAccessButton() {
   extensions_container_->UpdateRequestAccessButton(site_setting, web_contents);
 }
 
-void ExtensionsToolbarContainerViewController::OnTabStripModelChanged(
+void ExtensionsToolbarDesktopViewController::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
@@ -169,7 +168,7 @@ void ExtensionsToolbarContainerViewController::OnTabStripModelChanged(
   MaybeShowIPH();
 }
 
-void ExtensionsToolbarContainerViewController::OnTabChangedAt(
+void ExtensionsToolbarDesktopViewController::OnTabChangedAt(
     tabs::TabInterface* tab,
     int index,
     TabChangeType change_type) {
@@ -201,7 +200,7 @@ void ExtensionsToolbarContainerViewController::OnTabChangedAt(
   MaybeShowIPH();
 }
 
-void ExtensionsToolbarContainerViewController::OnUserPermissionsSettingsChanged(
+void ExtensionsToolbarDesktopViewController::OnUserPermissionsSettingsChanged(
     const extensions::PermissionsManager::UserPermissionsSettings& settings) {
   CHECK(extensions_container_);
   extensions_container_->UpdateControlsVisibility();
@@ -210,7 +209,7 @@ void ExtensionsToolbarContainerViewController::OnUserPermissionsSettingsChanged(
   // settings update are not tied to a specific action.
 }
 
-void ExtensionsToolbarContainerViewController::
+void ExtensionsToolbarDesktopViewController::
     OnShowAccessRequestsInToolbarChanged(
         const extensions::ExtensionId& extension_id,
         bool can_show_requests) {
@@ -222,14 +221,13 @@ void ExtensionsToolbarContainerViewController::
   // button is updated.
 }
 
-void ExtensionsToolbarContainerViewController::
-    OnHostAccessRequestDismissedByUser(
-        const extensions::ExtensionId& extension_id,
-        const url::Origin& origin) {
+void ExtensionsToolbarDesktopViewController::OnHostAccessRequestDismissedByUser(
+    const extensions::ExtensionId& extension_id,
+    const url::Origin& origin) {
   UpdateRequestAccessButton();
 }
 
-void ExtensionsToolbarContainerViewController::OnHostAccessRequestAdded(
+void ExtensionsToolbarDesktopViewController::OnHostAccessRequestAdded(
     const extensions::ExtensionId& extension_id,
     int tab_id) {
   int current_tab_id = extensions::ExtensionTabUtil::GetTabId(
@@ -241,13 +239,13 @@ void ExtensionsToolbarContainerViewController::OnHostAccessRequestAdded(
   UpdateRequestAccessButton();
 }
 
-void ExtensionsToolbarContainerViewController::OnHostAccessRequestUpdated(
+void ExtensionsToolbarDesktopViewController::OnHostAccessRequestUpdated(
     const extensions::ExtensionId& extension_id,
     int tab_id) {
   UpdateRequestAccessButton();
 }
 
-void ExtensionsToolbarContainerViewController::OnHostAccessRequestRemoved(
+void ExtensionsToolbarDesktopViewController::OnHostAccessRequestRemoved(
     const extensions::ExtensionId& extension_id,
     int tab_id) {
   int current_tab_id = extensions::ExtensionTabUtil::GetTabId(
@@ -259,7 +257,7 @@ void ExtensionsToolbarContainerViewController::OnHostAccessRequestRemoved(
   UpdateRequestAccessButton();
 }
 
-void ExtensionsToolbarContainerViewController::OnHostAccessRequestsCleared(
+void ExtensionsToolbarDesktopViewController::OnHostAccessRequestsCleared(
     int tab_id) {
   int current_tab_id = extensions::ExtensionTabUtil::GetTabId(
       extensions_container_->GetCurrentWebContents());

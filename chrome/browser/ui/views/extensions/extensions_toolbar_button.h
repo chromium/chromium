@@ -18,7 +18,7 @@
 #include "ui/views/widget/widget_observer.h"
 
 class BrowserWindowInterface;
-class ExtensionsToolbarContainer;
+class ExtensionsToolbarDesktop;
 class ExtensionsMenuCoordinator;
 
 // Button in the toolbar that provides access to the corresponding extensions
@@ -28,15 +28,14 @@ class ExtensionsToolbarButton : public ToolbarChipButton,
   METADATA_HEADER(ExtensionsToolbarButton, ToolbarChipButton)
 
  public:
-
   ExtensionsToolbarButton(BrowserWindowInterface* browser,
-                          ExtensionsToolbarContainer* extensions_container,
+                          ExtensionsToolbarDesktop* extensions_container,
                           ExtensionsMenuCoordinator* coordinator);
   ExtensionsToolbarButton(const ExtensionsToolbarButton&) = delete;
   ExtensionsToolbarButton& operator=(const ExtensionsToolbarButton&) = delete;
   ~ExtensionsToolbarButton() override;
 
-  // Toggle the Extensions menu. If the ExtensionsToolbarContainer is in
+  // Toggle the Extensions menu. If the ExtensionsToolbarDesktop is in
   // kAutoHide mode and hidden this will cause it to show.
   void ToggleExtensionsMenu();
 
@@ -66,7 +65,7 @@ class ExtensionsToolbarButton : public ToolbarChipButton,
 
   const raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<views::MenuButtonController> menu_button_controller_;
-  const raw_ptr<ExtensionsToolbarContainer> extensions_toolbar_container_;
+  const raw_ptr<ExtensionsToolbarDesktop> extensions_toolbar_;
   // This can be nullptr before `kExtensionsMenuAccessControl` feature is fully
   // rolled out.
   // TODO(crbug.com/40811196): Remove this disclaimer once feature is rolled

@@ -272,9 +272,9 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest, MAYBE_BackButtonHoverMetricsLogged) {
 }
 
 IN_PROC_BROWSER_TEST_F(ToolbarViewTest,
-                       ToolbarForRegularProfileHasExtensionsToolbarContainer) {
+                       ToolbarForRegularProfileHasExtensionsToolbarDesktop) {
   // Verify the normal browser has an extensions toolbar container.
-  ExtensionsToolbarContainer* extensions_container =
+  ExtensionsToolbarDesktop* extensions_container =
       BrowserView::GetBrowserViewForBrowser(browser())
           ->toolbar()
           ->extensions_container();
@@ -283,14 +283,13 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest,
 
 // TODO(crbug.com/41474891): Setup test profiles properly for CrOS.
 #if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ExtensionsToolbarContainerForGuest \
-  DISABLED_ExtensionsToolbarContainerForGuest
+#define MAYBE_ExtensionsToolbarDesktopForGuest \
+  DISABLED_ExtensionsToolbarDesktopForGuest
 #else
-#define MAYBE_ExtensionsToolbarContainerForGuest \
-  ExtensionsToolbarContainerForGuest
+#define MAYBE_ExtensionsToolbarDesktopForGuest ExtensionsToolbarDesktopForGuest
 #endif
 IN_PROC_BROWSER_TEST_F(ToolbarViewTest,
-                       MAYBE_ExtensionsToolbarContainerForGuest) {
+                       MAYBE_ExtensionsToolbarDesktopForGuest) {
   // Verify guest browser does not have an extensions toolbar container.
   profiles::SwitchToGuestProfile();
   ui_test_utils::WaitForBrowserToOpen();
@@ -299,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest,
   ASSERT_TRUE(guest);
   Browser* target_browser = chrome::FindAnyBrowser(guest, true);
   ASSERT_TRUE(target_browser);
-  ExtensionsToolbarContainer* extensions_container =
+  ExtensionsToolbarDesktop* extensions_container =
       BrowserView::GetBrowserViewForBrowser(target_browser)
           ->toolbar()
           ->extensions_container();

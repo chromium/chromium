@@ -6,7 +6,7 @@
 #include "chrome/browser/extensions/extension_action_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_controller.h"
@@ -85,7 +85,7 @@ class ToolbarActionHoverCardBubbleViewUITest : public ExtensionsToolbarUITest {
   ~ToolbarActionHoverCardBubbleViewUITest() override = default;
 
   ToolbarActionHoverCardBubbleView* hover_card() {
-    return GetExtensionsToolbarContainer()
+    return GetExtensionsToolbarDesktop()
         ->action_hover_card_controller_->hover_card_;
   }
 
@@ -102,7 +102,7 @@ class ToolbarActionHoverCardBubbleViewUITest : public ExtensionsToolbarUITest {
     // We don't use ToolbarActionView::OnMouseEntered here to invoke the hover
     // card because that path is disabled in browser tests. If we enabled it,
     // the real mouse might interfere with the test.
-    GetExtensionsToolbarContainer()->UpdateHoverCard(
+    GetExtensionsToolbarDesktop()->UpdateHoverCard(
         action_view, ToolbarActionHoverCardUpdateType::kHover);
   }
 
@@ -115,13 +115,13 @@ class ToolbarActionHoverCardBubbleViewUITest : public ExtensionsToolbarUITest {
   void MouseExitsFromExtensionsContainer() {
     ui::MouseEvent mouse_event(ui::EventType::kMouseExited, gfx::Point(),
                                gfx::Point(), base::TimeTicks(), ui::EF_NONE, 0);
-    GetExtensionsToolbarContainer()->OnMouseExited(mouse_event);
+    GetExtensionsToolbarDesktop()->OnMouseExited(mouse_event);
   }
 
   void MouseMovesInExtensionsContainer() {
     ui::MouseEvent mouse_event(ui::EventType::kMouseMoved, gfx::Point(),
                                gfx::Point(), base::TimeTicks(), ui::EF_NONE, 0);
-    GetExtensionsToolbarContainer()->OnMouseMoved(mouse_event);
+    GetExtensionsToolbarDesktop()->OnMouseMoved(mouse_event);
   }
 
   scoped_refptr<const extensions::Extension> LoadExtensionAndPinIt(
@@ -136,7 +136,7 @@ class ToolbarActionHoverCardBubbleViewUITest : public ExtensionsToolbarUITest {
     ToolbarActionsModel* const toolbar_model =
         ToolbarActionsModel::Get(browser()->profile());
     toolbar_model->SetActionVisibility(extension_id, true);
-    GetExtensionsToolbarContainer()->GetWidget()->LayoutRootViewIfNecessary();
+    GetExtensionsToolbarDesktop()->GetWidget()->LayoutRootViewIfNecessary();
   }
 
   // Make `extension_id` force-pinned, as if it was controlled by the
@@ -172,7 +172,7 @@ class ToolbarActionHoverCardBubbleViewUITest : public ExtensionsToolbarUITest {
 
     policy_provider_.UpdateChromePolicy(policy_map);
 
-    GetExtensionsToolbarContainer()->GetWidget()->LayoutRootViewIfNecessary();
+    GetExtensionsToolbarDesktop()->GetWidget()->LayoutRootViewIfNecessary();
   }
 
   // DialogBrowserTest:
@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
   // Verify card anchors to its action, and it only contains the extension's
   // name.
   ToolbarActionView* simple_action =
-      GetExtensionsToolbarContainer()->GetViewForId(simple_extension->id());
+      GetExtensionsToolbarDesktop()->GetViewForId(simple_extension->id());
   HoverMouseOverActionView(simple_action);
   views::Widget* const widget = hover_card()->GetWidget();
   views::test::WidgetVisibleWaiter(widget).Wait();
@@ -268,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
   // transitions from one action view to the other, and it contains the
   // extension's name and policy content.
   ToolbarActionView* force_installed_action =
-      GetExtensionsToolbarContainer()->GetViewForId(
+      GetExtensionsToolbarDesktop()->GetViewForId(
           force_installed_extension->id());
   HoverMouseOverActionView(force_installed_action);
   views::test::WidgetVisibleWaiter(widget).Wait();
@@ -287,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
   // Verify card anchors to its action using the same widget, and it contains
   // the extension's name and site access content.
   ToolbarActionView* action_with_host_permissions =
-      GetExtensionsToolbarContainer()->GetViewForId(
+      GetExtensionsToolbarDesktop()->GetViewForId(
           extension_with_host_permissions->id());
   HoverMouseOverActionView(action_with_host_permissions);
   views::test::WidgetVisibleWaiter(widget).Wait();
@@ -306,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
   // policy. Verify card anchors to its action using the same widget, and it
   // contains the extension's name, site access and policy content.
   ToolbarActionView* force_pinned_action_with_host_permissions =
-      GetExtensionsToolbarContainer()->GetViewForId(
+      GetExtensionsToolbarDesktop()->GetViewForId(
           force_pinned_extension_with_host_permissions->id());
   HoverMouseOverActionView(force_pinned_action_with_host_permissions);
   views::test::WidgetVisibleWaiter(widget).Wait();
@@ -334,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
 
   // Verify extension is pinned
   ToolbarActionView* action_view =
-      GetExtensionsToolbarContainer()->GetViewForId(extension->id());
+      GetExtensionsToolbarDesktop()->GetViewForId(extension->id());
   ASSERT_TRUE(action_view);
 
   // Hover over the extension and verify card anchors to its action.
@@ -388,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
 
   PinExtension(extension->id());
   ToolbarActionView* action_view =
-      GetExtensionsToolbarContainer()->GetViewForId(extension->id());
+      GetExtensionsToolbarDesktop()->GetViewForId(extension->id());
   ASSERT_TRUE(action_view);
 
   // Navigate to a example.com
@@ -457,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
   auto action_views = GetVisibleToolbarActionViews();
   ASSERT_EQ(action_views.size(), 1u);
 
-  GetExtensionsToolbarContainer()->GetFocusManager()->SetFocusedView(
+  GetExtensionsToolbarDesktop()->GetFocusManager()->SetFocusedView(
       action_views[0]);
   EXPECT_EQ(hover_card(), nullptr);
 }
