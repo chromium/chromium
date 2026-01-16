@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_chip_button.h"
 #include "extensions/common/extension_id.h"
@@ -19,7 +20,6 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-class Browser;
 class ExtensionsContainerViews;
 class ExtensionsRequestAccessHoverCardCoordinator;
 
@@ -30,7 +30,7 @@ class ExtensionsRequestAccessButton : public ToolbarChipButton {
 
  public:
   explicit ExtensionsRequestAccessButton(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       ExtensionsContainer* extensions_container,
       ExtensionsContainerViews* extensions_container_views);
   ExtensionsRequestAccessButton(const ExtensionsRequestAccessButton&) = delete;
@@ -80,7 +80,7 @@ class ExtensionsRequestAccessButton : public ToolbarChipButton {
 
   content::WebContents* GetActiveWebContents() const;
 
-  raw_ptr<Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<ExtensionsContainer> extensions_container_;
   raw_ptr<ExtensionsContainerViews> extensions_container_views_;
 

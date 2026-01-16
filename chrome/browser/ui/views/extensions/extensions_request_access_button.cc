@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 
-#include <algorithm>
-#include <iterator>
 #include <memory>
 #include <string>
 
@@ -18,18 +16,15 @@
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/extensions/extension_dialog_utils.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
-#include "chrome/browser/ui/views/extensions/extension_view_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_hover_card_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_chip_button.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -57,7 +52,7 @@ std::vector<const extensions::Extension*> GetExtensions(
 }  // namespace
 
 ExtensionsRequestAccessButton::ExtensionsRequestAccessButton(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     ExtensionsContainer* extensions_container,
     ExtensionsContainerViews* extensions_container_views)
     : ToolbarChipButton(
@@ -186,12 +181,12 @@ void ExtensionsRequestAccessButton::OnButtonPressed() {
 
   // Always grant access to this site to all extensions.
   DCHECK_GT(extension_ids_.size(), 0u);
+  Profile* profile = browser_->GetProfile();
   std::vector<const extensions::Extension*> extensions_to_run =
-      GetExtensions(browser_->profile(), extension_ids_);
-  extensions::SitePermissionsHelper(browser_->profile())
-      .UpdateSiteAccess(
-          extensions_to_run, web_contents,
-          extensions::PermissionsManager::UserSiteAccess::kOnSite);
+      GetExtensions(profile, extension_ids_);
+  extensions::SitePermissionsHelper(profile).UpdateSiteAccess(
+      extensions_to_run, web_contents,
+      extensions::PermissionsManager::UserSiteAccess::kOnSite);
 
   // Show confirmation message, and disable the button, for a specific duration.
   std::optional<SkColor> color;
@@ -219,7 +214,8 @@ void ExtensionsRequestAccessButton::OnButtonPressed() {
 
 content::WebContents* ExtensionsRequestAccessButton::GetActiveWebContents()
     const {
-  return browser_->tab_strip_model()->GetActiveWebContents();
+  auto* tab = TabListInterface::From(browser_)->GetActiveTab();
+  return tab ? tab->GetContents() : nullptr;
 }
 
 BEGIN_METADATA(ExtensionsRequestAccessButton)
