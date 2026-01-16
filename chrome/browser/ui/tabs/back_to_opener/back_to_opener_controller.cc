@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/back_to_opener/back_to_opener_controller.h"
 
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -217,11 +218,8 @@ void BackToOpenerController::OnPinnedStateChanged(tabs::TabInterface* tab,
 }
 
 void BackToOpenerController::NotifyUIStateChanged() {
-  content::WebContents* web_contents = tab().GetContents();
-  if (!web_contents) {
-    return;
-  }
-  web_contents->NotifyNavigationStateChanged(content::INVALIDATE_TYPE_TAB);
+  // TODO(crbug.com/448173940): Update back button state (Back button
+  // Interaction).
 }
 
 void BackToOpenerController::ReadyToCommitNavigation(
