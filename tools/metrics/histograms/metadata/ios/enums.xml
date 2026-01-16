@@ -2198,6 +2198,9 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="SceneActivation">
     Triggered by a scene becoming foreground active.
   </int>
+  <int value="3" label="ServiceStatusChange">
+    Triggered by the CrossDevicePrefTracker becoming available.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/synced_set_up/public/synced_set_up_metrics.h:SyncedSetUpTriggerSource) -->

@@ -20,7 +20,9 @@ enum class SyncedSetUpTriggerSource {
   kRemotePrefChange = 1,
   // Triggered by a scene becoming foreground active.
   kSceneActivation = 2,
-  kMaxValue = kSceneActivation,
+  // Triggered by a service status change notification from Sync.
+  kServiceStatusChange = 3,
+  kMaxValue = kServiceStatusChange,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:SyncedSetUpTriggerSource)
 
