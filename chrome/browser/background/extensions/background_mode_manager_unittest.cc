@@ -222,6 +222,12 @@ class BackgroundModeManagerTest : public testing::Test {
             raw_ptr<policy::ConfigurationPolicyProvider, VectorExperimental>>{
             &policy_provider_});
 
+#if BUILDFLAG(IS_WIN)
+    // Explicitly disable foreground launches.
+    g_browser_process->local_state()->SetBoolean(
+        prefs::kForegroundLaunchOnLogin, false);
+#endif  // BUILDFLAG(IS_WIN)
+
     startup_launch_manager_override_ =
         GlobalFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
             base::BindRepeating([](BrowserProcess& browser_process) {

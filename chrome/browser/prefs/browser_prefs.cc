@@ -1561,6 +1561,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   MediaFoundationServiceMonitor::RegisterPrefs(registry);
   os_crypt_async::AppBoundEncryptionProviderWin::RegisterLocalPrefs(registry);
   webnn::RegisterLocalPrefs(registry);
+  registry->RegisterBooleanPref(prefs::kForegroundLaunchOnLogin, false);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)

@@ -37,9 +37,9 @@ std::wstring GetAutoLaunchKeyName() {
   if (!base::PathService::Get(chrome::DIR_USER_DATA, &path)) {
     return {};
   }
-  // Background auto-launch is only supported for the Default profile at the
-  // moment, but keep the door opened to a multi-profile implementation by
-  // encoding the Default profile in the hash.
+  // Auto-launch is only supported for the Default profile at the moment, but
+  // keep the door opened to a multi-profile implementation by encoding the
+  // Default profile in the hash.
   path = path.AppendASCII(chrome::kInitialProfile);
 
   const auto hash = crypto::hash::Sha256(path.AsUTF8Unsafe());
@@ -65,6 +65,10 @@ void EnableStartAtLogin(StartupLaunchMode startup_launch_mode) {
       cmd_line.AppendSwitch(switches::kNoStartupWindow);
       cmd_line.AppendArgNative(app_launch_prefetch::GetPrefetchSwitch(
           app_launch_prefetch::SubprocessType::kBrowserBackground));
+      break;
+    case StartupLaunchMode::kForeground:
+      // TODO(crbug.com/458756948): Add a switch here so that metrics can be
+      // recorded for browser instances launched by Foreground Launch.
       break;
     default:
       NOTREACHED();

@@ -15,9 +15,41 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/startup/startup_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 
 using auto_launch_util::StartupLaunchMode;
+
+#if BUILDFLAG(IS_WIN)
+namespace {
+
+// This method sets the pref to trial group value if user has not explicitly set
+// it.
+void UpdateForegroundLaunchPrefForTrialGroup(PrefService* local_state) {
+  if (!local_state->FindPreference(prefs::kForegroundLaunchOnLogin)
+           ->IsDefaultValue()) {
+    return;
+  }
+
+  // Update the pref's default value as this has lower priority than a user-set
+  // value.
+  const auto trial_group = features::GetLaunchOnStartupDefaultPreference();
+  switch (trial_group) {
+    case features::LaunchOnStartupDefaultPreference::kDisabled:
+      local_state->SetDefaultPrefValue(prefs::kForegroundLaunchOnLogin,
+                                       base::Value(false));
+      break;
+    case features::LaunchOnStartupDefaultPreference::kEnabled:
+      local_state->SetDefaultPrefValue(prefs::kForegroundLaunchOnLogin,
+                                       base::Value(true));
+      break;
+  }
+}
+
+}  // namespace
+#endif  // BUILDFLAG(IS_WIN)
 
 StartupLaunchManager::Client::Client(StartupLaunchReason launch_reason)
     : launch_reason_(launch_reason) {
@@ -70,6 +102,28 @@ StartupLaunchManager::StartupLaunchManager(BrowserProcess* browser_process)
   // Acquire a lock so that any writes to registry are deferred until `Init()`
   // is called.
   AcquireSharedWriteLock();
+#if BUILDFLAG(IS_WIN)
+  if (features::IsForegroundLaunchEnabled()) {
+    PrefService* local_state = g_browser_process->local_state();
+
+    // Update the pref as per the trial group.
+    UpdateForegroundLaunchPrefForTrialGroup(local_state);
+
+    // Register a callback that will run when this pref is changed.
+    foreground_launch_on_login_.Init(
+        prefs::kForegroundLaunchOnLogin, local_state,
+        base::BindRepeating(&StartupLaunchManager::OnLaunchOnStartupPrefChanged,
+                            base::Unretained(this)));
+
+    // Initialize StartupLaunchManager to use current value of the pref.
+    OnLaunchOnStartupPrefChanged();
+  } else {
+    // Removes foreground launch if feature flag is disabled, but keeps the pref
+    // unchanged. This allows us to resume the experiment if it needs to be
+    // paused anytime.
+    UnregisterLaunchOnStartup(StartupLaunchReason::kForeground);
+  }
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 StartupLaunchManager::~StartupLaunchManager() = default;
@@ -119,10 +173,24 @@ void StartupLaunchManager::ForceReleaseAllLocks() {
   UpdateLaunchOnStartup(GetStartupLaunchMode());
 }
 
+void StartupLaunchManager::OnLaunchOnStartupPrefChanged() {
+  if (foreground_launch_on_login_.GetValue()) {
+    RegisterLaunchOnStartup(StartupLaunchReason::kForeground);
+  } else {
+    UnregisterLaunchOnStartup(StartupLaunchReason::kForeground);
+  }
+}
+
 std::optional<StartupLaunchMode> StartupLaunchManager::GetStartupLaunchMode()
     const {
   if (registered_launch_reasons_.empty()) {
     return std::nullopt;
+  }
+  // Foreground launch takes precedence as - having foreground launch enabled is
+  // the same as having both foreground and background launches enabled
+  // simultaneously.
+  if (registered_launch_reasons_.Has(StartupLaunchReason::kForeground)) {
+    return StartupLaunchMode::kForeground;
   }
   return StartupLaunchMode::kBackground;
 }

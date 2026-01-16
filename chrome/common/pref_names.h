@@ -3341,6 +3341,9 @@ inline constexpr char kChromeForTestingAllowed[] = "chrome_for_testing.allowed";
 #if BUILDFLAG(IS_WIN)
 inline constexpr char kUiAutomationProviderEnabled[] =
     "accessibility.ui_automation_provider_enabled";
+
+inline constexpr char kForegroundLaunchOnLogin[] =
+    "launch_on_login.foreground.enabled";
 #endif
 
 // A boolean pref which determines whether the QR Code generator feature is

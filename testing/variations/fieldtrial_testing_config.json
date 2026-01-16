@@ -15469,6 +15469,35 @@
             ]
         }
     ],
+    "LaunchOnStartup": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Foreground_OptOut",
+                    "params": {
+                        "mode": "foreground",
+                        "trial_group": "opt_out"
+                    },
+                    "enable_features": [
+                        "LaunchOnStartup"
+                    ]
+                },
+                {
+                    "name": "Enabled_Foreground_OptIn",
+                    "params": {
+                        "mode": "foreground",
+                        "trial_group": "opt_in"
+                    },
+                    "enable_features": [
+                        "LaunchOnStartup"
+                    ]
+                }
+            ]
+        }
+    ],
     "LazyBlinkTimezoneInit": [
         {
             "platforms": [

@@ -12,6 +12,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "chrome/installer/util/auto_launch_util.h"
+#include "components/prefs/pref_member.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserProcess;
@@ -28,10 +29,11 @@ class BrowserProcess;
 enum class StartupLaunchReason {
   kExtensions = 0,
   kGlic = 1,
+  kForeground = 2,
 
   // Update these when adding/removing values.
   kMinValue = kExtensions,
-  kMaxValue = kGlic
+  kMaxValue = kForeground,
 };
 
 // StartupLaunchManager registers with the OS so that Chrome launches on device
@@ -92,6 +94,10 @@ class StartupLaunchManager {
   std::optional<auto_launch_util::StartupLaunchMode> GetStartupLaunchMode()
       const;
 
+  // Updates the launch mode whenever the foreground launch pref is updated, eg.
+  // through settings toggle.
+  void OnLaunchOnStartupPrefChanged();
+
   // Task runner for making startup/login configuration changes that may
   // require file system or registry access.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
@@ -107,6 +113,8 @@ class StartupLaunchManager {
 
   // Stores the callback to trigger `ForceReleaseAllLocks` when initializing.
   base::OneShotTimer fallback_timer_;
+
+  PrefMember<bool> foreground_launch_on_login_;
 
   ui::ScopedUnownedUserData<StartupLaunchManager> scoped_unowned_user_data_;
 };
