@@ -216,7 +216,8 @@ public class SettingsIndexData {
             }
 
             public Builder setSummary(@Nullable String summary) {
-                mSummary = summary;
+                // Removes tags before storing.
+                mSummary = summary != null ? summary.replaceAll("<[^>]*>", "") : summary;
                 return this;
             }
 

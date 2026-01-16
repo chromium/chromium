@@ -138,6 +138,18 @@ public class SettingsIndexDataTest {
     }
 
     @Test
+    public void testAddEntry_removeTags() {
+        mIndexData.addEntry(
+                id("key_summary"),
+                new SettingsIndexData.Entry.Builder(id("key_summary"), "key_summary", "Other", "P1")
+                        .setHeader("Header 1")
+                        .setSummary("<link>Contains link text</link>")
+                        .build());
+        var entry = mIndexData.getEntry(id("key_summary"));
+        assertEquals("Contains link text", entry.summary);
+    }
+
+    @Test
     public void testFinalizeIndex_handlesMultiParentCorrectly() {
         // Setup: A child fragment (FragmentC) is reachable from two different parents (A and B).
         String ida = id("FragmentA", "pref_A");
