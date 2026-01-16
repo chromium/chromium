@@ -122,8 +122,12 @@ public class RecentlyClosedEntriesManager {
         if (entry instanceof SessionRecentlyClosedEntry) {
             mRecentlyClosedTabManager.openRecentlyClosedEntry(mRegularTabModel, entry);
         } else if (entry instanceof RecentlyClosedWindow closedWindow) {
-            mMultiInstanceManager.openWindow(
-                    closedWindow.getInstanceId(), NewWindowAppSource.RECENT_TABS);
+            if (canRestoreWindow()) {
+                mMultiInstanceManager.openWindow(
+                        closedWindow.getInstanceId(), NewWindowAppSource.RECENT_TABS);
+            } else {
+                mMultiInstanceManager.showInstanceCreationLimitMessage();
+            }
         }
     }
 
@@ -162,16 +166,11 @@ public class RecentlyClosedEntriesManager {
         // Nothing to restore.
         if (!closedWindowExists && !closedTabEventExists) return;
 
-        int instanceCount =
-                MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ACTIVE);
-        int instanceLimit = MultiWindowUtils.getMaxInstances();
-        boolean canRestoreWindow = instanceCount < instanceLimit;
-
         // Tab and window entries are both available for restoration.
         if (closedWindowExists && closedTabEventExists) {
             RecentlyClosedWindow mostRecentlyClosedWindow = recentlyClosedWindows.get(0);
             if (mostRecentlyClosedWindow.getDate().getTime() >= mostRecentTabClosureTime
-                    && canRestoreWindow) {
+                    && canRestoreWindow()) {
                 mMultiInstanceManager.openWindow(
                         mostRecentlyClosedWindow.getInstanceId(), newWindowSource);
                 if (mostRecentTabClosureTime == 0) {
@@ -185,7 +184,7 @@ public class RecentlyClosedEntriesManager {
         }
 
         // Only window entries are available for restoration.
-        if (closedWindowExists && canRestoreWindow) {
+        if (closedWindowExists && canRestoreWindow()) {
             RecentlyClosedWindow mostRecentlyClosedWindow = recentlyClosedWindows.get(0);
             mMultiInstanceManager.openWindow(
                     mostRecentlyClosedWindow.getInstanceId(), newWindowSource);
@@ -396,6 +395,13 @@ public class RecentlyClosedEntriesManager {
                             info.tabCount));
         }
         return recentlyClosedWindows;
+    }
+
+    private boolean canRestoreWindow() {
+        int instanceCount =
+                MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ACTIVE);
+        int instanceLimit = MultiWindowUtils.getMaxInstances();
+        return instanceCount < instanceLimit;
     }
 
     public static void setRecentlyClosedTabManagerForTests(

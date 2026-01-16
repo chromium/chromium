@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
-import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.lang.annotation.Retention;
@@ -421,21 +420,17 @@ public abstract class MultiInstanceManager {
      * running activities have been finished after an instance limit downgrade causing existence of
      * more active instances than the instance limit.
      *
-     * @param messageDispatcher The {@link MessageDispatcher} to enqueue the instance restoration
-     *     message.
      * @return {@code true} if the instance restoration message was shown, {@code false} otherwise.
      */
-    public boolean showInstanceRestorationMessage(@Nullable MessageDispatcher messageDispatcher) {
+    public boolean showInstanceRestorationMessage() {
         return false;
     }
 
     /**
      * Shows a message to notify the user that a new window cannot be created because {@link
      * MultiWindowUtils#getMaxInstances()} activities already exist.
-     *
-     * @param messageDispatcher The {@link MessageDispatcher} to enqueue the instance limit message.
      */
-    public void showInstanceCreationLimitMessage(@Nullable MessageDispatcher messageDispatcher) {
+    public void showInstanceCreationLimitMessage() {
         // Not implemented
     }
 

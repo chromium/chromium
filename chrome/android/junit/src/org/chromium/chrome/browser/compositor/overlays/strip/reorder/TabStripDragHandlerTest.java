@@ -1315,7 +1315,7 @@ public class TabStripDragHandlerTest {
                 .dragExit(mSourceInstance)
                 .end(false);
 
-        verify(mSourceMultiInstanceManager).showInstanceCreationLimitMessage(any());
+        verify(mSourceMultiInstanceManager).showInstanceCreationLimitMessage();
         if (!isGroupDrag) {
             histogramExpectation.assertExpected();
         }
