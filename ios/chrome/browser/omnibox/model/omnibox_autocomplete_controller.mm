@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_result_wrapper.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -418,6 +419,13 @@ using base::UserMetricsAction;
     return;
   }
 
+  // In the composebox, allow suggestions on clobber.
+  if (_omniboxPresentationContext == OmniboxPresentationContext::kComposebox &&
+      IsZPSOnClobberEnabled() && !text.length()) {
+    [self startZeroSuggestRequestWithText:text userClobbered:YES];
+    return;
+  }
+
   // Use text_model()->input during the refactoring while the edit model is
   // still using it crbug.com/390409559.
   _omniboxTextModel->input = AutocompleteInput(
@@ -443,10 +451,12 @@ using base::UserMetricsAction;
     return;
   }
 
-  // Early exit if a query is already in progress or the popup is already open.
+  // Early exit if a query is already in progress or the popup is already open
   // This is what allows this method to be called multiple times in multiple
-  // code locations without harm.
-  if (!_autocompleteController->done() || self.hasSuggestions) {
+  // code locations without harm. Exept if the event is user triggered by
+  // clobbering the text.
+  if (!userClobberedPermanentText &&
+      (!_autocompleteController->done() || self.hasSuggestions)) {
     return;
   }
 
