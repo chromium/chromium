@@ -215,10 +215,12 @@ public class NtpThemeCoordinator {
 
     @VisibleForTesting
     void onPreviewClosed(boolean isImageSelected) {
-        if (isImageSelected) {
-            mMediator.updateTrailingIconVisibilityForSectionType(IMAGE_FROM_DISK);
-            mBottomSheetDelegate.onNewColorSelected(/* isDifferentColor= */ true);
+        if (!isImageSelected) {
+            return;
         }
+
+        mMediator.updateTrailingIconVisibilityForSectionType(IMAGE_FROM_DISK);
+        mBottomSheetDelegate.onNewColorSelected(/* isDifferentColor= */ true);
         mDismissBottomSheetRunnable.run();
     }
 

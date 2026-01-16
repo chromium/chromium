@@ -10,7 +10,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -118,14 +117,14 @@ public class NtpThemeCoordinatorUnitTest {
         mCoordinator.onPreviewClosed(isImageSelected);
 
         verify(mBottomSheetDelegate, never()).onNewColorSelected(anyBoolean());
-        verify(mDismissBottomSheet).run();
+        verify(mDismissBottomSheet, never()).run();
         verify(mMediator, never()).updateTrailingIconVisibilityForSectionType(eq(IMAGE_FROM_DISK));
 
         isImageSelected = true;
         mCoordinator.onPreviewClosed(isImageSelected);
 
         verify(mBottomSheetDelegate).onNewColorSelected(eq(true));
-        verify(mDismissBottomSheet, times(2)).run();
+        verify(mDismissBottomSheet).run();
         verify(mMediator).updateTrailingIconVisibilityForSectionType(eq(IMAGE_FROM_DISK));
     }
 
