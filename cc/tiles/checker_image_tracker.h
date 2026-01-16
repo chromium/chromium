@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/paint/image_id.h"

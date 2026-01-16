@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/contains.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"

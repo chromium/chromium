@@ -12,6 +12,7 @@
 #include <map>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/types/id_type.h"
 #include "components/viz/common/viz_common_export.h"

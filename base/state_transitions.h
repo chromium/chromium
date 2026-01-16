@@ -5,10 +5,10 @@
 #ifndef BASE_STATE_TRANSITIONS_H_
 #define BASE_STATE_TRANSITIONS_H_
 
-#include <algorithm>
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 
 namespace base {
@@ -84,7 +84,7 @@ struct StateTransitions {
 
   // Tests whether transitioning from |source| to |destination| is valid.
   bool IsTransitionValid(const State& source, const State& destination) const {
-    return std::ranges::contains(GetValidTransitions(source), destination);
+    return base::Contains(GetValidTransitions(source), destination);
   }
 
   const std::vector<StateTransition> state_transitions;

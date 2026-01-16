@@ -11,7 +11,6 @@
 #include <stddef.h>
 #include <string.h>
 
-#include <algorithm>
 #include <memory>
 
 #include "base/compiler_specific.h"
@@ -322,8 +321,8 @@ TYPED_TEST_P(MappableBufferTest, Map) {
   // Use a multiple of 4 for both dimensions to support compressed formats.
   const gfx::Size kBufferSize(4, 4);
 
-  if (!std::ranges::contains(TestFixture::usages(),
-                             gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
+  if (!base::Contains(TestFixture::usages(),
+                      gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
     GTEST_SKIP();
   }
 
@@ -390,8 +389,8 @@ TYPED_TEST_P(MappableBufferTest, PersistentMap) {
   // Use a multiple of 4 for both dimensions to support compressed formats.
   const gfx::Size kBufferSize(4, 4);
 
-  if (!std::ranges::contains(TestFixture::usages(),
-                             gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
+  if (!base::Contains(TestFixture::usages(),
+                      gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
     GTEST_SKIP();
   }
 

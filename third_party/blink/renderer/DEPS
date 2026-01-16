@@ -12,6 +12,7 @@ include_rules = [
     "+base/containers/adapters.h",
     "+base/containers/buffer_iterator.h",
     "+base/containers/checked_iterators.h",
+    "+base/containers/contains.h",
     "+base/containers/cxx20_erase.h",
     "+base/containers/enum_set.h",
     "+base/containers/fixed_flat_map.h",

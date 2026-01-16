@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -272,7 +273,7 @@ class DiscreteSet {
   ~DiscreteSet() = default;
 
   bool Contains(const T& value) const {
-    return is_universal_ || std::ranges::contains(elements_, value);
+    return is_universal_ || base::Contains(elements_, value);
   }
 
   bool IsEmpty() const { return !is_universal_ && elements_.empty(); }
@@ -290,7 +291,7 @@ class DiscreteSet {
     // Both sets have explicit elements.
     Vector<T> intersection;
     for (const auto& entry : elements_) {
-      if (std::ranges::contains(other.elements_, entry))
+      if (base::Contains(other.elements_, entry))
         intersection.push_back(entry);
     }
     return DiscreteSet(std::move(intersection));

@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 
 namespace gpu {
@@ -45,7 +46,7 @@ class ValueValidator {
   }
 
   bool IsValid(const T value) const {
-    return std::ranges::contains(valid_values_, value);
+    return base::Contains(valid_values_, value);
   }
 
   const std::vector<T>& GetValues() const { return valid_values_; }

@@ -85,7 +85,7 @@ class HelpBubbleHandler;
 //   DCHECK(!id1);
 //   EXPECT_TRUE(static_cast<bool>(id2));
 //   DCHECK_NE(id1, id2);
-//   EXPECT_FALSE(map.contains(id1));
+//   EXPECT_FALSE(base::Contains(map, id1));
 //   ASSERT_EQ(4, map[id2]);
 //
 // -----

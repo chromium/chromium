@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"

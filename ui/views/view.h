@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <concepts>
 #include <memory>
 #include <optional>
@@ -20,6 +19,7 @@
 #include "base/auto_reset.h"
 #include "base/callback_list.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/advanced_memory_safety_checks.h"
@@ -531,7 +531,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
     CHECK(!view->owned_by_client())
         << "This should only be called if the client doesn't already have "
            "ownership of |view|.";
-    DCHECK(std::ranges::contains(children_, view));
+    DCHECK(base::Contains(children_, view));
     RemoveChildView(view);
     return base::WrapUnique(view);
   }

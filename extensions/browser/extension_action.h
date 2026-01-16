@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/constants.h"

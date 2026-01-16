@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/raster/task_graph_runner.h"

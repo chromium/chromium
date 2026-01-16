@@ -5,9 +5,9 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_IS_POTENTIALLY_TRUSTWORTHY_UNITTEST_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_IS_POTENTIALLY_TRUSTWORTHY_UNITTEST_H_
 
-#include <algorithm>
 #include <string_view>
 
+#include "base/containers/contains.h"
 #include "base/test/scoped_command_line.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -73,12 +73,11 @@ TYPED_TEST_P(AbstractTrustworthinessTest, OriginFromString) {
 TYPED_TEST_P(AbstractTrustworthinessTest, CustomSchemes) {
   // Custom testing schemes are registered in url::AbstractOriginTest::SetUp.
   // Let's double-check that schemes we test with have the expected properties.
-  EXPECT_TRUE(std::ranges::contains(url::GetSecureSchemes(), "sec"));
-  EXPECT_TRUE(
-      std::ranges::contains(url::GetSecureSchemes(), "sec-std-with-host"));
-  EXPECT_TRUE(std::ranges::contains(url::GetSecureSchemes(), "sec-noaccess"));
-  EXPECT_TRUE(std::ranges::contains(url::GetNoAccessSchemes(), "sec-noaccess"));
-  EXPECT_TRUE(std::ranges::contains(url::GetNoAccessSchemes(), "noaccess"));
+  EXPECT_TRUE(base::Contains(url::GetSecureSchemes(), "sec"));
+  EXPECT_TRUE(base::Contains(url::GetSecureSchemes(), "sec-std-with-host"));
+  EXPECT_TRUE(base::Contains(url::GetSecureSchemes(), "sec-noaccess"));
+  EXPECT_TRUE(base::Contains(url::GetNoAccessSchemes(), "sec-noaccess"));
+  EXPECT_TRUE(base::Contains(url::GetNoAccessSchemes(), "noaccess"));
   EXPECT_TRUE(GURL("sec-std-with-host://blah/x.js").IsStandard());
 
   // Unrecognized / unknown schemes are not trustworthy.

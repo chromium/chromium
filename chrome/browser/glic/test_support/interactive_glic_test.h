@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_GLIC_TEST_SUPPORT_INTERACTIVE_GLIC_TEST_H_
 #define CHROME_BROWSER_GLIC_TEST_SUPPORT_INTERACTIVE_GLIC_TEST_H_
 
-#include <algorithm>
 #include <map>
 #include <sstream>
 #include <string_view>
@@ -805,11 +804,10 @@ class InteractiveGlicTestMixin : public T {
   auto CheckOcclusionTracked(bool expect_is_tracked) {
     return Api::CheckResult(
         [this]() {
-          return std::ranges::contains(
-              PictureInPictureWindowManager::GetInstance()
-                  ->GetOcclusionTracker()
-                  ->GetPictureInPictureWidgetsForTesting(),
-              GetGlicWidget());
+          return base::Contains(PictureInPictureWindowManager::GetInstance()
+                                    ->GetOcclusionTracker()
+                                    ->GetPictureInPictureWidgetsForTesting(),
+                                GetGlicWidget());
         },
         expect_is_tracked, "CheckOcclusionTracked");
   }
