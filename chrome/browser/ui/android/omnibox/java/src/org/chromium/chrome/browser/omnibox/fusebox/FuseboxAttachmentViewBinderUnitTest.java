@@ -19,8 +19,6 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.constraintlayout.widget.ConstraintLayout;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -51,7 +49,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
 
     private ActivityController<TestActivity> mActivityController;
     private PropertyModel mModel;
-    private ConstraintLayout mView;
+    private View mView;
 
     @Before
     public void setUp() {
@@ -60,9 +58,8 @@ public class FuseboxAttachmentViewBinderUnitTest {
         mModel = new PropertyModel(FuseboxAttachmentProperties.ALL_KEYS);
         mModel.set(FuseboxAttachmentProperties.COLOR_SCHEME, BrandedColorScheme.APP_DEFAULT);
         mView =
-                (ConstraintLayout)
-                        LayoutInflater.from(activity)
-                                .inflate(R.layout.fusebox_attachment_layout, /* root= */ null);
+                LayoutInflater.from(activity)
+                        .inflate(R.layout.fusebox_attachment_layout, /* root= */ null);
         mView.setLayoutParams(new LayoutParams(100, 100));
         PropertyModelChangeProcessor.create(mModel, mView, FuseboxAttachmentViewBinder::bind);
     }

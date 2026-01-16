@@ -79,7 +79,8 @@ public class FuseboxAttachmentRecyclerView extends RecyclerView {
         setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
 
         Resources res = context.getResources();
-        @Px int decorationSpacing = res.getDimensionPixelSize(R.dimen.omnibox_action_chip_spacing);
+        @Px
+        int decorationSpacing = res.getDimensionPixelSize(R.dimen.fusebox_attachment_item_spacing);
         // TODO(https://crbug.com/475600644): Consider replacing with
         // SpacingRecyclerViewItemDecoration.
         addItemDecoration(new SimpleSpacingItemDecoration(decorationSpacing));

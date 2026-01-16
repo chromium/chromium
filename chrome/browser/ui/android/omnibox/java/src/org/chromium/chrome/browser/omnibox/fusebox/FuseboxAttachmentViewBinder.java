@@ -127,8 +127,12 @@ class FuseboxAttachmentViewBinder {
         progressView.setIndeterminateTintList(
                 ColorStateList.valueOf(
                         OmniboxResourceProvider.getColorPrimary(context, brandedColorScheme)));
-        view.getBackground()
+
+        View backgroundView = view.findViewById(R.id.attachment_background);
+        backgroundView
+                .getBackground()
                 .setTint(OmniboxResourceProvider.getAiModeButtonColor(context, brandedColorScheme));
+
         TextView titleView = view.findViewById(R.id.attachment_title);
         if (titleView != null) {
             titleView.setTextAppearance(
