@@ -26,6 +26,7 @@ import '../autofill_page/walletable_pass_detection_toggle.js';
 // </if>
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AiEnterpriseFeaturePrefName, ModelExecutionEnterprisePolicyValue} from '../ai_page/constants.js';
@@ -43,8 +44,8 @@ export interface CollapsibleCardElement {
   };
 }
 
-export class CollapsibleCardElement extends
-    SettingsViewMixin(PrefsMixin(PolymerElement)) {
+export class CollapsibleCardElement extends SettingsViewMixin
+(PrefsMixin(I18nMixin(PolymerElement))) {
   static get is() {
     return 'collapsible-autofill-settings-card';
   }
@@ -64,7 +65,7 @@ export class CollapsibleCardElement extends
          Indicates if a user is eligible to change Enhanced Autofill data.
          If a user is not eligible for Enhanced Autofill (Autofill with Ai),
          but they have data saved, the code allows them only to edit and delete
-         their data. They are not allowed to add new data, or to opt-in or
+         their data. They are not allowed to add new data, or to opt in or
          opt-out of Enhanced Autofill using the corresponding toggle in this
          component. If a user is not eligible for Enhanced Autofill and they
          also have no data saved, then they cannot access this page at all.
@@ -122,6 +123,18 @@ export class CollapsibleCardElement extends
               'AutofillAiIgnoresWhetherAddressFillingIsEnabled');
         },
       },
+
+      /**
+         Whether the feature kAutofillAiAvailableByDefault is enabled. When
+         enabled, users do not need to opt-in to enhanced Autofill to use
+         Autofill AI.
+       */
+      autofillAiAvailableByDefault_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('autofillAiAvailableByDefault');
+        },
+      },
     };
   }
 
@@ -141,6 +154,7 @@ export class CollapsibleCardElement extends
   declare private enhancedAutofillOptedIn_: chrome.settingsPrivate.PrefObject;
   declare private isUserEligibleForWalletablePassDetection_: boolean;
   declare private autofillAiIgnoresWhetherAddressFillingIsEnabled_: boolean;
+  declare private autofillAiAvailableByDefault_: boolean;
 
   private entityInstancesChangedListener_: EntityInstancesChangedListener|null =
       null;
@@ -165,6 +179,18 @@ export class CollapsibleCardElement extends
           this.entityInstancesChangedListener_);
       this.entityInstancesChangedListener_ = null;
     }
+  }
+
+  private getFirstWhenOnSectionTitle_() {
+    return this.i18n(
+        this.autofillAiAvailableByDefault_ ?
+            'autofillAiWhenOnCanFillDifficultFields' :
+            'autofillAiWhenOnUseToFill');
+  }
+
+  private getFirstWhenOnSectionIcon_() {
+    return this.autofillAiAvailableByDefault_ ? 'settings20:text-analysis' :
+                                                'settings20:sync-saved-locally';
   }
 
   private async onOptInToggleChange_() {

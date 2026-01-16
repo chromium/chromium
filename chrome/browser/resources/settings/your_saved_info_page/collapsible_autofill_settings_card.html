@@ -34,19 +34,22 @@
       <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>
       <ul class="icon-bulleted-list">
         <li>
-          <cr-icon icon="settings20:sync-saved-locally" aria-hidden="true">
+          <cr-icon icon="[[getFirstWhenOnSectionIcon_()]]" aria-hidden="true">
           </cr-icon>
           <div class="cr-secondary-text">
-            $i18n{autofillAiWhenOnSavedInfo}
+            [[getFirstWhenOnSectionTitle_()]]
           </div>
         </li>
-        <li>
-          <cr-icon icon="settings20:text-analysis" aria-hidden="true">
-          </cr-icon>
-          <div class="cr-secondary-text">
-            $i18n{autofillAiWhenOnUseToFill}
-          </div>
-        </li>
+        <template is="dom-if" if="[[!autofillAiAvailableByDefault_]]" restamp>
+          <li>
+            <cr-icon icon="settings20:text-analysis"
+                aria-hidden="true">
+            </cr-icon>
+            <div class="cr-secondary-text">
+                $i18n{autofillAiWhenOnUseToFill}
+            </div>
+          </li>
+        </template>
       </ul>
     </div>
     <div class="column">
