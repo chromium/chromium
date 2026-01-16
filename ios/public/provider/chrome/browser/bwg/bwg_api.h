@@ -94,6 +94,18 @@ enum class GeminiViewState {
   kExpanded,
 };
 
+// Enum representing the UI element type for which a change is requested.
+// This needs to stay in sync with GCRGeminiUIElementType (and its SDK
+// counterpart).
+enum class GeminiUIElementType {
+  // The element type is unknown.
+  kUnknown,
+  // The context attachment element.
+  kContextAttachment,
+  // The zero state element.
+  kZeroState,
+};
+
 // Starts the overlay experience with the given configuration.
 void StartBwgOverlay(GeminiConfiguration* gemini_configuration);
 
@@ -140,6 +152,9 @@ void UpdateGeminiViewState(GeminiViewState view_state);
 
 // Returns the current `GeminiViewState` of the floaty.
 GeminiViewState GetCurrentGeminiViewState();
+
+// Requests a UI change for a specific element type.
+void RequestUIChange(GeminiUIElementType ui_element_type);
 
 }  // namespace ios::provider
 
