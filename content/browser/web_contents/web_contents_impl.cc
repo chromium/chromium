@@ -936,8 +936,8 @@ GURL WebContentsImpl::GetPartitionedPopinEmbedderOriginForTesting() const {
   return GetPartitionedPopinEmbedderOriginImpl();
 }
 
-void WebContentsImpl::SetSecureEmbedConnector(
-    std::unique_ptr<SecureEmbedConnectorImpl> connector) {
+void WebContentsImpl::SetSurfaceEmbedConnector(
+    std::unique_ptr<SurfaceEmbedConnectorImpl> connector) {
   CHECK(!node_.outer_web_contents());
   CHECK(connector);
 
@@ -987,7 +987,7 @@ void WebContentsImpl::SetSecureEmbedConnector(
   // new TextInputManager. But, it must not be set before destroying the old
   // `view_` as that prevents unregistering as an Observer of the previous
   // TextInputManager.
-  secure_embed_connector_ = std::move(connector);
+  surface_embed_connector_ = std::move(connector);
 
   // When the WebContents being initialized has not already navigated, the
   // browser side Render{View,Frame}Host must be initialized and the
@@ -1003,7 +1003,7 @@ void WebContentsImpl::SetSecureEmbedConnector(
   }
   // Do the same for speculative render frame host.
   if (inner_speculative_render_view_host) {
-    // TODO(secure-embed): do we need to call RegisterFrameSinkId() for the
+    // TODO(surface-embed): do we need to call RegisterFrameSinkId() for the
     // speculative frame's view as well? GuestContents does not seem to
     // need it.
     inner_render_manager->InitRenderView(
@@ -1022,8 +1022,8 @@ void WebContentsImpl::SetSecureEmbedConnector(
   RecursivelyRegisterRenderWidgetHostViews();
 }
 
-void WebContentsImpl::ClearSecureEmbedConnector() {
-  CHECK(secure_embed_connector_);
+void WebContentsImpl::ClearSurfaceEmbedConnector() {
+  CHECK(surface_embed_connector_);
 
   // Because there may be child frames, we need to unregister all RWHVs before
   // clearing the connector, which will change the TextInputManager for this
@@ -1052,7 +1052,7 @@ void WebContentsImpl::ClearSecureEmbedConnector() {
   render_view_host_delegate_view_ = nullptr;
   view_ = nullptr;
 
-  secure_embed_connector_.reset();
+  surface_embed_connector_.reset();
 
   // Recreate WebContentsView.
   view_ = CreateWebContentsView(
@@ -1352,8 +1352,8 @@ void WebContentsImpl::WebContentsTreeNode::OnFrameTreeNodeDestroyed(
 void WebContentsImpl::NotifySwappedRWHVChildFrameFromRenderManager(
     RenderWidgetHostViewChildFrame* new_view,
     bool allow_paint_holding) {
-  if (secure_embed_connector_) {
-    secure_embed_connector_->SetView(new_view, allow_paint_holding);
+  if (surface_embed_connector_) {
+    surface_embed_connector_->SetView(new_view, allow_paint_holding);
   }
 }
 
@@ -1632,10 +1632,10 @@ WebContentsImpl::~WebContentsImpl() {
     outermost->SetAsFocusedWebContentsIfNecessary();
   }
 
-  // TODO(secure-embed): detach secure embed and clear focused frame tree when
+  // TODO(surface-embed): detach surface embed and clear focused frame tree when
   // detaching.
-  if (secure_embed_connector_) {
-    secure_embed_connector_->ClearFocusOnInnerWebContents();
+  if (surface_embed_connector_) {
+    surface_embed_connector_->ClearFocusOnInnerWebContents();
   }
 
   if (GetOuterWebContents() &&
@@ -1969,8 +1969,8 @@ void WebContentsImpl::SetDelegate(WebContentsDelegate* delegate) {
   }
 }
 
-SecureEmbedConnector* WebContentsImpl::GetSecureEmbedConnector() {
-  return secure_embed_connector_.get();
+SurfaceEmbedConnector* WebContentsImpl::GetSurfaceEmbedConnector() {
+  return surface_embed_connector_.get();
 }
 
 const RenderFrameHostImpl* WebContentsImpl::GetPrimaryMainFrame() const {
@@ -3462,7 +3462,7 @@ void WebContentsImpl::AttachInnerWebContentsImpl(
   render_frame_host_impl->set_inner_tree_main_frame_tree_node_id(
       inner_main_frame->frame_tree_node()->frame_tree_node_id());
 
-  // When attaching a WebContents as an secure-embed child WebContents, we need
+  // When attaching a WebContents as an surface-embed child WebContents, we need
   // to replace the Webcontents' view with a WebContentsViewChildFrame.
   inner_web_contents_impl->view_ = std::make_unique<WebContentsViewChildFrame>(
       inner_web_contents_impl,
@@ -4707,8 +4707,8 @@ WebContentsImpl::GetInputEventRouter() {
       return GetOuterWebContents()->GetInputEventRouter();
     }
 
-    if (secure_embed_connector_) {
-      return secure_embed_connector_->GetInputEventRouter();
+    if (surface_embed_connector_) {
+      return surface_embed_connector_->GetInputEventRouter();
     }
 
     if (!rwh_input_event_router_.get()) {
@@ -5851,8 +5851,8 @@ void WebContentsImpl::ShowCreatedWidget(int process_id,
   auto* outermost_web_contents = GetOutermostWebContents();
   RenderWidgetHostView* view =
       outermost_web_contents->GetRenderWidgetHostView();
-  if (auto* connector = GetSecureEmbedConnector()) {
-    view = static_cast<SecureEmbedConnectorImpl*>(connector)
+  if (auto* connector = GetSurfaceEmbedConnector()) {
+    view = static_cast<SurfaceEmbedConnectorImpl*>(connector)
                ->GetRootRenderWidgetHostView();
   }
   // It's not entirely obvious why we need the transform only in the case where
@@ -6297,8 +6297,8 @@ TextInputManager* WebContentsImpl::GetTextInputManager() {
     return GetOuterWebContents()->GetTextInputManager();
   }
 
-  if (secure_embed_connector_) {
-    return secure_embed_connector_->GetTextInputManager();
+  if (surface_embed_connector_) {
+    return surface_embed_connector_->GetTextInputManager();
   }
 
   if (!text_input_manager_ && !browser_plugin_guest_) {
@@ -9333,8 +9333,8 @@ WebContentsImpl* WebContentsImpl::GetFocusedWebContents() {
 }
 
 FrameTree* WebContentsImpl::GetFocusedFrameTree() {
-  if (secure_embed_connector_) {
-    return secure_embed_connector_->GetFocusedFrameTree();
+  if (surface_embed_connector_) {
+    return surface_embed_connector_->GetFocusedFrameTree();
   }
   if (GetOuterWebContents()) {
     return GetOuterWebContents()->GetFocusedFrameTree();
@@ -9350,7 +9350,7 @@ void WebContentsImpl::SetFocusToLocationBar() {
 }
 
 bool WebContentsImpl::ContainsOrIsFocusedWebContents() {
-  return SecureEmbedConnectorImpl::ContainsOrIsFocusedWebContents(this);
+  return SurfaceEmbedConnectorImpl::ContainsOrIsFocusedWebContents(this);
 }
 
 void WebContentsImpl::RemoveBrowserPluginEmbedder() {
@@ -10098,8 +10098,8 @@ void WebContentsImpl::SetFocusedFrameTree(FrameTree* frame_tree_to_focus) {
     return;
   }
 
-  if (secure_embed_connector_) {
-    secure_embed_connector_->SetFocusedFrameTree(frame_tree_to_focus);
+  if (surface_embed_connector_) {
+    surface_embed_connector_->SetFocusedFrameTree(frame_tree_to_focus);
     return;
   } else if (GetOuterWebContents()) {
     GetOuterWebContents()->SetFocusedFrameTree(frame_tree_to_focus);
@@ -10395,9 +10395,9 @@ void WebContentsImpl::FocusOwningWebContents(
   RenderWidgetHostImpl* focused_widget =
       GetFocusedRenderWidgetHost(main_frame_widget_host);
 
-  if (secure_embed_connector_) {
-    secure_embed_connector_->FocusInEmbedder(
-        SecureEmbedConnector::FocusOperation::kFocusPlugin);
+  if (surface_embed_connector_) {
+    surface_embed_connector_->FocusInEmbedder(
+        SurfaceEmbedConnector::FocusOperation::kFocusPlugin);
   }
 
   if (focused_widget != render_widget_host &&
@@ -10888,9 +10888,9 @@ void WebContentsImpl::Resize(const gfx::Rect& new_bounds) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::Resize");
   // If we're embeded, the HTML element has control over the size (and
   // resizing the platform view will resize the embedder, not this).
-  // TODO(secure-embed): Refactor this so this is in the View, which already
+  // TODO(surface-embed): Refactor this so this is in the View, which already
   // has the appropriate platform split.
-  if (secure_embed_connector_) {
+  if (surface_embed_connector_) {
     return;
   }
 #if defined(USE_AURA)

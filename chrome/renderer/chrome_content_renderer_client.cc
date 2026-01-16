@@ -344,7 +344,7 @@ std::unique_ptr<base::Unwinder> CreateV8Unwinder(v8::Isolate* isolate) {
 }
 
 // Allows only chrome://webui-browser to use SurfaceEmbed,
-// i.e., <embed type="application/x-chromium-surface-embed">.
+// i.e., <embed type="application/x-chromium-secure-embed">.
 bool IsSurfaceEmbedAllowedInFrame(content::RenderFrame* render_frame) {
   CHECK(render_frame);
   const url::Origin webui_browser_origin =
@@ -909,7 +909,7 @@ bool ChromeContentRendererClient::OverrideCreatePlugin(
 
 #if BUILDFLAG(ENABLE_SECURE_EMBED)
   if (IsSurfaceEmbedAllowedInFrame(render_frame)) {
-    if (secure_embed::MaybeCreatePlugin(render_frame, params, plugin)) {
+    if (surface_embed::MaybeCreatePlugin(render_frame, params, plugin)) {
       return true;
     }
   }

@@ -22,7 +22,7 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/gfx/geometry/dip_util.h"
 
-// TODO(secure-embed) I believe non-public code in /content is not supposed to
+// TODO(surface-embed) I believe non-public code in /content is not supposed to
 // use the public APIs if there are /content implementations. It should just use
 // the implementation directly. Review all such includes below.
 #include "content/public/browser/render_frame_host.h"
@@ -31,11 +31,11 @@
 namespace content {
 
 // Nested observer class that forwards relevant events to
-// SecureEmbedConnectorImpl. This avoids function name collisions with
+// SurfaceEmbedConnectorImpl. This avoids function name collisions with
 // CrossProcessFrameConnectorBase.
-class SecureEmbedConnectorImpl::WCObserver : public WebContentsObserver {
+class SurfaceEmbedConnectorImpl::WCObserver : public WebContentsObserver {
  public:
-  explicit WCObserver(SecureEmbedConnectorImpl* guest_frame,
+  explicit WCObserver(SurfaceEmbedConnectorImpl* guest_frame,
                       WebContents* web_contents)
       : WebContentsObserver(web_contents), guest_frame_(guest_frame) {}
 
@@ -45,49 +45,49 @@ class SecureEmbedConnectorImpl::WCObserver : public WebContentsObserver {
   void RenderViewReady() override { guest_frame_->OnRenderViewReady(); }
 
  private:
-  raw_ptr<SecureEmbedConnectorImpl> guest_frame_;
+  raw_ptr<SurfaceEmbedConnectorImpl> guest_frame_;
 };
 
 // static
-void SecureEmbedConnector::Attach(WebContents* parent_web_contents,
-                                  WebContents* child_web_contents,
-                                  SecureEmbedConnector::Delegate* delegate) {
+void SurfaceEmbedConnector::Attach(WebContents* parent_web_contents,
+                                   WebContents* child_web_contents,
+                                   SurfaceEmbedConnector::Delegate* delegate) {
   // Must Detach the child before re-Attaching.
-  CHECK(!child_web_contents->GetSecureEmbedConnector());
-  auto connector = std::make_unique<SecureEmbedConnectorImpl>(
+  CHECK(!child_web_contents->GetSurfaceEmbedConnector());
+  auto connector = std::make_unique<SurfaceEmbedConnectorImpl>(
       static_cast<WebContentsImpl*>(parent_web_contents),
       static_cast<WebContentsImpl*>(child_web_contents), delegate);
   auto* connector_ptr = connector.get();
   static_cast<WebContentsImpl*>(child_web_contents)
-      ->SetSecureEmbedConnector(std::move(connector));
+      ->SetSurfaceEmbedConnector(std::move(connector));
   connector_ptr->UpdateViewForCurrentRenderFrameHost();
 }
 
 // static
-void SecureEmbedConnector::Detach(WebContents* child_web_contents) {
-  if (auto* connector = static_cast<SecureEmbedConnectorImpl*>(
-          child_web_contents->GetSecureEmbedConnector())) {
+void SurfaceEmbedConnector::Detach(WebContents* child_web_contents) {
+  if (auto* connector = static_cast<SurfaceEmbedConnectorImpl*>(
+          child_web_contents->GetSurfaceEmbedConnector())) {
     // Note: we detach delegate after changing visibility so that
     // performance_manager doesn't get perturbed by us messing w/visibility of
     // something not top-level.
     connector->OnVisibilityChanged(blink::mojom::FrameVisibility::kNotRendered);
   }
 
-  // Connector will be freed by ClearSecureEmbedConnector().
+  // Connector will be freed by ClearSurfaceEmbedConnector().
   static_cast<WebContentsImpl*>(child_web_contents)
-      ->ClearSecureEmbedConnector();
+      ->ClearSurfaceEmbedConnector();
 }
 
-SecureEmbedConnectorImpl::SecureEmbedConnectorImpl(
+SurfaceEmbedConnectorImpl::SurfaceEmbedConnectorImpl(
     WebContentsImpl* embedder_web_contents,
     WebContentsImpl* embedded_web_contents,
-    SecureEmbedConnector::Delegate* delegate)
+    SurfaceEmbedConnector::Delegate* delegate)
     : delegate_(delegate),
       embedder_web_contents_(embedder_web_contents->GetWeakPtr()),
       guest_web_contents_(embedded_web_contents) {
   observer_ = std::make_unique<WCObserver>(this, embedded_web_contents);
 
-  // TODO(secure-embed): There may not be a view yet, depending on if the
+  // TODO(surface-embed): There may not be a view yet, depending on if the
   // WebContents has been shown or navigated. That means calling GetScreenInfos
   // on the RenderWidgetHost would default to the primary display, which may not
   // be appropriate. So instead calling GetScreenInfos() on the root
@@ -101,12 +101,12 @@ SecureEmbedConnectorImpl::SecureEmbedConnectorImpl(
                       ->GetScreenInfos();
 }
 
-SecureEmbedConnectorImpl::~SecureEmbedConnectorImpl() {
+SurfaceEmbedConnectorImpl::~SurfaceEmbedConnectorImpl() {
   // Notify the view of this object being destroyed, if the view still exists.
   SetView(nullptr, /*allow_paint_holding=*/false);
 }
 
-WebContentsView* SecureEmbedConnectorImpl::GetEmbedderWebContentsView() {
+WebContentsView* SurfaceEmbedConnectorImpl::GetEmbedderWebContentsView() {
   if (embedder_web_contents()) {
     return embedder_web_contents()->GetView();
   }
@@ -114,14 +114,14 @@ WebContentsView* SecureEmbedConnectorImpl::GetEmbedderWebContentsView() {
 }
 
 RenderViewHostDelegateView*
-SecureEmbedConnectorImpl::GetEmbedderRenderViewHostDelegateView() {
+SurfaceEmbedConnectorImpl::GetEmbedderRenderViewHostDelegateView() {
   if (embedder_web_contents()) {
     return embedder_web_contents()->GetDelegateView();
   }
   return nullptr;
 }
 
-void SecureEmbedConnectorImpl::EmbedderSystemDragEnded(
+void SurfaceEmbedConnectorImpl::EmbedderSystemDragEnded(
     RenderWidgetHost* source_rwh) {
   if (embedder_web_contents()) {
     embedder_web_contents()->SystemDragEnded(source_rwh);
@@ -129,19 +129,19 @@ void SecureEmbedConnectorImpl::EmbedderSystemDragEnded(
 }
 
 input::RenderWidgetHostInputEventRouter*
-SecureEmbedConnectorImpl::GetInputEventRouter() {
+SurfaceEmbedConnectorImpl::GetInputEventRouter() {
   return embedder_web_contents()->GetInputEventRouter();
 }
 
-TextInputManager* SecureEmbedConnectorImpl::GetTextInputManager() {
+TextInputManager* SurfaceEmbedConnectorImpl::GetTextInputManager() {
   return embedder_web_contents()->GetTextInputManager();
 }
 
-void SecureEmbedConnectorImpl::FocusInEmbedder(FocusOperation focus_op) {
+void SurfaceEmbedConnectorImpl::FocusInEmbedder(FocusOperation focus_op) {
   // Focus the embedder when traversing out of <embed>.
   // Usually when an *unfocused* Blink frame gains focus, it calls
   // RFHI::DidFocusFrame() which makes the WebContents focused.
-  // However in secure embed, when the guest WebContents is focused, its
+  // However in surface embed, when the guest WebContents is focused, its
   // embedder Blink frame is also focused, as a result Blink does *not* call
   // DidFocusFrame() when the focus traverses out. Hence focusing the embedder
   // WebContents explicitly here.
@@ -155,7 +155,7 @@ void SecureEmbedConnectorImpl::FocusInEmbedder(FocusOperation focus_op) {
 }
 
 // static
-bool SecureEmbedConnectorImpl::ContainsOrIsFocusedWebContents(
+bool SurfaceEmbedConnectorImpl::ContainsOrIsFocusedWebContents(
     WebContentsImpl* web_contents) {
   WebContentsImpl* root_web_contents = GetRootWebContents(web_contents);
   WebContentsImpl* focused_web_contents =
@@ -170,13 +170,13 @@ bool SecureEmbedConnectorImpl::ContainsOrIsFocusedWebContents(
   return false;
 }
 
-FrameTree* SecureEmbedConnectorImpl::GetFocusedFrameTree() {
+FrameTree* SurfaceEmbedConnectorImpl::GetFocusedFrameTree() {
   return ContainsOrIsFocusedWebContents(guest_web_contents_)
              ? embedder_web_contents()->GetFocusedFrameTree()
              : nullptr;
 }
 
-void SecureEmbedConnectorImpl::SetFocusedFrameTree(
+void SurfaceEmbedConnectorImpl::SetFocusedFrameTree(
     FrameTree* frame_tree_to_focus) {
   if (!embedder_web_contents_) {
     return;
@@ -199,7 +199,7 @@ void SecureEmbedConnectorImpl::SetFocusedFrameTree(
       ->SetPageFocus(true);
 }
 
-void SecureEmbedConnectorImpl::ClearFocusOnInnerWebContents() {
+void SurfaceEmbedConnectorImpl::ClearFocusOnInnerWebContents() {
   if (!ContainsOrIsFocusedWebContents(guest_web_contents_)) {
     return;
   }
@@ -213,12 +213,12 @@ void SecureEmbedConnectorImpl::ClearFocusOnInnerWebContents() {
       ->SetAsFocusedWebContentsIfNecessary();
 }
 
-SecureEmbedConnector::Delegate* SecureEmbedConnectorImpl::GetDelegate() {
+SurfaceEmbedConnector::Delegate* SurfaceEmbedConnectorImpl::GetDelegate() {
   return delegate_;
 }
 
-void SecureEmbedConnectorImpl::SetFocus(bool focused,
-                                        blink::mojom::FocusType focus_type) {
+void SurfaceEmbedConnectorImpl::SetFocus(bool focused,
+                                         blink::mojom::FocusType focus_type) {
   if (!guest_web_contents_ || !view_) {
     return;
   }
@@ -247,12 +247,12 @@ void SecureEmbedConnectorImpl::SetFocus(bool focused,
   }
 }
 
-const viz::FrameSinkId& SecureEmbedConnectorImpl::GetFrameSinkId() const {
+const viz::FrameSinkId& SurfaceEmbedConnectorImpl::GetFrameSinkId() const {
   return frame_sink_id_;
 }
 
-void SecureEmbedConnectorImpl::SetView(RenderWidgetHostViewChildFrame* view,
-                                       bool allow_paint_holding) {
+void SurfaceEmbedConnectorImpl::SetView(RenderWidgetHostViewChildFrame* view,
+                                        bool allow_paint_holding) {
   // Detach ourselves from the previous |view_|.
   if (view_) {
     RenderWidgetHostViewBase* root_view = GetRootRenderWidgetHostView();
@@ -300,7 +300,7 @@ void SecureEmbedConnectorImpl::SetView(RenderWidgetHostViewChildFrame* view,
 }
 
 RenderWidgetHostViewBase*
-SecureEmbedConnectorImpl::GetParentRenderWidgetHostView() {
+SurfaceEmbedConnectorImpl::GetParentRenderWidgetHostView() {
   if (!embedder_web_contents_) {
     return nullptr;
   }
@@ -309,34 +309,34 @@ SecureEmbedConnectorImpl::GetParentRenderWidgetHostView() {
 }
 
 RenderWidgetHostViewBase*
-SecureEmbedConnectorImpl::GetRootRenderWidgetHostView() {
-  // TODO(secure-embed): Do we support multiple levels of embedding?
+SurfaceEmbedConnectorImpl::GetRootRenderWidgetHostView() {
+  // TODO(surface-embed): Do we support multiple levels of embedding?
   // Mixed kinds?
   return GetParentRenderWidgetHostView();
 }
 
-void SecureEmbedConnectorImpl::RenderProcessGone() {
+void SurfaceEmbedConnectorImpl::RenderProcessGone() {
   if (delegate_) {
     delegate_->ChildProcessGone();
   }
 
-  // TODO(secure-embed): CrossProcessFrameConnector does a lot of logging
+  // TODO(surface-embed): CrossProcessFrameConnector does a lot of logging
   // and sometimes reloading here that's about child frames. We need to decide
   // when that's even relevant here (it's not for the very basic Webium use),
   // and replicate it.
 }
 
-void SecureEmbedConnectorImpl::FirstSurfaceActivation(
+void SurfaceEmbedConnectorImpl::FirstSurfaceActivation(
     const viz::SurfaceInfo& surface_info) {
   NOTIMPLEMENTED();
 }
 
-void SecureEmbedConnectorImpl::SendIntrinsicSizingInfoToParent(
+void SurfaceEmbedConnectorImpl::SendIntrinsicSizingInfoToParent(
     blink::mojom::IntrinsicSizingInfoPtr) {
   NOTIMPLEMENTED();
 }
 
-void SecureEmbedConnectorImpl::SynchronizeVisualProperties(
+void SurfaceEmbedConnectorImpl::SynchronizeVisualProperties(
     const blink::FrameVisualProperties& visual_properties,
     bool propagate) {
   last_received_zoom_level_ = visual_properties.zoom_level;
@@ -347,7 +347,7 @@ void SecureEmbedConnectorImpl::SynchronizeVisualProperties(
       (local_surface_id_ != visual_properties.local_surface_id);
   local_surface_id_ = visual_properties.local_surface_id;
 
-  // TODO(secure-embed): Not implemented yet.
+  // TODO(surface-embed): Not implemented yet.
   capture_sequence_number_ = visual_properties.capture_sequence_number;
 
   SetRectInParentView(visual_properties.rect_in_local_root);
@@ -362,7 +362,7 @@ void SecureEmbedConnectorImpl::SynchronizeVisualProperties(
   RenderWidgetHostImpl* render_widget_host = view_->host();
   DCHECK(render_widget_host);
 
-  // TODO(secure-embed): If we don't support auto-resize, we can skip this call
+  // TODO(surface-embed): If we don't support auto-resize, we can skip this call
   // and use something other than FrameVisualProperties.
   render_widget_host->SetAutoResize(visual_properties.auto_resize_enabled,
                                     visual_properties.min_size_for_auto_resize,
@@ -382,7 +382,7 @@ void SecureEmbedConnectorImpl::SynchronizeVisualProperties(
   }
 }
 
-void SecureEmbedConnectorImpl::UpdateCursor(const ui::Cursor& cursor) {
+void SurfaceEmbedConnectorImpl::UpdateCursor(const ui::Cursor& cursor) {
   RenderWidgetHostViewBase* root_view = GetRootRenderWidgetHostView();
   // UpdateCursor messages are ignored if the root view does not support
   // cursors.
@@ -392,88 +392,89 @@ void SecureEmbedConnectorImpl::UpdateCursor(const ui::Cursor& cursor) {
 }
 
 CrossProcessFrameConnectorBase::RootViewFocusState
-SecureEmbedConnectorImpl::HasFocus() {
+SurfaceEmbedConnectorImpl::HasFocus() {
   NOTIMPLEMENTED();
   return CrossProcessFrameConnectorBase::RootViewFocusState::kNullView;
 }
 
-void SecureEmbedConnectorImpl::FocusRootView() {
+void SurfaceEmbedConnectorImpl::FocusRootView() {
   NOTIMPLEMENTED();
 }
 
-blink::mojom::PointerLockResult SecureEmbedConnectorImpl::LockPointer(
+blink::mojom::PointerLockResult SurfaceEmbedConnectorImpl::LockPointer(
     bool request_unadjusted_movement) {
   NOTIMPLEMENTED();
   return blink::mojom::PointerLockResult::kUnknownError;
 }
 
-blink::mojom::PointerLockResult SecureEmbedConnectorImpl::ChangePointerLock(
+blink::mojom::PointerLockResult SurfaceEmbedConnectorImpl::ChangePointerLock(
     bool request_unadjusted_movement) {
   NOTIMPLEMENTED();
   return blink::mojom::PointerLockResult::kUnknownError;
 }
 
-void SecureEmbedConnectorImpl::UnlockPointer() {
+void SurfaceEmbedConnectorImpl::UnlockPointer() {
   NOTIMPLEMENTED();
 }
 
-bool SecureEmbedConnectorImpl::HasSize() const {
+bool SurfaceEmbedConnectorImpl::HasSize() const {
   return has_size_;
 }
 
-const display::ScreenInfos& SecureEmbedConnectorImpl::GetScreenInfos() const {
+const display::ScreenInfos& SurfaceEmbedConnectorImpl::GetScreenInfos() const {
   return screen_infos_;
 }
 
-const viz::LocalSurfaceId& SecureEmbedConnectorImpl::GetLocalSurfaceId() const {
+const viz::LocalSurfaceId& SurfaceEmbedConnectorImpl::GetLocalSurfaceId()
+    const {
   return local_surface_id_;
 }
 
 const blink::mojom::ViewportIntersectionState&
-SecureEmbedConnectorImpl::GetIntersectionState() const {
+SurfaceEmbedConnectorImpl::GetIntersectionState() const {
   return intersection_state_;
 }
 
-uint32_t SecureEmbedConnectorImpl::GetCaptureSequenceNumber() const {
+uint32_t SurfaceEmbedConnectorImpl::GetCaptureSequenceNumber() const {
   NOTIMPLEMENTED();
   return 0;
 }
 
-const gfx::Rect& SecureEmbedConnectorImpl::GetRectInParentViewInDip() const {
+const gfx::Rect& SurfaceEmbedConnectorImpl::GetRectInParentViewInDip() const {
   return rect_in_parent_view_in_dip_;
 }
 
-const gfx::Size& SecureEmbedConnectorImpl::GetLocalFrameSizeInDip() const {
+const gfx::Size& SurfaceEmbedConnectorImpl::GetLocalFrameSizeInDip() const {
   return local_frame_size_in_dip_;
 }
 
-const gfx::Size& SecureEmbedConnectorImpl::GetLocalFrameSizeInPixels() const {
+const gfx::Size& SurfaceEmbedConnectorImpl::GetLocalFrameSizeInPixels() const {
   return local_frame_size_in_pixels_;
 }
 
-double SecureEmbedConnectorImpl::GetCssZoomFactor() const {
+double SurfaceEmbedConnectorImpl::GetCssZoomFactor() const {
   return last_received_css_zoom_factor_;
 }
 
-void SecureEmbedConnectorImpl::EnableAutoResize(const gfx::Size& min_size,
-                                                const gfx::Size& max_size) {
+void SurfaceEmbedConnectorImpl::EnableAutoResize(const gfx::Size& min_size,
+                                                 const gfx::Size& max_size) {
   NOTIMPLEMENTED();
 }
 
-void SecureEmbedConnectorImpl::DisableAutoResize() {
+void SurfaceEmbedConnectorImpl::DisableAutoResize() {
   NOTIMPLEMENTED();
 }
 
-bool SecureEmbedConnectorImpl::IsInert() const {
+bool SurfaceEmbedConnectorImpl::IsInert() const {
   return is_inert_;
 }
 
-cc::TouchAction SecureEmbedConnectorImpl::InheritedEffectiveTouchAction()
+cc::TouchAction SurfaceEmbedConnectorImpl::InheritedEffectiveTouchAction()
     const {
   return inherited_effective_touch_action_;
 }
 
-bool SecureEmbedConnectorImpl::IsHidden() const {
+bool SurfaceEmbedConnectorImpl::IsHidden() const {
   // We want IsHidden() to return false even when the page isn't actually
   // rendering us, since WebContents may want to render us for features like
   // capture; any CSS that's hiding us should make us not show up incorrectly
@@ -481,19 +482,19 @@ bool SecureEmbedConnectorImpl::IsHidden() const {
   return !embedder_web_contents_;
 }
 
-bool SecureEmbedConnectorImpl::IsThrottled() const {
+bool SurfaceEmbedConnectorImpl::IsThrottled() const {
   return is_throttled_;
 }
 
-bool SecureEmbedConnectorImpl::IsSubtreeThrottled() const {
+bool SurfaceEmbedConnectorImpl::IsSubtreeThrottled() const {
   return subtree_throttled_;
 }
 
-bool SecureEmbedConnectorImpl::IsDisplayLocked() const {
+bool SurfaceEmbedConnectorImpl::IsDisplayLocked() const {
   return display_locked_;
 }
 
-void SecureEmbedConnectorImpl::DidUpdateVisualProperties(
+void SurfaceEmbedConnectorImpl::DidUpdateVisualProperties(
     const cc::RenderFrameMetadata& metadata) {
   if (metadata.local_surface_id.has_value() &&
       local_surface_id_ != *metadata.local_surface_id) {
@@ -503,11 +504,11 @@ void SecureEmbedConnectorImpl::DidUpdateVisualProperties(
   }
 }
 
-void SecureEmbedConnectorImpl::SetVisibilityForChildViews(bool visible) const {
+void SurfaceEmbedConnectorImpl::SetVisibilityForChildViews(bool visible) const {
   current_child_frame_host()->SetVisibilityForChildViews(visible);
 }
 
-void SecureEmbedConnectorImpl::ForceRenderable(bool renderable) {
+void SurfaceEmbedConnectorImpl::ForceRenderable(bool renderable) {
   // We may be force-shown by WebContents to enable tab capture, even if we're
   // in background. To enable that, we want to create a reference to the
   // surface, to help the compositor notice its capture; this won't be created
@@ -521,7 +522,7 @@ void SecureEmbedConnectorImpl::ForceRenderable(bool renderable) {
   }
 }
 
-void SecureEmbedConnectorImpl::SetLocalFrameSize(
+void SurfaceEmbedConnectorImpl::SetLocalFrameSize(
     const gfx::Size& local_frame_size) {
   has_size_ = true;
   const float dsf = screen_infos_.current().device_scale_factor;
@@ -530,14 +531,14 @@ void SecureEmbedConnectorImpl::SetLocalFrameSize(
       gfx::ScaleToRoundedSize(local_frame_size, 1.f / dsf);
 }
 
-void SecureEmbedConnectorImpl::SetRectInParentView(
+void SurfaceEmbedConnectorImpl::SetRectInParentView(
     const gfx::Rect& rect_in_parent_view) {
   const float dsf = screen_infos_.current().device_scale_factor;
   rect_in_parent_view_in_dip_ = gfx::Rect(
       gfx::ScaleToFlooredPoint(rect_in_parent_view.origin(), 1.f / dsf),
       gfx::ScaleToCeiledSize(rect_in_parent_view.size(), 1.f / dsf));
 
-  // TODO(secure-embed): The CPFC version of this checks if
+  // TODO(surface-embed): The CPFC version of this checks if
   // frame_proxy_in_parent_renderer_ is valid before proceeding. It looks like
   // this is because it then iterates through the FrameTreeNodes of the subtree
   // rooted at the frame proxy to update their screen rects. Since we don't have
@@ -545,8 +546,9 @@ void SecureEmbedConnectorImpl::SetRectInParentView(
   if (view_ /*&& frame_proxy_in_parent_renderer_*/) {
     view_->SetBounds(rect_in_parent_view_in_dip_);
 
-    // TODO(secure-embed): Notify the embedder of the rect change so that it can
-    // call SendScreenRects on all subtrees rooted at the guest web contents?
+    // TODO(surface-embed): Notify the embedder of the rect change so that it
+    // can call SendScreenRects on all subtrees rooted at the guest web
+    // contents?
 
     // Other local root frames nested underneath this one implicitly have their
     // view rects changed when their ancestor is repositioned, and therefore
@@ -564,25 +566,25 @@ void SecureEmbedConnectorImpl::SetRectInParentView(
   }
 }
 
-void SecureEmbedConnectorImpl::SetIsInert(bool inert) {
-  // TODO(secure-embed): Do we want to support inert and other throttling states
-  // across embedder/guest boundaries?
+void SurfaceEmbedConnectorImpl::SetIsInert(bool inert) {
+  // TODO(surface-embed): Do we want to support inert and other throttling
+  // states across embedder/guest boundaries?
   is_inert_ = inert;
   if (view_) {
     view_->SetIsInert();
   }
 }
 
-void SecureEmbedConnectorImpl::OnSetInheritedEffectiveTouchAction(
+void SurfaceEmbedConnectorImpl::OnSetInheritedEffectiveTouchAction(
     cc::TouchAction touch_action) {
-  // TODO(secure-embed): Do we want to support inheriting touch actions?
+  // TODO(surface-embed): Do we want to support inheriting touch actions?
   inherited_effective_touch_action_ = touch_action;
   if (view_) {
     view_->UpdateInheritedEffectiveTouchAction();
   }
 }
 
-void SecureEmbedConnectorImpl::OnVisibilityChanged(
+void SurfaceEmbedConnectorImpl::OnVisibilityChanged(
     blink::mojom::FrameVisibility visibility) {
   visibility_ = visibility;
 
@@ -605,7 +607,7 @@ void SecureEmbedConnectorImpl::OnVisibilityChanged(
   }
 }
 
-void SecureEmbedConnectorImpl::UpdateRenderThrottlingStatus(
+void SurfaceEmbedConnectorImpl::UpdateRenderThrottlingStatus(
     bool is_throttled,
     bool subtree_throttled,
     bool display_locked) {
@@ -621,10 +623,10 @@ void SecureEmbedConnectorImpl::UpdateRenderThrottlingStatus(
   }
 }
 
-void SecureEmbedConnectorImpl::UpdateViewportIntersection(
+void SurfaceEmbedConnectorImpl::UpdateViewportIntersection(
     const blink::mojom::ViewportIntersectionState& intersection_state,
     const std::optional<blink::FrameVisualProperties>& visual_properties) {
-  // TODO(secure-embed): Implementation was copied from CPFC but need to dig
+  // TODO(surface-embed): Implementation was copied from CPFC but need to dig
   // into it and better understand if, and how much, of it is needed.
   bool intersection_changed = !intersection_state.Equals(intersection_state_);
   if (intersection_changed) {
@@ -653,7 +655,7 @@ void SecureEmbedConnectorImpl::UpdateViewportIntersection(
   }
 }
 
-bool SecureEmbedConnectorImpl::IsVisible() {
+bool SurfaceEmbedConnectorImpl::IsVisible() {
   if (visibility_ == blink::mojom::FrameVisibility::kNotRendered ||
       GetIntersectionState().viewport_intersection.IsEmpty()) {
     return false;
@@ -666,20 +668,20 @@ bool SecureEmbedConnectorImpl::IsVisible() {
   return true;
 }
 
-Visibility SecureEmbedConnectorImpl::EmbedderVisibility() {
+Visibility SurfaceEmbedConnectorImpl::EmbedderVisibility() {
   if (!embedder_web_contents()) {
     return Visibility::HIDDEN;
   }
 
-  // TODO(secure-embed): Need to get the embedder visibility rather than the
-  // embedded visibility. Embedder = SecureEmbed. May need to add a method to
-  // SecureEmbedDelegate for this or ensure that visibility state is pushed to
+  // TODO(surface-embed): Need to get the embedder visibility rather than the
+  // embedded visibility. Embedder = SurfaceEmbed. May need to add a method to
+  // SurfaceEmbedDelegate for this or ensure that visibility state is pushed to
   // the GuestFrame when it changes.
   NOTIMPLEMENTED();
   return embedder_web_contents()->GetVisibility();
 }
 
-void SecureEmbedConnectorImpl::OnSynchronizeVisualProperties(
+void SurfaceEmbedConnectorImpl::OnSynchronizeVisualProperties(
     const blink::FrameVisualProperties& visual_properties) {
   if (!embedder_web_contents_) {
     return;
@@ -704,23 +706,24 @@ void SecureEmbedConnectorImpl::OnSynchronizeVisualProperties(
 }
 
 input::RenderWidgetHostViewInput*
-SecureEmbedConnectorImpl::GetParentViewInput() {
+SurfaceEmbedConnectorImpl::GetParentViewInput() {
   return GetParentRenderWidgetHostView();
 }
 
-input::RenderWidgetHostViewInput* SecureEmbedConnectorImpl::GetRootViewInput() {
+input::RenderWidgetHostViewInput*
+SurfaceEmbedConnectorImpl::GetRootViewInput() {
   return GetRootRenderWidgetHostView();
 }
 
 // Although SetView is called from the WebContentsImpl during navigation,
 // we still need the Observer for RenderViewReady to catch the initial
 // creation or the view won't be set correctly for the initial document.
-void SecureEmbedConnectorImpl::OnRenderViewReady() {
+void SurfaceEmbedConnectorImpl::OnRenderViewReady() {
   // When the RenderView is ready, update the view in case it has changed.
   UpdateViewForCurrentRenderFrameHost();
 }
 
-void SecureEmbedConnectorImpl::UpdateViewForCurrentRenderFrameHost() {
+void SurfaceEmbedConnectorImpl::UpdateViewForCurrentRenderFrameHost() {
   CHECK(guest_web_contents_);  // Should not get here w/o WebContents.
 
   // Get the current RenderWidgetHostView for the guest WebContents.
@@ -744,18 +747,18 @@ void SecureEmbedConnectorImpl::UpdateViewForCurrentRenderFrameHost() {
 }
 
 // static
-WebContentsImpl* SecureEmbedConnectorImpl::GetParentWebContents(
+WebContentsImpl* SurfaceEmbedConnectorImpl::GetParentWebContents(
     WebContentsImpl* web_contents) {
-  if (SecureEmbedConnector* connector =
-          web_contents->GetSecureEmbedConnector()) {
-    return static_cast<SecureEmbedConnectorImpl*>(connector)
+  if (SurfaceEmbedConnector* connector =
+          web_contents->GetSurfaceEmbedConnector()) {
+    return static_cast<SurfaceEmbedConnectorImpl*>(connector)
         ->embedder_web_contents();
   }
   return static_cast<WebContentsImpl*>(web_contents->GetOuterWebContents());
 }
 
 // static
-WebContentsImpl* SecureEmbedConnectorImpl::GetRootWebContents(
+WebContentsImpl* SurfaceEmbedConnectorImpl::GetRootWebContents(
     WebContentsImpl* web_contents) {
   while (GetParentWebContents(web_contents)) {
     web_contents = GetParentWebContents(web_contents);
@@ -763,26 +766,26 @@ WebContentsImpl* SecureEmbedConnectorImpl::GetRootWebContents(
   return web_contents;
 }
 
-WebContentsImpl* SecureEmbedConnectorImpl::embedder_web_contents() {
+WebContentsImpl* SurfaceEmbedConnectorImpl::embedder_web_contents() {
   return static_cast<WebContentsImpl*>(embedder_web_contents_.get());
 }
 
-void SecureEmbedConnectorImpl::ResetRectInParentView() {
+void SurfaceEmbedConnectorImpl::ResetRectInParentView() {
   local_surface_id_ = viz::LocalSurfaceId();
   rect_in_parent_view_in_dip_ = gfx::Rect();
   last_received_local_frame_size_ = gfx::Size();
 }
 
-void SecureEmbedConnectorImpl::DelegateWasShown() {
+void SurfaceEmbedConnectorImpl::DelegateWasShown() {
   NOTIMPLEMENTED();
 }
 
-void SecureEmbedConnectorImpl::UpdateViewportIntersectionInternal(
+void SurfaceEmbedConnectorImpl::UpdateViewportIntersectionInternal(
     const blink::mojom::ViewportIntersectionState& intersection_state,
     bool include_visual_properties) {
   intersection_state_ = intersection_state;
   if (view_) {
-    // TODO(secure-embed): Look into this further to make sure we're calling it
+    // TODO(surface-embed): Look into this further to make sure we're calling it
     // on the right side (embedder vs embedded).
     CHECK(current_child_frame_host());
     current_child_frame_host()
@@ -799,7 +802,7 @@ void SecureEmbedConnectorImpl::UpdateViewportIntersectionInternal(
   }
 }
 
-RenderFrameHostImpl* SecureEmbedConnectorImpl::current_child_frame_host()
+RenderFrameHostImpl* SurfaceEmbedConnectorImpl::current_child_frame_host()
     const {
   if (!guest_web_contents_) {
     return nullptr;
@@ -808,7 +811,7 @@ RenderFrameHostImpl* SecureEmbedConnectorImpl::current_child_frame_host()
       ->GetPrimaryMainFrame();
 }
 
-void SecureEmbedConnectorImpl::MaybeRefreshSurfaceKeepAlive() {
+void SurfaceEmbedConnectorImpl::MaybeRefreshSurfaceKeepAlive() {
   if (keep_surface_alive_) {
     ForceRenderable(true);
   }

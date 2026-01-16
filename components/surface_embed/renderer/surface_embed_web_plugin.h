@@ -27,18 +27,18 @@ namespace content {
 class RenderFrame;
 }  // namespace content
 
-namespace secure_embed {
+namespace surface_embed {
 
-class SecureEmbedWebPlugin : public blink::WebPlugin,
-                             public mojom::SecureEmbed,
-                             public cc::ContentLayerClient {
+class SurfaceEmbedWebPlugin : public blink::WebPlugin,
+                              public mojom::SurfaceEmbed,
+                              public cc::ContentLayerClient {
  public:
-  static SecureEmbedWebPlugin* Create(content::RenderFrame* render_frame,
-                                      const blink::WebPluginParams& params);
+  static SurfaceEmbedWebPlugin* Create(content::RenderFrame* render_frame,
+                                       const blink::WebPluginParams& params);
 
-  SecureEmbedWebPlugin(const SecureEmbedWebPlugin&) = delete;
-  SecureEmbedWebPlugin& operator=(const SecureEmbedWebPlugin&) = delete;
-  ~SecureEmbedWebPlugin() override;
+  SurfaceEmbedWebPlugin(const SurfaceEmbedWebPlugin&) = delete;
+  SurfaceEmbedWebPlugin& operator=(const SurfaceEmbedWebPlugin&) = delete;
+  ~SurfaceEmbedWebPlugin() override;
 
   // blink::WebPlugin:
   bool Initialize(blink::WebPluginContainer* container) override;
@@ -65,7 +65,7 @@ class SecureEmbedWebPlugin : public blink::WebPlugin,
   void DidFailLoading(const blink::WebURLError& error) override;
   bool SupportsKeyboardFocus() const override;
 
-  // mojom::SecureEmbed:
+  // mojom::SurfaceEmbed:
   void SetFrameSinkId(const ::viz::FrameSinkId& frame_sink_id) override;
   void UpdateLocalSurfaceIdFromChild(
       const ::viz::LocalSurfaceId& local_surface_id) override;
@@ -78,11 +78,11 @@ class SecureEmbedWebPlugin : public blink::WebPlugin,
   bool FillsBoundsCompletely() const override;
 
  private:
-  explicit SecureEmbedWebPlugin(
-      mojo::AssociatedRemote<mojom::SecureEmbedHost> host,
+  explicit SurfaceEmbedWebPlugin(
+      mojo::AssociatedRemote<mojom::SurfaceEmbedHost> host,
       int contents_id);
 
-  void OnSecureEmbedHostDisconnected();
+  void OnSurfaceEmbedHostDisconnected();
 
   void SynchronizeVisualProperties();
 
@@ -109,12 +109,12 @@ class SecureEmbedWebPlugin : public blink::WebPlugin,
   viz::FrameSinkId frame_sink_id_;
   bool frame_sink_id_changed_ = false;
 
-  mojo::AssociatedRemote<mojom::SecureEmbedHost> host_;
-  mojo::AssociatedReceiver<mojom::SecureEmbed> receiver_{this};
+  mojo::AssociatedRemote<mojom::SurfaceEmbedHost> host_;
+  mojo::AssociatedReceiver<mojom::SurfaceEmbed> receiver_{this};
   std::unique_ptr<viz::ParentLocalSurfaceIdAllocator>
       parent_local_surface_id_allocator_;
 };
 
-}  // namespace secure_embed
+}  // namespace surface_embed
 
 #endif  // COMPONENTS_SURFACE_EMBED_RENDERER_SURFACE_EMBED_WEB_PLUGIN_H_

@@ -6,10 +6,10 @@
 
 #include "content/public/browser/web_contents.h"
 
-namespace secure_embed {
+namespace surface_embed {
 
-bool IsSecureEmbedGuestWebContents(content::WebContents* web_contents) {
-  return web_contents ? !!web_contents->GetSecureEmbedConnector() : false;
+bool IsSurfaceEmbedGuestWebContents(content::WebContents* web_contents) {
+  return web_contents ? !!web_contents->GetSurfaceEmbedConnector() : false;
 }
 
-}  // namespace secure_embed
+}  // namespace surface_embed

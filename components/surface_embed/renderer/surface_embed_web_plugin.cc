@@ -31,13 +31,13 @@
 #include "ui/gfx/geometry/rect.h"
 #include "v8/include/v8-local-handle.h"
 
-namespace secure_embed {
+namespace surface_embed {
 
 // static
-SecureEmbedWebPlugin* SecureEmbedWebPlugin::Create(
+SurfaceEmbedWebPlugin* SurfaceEmbedWebPlugin::Create(
     content::RenderFrame* render_frame,
     const blink::WebPluginParams& params) {
-  mojo::AssociatedRemote<mojom::SecureEmbedHost> host;
+  mojo::AssociatedRemote<mojom::SurfaceEmbedHost> host;
   render_frame->GetRemoteAssociatedInterfaces()->GetInterface(&host);
 
   // Read the content ID from the data-content-id attribute
@@ -49,36 +49,36 @@ SecureEmbedWebPlugin* SecureEmbedWebPlugin::Create(
     }
   }
 
-  return new SecureEmbedWebPlugin(std::move(host), contents_id);
+  return new SurfaceEmbedWebPlugin(std::move(host), contents_id);
 }
 
-SecureEmbedWebPlugin::SecureEmbedWebPlugin(
-    mojo::AssociatedRemote<mojom::SecureEmbedHost> host,
+SurfaceEmbedWebPlugin::SurfaceEmbedWebPlugin(
+    mojo::AssociatedRemote<mojom::SurfaceEmbedHost> host,
     int contents_id)
     : contents_id_(contents_id),
       host_(std::move(host)),
       parent_local_surface_id_allocator_(
           std::make_unique<viz::ParentLocalSurfaceIdAllocator>()) {}
 
-SecureEmbedWebPlugin::~SecureEmbedWebPlugin() = default;
+SurfaceEmbedWebPlugin::~SurfaceEmbedWebPlugin() = default;
 
-bool SecureEmbedWebPlugin::Initialize(blink::WebPluginContainer* container) {
+bool SurfaceEmbedWebPlugin::Initialize(blink::WebPluginContainer* container) {
   container_ = container;
 
   InitializeSurfaceLayer();
 
   if (host_) {
-    mojo::PendingAssociatedRemote<mojom::SecureEmbed> pending_remote =
+    mojo::PendingAssociatedRemote<mojom::SurfaceEmbed> pending_remote =
         receiver_.BindNewEndpointAndPassRemote();
     host_.set_disconnect_handler(
-        base::BindOnce(&SecureEmbedWebPlugin::OnSecureEmbedHostDisconnected,
+        base::BindOnce(&SurfaceEmbedWebPlugin::OnSurfaceEmbedHostDisconnected,
                        base::Unretained(this)));
     receiver_.set_disconnect_handler(
-        base::BindOnce(&SecureEmbedWebPlugin::OnSecureEmbedHostDisconnected,
+        base::BindOnce(&SurfaceEmbedWebPlugin::OnSurfaceEmbedHostDisconnected,
                        base::Unretained(this)));
 
-    // Set up the SecureEmbed interface first.
-    host_->SetSecureEmbed(std::move(pending_remote));
+    // Set up the SurfaceEmbed interface first.
+    host_->SetSurfaceEmbed(std::move(pending_remote));
 
     // Then attach with the content ID.
     if (contents_id_ > 0) {
@@ -88,7 +88,7 @@ bool SecureEmbedWebPlugin::Initialize(blink::WebPluginContainer* container) {
   return true;
 }
 
-void SecureEmbedWebPlugin::Destroy() {
+void SurfaceEmbedWebPlugin::Destroy() {
   if (container_) {
     container_->SetCcLayer(nullptr);
   }
@@ -101,7 +101,7 @@ void SecureEmbedWebPlugin::Destroy() {
   delete this;
 }
 
-void SecureEmbedWebPlugin::OnSecureEmbedHostDisconnected() {
+void SurfaceEmbedWebPlugin::OnSurfaceEmbedHostDisconnected() {
   receiver_.reset();
   host_.reset();
 
@@ -110,7 +110,7 @@ void SecureEmbedWebPlugin::OnSecureEmbedHostDisconnected() {
   NOTREACHED();
 }
 
-void SecureEmbedWebPlugin::InitializeSurfaceLayer() {
+void SurfaceEmbedWebPlugin::InitializeSurfaceLayer() {
   // We'll be embedding an outside surface layer.
   layer_ = cc::SurfaceLayer::Create();
   layer_->SetIsDrawable(true);
@@ -118,32 +118,32 @@ void SecureEmbedWebPlugin::InitializeSurfaceLayer() {
   container_->SetCcLayer(layer_.get());
 }
 
-blink::WebPluginContainer* SecureEmbedWebPlugin::Container() const {
+blink::WebPluginContainer* SurfaceEmbedWebPlugin::Container() const {
   return container_;
 }
 
-v8::Local<v8::Object> SecureEmbedWebPlugin::V8ScriptableObject(
+v8::Local<v8::Object> SurfaceEmbedWebPlugin::V8ScriptableObject(
     v8::Isolate* isolate) {
   return v8::Local<v8::Object>();
 }
 
-void SecureEmbedWebPlugin::UpdateAllLifecyclePhases(
+void SurfaceEmbedWebPlugin::UpdateAllLifecyclePhases(
     blink::DocumentUpdateReason reason) {}
 
-void SecureEmbedWebPlugin::Paint(cc::PaintCanvas* canvas,
-                                 const gfx::Rect& rect) {
+void SurfaceEmbedWebPlugin::Paint(cc::PaintCanvas* canvas,
+                                  const gfx::Rect& rect) {
   // No-op: rendering is now handled by the compositor layer
   NOTREACHED();
 }
 
-viz::FrameSinkId SecureEmbedWebPlugin::GetFrameSinkId() {
+viz::FrameSinkId SurfaceEmbedWebPlugin::GetFrameSinkId() {
   return frame_sink_id_;
 }
 
-void SecureEmbedWebPlugin::UpdateGeometry(const gfx::Rect& window_rect,
-                                          const gfx::Rect& clip_rect,
-                                          const gfx::Rect& unobscured_rect,
-                                          bool is_visible) {
+void SurfaceEmbedWebPlugin::UpdateGeometry(const gfx::Rect& window_rect,
+                                           const gfx::Rect& clip_rect,
+                                           const gfx::Rect& unobscured_rect,
+                                           bool is_visible) {
   // Note: Layer bounds are set by WebPluginContainerImpl::Paint()
   // so we don't need to set them here for the time being.
 
@@ -164,10 +164,10 @@ void SecureEmbedWebPlugin::UpdateGeometry(const gfx::Rect& window_rect,
   }
 }
 
-void SecureEmbedWebPlugin::SynchronizeVisualProperties() {
+void SurfaceEmbedWebPlugin::SynchronizeVisualProperties() {
   // Note: This is largely based on RemoteFrame's SynchronizeVisualProperties().
 
-  // TODO(secure-embed): The following properties or pieces of functionality
+  // TODO(surface-embed): The following properties or pieces of functionality
   // have not yet been vetted as needed or correct implementation:
   // - css zoom between ancestor widget and embedding element (inclusive).
   // - viewport segments, do these need any adjustment for plugin location/size?
@@ -278,14 +278,14 @@ void SecureEmbedWebPlugin::SynchronizeVisualProperties() {
   }
 }
 
-void SecureEmbedWebPlugin::UpdateFocus(bool focused,
-                                       blink::mojom::FocusType focus_type) {
+void SurfaceEmbedWebPlugin::UpdateFocus(bool focused,
+                                        blink::mojom::FocusType focus_type) {
   host_->SetFocus(focused, focus_type);
 }
 
-void SecureEmbedWebPlugin::UpdateVisibility(bool is_visible) {}
+void SurfaceEmbedWebPlugin::UpdateVisibility(bool is_visible) {}
 
-void SecureEmbedWebPlugin::UpdateDataAttribute(
+void SurfaceEmbedWebPlugin::UpdateDataAttribute(
     const blink::WebString& attribute_name,
     const blink::WebString& attribute_value) {
   if (attribute_name.Utf8() != "data-content-id") {
@@ -309,35 +309,35 @@ void SecureEmbedWebPlugin::UpdateDataAttribute(
   }
 }
 
-blink::WebInputEventResult SecureEmbedWebPlugin::HandleInputEvent(
+blink::WebInputEventResult SurfaceEmbedWebPlugin::HandleInputEvent(
     const blink::WebCoalescedInputEvent& coalesced_event,
     ui::Cursor* cursor) {
   return blink::WebInputEventResult::kNotHandled;
 }
 
-void SecureEmbedWebPlugin::DidReceiveResponse(
+void SurfaceEmbedWebPlugin::DidReceiveResponse(
     const blink::WebURLResponse& response) {
   NOTIMPLEMENTED();
 }
 
-void SecureEmbedWebPlugin::DidReceiveData(base::span<const char> data) {
+void SurfaceEmbedWebPlugin::DidReceiveData(base::span<const char> data) {
   NOTIMPLEMENTED();
 }
 
-void SecureEmbedWebPlugin::DidFinishLoading() {
+void SurfaceEmbedWebPlugin::DidFinishLoading() {
   NOTIMPLEMENTED();
 }
 
-void SecureEmbedWebPlugin::DidFailLoading(const blink::WebURLError& error) {
+void SurfaceEmbedWebPlugin::DidFailLoading(const blink::WebURLError& error) {
   NOTIMPLEMENTED();
 }
 
-bool SecureEmbedWebPlugin::SupportsKeyboardFocus() const {
-  // TODO(secure-embed): Test with pages with nothing focusable.
+bool SurfaceEmbedWebPlugin::SupportsKeyboardFocus() const {
+  // TODO(surface-embed): Test with pages with nothing focusable.
   return true;
 }
 
-void SecureEmbedWebPlugin::SetFrameSinkId(
+void SurfaceEmbedWebPlugin::SetFrameSinkId(
     const ::viz::FrameSinkId& frame_sink_id) {
   // Make sure we use a normal layer, not crash one.
   container_->SetCcLayer(layer_.get());
@@ -359,7 +359,7 @@ void SecureEmbedWebPlugin::SetFrameSinkId(
   SynchronizeVisualProperties();
 }
 
-void SecureEmbedWebPlugin::UpdateLocalSurfaceIdFromChild(
+void SurfaceEmbedWebPlugin::UpdateLocalSurfaceIdFromChild(
     const ::viz::LocalSurfaceId& local_surface_id) {
   if (!parent_local_surface_id_allocator_->UpdateFromChild(local_surface_id)) {
     return;
@@ -370,7 +370,7 @@ void SecureEmbedWebPlugin::UpdateLocalSurfaceIdFromChild(
   SynchronizeVisualProperties();
 }
 
-void SecureEmbedWebPlugin::ChildProcessGone() {
+void SurfaceEmbedWebPlugin::ChildProcessGone() {
   crashed_layer_ = cc::PictureLayer::Create(this);
   crashed_layer_->SetMasksToBounds(true);
   crashed_layer_->SetIsDrawable(true);
@@ -378,7 +378,7 @@ void SecureEmbedWebPlugin::ChildProcessGone() {
   container_->ScheduleAnimation();
 }
 
-void SecureEmbedWebPlugin::DetachPlugin() {
+void SurfaceEmbedWebPlugin::DetachPlugin() {
   // The browser forcibly detached the guest that was previously attached to
   // to this plugin. This can happen when the guest is being re-attached
   // elsewhere.
@@ -390,13 +390,13 @@ void SecureEmbedWebPlugin::DetachPlugin() {
   DetachInternal();
 }
 
-void SecureEmbedWebPlugin::DetachInternal() {
+void SurfaceEmbedWebPlugin::DetachInternal() {
   InitializeSurfaceLayer();
   SetFrameSinkId(viz::FrameSinkId());
   container_->ScheduleAnimation();
 }
 
-void SecureEmbedWebPlugin::RequestFocus(mojom::FocusOperation focus_op) {
+void SurfaceEmbedWebPlugin::RequestFocus(mojom::FocusOperation focus_op) {
   if (container_) {
     container_->GetElement().Focus();
     auto* frame = container_->GetDocument().GetFrame();
@@ -411,7 +411,7 @@ void SecureEmbedWebPlugin::RequestFocus(mojom::FocusOperation focus_op) {
 }
 
 scoped_refptr<cc::DisplayItemList>
-SecureEmbedWebPlugin::PaintContentsToDisplayList() {
+SurfaceEmbedWebPlugin::PaintContentsToDisplayList() {
   blink::WebFrameWidget* ancestor_widget =
       container_->GetDocument().GetFrame()->LocalRoot()->FrameWidget();
   auto device_scale_factor =
@@ -456,8 +456,8 @@ SecureEmbedWebPlugin::PaintContentsToDisplayList() {
   return display_list;
 }
 
-bool SecureEmbedWebPlugin::FillsBoundsCompletely() const {
+bool SurfaceEmbedWebPlugin::FillsBoundsCompletely() const {
   return true;
 }
 
-}  // namespace secure_embed
+}  // namespace surface_embed

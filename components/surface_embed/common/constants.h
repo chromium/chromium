@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_SURFACE_EMBED_COMMON_CONSTANTS_H_
 #define COMPONENTS_SURFACE_EMBED_COMMON_CONSTANTS_H_
 
-namespace secure_embed {
+namespace surface_embed {
 
 // MIME type of the internal secure-embed plugin.
 inline constexpr char kInternalPluginMimeType[] =
     "application/x-google-chrome-secure-embed";
 
-}  // namespace secure_embed
+}  // namespace surface_embed
 
 #endif  // COMPONENTS_SURFACE_EMBED_COMMON_CONSTANTS_H_

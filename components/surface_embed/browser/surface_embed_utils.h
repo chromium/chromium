@@ -11,11 +11,11 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace secure_embed {
+namespace surface_embed {
 
 COMPONENT_EXPORT(SECURE_EMBED)
-bool IsSecureEmbedGuestWebContents(content::WebContents* web_contents);
+bool IsSurfaceEmbedGuestWebContents(content::WebContents* web_contents);
 
-}  // namespace secure_embed
+}  // namespace surface_embed
 
 #endif  // COMPONENTS_SURFACE_BROWSER_SECURE_EMBED_UTILS_H_

@@ -21,27 +21,27 @@ class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
-namespace secure_embed {
+namespace surface_embed {
 
-class COMPONENT_EXPORT(SECURE_EMBED) SecureEmbedHost
-    : public mojom::SecureEmbedHost,
-      public content::SecureEmbedConnector::Delegate {
+class COMPONENT_EXPORT(SECURE_EMBED) SurfaceEmbedHost
+    : public mojom::SurfaceEmbedHost,
+      public content::SurfaceEmbedConnector::Delegate {
  public:
-  ~SecureEmbedHost() override;
+  ~SurfaceEmbedHost() override;
 
-  SecureEmbedHost(const SecureEmbedHost&) = delete;
-  SecureEmbedHost& operator=(const SecureEmbedHost&) = delete;
+  SurfaceEmbedHost(const SurfaceEmbedHost&) = delete;
+  SurfaceEmbedHost& operator=(const SurfaceEmbedHost&) = delete;
 
   static void Create(
       content::RenderFrameHost* render_frame_host,
-      mojo::PendingAssociatedReceiver<mojom::SecureEmbedHost> receiver);
+      mojo::PendingAssociatedReceiver<mojom::SurfaceEmbedHost> receiver);
 
   static size_t GetInstanceCountForTesting();
   static size_t GetAttachedInstanceCountForTesting();
 
-  // mojom::SecureEmbedHost implementation:
-  void SetSecureEmbed(
-      mojo::PendingAssociatedRemote<mojom::SecureEmbed> secure_embed) override;
+  // mojom::SurfaceEmbedHost implementation:
+  void SetSurfaceEmbed(mojo::PendingAssociatedRemote<mojom::SurfaceEmbed>
+                           surface_embed) override;
   void AttachConnector(int64_t content_id) override;
   void DetachConnector() override;
   void SynchronizeVisualProperties(
@@ -49,23 +49,23 @@ class COMPONENT_EXPORT(SECURE_EMBED) SecureEmbedHost
       bool is_visible) override;
   void SetFocus(bool focused, blink::mojom::FocusType focus_type) override;
 
-  // content::SecureEmbedConnector::Delegate implementation:
+  // content::SurfaceEmbedConnector::Delegate implementation:
   void SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) override;
   void UpdateLocalSurfaceIdFromChild(
       const ::viz::LocalSurfaceId& local_surface_id) override;
   void FocusInEmbedder(
-      content::SecureEmbedConnector::FocusOperation focus_op) override;
+      content::SurfaceEmbedConnector::FocusOperation focus_op) override;
   void ChildProcessGone() override;
   void DetachedByHost() override;
   bool IsAttachedForTesting() const override;
 
  private:
-  explicit SecureEmbedHost(content::RenderFrameHost*);
+  explicit SurfaceEmbedHost(content::RenderFrameHost*);
 
-  void OnSecureEmbedDisconnected();
+  void OnSurfaceEmbedDisconnected();
 
   // May return null.
-  content::SecureEmbedConnector* GetConnector();
+  content::SurfaceEmbedConnector* GetConnector();
 
   // Count of all alive instances for testing.
   static size_t instance_count_for_testing_;
@@ -76,9 +76,9 @@ class COMPONENT_EXPORT(SECURE_EMBED) SecureEmbedHost
   base::WeakPtr<content::WebContents> guest_contents_ = nullptr;
   bool know_have_focus_ = false;
 
-  mojo::AssociatedRemote<mojom::SecureEmbed> secure_embed_;
+  mojo::AssociatedRemote<mojom::SurfaceEmbed> surface_embed_;
 };
 
-}  // namespace secure_embed
+}  // namespace surface_embed
 
 #endif  // COMPONENTS_SURFACE_EMBED_BROWSER_SURFACE_EMBED_HOST_H_

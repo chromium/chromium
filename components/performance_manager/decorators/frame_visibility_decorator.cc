@@ -142,7 +142,7 @@ void FrameVisibilityDecorator::OnCurrentFrameChanged(
 
 void FrameVisibilityDecorator::OnViewportIntersectionChanged(
     const FrameNode* frame_node) {
-  if (!secure_embed::IsSecureEmbedGuestWebContents(
+  if (!surface_embed::IsSurfaceEmbedGuestWebContents(
           frame_node->GetPageNode()->GetWebContents().get())) {
     CHECK(frame_node->GetParentOrOuterDocumentOrEmbedder());
   }

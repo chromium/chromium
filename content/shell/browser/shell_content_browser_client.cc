@@ -687,13 +687,13 @@ void ShellContentBrowserClient::
         RenderFrameHost& render_frame_host,
         blink::AssociatedInterfaceRegistry& associated_registry) {
 #if BUILDFLAG(ENABLE_SECURE_EMBED)
-  associated_registry.AddInterface<secure_embed::mojom::SecureEmbedHost>(
+  associated_registry.AddInterface<surface_embed::mojom::SurfaceEmbedHost>(
       base::BindRepeating(
           [](content::RenderFrameHost* render_frame_host,
              mojo::PendingAssociatedReceiver<
-                 secure_embed::mojom::SecureEmbedHost> receiver) {
-            secure_embed::SecureEmbedHost::Create(render_frame_host,
-                                                  std::move(receiver));
+                 surface_embed::mojom::SurfaceEmbedHost> receiver) {
+            surface_embed::SurfaceEmbedHost::Create(render_frame_host,
+                                                    std::move(receiver));
           },
           &render_frame_host));
 #endif  // BUILDFLAG(ENABLE_SECURE_EMBED)

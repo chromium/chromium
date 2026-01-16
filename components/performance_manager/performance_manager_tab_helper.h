@@ -17,7 +17,6 @@
 #include "components/performance_manager/public/mojom/coordination_unit.mojom-forward.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_result.h"
-#include "content/public/browser/surface_embed_connector.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"

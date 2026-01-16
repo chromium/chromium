@@ -41,7 +41,7 @@ class RenderWidgetHostViewBase;
 class RenderWidgetHostViewChildFrame;
 
 // CrossProcessFrameConnectorBase allows CrossProcessFrameConnector and
-// SecureEmbedHost to share a common interface.
+// SurfaceEmbedConnectorImpl to share a common interface.
 //
 // CrossProcessFrameConnector provides the platform view abstraction for
 // RenderWidgetHostViewChildFrame allowing RWHVChildFrame to remain ignorant

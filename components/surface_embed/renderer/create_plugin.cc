@@ -9,16 +9,16 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 
-namespace secure_embed {
+namespace surface_embed {
 
 bool MaybeCreatePlugin(content::RenderFrame* render_frame,
                        const blink::WebPluginParams& params,
                        blink::WebPlugin** plugin) {
   if (params.mime_type == kInternalPluginMimeType) {
-    *plugin = SecureEmbedWebPlugin::Create(render_frame, params);
+    *plugin = SurfaceEmbedWebPlugin::Create(render_frame, params);
     return true;
   }
   return false;
 }
 
-}  // namespace secure_embed
+}  // namespace surface_embed

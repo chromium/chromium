@@ -427,7 +427,7 @@ void WebContentsFrameTracker::OnPossibleTargetChange() {
   //
   // We only want to do a mouse overlay if this not a background tab, so
   // we disregard the view if it is. This is only needed if multiple tabs
-  // share the same native view (which happens with SecureEmbed).
+  // share the same native view (which happens with SurfaceEmbed).
   SetTargetView(web_contents()->GetVisibility() != Visibility::HIDDEN
                     ? capture_target.view
                     : gfx::NativeView());

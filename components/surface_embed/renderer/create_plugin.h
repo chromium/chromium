@@ -16,14 +16,14 @@ namespace content {
 class RenderFrame;
 }  // namespace content
 
-namespace secure_embed {
+namespace surface_embed {
 
-// Returns true if a SecureEmbedWebPlugin is created.
+// Returns true if a SurfaceEmbedWebPlugin is created.
 COMPONENT_EXPORT(SECURE_EMBED)
 bool MaybeCreatePlugin(content::RenderFrame* render_frame,
                        const blink::WebPluginParams& params,
                        blink::WebPlugin** plugin);
 
-}  // namespace secure_embed
+}  // namespace surface_embed
 
 #endif  // COMPONENTS_SURFACE_EMBED_RENDERER_CREATE_PLUGIN_H_

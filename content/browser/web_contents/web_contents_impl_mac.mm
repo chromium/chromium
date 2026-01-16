@@ -12,7 +12,7 @@
 namespace content {
 
 void WebContentsImpl::Resize(const gfx::Rect& new_bounds) {
-  if (secure_embed_connector_) {
+  if (surface_embed_connector_) {
     return;
   }
   NSView* view = GetNativeView().GetNativeNSView();

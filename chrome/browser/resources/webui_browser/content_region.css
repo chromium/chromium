@@ -27,7 +27,7 @@ cr-tab-webview {
   width: 100%;
   height: 100%;
   /* We hide background tabs with visibility:hidden and not display:none
-   * so that a plugin --- and therefore a SecureEmbedConnector --- actually
+   * so that a plugin --- and therefore a SurfaceEmbedConnector --- actually
    * exist in case someone wants to capture them. Similarly, they're taken out
    * of flow with position: absolute and not just sized to 0x0 so they are sized
    * appropriately for capture. */

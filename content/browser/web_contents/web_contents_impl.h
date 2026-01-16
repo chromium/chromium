@@ -156,8 +156,8 @@ class SavePackage;
 class ScopedAccessibilityMode;
 class ScreenChangeMonitor;
 class ScreenOrientationProvider;
-class SecureEmbedConnector;
-class SecureEmbedConnectorImpl;
+class SurfaceEmbedConnector;
+class SurfaceEmbedConnectorImpl;
 class SiteInstanceGroup;
 // For web_contents_impl_browsertest.cc
 class TestWCDelegateForDialogsAndFullscreen;
@@ -387,7 +387,7 @@ class CONTENT_EXPORT WebContentsImpl
   // WebContents ------------------------------------------------------
   WebContentsDelegate* GetDelegate() final;
   void SetDelegate(WebContentsDelegate* delegate) override;
-  SecureEmbedConnector* GetSecureEmbedConnector() override;
+  SurfaceEmbedConnector* GetSurfaceEmbedConnector() override;
 
   NavigationControllerImpl& GetController() override;
   const NavigationControllerImpl& GetController() const override;
@@ -1618,9 +1618,9 @@ class CONTENT_EXPORT WebContentsImpl
   // PassKey requirements.
   GURL GetPartitionedPopinEmbedderOriginForTesting() const;
 
-  void SetSecureEmbedConnector(
-      std::unique_ptr<content::SecureEmbedConnectorImpl> connector);
-  void ClearSecureEmbedConnector();
+  void SetSurfaceEmbedConnector(
+      std::unique_ptr<content::SurfaceEmbedConnectorImpl> connector);
+  void ClearSurfaceEmbedConnector();
 
  private:
   using FrameTreeIterationCallback = base::FunctionRef<void(FrameTree&)>;
@@ -2292,8 +2292,8 @@ class CONTENT_EXPORT WebContentsImpl
   // NULL otherwise.
   std::unique_ptr<BrowserPluginGuest> browser_plugin_guest_;
 
-  // Helps manage being embeded with SecureEmbed.
-  std::unique_ptr<SecureEmbedConnectorImpl> secure_embed_connector_;
+  // Helps manage being embeded with SurfaceEmbed.
+  std::unique_ptr<SurfaceEmbedConnectorImpl> surface_embed_connector_;
 
   // Helper classes ------------------------------------------------------------
 

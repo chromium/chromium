@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module secure_embed.mojom;
+module surface_embed.mojom;
 
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
@@ -16,9 +16,9 @@ enum FocusOperation {
   kFocusAfterPlugin
 };
 
-// Implemented in Renderer by SecureEmbedWebPlugin.
-interface SecureEmbed {
-  // TODO(secure-embed): Implement allow_paint_holding.
+// Implemented in Renderer by SurfaceEmbedWebPlugin.
+interface SurfaceEmbed {
+  // TODO(surface-embed): Implement allow_paint_holding.
   SetFrameSinkId(viz.mojom.FrameSinkId frame_sink_id);
 
   // Called when the child frame initiates a LocalSurfaceId update.
@@ -37,11 +37,11 @@ interface SecureEmbed {
   DetachPlugin();
 };
 
-// Implemented by Browser. Available on RenderFrameHost.
-interface SecureEmbedHost {
-  // Sets the SecureEmbed interface for communication with the renderer. This
-  // must be called before other methods on SecureEmbedHost.
-  SetSecureEmbed(pending_associated_remote<SecureEmbed> secure_embed);
+// Implemented in Browser. Available on RenderFrameHost.
+interface SurfaceEmbedHost {
+  // Sets the SurfaceEmbed interface for communication with the renderer. This
+  // must be called before other methods on SurfaceEmbedHost.
+  SetSurfaceEmbed(pending_associated_remote<SurfaceEmbed> surface_embed);
 
   // Attaches the guest content identified by `content_id` (a
   // GuestContentsHandle) to the host.

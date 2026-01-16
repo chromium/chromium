@@ -44,7 +44,7 @@ bool ContentRendererClient::OverrideCreatePlugin(
     content::RenderFrame* render_frame,
     const blink::WebPluginParams& params,
     blink::WebPlugin** plugin) {
-  if (secure_embed::MaybeCreatePlugin(render_frame, params, plugin)) {
+  if (surface_embed::MaybeCreatePlugin(render_frame, params, plugin)) {
     return true;
   }
   return false;

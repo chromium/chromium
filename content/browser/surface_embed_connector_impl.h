@@ -40,14 +40,14 @@ class WebContentsView;
 class RenderViewHostDelegateView;
 class RenderWidgetHost;
 
-class SecureEmbedConnectorImpl : public SecureEmbedConnector,
-                                 public CrossProcessFrameConnectorBase {
+class SurfaceEmbedConnectorImpl : public SurfaceEmbedConnector,
+                                  public CrossProcessFrameConnectorBase {
  public:
   // `embedded_web_contents` will have ownership of this.
-  SecureEmbedConnectorImpl(WebContentsImpl* embedder_web_contents,
-                           WebContentsImpl* embedded_web_contents,
-                           SecureEmbedConnector::Delegate* delegate);
-  ~SecureEmbedConnectorImpl() override;
+  SurfaceEmbedConnectorImpl(WebContentsImpl* embedder_web_contents,
+                            WebContentsImpl* embedded_web_contents,
+                            SurfaceEmbedConnector::Delegate* delegate);
+  ~SurfaceEmbedConnectorImpl() override;
 
   WebContentsView* GetEmbedderWebContentsView();
   RenderViewHostDelegateView* GetEmbedderRenderViewHostDelegateView();
@@ -70,12 +70,12 @@ class SecureEmbedConnectorImpl : public SecureEmbedConnector,
   void SetFocusedFrameTree(FrameTree* frame_tree_to_focus);
   void ClearFocusOnInnerWebContents();
 
-  // SecureEmbedConnector:
-  SecureEmbedConnector::Delegate* GetDelegate() override;
+  // SurfaceEmbedConnector:
+  SurfaceEmbedConnector::Delegate* GetDelegate() override;
 
   // CrossProcessFrameConnectorBase:
-  // TODO(secure-embed): Some of the methods that we override here don't need to
-  // be on CrossProcessFrameConnectorBase class at all. Go through them and
+  // TODO(surface-embed): Some of the methods that we override here don't need
+  // to be on CrossProcessFrameConnectorBase class at all. Go through them and
   // remove anything that isn't directly used by the view from the base class.
   void OnSynchronizeVisualProperties(
       const blink::FrameVisualProperties& visual_properties) override;
@@ -176,7 +176,7 @@ class SecureEmbedConnectorImpl : public SecureEmbedConnector,
   RenderFrameHostImpl* current_child_frame_host() const;
 
   std::unique_ptr<WCObserver> observer_;
-  raw_ptr<SecureEmbedConnector::Delegate> delegate_ = nullptr;
+  raw_ptr<SurfaceEmbedConnector::Delegate> delegate_ = nullptr;
 
   base::WeakPtr<WebContents> embedder_web_contents_;
   raw_ptr<WebContentsImpl> guest_web_contents_ = nullptr;  // Owns us.
@@ -205,18 +205,18 @@ class SecureEmbedConnectorImpl : public SecureEmbedConnector,
   // Represents CSS zoom applied to the embedding element in the parent.
   double last_received_css_zoom_factor_ = 1.0;
 
-  // Visibility state of the corresponding secureembed element in parent process
-  // which is set through CSS or scrolling.
+  // Visibility state of the corresponding surface embed element in parent
+  // process which is set through CSS or scrolling.
   blink::mojom::FrameVisibility visibility_ =
       blink::mojom::FrameVisibility::kRenderedInViewport;
 
   // The last received FrameSinkId from the guest WebContents's view.
   viz::FrameSinkId frame_sink_id_;
 
-  // The last received LocalSurfaceId from the SecureEmbed.
+  // The last received LocalSurfaceId from the SurfaceEmbed.
   viz::LocalSurfaceId local_surface_id_;
 
-  // TODO(secure-embed): Not implemented fully yet.
+  // TODO(surface-embed): Not implemented fully yet.
   uint32_t capture_sequence_number_ = 0u;
 
   cc::TouchAction inherited_effective_touch_action_ = cc::TouchAction::kAuto;

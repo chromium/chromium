@@ -26,7 +26,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace secure_embed {
+namespace surface_embed {
 
 namespace {
 constexpr char kAttachHarnessUrl[] =
@@ -36,7 +36,7 @@ constexpr char kBlueBoxUrl[] = "/surface_embed/blue_box.html";
 constexpr char kEmptyUrl[] = "/surface_embed/empty.html";
 }  // namespace
 
-class SecureEmbedBrowserTest : public content::ContentBrowserTest {
+class SurfaceEmbedBrowserTest : public content::ContentBrowserTest {
  public:
   // RAII helper for monitoring data-content-id attribute changes.
   class ScopedDataContentIdMonitor {
@@ -111,18 +111,18 @@ class SecureEmbedBrowserTest : public content::ContentBrowserTest {
 
   bool WaitForHostCreation() {
     // Host creation is asynchronous because it requires mojo IPC between
-    // the renderer process (SecureEmbedWebPlugin) and browser process
-    // (SecureEmbedHost). Poll until the expected number of hosts are created.
+    // the renderer process (SurfaceEmbedWebPlugin) and browser process
+    // (SurfaceEmbedHost). Poll until the expected number of hosts are created.
     return base::test::RunUntil(
-        [&]() { return SecureEmbedHost::GetInstanceCountForTesting() >= 1; });
+        [&]() { return SurfaceEmbedHost::GetInstanceCountForTesting() >= 1; });
   }
 
   bool WaitForHostAttachment(size_t expected_count) {
     // After host creation, the attachment happens asychronously when
-    // SecureEmbedHost::AttachConnector() is called. Poll until the expected
+    // SurfaceEmbedHost::AttachConnector() is called. Poll until the expected
     // number of hosts are attached.
     return base::test::RunUntil([&]() {
-      return SecureEmbedHost::GetAttachedInstanceCountForTesting() >=
+      return SurfaceEmbedHost::GetAttachedInstanceCountForTesting() >=
              expected_count;
     });
   }
@@ -210,7 +210,7 @@ class SecureEmbedBrowserTest : public content::ContentBrowserTest {
     ASSERT_TRUE(content::WaitForLoadStop(guest_contents));
   }
 
-  // Attach a guest to an embed element and wait for SecureEmbedHost creation.
+  // Attach a guest to an embed element and wait for SurfaceEmbedHost creation.
   void AttachGuestToEmbed(content::WebContents* guest_contents) {
     AttachGuestToEmbedWithId(guest_contents, std::nullopt);
   }
@@ -230,7 +230,7 @@ class SecureEmbedBrowserTest : public content::ContentBrowserTest {
     script += ");";
     ASSERT_TRUE(content::ExecJs(web_contents(), script));
     ASSERT_TRUE(WaitForHostAttachment(1));
-    EXPECT_NE(guest_contents->GetSecureEmbedConnector(), nullptr);
+    EXPECT_NE(guest_contents->GetSurfaceEmbedConnector(), nullptr);
   }
 
   // Get the guest handle for the provided guest WebContents.
@@ -276,7 +276,7 @@ class SecureEmbedBrowserTest : public content::ContentBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest,
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
                        PluginRendersRedSquare_AttachBeforeLoad) {
   NavigateToAttachHarness();
   auto guest_contents = CreateGuestWebContents();
@@ -290,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest,
   VerifyBoxRendering(SK_ColorRED);
 }
 
-IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest,
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
                        PluginRendersRedSquare_AttachAfterLoad) {
   // Load content before attaching.
   auto guest_contents = SetupHarnessAndGuestWithContent(kRedBoxUrl);
@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest,
   VerifyBoxRendering(SK_ColorRED);
 }
 
-IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, Crash) {
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, Crash) {
   auto guest_contents = SetupHarnessAndGuestWithContent(kRedBoxUrl);
   AttachGuestToEmbed(guest_contents.get());
 
@@ -325,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, Crash) {
   EXPECT_TRUE(VerifyPixelColors(rwhv, capture_rect, expected_colors));
 }
 
-IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest,
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
                        PluginRendersRedSquare_MultipleAttachCalls) {
   NavigateToAttachHarness();
 
@@ -350,17 +350,18 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest,
       "setDataContentId(" + base::NumberToString(guest_id_blue) + ");";
   ASSERT_TRUE(content::ExecJs(web_contents(), script_blue));
   VerifyBoxRendering(SK_ColorBLUE);
-  EXPECT_EQ(guest_contents_red->GetSecureEmbedConnector(), nullptr);
+  EXPECT_EQ(guest_contents_red->GetSurfaceEmbedConnector(), nullptr);
 
   // Swap back to red guest.
   std::string script_red_again =
       "setDataContentId(" + base::NumberToString(guest_id_red) + ");";
   ASSERT_TRUE(content::ExecJs(web_contents(), script_red_again));
   VerifyBoxRendering(SK_ColorRED);
-  EXPECT_EQ(guest_contents_blue->GetSecureEmbedConnector(), nullptr);
+  EXPECT_EQ(guest_contents_blue->GetSurfaceEmbedConnector(), nullptr);
 }
 
-IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, VisibilityHiddenStopsRendering) {
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
+                       VisibilityHiddenStopsRendering) {
   auto guest_contents = SetupHarnessAndGuestWithContent(kRedBoxUrl);
   AttachGuestToEmbed(guest_contents.get());
   VerifyBoxRendering(SK_ColorRED);
@@ -378,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, VisibilityHiddenStopsRendering) {
   VerifyBoxRendering(SK_ColorRED);
 }
 
-IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, DisplayNoneStopsRendering) {
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, DisplayNoneStopsRendering) {
   auto guest_contents = SetupHarnessAndGuestWithContent(kRedBoxUrl);
   AttachGuestToEmbed(guest_contents.get());
   VerifyBoxRendering(SK_ColorRED);
@@ -396,9 +397,9 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, DisplayNoneStopsRendering) {
   VerifyBoxRendering(SK_ColorRED);
 }
 
-// TODO(secure-embed): This test fails right now because attribute changes do
+// TODO(surface-embed): This test fails right now because attribute changes do
 // not trigger re-attaches.
-IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, VisibilityHiddenSwapGuest) {
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, VisibilityHiddenSwapGuest) {
   NavigateToAttachHarness();
 
   // Create and load both guests.
@@ -435,7 +436,7 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, VisibilityHiddenSwapGuest) {
   VerifyBoxRendering(SK_ColorBLUE);
 }
 
-IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, DisplayNoneSwapGuest) {
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, DisplayNoneSwapGuest) {
   NavigateToAttachHarness();
 
   // Create and load both guests.
@@ -474,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, DisplayNoneSwapGuest) {
 
 // Create 2 <embed>s that use the same content id. The 2nd <embed> should show
 // and the 1st <embed> should be blank.
-IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, TwoEmbedSameContentId) {
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, TwoEmbedSameContentId) {
   NavigateToAttachHarness();
 
   // Create and load both guests.
@@ -487,7 +488,7 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, TwoEmbedSameContentId) {
   VerifyBoxRendering(SK_ColorRED);
 
   // Cache the first host's delegate pointer before forced detachment.
-  auto* connector = guest_contents_red->GetSecureEmbedConnector();
+  auto* connector = guest_contents_red->GetSurfaceEmbedConnector();
   ASSERT_NE(connector, nullptr);
   auto* first_host_delegate = connector->GetDelegate();
   ASSERT_NE(first_host_delegate, nullptr);
@@ -507,7 +508,7 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, TwoEmbedSameContentId) {
   // The first host should no longer think it's attached due to the forced
   // detachment by being attached to the 2nd <embed>.
   EXPECT_FALSE(first_host_delegate->IsAttachedForTesting());
-  auto* second_connector = guest_contents_red->GetSecureEmbedConnector();
+  auto* second_connector = guest_contents_red->GetSurfaceEmbedConnector();
   ASSERT_NE(second_connector, nullptr);
   EXPECT_TRUE(second_connector->GetDelegate()->IsAttachedForTesting());
 
@@ -523,7 +524,7 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, TwoEmbedSameContentId) {
                   .ExtractString() == "0");
 }
 
-IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, ReattachSameGuestToNewEmbed) {
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, ReattachSameGuestToNewEmbed) {
   auto guest_contents = SetupHarnessAndGuestWithContent(kRedBoxUrl);
   int guest_id = GetGuestHandleId(guest_contents.get());
 
@@ -550,7 +551,7 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, ReattachSameGuestToNewEmbed) {
 //  query TextInputManager's selection state to potentially update the
 //  clipboard; this test exercises a similar code path via
 //  BoundingBoxUpdateWaiter querying the selection's bounding box).
-IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, TextInputManager) {
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, TextInputManager) {
   auto guest_contents = SetupHarnessAndGuestWithContent(kRedBoxUrl);
   AttachGuestToEmbed(guest_contents.get());
   content::TextInputManagerTester input_tester(web_contents());
@@ -591,7 +592,7 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, TextInputManager) {
 
 #endif
 
-IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, Detach) {
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, Detach) {
   auto guest_contents = SetupHarnessAndGuestWithContent(kRedBoxUrl);
   AttachGuestToEmbed(guest_contents.get());
 
@@ -600,7 +601,7 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, Detach) {
   // Change the data-content-id attribute to 0 to trigger a detach.
   std::string script_cause_detach = "setDataContentId(0);";
   ASSERT_TRUE(content::ExecJs(web_contents(), script_cause_detach));
-  EXPECT_EQ(guest_contents->GetSecureEmbedConnector(), nullptr);
+  EXPECT_EQ(guest_contents->GetSurfaceEmbedConnector(), nullptr);
   VerifyBoxRendering(SK_ColorWHITE);
 
   // Re-attach the same guest.
@@ -609,10 +610,10 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, Detach) {
       "setDataContentId(" + base::NumberToString(guest_id) + ");";
   ASSERT_TRUE(content::ExecJs(web_contents(), script_reattach));
   VerifyBoxRendering(SK_ColorRED);
-  EXPECT_NE(guest_contents->GetSecureEmbedConnector(), nullptr);
+  EXPECT_NE(guest_contents->GetSurfaceEmbedConnector(), nullptr);
 }
 
-IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, GuestWithCrossSiteIframe) {
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, GuestWithCrossSiteIframe) {
   // If a OOPIF is present in the guest and sets up its TextInputManager before
   // the embed is attached, we used to hit a DCHECK failure while attaching as
   // all of the views that are part of the guest's frame tree must share the
@@ -642,7 +643,7 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, GuestWithCrossSiteIframe) {
   VerifyBoxRendering(SK_ColorRED);
 }
 
-IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest,
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
                        DetachAndReattachGuestWithCrossSiteIframe) {
   // If a OOPIF is present in the guest and sets up its TextInputManager before
   // the embed is attached, we used to hit a DCHECK failure while attaching as
@@ -676,7 +677,7 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest,
   // Change the data-content-id attribute to 0 to trigger a detach.
   std::string script_cause_detach = "setDataContentId(0);";
   ASSERT_TRUE(content::ExecJs(web_contents(), script_cause_detach));
-  EXPECT_EQ(guest_contents->GetSecureEmbedConnector(), nullptr);
+  EXPECT_EQ(guest_contents->GetSurfaceEmbedConnector(), nullptr);
   VerifyBoxRendering(SK_ColorWHITE);
 
   // Reattach the same guest.
@@ -687,7 +688,7 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest,
   VerifyBoxRendering(SK_ColorRED);
 }
 
-IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, InvalidContentIdNegative) {
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, InvalidContentIdNegative) {
   // Test that specifying an invalid (negative) content_id creates a host but
   // doesn't attach any guest, resulting in white rendering.
   NavigateToAttachHarness();
@@ -698,12 +699,12 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, InvalidContentIdNegative) {
   // Host should be created even with invalid content_id but no attach should
   // happen.
   ASSERT_TRUE(WaitForHostCreation());
-  EXPECT_EQ(1u, SecureEmbedHost::GetInstanceCountForTesting());
-  EXPECT_EQ(0u, SecureEmbedHost::GetAttachedInstanceCountForTesting());
+  EXPECT_EQ(1u, SurfaceEmbedHost::GetInstanceCountForTesting());
+  EXPECT_EQ(0u, SurfaceEmbedHost::GetAttachedInstanceCountForTesting());
   VerifyBoxRendering(SK_ColorWHITE);
 }
 
-IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest,
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
                        AttachValidGuestThenUpdateToNegativeContentId) {
   // Test that attaching a valid guest shows its content, but updating to a
   // negative content_id detaches and results in white rendering.
@@ -711,18 +712,18 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest,
   AttachGuestToEmbed(guest_contents.get());
 
   VerifyBoxRendering(SK_ColorRED);
-  EXPECT_NE(guest_contents->GetSecureEmbedConnector(), nullptr);
+  EXPECT_NE(guest_contents->GetSurfaceEmbedConnector(), nullptr);
 
   // Update the data-content-id to a negative number to trigger detachment.
   std::string script_detach = "setDataContentId(-5);";
   ASSERT_TRUE(content::ExecJs(web_contents(), script_detach));
 
   VerifyBoxRendering(SK_ColorWHITE);
-  EXPECT_EQ(guest_contents->GetSecureEmbedConnector(), nullptr);
+  EXPECT_EQ(guest_contents->GetSurfaceEmbedConnector(), nullptr);
 }
 
 // Tests that calling focus() on an <embed> makes the guest WebContents focused.
-IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, FocusByJS) {
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, FocusByJS) {
   auto guest_contents = SetupHarnessAndGuestWithContent(kRedBoxUrl);
   AttachGuestToEmbed(guest_contents.get());
 
@@ -765,7 +766,7 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, FocusByJS) {
 //     </embed>
 //   <button id='embedder_btn_2' />
 // </html>
-IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, FocusByTabTraversal) {
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, FocusByTabTraversal) {
   NavigateToAttachHarness();
   auto guest_contents = CreateGuestWebContents();
   NavigateGuestToUrl(guest_contents.get(), kEmptyUrl);
@@ -882,7 +883,7 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, FocusByTabTraversal) {
 // The test enumerates all combinations of (starting_input, target_input). The
 // focus is verified by checking the input's value after sending keyboard
 // events.
-IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, FocusByClick) {
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, FocusByClick) {
   NavigateToAttachHarness();
   auto guest_contents = CreateGuestWebContents();
   NavigateGuestToUrl(guest_contents.get(), kEmptyUrl);
@@ -1035,4 +1036,4 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, FocusByClick) {
   }
 }
 
-}  // namespace secure_embed
+}  // namespace surface_embed

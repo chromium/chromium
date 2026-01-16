@@ -23,9 +23,11 @@ namespace content {
 class RenderFrameHost;
 class WebContents;
 
-// This is created and owned by WebContents when it's created with
-// `secure_embed_embedder` in its CreateParams.
-class CONTENT_EXPORT SecureEmbedConnector {
+// This permits an embedder to host one WebContents within another;
+// without them being involved in usual frame hierarchy. The user of this API
+// is responsible for forwarding a lot of neccessary information around; see
+// components/surface_embed for one way of doing it.
+class CONTENT_EXPORT SurfaceEmbedConnector {
  public:
   enum class FocusOperation {
     kFocusPlugin,
@@ -48,7 +50,7 @@ class CONTENT_EXPORT SecureEmbedConnector {
     virtual void ChildProcessGone() = 0;
 
     // Called when the connector is being detached at the host's request instead
-    // of the SecureEmbed's request.
+    // of the SurfaceEmbed's request.
     virtual void DetachedByHost() = 0;
 
     // Returns whether this delegate's host still has an attached guest.
@@ -56,16 +58,16 @@ class CONTENT_EXPORT SecureEmbedConnector {
   };
 
   // Attach a WebContents to a parent WebContents. This creates a
-  // SecureEmbedConnector owned by the child WebContents.
+  // SurfaceEmbedConnector owned by the child WebContents.
   static void Attach(WebContents* parent_web_contents,
                      WebContents* child_web_contents,
-                     SecureEmbedConnector::Delegate* delegate);
+                     SurfaceEmbedConnector::Delegate* delegate);
 
-  // Detach the SecureEmbedConnector from the child WebContents. This destroys
-  // the SecureEmbedConnector owned by the child WebContents.
+  // Detach the SurfaceEmbedConnector from the child WebContents. This destroys
+  // the SurfaceEmbedConnector owned by the child WebContents.
   static void Detach(WebContents* child_web_contents);
 
-  virtual ~SecureEmbedConnector() = default;
+  virtual ~SurfaceEmbedConnector() = default;
 
   virtual Delegate* GetDelegate() = 0;
 

@@ -366,7 +366,7 @@ bool ShellContentRendererClient::OverrideCreatePlugin(
     const blink::WebPluginParams& params,
     blink::WebPlugin** plugin) {
 #if BUILDFLAG(ENABLE_SECURE_EMBED)
-  if (secure_embed::MaybeCreatePlugin(render_frame, params, plugin)) {
+  if (surface_embed::MaybeCreatePlugin(render_frame, params, plugin)) {
     return true;
   }
 #endif  // BUILDFLAG(ENABLE_SECURE_EMBED)

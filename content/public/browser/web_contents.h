@@ -132,8 +132,8 @@ class RenderViewHost;
 class RenderWidgetHost;
 class RenderWidgetHostView;
 class ScreenOrientationDelegate;
-class SecureEmbedConnector;
 class SiteInstance;
+class SurfaceEmbedConnector;
 class UnownedInnerWebContentsClient;
 class WebContentsDelegate;
 class WebUI;
@@ -439,7 +439,7 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   virtual WebContentsDelegate* GetDelegate() = 0;
   virtual void SetDelegate(WebContentsDelegate* delegate) = 0;
 
-  virtual SecureEmbedConnector* GetSecureEmbedConnector() = 0;
+  virtual SurfaceEmbedConnector* GetSurfaceEmbedConnector() = 0;
 
   // Gets the NavigationController for primary frame tree of this WebContents.
   // See comments on NavigationController for more details.

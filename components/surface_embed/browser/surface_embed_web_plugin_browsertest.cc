@@ -23,7 +23,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 
-namespace secure_embed {
+namespace surface_embed {
 
 namespace {
 
@@ -33,26 +33,26 @@ constexpr char kMultipleEmbedsUrl[] = "/surface_embed/multiple_embeds.html";
 constexpr size_t kSingleEmbedCount = 1;
 constexpr size_t kMultipleEmbedCount = 3;
 
-class MockSecureEmbedHost;
+class MockSurfaceEmbedHost;
 
-// Helper class for tracking MockSecureEmbedHost instances.
-class SecureEmbedHostTracker {
+// Helper class for tracking MockSurfaceEmbedHost instances.
+class SurfaceEmbedHostTracker {
  public:
-  SecureEmbedHostTracker() = default;
+  SurfaceEmbedHostTracker() = default;
 
-  SecureEmbedHostTracker(const SecureEmbedHostTracker&) = delete;
-  SecureEmbedHostTracker& operator=(const SecureEmbedHostTracker&) = delete;
+  SurfaceEmbedHostTracker(const SurfaceEmbedHostTracker&) = delete;
+  SurfaceEmbedHostTracker& operator=(const SurfaceEmbedHostTracker&) = delete;
 
-  ~SecureEmbedHostTracker() = default;
+  ~SurfaceEmbedHostTracker() = default;
 
-  void AddMockHost(MockSecureEmbedHost* host) {
+  void AddMockHost(MockSurfaceEmbedHost* host) {
     mock_hosts_.push_back(host);
     if (host_added_callback_) {
       std::move(host_added_callback_).Run();
     }
   }
 
-  void RemoveMockHost(MockSecureEmbedHost* host) {
+  void RemoveMockHost(MockSurfaceEmbedHost* host) {
     auto it = std::find(mock_hosts_.begin(), mock_hosts_.end(), host);
     CHECK(it != mock_hosts_.end());
     mock_hosts_.erase(it);
@@ -63,11 +63,11 @@ class SecureEmbedHostTracker {
     host_added_callback_ = std::move(callback);
   }
 
-  const std::vector<MockSecureEmbedHost*>& mock_hosts() const {
+  const std::vector<MockSurfaceEmbedHost*>& mock_hosts() const {
     return mock_hosts_;
   }
 
-  MockSecureEmbedHost* GetMockHost(size_t index) const {
+  MockSurfaceEmbedHost* GetMockHost(size_t index) const {
     if (index < mock_hosts_.size()) {
       return mock_hosts_[index];
     }
@@ -77,18 +77,18 @@ class SecureEmbedHostTracker {
   size_t GetMockHostCount() const { return mock_hosts_.size(); }
 
  private:
-  std::vector<MockSecureEmbedHost*> mock_hosts_;
+  std::vector<MockSurfaceEmbedHost*> mock_hosts_;
   base::OnceClosure host_added_callback_;
 };
 
-class MockSecureEmbedHost : public mojom::SecureEmbedHost {
+class MockSurfaceEmbedHost : public mojom::SurfaceEmbedHost {
  public:
-  explicit MockSecureEmbedHost(SecureEmbedHostTracker* tracker)
+  explicit MockSurfaceEmbedHost(SurfaceEmbedHostTracker* tracker)
       : tracker_(tracker) {
     tracker_->AddMockHost(this);
   }
 
-  ~MockSecureEmbedHost() override {
+  ~MockSurfaceEmbedHost() override {
     // Manually calling the disconnect callback in the d'tor. This is
     // effectively the same as calling it from connection_error_handler since
     // this object is kept alive via SelfOwnedAssociatedReceiver which detects
@@ -99,24 +99,24 @@ class MockSecureEmbedHost : public mojom::SecureEmbedHost {
     tracker_->RemoveMockHost(this);
   }
 
-  // mojom::SecureEmbedHost implementation
-  void SetSecureEmbed(
-      mojo::PendingAssociatedRemote<mojom::SecureEmbed> secure_embed) override {
-    secure_embed_.Bind(std::move(secure_embed));
-    secure_embed_.set_disconnect_handler(
-        base::BindOnce(&MockSecureEmbedHost::OnSecureEmbedDisconnected,
+  // mojom::SurfaceEmbedHost implementation
+  void SetSurfaceEmbed(mojo::PendingAssociatedRemote<mojom::SurfaceEmbed>
+                           surface_embed) override {
+    surface_embed_.Bind(std::move(surface_embed));
+    surface_embed_.set_disconnect_handler(
+        base::BindOnce(&MockSurfaceEmbedHost::OnSurfaceEmbedDisconnected,
                        base::Unretained(this)));
   }
 
   void AttachConnector(int64_t content_id) override {
-    CHECK(secure_embed_);
+    CHECK(surface_embed_);
     attach_call_count_++;
     last_content_id_ = content_id;
   }
 
   void DetachConnector() override {
     detach_call_count_++;
-    // TODO(secure-embed): Create a constant for invalid content ID.
+    // TODO(surface-embed): Create a constant for invalid content ID.
     last_content_id_ = 0;
   }
 
@@ -126,7 +126,7 @@ class MockSecureEmbedHost : public mojom::SecureEmbedHost {
 
   void SetFocus(bool focused, blink::mojom::FocusType focus_type) override {}
 
-  void OnSecureEmbedDisconnected() { secure_embed_.reset(); }
+  void OnSurfaceEmbedDisconnected() { surface_embed_.reset(); }
 
   void SetDisconnectCallback(base::OnceClosure callback) {
     disconnect_callback_ = std::move(callback);
@@ -137,46 +137,47 @@ class MockSecureEmbedHost : public mojom::SecureEmbedHost {
   int64_t last_content_id() const { return last_content_id_; }
 
  private:
-  raw_ptr<SecureEmbedHostTracker> tracker_;
+  raw_ptr<SurfaceEmbedHostTracker> tracker_;
   int attach_call_count_ = 0;
   int detach_call_count_ = 0;
   int64_t last_content_id_ = -1;
   base::OnceClosure disconnect_callback_;
-  mojo::AssociatedRemote<mojom::SecureEmbed> secure_embed_;
+  mojo::AssociatedRemote<mojom::SurfaceEmbed> surface_embed_;
 };
 
-class SecureEmbedTestContentBrowserClient
+class SurfaceEmbedTestContentBrowserClient
     : public content::ContentBrowserTestContentBrowserClient {
  public:
-  explicit SecureEmbedTestContentBrowserClient(SecureEmbedHostTracker* tracker)
+  explicit SurfaceEmbedTestContentBrowserClient(
+      SurfaceEmbedHostTracker* tracker)
       : tracker_(tracker) {}
-  ~SecureEmbedTestContentBrowserClient() override = default;
+  ~SurfaceEmbedTestContentBrowserClient() override = default;
 
   void RegisterAssociatedInterfaceBindersForRenderFrameHost(
       content::RenderFrameHost& render_frame_host,
       blink::AssociatedInterfaceRegistry& associated_registry) override {
-    associated_registry.AddInterface<mojom::SecureEmbedHost>(
+    associated_registry.AddInterface<mojom::SurfaceEmbedHost>(
         base::BindRepeating(
-            [](SecureEmbedHostTracker* tracker,
+            [](SurfaceEmbedHostTracker* tracker,
                content::RenderFrameHost* render_frame_host,
-               mojo::PendingAssociatedReceiver<mojom::SecureEmbedHost>
+               mojo::PendingAssociatedReceiver<mojom::SurfaceEmbedHost>
                    receiver) {
               mojo::MakeSelfOwnedAssociatedReceiver(
-                  std::make_unique<MockSecureEmbedHost>(tracker),
+                  std::make_unique<MockSurfaceEmbedHost>(tracker),
                   std::move(receiver));
             },
             base::Unretained(tracker_), &render_frame_host));
   }
 
  private:
-  raw_ptr<SecureEmbedHostTracker> tracker_;
+  raw_ptr<SurfaceEmbedHostTracker> tracker_;
 };
 
 }  // namespace
 
-class SecureEmbedRendererTest : public content::ContentBrowserTest {
+class SurfaceEmbedRendererTest : public content::ContentBrowserTest {
  public:
-  SecureEmbedRendererTest() = default;
+  SurfaceEmbedRendererTest() = default;
 
   void SetUpOnMainThread() override {
     content::ContentBrowserTest::SetUpOnMainThread();
@@ -190,7 +191,7 @@ class SecureEmbedRendererTest : public content::ContentBrowserTest {
       content::BrowserMainParts* browser_main_parts) override {
     content::ContentBrowserTest::CreatedBrowserMainParts(browser_main_parts);
     test_browser_client_ =
-        std::make_unique<SecureEmbedTestContentBrowserClient>(&tracker_);
+        std::make_unique<SurfaceEmbedTestContentBrowserClient>(&tracker_);
   }
 
   content::WebContents* web_contents() { return shell()->web_contents(); }
@@ -205,12 +206,12 @@ class SecureEmbedRendererTest : public content::ContentBrowserTest {
         .ExtractInt();
   }
 
-  bool WaitForAttachCall(MockSecureEmbedHost* host) {
+  bool WaitForAttachCall(MockSurfaceEmbedHost* host) {
     return base::test::RunUntil(
         [host]() { return host->attach_call_count() > 0; });
   }
 
-  bool WaitForDetachCall(MockSecureEmbedHost* host) {
+  bool WaitForDetachCall(MockSurfaceEmbedHost* host) {
     return base::test::RunUntil(
         [host]() { return host->detach_call_count() > 0; });
   }
@@ -224,24 +225,24 @@ class SecureEmbedRendererTest : public content::ContentBrowserTest {
     run_loop.Run();
   }
 
-  MockSecureEmbedHost* GetMockHost(size_t index) {
+  MockSurfaceEmbedHost* GetMockHost(size_t index) {
     return tracker_.GetMockHost(index);
   }
 
   size_t GetMockHostCount() const { return tracker_.GetMockHostCount(); }
 
  protected:
-  SecureEmbedHostTracker tracker_;
-  std::unique_ptr<SecureEmbedTestContentBrowserClient> test_browser_client_;
+  SurfaceEmbedHostTracker tracker_;
+  std::unique_ptr<SurfaceEmbedTestContentBrowserClient> test_browser_client_;
 };
 
-IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest, EmbedTagCreatesPlugin) {
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedRendererTest, EmbedTagCreatesPlugin) {
   NavigateToTestUrl(kTestUrl);
 
   EXPECT_EQ(kSingleEmbedCount, CountEmbedElementsInPage());
   ASSERT_EQ(kSingleEmbedCount, GetMockHostCount());
 
-  MockSecureEmbedHost* host = GetMockHost(0);
+  MockSurfaceEmbedHost* host = GetMockHost(0);
   ASSERT_NE(nullptr, host);
 
   ASSERT_TRUE(WaitForAttachCall(host));
@@ -250,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest, EmbedTagCreatesPlugin) {
   EXPECT_EQ(1, host->last_content_id());
 }
 
-IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest, MultipleEmbedTags) {
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedRendererTest, MultipleEmbedTags) {
   NavigateToTestUrl(kMultipleEmbedsUrl);
 
   ASSERT_EQ(kMultipleEmbedCount, CountEmbedElementsInPage());
@@ -261,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest, MultipleEmbedTags) {
   // (order is not deterministic).
   std::set<int64_t> content_ids;
   for (size_t i = 0; i < kMultipleEmbedCount; i++) {
-    MockSecureEmbedHost* host = GetMockHost(i);
+    MockSurfaceEmbedHost* host = GetMockHost(i);
     ASSERT_NE(nullptr, host);
     ASSERT_TRUE(WaitForAttachCall(host));
     ASSERT_EQ(1, host->attach_call_count());
@@ -271,14 +272,14 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest, MultipleEmbedTags) {
   EXPECT_EQ(std::set<int64_t>({1, 2, 3}), content_ids);
 }
 
-IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest, PluginDestruction) {
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedRendererTest, PluginDestruction) {
   // Verifies that navigating away from a page with a plugin properly destroys
-  // the SecureEmbedWebPlugin and SecureEmbedHost, and that the Mojo connection
-  // is cleanly closed.
+  // the SurfaceEmbedWebPlugin and SurfaceEmbedHost, and that the Mojo
+  // connection is cleanly closed.
   NavigateToTestUrl(kTestUrl);
   ASSERT_EQ(kSingleEmbedCount, CountEmbedElementsInPage());
   ASSERT_EQ(kSingleEmbedCount, GetMockHostCount());
-  MockSecureEmbedHost* first_host = GetMockHost(0);
+  MockSurfaceEmbedHost* first_host = GetMockHost(0);
   ASSERT_NE(nullptr, first_host);
 
   ASSERT_TRUE(WaitForAttachCall(first_host));
@@ -301,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest, PluginDestruction) {
   ASSERT_EQ(kMultipleEmbedCount, GetMockHostCount());
 
   for (size_t i = 0; i < kMultipleEmbedCount; i++) {
-    MockSecureEmbedHost* host = GetMockHost(i);
+    MockSurfaceEmbedHost* host = GetMockHost(i);
     ASSERT_NE(nullptr, host);
     ASSERT_TRUE(WaitForAttachCall(host));
   }
@@ -309,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest, PluginDestruction) {
   std::vector<std::unique_ptr<base::RunLoop>> disconnect_loops;
   std::vector<bool> hosts_disconnected(kMultipleEmbedCount, false);
   for (size_t i = 0; i < kMultipleEmbedCount; i++) {
-    MockSecureEmbedHost* host = GetMockHost(i);
+    MockSurfaceEmbedHost* host = GetMockHost(i);
     auto loop = std::make_unique<base::RunLoop>();
     host->SetDisconnectCallback(base::BindLambdaForTesting(
         [&hosts_disconnected, i, loop_ptr = loop.get()]() {
@@ -330,15 +331,15 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest, PluginDestruction) {
   ASSERT_EQ(0u, GetMockHostCount());
 }
 
-IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest, RemoveEmbedFromDOM) {
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedRendererTest, RemoveEmbedFromDOM) {
   // Verifies that removing an embed element from the DOM destroys the
-  // SecureEmbedHost connection.
+  // SurfaceEmbedHost connection.
   NavigateToTestUrl(kTestUrl);
 
   ASSERT_EQ(kSingleEmbedCount, CountEmbedElementsInPage());
   ASSERT_EQ(kSingleEmbedCount, GetMockHostCount());
 
-  MockSecureEmbedHost* host = GetMockHost(0);
+  MockSurfaceEmbedHost* host = GetMockHost(0);
   ASSERT_NE(nullptr, host);
   ASSERT_TRUE(WaitForAttachCall(host));
 
@@ -364,16 +365,16 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest, RemoveEmbedFromDOM) {
   EXPECT_EQ(0u, GetMockHostCount());
 }
 
-IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest, RemoveAndReinsertEmbed) {
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedRendererTest, RemoveAndReinsertEmbed) {
   // Verifies that removing an embed element from the DOM (while keeping it
-  // alive in JS) destroys the SecureEmbedHost connection, and re-inserting
-  // it creates a new SecureEmbedHost connection.
+  // alive in JS) destroys the SurfaceEmbedHost connection, and re-inserting
+  // it creates a new SurfaceEmbedHost connection.
   NavigateToTestUrl(kTestUrl);
 
   ASSERT_EQ(kSingleEmbedCount, CountEmbedElementsInPage());
   ASSERT_EQ(kSingleEmbedCount, GetMockHostCount());
 
-  MockSecureEmbedHost* first_host = GetMockHost(0);
+  MockSurfaceEmbedHost* first_host = GetMockHost(0);
   ASSERT_NE(nullptr, first_host);
   ASSERT_TRUE(WaitForAttachCall(first_host));
 
@@ -404,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest, RemoveAndReinsertEmbed) {
   WaitForHostAdded(kSingleEmbedCount);
   ASSERT_EQ(kSingleEmbedCount, GetMockHostCount());
 
-  MockSecureEmbedHost* second_host = GetMockHost(0);
+  MockSurfaceEmbedHost* second_host = GetMockHost(0);
   ASSERT_NE(nullptr, second_host);
 
   // Wait for the new host to receive the Attach call
@@ -412,10 +413,10 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest, RemoveAndReinsertEmbed) {
   EXPECT_EQ(1, second_host->attach_call_count());
 }
 
-IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest,
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedRendererTest,
                        ChangeDataContentIdDoesNotRecreateHost) {
   // Verifies that changing the data-content-id attribute does not destroy
-  // and recreate the SecureEmbedHost connection.
+  // and recreate the SurfaceEmbedHost connection.
   constexpr size_t kFinalEmbedCount = 2;
 
   NavigateToTestUrl(kTestUrl);
@@ -423,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest,
   ASSERT_EQ(kSingleEmbedCount, CountEmbedElementsInPage());
   ASSERT_EQ(kSingleEmbedCount, GetMockHostCount());
 
-  MockSecureEmbedHost* host = GetMockHost(0);
+  MockSurfaceEmbedHost* host = GetMockHost(0);
   ASSERT_NE(nullptr, host);
   ASSERT_TRUE(WaitForAttachCall(host));
   EXPECT_EQ(1, host->last_content_id());
@@ -452,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest,
   WaitForHostAdded(kFinalEmbedCount);
   ASSERT_EQ(kFinalEmbedCount, GetMockHostCount());
 
-  MockSecureEmbedHost* second_host = GetMockHost(1);
+  MockSurfaceEmbedHost* second_host = GetMockHost(1);
   ASSERT_NE(nullptr, second_host);
   ASSERT_TRUE(WaitForAttachCall(second_host));
   EXPECT_EQ(1, second_host->attach_call_count());
@@ -467,13 +468,13 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest,
   EXPECT_EQ(5, host->last_content_id());
 }
 
-IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest, Detach) {
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedRendererTest, Detach) {
   NavigateToTestUrl(kTestUrl);
 
   EXPECT_EQ(kSingleEmbedCount, CountEmbedElementsInPage());
   ASSERT_EQ(kSingleEmbedCount, GetMockHostCount());
 
-  MockSecureEmbedHost* host = GetMockHost(0);
+  MockSurfaceEmbedHost* host = GetMockHost(0);
   ASSERT_NE(nullptr, host);
 
   ASSERT_TRUE(WaitForAttachCall(host));
@@ -490,13 +491,13 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest, Detach) {
   EXPECT_EQ(0, host->last_content_id());
 }
 
-IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest,
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedRendererTest,
                        UpdateDataAttributeWithInvalidStrings) {
   NavigateToTestUrl(kTestUrl);
   ASSERT_EQ(kSingleEmbedCount, CountEmbedElementsInPage());
   ASSERT_EQ(kSingleEmbedCount, GetMockHostCount());
 
-  MockSecureEmbedHost* host = GetMockHost(0);
+  MockSurfaceEmbedHost* host = GetMockHost(0);
   ASSERT_NE(nullptr, host);
 
   ASSERT_TRUE(WaitForAttachCall(host));
@@ -531,4 +532,4 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest,
   EXPECT_EQ(5, host->last_content_id());
 }
 
-}  // namespace secure_embed
+}  // namespace surface_embed

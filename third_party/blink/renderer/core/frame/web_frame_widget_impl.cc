@@ -270,7 +270,7 @@ viz::FrameSinkId GetFrameSinkIdForPluginElement(
     return viz::FrameSinkId();
   }
 
-  // TODO(secure-embed): Maybe additional checks on bounds and visibility are
+  // TODO(surface-embed): Maybe additional checks on bounds and visibility are
   // needed. See GetFrameSinkIdForFrameOwnerElement().
   return plugin->GetFrameSinkId();
 }

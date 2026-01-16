@@ -53,8 +53,9 @@ WebContentsView* WebContentsViewChildFrame::GetOuterView() {
   if (auto* outer_web_contents = web_contents_->GetOuterWebContents()) {
     return outer_web_contents->GetView();
   }
-  if (auto* secure_embed_connector = web_contents_->GetSecureEmbedConnector()) {
-    return static_cast<SecureEmbedConnectorImpl*>(secure_embed_connector)
+  if (auto* surface_embed_connector =
+          web_contents_->GetSurfaceEmbedConnector()) {
+    return static_cast<SurfaceEmbedConnectorImpl*>(surface_embed_connector)
         ->GetEmbedderWebContentsView();
   }
 
@@ -72,8 +73,9 @@ RenderViewHostDelegateView* WebContentsViewChildFrame::GetOuterDelegateView() {
     CHECK(outer_rvh);
     return outer_rvh->GetDelegate()->GetDelegateView();
   }
-  if (auto* secure_embed_connector = web_contents_->GetSecureEmbedConnector()) {
-    return static_cast<SecureEmbedConnectorImpl*>(secure_embed_connector)
+  if (auto* surface_embed_connector =
+          web_contents_->GetSurfaceEmbedConnector()) {
+    return static_cast<SurfaceEmbedConnectorImpl*>(surface_embed_connector)
         ->GetEmbedderRenderViewHostDelegateView();
   }
   return nullptr;
@@ -223,12 +225,12 @@ void WebContentsViewChildFrame::GotFocus(
 }
 
 void WebContentsViewChildFrame::TakeFocus(bool reverse) {
-  if (SecureEmbedConnector* secure_embed_connector =
-          web_contents_->GetSecureEmbedConnector()) {
-    static_cast<SecureEmbedConnectorImpl*>(secure_embed_connector)
+  if (SurfaceEmbedConnector* surface_embed_connector =
+          web_contents_->GetSurfaceEmbedConnector()) {
+    static_cast<SurfaceEmbedConnectorImpl*>(surface_embed_connector)
         ->FocusInEmbedder(
-            reverse ? SecureEmbedConnector::FocusOperation::kFocusBeforePlugin
-                    : SecureEmbedConnector::FocusOperation::kFocusAfterPlugin);
+            reverse ? SurfaceEmbedConnector::FocusOperation::kFocusBeforePlugin
+                    : SurfaceEmbedConnector::FocusOperation::kFocusAfterPlugin);
   } else {
     // This is handled in RenderFrameHostImpl::TakeFocus we shouldn't
     // end up here.
@@ -280,9 +282,9 @@ void WebContentsViewChildFrame::StartDragging(
   } else {
     if (auto* outer_web_contents = web_contents_->GetOuterWebContents()) {
       outer_web_contents->SystemDragEnded(source_rwh);
-    } else if (auto* secure_embed_connector =
-                   web_contents_->GetSecureEmbedConnector()) {
-      static_cast<SecureEmbedConnectorImpl*>(secure_embed_connector)
+    } else if (auto* surface_embed_connector =
+                   web_contents_->GetSurfaceEmbedConnector()) {
+      static_cast<SurfaceEmbedConnectorImpl*>(surface_embed_connector)
           ->EmbedderSystemDragEnded(source_rwh);
     }
   }
