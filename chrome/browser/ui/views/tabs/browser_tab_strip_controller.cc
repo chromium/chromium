@@ -160,15 +160,6 @@ BrowserTabStripController::BrowserTabStripController(
     menu_model_factory_ = std::make_unique<TabMenuModelFactory>();
   }
   model_->SetTabStripUI(this);
-
-  should_show_discard_indicator_ = g_browser_process->local_state()->GetBoolean(
-      performance_manager::user_tuning::prefs::kDiscardRingTreatmentEnabled);
-  local_state_registrar_.Init(g_browser_process->local_state());
-  local_state_registrar_.Add(
-      performance_manager::user_tuning::prefs::kDiscardRingTreatmentEnabled,
-      base::BindRepeating(
-          &BrowserTabStripController::OnDiscardRingTreatmentEnabledChanged,
-          base::Unretained(this)));
 }
 
 BrowserTabStripController::~BrowserTabStripController() {
@@ -926,25 +917,11 @@ void BrowserTabStripController::AddTabs(
 
   tabstrip_->AddTabsAt(std::move(tabs_data));
 
-  for (const auto& [contents, index] : contents_list) {
-    tabstrip_->tab_at(index)->SetShouldShowDiscardIndicator(
-        should_show_discard_indicator_);
-  }
-
   // Try to show tab search IPH if needed.
   constexpr int kTabSearchIPHTriggerThreshold = 8;
   if (tabstrip_->GetTabCount() >= kTabSearchIPHTriggerThreshold) {
     BrowserUserEducationInterface::From(GetBrowserWindowInterface())
         ->MaybeShowFeaturePromo(feature_engagement::kIPHTabSearchFeature);
-  }
-}
-
-void BrowserTabStripController::OnDiscardRingTreatmentEnabledChanged() {
-  should_show_discard_indicator_ = g_browser_process->local_state()->GetBoolean(
-      performance_manager::user_tuning::prefs::kDiscardRingTreatmentEnabled);
-  for (int tab_index = 0; tab_index < tabstrip_->GetTabCount(); ++tab_index) {
-    tabstrip_->tab_at(tab_index)->SetShouldShowDiscardIndicator(
-        should_show_discard_indicator_);
   }
 }
 

@@ -1073,10 +1073,6 @@ std::u16string Tab::GetTooltipText(const std::u16string& title,
   return result;
 }
 
-void Tab::SetShouldShowDiscardIndicator(bool enabled) {
-  icon_->SetShouldShowDiscardIndicator(enabled);
-}
-
 void Tab::UpdateInsets() {
   SetBorder(views::CreateEmptyBorder(tab_style_views()->GetContentsInsets()));
 }

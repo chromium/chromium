@@ -104,6 +104,7 @@ source_set("browser_tests") {
     ":impl",
     "//base",
     "//chrome/browser",
+    "//chrome/browser/performance_manager/public/user_tuning",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:ui_features",

@@ -124,21 +124,21 @@ void RootTabCollectionNode::OnTabStripModelChanged(
     return;
   }
 
-  std::set<TabCollectionNode*> selection_changes;
+  std::set<TabCollectionNode*> changed_tabs;
 
   if (selection.active_tab_changed()) {
     if (selection.old_tab) {
       TabCollectionNode* old_tab_node =
           GetNodeForHandle(selection.old_tab->GetHandle());
       if (old_tab_node) {
-        selection_changes.insert(old_tab_node);
+        changed_tabs.insert(old_tab_node);
       }
     }
     if (selection.new_tab) {
       TabCollectionNode* new_tab_node =
           GetNodeForHandle(selection.new_tab->GetHandle());
       if (new_tab_node) {
-        selection_changes.insert(new_tab_node);
+        changed_tabs.insert(new_tab_node);
       }
     }
   }
@@ -158,13 +158,22 @@ void RootTabCollectionNode::OnTabStripModelChanged(
          base::STLSetUnion<SelectionHandles>(old_selections, new_selections)) {
       TabCollectionNode* tab_node = GetNodeForHandle(tab_handle);
       if (tab_node) {
-        selection_changes.insert(tab_node);
+        changed_tabs.insert(tab_node);
       }
     }
     selected_tabs_ = selected_tabs;
   }
 
-  for (auto* tab_node : selection_changes) {
+  if (change.type() == TabStripModelChange::kReplaced) {
+    // Discarding a tab causes a replace change notification to be sent. Add any
+    // replaced tab to the list of tabs to update.
+    auto* replace = change.GetReplace();
+    TabCollectionNode* tab_node = GetNodeForHandle(
+        tab_strip_model->GetTabAtIndex(replace->index)->GetHandle());
+    changed_tabs.insert(tab_node);
+  }
+
+  for (auto* tab_node : changed_tabs) {
     tab_node->NotifyDataChanged();
   }
 }

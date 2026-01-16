@@ -7,6 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
+#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -88,6 +89,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, IconDataChanged) {
   ASSERT_TRUE(icon->GetActiveStateForTesting());
   ASSERT_FALSE(icon->GetShowingLoadingAnimation());
   ASSERT_FALSE(icon->GetShowingAttentionIndicator());
+  ASSERT_FALSE(icon->GetShowingDiscardIndicator());
 
   // After changing network state, expect the favicon to be loading.
   content::WebContents* web_contents =
@@ -125,6 +127,19 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, IconDataChanged) {
   // to be showing.
   browser()->tab_strip_model()->SetTabNeedsAttentionAt(0, true);
   EXPECT_TRUE(icon->GetShowingAttentionIndicator());
+
+  // After discarding the tab, the icon should show the discard indicator.
+  std::unique_ptr<content::WebContents> replacement_web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->profile()));
+  replacement_web_contents->SetWasDiscarded(true);
+  performance_manager::user_tuning::UserPerformanceTuningManager::
+      PreDiscardResourceUsage::CreateForWebContents(
+          replacement_web_contents.get(), base::KiBU(0),
+          ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+  browser()->tab_strip_model()->DiscardWebContentsAt(
+      0, std::move(replacement_web_contents));
+  EXPECT_TRUE(icon->GetShowingDiscardIndicator());
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, TitleDataChanged) {

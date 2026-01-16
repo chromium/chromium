@@ -203,8 +203,6 @@ class Tab : public gfx::AnimationDelegate,
     return alert_indicator_button_;
   }
 
-  void SetShouldShowDiscardIndicator(bool enabled);
-
   void UpdateInsets();
 
 #if BUILDFLAG(ENABLE_GLIC)

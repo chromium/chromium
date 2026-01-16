@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
 #include "components/performance_manager/public/features.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
@@ -83,7 +84,7 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   bool GetActiveStateForTesting() { return is_active_tab_; }
 
   void EnlargeDiscardIndicatorRadius(int radius);
-  void SetShouldShowDiscardIndicator(bool enabled);
+  void OnDiscardRingTreatmentEnabledChanged();
 
  protected:
   class CrashAnimation;
@@ -195,7 +196,7 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   // due to a change in the discard status or a change to the pref, because
   // we don't want to animate the discard ring in the latter case.
   bool is_discarded_ = false;
-  bool should_show_discard_indicator_ = true;
+  bool discard_ring_treatment_enabled_ = true;
   bool was_discard_indicator_shown_ = false;
 
   // Crash animation (in place of favicon). Lazily created since most of the
@@ -211,6 +212,8 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   bool is_monochrome_favicon_ = false;
 
   int increased_discard_indicator_radius_ = 0;
+
+  PrefChangeRegistrar local_state_registrar_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_ICON_H_
