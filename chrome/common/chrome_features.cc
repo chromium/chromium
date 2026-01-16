@@ -275,7 +275,7 @@ BASE_FEATURE(kGeoLanguage, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicActor, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta> kGlicActorPageToolTimeout{
-    &kGlicActor, "glic-actor-page-tool-timeout", base::Seconds(10)};
+    &kGlicActor, "glic-actor-page-tool-timeout", base::Seconds(30)};
 
 const base::FeatureParam<base::TimeDelta> kGlicActorClickDelay{
     &kGlicActor, "glic-actor-click-delay", base::Milliseconds(5)};
