@@ -399,6 +399,14 @@ AimEligibilityService::GetMostRecentResponseSource() const {
   return most_recent_response_source_;
 }
 
+const omnibox::SearchboxConfig* AimEligibilityService::GetSearchboxConfig()
+    const {
+  if (most_recent_response_.has_searchbox_config()) {
+    return &most_recent_response_.searchbox_config();
+  }
+  return nullptr;
+}
+
 void AimEligibilityService::StartServerEligibilityRequestForDebugging() {
   StartServerEligibilityRequest(RequestSource::kUser);
 }
