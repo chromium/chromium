@@ -10,7 +10,7 @@ import android.os.Process;
 import android.os.SystemClock;
 import android.util.Log;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONObject;
@@ -30,6 +30,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Executor;
 
@@ -534,14 +535,14 @@ public abstract class CronetEngine {
          * @return the builder to facilitate chaining.
          */
         @ProxyOptions.Experimental
-        public Builder setProxyOptions(@Nullable ProxyOptions proxyOptions) {
+        public Builder setProxyOptions(@NonNull ProxyOptions proxyOptions) {
             if (!mBuilderDelegate
                     .getSupportedConfigOptions()
                     .contains(ICronetEngineBuilder.PROXY_OPTIONS)) {
                 throw new UnsupportedOperationException(
                         "This Cronet implementation does not support ProxyOptions");
             }
-            mBuilderDelegate.setProxyOptions(proxyOptions);
+            mBuilderDelegate.setProxyOptions(Objects.requireNonNull(proxyOptions));
             return this;
         }
 
