@@ -32,10 +32,6 @@ class CSSFunctionValue : public CSSValueList {
   }
   CSSValueID FunctionType() const { return value_id_; }
 
-  const CSSValue* CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
-      const CSSPropertyName& property_name,
-      wtf_size_t& property_value_index) const;
-
   void TraceAfterDispatch(blink::Visitor* visitor) const {
     CSSValueList::TraceAfterDispatch(visitor);
   }

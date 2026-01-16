@@ -66,10 +66,6 @@ class CORE_EXPORT CSSImageSetValue : public CSSValueList {
       const StyleResolverState&) const;
   CSSImageSetValue& ResolveValuesIfNeeded(const StyleResolverState&);
 
-  const CSSValue* CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
-      const CSSPropertyName&,
-      wtf_size_t& property_value_index) const;
-
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:

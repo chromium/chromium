@@ -1805,20 +1805,6 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateComparisonFunction(
       category, std::move(operands), op, CSSMathType());
 }
 
-const CSSMathExpressionNode*
-CSSMathExpressionOperation::CopyRandomWithPropertyNameAndValueIndexIfNeeded(
-    const CSSPropertyName& property_name,
-    wtf_size_t& property_value_index) const {
-  DCHECK(NeedsPropertyNameAndValueIndexForRandom());
-  Operands operands(operands_);
-  for (wtf_size_t i = 0; i < operands_.size(); i++) {
-    operands[i] = operands_[i]->CopyRandomWithPropertyNameAndValueIndexIfNeeded(
-        property_name, property_value_index);
-  }
-  return MakeGarbageCollected<CSSMathExpressionOperation>(
-      category_, std::move(operands), operator_, type_);
-}
-
 // Helper function for parsing number value
 static double ValueAsNumber(const CSSMathExpressionNode* node, bool& error) {
   if (node->Category() == kCalcNumber) {
@@ -2626,9 +2612,6 @@ CSSMathExpressionOperation::CSSMathExpressionOperation(
   has_nested_intermediate_result_ |= NodeHasNestedIntermediateResult(left_side);
   has_nested_intermediate_result_ |=
       NodeHasNestedIntermediateResult(right_side);
-  needs_property_name_and_value_index_for_random_ |=
-      (left_side && left_side->NeedsPropertyNameAndValueIndexForRandom()) ||
-      (right_side && right_side->NeedsPropertyNameAndValueIndexForRandom());
 }
 
 bool CSSMathExpressionOperation::HasPercentage() const {
@@ -2717,10 +2700,6 @@ CSSMathExpressionOperation::CSSMathExpressionOperation(
         NodeHasNestedIntermediateResult(operands_.front());
     has_nested_intermediate_result_ |=
         NodeHasNestedIntermediateResult(operands_.back());
-  }
-  for (const CSSMathExpressionNode* operand : operands_) {
-    needs_property_name_and_value_index_for_random_ |=
-        operand && operand->NeedsPropertyNameAndValueIndexForRandom();
   }
 }
 
@@ -5349,38 +5328,6 @@ bool RandomValueSharing::IsElementShared() const {
          std::get<NameAndElementShared>(value_).is_element_shared;
 }
 
-const RandomValueSharing*
-RandomValueSharing::CopyWithPropertyValueIndexNameIfNeeded(
-    const CSSPropertyName& property_name,
-    wtf_size_t& property_value_index) const {
-  ++property_value_index;
-  if (IsFixed()) {
-    const CSSPrimitiveValue* fixed_with_property = To<CSSPrimitiveValue>(
-        GetFixed()->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
-            property_name, property_value_index));
-    return MakeGarbageCollected<RandomValueSharing>(fixed_with_property);
-  }
-  NameAndElementShared name_and_element_shared =
-      std::get<NameAndElementShared>(value_);
-  if (name_and_element_shared.name.IsNull()) {
-    StringBuilder str;
-    // Use string of form "PROPERTY {property_name} {property_value_index}"
-    // as name, this is later used for caching random values [0]. The prefix
-    // "PROPERTY" is needed since we need to make distinguish between custom
-    // property name and random value identifier, i.e. <dashed-ident> value in
-    // <random-value-sharing> [1]
-    // [0] https://drafts.csswg.org/css-values-5/#random-caching-key
-    // [1] https://drafts.csswg.org/css-values-5/#typedef-random-value-sharing
-    str.Append("PROPERTY ");
-    str.Append(property_name.ToAtomicString());
-    str.Append(" ");
-    str.AppendNumber(property_value_index);
-    return MakeGarbageCollected<RandomValueSharing>(
-        str.ToAtomicString(), name_and_element_shared.is_element_shared);
-  }
-  return this;
-}
-
 const RandomValueSharing* RandomValueSharing::Parse(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
@@ -5517,8 +5464,6 @@ CSSMathExpressionRandomFunction::CSSMathExpressionRandomFunction(
       min_(min),
       max_(max),
       step_(step) {
-  needs_property_name_and_value_index_for_random_ =
-      random_value_sharing->Name().IsNull();
 }
 
 CSSMathExpressionRandomFunction* CSSMathExpressionRandomFunction::Create(
@@ -5550,18 +5495,6 @@ CSSMathExpressionNode* CSSMathExpressionRandomFunction::Copy() const {
   return MakeGarbageCollected<CSSMathExpressionRandomFunction>(
       base::PassKey<CSSMathExpressionRandomFunction>(), category_,
       random_value_sharing_, min_, max_, step_);
-}
-
-const CSSMathExpressionNode* CSSMathExpressionRandomFunction::
-    CopyRandomWithPropertyNameAndValueIndexIfNeeded(
-        const CSSPropertyName& property_name,
-        wtf_size_t& property_value_index) const {
-  const RandomValueSharing* random_value_sharing =
-      random_value_sharing_->CopyWithPropertyValueIndexNameIfNeeded(
-          property_name, property_value_index);
-  return MakeGarbageCollected<CSSMathExpressionRandomFunction>(
-      base::PassKey<CSSMathExpressionRandomFunction>(), category_,
-      random_value_sharing, min_, max_, step_);
 }
 
 bool CSSMathExpressionRandomFunction::IsComputationallyIndependent() const {

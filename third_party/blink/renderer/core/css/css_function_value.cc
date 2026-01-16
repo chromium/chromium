@@ -20,19 +20,4 @@ String CSSFunctionValue::CustomCSSText() const {
   return result.ReleaseString();
 }
 
-const CSSValue*
-CSSFunctionValue::CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
-    const CSSPropertyName& property_name,
-    wtf_size_t& property_value_index) const {
-  CSSFunctionValue* new_function_value = MakeGarbageCollected<CSSFunctionValue>(
-      value_id_, static_cast<ValueListSeparator>(value_list_separator_));
-  for (wtf_size_t i = 0; i < CSSValueList::length(); i++) {
-    new_function_value->Append(
-        *CSSValueList::Item(i)
-             .CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
-                 property_name, property_value_index));
-  }
-  return new_function_value;
-}
-
 }  // namespace blink

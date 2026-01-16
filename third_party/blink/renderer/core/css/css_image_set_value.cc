@@ -188,27 +188,6 @@ CSSImageSetValue& CSSImageSetValue::ResolveValuesIfNeeded(
   return *this;
 }
 
-const CSSValue*
-CSSImageSetValue::CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
-    const CSSPropertyName& property_name,
-    wtf_size_t& property_value_index) const {
-  HeapVector<Member<const CSSImageSetOptionValue>> options(options_);
-  wtf_size_t random_values_count = 0;
-  for (wtf_size_t i = 0; i < options.size(); i++) {
-    options[i] = To<CSSImageSetOptionValue>(
-        options[i]->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
-            property_name, property_value_index));
-    if (options[i] != options_[i]) {
-      random_values_count++;
-    }
-  }
-  if (random_values_count) {
-    return MakeGarbageCollected<CSSImageSetValue>(
-        cached_image_, cached_device_scale_factor_, std::move(options));
-  }
-  return this;
-}
-
 void CSSImageSetValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(cached_image_);
   visitor->Trace(options_);

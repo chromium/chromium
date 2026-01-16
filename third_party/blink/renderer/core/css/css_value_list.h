@@ -86,10 +86,6 @@ class CORE_EXPORT CSSValueList : public CSSValue {
   bool MayContainUrl() const;
   void ReResolveUrl(const Document&) const;
 
-  const CSSValue* CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
-      const CSSPropertyName& property_name,
-      wtf_size_t& property_value_index) const;
-
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
