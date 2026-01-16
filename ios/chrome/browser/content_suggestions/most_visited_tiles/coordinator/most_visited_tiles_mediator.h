@@ -32,6 +32,7 @@ class ChromeAccountManagerService;
 @protocol ContentSuggestionsDelegate;
 enum class ContentSuggestionsModuleType;
 @class ContentSuggestionsMetricsRecorder;
+@protocol HelpCommands;
 class LargeIconCache;
 @class LayoutGuideCenter;
 @class MostVisitedTilesConfig;
@@ -71,6 +72,9 @@ class UrlLoadingBrowserAgent;
 
 // Handler for snackbar commands.
 @property(nonatomic, weak) id<SnackbarCommands> snackbarHandler;
+
+// Handler for in-product help commands.
+@property(nonatomic, weak) id<HelpCommands> helpHandler;
 
 // Delegate for reporting content suggestions actions to the NTP.
 @property(nonatomic, weak) id<NewTabPageActionsDelegate> NTPActionsDelegate;

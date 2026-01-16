@@ -125,6 +125,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   BubbleViewControllerPresenter* _pageActionMenuBubblePresenter;
   BubbleViewControllerPresenter* _readerModeOptionsBubblePresenter;
   BubbleViewControllerPresenter* _geminiImageRemixBubblePresenter;
+  BubbleViewControllerPresenter* _pinSiteToMostVisitedTilesBubblePresenter;
 
   // List of existing gestural IPH views.
   GestureInProductHelpView* _pullToRefreshGestureIPH;
@@ -198,6 +199,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   [_pageActionMenuBubblePresenter dismissAnimated:NO];
   [_readerModeOptionsBubblePresenter dismissAnimated:NO];
   [_geminiImageRemixBubblePresenter dismissAnimated:NO];
+  [_pinSiteToMostVisitedTilesBubblePresenter dismissAnimated:NO];
   [self hideAllGestureInProductHelpViewsForReason:IPHDismissalReasonType::
                                                       kUnknown];
 }
@@ -532,6 +534,27 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                                       identityDiscAnchor.y + anchorYOffset)];
   if (presenter) {
     _switchAccountWithNTPIdentityDiscBubblePresenter = presenter;
+  }
+}
+
+- (void)presentPinSiteToMostVisitedTilesBubble {
+  if (![self canPresentBubble]) {
+    return;
+  }
+  NSString* text = l10n_util::GetNSString(
+      IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_IN_PRODUCT_HELP);
+  BubbleViewControllerPresenter* presenter = [self
+      presentBubbleForFeature:feature_engagement::
+                                  kIPHiOSPinMostVisitedSiteFeature
+                    direction:BubbleArrowDirectionUp
+                    alignment:BubbleAlignmentTopOrLeading
+                         text:text
+        voiceOverAnnouncement:text
+                  anchorPoint:
+                      [self anchorPointToGuide:kNTPFirstMostVisitedTileGuide
+                                     direction:BubbleArrowDirectionUp]];
+  if (presenter) {
+    _pinSiteToMostVisitedTilesBubblePresenter = presenter;
   }
 }
 

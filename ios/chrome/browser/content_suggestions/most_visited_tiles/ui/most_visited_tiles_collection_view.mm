@@ -220,7 +220,7 @@ UICollectionViewCompositionalLayout* GetLayoutForMostVisitedTilesCollectionView(
     cell.contentConfiguration = _items[identifier.unsignedIntValue];
   }
   /// Mark the first item in the tiles for layout guide
-  /// `kNTPFirstMostVisitedTile`.
+  /// `kNTPFirstMostVisitedTileGuide`.
   if (identifier.intValue == 0) {
     [_layoutGuideCenter referenceView:cell
                             underName:kNTPFirstMostVisitedTileGuide];

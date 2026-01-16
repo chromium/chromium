@@ -113,6 +113,10 @@ class DeviceSwitcherResultDispatcher;
 // identity disc on the New Tab page to switch accounts.
 - (void)presentSwitchAccountsWithNTPAccountParticleDiscBubble;
 
+// Optionally presents a bubble informing the user that they can pin a custom
+// site to the most visited tiles.
+- (void)presentPinSiteToMostVisitedTilesBubble;
+
 // Optionally presents a gesture IPH associated with the pull-to-refresh
 // feature. The eligibility can depend on the UI hierarchy at the moment, the
 // configuration and the display history of the bubble, etc.

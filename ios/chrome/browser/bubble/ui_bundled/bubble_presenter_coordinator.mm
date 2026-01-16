@@ -216,6 +216,11 @@
                                   pageActionMenuEntryPointHandler];
       break;
     }
+    case InProductHelpType::kPinSiteToMostVisited: {
+      CHECK(IsContentSuggestionsCustomizable());
+      [_presenter presentPinSiteToMostVisitedTilesBubble];
+      break;
+    }
   }
 }
 

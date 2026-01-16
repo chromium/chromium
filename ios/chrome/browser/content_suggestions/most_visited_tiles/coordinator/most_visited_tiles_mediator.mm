@@ -43,6 +43,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/utils/observable_boolean.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
@@ -438,6 +439,9 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
 
   [self.consumer setMostVisitedTilesConfig:_mostVisitedConfig];
   [self.contentSuggestionsDelegate contentSuggestionsWasUpdated];
+  if (IsContentSuggestionsCustomizable()) {
+    [self maybeDisplayIPH];
+  }
 }
 
 // Logs a histogram due to a Most Visited item being opened.
@@ -565,6 +569,25 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   SnackbarMessage* snackbar = [[SnackbarMessage alloc] initWithTitle:message];
   snackbar.action = action;
   [self.snackbarHandler showSnackbarMessage:snackbar];
+}
+
+// Display an in-product help on the first tile of the most visited tiles if
+// conditions are met.
+- (void)maybeDisplayIPH {
+  if (!_engagementTracker->WouldTriggerHelpUI(
+          feature_engagement::kIPHiOSPinMostVisitedSiteFeature)) {
+    // If the in-product help is not eligible as determined by the in-product
+    // help view, return directly without consulting history service.
+    return;
+  }
+  // TODO(crbug.com/475119329): Check history service to see if the user has
+  // visited the same site in the current items 3 times or more in the past
+  // week. This process will be asynchronous.
+  id<HelpCommands> helpHandler = self.helpHandler;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [helpHandler
+        presentInProductHelpWithType:InProductHelpType::kPinSiteToMostVisited];
+  });
 }
 
 @end
