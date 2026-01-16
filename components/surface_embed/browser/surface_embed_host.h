@@ -23,7 +23,7 @@ class WebContents;
 
 namespace surface_embed {
 
-class COMPONENT_EXPORT(SECURE_EMBED) SurfaceEmbedHost
+class COMPONENT_EXPORT(SURFACE_EMBED) SurfaceEmbedHost
     : public mojom::SurfaceEmbedHost,
       public content::SurfaceEmbedConnector::Delegate {
  public:

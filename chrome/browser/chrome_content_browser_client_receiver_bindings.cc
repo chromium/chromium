@@ -132,7 +132,7 @@
 #include "chrome/browser/offline_pages/offline_page_tab_helper.h"
 #endif
 
-#if BUILDFLAG(ENABLE_SECURE_EMBED)
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
 #include "components/surface_embed/browser/surface_embed_host.h"
 #endif
 
@@ -569,7 +569,7 @@ void ChromeContentBrowserClient::
           },
           &render_frame_host));
 #endif  //  !BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(ENABLE_SECURE_EMBED)
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
   // TODO(surface-embed): restrict access to SurfaceEmbedHost. Maybe move to
   // PopulateChromeWebUIFrameBindersPartsDesktop().
   associated_registry.AddInterface<surface_embed::mojom::SurfaceEmbedHost>(
@@ -581,7 +581,7 @@ void ChromeContentBrowserClient::
                                                     std::move(receiver));
           },
           &render_frame_host));
-#endif  // BUILDFLAG(ENABLE_SECURE_EMBED)
+#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 #if BUILDFLAG(ENABLE_PRINTING)
   associated_registry.AddInterface<printing::mojom::PrintManagerHost>(
       base::BindRepeating(

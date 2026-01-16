@@ -6,5 +6,5 @@ import("//build/config/cast.gni")
 import("//build/config/chrome_build.gni")
 
 declare_args() {
-  enable_secure_embed = is_linux || is_mac || is_win || is_chromeos
+  enable_surface_embed = is_linux || is_mac || is_win || is_chromeos
 }

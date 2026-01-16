@@ -92,7 +92,7 @@ static_library("webui_examples_lib") {
     ]
   }
 
-  if (enable_secure_embed) {
+  if (enable_surface_embed) {
     deps += [
       "//components/surface_embed/browser",
       "//components/surface_embed/buildflags",

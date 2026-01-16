@@ -445,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedRendererTest,
       content::ExecJs(web_contents(),
                       "const newEmbed = document.createElement('embed');"
                       "newEmbed.setAttribute('type', "
-                      "'application/x-google-chrome-secure-embed');"
+                      "'application/x-google-chrome-surface-embed');"
                       "newEmbed.setAttribute('data-content-id', '10');"
                       "document.body.appendChild(newEmbed);"));
 

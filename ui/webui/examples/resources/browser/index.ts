@@ -76,7 +76,7 @@ class WebviewElement extends HTMLElement {
   }
 }
 
-class SecureEmbedElement extends HTMLElement {
+class SurfaceEmbedElement extends HTMLElement {
   public embedElement: HTMLEmbedElement;
   private guestContentsId: number;
   private attached: boolean = false;
@@ -89,11 +89,11 @@ class SecureEmbedElement extends HTMLElement {
     this.embedElement.style.padding = '0';
     this.embedElement.style.flex = '1';
     this.guestContentsId = loadTimeData.getInteger('guest-contents-id');
-    console.log('secure-embed guest-contents-id', this.guestContentsId);
+    console.log('surface-embed guest-contents-id', this.guestContentsId);
     this.embedElement.setAttribute(
         'data-content-id', this.guestContentsId.toString());
     this.embedElement.setAttribute(
-        'type', 'application/x-google-chrome-secure-embed');
+        'type', 'application/x-google-chrome-surface-embed');
   }
 
   connectedCallback() {
@@ -118,10 +118,10 @@ class SecureEmbedElement extends HTMLElement {
 
 webshell.allowWebviewElementRegistration(() => {
   customElements.define("webview", WebviewElement);
-  customElements.define('secureembed', SecureEmbedElement);
+  customElements.define('surfaceembed', SurfaceEmbedElement);
 });
 
-let currentEmbedElement: WebviewElement|SecureEmbedElement|null = null;
+let currentEmbedElement: WebviewElement|SurfaceEmbedElement|null = null;
 
 function attachViaGuestContents() {
   if (currentEmbedElement) {
@@ -135,17 +135,17 @@ function attachViaGuestContents() {
   currentEmbedElement = webview;
 }
 
-function attachViaSecureEmbed() {
+function attachViaSurfaceEmbed() {
   if (currentEmbedElement) {
     currentEmbedElement.remove();
   }
 
-  // Create and attach SecureEmbedElement
-  const secureEmbed =
-      document.createElement('secureembed') as SecureEmbedElement;
-  secureEmbed.id = 'webview';
-  document.body.appendChild(secureEmbed);
-  currentEmbedElement = secureEmbed;
+  // Create and attach SurfaceEmbedElement
+  const surfaceEmbed =
+      document.createElement('surfaceembed') as SurfaceEmbedElement;
+  surfaceEmbed.id = 'webview';
+  document.body.appendChild(surfaceEmbed);
+  currentEmbedElement = surfaceEmbed;
 }
 
 const attachGuestButton = document.getElementById('attach-guest');
@@ -153,9 +153,10 @@ if (attachGuestButton) {
   attachGuestButton.addEventListener('click', attachViaGuestContents);
 }
 
-const attachSecureEmbedButton = document.getElementById('attach-secure-embed');
-if (attachSecureEmbedButton) {
-  attachSecureEmbedButton.addEventListener('click', attachViaSecureEmbed);
+const attachSurfaceEmbedButton =
+    document.getElementById('attach-surface-embed');
+if (attachSurfaceEmbedButton) {
+  attachSurfaceEmbedButton.addEventListener('click', attachViaSurfaceEmbed);
 }
 
 function navigateToAddressBarUrl() {

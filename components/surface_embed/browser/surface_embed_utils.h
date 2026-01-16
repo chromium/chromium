@@ -13,9 +13,9 @@ class WebContents;
 
 namespace surface_embed {
 
-COMPONENT_EXPORT(SECURE_EMBED)
+COMPONENT_EXPORT(SURFACE_EMBED)
 bool IsSurfaceEmbedGuestWebContents(content::WebContents* web_contents);
 
 }  // namespace surface_embed
 
-#endif  // COMPONENTS_SURFACE_BROWSER_SECURE_EMBED_UTILS_H_
+#endif  // COMPONENTS_SURFACE_BROWSER_SURFACE_EMBED_UTILS_H_

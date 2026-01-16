@@ -7,10 +7,10 @@ import("//components/surface_embed/buildflags/buildflags.gni")
 
 # This file is in a separate directory so all targets in the build can refer to
 # the buildflag header to get the necessary preprocessor defines without
-# bringing in all of secure_embed. Other targets can depend on this target
-# regardless of whether secure_embed are enabled.
+# bringing in all of surface_embed. Other targets can depend on this target
+# regardless of whether surface_embed are enabled.
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "ENABLE_SECURE_EMBED=$enable_secure_embed" ]
+  flags = [ "ENABLE_SURFACE_EMBED=$enable_surface_embed" ]
 }

@@ -15,9 +15,9 @@
 #include "ui/webui/examples/browser/ui/web/browser_page_handler.h"
 #include "ui/webui/examples/resources/browser/grit/webui_examples_browser_resources.h"
 
-#if BUILDFLAG(ENABLE_SECURE_EMBED)
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
 #include "services/network/public/mojom/content_security_policy.mojom.h"
-#endif  // BUILDFLAG(ENABLE_SECURE_EMBED)
+#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
 namespace webui_examples {
 
@@ -34,11 +34,11 @@ Browser::Browser(content::WebUI* web_ui)
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(browser_context, kMainUI);
   html_source->UseStringsJs();
-#if BUILDFLAG(ENABLE_SECURE_EMBED)
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
   // Allow the embed element (default CSP blocks object-src with 'none')
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ObjectSrc, "object-src 'self';");
-#endif  // BUILDFLAG(ENABLE_SECURE_EMBED)
+#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
   html_source->AddResourcePath("index.js", IDR_WEBUI_EXAMPLES_BROWSER_INDEX_JS);
   html_source->AddResourcePath("index.css",
                                IDR_WEBUI_EXAMPLES_BROWSER_INDEX_CSS);

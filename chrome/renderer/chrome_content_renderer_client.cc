@@ -244,7 +244,7 @@
 #include "components/paint_preview/renderer/paint_preview_recorder_impl.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(ENABLE_SECURE_EMBED)
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
 #include "components/surface_embed/renderer/create_plugin.h"
 #endif
 
@@ -344,7 +344,7 @@ std::unique_ptr<base::Unwinder> CreateV8Unwinder(v8::Isolate* isolate) {
 }
 
 // Allows only chrome://webui-browser to use SurfaceEmbed,
-// i.e., <embed type="application/x-chromium-secure-embed">.
+// i.e., <embed type="application/x-chromium-surface-embed">.
 bool IsSurfaceEmbedAllowedInFrame(content::RenderFrame* render_frame) {
   CHECK(render_frame);
   const url::Origin webui_browser_origin =
@@ -907,7 +907,7 @@ bool ChromeContentRendererClient::OverrideCreatePlugin(
   }
 #endif
 
-#if BUILDFLAG(ENABLE_SECURE_EMBED)
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
   if (IsSurfaceEmbedAllowedInFrame(render_frame)) {
     if (surface_embed::MaybeCreatePlugin(render_frame, params, plugin)) {
       return true;

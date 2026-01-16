@@ -21,11 +21,11 @@ class ContentRendererClient : public content::ContentRendererClient {
   // content::ContentRendererClient:
   void RenderFrameCreated(content::RenderFrame* render_frame) override;
   void RenderThreadStarted() override;
-#if BUILDFLAG(ENABLE_SECURE_EMBED)
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
   bool OverrideCreatePlugin(content::RenderFrame* render_frame,
                             const blink::WebPluginParams& params,
                             blink::WebPlugin** plugin) override;
-#endif  // BUILDFLAG(ENABLE_SECURE_EMBED)
+#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 };
 
 }  // namespace webui_examples

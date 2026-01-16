@@ -271,7 +271,7 @@ static_library("renderer") {
     deps += [ "//chrome/common/request_header_integrity" ]
   }
 
-  if (enable_secure_embed) {
+  if (enable_surface_embed) {
     deps += [ "//components/surface_embed/renderer" ]
   }
 

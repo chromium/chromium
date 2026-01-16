@@ -19,7 +19,7 @@ class RenderFrame;
 namespace surface_embed {
 
 // Returns true if a SurfaceEmbedWebPlugin is created.
-COMPONENT_EXPORT(SECURE_EMBED)
+COMPONENT_EXPORT(SURFACE_EMBED)
 bool MaybeCreatePlugin(content::RenderFrame* render_frame,
                        const blink::WebPluginParams& params,
                        blink::WebPlugin** plugin);

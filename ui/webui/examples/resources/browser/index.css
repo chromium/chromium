@@ -29,7 +29,7 @@ webview {
   flex: 1;
 }
 
-secureembed {
+surfaceembed {
   display: flex;
   flex-direction: column;
 

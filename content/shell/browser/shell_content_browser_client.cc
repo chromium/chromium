@@ -143,10 +143,10 @@
 #include "media/mojo/services/media_foundation_preferences.h"
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(ENABLE_SECURE_EMBED)
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
 #include "components/surface_embed/browser/surface_embed_host.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
-#endif  // BUILDFLAG(ENABLE_SECURE_EMBED)
+#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
 namespace content {
 
@@ -686,7 +686,7 @@ void ShellContentBrowserClient::
     RegisterAssociatedInterfaceBindersForRenderFrameHost(
         RenderFrameHost& render_frame_host,
         blink::AssociatedInterfaceRegistry& associated_registry) {
-#if BUILDFLAG(ENABLE_SECURE_EMBED)
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
   associated_registry.AddInterface<surface_embed::mojom::SurfaceEmbedHost>(
       base::BindRepeating(
           [](content::RenderFrameHost* render_frame_host,
@@ -696,7 +696,7 @@ void ShellContentBrowserClient::
                                                     std::move(receiver));
           },
           &render_frame_host));
-#endif  // BUILDFLAG(ENABLE_SECURE_EMBED)
+#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 }
 
 void ShellContentBrowserClient::OpenURL(

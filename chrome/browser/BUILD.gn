@@ -8134,7 +8134,7 @@ static_library("browser") {
     ]
   }
 
-  if (enable_secure_embed) {
+  if (enable_surface_embed) {
     deps += [ "//components/surface_embed/browser" ]
   }
 

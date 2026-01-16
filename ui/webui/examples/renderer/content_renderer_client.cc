@@ -10,9 +10,9 @@
 #include "third_party/blink/public/web/web_custom_element.h"
 #include "ui/webui/examples/renderer/render_frame_observer.h"
 
-#if BUILDFLAG(ENABLE_SECURE_EMBED)
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
 #include "components/surface_embed/renderer/create_plugin.h"
-#endif  // BUILDFLAG(ENABLE_SECURE_EMBED)
+#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
 namespace webui_examples {
 
@@ -36,10 +36,10 @@ void ContentRendererClient::RenderThreadStarted() {
   blink::WebCustomElement::AddEmbedderCustomElementName(
       blink::WebString("webview"));
   blink::WebCustomElement::AddEmbedderCustomElementName(
-      blink::WebString("secureembed"));
+      blink::WebString("surfaceembed"));
 }
 
-#if BUILDFLAG(ENABLE_SECURE_EMBED)
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
 bool ContentRendererClient::OverrideCreatePlugin(
     content::RenderFrame* render_frame,
     const blink::WebPluginParams& params,
@@ -49,6 +49,6 @@ bool ContentRendererClient::OverrideCreatePlugin(
   }
   return false;
 }
-#endif  // BUILDFLAG(ENABLE_SECURE_EMBED)
+#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
 }  // namespace webui_examples

@@ -7,9 +7,9 @@
 
 namespace surface_embed {
 
-// MIME type of the internal secure-embed plugin.
+// MIME type of the internal surface-embed plugin.
 inline constexpr char kInternalPluginMimeType[] =
-    "application/x-google-chrome-secure-embed";
+    "application/x-google-chrome-surface-embed";
 
 }  // namespace surface_embed
 

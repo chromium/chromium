@@ -54,7 +54,7 @@ export class WebviewElement extends CrLitElement {
     }
 
     let embed = html`<embed id="embed"
-          type="application/x-google-chrome-secure-embed"
+          type="application/x-google-chrome-surface-embed"
           data-content-id="${this.guestId}"
           src="about:blank">
          </embed>`;

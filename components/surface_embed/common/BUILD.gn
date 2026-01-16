@@ -5,7 +5,7 @@
 import("//components/surface_embed/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(enable_secure_embed)
+assert(enable_surface_embed)
 
 source_set("constants") {
   sources = [ "constants.h" ]

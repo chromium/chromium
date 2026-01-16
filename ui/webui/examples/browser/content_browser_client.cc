@@ -16,9 +16,9 @@
 #include "ui/webui/examples/browser/ui/web/browser.h"
 #include "ui/webui/examples/browser/ui/web/browser.mojom.h"
 
-#if BUILDFLAG(ENABLE_SECURE_EMBED)
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
 #include "components/surface_embed/browser/surface_embed_host.h"
-#endif  // BUILDFLAG(ENABLE_SECURE_EMBED)
+#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
 namespace webui_examples {
 
@@ -53,7 +53,7 @@ void ContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
       guest_contents::mojom::GuestContentsHost, Browser>(map);
 }
 
-#if BUILDFLAG(ENABLE_SECURE_EMBED)
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
 void ContentBrowserClient::RegisterAssociatedInterfaceBindersForRenderFrameHost(
     content::RenderFrameHost& render_frame_host,
     blink::AssociatedInterfaceRegistry& associated_registry) {
@@ -67,7 +67,7 @@ void ContentBrowserClient::RegisterAssociatedInterfaceBindersForRenderFrameHost(
           },
           &render_frame_host));
 }
-#endif  // BUILDFLAG(ENABLE_SECURE_EMBED)
+#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
 std::string ContentBrowserClient::GetUserAgent() {
   return embedder_support::GetUserAgent();

@@ -4,10 +4,10 @@
 
 import("//components/surface_embed/buildflags/buildflags.gni")
 
-assert(enable_secure_embed)
+assert(enable_surface_embed)
 
 component("browser") {
-  defines = [ "IS_SECURE_EMBED_IMPL" ]
+  defines = [ "IS_SURFACE_EMBED_IMPL" ]
 
   public = [
     "surface_embed_host.h",
