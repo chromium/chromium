@@ -334,14 +334,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, BeginInstall) {
   EXPECT_TRUE(approval->use_app_installed_bubble);
   EXPECT_FALSE(approval->skip_post_install_ui);
   EXPECT_EQ("2", approval->authuser);
-  EXPECT_EQ(profile(), approval->profile);
+  EXPECT_EQ(profile(), Profile::FromBrowserContext(approval->browser_context));
 
   approval = WebstorePrivateApi::PopApprovalForTesting(profile(), kExtensionId);
   EXPECT_EQ(kExtensionId, approval->extension_id);
   EXPECT_FALSE(approval->use_app_installed_bubble);
   EXPECT_FALSE(approval->skip_post_install_ui);
   EXPECT_TRUE(approval->authuser.empty());
-  EXPECT_EQ(profile(), approval->profile);
+  EXPECT_EQ(profile(), Profile::FromBrowserContext(approval->browser_context));
 }
 
 // Tests that themes are installed without an install prompt.

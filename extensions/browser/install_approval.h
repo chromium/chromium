@@ -19,10 +19,12 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
-class Profile;
-
 namespace base {
 class Version;
+}
+
+namespace content {
+class BrowserContext;
 }
 
 namespace extensions {
@@ -37,11 +39,11 @@ class Manifest;
 // was approved and the CRX was downloaded.
 struct InstallApproval : public base::SupportsUserData::Data {
   static std::unique_ptr<InstallApproval> CreateWithInstallPrompt(
-      Profile* profile);
+      content::BrowserContext* browser_context);
 
   // Creates an InstallApproval for installing a shared module.
   static std::unique_ptr<InstallApproval> CreateForSharedModule(
-      Profile* profile);
+      content::BrowserContext* browser_context);
 
   // Creates an InstallApproval that will skip putting up an install
   // confirmation prompt if the actual manifest from the extension to be
@@ -49,7 +51,7 @@ struct InstallApproval : public base::SupportsUserData::Data {
   // whether we want to require an exact manifest match, or are willing to
   // tolerate a looser check just that the effective permissions are the same.
   static std::unique_ptr<InstallApproval> CreateWithNoInstallPrompt(
-      Profile* profile,
+      content::BrowserContext* browser_context,
       const ExtensionId& extension_id,
       base::Value::Dict parsed_manifest,
       bool strict_manifest_check);
@@ -59,8 +61,8 @@ struct InstallApproval : public base::SupportsUserData::Data {
   // The extension id that was approved for installation.
   ExtensionId extension_id;
 
-  // The profile the extension should be installed into.
-  raw_ptr<Profile> profile = nullptr;
+  // The BrowserContext the extension should be installed into.
+  raw_ptr<content::BrowserContext> browser_context = nullptr;
 
   // The expected manifest, before localization.
   std::unique_ptr<Manifest> manifest;

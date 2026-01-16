@@ -137,7 +137,7 @@ class PendingApprovals : public ProfileObserver {
   // Remove pending approvals if the Profile is being destroyed.
   void OnProfileWillBeDestroyed(Profile* profile) override {
     std::erase_if(approvals_, [profile](const auto& approval) {
-      return approval->profile == profile;
+      return Profile::FromBrowserContext(approval->browser_context) == profile;
     });
     observation_.RemoveObservation(profile);
   }
@@ -152,7 +152,7 @@ class PendingApprovals : public ProfileObserver {
   // for the Profile.
   void MaybeRemoveObservation(Profile* profile) {
     for (const auto& entry : approvals_) {
-      if (entry->profile == profile) {
+      if (Profile::FromBrowserContext(entry->browser_context) == profile) {
         return;
       }
     }
@@ -167,7 +167,7 @@ class PendingApprovals : public ProfileObserver {
 };
 
 void PendingApprovals::PushApproval(std::unique_ptr<InstallApproval> approval) {
-  MaybeAddObservation(approval->profile);
+  MaybeAddObservation(Profile::FromBrowserContext(approval->browser_context));
   approvals_.push_back(std::move(approval));
 }
 
@@ -176,10 +176,12 @@ std::unique_ptr<InstallApproval> PendingApprovals::PopApproval(
     const std::string& id) {
   for (auto iter = approvals_.begin(); iter != approvals_.end(); ++iter) {
     if (iter->get()->extension_id == id &&
-        profile->IsSameOrParent(iter->get()->profile)) {
+        profile->IsSameOrParent(
+            Profile::FromBrowserContext(iter->get()->browser_context))) {
       std::unique_ptr<InstallApproval> approval = std::move(*iter);
       approvals_.erase(iter);
-      MaybeRemoveObservation(approval->profile);
+      MaybeRemoveObservation(
+          Profile::FromBrowserContext(approval->browser_context));
       return approval;
     }
   }

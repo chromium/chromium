@@ -150,7 +150,8 @@ CrxInstaller::CrxInstaller(content::BrowserContext* context,
   if (!approval)
     return;
 
-  CHECK(profile()->IsSameOrParent(approval->profile));
+  CHECK(profile()->IsSameOrParent(
+      Profile::FromBrowserContext(approval->browser_context)));
   if (client_) {
     client_->install_ui()->SetUseAppInstalledBubble(
         approval->use_app_installed_bubble);
