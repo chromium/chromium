@@ -697,6 +697,7 @@ class PermissionUmaUtil {
       const std::vector<std::unique_ptr<PermissionRequest>>& requests,
       content::BrowserContext* browser_context,
       PermissionAction permission_action,
+      const PromptOptions& prompt_options,
       base::TimeDelta time_to_action,
       PermissionPromptDisposition ui_disposition,
       std::optional<PermissionPromptDispositionReason> ui_reason,

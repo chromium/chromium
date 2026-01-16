@@ -381,6 +381,7 @@ TEST_F(PermissionsDelegationUmaUtilTest, UsageAndPromptInTopLevelFrame) {
 
   PermissionUmaUtil::PermissionPromptResolved(
       manager_->Requests(), browser_context(), PermissionAction::GRANTED,
+      /*prompt_options=*/std::monostate(),
       /*time_to_decision*/ base::TimeDelta(),
       PermissionPromptDisposition::NOT_APPLICABLE,
       /* ui_reason*/ std::nullopt,
@@ -721,6 +722,7 @@ TEST_F(PermissionsDelegationUmaUtilTest, SiteLevelAndOSPromptVariantsTest) {
 
   PermissionUmaUtil::PermissionPromptResolved(
       {manager_->Requests()}, browser_context(), PermissionAction::GRANTED,
+      /*prompt_options=*/std::monostate(),
       /*time_to_decision*/ base::TimeDelta(),
       PermissionPromptDisposition::ELEMENT_ANCHORED_BUBBLE,
       /* ui_reason*/ std::nullopt, variants,
@@ -758,6 +760,7 @@ TEST_F(PermissionsDelegationUmaUtilTest, PermissionAiRelevanceModelUkmTest) {
 
   PermissionUmaUtil::PermissionPromptResolved(
       manager_->Requests(), browser_context(), PermissionAction::GRANTED,
+      /*prompt_options=*/std::monostate(),
       /*time_to_decision*/ base::TimeDelta(),
       PermissionPromptDisposition::ELEMENT_ANCHORED_BUBBLE,
       /* ui_reason*/ std::nullopt, /*variants*/ {},
@@ -799,6 +802,7 @@ TEST_F(PermissionsDelegationUmaUtilTest, SameOriginFrame) {
                               0);
   PermissionUmaUtil::PermissionPromptResolved(
       manager_->Requests(), browser_context(), PermissionAction::GRANTED,
+      /*prompt_options=*/std::monostate(),
       /*time_to_decision*/ base::TimeDelta(),
       PermissionPromptDisposition::NOT_APPLICABLE,
       /* ui_reason*/ std::nullopt,
@@ -969,6 +973,7 @@ TEST_P(CrossFramePermissionsDelegationUmaUtilTest, CrossOriginFrame) {
 
   PermissionUmaUtil::PermissionPromptResolved(
       manager_->Requests(), browser_context(), GetParam().action,
+      /*prompt_options=*/std::monostate(),
       /*time_to_decision*/ base::TimeDelta(),
       PermissionPromptDisposition::NOT_APPLICABLE,
       /* ui_reason*/ std::nullopt,
@@ -1173,7 +1178,8 @@ TEST_F(PermissionsDelegationUmaUtilTest,
       RequestType::kNotifications, PermissionRequestGestureType::GESTURE));
 
   PermissionUmaUtil::PermissionPromptResolved(
-      requests, browser_context(), PermissionAction::GRANTED, base::TimeDelta(),
+      requests, browser_context(), PermissionAction::GRANTED,
+      /*prompt_options=*/std::monostate(), base::TimeDelta(),
       PermissionPromptDisposition::ANCHORED_BUBBLE,
       /*ui_reason=*/std::nullopt,
       /*variants=*/{},
@@ -1200,7 +1206,8 @@ TEST_F(PermissionsDelegationUmaUtilTest,
       RequestType::kNotifications, PermissionRequestGestureType::NO_GESTURE));
 
   PermissionUmaUtil::PermissionPromptResolved(
-      requests, browser_context(), PermissionAction::DENIED, base::TimeDelta(),
+      requests, browser_context(), PermissionAction::DENIED,
+      /*prompt_options=*/std::monostate(), base::TimeDelta(),
       PermissionPromptDisposition::ANCHORED_BUBBLE,
       /*ui_reason=*/std::nullopt,
       /*variants=*/{},
@@ -1228,7 +1235,7 @@ TEST_F(PermissionsDelegationUmaUtilTest,
 
   PermissionUmaUtil::PermissionPromptResolved(
       requests, browser_context(), PermissionAction::DISMISSED,
-      base::TimeDelta(),
+      /*prompt_options=*/std::monostate(), base::TimeDelta(),
       PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP,
       /*ui_reason=*/std::nullopt,
       /*variants=*/{},
@@ -1255,7 +1262,8 @@ TEST_F(PermissionsDelegationUmaUtilTest,
       RequestType::kNotifications, PermissionRequestGestureType::NO_GESTURE));
 
   PermissionUmaUtil::PermissionPromptResolved(
-      requests, browser_context(), PermissionAction::IGNORED, base::TimeDelta(),
+      requests, browser_context(), PermissionAction::IGNORED,
+      /*prompt_options=*/std::monostate(), base::TimeDelta(),
       PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP,
       /*ui_reason=*/std::nullopt,
       /*variants=*/{},
@@ -1283,7 +1291,8 @@ TEST_F(PermissionsDelegationUmaUtilTest,
 
   PermissionUmaUtil::PermissionPromptResolved(
       requests, browser_context(), PermissionAction::GRANTED_ONCE,
-      base::TimeDelta(), PermissionPromptDisposition::ANCHORED_BUBBLE,
+      /*prompt_options=*/std::monostate(), base::TimeDelta(),
+      PermissionPromptDisposition::ANCHORED_BUBBLE,
       /*ui_reason=*/std::nullopt,
       /*variants=*/{},
       /*predicted_grant_likelihood=*/std::nullopt,
@@ -1309,7 +1318,8 @@ TEST_F(PermissionsDelegationUmaUtilTest,
       RequestType::kGeolocation, PermissionRequestGestureType::NO_GESTURE));
 
   PermissionUmaUtil::PermissionPromptResolved(
-      requests, browser_context(), PermissionAction::GRANTED, base::TimeDelta(),
+      requests, browser_context(), PermissionAction::GRANTED,
+      /*prompt_options=*/std::monostate(), base::TimeDelta(),
       PermissionPromptDisposition::ANCHORED_BUBBLE,
       /*ui_reason=*/std::nullopt,
       /*variants=*/{},
@@ -1336,7 +1346,8 @@ TEST_F(PermissionsDelegationUmaUtilTest,
       RequestType::kGeolocation, PermissionRequestGestureType::GESTURE));
 
   PermissionUmaUtil::PermissionPromptResolved(
-      requests, browser_context(), PermissionAction::DENIED, base::TimeDelta(),
+      requests, browser_context(), PermissionAction::DENIED,
+      /*prompt_options=*/std::monostate(), base::TimeDelta(),
       PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP,
       /*ui_reason=*/std::nullopt,
       /*variants=*/{},
@@ -1364,7 +1375,7 @@ TEST_F(PermissionsDelegationUmaUtilTest,
 
   PermissionUmaUtil::PermissionPromptResolved(
       requests, browser_context(), PermissionAction::DISMISSED,
-      base::TimeDelta(),
+      /*prompt_options=*/std::monostate(), base::TimeDelta(),
       PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP,
       /*ui_reason=*/std::nullopt,
       /*variants=*/{},

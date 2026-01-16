@@ -1098,6 +1098,7 @@ void PermissionUmaUtil::PermissionPromptResolved(
     const std::vector<std::unique_ptr<PermissionRequest>>& requests,
     content::BrowserContext* browser_context,
     PermissionAction permission_action,
+    const PromptOptions& prompt_options,
     base::TimeDelta time_to_action,
     PermissionPromptDisposition ui_disposition,
     std::optional<PermissionPromptDispositionReason> ui_reason,
@@ -1157,7 +1158,7 @@ void PermissionUmaUtil::PermissionPromptResolved(
         content::RenderFrameHost::FromID(request->get_requesting_frame_id()),
         predicted_grant_likelihood, permission_request_relevance,
         permission_ai_relevance_model, prediction_decision_held_back,
-        request->prompt_options(), initial_geolocation_accuracy_selection,
+        prompt_options, initial_geolocation_accuracy_selection,
         request->get_ukm_source_id());
 
     std::string priorDismissPrefix = base::StrCat(
@@ -1198,8 +1199,8 @@ void PermissionUmaUtil::PermissionPromptResolved(
 
   if (requests.size() == 1 &&
       requests[0]->request_type() == RequestType::kGeolocation) {
-    if (const auto* geolocation_options = std::get_if<GeolocationPromptOptions>(
-            &requests[0]->prompt_options())) {
+    if (const auto* geolocation_options =
+            std::get_if<GeolocationPromptOptions>(&prompt_options)) {
       base::UmaHistogramEnumeration(
           base::StrCat(
               {"Permissions.Prompt.Geolocation.", action_string, ".Accuracy"}),

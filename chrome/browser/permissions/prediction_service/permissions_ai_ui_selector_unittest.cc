@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <variant>
 
 #include "base/command_line.h"
 #include "base/run_loop.h"
@@ -578,7 +579,7 @@ TEST_F(PermissionsLikelihoodHistogramTest, NoMsbb_Likelihood_Recorded_Test) {
 
   permissions::PermissionUmaUtil::PermissionPromptResolved(
       requests, browser_context(), permissions::PermissionAction::GRANTED,
-      base::TimeDelta(),
+      /*prompt_options=*/std::monostate(), base::TimeDelta(),
       permissions::PermissionPromptDisposition::ANCHORED_BUBBLE,
       /*ui_reason=*/std::nullopt,
       /*variants=*/{},
@@ -612,7 +613,7 @@ TEST_F(PermissionsLikelihoodHistogramTest, Msbb_No_Likelihood_Recorded_Test) {
 
   permissions::PermissionUmaUtil::PermissionPromptResolved(
       requests, browser_context(), permissions::PermissionAction::GRANTED,
-      base::TimeDelta(),
+      /*prompt_options=*/std::monostate(), base::TimeDelta(),
       permissions::PermissionPromptDisposition::ANCHORED_BUBBLE,
       /*ui_reason=*/std::nullopt,
       /*variants=*/{},
@@ -646,7 +647,7 @@ TEST_F(PermissionsLikelihoodHistogramTest,
 
   permissions::PermissionUmaUtil::PermissionPromptResolved(
       requests, browser_context(), permissions::PermissionAction::GRANTED,
-      base::TimeDelta(),
+      /*prompt_options=*/std::monostate(), base::TimeDelta(),
       permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP,
       /*ui_reason=*/std::nullopt,
       /*variants=*/{},
@@ -680,7 +681,7 @@ TEST_F(PermissionsLikelihoodHistogramTest,
 
   permissions::PermissionUmaUtil::PermissionPromptResolved(
       requests, browser_context(), permissions::PermissionAction::GRANTED,
-      base::TimeDelta(),
+      /*prompt_options=*/std::monostate(), base::TimeDelta(),
       permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP,
       /*ui_reason=*/std::nullopt,
       /*variants=*/{},
@@ -713,7 +714,7 @@ TEST_F(PermissionsLikelihoodHistogramTest,
 
   permissions::PermissionUmaUtil::PermissionPromptResolved(
       requests, browser_context(), permissions::PermissionAction::GRANTED,
-      base::TimeDelta(),
+      /*prompt_options=*/std::monostate(), base::TimeDelta(),
       permissions::PermissionPromptDisposition::ANCHORED_BUBBLE,
       /*ui_reason=*/std::nullopt,
       /*variants=*/{},
@@ -747,7 +748,7 @@ TEST_F(PermissionsLikelihoodHistogramTest,
 
   permissions::PermissionUmaUtil::PermissionPromptResolved(
       requests, browser_context(), permissions::PermissionAction::GRANTED,
-      base::TimeDelta(),
+      /*prompt_options=*/std::monostate(), base::TimeDelta(),
       permissions::PermissionPromptDisposition::ANCHORED_BUBBLE,
       /*ui_reason=*/std::nullopt,
       /*variants=*/{},
@@ -780,7 +781,7 @@ TEST_F(PermissionsLikelihoodHistogramTest,
 
   permissions::PermissionUmaUtil::PermissionPromptResolved(
       requests, browser_context(), permissions::PermissionAction::GRANTED,
-      base::TimeDelta(),
+      /*prompt_options=*/std::monostate(), base::TimeDelta(),
       permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP,
       /*ui_reason=*/std::nullopt,
       /*variants=*/{},
@@ -813,7 +814,7 @@ TEST_F(PermissionsLikelihoodHistogramTest,
 
   permissions::PermissionUmaUtil::PermissionPromptResolved(
       requests, browser_context(), permissions::PermissionAction::GRANTED,
-      base::TimeDelta(),
+      /*prompt_options=*/std::monostate(), base::TimeDelta(),
       permissions::PermissionPromptDisposition::ANCHORED_BUBBLE,
       /*ui_reason=*/std::nullopt,
       /*variants=*/{},
@@ -846,7 +847,7 @@ TEST_F(PermissionsLikelihoodHistogramTest,
 
   permissions::PermissionUmaUtil::PermissionPromptResolved(
       requests, browser_context(), permissions::PermissionAction::GRANTED,
-      base::TimeDelta(),
+      /*prompt_options=*/std::monostate(), base::TimeDelta(),
       permissions::PermissionPromptDisposition::ANCHORED_BUBBLE,
       /*ui_reason=*/std::nullopt,
       /*variants=*/{},
@@ -881,7 +882,7 @@ TEST_F(PermissionsLikelihoodHistogramTest,
 
   permissions::PermissionUmaUtil::PermissionPromptResolved(
       requests, browser_context(), permissions::PermissionAction::GRANTED,
-      base::TimeDelta(),
+      /*prompt_options=*/std::monostate(), base::TimeDelta(),
       permissions::PermissionPromptDisposition::ANCHORED_BUBBLE,
       /*ui_reason=*/std::nullopt,
       /*variants=*/{},
@@ -916,7 +917,7 @@ TEST_F(PermissionsLikelihoodHistogramTest,
 
   permissions::PermissionUmaUtil::PermissionPromptResolved(
       requests, browser_context(), permissions::PermissionAction::GRANTED,
-      base::TimeDelta(),
+      /*prompt_options=*/std::monostate(), base::TimeDelta(),
       permissions::PermissionPromptDisposition::ANCHORED_BUBBLE,
       /*ui_reason=*/std::nullopt,
       /*variants=*/{},
@@ -951,7 +952,7 @@ TEST_F(PermissionsLikelihoodHistogramTest,
 
   permissions::PermissionUmaUtil::PermissionPromptResolved(
       requests, browser_context(), permissions::PermissionAction::GRANTED,
-      base::TimeDelta(),
+      /*prompt_options=*/std::monostate(), base::TimeDelta(),
       permissions::PermissionPromptDisposition::ANCHORED_BUBBLE,
       /*ui_reason=*/std::nullopt,
       /*variants=*/{},
@@ -986,7 +987,7 @@ TEST_F(PermissionsLikelihoodHistogramTest,
 
   permissions::PermissionUmaUtil::PermissionPromptResolved(
       requests, browser_context(), permissions::PermissionAction::GRANTED,
-      base::TimeDelta(),
+      /*prompt_options=*/std::monostate(), base::TimeDelta(),
       permissions::PermissionPromptDisposition::ANCHORED_BUBBLE,
       /*ui_reason=*/std::nullopt,
       /*variants=*/{},
