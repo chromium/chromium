@@ -175,6 +175,7 @@ input::-webkit-search-cancel-button {
 :is(input, textarea)::placeholder {
   color: var(--color-searchbox-placeholder);
   opacity: var(--placeholder-opacity);
+  white-space: nowrap;
 }
 
 :is(input, textarea):focus::placeholder {
