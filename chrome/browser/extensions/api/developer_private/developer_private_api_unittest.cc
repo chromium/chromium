@@ -2293,7 +2293,7 @@ TEST_F(DeveloperPrivateApiUnitTest, ExtensionUpdatedEventOnPermissionsChange) {
 
   permissions_test_util::RevokeOptionalPermissionsAndWaitForCompletion(
       profile(), *dummy_extension, permissions,
-      PermissionsUpdater::REMOVE_HARD);
+      PermissionsUpdater::RemoveType::kHard);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(WasItemChangedEventDispatched(
       test_observer, dummy_extension->id(),

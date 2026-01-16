@@ -188,7 +188,7 @@ bool UnpackedInstaller::LoadFromCommandLine(const base::FilePath& path_in,
   }
 
   extension()->permissions_data()->BindToCurrentThread();
-  PermissionsUpdater(browser_context_, PermissionsUpdater::INIT_FLAG_TRANSIENT)
+  PermissionsUpdater(browser_context_, PermissionsUpdater::InitFlag::kTransient)
       .InitializePermissions(extension());
   StartInstallChecks();
 

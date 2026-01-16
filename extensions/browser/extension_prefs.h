@@ -529,7 +529,7 @@ class ExtensionPrefs : public KeyedService {
   void SetActiveBit(const ExtensionId& extension_id, bool active);
 
   // Returns the granted permission set for the extension with `extension_id`,
-  // and NULL if no preferences were found for `extension_id`.
+  // and nullptr if no preferences were found for `extension_id`.
   // This passes ownership of the returned set to the caller.
   std::unique_ptr<PermissionSet> GetGrantedPermissions(
       const ExtensionId& extension_id) const;

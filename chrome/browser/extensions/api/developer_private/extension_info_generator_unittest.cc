@@ -1007,8 +1007,9 @@ TEST_F(ExtensionInfoGeneratorUnitTest,
     // Revoking the optional permissions should remove the granted API
     // permission from the active set.
     PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
-    updater.RevokeOptionalPermissions(
-        *extension, delta, PermissionsUpdater::REMOVE_SOFT, base::DoNothing());
+    updater.RevokeOptionalPermissions(*extension, delta,
+                                      PermissionsUpdater::RemoveType::kSoft,
+                                      base::DoNothing());
     waiter.WaitForExtensionPermissionsUpdate();
     // Make sure the extension's active permissions reflect the change.
     active_permissions =
@@ -1093,8 +1094,9 @@ TEST_F(ExtensionInfoGeneratorUnitTest, RevokedOptionalHostPermissionsInfoTest) {
                         URLPatternSet({host}), URLPatternSet());
 
     PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
-    updater.RevokeOptionalPermissions(
-        *extension, delta, PermissionsUpdater::REMOVE_SOFT, base::DoNothing());
+    updater.RevokeOptionalPermissions(*extension, delta,
+                                      PermissionsUpdater::RemoveType::kSoft,
+                                      base::DoNothing());
     waiter.WaitForExtensionPermissionsUpdate();
 
     // Make sure the extension's active permissions reflect the change.

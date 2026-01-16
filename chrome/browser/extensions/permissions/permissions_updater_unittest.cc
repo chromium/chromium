@@ -166,7 +166,8 @@ TEST_F(PermissionsUpdaterTest, GrantAndRevokeOptionalPermissions) {
 
     PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
     PermissionsUpdater(profile()).RevokeOptionalPermissions(
-        *extension, delta, PermissionsUpdater::REMOVE_SOFT, base::DoNothing());
+        *extension, delta, PermissionsUpdater::RemoveType::kSoft,
+        base::DoNothing());
     waiter.WaitForExtensionPermissionsUpdate(base::BindOnce(
         [](scoped_refptr<const Extension> extension, PermissionSet* delta,
            const Extension& actual_extension,
@@ -259,7 +260,7 @@ TEST_F(PermissionsUpdaterTest, RevokingPermissions) {
     // The extension should still have the "cookies" permission.
     permissions_test_util::RevokeOptionalPermissionsAndWaitForCompletion(
         profile(), *extension, *api_permission_set(APIPermissionID::kTab),
-        PermissionsUpdater::REMOVE_HARD);
+        PermissionsUpdater::RemoveType::kHard);
     EXPECT_FALSE(permissions->HasAPIPermission(APIPermissionID::kTab));
     granted_permissions = prefs->GetGrantedPermissions(extension->id());
     EXPECT_FALSE(granted_permissions->HasAPIPermission(APIPermissionID::kTab));
@@ -405,18 +406,18 @@ TEST_F(PermissionsUpdaterTest,
   EXPECT_EQ(optional_permissions,
             *prefs->GetGrantedPermissions(extension->id()));
 
-  // Removing permissions with REMOVE_SOFT should not remove the permission
+  // Removing permissions with kSoft should not remove the permission
   // from runtime-granted permissions or granted permissions; this happens when
   // the extension opts into lower privilege.
   permissions_test_util::RevokeOptionalPermissionsAndWaitForCompletion(
       profile(), *extension, optional_permissions,
-      PermissionsUpdater::REMOVE_SOFT);
+      PermissionsUpdater::RemoveType::kSoft);
   EXPECT_EQ(optional_permissions,
             *prefs->GetRuntimeGrantedPermissions(extension->id()));
   EXPECT_EQ(optional_permissions,
             *prefs->GetGrantedPermissions(extension->id()));
 
-  // Removing permissions with REMOVE_HARD should remove the permission from
+  // Removing permissions with kHard should remove the permission from
   // runtime-granted and granted permissions; this happens when the user chooses
   // to revoke the permission.
   // Note: we need to add back the permission first, so it shows up as a
@@ -426,7 +427,7 @@ TEST_F(PermissionsUpdaterTest,
       profile(), *extension, optional_permissions);
   permissions_test_util::RevokeOptionalPermissionsAndWaitForCompletion(
       profile(), *extension, optional_permissions,
-      PermissionsUpdater::REMOVE_HARD);
+      PermissionsUpdater::RemoveType::kHard);
   EXPECT_TRUE(prefs->GetRuntimeGrantedPermissions(extension->id())->IsEmpty());
   EXPECT_TRUE(prefs->GetGrantedPermissions(extension->id())->IsEmpty());
 }

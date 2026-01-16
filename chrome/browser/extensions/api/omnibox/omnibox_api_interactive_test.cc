@@ -1070,7 +1070,7 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest,
       profile(), *extension,
       PermissionSet(api_permissions.Clone(), ManifestPermissionSet(),
                     URLPatternSet(), URLPatternSet()),
-      PermissionsUpdater::RemoveType::REMOVE_SOFT);
+      PermissionsUpdater::RemoveType::kSoft);
   EXPECT_FALSE(
       turl_service->GetUnscopedModeExtensionIds().contains(extension_id));
 }

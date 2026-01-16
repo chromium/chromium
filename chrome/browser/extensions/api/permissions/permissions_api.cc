@@ -261,7 +261,8 @@ ExtensionFunction::ResponseAction PermissionsRemoveFunction::Run() {
 
   PermissionsUpdater(browser_context())
       .RevokeOptionalPermissions(
-          *extension(), *permissions_to_revoke, PermissionsUpdater::REMOVE_SOFT,
+          *extension(), *permissions_to_revoke,
+          PermissionsUpdater::RemoveType::kSoft,
           base::BindOnce(
               &PermissionsRemoveFunction::Respond, this,
               ArgumentList(api::permissions::Remove::Results::Create(true))));

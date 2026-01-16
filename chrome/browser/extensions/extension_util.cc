@@ -278,7 +278,7 @@ std::unique_ptr<const PermissionSet> GetInstallPromptPermissionSetForExtension(
     Profile* profile) {
   // Initialize permissions if they have not already been set so that
   // any transformations are correctly reflected in the install prompt.
-  PermissionsUpdater(profile, PermissionsUpdater::INIT_FLAG_TRANSIENT)
+  PermissionsUpdater(profile, PermissionsUpdater::InitFlag::kTransient)
       .InitializePermissions(extension);
 
   return extension->permissions_data()->active_permissions().Clone();
