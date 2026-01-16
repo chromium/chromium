@@ -18,11 +18,11 @@ std::string BrowserUpdaterClient::GetAppId() {
 }
 
 base::FilePath BrowserUpdaterClient::GetExpectedEcp() {
-  return {};
+  NOTREACHED() << "Chromium Updater does not manage the browser on Linux";
 }
 
 RegistrationRequest BrowserUpdaterClient::GetRegistrationRequest() {
-  return {};
+  NOTREACHED() << "Chromium Updater does not manage the browser on Linux";
 }
 
 bool BrowserUpdaterClient::AppMatches(const UpdateService::AppState& app) {
