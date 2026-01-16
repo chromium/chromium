@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
@@ -93,6 +94,9 @@ class PersistentProtoInternal
  protected:
   // Cleans up the in-memory proto.
   void DeallocProto();
+
+ protected:
+  SEQUENCE_CHECKER(sequence_checker_);
 
  private:
   // Queues a task to delete the backing file.

@@ -54,16 +54,32 @@ class PersistentProto : public internal::PersistentProtoInternal {
 
   ~PersistentProto() override { DeallocProto(); }
 
-  T* get() { return static_cast<T*>(internal::PersistentProtoInternal::get()); }
+  T* get() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return static_cast<T*>(internal::PersistentProtoInternal::get());
+  }
   const T* get() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return static_cast<T*>(internal::PersistentProtoInternal::get());
   }
 
-  T* operator->() { return get(); }
-  const T* operator->() const { return get(); }
+  T* operator->() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return get();
+  }
+  const T* operator->() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return get();
+  }
 
-  T& operator*() { return *get(); }
-  const T& operator*() const { return *get(); }
+  T& operator*() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return *get();
+  }
+  const T& operator*() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return *get();
+  }
 
  private:
   google::protobuf::MessageLite* GetProto() override { return handle_.get(); }
