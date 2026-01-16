@@ -88,8 +88,11 @@ class TabGroupHeader : public TabSlotView,
   // Enables or disables attention indicator on a tab group.
   void SetTabGroupNeedsAttention(bool needs_attention);
 
+  // Gets the intended attention indicator status for a tab group.
+  bool GetTabGroupNeedsAttention();
+
   // Returns whether the attention indicator should be shown.
-  bool GetShowingAttentionIndicator();
+  bool ShouldShowAttentionIndicator();
 
   // Returns the title text for testing.
   std::u16string_view GetTitleTextForTesting() const;
@@ -158,9 +161,6 @@ class TabGroupHeader : public TabSlotView,
   // `TabSlotController::IsGroupCollapsed()`, then the collapsed state has
   // changed in the model and we need to react to that.
   bool is_collapsed_;
-
-  // Determines if the tab group should show the attention indicator.
-  bool needs_attention_ = false;
 
   base::CallbackListSubscription title_text_changed_subscription_;
 

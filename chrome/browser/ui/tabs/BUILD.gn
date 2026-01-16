@@ -150,6 +150,7 @@ if (!is_android) {
   source_set("tab_group") {
     sources = [
       "shared_tab_group_version_upgrade_modal.h",
+      "tab_group_attention_indicator.h",
       "tab_group_deletion_dialog_controller.h",
       "tab_group_desktop.h",
       "tab_group_features.h",
@@ -173,6 +174,7 @@ if (!is_android) {
 
     sources = [
       "shared_tab_group_version_upgrade_modal.cc",
+      "tab_group_attention_indicator.cc",
       "tab_group_deletion_dialog_controller.cc",
       "tab_group_desktop.cc",
       "tab_group_features.cc",

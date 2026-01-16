@@ -5,6 +5,8 @@
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/tabs/tab_group_attention_indicator.h"
+#include "chrome/browser/ui/tabs/tab_group_features.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/tabs/recent_activity_bubble_dialog_view.h"
@@ -16,6 +18,7 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/signin/public/base/avatar_icon_util.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_group.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -53,6 +56,11 @@ class TabGroupHeaderInteractiveUiTest
     }
     return browser()->tab_strip_model()->AddToNewGroup(tab_indices);
   }
+
+  TabStrip* GetTabStrip() {
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->horizontal_tab_strip_for_testing();
+  }
 };
 
 // Disable these tests on windows.
@@ -87,4 +95,31 @@ IN_PROC_BROWSER_TEST_F(TabGroupHeaderInteractiveUiTest, OpenEditorBubble) {
                   FinishTabstripAnimations(),
                   MoveMouseTo(kTabGroupHeaderElementId), ClickMouse(action),
                   WaitForShow(kTabGroupEditorBubbleId));
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupHeaderInteractiveUiTest, AttentionIndicator) {
+  tab_groups::TabGroupId group_id = CreateTabGroup({CreateTab()});
+
+  ui_controls::MouseButton action = ui_controls::MouseButton::LEFT;
+
+  RunTestSequence(
+      WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
+      PollViewProperty(kTabGroupCollapsedState, kTabGroupHeaderElementId,
+                       &TabGroupHeader::is_collapsed_for_testing),
+      // Click the group to collapse it.
+      MoveMouseTo(kTabGroupHeaderElementId), ClickMouse(action), Do([&]() {
+        // Set the attention indicator to true.
+        browser()
+            ->tab_strip_model()
+            ->group_model()
+            ->GetTabGroup(group_id)
+            ->GetTabGroupFeatures()
+            ->attention_indicator()
+            ->set_has_attention(true);
+      }),
+      Do([&]() {
+        EXPECT_TRUE(GetTabStrip()
+                        ->group_header(group_id)
+                        ->ShouldShowAttentionIndicator());
+      }));
 }
