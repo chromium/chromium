@@ -68,13 +68,6 @@
       0, topToolbarHeight, originFrame.size.width, contentSnapshot.size.height);
   contentImageView.frame = imageViewOriginFrame;
 
-  // Create the content snapshot's destination frame.
-  CGFloat destinationFrameAspectRatio =
-      destinationFrame.size.width / destinationFrame.size.height;
-  CGRect imageViewDestinationFrame =
-      CGRectMake(0, topToolbarHeight, originFrame.size.width,
-                 originFrame.size.width / destinationFrameAspectRatio);
-
   // Needed so that the contentImageView's innerImageView frame is not
   // CGRectZero when the animation starts.
   [contentImageView setNeedsLayout];
@@ -147,12 +140,6 @@
     activeGridBlurView.effect = nil;
     activeGridView.transform = CGAffineTransformIdentity;
     pinnedTabsView.transform = CGAffineTransformIdentity;
-
-    // Needed so that the contentImageView's innerImageView frame is
-    // animated.
-    contentImageView.frame = imageViewDestinationFrame;
-    [contentImageView setNeedsLayout];
-    [contentImageView layoutIfNeeded];
 
     // Scale animated view to destination frame.
     animatedView.transform = CGAffineTransformMakeScale(
