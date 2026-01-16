@@ -21,6 +21,8 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/input/web_gesture_event.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -34,13 +36,41 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
+namespace {
+
+class ZoomBlockingWebView : public views::WebView {
+  METADATA_HEADER(ZoomBlockingWebView, views::WebView)
+
+ public:
+  explicit ZoomBlockingWebView(content::BrowserContext* browser_context)
+      : views::WebView(browser_context) {}
+  ~ZoomBlockingWebView() override = default;
+
+  // Content::WebContentsDelegate:
+  bool PreHandleGestureEvent(content::WebContents* source,
+                             const blink::WebGestureEvent& event) override {
+    // Block pinch-to-zoom and double-tap-to-zoom.
+    // TODO(crbug.com/475836809) Disable this for all webviews.
+    if (blink::WebInputEvent::IsPinchGestureEventType(event.GetType()) ||
+        (event.GetType() == blink::WebInputEvent::Type::kGestureDoubleTap)) {
+      return true;
+    }
+    return views::WebView::PreHandleGestureEvent(source, event);
+  }
+};
+
+BEGIN_METADATA(ZoomBlockingWebView)
+END_METADATA
+
+}  // namespace
+
 WebUIToolbarWebView::WebUIToolbarWebView(
     BrowserWindowInterface* browser,
     chrome::BrowserCommandController* controller)
     : browser_(browser), controller_(controller), reload_control_(this) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  auto web_view = std::make_unique<views::WebView>(browser->GetProfile());
+  auto web_view = std::make_unique<ZoomBlockingWebView>(browser->GetProfile());
   const GURL kUrl(chrome::kChromeUIWebUIToolbarURL);
   auto* web_contents = web_view->GetWebContents(kUrl);
   // PLM has to be initialized before loading the URL.
