@@ -20,8 +20,10 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -133,6 +135,8 @@ public class FullscreenVideoPictureInPictureControllerTest {
     /** Tests that PiP is left when the renderer crashes. */
     @Test
     @MediumTest
+    // TODO(crbug.com/473893732): Fix the clickNode.
+    @DisableFeatures(ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2)
     public void testExitOnCrash() throws Throwable {
         testExitOn(() -> WebContentsUtils.simulateRendererKilled(getWebContents()));
     }
@@ -190,6 +194,8 @@ public class FullscreenVideoPictureInPictureControllerTest {
     @Test
     @MediumTest
     @DisabledTest(message = "https://crbug.com/1429112")
+    // TODO(crbug.com/473893732): Fix the clickNode.
+    @DisableFeatures(ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2)
     public void testReenterPip() throws Throwable {
         enterFullscreen();
         triggerAutoPiPAndWait();

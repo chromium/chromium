@@ -77,6 +77,8 @@ public class PopupMultiwindowPTTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.ONLY_TABLET)
+    // TODO(crbug.com/473893732): Fix the clickNode.
+    @DisableFeatures(ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2)
     public void testBasicIncognito() {
         final IncognitoNewTabPageStation incognitoEntryPoint =
                 mEntryPage.openNewIncognitoTabOrWindowFast();

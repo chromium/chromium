@@ -448,6 +448,8 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
+    // TODO(crbug.com/473893732): Fix the clickNode.
+    @DisableFeatures(ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2)
     public void testContextMenuEntriesBeforeFirstRun() throws Exception {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
         // Mark the first run as not completed. This has to be done after we start the intent,

@@ -16,9 +16,11 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.content.WebContentsFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -68,6 +70,8 @@ public class SelectPopupOtherContentViewTest {
     @Test
     @LargeTest
     @Feature({"Browser"})
+    // TODO(crbug.com/473893732): Fix the clickNode.
+    @DisableFeatures(ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2)
     public void testPopupNotClosedByOtherContentView() throws Exception, Throwable {
         // Load the test page.
         WebPageStation page = mActivityTestRule.startOnUrl(SELECT_URL);

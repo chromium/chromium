@@ -121,7 +121,11 @@ public class TouchToFillCreditCardTest {
     // TODO(crbug.com/462636368): Turn on the flag after blink bug is fixed.
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)
+    @DisableFeatures({
+        ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING,
+        // TODO(crbug.com/473893732): Fix the clickNode.
+        ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2
+    })
     public void testSelectingLocalCard() throws TimeoutException {
         // Focus the field to bring up the touch to fill for credit cards.
         DOMUtils.clickNode(mWebContents, CREDIT_CARD_NUMBER_FIELD_ID);
