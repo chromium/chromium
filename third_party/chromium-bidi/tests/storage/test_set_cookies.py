@@ -401,7 +401,6 @@ async def test_cookies_set_params_cookie_cdp_specific_fields(
                                               # CDP-specific fields.
                                               'goog:url': SOME_URL,
                                               'goog:priority': 'High',
-                                              'goog:sameParty': True,
                                               'goog:sourceScheme': 'Secure',
                                               'goog:sourcePort': 1234
                                           },
@@ -433,9 +432,6 @@ async def test_cookies_set_params_cookie_cdp_specific_fields(
                     'hasCrossSiteAncestor': False,
                 },
                 'goog:priority': 'High',
-                # `someParty` is not set for whatever reason.
-                # TODO: add test for `sameParty: true`.
-                'goog:sameParty': False,
                 'goog:session': True,
                 'goog:sourcePort': 1234,
                 'goog:sourceScheme': 'Secure',

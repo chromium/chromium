@@ -67,7 +67,6 @@ async def test_cookies_get_result_cdp_specific_fields(websocket, context_id):
         'cookies': [
             cookie | {
                 'goog:priority': 'Medium',
-                'goog:sameParty': False,
                 'goog:session': True,
                 'goog:sourcePort': 443,
                 'goog:sourceScheme': 'Secure',

@@ -201,7 +201,6 @@ export function cdpToBiDiCookie(
   // Extending with CDP-specific properties with `goog:` prefix.
   result[`goog:session`] = cookie.session;
   result[`goog:priority`] = cookie.priority;
-  result[`goog:sameParty`] = cookie.sameParty;
   result[`goog:sourceScheme`] = cookie.sourceScheme;
   result[`goog:sourcePort`] = cookie.sourcePort;
   if (cookie.partitionKey !== undefined) {
@@ -263,9 +262,6 @@ export function bidiToCdpCookie(
   }
   if (params.cookie[`goog:priority`] !== undefined) {
     result.priority = params.cookie[`goog:priority`];
-  }
-  if (params.cookie[`goog:sameParty`] !== undefined) {
-    result.sameParty = params.cookie[`goog:sameParty`];
   }
   if (params.cookie[`goog:sourceScheme`] !== undefined) {
     result.sourceScheme = params.cookie[`goog:sourceScheme`];
