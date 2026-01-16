@@ -59,7 +59,6 @@
 #include "components/permissions/constants.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
-#include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
@@ -1888,29 +1887,22 @@ void ContentSettingQuietRequestBubbleModel::OnDoneButtonClicked() {
   CHECK_GT(manager->Requests().size(), 0u);
   DCHECK_EQ(manager->Requests().size(), 1u);
   auto quiet_ui_reason = manager->ReasonForUsingQuietUi();
-  const permissions::PermissionRequest& request = *manager->Requests()[0];
+  const permissions::RequestType request_type =
+      manager->Requests()[0]->request_type();
   DCHECK(quiet_ui_reason);
-  DCHECK(request.request_type() == permissions::RequestType::kNotifications ||
-         request.request_type() == permissions::RequestType::kGeolocation);
-
-  // GEOLOCATION_WITH_OPTIONS is currently not supported on desktop.
-  //
-  // TODO(crbug.com/430494523): Plumb through the selected PromptOptions once it
-  // is.
-  CHECK_NE(request.GetContentSettingsType(),
-           ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
-
+  DCHECK(request_type == permissions::RequestType::kNotifications ||
+         request_type == permissions::RequestType::kGeolocation);
   switch (*quiet_ui_reason) {
     case QuietUiReason::kEnabledInPrefs:
     case QuietUiReason::kTriggeredByCrowdDeny:
     case QuietUiReason::kServicePredictedVeryUnlikelyGrant:
     case QuietUiReason::kOnDevicePredictedVeryUnlikelyGrant:
-      manager->Accept(/*prompt_options=*/std::monostate());
+      manager->Accept();
       break;
     case QuietUiReason::kTriggeredDueToAbusiveRequests:
     case QuietUiReason::kTriggeredDueToAbusiveContent:
     case QuietUiReason::kTriggeredDueToDisruptiveBehavior:
-      manager->Deny(/*prompt_options=*/std::monostate());
+      manager->Deny();
       base::RecordAction(base::UserMetricsAction(
           "Notifications.Quiet.ContinueBlockingClicked"));
       break;
@@ -1935,9 +1927,7 @@ void ContentSettingQuietRequestBubbleModel::OnCancelButtonClicked() {
     case QuietUiReason::kTriggeredDueToAbusiveRequests:
     case QuietUiReason::kTriggeredDueToAbusiveContent:
     case QuietUiReason::kTriggeredDueToDisruptiveBehavior:
-      CHECK_EQ(manager->Requests()[0]->request_type(),
-               permissions::RequestType::kNotifications);
-      manager->Accept(/*prompt_options=*/std::monostate());
+      manager->Accept();
       base::RecordAction(
           base::UserMetricsAction("Notifications.Quiet.ShowForSiteClicked"));
       break;

@@ -36,7 +36,7 @@ ExclusiveAccessPermissionPrompt::GetPromptDisposition() const {
 }
 
 void ExclusiveAccessPermissionPrompt::DismissScrim() {
-  delegate_->Dismiss(/*prompt_options=*/std::monostate());
+  delegate_->Dismiss();
 }
 
 base::WeakPtr<permissions::PermissionPrompt::Delegate>

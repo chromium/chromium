@@ -4,7 +4,6 @@
 
 #include "components/permissions/prediction_service/prediction_service.h"
 
-#include <variant>
 #include <vector>
 
 #include "base/base_paths.h"
@@ -35,7 +34,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
@@ -477,15 +475,9 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
     EXPECT_EQ(expected_prediction_likelihood,
               manager->prediction_grant_likelihood_for_testing());
     if (permission_action == PermissionAction::DISMISSED) {
-      manager->Dismiss(/*prompt_options=*/std::monostate());
+      manager->Dismiss();
     } else if (permission_action == PermissionAction::GRANTED) {
-      PromptOptions prompt_options =
-          manager->Requests()[0]->GetContentSettingsType() ==
-                  ContentSettingsType::GEOLOCATION_WITH_OPTIONS
-              ? PromptOptions(GeolocationPromptOptions(
-                    {.selected_accuracy = GeolocationAccuracy::kPrecise}))
-              : std::monostate();
-      manager->Accept(prompt_options);
+      manager->Accept();
     }
   }
 
@@ -1902,10 +1894,7 @@ IN_PROC_BROWSER_TEST_P(PredictionServiceGeolocationAccuracyBrowserTest,
   EXPECT_EQ(GetParam().expected_accuracy,
             manager->GetInitialGeolocationAccuracySelection());
 
-  // It doesn't actually matter what the user selects for the purpose of this
-  // test.
-  manager->Accept(GeolocationPromptOptions{.selected_accuracy =
-                                               GeolocationAccuracy::kPrecise});
+  manager->Accept();
 
   auto entries =
       ukm_recorder.GetEntriesByName(ukm::builders::Permission::kEntryName);

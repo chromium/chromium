@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <variant>
-
 #include "base/command_line.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -1056,7 +1054,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
   EXPECT_TRUE(manager->IsRequestInProgress());
   EXPECT_TRUE(observer.request_shown());
 
-  manager->Accept(/*prompt_options=*/std::monostate());
+  manager->Accept();
 
   EXPECT_EQ(true, content::EvalJs(main_rfh, kCheckMicrophone,
                                   content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1));
@@ -1189,7 +1187,7 @@ class PermissionsSecurityModelHTTPS
     EXPECT_TRUE(manager->IsRequestInProgress());
     EXPECT_TRUE(observer.request_shown());
 
-    manager->Accept(/*prompt_options=*/std::monostate());
+    manager->Accept();
   }
 
  private:

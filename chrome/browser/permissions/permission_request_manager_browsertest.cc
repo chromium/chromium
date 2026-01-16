@@ -42,7 +42,6 @@
 #include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 #include "components/permissions/request_type.h"
-#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/permissions/test/mock_permission_ui_selector.h"
@@ -950,7 +949,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   EXPECT_EQ(1u, GetPermissionRequestManager()->Requests().size());
 
   // Cleanup remaining request. And check that this was the last request.
-  GetPermissionRequestManager()->Dismiss(/*prompt_options=*/std::monostate());
+  GetPermissionRequestManager()->Dismiss();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0u, GetPermissionRequestManager()->Requests().size());
 }
@@ -989,7 +988,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   EXPECT_THAT(manager->permission_request_relevance_for_testing(),
               Optional(kPermissionRequestRelevance));
 
-  manager->Dismiss(/*prompt_options=*/std::monostate());
+  manager->Dismiss();
   base::RunLoop().RunUntilIdle();
 }
 
@@ -1025,7 +1024,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   EXPECT_EQ(manager->prediction_grant_likelihood_for_testing(), std::nullopt);
   EXPECT_EQ(manager->permission_request_relevance_for_testing(), std::nullopt);
 
-  manager->Dismiss(/*prompt_options=*/std::monostate());
+  manager->Dismiss();
   base::RunLoop().RunUntilIdle();
 }
 
@@ -1049,7 +1048,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   auto disposition_from_prompt_bubble =
       manager->GetCurrentPrompt()->GetPromptDisposition();
 
-  manager->Dismiss(/*prompt_options=*/std::monostate());
+  manager->Dismiss();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(disposition.has_value());
@@ -1093,7 +1092,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
 
   //  DCHECK failure if Closing executed on HIDDEN PermissionRequestManager.
   browser()->tab_strip_model()->ActivateTabAt(0);
-  manager->Dismiss(/*prompt_options=*/std::monostate());
+  manager->Dismiss();
   base::RunLoop().RunUntilIdle();
 }
 
@@ -1138,7 +1137,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
         web_contents->GetPrimaryMainFrame(), std::move(request_quiet));
 
     bubble_factory()->WaitForPermissionBubble();
-    GetPermissionRequestManager()->Dismiss(/*prompt_options=*/std::monostate());
+    GetPermissionRequestManager()->Dismiss();
     base::RunLoop().RunUntilIdle();
 
     if (!test.expected_message) {
@@ -1183,7 +1182,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
   EXPECT_EQ(1u, GetPermissionRequestManager()->Requests().size());
 
   // Close first request.
-  GetPermissionRequestManager()->Dismiss(/*prompt_options=*/std::monostate());
+  GetPermissionRequestManager()->Dismiss();
   base::RunLoop().RunUntilIdle();
 
   if (permissions::PermissionUtil::DoesPlatformSupportChip()) {
@@ -1196,7 +1195,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
   EXPECT_EQ(1u, GetPermissionRequestManager()->Requests().size());
 
   // Close second request. No more requests pending
-  GetPermissionRequestManager()->Dismiss(/*prompt_options=*/std::monostate());
+  GetPermissionRequestManager()->Dismiss();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(request1_state.finished);
@@ -1276,7 +1275,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithBackForwardCacheBrowserTest,
   ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
 
   // Cleanup before we delete the requests.
-  GetPermissionRequestManager()->Dismiss(/*prompt_options=*/std::monostate());
+  GetPermissionRequestManager()->Dismiss();
 }
 
 class PermissionRequestManagerOneTimePermissionBrowserTest
@@ -2295,9 +2294,6 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerApproximateLocationBrowserTest,
     base::HistogramTester histograms;
     request_manager->set_auto_response_for_test(
         permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
-    request_manager->set_auto_response_prompt_options_for_test(
-        GeolocationPromptOptions{.selected_accuracy =
-                                     GeolocationAccuracy::kApproximate});
     EXPECT_EQ(RequestPermissionFromCurrentDocumentSync(
                   kApproximateGeolocationDescriptor.Clone()),
               approx_only_permission_result);

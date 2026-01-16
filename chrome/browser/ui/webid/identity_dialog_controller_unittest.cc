@@ -152,17 +152,17 @@ class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
   }
 
   void Accept(permissions::PermissionRequestManager* manager) {
-    manager->Accept(/*prompt_options=*/std::monostate());
+    manager->Accept();
     task_environment()->RunUntilIdle();
   }
 
   void Deny(permissions::PermissionRequestManager* manager) {
-    manager->Deny(/*prompt_options=*/std::monostate());
+    manager->Deny();
     task_environment()->RunUntilIdle();
   }
 
   void Dismiss(permissions::PermissionRequestManager* manager) {
-    manager->Dismiss(/*prompt_options=*/std::monostate());
+    manager->Dismiss();
     task_environment()->RunUntilIdle();
   }
 

@@ -95,7 +95,7 @@ void PermissionPromptNotificationsMac::OnPermissionResult(
       mac_notifications::mojom::RequestPermissionResult;
   switch (result) {
     case RequestPermissionResult::kPermissionGranted:
-      delegate_->Accept(/*prompt_options=*/std::monostate());
+      delegate_->Accept();
       return;
     case RequestPermissionResult::kPermissionPreviouslyDenied: {
       content::RenderFrameHost* rfh =
@@ -104,11 +104,11 @@ void PermissionPromptNotificationsMac::OnPermissionResult(
           ->SetNotificationsWasDeniedBecauseOfSystemPermission();
       // TODO(https://crbug.com/328105508): Consider adding a new result type
       // for this rather than re-using ignore.
-      delegate_->Ignore(/*prompt_options=*/std::monostate());
+      delegate_->Ignore();
       break;
     }
     case RequestPermissionResult::kPermissionDenied:
-      delegate_->Deny(/*prompt_options=*/std::monostate());
+      delegate_->Deny();
       return;
     case RequestPermissionResult::kPermissionPreviouslyGranted:
     case RequestPermissionResult::kRequestFailed:

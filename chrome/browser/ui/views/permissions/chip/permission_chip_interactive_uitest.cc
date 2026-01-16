@@ -4,7 +4,6 @@
 
 #include <algorithm>
 #include <memory>
-#include <variant>
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -261,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarIconOverrideTest,
       permissions::PermissionPromptDisposition::
           LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 
-  test_api_->manager()->Accept(/*prompt_options=*/std::monostate());
+  test_api_->manager()->Accept();
 
   base::RunLoop().RunUntilIdle();
 
@@ -317,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
   EXPECT_TRUE(GetChip()->GetText() ==
               l10n_util::GetStringUTF16(IDS_GEOLOCATION_PERMISSION_CHIP));
 
-  test_api_->manager()->Accept(/*prompt_options=*/std::monostate());
+  test_api_->manager()->Accept();
 
   // Confirmation chip should be visible
   EXPECT_TRUE(GetChip()->GetVisible());
@@ -344,7 +343,7 @@ IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
   EXPECT_EQ(GetChip()->GetText(),
             l10n_util::GetStringUTF16(IDS_NOTIFICATION_PERMISSIONS_CHIP));
 
-  test_api_->manager()->Deny(/*prompt_options=*/std::monostate());
+  test_api_->manager()->Deny();
 
   // After deny, the deny confirmation should be displayed
   EXPECT_TRUE(GetChip()->GetVisible());
@@ -359,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
   RequestPermission(permissions::RequestType::kGeolocation);
   base::RunLoop().RunUntilIdle();
 
-  test_api_->manager()->Accept(/*prompt_options=*/std::monostate());
+  test_api_->manager()->Accept();
 
   RequestPermission(permissions::RequestType::kNotifications);
   base::RunLoop().RunUntilIdle();
@@ -369,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
   EXPECT_EQ(GetChip()->GetText(),
             l10n_util::GetStringUTF16(IDS_NOTIFICATION_PERMISSIONS_CHIP));
 
-  test_api_->manager()->Deny(/*prompt_options=*/std::monostate());
+  test_api_->manager()->Deny();
 
   // After the deny, the deny confirmation should be displayed
   EXPECT_TRUE(GetChip()->GetVisible());
@@ -383,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
   RequestPermission(permissions::RequestType::kGeolocation);
   base::RunLoop().RunUntilIdle();
 
-  test_api_->manager()->Accept(/*prompt_options=*/std::monostate());
+  test_api_->manager()->Accept();
 
   ClickOnChip(GetChip());
 
@@ -413,7 +412,7 @@ IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
   EXPECT_TRUE(GetChip()->GetText() ==
               l10n_util::GetStringUTF16(IDS_GEOLOCATION_PERMISSION_CHIP));
 
-  test_api_->manager()->Accept(/*prompt_options=*/std::monostate());
+  test_api_->manager()->Accept();
   EXPECT_TRUE(GetChip()->GetVisible());
   EXPECT_TRUE(GetChip()->GetText() ==
               l10n_util::GetStringUTF16(
@@ -525,7 +524,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoChangedWithin1mUmaTest,
   InitAndRequestNotification();
   base::HistogramTester histograms;
 
-  test_api_->manager()->Accept(/*prompt_options=*/std::monostate());
+  test_api_->manager()->Accept();
 
   OpenPageInfoAndClickReset();
 
@@ -541,7 +540,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoChangedWithin1mUmaTest,
   InitAndRequestNotification();
   base::HistogramTester histograms;
 
-  test_api_->manager()->Deny(/*prompt_options=*/std::monostate());
+  test_api_->manager()->Deny();
 
   OpenPageInfoAndClickReset();
 
@@ -556,7 +555,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoChangedWithin1mUmaTest, VerifyRevokedUmaMetric) {
   InitAndRequestNotification();
   base::HistogramTester histograms;
 
-  test_api_->manager()->Accept(/*prompt_options=*/std::monostate());
+  test_api_->manager()->Accept();
 
   OpenPageInfoAndTogglePermission();
 
@@ -570,7 +569,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoChangedWithin1mUmaTest, VerifyReallowUmaMetric) {
   InitAndRequestNotification();
   base::HistogramTester histograms;
 
-  test_api_->manager()->Deny(/*prompt_options=*/std::monostate());
+  test_api_->manager()->Deny();
 
   OpenPageInfoAndTogglePermission();
 
@@ -585,7 +584,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoChangedWithin1mUmaTest,
   InitAndRequestNotification();
   base::HistogramTester histograms;
 
-  test_api_->manager()->Deny(/*prompt_options=*/std::monostate());
+  test_api_->manager()->Deny();
 
   content::WebContents* web_contents = GetLocationBarView()->GetWebContents();
   const GURL& origin = permissions::PermissionUtil::GetLastCommittedOriginAsURL(
@@ -626,7 +625,7 @@ IN_PROC_BROWSER_TEST_F(ChipGestureSensitiveEnabledInteractiveTest,
       permissions::PermissionPromptDisposition::
           LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 
-  test_api_->manager()->Accept(/*prompt_options=*/std::monostate());
+  test_api_->manager()->Accept();
   base::RunLoop().RunUntilIdle();
 
   RequestPermission(permissions::RequestType::kNotifications);
@@ -636,7 +635,7 @@ IN_PROC_BROWSER_TEST_F(ChipGestureSensitiveEnabledInteractiveTest,
       permissions::PermissionPromptDisposition::
           LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 
-  test_api_->manager()->Accept(/*prompt_options=*/std::monostate());
+  test_api_->manager()->Accept();
   base::RunLoop().RunUntilIdle();
 
   RequestPermission(permissions::RequestType::kMidiSysex);
@@ -679,7 +678,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
       permissions::PermissionPromptDisposition::
           LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 
-  test_api_->manager()->Ignore(/*prompt_options=*/std::monostate());
+  test_api_->manager()->Ignore();
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histograms.ExpectBucketCount(
@@ -698,7 +697,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
       permissions::PermissionPromptDisposition::
           LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 
-  test_api_->manager()->Accept(/*prompt_options=*/std::monostate());
+  test_api_->manager()->Accept();
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histograms.ExpectBucketCount(
@@ -717,7 +716,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
       permissions::PermissionPromptDisposition::
           LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 
-  test_api_->manager()->Deny(/*prompt_options=*/std::monostate());
+  test_api_->manager()->Deny();
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histograms.ExpectBucketCount(
@@ -738,7 +737,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
   base::TimeDelta duration = base::Milliseconds(42);
   test_api_->manager()->set_time_to_decision_for_test(duration);
 
-  test_api_->manager()->Dismiss(/*prompt_options=*/std::monostate());
+  test_api_->manager()->Dismiss();
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histograms.ExpectBucketCount(
@@ -769,7 +768,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
 
     ClickOnChip(GetChip());
 
-    test_api_->manager()->Ignore(/*prompt_options=*/std::monostate());
+    test_api_->manager()->Ignore();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -812,7 +811,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
 
     permission_prompt_bubble->managed_button_clicked_for_test();
 
-    test_api_->manager()->Ignore(/*prompt_options=*/std::monostate());
+    test_api_->manager()->Ignore();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -847,7 +846,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
 
     ClickOnChip(GetChip());
 
-    test_api_->manager()->Ignore(/*prompt_options=*/std::monostate());
+    test_api_->manager()->Ignore();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -883,7 +882,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
 
     ClickOnChip(GetChip());
 
-    test_api_->manager()->Accept(/*prompt_options=*/std::monostate());
+    test_api_->manager()->Accept();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -913,7 +912,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
 
     ClickOnChip(GetChip());
 
-    test_api_->manager()->AcceptThisTime(/*prompt_options=*/std::monostate());
+    test_api_->manager()->AcceptThisTime();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -943,7 +942,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
 
     ClickOnChip(GetChip());
 
-    test_api_->manager()->Deny(/*prompt_options=*/std::monostate());
+    test_api_->manager()->Deny();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -973,7 +972,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
 
     ClickOnChip(GetChip());
 
-    test_api_->manager()->Dismiss(/*prompt_options=*/std::monostate());
+    test_api_->manager()->Dismiss();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -1012,7 +1011,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
 
     permission_prompt_bubble->learn_more_button_clicked_for_test();
 
-    test_api_->manager()->Ignore(/*prompt_options=*/std::monostate());
+    test_api_->manager()->Ignore();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -1051,7 +1050,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
       permissions::PermissionPromptDisposition::
           LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP);
 
-  test_api_->manager()->Accept(/*prompt_options=*/std::monostate());
+  test_api_->manager()->Accept();
   base::RunLoop().RunUntilIdle();
 
   RequestPermission(permissions::RequestType::kNotifications);
@@ -1061,7 +1060,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
       permissions::PermissionPromptDisposition::
           LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP);
 
-  test_api_->manager()->Accept(/*prompt_options=*/std::monostate());
+  test_api_->manager()->Accept();
   base::RunLoop().RunUntilIdle();
 
   RequestPermission(permissions::RequestType::kMidiSysex);
@@ -1159,7 +1158,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
 
   EXPECT_TRUE(manager->IsRequestInProgress());
 
-  manager->Accept(/*prompt_options=*/std::monostate());
+  manager->Accept();
 
   EXPECT_EQ(true, content::EvalJs(main_rfh, kCheckNotifications));
   EXPECT_FALSE(manager->IsRequestInProgress());
@@ -1236,7 +1235,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
   EXPECT_EQ("default", content::EvalJs(main_rfh, kRequestNotifications));
 
   EXPECT_TRUE(manager->IsRequestInProgress());
-  manager->Accept(/*prompt_options=*/std::monostate());
+  manager->Accept();
 
   EXPECT_EQ(true, content::EvalJs(main_rfh, kCheckNotifications));
   EXPECT_FALSE(manager->IsRequestInProgress());
@@ -1457,7 +1456,7 @@ IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveUITest,
     ASSERT_TRUE(disposition.has_value());
     EXPECT_EQ(permissions::PermissionPromptDisposition::ANCHORED_BUBBLE,
               disposition.value());
-    manager->Dismiss(/*prompt_options=*/std::monostate());
+    manager->Dismiss();
   }
 
   // Request permission with user gesture
@@ -1559,7 +1558,7 @@ IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveUITest,
   EXPECT_TRUE(manager->IsRequestInProgress());
   EXPECT_TRUE(chip_controller->IsPermissionPromptChipVisible());
 
-  manager->Accept(/*prompt_options=*/std::monostate());
+  manager->Accept();
 
   EXPECT_EQ(true, content::EvalJs(main_rfh, kCheckNotifications));
 }

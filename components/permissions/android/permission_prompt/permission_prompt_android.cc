@@ -78,24 +78,29 @@ PermissionPromptAndroid::GetEmbeddedPromptVariant() const {
 }
 
 void PermissionPromptAndroid::Dismiss(const PromptOptions& prompt_options) {
-  delegate_->Dismiss(prompt_options);
+  delegate_->SetPromptOptions(prompt_options);
+  delegate_->Dismiss();
 }
 
 void PermissionPromptAndroid::Accept(const PromptOptions& prompt_options) {
-  delegate_->Accept(prompt_options);
+  delegate_->SetPromptOptions(prompt_options);
+  delegate_->Accept();
 }
 
 void PermissionPromptAndroid::AcceptThisTime(
     const PromptOptions& prompt_options) {
-  delegate_->AcceptThisTime(prompt_options);
+  delegate_->SetPromptOptions(prompt_options);
+  delegate_->AcceptThisTime();
 }
 
 void PermissionPromptAndroid::Deny(const PromptOptions& prompt_options) {
-  delegate_->Deny(prompt_options);
+  delegate_->SetPromptOptions(prompt_options);
+  delegate_->Deny();
 }
 
 void PermissionPromptAndroid::Ignore(const PromptOptions& prompt_options) {
-  delegate_->Ignore(prompt_options);
+  delegate_->SetPromptOptions(prompt_options);
+  delegate_->Ignore();
 }
 
 void PermissionPromptAndroid::SetManageClicked() {

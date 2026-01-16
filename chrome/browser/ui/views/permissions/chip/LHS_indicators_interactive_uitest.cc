@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -28,8 +27,6 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
-#include "components/permissions/request_type.h"
-#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "components/permissions/test/mock_permission_ui_selector.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "content/public/test/browser_test.h"
@@ -527,7 +524,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest,
   RequestPermission(permissions::RequestType::kNotifications);
   GetLocationBarView(browser())->GetChipController()->DoNotCollapseForTesting();
 
-  test_api()->manager()->Accept(/*prompt_options=*/std::monostate());
+  test_api()->manager()->Accept();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetLocationBarView(browser())
                   ->GetChipController()
@@ -554,7 +551,7 @@ IN_PROC_BROWSER_TEST_F(
   RequestPermission(permissions::RequestType::kNotifications);
   GetLocationBarView(browser())->GetChipController()->DoNotCollapseForTesting();
 
-  test_api()->manager()->Accept(/*prompt_options=*/std::monostate());
+  test_api()->manager()->Accept();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetLocationBarView(browser())
                   ->GetChipController()
@@ -581,7 +578,7 @@ IN_PROC_BROWSER_TEST_F(
   RequestPermission(permissions::RequestType::kNotifications);
   GetLocationBarView(browser())->GetChipController()->DoNotCollapseForTesting();
 
-  test_api()->manager()->Accept(/*prompt_options=*/std::monostate());
+  test_api()->manager()->Accept();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetLocationBarView(browser())
                   ->GetChipController()
@@ -606,7 +603,7 @@ IN_PROC_BROWSER_TEST_F(
   RequestPermission(permissions::RequestType::kNotifications);
   GetLocationBarView(browser())->GetChipController()->DoNotCollapseForTesting();
 
-  test_api()->manager()->Accept(/*prompt_options=*/std::monostate());
+  test_api()->manager()->Accept();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetLocationBarView(browser())
                   ->GetChipController()
@@ -626,13 +623,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest,
   RequestPermission(permissions::RequestType::kGeolocation);
   GetLocationBarView(browser())->GetChipController()->DoNotCollapseForTesting();
 
-  PromptOptions prompt_options =
-      base::FeatureList::IsEnabled(
-          content_settings::features::kApproximateGeolocationPermission)
-          ? PromptOptions(GeolocationPromptOptions{
-                .selected_accuracy = GeolocationAccuracy::kPrecise})
-          : std::monostate();
-  test_api()->manager()->Accept(prompt_options);
+  test_api()->manager()->Accept();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetLocationBarView(browser())
                   ->GetChipController()

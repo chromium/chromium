@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/feature_list.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -12,11 +11,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_request_manager.h"
-#include "components/permissions/request_type.h"
-#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -66,14 +62,7 @@ class OneTimePermissionsBrowserTest : public InProcessBrowserTest {
                                     ->GetPrimaryMainFrame(),
                                 request_type);
     observer.Wait();
-    PromptOptions prompt_options =
-        (request_type == permissions::RequestType::kGeolocation &&
-         base::FeatureList::IsEnabled(
-             content_settings::features::kApproximateGeolocationPermission))
-            ? PromptOptions(GeolocationPromptOptions{
-                  .selected_accuracy = GeolocationAccuracy::kPrecise})
-            : std::monostate();
-    manager_->AcceptThisTime(prompt_options);
+    manager_->AcceptThisTime();
   }
 
   GURL GetTestURL() {
@@ -135,25 +124,18 @@ class OneTimePermissionActionBrowserTest
   }
 
   void ExecuteAction(permissions::PermissionRequestManager* manager) {
-    PromptOptions prompt_options =
-        (GetParam().request_type == permissions::RequestType::kGeolocation &&
-         base::FeatureList::IsEnabled(
-             content_settings::features::kApproximateGeolocationPermission))
-            ? PromptOptions(GeolocationPromptOptions{
-                  .selected_accuracy = GeolocationAccuracy::kPrecise})
-            : std::monostate();
     switch (GetParam().action) {
       case permissions::PermissionAction::GRANTED:
-        manager->Accept(prompt_options);
+        manager->Accept();
         break;
       case permissions::PermissionAction::DENIED:
-        manager->Deny(prompt_options);
+        manager->Deny();
         break;
       case permissions::PermissionAction::DISMISSED:
-        manager->Dismiss(prompt_options);
+        manager->Dismiss();
         break;
       case permissions::PermissionAction::IGNORED:
-        manager->Ignore(prompt_options);
+        manager->Ignore();
         break;
       default:
         NOTREACHED();

@@ -3290,7 +3290,7 @@ TEST_F(ClientSideDetectionHostNotificationTest,
   ASSERT_FALSE(cb.is_null());
   std::move(cb).Run("fake_access_token_notification_permission_prompt");
 
-  manager->Accept(/*prompt_options=*/std::monostate());
+  manager->Accept();
   task_environment()->RunUntilIdle();
 
   EXPECT_TRUE(request_state.granted);

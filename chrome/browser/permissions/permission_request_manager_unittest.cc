@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
@@ -29,7 +28,6 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_actions_history.h"
@@ -40,7 +38,6 @@
 #include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "components/permissions/pref_names.h"
 #include "components/permissions/request_type.h"
-#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -101,23 +98,23 @@ class PermissionRequestManagerTest
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  void Accept(const PromptOptions& prompt_options = std::monostate()) {
-    manager_->Accept(prompt_options);
+  void Accept() {
+    manager_->Accept();
     base::RunLoop().RunUntilIdle();
   }
 
-  void AcceptThisTime(const PromptOptions& prompt_options = std::monostate()) {
-    manager_->AcceptThisTime(prompt_options);
+  void AcceptThisTime() {
+    manager_->AcceptThisTime();
     base::RunLoop().RunUntilIdle();
   }
 
   void Deny() {
-    manager_->Deny(/*prompt_options=*/std::monostate());
+    manager_->Deny();
     base::RunLoop().RunUntilIdle();
   }
 
   void Closing() {
-    manager_->Dismiss(/*prompt_options=*/std::monostate());
+    manager_->Dismiss();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -213,11 +210,7 @@ TEST_F(PermissionRequestManagerTest, UMAForSimpleAcceptedGestureBubble) {
       permissions::PermissionUmaUtil::kPermissionsPromptShownNoGesture, 0);
   histograms.ExpectTotalCount("Permissions.Engagement.Accepted.Geolocation", 0);
 
-  Accept(base::FeatureList::IsEnabled(
-             content_settings::features::kApproximateGeolocationPermission)
-             ? PromptOptions(GeolocationPromptOptions{
-                   .selected_accuracy = GeolocationAccuracy::kPrecise})
-             : std::monostate());
+  Accept();
   histograms.ExpectUniqueSample(
       permissions::PermissionUmaUtil::kPermissionsPromptAccepted,
       static_cast<base::HistogramBase::Sample32>(
