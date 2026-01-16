@@ -110,6 +110,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
@@ -128,6 +129,7 @@ import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMeth
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ProgressIconProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TosFooterProperties;
+import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.IbanRecordType;
 import org.chromium.components.autofill.LoyaltyCard;
@@ -904,7 +906,13 @@ class TouchToFillPaymentMethodMediator {
                         createBnplIssuerTosTextItemModel(
                                 R.drawable.checklist,
                                 mContext.getString(
-                                        R.string.autofill_bnpl_tos_review_text, issuerName))));
+                                        ChromeFeatureList.isEnabled(
+                                                        AutofillFeatures
+                                                                .AUTOFILL_ENABLE_WALLET_BRANDING)
+                                                ? R.string
+                                                        .autofill_bnpl_tos_review_text_wallet_branding
+                                                : R.string.autofill_bnpl_tos_review_text,
+                                        issuerName))));
         sheetItems.add(
                 new ListItem(
                         BNPL_TOS_TEXT,
