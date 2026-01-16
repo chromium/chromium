@@ -677,7 +677,7 @@ void LensOverlayController::IssueEndTranslateModeRequestForTesting() {
 void LensOverlayController::IssueTranslateFullPageRequest(
     const std::string& source_language,
     const std::string& target_language) {
-  MaybeGrantLensOverlayPermissionsForSession();
+  MaybeGrantLensOverlayPermissionsForSession(invocation_source_);
   // Remove the selection thumbnail, if it exists.
   lens_search_controller_->ClearVisualSelectionThumbnail();
   ClearRegionSelection();
@@ -1305,7 +1305,7 @@ void LensOverlayController::IssueSearchBoxRequest(
     bool is_zero_prefix_suggestion,
     std::map<std::string, std::string> additional_query_params,
     std::optional<lens::LensOverlayInvocationSource> invocation_source) {
-  MaybeGrantLensOverlayPermissionsForSession();
+  MaybeGrantLensOverlayPermissionsForSession(invocation_source);
   // Log the interaction time here so the time to fetch new page bytes is not
   // intcluded.
   GetLensSessionMetricsLogger()
@@ -2233,7 +2233,7 @@ void LensOverlayController::InfoRequestedByOverlay(
 void LensOverlayController::IssueLensRegionRequest(
     lens::mojom::CenterRotatedBoxPtr region,
     bool is_click) {
-  MaybeGrantLensOverlayPermissionsForSession();
+  MaybeGrantLensOverlayPermissionsForSession(invocation_source_);
   IssueLensRequest(/*query_start_time=*/base::Time::Now(), std::move(region),
                    is_click ? lens::TAP_ON_EMPTY : lens::REGION_SEARCH,
                    std::nullopt);
@@ -2242,7 +2242,7 @@ void LensOverlayController::IssueLensRegionRequest(
 void LensOverlayController::IssueLensObjectRequest(
     lens::mojom::CenterRotatedBoxPtr region,
     bool is_mask_click) {
-  MaybeGrantLensOverlayPermissionsForSession();
+  MaybeGrantLensOverlayPermissionsForSession(invocation_source_);
   IssueLensRequest(
       /*query_start_time=*/base::Time::Now(), std::move(region),
       is_mask_click ? lens::TAP_ON_REGION_GLEAM : lens::TAP_ON_OBJECT,
@@ -2253,7 +2253,7 @@ void LensOverlayController::IssueTextSelectionRequest(const std::string& query,
                                                       int selection_start_index,
                                                       int selection_end_index,
                                                       bool is_translate) {
-  MaybeGrantLensOverlayPermissionsForSession();
+  MaybeGrantLensOverlayPermissionsForSession(invocation_source_);
   initialization_data_->additional_search_query_params_.clear();
   lens_selection_type_ =
       is_translate ? lens::SELECT_TRANSLATED_TEXT : lens::SELECT_TEXT_HIGHLIGHT;
@@ -2267,7 +2267,7 @@ void LensOverlayController::IssueTranslateSelectionRequest(
     const std::string& content_language,
     int selection_start_index,
     int selection_end_index) {
-  MaybeGrantLensOverlayPermissionsForSession();
+  MaybeGrantLensOverlayPermissionsForSession(invocation_source_);
   initialization_data_->additional_search_query_params_.clear();
   lens::AppendTranslateParamsToMap(
       initialization_data_->additional_search_query_params_, query, "auto");
@@ -2282,7 +2282,7 @@ void LensOverlayController::IssueMathSelectionRequest(
     const std::string& formula,
     int selection_start_index,
     int selection_end_index) {
-  MaybeGrantLensOverlayPermissionsForSession();
+  MaybeGrantLensOverlayPermissionsForSession(invocation_source_);
   initialization_data_->additional_search_query_params_.clear();
   lens::AppendStickinessSignalForFormula(
       initialization_data_->additional_search_query_params_, formula);
@@ -3029,7 +3029,23 @@ bool LensOverlayController::IsResultsSidePanelShowing() {
   return GetLensResultsPanelRouter()->IsEntryShowing();
 }
 
-void LensOverlayController::MaybeGrantLensOverlayPermissionsForSession() {
+void LensOverlayController::MaybeGrantLensOverlayPermissionsForSession(
+    std::optional<lens::LensOverlayInvocationSource> invocation_source) {
+  lens::LensOverlayInvocationSource effective_invocation_source =
+      invocation_source.value_or(invocation_source_);
+  // The Omnibox contextual query flow does not require the user to accept the
+  // Lens privacy notice. This can be removed once the non-blocking privacy
+  // notice is launched as it will be handled in the case below.
+  if (effective_invocation_source ==
+          lens::LensOverlayInvocationSource::kOmniboxContextualQuery &&
+      !lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled() &&
+      !lens::DidUserGrantLensOverlayNeededPermissions(pref_service_)) {
+    GetLensOverlayQueryController()->GrantPermissionForSession();
+    GetLensQueryFlowRouter()->MaybeResumeQueryFlow();
+    user_interacted_without_accepting_privacy_notice = true;
+    return;
+  }
+
   if (lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled() &&
       !lens::DidUserGrantLensOverlayNeededPermissions(pref_service_)) {
     GetLensOverlayQueryController()->GrantPermissionForSession();
@@ -3037,7 +3053,7 @@ void LensOverlayController::MaybeGrantLensOverlayPermissionsForSession() {
     user_interacted_without_accepting_privacy_notice = true;
     lens::RecordNonBlockingPrivacyNoticeAccepted(
         lens::LensOverlayNonBlockingPrivacyNoticeUserAction::kLensInteraction,
-        invocation_source_);
+        effective_invocation_source);
   }
 }
 

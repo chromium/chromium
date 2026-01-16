@@ -4802,4 +4802,74 @@ TEST_F(LensOverlayQueryControllerTest,
   query_controller.EndQuery();
 }
 
+TEST_F(LensOverlayQueryControllerTest,
+       SendContextualTextQuery_WithOmniboxContextualQuery_RestartsFlow) {
+  // Disable non-blocking privacy notice to test that kOmniboxContextualQuery
+  // bypasses it.
+  feature_list_.Reset();
+  feature_list_.InitWithFeaturesAndParameters(
+      {{lens::features::kLensOverlayLatencyOptimizations,
+        {{"enable-cluster-info-optimization", "true"}}},
+       {lens::features::kLensOverlayContextualSearchbox, {}}},
+      {{lens::features::kLensOverlayNonBlockingPrivacyNotice}});
+
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
+      url_response_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&>
+      thumbnail_created_future;
+  TestLensOverlayQueryController query_controller(
+      full_image_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      thumbnail_created_future.GetRepeatingCallback(), base::NullCallback(),
+      fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kOmniboxContextualQuery,
+      /*use_dark_mode=*/false, GetGen204Controller());
+
+  // Set up the query controller responses.
+  lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response;
+  fake_cluster_info_response.set_server_session_id(kTestServerSessionId);
+  fake_cluster_info_response.set_search_session_id(kTestSearchSessionId);
+  query_controller.set_fake_cluster_info_response(fake_cluster_info_response);
+  lens::LensOverlayObjectsResponse fake_objects_response;
+  fake_objects_response.mutable_cluster_info()->set_server_session_id(
+      kTestServerSessionId);
+  query_controller.set_fake_objects_response(fake_objects_response);
+  lens::LensOverlayInteractionResponse fake_interaction_response;
+  fake_interaction_response.set_encoded_response(kTestSuggestSignals);
+  query_controller.set_fake_interaction_response(fake_interaction_response);
+
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  std::map<std::string, std::string> additional_search_query_params;
+  query_controller.StartQueryFlow(
+      bitmap, GURL(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(), kFakeTextPageContents,
+      lens::MimeType::kPlainText,
+      /*pdf_current_page=*/std::nullopt, 0, base::TimeTicks::Now());
+
+  ASSERT_TRUE(full_image_response_future.Wait());
+  EXPECT_EQ(1, query_controller.num_cluster_info_fetch_requests_sent());
+
+  // Reset the cluster info state to simulate it expiring or being missing.
+  query_controller.ResetRequestClusterInfoStateForTesting();
+  full_image_response_future.Clear();
+
+  // Send contextual text query. This should restart the flow because of
+  // kOmniboxContextualQuery.
+  query_controller.SendContextualTextQuery(
+      kTestTime, kTestQueryText,
+      lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
+      additional_search_query_params);
+
+  // Wait for the cluster info request to be sent again.
+  ASSERT_TRUE(full_image_response_future.Wait());
+  EXPECT_EQ(2, query_controller.num_cluster_info_fetch_requests_sent());
+
+  query_controller.EndQuery();
+}
+
 }  // namespace lens

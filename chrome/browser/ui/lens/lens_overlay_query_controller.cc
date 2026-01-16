@@ -595,7 +595,9 @@ void LensOverlayQueryController::SendContextualTextQuery(
         &LensOverlayQueryController::SendContextualTextQuery,
         weak_ptr_factory_.GetWeakPtr(), query_start_time, query_text,
         lens_selection_type, additional_search_query_params);
-    if (lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled() &&
+    if ((lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled() ||
+         invocation_source_ ==
+             lens::LensOverlayInvocationSource::kOmniboxContextualQuery) &&
         !cluster_info_.has_value()) {
       // If the cluster info is expired, restart a new query flow so the pending
       // interaction request will be sent once the cluster info is available.

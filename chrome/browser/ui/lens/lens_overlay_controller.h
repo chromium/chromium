@@ -963,7 +963,8 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // For the current session only, grants the permissions needed for
   // contextualization if the non-blocking privacy notice is being used and the
   // permissions have not already been permanently granted.
-  virtual void MaybeGrantLensOverlayPermissionsForSession();
+  virtual void MaybeGrantLensOverlayPermissionsForSession(
+      std::optional<lens::LensOverlayInvocationSource> invocation_source);
 
   // Shorthand to grab the LensSearchboxController for this instance of Lens.
   lens::LensSearchboxController* GetLensSearchboxController();
