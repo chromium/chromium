@@ -8654,7 +8654,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="278" label="Profiler"/>
   <int value="279" label="AsyncIterableStreams"/>
   <int value="280" label="ContainerScrollStateQueries"/>
-  <int value="281" label="DRAFT_ScopedViewTransitions"/>
+  <int value="281" label="ViewTransitionsElementScoped"/>
   <int value="282" label="AttributionReporting"/>
   <int value="283" label="CookieStore"/>
   <int value="284" label="Fencedframe"/>

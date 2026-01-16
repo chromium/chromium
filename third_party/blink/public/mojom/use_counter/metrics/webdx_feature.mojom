@@ -340,7 +340,7 @@ enum WebDXFeature {
   kProfiler = 278,
   kAsyncIterableStreams = 279,
   kContainerScrollStateQueries = 280,
-  kDRAFT_ScopedViewTransitions = 281,
+  kViewTransitionsElementScoped = 281,
   kAttributionReporting = 282,
   kCookieStore = 283,
   kFencedframe = 284,
