@@ -52,7 +52,8 @@ public class IncognitoDescriptionViewRenderTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(2)
+                    .setRevision(3)
+                    .setDescription("Updated Incognito splash to GM3")
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_INCOGNITO)
                     .build();
 
