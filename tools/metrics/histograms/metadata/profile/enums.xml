@@ -404,6 +404,7 @@ chromium-metrics-reviews@google.com.
   <int value="40" label="kGlicView"/>
   <int value="41" label="kWaitingForGlicView"/>
   <int value="42" label="kWaitingForBookmarksImportOnFirstRun"/>
+  <int value="43" label="kSkillsDialog"/>
 </enum>
 
 <!-- LINT.IfChange(ProfileManagementFlowStep) -->

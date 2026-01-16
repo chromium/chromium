@@ -5,20 +5,39 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SKILLS_SKILLS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_SKILLS_SKILLS_UI_H_
 
+#include "chrome/browser/ui/webui/skills/skills.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/webui_config.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 namespace skills {
 
+class SkillsPageHandler;
+
 // MojoWebUIController for the chrome://skills page.
-class SkillsUI : public ui::MojoWebUIController {
+class SkillsUI : public ui::MojoWebUIController,
+                 public skills::mojom::PageHandlerFactory {
  public:
   explicit SkillsUI(content::WebUI* web_ui);
   SkillsUI(const SkillsUI&) = delete;
   SkillsUI& operator=(const SkillsUI&) = delete;
 
   ~SkillsUI() override;
+
+  // Instantiates the implementor of the mojom::PageHandlerFactory mojo
+  // interface passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<skills::mojom::PageHandlerFactory> receiver);
+
+ private:
+  void CreatePageHandler(
+      mojo::PendingReceiver<skills::mojom::PageHandler> receiver) override;
+
+  std::unique_ptr<SkillsPageHandler> page_handler_;
+
+  mojo::Receiver<skills::mojom::PageHandlerFactory> page_factory_receiver_{
+      this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

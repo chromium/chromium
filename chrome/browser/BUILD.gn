@@ -6822,6 +6822,8 @@ static_library("browser") {
       "//chrome/browser/enterprise/connectors/device_trust/common",
       "//chrome/browser/enterprise/connectors/device_trust/signals",
       "//chrome/browser/enterprise/connectors/device_trust/signals/decorators/common",
+      "//chrome/browser/ui/webui/skills",
+      "//chrome/browser/ui/webui/skills:mojo_bindings",
       "//components/device_signals/core/browser",
       "//components/device_signals/core/common",
       "//components/enterprise/core",
@@ -8745,8 +8747,10 @@ static_library("browser_generated_files") {
     ]
   }
   if (is_win || is_mac || is_linux || is_chromeos) {
-    public_deps +=
-        [ "//ui/webui/resources/cr_components/help_bubble:mojo_bindings" ]
+    public_deps += [
+      "//chrome/browser/ui/webui/skills:mojo_bindings",
+      "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
+    ]
   }
   if (safe_browsing_mode == 1) {
     public_deps += [ "//chrome/browser/ui/webui/reset_password:mojo_bindings" ]
