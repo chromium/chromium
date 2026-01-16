@@ -147,8 +147,13 @@ GeminiSettingsAction* ActionForSettingsContext(GeminiSettingsContext context);
 // viewport.
 void UpdateOverlayOffsetWithOpacity(CGFloat offset, CGFloat opacity);
 
+// TODO(crbug.com/475205334): Remove this method after function below is
+// implemented.
 // Updates Gemini floaty view state.
 void UpdateGeminiViewState(GeminiViewState view_state);
+
+// Updates Gemini floaty view state with an animation flag.
+void UpdateGeminiViewState(GeminiViewState view_state, bool animated);
 
 // Returns the current `GeminiViewState` of the floaty.
 GeminiViewState GetCurrentGeminiViewState();
