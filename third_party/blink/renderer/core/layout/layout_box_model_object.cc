@@ -657,13 +657,15 @@ LayoutBoxModelObject::ComputeStickyPositionConstraints() const {
     std::optional<LayoutUnit> bottom =
         ResolveInset(style.Bottom(), available_size.height);
 
-    // Skip the end inset if there is not enough space to honor both insets.
+    // Reduce the end inset if there is not enough space to honor both insets.
     if (left && right) {
-      if (*left + *right + sticky_box_rect.Width() > available_size.width) {
+      const LayoutUnit free_space =
+          available_size.width - sticky_box_rect.Width() - *left - *right;
+      if (free_space < LayoutUnit()) {
         if (style.IsLeftToRightDirection()) {
-          right = std::nullopt;
+          *right += free_space;
         } else {
-          left = std::nullopt;
+          *left += free_space;
         }
       }
     }
@@ -671,8 +673,10 @@ LayoutBoxModelObject::ComputeStickyPositionConstraints() const {
       // TODO(flackr): Exclude top or bottom edge offset depending on the
       // writing mode when related sections are fixed in spec. See
       // http://lists.w3.org/Archives/Public/www-style/2014May/0286.html
-      if (*top + *bottom + sticky_box_rect.Height() > available_size.height) {
-        bottom = std::nullopt;
+      const LayoutUnit free_space =
+          available_size.height - sticky_box_rect.Height() - *top - *bottom;
+      if (free_space < LayoutUnit()) {
+        *bottom += free_space;
       }
     }
 
