@@ -4,7 +4,6 @@
 
 #include "base/process/process_iterator.h"
 
-#include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
 
 namespace base {
@@ -18,7 +17,7 @@ ProcessIterator::~ProcessIterator() {
 }
 
 bool ProcessIterator::CheckForNextProcess() {
-  InitProcessEntry(&entry_);
+  entry_ = ProcessEntry{{.dwSize = sizeof(entry_)}};
 
   if (!started_iteration_) {
     started_iteration_ = true;
@@ -28,14 +27,10 @@ bool ProcessIterator::CheckForNextProcess() {
   return !!Process32Next(snapshot_, &entry_);
 }
 
-void ProcessIterator::InitProcessEntry(ProcessEntry* entry) {
-  UNSAFE_TODO(memset(entry, 0, sizeof(*entry)));
-  entry->dwSize = sizeof(*entry);
-}
-
 bool NamedProcessIterator::IncludeEntry() {
-  // Case insensitive.
-  return UNSAFE_TODO(!_wcsicmp(executable_name_.c_str(), entry().exe_file())) &&
+  FilePath::StringViewType entry_exe_view(entry().exe_file());
+
+  return FilePath::CompareEqualIgnoreCase(executable_name_, entry_exe_view) &&
          ProcessIterator::IncludeEntry();
 }
 
