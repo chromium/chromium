@@ -8,6 +8,7 @@ import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/args.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/pgo/pgo.gni")
+import("//build/config/coverage/coverage.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/cc_wrapper.gni")
@@ -369,3 +370,9 @@ if (forbid_non_component_debug_builds) {
 # LzmaDecOpt.asm only works on x64 and not x86.
 # https://sourceforge.net/p/sevenzip/discussion/45797/thread/768932e9dd/?limit=25#0d6c
 disable_llvm_ml = host_os == "win" && target_cpu == "x64" && !is_msan
+
+# TODO(crbug.com/476018435): Remove this once the issue is resolved.
+if (is_win) {
+  assert(!use_clang_coverage || !is_component_build,
+         "Clang coverage requires non component build on Windows")
+}
