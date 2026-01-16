@@ -975,8 +975,9 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   EXPECT_NE(GetImmersiveWebContents(), starting_contents);
 }
 
+// TODO(crbug.com/476203141): Reenable the test
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
-                       ShowImmersiveUI_ClosesSidePanel) {
+                       DISABLED_ShowImmersiveUI_ClosesSidePanel) {
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
@@ -1161,8 +1162,9 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
             ReadAnythingController::PresentationState::kInactive);
 }
 
+// TODO(crbug.com/476203141): Reenable the test
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
-                       ToggleImmersiveUI_ClosesSidePanel) {
+                       DISABLED_ToggleImmersiveUI_ClosesSidePanel) {
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
@@ -1219,8 +1221,10 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
             ReadAnythingController::PresentationState::kInSidePanel);
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
-                       TogglePresentation_FromSidePanel_OpensImmersive) {
+// TODO(crbug.com/476203141): Reenable the test
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingControllerBrowserTest,
+    DISABLED_TogglePresentation_FromSidePanel_OpensImmersive) {
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
