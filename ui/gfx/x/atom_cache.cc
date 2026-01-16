@@ -214,6 +214,7 @@ AtomCache::AtomCache(Connection* connection) : connection_(connection) {
 AtomCache::~AtomCache() = default;
 
 Atom AtomCache::GetAtom(const char* name) {
+  CHECK(name);
   const auto it = cached_atoms_.find(name);
   if (it != cached_atoms_.end()) {
     return it->second;
