@@ -10429,6 +10429,21 @@
             ]
         }
     ],
+    "ExcludePipFromScreenCapture": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ExcludePipFromScreenCapture"
+                    ]
+                }
+            ]
+        }
+    ],
     "ExpandCompositedCullRectMobile": [
         {
             "platforms": [
