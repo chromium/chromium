@@ -265,6 +265,9 @@ bool VerticalTabView::OnMousePressed(const ui::MouseEvent& event) {
 }
 
 void VerticalTabView::OnMouseReleased(const ui::MouseEvent& event) {
+  if (!collection_node_) {
+    return;
+  }
   auto* controller = collection_node_->GetController();
   base::WeakPtr<VerticalTabView> self = weak_ptr_factory_.GetWeakPtr();
   if (event.IsOnlyMiddleMouseButton()) {
