@@ -6005,10 +6005,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToDrive.UI.FileSizeMB.{Outcome}" units="MB"
-    expires_after="2026-06-21">
+    expires_after="2027-01-15">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>
     Logged the Save to Drive UI is dismissed, indicating the size of the file to
     download, as a function of the final outcome of the UI flow e.g. whether the
@@ -6019,10 +6019,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToDrive.UI.ManageStorageAlert.Cancelled"
-    enum="BooleanCanceled" expires_after="2026-02-12">
+    enum="BooleanCanceled" expires_after="2027-01-15">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>
     Logged when an alert was shown to let the user manage their Drive storage.
     Reports whether the user cancelled or instead opted to manage their Drive
@@ -6031,10 +6031,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToDrive.UI.ManageStorageAlert.Shown"
-    enum="BooleanShown" expires_after="2026-06-21">
+    enum="BooleanShown" expires_after="2027-01-15">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>
     Logged when the user attempts to select Drive as destination for their
     download. Reports whether an alert was shown to let the user manage their
@@ -6043,10 +6043,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToDrive.UI.MimeType.{Outcome}"
-    enum="DownloadMimeTypeResult" expires_after="2026-02-12">
+    enum="DownloadMimeTypeResult" expires_after="2027-01-15">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>
     Logged the Save to Drive UI is dismissed, indicating the MIME type of the
     file to download, as a function of the final outcome of the UI flow e.g.
@@ -6056,10 +6056,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToDrive.UI.NumberOfAttempts.{Outcome}" units="count"
-    expires_after="2026-02-12">
+    expires_after="2027-01-15">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>
     Logged the Save to Drive UI is dismissed, indicating the number of attempts
     to select a destination (i.e. number of times &quot;Save&quot; was tapped)
@@ -6071,10 +6071,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToDrive.UI.Outcome" enum="IOSSaveToDriveOutcomeType"
-    expires_after="2026-06-21">
+    expires_after="2027-01-15">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>
     Logged before dismissing the Save to Drive UI i.e. the file destination and
     account selection view. Describes what destination was picked, whether the
@@ -6083,10 +6083,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToDrive.UploadTask.FileSizeMB.{FinalState}" units="MB"
-    expires_after="2026-06-21">
+    expires_after="2027-01-15">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>
     Logged when a Drive upload task's destructor is called, indicating the the
     size of the uploaded file as a function of the final state of the task e.g.
@@ -6096,10 +6096,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToDrive.UploadTask.FinalState"
-    enum="IOSSaveToDriveUploadTaskStateType" expires_after="2026-06-21">
+    enum="IOSSaveToDriveUploadTaskStateType" expires_after="2027-01-15">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>
     Logged when a Drive upload task's destructor is called, indicating the final
     state of the task e.g. Not Started, Cancelled, Completed or Failed.
@@ -6107,10 +6107,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToDrive.UploadTask.MimeType.{FinalState}"
-    enum="DownloadMimeTypeResult" expires_after="2026-06-21">
+    enum="DownloadMimeTypeResult" expires_after="2027-01-15">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>
     Logged when a Drive upload task's destructor is called, indicating the the
     MIME type of the uploaded file as a function of the final state of the task
@@ -6120,10 +6120,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToDrive.UploadTask.NumberOfAttempts.{FinalState}"
-    units="count" expires_after="2026-05-31">
+    units="count" expires_after="2027-01-15">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>
     Logged when a Drive upload task's destructor is called, indicating the
     number of attempts to complete the task (i.e. number of times it was
@@ -6135,10 +6135,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToDrive.{QueryType}.ErrorCode" enum="HttpResponseCode"
-    expires_after="2026-06-21">
+    expires_after="2027-01-15">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>
     Logged when receiving the response for a failed Drive query, indicating the
     error code associated with the response.
@@ -6147,10 +6147,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToDrive.{QueryType}.Successful" enum="BooleanSuccess"
-    expires_after="2026-06-21">
+    expires_after="2027-01-15">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>
     Logged when receiving the response for a Drive query, indicating whether the
     response is successful or not.
