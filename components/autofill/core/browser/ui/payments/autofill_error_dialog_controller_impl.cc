@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/ui/payments/autofill_error_dialog_view.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -154,7 +155,9 @@ const std::u16string AutofillErrorDialogControllerImpl::GetDescription() {
     case AutofillErrorDialogType::kCreditCardUploadError:
 #if BUILDFLAG(IS_IOS)
       return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_DESCRIPTION_TEXT);
+          base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)
+              ? IDS_AUTOFILL_SAVE_CARD_TO_WALLET_CONFIRMATION_FAILURE_DESCRIPTION_TEXT
+              : IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_DESCRIPTION_TEXT);
 #else
       NOTREACHED();
 #endif  // BUILDFLAG(IS_IOS)
