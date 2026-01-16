@@ -120,7 +120,7 @@ bool XRRenderState::HasLayer(XRLayer* layer) const {
     return true;
   }
   if (layers_) {
-    return base::Contains(*layers_, layer);
+    return std::ranges::contains(*layers_, layer);
   }
   return false;
 }
