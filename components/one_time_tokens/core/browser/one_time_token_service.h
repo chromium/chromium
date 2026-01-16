@@ -22,6 +22,7 @@ namespace one_time_tokens {
 enum class OneTimeTokenSource {
   kUnknown = 0,
   kOnDeviceSms = 1,
+  kGmail = 2,
 };
 
 // Service to subscribe to `OneTimeToken`s. One instance per profile.

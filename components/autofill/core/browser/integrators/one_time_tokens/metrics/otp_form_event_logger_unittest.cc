@@ -67,7 +67,8 @@ class OtpFormEventLoggerIntegrationTest
     autofill_client().set_sms_otp_backend(std::move(mock_sms_otp_backend));
     autofill_client().set_one_time_token_service(
         std::make_unique<one_time_tokens::OneTimeTokenServiceImpl>(
-            autofill_client().GetSmsOtpBackend()));
+            autofill_client().GetSmsOtpBackend(),
+            /*gmail_otp_backend=*/nullptr));
   }
 
   void ResetCrowdsourcingManager() {
