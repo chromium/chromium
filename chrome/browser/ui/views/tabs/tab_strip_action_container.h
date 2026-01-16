@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/tabs/organization/tab_declutter_observer.h"
 #include "chrome/browser/ui/views/tabs/glic/glic_actor_task_icon.h"
 #include "chrome/browser/ui/views/tabs/tab_search_container.h"
-#include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/common/buildflags.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -94,7 +93,7 @@ class TabStripActionContainer : public views::View,
   };
 
   explicit TabStripActionContainer(
-      TabStripController* tab_strip_controller,
+      BrowserWindowInterface* browser_window_interface,
       tabs::TabDeclutterController* tab_declutter_controller,
       tabs::GlicNudgeController* tab_glic_nudge_controller);
   TabStripActionContainer(const TabStripActionContainer&) = delete;
@@ -168,16 +167,14 @@ class TabStripActionContainer : public views::View,
                               TabStripNudgeButton* button);
 
 #if BUILDFLAG(ENABLE_GLIC)
-  std::unique_ptr<glic::GlicButton> CreateGlicButton(
-      TabStripController* tab_strip_controller);
+  std::unique_ptr<glic::GlicButton> CreateGlicButton();
   void OnGlicButtonClicked();
   void OnGlicButtonDismissed();
   void OnGlicButtonHovered();
   void OnGlicButtonMouseDown();
   void OnGlicButtonAnimationEnded();
 
-  std::unique_ptr<glic::GlicActorTaskIcon> CreateGlicActorTaskIcon(
-      TabStripController* tab_strip_controller);
+  std::unique_ptr<glic::GlicActorTaskIcon> CreateGlicActorTaskIcon();
   void OnGlicActorTaskIconClicked();
 
   // TODO(crbug.com/431015299): Clean up when GlicButton and GlicActorTaskIcon
@@ -221,10 +218,8 @@ class TabStripActionContainer : public views::View,
 
   bool ButtonOwnsAnimation(const TabStripNudgeButton* button) const;
 
-  std::unique_ptr<TabStripNudgeButton> CreateAutoTabGroupButton(
-      TabStripController* tab_strip_controller);
-  std::unique_ptr<TabStripNudgeButton> CreateTabDeclutterButton(
-      TabStripController* tab_strip_controller);
+  std::unique_ptr<TabStripNudgeButton> CreateAutoTabGroupButton();
+  std::unique_ptr<TabStripNudgeButton> CreateTabDeclutterButton();
   void SetupButtonProperties(TabStripNudgeButton* button);
 
   // TODO(crbug.com/387356481) make ProductSpecificationsButton a subclass of

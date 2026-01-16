@@ -18,7 +18,8 @@ namespace gfx {
 struct VectorIcon;
 }  // namespace gfx
 
-class TabStripController;
+class BrowserFrameView;
+class BrowserWindowInterface;
 
 enum class Edge {
   kNone = 0,
@@ -34,19 +35,19 @@ class TabStripControlButton : public views::LabelButton,
   static const int kIconSize;
   static const gfx::Size kButtonSize;
 
-  TabStripControlButton(TabStripController* tab_strip,
+  TabStripControlButton(BrowserWindowInterface* browser_window_interface,
                         PressedCallback callback,
                         const gfx::VectorIcon& icon,
                         Edge fixed_flat_edge = Edge::kNone,
                         Edge animated_flat_edge = Edge::kNone);
 
-  TabStripControlButton(TabStripController* tab_strip,
+  TabStripControlButton(BrowserWindowInterface* browser_window_interface,
                         PressedCallback callback,
                         const std::u16string& text,
                         Edge fixed_flat_edge = Edge::kNone,
                         Edge animated_flat_edge = Edge::kNone);
 
-  TabStripControlButton(TabStripController* tab_strip,
+  TabStripControlButton(BrowserWindowInterface* browser_window_interface,
                         PressedCallback callback,
                         const gfx::VectorIcon& icon,
                         const std::u16string& text,
@@ -131,11 +132,17 @@ class TabStripControlButton : public views::LabelButton,
         paint_transparent_for_custom_image_theme;
   }
 
+  // See BrowserFrameView::IsFrameCondensed(). This accessor is made virtual for
+  // testing.
+  virtual bool IsFrameCondensed() const;
+
  private:
   void UpdateBackground();
   void UpdateInkDrop();
 
   bool IsWidgetAlive() const;
+
+  BrowserFrameView* GetBrowserFrameView() const;
 
   // Optional icon for the label button.
   raw_ref<const gfx::VectorIcon> icon_;
@@ -154,8 +161,8 @@ class TabStripControlButton : public views::LabelButton,
   // 1. Used for animating corner radius.
   float flat_edge_factor_ = 1;
 
-  // Tab strip that contains this button.
-  raw_ptr<TabStripController> tab_strip_controller_;
+  // Browser that contains this button.
+  raw_ptr<BrowserWindowInterface> browser_window_interface_;
 
   // Stored ColorId values to differentiate for ChromeRefresh.
   ui::ColorId foreground_frame_active_color_id_;

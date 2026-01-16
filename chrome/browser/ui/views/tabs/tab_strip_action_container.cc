@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
@@ -228,15 +229,14 @@ void TabStripActionContainer::TabStripNudgeAnimationSession::MarkAnimationDone(
 }
 
 TabStripActionContainer::TabStripActionContainer(
-    TabStripController* tab_strip_controller,
+    BrowserWindowInterface* browser_window_interface,
     tabs::TabDeclutterController* tab_declutter_controller,
     tabs::GlicNudgeController* glic_nudge_controller)
     : AnimationDelegateViews(this),
       locked_expansion_view_(this),
       tab_declutter_controller_(tab_declutter_controller),
       glic_nudge_controller_(glic_nudge_controller),
-      browser_window_interface_(
-          tab_strip_controller->GetBrowserWindowInterface()) {
+      browser_window_interface_(browser_window_interface) {
   SetProperty(views::kElementIdentifierKey, kTabStripActionContainerElementId);
 
   mouse_watcher_ = std::make_unique<views::MouseWatcher>(
@@ -253,8 +253,7 @@ TabStripActionContainer::TabStripActionContainer(
   // `tab_declutter_controller_` will be null for some profile types and if
   // feature is not enabled.
   if (tab_declutter_controller_) {
-    tab_declutter_button_ =
-        AddChildView(CreateTabDeclutterButton(tab_strip_controller));
+    tab_declutter_button_ = AddChildView(CreateTabDeclutterButton());
 
     SetupButtonProperties(tab_declutter_button_);
 
@@ -269,15 +268,14 @@ TabStripActionContainer::TabStripActionContainer(
     NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_GLIC)
   }
-  auto_tab_group_button_ =
-      AddChildView(CreateAutoTabGroupButton(tab_strip_controller));
+  auto_tab_group_button_ = AddChildView(CreateAutoTabGroupButton());
 
   SetupButtonProperties(auto_tab_group_button_);
   if (base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
     std::unique_ptr<ProductSpecificationsButton> product_specifications_button;
     product_specifications_button =
         std::make_unique<ProductSpecificationsButton>(
-            tab_strip_controller, browser_window_interface_->GetTabStripModel(),
+            browser_window_interface_,
             commerce::ProductSpecificationsEntryPointController::From(
                 browser_window_interface_),
             /*render_tab_search_before_tab_strip_*/ false, this);
@@ -294,11 +292,11 @@ TabStripActionContainer::TabStripActionContainer(
     if (features::kGlicActorUiTaskIcon.Get()) {
       glic_actor_button_container_ =
           AddChildView(CreateGlicActorButtonContainer());
-      glic_actor_task_icon_ = glic_actor_button_container_->AddChildView(
-          CreateGlicActorTaskIcon(tab_strip_controller));
+      glic_actor_task_icon_ =
+          glic_actor_button_container_->AddChildView(CreateGlicActorTaskIcon());
       glic_actor_button_container_->SetVisible(false);
     }
-    glic_button_ = AddChildView(CreateGlicButton(tab_strip_controller));
+    glic_button_ = AddChildView(CreateGlicButton());
 
     SetupButtonProperties(glic_button_);
 #if !BUILDFLAG(IS_MAC)
@@ -343,10 +341,9 @@ TabStripActionContainer::~TabStripActionContainer() {
 }
 
 std::unique_ptr<TabStripNudgeButton>
-TabStripActionContainer::CreateTabDeclutterButton(
-    TabStripController* tab_strip_controller) {
+TabStripActionContainer::CreateTabDeclutterButton() {
   auto button = std::make_unique<TabStripNudgeButton>(
-      tab_strip_controller,
+      browser_window_interface_,
       base::BindRepeating(&TabStripActionContainer::OnTabDeclutterButtonClicked,
                           base::Unretained(this)),
       base::BindRepeating(
@@ -373,10 +370,9 @@ TabStripActionContainer::CreateTabDeclutterButton(
 }
 
 std::unique_ptr<TabStripNudgeButton>
-TabStripActionContainer::CreateAutoTabGroupButton(
-    TabStripController* tab_strip_controller) {
+TabStripActionContainer::CreateAutoTabGroupButton() {
   auto button = std::make_unique<TabStripNudgeButton>(
-      tab_strip_controller,
+      browser_window_interface_,
       base::BindRepeating(&TabStripActionContainer::OnAutoTabGroupButtonClicked,
                           base::Unretained(this)),
       base::BindRepeating(
@@ -393,8 +389,7 @@ TabStripActionContainer::CreateAutoTabGroupButton(
 }
 
 #if BUILDFLAG(ENABLE_GLIC)
-std::unique_ptr<glic::GlicButton> TabStripActionContainer::CreateGlicButton(
-    TabStripController* tab_strip_controller) {
+std::unique_ptr<glic::GlicButton> TabStripActionContainer::CreateGlicButton() {
   glic::GlicKeyedService* service =
       glic::GlicKeyedService::Get(browser_window_interface_->GetProfile());
   std::u16string tooltip_text = l10n_util::GetStringUTF16(
@@ -402,7 +397,7 @@ std::unique_ptr<glic::GlicButton> TabStripActionContainer::CreateGlicButton(
                                       : IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP);
   std::unique_ptr<glic::GlicButton> glic_button =
       std::make_unique<glic::GlicButton>(
-          tab_strip_controller,
+          browser_window_interface_,
           base::BindRepeating(&TabStripActionContainer::OnGlicButtonClicked,
                               base::Unretained(this)),
           base::BindRepeating(&TabStripActionContainer::OnGlicButtonDismissed,
@@ -423,11 +418,10 @@ std::unique_ptr<glic::GlicButton> TabStripActionContainer::CreateGlicButton(
 }
 
 std::unique_ptr<glic::GlicActorTaskIcon>
-TabStripActionContainer::CreateGlicActorTaskIcon(
-    TabStripController* tab_strip_controller) {
+TabStripActionContainer::CreateGlicActorTaskIcon() {
   std::unique_ptr<glic::GlicActorTaskIcon> glic_actor_task_icon =
       std::make_unique<glic::GlicActorTaskIcon>(
-          tab_strip_controller, browser_window_interface_,
+          browser_window_interface_,
           base::BindRepeating(
               &TabStripActionContainer::OnGlicActorTaskIconClicked,
               base::Unretained(this)));

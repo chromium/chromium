@@ -32,7 +32,7 @@ class GlicButton : public TabStripNudgeButton,
   METADATA_HEADER(GlicButton, TabStripNudgeButton)
 
  public:
-  explicit GlicButton(TabStripController* tab_strip_controller,
+  explicit GlicButton(BrowserWindowInterface* browser_window_interface,
                       PressedCallback pressed_callback,
                       PressedCallback close_pressed_callback,
                       base::RepeatingClosure hovered_callback,

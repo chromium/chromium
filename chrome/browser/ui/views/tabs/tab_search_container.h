@@ -23,7 +23,6 @@ class BrowserWindowInterface;
 class TabStripNudgeButton;
 class TabOrganizationService;
 class TabSearchButton;
-class TabStripController;
 class TabStrip;
 class ScopedTabStripModalUI;
 
@@ -151,10 +150,8 @@ class TabSearchContainer : public views::View,
   void OnAnimationSessionEnded();
 
   std::unique_ptr<TabStripNudgeButton> CreateAutoTabGroupButton(
-      TabStripController* tab_strip_controller,
       bool tab_search_before_chips);
   std::unique_ptr<TabStripNudgeButton> CreateTabDeclutterButton(
-      TabStripController* tab_strip_controller,
       bool tab_search_before_chips);
   void SetupButtonProperties(TabStripNudgeButton* button,
                              bool tab_search_before_chips);

@@ -8,8 +8,9 @@
 #include <string>
 
 #include "base/callback_list.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
+
+class BrowserWindowInterface;
 
 namespace glic {
 
@@ -17,8 +18,7 @@ class GlicActorTaskIcon : public TabStripNudgeButton {
   METADATA_HEADER(GlicActorTaskIcon, TabStripNudgeButton)
 
  public:
-  explicit GlicActorTaskIcon(TabStripController* tab_strip_controller,
-                             BrowserWindowInterface* browser_window_interface,
+  explicit GlicActorTaskIcon(BrowserWindowInterface* browser_window_interface,
                              PressedCallback pressed_callback);
   GlicActorTaskIcon(const GlicActorTaskIcon&) = delete;
   GlicActorTaskIcon& operator=(const GlicActorTaskIcon&) = delete;
@@ -74,8 +74,6 @@ class GlicActorTaskIcon : public TabStripNudgeButton {
   base::CallbackListSubscription window_did_become_active_subscription_;
   base::CallbackListSubscription window_did_become_inactive_subscription_;
 
-  // Tab strip that contains this button.
-  raw_ptr<TabStripController> tab_strip_controller_;
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
 };
 

@@ -4,10 +4,13 @@
 
 #include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
 
+#include <optional>
 #include <utility>
 
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
@@ -62,12 +65,12 @@ const int TabStripControlButton::kIconSize = 16;
 const gfx::Size TabStripControlButton::kButtonSize{28, 28};
 
 TabStripControlButton::TabStripControlButton(
-    TabStripController* tab_strip_controller,
+    BrowserWindowInterface* browser_window_interface,
     PressedCallback callback,
     const gfx::VectorIcon& icon,
     Edge fixed_flat_edge,
     Edge animated_flat_edge)
-    : TabStripControlButton(tab_strip_controller,
+    : TabStripControlButton(browser_window_interface,
                             std::move(callback),
                             icon,
                             std::u16string(),
@@ -75,12 +78,12 @@ TabStripControlButton::TabStripControlButton(
                             animated_flat_edge) {}
 
 TabStripControlButton::TabStripControlButton(
-    TabStripController* tab_strip_controller,
+    BrowserWindowInterface* browser_window_interface,
     PressedCallback callback,
     const std::u16string& text,
     Edge fixed_flat_edge,
     Edge animated_flat_edge)
-    : TabStripControlButton(tab_strip_controller,
+    : TabStripControlButton(browser_window_interface,
                             std::move(callback),
                             gfx::VectorIcon::EmptyIcon(),
                             text,
@@ -88,7 +91,7 @@ TabStripControlButton::TabStripControlButton(
                             animated_flat_edge) {}
 
 TabStripControlButton::TabStripControlButton(
-    TabStripController* tab_strip_controller,
+    BrowserWindowInterface* browser_window_interface,
     PressedCallback callback,
     const gfx::VectorIcon& icon,
     const std::u16string& text,
@@ -98,7 +101,7 @@ TabStripControlButton::TabStripControlButton(
       icon_(icon),
       fixed_flat_edge_(fixed_flat_edge),
       animated_flat_edge_(animated_flat_edge),
-      tab_strip_controller_(tab_strip_controller) {
+      browser_window_interface_(browser_window_interface) {
   SetImageCentered(true);
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
@@ -239,8 +242,11 @@ void TabStripControlButton::UpdateBackground() {
     return;
   }
 
-  const std::optional<int> bg_id = tab_strip_controller_->GetCustomBackgroundId(
-      BrowserFrameActiveState::kUseCurrent);
+  BrowserFrameView* const browser_frame_view = GetBrowserFrameView();
+  const std::optional<int> bg_id =
+      browser_frame_view ? browser_frame_view->GetCustomBackgroundId(
+                               BrowserFrameActiveState::kUseCurrent)
+                         : std::nullopt;
 
   // Paint the background as transparent for image based themes.
   if (bg_id.has_value() && paint_transparent_for_custom_image_theme_) {
@@ -297,7 +303,7 @@ void TabStripControlButton::OnThemeChanged() {
 }
 
 bool TabStripControlButton::GetHitTestMask(SkPath* mask) const {
-  const bool extend_to_top = tab_strip_controller_->IsFrameCondensed();
+  const bool extend_to_top = IsFrameCondensed();
 
   const SkScalar bottom_left_radius = GetLeftCornerRadius();
   const SkScalar bottom_right_radius = GetRightCornerRadius();
@@ -342,6 +348,11 @@ void TabStripControlButton::NotifyClick(const ui::Event& event) {
       views::InkDropState::ACTION_TRIGGERED);
 }
 
+bool TabStripControlButton::IsFrameCondensed() const {
+  BrowserFrameView* const browser_frame_view = GetBrowserFrameView();
+  return browser_frame_view ? browser_frame_view->IsFrameCondensed() : false;
+}
+
 void TabStripControlButton::SetFlatEdgeFactor(float factor) {
   flat_edge_factor_ = factor;
   UpdateBackground();
@@ -360,6 +371,18 @@ void TabStripControlButton::AnimateToStateForTesting(
 bool TabStripControlButton::IsWidgetAlive() const {
   const views::Widget* widget = GetWidget();
   return widget && !widget->IsClosed();
+}
+
+BrowserFrameView* TabStripControlButton::GetBrowserFrameView() const {
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser_window_interface_);
+  // 'browser_view' can be null during startup before the BrowserView is added
+  // to a widget and is associated to `browser_window_interface_`
+  if (!browser_view) {
+    return nullptr;
+  }
+
+  return browser_view->browser_widget()->GetFrameView();
 }
 
 void TabStripControlButton::SetLeftRightCornerRadii(int left, int right) {

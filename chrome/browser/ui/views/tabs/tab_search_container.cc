@@ -223,8 +223,8 @@ TabSearchContainer::TabSearchContainer(bool tab_search_before_chips,
   // should animate to flat on chip show.
   std::unique_ptr<TabSearchButton> tab_search_button =
       std::make_unique<TabSearchButton>(
-          tab_strip_controller, browser_window_interface_, Edge::kNone,
-          GetFlatEdge(true, tab_search_before_chips), tab_strip);
+          browser_window_interface_, Edge::kNone,
+          GetFlatEdge(true, tab_search_before_chips));
   tab_search_button->SetProperty(views::kCrossAxisAlignmentKey,
                                  views::LayoutAlignment::kCenter);
   tab_search_button_ = AddChildView(std::move(tab_search_button));
@@ -234,9 +234,8 @@ TabSearchContainer::TabSearchContainer(bool tab_search_before_chips,
                                       : tab_search_button_index;
   // TODO(crbug.com/40925230): Consider hiding the button when the request has
   // started, vs. when the button as clicked.
-  auto_tab_group_button_ = AddChildViewAt(
-      CreateAutoTabGroupButton(tab_strip_controller, tab_search_before_chips),
-      index);
+  auto_tab_group_button_ =
+      AddChildViewAt(CreateAutoTabGroupButton(tab_search_before_chips), index);
 
   SetupButtonProperties(auto_tab_group_button_, tab_search_before_chips);
 
@@ -246,8 +245,7 @@ TabSearchContainer::TabSearchContainer(bool tab_search_before_chips,
       browser_window_interface_->GetFeatures().tab_declutter_controller();
   if (tab_declutter_controller) {
     tab_declutter_button_ = AddChildViewAt(
-        CreateTabDeclutterButton(tab_strip_controller, tab_search_before_chips),
-        index);
+        CreateTabDeclutterButton(tab_search_before_chips), index);
 
     SetupButtonProperties(tab_declutter_button_, tab_search_before_chips);
 
@@ -279,11 +277,9 @@ void TabSearchContainer::SetupButtonProperties(TabStripNudgeButton* button,
 }
 
 std::unique_ptr<TabStripNudgeButton>
-TabSearchContainer::CreateAutoTabGroupButton(
-    TabStripController* tab_strip_controller,
-    bool tab_search_before_chips) {
+TabSearchContainer::CreateAutoTabGroupButton(bool tab_search_before_chips) {
   auto button = std::make_unique<TabStripNudgeButton>(
-      tab_strip_controller,
+      browser_window_interface_,
       base::BindRepeating(&TabSearchContainer::OnAutoTabGroupButtonClicked,
                           base::Unretained(this)),
       base::BindRepeating(&TabSearchContainer::OnAutoTabGroupButtonDismissed,
@@ -301,10 +297,9 @@ TabSearchContainer::CreateAutoTabGroupButton(
 
 std::unique_ptr<TabStripNudgeButton>
 TabSearchContainer::CreateTabDeclutterButton(
-    TabStripController* tab_strip_controller,
     bool tab_search_before_chips) {
   auto button = std::make_unique<TabStripNudgeButton>(
-      tab_strip_controller,
+      browser_window_interface_,
       base::BindRepeating(&TabSearchContainer::OnTabDeclutterButtonClicked,
                           base::Unretained(this)),
       base::BindRepeating(&TabSearchContainer::OnTabDeclutterButtonDismissed,

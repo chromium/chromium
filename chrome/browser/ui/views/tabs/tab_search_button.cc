@@ -29,12 +29,10 @@ constexpr int kComboButtonFlatCornerRadius = 0;
 }  // namespace
 
 TabSearchButton::TabSearchButton(
-    TabStripController* tab_strip_controller,
     BrowserWindowInterface* browser_window_interface,
     Edge fixed_flat_edge,
-    Edge animated_flat_edge,
-    TabStrip* tab_strip)
-    : TabStripControlButton(tab_strip_controller,
+    Edge animated_flat_edge)
+    : TabStripControlButton(browser_window_interface,
                             PressedCallback(),
                             vector_icons::kExpandMoreIcon,
                             fixed_flat_edge,

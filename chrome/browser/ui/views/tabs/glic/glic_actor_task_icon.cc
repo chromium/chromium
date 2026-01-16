@@ -10,7 +10,7 @@
 #include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/tabs/glic/glic_actor_constants.h"
 #include "chrome/common/chrome_features.h"
@@ -42,10 +42,9 @@ const gfx::VectorIcon& GetTaskIcon() {
 constexpr int kActorNudgeLabelMargin = 6;
 
 GlicActorTaskIcon::GlicActorTaskIcon(
-    TabStripController* tab_strip_controller,
     BrowserWindowInterface* browser_window_interface,
     PressedCallback pressed_callback)
-    : TabStripNudgeButton(tab_strip_controller,
+    : TabStripNudgeButton(browser_window_interface,
                           std::move(pressed_callback),
                           views::Button::PressedCallback(),
                           std::u16string(),
@@ -53,7 +52,6 @@ GlicActorTaskIcon::GlicActorTaskIcon(
                           Edge::kNone,
                           GetTaskIcon(),
                           /*show_close_button=*/false),
-      tab_strip_controller_(tab_strip_controller),
       browser_window_interface_(browser_window_interface) {
   SetProperty(views::kElementIdentifierKey, kGlicActorTaskIconElementId);
 

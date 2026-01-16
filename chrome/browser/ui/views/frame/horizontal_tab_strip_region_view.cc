@@ -216,8 +216,7 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
       (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL)) {
     if (features::HasTabSearchToolbarButton()) {
       tab_strip_action_container = std::make_unique<TabStripActionContainer>(
-          tab_strip_->controller(),
-          browser->GetFeatures().tab_declutter_controller(),
+          browser, browser->GetFeatures().tab_declutter_controller(),
           browser->GetFeatures().glic_nudge_controller());
 
       tab_strip_action_container->SetProperty(views::kCrossAxisAlignmentKey,
@@ -231,7 +230,7 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
       if (base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
         product_specifications_button =
             std::make_unique<ProductSpecificationsButton>(
-                tab_strip_->controller(), browser->GetTabStripModel(),
+                browser,
                 commerce::ProductSpecificationsEntryPointController::From(
                     browser),
                 render_tab_search_before_tab_strip_, this);
@@ -273,7 +272,6 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
   if (ShouldShowNewTabButton(browser)) {
     std::unique_ptr<TabStripControlButton> tab_strip_control_button =
         std::make_unique<NewTabButton>(
-            tab_strip_->controller(),
             base::BindRepeating(&TabStrip::NewTabButtonPressed,
                                 base::Unretained(tab_strip_)),
             vector_icons::kAddIcon, Edge::kNone, Edge::kNone, browser);

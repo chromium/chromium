@@ -185,8 +185,8 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
         browser_window_interface_.get());
 
     tab_strip_action_container_ = std::make_unique<TabStripActionContainer>(
-        tab_strip_->controller(), tab_declutter_controller_.get(),
-        glic_nudge_controller_.get());
+        tab_strip_->GetBrowserWindowInterface(),
+        tab_declutter_controller_.get(), glic_nudge_controller_.get());
   }
 
   void SetActiveTabChangedCallback(

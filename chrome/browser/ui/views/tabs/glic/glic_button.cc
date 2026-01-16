@@ -244,14 +244,14 @@ class GlicButton::WidthAnimationController : public gfx::AnimationDelegate {
   gfx::SlideAnimation animation_{this};
 };
 
-GlicButton::GlicButton(TabStripController* tab_strip_controller,
+GlicButton::GlicButton(BrowserWindowInterface* browser_window_interface,
                        PressedCallback pressed_callback,
                        PressedCallback close_pressed_callback,
                        base::RepeatingClosure hovered_callback,
                        base::RepeatingClosure mouse_down_callback,
                        base::RepeatingClosure expansion_animation_done_callback,
                        const std::u16string& tooltip)
-    : TabStripNudgeButton(tab_strip_controller,
+    : TabStripNudgeButton(browser_window_interface,
                           std::move(pressed_callback),
                           std::move(close_pressed_callback),
                           GetLabelText(),
@@ -260,10 +260,8 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
                           gfx::VectorIcon::EmptyIcon(),
                           /*show_close_button=*/true),
       menu_model_(CreateMenuModel()),
-      profile_(
-          tab_strip_controller->GetBrowserWindowInterface()
-              ? tab_strip_controller->GetBrowserWindowInterface()->GetProfile()
-              : nullptr),
+      profile_(browser_window_interface ? browser_window_interface->GetProfile()
+                                        : nullptr),
       hovered_callback_(std::move(hovered_callback)),
       mouse_down_callback_(std::move(mouse_down_callback)),
       normal_icon_(GetNormalIcon()),

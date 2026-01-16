@@ -9,7 +9,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
-class TabStripController;
+class BrowserWindowInterface;
 
 namespace gfx {
 class SlideAnimation;
@@ -19,7 +19,7 @@ class TabStripNudgeButton : public TabStripControlButton {
   METADATA_HEADER(TabStripNudgeButton, TabStripControlButton)
 
  public:
-  TabStripNudgeButton(TabStripController* tab_strip_controller,
+  TabStripNudgeButton(BrowserWindowInterface* browser_window_interface,
                       PressedCallback pressed_callback,
                       PressedCallback close_pressed_callback,
                       const std::u16string& initial_label_text,
