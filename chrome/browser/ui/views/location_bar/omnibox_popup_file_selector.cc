@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/unguessable_token.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
+#include "chrome/browser/ui/omnibox/omnibox_context_menu_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
@@ -48,6 +50,7 @@ void OmniboxPopupFileSelector::OpenFileUploadDialog(
   edit_model_ = edit_model;
   image_encoding_options_ = image_encoding_options;
   was_ai_mode_open_ = was_ai_mode_open;
+  is_image_ = is_image;
   file_dialog_ = ui::SelectFileDialog::Create(
       this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
 
@@ -145,6 +148,15 @@ void OmniboxPopupFileSelector::OnFileDataReady(
   }
 
   edit_model_->OpenAiMode(false, /*via_context_menu=*/true);
+
+  const std::string prefix = was_ai_mode_open_
+                                 ? kAimContextTypeHistogramPrefix
+                                 : kClassicContextTypeHistogramPrefix;
+  const std::string sliced_prefix = base::StrCat({prefix, ".Clicked"});
+  base::UmaHistogramEnumeration(
+      sliced_prefix, is_image_
+                         ? OmniboxContextMenuController::ContextType::kImage
+                         : OmniboxContextMenuController::ContextType::kFile);
 }
 
 void OmniboxPopupFileSelector::UpdateSearchboxContextData(

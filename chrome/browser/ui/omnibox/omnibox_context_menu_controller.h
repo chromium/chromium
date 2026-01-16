@@ -17,6 +17,11 @@
 #include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
 
+inline constexpr char kClassicContextTypeHistogramPrefix[] =
+    "Omnibox.AimEntrypoint.ClassicPopup.ContextualElement";
+inline constexpr char kAimContextTypeHistogramPrefix[] =
+    "Omnibox.AimEntrypoint.AimPopup.ContextualElement";
+
 class FaviconService;
 class OmniboxPopupFileSelector;
 class OmniboxPopupUI;
@@ -42,6 +47,8 @@ class WebContents;
 namespace contextual_search {
 struct FileInfo;
 }  // namespace contextual_search
+
+enum class OmniboxPopupState;
 
 // OmniboxContextMenuController creates and manages state for the context menu
 // shown for the omnibox.
@@ -72,6 +79,20 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
       std::optional<TabInfo> tab_info,
       std::optional<searchbox::mojom::ToolMode> tool_mode);
 
+  // Tracks the context type.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(ContextType)
+  enum class ContextType {
+    kTab = 0,
+    kFile = 1,
+    kImage = 2,
+    kImageGen = 3,
+    kDeepResearch = 4,
+    kMaxValue = kDeepResearch,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:ContextType,//tools/metrics/histograms/metadata/omnibox/histograms.xml:ContextType)
+
  private:
   FRIEND_TEST_ALL_PREFIXES(OmniboxContextMenuControllerTest,
                            IsCommandIdEnabledHelper_InitialState);
@@ -90,7 +111,8 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
       int command_id,
       omnibox::ChromeAimToolsAndModels aim_tool_mode,
       const std::vector<contextual_search::FileInfo>& file_infos,
-      int max_num_files);
+      int max_num_files,
+      OmniboxPopupState page_type);
 
   void BuildMenu();
   // Adds a IDC_* style command to the menu with a string16.
