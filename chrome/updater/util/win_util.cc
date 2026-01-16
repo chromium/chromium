@@ -553,15 +553,16 @@ HResultOr<bool> IsCOMCallerAdmin() {
     return base::ok(::IsUserAnAdmin());
   }
 
-  HResultOr<ScopedKernelHANDLE> token = []() -> decltype(token) {
-    ScopedKernelHANDLE token;
+  HResultOr<ScopedKernelHANDLE> token = [] {
+    using Token = HResultOr<ScopedKernelHANDLE>;
+    Token::value_type token;
     if (!::OpenThreadToken(::GetCurrentThread(), TOKEN_QUERY, TRUE,
                            ScopedKernelHANDLE::Receiver(token).get())) {
       HRESULT hr = HRESULTFromLastError();
       LOG(ERROR) << "::OpenThreadToken failed: " << std::hex << hr;
-      return base::unexpected(hr);
+      return Token(base::unexpected(hr));
     }
-    return token;
+    return Token(std::move(token));
   }();
 
   if (!token.has_value()) {
