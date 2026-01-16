@@ -25,6 +25,7 @@ ts_library("build_ts") {
     # and reduce the maintenance burden for the Desktop WebUI team).
 
     "//chrome/browser/resources/about_sys:build_ts",
+    "//chrome/browser/resources/access_code_cast:build_ts",
     "//chrome/browser/resources/actor_overlay:build_ts",
     "//chrome/browser/resources/app_home:build_ts",
     "//chrome/browser/resources/app_service_internals:build_ts",

@@ -13,11 +13,16 @@ build_webui("build") {
 
   web_component_files = [
     "access_code_cast.ts",
-    "error_message/error_message.ts",
     "passcode_input/passcode_input.ts",
   ]
 
-  ts_files = [ "browser_proxy.ts" ]
+  ts_files = [
+    "browser_proxy.ts",
+    "error_message/error_message.ts",
+    "error_message/error_message.html.ts",
+  ]
+
+  css_files = [ "error_message/error_message.css" ]
 
   mojo_files_deps = [
     "//chrome/browser/ui/webui/access_code_cast:mojo_bindings_ts__generator",
@@ -30,6 +35,7 @@ build_webui("build") {
 
   ts_composite = true
   ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
