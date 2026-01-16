@@ -254,12 +254,19 @@ void RecordPdfRequestState(bool is_pdf_document, bool pdf_found) {
 }
 #endif
 
+using GetScreenshotServiceCallback =
+    base::RepeatingCallback<PageContentScreenshotService*(
+        content::BrowserContext*)>;
+
 // Coordinates fetching multiple types of page context.
 class PageContextFetcher : public content::WebContentsObserver {
  public:
   explicit PageContextFetcher(
+      GetScreenshotServiceCallback get_screenshot_service_callback,
       std::unique_ptr<FetchPageProgressListener> progress_listener)
-      : progress_listener_(std::move(progress_listener)) {}
+      : get_screenshot_service_callback_(
+            std::move(get_screenshot_service_callback)),
+        progress_listener_(std::move(progress_listener)) {}
   ~PageContextFetcher() override = default;
 
   void FetchStart(content::WebContents& aweb_contents,
@@ -385,8 +392,8 @@ class PageContextFetcher : public content::WebContentsObserver {
 
     if (screenshot_options.use_paint_preview()) {
       PageContentScreenshotService* service =
-          PageContentScreenshotServiceFactory::GetForProfile(
-              Profile::FromBrowserContext(web_contents.GetBrowserContext()));
+          get_screenshot_service_callback_.Run(
+              web_contents.GetBrowserContext());
       if (!service) {
         ReceivedEncodedScreenshot(
             base::unexpected("Could not get PageContentScreenshotService."));
@@ -744,6 +751,7 @@ class PageContextFetcher : public content::WebContentsObserver {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  const GetScreenshotServiceCallback get_screenshot_service_callback_;
   FetchPageContextResultCallback callback_;
 
   uint32_t inner_text_bytes_limit_ = 0;
@@ -848,8 +856,12 @@ void FetchPageContext(
     std::unique_ptr<FetchPageProgressListener> progress_listener,
     FetchPageContextResultCallback callback) {
   CHECK(callback);
-  auto self =
-      std::make_unique<PageContextFetcher>(std::move(progress_listener));
+  auto self = std::make_unique<PageContextFetcher>(
+      base::BindRepeating([](content::BrowserContext* context) {
+        return PageContentScreenshotServiceFactory::GetForProfile(
+            Profile::FromBrowserContext(context));
+      }),
+      std::move(progress_listener));
   auto* raw_self = self.get();
   raw_self->FetchStart(web_contents, options,
                        base::BindOnce(
