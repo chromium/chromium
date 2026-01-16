@@ -3557,7 +3557,7 @@
             ]
         }
     ],
-    "AutomatedPasswordChangeStudyV3": [
+    "AutomatedPasswordChangeStudyModelUsage": [
         {
             "platforms": [
                 "chromeos",
@@ -3569,11 +3569,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "CheckVisibilityInChangePasswordFormWaiter",
-                        "DisableFillingOnPageLoadForLeakedCredentials",
-                        "StopLoginCheckOnFailedLogin"
-                    ],
-                    "disable_features": [
                         "DownloadModelForPasswordChange"
                     ]
                 }

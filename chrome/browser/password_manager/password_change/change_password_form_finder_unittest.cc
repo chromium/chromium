@@ -22,6 +22,8 @@
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
+#include "components/password_manager/core/browser/mock_password_form_cache.h"
+#include "components/password_manager/core/browser/mock_password_manager.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_form_prediction_waiter.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -55,6 +57,19 @@ class MockChromePasswordManagerClient
               GetProfilePasswordStore,
               (),
               (override, const));
+  MOCK_METHOD(password_manager::PasswordManagerInterface*,
+              GetPasswordManager,
+              (),
+              (override, const));
+};
+
+class MockPasswordManagerDriver
+    : public password_manager::StubPasswordManagerDriver {
+ public:
+  MOCK_METHOD(void,
+              CheckViewAreaVisible,
+              (autofill::FieldRendererId, base::OnceCallback<void(bool)>),
+              (override));
 };
 
 std::unique_ptr<KeyedService> CreateOptimizationService(
@@ -151,9 +166,14 @@ class ChangePasswordFormFinderTest : public ChromeRenderViewHostTestHarness {
 
     ON_CALL(client_, GetProfilePasswordStore)
         .WillByDefault(testing::Return(password_store_.get()));
+    ON_CALL(client_, GetPasswordManager).WillByDefault(Return(&mock_manager_));
+    ON_CALL(mock_manager_, GetPasswordFormCache)
+        .WillByDefault(Return(&mock_cache_));
+    ON_CALL(driver_, CheckViewAreaVisible)
+        .WillByDefault(base::test::RunOnceCallback<1>(true));
   }
 
-  std::unique_ptr<password_manager::PasswordFormManager> CreateFormManager(
+  password_manager::PasswordFormManager* CreateFormManager(
       autofill::FormData form_data = CreateFormData()) {
     auto form_manager = std::make_unique<password_manager::PasswordFormManager>(
         client(), driver().AsWeakPtr(), form_data, &form_fetcher(),
@@ -164,12 +184,15 @@ class ChangePasswordFormFinderTest : public ChromeRenderViewHostTestHarness {
     static_cast<password_manager::PasswordFormPredictionWaiter::Client*>(
         form_manager.get())
         ->OnWaitCompleted();
-    return form_manager;
+    managers_.push_back(std::move(form_manager));
+    EXPECT_CALL(mock_cache_, GetFormManagers)
+        .WillRepeatedly(testing::Return(base::span(managers_)));
+    return managers_.back().get();
   }
 
   password_manager::PasswordManagerClient* client() { return &client_; }
 
-  password_manager::StubPasswordManagerDriver& driver() { return driver_; }
+  MockPasswordManagerDriver& driver() { return driver_; }
 
   PrefService* prefs() { return profile()->GetPrefs(); }
 
@@ -191,12 +214,15 @@ class ChangePasswordFormFinderTest : public ChromeRenderViewHostTestHarness {
   scoped_refptr<password_manager::MockPasswordStoreInterface> password_store_ =
       base::MakeRefCounted<password_manager::MockPasswordStoreInterface>();
   password_manager::FakeFormFetcher form_fetcher_;
-  password_manager::StubPasswordManagerDriver driver_;
+  password_manager::MockPasswordManager mock_manager_;
+  password_manager::MockPasswordFormCache mock_cache_;
+  MockPasswordManagerDriver driver_;
+  std::vector<std::unique_ptr<password_manager::PasswordFormManager>> managers_;
 };
 
 TEST_F(ChangePasswordFormFinderTest, PasswordChangeFormFound) {
   base::HistogramTester histogram_tester;
-  auto form_manager = CreateFormManager();
+  auto* form_manager = CreateFormManager();
   ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
   base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
       completion_callback;
@@ -209,10 +235,10 @@ TEST_F(ChangePasswordFormFinderTest, PasswordChangeFormFound) {
 
   ASSERT_TRUE(form_finder.form_waiter());
   EXPECT_CALL(capture_annotated_page_content, Run).Times(0);
-  EXPECT_CALL(completion_callback, Run(form_manager.get()));
+  EXPECT_CALL(completion_callback, Run(form_manager));
   static_cast<password_manager::PasswordFormManagerObserver*>(
       form_finder.form_waiter())
-      ->OnPasswordFormParsed(form_manager.get());
+      ->OnPasswordFormParsed(form_manager);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ChangePasswordFormDetected", true, 1);
   histogram_tester.ExpectTotalCount(
@@ -244,7 +270,9 @@ TEST_F(ChangePasswordFormFinderTest, ChangePasswordFormNotDetected) {
 TEST_F(ChangePasswordFormFinderTest,
        InitialFormWaiter_InvisiblePasswordChangeFormIgnored) {
   auto invisible_form = CreateHiddenFormData();
-  auto form_manager = CreateFormManager(invisible_form);
+  auto* form_manager = CreateFormManager(invisible_form);
+  EXPECT_CALL(driver(), CheckViewAreaVisible)
+      .WillOnce(base::test::RunOnceCallback<1>(false));
   ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
   base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
       completion_callback;
@@ -256,10 +284,10 @@ TEST_F(ChangePasswordFormFinderTest,
       completion_callback.Get(), capture_annotated_page_content.Get());
 
   ASSERT_TRUE(form_finder.form_waiter());
-  EXPECT_CALL(completion_callback, Run(form_manager.get())).Times(0);
+  EXPECT_CALL(completion_callback, Run(form_manager)).Times(0);
   static_cast<password_manager::PasswordFormManagerObserver*>(
       form_finder.form_waiter())
-      ->OnPasswordFormParsed(form_manager.get());
+      ->OnPasswordFormParsed(form_manager);
 }
 
 TEST_F(ChangePasswordFormFinderTest, ExecuteModelModelFailedWhenFormNotFound) {
@@ -445,11 +473,11 @@ TEST_F(ChangePasswordFormFinderTest, ButtonClickRequestedAndSucceeded) {
   // Now `form_finder` is waiting for the change password form again.
   EXPECT_TRUE(form_finder->form_waiter());
 
-  auto form_manager = CreateFormManager();
-  EXPECT_CALL(completion_callback, Run(form_manager.get()));
+  auto* form_manager = CreateFormManager();
+  EXPECT_CALL(completion_callback, Run(form_manager));
   static_cast<password_manager::PasswordFormManagerObserver*>(
       form_finder->form_waiter())
-      ->OnPasswordFormParsed(form_manager.get());
+      ->OnPasswordFormParsed(form_manager);
 
   CheckOpenFormStatus(
       logs_uploader.GetFinalLog(),
@@ -495,11 +523,11 @@ TEST_F(ChangePasswordFormFinderTest,
   EXPECT_TRUE(form_finder->form_waiter());
 
   auto invisible_form = CreateHiddenFormData();
-  auto form_manager = CreateFormManager(invisible_form);
-  EXPECT_CALL(completion_callback, Run(form_manager.get()));
+  auto* form_manager = CreateFormManager(invisible_form);
+  EXPECT_CALL(completion_callback, Run(form_manager));
   static_cast<password_manager::PasswordFormManagerObserver*>(
       form_finder->form_waiter())
-      ->OnPasswordFormParsed(form_manager.get());
+      ->OnPasswordFormParsed(form_manager);
 
   CheckOpenFormStatus(
       logs_uploader.GetFinalLog(),
@@ -520,7 +548,7 @@ TEST_F(ChangePasswordFormFinderTest,
   auto form_finder = std::make_unique<ChangePasswordFormFinder>(
       pass_key(), web_contents(), client(), &logs_uploader,
       completion_callback.GetCallback(), capture_annotated_page_content.Get());
-  auto form_manager = CreateFormManager();
+  auto* form_manager = CreateFormManager();
 
   ASSERT_TRUE(form_finder->form_waiter());
   static_cast<content::WebContentsObserver*>(form_finder->form_waiter())
@@ -549,10 +577,10 @@ TEST_F(ChangePasswordFormFinderTest,
   ASSERT_TRUE(form_finder->form_waiter());
   static_cast<password_manager::PasswordFormManagerObserver*>(
       form_finder->form_waiter())
-      ->OnPasswordFormParsed(form_manager.get());
+      ->OnPasswordFormParsed(form_manager);
 
   EXPECT_TRUE(completion_callback.IsReady());
-  EXPECT_EQ(completion_callback.Get(), form_manager.get());
+  EXPECT_EQ(completion_callback.Get(), form_manager);
   CheckOpenFormStatus(
       logs_uploader.GetFinalLog(),
       QualityStatus::
@@ -590,7 +618,6 @@ TEST_F(ChangePasswordFormFinderTest, FailsWhenPageTypeIsNotSettingsPage) {
   auto form_finder = std::make_unique<ChangePasswordFormFinder>(
       pass_key(), web_contents(), client(), &logs_uploader,
       completion_callback.GetCallback(), capture_annotated_page_content.Get());
-  auto form_manager = CreateFormManager();
 
   ASSERT_TRUE(form_finder->form_waiter());
   static_cast<content::WebContentsObserver*>(form_finder->form_waiter())
