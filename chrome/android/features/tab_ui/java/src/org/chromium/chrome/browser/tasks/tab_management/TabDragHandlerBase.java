@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.build.NullUtil.assertNonNull;
-import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 
 import android.app.Activity;
@@ -40,7 +39,6 @@ import org.chromium.chrome.browser.tabmodel.TabGroupMetadataExtractor;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
-import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
@@ -384,11 +382,7 @@ public abstract class TabDragHandlerBase
                     didCloseWindow, isTabGroupDrop, isMultiTabDrop);
         } else if (MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ACTIVE)
                 >= MultiWindowUtils.getMaxInstances()) {
-            assumeNonNull(mTabModelSelector);
-            assumeNonNull(mTabModelSelector.getCurrentTab());
-            var windowAndroid = mTabModelSelector.getCurrentTab().getWindowAndroid();
-            mMultiInstanceManager.showInstanceCreationLimitMessage(
-                    MessageDispatcherProvider.from(windowAndroid));
+            mMultiInstanceManager.showInstanceCreationLimitMessage();
             ChromeDragDropUtils.recordTabOrGroupDragToCreateInstanceFailureCount();
             DragDropMetricUtils.recordDragDropResult(
                     DragDropResult.IGNORED_MAX_INSTANCES,

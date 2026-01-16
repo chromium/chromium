@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -226,6 +227,7 @@ public class MultiInstanceManagerApi31UnitTest {
     @Mock ChromeTabbedActivity mTabbedActivityTask65;
     @Mock ChromeTabbedActivity mTabbedActivityTask66;
     @Mock RecentlyClosedEntriesManagerTracker mRecentlyClosedTracker;
+    @Mock MessageDispatcher mMessageDispatcher;
 
     @Captor private ArgumentCaptor<Runnable> mOnSaveTabListRunnableCaptor;
 
@@ -548,6 +550,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
         setupActivityForCreateNewWindowIntent(mCurrentActivity);
         RecentlyClosedEntriesManagerTrackerFactory.setInstanceForTesting(mRecentlyClosedTracker);
+        doReturn(mMessageDispatcher).when(mMultiInstanceManager).getMessageDispatcher();
     }
 
     @After
@@ -2178,11 +2181,10 @@ public class MultiInstanceManagerApi31UnitTest {
     public void showInstanceRestorationMessage() {
         MultiWindowUtils.setInstanceCountForTesting(3);
         MultiWindowUtils.setMaxInstancesForTesting(2);
-        var messageDispatcher = mock(MessageDispatcher.class);
         when(mCurrentActivity.getResources()).thenReturn(mock(Resources.class));
 
-        mMultiInstanceManager.showInstanceRestorationMessage(messageDispatcher);
-        verify(messageDispatcher).enqueueWindowScopedMessage(any(), eq(false));
+        mMultiInstanceManager.showInstanceRestorationMessage();
+        verify(mMessageDispatcher).enqueueWindowScopedMessage(any(), eq(false));
         assertTrue(
                 "SharedPref for tracking restoration message should be updated.",
                 ChromeSharedPreferences.getInstance()
@@ -2476,13 +2478,12 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     public void showInstanceCreationLimitMessage() {
-        var messageDispatcher = mock(MessageDispatcher.class);
         when(mCurrentActivity.getResources()).thenReturn(mock(Resources.class));
 
-        mMultiInstanceManager.showInstanceCreationLimitMessage(messageDispatcher);
+        mMultiInstanceManager.showInstanceCreationLimitMessage();
 
         ArgumentCaptor<PropertyModel> message = ArgumentCaptor.forClass(PropertyModel.class);
-        verify(messageDispatcher).enqueueWindowScopedMessage(message.capture(), eq(false));
+        verify(mMessageDispatcher).enqueueWindowScopedMessage(message.capture(), eq(false));
         assertEquals(
                 "Message identifier should match.",
                 MessageIdentifier.MULTI_INSTANCE_CREATION_LIMIT,
@@ -2729,7 +2730,7 @@ public class MultiInstanceManagerApi31UnitTest {
         verify(mMultiInstanceManager, Mockito.never())
                 .showTargetSelectorDialog(
                         any(), anyInt(), eq(R.string.contextmenu_open_in_other_window));
-        verify(mMultiInstanceManager, Mockito.never()).showInstanceCreationLimitMessage(any());
+        verify(mMultiInstanceManager, Mockito.never()).showInstanceCreationLimitMessage();
         verify(mMultiInstanceManager, times(1))
                 .launchTabInOtherWindow(
                         /* isIncognito= */ false,
@@ -2765,7 +2766,7 @@ public class MultiInstanceManagerApi31UnitTest {
         verify(mMultiInstanceManager, Mockito.never())
                 .showTargetSelectorDialog(
                         any(), anyInt(), eq(R.string.contextmenu_open_in_other_window));
-        verify(mMultiInstanceManager, Mockito.never()).showInstanceCreationLimitMessage(any());
+        verify(mMultiInstanceManager, Mockito.never()).showInstanceCreationLimitMessage();
         verify(mMultiInstanceManager, times(1))
                 .launchTabInOtherWindow(
                         /* isIncognito= */ true,
