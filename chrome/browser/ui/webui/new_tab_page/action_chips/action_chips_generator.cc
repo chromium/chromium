@@ -323,7 +323,7 @@ void ActionChipsGeneratorImpl::GenerateDeepDiveChipsFromRemoteResponse(
     base::OnceCallback<void(std::vector<action_chips::mojom::ActionChipPtr>)>
         callback,
     RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&& result) {
-  if (!result.has_value() || result->size() == 0) {
+  if (!result.has_value() || result->size() <= 1) {
     std::move(callback).Run(CreateChipsForSteadyState(std::move(tab),
                                                       aim_eligibility_service_,
                                                       /*options=*/{}));
