@@ -10,6 +10,7 @@ import {FileUploadErrorType, FileUploadStatus} from 'chrome://resources/cr_compo
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteMatch, AutocompleteResult, PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -2568,6 +2569,20 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Autocomplete can be queried again, since there's no voice search result in the input.
     assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 1);
+  });
+
+  test('onInputStateChanged updates inputState', async () => {
+    createComposeboxElement();
+    const inputState = {
+      activeModel: 0,
+      activeTool: 0,
+      disabledModels: [],
+      disabledTools: [],
+      disabledInputTypes: [],
+    } as InputState;
+    searchboxCallbackRouterRemote.onInputStateChanged(inputState);
+    await microtasksFinished();
+    assertDeepEquals((composeboxElement as any).inputState_, inputState);
   });
 
   suite('Context menu', () => {
