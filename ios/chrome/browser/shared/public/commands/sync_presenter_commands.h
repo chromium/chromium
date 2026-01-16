@@ -38,6 +38,9 @@ enum class TrustedVaultUserActionTriggerForUMA;
 - (void)showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
     (trusted_vault::TrustedVaultUserActionTriggerForUMA)trigger;
 
+// Presents the help center article for the bookmarks limit exceeded error.
+- (void)showBookmarksLimitExceededHelp;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_SYNC_PRESENTER_COMMANDS_H_

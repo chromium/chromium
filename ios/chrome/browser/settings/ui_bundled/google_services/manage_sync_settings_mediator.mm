@@ -919,6 +919,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     case SyncNeedsTrustedVaultKeyErrorItemType:
     case SyncTrustedVaultRecoverabilityDegradedErrorItemType:
     case SyncDisabledByAdministratorErrorItemType:
+    case BookmarksLimitExceededErrorItemType:
     case SignOutItemFooterType:
     case TypesListHeaderOrFooterType:
     case AccountErrorMessageItemType:
@@ -1092,6 +1093,9 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     case SyncTrustedVaultRecoverabilityDegradedErrorItemType:
       [self.syncErrorHandler openTrustedVaultReauthForDegradedRecoverability];
       break;
+    case BookmarksLimitExceededErrorItemType:
+      [self.syncErrorHandler openBookmarksLimitExceededHelp];
+      break;
     case SignOutItemType:
       [self.commandHandler signOutFromTargetRect:cellRect];
       break;
@@ -1152,7 +1156,8 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   CHECK((itemType == PrimaryAccountReauthErrorItemType) ||
         (itemType == ShowPassphraseDialogErrorItemType) ||
         (itemType == SyncNeedsTrustedVaultKeyErrorItemType) ||
-        (itemType == SyncTrustedVaultRecoverabilityDegradedErrorItemType))
+        (itemType == SyncTrustedVaultRecoverabilityDegradedErrorItemType) ||
+        (itemType == BookmarksLimitExceededErrorItemType))
       << "itemType: " << itemType;
   CHECK(self.accountStateSignedIn);
   TableViewTextItem* item = [[TableViewTextItem alloc] initWithType:itemType];
@@ -1293,8 +1298,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
         kTrustedVaultRecoverabilityDegradedForEverything:
       return SyncTrustedVaultRecoverabilityDegradedErrorItemType;
     case syncer::SyncService::UserActionableError::kBookmarksLimitExceeded:
-      // TODO(crbug.com/452968646) Add item for kBookmarksLimitExceeded.
-      return std::nullopt;
+      return BookmarksLimitExceededErrorItemType;
     case syncer::SyncService::UserActionableError::kNone:
     // UI not implemented for this case.
     case syncer::SyncService::UserActionableError::kNeedsClientUpgrade:

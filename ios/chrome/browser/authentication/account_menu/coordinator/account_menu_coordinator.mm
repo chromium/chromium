@@ -53,10 +53,12 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
@@ -497,6 +499,15 @@ void maybeShowSettingsIPH(Browser* browser) {
 - (void)openMDMErrodDialogWithSystemIdentity:(id<SystemIdentity>)identity {
   [self stopChildrenCoordinators];
   _authenticationService->ShowMDMErrorDialogForIdentity(identity);
+}
+
+- (void)openBookmarksLimitExceededHelp {
+  GURL helpUrl(kBookmarksLimitExceededHelpCenter);
+  OpenNewTabCommand* command =
+      [OpenNewTabCommand commandWithURLFromChrome:helpUrl];
+  id<SceneCommands> handler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  [handler closePresentedViewsAndOpenURL:command];
 }
 
 - (void)openPrimaryAccountReauthDialog {

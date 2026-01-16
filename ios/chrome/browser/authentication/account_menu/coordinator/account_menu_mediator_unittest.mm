@@ -536,6 +536,18 @@ TEST_P(AccountMenuMediatorTest, TestTapErrorButtonPassphrase) {
                    "Signin_AccountMenu_ErrorButton_Passphrase"));
 }
 
+// Tests the result of didTapErrorButton when a bookmarks limit is exceeded.
+TEST_P(AccountMenuMediatorTest, TestTapErrorButtonBookmarksLimitExceeded) {
+  test_sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
+  test_sync_service_->SetBookmarksLimitExceeded(true);
+
+  OCMExpect([consumer_mock_ updateErrorSection:[OCMArg any]]);
+  test_sync_service_->FireStateChanged();
+
+  OCMExpect([sync_error_settings_mock_ openBookmarksLimitExceededHelp]);
+  [mediator_ didTapErrorButton];
+}
+
 // Tests the effect of didTapManageYourGoogleAccount.
 TEST_P(AccountMenuMediatorTest, TestDidTapManageYourGoogleAccount) {
   OCMExpect([delegate_mock_ didTapManageYourGoogleAccount]);

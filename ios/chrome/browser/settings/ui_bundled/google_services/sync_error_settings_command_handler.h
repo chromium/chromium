@@ -31,6 +31,9 @@
 // enroll additional recovery factors), for Chrome Sync security domain.
 - (void)openTrustedVaultReauthForDegradedRecoverability;
 
+// Opens the help center article for the bookmarks limit exceeded error.
+- (void)openBookmarksLimitExceededHelp;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_GOOGLE_SERVICES_SYNC_ERROR_SETTINGS_COMMAND_HANDLER_H_

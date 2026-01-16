@@ -335,6 +335,13 @@ TEST_P(AccountMenuCoordinatorTest, testMDMError) {
   AssertOpenAndStop();
 }
 
+// Tests that `openBookmarksLimitExceededHelp` opens the help center article.
+TEST_P(AccountMenuCoordinatorTest, testBookmarksLimitExceededHelp) {
+  OCMExpect([mock_scene_handler_ closePresentedViewsAndOpenURL:[OCMArg any]]);
+  [coordinator_ openBookmarksLimitExceededHelp];
+  AssertOpenAndStop();
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          AccountMenuCoordinatorTest,
                          testing::Bool(),

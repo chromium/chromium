@@ -4181,6 +4181,15 @@ const char kChromeAppStoreUrl[] =
   [self showTrustedVaultReauthWithTrigger:trigger intent:intent];
 }
 
+- (void)showBookmarksLimitExceededHelp {
+  GURL helpUrl(kBookmarksLimitExceededHelpCenter);
+  UrlLoadParams params = UrlLoadParams::InNewTab(helpUrl);
+  params.append_to = OpenPosition::kCurrentTab;
+  params.user_initiated = YES;
+  params.in_incognito = self.isOffTheRecord;
+  _urlLoadingBrowserAgent->Load(params);
+}
+
 #pragma mark - SyncPresenterCommands helper
 
 - (void)showTrustedVaultReauthWithTrigger:

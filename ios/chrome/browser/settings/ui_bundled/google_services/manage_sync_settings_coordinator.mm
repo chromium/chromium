@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
+#import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/bulk_upload/bulk_upload_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/bulk_upload/bulk_upload_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_coordinator.h"
@@ -71,6 +72,8 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -659,6 +662,15 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
 - (void)openMDMErrodDialogWithSystemIdentity:(id<SystemIdentity>)identity {
   self.authService->ShowMDMErrorDialogForIdentity(identity);
+}
+
+- (void)openBookmarksLimitExceededHelp {
+  GURL helpUrl(kBookmarksLimitExceededHelpCenter);
+  UrlLoadParams params = UrlLoadParams::InNewTab(helpUrl);
+  params.append_to = OpenPosition::kCurrentTab;
+  params.user_initiated = YES;
+  params.in_incognito = self.browser->GetProfile()->IsOffTheRecord();
+  UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
 }
 
 - (void)openPrimaryAccountReauthDialog {
