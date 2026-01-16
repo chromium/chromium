@@ -269,8 +269,6 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
                       const ui::LocatedEvent& event,
                       ui::ListSelectionModel original_selection) {
     std::vector<TabSlotView*> dragging_views;
-    int x = source->GetMirroredXInView(event.x());
-    int y = event.y();
 
     // Build the set of selected tabs to drag and calculate the offset from the
     // source.
@@ -316,9 +314,6 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
         }
 
         dragging_views.push_back(other_tab);
-        if (other_tab == source) {
-          x += GetSizeNeededForViews(dragging_views) - other_tab->width();
-        }
       }
       if (!original_selection.IsSelected(
               tab_strip_->GetModelIndexOf(source).value())) {
@@ -348,8 +343,8 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     // TabStrip, and the TabDragController, and may end the drag and destroy
     // `tab_drag_controller_`. If Init returns DELETED, then `drag_controller_`
     // is nullptr or it points to a *different instance*.
-    if (drag_controller_->Init(this, source, dragging_views, gfx::Point(x, y),
-                               event.location(), std::move(selection_model),
+    if (drag_controller_->Init(this, source, dragging_views, event.location(),
+                               std::move(selection_model),
                                EventSourceFromEvent(event)) ==
         TabDragController::Liveness::kDeleted) {
       return;

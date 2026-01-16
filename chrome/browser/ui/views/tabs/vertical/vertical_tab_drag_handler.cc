@@ -88,15 +88,13 @@ void VerticalTabDragHandlerImpl::InitializeDrag(TabCollectionNode& node,
 
   // TODO(crbug.com/439963720): Support dragging multiple tabs.
   dragged_tabs_.insert(&node);
-  const gfx::Point offset_from_first_dragged_view = event.location();
   const gfx::Point offset_from_source = event.location();
   ui::ListSelectionModel selection_model;
   TabSlotView& dragged_view = GetOrCreateShimViewForNode(node);
   dragged_view.SetBoundsRect(node.view()->GetLocalBounds());
 
   if (drag_controller_->Init(this, &dragged_view, {&dragged_view},
-                             offset_from_first_dragged_view, offset_from_source,
-                             std::move(selection_model),
+                             offset_from_source, std::move(selection_model),
                              EventSourceFromEvent(event)) ==
       TabDragController::Liveness::kDeleted) {
     dragged_tabs_.clear();
