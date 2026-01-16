@@ -612,29 +612,6 @@
     "expires": "Jul 1, 2026"
   },
   {
-    "prefix": "data-url-mime-type-parameter-preservation",
-    "owners": [
-      "helmut@januschka.com",
-      "nidhijaju@chromium.org"
-    ],
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/fetch/data-urls/processing.any.html",
-      "external/wpt/fetch/data-urls/processing.any.worker.html",
-      "external/wpt/fetch/data-urls/processing.any.sharedworker.html",
-      "external/wpt/fetch/data-urls/processing.any.serviceworker.html"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=DataUrlMimeTypeParameterPreservation"
-    ],
-    "expires": "Dec 1, 2026"
-  },
-  {
     "prefix": "dbsc-enabled",
     "owners": [
       "thefrog@chromium.org",
