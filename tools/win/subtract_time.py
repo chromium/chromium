@@ -13,7 +13,7 @@ import sys
 def ParseTime(time_string):
     # Time looks like 15:19:30.32 or 15:19:30,32 depending on locale
     # (and there might be other variants as well)
-    match = re.match("(.*):(.*):(.*)[\.,](.*)", time_string)
+    match = re.match("(\d+)\D*(\d+)\D*(\d+)\D*(\d+)", time_string.strip())
     hours, minutes, seconds, fraction = map(int, match.groups())
     result = hours * 3600 + minutes * 60 + seconds + fraction * .01
     if result < 0:
