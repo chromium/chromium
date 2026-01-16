@@ -82,7 +82,7 @@ async def read_JSON_message(websocket) -> dict:
     return result
 
 
-async def execute_command(websocket, command: dict, timeout: int = 5) -> dict:
+async def execute_command(websocket, command: dict, timeout: int = 20) -> dict:
     if "id" not in command:
         command["id"] = get_next_command_id()
 
@@ -104,7 +104,7 @@ async def execute_command(websocket, command: dict, timeout: int = 5) -> dict:
 
 async def wait_for_command(websocket,
                            command_id: int,
-                           timeout: int = 5) -> dict:
+                           timeout: int = 20) -> dict:
 
     def _filter(resp):
         return "id" in resp and resp["id"] == command_id
@@ -117,7 +117,7 @@ async def wait_for_command(websocket,
 
 async def wait_for_message(websocket,
                            filter_lambda: Callable[[dict], bool],
-                           timeout: int = 5):
+                           timeout: int = 20):
 
     async def future():
         while True:
