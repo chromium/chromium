@@ -49,4 +49,10 @@ bool TabGroupsEventRouterFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
 }
 
+bool TabGroupsEventRouterFactory::ServiceIsNULLWhileTesting() const {
+  // The event router adds tab strip observers on construction, which some
+  // tests cannot tolerate.
+  return true;
+}
+
 }  // namespace extensions

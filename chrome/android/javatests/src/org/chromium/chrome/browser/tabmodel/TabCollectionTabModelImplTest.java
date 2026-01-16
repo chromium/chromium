@@ -3934,4 +3934,32 @@ public class TabCollectionTabModelImplTest {
                     assertEquals(3, tabIndices[1]);
                 });
     }
+
+    @Test
+    @MediumTest
+    public void testOnTabGroupCreatedNotification() throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        List<Tab> tabs = List.of(tab0, tab1);
+
+        CallbackHelper onTabGroupCreated = new CallbackHelper();
+        TabModelObserver observer =
+                new TabModelObserver() {
+                    @Override
+                    public void onTabGroupCreated(Token groupId) {
+                        assertFalse(groupId.isZero());
+                        onTabGroupCreated.notifyCalled();
+                    }
+                };
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.addObserver(observer);
+                    mCollectionModel.createTabGroup(tabs);
+                });
+
+        onTabGroupCreated.waitForOnly();
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeObserver(observer));
+    }
 }

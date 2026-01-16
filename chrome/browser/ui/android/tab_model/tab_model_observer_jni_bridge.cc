@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/android/jni_android.h"
+#include "base/android/token_android.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -156,6 +157,15 @@ void TabModelObserverJniBridge::TabRemoved(JNIEnv* env, TabAndroid* tab) {
   }
   for (auto& observer : interface_observers_) {
     observer.OnTabRemoved(tab);
+  }
+}
+
+void TabModelObserverJniBridge::OnTabGroupCreated(JNIEnv* env,
+                                                  base::Token group_id) {
+  auto tab_group_id = tab_groups::TabGroupId::FromRawToken(group_id);
+  CHECK(!tab_group_id.is_empty());
+  for (auto& observer : model_observers_) {
+    observer.OnTabGroupCreated(tab_group_id);
   }
 }
 

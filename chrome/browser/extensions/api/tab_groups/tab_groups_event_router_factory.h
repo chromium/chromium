@@ -40,6 +40,7 @@ class TabGroupsEventRouterFactory : public ProfileKeyedServiceFactory {
   bool ServiceIsCreatedWithBrowserContext() const override;
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
+  bool ServiceIsNULLWhileTesting() const override;
 };
 
 }  // namespace extensions

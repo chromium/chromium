@@ -18,24 +18,85 @@
 #include "components/tabs/public/tab_group.h"
 #include "extensions/browser/event_router.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "base/scoped_multi_source_observation.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list_observer.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
+#else
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
 #if BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/405219902): Implement PlatformDelegate for Android.
-class TabGroupsEventRouter::PlatformDelegate {
+
+class TabGroupsEventRouter::PlatformDelegate : public TabModelListObserver,
+                                               public TabModelObserver {
  public:
-  PlatformDelegate(TabGroupsEventRouter* owner, Profile* profile) {}
+  PlatformDelegate(TabGroupsEventRouter* owner, Profile* profile)
+      : owner_(owner), profile_(profile) {}
+
   PlatformDelegate(const PlatformDelegate&) = delete;
   PlatformDelegate& operator=(const PlatformDelegate&) = delete;
-  ~PlatformDelegate() = default;
+
+  ~PlatformDelegate() override {
+    tab_model_observations_.RemoveAllObservations();
+    TabModelList::RemoveObserver(this);
+  }
+
+  void Init() {
+    // Equivalent to observing for new windows.
+    TabModelList::AddObserver(this);
+    // Add models for existing windows.
+    for (TabModel* model : TabModelList::models()) {
+      OnTabModelAdded(model);
+    }
+  }
+
+  // TabModelListObserver:
+  void OnTabModelAdded(TabModel* model) override {
+    if (!ShouldTrackModel(model)) {
+      return;
+    }
+    tab_model_observations_.AddObservation(model);
+
+    // TODO(crbug.com/405219902): Should we fire a "created" event for existing
+    // tab groups? This object is created early in startup, so tab groups may
+    // not exist yet. Need to check Win/Mac/Linux behavior.
+  }
+
+  void OnTabModelRemoved(TabModel* model) override {
+    if (tab_model_observations_.IsObservingSource(model)) {
+      tab_model_observations_.RemoveObservation(model);
+    }
+  }
+
+  // TabModelObserver:
+  void OnTabGroupCreated(tab_groups::TabGroupId group_id) override {
+    owner_->DispatchGroupCreated(group_id);
+
+    // TODO(crbug.com/405219902): For compatibility with Win/Mac/Linux we also
+    // fire "updated" when a group is created. Check if this is necessary as
+    // more observer methods are added, specifically the updated method.
+    owner_->DispatchGroupUpdated(group_id);
+  }
+
+ private:
+  bool ShouldTrackModel(TabModel* model) {
+    // We only track tab models belonging to the same profile.
+    return profile_->IsSameOrParent(model->GetProfile());
+  }
+
+  const raw_ptr<TabGroupsEventRouter> owner_;
+  const raw_ptr<Profile> profile_;
+  base::ScopedMultiSourceObservation<TabModel, TabModelObserver>
+      tab_model_observations_{this};
 };
 
 #else
@@ -50,11 +111,12 @@ class TabGroupsEventRouter::PlatformDelegate
         browser_tab_strip_tracker_(/*tab_strip_model_observer=*/this,
                                    /*delegate=*/this) {
     CHECK(profile_);
-    browser_tab_strip_tracker_.Init();
   }
   PlatformDelegate(const PlatformDelegate&) = delete;
   PlatformDelegate& operator=(const PlatformDelegate&) = delete;
   ~PlatformDelegate() override = default;
+
+  void Init() { browser_tab_strip_tracker_.Init(); }
 
   // TabStripModelObserver:
   void OnTabGroupChanged(const TabGroupChange& change) override {
@@ -108,38 +170,56 @@ class TabGroupsEventRouter::PlatformDelegate
 TabGroupsEventRouter::TabGroupsEventRouter(content::BrowserContext* context)
     : profile_(Profile::FromBrowserContext(context)),
       event_router_(EventRouter::Get(context)),
-      platform_delegate_(std::make_unique<PlatformDelegate>(this, profile_)) {}
+      platform_delegate_(std::make_unique<PlatformDelegate>(this, profile_)) {
+  platform_delegate_->Init();
+}
 
 TabGroupsEventRouter::~TabGroupsEventRouter() = default;
 
 void TabGroupsEventRouter::DispatchGroupCreated(tab_groups::TabGroupId group) {
-  auto args(api::tab_groups::OnCreated::Create(
-      *ExtensionTabUtil::CreateTabGroupObject(group)));
-
+  std::optional<api::tab_groups::TabGroup> tab_group =
+      ExtensionTabUtil::CreateTabGroupObject(group);
+  if (!tab_group) {
+    // May be nullopt in tests.
+    return;
+  }
+  auto args(api::tab_groups::OnCreated::Create(*tab_group));
   DispatchEvent(events::TAB_GROUPS_ON_CREATED,
                 api::tab_groups::OnCreated::kEventName, std::move(args));
 }
 
 void TabGroupsEventRouter::DispatchGroupRemoved(tab_groups::TabGroupId group) {
-  auto args(api::tab_groups::OnRemoved::Create(
-      *ExtensionTabUtil::CreateTabGroupObject(group)));
-
+  std::optional<api::tab_groups::TabGroup> tab_group =
+      ExtensionTabUtil::CreateTabGroupObject(group);
+  if (!tab_group) {
+    // May be nullopt in tests.
+    return;
+  }
+  auto args(api::tab_groups::OnRemoved::Create(*tab_group));
   DispatchEvent(events::TAB_GROUPS_ON_REMOVED,
                 api::tab_groups::OnRemoved::kEventName, std::move(args));
 }
 
 void TabGroupsEventRouter::DispatchGroupMoved(tab_groups::TabGroupId group) {
-  auto args(api::tab_groups::OnMoved::Create(
-      *ExtensionTabUtil::CreateTabGroupObject(group)));
-
+  std::optional<api::tab_groups::TabGroup> tab_group =
+      ExtensionTabUtil::CreateTabGroupObject(group);
+  if (!tab_group) {
+    // May be nullopt in tests.
+    return;
+  }
+  auto args(api::tab_groups::OnMoved::Create(*tab_group));
   DispatchEvent(events::TAB_GROUPS_ON_MOVED,
                 api::tab_groups::OnMoved::kEventName, std::move(args));
 }
 
 void TabGroupsEventRouter::DispatchGroupUpdated(tab_groups::TabGroupId group) {
-  auto args(api::tab_groups::OnUpdated::Create(
-      *ExtensionTabUtil::CreateTabGroupObject(group)));
-
+  std::optional<api::tab_groups::TabGroup> tab_group =
+      ExtensionTabUtil::CreateTabGroupObject(group);
+  if (!tab_group) {
+    // May be nullopt in tests.
+    return;
+  }
+  auto args(api::tab_groups::OnUpdated::Create(*tab_group));
   DispatchEvent(events::TAB_GROUPS_ON_UPDATED,
                 api::tab_groups::OnUpdated::kEventName, std::move(args));
 }
