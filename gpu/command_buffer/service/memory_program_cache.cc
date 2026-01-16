@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <cmath>
+
 #include "base/base64.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -269,13 +271,24 @@ MemoryProgramCache::MemoryProgramCache(
       compress_program_binaries_(CompressProgramBinaries()),
       curr_size_bytes_(0),
       store_(ProgramLRUCache::NO_AUTO_EVICT),
-      use_shader_cache_shm_count_(use_shader_cache_shm_count) {}
+      use_shader_cache_shm_count_(use_shader_cache_shm_count),
+      memory_pressure_listener_registration_(
+          FROM_HERE,
+          base::MemoryPressureListenerTag::kProgramCache,
+          this) {}
 
 MemoryProgramCache::~MemoryProgramCache() = default;
 
 void MemoryProgramCache::ClearBackend() {
   store_.Clear();
   DCHECK_EQ(0U, curr_size_bytes_);
+}
+
+size_t MemoryProgramCache::GetCurrentMaxSizeBytes() const {
+  double memory_limit_ratio = GetMemoryLimitRatio();
+  CHECK_LE(memory_limit_ratio, 1.0);
+  // To match previous behavior, the size must be 1/4 at 50% memory limit.
+  return max_size_bytes() * std::pow(memory_limit_ratio, 2.0);
 }
 
 ProgramCache::ProgramLoadResult MemoryProgramCache::LoadLinkedProgram(
@@ -313,7 +326,7 @@ ProgramCache::ProgramLoadResult MemoryProgramCache::LoadLinkedProgram(
   const std::vector<uint8_t>& decoded =
       value->is_compressed()
           ? DecompressData(value->data(), value->decompressed_length(),
-                           max_size_bytes())
+                           GetCurrentMaxSizeBytes())
           : value->data();
   if (decoded.empty()) {
     // Decompression failure.
@@ -380,7 +393,8 @@ void MemoryProgramCache::SaveLinkedProgram(
   GLenum format;
   GLsizei length = 0;
   glGetProgramiv(program, GL_PROGRAM_BINARY_LENGTH, &length);
-  if (length == 0 || static_cast<unsigned int>(length) > max_size_bytes()) {
+  if (length == 0 ||
+      static_cast<unsigned int>(length) > GetCurrentMaxSizeBytes()) {
     return;
   }
   std::vector<uint8_t> binary(length);
@@ -392,8 +406,9 @@ void MemoryProgramCache::SaveLinkedProgram(
   }
 
   // If the binary is so big it will never fit in the cache, throw it away.
-  if (binary.size() > max_size_bytes())
+  if (binary.size() > GetCurrentMaxSizeBytes()) {
     return;
+  }
 
   Hash a_sha;
   Hash b_sha;
@@ -416,8 +431,8 @@ void MemoryProgramCache::SaveLinkedProgram(
     store_.Erase(existing);
 
   // If the cache is overflowing, remove some old entries.
-  DCHECK(max_size_bytes() >= binary.size());
-  Trim(max_size_bytes() - binary.size());
+  DCHECK(GetCurrentMaxSizeBytes() >= binary.size());
+  Trim(GetCurrentMaxSizeBytes() - binary.size());
 
   if (!disable_gpu_shader_disk_cache_) {
     std::unique_ptr<GpuProgramProto> proto(
@@ -551,6 +566,11 @@ size_t MemoryProgramCache::Trim(size_t limit) {
     store_.Erase(store_.rbegin());
   }
   return initial_size - curr_size_bytes_;
+}
+
+void MemoryProgramCache::OnMemoryPressure(
+    base::MemoryPressureLevel memory_pressure_level) {
+  Trim(GetCurrentMaxSizeBytes());
 }
 
 MemoryProgramCache::ProgramCacheValue::ProgramCacheValue(

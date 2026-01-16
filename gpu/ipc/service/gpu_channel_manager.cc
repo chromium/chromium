@@ -830,9 +830,6 @@ void GpuChannelManager::OnMemoryPressure(
     return;
   }
 
-  if (program_cache_)
-    program_cache_->HandleMemoryPressure(memory_pressure_level);
-
   // SharedContextState requires a current context for cleanup.
   if (shared_context_state_ &&
       shared_context_state_->MakeCurrent(nullptr, true /* needs_gl */)) {

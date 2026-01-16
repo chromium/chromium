@@ -184,21 +184,6 @@ void ProgramCache::ComputeProgramHash(
   result = base::SHA1Hash(buffer_storage);
 }
 
-void ProgramCache::HandleMemoryPressure(
-    base::MemoryPressureLevel memory_pressure_level) {
-  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE) {
-    return;
-  }
-
-  // Set a low limit on cache size for MEMORY_PRESSURE_LEVEL_MODERATE.
-  size_t limit = max_size_bytes_ / 4;
-  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
-    limit = 0;
-  }
-
-  Trim(limit);
-}
-
 size_t ProgramCache::HashHasher::operator()(const Hash& hash) const {
   return base::FastHash(hash);
 }

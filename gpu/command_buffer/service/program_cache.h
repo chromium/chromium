@@ -17,7 +17,6 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/hash/sha1.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/stack_allocated.h"
 #include "base/synchronization/lock.h"
 #include "gpu/command_buffer/common/gl2_types.h"
@@ -125,9 +124,6 @@ class GPU_GLES2_EXPORT ProgramCache {
   // Discards excess cache contents to a fixed upper limit.
   // Returns the number of bytes of memory freed.
   virtual size_t Trim(size_t limit) = 0;
-
-  // Reduces cache usage based on the given MemoryPressureLevel
-  void HandleMemoryPressure(base::MemoryPressureLevel memory_pressure_level);
 
  protected:
   size_t max_size_bytes() const { return max_size_bytes_; }

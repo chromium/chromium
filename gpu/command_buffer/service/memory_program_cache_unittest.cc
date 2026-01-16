@@ -15,9 +15,12 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "gpu/command_buffer/common/shm_count.h"
@@ -95,6 +98,8 @@ class MemoryProgramCacheTest : public GpuServiceTest, public DecoderClient {
   static const GLuint kVertexShaderServiceId = 100;
   static const GLuint kFragmentShaderClientId = 91;
   static const GLuint kFragmentShaderServiceId = 100;
+  static constexpr const char* kDefaultFragmentSource =
+      "bbbal   sldkdkdkas 134 ad";
 
   MemoryProgramCacheTest()
       : cache_(new MemoryProgramCache(kCacheSizeBytes,
@@ -172,7 +177,7 @@ class MemoryProgramCacheTest : public GpuServiceTest, public DecoderClient {
         GL_FLOAT, 0, GL_HIGH_FLOAT, true, "d"));
 
     vertex_shader_->set_source("bbbalsldkdkdkd");
-    fragment_shader_->set_source("bbbal   sldkdkdkas 134 ad");
+    fragment_shader_->set_source(kDefaultFragmentSource);
 
     TestHelper::SetShaderStates(gl_.get(), vertex_shader_, true, nullptr,
                                 nullptr, nullptr, &vertex_attrib_map,
@@ -232,6 +237,49 @@ class MemoryProgramCacheTest : public GpuServiceTest, public DecoderClient {
   int32_t shader_cache_count_;
   std::string shader_cache_shader_;
   std::vector<std::string> varyings_;
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
+
+  void SimulateMemoryPressure(base::MemoryPressureLevel level) {
+    base::RunLoop run_loop;
+    base::MemoryPressureListener::SimulatePressureNotificationAsync(
+        level, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  void SaveProgram(int program_id,
+                   const std::string& source,
+                   const std::vector<char>& binary) {
+    fragment_shader_->set_source(source);
+    TestHelper::SetShaderStates(gl_.get(), fragment_shader_, true);
+    ProgramBinaryEmulator emulator(1, binary);
+
+    SetExpectationsForSaveLinkedProgram(program_id, &emulator);
+    cache_->SaveLinkedProgram(program_id, vertex_shader_, fragment_shader_,
+                              nullptr, varyings_, GL_NONE, this);
+  }
+
+  void SaveProgramFailure(int i, int blob_length) {
+    fragment_shader_->set_source("shader" + base::NumberToString(i));
+    TestHelper::SetShaderStates(gl_.get(), fragment_shader_, true);
+    std::vector<char> binary(blob_length, static_cast<char>(i));
+    ProgramBinaryEmulator emulator(1, binary);
+
+    EXPECT_CALL(*gl_.get(),
+                GetProgramiv(10 + i, GL_PROGRAM_BINARY_LENGTH_OES, _))
+        .WillOnce(SetArgPointee<2>(emulator.length()));
+    cache_->SaveLinkedProgram(10 + i, vertex_shader_, fragment_shader_, nullptr,
+                              varyings_, GL_NONE, this);
+  }
+
+  void CheckProgramStatus(const std::string& source,
+                          ProgramCache::LinkedProgramStatus expected_status) {
+    fragment_shader_->set_source(source);
+    TestHelper::SetShaderStates(gl_.get(), fragment_shader_, true);
+    EXPECT_EQ(expected_status, cache_->GetLinkedProgramStatus(
+                                   vertex_shader_->last_compiled_signature(),
+                                   fragment_shader_->last_compiled_signature(),
+                                   nullptr, varyings_, GL_NONE));
+  }
 };
 
 namespace {
@@ -512,43 +560,25 @@ TEST_F(MemoryProgramCacheTest, LoadFailIfTransformFeedbackCachingDisabled) {
 }
 
 TEST_F(MemoryProgramCacheTest, MemoryProgramCacheEviction) {
-  const GLenum kFormat = 1;
   const int kProgramId = 10;
   const auto test_binary = TwentyIncrementingChars();
-  ProgramBinaryEmulator emulator1(kFormat, test_binary);
+  std::vector<char> binary1(test_binary.begin(), test_binary.end());
 
-  SetExpectationsForSaveLinkedProgram(kProgramId, &emulator1);
-  cache_->SaveLinkedProgram(kProgramId, vertex_shader_, fragment_shader_,
-                            nullptr, varyings_, GL_NONE, this);
+  SaveProgram(kProgramId, kDefaultFragmentSource, binary1);
 
   const int kEvictingProgramId = 11;
   const GLuint kEvictingBinaryLength = kCacheSizeBytes - test_binary.size() + 1;
-
-  // save old source and modify for new program
-  const std::string& old_sig = fragment_shader_->last_compiled_signature();
-  fragment_shader_->set_source("al sdfkjdk");
-  TestHelper::SetShaderStates(gl_.get(), fragment_shader_, true);
 
   auto bigTestBinary = base::HeapArray<char>::Uninit(kEvictingBinaryLength);
   for (size_t i = 0; i < kEvictingBinaryLength; ++i) {
     bigTestBinary[i] = i % 250;
   }
-  ProgramBinaryEmulator emulator2(kFormat, bigTestBinary);
+  std::vector<char> binary2(bigTestBinary.begin(), bigTestBinary.end());
 
-  SetExpectationsForSaveLinkedProgram(kEvictingProgramId, &emulator2);
-  cache_->SaveLinkedProgram(kEvictingProgramId, vertex_shader_,
-                            fragment_shader_, nullptr, varyings_, GL_NONE,
-                            this);
+  SaveProgram(kEvictingProgramId, "al sdfkjdk", binary2);
 
-  EXPECT_EQ(ProgramCache::LINK_SUCCEEDED,
-            cache_->GetLinkedProgramStatus(
-                vertex_shader_->last_compiled_signature(),
-                fragment_shader_->last_compiled_signature(), nullptr, varyings_,
-                GL_NONE));
-  EXPECT_EQ(
-      ProgramCache::LINK_UNKNOWN,
-      cache_->GetLinkedProgramStatus(vertex_shader_->last_compiled_signature(),
-                                     old_sig, nullptr, varyings_, GL_NONE));
+  CheckProgramStatus("al sdfkjdk", ProgramCache::LINK_SUCCEEDED);
+  CheckProgramStatus(kDefaultFragmentSource, ProgramCache::LINK_UNKNOWN);
 }
 
 TEST_F(MemoryProgramCacheTest, SaveCorrectProgram) {
@@ -622,61 +652,82 @@ TEST_F(MemoryProgramCacheTest, OverwriteOnNewSave) {
 
 TEST_F(MemoryProgramCacheTest, MemoryProgramCacheTrim) {
   // Insert a 20 byte program.
-  const GLenum kFormat = 1;
   const int kProgramId = 10;
   const auto test_binary = TwentyIncrementingChars();
-  ProgramBinaryEmulator emulator1(kFormat, test_binary);
+  std::vector<char> binary(test_binary.begin(), test_binary.end());
 
-  SetExpectationsForSaveLinkedProgram(kProgramId, &emulator1);
-  cache_->SaveLinkedProgram(kProgramId, vertex_shader_, fragment_shader_,
-                            nullptr, varyings_, GL_NONE, this);
+  SaveProgram(kProgramId, kDefaultFragmentSource, binary);
 
   // Insert a second 20 byte program.
   const int kSecondProgramId = 11;
-  const std::string& first_sig = fragment_shader_->last_compiled_signature();
-
-  fragment_shader_->set_source("al sdfkjdk");
-  TestHelper::SetShaderStates(gl_.get(), fragment_shader_, true);
-  ProgramBinaryEmulator emulator2(kFormat, test_binary);
-
-  SetExpectationsForSaveLinkedProgram(kSecondProgramId, &emulator2);
-  cache_->SaveLinkedProgram(kSecondProgramId, vertex_shader_, fragment_shader_,
-                            nullptr, varyings_, GL_NONE, this);
+  SaveProgram(kSecondProgramId, "al sdfkjdk", binary);
 
   // Both programs should be present.
-  EXPECT_EQ(ProgramCache::LINK_SUCCEEDED,
-            cache_->GetLinkedProgramStatus(
-                vertex_shader_->last_compiled_signature(),
-                fragment_shader_->last_compiled_signature(), nullptr, varyings_,
-                GL_NONE));
-  EXPECT_EQ(
-      ProgramCache::LINK_SUCCEEDED,
-      cache_->GetLinkedProgramStatus(vertex_shader_->last_compiled_signature(),
-                                     first_sig, nullptr, varyings_, GL_NONE));
+  CheckProgramStatus("al sdfkjdk", ProgramCache::LINK_SUCCEEDED);
+  CheckProgramStatus(kDefaultFragmentSource, ProgramCache::LINK_SUCCEEDED);
 
   // Trim cache to 20 bytes - this should evict the first program.
   cache_->Trim(20);
-  EXPECT_EQ(ProgramCache::LINK_SUCCEEDED,
-            cache_->GetLinkedProgramStatus(
-                vertex_shader_->last_compiled_signature(),
-                fragment_shader_->last_compiled_signature(), nullptr, varyings_,
-                GL_NONE));
-  EXPECT_EQ(
-      ProgramCache::LINK_UNKNOWN,
-      cache_->GetLinkedProgramStatus(vertex_shader_->last_compiled_signature(),
-                                     first_sig, nullptr, varyings_, GL_NONE));
+  CheckProgramStatus("al sdfkjdk", ProgramCache::LINK_SUCCEEDED);
+  CheckProgramStatus(kDefaultFragmentSource, ProgramCache::LINK_UNKNOWN);
 
   // Trim cache to 0 bytes - this should evict both programs.
   cache_->Trim(0);
-  EXPECT_EQ(ProgramCache::LINK_UNKNOWN,
-            cache_->GetLinkedProgramStatus(
-                vertex_shader_->last_compiled_signature(),
-                fragment_shader_->last_compiled_signature(), nullptr, varyings_,
-                GL_NONE));
-  EXPECT_EQ(
-      ProgramCache::LINK_UNKNOWN,
-      cache_->GetLinkedProgramStatus(vertex_shader_->last_compiled_signature(),
-                                     first_sig, nullptr, varyings_, GL_NONE));
+  CheckProgramStatus("al sdfkjdk", ProgramCache::LINK_UNKNOWN);
+  CheckProgramStatus(kDefaultFragmentSource, ProgramCache::LINK_UNKNOWN);
+}
+
+TEST_F(MemoryProgramCacheTest, MemoryPressure) {
+  const int kCacheCapacity = 4;
+  // Compute a blob length giving us a cache capacity of 4 entries.
+  const int kBlobLength = kCacheSizeBytes / kCacheCapacity;
+
+  // Fill the cache.
+  for (int i = 0; i < kCacheCapacity; i++) {
+    std::vector<char> binary(kBlobLength, static_cast<char>(i));
+    SaveProgram(10 + i, "shader" + base::NumberToString(i), binary);
+  }
+
+  CheckProgramStatus("shader0", ProgramCache::LINK_SUCCEEDED);
+  CheckProgramStatus("shader1", ProgramCache::LINK_SUCCEEDED);
+  CheckProgramStatus("shader2", ProgramCache::LINK_SUCCEEDED);
+  CheckProgramStatus("shader3", ProgramCache::LINK_SUCCEEDED);
+
+  SimulateMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE);
+
+  // Cache size should be reduced to 1/4 of the max size under moderate
+  // pressure.
+  CheckProgramStatus("shader0", ProgramCache::LINK_UNKNOWN);
+  CheckProgramStatus("shader1", ProgramCache::LINK_UNKNOWN);
+  CheckProgramStatus("shader2", ProgramCache::LINK_UNKNOWN);
+  CheckProgramStatus("shader3", ProgramCache::LINK_SUCCEEDED);
+
+  // Adding an item removes the previous one.
+  std::vector<char> binary4(kBlobLength, static_cast<char>(4));
+  SaveProgram(14, "shader4", binary4);
+  CheckProgramStatus("shader3", ProgramCache::LINK_UNKNOWN);
+  CheckProgramStatus("shader4", ProgramCache::LINK_SUCCEEDED);
+
+  SimulateMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+
+  // Cache is emptied under critical pressure.
+  CheckProgramStatus("shader4", ProgramCache::LINK_UNKNOWN);
+
+  // Verify new insertions are rejected.
+  SaveProgramFailure(5, kBlobLength);
+
+  // Return memory pressure state to normal.
+  SimulateMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE);
+
+  for (int i = 6; i < 6 + kCacheCapacity; i++) {
+    std::vector<char> binary(kBlobLength, static_cast<char>(i));
+    SaveProgram(10 + i, "shader" + base::NumberToString(i), binary);
+  }
+
+  CheckProgramStatus("shader6", ProgramCache::LINK_SUCCEEDED);
+  CheckProgramStatus("shader7", ProgramCache::LINK_SUCCEEDED);
+  CheckProgramStatus("shader8", ProgramCache::LINK_SUCCEEDED);
+  CheckProgramStatus("shader9", ProgramCache::LINK_SUCCEEDED);
 }
 
 }  // namespace gles2

@@ -12,6 +12,8 @@
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
+#include "base/memory/memory_pressure_listener_registry.h"
+#include "base/run_loop.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "gpu/command_buffer/common/shm_count.h"
 #include "gpu/command_buffer/service/decoder_client.h"
@@ -36,9 +38,7 @@ class PassthroughProgramCacheTest : public GpuServiceTest,
   static const bool kDisableGpuDiskCache = false;
 
   PassthroughProgramCacheTest()
-      : cache_(
-            new PassthroughProgramCache(kCacheSizeBytes, kDisableGpuDiskCache)),
-        blob_count_(0) {}
+      : cache_(kCacheSizeBytes, kDisableGpuDiskCache), blob_count_(0) {}
   ~PassthroughProgramCacheTest() override {}
 
   void OnConsoleMessage(int32_t id, const std::string& message) override {}
@@ -93,7 +93,15 @@ class PassthroughProgramCacheTest : public GpuServiceTest,
     return binary_blob;
   }
 
-  std::unique_ptr<PassthroughProgramCache> cache_;
+  void SimulateMemoryPressure(base::MemoryPressureLevel level) {
+    base::RunLoop run_loop;
+    base::MemoryPressureListener::SimulatePressureNotificationAsync(
+        level, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
+  PassthroughProgramCache cache_;
   int32_t blob_count_;
 };
 
@@ -109,7 +117,7 @@ TEST_F(PassthroughProgramCacheTest, LoadProgram) {
     std::string key_string_64 = base::Base64Encode(binary_key);
     std::string value_string_64 = base::Base64Encode(binary_blob);
 
-    cache_->LoadProgram(key_string_64, value_string_64);
+    cache_.LoadProgram(key_string_64, value_string_64);
 
     // Make sure the blob was inserted.
     EXPECT_EQ(binary_blob, Get(binary_key));
@@ -181,7 +189,7 @@ TEST_F(PassthroughProgramCacheTest, Clear) {
   Set(binary_key, binary_blob);
   EXPECT_EQ(binary_blob, Get(binary_key));
 
-  cache_->Clear();
+  cache_.Clear();
 
   // Make sure the blob is removed.
   EXPECT_EQ("", Get(binary_key));
@@ -227,22 +235,22 @@ TEST_F(PassthroughProgramCacheTest, Trim) {
   EXPECT_EQ(binary_blob2, Get(binary_key2));
 
   // Trimming to exact size of the two blobs shouldn't evict anything.
-  cache_->Trim(kBlobLength * 2);
+  cache_.Trim(kBlobLength * 2);
   EXPECT_EQ(binary_blob, Get(binary_key));
   EXPECT_EQ(binary_blob2, Get(binary_key2));
 
   // Trimming to even a byte under that should evict the first (oldest) blob.
-  cache_->Trim(kBlobLength * 2 - 1);
+  cache_.Trim(kBlobLength * 2 - 1);
   EXPECT_EQ("", Get(binary_key));
   EXPECT_EQ(binary_blob2, Get(binary_key2));
 
   // Trimming to exact size of the blob that's left shouldn't evict anything.
-  cache_->Trim(kBlobLength);
+  cache_.Trim(kBlobLength);
   EXPECT_EQ("", Get(binary_key));
   EXPECT_EQ(binary_blob2, Get(binary_key2));
 
   // Trimming more should evict the second blob too.
-  cache_->Trim(kBlobLength - 1);
+  cache_.Trim(kBlobLength - 1);
   EXPECT_EQ("", Get(binary_key));
   EXPECT_EQ("", Get(binary_key2));
 
@@ -253,9 +261,66 @@ TEST_F(PassthroughProgramCacheTest, Trim) {
   EXPECT_EQ(binary_blob, Get(binary_key));
   EXPECT_EQ(binary_blob2, Get(binary_key2));
 
-  cache_->Trim(0);
+  cache_.Trim(0);
   EXPECT_EQ("", Get(binary_key));
   EXPECT_EQ("", Get(binary_key2));
+}
+
+TEST_F(PassthroughProgramCacheTest, MemoryPressure) {
+  const int kKeyLength = 10;
+  // Compute a blob length giving us a cache capacity of 4 entries.
+  const int kCacheCapacity = 4;
+  const int kBlobLength = kCacheSizeBytes / kCacheCapacity;
+
+  // Fill the cache.
+  for (int i = 0; i < kCacheCapacity; i++) {
+    std::string binary_key = MakeKey(kKeyLength, i);
+    std::string binary_blob = MakeBlob(kBlobLength, i);
+    Set(binary_key, binary_blob);
+  }
+
+  EXPECT_NE("", Get(MakeKey(kKeyLength, 0)));
+  EXPECT_NE("", Get(MakeKey(kKeyLength, 1)));
+  EXPECT_NE("", Get(MakeKey(kKeyLength, 2)));
+  EXPECT_NE("", Get(MakeKey(kKeyLength, 3)));
+
+  SimulateMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE);
+
+  // Cache size should be reduced to 1/4 of the max size under moderate
+  // pressure.
+  EXPECT_EQ("", Get(MakeKey(kKeyLength, 0)));
+  EXPECT_EQ("", Get(MakeKey(kKeyLength, 1)));
+  EXPECT_EQ("", Get(MakeKey(kKeyLength, 2)));
+  EXPECT_NE("", Get(MakeKey(kKeyLength, 3)));
+
+  // Adding an item removes the previous one.
+  Set(MakeKey(kKeyLength, 4), MakeBlob(kBlobLength, 4));
+
+  EXPECT_EQ("", Get(MakeKey(kKeyLength, 3)));
+  EXPECT_NE("", Get(MakeKey(kKeyLength, 4)));
+
+  SimulateMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+
+  EXPECT_EQ("", Get(MakeKey(kKeyLength, 4)));
+
+  // Verify new insertions are rejected.
+  Set(MakeKey(kKeyLength, 5), MakeBlob(kBlobLength, 5));
+
+  EXPECT_EQ("", Get(MakeKey(kKeyLength, 5)));
+
+  // Return memory pressure state to normal.
+  SimulateMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE);
+
+  for (int i = 6; i < 6 + kCacheCapacity; i++) {
+    std::string binary_key = MakeKey(kKeyLength, i);
+    std::string binary_blob = MakeBlob(kBlobLength, i);
+    Set(binary_key, binary_blob);
+  }
+
+  EXPECT_NE("", Get(MakeKey(kKeyLength, 6)));
+  EXPECT_NE("", Get(MakeKey(kKeyLength, 7)));
+  EXPECT_NE("", Get(MakeKey(kKeyLength, 8)));
+  EXPECT_NE("", Get(MakeKey(kKeyLength, 9)));
 }
 
 }  // namespace gles2
