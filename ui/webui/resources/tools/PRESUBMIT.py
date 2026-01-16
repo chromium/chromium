@@ -9,6 +9,7 @@ webui_sources = set([
     'generate_grd.py',
     'minify_js.py',
     'rollup_plugin.mjs',
+    'stylelint.py',
 ])
 
 webui_tests = set([
@@ -16,6 +17,7 @@ webui_tests = set([
     'eslint_ts_test.py',
     'generate_grd_test.py',
     'minify_js_test.py',
+    'stylelint_test.py',
 ])
 
 def _CheckChangeOnUploadOrCommit(input_api, output_api):

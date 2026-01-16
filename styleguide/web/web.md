@@ -391,10 +391,10 @@ are two types of ESLint checks:
    https://typescript-eslint.io/rules/?=typeInformation) of all possible such
    checks (not all of these are used in Chromium). Build-time ESLint checks can
    be triggered locally by building the `chrome` or `browser_tests` binaries, or
-   by explicitly triggering the `:lint` target for cases where `build_webui()`
-   or `build_webui_tests()` is used. For example by running:
+   by explicitly triggering the `:lint_ts` target for cases where
+   `build_webui()` or `build_webui_tests()` is used. For example by running:
    <br><br>
-   `autoninja -C out/chromium/ chrome/browser/resources/settings:lint`
+   `autoninja -C out/chromium/ chrome/browser/resources/settings:lint_ts`
    <br><br>
    See [`build_webui()` docs](
    https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui/webui_build_configuration.md#build_webui)

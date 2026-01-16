@@ -19,6 +19,7 @@ import("//ui/webui/resources/tools/eslint_ts.gni")
 import("//ui/webui/resources/tools/generate_code_cache.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/resources/tools/minify_js.gni")
+import("//ui/webui/resources/tools/stylelint.gni")
 import("//ui/webui/webui_features.gni")
 
 if (use_blink) {
@@ -206,7 +207,7 @@ template("build_webui") {
       visibility = [
         ":build_ts",
         ":html_wrapper_files",
-        ":lint",
+        ":lint_ts",
       ]
       if (enable_source_maps) {
         visibility += [ ":create_source_maps" ]
@@ -256,6 +257,7 @@ template("build_webui") {
       visibility = [
         ":css_wrapper_files",
         ":html_wrapper_files",
+        ":lint_css",
       ]
 
       defines = preprocessor_defines
@@ -306,7 +308,7 @@ template("build_webui") {
     html_to_wrapper("html_wrapper_files") {
       visibility = [
         ":build_ts",
-        ":lint",
+        ":lint_ts",
       ]
       deps = [ ":preprocess_html_css_files" ]
       in_folder = preprocess_dir
@@ -357,6 +359,12 @@ template("build_webui") {
       in_files = invoker.css_files
       minify = optimize
     }
+
+    stylelint("lint_css") {
+      deps = [ ":preprocess_html_css_files" ]
+      in_folder = preprocess_dir
+      in_files = invoker.css_files
+    }
   }
 
   if (defined(invoker.mojo_files_deps)) {
@@ -399,7 +407,7 @@ template("build_webui") {
         ":$generate_grd_target_name",
         ":build_bundle",
         ":build_min_js",
-        ":lint",
+        ":lint_ts",
       ]
 
       if (enable_source_maps) {
@@ -494,7 +502,7 @@ template("build_webui") {
       invoker.enable_type_aware_eslint_checks
 
   if (enable_type_aware_eslint_checks) {
-    eslint_ts("lint") {
+    eslint_ts("lint_ts") {
       in_folder = preprocess_dir
       in_files = filter_exclude(all_ts_files, [ "*.js" ])
       tsconfig = "$target_gen_dir/tsconfig_build_ts.json"
@@ -658,7 +666,11 @@ template("build_webui") {
       out_grd = "$target_gen_dir/resources.grdp"
     }
 
-    deps = []
+    # Adding ":lint" as a dependency so that the lint checks run as part of the
+    # build, even though this `generate_grd()` target does not need any outputs
+    # from it.
+    deps = [ ":lint" ]
+
     manifest_files = []
 
     if (defined(invoker.static_files)) {
@@ -700,11 +712,17 @@ template("build_webui") {
     if (defined(invoker.grd_resource_path_prefix)) {
       resource_path_prefix = invoker.grd_resource_path_prefix
     }
+  }
 
+  # Groups together targets that run additional build time checks.
+  group("lint") {
+    deps = []
     if (enable_type_aware_eslint_checks) {
-      # Adding as a dependency so that it runs as part of the build, even though
-      # this `generate_grd()` target does not use any outputs from it.
-      deps += [ ":lint" ]
+      deps += [ ":lint_ts" ]
+    }
+
+    if (defined(invoker.css_files)) {
+      deps += [ ":lint_css" ]
     }
   }
 
