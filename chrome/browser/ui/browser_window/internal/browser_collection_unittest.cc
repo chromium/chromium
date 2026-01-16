@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/browser_window/public/browser_collection.h"
+
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"

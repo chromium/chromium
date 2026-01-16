@@ -5,7 +5,10 @@
 import("//chrome/common/features.gni")
 
 source_set("internal") {
-  sources = [ "create_browser_window.cc" ]
+  sources = [
+    "browser_collection.cc",
+    "create_browser_window.cc",
+  ]
   deps = [
     "//base",
     "//chrome/browser/profiles:profile",
@@ -21,7 +24,6 @@ source_set("internal") {
       "android/android_browser_window.cc",
       "android/android_browser_window_enumerator.cc",
       "android/android_browser_window_enumerator.h",
-      "android/browser_collection_android.cc",
       "android/browser_window_interface_iterator_android.cc",
       "android/create_browser_window_android.cc",
       "android/global_browser_collection_android.cc",
@@ -36,7 +38,6 @@ source_set("internal") {
     ]
   } else {
     sources += [
-      "browser_collection_non_android.cc",
       "browser_window_features.cc",
       "browser_window_interface_iterator_non_android.cc",
       "create_browser_window_non_android.cc",
@@ -130,9 +131,11 @@ source_set("internal") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = []
+  sources = [ "browser_collection_unittest.cc" ]
   deps = [
     ":internal",
+    "//chrome/browser/ui:test_support",
+    "//chrome/browser/ui/browser_window",
     "//testing/gmock",
     "//testing/gtest",
   ]
@@ -146,19 +149,12 @@ source_set("unit_tests") {
     ]
     deps += [
       "//base",
-      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/browser_window/test:native_unit_test_support_java",
       "//chrome/browser/ui/browser_window/test:native_unit_test_support_jni",
       "//chrome/test:test_support",
       "//components/sessions:session_id",
       "//content/test:test_support",
       "//ui/base",
-    ]
-  } else {
-    sources += [ "browser_collection_non_android_unittest.cc" ]
-    deps += [
-      "//chrome/browser/ui:test_support",
-      "//chrome/browser/ui/browser_window",
     ]
   }
 }

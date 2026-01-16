@@ -9,6 +9,7 @@ import("//chrome/common/features.gni")
 # dependencies this interface should not depend on anything else in //chrome.
 source_set("browser_window") {
   sources = [
+    "public/browser_collection.h",
     "public/browser_collection_observer.h",
     "public/browser_window_interface.h",
     "public/browser_window_interface_iterator.h",
@@ -20,7 +21,6 @@ source_set("browser_window") {
 
   if (!is_android) {
     sources += [
-      "public/browser_collection.h",
       "public/browser_window_features.h",
       "public/desktop_browser_window_capabilities.h",
       "public/desktop_browser_window_capabilities_delegate.h",

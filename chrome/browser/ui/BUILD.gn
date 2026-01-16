@@ -5705,7 +5705,10 @@ if (!is_android) {
 static_library("test_support") {
   testonly = true
 
-  sources = []
+  sources = [
+    "browser_window/test/mock_browser_window_interface.cc",
+    "browser_window/test/mock_browser_window_interface.h",
+  ]
   public_deps = [ ":ui" ]
 
   deps = [
@@ -5714,6 +5717,7 @@ static_library("test_support") {
     "//chrome/browser/devtools",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/autofill/payments:test_support",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/toolbar:test_support",
     "//components/omnibox/browser",
     "//components/password_manager/core/browser",
@@ -5791,8 +5795,6 @@ static_library("test_support") {
     ]
   } else {
     sources += [
-      "browser_window/test/mock_browser_window_interface.cc",
-      "browser_window/test/mock_browser_window_interface.h",
       "test/popup_test_base.cc",
       "test/popup_test_base.h",
       "test/test_confirm_bubble_model.cc",
@@ -5802,7 +5804,6 @@ static_library("test_support") {
       "webui/settings/saved_info_handler_test_api.h",
     ]
     deps += [
-      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/content_settings:test_support",
       "//chrome/browser/ui/passwords:test_support_ui",
       "//chrome/browser/ui/views/toolbar",
