@@ -109,6 +109,7 @@
 #include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/webdata/account_settings/account_setting_service.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -1052,6 +1053,9 @@ bool ChromeAutofillClient::IsTabInActorMode() const {
 #if BUILDFLAG(IS_ANDROID)
   return false;
 #else
+  if (base::FeatureList::IsEnabled(features::debug::kAutofillForceActorMode)) {
+    return true;
+  }
   return active_actor_task_.has_value();
 #endif  // BUILDFLAG(IS_ANDROID)
 }
