@@ -320,7 +320,7 @@ bool OnScreenKeyboardDisplayManagerTabTip::GetOSKPath(std::wstring* osk_path) {
     return false;
   }
 
-  osk_path->resize(UNSAFE_TODO(wcslen(osk_path->c_str())));
+  osk_path->resize(wcsnlen_s(osk_path->c_str(), osk_path->size()));
 
   *osk_path = base::ToLowerASCII(*osk_path);
 
