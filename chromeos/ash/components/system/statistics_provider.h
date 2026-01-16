@@ -220,6 +220,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProvider {
   // Get the current state of loading VPD data.
   virtual LoadingState GetLoadingState() const = 0;
 
+  // Returns the updated hardware class.
+  virtual std::optional<std::string> GetUpdatedHardwareClass() const = 0;
+
   // Get the Singleton instance.
   static StatisticsProvider* GetInstance();
 

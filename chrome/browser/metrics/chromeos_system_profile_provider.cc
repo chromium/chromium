@@ -62,7 +62,7 @@ ChromeOSSystemProfileProvider::~ChromeOSSystemProfileProvider() = default;
 
 void ChromeOSSystemProfileProvider::AsyncInit(base::OnceClosure callback) {
   base::RepeatingClosure barrier = base::BarrierClosure(4, std::move(callback));
-  InitTaskGetFullHardwareClass(barrier);
+  InitTaskWaitForMachineStatisticsLoaded(barrier);
   InitTaskGetArcFeatures(barrier);
   InitTaskGetTpmFirmwareVersion(barrier);
   InitTaskGetCellularDeviceVariant(barrier);
@@ -86,6 +86,15 @@ void ChromeOSSystemProfileProvider::ProvideSystemProfileMetrics(
   metrics::SystemProfileProto::Hardware* hardware =
       system_profile_proto->mutable_hardware();
   hardware->set_full_hardware_class(full_hardware_class_);
+
+  // Updated hardware class might be updated after machine statistics are
+  // loaded, so get it here to ensure the latest value is retrieved.
+  const auto updated_hardware_class =
+      ash::system::StatisticsProvider::GetInstance()->GetUpdatedHardwareClass();
+  if (updated_hardware_class.has_value()) {
+    hardware->set_updated_hardware_class(*updated_hardware_class);
+  }
+
   display::Display::TouchSupport has_touch =
       ui::GetInternalDisplayTouchSupport();
   if (has_touch == display::Display::TouchSupport::AVAILABLE)
@@ -185,7 +194,7 @@ void ChromeOSSystemProfileProvider::WriteDemoModeDimensionMetrics(
       ash::demo_mode::ResourcesVersion().GetString());
 }
 
-void ChromeOSSystemProfileProvider::InitTaskGetFullHardwareClass(
+void ChromeOSSystemProfileProvider::InitTaskWaitForMachineStatisticsLoaded(
     base::OnceClosure callback) {
   ash::system::StatisticsProvider::GetInstance()
       ->ScheduleOnMachineStatisticsLoaded(base::BindOnce(
@@ -230,6 +239,9 @@ void ChromeOSSystemProfileProvider::OnMachineStatisticsLoaded(
               "hardware_class")) {
     full_hardware_class_ = std::string(full_hardware_class.value());
   }
+  // Calling ash::system::StatisticsProvider::GetUpdatedHardwareClass() is valid
+  // now since the initialization of updated hardware class is completed in the
+  // loading of machine statistics.
   std::move(callback).Run();
 }
 

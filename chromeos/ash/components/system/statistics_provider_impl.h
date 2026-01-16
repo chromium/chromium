@@ -18,6 +18,8 @@
 #include "base/files/file_path_watcher.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
@@ -45,11 +47,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProviderImpl
     base::CommandLine vpd_tool{base::CommandLine::NO_PROGRAM};
     // Binary to fake crossystem tool with arguments. E.g. echo.
     base::CommandLine crossystem_tool{base::CommandLine::NO_PROGRAM};
+    // Command line for retrieving the updated hardware class.
+    base::CommandLine runtime_hwid_tool{base::CommandLine::NO_PROGRAM};
 
     base::FilePath machine_info_filepath;
     base::FilePath oem_manifest_filepath;
     base::FilePath cros_regions_filepath;
     base::FilePath vpd_cache_filepath;
+    base::FilePath updated_hw_class_filepath;
   };
 
   // Constructs a provider with given `testing_sources` for testing purposes.
@@ -89,7 +94,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProviderImpl
 
   LoadingState GetLoadingState() const override;
 
+  std::optional<std::string> GetUpdatedHardwareClass() const override;
+
  private:
+  // Allows a peer class in unit test to access private functions.
+  friend class StatisticsProviderImplPeer;
+
+  // The inner file watcher class that lives on the background thread.
+  class BackgroundFilePathWatcher;
+
   using MachineFlags = base::flat_map<std::string, bool>;
 
   explicit StatisticsProviderImpl(StatisticsSources sources);
@@ -104,7 +117,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProviderImpl
   bool WaitForStatisticsLoaded(std::string_view statistic_name);
 
   // Loads the machine statistics off of disk. Runs on the file thread.
-  void LoadMachineStatistics(bool load_oem_manifest);
+  void LoadMachineStatistics(
+      scoped_refptr<base::SequencedTaskRunner> main_task_runner,
+      base::WeakPtr<StatisticsProviderImpl> weak_ptr,
+      bool load_oem_manifest);
 
   // Loads calls the crossystem tool and loads statistics from its output.
   void LoadCrossystemTool();
@@ -136,6 +152,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProviderImpl
                            const base::FilePath& file_path,
                            bool error);
 
+  // Sets the member `updated_hardware_class_`.
+  void SetUpdatedHardwareClass(std::string updated_hardware_class);
+
   StatisticsSources sources_;
 
   LoadingState loading_state_;
@@ -153,6 +172,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProviderImpl
   // 2. The region in question (RO or RW) is reported invalid (e.g., erased or
   //    corrupted).
   VpdStatus vpd_status_{VpdStatus::kUnknown};
+
+  // Stores the updated hardware class. The value might be updated after machine
+  // statistics are loaded.
+  std::string updated_hardware_class_;
 
   // Lock held when `statistics_loaded_` is signaled and when
   // `statistics_loaded_callbacks_` is accessed.
@@ -172,8 +195,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProviderImpl
 
   scoped_refptr<base::SequencedTaskRunner> vpd_change_task_runner_;
 
-  // Allows a peer class in unit test to access private functions.
-  friend class StatisticsProviderImplPeer;
+  // A file path watcher that runs in a background thread to monitor updated
+  // hardware class change.
+  std::unique_ptr<BackgroundFilePathWatcher, base::OnTaskRunnerDeleter>
+      updated_hw_class_change_watcher_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<StatisticsProviderImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace ash::system

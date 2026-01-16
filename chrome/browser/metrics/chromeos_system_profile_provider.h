@@ -42,9 +42,10 @@ class ChromeOSSystemProfileProvider : public metrics::MetricsProvider {
   void WriteDemoModeDimensionMetrics(
       metrics::SystemProfileProto* system_profile_proto);
 
-  // Loads hardware class information. When this task is complete, |callback|
-  // is run.
-  void InitTaskGetFullHardwareClass(base::OnceClosure callback);
+  // Waits for machine statistics to load, and loads hardware class information.
+  // This also ensures that the initial value of updated hardware class is
+  // accessible. When this task is complete, |callback| is run.
+  void InitTaskWaitForMachineStatisticsLoaded(base::OnceClosure callback);
 
   // Retrieves ARC features using ArcFeaturesParser. When this task is complete,
   // |callback| is run.

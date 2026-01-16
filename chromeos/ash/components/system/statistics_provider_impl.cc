@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/system/statistics_provider_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <type_traits>
@@ -16,6 +17,7 @@
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -25,6 +27,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/synchronization/lock.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
@@ -43,6 +46,10 @@ namespace {
 // output of the tool.
 const char kCrosSystemTool[] = "/usr/bin/crossystem";
 const char kCrosSystemValueError[] = "(error)";
+
+// Path to the tool to get updated hardware class.
+constexpr char kRuntimeHwidTool[] = "runtime_hwid_tool";
+constexpr char kRuntimeHwidToolArg[] = "get";
 
 // Path to the tool to get VPD info.
 const char kFilteredVpdTool[] = "/usr/sbin/dump_filtered_vpd";
@@ -86,8 +93,13 @@ constexpr char kStatisticLoadingTimeMetricNamePrefix[] =
     "ChromeOS.MachineStatistic.";
 
 // The cache file for VPD info. This file is used to monitor VPD change.
-const base::FilePath::CharType kVpdCacheFilePath[] =
+constexpr base::FilePath::CharType kVpdCacheFilePath[] =
     FILE_PATH_LITERAL("/run/vpd/rw.txt");
+
+// The file for updated hardware class. This file is used to monitor updated
+// hardware class change.
+constexpr base::FilePath::CharType kUpdatedHwClassFilePath[] =
+    FILE_PATH_LITERAL("/var/cache/hardware_verifier/runtime_hwid");
 
 // Gets the list from the given `dictionary` by given `key`, and returns it as a
 // string with all list values joined by ','. Returns nullopt if `key` is not
@@ -185,14 +197,27 @@ bool HasOemPrefix(std::string_view name) {
   return name.substr(0, 4) == "oem_";
 }
 
+// Called on a background thread to run the command and return the output.
+std::optional<std::string> GetCommandOutput(const base::CommandLine& command) {
+  std::string output;
+  if (!base::GetAppOutput(command, &output)) {
+    LOG(ERROR) << "Failed to run command: " << command.GetProgram();
+    return std::nullopt;
+  }
+  return output;
+}
+
 StatisticsProviderImpl::StatisticsSources CreateDefaultSources() {
   StatisticsProviderImpl::StatisticsSources sources;
   sources.crossystem_tool = base::CommandLine(base::FilePath(kCrosSystemTool));
   sources.vpd_tool = base::CommandLine(base::FilePath(kFilteredVpdTool));
   sources.machine_info_filepath = GetFilePathIgnoreFailure(FILE_MACHINE_INFO);
+  sources.runtime_hwid_tool =
+      base::CommandLine({kRuntimeHwidTool, kRuntimeHwidToolArg});
   sources.oem_manifest_filepath = base::FilePath(kOemManifestFilePath);
   sources.cros_regions_filepath = base::FilePath(kCrosRegions);
   sources.vpd_cache_filepath = base::FilePath(kVpdCacheFilePath);
+  sources.updated_hw_class_filepath = base::FilePath(kUpdatedHwClassFilePath);
   return sources;
 }
 
@@ -262,6 +287,70 @@ void RecordStatisticsRequestLoadingTimeMetric(std::string_view statistic_name,
 
 }  // namespace
 
+class StatisticsProviderImpl::BackgroundFilePathWatcher {
+ public:
+  static std::unique_ptr<BackgroundFilePathWatcher, base::OnTaskRunnerDeleter>
+  Create(const base::CommandLine& cmd_on_change,
+         const base::FilePath& path_to_watch,
+         scoped_refptr<base::SequencedTaskRunner> main_task_runner,
+         base::RepeatingCallback<void(std::string)> update_callback) {
+    scoped_refptr<base::SequencedTaskRunner> background_task_runner =
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+
+    std::unique_ptr<BackgroundFilePathWatcher, base::OnTaskRunnerDeleter>
+        watcher(new BackgroundFilePathWatcher(cmd_on_change, main_task_runner,
+                                              update_callback),
+                base::OnTaskRunnerDeleter(background_task_runner));
+
+    background_task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(&BackgroundFilePathWatcher::StartWatching,
+                       base::Unretained(watcher.get()), path_to_watch));
+
+    return watcher;
+  }
+
+  ~BackgroundFilePathWatcher() = default;
+
+ private:
+  BackgroundFilePathWatcher(
+      const base::CommandLine& cmd_on_change,
+      scoped_refptr<base::SequencedTaskRunner> main_task_runner,
+      base::RepeatingCallback<void(std::string)> update_callback)
+      : cmd_on_change_(cmd_on_change),
+        main_task_runner_(std::move(main_task_runner)),
+        update_callback_(std::move(update_callback)) {}
+
+  void StartWatching(const base::FilePath& path) {
+    CHECK(!watcher_);
+    watcher_ = std::make_unique<base::FilePathWatcher>();
+
+    if (!watcher_->Watch(
+            path, base::FilePathWatcher::Type::kNonRecursive,
+            base::BindRepeating(&BackgroundFilePathWatcher::OnFileChanged,
+                                base::Unretained(this)))) {
+      LOG(ERROR) << "Failed to start file path watcher.";
+    }
+  }
+
+  void OnFileChanged(const base::FilePath& path, bool error) {
+    if (error) {
+      LOG(ERROR) << "Error watching file: " << path.value();
+      return;
+    }
+
+    const auto output = GetCommandOutput(cmd_on_change_);
+    main_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(update_callback_, output.value_or("")));
+  }
+
+  std::unique_ptr<base::FilePathWatcher> watcher_;
+  base::CommandLine cmd_on_change_;
+  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
+  base::RepeatingCallback<void(std::string)> update_callback_;
+};
+
 StatisticsProviderImpl::StatisticsSources::StatisticsSources() = default;
 
 StatisticsProviderImpl::StatisticsSources::~StatisticsSources() = default;
@@ -295,7 +384,9 @@ StatisticsProviderImpl::StatisticsProviderImpl(StatisticsSources sources)
       loading_state_(LoadingState::kNotStarted),
       oem_manifest_loaded_(false),
       statistics_loaded_(base::WaitableEvent::ResetPolicy::MANUAL,
-                         base::WaitableEvent::InitialState::NOT_SIGNALED) {
+                         base::WaitableEvent::InitialState::NOT_SIGNALED),
+      updated_hw_class_change_watcher_(nullptr,
+                                       base::OnTaskRunnerDeleter(nullptr)) {
   if (base::SysInfo::IsRunningOnChromeOS()) {
     vpd_change_watcher_ = std::make_unique<base::FilePathWatcher>();
     vpd_change_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
@@ -303,6 +394,12 @@ StatisticsProviderImpl::StatisticsProviderImpl(StatisticsSources sources)
     vpd_change_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&StatisticsProviderImpl::StartVpdWatcher,
                                   base::Unretained(this)));
+
+    updated_hw_class_change_watcher_ = BackgroundFilePathWatcher::Create(
+        sources_.runtime_hwid_tool, sources_.updated_hw_class_filepath,
+        base::SequencedTaskRunner::GetCurrentDefault(),
+        base::BindRepeating(&StatisticsProviderImpl::SetUpdatedHardwareClass,
+                            weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -328,7 +425,9 @@ void StatisticsProviderImpl::StartLoadingMachineStatistics(
       {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&StatisticsProviderImpl::LoadMachineStatistics,
-                     base::Unretained(this), load_oem_manifest));
+                     base::Unretained(this),
+                     base::SequencedTaskRunner::GetCurrentDefault(),
+                     weak_ptr_factory_.GetWeakPtr(), load_oem_manifest));
 }
 
 void StatisticsProviderImpl::ScheduleOnMachineStatisticsLoaded(
@@ -414,6 +513,7 @@ void StatisticsProviderImpl::Shutdown() {
     vpd_change_task_runner_->DeleteSoon(FROM_HERE,
                                         vpd_change_watcher_.release());
   }
+  updated_hw_class_change_watcher_.reset();
 }
 
 bool StatisticsProviderImpl::IsRunningOnVm() {
@@ -437,6 +537,15 @@ StatisticsProvider::VpdStatus StatisticsProviderImpl::GetVpdStatus() const {
 StatisticsProvider::LoadingState StatisticsProviderImpl::GetLoadingState()
     const {
   return loading_state_;
+}
+
+std::optional<std::string> StatisticsProviderImpl::GetUpdatedHardwareClass()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (updated_hardware_class_.empty()) {
+    return std::nullopt;
+  }
+  return updated_hardware_class_;
 }
 
 void StatisticsProviderImpl::SignalStatisticsLoaded() {
@@ -492,7 +601,10 @@ bool StatisticsProviderImpl::WaitForStatisticsLoaded(
   return false;
 }
 
-void StatisticsProviderImpl::LoadMachineStatistics(bool load_oem_manifest) {
+void StatisticsProviderImpl::LoadMachineStatistics(
+    scoped_refptr<base::SequencedTaskRunner> main_task_runner,
+    base::WeakPtr<StatisticsProviderImpl> weak_ptr,
+    bool load_oem_manifest) {
   // Run from the file task runner. StatisticsProviderImpl is a Singleton<> and
   // will not be destroyed until after threads have been stopped, so this test
   // is always safe.
@@ -559,6 +671,14 @@ void StatisticsProviderImpl::LoadMachineStatistics(bool load_oem_manifest) {
     } else if (machine_info_[kFirmwareWriteProtectCurrentKey] != "1") {
       LOG(WARNING) << "Write-protect disabled.";
     }
+
+    // Run the tool once to get the initial value.
+    const auto updated_hardware_class =
+        GetCommandOutput(sources_.runtime_hwid_tool).value_or("");
+    main_task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(&StatisticsProviderImpl::SetUpdatedHardwareClass,
+                       weak_ptr, updated_hardware_class));
   }
 
   if (load_oem_manifest) {
@@ -791,6 +911,12 @@ void StatisticsProviderImpl::OnVpdChange(
       {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&StatisticsProviderImpl::LoadVpd, base::Unretained(this)));
+}
+
+void StatisticsProviderImpl::SetUpdatedHardwareClass(
+    std::string updated_hardware_class) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  updated_hardware_class_ = updated_hardware_class;
 }
 
 }  // namespace ash::system
