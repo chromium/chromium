@@ -8,6 +8,7 @@
 #import "base/values.h"
 #import "components/autofill/core/common/password_form_fill_data.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
+#import "components/webauthn/ios/features.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 
@@ -67,6 +68,8 @@ void AutofillBottomSheetJavaScriptFeature::AttachListeners(
   parameters.Append(std::move(renderer_id_list));
   parameters.Append(allow_autofocus);
   parameters.Append(base::FeatureList::IsEnabled(kAutofillBottomSheetNewBlur));
+  parameters.Append(
+      base::FeatureList::IsEnabled(kIOSPasskeyConditionalLoginWithShim));
   CallJavaScriptFunction(frame, "bottomSheet.attachListeners", parameters);
 }
 
