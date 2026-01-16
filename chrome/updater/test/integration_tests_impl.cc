@@ -44,6 +44,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -417,6 +418,17 @@ void ExpectUpdateSequence(UpdaterScope scope,
        request::GetScopeMatcher(scope)},
       ")]}'\n");
 }
+
+// Extends the run loop timeout during app installation or updates. This
+// ensures that CRX verification, which can be time-consuming, completes
+// without being interrupted by the default timeout.
+class ScopedAppInstallTimeout {
+ public:
+  ScopedAppInstallTimeout() = default;
+
+ private:
+  base::test::ScopedRunLoopTimeout timeout_{FROM_HERE, base::Minutes(3)};
+};
 
 }  // namespace
 
@@ -984,6 +996,7 @@ void Update(UpdaterScope scope,
             const std::string& install_data_index) {
   scoped_refptr<UpdateService> update_service = CreateUpdateServiceProxy(scope);
   base::RunLoop loop;
+  ScopedAppInstallTimeout runloop_timeout;
   update_service->Update(
       app_id, install_data_index, UpdateService::Priority::kForeground,
       UpdateService::PolicySameVersionUpdate::kNotAllowed,
@@ -996,6 +1009,7 @@ void Update(UpdaterScope scope,
 void UpdateAll(UpdaterScope scope) {
   scoped_refptr<UpdateService> update_service = CreateUpdateServiceProxy(scope);
   base::RunLoop loop;
+  ScopedAppInstallTimeout runloop_timeout;
   update_service->UpdateAll(
       base::DoNothing(),
       base::BindLambdaForTesting(
@@ -1013,6 +1027,7 @@ void InstallAppViaService(UpdaterScope scope,
   UpdateService::UpdateState final_update_state;
   UpdateService::Result final_result;
   base::RunLoop loop;
+  ScopedAppInstallTimeout runloop_timeout;
   update_service->Install(
       registration, /*client_install_data=*/"", /*install_data_index=*/"",
       UpdateService::Priority::kForeground,
