@@ -15,6 +15,7 @@ import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import 'chrome://resources/cr_elements/cr_page_host_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/cr_scrollable.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '/shared/settings/prefs/prefs.js';
 import '../icons.html.js';
@@ -24,7 +25,6 @@ import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 
 import type {SettingsPrefsElement} from '/shared/settings/prefs/prefs.js';
-import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import type {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import type {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import {FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
@@ -55,6 +55,7 @@ export interface SettingsUiElement {
     drawerTemplate: DomIf,
     leftMenu: SettingsMenuElement,
     main: SettingsMainElement,
+    scrollableShadow: HTMLElement,
     toolbar: CrToolbarElement,
     prefs: SettingsPrefsElement,
   };
@@ -62,8 +63,8 @@ export interface SettingsUiElement {
 
 export const MAX_QUERY_LENGTH = 1000;
 
-const SettingsUiElementBase = RouteObserverMixin(
-    CrContainerShadowMixin(FindShortcutMixin(PolymerElement)));
+const SettingsUiElementBase =
+    RouteObserverMixin(FindShortcutMixin(PolymerElement));
 
 export class SettingsUiElement extends SettingsUiElementBase {
   static get is() {
@@ -169,21 +170,8 @@ export class SettingsUiElement extends SettingsUiElementBase {
   }
 
   override currentRouteChanged(route: Route) {
-    if (route === routes.PRIVACY_GUIDE) {
-      // Privacy guide has a multi-card layout, which only needs shadows to
-      // show when there is more content to scroll.
-      this.setForceDropShadows(false);
-      this.enableScrollObservation(true);
-    } else if (route.depth <= 1) {
-      // Main page uses scroll position to determine whether a shadow should
-      // be shown.
-      this.setForceDropShadows(false);
-      this.enableScrollObservation(true);
-    } else if (!route.isNavigableDialog) {
-      // Sub-pages always show the top shadow, regardless of scroll position.
-      this.enableScrollObservation(false);
-      this.setForceDropShadows(true);
-    }
+    this.$.scrollableShadow.classList.toggle(
+        'force-on', route === routes.PRIVACY_GUIDE || route.depth > 1);
 
     const urlSearchQuery =
         Router.getInstance().getQueryParameters().get('search') || '';

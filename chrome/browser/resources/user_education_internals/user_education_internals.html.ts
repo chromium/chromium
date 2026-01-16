@@ -18,7 +18,8 @@ export function getHtml(this: UserEducationInternalsElement) {
     @narrow-changed="${this.onNarrowChanged_}"
     narrow-threshold="920">
 </cr-toolbar>
-<div id="container">
+<div id="container" class="cr-scrollable">
+  <div class="cr-scrollable-top-shadow"></div>
   <div id="left" ?hidden="${this.narrow_}">
     <div role="navigation">
       <h2>Navigation</h2>
