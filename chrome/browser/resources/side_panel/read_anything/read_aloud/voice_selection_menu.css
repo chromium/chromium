@@ -46,6 +46,11 @@ cr-action-menu::part(dialog) {
   z-index: 9999;
 }
 
+/* Custom radius for non-modal submenus used in immersive reading mode */
+cr-action-menu[non-modal]::part(dialog) {
+  border-radius: var(--cornerRadii-medium-small, 12px);
+}
+
 .clickable-false {
   pointer-events: none;
   opacity: var(--cr-disabled-opacity);
