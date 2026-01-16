@@ -37,6 +37,9 @@ const char kStartupTimeWithFREHistogram[] = "IOS.Gemini.StartupTime.FirstRun";
 
 const char kStartupTimeNoFREHistogram[] = "IOS.Gemini.StartupTime.NotFirstRun";
 
+const char kGeminiSessionCancellationHistogram[] =
+    "IOS.Gemini.Session.CancellationReason";
+
 const char kGeminiSessionLengthWithPromptHistogram[] =
     "IOS.Gemini.SessionLength.WithPrompt";
 
@@ -96,6 +99,11 @@ void RecordFREConsentAction(IOSGeminiFREAction action) {
       break;
   }
   base::UmaHistogramEnumeration(kConsentActionHistogram, action);
+}
+
+void RecordGeminiSessionCancellation(
+    IOSGeminiSessionCancellationReason reason) {
+  base::UmaHistogramEnumeration(kGeminiSessionCancellationHistogram, reason);
 }
 
 void RecordGeminiSessionTime(base::TimeDelta session_duration) {

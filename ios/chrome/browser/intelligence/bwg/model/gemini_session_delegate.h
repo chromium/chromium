@@ -44,6 +44,22 @@ enum class GeminiFeedbackType {
 };
 // LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiFeedback)
 
+// Cancellation types for a Gemini session.
+typedef NS_ENUM(NSInteger, GeminiCancelType) {
+  // Unknown cancellation reason.
+  GeminiCancelTypeUnknown = 0,
+  // Stop button was tapped.
+  GeminiCancelTypeStopButtonTapped = 1,
+  // User tapped outside of floaty.
+  GeminiCancelTypeOutsideTapped = 2,
+  // Close button was tapped in the expanded state.
+  GeminiCancelTypeExpandedStateCloseButtonTapped = 3,
+  // Close button was tapped in the collapsed state.
+  GeminiCancelTypeCollapsedStateCloseButtonTapped = 4,
+  // Close button was tapped in the loading state.
+  GeminiCancelTypeLoadingStateCloseButtonTapped = 5,
+};
+
 // Delegate for Gemini session events. Keep up to date with GCR's
 // SessionDelegate.
 @protocol GeminiSessionDelegate
@@ -88,6 +104,10 @@ enum class GeminiFeedbackType {
                    sessionID:(NSString*)sessionID
               conversationID:(NSString*)conversationID;
 
+// Called when gemini response is cancelled.
+- (void)responseCancelledWithReason:(GeminiCancelType)reason
+                          sessionID:(NSString*)sessionID
+                     conversationID:(NSString*)conversationID;
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_SESSION_DELEGATE_H_

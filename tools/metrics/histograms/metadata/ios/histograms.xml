@@ -2442,6 +2442,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Gemini.Session.CancellationReason"
+    enum="IOSGeminiSessionCancellationReason" expires_after="2026-07-14">
+  <owner>fbeauchamp@google.com</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <summary>Records the reason a gemini session was cancelled.</summary>
+</histogram>
+
 <histogram name="IOS.Gemini.Session.FirstPrompt" enum="Boolean"
     expires_after="2026-06-07">
   <owner>kanouche@google.com</owner>

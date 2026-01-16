@@ -45,6 +45,26 @@ IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
   }
 }
 
+IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
+    GeminiCancelType cancel_type) {
+  switch (cancel_type) {
+    case GeminiCancelTypeUnknown:
+      return IOSGeminiSessionCancellationReason::kUnknown;
+    case GeminiCancelTypeStopButtonTapped:
+      return IOSGeminiSessionCancellationReason::kStopButtonTapped;
+    case GeminiCancelTypeOutsideTapped:
+      return IOSGeminiSessionCancellationReason::kOutsideTapped;
+    case GeminiCancelTypeExpandedStateCloseButtonTapped:
+      return IOSGeminiSessionCancellationReason::
+          kExpandedStateCloseButtonTapped;
+    case GeminiCancelTypeCollapsedStateCloseButtonTapped:
+      return IOSGeminiSessionCancellationReason::
+          kCollapsedStateCloseButtonTapped;
+    case GeminiCancelTypeLoadingStateCloseButtonTapped:
+      return IOSGeminiSessionCancellationReason::kLoadingStateCloseButtonTapped;
+  }
+}
+
 }  // namespace
 
 @implementation BWGSessionHandler {
@@ -223,6 +243,13 @@ IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
       RecordGeminiFeedback(IOSGeminiFeedback::kThumbsDown);
       break;
   }
+}
+
+// Called when a gemini session is cancelled.
+- (void)responseCancelledWithReason:(GeminiCancelType)reason
+                          sessionID:(NSString*)sessionID
+                     conversationID:(NSString*)conversationID {
+  RecordGeminiSessionCancellation(HistogramEnumFromGeminiCancelType(reason));
 }
 
 #pragma mark - Private

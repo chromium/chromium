@@ -743,6 +743,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiFREAction) -->
 
+<!--  LINT.IfChange(IOSGeminiSessionCancellationReason) -->
+
+<enum name="IOSGeminiSessionCancellationReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Stop Button Tapped"/>
+  <int value="2" label="Outside Tapped"/>
+  <int value="3" label="Close Button Tapped Expanded State"/>
+  <int value="4" label="Close Button Tapped Collapsed State"/>
+  <int value="5" label="Close Button Tapped Loading State"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiSessionCancellationReason) -->
+
 <!-- LINT.IfChange(IOSGeminiSettingsItem) -->
 
 <enum name="IOSGeminiSettingsItem">
