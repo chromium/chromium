@@ -212,6 +212,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       base::FeatureList::IsEnabled(ntp_features::kNtpNextFeatures));
   source->AddBoolean("ntpNextShowSimplificationUIEnabled",
                      ntp_features::kNtpNextShowSimplificationUIParam.Get());
+  source->AddBoolean("ntpNextShowDismissalUIEnabled",
+                     ntp_features::kNtpNextShowDismissalUIParam.Get());
   source->AddBoolean(
       "oneGoogleBarEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpOneGoogleBar));

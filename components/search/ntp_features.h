@@ -275,6 +275,10 @@ extern const base::FeatureParam<bool>
 // NTP Simplification UI.
 extern const base::FeatureParam<bool> kNtpNextShowSimplificationUIParam;
 
+// Parameter determining if the Action Chips on the NTP should display the
+// dismissal UI.
+extern const base::FeatureParam<bool> kNtpNextShowDismissalUIParam;
+
 // Parameter determining if the tab upload should be delayed when tab context is
 // added from an action chip.
 extern const base::FeatureParam<bool> kAddTabUploadDelayOnActionChipClick;
