@@ -82,18 +82,23 @@ public class IncognitoUtils {
         if (!ChromeFeatureList.sAndroidOpenIncognitoAsWindow.isEnabled()) {
             return false;
         }
+        // Honor test override first. This is needed by Unit Test.
+        if (sShouldOpenIncognitoAsWindowForTesting != null) {
+            return sShouldOpenIncognitoAsWindowForTesting;
+        }
         // Automotive is currently restricted to a single window.
+        // The form factor check must happen before the display size check; because Automotive and
+        // Foldable could also be tablet-sized.
         if (DeviceInfo.isAutomotive() || DeviceInfo.isFoldable()) {
             return false;
         }
         if (BuildConfig.IS_FOR_TEST) {
-            if (sShouldOpenIncognitoAsWindowForTesting == null) {
-                sShouldOpenIncognitoAsWindowForTesting =
-                        ThreadUtils.runOnUiThreadBlocking(
-                                DisplayUtil::isGlobalDefaultDisplayTabletSized);
-            }
+            sShouldOpenIncognitoAsWindowForTesting =
+                    ThreadUtils.runOnUiThreadBlocking(
+                            DisplayUtil::isGlobalDefaultDisplayTabletSized);
             return sShouldOpenIncognitoAsWindowForTesting;
         }
+
         // Simplified check based on MultiWindowUtils#isMultiInstanceApi31Enabled. Skips the
         // Manifest launchMode check due to dependency restrictions on ChromeTabbedActivity.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S_V2) {
