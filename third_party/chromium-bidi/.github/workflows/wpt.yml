@@ -271,7 +271,7 @@ jobs:
           rm -rf wpt-metadata/chromedriver wpt-metadata/mapper
           mv all-artifacts/updated-wpt-metadata/* ./wpt-metadata/
       - name: Commit updated expectations
-        uses: stefanzweifel/git-auto-commit-action@v7.0.0
+        uses: stefanzweifel/git-auto-commit-action@v7.1.0
         with:
           commit_message: Update WPT expectations
           commit_options: -n --signoff
