@@ -232,11 +232,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return StyleRef().IsHorizontalWritingMode() ? size.height : size.width;
   }
 
-  LayoutUnit LogicalHeightForEmptyLine() const {
-    NOT_DESTROYED();
-    return FirstLineHeight();
-  }
-
   // Return the size of all fragments stitched together in the block direction.
   //
   // <div style="columns:2; column-fill:auto; height:100px;">
@@ -907,8 +902,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     return Parent() && Parent()->IsMathML();
   }
-
-  LayoutUnit FirstLineHeight() const override;
 
   PhysicalOffset OffsetPoint(const Element* parent) const;
   LayoutUnit OffsetLeft(const Element*) const final;

@@ -352,9 +352,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     NOT_DESTROYED();
   }
 
-  // Overridden by subclasses to determine line-height of the first-line.
-  virtual LayoutUnit FirstLineHeight() const = 0;
-
   // Returns true if the background is painted opaque in the given rect.
   // The query rect is given in local coordinate system.
   virtual bool BackgroundIsKnownToBeOpaqueInRect(const PhysicalRect&) const {

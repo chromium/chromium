@@ -516,7 +516,7 @@ std::optional<LayoutUnit> LayoutBlock::BaselineForEmptyLine() const {
     return std::nullopt;
   const auto& font_metrics = font_data->GetFontMetrics();
   const auto baseline_type = style->GetFontBaseline();
-  const LayoutUnit line_height = FirstLineHeight();
+  const LayoutUnit line_height = style->ComputedLineHeightAsFixed();
   int ascent_or_descent = IsFlippedLinesWritingMode(style->GetWritingMode())
                               ? font_metrics.Descent(baseline_type)
                               : font_metrics.Ascent(baseline_type);
@@ -524,11 +524,6 @@ std::optional<LayoutUnit> LayoutBlock::BaselineForEmptyLine() const {
                      (line_height - font_metrics.Height()) / 2 +
                      BorderAndPaddingBlockStart())
                         .ToInt());
-}
-
-LayoutUnit LayoutBlock::FirstLineHeight() const {
-  NOT_DESTROYED();
-  return LayoutUnit(FirstLineStyle()->ComputedLineHeight());
 }
 
 const LayoutBlock* LayoutBlock::FirstLineStyleParentBlock() const {

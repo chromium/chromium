@@ -129,9 +129,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
     return &children_;
   }
 
-  // These two functions are overridden for inline-block.
-  LayoutUnit FirstLineHeight() const override;
-
   const char* GetName() const override;
 
  private:

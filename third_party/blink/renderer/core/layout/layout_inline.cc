@@ -865,11 +865,6 @@ void LayoutInline::DirtyLinesFromChangedChild(LayoutObject* child) {
   }
 }
 
-LayoutUnit LayoutInline::FirstLineHeight() const {
-  NOT_DESTROYED();
-  return LayoutUnit(FirstLineStyle()->ComputedLineHeight());
-}
-
 void LayoutInline::ImageChanged(WrappedImagePtr, CanDeferInvalidation) {
   NOT_DESTROYED();
   if (!Parent())

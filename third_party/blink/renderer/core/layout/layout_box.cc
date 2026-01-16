@@ -240,17 +240,19 @@ LayoutUnit TextAreaIntrinsicBlockSize(const HTMLTextAreaElement& textarea,
   const LayoutBox* inner_box =
       editor_box ? DynamicTo<LayoutBox>(editor_box->SlowFirstChild()) : nullptr;
 
-  const LayoutUnit line_height = ([&]() {
+  const LayoutBox& target_box = ([&]() -> const LayoutBox& {
     if (inner_box) {
-      return inner_box->FirstLineHeight();
+      return *inner_box;
     }
     if (editor_box) {
-      return editor_box->FirstLineHeight();
+      return *editor_box;
     }
-    return box.FirstLineHeight();
+    return box;
   })();
 
-  return line_height * textarea.rows() + scrollbar_thickness;
+  return target_box.FirstLineStyleRef().ComputedLineHeightAsFixed() *
+             textarea.rows() +
+         scrollbar_thickness;
 }
 
 LayoutUnit TextFieldIntrinsicBlockSize(const HTMLInputElement& input,
@@ -261,7 +263,7 @@ LayoutUnit TextFieldIntrinsicBlockSize(const HTMLInputElement& input,
   const LayoutBox& target_box = (inner_editor && inner_editor->GetLayoutBox())
                                     ? *inner_editor->GetLayoutBox()
                                     : box;
-  return target_box.FirstLineHeight();
+  return target_box.FirstLineStyleRef().ComputedLineHeightAsFixed();
 }
 
 LayoutUnit FileUploadControlIntrinsicInlineSize(const HTMLInputElement& input,
@@ -3761,17 +3763,6 @@ bool LayoutBox::IsMonolithic() const {
   }
 
   return false;
-}
-
-LayoutUnit LayoutBox::FirstLineHeight() const {
-  NOT_DESTROYED();
-  if (IsAtomicInlineLevel()) {
-    PhysicalSize size = StitchedSize();
-    return FirstLineStyle()->IsHorizontalWritingMode()
-               ? MarginHeight() + size.height
-               : MarginWidth() + size.width;
-  }
-  return LayoutUnit();
 }
 
 PhysicalBoxStrut LayoutBox::BorderOutsetsForClipping() const {

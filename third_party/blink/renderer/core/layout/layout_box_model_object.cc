@@ -876,7 +876,8 @@ LogicalRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(
   // primaryFont is null.
   if (font_data)
     height = LayoutUnit(font_data->GetFontMetrics().Height());
-  LayoutUnit vertical_space = FirstLineHeight() - height;
+  LayoutUnit vertical_space =
+      current_style.ComputedLineHeightAsFixed() - height;
   LayoutUnit block_start = border_padding.block_start + (vertical_space / 2);
   // Care-shape applies to text or elements that accept text input.
   const Node* node = GetNode();

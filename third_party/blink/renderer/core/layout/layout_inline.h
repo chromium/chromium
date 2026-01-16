@@ -322,10 +322,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   void DirtyLinesFromChangedChild(LayoutObject*) final;
 
-  // TODO(leviw): This should probably be an int. We don't snap equivalent lines
-  // to different heights.
-  LayoutUnit FirstLineHeight() const final;
-
   void ChildBecameNonInline(LayoutObject* child) final;
 
   void UpdateHitTestResult(HitTestResult&, const PhysicalOffset&) const final;
