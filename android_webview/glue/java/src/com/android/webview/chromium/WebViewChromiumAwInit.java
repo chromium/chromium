@@ -41,6 +41,7 @@ import org.chromium.android_webview.WebViewChromiumRunQueue;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwResource;
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.metrics.TrackExitReasons;
@@ -58,6 +59,7 @@ import org.chromium.base.library_loader.LoaderErrors;
 import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
 import org.chromium.content_public.browser.BrowserStartupController.StartupCallback;
 import org.chromium.content_public.browser.BrowserStartupController.StartupMetrics;
@@ -602,9 +604,18 @@ public class WebViewChromiumAwInit {
         ArrayDeque<Runnable> postBrowserProcessStartTasks = new ArrayDeque<>();
         preBrowserProcessStartTasks.addLast(
                 () -> {
+                    if (WebViewCachedFlags.get()
+                            .isCachedFeatureEnabled(
+                                    AwFeatures.WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT)) {
+                        PostTask.postTask(
+                                TaskTraits.USER_VISIBLE,
+                                () -> {
+                                    PlatformServiceBridge.getInstance();
+                                });
+                    }
                     if (anyStartupTaskExperimentIsEnabled()) {
                         // Disable java-side PostTask scheduling. The native-side task runners
-                        // are also disabled in the native code. The unscheduled prenative tasks
+                        // are also disabled in the native code. The unscheduled prenative 9tasks
                         // are migrated to the native task runner. The native task runner is
                         // enabled when we are done with startup.
                         PostTask.disablePreNativeUiTasks(true);
