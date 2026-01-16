@@ -64,6 +64,30 @@ export class SettingsIdentityDocsPageElement extends
         },
       },
 
+      /**
+         Whether the feature kAutofillAiAvailableByDefault is enabled. When
+         enabled, users do not need to opt-in to enhanced Autofill to use
+         Autofill AI.
+       */
+      autofillAiAvailableByDefault_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('autofillAiAvailableByDefault');
+        },
+      },
+
+      /**
+       Controls whether the user can use Autofill AI (in this context, identity
+       docs filling). As an example, this can be false if the extensions API
+       disables the feature.
+      */
+      canEnableOrDisableAutofillAi_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('canEnableOrDisableAutofillAi');
+        },
+      },
+
       enhancedAutofillOptedIn_: {
         type: Boolean,
         value: false,
@@ -109,6 +133,8 @@ export class SettingsIdentityDocsPageElement extends
 
   declare private enhancedAutofillEligibleUser_: boolean;
   declare private enhancedAutofillOptedIn_: boolean;
+  declare private autofillAiAvailableByDefault_: boolean;
+  declare private canEnableOrDisableAutofillAi_: boolean;
   declare private identityDocsOptedIn_: chrome.settingsPrivate.PrefObject;
   declare private autofillAiIgnoresWhetherAddressFillingIsEnabled_: boolean;
 
@@ -125,6 +151,10 @@ export class SettingsIdentityDocsPageElement extends
         this.getPref<boolean>('autofill.profile_enabled').value;
     const ignoreAddressAutofill =
         this.autofillAiIgnoresWhetherAddressFillingIsEnabled_;
+    if (this.autofillAiAvailableByDefault_) {
+      return !this.canEnableOrDisableAutofillAi_ ||
+          (!ignoreAddressAutofill && !addressAutofillOptInStatus);
+    }
 
     // The identity docs opt-in toggle should be enabled (editable) when all
     // conditions are met:
@@ -140,6 +170,11 @@ export class SettingsIdentityDocsPageElement extends
   }
 
   private onAutofillOptInStatusChange_() {
+    // If Autofill AI is enabled by default, there is no need to check the
+    // opt-in status.
+    if (this.autofillAiAvailableByDefault_) {
+      return;
+    }
     this.entityDataManager_.getOptInStatus().then(status => {
       this.set('enhancedAutofillOptedIn_', status);
     });

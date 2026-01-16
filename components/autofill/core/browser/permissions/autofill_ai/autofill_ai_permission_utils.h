@@ -43,7 +43,16 @@ enum class AutofillAiAction {
   // AutofillAI feature.
   // If AutofillAiAvailableByDefault is enabled: Opt into online model runs and
   // MQLS logging.
+  // TODO(crbug.com/440488776): Rename to kImproveAutofillAi once
+  // AutofillAiAvailableByDefault is launched.
   kOptIn,
+  // Used only if AutofillAiAvailableByDefault is enabled, it controls whether
+  // users can opt into Autofill AI features, such as identity docs and travel
+  // information.
+  // Its implementation is currently the exact same as kOptIn. However this
+  // will change once a new developer extension
+  // pref is introduced, which will allow for disabling Autofill AI.
+  kEnableOrDisable,
   // Trigger a run of the server classification model.
   kServerClassificationModel,
   // Access locally cached results from the server classification model.

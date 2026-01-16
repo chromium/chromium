@@ -1773,6 +1773,15 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       autofill_client &&
           autofill::MayPerformAutofillAiAction(
               *autofill_client, autofill::AutofillAiAction::kOptIn));
+  html_source->AddBoolean(
+      "canEnableOrDisableAutofillAi",
+      autofill_client &&
+          (autofill::MayPerformAutofillAiAction(
+              *autofill_client, autofill::AutofillAiAction::kEnableOrDisable)));
+  html_source->AddBoolean(
+      "autofillAiAvailableByDefault",
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAiAvailableByDefault));
   html_source->AddBoolean("isWalletServerStorageEnabled",
                           IsWalletServerStorageEnabled());
   html_source->AddBoolean("AutofillAiIgnoresWhetherAddressFillingIsEnabled",

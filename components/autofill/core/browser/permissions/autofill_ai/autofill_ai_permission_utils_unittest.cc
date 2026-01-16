@@ -64,6 +64,8 @@ std::string GetTestSuffix(
       return "kLogToMqls";
     case AutofillAiAction::kOptIn:
       return "kOptIn";
+    case AutofillAiAction::kEnableOrDisable:
+      return "kEnableOrDisable";
     case AutofillAiAction::kServerClassificationModel:
       return "kServerClassificationModel";
     case AutofillAiAction::kUseCachedServerClassificationModelResults:

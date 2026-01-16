@@ -69,6 +69,30 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
       },
 
       /**
+         Whether the feature kAutofillAiAvailableByDefault is enabled. When
+         enabled, users do not need to opt-in to enhanced Autofill to use
+         Autofill AI.
+       */
+      autofillAiAvailableByDefault_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('autofillAiAvailableByDefault');
+        },
+      },
+
+      /**
+       Controls whether the user can use Autofill AI (in this context travel
+       info filling). As an example, this can be false if the extensions API
+       disables the feature.
+      */
+      canEnableOrDisableAutofillAi_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('canEnableOrDisableAutofillAi');
+        },
+      },
+
+      /**
          Fake preference used by `this.$.optInToggle`. Shows value of
          `autofill.autofill_ai.travel_entities_enabled` preference if toggle
          is enabled (clickable). If toggle is disabled then the value is
@@ -108,6 +132,8 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
   declare private enhancedAutofillOptedIn_: boolean;
   declare private travelOptedIn_: chrome.settingsPrivate.PrefObject;
   declare private autofillAiIgnoresWhetherAddressFillingIsEnabled_: boolean;
+  declare private autofillAiAvailableByDefault_: boolean;
+  declare private canEnableOrDisableAutofillAi_: boolean;
 
   private entityDataManager_: EntityDataManagerProxy =
       EntityDataManagerProxyImpl.getInstance();
@@ -122,6 +148,11 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
         this.getPref<boolean>('autofill.profile_enabled').value;
     const ignoreAddressAutofill =
         this.autofillAiIgnoresWhetherAddressFillingIsEnabled_;
+    if (this.autofillAiAvailableByDefault_) {
+      return !this.canEnableOrDisableAutofillAi_ ||
+          (!ignoreAddressAutofill && !addressAutofillOptInStatus);
+    }
+
     // The travel opt-in toggle should be enabled (editable) when all
     // conditions are met:
     //  * User is eligible for enhanced autofill.
@@ -136,6 +167,11 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
   }
 
   private onAutofillOptInStatusChange_() {
+    // If autofill AI is enabled by default, there is no need to check the
+    // opt-in status.
+    if (this.autofillAiAvailableByDefault_) {
+      return;
+    }
     this.entityDataManager_.getOptInStatus().then(status => {
       this.set('enhancedAutofillOptedIn_', status);
     });

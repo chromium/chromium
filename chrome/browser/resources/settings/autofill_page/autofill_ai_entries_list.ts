@@ -87,6 +87,31 @@ export class SettingsAutofillAiEntriesListElement extends
         },
       },
 
+      /**
+         Whether the feature kAutofillAiAvailableByDefault is enabled. When
+         enabled, users do not need to opt-in to enhanced Autofill to use
+         Autofill AI.
+       */
+      autofillAiAvailableByDefault_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('autofillAiAvailableByDefault');
+        },
+      },
+
+      /**
+       Controls whether the user can use Autofill AI. For example this can be
+       false if the extensions API disables the feature.
+       Specifically in this file, it controls whether users can add new
+       entities.
+      */
+      canEnableOrDisableAutofillAi_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('canEnableOrDisableAutofillAi');
+        },
+      },
+
       allowedEntityTypes: {
         type: Set,
         value: null,
@@ -170,7 +195,7 @@ export class SettingsAutofillAiEntriesListElement extends
   static get observers() {
     return [
       'onAutofillAddressPrefChanged_(' +
-          'prefs.autofill.profile_enabled.value, allowEditingPref.*))',
+          'prefs.autofill.profile_enabled.value, allowEditingPref.*)',
       'onOptInStatusChanged_(' +
           'prefs.autofill.autofill_ai.opt_in_status.value, allowEditingPref.*)',
     ];
@@ -188,6 +213,8 @@ export class SettingsAutofillAiEntriesListElement extends
   declare private showRemoveEntityInstanceDialog_: boolean;
   declare private entityInstances_: EntityInstanceWithLabels[];
   declare private autofillAiIgnoresWhetherAddressFillingIsEnabled_: boolean;
+  declare private autofillAiAvailableByDefault_: boolean;
+  declare private canEnableOrDisableAutofillAi_: boolean;
 
   private entityInstancesChangedListener_: EntityInstancesChangedListener|null =
       null;
@@ -197,9 +224,21 @@ export class SettingsAutofillAiEntriesListElement extends
   override connectedCallback() {
     super.connectedCallback();
 
-    this.entityDataManager_.getOptInStatus().then(
-        optedInAtofillAi => this.allowEditing_ = !this.ineligibleUser &&
-            optedInAtofillAi && this.isEditingAllowedByPref_);
+    this.entityDataManager_.getOptInStatus().then(optedIntoAutofillAi => {
+      if (!this.autofillAiIgnoresWhetherAddressFillingIsEnabled_ &&
+          !this.getPref('autofill.profile_enabled').value) {
+        this.allowEditing_ = false;
+        return;
+      }
+
+      if (!this.autofillAiAvailableByDefault_) {
+        this.allowEditing_ = !this.ineligibleUser && optedIntoAutofillAi &&
+            this.isEditingAllowedByPref_;
+      } else {
+        this.allowEditing_ =
+            this.canEnableOrDisableAutofillAi_ && this.isEditingAllowedByPref_;
+      }
+    });
 
     this.entityInstancesChangedListener_ =
         (entityInstances: EntityInstanceWithLabels[]) => {
@@ -378,10 +417,16 @@ export class SettingsAutofillAiEntriesListElement extends
     if (this.autofillAiIgnoresWhetherAddressFillingIsEnabled_) {
       return;
     }
-    const autofillAiOptInStatus =
-        await this.entityDataManager_.getOptInStatus();
-    this.allowEditing_ = !this.ineligibleUser && autofillAiOptInStatus &&
-        prefValue && this.isEditingAllowedByPref_;
+
+    if (!this.autofillAiAvailableByDefault_) {
+      const autofillAiOptInStatus =
+          await this.entityDataManager_.getOptInStatus();
+      this.allowEditing_ = !this.ineligibleUser && autofillAiOptInStatus &&
+          prefValue && this.isEditingAllowedByPref_;
+    } else {
+      this.allowEditing_ = this.canEnableOrDisableAutofillAi_ && prefValue &&
+          this.isEditingAllowedByPref_;
+    }
   }
 
   private onRemoteWalletPassesLinkClick_() {
@@ -390,6 +435,12 @@ export class SettingsAutofillAiEntriesListElement extends
   }
 
   private async onOptInStatusChanged_(): Promise<void> {
+    // If Autofill AI is available by default, it means that the pref only
+    // controls server model calls and MQLS logging. Therefore not whether the
+    // user can use Autofill AI.
+    if (this.autofillAiAvailableByDefault_) {
+      return;
+    }
     const optedIn = await this.entityDataManager_.getOptInStatus();
     this.allowEditing_ =
         !this.ineligibleUser && optedIn && this.isEditingAllowedByPref_;

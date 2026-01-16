@@ -31,6 +31,9 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
+    // Ensure clean state for prefs.
+    settingsPrefs.set('prefs.autofill.profile_enabled.value', true);
+
     entityDataManager = new TestEntityDataManagerProxy();
     EntityDataManagerProxyImpl.setInstance(entityDataManager);
 
@@ -96,12 +99,16 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
 
   async function createEntriesList(
       eligibleUser: boolean = true,
-      autofillAiIgnoresWhetherAddressFillingIsEnabled: boolean =
+      autofillAiIgnoresWhetherAddressFillingIsEnabled: boolean = false,
+      autofillAiAvailableByDefault: boolean = false,
+      canEnableOrDisableAutofillAi: boolean =
           false): Promise<SettingsAutofillAiEntriesListElement> {
     loadTimeData.overrideValues({
       userEligibleForAutofillAi: eligibleUser,
       AutofillAiIgnoresWhetherAddressFillingIsEnabled:
           autofillAiIgnoresWhetherAddressFillingIsEnabled,
+      autofillAiAvailableByDefault: autofillAiAvailableByDefault,
+      canEnableOrDisableAutofillAi: canEnableOrDisableAutofillAi,
     });
     const entriesList: SettingsAutofillAiEntriesListElement =
         document.createElement('settings-autofill-ai-entries-list');
@@ -140,6 +147,47 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
             isVisible(entriesList.shadowRoot!.querySelector('#entries')));
       }));
 
+  test(
+      'AddButtonEnabledByDefaultWhenAutofillAiIsAvailableByDefault',
+      async function() {
+        const entriesList = await createEntriesList(
+            /*eligibleUser=*/ false,
+            /*autofillAiIgnoresWhetherAddressFillingIsEnabled=*/ false,
+            /*autofillAiAvailableByDefault=*/ true,
+            /*canEnableOrDisableAutofillAi=*/ true);
+
+        // The user is not opted-in to enhanced Autofill (model calls and mqls
+        // logging), yet they can still add entities.
+        updateOptInStatus(false, entriesList);
+        await flushTasks();
+
+        const addButton =
+            entriesList.shadowRoot!.querySelector<CrButtonElement>(
+                '#addEntityInstance');
+        assertTrue(!!addButton);
+        assertEquals(addButton.disabled, false);
+
+        assertTrue(
+            isVisible(entriesList.shadowRoot!.querySelector('#entries')));
+      });
+
+  // canEnableOrDisableAutofillAi can be false in the case where
+  // the extensions API disables the feature. In this scenario even if
+  // autofillAiAvailableByDefault is true the feature will still disabled.
+  test('CannotUseAutofillAiDisablesTheFeature', async function() {
+    const entriesList = await createEntriesList(
+        /*eligibleUser=*/ false,
+        /*autofillAiIgnoresWhetherAddressFillingIsEnabled=*/ false,
+        /*autofillAiAvailableByDefault=*/ true,
+        /*canEnableOrDisableAutofillAi=*/ false);
+    updateOptInStatus(false, entriesList);
+    await flushTasks();
+    const addButton = entriesList.shadowRoot!.querySelector<CrButtonElement>(
+        '#addEntityInstance');
+    assertTrue(!!addButton);
+    assertTrue(addButton.disabled);
+  });
+
   test('DisablingClassicAutofillPrefDisablesTheFeature', async function() {
     const entriesList = await createEntriesList();
     updateOptInStatus(true, entriesList);
@@ -156,6 +204,31 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
     await flushTasks();
     assertTrue(addButton.disabled);
   });
+
+  // TODO(crbug.com/440488776): Rename this test once feature is launched.
+  test(
+      'DisablingClassicAutofillPrefDisablesTheFeatureEvenWhenAvailableByDefault',
+      async function() {
+        const entriesList = await createEntriesList(
+            /*eligibleUser=*/ false,
+            /*autofillAiIgnoresWhetherAddressFillingIsEnabled=*/ false,
+            /*autofillAiAvailableByDefault=*/ true,
+            /*canEnableOrDisableAutofillAi=*/ true);
+        await flushTasks();
+
+        const addButton =
+            entriesList.shadowRoot!.querySelector<CrButtonElement>(
+                '#addEntityInstance');
+        assertTrue(!!addButton);
+        assertFalse(addButton.disabled);
+
+        // Check that when the autofill pref is off, the add button becomes
+        // disabled, which essentially means the feature is off.
+        entriesList.setPrefValue('autofill.profile_enabled', false);
+        await flushTasks();
+
+        assertTrue(addButton.disabled);
+      });
 
   test(
       'DisablingClassicAutofillPrefDoesNotDisabledTheFeatureIfOverrideBehaviourIsEnabled',

@@ -146,6 +146,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kIphForOptIn:
     case AutofillAiAction::kLogToMqls:
     case AutofillAiAction::kOptIn:
+    case AutofillAiAction::kEnableOrDisable:
     case AutofillAiAction::kServerClassificationModel:
     case AutofillAiAction::kUseCachedServerClassificationModelResults:
     case AutofillAiAction::kImportToWallet:
@@ -188,6 +189,8 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kLogToMqls:
     case AutofillAiAction::kOptIn:
       return true;
+    case AutofillAiAction::kEnableOrDisable:
+      return is_enabled(features::kAutofillAiAvailableByDefault);
   }
   NOTREACHED();
 }
@@ -214,6 +217,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kListEntityInstancesInSettings:
     case AutofillAiAction::kLogToMqls:
     case AutofillAiAction::kOptIn:
+    case AutofillAiAction::kEnableOrDisable:
       return true;
   }
   NOTREACHED();
@@ -280,6 +284,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kListEntityInstancesInSettings:
     case AutofillAiAction::kLogToMqls:
     case AutofillAiAction::kOptIn:
+    case AutofillAiAction::kEnableOrDisable:
       return true;
   }
   NOTREACHED();
@@ -348,6 +353,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
       // The IPH should only show if the user has not opted in yet.
       return policy_pref_enabled && !autofill_ai_available;
     case AutofillAiAction::kOptIn:
+    case AutofillAiAction::kEnableOrDisable:
       if (!policy_pref_enabled) {
         MaybeOutputReason(debug_message, "Enterprise policy is not enabled.");
       }
@@ -406,6 +412,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kListEntityInstancesInSettings:
     case AutofillAiAction::kLogToMqls:
     case AutofillAiAction::kOptIn:
+    case AutofillAiAction::kEnableOrDisable:
     case AutofillAiAction::kImportToWallet:
     case AutofillAiAction::kServerClassificationModel: {
       if (is_off_the_record) {
@@ -435,6 +442,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kListEntityInstancesInSettings:
     case AutofillAiAction::kLogToMqls:
     case AutofillAiAction::kOptIn:
+    case AutofillAiAction::kEnableOrDisable:
     case AutofillAiAction::kServerClassificationModel:
     case AutofillAiAction::kFilling:
     case AutofillAiAction::kUseCachedServerClassificationModelResults:
