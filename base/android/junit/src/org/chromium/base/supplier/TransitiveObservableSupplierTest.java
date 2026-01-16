@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
@@ -332,6 +333,97 @@ public class TransitiveObservableSupplierTest {
         // Test back to null because of supplier1.
         nullableSupplier1.set(null);
         verify(mOnChangeCallback).onResult(null);
+        assertNull(transitive.get());
+    }
+
+    @Test
+    public void testNonNullDefaultValue_withObservers() {
+        NonNullObservableSupplier<String> nonNullSupplier =
+                ObservableSuppliers.createNonNull("nonNull");
+        SettableNullableObservableSupplier<String> nullableSupplier =
+                ObservableSuppliers.createNullable();
+
+        // Test NonNull due to default value.
+        NonNullObservableSupplier<String> transitiveNonNull =
+                nullableSupplier.createTransitiveNonNull("foo", unused -> nonNullSupplier);
+        transitiveNonNull.addSyncObserverAndCallIfNonNull(mOnChangeCallback);
+        verify(mOnChangeCallback).onResult(eq("foo"));
+        clearInvocations(mOnChangeCallback);
+        assertEquals("foo", transitiveNonNull.get());
+
+        // Test transition away from default value.
+        nullableSupplier.set("bar");
+        verify(mOnChangeCallback).onResult(eq("nonNull"));
+        clearInvocations(mOnChangeCallback);
+        assertEquals("nonNull", transitiveNonNull.get());
+
+        // Back to default value.
+        nullableSupplier.set(null);
+        verify(mOnChangeCallback).onResult(eq("foo"));
+        assertEquals("foo", transitiveNonNull.get());
+    }
+
+    @Test
+    public void testNonNullDefaultValue_withoutObservers() {
+        NonNullObservableSupplier<String> nonNullSupplier =
+                ObservableSuppliers.createNonNull("nonNull");
+        SettableNullableObservableSupplier<String> nullableSupplier =
+                ObservableSuppliers.createNullable();
+
+        // Test NonNull due to default value.
+        NonNullObservableSupplier<String> transitiveNonNull =
+                nullableSupplier.createTransitiveNonNull("foo", unused -> nonNullSupplier);
+        assertEquals("foo", transitiveNonNull.get());
+
+        // Test transition away from default value.
+        nullableSupplier.set("bar");
+        assertEquals("nonNull", transitiveNonNull.get());
+
+        // Back to default value.
+        nullableSupplier.set(null);
+        assertEquals("foo", transitiveNonNull.get());
+    }
+
+    @Test
+    public void testGetAfterDestroy() {
+        SettableNullableObservableSupplier<String> nullableSupplier1 =
+                ObservableSuppliers.createNullable();
+        SettableNullableObservableSupplier<String> nullableSupplier2 =
+                ObservableSuppliers.createNullable();
+
+        SettableNullableObservableSupplier<String> transitive =
+                nullableSupplier1.createTransitiveNullable(unused -> nullableSupplier2);
+        transitive.addSyncObserverAndCallIfNonNull(mOnChangeCallback);
+        assertNull(transitive.get());
+
+        // Set a value.
+        nullableSupplier2.set("A");
+        nullableSupplier1.set("B");
+        verify(mOnChangeCallback).onResult("A");
+        clearInvocations(mOnChangeCallback);
+        assertEquals("A", transitive.get());
+
+        // Ensure destroy() causes get() to return null.
+        transitive.destroy();
+        assertNull(transitive.get());
+    }
+
+    @Test
+    public void testDestroyUnregisters() {
+        SettableNullableObservableSupplier<String> nullableSupplier1 =
+                ObservableSuppliers.createNullable();
+        SettableNullableObservableSupplier<String> nullableSupplier2 =
+                ObservableSuppliers.createNullable();
+
+        SettableNullableObservableSupplier<String> transitive =
+                nullableSupplier1.createTransitiveNullable(unused -> nullableSupplier2);
+        transitive.addSyncObserverAndCallIfNonNull(mOnChangeCallback);
+        transitive.destroy();
+
+        // Set a value.
+        nullableSupplier2.set("A");
+        nullableSupplier1.set("B");
+        verify(mOnChangeCallback, never()).onResult(any());
         assertNull(transitive.get());
     }
 }
