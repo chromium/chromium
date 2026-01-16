@@ -1209,9 +1209,7 @@ if (_is_default_toolchain) {
   }
 
   android_library("xr_java") {
-    sources = [
-      "java/src/org/chromium/chrome/browser/xr/scenecore/XrModuleProvider.java",
-    ]
+    sources = [ "java/src/org/chromium/chrome/browser/xr/scenecore/XrModuleProvider.java" ]
 
     deps = [
       "//base:base_java",
@@ -1300,7 +1298,6 @@ if (_is_default_toolchain) {
       "//chrome/browser/android/browserservices/intents:java",
       "//chrome/browser/android/intents:java",
       "//chrome/browser/autofill/android:java",
-      "//chrome/browser/browser_controls/android:java",
       "//chrome/browser/feature_engagement:java",
       "//chrome/browser/flags:java",
       "//chrome/browser/profiles/android:java",
