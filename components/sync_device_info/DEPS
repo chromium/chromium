@@ -12,5 +12,4 @@ include_rules = [
   "+components/sync/test",
   "+components/version_info",
   "+ui/base",
-  "+absl/container",
 ]

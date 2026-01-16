@@ -5,9 +5,9 @@
 #ifndef SERVICES_WEBNN_ORT_EXTERNAL_WEIGHTS_MANAGER_H_
 #define SERVICES_WEBNN_ORT_EXTERNAL_WEIGHTS_MANAGER_H_
 
-#include "absl/container/flat_hash_set.h"
 #include "base/containers/heap_array.h"
 #include "services/webnn/ort/scoped_ort_types.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/windows_app_sdk_headers/src/inc/abi/winml/winml/onnxruntime_c_api.h"
 
 namespace webnn::ort {

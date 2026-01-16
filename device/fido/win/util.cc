@@ -8,7 +8,6 @@
 #include <windows.security.credentials.ui.h>
 #include <wtsapi32.h>
 
-#include "absl/cleanup/cleanup.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
@@ -19,6 +18,7 @@
 #include "base/threading/scoped_thread_priority.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/post_async_results.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace device::fido::win {
 

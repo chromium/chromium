@@ -1,5 +1,4 @@
 include_rules = [
-  "+absl/container/flat_hash_set.h",
   "+content/test/fuzzer/mojolpm_fuzzer_support.h",
   "+gpu/command_buffer/common/command_buffer_id.h",
   "+gpu/command_buffer/common/sync_token.h",

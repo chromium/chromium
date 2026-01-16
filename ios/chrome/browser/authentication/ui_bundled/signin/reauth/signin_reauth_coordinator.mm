@@ -7,7 +7,6 @@
 #import <string>
 #import <variant>
 
-#import "absl/functional/overload.h"
 #import "base/logging.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -19,6 +18,7 @@
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_interaction_manager.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
+#import "third_party/abseil-cpp/absl/functional/overload.h"
 
 @implementation SigninReauthCoordinator {
   raw_ptr<Browser> _browser;
