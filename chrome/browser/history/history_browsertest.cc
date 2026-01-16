@@ -24,6 +24,8 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/history/history_test_utils.h"
+#include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
+#include "chrome/browser/history_embeddings/history_embeddings_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -71,6 +73,30 @@ using content::BrowserThread;
 using ::testing::_;
 
 namespace {
+
+class MockHistoryEmbeddingsTabHelper : public HistoryEmbeddingsTabHelper {
+ public:
+  explicit MockHistoryEmbeddingsTabHelper(content::WebContents* web_contents)
+      : HistoryEmbeddingsTabHelper(web_contents) {}
+  ~MockHistoryEmbeddingsTabHelper() override = default;
+
+  MOCK_METHOD(void,
+              OnUpdatedHistoryForNavigation,
+              (content::NavigationHandle*, base::Time, const GURL&),
+              (override));
+};
+
+class MockHistoryClustersTabHelper : public HistoryClustersTabHelper {
+ public:
+  explicit MockHistoryClustersTabHelper(content::WebContents* web_contents)
+      : HistoryClustersTabHelper(web_contents) {}
+  ~MockHistoryClustersTabHelper() override = default;
+
+  MOCK_METHOD(void,
+              OnUpdatedHistoryForNavigation,
+              (int64_t navigation_id, base::Time timestamp, const GURL& url),
+              (override));
+};
 
 // Used to test if the History Service Observer gets called for both
 // `OnURLVisited()` and `OnURLVisitedWithNavigationId()`.
@@ -1371,6 +1397,105 @@ IN_PROC_BROWSER_TEST_P(History404BrowserTest, NavigationTo404) {
     EXPECT_FALSE(result.success);
     EXPECT_EQ(0u, result.visits.size());
   }
+}
+
+IN_PROC_BROWSER_TEST_P(History404BrowserTest, HistoryRemovalRemoves404Url) {
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(browser()->profile(),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+
+  GURL url(embedded_https_test_server().GetURL("/page404.html"));
+
+  // Add url to the history.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  history::BlockUntilHistoryProcessesPendingRequests(history_service);
+
+  if (GetParam()) {
+    // When feature is enabled, 404 navigations should be in history.
+    EXPECT_TRUE(HistoryContainsURL(url));
+
+    // Delete url from history
+    history_service->DeleteURLs({url});
+
+    // Wait for the asynchronous delete to complete
+    base::RunLoop run_loop;
+    history_service->FlushForTest(run_loop.QuitClosure());
+    run_loop.Run();
+
+    // Expect url to successfully be deleted from history
+    EXPECT_FALSE(HistoryContainsURL(url));
+  } else {
+    // When feature is disabled, 404 navigations should not be in history.
+    EXPECT_FALSE(HistoryContainsURL(url));
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(History404BrowserTest,
+                       DoesNotNotifyHistoryEmbeddingsTabHelperOn404) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // The HistoryEmbeddingsTabHelper is created in ChromeContentBrowserClient, so
+  // it already exists in web_contents.
+  web_contents->RemoveUserData(HistoryEmbeddingsTabHelper::UserDataKey());
+  auto mock_helper =
+      std::make_unique<MockHistoryEmbeddingsTabHelper>(web_contents);
+  MockHistoryEmbeddingsTabHelper* mock_helper_ptr = mock_helper.get();
+  web_contents->SetUserData(HistoryEmbeddingsTabHelper::UserDataKey(),
+                            std::move(mock_helper));
+
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(browser()->profile(),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  ui_test_utils::WaitForHistoryToLoad(history_service);
+
+  // Regardless of whether the feature is enabled, HistoryEmbeddings shouldn't
+  // be notified on a 404 visit...
+  GURL url404 = embedded_https_test_server().GetURL("/page404.html");
+  EXPECT_CALL(*mock_helper_ptr, OnUpdatedHistoryForNavigation(_, _, url404))
+      .Times(0);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url404));
+
+  // ... but a non-404 visit should
+  GURL url_non_404 = embedded_https_test_server().GetURL("/title1.html");
+  EXPECT_CALL(*mock_helper_ptr,
+              OnUpdatedHistoryForNavigation(_, _, url_non_404))
+      .Times(1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_non_404));
+}
+
+IN_PROC_BROWSER_TEST_P(History404BrowserTest,
+                       DoesNotNotifyHistoryClustersTabHelperOn404) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // The HistoryClustersTabHelper is created in ChromeContentBrowserClient, so
+  // it already exists in web_contents.
+  web_contents->RemoveUserData(HistoryClustersTabHelper::UserDataKey());
+  auto mock_helper =
+      std::make_unique<MockHistoryClustersTabHelper>(web_contents);
+  MockHistoryClustersTabHelper* mock_helper_ptr = mock_helper.get();
+  web_contents->SetUserData(HistoryClustersTabHelper::UserDataKey(),
+                            std::move(mock_helper));
+
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(browser()->profile(),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  ui_test_utils::WaitForHistoryToLoad(history_service);
+
+  // Regardless of whether the feature is enabled, HistoryClusters shouldn't
+  // be notified on a 404 visit...
+  GURL url404 = embedded_https_test_server().GetURL("/page404.html");
+  EXPECT_CALL(*mock_helper_ptr, OnUpdatedHistoryForNavigation(_, _, url404))
+      .Times(0);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url404));
+
+  // ... but a non-404 visit should
+  GURL url_non_404 = embedded_https_test_server().GetURL("/title1.html");
+  EXPECT_CALL(*mock_helper_ptr,
+              OnUpdatedHistoryForNavigation(_, _, url_non_404))
+      .Times(1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_non_404));
 }
 
 INSTANTIATE_TEST_SUITE_P(, History404BrowserTest, ::testing::Bool());
