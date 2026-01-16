@@ -4,6 +4,7 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.app.tabmodel.ShadowTabStoreValidator.HEADLESS_TAG;
 import static org.chromium.chrome.browser.app.tabmodel.TabPersistentStoreFactory.buildShadowStore;
 
 import org.chromium.base.ContextUtils;
@@ -93,7 +94,7 @@ public class HeadlessTabModelOrchestrator implements Destroyable {
                         mTabPersistentStore,
                         windowTag,
                         /* cipherFactory= */ null,
-                        /* recordMetrics= */ false);
+                        HEADLESS_TAG);
 
         mTabModelSelector.selectModel(false);
         mTabPersistentStore.addObserver(

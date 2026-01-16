@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.app.tabmodel.ShadowTabStoreValidator.ARCHIVED_TAG;
 import static org.chromium.chrome.browser.app.tabmodel.TabPersistentStoreFactory.buildNonOtrShadowStore;
 
 import android.content.Context;
@@ -596,7 +597,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                         mTabPersistencePolicy,
                         mTabPersistentStore,
                         ARCHIVED_TAB_SELECTOR_UNIQUE_TAG,
-                        /* recordMetrics= */ false);
+                        ARCHIVED_TAG);
     }
 
     @Override

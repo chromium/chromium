@@ -43,7 +43,8 @@ public class TabPersistentStoreFactory {
      *     truth.
      * @param windowTag The unique identifier for the window instance.
      * @param cipherFactory The cipher factory to use for encryption to the store.
-     * @param recordMetrics Whether to record metrics for the shadow store;
+     * @param orchestratorTag A tag representing the type of tab model orchestrator this validator
+     *     is for.
      */
     public static @Nullable TabPersistentStore buildShadowStore(
             Profile profile,
@@ -54,7 +55,7 @@ public class TabPersistentStoreFactory {
             TabPersistentStore authoritativeStore,
             String windowTag,
             @Nullable CipherFactory cipherFactory,
-            boolean recordMetrics) {
+            String orchestratorTag) {
         TabCreatorManager shadowTabCreatorManager =
                 incognito -> incognito ? incognitoShadowTabCreator : regularShadowTabCreator;
 
@@ -67,7 +68,7 @@ public class TabPersistentStoreFactory {
                 windowTag,
                 cipherFactory,
                 regularShadowTabCreator,
-                recordMetrics);
+                orchestratorTag);
     }
 
     /**
@@ -85,7 +86,8 @@ public class TabPersistentStoreFactory {
      * @param authoritativeStore The primary {@link TabPersistentStore} that acts as the source of
      *     truth.
      * @param windowTag The unique identifier for the window instance.
-     * @param recordMetrics Whether to record metrics for the shadow store;
+     * @param orchestratorTag A tag representing the type of tab model orchestrator this validator
+     *     is for.
      */
     public static @Nullable TabPersistentStore buildNonOtrShadowStore(
             Profile profile,
@@ -94,7 +96,7 @@ public class TabPersistentStoreFactory {
             TabPersistencePolicy tabPersistencePolicy,
             TabPersistentStore authoritativeStore,
             String windowTag,
-            boolean recordMetrics) {
+            String orchestratorTag) {
         TabCreatorManager shadowTabCreatorManager =
                 incognito -> {
                     assert !incognito;
@@ -110,7 +112,7 @@ public class TabPersistentStoreFactory {
                 windowTag,
                 /* cipherFactory= */ null,
                 regularShadowTabCreator,
-                recordMetrics);
+                orchestratorTag);
     }
 
     private static @Nullable TabPersistentStore buildShadowStoreInternal(
@@ -122,7 +124,7 @@ public class TabPersistentStoreFactory {
             String windowTag,
             @Nullable CipherFactory cipherFactory,
             AccumulatingTabCreator regularShadowTabCreator,
-            boolean recordMetrics) {
+            String orchestratorTag) {
         if (!TabStateStorageFlagHelper.isTabStorageEnabled()) return null;
         assert !profile.isOffTheRecord();
 
@@ -143,7 +145,7 @@ public class TabPersistentStoreFactory {
                 shadowTabPersistentStore,
                 selector.getModel(/* incognito= */ false),
                 regularShadowTabCreator,
-                recordMetrics);
+                orchestratorTag);
         return shadowTabPersistentStore;
     }
 }

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.app.tabmodel.ShadowTabStoreValidator.TABBED_TAG;
 import static org.chromium.chrome.browser.app.tabmodel.TabPersistentStoreFactory.buildShadowStore;
 
 import android.app.Activity;
@@ -273,7 +274,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
                             mTabPersistentStore,
                             mWindowTag,
                             mCipherFactory,
-                            /* recordMetrics= */ true);
+                            TABBED_TAG);
         }
     }
 

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.app.tabmodel;
 
+import static org.chromium.chrome.browser.app.tabmodel.ShadowTabStoreValidator.CUSTOM_TAG;
 import static org.chromium.chrome.browser.app.tabmodel.TabPersistentStoreFactory.buildShadowStore;
 
 import android.app.Activity;
@@ -102,7 +103,7 @@ public class CustomTabsTabModelOrchestrator extends TabModelOrchestrator {
                                     mTabPersistentStore,
                                     windowTag,
                                     cipherFactory,
-                                    /* recordMetrics= */ false);
+                                    CUSTOM_TAG);
                 });
 
         wireSelectorAndStore();

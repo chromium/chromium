@@ -113,6 +113,17 @@ chromium-metrics-reviews@google.com.
                condition"/>
 </variants>
 
+<!-- LINT.IfChange(TabModelOrchestratorType) -->
+
+<variants name="TabModelOrchestratorType">
+  <variant name="Archived" summary="ArchivedTabModelOrchestrator"/>
+  <variant name="Custom" summary="CustomTabsTabModelOrchestrator"/>
+  <variant name="Headless" summary="HeadlessTabModelOrchestrator"/>
+  <variant name="Tabbed" summary="TabbedModeTabModelOrchestrator"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/app/tabmodel/ShadowTabStoreValidator.java:TabModelOrchestratorType) -->
+
 <variants name="TabModelSelectorType">
   <variant name="Archived" summary="The archived tab model selector"/>
   <variant name="Custom" summary="The custom tab model selector."/>
@@ -3656,29 +3667,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.TabStateStore.TabCountDelta.AuthoritativeHigher"
+<histogram
+    name="Tabs.TabStateStore.TabCountDelta.AuthoritativeHigher.{TabModelOrchestratorType}"
     units="tabs" expires_after="2026-10-28">
   <owner>skym@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
     [Android] Records the delta in tab count between the authoritative and
     shadow tab models when the authoritative model has more tabs. Recorded when
-    both models have finished loading.
+    both models have finished loading. This is recorded for the
+    {TabModelOrchestratorType} tab model orchestrator.
   </summary>
+  <token key="TabModelOrchestratorType" variants="TabModelOrchestratorType"/>
 </histogram>
 
-<histogram name="Tabs.TabStateStore.TabCountDelta.ShadowHigher" units="tabs"
-    expires_after="2026-10-28">
+<histogram
+    name="Tabs.TabStateStore.TabCountDelta.ShadowHigher.{TabModelOrchestratorType}"
+    units="tabs" expires_after="2026-10-28">
   <owner>skym@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
     [Android] Records the delta in tab count between the authoritative and
     shadow tab models when the shadow model has more tabs. Recorded when both
-    models have finished loading.
+    models have finished loading. This is recorded for the
+    {TabModelOrchestratorType} tab model orchestrator.
   </summary>
+  <token key="TabModelOrchestratorType" variants="TabModelOrchestratorType"/>
 </histogram>
 
-<histogram name="Tabs.TabStateStore.TimeDeltaOnMismatch.AuthoritativeNewer"
+<histogram
+    name="Tabs.TabStateStore.TimeDeltaOnMismatch.AuthoritativeNewer.{TabModelOrchestratorType}"
     units="ms" expires_after="2026-10-28">
   <owner>skym@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
@@ -3686,19 +3704,24 @@ chromium-metrics-reviews@google.com.
     [Android] Records the time delta when a URL mismatch occurs between the
     authoritative and shadow tab models, and the authoritative tab is newer.
     Recorded when both models have finished loading and a URL mismatch is
-    detected.
+    detected. This is recorded for the {TabModelOrchestratorType} tab model
+    orchestrator.
   </summary>
+  <token key="TabModelOrchestratorType" variants="TabModelOrchestratorType"/>
 </histogram>
 
-<histogram name="Tabs.TabStateStore.TimeDeltaOnMismatch.ShadowNewer" units="ms"
-    expires_after="2026-10-28">
+<histogram
+    name="Tabs.TabStateStore.TimeDeltaOnMismatch.ShadowNewer.{TabModelOrchestratorType}"
+    units="ms" expires_after="2026-10-28">
   <owner>skym@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
     [Android] Records the time delta when a URL mismatch occurs between the
     authoritative and shadow tab models, and the shadow tab is newer. Recorded
-    when both models have finished loading and a URL mismatch is detected.
+    when both models have finished loading and a URL mismatch is detected. This
+    is recorded for the {TabModelOrchestratorType} tab model orchestrator.
   </summary>
+  <token key="TabModelOrchestratorType" variants="TabModelOrchestratorType"/>
 </histogram>
 
 <histogram name="Tabs.TabThumbnailCleanupAbortedByArchive" enum="Boolean"
