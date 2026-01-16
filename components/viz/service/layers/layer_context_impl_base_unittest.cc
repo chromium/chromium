@@ -418,13 +418,13 @@ int LayerContextImplTest::AddDefaultLayerToUpdate(
   if (id == -1) {
     id = next_layer_id_++;
   }
-  layer->id = id;
-  layer->type = type;
-  layer->transform_tree_index = cc::kSecondaryRootPropertyNodeId;
-  layer->clip_tree_index = cc::kRootPropertyNodeId;
-  layer->effect_tree_index = cc::kSecondaryRootPropertyNodeId;
-  layer->bounds = kDefaultLayerBounds;
-  layer->layer_extra = CreateDefaultLayerExtra(type);
+  SetLayerId(layer.get(), id);
+  SetLayerType(layer.get(), type);
+  SetLayerTransformTreeIndex(layer.get(), cc::kSecondaryRootPropertyNodeId);
+  SetLayerClipTreeIndex(layer.get(), cc::kRootPropertyNodeId);
+  SetLayerEffectTreeIndex(layer.get(), cc::kSecondaryRootPropertyNodeId);
+  SetLayerBounds(layer.get(), kDefaultLayerBounds);
+  SetLayerExtra(layer.get(), CreateDefaultLayerExtra(type));
 
   update->layers.push_back(std::move(layer));
 
@@ -487,15 +487,162 @@ mojom::LayerPtr LayerContextImplTest::CreateManualLayer(
     int effect_idx,
     int scroll_idx) {
   auto layer = mojom::Layer::New();
-  layer->id = id;
-  layer->type = type;
-  layer->bounds = bounds;
-  layer->transform_tree_index = transform_idx;
-  layer->clip_tree_index = clip_idx;
-  layer->effect_tree_index = effect_idx;
-  layer->scroll_tree_index = scroll_idx;
-  layer->layer_extra = CreateDefaultLayerExtra(type);
+  SetLayerId(layer.get(), id);
+  SetLayerType(layer.get(), type);
+  SetLayerTransformTreeIndex(layer.get(), transform_idx);
+  SetLayerClipTreeIndex(layer.get(), clip_idx);
+  SetLayerEffectTreeIndex(layer.get(), effect_idx);
+  SetLayerScrollTreeIndex(layer.get(), scroll_idx);
+  SetLayerBounds(layer.get(), bounds);
+  SetLayerExtra(layer.get(), CreateDefaultLayerExtra(type));
   return layer;
+}
+
+void LayerContextImplTest::SetLayerExtra(mojom::Layer* layer,
+                                         mojom::LayerExtraPtr extra) {
+  layer->layer_extra = std::move(extra);
+}
+
+const mojom::LayerExtra* LayerContextImplTest::GetLayerExtra(
+    const mojom::Layer* layer) {
+  return layer->layer_extra.get();
+}
+
+mojom::LayerExtra* LayerContextImplTest::GetLayerExtra(mojom::Layer* layer) {
+  return layer->layer_extra.get();
+}
+
+int LayerContextImplTest::GetLayerId(const mojom::Layer* layer) {
+  return layer->id;
+}
+
+cc::mojom::LayerType LayerContextImplTest::GetLayerType(
+    const mojom::Layer* layer) {
+  return layer->type;
+}
+
+int LayerContextImplTest::GetLayerTransformTreeIndex(
+    const mojom::Layer* layer) {
+  return layer->transform_tree_index;
+}
+
+int LayerContextImplTest::GetLayerClipTreeIndex(const mojom::Layer* layer) {
+  return layer->clip_tree_index;
+}
+
+int LayerContextImplTest::GetLayerEffectTreeIndex(const mojom::Layer* layer) {
+  return layer->effect_tree_index;
+}
+
+int LayerContextImplTest::GetLayerScrollTreeIndex(const mojom::Layer* layer) {
+  return layer->scroll_tree_index;
+}
+
+void LayerContextImplTest::SetLayerId(mojom::Layer* layer, int id) {
+  layer->id = id;
+}
+
+void LayerContextImplTest::SetLayerType(mojom::Layer* layer,
+                                        cc::mojom::LayerType type) {
+  layer->type = type;
+}
+
+void LayerContextImplTest::SetLayerTransformTreeIndex(
+    mojom::Layer* layer,
+    int transform_tree_index) {
+  layer->transform_tree_index = transform_tree_index;
+}
+
+void LayerContextImplTest::SetLayerClipTreeIndex(mojom::Layer* layer,
+                                                 int clip_tree_index) {
+  layer->clip_tree_index = clip_tree_index;
+}
+
+void LayerContextImplTest::SetLayerEffectTreeIndex(mojom::Layer* layer,
+                                                   int effect_tree_index) {
+  layer->effect_tree_index = effect_tree_index;
+}
+
+void LayerContextImplTest::SetLayerScrollTreeIndex(mojom::Layer* layer,
+                                                   int scroll_tree_index) {
+  layer->scroll_tree_index = scroll_tree_index;
+}
+
+void LayerContextImplTest::SetLayerBounds(mojom::Layer* layer,
+                                          const gfx::Size& bounds) {
+  layer->bounds = bounds;
+}
+
+void LayerContextImplTest::SetLayerContentsOpaque(mojom::Layer* layer,
+                                                  bool opaque) {
+  layer->contents_opaque = opaque;
+}
+
+void LayerContextImplTest::SetLayerContentsOpaqueForText(mojom::Layer* layer,
+                                                         bool opaque) {
+  layer->contents_opaque_for_text = opaque;
+}
+
+void LayerContextImplTest::SetLayerSafeOpaqueBackgroundColor(
+    mojom::Layer* layer,
+    SkColor4f color) {
+  layer->safe_opaque_background_color = color;
+}
+
+void LayerContextImplTest::SetLayerBackgroundColor(mojom::Layer* layer,
+                                                   SkColor4f color) {
+  layer->background_color = color;
+}
+
+void LayerContextImplTest::SetLayerIsDrawable(mojom::Layer* layer,
+                                              bool is_drawable) {
+  layer->is_drawable = is_drawable;
+}
+
+void LayerContextImplTest::SetLayerHitTestOpaqueness(
+    mojom::Layer* layer,
+    cc::HitTestOpaqueness opaqueness) {
+  layer->hit_test_opaqueness = opaqueness;
+}
+
+void LayerContextImplTest::SetLayerElementId(mojom::Layer* layer,
+                                             cc::ElementId element_id) {
+  layer->element_id = element_id;
+}
+
+void LayerContextImplTest::SetLayerOffsetToTransformParent(
+    mojom::Layer* layer,
+    const gfx::Vector2dF& offset) {
+  layer->offset_to_transform_parent = offset;
+}
+
+void LayerContextImplTest::SetLayerShouldCheckBackfaceVisibility(
+    mojom::Layer* layer,
+    bool should_check) {
+  layer->should_check_backface_visibility = should_check;
+}
+
+void LayerContextImplTest::SetLayerUpdateRect(mojom::Layer* layer,
+                                              const gfx::Rect& rect) {
+  layer->update_rect = rect;
+}
+
+void LayerContextImplTest::SetLayerRareProperties(
+    mojom::Layer* layer,
+    mojom::RarePropertiesPtr rare_properties) {
+  layer->rare_properties = std::move(rare_properties);
+}
+
+void LayerContextImplTest::SetLayerPropertyChangedNotFromPropertyTrees(
+    mojom::Layer* layer,
+    bool changed) {
+  layer->layer_property_changed_not_from_property_trees = changed;
+}
+
+void LayerContextImplTest::SetLayerPropertyChangedFromPropertyTrees(
+    mojom::Layer* layer,
+    bool changed) {
+  layer->layer_property_changed_from_property_trees = changed;
 }
 
 }  // namespace viz
