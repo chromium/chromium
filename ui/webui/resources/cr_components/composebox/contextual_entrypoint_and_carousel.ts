@@ -241,8 +241,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   protected get shouldShowToolChipsForTallMode_(): boolean {
-    return this.searchboxLayoutMode !== 'Compact' ||
-        this.shouldShowContextualChipsForCompactMode_;
+    return !this.shouldShowToolChipsForCompactMode_;
   }
 
   protected get toolChipsVisible_(): boolean {
@@ -250,11 +249,17 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         this.inDeepSearchMode_ || this.inCreateImageMode_;
   }
 
+  protected get isOmniboxInCompactMode_(): boolean {
+    return this.entrypointName === 'Omnibox' &&
+        this.searchboxLayoutMode === 'Compact';
+  }
+
   protected get shouldShowToolChipsForCompactMode_(): boolean {
-    return this.searchboxLayoutMode === 'Compact' && this.toolChipsVisible_ &&
-        ((this.entrypointName !== 'Omnibox') ||
-         (this.entrypointName === 'Omnibox' &&
-          this.searchboxLayoutMode === 'Compact' && this.inComposebox));
+    if (this.searchboxLayoutMode !== 'Compact' || !this.toolChipsVisible_) {
+      return false;
+    }
+
+    return this.entrypointName !== 'Omnibox' || this.inComposebox;
   }
 
   protected get shouldShowDivider_(): boolean {
@@ -265,10 +270,9 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     }
 
     return this.showDropdown &&
-        (this.shouldShowContextualChipsForCompactMode_ ||
-         (this.showFileCarousel_ ||
-          this.searchboxLayoutMode === 'TallTopContext' ||
-          this.submitButtonShown));
+        (this.showFileCarousel_ ||
+         this.searchboxLayoutMode === 'TallTopContext' ||
+         this.submitButtonShown);
   }
 
   protected get shouldHideEntrypointButton_(): boolean {

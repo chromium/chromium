@@ -32,8 +32,7 @@ export function getHtml(this: ContextMenuEntrypointElement) {
         ?disabled="${this.inputsDisabled}"
         title="${this.i18n('addContextTitle')}"
         noink>
-    </cr-icon-button>`}
-  ` : html`<div id="entrypointPlaceholder" aria-hidden="true"></div>`;
+    </cr-icon-button>`}` : '';
   return html`<!--_html_template_start_-->
     ${this.glifAnimationState !== GlifAnimationState.INELIGIBLE ? html`
     <div id="glowWrapper" class="glow-container">
