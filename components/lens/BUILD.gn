@@ -51,7 +51,6 @@ static_library("lens") {
     "//components/lens/proto/v1:lens_latencies_metadata_proto",
     "//components/sessions",
     "//components/signin/public/identity_manager",
-    "//components/tabs:public",
     "//components/variations",
     "//components/variations:variations_mojom",
     "//google_apis/common",
