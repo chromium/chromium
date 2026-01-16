@@ -181,6 +181,7 @@ dependencies = [
  "read-fonts",
  "rustc-demangle-capi",
  "serde",
+ "serde_json",
  "serde_json_lenient",
  "skrifa",
  "small_ctor",
