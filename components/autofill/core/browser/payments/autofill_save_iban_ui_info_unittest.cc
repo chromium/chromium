@@ -6,9 +6,11 @@
 
 #include <string>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -49,7 +51,11 @@ TEST(AutofillSaveIbanUiInfo, CreateForLocalSaveSetsProperties) {
   EXPECT_THAT(ui_info.legal_message_lines, testing::ElementsAre());
 }
 
-TEST(AutofillSaveIbanUiInfo, CreateForUploadSaveSetsProperties) {
+TEST(AutofillSaveIbanUiInfo,
+     CreateForUploadSaveSetsProperties_WalletBrandingDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(features::kAutofillEnableWalletBranding);
+
   Iban local_iban(
       Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
   local_iban.set_value(u"FR7630006000011234567890189");
@@ -69,6 +75,36 @@ TEST(AutofillSaveIbanUiInfo, CreateForUploadSaveSetsProperties) {
   EXPECT_EQ(
       ui_info.description_text,
       l10n_util::GetStringUTF16(IDS_AUTOFILL_UPLOAD_IBAN_PROMPT_EXPLANATION));
+  EXPECT_EQ(ui_info.accept_text,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_MOBILE_ACCEPT));
+  EXPECT_EQ(ui_info.cancel_text,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_MOBILE_NO_THANKS));
+  EXPECT_THAT(ui_info.legal_message_lines, testing::ElementsAre());
+}
+
+TEST(AutofillSaveIbanUiInfo, CreateForUploadSaveSetsProperties) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableWalletBranding);
+
+  Iban local_iban(
+      Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
+  local_iban.set_value(u"FR7630006000011234567890189");
+
+  auto ui_info = AutofillSaveIbanUiInfo::CreateForUploadSave(
+      local_iban.GetIdentifierStringForAutofillDisplay(
+          /*is_value_masked=*/false),
+      LegalMessageLines());
+
+  EXPECT_TRUE(ui_info.is_server_save);
+  EXPECT_EQ(ui_info.logo_icon_id, IDR_AUTOFILL_GOOGLE_PAY);
+  EXPECT_EQ(FormatIbanForDisplay(ui_info.iban_value),
+            u"FR76 3000 6000 0112 3456 7890 189");
+  EXPECT_EQ(
+      ui_info.title_text,
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_PROMPT_TITLE_SERVER));
+  EXPECT_EQ(ui_info.description_text,
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_UPLOAD_IBAN_TO_WALLET_PROMPT_EXPLANATION));
   EXPECT_EQ(ui_info.accept_text,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_MOBILE_ACCEPT));
   EXPECT_EQ(ui_info.cancel_text,
