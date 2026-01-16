@@ -322,6 +322,13 @@ class CONTENT_EXPORT ContentBrowserClient {
                               const ClipboardPasteData& data,
                               std::optional<std::u16string> replacement_data)>;
 
+  // Checks if the drag operation initiated by the renderer is allowed by
+  // enterprise policies. This mirrors `IsClipboardCopyAllowedByPolicy` but
+  // accepts the full `DropData` bundle, allowing the embedder to inspect all
+  // data types present in the drag. The default implementation allows the drag.
+  virtual bool IsDragAllowedByPolicy(const ClipboardEndpoint& source,
+                                     const struct DropData& drop_data);
+
   // Records the detailed reason for ShouldUseSpareRenderProcessHost returning
   // .
   //

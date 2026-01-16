@@ -1135,6 +1135,13 @@ void WebContentsViewAura::ShowContextMenu(RenderFrameHost& render_frame_host,
   }
 }
 
+bool WebContentsViewAura::IsDragAllowedByDataControlPolicy(
+    const ClipboardEndpoint& source,
+    const DropData& drop_data) {
+  return GetContentClient()->browser()->IsDragAllowedByPolicy(source,
+                                                              drop_data);
+}
+
 void WebContentsViewAura::StartDragging(
     const DropData& drop_data,
     const url::Origin& source_origin,
@@ -1160,6 +1167,33 @@ void WebContentsViewAura::StartDragging(
   base::WeakPtr<WebContentsViewAura> weak_this = weak_ptr_factory_.GetWeakPtr();
 
   drag_security_info_.OnDragInitiated(source_rwh, drop_data);
+
+  GURL source_url = web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL();
+  ui::DataTransferEndpoint data_endpoint(
+      source_url,
+      {.notify_if_restricted = true,
+       .off_the_record = web_contents_->GetBrowserContext()->IsOffTheRecord()});
+
+  ClipboardEndpoint source_endpoint(
+      base::optional_ref<const ui::DataTransferEndpoint>(data_endpoint),
+      base::BindRepeating(
+          [](GlobalRenderFrameHostId rfh_id) -> BrowserContext* {
+            auto* rfh = RenderFrameHost::FromID(rfh_id);
+            if (!rfh) {
+              return nullptr;
+            }
+            return rfh->GetBrowserContext();
+          },
+          web_contents_->GetPrimaryMainFrame()->GetGlobalId()),
+      *web_contents_->GetPrimaryMainFrame());
+
+  // Synchronous policy check.
+  // If drag is not allowed, it means the policy blocked the action.
+  if (!IsDragAllowedByDataControlPolicy(source_endpoint, drop_data)) {
+    // Critical: We must notify the renderer that the drag has ended.
+    web_contents_->SystemDragEnded(source_rwh);
+    return;
+  }
 
   ui::TouchSelectionController* selection_controller = GetSelectionController();
   if (selection_controller)

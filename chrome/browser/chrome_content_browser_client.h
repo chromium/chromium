@@ -943,6 +943,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const ClipboardPasteData& data,
       IsClipboardCopyAllowedCallback callback) override;
 
+  bool IsDragAllowedByPolicy(const content::ClipboardEndpoint& source,
+                             const content::DropData& drop_data) override;
+
 #if BUILDFLAG(ENABLE_VR)
   content::XrIntegrationClient* GetXrIntegrationClient() override;
 #endif

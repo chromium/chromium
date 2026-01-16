@@ -19,6 +19,7 @@
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/browser/web_contents/web_contents_view_drag_security_info.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_view_delegate.h"
@@ -184,8 +185,12 @@ class CONTENT_EXPORT WebContentsViewAura
   void PrepareDropData(DropData* drop_data,
                        const ui::OSExchangeData& data) const;
 
-  void EndDrag(base::WeakPtr<RenderWidgetHostImpl> source_rwh_weak_ptr,
-               ui::mojom::DragOperation op);
+  // Virtual for testing.
+  virtual bool IsDragAllowedByDataControlPolicy(const ClipboardEndpoint& source,
+                                                const DropData& drop_data);
+
+  virtual void EndDrag(base::WeakPtr<RenderWidgetHostImpl> source_rwh_weak_ptr,
+                       ui::mojom::DragOperation op);
 
   void InstallOverscrollControllerDelegate(RenderWidgetHostViewAura* view);
 

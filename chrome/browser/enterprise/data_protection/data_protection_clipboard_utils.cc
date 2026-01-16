@@ -28,6 +28,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/drop_data.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_metadata.h"
@@ -273,6 +274,67 @@ void MaybeReportDataControlsCopy(const content::ClipboardEndpoint& source,
     router->ReportCopy(context, verdict);
   }
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+}
+
+void ReportDragData(const content::ClipboardEndpoint& source,
+                    const content::DropData& drop_data,
+                    const data_controls::Verdict& verdict) {
+  if (drop_data.text) {
+    MaybeReportDataControlsCopy(
+        source,
+        {.size = drop_data.text->size(),
+         .format_type = ui::ClipboardFormatType::PlainTextType()},
+        verdict);
+  }
+  if (drop_data.html) {
+    MaybeReportDataControlsCopy(
+        source,
+        {.size = drop_data.html->size(),
+         .format_type = ui::ClipboardFormatType::HtmlType()},
+        verdict);
+  }
+  if (!drop_data.file_contents.empty()) {
+    // Map `file_contents` to PNG if the image is accessible,
+    // otherwise report it as a generic custom type.
+    auto type = drop_data.file_contents_image_accessible
+                    ? ui::ClipboardFormatType::PngType()
+                    : ui::ClipboardFormatType::DataTransferCustomType();
+    MaybeReportDataControlsCopy(
+        source, {.size = drop_data.file_contents.size(), .format_type = type},
+        verdict);
+  }
+  if (!drop_data.url_infos.empty()) {
+    size_t size = 0;
+    for (const auto& url_info : drop_data.url_infos) {
+      size += url_info.url.spec().size();
+    }
+    MaybeReportDataControlsCopy(
+        source,
+        {.size = size, .format_type = ui::ClipboardFormatType::UrlType()},
+        verdict);
+  }
+  if (!drop_data.custom_data.empty()) {
+    size_t size = 0;
+    for (const auto& item : drop_data.custom_data) {
+      size += item.first.size() + item.second.size();
+    }
+    MaybeReportDataControlsCopy(
+        source,
+        {.size = size,
+         .format_type = ui::ClipboardFormatType::DataTransferCustomType()},
+        verdict);
+  }
+  if (!drop_data.file_system_files.empty()) {
+    size_t fs_size = 0;
+    for (const auto& fs_file : drop_data.file_system_files) {
+      fs_size += fs_file.size;
+    }
+    MaybeReportDataControlsCopy(
+        source,
+        {.size = fs_size,
+         .format_type = ui::ClipboardFormatType::FilenamesType()},
+        verdict);
+  }
 }
 
 void OnDataControlsPasteWarning(
@@ -717,6 +779,38 @@ bool CanPopulateFindBarFromSelection(content::WebContents* web_contents) {
                      ->GetForBrowserContext(source.browser_context())
                      ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(source));
   return verdict.level() != data_controls::Rule::Level::kBlock;
+}
+
+bool IsDragAllowedByPolicy(const content::ClipboardEndpoint& source,
+                           const content::DropData& drop_data) {
+  if (SkipDataControlOrContentAnalysisChecks(source)) {
+    return true;
+  }
+
+  auto verdict = data_controls::ChromeRulesServiceFactory::GetInstance()
+                     ->GetForBrowserContext(source.browser_context())
+                     ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(source));
+
+  if (verdict.level() == data_controls::Rule::Level::kBlock ||
+      verdict.level() == data_controls::Rule::Level::kWarn ||
+      verdict.level() == data_controls::Rule::Level::kReport) {
+    ReportDragData(source, drop_data, verdict);
+  }
+
+  if (verdict.level() == data_controls::Rule::Level::kBlock ||
+      verdict.level() == data_controls::Rule::Level::kWarn) {
+    auto* factory = GetDialogFactory();
+    if (factory) {
+      // TODO(crbug.com/406716605): Use a drag-specific dialog type
+      factory->ShowDialogIfNeeded(
+          source.web_contents(),
+          data_controls::DataControlsDialog::Type::kClipboardCopyBlock);
+    }
+
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace enterprise_data_protection

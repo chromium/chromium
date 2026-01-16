@@ -7646,6 +7646,16 @@ void ChromeContentBrowserClient::IsClipboardCopyAllowedByPolicy(
 #endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS) && !BUILDFLAG(IS_ANDROID)
 }
 
+bool ChromeContentBrowserClient::IsDragAllowedByPolicy(
+    const content::ClipboardEndpoint& source,
+    const content::DropData& drop_data) {
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+  return enterprise_data_protection::IsDragAllowedByPolicy(source, drop_data);
+#else
+  return true;
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+}
+
 #if BUILDFLAG(ENABLE_VR)
 content::XrIntegrationClient*
 ChromeContentBrowserClient::GetXrIntegrationClient() {

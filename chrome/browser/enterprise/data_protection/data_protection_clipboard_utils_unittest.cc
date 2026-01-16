@@ -17,6 +17,7 @@
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/drop_data.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -749,5 +750,12 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
             "image");
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+TEST_F(DataProtectionClipboardTest, DragAllowed_NoRule) {
+  content::DropData drop_data;
+  drop_data.text = u"allowed";
+
+  EXPECT_TRUE(IsDragAllowedByPolicy(SourceEndpoint(), drop_data));
+}
 
 }  // namespace enterprise_data_protection

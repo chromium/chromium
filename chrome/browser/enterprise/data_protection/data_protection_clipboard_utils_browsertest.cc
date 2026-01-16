@@ -28,6 +28,7 @@
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "content/public/common/drop_data.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "ui/base/clipboard/clipboard_metadata.h"
@@ -2108,6 +2109,104 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                                  })"},
                                  machine_scope());
   EXPECT_FALSE(CanPopulateFindBarFromSelection(contents()));
+}
+
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, DragAllowed) {
+  auto event_validator = event_report_validator_helper_->CreateValidator();
+  event_validator.ExpectNoReport();
+
+  bool allowed = IsDragAllowedByPolicy(
+      /*source=*/CreateURLClipboardEndpoint("https://google.com"),
+      /*drop_data=*/content::DropData());
+
+  EXPECT_TRUE(allowed);
+}
+
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, DragBlocked) {
+  active_user_test_mixin_->SetFakeCookieValue();
+
+  base::RunLoop run_loop;
+  auto event_validator = event_report_validator_helper_->CreateValidator();
+  event_validator.SetDoneClosure(run_loop.QuitClosure());
+
+  if (use_proto_format()) {
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+    if (use_workspace_urls()) {
+      expected_event.set_web_app_signed_in_account(kContentAreaUser0);
+      expected_event.set_source_web_app_signed_in_account(kContentAreaUser0);
+    }
+    expected_event.set_url(test_url_0());
+    expected_event.set_tab_url(test_url_0());
+    expected_event.set_source(test_url_0());
+    expected_event.set_destination("");
+    expected_event.set_content_type("text/plain");
+    expected_event.set_content_size(14);
+    expected_event.set_trigger(chrome::cros::reporting::proto::
+                                   DataTransferEventTrigger::CLIPBOARD_COPY);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);
+
+    ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_rule_id(987);
+    triggered_rule.set_rule_name("block");
+
+    *expected_event.add_triggered_rule_info() = triggered_rule;
+    expected_event.set_profile_identifier(
+        browser()->profile()->GetPath().AsUTF8Unsafe());
+    expected_event.set_profile_user_name(kUserName);
+
+    event_validator.ExpectSensitiveDataEvent(std::move(expected_event));
+  } else {
+    if (use_workspace_urls()) {
+      event_validator.ExpectActiveUser(kContentAreaUser0);
+      event_validator.ExpectSourceActiveUser(kContentAreaUser0);
+    }
+    event_validator.ExpectDataControlsSensitiveDataEvent(
+        /*expected_url=*/test_url_0(),
+        /*expected_tab_url=*/test_url_0(),
+        /*expected_source=*/test_url_0(),
+        /*expected_destination=*/"",
+        /*expected_mimetypes=*/
+        []() {
+          static std::set<std::string> set = {"text/plain"};
+          return &set;
+        }(),
+        /*expected_trigger=*/"CLIPBOARD_COPY",
+        /*triggered_rules=*/{{{0, machine_scope()}, {"987", "block"}}},
+        /*expected_result=*/"EVENT_RESULT_BLOCKED",
+        /*expected_profile_username=*/kUserName,
+        /*expected_profile_identifier=*/
+        browser()->profile()->GetPath().AsUTF8Unsafe(),
+        /*expected_content_size=*/14);
+  }
+
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                                   "name": "block",
+                                   "rule_id": "987",
+                                   "sources": {
+                                     "urls": ["google.com", "not.workspace.com"]
+                                   },
+                                   "restrictions": [
+                                     {"class": "CLIPBOARD", "level": "BLOCK"}
+                                   ]
+                                 })"},
+                                 machine_scope());
+  data_controls::DesktopDataControlsDialogTestHelper helper(
+      data_controls::DataControlsDialog::Type::kClipboardCopyBlock);
+
+  content::DropData drop_data;
+  drop_data.text = u"Sensitive Data";
+
+  bool allowed = IsDragAllowedByPolicy(
+      /*source=*/CreateURLClipboardEndpoint(test_url_0()),
+      /*drop_data=*/drop_data);
+
+  EXPECT_FALSE(allowed);
+
+  helper.WaitForDialogToInitialize();
+  helper.CloseDialogWithoutBypass();
+  helper.WaitForDialogToClose();
+  run_loop.Run();
 }
 
 }  // namespace enterprise_data_protection

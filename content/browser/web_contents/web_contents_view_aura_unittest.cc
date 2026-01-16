@@ -1085,4 +1085,81 @@ TEST_F(WebContentsViewAuraTest, EndDragIsCalledAfterAsyncDrop) {
   end_drag_run_loop.Run();
 }
 
+class MockWebContentsViewAura : public WebContentsViewAura {
+ public:
+  using WebContentsViewAura::WebContentsViewAura;
+
+  bool allowed_ = false;
+  void set_allowed(bool allowed) { allowed_ = allowed; }
+
+  bool IsDragAllowedByDataControlPolicy(
+      const content::ClipboardEndpoint& source,
+      const content::DropData& drop_data) override {
+    return allowed_;
+  }
+  // Override to avoid calling
+  // `RenderWidgetHostViewBase::TransformPointToCoordSpaceForView` which will
+  // result NOTREACHED being called.
+  void EndDrag(base::WeakPtr<RenderWidgetHostImpl> source_rwh_weak_ptr,
+               ui::mojom::DragOperation op) override {}
+};
+
+TEST_F(WebContentsViewAuraTest, StartDragBlockedByPolicy) {
+  const char kGoogleUrl[] = "https://google.com/";
+  NavigateAndCommit(GURL(kGoogleUrl));
+
+  TestDragDropClient drag_drop_client;
+  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+
+  MockWebContentsViewAura mock_view(
+      static_cast<WebContentsImpl*>(web_contents()), nullptr);
+
+  WebContentsView* view_interface = &mock_view;
+  view_interface->CreateView(nullptr);
+  root_window()->AddChild(view_interface->GetNativeView());
+  mock_view.set_allowed(false);
+
+  DropData drop_data;
+  drop_data.text = u"Blocked Data";
+
+  auto* rwh = RenderWidgetHostImpl::From(rvh()->GetWidget());
+
+  static_cast<RenderViewHostDelegateView*>(&mock_view)
+      ->StartDragging(drop_data, url::Origin(),
+                      blink::DragOperationsMask::kDragOperationCopy,
+                      gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
+                      blink::mojom::DragEventSourceInfo(), rwh);
+
+  EXPECT_FALSE(drag_drop_client.GetDragDropData());
+}
+
+TEST_F(WebContentsViewAuraTest, StartDragAllowedByPolicy) {
+  const char kGoogleUrl[] = "https://google.com/";
+  NavigateAndCommit(GURL(kGoogleUrl));
+
+  TestDragDropClient drag_drop_client;
+  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+
+  MockWebContentsViewAura mock_view(
+      static_cast<WebContentsImpl*>(web_contents()), nullptr);
+
+  WebContentsView* view_interface = &mock_view;
+  view_interface->CreateView(nullptr);
+  root_window()->AddChild(view_interface->GetNativeView());
+  mock_view.set_allowed(true);
+
+  DropData drop_data;
+  drop_data.text = u"Allowed Data";
+
+  auto* rwh = RenderWidgetHostImpl::From(rvh()->GetWidget());
+
+  static_cast<RenderViewHostDelegateView*>(&mock_view)
+      ->StartDragging(drop_data, url::Origin(),
+                      blink::DragOperationsMask::kDragOperationCopy,
+                      gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
+                      blink::mojom::DragEventSourceInfo(), rwh);
+
+  EXPECT_TRUE(drag_drop_client.GetDragDropData());
+}
+
 }  // namespace content
