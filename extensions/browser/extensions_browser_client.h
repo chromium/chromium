@@ -94,6 +94,7 @@ namespace extensions {
 
 class ComponentExtensionResourceManager;
 class Extension;
+class ExtensionAssetsManager;
 class ExtensionCache;
 class ExtensionError;
 class ExtensionHostDelegate;
@@ -611,6 +612,14 @@ class ExtensionsBrowserClient {
   virtual void RecordCommandLineMetricsOnUnpackedInstallation(
       content::BrowserContext* context,
       const Extension* extension) const;
+
+  // Returns the implementation of ExtensionAssetsManager.
+  // On ChromeOS, this provides a platform-specific implementation, while
+  // other platforms fall back to a trivial default implementation.
+  virtual ExtensionAssetsManager* GetAssetsManager();
+
+ protected:
+  std::unique_ptr<ExtensionAssetsManager> assets_manager_;
 
  private:
   std::vector<std::unique_ptr<ExtensionsBrowserAPIProvider>> providers_;

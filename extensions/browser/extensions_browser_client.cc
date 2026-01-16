@@ -18,6 +18,7 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
+#include "extensions/browser/extension_assets_manager.h"
 #include "extensions/browser/extension_error.h"
 #include "extensions/browser/updater/scoped_extension_updater_keep_alive.h"
 #include "extensions/common/constants.h"
@@ -301,5 +302,12 @@ void ExtensionsBrowserClient::ShowWarningMessageBox(
 void ExtensionsBrowserClient::RecordCommandLineMetricsOnUnpackedInstallation(
     content::BrowserContext* context,
     const Extension* extension) const {}
+
+ExtensionAssetsManager* ExtensionsBrowserClient::GetAssetsManager() {
+  if (!assets_manager_) {
+    assets_manager_ = ExtensionAssetsManager::CreateDefaultInstance();
+  }
+  return assets_manager_.get();
+}
 
 }  // namespace extensions

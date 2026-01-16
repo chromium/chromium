@@ -24,7 +24,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/blocklist_factory.h"
-#include "chrome/browser/extensions/extension_assets_manager.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
@@ -46,12 +45,14 @@
 #include "extensions/browser/blocklist_check.h"
 #include "extensions/browser/content_verifier/content_verifier.h"
 #include "extensions/browser/convert_user_script.h"
+#include "extensions/browser/extension_assets_manager.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/install/crx_install_error.h"
 #include "extensions/browser/install_approval.h"
 #include "extensions/browser/install_flag.h"
@@ -924,7 +925,7 @@ void CrxInstaller::CompleteInstall(
   }
 
   ExtensionAssetsManager* assets_manager =
-      ExtensionAssetsManager::GetInstance();
+      ExtensionsBrowserClient::Get()->GetAssetsManager();
   assets_manager->InstallExtension(
       extension(), unpacked_extension_root_, install_directory_, profile(),
       base::BindOnce(&CrxInstaller::ReloadExtensionAfterInstall, this),

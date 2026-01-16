@@ -301,6 +301,7 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   void RecordCommandLineMetricsOnUnpackedInstallation(
       content::BrowserContext* context,
       const Extension* extension) const override;
+  ExtensionAssetsManager* GetAssetsManager() override;
 
   static void set_did_chrome_update_for_testing(bool did_update);
 

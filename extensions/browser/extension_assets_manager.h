@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_ASSETS_MANAGER_H_
-#define CHROME_BROWSER_EXTENSIONS_EXTENSION_ASSETS_MANAGER_H_
+#ifndef EXTENSIONS_BROWSER_EXTENSION_ASSETS_MANAGER_H_
+#define EXTENSIONS_BROWSER_EXTENSION_ASSETS_MANAGER_H_
 
 #include <string>
 
@@ -13,7 +13,9 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
-class Profile;
+namespace content {
+class BrowserContext;
+}
 
 namespace extensions {
 
@@ -26,12 +28,14 @@ class Extension;
 // runner thread.
 class ExtensionAssetsManager {
  public:
+  static std::unique_ptr<ExtensionAssetsManager> CreateDefaultInstance();
+
+  virtual ~ExtensionAssetsManager() = default;
+
   // Callback that is invoked when the extension assets are installed.
   // `file_path` is destination directory on success or empty in case of error.
   typedef base::OnceCallback<void(const base::FilePath& file_path)>
       InstallExtensionCallback;
-
-  static ExtensionAssetsManager* GetInstance();
 
   // Copy extension assets to final location. This location could be under
   // `local_install_dir` or some common location shared for multiple users.
@@ -39,7 +43,7 @@ class ExtensionAssetsManager {
       const Extension* extension,
       const base::FilePath& unpacked_extension_root,
       const base::FilePath& local_install_dir,
-      Profile* profile,
+      content::BrowserContext* browser_context,
       InstallExtensionCallback callback,
       bool updates_from_webstore_or_empty_update_url) = 0;
 
@@ -53,11 +57,8 @@ class ExtensionAssetsManager {
                                   const base::FilePath& extensions_install_dir,
                                   const base::FilePath& extension_dir_to_delete,
                                   const base::FilePath& profile_dir) = 0;
-
- protected:
-  virtual ~ExtensionAssetsManager() = default;
 };
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_EXTENSION_ASSETS_MANAGER_H_
+#endif  // EXTENSIONS_BROWSER_EXTENSION_ASSETS_MANAGER_H_

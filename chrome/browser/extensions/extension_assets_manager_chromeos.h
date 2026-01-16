@@ -8,13 +8,10 @@
 #include <map>
 
 #include "base/values.h"
-#include "chrome/browser/extensions/extension_assets_manager.h"
-
-namespace base {
-template <typename T> struct DefaultSingletonTraits;
-}
+#include "extensions/browser/extension_assets_manager.h"
 
 class PrefRegistrySimple;
+class Profile;
 
 namespace extensions {
 
@@ -22,12 +19,12 @@ namespace extensions {
 // between all users on the machine.
 class ExtensionAssetsManagerChromeOS : public ExtensionAssetsManager {
  public:
+  ExtensionAssetsManagerChromeOS();
+  ~ExtensionAssetsManagerChromeOS() override;
   ExtensionAssetsManagerChromeOS(const ExtensionAssetsManagerChromeOS&) =
       delete;
   ExtensionAssetsManagerChromeOS& operator=(
       const ExtensionAssetsManagerChromeOS&) = delete;
-
-  static ExtensionAssetsManagerChromeOS* GetInstance();
 
   // A dictionary that maps shared extension IDs to version/paths/users.
   static const char kSharedExtensions[];
@@ -46,7 +43,7 @@ class ExtensionAssetsManagerChromeOS : public ExtensionAssetsManager {
       const Extension* extension,
       const base::FilePath& unpacked_extension_root,
       const base::FilePath& local_install_dir,
-      Profile* profile,
+      content::BrowserContext* browser_context,
       InstallExtensionCallback callback,
       bool updates_from_webstore_or_empty_update_url) override;
   void UninstallExtension(const std::string& id,
@@ -71,11 +68,6 @@ class ExtensionAssetsManagerChromeOS : public ExtensionAssetsManager {
   static void SetSharedInstallDirForTesting(const base::FilePath& install_dir);
 
  private:
-  friend struct base::DefaultSingletonTraits<ExtensionAssetsManagerChromeOS>;
-
-  ExtensionAssetsManagerChromeOS();
-  ~ExtensionAssetsManagerChromeOS() override;
-
   // Return `true` if `extension` can be installed in a shared place for all
   // users on the device.
   static bool CanShareAssets(const Extension* extension,

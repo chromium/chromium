@@ -118,6 +118,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
+#include "chrome/browser/extensions/extension_assets_manager_chromeos.h"
 #include "chrome/browser/extensions/updater/chromeos_extension_cache_delegate.h"
 #include "chrome/browser/extensions/updater/extension_cache_impl.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
@@ -1082,6 +1083,18 @@ void ChromeExtensionsBrowserClient::
 void ChromeExtensionsBrowserClient::set_did_chrome_update_for_testing(
     bool did_update) {
   g_did_chrome_update_for_testing = did_update;
+}
+
+ExtensionAssetsManager* ChromeExtensionsBrowserClient::GetAssetsManager() {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!assets_manager_) {
+    assets_manager_ = std::make_unique<ExtensionAssetsManagerChromeOS>();
+  }
+  return assets_manager_.get();
+#else
+  // If not Chrome OS, use trivial implementation that doesn't share anything.
+  return ExtensionsBrowserClient::GetAssetsManager();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace extensions

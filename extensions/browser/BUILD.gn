@@ -292,6 +292,8 @@ source_set("browser_sources") {
     "extension_action_manager.h",
     "extension_api_frame_id_map.cc",
     "extension_api_frame_id_map.h",
+    "extension_assets_manager.cc",
+    "extension_assets_manager.h",
     "extension_creator.cc",
     "extension_creator.h",
     "extension_creator_filter.cc",

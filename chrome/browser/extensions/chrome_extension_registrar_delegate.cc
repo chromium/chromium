@@ -16,7 +16,6 @@
 #include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/data_deleter.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
-#include "chrome/browser/extensions/extension_assets_manager.h"
 #include "chrome/browser/extensions/extension_disabled_ui.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
@@ -32,6 +31,7 @@
 #include "components/favicon_base/favicon_url_parser.h"
 #include "extensions/browser/delayed_install_manager.h"
 #include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_assets_manager.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -612,7 +612,8 @@ void ChromeExtensionRegistrarDelegate::UninstallExtensionOnFileThread(
     const base::FilePath& extension_dir_to_delete,
     const base::FilePath& profile_dir) {
   ExtensionAssetsManager* assets_manager =
-      ExtensionAssetsManager::GetInstance();
+      ExtensionsBrowserClient::Get()->GetAssetsManager();
+
   assets_manager->UninstallExtension(id, profile_user_name,
                                      extensions_install_dir,
                                      extension_dir_to_delete, profile_dir);

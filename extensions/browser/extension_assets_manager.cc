@@ -2,40 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_assets_manager.h"
+#include "extensions/browser/extension_assets_manager.h"
 
-#include "base/memory/singleton.h"
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/file_util.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/extensions/extension_assets_manager_chromeos.h"
-#endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 namespace {
 
-class ExtensionAssetsManagerImpl :  public ExtensionAssetsManager {
+class EmptyExtensionAssetsManager : public ExtensionAssetsManager {
  public:
-  ExtensionAssetsManagerImpl(const ExtensionAssetsManagerImpl&) = delete;
-  ExtensionAssetsManagerImpl& operator=(const ExtensionAssetsManagerImpl&) =
+  EmptyExtensionAssetsManager() = default;
+  ~EmptyExtensionAssetsManager() override = default;
+  EmptyExtensionAssetsManager(const EmptyExtensionAssetsManager&) = delete;
+  EmptyExtensionAssetsManager& operator=(const EmptyExtensionAssetsManager&) =
       delete;
-
-  static ExtensionAssetsManagerImpl* GetInstance() {
-    return base::Singleton<ExtensionAssetsManagerImpl>::get();
-  }
 
   // Override from ExtensionAssetsManager.
   void InstallExtension(
       const Extension* extension,
       const base::FilePath& unpacked_extension_root,
       const base::FilePath& local_install_dir,
-      Profile* profile,
+      content::BrowserContext* browser_context,
       InstallExtensionCallback callback,
       bool updates_from_webstore_or_empty_update_url) override {
     std::move(callback).Run(file_util::InstallExtension(
@@ -51,24 +42,14 @@ class ExtensionAssetsManagerImpl :  public ExtensionAssetsManager {
     file_util::UninstallExtension(profile_dir, extensions_install_dir,
                                   extension_dir_to_delete);
   }
-
- private:
-  friend struct base::DefaultSingletonTraits<ExtensionAssetsManagerImpl>;
-
-  ExtensionAssetsManagerImpl() = default;
-  ~ExtensionAssetsManagerImpl() override = default;
 };
 
 }  // namespace
 
 // static
-ExtensionAssetsManager* ExtensionAssetsManager::GetInstance() {
-#if BUILDFLAG(IS_CHROMEOS)
-  return ExtensionAssetsManagerChromeOS::GetInstance();
-#else
-  // If not Chrome OS, use trivial implementation that doesn't share anything.
-  return ExtensionAssetsManagerImpl::GetInstance();
-#endif  // BUILDFLAG(IS_CHROMEOS)
+std::unique_ptr<ExtensionAssetsManager>
+ExtensionAssetsManager::CreateDefaultInstance() {
+  return std::make_unique<EmptyExtensionAssetsManager>();
 }
 
 }  // namespace extensions

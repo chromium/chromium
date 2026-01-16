@@ -291,8 +291,6 @@ source_set("extensions") {
     "extension_allowlist.h",
     "extension_allowlist_factory.cc",
     "extension_allowlist_factory.h",
-    "extension_assets_manager.cc",
-    "extension_assets_manager.h",
     "extension_commands_global_registry.cc",
     "extension_commands_global_registry.h",
     "extension_context_menu_model.cc",

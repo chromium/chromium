@@ -139,11 +139,6 @@ ExtensionAssetsManagerChromeOS::~ExtensionAssetsManagerChromeOS() {
 }
 
 // static
-ExtensionAssetsManagerChromeOS* ExtensionAssetsManagerChromeOS::GetInstance() {
-  return base::Singleton<ExtensionAssetsManagerChromeOS>::get();
-}
-
-// static
 void ExtensionAssetsManagerChromeOS::RegisterPrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kSharedExtensions);
@@ -153,7 +148,7 @@ void ExtensionAssetsManagerChromeOS::InstallExtension(
     const Extension* extension,
     const base::FilePath& unpacked_extension_root,
     const base::FilePath& local_install_dir,
-    Profile* profile,
+    content::BrowserContext* browser_context,
     InstallExtensionCallback callback,
     bool updates_from_webstore_or_empty_update_url) {
   if (!CanShareAssets(extension, unpacked_extension_root,
@@ -164,6 +159,7 @@ void ExtensionAssetsManagerChromeOS::InstallExtension(
     return;
   }
 
+  Profile* profile = Profile::FromBrowserContext(browser_context);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&ExtensionAssetsManagerChromeOS::CheckSharedExtension,
