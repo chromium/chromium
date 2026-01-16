@@ -48,7 +48,7 @@ class GlicTabDataObserver::TabObserver : public content::WebContentsObserver {
   void Subscribe(::mojo::PendingRemote<mojom::TabDataHandler> receiver) {
     mojo::Remote<mojom::TabDataHandler> new_remote;
     new_remote.Bind(std::move(receiver));
-    new_remote->OnTabDataChanged(CreateTabData(tab_->GetContents()));
+    new_remote->OnTabDataChanged(CreateTabData(tab_));
     tab_data_receivers_.Add(std::move(new_remote));
   }
 
@@ -89,14 +89,14 @@ class GlicTabDataObserver::TabObserver : public content::WebContentsObserver {
   // Runs asynchronously after HandleTabActivatedChange, once the changes
   // actually take effect.
   void NotifyTabInfoChangeAfterTabActivatedChange() {
-    SendTabData(TabDataChange{{TabDataChangeCause::kVisibility},
-                              CreateTabData(web_contents())});
+    SendTabData(
+        TabDataChange{{TabDataChangeCause::kVisibility}, CreateTabData(tab_)});
   }
 
   // Callback for BrowserWindowInterface activated changes.
   void HandleWindowActivatedChange(BrowserWindowInterface* browser_window) {
-    SendTabData(TabDataChange{{TabDataChangeCause::kVisibility},
-                              CreateTabData(web_contents())});
+    SendTabData(
+        TabDataChange{{TabDataChangeCause::kVisibility}, CreateTabData(tab_)});
   }
 
   void OnDidInsert(tabs::TabInterface* tab) { UpdateWindowObservations(); }

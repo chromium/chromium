@@ -217,8 +217,7 @@ void FetchPageContext(
   page_content_annotations::FetchPageContext(
       *web_contents, options, std::move(progress_listener),
       base::BindOnce(
-          &HandleFetchPageResult, tab->GetWeakPtr(),
-          CreateTabData(web_contents),
+          &HandleFetchPageResult, tab->GetWeakPtr(), CreateTabData(tab),
           web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
           std::move(media_root_node), std::move(callback),
           std::move(journal_entry)));

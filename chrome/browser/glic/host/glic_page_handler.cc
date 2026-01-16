@@ -1821,7 +1821,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       const std::vector<content::WebContents*>& pinned_contents) {
     std::vector<glic::mojom::TabDataPtr> tab_data;
     for (content::WebContents* web_contents : pinned_contents) {
-      tab_data.push_back(CreateTabData(web_contents));
+      tab_data.push_back(
+          CreateTabData(tabs::TabInterface::GetFromContents(web_contents)));
     }
     web_client_->NotifyPinnedTabsChanged(std::move(tab_data));
   }

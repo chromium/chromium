@@ -537,7 +537,8 @@ tabs::TabInterface* GlicKeyedService::CreateTab(
   // the navigation commits.
   content::WebContents* new_web_contents =
       navigation_handle.get()->GetWebContents();
-  mojom::TabDataPtr tab_data = CreateTabData(new_web_contents);
+  mojom::TabDataPtr tab_data =
+      CreateTabData(tabs::TabInterface::GetFromContents(new_web_contents));
   if (tab_data) {
     tab_data->url = url;
   }

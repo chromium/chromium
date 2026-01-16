@@ -92,7 +92,7 @@ class GlicPinnedTabManagerImpl::PinnedTabObserver
     is_audible_ = audible;
     if (was_observable != IsObservable()) {
       UpdateTabDataAndSend(
-          {{TabDataChangeCause::kAudioState}, CreateTabData(web_contents())});
+          {{TabDataChangeCause::kAudioState}, CreateTabData(tab_)});
     }
   }
 
@@ -101,7 +101,7 @@ class GlicPinnedTabManagerImpl::PinnedTabObserver
     is_foreground_ = IsForeground(visibility);
     if (was_observable != IsObservable()) {
       UpdateTabDataAndSend(
-          {{TabDataChangeCause::kVisibility}, CreateTabData(web_contents())});
+          {{TabDataChangeCause::kVisibility}, CreateTabData(tab_)});
     }
   }
 
@@ -506,7 +506,8 @@ void GlicPinnedTabManagerImpl::SendPinCandidatesUpdate() {
                candidates.size());
   std::vector<mojom::PinCandidatePtr> results;
   for (size_t i = 0; i < limit; ++i) {
-    results.push_back(mojom::PinCandidate::New(CreateTabData(candidates[i])));
+    results.push_back(mojom::PinCandidate::New(
+        CreateTabData(tabs::TabInterface::GetFromContents(candidates[i]))));
   }
   pin_candidates_observer_->OnPinCandidatesChanged(std::move(results));
 }

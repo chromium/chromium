@@ -120,7 +120,8 @@ TabDataObserver::TabDataObserver(
     content::WebContents* web_contents,
     base::RepeatingCallback<void(TabDataChange)> tab_data_changed)
     : content::WebContentsObserver(web_contents),
-      tab_data_changed_(std::move(tab_data_changed)) {
+      tab_data_changed_(std::move(tab_data_changed)),
+      tab_(tab) {
   if (web_contents) {
     auto* favicon_driver =
         favicon::ContentFaviconDriver::FromWebContents(web_contents);
@@ -154,6 +155,7 @@ void TabDataObserver::ClearObservation() {
   ReportUpdatesPerNavigation();
   updates_since_navigation_ = 0;
   tab_detach_subscription_ = {};
+  tab_ = nullptr;
 }
 
 void TabDataObserver::DidFinishNavigation(
@@ -205,7 +207,7 @@ void TabDataObserver::SendRateLimitedUpdate() {
 void TabDataObserver::SendUpdate() {
   deferred_update_.Stop();
   ++updates_since_navigation_;
-  tab_data_changed_.Run({change_causes_, CreateTabData(web_contents())});
+  tab_data_changed_.Run({change_causes_, CreateTabData(tab_)});
   change_causes_ = {};
 }
 
@@ -246,10 +248,11 @@ const GURL& GetTabUrl(content::WebContents* web_contents) {
 }
 
 // CreateTabData Implementation:
-glic::mojom::TabDataPtr CreateTabData(content::WebContents* web_contents) {
-  if (!web_contents) {
+glic::mojom::TabDataPtr CreateTabData(tabs::TabInterface* tab) {
+  if (!tab) {
     return nullptr;
   }
+  content::WebContents* web_contents = tab->GetContents();
 
   SkBitmap favicon;
   auto* favicon_driver =
@@ -274,8 +277,7 @@ glic::mojom::TabDataPtr CreateTabData(content::WebContents* web_contents) {
   bool is_observable = is_audible || is_foreground;
   bool is_active_in_window = false;
   bool is_window_active = false;
-  tabs::TabInterface* tab =
-      tabs::TabInterface::MaybeGetFromContents(web_contents);
+
   if (base::FeatureList::IsEnabled(features::kGlicGetTabByIdApi)) {
     is_active_in_window = tab && tab->IsActivated();
     // This code may be reached during the dragging of the tab out into a new
@@ -303,13 +305,11 @@ glic::mojom::FocusedTabDataPtr CreateFocusedTabData(
     const FocusedTabData& focused_tab_data) {
   if (focused_tab_data.is_focus()) {
     return mojom::FocusedTabData::NewFocusedTab(
-        CreateTabData(focused_tab_data.focus()->GetContents()));
+        CreateTabData(focused_tab_data.focus()));
   }
   return mojom::FocusedTabData::NewNoFocusedTabData(
       mojom::NoFocusedTabData::New(
-          CreateTabData(focused_tab_data.unfocused_tab()
-                            ? focused_tab_data.unfocused_tab()->GetContents()
-                            : nullptr),
+          CreateTabData(focused_tab_data.unfocused_tab()),
           focused_tab_data.GetFocus().error()));
 }
 

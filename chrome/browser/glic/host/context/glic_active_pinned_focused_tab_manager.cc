@@ -107,11 +107,7 @@ void GlicActivePinnedFocusedTabManager::UpdateActiveTabDataObserver(
 void GlicActivePinnedFocusedTabManager::UpdateFocusedTab() {
   FocusedTabData focused_tab_data = GetFocusedTabData();
   NotifyFocusedTabChanged(focused_tab_data);
-  NotifyFocusedTabDataChanged(
-      CreateTabData(focused_tab_data.focus()
-                        ? focused_tab_data.focus()->GetContents()
-                        : nullptr)
-          .get());
+  NotifyFocusedTabDataChanged(CreateTabData(focused_tab_data.focus()).get());
 }
 
 void GlicActivePinnedFocusedTabManager::NotifyFocusedTabChanged(
