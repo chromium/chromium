@@ -320,8 +320,9 @@ template("single_apple_toolchain") {
         # TODO(danakj): When `!toolchain_uses_lld` do we need to specify a path
         # to libtool like the "alink" rule?
 
-        rspfile_content = "{{rustdeps}} {{externs}} SOURCES {{sources}}"
-        command = "$rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $libname -- -Clinker=\"$_cxx\" $rustc_common_args LDFLAGS RUSTENV {{rustenv}}"
+        rspfile_content =
+            "$rustc_common_args {{rustdeps}} {{externs}} SOURCES {{sources}}"
+        command = "$rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $libname -- -Clinker=\"$_cxx\" {{source}} LDFLAGS RUSTENV {{rustenv}}"
         rust_sysroot = rust_sysroot_relative
       }
 
@@ -350,8 +351,9 @@ template("single_apple_toolchain") {
           "${rspfile}.rust",
         ]
 
-        rspfile_content = "{{rustdeps}} {{externs}} SOURCES {{sources}}"
-        command = "$rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $rlibname -- -Clinker=\"$_cxx\" $rustc_common_args {{rustdeps}} {{externs}} LDFLAGS RUSTENV {{rustenv}}"
+        rspfile_content =
+            "$rustc_common_args {{rustdeps}} {{externs}} SOURCES {{sources}}"
+        command = "$rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $rlibname -- -Clinker=\"$_cxx\" {{source}} {{rustdeps}} {{externs}} LDFLAGS RUSTENV {{rustenv}}"
         rust_sysroot = rust_sysroot_relative
       }
 
@@ -381,8 +383,9 @@ template("single_apple_toolchain") {
         #   outputs += [ _unstripped_output ]
         # }
 
-        rspfile_content = "{{rustdeps}} {{externs}} SOURCES {{sources}}"
-        command = "$linker_driver_env $rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $exename -- -Clinker=\"$linker_driver\" $rustc_common_args LDFLAGS $linker_driver_args {{ldflags}} RUSTENV {{rustenv}}"
+        rspfile_content =
+            "$rustc_common_args {{rustdeps}} {{externs}} SOURCES {{sources}}"
+        command = "$linker_driver_env $rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $exename -- -Clinker=\"$linker_driver\" {{source}} LDFLAGS $linker_driver_args {{ldflags}} RUSTENV {{rustenv}}"
         rust_sysroot = rust_sysroot_relative
       }
 
@@ -414,8 +417,9 @@ template("single_apple_toolchain") {
         #   outputs += [ _unstripped_output ]
         # }
 
-        rspfile_content = "{{rustdeps}} {{externs}} SOURCES {{sources}}"
-        command = "$linker_driver_env $rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $dllname -- -Clinker=\"$linker_driver\" $rustc_common_args LDFLAGS $linker_driver_args {{ldflags}} RUSTENV {{rustenv}}"
+        rspfile_content =
+            "$rustc_common_args {{rustdeps}} {{externs}} SOURCES {{sources}}"
+        command = "$linker_driver_env $rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $dllname -- -Clinker=\"$linker_driver\" {{source}} LDFLAGS $linker_driver_args {{ldflags}} RUSTENV {{rustenv}}"
         rust_sysroot = rust_sysroot_relative
       }
 
@@ -447,8 +451,9 @@ template("single_apple_toolchain") {
         #   outputs += [ _unstripped_output ]
         # }
 
-        rspfile_content = "{{rustdeps}} {{externs}} SOURCES {{sources}}"
-        command = "$rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $dllname -- -Clinker=\"${_cxx}\" $rustc_common_args LDFLAGS {{ldflags}} RUSTENV {{rustenv}}"
+        rspfile_content =
+            "$rustc_common_args {{rustdeps}} {{externs}} SOURCES {{sources}}"
+        command = "$rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $dllname -- -Clinker=\"${_cxx}\" {{source}} LDFLAGS {{ldflags}} RUSTENV {{rustenv}}"
         rust_sysroot = rust_sysroot_relative
       }
     }

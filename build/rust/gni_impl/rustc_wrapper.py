@@ -54,10 +54,10 @@ import action_helpers
 #
 # RSP files:
 #
-# We want to put the ninja/gn variables {{rustdeps}} and {{externs}}
-# in an RSP file. Unfortunately, they are space-separated variables
-# but Rust requires a newline-separated input. This script duly makes
-# the adjustment. This works around a gn issue:
+# We want to put the ninja/gn variables (e.g. {{rustflags}}, {{rustdeps}},
+# and/or {{externs}}) in an RSP file. Unfortunately, they are space-separated
+# variables but Rust requires a newline-separated input. This script duly makes
+# the adjustment. This works around the following GN issue:
 # TODO(https://crbug.com/gn/42440152): fix this
 #
 # WORKAROUND WINDOWS BUGS:
@@ -104,6 +104,21 @@ def remove_lib_suffix_from_l_args(text):
   if text.startswith("-l") and text.endswith(".lib"):
     return text[:-len(".lib")]
   return text
+
+
+def remove_gn_escaping_from_rsp_args(arg):
+  """Remove GN escaping from the `arg`. """
+
+  # `--cfg=feature=\"foo\"` => `--cfg=feature="foo"`
+  arg = arg.replace(r'\"', '"')
+
+  # `"foo bar"` => `foo bar` (Rust-style `.rsp` file expects one flag per line
+  # so it doesn't need to worry about escaping whitespace (unlike
+  # default-GN-style `.rsp` file where flags are separated by whitespace).
+  if arg.startswith('"') and arg.endswith('"'):
+    arg = arg[1:len(arg) - 1]
+
+  return arg
 
 
 def normalize_path(path, abs_build_root):
@@ -218,6 +233,23 @@ def LoadRustEnvAndFlags(path):
   return rustenv, rustflags
 
 
+def ExpandNestedRustStyleRspFiles(rsp_args):
+  # `rustc` doesn't support using `@<file.rsp>` from **inside** `@another.rsp`.
+  # And things like `@cargo_flags.rs` (see build script handling inside
+  # `cargo_crate.gni`) may end up in `rustflags`.  And since `rustflags` are
+  # **also** put into an rsp file, we have to undo the undesirable nesting.
+  new_rsp_args = []
+  for arg in rsp_args:
+    if arg.startswith('@'):
+      with open(arg[1:], 'r') as nested_rsp_file:
+        # Nested rsp files are expected to conform to `rustc` requirements and
+        # therefore there is no need any additional processing/unescaping/etc.
+        new_rsp_args += [line.rstrip() for line in nested_rsp_file]
+    else:
+      new_rsp_args.append(arg)
+  return new_rsp_args
+
+
 def main():
   parser = argparse.ArgumentParser()
 
@@ -271,6 +303,8 @@ def main():
     # Full fix will come from https://gn-review.googlesource.com/c/gn/+/12480
     rsp_args = [remove_lib_suffix_from_l_args(arg) for arg in rsp_args]
     rustc_args = [remove_lib_suffix_from_l_args(arg) for arg in rustc_args]
+  rsp_args = [remove_gn_escaping_from_rsp_args(arg) for arg in rsp_args]
+  rsp_args = ExpandNestedRustStyleRspFiles(rsp_args)
   out_rsp = str(args.rsp) + ".rust"
   with open(out_rsp, 'w') as rspfile:
     # rustc needs the rsp file to be separated by newlines. Note that GN

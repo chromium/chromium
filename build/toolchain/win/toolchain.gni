@@ -375,8 +375,9 @@ template("msvc_toolchain") {
           "${rspfile}.rust",
         ]
 
-        rspfile_content = "{{rustdeps}} {{externs}} SOURCES {{sources}}"
-        command = "$rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $libname -- $rustc_windows_args LDFLAGS RUSTENV {{rustenv}}"
+        rspfile_content =
+            "$rustc_windows_args {{rustdeps}} {{externs}} SOURCES {{sources}}"
+        command = "$rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $libname -- {{source}} LDFLAGS RUSTENV {{rustenv}}"
         rust_sysroot = rust_sysroot_relative
       }
 
@@ -405,8 +406,9 @@ template("msvc_toolchain") {
           "${rspfile}.rust",
         ]
 
-        rspfile_content = "{{rustdeps}} {{externs}} SOURCES {{sources}}"
-        command = "$rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $rlibname -- $rustc_windows_args {{rustdeps}} {{externs}} LDFLAGS RUSTENV {{rustenv}}"
+        rspfile_content =
+            "$rustc_windows_args {{rustdeps}} {{externs}} SOURCES {{sources}}"
+        command = "$rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $rlibname -- {{source}} {{rustdeps}} {{externs}} LDFLAGS RUSTENV {{rustenv}}"
         rust_sysroot = rust_sysroot_relative
       }
 
@@ -429,9 +431,10 @@ template("msvc_toolchain") {
         ]
         runtime_outputs = outputs
 
-        rspfile_content = "{{rustdeps}} {{externs}} SOURCES {{sources}}"
+        rspfile_content =
+            "$rustc_windows_args {{rustdeps}} {{externs}} SOURCES {{sources}}"
         dynamic_link_switch = ""
-        command = "$rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $exename -- $rustc_windows_args LDFLAGS {{ldflags}} $sys_lib_flags /PDB:$pdbname RUSTENV {{rustenv}}"
+        command = "$rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $exename -- {{source}} LDFLAGS {{ldflags}} $sys_lib_flags /PDB:$pdbname RUSTENV {{rustenv}}"
         rust_sysroot = rust_sysroot_relative
       }
 
@@ -463,9 +466,10 @@ template("msvc_toolchain") {
           pdbname,
         ]
 
-        rspfile_content = "{{rustdeps}} {{externs}} SOURCES {{sources}}"
+        rspfile_content =
+            "$rustc_windows_args {{rustdeps}} {{externs}} SOURCES {{sources}}"
         dynamic_link_switch = ""
-        command = "$rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $dllname -- $rustc_windows_args LDFLAGS {{ldflags}} $sys_lib_flags /PDB:$pdbname /IMPLIB:$libname RUSTENV {{rustenv}}"
+        command = "$rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $dllname -- {{source}} LDFLAGS {{ldflags}} $sys_lib_flags /PDB:$pdbname /IMPLIB:$libname RUSTENV {{rustenv}}"
         rust_sysroot = rust_sysroot_relative
 
         # Since the above commands only updates the .lib file when it changes,
@@ -500,9 +504,10 @@ template("msvc_toolchain") {
         ]
         runtime_outputs = outputs
 
-        rspfile_content = "{{rustdeps}} {{externs}} SOURCES {{sources}}"
+        rspfile_content =
+            "$rustc_windows_args {{rustdeps}} {{externs}} SOURCES {{sources}}"
         dynamic_link_switch = ""
-        command = "$rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $dllname -- $rustc_windows_args LDFLAGS {{ldflags}} $sys_lib_flags /PDB:$pdbname RUSTENV {{rustenv}}"
+        command = "$rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $dllname -- {{source}} LDFLAGS {{ldflags}} $sys_lib_flags /PDB:$pdbname RUSTENV {{rustenv}}"
         rust_sysroot = rust_sysroot_relative
 
         # Since the above commands only updates the .lib file when it changes,

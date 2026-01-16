@@ -385,7 +385,8 @@ assert(!toolchain_has_rust || rust_target_arch != "")
 # This is common between gcc/clang, Mac and Windows toolchains so specify once,
 # here. This is not the complete command-line: toolchains should add -o
 # and probably --emit arguments too.
-rustc_common_args = "--crate-name {{crate_name}} {{source}} --crate-type {{crate_type}} {{rustflags}}"
+rustc_common_args =
+    "--crate-name {{crate_name}} --crate-type {{crate_type}} {{rustflags}}"
 
 # Rust procedural macros are shared objects loaded into a prebuilt host rustc
 # binary. To build them, we obviously need to build for the host. Not only
