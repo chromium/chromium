@@ -9,10 +9,12 @@
 #include <set>
 #include <variant>
 
+#include "base/base64.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -27,6 +29,7 @@
 #include "base/uuid.h"
 #include "net/ssl/client_cert_store.h"
 #include "remoting/base/certificate_helpers.h"
+#include "remoting/base/ecdh_key_exchange.h"
 #include "remoting/base/http_status.h"
 #include "remoting/base/internal_headers.h"
 #include "remoting/base/rsa_key_pair.h"
@@ -51,6 +54,10 @@ constexpr char kSquirrel[] = "🐿️";
 constexpr int kSquirrelCount = 1000000;
 constexpr char kSquirrelMsgStart[] = "Ready for lots of squirrels? -> ";
 constexpr char kSquirrelMsgEnd[] = " -> Wow! That was nuts!!!";
+
+constexpr char kEcdhInitiatePrefix[] = "ecdh-initiate:";
+constexpr char kEcdhResponsePrefix[] = "ecdh-response:";
+
 }  // namespace
 
 class CorpMessagingPlayground::Core {
@@ -269,11 +276,70 @@ void CorpMessagingPlayground::OnPeerMessageReceived(
                    LOG(INFO) << "PeerMessage received: payload="
                              << simple_message.payload;
                  },
-                 [](const EncryptedStruct& encrypted_struct) {
-                   LOG(INFO) << "Encrypted PeerMessage received: payload="
-                             << encrypted_struct.payload << ", "
-                             << encrypted_struct.unencrypted_payload;
-                   // TODO: joedow - Decrypt the payload.
+                 [this](const EncryptedStruct& encrypted_struct) {
+                   if (base::StartsWith(encrypted_struct.unencrypted_payload,
+                                        kEcdhInitiatePrefix)) {
+                     LOG(INFO) << "Received ECDH initiate message.";
+                     std::string client_public_key_base64 =
+                         encrypted_struct.unencrypted_payload.substr(
+                             strlen(kEcdhInitiatePrefix));
+                     std::optional<std::vector<uint8_t>> client_public_key =
+                         base::Base64Decode(client_public_key_base64);
+                     if (!client_public_key) {
+                       LOG(ERROR) << "Failed to decode client public key.";
+                       return;
+                     }
+                     key_exchange_ = std::make_unique<EcdhKeyExchange>();
+                     crypter_ =
+                         key_exchange_->CreateAesGcmCrypter(*client_public_key);
+                     if (!crypter_) {
+                       LOG(ERROR) << "Failed to derive encryption key.";
+                       key_exchange_.reset();
+                       return;
+                     }
+
+                     std::vector<uint8_t> signature =
+                         key_pair_->Sign(key_exchange_->public_key_bytes());
+                     base::Value::Dict response_dict;
+                     response_dict.Set("publicKey",
+                                       key_exchange_->PublicKeyBase64());
+                     response_dict.Set("signature",
+                                       base::Base64Encode(signature));
+                     std::string response_json;
+                     base::JSONWriter::Write(response_dict, &response_json);
+
+                     internal::EncryptedStruct response;
+                     response.unencrypted_payload =
+                         std::string(kEcdhResponsePrefix) + response_json;
+                     internal::SystemTestStruct system_test_struct;
+                     system_test_struct.test_message = std::move(response);
+                     internal::PeerMessageStruct peer_message;
+                     peer_message.payload = std::move(system_test_struct);
+                     LOG(INFO) << "Sending ECDH response: " << response_json;
+                     client_->SendMessage(
+                         SignalingAddress(messaging_authz_token_),
+                         SignalingMessage{std::move(peer_message)},
+                         base::DoNothing());
+                   } else if (base::StartsWith(
+                                  encrypted_struct.unencrypted_payload,
+                                  kEcdhResponsePrefix)) {
+                     // The ECDH key exchange is initiated by the client so
+                     // receiving this message is unexpected.
+                     LOG(ERROR) << "Received unexpected ECDH response message.";
+                   } else {
+                     LOG(INFO) << "Encrypted PeerMessage received: "
+                               << "unencrypted_payload="
+                               << encrypted_struct.unencrypted_payload;
+                     auto decrypted_payload = crypter_->Decrypt(
+                         base::as_bytes(base::span(encrypted_struct.payload)));
+                     if (decrypted_payload.has_value()) {
+                       LOG(INFO) << "Decrypted content = "
+                                 << std::string(decrypted_payload->begin(),
+                                                decrypted_payload->end());
+                     } else {
+                       LOG(WARNING) << "Failed to decrypt content";
+                     }
+                   }
                  },
                  [this](const ShareSessionTokenStruct& message) {
                    LOG(INFO) << "ShareSessionToken received.";

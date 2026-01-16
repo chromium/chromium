@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "remoting/base/ecdh_key_exchange.h"
 #include "remoting/base/internal_headers.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/signaling/signaling_address.h"
@@ -58,6 +59,8 @@ class CorpMessagingPlayground {
   std::unique_ptr<network::TransitionalURLLoaderFactoryOwner>
       url_loader_factory_owner_;
   scoped_refptr<RsaKeyPair> key_pair_{RsaKeyPair::Generate()};
+  std::unique_ptr<EcdhKeyExchange> key_exchange_;
+  std::unique_ptr<EcdhKeyExchange::AesGcmCrypter> crypter_;
   std::unique_ptr<CorpMessagingClient> client_;
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<Core> core_;
