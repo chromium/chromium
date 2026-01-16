@@ -266,13 +266,6 @@ TEST_F(GeolocationPermissionResolverTest,
   EXPECT_EQ(
       std::get<GeolocationSetting>(
           precise_request_resolver()->ComputePermissionDecisionResult(
-              previous_setting, PermissionDecision::kAllow, std::monostate())),
-      GeolocationSetting(PermissionOption::kAllowed,
-                         PermissionOption::kDenied));
-
-  EXPECT_EQ(
-      std::get<GeolocationSetting>(
-          precise_request_resolver()->ComputePermissionDecisionResult(
               previous_setting, PermissionDecision::kAllow,
               GeolocationPromptOptions{
                   /*selected_accuracy=*/GeolocationAccuracy::kApproximate})),

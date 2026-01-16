@@ -117,11 +117,11 @@ void ExclusiveAccessPermissionPromptView::RunButtonCallback(int button_id) {
       request_type(), GetPermissionActionString(button),
       record_browser_always_active_value());
   if (button == ButtonType::kAllowThisTime) {
-    delegate_->AcceptThisTime();
+    delegate_->AcceptThisTime(/*prompt_options=*/std::monostate());
   } else if (button == ButtonType::kAlwaysAllow) {
-    delegate_->Accept();
+    delegate_->Accept(/*prompt_options=*/std::monostate());
   } else if (button == ButtonType::kNeverAllow) {
-    delegate_->Deny();
+    delegate_->Deny(/*prompt_options=*/std::monostate());
   }
 }
 
@@ -298,7 +298,7 @@ void ExclusiveAccessPermissionPromptView::ClosingPermission() {
   if (delegate_) {
     permissions::PermissionUmaUtil::RecordActionBrowserAlwaysActive(
         request_type(), "Dismissed", record_browser_always_active_value());
-    delegate_->Dismiss();
+    delegate_->Dismiss(/*prompt_options=*/std::monostate());
   }
 }
 

@@ -32,19 +32,19 @@ class PermissionPromptDelegate : public TestPermissionBubbleViewDelegate {
     return browser_->tab_strip_model()->GetActiveWebContents();
   }
 
-  void Accept() override {
+  void Accept(const PromptOptions& prompt_options) override {
     for (const auto& request : Requests()) {
-      request->PermissionGranted(/*is_one_time=*/false);
+      request->PermissionGranted(prompt_options, /*is_one_time=*/false);
     }
   }
 
-  void AcceptThisTime() override {
+  void AcceptThisTime(const PromptOptions& prompt_options) override {
     for (const auto& request : Requests()) {
-      request->PermissionGranted(/*is_one_time=*/true);
+      request->PermissionGranted(prompt_options, /*is_one_time=*/true);
     }
   }
 
-  void Deny() override {
+  void Deny(const PromptOptions& prompt_options) override {
     for (const auto& request : Requests()) {
       request->PermissionDenied();
     }

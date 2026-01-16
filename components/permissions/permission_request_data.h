@@ -12,7 +12,6 @@
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/request_type.h"
-#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "components/permissions/resolvers/permission_resolver.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
@@ -130,10 +129,6 @@ struct PermissionRequestData {
 
   std::vector<std::string> requested_audio_capture_device_ids;
   std::vector<std::string> requested_video_capture_device_ids;
-
-  // TODO(https://crbug.com/450752868): This should not be here, because it's
-  // not a property of the request but rather part of the decision.
-  PromptOptions prompt_options = std::monostate();
 };
 
 }  // namespace permissions

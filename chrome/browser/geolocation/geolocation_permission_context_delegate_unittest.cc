@@ -122,7 +122,7 @@ TEST_F(GeolocationPermissionContextDelegateTests, TabContentSettingIsUpdated) {
           &run_loop));
   task_environment()->RunUntilIdle();
   ASSERT_TRUE(manager->IsRequestInProgress());
-  manager->Accept();
+  manager->Accept(/*prompt_options=*/std::monostate());
   run_loop.Run();
   content_settings::PageSpecificContentSettings* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(

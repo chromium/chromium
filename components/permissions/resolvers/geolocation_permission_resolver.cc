@@ -77,23 +77,22 @@ GeolocationPermissionResolver::ComputePermissionDecisionResult(
       setting.approximate = PermissionOption::kAllowed;
 
       if (requested_precise_) {
-        if (auto* geo_options =
-                std::get_if<GeolocationPromptOptions>(&prompt_options)) {
-          // If the user downgraded the request, we consider precise as blocked.
-          switch (geo_options->selected_accuracy) {
-            case GeolocationAccuracy::kPrecise:
-              setting.precise = PermissionOption::kAllowed;
-              break;
-            case GeolocationAccuracy::kApproximate:
-              setting.precise = PermissionOption::kDenied;
-              break;
-          }
+        CHECK(std::holds_alternative<GeolocationPromptOptions>(prompt_options));
+        switch (std::get<GeolocationPromptOptions>(prompt_options)
+                    .selected_accuracy) {
+          case GeolocationAccuracy::kPrecise:
+            setting.precise = PermissionOption::kAllowed;
+            break;
+          case GeolocationAccuracy::kApproximate:
+            // If the user downgraded the request, we consider precise as
+            // blocked.
+            setting.precise = PermissionOption::kDenied;
+            break;
         }
-        // If the prompt_options are not set it means that this did not go
-        // through a prompt, so let's just keep the value in previous setting.
-        //
-        // TODO(https://crbug.com/450752868): This implicit logic is fragile.
-        // Find out how to improve this.
+      } else {
+        CHECK(std::holds_alternative<std::monostate>(prompt_options) ||
+              std::get<GeolocationPromptOptions>(prompt_options)
+                      .selected_accuracy == GeolocationAccuracy::kApproximate);
       }
       break;
     case PermissionDecision::kNone:
