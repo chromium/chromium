@@ -95,16 +95,6 @@ class CORE_EXPORT CSSParserLocalContext {
     return CSSParserLocalContext();
   }
 
-  // TODO(crbug.com/413385732): This constructor is used in
-  // ConsumeBorderRadiusCommon in css_parsing_utils.cc, to avoid logical changes
-  // when parsing legacy properties with border radius. Using constructor with
-  // property name causes
-  // `animations/interpolation/webkit-clip-path-interpolation.html` test to
-  // fail. This constructor should be removed.
-  static CSSParserLocalContext CreateWithoutPropertyForBorderRadius() {
-    return CSSParserLocalContext();
-  }
-
   // For standard CSS properties, need to pass CSSPropertyName with unresolved
   // property id.
   explicit CSSParserLocalContext(CSSPropertyName property_name)
@@ -130,6 +120,8 @@ class CORE_EXPORT CSSParserLocalContext {
   }
 
   CSSPropertyID CurrentShorthand() const { return current_shorthand_; }
+
+  std::optional<CSSPropertyName> PropertyName() const { return property_name_; }
 
   const AtomicString PropertyNameAndRandomCount() const {
     StringBuilder str;

@@ -565,15 +565,13 @@ cssvalue::CSSBasicShapePolygonValue* ConsumeBasicShapePolygon(
 template <class U>
 bool ConsumeBorderRadiusCommon(CSSParserTokenStream& args,
                                const CSSParserContext& context,
-                               CSSParserLocalContext&,
+                               CSSParserLocalContext& local_context,
                                U* shape) {
   if (ConsumeIdent<CSSValueID::kRound>(args)) {
     std::array<CSSValue*, 4> horizontal_radii = {nullptr};
     std::array<CSSValue*, 4> vertical_radii = {nullptr};
-    CSSParserLocalContext local_context_new =
-        CSSParserLocalContext::CreateWithoutPropertyForBorderRadius();
     if (!ConsumeRadii(horizontal_radii, vertical_radii, args, context,
-                      local_context_new)) {
+                      local_context)) {
       return false;
     }
     shape->SetTopLeftRadius(MakeGarbageCollected<CSSValuePair>(
@@ -8746,7 +8744,10 @@ bool ConsumeRadii(std::array<CSSValue*, 4>& horizontal_radii,
   } else {
     // Legacy syntax: -webkit-border-radius: l1 l2; is equivalent to
     // border-radius: l1 / l2;
-    if (local_context.UseAliasParsing() && horizontal_value_count == 2) {
+    if (local_context.PropertyName().has_value() &&
+        local_context.PropertyName()->Id() ==
+            CSSPropertyID::kAliasWebkitBorderRadius &&
+        horizontal_value_count == 2) {
       vertical_radii[0] = horizontal_radii[1];
       horizontal_radii[1] = nullptr;
     } else {
