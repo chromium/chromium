@@ -219,7 +219,7 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
       tag->fTypeString = chrome_pdf::kPDFStructureTypeForm;
       tag->fAttributes.appendName(chrome_pdf::kPDFPrintFieldAttributeOwner,
                                   chrome_pdf::kPDFPrintFieldRoleAttribute,
-                                  chrome_pdf::kPDFRoleRadioButtonAttribute);
+                                  chrome_pdf::kPDFRoleCheckBoxAttribute);
 
       // The default value of the "checked" attribute is "Off". All other
       // CheckedStates options do not clearly apply to PDF.

@@ -6,7 +6,7 @@
       "~children": [ {
          "attributes": [ {
             "O": "PrintField",
-            "Role": "rb"
+            "Role": "cb"
          }, {
             "Desc": "First unchecked checkbox",
             "O": "PrintField"
@@ -15,7 +15,7 @@
       }, {
          "attributes": [ {
             "O": "PrintField",
-            "Role": "rb"
+            "Role": "cb"
          } ],
          "type": "Form"
       }, {
@@ -23,7 +23,7 @@
       }, {
          "attributes": [ {
             "O": "PrintField",
-            "Role": "rb"
+            "Role": "cb"
          }, {
             "O": "PrintField",
             "checked": "on"
