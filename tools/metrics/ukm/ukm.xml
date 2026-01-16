@@ -26373,6 +26373,11 @@ be describing additional metrics about the same event.
       bucket (with a bucket ratio of 1.3).
     </summary>
   </metric>
+  <metric name="IsInputHandling" enum="Boolean">
+    <summary>
+      Indicates whether the cycle started while input handling state was true.
+    </summary>
+  </metric>
   <metric name="IsLoading" enum="Boolean">
     <summary>
       Indicates whether the cylce started while loading state was true.
