@@ -57,11 +57,12 @@
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 using ::country_codes::CountryId;
-using regional_capabilities::CheckHistogramExpectation;
-using regional_capabilities::ExpectHistogramBucket;
-using regional_capabilities::ExpectHistogramNever;
-using regional_capabilities::FunnelStage;
-using regional_capabilities::HistogramExpectation;
+using ::regional_capabilities::CheckHistogramExpectation;
+using ::regional_capabilities::ExpectHistogramBucket;
+using ::regional_capabilities::ExpectHistogramNever;
+using ::regional_capabilities::FunnelStage;
+using ::regional_capabilities::HistogramExpectation;
+using ::regional_capabilities::SearchEngineChoiceScreenConditions;
 using ::search_engines::RepromptResult;
 using ::search_engines::SearchEngineChoiceWipeReason;
 using ::testing::NiceMock;

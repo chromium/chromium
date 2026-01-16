@@ -53,7 +53,7 @@ bool ShouldDisplaySearchEngineChoiceScreen(
   ios::SearchEngineChoiceTriggeringService* triggering_service =
       ios::SearchEngineChoiceTriggeringServiceFactory::GetForProfile(&profile);
 
-  search_engines::SearchEngineChoiceScreenConditions condition;
+  regional_capabilities::SearchEngineChoiceScreenConditions condition;
   if (triggering_service) {
     condition = triggering_service->EvaluateTriggeringConditions(
         is_first_run_entrypoint, app_started_via_external_intent);
@@ -71,7 +71,7 @@ bool ShouldDisplaySearchEngineChoiceScreen(
     if (regional_capabilities::IsEligible(condition)) {
       // If we didn't get a `triggering_service`, the search engine should not
       // be eligible for choice screens either.
-      condition = search_engines::SearchEngineChoiceScreenConditions::
+      condition = regional_capabilities::SearchEngineChoiceScreenConditions::
           kUnsupportedBrowserType;
     }
   }

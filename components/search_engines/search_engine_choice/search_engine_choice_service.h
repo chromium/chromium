@@ -28,6 +28,7 @@ class VariationsService;
 namespace regional_capabilities {
 class RegionalCapabilitiesService;
 struct ChoiceScreenEligibilityConfig;
+enum class SearchEngineChoiceScreenConditions;
 }  // namespace regional_capabilities
 namespace TemplateURLPrepopulateData {
 class Resolver;
@@ -48,7 +49,6 @@ namespace search_engines {
 class ChoiceScreenData;
 class SearchEngineChoiceService;
 enum class ChoiceMadeLocation;
-enum class SearchEngineChoiceScreenConditions;
 enum class SearchEngineChoiceScreenEvents;
 enum class SearchEngineChoiceWipeReason;
 struct ChoiceCompletionMetadata;
@@ -122,7 +122,8 @@ class SearchEngineChoiceService : public KeyedService {
   // checks dynamic conditions, that can change from one call to the other
   // during a profile's lifetime. Should be checked right before showing a
   // choice screen.
-  SearchEngineChoiceScreenConditions GetDynamicChoiceScreenConditions(
+  regional_capabilities::SearchEngineChoiceScreenConditions
+  GetDynamicChoiceScreenConditions(
       const TemplateURLService& template_url_service) const;
 
   // Returns the choice screen eligibility condition most relevant for the
@@ -130,19 +131,20 @@ class SearchEngineChoiceService : public KeyedService {
   // such that if a non-eligible condition is returned, it would take at least a
   // restart for the state to change. So this state can be checked and cached
   // ahead of showing a choice screen.
-  SearchEngineChoiceScreenConditions GetStaticChoiceScreenConditions(
+  regional_capabilities::SearchEngineChoiceScreenConditions
+  GetStaticChoiceScreenConditions(
       const policy::PolicyService& policy_service,
       const TemplateURLService& template_url_service) const;
 
   // Records the specified choice screen condition at profile initialization.
   void RecordProfileLoadEligibility(
-      SearchEngineChoiceScreenConditions condition);
+      regional_capabilities::SearchEngineChoiceScreenConditions condition);
 
 #if BUILDFLAG(IS_IOS)
   // Records only the legacy static eligibility histograms. Note that on iOS,
   // the legacy histograms are not recorded by `RecordProfileLoadEligibility()`
   void RecordLegacyStaticEligibility(
-      SearchEngineChoiceScreenConditions condition);
+      regional_capabilities::SearchEngineChoiceScreenConditions condition);
 
   // Indicates whether the choice screen can be shown on a surface with a
   // particular "first run experience" status.
@@ -151,7 +153,7 @@ class SearchEngineChoiceService : public KeyedService {
 
   // Records the specified choice screen condition for relevant navigations.
   void RecordTriggeringEligibility(
-      SearchEngineChoiceScreenConditions condition);
+      regional_capabilities::SearchEngineChoiceScreenConditions condition);
 
   // Records the specified choice screen event.
   void RecordChoiceScreenEvent(SearchEngineChoiceScreenEvents event);
@@ -249,7 +251,7 @@ class SearchEngineChoiceService : public KeyedService {
 
   void RemoveObserver(Observer* obs) { observers_.RemoveObserver(obs); }
 
-  std::optional<SearchEngineChoiceScreenConditions>
+  std::optional<regional_capabilities::SearchEngineChoiceScreenConditions>
   recorded_profile_load_choice_screen_eligibility() const {
     return recorded_profile_load_choice_screen_eligibility_;
   }
@@ -300,7 +302,7 @@ class SearchEngineChoiceService : public KeyedService {
   const raw_ref<policy::ManagementService> platform_management_service_;
   base::ObserverList<Observer> observers_;
 
-  std::optional<SearchEngineChoiceScreenConditions>
+  std::optional<regional_capabilities::SearchEngineChoiceScreenConditions>
       recorded_profile_load_choice_screen_eligibility_;
 
   // Used to track whether `MaybeRecordChoiceScreenDisplayState()` has already

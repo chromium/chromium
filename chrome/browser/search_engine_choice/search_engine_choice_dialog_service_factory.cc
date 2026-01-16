@@ -29,7 +29,7 @@
 #endif
 
 namespace {
-using search_engines::SearchEngineChoiceScreenConditions;
+using ::regional_capabilities::SearchEngineChoiceScreenConditions;
 
 // Stores whether this is a Google Chrome-branded build.
 bool g_is_chrome_build =

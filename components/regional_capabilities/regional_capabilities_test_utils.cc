@@ -120,15 +120,11 @@ void CheckHistogramExpectation(const base::HistogramTester& histogram_tester,
              expectation);
 }
 
-}  // namespace regional_capabilities
-
-namespace search_engines {
-
 // Declared in
-// //components/regional_capabilities/regional_capabilities_metrics.h
+// //components/regional_capabilities/enums.h
 void PrintTo(const SearchEngineChoiceScreenConditions& condition,
              std::ostream* os) {
   *os << regional_capabilities::ToString(condition);
 }
 
-}  // namespace search_engines
+}  // namespace regional_capabilities

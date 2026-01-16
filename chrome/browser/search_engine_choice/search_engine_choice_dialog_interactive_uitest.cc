@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogInteractiveUiTest,
   EXPECT_GE(HistogramTester().GetBucketCount(
                 search_engines::
                     kSearchEngineChoiceScreenNavigationConditionsHistogram,
-                search_engines::SearchEngineChoiceScreenConditions::
+                regional_capabilities::SearchEngineChoiceScreenConditions::
                     kAlreadyCompleted),
             1);
   EXPECT_EQ(UserActionTester().GetActionCount("ExpandSearchEngineDescription"),

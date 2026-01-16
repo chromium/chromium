@@ -8,15 +8,17 @@
 #import "base/memory/raw_ref.h"
 #import "components/keyed_service/core/keyed_service.h"
 
-namespace search_engines {
-class SearchEngineChoiceService;
-enum class SearchEngineChoiceScreenConditions;
-}  // namespace search_engines
+class PrefService;
+class TemplateURLService;
 namespace policy {
 class PolicyService;
-}
-class TemplateURLService;
-class PrefService;
+}  // namespace policy
+namespace regional_capabilities {
+enum class SearchEngineChoiceScreenConditions;
+}  // namespace regional_capabilities
+namespace search_engines {
+class SearchEngineChoiceService;
+}  // namespace search_engines
 
 namespace ios {
 
@@ -38,7 +40,7 @@ class SearchEngineChoiceTriggeringService : public KeyedService {
       const SearchEngineChoiceTriggeringService&) = delete;
 
   // Returns eligibility status for newly triggering a choice screen.
-  search_engines::SearchEngineChoiceScreenConditions
+  regional_capabilities::SearchEngineChoiceScreenConditions
   EvaluateTriggeringConditions(bool is_first_run_entrypoint,
                                bool app_started_via_external_intent);
 

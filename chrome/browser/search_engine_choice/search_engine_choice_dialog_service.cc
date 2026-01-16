@@ -43,7 +43,8 @@
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 namespace {
-using search_engines::SearchEngineChoiceScreenEvents;
+using ::regional_capabilities::SearchEngineChoiceScreenConditions;
+using ::search_engines::SearchEngineChoiceScreenEvents;
 
 bool g_dialog_disabled_for_testing = false;
 
@@ -334,22 +335,20 @@ SearchEngineChoiceDialogService::GetSearchEngines() {
   return result;
 }
 
-search_engines::SearchEngineChoiceScreenConditions
+SearchEngineChoiceScreenConditions
 SearchEngineChoiceDialogService::ComputeDialogConditions(
     Browser& browser) const {
   if (g_dialog_disabled_for_testing) {
-    return search_engines::SearchEngineChoiceScreenConditions::
-        kFeatureSuppressed;
+    return SearchEngineChoiceScreenConditions::kFeatureSuppressed;
   }
 
   if (browser_registry_.HasOpenDialog(browser)) {
-    return search_engines::SearchEngineChoiceScreenConditions::
-        kAlreadyBeingShown;
+    return SearchEngineChoiceScreenConditions::kAlreadyBeingShown;
   }
 
   if (search_engine_choice_service_->GetSavedSearchEngineBetweenGuestSessions()
           .has_value()) {
-    return search_engines::SearchEngineChoiceScreenConditions::
+    return SearchEngineChoiceScreenConditions::
         kUsingPersistedGuestSessionChoice;
   }
 
@@ -357,20 +356,17 @@ SearchEngineChoiceDialogService::ComputeDialogConditions(
     // Showing a Chrome-specific search engine dialog on top of a window
     // dedicated to a specific web app is a horrible UX, we suppress it for this
     // window. When the user proceeds to a non-web app window they will get it.
-    return search_engines::SearchEngineChoiceScreenConditions::
-        kUnsupportedBrowserType;
+    return SearchEngineChoiceScreenConditions::kUnsupportedBrowserType;
   }
 
   // Only show the dialog over normal and popup browsers. This is to avoid
   // showing it in picture-in-picture for example.
   if (!IsBrowserTypeSupported(browser)) {
-    return search_engines::SearchEngineChoiceScreenConditions::
-        kUnsupportedBrowserType;
+    return SearchEngineChoiceScreenConditions::kUnsupportedBrowserType;
   }
 
   if (!CanWindowHeightFitSearchEngineChoiceDialog(browser)) {
-    return search_engines::SearchEngineChoiceScreenConditions::
-        kBrowserWindowTooSmall;
+    return SearchEngineChoiceScreenConditions::kBrowserWindowTooSmall;
   }
 
   // To avoid conflict, the dialog should not be shown if a sign-in dialog is
@@ -383,8 +379,7 @@ SearchEngineChoiceDialogService::ComputeDialogConditions(
       IsProfileCustomizationBubbleSyncControllerRunning(&browser);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   if (signin_dialog_displayed_or_pending) {
-    return search_engines::SearchEngineChoiceScreenConditions::
-        kSuppressedByOtherDialog;
+    return SearchEngineChoiceScreenConditions::kSuppressedByOtherDialog;
   }
 
   // Respect common conditions with other platforms.

@@ -51,13 +51,13 @@
 
 namespace {
 
-using country_codes::CountryId;
-using search_engines::ChoiceMadeLocation;
-using search_engines::SearchEngineChoiceScreenConditions;
-using search_engines::SearchEngineChoiceWipeReason;
-using search_engines::SearchEnginesTestEnvironment;
-using search_engines::WipeSearchEngineChoicePrefs;
-using ChoiceStatus = search_engines::SearchEngineChoiceService::ChoiceStatus;
+using ::country_codes::CountryId;
+using ::regional_capabilities::SearchEngineChoiceScreenConditions;
+using ::search_engines::ChoiceMadeLocation;
+using ::search_engines::SearchEngineChoiceWipeReason;
+using ::search_engines::SearchEnginesTestEnvironment;
+using ::search_engines::WipeSearchEngineChoicePrefs;
+using ChoiceStatus = ::search_engines::SearchEngineChoiceService::ChoiceStatus;
 
 #if BUILDFLAG(CHOICE_SCREEN_IN_CHROME)
 constexpr regional_capabilities::ProgramSettings

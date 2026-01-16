@@ -23,10 +23,13 @@
 class Browser;
 class TemplateURLService;
 
+namespace regional_capabilities {
+enum class SearchEngineChoiceScreenConditions;
+}
+
 namespace search_engines {
 
 class ChoiceScreenData;
-enum class SearchEngineChoiceScreenConditions;
 
 // Profile specific data related to the search engine choice.
 // `timestamp` is the search engine choice timestamp that's saved in the
@@ -99,8 +102,8 @@ class SearchEngineChoiceDialogService : public KeyedService {
   // If calling this ahead of requesting to show the dialog, prefer to call
   // `SearchEngineChoiceTabHelper::MaybeShowDialog()` instead. It will check a
   // few more things and ensure we log the event correctly.
-  search_engines::SearchEngineChoiceScreenConditions ComputeDialogConditions(
-      Browser& browser) const;
+  regional_capabilities::SearchEngineChoiceScreenConditions
+  ComputeDialogConditions(Browser& browser) const;
 
   // Returns whether the dialog should be displayed over the passed URL.
   bool IsUrlSuitableForDialog(GURL url);

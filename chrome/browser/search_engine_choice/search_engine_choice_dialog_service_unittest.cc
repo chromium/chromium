@@ -37,7 +37,7 @@
 #include "ui/gfx/native_ui_types.h"
 
 using ::country_codes::CountryId;
-using ::search_engines::SearchEngineChoiceScreenConditions;
+using ::regional_capabilities::SearchEngineChoiceScreenConditions;
 
 namespace {
 

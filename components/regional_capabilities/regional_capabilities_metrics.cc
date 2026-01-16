@@ -93,8 +93,7 @@ std::string ToString(SearchEngineChoiceScreenConditions condition) {
       return "IneligibleSurface";
     case SearchEngineChoiceScreenConditions::kManaged:
       return "Managed";
-    case search_engines::SearchEngineChoiceScreenConditions::
-        kEligibleForRestore:
+    case SearchEngineChoiceScreenConditions::kEligibleForRestore:
       return "EligibleForRestore";
   }
   NOTREACHED();

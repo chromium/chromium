@@ -94,7 +94,7 @@ void SearchEngineChoiceTabHelper::MaybeShowDialog() {
     return;
   }
 
-  search_engines::SearchEngineChoiceScreenConditions conditions =
+  regional_capabilities::SearchEngineChoiceScreenConditions conditions =
       search_engine_choice_dialog_service->ComputeDialogConditions(*browser);
 
   search_engines::SearchEngineChoiceService* search_engine_choice_service =

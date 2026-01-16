@@ -9,7 +9,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
-namespace search_engines {
+namespace regional_capabilities {
 enum class SearchEngineChoiceScreenConditions;
 }
 
@@ -34,7 +34,7 @@ class SearchEngineChoiceDialogServiceFactory
       bool force_chrome_build);
 
   // Computes static eligibility for the profile.
-  static search_engines::SearchEngineChoiceScreenConditions
+  static regional_capabilities::SearchEngineChoiceScreenConditions
   ComputeProfileEligibilityForTesting(Profile& profile);
 
  private:

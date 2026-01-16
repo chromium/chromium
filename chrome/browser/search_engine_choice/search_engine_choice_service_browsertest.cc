@@ -31,11 +31,11 @@
 
 namespace {
 
-using search_engines::GetChoiceCompletionMetadata;
-using search_engines::SearchEngineChoiceScreenConditions;
-using search_engines::SearchEngineChoiceService;
-using search_engines::SearchEngineChoiceServiceFactory;
-using ChoiceStatus = search_engines::SearchEngineChoiceService::ChoiceStatus;
+using ::regional_capabilities::SearchEngineChoiceScreenConditions;
+using ::search_engines::GetChoiceCompletionMetadata;
+using ::search_engines::SearchEngineChoiceService;
+using ::search_engines::SearchEngineChoiceServiceFactory;
+using ChoiceStatus = ::search_engines::SearchEngineChoiceService::ChoiceStatus;
 
 class SearchEngineChoiceServiceBrowserTest : public InProcessBrowserTest {
  public:

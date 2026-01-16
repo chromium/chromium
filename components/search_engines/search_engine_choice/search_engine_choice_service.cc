@@ -62,6 +62,7 @@
 #endif
 
 using ::country_codes::CountryId;
+using ::regional_capabilities::SearchEngineChoiceScreenConditions;
 
 namespace search_engines {
 namespace {
