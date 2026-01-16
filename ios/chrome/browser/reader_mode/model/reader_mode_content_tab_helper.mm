@@ -45,12 +45,14 @@ void ReaderModeContentTabHelper::LoadContent(GURL content_url,
   content_url_request_allowed_ = false;
   web::NavigationManager* const navigation_manager =
       web_state()->GetNavigationManager();
-  if (!navigation_manager->GetLastCommittedItem()) {
-    // `LoadData` requires an already committed navigation item.
-    std::vector<std::unique_ptr<web::NavigationItem>> navigation_items;
-    navigation_items.push_back(web::NavigationItem::Create());
-    navigation_manager->Restore(0, std::move(navigation_items));
-  }
+
+  // Create a committed navigation item for `LoadData` and load it in the
+  // navigation manager. This is done unconditionally to account for fragment
+  // navigations which require an explicit restore crbug.com/454302739.
+  std::vector<std::unique_ptr<web::NavigationItem>> navigation_items;
+  navigation_items.push_back(web::NavigationItem::Create());
+  navigation_manager->Restore(0, std::move(navigation_items));
+
   web_state()->LoadData(content_data, @"text/html", std::move(content_url));
 }
 
