@@ -44997,6 +44997,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_ShowAdvancedSyncSettings">
+  <obsolete>Deprecated 2026/01</obsolete>
   <owner>triploblastic@chromium.org</owner>
   <owner>bsazonov@chromium.org</owner>
   <description>

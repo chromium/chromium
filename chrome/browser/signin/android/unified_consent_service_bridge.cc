@@ -44,12 +44,4 @@ JNI_UnifiedConsentServiceBridge_SetUrlKeyedAnonymizedDataCollectionEnabled(
   unifiedConsentService->SetUrlKeyedAnonymizedDataCollectionEnabled(enabled);
 }
 
-static void JNI_UnifiedConsentServiceBridge_RecordSyncSetupDataTypesHistogram(
-    JNIEnv* env,
-    Profile* profile) {
-  auto* syncService = SyncServiceFactory::GetForProfile(profile);
-  unified_consent::metrics::RecordSyncSetupDataTypesHistrogam(
-      syncService->GetUserSettings());
-}
-
 DEFINE_JNI(UnifiedConsentServiceBridge)

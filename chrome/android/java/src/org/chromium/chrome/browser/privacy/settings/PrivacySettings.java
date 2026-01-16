@@ -338,10 +338,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                     @Override
                     public void onClick(View view) {
                         SettingsNavigationFactory.createSettingsNavigation()
-                                .startSettings(
-                                        getActivity(),
-                                        ManageSyncSettings.class,
-                                        ManageSyncSettings.createArguments(false));
+                                .startSettings(getActivity(), ManageSyncSettings.class);
                     }
                 };
         if (assumeNonNull(IdentityServicesProvider.get().getIdentityManager(getProfile()))

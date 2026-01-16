@@ -276,9 +276,7 @@ public class LegacySyncPromoView extends FrameLayout
                             SettingsNavigation settingsNavigation =
                                     SettingsNavigationFactory.createSettingsNavigation();
                             settingsNavigation.startSettings(
-                                    getContext(),
-                                    ManageSyncSettings.class,
-                                    ManageSyncSettings.createArguments(false));
+                                    getContext(), ManageSyncSettings.class);
                         });
 
         return new ViewState(descId, positiveButton);

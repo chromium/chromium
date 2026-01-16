@@ -619,10 +619,7 @@ public class BookmarkManagerCoordinator
 
     private void openSettings() {
         SettingsNavigationFactory.createSettingsNavigation()
-                .startSettings(
-                        mContext,
-                        ManageSyncSettings.class,
-                        ManageSyncSettings.createArguments(false));
+                .startSettings(mContext, ManageSyncSettings.class);
     }
 
     @Nullable BackPressManager getBackPressManagerForTesting() {

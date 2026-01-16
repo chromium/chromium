@@ -456,10 +456,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
     private void openSettings() {
         SettingsNavigation settingsNavigation =
                 SettingsNavigationFactory.createSettingsNavigation();
-        settingsNavigation.startSettings(
-                getApplicationContext(),
-                ManageSyncSettings.class,
-                ManageSyncSettings.createArguments(false));
+        settingsNavigation.startSettings(getApplicationContext(), ManageSyncSettings.class);
     }
 
     private void startUpdateCredentialsFlow(Activity activity) {

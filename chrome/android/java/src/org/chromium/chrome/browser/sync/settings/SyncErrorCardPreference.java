@@ -36,12 +36,6 @@ public class SyncErrorCardPreference extends Preference
         implements SyncService.SyncStateChangedListener, ProfileDataCache.Observer {
     /** Listener for the buttons in the error card. */
     public interface SyncErrorCardPreferenceListener {
-        /**
-         * Called to check if the preference should be hidden in case its created from signin
-         * screen.
-         */
-        boolean shouldSuppressSyncSetupIncomplete();
-
         /** Called when the user clicks the primary button. */
         void onSyncErrorCardPrimaryButtonClicked();
 
@@ -124,10 +118,7 @@ public class SyncErrorCardPreference extends Preference
         }
 
         mSyncError = SyncSettingsUtils.getSyncError(mProfile);
-        boolean suppressSyncSetupIncompleteFromSigninPage =
-                (mSyncError == UserActionableError.NEEDS_SETTINGS_CONFIRMATION)
-                        && mListener.shouldSuppressSyncSetupIncomplete();
-        if (mSyncError == UserActionableError.NONE || suppressSyncSetupIncompleteFromSigninPage) {
+        if (mSyncError == UserActionableError.NONE) {
             setVisible(false);
         } else {
             setVisible(true);
