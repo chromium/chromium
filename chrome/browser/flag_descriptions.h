@@ -2842,19 +2842,6 @@ inline constexpr char kNewEtc1EncoderDescription[] =
     "Enables the new ETC1 encoder implementation for tab and back/forward "
     "thumbnails.";
 
-inline constexpr char kNotebookLmAppPreinstallName[] = "NotebookLM app preload";
-inline constexpr char kNotebookLmAppPreinstallDescription[] =
-    "Preloads the NotebookLM app.";
-
-inline constexpr char kNotebookLmAppShelfPinName[] = "NotebookLM app shelf pin";
-inline constexpr char kNotebookLmAppShelfPinDescription[] =
-    "Pins the NotebookLM app preload to the shelf";
-
-inline constexpr char kNotebookLmAppShelfPinResetName[] =
-    "NotebookLM app shelf pin reset";
-inline constexpr char kNotebookLmAppShelfPinResetDescription[] =
-    "Clears state relating to pinning the NotebookLM app preload to the shelf";
-
 inline constexpr char kNotificationSchedulerName[] = "Notification scheduler";
 inline constexpr char kNotificationSchedulerDescription[] =
     "Enable notification scheduler feature.";

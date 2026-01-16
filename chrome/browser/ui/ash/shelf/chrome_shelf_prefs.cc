@@ -393,19 +393,7 @@ void AddNotebookLmAppPinIfNeeded(
     Profile* profile,
     app_list::AppListSyncableService* syncable_service) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Allow manual testers to reset the sync state easily.
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kNotebookLmAppShelfPinReset)) {
-    ScopedListPrefUpdate update(profile->GetPrefs(),
-                                prefs::kShelfNotebookLmAppPinRolls);
-
-    update->clear();
-    return;
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          chromeos::features::kNotebookLmAppShelfPin) ||
-      !ShelfControllerHelper::IsAppDefaultInstalled(profile,
+  if (!ShelfControllerHelper::IsAppDefaultInstalled(profile,
                                                     ash::kNotebookLmAppId) ||
       !profile->GetPrefs()
            ->GetList(prefs::kShelfNotebookLmAppPinRolls)
@@ -417,7 +405,7 @@ void AddNotebookLmAppPinIfNeeded(
   update->Append("v1");
 
   PinAfterChromeIfNotPresent(syncable_service, {ash::kGeminiAppId},
-                      ash::kNotebookLmAppId);
+                             ash::kNotebookLmAppId);
 #endif  // GOOGLE_CHROME_BRANDING
 }
 
@@ -441,12 +429,10 @@ void AddMallPinIfNeeded(Profile* profile,
                               prefs::kShelfMallAppPinRolls);
   update->Append("v1");
 
-  std::vector<std::string> skip_app_ids = {ash::kGeminiAppId};
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kNotebookLmAppShelfPin)) {
-    skip_app_ids.push_back(ash::kNotebookLmAppId);
-  }
-  PinAfterChromeIfNotPresent(syncable_service, skip_app_ids, ash::kMallSystemAppId);
+  std::vector<std::string> skip_app_ids = {ash::kGeminiAppId,
+                                           ash::kNotebookLmAppId};
+  PinAfterChromeIfNotPresent(syncable_service, skip_app_ids,
+                             ash::kMallSystemAppId);
 }
 
 void SetPreloadPinComplete(Profile* profile) {

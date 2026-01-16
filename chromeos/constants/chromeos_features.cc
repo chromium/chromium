@@ -101,9 +101,6 @@ BASE_FEATURE(kPompano, base::FEATURE_ENABLED_BY_DEFAULT);
 // Controls enabling / disabling the summary of selected text feature.
 BASE_FEATURE(kMahiSummarizeSelected, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether NotebookLM is preinstalled.
-BASE_FEATURE(kNotebookLmAppPreinstall, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Kill switch to disable the new guest profile implementation on CrOS that is
 // consistent with desktop chrome.
 // TODO(crbug.com/40233408): Remove if the change is fully launched.
@@ -280,13 +277,6 @@ BASE_FEATURE(kFileSystemProviderContentCache,
 // in user sessions.
 BASE_FEATURE(kSystemFeaturesDisableListHidden,
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables pinning the NotebookLM preinstalled app to the shelf.
-BASE_FEATURE(kNotebookLmAppShelfPin, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Resets the act of pinning the NotebookLM preinstalled app to the shelf, used
-// for manual testing.
-BASE_FEATURE(kNotebookLmAppShelfPinReset, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether Vids is preinstalled.
 BASE_FEATURE(kVidsAppPreinstall, base::FEATURE_ENABLED_BY_DEFAULT);

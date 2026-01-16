@@ -258,11 +258,7 @@ class ChromeShelfPrefsTest : public testing::Test {
   }
 
   const char* MaybeNotebookLmItem() {
-    return base::FeatureList::IsEnabled(
-               chromeos::features::kNotebookLmAppShelfPin) &&
-                   IsGoogleChromeBranded()
-               ? "notebook_lm, "
-               : "";
+    return IsGoogleChromeBranded() ? "notebook_lm, " : "";
   }
 
   void ResetShelfToOrder(std::vector<std::string> pin_order) {
@@ -358,9 +354,6 @@ TEST_F(ChromeShelfPrefsTest, ProfileChanged) {
 // NotebookLM is only pinned in branded versions of Chrome.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 TEST_F(ChromeShelfPrefsTest, PinNotebookLmAppWhenInstalled) {
-  base::test::ScopedFeatureList feature_list{
-      chromeos::features::kNotebookLmAppShelfPin};
-
   InstallNotebookLmApp();
 
   std::vector<std::string> expected_order = {
@@ -372,9 +365,6 @@ TEST_F(ChromeShelfPrefsTest, PinNotebookLmAppWhenInstalled) {
 }
 
 TEST_F(ChromeShelfPrefsTest, PinNotebookLmAppOnceOnly) {
-  base::test::ScopedFeatureList feature_list{
-      chromeos::features::kNotebookLmAppShelfPin};
-
   EXPECT_THAT(GetPinnedAppIds(), testing::Contains(ash::kNotebookLmAppId));
 
   shelf_prefs_->RemovePinPosition(ash::ShelfID(ash::kNotebookLmAppId));
@@ -385,9 +375,6 @@ TEST_F(ChromeShelfPrefsTest, PinNotebookLmAppOnceOnly) {
 }
 
 TEST_F(ChromeShelfPrefsTest, PinNotebookLmMigration_ChromeOther) {
-  base::test::ScopedFeatureList feature_list{
-      chromeos::features::kNotebookLmAppShelfPin};
-
   ResetShelfToOrder({
       app_constants::kChromeAppId,
       ash::kGmailAppId,
@@ -399,9 +386,6 @@ TEST_F(ChromeShelfPrefsTest, PinNotebookLmMigration_ChromeOther) {
 }
 
 TEST_F(ChromeShelfPrefsTest, PinNotebookLmMigration_ChromeGeminiOther) {
-  base::test::ScopedFeatureList feature_list{
-      chromeos::features::kNotebookLmAppShelfPin};
-
   ResetShelfToOrder({
       app_constants::kChromeAppId,
       ash::kGeminiAppId,
@@ -414,9 +398,6 @@ TEST_F(ChromeShelfPrefsTest, PinNotebookLmMigration_ChromeGeminiOther) {
 }
 
 TEST_F(ChromeShelfPrefsTest, PinNotebookLmMigration_GeminiChromeOther) {
-  base::test::ScopedFeatureList feature_list{
-      chromeos::features::kNotebookLmAppShelfPin};
-
   ResetShelfToOrder({
       ash::kGeminiAppId,
       app_constants::kChromeAppId,
@@ -429,9 +410,6 @@ TEST_F(ChromeShelfPrefsTest, PinNotebookLmMigration_GeminiChromeOther) {
 }
 
 TEST_F(ChromeShelfPrefsTest, PinNotebookLmMigration_Chrome) {
-  base::test::ScopedFeatureList feature_list{
-      chromeos::features::kNotebookLmAppShelfPin};
-
   ResetShelfToOrder({
       app_constants::kChromeAppId,
   });
@@ -442,9 +420,6 @@ TEST_F(ChromeShelfPrefsTest, PinNotebookLmMigration_Chrome) {
 }
 
 TEST_F(ChromeShelfPrefsTest, PinNotebookLmMigration_ChromeGemini) {
-  base::test::ScopedFeatureList feature_list{
-      chromeos::features::kNotebookLmAppShelfPin};
-
   ResetShelfToOrder({
       app_constants::kChromeAppId,
       ash::kGeminiAppId,
@@ -456,9 +431,6 @@ TEST_F(ChromeShelfPrefsTest, PinNotebookLmMigration_ChromeGemini) {
 }
 
 TEST_F(ChromeShelfPrefsTest, PinNotebookLmMigration_ChromeOtherGemini) {
-  base::test::ScopedFeatureList feature_list{
-      chromeos::features::kNotebookLmAppShelfPin};
-
   ResetShelfToOrder({
       app_constants::kChromeAppId,
       ash::kGmailAppId,
@@ -471,9 +443,6 @@ TEST_F(ChromeShelfPrefsTest, PinNotebookLmMigration_ChromeOtherGemini) {
 }
 
 TEST_F(ChromeShelfPrefsTest, PinNotebookLmMigration_OtherChromeGemini) {
-  base::test::ScopedFeatureList feature_list{
-      chromeos::features::kNotebookLmAppShelfPin};
-
   ResetShelfToOrder({
       ash::kGmailAppId,
       app_constants::kChromeAppId,
