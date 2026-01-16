@@ -5329,22 +5329,6 @@
       ]
      ]
     },
-    "css-scoping": {
-     "chrome-1492368-crash.html": [
-      "04d48ef21532405548b80e23c482e848b3fc1ef6",
-      [
-       null,
-       {}
-      ]
-     ],
-     "shadow-reassign-dynamic-005-crash.html": [
-      "9e4f002cfec32cab44a4fe3b879a072f64a025bf",
-      [
-       null,
-       {}
-      ]
-     ]
-    },
     "css-scroll-anchoring": {
      "fresh-table-col-crash.html": [
       "dc5b2b43f3d76fae72e8ef31b6ed54069820906a",
@@ -5396,6 +5380,22 @@
     "css-scrollbars": {
      "invalid-needs-layout-crash.html": [
       "0b0ae427897894f9f38a7ce9d88256e860b0d5ea",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
+    "css-shadow": {
+     "chrome-1492368-crash.html": [
+      "04d48ef21532405548b80e23c482e848b3fc1ef6",
+      [
+       null,
+       {}
+      ]
+     ],
+     "shadow-reassign-dynamic-005-crash.html": [
+      "9e4f002cfec32cab44a4fe3b879a072f64a025bf",
       [
        null,
        {}
@@ -16268,76 +16268,6 @@
        {}
       ]
      ],
-     "cgrsor-image-png-017-manual.html": [
-      "03b6d6f4144b5e208cfa503228054d8db6594d1a",
-      [
-       null,
-       {}
-      ]
-     ],
-     "cgrsor-image-png-019-manual.html": [
-      "86a33f7e1d135a9f8919cf862958002b26e3efa9",
-      [
-       null,
-       {}
-      ]
-     ],
-     "cgrsor-image-png-023-manual.html": [
-      "397244e45e06b27432b07aed8119f27fede2696e",
-      [
-       null,
-       {}
-      ]
-     ],
-     "cgrsor-image-png-024-manual.html": [
-      "986cd8c455bf5e8d1ba64d7f67a478e37b87d987",
-      [
-       null,
-       {}
-      ]
-     ],
-     "cgrsor-image-png-025-manual.html": [
-      "b584da62e1c7f3b77df63cf2fece7a3933c202d5",
-      [
-       null,
-       {}
-      ]
-     ],
-     "cgrsor-image-png-027-manual.html": [
-      "febbad5316557db00c57ac68cd6773a42975517c",
-      [
-       null,
-       {}
-      ]
-     ],
-     "cgrsor-image-png-028-manual.html": [
-      "e572419dd3f00fb08ac7f1aac71725e0d211002c",
-      [
-       null,
-       {}
-      ]
-     ],
-     "cgrsor-image-png-036-manual.html": [
-      "4dabbe3c33fef457ea25367d7d0f3c06e73f787b",
-      [
-       null,
-       {}
-      ]
-     ],
-     "cgrsor-image-png-040-manual.html": [
-      "49473b31057bbe037c9e381a1cab990ff88024a6",
-      [
-       null,
-       {}
-      ]
-     ],
-     "cgrsor-image-png-042-manual.html": [
-      "e88ed4e23cdc48e12d3edf90a924ebcaa37789dc",
-      [
-       null,
-       {}
-      ]
-     ],
      "cursor-001-manual.html": [
       "6f46a6bb2a8aae66a5d8f60f75ab90e206cb013c",
       [
@@ -16814,8 +16744,22 @@
        {}
       ]
      ],
+     "cursor-image-png-017-manual.html": [
+      "03b6d6f4144b5e208cfa503228054d8db6594d1a",
+      [
+       null,
+       {}
+      ]
+     ],
      "cursor-image-png-018.html": [
       "b7190aadfa0efa715ac290c8e4da5e49d9af7ebf",
+      [
+       null,
+       {}
+      ]
+     ],
+     "cursor-image-png-019-manual.html": [
+      "86a33f7e1d135a9f8919cf862958002b26e3efa9",
       [
        null,
        {}
@@ -16842,8 +16786,43 @@
        {}
       ]
      ],
+     "cursor-image-png-023-manual.html": [
+      "397244e45e06b27432b07aed8119f27fede2696e",
+      [
+       null,
+       {}
+      ]
+     ],
+     "cursor-image-png-024-manual.html": [
+      "986cd8c455bf5e8d1ba64d7f67a478e37b87d987",
+      [
+       null,
+       {}
+      ]
+     ],
+     "cursor-image-png-025-manual.html": [
+      "b584da62e1c7f3b77df63cf2fece7a3933c202d5",
+      [
+       null,
+       {}
+      ]
+     ],
      "cursor-image-png-026-manual.html": [
       "e9b68de4d88d653482ebffb6efdd0c3a53e3c8c8",
+      [
+       null,
+       {}
+      ]
+     ],
+     "cursor-image-png-027-manual.html": [
+      "febbad5316557db00c57ac68cd6773a42975517c",
+      [
+       null,
+       {}
+      ]
+     ],
+     "cursor-image-png-028-manual.html": [
+      "e572419dd3f00fb08ac7f1aac71725e0d211002c",
       [
        null,
        {}
@@ -16898,6 +16877,13 @@
        {}
       ]
      ],
+     "cursor-image-png-036-manual.html": [
+      "4dabbe3c33fef457ea25367d7d0f3c06e73f787b",
+      [
+       null,
+       {}
+      ]
+     ],
      "cursor-image-png-037-manual.html": [
       "dd744992019b60494878d9327e1e4ff9b4b28fb9",
       [
@@ -16919,8 +16905,22 @@
        {}
       ]
      ],
+     "cursor-image-png-040-manual.html": [
+      "49473b31057bbe037c9e381a1cab990ff88024a6",
+      [
+       null,
+       {}
+      ]
+     ],
      "cursor-image-png-041-manual.html": [
       "d817844d0610d6df1b0c61d29d6b3a7afb83bd89",
+      [
+       null,
+       {}
+      ]
+     ],
+     "cursor-image-png-042-manual.html": [
+      "e88ed4e23cdc48e12d3edf90a924ebcaa37789dc",
       [
        null,
        {}
@@ -79192,7 +79192,7 @@
       ]
      ],
      "animation-name-in-nested-shadow.html": [
-      "84dab9621c17a489163dec4fb0797d49692d93ab",
+      "1a3aca96267731fa9962f9dbc74f79a670a6cd98",
       [
        null,
        [
@@ -79205,7 +79205,7 @@
       ]
      ],
      "animation-name-in-shadow-part-inner-match.html": [
-      "54deb0c53e3dc78380191e419505d6df76350d15",
+      "9181aaf1f0cfbf89d13be75c03fbbc341dce8228",
       [
        null,
        [
@@ -79218,7 +79218,7 @@
       ]
      ],
      "animation-name-in-shadow-part-outer-match.html": [
-      "bb12ab6ad066d72b0ee69e62a80b35506971fa39",
+      "0125af3d7fae93ee7aada140c8bd8e884e6f7960",
       [
        null,
        [
@@ -79231,7 +79231,7 @@
       ]
      ],
      "animation-name-in-shadow-part.html": [
-      "d8bc028e667282ba63a20fcaca68e2c15343e727",
+      "87169d54a21928b6048821416faeb7aaa12d066b",
       [
        null,
        [
@@ -118045,7 +118045,7 @@
      ],
      "counter-style-at-rule": {
       "access-from-shadow-dom.html": [
-       "94ec03722b80615fa0b1e1089d24c0e472e3cd17",
+       "f7f8b37d86b9d5002227c296d1abb8ecb62b5ec6",
        [
         null,
         [
@@ -118305,7 +118305,7 @@
        ]
       ],
       "fallbacks-in-shadow-dom.html": [
-       "d51f70bc31c011fe9853755715a710837090a700",
+       "10e0f4e0ccba329b5e49042f0d5ae877af319a00",
        [
         null,
         [
@@ -118331,7 +118331,7 @@
        ]
       ],
       "override-in-shadow-dom.html": [
-       "62064eb6fe86cf356794cfab36d52ca322781d0c",
+       "9020b8ba5c5550691c66316e9498f84d4cc675ac",
        [
         null,
         [
@@ -118370,7 +118370,7 @@
        ]
       ],
       "shadow-dom-part.html": [
-       "cc43eee8eff3888f874feb2f818d08faaafdab9e",
+       "c2e8ae88ede60a70b6a467d817d5ac5848293884",
        [
         null,
         [
@@ -200823,1360 +200823,6 @@
       ]
      ]
     },
-    "css-scoping": {
-     "css-scoping-shadow-assigned-node-with-before-after.html": [
-      "b926540ae94034ce1acadad02fc3cf4cb7d20580",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "css-scoping-shadow-assigned-node-with-rules.html": [
-      "e981eae0557bdf98101c474cd7ae5ffe031d16b3",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "css-scoping-shadow-host-functional-rule.html": [
-      "13f9a67ed8c006a010d11e9ad71815832da2a31b",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "css-scoping-shadow-host-namespace.html": [
-      "46dffc8de38a52a6448e2e7692e6af0d7be1177d",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "css-scoping-shadow-host-rule.html": [
-      "ef70b9017cdf3d8a5ca04b5da57f491d9b8dffb5",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "css-scoping-shadow-host-with-before-after.html": [
-      "c32d8a9e87855b1131851c7e423b3da5de71d916",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "css-scoping-shadow-invisible-slot.html": [
-      "be9f308fc40a9107c708aa15facf8d2c455f288a",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "css-scoping-shadow-nested-slot-display-override.html": [
-      "f194e469f05845e9ee4e362541971aeeaceff1ce",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "css-scoping-shadow-root-hides-children.html": [
-      "bc526059dcafa63267a9a4abbcf4e120ea738374",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "css-scoping-shadow-slot-display-override.html": [
-      "9338a25be6fe21089f359da72b8fe118ac593bdc",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "css-scoping-shadow-slot-fallback.html": [
-      "6cf1b5bafc549b5f27de0868a14fcaa749a08dba",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "css-scoping-shadow-slot-style.html": [
-      "e3f37c33c848d45133717e79ed333afd52219493",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "css-scoping-shadow-slot.html": [
-      "2b588d622e12dff9f146150b25edae0e76b31356",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "css-scoping-shadow-slotted-nested.html": [
-      "5f930e2e8777e7c4bb84aa19789e54b588122214",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "css-scoping-shadow-slotted-rule.html": [
-      "9771c5d1dfb6d9139ecd76f7db3c0363b2c5d0c9",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "css-scoping-shadow-with-outside-rules.html": [
-      "c725752cba54234c632d385d2ca1d9b0547da3f6",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "css-scoping-shadow-with-rules-no-style-leak.html": [
-      "e4d1d15b7be7c20dff2d6fe66d86161e885c82c9",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "css-scoping-shadow-with-rules.html": [
-      "3338ecbf72f028cdb657bacc2a176ebd2658333b",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "has-slotted-001.html": [
-      "4e3de3f6adbdfc20fa6a441d23b90d3e9f28c7ea",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "has-slotted-002.html": [
-      "729f105719b98ac791cf1f7ba9ceae88f38a4b4e",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "has-slotted-003.html": [
-      "d13911e96b76f524e9d934a3a3d13e24360111b7",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "has-slotted-flattened-001.html": [
-      "cd6436a7145064db3555b5d316f81a191a0db614",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "has-slotted-flattened-002.html": [
-      "84e4c63953ed739f7a7d7cbdb619aebaec59dbb0",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "has-slotted-flattened-003.html": [
-      "e16abd7be8917ae368c5e93b0b316cd33bfa78fa",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "has-slotted-flattened-004.html": [
-      "365aad154dc746c922adce568972025e1f8430b2",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "has-slotted-functional-001.tentative.html": [
-      "9a9563287631b6544b9009b16200791424d5d868",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "has-slotted-functional-002.tentative.html": [
-      "a67f788f78563382862dc722782ca186010b6c30",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "has-slotted-functional-003.tentative.html": [
-      "9565b1594c3ed71094f7cf826653f6c06f486a1d",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "has-slotted-functional-004.tentative.html": [
-      "2d980e10051eb5a654771a9069eeb74f7f4f5890",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "has-slotted-functional-005.tentative.html": [
-      "3de7c16f287cb6fc5681362f7def0252981bde24",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "has-slotted-functional-006.tentative.html": [
-      "aea5c6b2a141fd297859635509bd976772cd1908",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "has-slotted-functional-007.tentative.html": [
-      "d7e015056300ca81a5a38c2020c59332f9258d6c",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "has-slotted-functional-flattened-001.tentative.html": [
-      "f14bdbc776d639a5f52c9d69bf25882d601da876",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "has-slotted-functional-flattened-002.tentative.html": [
-      "ff13ac70963c4fac875ba0202185d7320253b6ec",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "has-slotted-functional-flattened-003.tentative.html": [
-      "bca81b971de20dd8e5174052623ad2da21ad11fc",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "has-slotted-functional-flattened-004.tentative.html": [
-      "7b299d25baa36f23d6311ac1fd5981a50f9d6a5b",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "has-slotted-functional-flattened-005.tentative.html": [
-      "7fccf604d8bcbf0f3452c3e8c79f2da24122b9b0",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "has-slotted-functional-flattened-006.tentative.html": [
-      "fd3dda69bc8a70300437ace996362431019d8329",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-context-specificity-001.html": [
-      "694087f56b76cae0a3ccf5015cc25902a1dad8cf",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-context-specificity-002.html": [
-      "3d4d3e5b245950f15ec126909393ff5e8b3edcb8",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-context-specificity-003.html": [
-      "7abf8847c95ed04fae77b8601457909ecd72742e",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-defined.html": [
-      "563bc52e527927030270658c4c965d51045edcbb",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-descendant-001.html": [
-      "423beaf055b9f482dd299c055721a405df1d5d77",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-descendant-002.html": [
-      "6660d4a40c6244e675bb0b0dfddac86d36034fe9",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-descendant-003.html": [
-      "eb2cc7d343e1c382f693f93ec3de6557dfd8d5ff",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-has-001.tentative.html": [
-      "79c89874c63af3b2fa14ed64e0711b006a8032dc",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-has-002.tentative.html": [
-      "33a705672aeb07fdaae71eb7fac583396f20d450",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-has-003.tentative.html": [
-      "58f1482564b0b29afd2a1c5dea7a7640d6b74a72",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-has-internal-001.html": [
-      "c2082de0ac306be835d1913e4b011b5503eac186",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-has-internal-002.html": [
-      "217ed9596c411a6d20b2cda5d972728a8e4da8eb",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-has-internal-003.html": [
-      "9c0a724834596d29f397a5434a83b5bbba658d46",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-has-internal-004.html": [
-      "fe51186f59f88bdfcf5ed8641938b7491024bfda",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-is-001.html": [
-      "16d0dd76691362ee963e386a2fd238783c096243",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-is-002.html": [
-      "408dde2987690b715e454504030499d68baa12a1",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-is-003.html": [
-      "b1958c00ea2a2d40d6ae8f757e250861132a63fb",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-is-004.html": [
-      "5d12a5b5a77e4b2f4d9964d48141ec05c444a52a",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-is-005.html": [
-      "1e2209abda828d785ecf561e307f3bd26391ca7c",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-is-006.html": [
-      "fca86d0184babd62cdce0cd332887972262d8e54",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-multiple-001.html": [
-      "c8833c4b5b7abb52a6c336ea6b6f24e546cfed62",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-multiple-002.html": [
-      "c3f76a5091861a79ed18fda1a6b845d5385d03d6",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-multiple-003.html": [
-      "97774b5bedf323b43359b06aa8017f440ed77a44",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-multiple-004.html": [
-      "65a605a922ed2fa58045a59c6ae899034e07ab2e",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-multiple-005.html": [
-      "d834954f3b3fd29fff1749b0b33755d83980004b",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-nested-001.html": [
-      "f8e412cc00565c5b20416bee5b88e0cc95ddc6d8",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-not-001.html": [
-      "a5cfcbd8ea7709be52ab2317ce916a620675e1be",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-slotted-001.html": [
-      "f05b7c729f31a7225809f6166ea0d65be8fa0314",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-specificity-002.html": [
-      "3132d3a3455241347d6fe421f3434c361e424493",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-specificity-003.html": [
-      "54a22599d8f83f612d7fc9ff91abfe650114c6e2",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-specificity.html": [
-      "3ef61d4135fe7dbf846feb82540ca1a213ce7987",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "host-with-default-namespace-001.html": [
-      "dcd51f8119f4bbaed2f97bf3b4dcee9fa8f0fc7c",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "reslot-text-inheritance.html": [
-      "43711c83bd160825caf1d89c7599f3df1ae64508",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-text.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "scoped-reference-animation-001.html": [
-      "891bda52a39b42322cf15cb01727f9cad58cf026",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/scoped-reference-animation-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "scoped-reference-animation-002.html": [
-      "d5c25f06c0aa73269615ec9bf2b6399729ea261a",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/scoped-reference-animation-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "shadow-assign-dynamic-001.html": [
-      "b9a0d1a2991c071bb3654995f93c4ac7ff495aee",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "shadow-at-import.html": [
-      "1adf516311f3a7ae470308e8698f3165b5fa6ca5",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "shadow-directionality-001.tentative.html": [
-      "7070d2a1d9a856fa9a00fa590f5f582df0a29ac9",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "shadow-directionality-002.tentative.html": [
-      "6aba12436a6780ce5afde675388506f7f82c29a8",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "shadow-disabled-sheet-001.html": [
-      "275ac47a613adb26c408912160a339b8a71c9c9c",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "shadow-fallback-dynamic-001.html": [
-      "9a5672eb63a902d08f309f96ba659b615cceeda9",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "shadow-fallback-dynamic-002.html": [
-      "f65d0c7a2129d685429cef4b754a720816af6b22",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "shadow-fallback-dynamic-003.html": [
-      "a30e8fed7d257ceedc249c24b249fab69d85c19d",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "shadow-fallback-dynamic-004.html": [
-      "29e407573a31ba87da8419121431b661612c68ca",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "shadow-fallback-dynamic-005.html": [
-      "1d84907e5fc0deb164bd38ab6b9979977a003fc6",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "shadow-host-with-before-after.html": [
-      "87e1554f154d82c6252e752caa830954c119310c",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "shadow-link-rel-stylesheet-no-style-leak.html": [
-      "8ca69ccd1b287ad36283405c8ca95742ad08299e",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "shadow-link-rel-stylesheet.html": [
-      "d67929a1adbd42b807500685c6a36a9e61e22fed",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "shadow-reassign-dynamic-001.html": [
-      "e8fe49ac96ff1694565bd82213c07f7204f0bb1c",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "shadow-reassign-dynamic-002.html": [
-      "7874e2e13987246c1160c419967aba9db32bbf63",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "shadow-reassign-dynamic-004.html": [
-      "6c2beadc36a5007f26affa4ad4cceb39f6849d8e",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "shadow-reassign-dynamic-006.html": [
-      "ace701eea93f5b098505266c23420e6644aa9fb2",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/shadow-reassign-dynamic-006-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "shadow-root-insert-into-document.html": [
-      "a3b89be389a780dd53a1b53224810ecb4866c287",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "slotted-details-content.html": [
-      "005098bd2544a6db184b225e7d061d2610784bad",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/slotted-details-content-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "slotted-file-selector-button.html": [
-      "7b11deda3e1c5aa5272c27ca128346278dd1aadf",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/slotted-file-selector-button-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "slotted-has-001.html": [
-      "dcb11ec32eaea0b9982f8d5bc6b4a6cad7c41fad",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "slotted-has-002.html": [
-      "5e709a969619b3b48f62231c4ac30209388dc8a5",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "slotted-has-003.html": [
-      "548f2c5d421d673367abc89c9289d756cf463016",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "slotted-has-004.html": [
-      "7e76b1b6de62920eb863a7fb114de6ba6c160b78",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square-only.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "slotted-placeholder.html": [
-      "a3d607afb8e78e8c340b2d4c6ec86a5f4fc12190",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/slotted-placeholder-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "slotted-specificity-002.html": [
-      "ca2b9ab14c429a855e37823ce76b20f0e0b65921",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "slotted-specificity.html": [
-      "d049182db65ae9b0339c33c429ac4beb92dc39a1",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "slotted-with-pseudo-element.html": [
-      "f2b33ae49474ff6594acd2052d400d781d4101af",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/slotted-with-pseudo-element-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "stylesheet-title-001.html": [
-      "a91fca8ce132770b6d031fe9a3abacf8d40a66f6",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "svg-id-ref-001.html": [
-      "81deb379f8fb20c1ecbca97ba248842333a5a3b5",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "whitespace-crash-001.html": [
-      "d3b4a8a4ad21962d8277a8ab1ecd9e9ffb1675d4",
-      [
-       null,
-       [
-        [
-         "/css/css-scoping/reference/green-box.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ]
-    },
     "css-scroll-anchoring": {
      "nested-overflow-subtree-layout-vertical.html": [
       "5b176a2042e7607f740e94faa445ec301c8e88d8",
@@ -203031,94 +201677,1448 @@
       ]
      ]
     },
-    "css-shadow-parts": {
-     "animation-part.html": [
-      "333785fe6284871ff18358fefcb15e74bedee108",
+    "css-shadow": {
+     "css-scoping-shadow-assigned-node-with-before-after.html": [
+      "3d5ca4decf853c54bc7028bc56f6dd391833fe23",
       [
        null,
        [
         [
-         "/css/css-shadow-parts/animation-part-ref.html",
+         "/css/css-shadow/reference/green-box.html",
          "=="
         ]
        ],
        {}
       ]
      ],
-     "exportparts-different-scope.html": [
-      "a487a052de3ae194773892457052ef8c1ad560cd",
+     "css-scoping-shadow-assigned-node-with-rules.html": [
+      "6c9a7c5f4780092c692da485c12d21a226b63949",
       [
        null,
        [
         [
-         "/css/css-shadow-parts/exportparts-different-scope-ref.html",
+         "/css/css-shadow/reference/green-box.html",
          "=="
         ]
        ],
        {}
       ]
      ],
-     "exportparts-layered.html": [
-      "9d6d12a4b4f495e72e235005382b5e5917ed4279",
+     "css-scoping-shadow-host-functional-rule.html": [
+      "311161cbe051ad76211a93a5d7edd630e270bb53",
       [
        null,
        [
         [
-         "/css/css-shadow-parts/exportparts-layered.ref.html",
+         "/css/css-shadow/reference/green-box.html",
          "=="
         ]
        ],
        {}
       ]
      ],
-     "interaction-with-nested-pseudo-class.html": [
-      "55066d3a19136010d1450a0c1a44c541eb06bb38",
+     "css-scoping-shadow-host-namespace.html": [
+      "033f51b3f2a1bf6a0ef6c26453b210c8d73a3800",
       [
        null,
        [
         [
-         "/css/css-shadow-parts/interaction-with-nested-pseudo-class-ref.html",
-         "=="
-        ]
-       ],
-       {
-        "testdriver": true
-       }
-      ]
-     ],
-     "interaction-with-placeholder.html": [
-      "54dc046a5677cdabf7c61cb208c3d78e685a2ae5",
-      [
-       null,
-       [
-        [
-         "/css/css-shadow-parts/interaction-with-placeholder-ref.html",
+         "/css/css-shadow/reference/green-box.html",
          "=="
         ]
        ],
        {}
       ]
      ],
-     "part-after-combinator-invalidation.html": [
-      "1ef9fbb674d7ac03a7b6881bf997d5893a768107",
+     "css-scoping-shadow-host-rule.html": [
+      "1f711737bae4b102c55d991f2c25046b367ed688",
       [
        null,
        [
         [
-         "/css/css-shadow-parts/part-after-combinator-invalidation-ref.html",
+         "/css/css-shadow/reference/green-box.html",
          "=="
         ]
        ],
        {}
       ]
      ],
-     "part-nested-pseudo.html": [
-      "94339cf7bb748bed160ae18ef3f1c4f313dfa506",
+     "css-scoping-shadow-host-with-before-after.html": [
+      "7289405455af85cabae90930c9e923903db9940a",
       [
        null,
        [
         [
-         "/css/css-shadow-parts/part-nested-pseudo-ref.html",
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "css-scoping-shadow-invisible-slot.html": [
+      "9c3fb4fd2d76de01afae8218387cdf312be1956e",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "css-scoping-shadow-nested-slot-display-override.html": [
+      "21159d5087723b12060da36c7367ddad4043a2af",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "css-scoping-shadow-root-hides-children.html": [
+      "4343d157c34975c0f43af8b5b6512aad6391993c",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "css-scoping-shadow-slot-display-override.html": [
+      "31a02edab48142cbba90860efe3b46047253c09c",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "css-scoping-shadow-slot-fallback.html": [
+      "d5f581d87602433c87e9cadf9e899e1f0cfd4a9a",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "css-scoping-shadow-slot-style.html": [
+      "6f598fa68293d8b5e9cfd4f33efbb8c56b46aefb",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "css-scoping-shadow-slot.html": [
+      "863fd767746fe857fb281f767ca5a08217f8e648",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "css-scoping-shadow-slotted-nested.html": [
+      "072bab7d79145852dfec43db9f4c18779d6d0617",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "css-scoping-shadow-slotted-rule.html": [
+      "186dec05b2a85901307aac1c3a21542227386a8d",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "css-scoping-shadow-with-outside-rules.html": [
+      "8123e9e5f2369cd2388d1f712bb1365e2e01fc71",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "css-scoping-shadow-with-rules-no-style-leak.html": [
+      "7e19ee381e83996f9967f7a63e3a2c1d7943da30",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "css-scoping-shadow-with-rules.html": [
+      "bfdfeb3aa865ea4e3c10c92b747bada05e376d5b",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-001.html": [
+      "4e3de3f6adbdfc20fa6a441d23b90d3e9f28c7ea",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-002.html": [
+      "729f105719b98ac791cf1f7ba9ceae88f38a4b4e",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-003.html": [
+      "d13911e96b76f524e9d934a3a3d13e24360111b7",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-flattened-001.html": [
+      "cd6436a7145064db3555b5d316f81a191a0db614",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-flattened-002.html": [
+      "84e4c63953ed739f7a7d7cbdb619aebaec59dbb0",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-flattened-003.html": [
+      "e16abd7be8917ae368c5e93b0b316cd33bfa78fa",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-flattened-004.html": [
+      "365aad154dc746c922adce568972025e1f8430b2",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-functional-001.tentative.html": [
+      "9a9563287631b6544b9009b16200791424d5d868",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-functional-002.tentative.html": [
+      "a67f788f78563382862dc722782ca186010b6c30",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-functional-003.tentative.html": [
+      "9565b1594c3ed71094f7cf826653f6c06f486a1d",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-functional-004.tentative.html": [
+      "2d980e10051eb5a654771a9069eeb74f7f4f5890",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-functional-005.tentative.html": [
+      "3de7c16f287cb6fc5681362f7def0252981bde24",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-functional-006.tentative.html": [
+      "aea5c6b2a141fd297859635509bd976772cd1908",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-functional-007.tentative.html": [
+      "d7e015056300ca81a5a38c2020c59332f9258d6c",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-functional-flattened-001.tentative.html": [
+      "f14bdbc776d639a5f52c9d69bf25882d601da876",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-functional-flattened-002.tentative.html": [
+      "ff13ac70963c4fac875ba0202185d7320253b6ec",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-functional-flattened-003.tentative.html": [
+      "bca81b971de20dd8e5174052623ad2da21ad11fc",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-functional-flattened-004.tentative.html": [
+      "7b299d25baa36f23d6311ac1fd5981a50f9d6a5b",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-functional-flattened-005.tentative.html": [
+      "7fccf604d8bcbf0f3452c3e8c79f2da24122b9b0",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "has-slotted-functional-flattened-006.tentative.html": [
+      "fd3dda69bc8a70300437ace996362431019d8329",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-context-specificity-001.html": [
+      "8c89bb67855ffa27f044fbb0e68b6a64871b9b2e",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-context-specificity-002.html": [
+      "23f91ed7ea904e567db781d7894a2ad9e6cdefee",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-context-specificity-003.html": [
+      "94ba218dbad30282cab6ffadb44d675a3062848d",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-defined.html": [
+      "563bc52e527927030270658c4c965d51045edcbb",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-descendant-001.html": [
+      "03ea12391d0a465d39d1b76beac07dab7348fc4f",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-descendant-002.html": [
+      "22d901045c1d023e99b00a09f69a48ba79c669e7",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-descendant-003.html": [
+      "eb2cc7d343e1c382f693f93ec3de6557dfd8d5ff",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-has-001.tentative.html": [
+      "018a228cce75f651c62fe813ab4ba06244bf0f1e",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-has-002.tentative.html": [
+      "f0cb77a7a727dac0155741259c7511bd702fd3a6",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-has-003.tentative.html": [
+      "502e454270b45505ad2207cee0af64a91132affc",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-has-internal-001.html": [
+      "78a028dfd8d1c24e8550a397c5938de1da1336ef",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-has-internal-002.html": [
+      "05e3b631ed0357ed0ffa4b390c279675bf005209",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-has-internal-003.html": [
+      "fcb440de1db6914792b7100964a20b22f6ae3b8b",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-has-internal-004.html": [
+      "61f673021960fdeb7c158124c377a32691aefec5",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-is-001.html": [
+      "16d0dd76691362ee963e386a2fd238783c096243",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-is-002.html": [
+      "408dde2987690b715e454504030499d68baa12a1",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-is-003.html": [
+      "b1958c00ea2a2d40d6ae8f757e250861132a63fb",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-is-004.html": [
+      "5d12a5b5a77e4b2f4d9964d48141ec05c444a52a",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-is-005.html": [
+      "1e2209abda828d785ecf561e307f3bd26391ca7c",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-is-006.html": [
+      "fca86d0184babd62cdce0cd332887972262d8e54",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-multiple-001.html": [
+      "91df48cc4a9239b73bcb4937729ca141cd9fb871",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-multiple-002.html": [
+      "c3f76a5091861a79ed18fda1a6b845d5385d03d6",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-multiple-003.html": [
+      "97774b5bedf323b43359b06aa8017f440ed77a44",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-multiple-004.html": [
+      "65a605a922ed2fa58045a59c6ae899034e07ab2e",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-multiple-005.html": [
+      "d834954f3b3fd29fff1749b0b33755d83980004b",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-nested-001.html": [
+      "42cb0a4c8fb2bec1a69ae6d7d4d0f7aa26b8d46a",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-not-001.html": [
+      "a5cfcbd8ea7709be52ab2317ce916a620675e1be",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-slotted-001.html": [
+      "285b526cb6b8529f4a0a214c0766744cb96cf658",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-specificity-002.html": [
+      "c16b2fb1574f741a9756c98d26ed8ba408f1f23e",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-specificity-003.html": [
+      "5e1673f823288d13ea8371771f14894fe1bfa300",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-specificity.html": [
+      "11745fe564af8516d0c52b8ae5aed8bbf3150817",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-with-default-namespace-001.html": [
+      "20f948d3391c974bc153f0bb2f4ca1010d657315",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "part": {
+      "animation-part.html": [
+       "333785fe6284871ff18358fefcb15e74bedee108",
+       [
+        null,
+        [
+         [
+          "/css/css-shadow/part/animation-part-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "exportparts-different-scope.html": [
+       "a487a052de3ae194773892457052ef8c1ad560cd",
+       [
+        null,
+        [
+         [
+          "/css/css-shadow/part/exportparts-different-scope-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "exportparts-layered.html": [
+       "9d6d12a4b4f495e72e235005382b5e5917ed4279",
+       [
+        null,
+        [
+         [
+          "/css/css-shadow/part/exportparts-layered.ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "interaction-with-nested-pseudo-class.html": [
+       "55066d3a19136010d1450a0c1a44c541eb06bb38",
+       [
+        null,
+        [
+         [
+          "/css/css-shadow/part/interaction-with-nested-pseudo-class-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "interaction-with-placeholder.html": [
+       "54dc046a5677cdabf7c61cb208c3d78e685a2ae5",
+       [
+        null,
+        [
+         [
+          "/css/css-shadow/part/interaction-with-placeholder-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "part-after-combinator-invalidation.html": [
+       "1ef9fbb674d7ac03a7b6881bf997d5893a768107",
+       [
+        null,
+        [
+         [
+          "/css/css-shadow/part/part-after-combinator-invalidation-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "part-nested-pseudo.html": [
+       "94339cf7bb748bed160ae18ef3f1c4f313dfa506",
+       [
+        null,
+        [
+         [
+          "/css/css-shadow/part/part-nested-pseudo-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ]
+     },
+     "reslot-text-inheritance.html": [
+      "c23a1e7650a4d0e4caefdf5b4e25a83902776da7",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-text.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scoped-reference-animation-001.html": [
+      "baf08b48564a6b0e370e19aefc2faaf6e9c6fdbb",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/scoped-reference-animation-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scoped-reference-animation-002.html": [
+      "11c05157f27708fabea17604e5028b6f06b24362",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/scoped-reference-animation-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "shadow-assign-dynamic-001.html": [
+      "3d38bdd8eec8d2e1acb1715c1bc476be3ad185bb",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "shadow-at-import.html": [
+      "1adf516311f3a7ae470308e8698f3165b5fa6ca5",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "shadow-directionality-001.tentative.html": [
+      "7070d2a1d9a856fa9a00fa590f5f582df0a29ac9",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "shadow-directionality-002.tentative.html": [
+      "6aba12436a6780ce5afde675388506f7f82c29a8",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "shadow-disabled-sheet-001.html": [
+      "d4d4e9dcfa215cd98ba9ed346ba59ef205d12105",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "shadow-fallback-dynamic-001.html": [
+      "dfb8e325ff1a45a11af7890181355bfa90c147b8",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "shadow-fallback-dynamic-002.html": [
+      "26bb07b2e2d8a0b2d8c0aa489ccb530bbc5d590c",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "shadow-fallback-dynamic-003.html": [
+      "cbf14810f9adf78a0f66d9919648971abfa5b8d6",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "shadow-fallback-dynamic-004.html": [
+      "4ef619627221d6d22622cf08dab415e600694e5e",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "shadow-fallback-dynamic-005.html": [
+      "743f62d75c80a01c2355328ec327a04ada59f4c2",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "shadow-host-with-before-after.html": [
+      "f46f92caeb4fabcfa4e1e765fb8cbb39cd0570ed",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "shadow-link-rel-stylesheet-no-style-leak.html": [
+      "dfdc2c49b0567ced865a3c7040f4c50f72e3413d",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "shadow-link-rel-stylesheet.html": [
+      "d67929a1adbd42b807500685c6a36a9e61e22fed",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "shadow-reassign-dynamic-001.html": [
+      "c358b1fac7d87000c75852acb6ce5f5979f3ffad",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "shadow-reassign-dynamic-002.html": [
+      "b12fddc0d3cb305cdc646a57e7a549d38c624186",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "shadow-reassign-dynamic-004.html": [
+      "144ad3b8628cc19a62786c1f607cd44bb7a51463",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "shadow-reassign-dynamic-006.html": [
+      "d2e298949177f88267702a6c01a5b8348b32c580",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/shadow-reassign-dynamic-006-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "shadow-root-insert-into-document.html": [
+      "9327d31b879174786fb8376f0f4dfd6330d75428",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "slotted-details-content.html": [
+      "93d42a137162faa7a7cd89d78e5eeaf2d8aec82d",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/slotted-details-content-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "slotted-file-selector-button.html": [
+      "5d00fe031e72ebf757a34ed4259f5f10b3242eb1",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/slotted-file-selector-button-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "slotted-has-001.html": [
+      "dcb11ec32eaea0b9982f8d5bc6b4a6cad7c41fad",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "slotted-has-002.html": [
+      "5e709a969619b3b48f62231c4ac30209388dc8a5",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "slotted-has-003.html": [
+      "548f2c5d421d673367abc89c9289d756cf463016",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "slotted-has-004.html": [
+      "7e76b1b6de62920eb863a7fb114de6ba6c160b78",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "slotted-placeholder.html": [
+      "85bb6403699c6198555310e69588db5225078e68",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/slotted-placeholder-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "slotted-specificity-002.html": [
+      "29c3b2c1881ebdf28bc52cba6a8903e8e262812e",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "slotted-specificity.html": [
+      "b46da37759399cab7d40bfe9408027354a61f932",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "slotted-with-pseudo-element.html": [
+      "4e0cab54ffa8d6264d31f3da6bf20b9b324e2dbf",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/slotted-with-pseudo-element-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "stylesheet-title-001.html": [
+      "a91fca8ce132770b6d031fe9a3abacf8d40a66f6",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "svg-id-ref-001.html": [
+      "d97f94a6d58efc9f68a723f52e474eb01e63a765",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "whitespace-crash-001.html": [
+      "c0454c9328840c0c2307cc8b08c5e072da3d1367",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow/reference/green-box.html",
          "=="
         ]
        ],
@@ -385664,120 +385664,6 @@
       ]
      }
     },
-    "css-scoping": {
-     "META.yml": [
-      "826341652122a40956ccc74288e23f952f1f40e8",
-      []
-     ],
-     "OWNERS": [
-      "53463b38f4154029f9fadf7c337119f9828f57b4",
-      []
-     ],
-     "WEB_FEATURES.yml": [
-      "4fcf1578cd46c2b3e8f027bbf4d220ca11fc2f60",
-      []
-     ],
-     "font-face-001-expected.txt": [
-      "0ccc20dfb3a8a07be48e528279d05f1c944ce5df",
-      []
-     ],
-     "font-face-005-expected.txt": [
-      "e808174513245057d6da71845dfb8de3bd1affc3",
-      []
-     ],
-     "font-face-007-expected.txt": [
-      "610662c85551e0c1e187ad7c5d65c0607aec1a67",
-      []
-     ],
-     "font-face-008-expected.txt": [
-      "5d3bb44987acc21a806ff36a030eede932aedb23",
-      []
-     ],
-     "font-face-009-expected.txt": [
-      "a446b39f4cba898e1c14f7c62b74456acba91901",
-      []
-     ],
-     "has-slotted-functional-changing-001.tentative-expected.txt": [
-      "491d6e747559ea92977f6f67467f7b93a25f9268",
-      []
-     ],
-     "has-slotted-functional-changing-002.tentative-expected.txt": [
-      "805e5333690d7e48ed1b12dff763a549a535fa89",
-      []
-     ],
-     "has-slotted-functional-changing-003.tentative-expected.txt": [
-      "0687500ebb2e267d851d6671f72c77b13e77f505",
-      []
-     ],
-     "has-slotted-functional-changing-004.tentative-expected.txt": [
-      "805e5333690d7e48ed1b12dff763a549a535fa89",
-      []
-     ],
-     "has-slotted-query-selector-expected.txt": [
-      "33440d6d0171a4b2245e18a1690fd1672afa2161",
-      []
-     ],
-     "keyframes-002-expected.txt": [
-      "765775c5d7c5011c6d148252d1d8e0e6dca8c756",
-      []
-     ],
-     "keyframes-004-expected.txt": [
-      "40cde489aee19661e3efceb23363341a0c61de85",
-      []
-     ],
-     "keyframes-005-expected.txt": [
-      "6aa1d8b3d3c01fb02ed95e5f55b3d2304317e213",
-      []
-     ],
-     "reference": {
-      "green-box.html": [
-       "24b5e0d5f53d8fab39a2d1699f77ccef417ef6b6",
-       []
-      ],
-      "green-text.html": [
-       "95736b4484dc020f02000fc327ae87494f491d48",
-       []
-      ]
-     },
-     "resources": {
-      "host-green-box.css": [
-       "a77b3fdc6432ea324e1601b99e901611d76098b0",
-       []
-      ]
-     },
-     "scoped-reference-animation-ref.html": [
-      "9f407eb690e0fb3d033afba0817082f84e30b783",
-      []
-     ],
-     "shadow-reassign-dynamic-006-ref.html": [
-      "60a6282457f17663be1317392b579f5369277048",
-      []
-     ],
-     "slotted-details-content-ref.html": [
-      "f99ca29497753a9b2799845d7fd150ea83fdf831",
-      []
-     ],
-     "slotted-file-selector-button-ref.html": [
-      "284033716d3b3e493b4c78512a58ce117b617bb0",
-      []
-     ],
-     "slotted-parsing-expected.txt": [
-      "180f9b3b9cf1207b5a7b42c0fe03a035b49c7337",
-      []
-     ],
-     "slotted-placeholder-ref.html": [
-      "f99c0385d061766b49d55e7703bf596fe69d6ec2",
-      []
-     ],
-     "slotted-text-with-flex-ref.html": [
-      "055dd72b235494d03663913b2fbf6083629670ef",
-      []
-     ],
-     "slotted-with-pseudo-element-ref.html": [
-      "d452d489a4aba9cab85debe4f1c8361bf3b430bb",
-      []
-     ]
-    },
     "css-scroll-anchoring": {
      "DIR_METADATA": [
       "5e354710d3b40f776065d9eadb2feb229fb8a225",
@@ -386226,53 +386112,167 @@
       []
      ]
     },
-    "css-shadow-parts": {
+    "css-shadow": {
      "META.yml": [
-      "0d85c80af4138f3cb21540080192d2ccabafbbf3",
+      "06bf5d06260c4e4f39cd1146192cbf512656d4d3",
+      []
+     ],
+     "OWNERS": [
+      "53463b38f4154029f9fadf7c337119f9828f57b4",
       []
      ],
      "WEB_FEATURES.yml": [
-      "e9fb6df46fa691b302664c9b92051c83cdb656f0",
+      "4fcf1578cd46c2b3e8f027bbf4d220ca11fc2f60",
       []
      ],
-     "animation-part-ref.html": [
-      "c0c8ff040c9d70abb569f058842c99902ff9e2bd",
+     "font-face-001-expected.txt": [
+      "0ccc20dfb3a8a07be48e528279d05f1c944ce5df",
       []
      ],
-     "exportparts-different-scope-ref.html": [
-      "d497566c45ce000be904315c221458380d7b965e",
+     "font-face-005-expected.txt": [
+      "e808174513245057d6da71845dfb8de3bd1affc3",
       []
      ],
-     "exportparts-layered.ref.html": [
-      "1be4a7eb325c9211b67c1ab08f13e4d58fdb2510",
+     "font-face-007-expected.txt": [
+      "610662c85551e0c1e187ad7c5d65c0607aec1a67",
       []
      ],
-     "interaction-with-nested-pseudo-class-ref.html": [
-      "e3b99d43a69e6ff44899e6512237978883df06cf",
+     "font-face-008-expected.txt": [
+      "5d3bb44987acc21a806ff36a030eede932aedb23",
       []
      ],
-     "interaction-with-placeholder-ref.html": [
-      "36942387db9eb398b79c20007f8b10506edceec6",
+     "font-face-009-expected.txt": [
+      "a446b39f4cba898e1c14f7c62b74456acba91901",
       []
      ],
-     "part-after-combinator-invalidation-ref.html": [
-      "d6db0d0e4c4461a7f7f873f2f243d830b82f1afb",
+     "has-slotted-functional-changing-001.tentative-expected.txt": [
+      "491d6e747559ea92977f6f67467f7b93a25f9268",
       []
      ],
-     "part-nested-pseudo-ref.html": [
-      "8eee65a27045ae97d10ed22050126d94fa69ed9b",
+     "has-slotted-functional-changing-002.tentative-expected.txt": [
+      "805e5333690d7e48ed1b12dff763a549a535fa89",
       []
      ],
-     "pseudo-classes-after-part-expected.txt": [
-      "9e89ee7e601fa9ffbbe0fb53502feab3826225ed",
+     "has-slotted-functional-changing-003.tentative-expected.txt": [
+      "0687500ebb2e267d851d6671f72c77b13e77f505",
       []
      ],
-     "support": {
-      "shadow-helper.js": [
-       "94accd6b1f9b095fda0079f7b86b866d88ffee01",
+     "has-slotted-functional-changing-004.tentative-expected.txt": [
+      "805e5333690d7e48ed1b12dff763a549a535fa89",
+      []
+     ],
+     "has-slotted-query-selector-expected.txt": [
+      "33440d6d0171a4b2245e18a1690fd1672afa2161",
+      []
+     ],
+     "keyframes-002-expected.txt": [
+      "765775c5d7c5011c6d148252d1d8e0e6dca8c756",
+      []
+     ],
+     "keyframes-004-expected.txt": [
+      "40cde489aee19661e3efceb23363341a0c61de85",
+      []
+     ],
+     "keyframes-005-expected.txt": [
+      "6aa1d8b3d3c01fb02ed95e5f55b3d2304317e213",
+      []
+     ],
+     "part": {
+      "META.yml": [
+       "b1cc74ad45668c5b11b481f322cbeaf1fba96afe",
+       []
+      ],
+      "WEB_FEATURES.yml": [
+       "e9fb6df46fa691b302664c9b92051c83cdb656f0",
+       []
+      ],
+      "animation-part-ref.html": [
+       "c0c8ff040c9d70abb569f058842c99902ff9e2bd",
+       []
+      ],
+      "exportparts-different-scope-ref.html": [
+       "d497566c45ce000be904315c221458380d7b965e",
+       []
+      ],
+      "exportparts-layered.ref.html": [
+       "1be4a7eb325c9211b67c1ab08f13e4d58fdb2510",
+       []
+      ],
+      "interaction-with-nested-pseudo-class-ref.html": [
+       "e3b99d43a69e6ff44899e6512237978883df06cf",
+       []
+      ],
+      "interaction-with-placeholder-ref.html": [
+       "36942387db9eb398b79c20007f8b10506edceec6",
+       []
+      ],
+      "part-after-combinator-invalidation-ref.html": [
+       "d6db0d0e4c4461a7f7f873f2f243d830b82f1afb",
+       []
+      ],
+      "part-nested-pseudo-ref.html": [
+       "8eee65a27045ae97d10ed22050126d94fa69ed9b",
+       []
+      ],
+      "pseudo-classes-after-part-expected.txt": [
+       "9e89ee7e601fa9ffbbe0fb53502feab3826225ed",
+       []
+      ],
+      "support": {
+       "shadow-helper.js": [
+        "94accd6b1f9b095fda0079f7b86b866d88ffee01",
+        []
+       ]
+      }
+     },
+     "reference": {
+      "green-box.html": [
+       "24b5e0d5f53d8fab39a2d1699f77ccef417ef6b6",
+       []
+      ],
+      "green-text.html": [
+       "95736b4484dc020f02000fc327ae87494f491d48",
        []
       ]
-     }
+     },
+     "resources": {
+      "host-green-box.css": [
+       "a77b3fdc6432ea324e1601b99e901611d76098b0",
+       []
+      ]
+     },
+     "scoped-reference-animation-ref.html": [
+      "9f407eb690e0fb3d033afba0817082f84e30b783",
+      []
+     ],
+     "shadow-reassign-dynamic-006-ref.html": [
+      "60a6282457f17663be1317392b579f5369277048",
+      []
+     ],
+     "slotted-details-content-ref.html": [
+      "f99ca29497753a9b2799845d7fd150ea83fdf831",
+      []
+     ],
+     "slotted-file-selector-button-ref.html": [
+      "284033716d3b3e493b4c78512a58ce117b617bb0",
+      []
+     ],
+     "slotted-parsing-expected.txt": [
+      "180f9b3b9cf1207b5a7b42c0fe03a035b49c7337",
+      []
+     ],
+     "slotted-placeholder-ref.html": [
+      "f99c0385d061766b49d55e7703bf596fe69d6ec2",
+      []
+     ],
+     "slotted-text-with-flex-ref.html": [
+      "055dd72b235494d03663913b2fbf6083629670ef",
+      []
+     ],
+     "slotted-with-pseudo-element-ref.html": [
+      "d452d489a4aba9cab85debe4f1c8361bf3b430bb",
+      []
+     ]
     },
     "css-shapes": {
      "DIR_METADATA": [
@@ -439226,7 +439226,7 @@
     }
    },
    "lint.ignore": [
-    "6d12f2b94bc98d40c9f016a063e5d42d9f0632b0",
+    "345dc51f8a31a94259b716a7648b021d0112a4a7",
     []
    ],
    "loading": {
@@ -527567,7 +527567,7 @@
       ]
      ],
      "position-try-tree-scoped.html": [
-      "b1cec4e4ef2d7b19b5696b315d7da753b099a90c",
+      "0403aabb8e7f1b74e91e55408cef3e51d3683b71",
       [
        null,
        {}
@@ -532062,7 +532062,7 @@
        ]
       ],
       "container-name-tree-scoped.html": [
-       "48e5ab03f4ee6d9260e3011ec3e81ad7633d22d0",
+       "7497398a28493756f5f31e5a020d9d5f2af669eb",
        [
         null,
         {}
@@ -545310,28 +545310,28 @@
       ]
      ],
      "function-shadow-animations.html": [
-      "c0acebbaebb5c27f03084c65b6b37dc837db3efa",
+      "4462df57aa4fe5d74461ec7794495ff3a5e70a95",
       [
        null,
        {}
       ]
      ],
      "function-shadow-cache.html": [
-      "300eebf622d0cdc1f30e84437ef7dd89f546df15",
+      "b3e96e21cfdd0182569ed93b6b8f9f3347d14bf7",
       [
        null,
        {}
       ]
      ],
      "function-shadow-container.html": [
-      "ee01897aea4c75c9460fe14b20b05755de9b712c",
+      "f8d307db320229eab357b06855c6c0d7c2f70eb0",
       [
        null,
        {}
       ]
      ],
      "function-shadow.html": [
-      "b9db932b29bd994be73932976a11ae654570f9d2",
+      "c43e4712767221960147872d5d7a5237def9a277",
       [
        null,
        {}
@@ -545457,7 +545457,7 @@
       ]
      ],
      "mixin-shadow-dom.html": [
-      "8ad93f240be86a6b958d9693ddaeff19eb70cef3",
+      "f6738e10b2d444b6cfee021b0128fa9b3b04a69a",
       [
        null,
        {}
@@ -547972,7 +547972,7 @@
       ]
      ],
      "backdrop-tree-abiding-slotted.html": [
-      "057b484e2629e1617c44e8bf24555f9d22b9f564",
+      "b15ad8fb946321e5af9275d059cbcf2ac628a67a",
       [
        null,
        {}
@@ -549925,349 +549925,6 @@
       ]
      ]
     },
-    "css-scoping": {
-     "css-scoping-shadow-dynamic-remove-style-detached.html": [
-      "c8c9eadc8723c700cd8f230a0fca88ab84aa912f",
-      [
-       null,
-       {}
-      ]
-     ],
-     "font-face-001.html": [
-      "4496786449f7fa63f7c437ea2ae43cf7df3b7525",
-      [
-       null,
-       {}
-      ]
-     ],
-     "font-face-002.html": [
-      "3a20d0b808892db1f4dea21936bcd50e11f3df8f",
-      [
-       null,
-       {}
-      ]
-     ],
-     "font-face-003.html": [
-      "4e8d8ff482d49e0ccfaf441f0d70829a3261269a",
-      [
-       null,
-       {}
-      ]
-     ],
-     "font-face-004.html": [
-      "f68e70994fc2af078e92fa221374cd72da133f2e",
-      [
-       null,
-       {}
-      ]
-     ],
-     "font-face-005.html": [
-      "de102f253e60f3fc2e62e68a3fa3c574a56b5d7c",
-      [
-       null,
-       {}
-      ]
-     ],
-     "font-face-006.html": [
-      "e72d4ec2aa72a84d3394cea05295da8de7e9b1ad",
-      [
-       null,
-       {}
-      ]
-     ],
-     "font-face-007.html": [
-      "c644a5498673b5bea3a013cae049f3db49f6ae25",
-      [
-       null,
-       {}
-      ]
-     ],
-     "font-face-008.html": [
-      "52c7869f9f8d48a3a093d20f74dd7e66805f6373",
-      [
-       null,
-       {}
-      ]
-     ],
-     "font-face-009.html": [
-      "4e08162dcdbacb5f92a9c998e91e29d35f07d539",
-      [
-       null,
-       {}
-      ]
-     ],
-     "has-slotted-changing-001.html": [
-      "5c6cce72bb7ccd9cd9b78a76bd83e4b61083adc5",
-      [
-       null,
-       {
-        "testdriver": true
-       }
-      ]
-     ],
-     "has-slotted-changing-002.html": [
-      "98c15f30c8f0968316331af9cad7521d3e02adb9",
-      [
-       null,
-       {
-        "testdriver": true
-       }
-      ]
-     ],
-     "has-slotted-functional-changing-001.tentative.html": [
-      "858a8e5abb75902048c3a343df71eed296c3b975",
-      [
-       null,
-       {
-        "testdriver": true
-       }
-      ]
-     ],
-     "has-slotted-functional-changing-002.tentative.html": [
-      "76b726a0a4fcc26bab56cf60803b263c042466c2",
-      [
-       null,
-       {
-        "testdriver": true
-       }
-      ]
-     ],
-     "has-slotted-functional-changing-003.tentative.html": [
-      "0b1d710d770d300fca10483e9840de2c6aedd398",
-      [
-       null,
-       {
-        "testdriver": true
-       }
-      ]
-     ],
-     "has-slotted-functional-changing-004.tentative.html": [
-      "f4fd54f3d487af230764b596298833af29ee3ee1",
-      [
-       null,
-       {
-        "testdriver": true
-       }
-      ]
-     ],
-     "has-slotted-manual-assignment.html": [
-      "02be3861ead826914737aad9deabb3bad43eb416",
-      [
-       null,
-       {}
-      ]
-     ],
-     "has-slotted-query-selector.html": [
-      "88da744a67bab436dcbda3b1c4545d45d1b5848c",
-      [
-       null,
-       {}
-      ]
-     ],
-     "host-context-parsing.html": [
-      "56055ece63733e8c58c6add661566572356d67aa",
-      [
-       null,
-       {}
-      ]
-     ],
-     "host-descendant-invalidation.html": [
-      "61ed4bbfc704d94efb29527db8239ee1563c9802",
-      [
-       null,
-       {}
-      ]
-     ],
-     "host-dom-001.html": [
-      "fff0112b1e7d616e7f86e2356a6983e0444c4235",
-      [
-       null,
-       {}
-      ]
-     ],
-     "host-functional-descendant-invalidation.html": [
-      "b9f1329a95d2f145a6990dc87a568f75cfd73caa",
-      [
-       null,
-       {}
-      ]
-     ],
-     "host-in-host-context-selector.html": [
-      "5976b8b5cc4a34fd5bb0f3c3915167fe6e4ed08a",
-      [
-       null,
-       {}
-      ]
-     ],
-     "host-in-host-selector.html": [
-      "2379d170b8f9611c07e381edc3bc8a042754e71f",
-      [
-       null,
-       {}
-      ]
-     ],
-     "host-is-featureless.html": [
-      "fcbff34ac1a8eb34ba4ed12b90448bbf14b10b15",
-      [
-       null,
-       {}
-      ]
-     ],
-     "host-parsing.html": [
-      "139433af483a94a43c70a7f429a221f759d0c8a7",
-      [
-       null,
-       {}
-      ]
-     ],
-     "keyframes-001.html": [
-      "56f0f32dcf901ec53b6465e756f25b466e4f2f7f",
-      [
-       null,
-       {}
-      ]
-     ],
-     "keyframes-002.html": [
-      "347adcb0f525e95b27e09d9101e53adc76595875",
-      [
-       null,
-       {}
-      ]
-     ],
-     "keyframes-003.html": [
-      "2e1d799bd0d04d25a2e8391142cac48f268eeed6",
-      [
-       null,
-       {}
-      ]
-     ],
-     "keyframes-004.html": [
-      "2dee8c2e64083d517c3a5c7c13a543c09c32a60e",
-      [
-       null,
-       {}
-      ]
-     ],
-     "keyframes-005.html": [
-      "d9026d2f6aa7042ada567f866e64ab4366157843",
-      [
-       null,
-       {}
-      ]
-     ],
-     "keyframes-006.html": [
-      "79c39a14ac18ed455ee8868158001e5cb77a2c65",
-      [
-       null,
-       {}
-      ]
-     ],
-     "scope-pseudo-in-shadow.html": [
-      "ca8720d975f1cc2db82342989f88aceb3a5e6818",
-      [
-       null,
-       {}
-      ]
-     ],
-     "shadow-cascade-order-001.html": [
-      "59b71b0ee105bba69d68d8535832538f01a39e07",
-      [
-       null,
-       {}
-      ]
-     ],
-     "shadow-host-removal-invalidation.html": [
-      "6daa635fa623a42a9900a946280a6f997a737ada",
-      [
-       null,
-       {}
-      ]
-     ],
-     "shadow-host-style-sharing.html": [
-      "ba6b8ebd3b453d0677e07c4176873f70c5232eb2",
-      [
-       null,
-       {}
-      ]
-     ],
-     "shadow-multiple-links.html": [
-      "d1c4fd9eb7ed7595d5f30b01777b4f1c15f242ba",
-      [
-       null,
-       {}
-      ]
-     ],
-     "shadow-reassign-dynamic-003.html": [
-      "bc6392176eb58acff55b740fbd4e9f6321982d91",
-      [
-       null,
-       {}
-      ]
-     ],
-     "shadow-shared-style-cache-001.html": [
-      "e80b4d1c42aaa2337715b7a70260ddc3f3e36812",
-      [
-       null,
-       {}
-      ]
-     ],
-     "slot-non-html-display-value.html": [
-      "2f56254a7d8995550e3d6f96de83e1584c045ed2",
-      [
-       null,
-       {}
-      ]
-     ],
-     "slotted-invalidation.html": [
-      "f8471062e1d0b222e5b3a165f35e6252f990a1c2",
-      [
-       null,
-       {}
-      ]
-     ],
-     "slotted-link.html": [
-      "c06c96143ba0d478940fb54208d241adb4f6ee8b",
-      [
-       null,
-       {}
-      ]
-     ],
-     "slotted-matches.html": [
-      "1a582fe98d3d6bbd13a66869af151d614cdb1165",
-      [
-       null,
-       {}
-      ]
-     ],
-     "slotted-nested.html": [
-      "c7139fea4c280585197db5bd432931bcf53c2e53",
-      [
-       null,
-       {}
-      ]
-     ],
-     "slotted-parsing.html": [
-      "8a5851c598e9155e9824849b061f2ecc35db8494",
-      [
-       null,
-       {}
-      ]
-     ],
-     "slotted-slot.html": [
-      "1f4aa75ae60ec5ee5f6863aace8678584e4e6934",
-      [
-       null,
-       {}
-      ]
-     ],
-     "stylesheet-title-002.html": [
-      "2843ada3eead2526e80797e9634841a0a12fa94f",
-      [
-       null,
-       {}
-      ]
-     ]
-    },
     "css-scroll-anchoring": {
      "abspos-containing-block-outside-scroller.html": [
       "76a4952383e2a99a704b8527b664f0ca506fb3eb",
@@ -552062,185 +551719,78 @@
      ]
     },
     "css-shadow": {
-     "idlharness.html": [
-      "4efaf31ce0adc31d38e60384e113a5034dbfbdbc",
-      [
-       null,
-       {}
-      ]
-     ]
-    },
-    "css-shadow-parts": {
-     "all-hosts.html": [
-      "fe1bc92107491b46b7c1f215064c37ca3e3a867b",
+     "css-scoping-shadow-dynamic-remove-style-detached.html": [
+      "f89002ad079a9a2c364d3ce7d6fde779aabc21e1",
       [
        null,
        {}
       ]
      ],
-     "both-part-and-exportparts.html": [
-      "6cd945c6c0770a7c70e9a56252b646ad41a26052",
+     "font-face-001.html": [
+      "d58276c8b7793156c2a40f73a2fae628089898e0",
       [
        null,
        {}
       ]
      ],
-     "chaining-invalid-selector.html": [
-      "d030cd8d844e9c2bcc5be2508e0e302cf192283c",
+     "font-face-002.html": [
+      "b7743d487022690f69a8032b83f0f840beaea73b",
       [
        null,
        {}
       ]
      ],
-     "complex-matching.html": [
-      "a09a3180bddd3ef0f544dd701f3e701a9c195c84",
+     "font-face-003.html": [
+      "6edbf451f78ab2a1e63547689408f2d7a2324ab7",
       [
        null,
        {}
       ]
      ],
-     "complex-non-matching.html": [
-      "77740e511d093ea096a4ef43e2849f1b725d8e3a",
+     "font-face-004.html": [
+      "bcd7d2d5cdb538a93404d6ad22d912702929d1f2",
       [
        null,
        {}
       ]
      ],
-     "different-host.html": [
-      "4382dca5feaaecdf462c8ff5e15a5252e348527d",
+     "font-face-005.html": [
+      "351caec58e957895b1add520f53e3f74bf293cbf",
       [
        null,
        {}
       ]
      ],
-     "double-forward.html": [
-      "37b7ce8dd50adfec41d58d585d07797f51c4c148",
+     "font-face-006.html": [
+      "90b48b15ab210f6021dd199da55dc1b19580d7fe",
       [
        null,
        {}
       ]
      ],
-     "exportparts-multiple.html": [
-      "a0d9dc646191c63bb9ba37255adab064ea0b81df",
+     "font-face-007.html": [
+      "d59885844cf99470d6e0449ec21486150475853a",
       [
        null,
        {}
       ]
      ],
-     "grouping-with-checked.html": [
-      "bc555d66385e8b7da12086c745fd18c1e5ee13ae",
+     "font-face-008.html": [
+      "9fa18aa8d578b0ca67f89b54b9ab17c81c634c83",
       [
        null,
        {}
       ]
      ],
-     "grouping-with-disabled.html": [
-      "b01b0797bcf2b61b4cbe716688f8efcffa2ee2ed",
+     "font-face-009.html": [
+      "b53d17e44c2aaa0a277fdc41c40bf554985900b5",
       [
        null,
        {}
       ]
      ],
-     "host-part-001.html": [
-      "39782dc231a89f4860b07ef8433ec13f9f9c0954",
-      [
-       null,
-       {}
-      ]
-     ],
-     "host-part-002.html": [
-      "cbc84248203337d5a1703008a350e84e06503330",
-      [
-       null,
-       {}
-      ]
-     ],
-     "host-part-003.html": [
-      "1a59def4da0a200f8bf4edaccbb710953115a3be",
-      [
-       null,
-       {}
-      ]
-     ],
-     "host-part-nesting.html": [
-      "0933251fbe8fc5b70b07aa14757c512dc1c340e8",
-      [
-       null,
-       {}
-      ]
-     ],
-     "host-stylesheet.html": [
-      "477c75d1d8687ac4f16329025f671854bb24d773",
-      [
-       null,
-       {}
-      ]
-     ],
-     "inner-host.html": [
-      "a4f290f119bc4c31ba3ddd888a59bc88d85ad8c9",
-      [
-       null,
-       {}
-      ]
-     ],
-     "interaction-with-pseudo-elements.html": [
-      "95a36a6d5ac7804b1df19ae80e6c505a5b721665",
-      [
-       null,
-       {}
-      ]
-     ],
-     "invalidation-change-exportparts-forward.html": [
-      "180c735bf561278742b695978238f8286eafafe6",
-      [
-       null,
-       {}
-      ]
-     ],
-     "invalidation-change-part-name-forward.html": [
-      "5dffb72aab0ad5e2b722f3f116fef762ec6ec2f4",
-      [
-       null,
-       {}
-      ]
-     ],
-     "invalidation-change-part-name-idl-domtokenlist.html": [
-      "2caed9097847a1ec1513cb56112111b8b3cef3c2",
-      [
-       null,
-       {}
-      ]
-     ],
-     "invalidation-change-part-name-idl-setter.html": [
-      "c9dc594087575ec82565da6911140f7858110183",
-      [
-       null,
-       {}
-      ]
-     ],
-     "invalidation-change-part-name.html": [
-      "abcb2d54562176a0bf8cac3cba16d54e259eb4ab",
-      [
-       null,
-       {}
-      ]
-     ],
-     "invalidation-complex-selector-forward.html": [
-      "a9d7982499a8fb3a50bc4a18fe267220fa2ab7b5",
-      [
-       null,
-       {}
-      ]
-     ],
-     "invalidation-complex-selector.html": [
-      "ab1f10a2583a6b1075342488f322e7723e4fdfbf",
-      [
-       null,
-       {}
-      ]
-     ],
-     "invalidation-part-pseudo.html": [
-      "eaf2d955ea634f22d248f85d778ff20401358c2b",
+     "has-slotted-changing-001.html": [
+      "5c6cce72bb7ccd9cd9b78a76bd83e4b61083adc5",
       [
        null,
        {
@@ -552248,113 +551798,561 @@
        }
       ]
      ],
-     "multiple-parts.html": [
-      "cdbaafe412a4dd7f0281bc2fe616fd9800d0ead8",
+     "has-slotted-changing-002.html": [
+      "98c15f30c8f0968316331af9cad7521d3e02adb9",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "has-slotted-functional-changing-001.tentative.html": [
+      "858a8e5abb75902048c3a343df71eed296c3b975",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "has-slotted-functional-changing-002.tentative.html": [
+      "76b726a0a4fcc26bab56cf60803b263c042466c2",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "has-slotted-functional-changing-003.tentative.html": [
+      "0b1d710d770d300fca10483e9840de2c6aedd398",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "has-slotted-functional-changing-004.tentative.html": [
+      "f4fd54f3d487af230764b596298833af29ee3ee1",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "has-slotted-manual-assignment.html": [
+      "02be3861ead826914737aad9deabb3bad43eb416",
       [
        null,
        {}
       ]
      ],
-     "multiple-scopes.html": [
-      "41ffbcf9a37b261204469059d32018cfe397b782",
+     "has-slotted-query-selector.html": [
+      "88da744a67bab436dcbda3b1c4545d45d1b5848c",
       [
        null,
        {}
       ]
      ],
-     "part-mutation-pseudo.html": [
-      "67085ee2d67c86cdb77dd5f5bb1211302c7b49a6",
+     "host-context-parsing.html": [
+      "83650c68631bdbde5bf343d6dcab427983a0e805",
       [
        null,
        {}
       ]
      ],
-     "part-name-idl.html": [
-      "d1a2f421b17085ef609e6a0fdfe0cb0c7cd11683",
+     "host-descendant-invalidation.html": [
+      "3b95c2395d4b7a8a8c7027c5939058688d6646f2",
       [
        null,
        {}
       ]
      ],
-     "precedence-part-vs-part.html": [
-      "5a4fbfe75bc67675490bf59a6562b7a6eaa575d2",
+     "host-dom-001.html": [
+      "927d0e421180331c2a4920d38dcfaebd68b7a64f",
       [
        null,
        {}
       ]
      ],
-     "pseudo-classes-after-part.html": [
-      "57aeb195644981832911f7c54708803e71238eaa",
+     "host-functional-descendant-invalidation.html": [
+      "8269ce1a98a5af4a1fdf68a0775131f72b3661f8",
       [
        null,
        {}
       ]
      ],
-     "pseudo-elements-after-part.html": [
-      "bd3c098703886df51cba649c954e52d8eaa50468",
+     "host-in-host-context-selector.html": [
+      "426f9673622616be5bd90210eb2b4a144369fb63",
       [
        null,
        {}
       ]
      ],
-     "serialization.html": [
-      "1c9b1eaa0e3c3be5f66a3b20a69efb3500193fd0",
+     "host-in-host-selector.html": [
+      "0ae7c759e6fd16349044e90ff76ab16f5d9c4a08",
       [
        null,
        {}
       ]
      ],
-     "simple-forward-shorthand.html": [
-      "05c027e7674f8d2fd8f1077af3bbdf01ddeda8a5",
+     "host-is-featureless.html": [
+      "543e78fc8e41c86786f7eed7a322ea227f34d1e3",
       [
        null,
        {}
       ]
      ],
-     "simple-forward.html": [
-      "45c9d51b34e09adcfd2928804cc9d5af152e0692",
+     "host-parsing.html": [
+      "ef7f19a1549a587c74cee81997326b5115aaac3a",
       [
        null,
        {}
       ]
      ],
-     "simple-important-important.html": [
-      "82ad48b1960fc6180615049e3efcf220654a0571",
+     "idlharness.html": [
+      "4efaf31ce0adc31d38e60384e113a5034dbfbdbc",
       [
        null,
        {}
       ]
      ],
-     "simple-important-inline.html": [
-      "1cebc014225ff4018533f75aba2dcb1f77916fe6",
+     "keyframes-001.html": [
+      "d01f763d47d1b30c3025f72955126707708a438d",
       [
        null,
        {}
       ]
      ],
-     "simple-important.html": [
-      "cb99113e2b32eead8231a07fe82c77d947234599",
+     "keyframes-002.html": [
+      "d34d600d78dd1bdb8daa6b4a1a6e52cc6df77f68",
       [
        null,
        {}
       ]
      ],
-     "simple-inline.html": [
-      "0e6211e5672d90fb814057a027f411e84b0f6956",
+     "keyframes-003.html": [
+      "ace5f23081c3d5f71ba3435712aa2b91ef3da259",
       [
        null,
        {}
       ]
      ],
-     "simple.html": [
-      "1b4ab10f77665d4c82c8dab9530b6eadd2ec194c",
+     "keyframes-004.html": [
+      "158a18a9699bc76a74fde50d779ea3786817b370",
       [
        null,
        {}
       ]
      ],
-     "style-sharing.html": [
-      "f4549afc55ccd1522f2ae7f30b0748e5ccaa7d21",
+     "keyframes-005.html": [
+      "1537d5724e0121c93795d82ce25429a57366822e",
+      [
+       null,
+       {}
+      ]
+     ],
+     "keyframes-006.html": [
+      "46d089546a9f0e7c7c4f1335e22432b59fa0c478",
+      [
+       null,
+       {}
+      ]
+     ],
+     "part": {
+      "all-hosts.html": [
+       "fe1bc92107491b46b7c1f215064c37ca3e3a867b",
+       [
+        null,
+        {}
+       ]
+      ],
+      "both-part-and-exportparts.html": [
+       "6cd945c6c0770a7c70e9a56252b646ad41a26052",
+       [
+        null,
+        {}
+       ]
+      ],
+      "chaining-invalid-selector.html": [
+       "d030cd8d844e9c2bcc5be2508e0e302cf192283c",
+       [
+        null,
+        {}
+       ]
+      ],
+      "complex-matching.html": [
+       "a09a3180bddd3ef0f544dd701f3e701a9c195c84",
+       [
+        null,
+        {}
+       ]
+      ],
+      "complex-non-matching.html": [
+       "77740e511d093ea096a4ef43e2849f1b725d8e3a",
+       [
+        null,
+        {}
+       ]
+      ],
+      "different-host.html": [
+       "4382dca5feaaecdf462c8ff5e15a5252e348527d",
+       [
+        null,
+        {}
+       ]
+      ],
+      "double-forward.html": [
+       "37b7ce8dd50adfec41d58d585d07797f51c4c148",
+       [
+        null,
+        {}
+       ]
+      ],
+      "exportparts-multiple.html": [
+       "a0d9dc646191c63bb9ba37255adab064ea0b81df",
+       [
+        null,
+        {}
+       ]
+      ],
+      "grouping-with-checked.html": [
+       "bc555d66385e8b7da12086c745fd18c1e5ee13ae",
+       [
+        null,
+        {}
+       ]
+      ],
+      "grouping-with-disabled.html": [
+       "b01b0797bcf2b61b4cbe716688f8efcffa2ee2ed",
+       [
+        null,
+        {}
+       ]
+      ],
+      "host-part-001.html": [
+       "5ab7a58e32097943fd0bbced48636ab6415104d8",
+       [
+        null,
+        {}
+       ]
+      ],
+      "host-part-002.html": [
+       "965b7c263e590e6f780daca98827c9a9f347a66d",
+       [
+        null,
+        {}
+       ]
+      ],
+      "host-part-003.html": [
+       "675b21f4537e239d92303bd9c533a47f9cee9264",
+       [
+        null,
+        {}
+       ]
+      ],
+      "host-part-nesting.html": [
+       "e2723b10d01ddf3b88035dcb7f16e148cba2f93b",
+       [
+        null,
+        {}
+       ]
+      ],
+      "host-stylesheet.html": [
+       "477c75d1d8687ac4f16329025f671854bb24d773",
+       [
+        null,
+        {}
+       ]
+      ],
+      "inner-host.html": [
+       "a4f290f119bc4c31ba3ddd888a59bc88d85ad8c9",
+       [
+        null,
+        {}
+       ]
+      ],
+      "interaction-with-pseudo-elements.html": [
+       "95a36a6d5ac7804b1df19ae80e6c505a5b721665",
+       [
+        null,
+        {}
+       ]
+      ],
+      "invalidation-change-exportparts-forward.html": [
+       "180c735bf561278742b695978238f8286eafafe6",
+       [
+        null,
+        {}
+       ]
+      ],
+      "invalidation-change-part-name-forward.html": [
+       "5dffb72aab0ad5e2b722f3f116fef762ec6ec2f4",
+       [
+        null,
+        {}
+       ]
+      ],
+      "invalidation-change-part-name-idl-domtokenlist.html": [
+       "2caed9097847a1ec1513cb56112111b8b3cef3c2",
+       [
+        null,
+        {}
+       ]
+      ],
+      "invalidation-change-part-name-idl-setter.html": [
+       "c9dc594087575ec82565da6911140f7858110183",
+       [
+        null,
+        {}
+       ]
+      ],
+      "invalidation-change-part-name.html": [
+       "abcb2d54562176a0bf8cac3cba16d54e259eb4ab",
+       [
+        null,
+        {}
+       ]
+      ],
+      "invalidation-complex-selector-forward.html": [
+       "a9d7982499a8fb3a50bc4a18fe267220fa2ab7b5",
+       [
+        null,
+        {}
+       ]
+      ],
+      "invalidation-complex-selector.html": [
+       "ab1f10a2583a6b1075342488f322e7723e4fdfbf",
+       [
+        null,
+        {}
+       ]
+      ],
+      "invalidation-part-pseudo.html": [
+       "eaf2d955ea634f22d248f85d778ff20401358c2b",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "multiple-parts.html": [
+       "cdbaafe412a4dd7f0281bc2fe616fd9800d0ead8",
+       [
+        null,
+        {}
+       ]
+      ],
+      "multiple-scopes.html": [
+       "41ffbcf9a37b261204469059d32018cfe397b782",
+       [
+        null,
+        {}
+       ]
+      ],
+      "part-mutation-pseudo.html": [
+       "67085ee2d67c86cdb77dd5f5bb1211302c7b49a6",
+       [
+        null,
+        {}
+       ]
+      ],
+      "part-name-idl.html": [
+       "d1a2f421b17085ef609e6a0fdfe0cb0c7cd11683",
+       [
+        null,
+        {}
+       ]
+      ],
+      "precedence-part-vs-part.html": [
+       "5a4fbfe75bc67675490bf59a6562b7a6eaa575d2",
+       [
+        null,
+        {}
+       ]
+      ],
+      "pseudo-classes-after-part.html": [
+       "4ccfeadd3a3829e4f06a0996a5fdeffbe010aaa5",
+       [
+        null,
+        {}
+       ]
+      ],
+      "pseudo-elements-after-part.html": [
+       "d51a239e509057e3ddca0d741f0ac2cbe445ff43",
+       [
+        null,
+        {}
+       ]
+      ],
+      "serialization.html": [
+       "1c9b1eaa0e3c3be5f66a3b20a69efb3500193fd0",
+       [
+        null,
+        {}
+       ]
+      ],
+      "simple-forward-shorthand.html": [
+       "05c027e7674f8d2fd8f1077af3bbdf01ddeda8a5",
+       [
+        null,
+        {}
+       ]
+      ],
+      "simple-forward.html": [
+       "45c9d51b34e09adcfd2928804cc9d5af152e0692",
+       [
+        null,
+        {}
+       ]
+      ],
+      "simple-important-important.html": [
+       "82ad48b1960fc6180615049e3efcf220654a0571",
+       [
+        null,
+        {}
+       ]
+      ],
+      "simple-important-inline.html": [
+       "1cebc014225ff4018533f75aba2dcb1f77916fe6",
+       [
+        null,
+        {}
+       ]
+      ],
+      "simple-important.html": [
+       "cb99113e2b32eead8231a07fe82c77d947234599",
+       [
+        null,
+        {}
+       ]
+      ],
+      "simple-inline.html": [
+       "0e6211e5672d90fb814057a027f411e84b0f6956",
+       [
+        null,
+        {}
+       ]
+      ],
+      "simple.html": [
+       "1b4ab10f77665d4c82c8dab9530b6eadd2ec194c",
+       [
+        null,
+        {}
+       ]
+      ],
+      "style-sharing.html": [
+       "f4549afc55ccd1522f2ae7f30b0748e5ccaa7d21",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
+     "scope-pseudo-in-shadow.html": [
+      "5c2733af7630eeb21ddff481d596f4cb896cdc53",
+      [
+       null,
+       {}
+      ]
+     ],
+     "shadow-cascade-order-001.html": [
+      "0347952b532d6fd8c9c9100f7c3c4fc3a48d9842",
+      [
+       null,
+       {}
+      ]
+     ],
+     "shadow-host-removal-invalidation.html": [
+      "6707c91682fd891f460cec5a0b207aadaa92697a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "shadow-host-style-sharing.html": [
+      "79bc41aa1746232665d8cf5c36d142694ba1f279",
+      [
+       null,
+       {}
+      ]
+     ],
+     "shadow-multiple-links.html": [
+      "71b9ea9433487f893253eac21d62f5f9955cc852",
+      [
+       null,
+       {}
+      ]
+     ],
+     "shadow-reassign-dynamic-003.html": [
+      "30318e9f1b55b4a6d9762829b08d716262120af1",
+      [
+       null,
+       {}
+      ]
+     ],
+     "shadow-shared-style-cache-001.html": [
+      "15eeda66e111c9cfcf90d3d651fbaeadab37958d",
+      [
+       null,
+       {}
+      ]
+     ],
+     "slot-non-html-display-value.html": [
+      "c49ef8b8b48cb223cf0d9f34695bd9926f656f99",
+      [
+       null,
+       {}
+      ]
+     ],
+     "slotted-invalidation.html": [
+      "feff45c609649e9fa9696ef603bf45987d66d1b3",
+      [
+       null,
+       {}
+      ]
+     ],
+     "slotted-link.html": [
+      "46d0e8e0a987c58073c1ab30aede55d1e23e285d",
+      [
+       null,
+       {}
+      ]
+     ],
+     "slotted-matches.html": [
+      "e3789fa11f0e17091d778a0b3d2c8b6fbfd601cb",
+      [
+       null,
+       {}
+      ]
+     ],
+     "slotted-nested.html": [
+      "04e1e71a26537364b71bfad1a8934ff7f726ac88",
+      [
+       null,
+       {}
+      ]
+     ],
+     "slotted-parsing.html": [
+      "6c1bf524ef00820cb56590ac304b9500fc42e009",
+      [
+       null,
+       {}
+      ]
+     ],
+     "slotted-slot.html": [
+      "926ce3f5b0b4610a5b89a6b2d45ea6356e1ee8dd",
+      [
+       null,
+       {}
+      ]
+     ],
+     "stylesheet-title-002.html": [
+      "2843ada3eead2526e80797e9634841a0a12fa94f",
       [
        null,
        {}
@@ -567976,7 +567974,7 @@
       ]
      ],
      "selectorText-modification-restyle-002.html": [
-      "a6b37c2cf0a62228f9bac52eea3f21cbed46db10",
+      "51b1c2a3480d9c3327fa4a04ec00ed373e778454",
       [
        null,
        {}
@@ -572156,7 +572154,7 @@
       ]
      ],
      "is-specificity-shadow.html": [
-      "af039955eb7c4fa1dff8bfa425775184a911a671",
+      "b97509ddb561c5cc18a7255024cc0834303d8c4d",
       [
        null,
        {}
@@ -572198,7 +572196,7 @@
       ]
      ],
      "is-where-shadow.html": [
-      "1b25bb63f168a5da7ba3a9d9b871ebda9c9c032e",
+      "3116bd7040b209fc8b03e9b6d3c8a58f732a6892",
       [
        null,
        {}
@@ -572452,7 +572450,7 @@
        ]
       ],
       "parse-slotted.html": [
-       "47fafdf2b35d6f55098ed7464fea39d25d956694",
+       "bcc4bc2cb72c04379a364f35d9e24d9e5cc4a8ed",
        [
         null,
         {}
@@ -879837,9 +879835,9 @@
       ]
      ]
     },
-    "css-scoping": {
+    "css-shadow": {
      "slotted-text-with-flex.html": [
-      "9f83e54c215bc4a881b45b4a1515d1defea9e816",
+      "aa98c31373664039cc5817f325e98fe9bee10f79",
       [
        null,
        {}
