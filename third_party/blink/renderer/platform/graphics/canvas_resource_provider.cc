@@ -1089,20 +1089,9 @@ Canvas2DResourceProviderBitmap::Create(gfx::Size size,
                                          delegate));
   if (provider->IsValid()) {
     if (should_initialize ==
-        CanvasResourceProvider::ShouldInitialize::kCallClear) {
-      // Instead of adding these commands to our deferred queue, we'll
-      // send them directly through to Skia so that they're not replayed for
-      // printing operations. See crbug.com/1003114
-      if (alpha_type == kOpaque_SkAlphaType) {
-        provider->Canvas().clear(SkColors::kBlack);
-      } else {
-        provider->Canvas().clear(SkColors::kTransparent);
-      }
-
-      provider->FlushCanvas(FlushReason::kClear);
-    }
-
-    // The above operations cannot turn a CRPBitmap invalid.
+        CanvasResourceProvider::ShouldInitialize::kCallClear)
+      provider->Clear();
+    // The Clear() call cannot turn a CRPBitmap invalid.
     CHECK(provider->IsValid());
     return provider;
   }
@@ -1132,20 +1121,9 @@ CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
       delegate);
   if (provider->IsValid()) {
     if (should_initialize ==
-        CanvasResourceProvider::ShouldInitialize::kCallClear) {
-      // Instead of adding these commands to our deferred queue, we'll
-      // send them directly through to Skia so that they're not replayed for
-      // printing operations. See crbug.com/1003114
-      if (alpha_type == kOpaque_SkAlphaType) {
-        provider->Canvas().clear(SkColors::kBlack);
-      } else {
-        provider->Canvas().clear(SkColors::kTransparent);
-      }
-
-      provider->FlushCanvas(FlushReason::kClear);
-    }
-
-    // The above operations cannot turn a CRPBitmap invalid.
+        CanvasResourceProvider::ShouldInitialize::kCallClear)
+      provider->Clear();
+    // The Clear() call cannot turn a SW CRPSI invalid.
     CHECK(provider->IsValid());
     return provider;
   }
@@ -1268,18 +1246,8 @@ CanvasResourceProvider::CreateSharedImageProvider(
       is_accelerated, shared_image_usage_flags, delegate);
   if (provider->IsValid()) {
     if (should_initialize ==
-        CanvasResourceProvider::ShouldInitialize::kCallClear) {
-      // Instead of adding these commands to our deferred queue, we'll
-      // send them directly through to Skia so that they're not replayed for
-      // printing operations. See crbug.com/1003114
-      if (alpha_type == kOpaque_SkAlphaType) {
-        provider->Canvas().clear(SkColors::kBlack);
-      } else {
-        provider->Canvas().clear(SkColors::kTransparent);
-      }
-
-      provider->FlushCanvas(FlushReason::kClear);
-    }
+        CanvasResourceProvider::ShouldInitialize::kCallClear)
+      provider->Clear();
 
     // Check whether an error occurred while flushing the recording.
     if (!provider->IsValid()) {
@@ -1731,6 +1699,22 @@ bool CanvasResourceProvider::UnacceleratedWritePixels(
     last_recording_ = std::nullopt;
   }
   return wrote_pixels;
+}
+
+void CanvasResourceProvider::Clear() {
+  // Clear the background transparent or opaque, as required. This should only
+  // be called when a new resource provider is created to ensure that we're
+  // not leaking data or displaying bad pixels (in the case of kOpaque
+  // canvases). Instead of adding these commands to our deferred queue, we'll
+  // send them directly through to Skia so that they're not replayed for
+  // printing operations. See crbug.com/1003114
+  DCHECK(IsValid());
+  if (info_.alphaType() == kOpaque_SkAlphaType)
+    Canvas().clear(SkColors::kBlack);
+  else
+    Canvas().clear(SkColors::kTransparent);
+
+  FlushCanvas(FlushReason::kClear);
 }
 
 uint32_t CanvasResourceProvider::ContentUniqueID() const {
