@@ -174,7 +174,7 @@ bool SyncErrorInfoBarDelegate::Accept() {
       break;
   }
 
-  return false;
+  return true;
 }
 
 void SyncErrorInfoBarDelegate::InfoBarDismissed() {
