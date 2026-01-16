@@ -48,8 +48,14 @@ const TAG_TO_RM_TAG: Map<string, string> = new Map([
 ]);
 
 export interface ContentListener {
+  // Called when the current state changes between the different ContentTypes.
   onContentStateChange(): void;
+  // Called when the new content is determined to be a different page from
+  // before.
   onNewPageDrawn(): void;
+  // Called when any content on the page has changed. e.g. content is added or
+  // removed.
+  onContentChange(): void;
 }
 
 export enum ContentType {
@@ -181,6 +187,7 @@ export class ContentController {
     if (deletedNode) {
       this.nodeStore_.removeDomNode(deletedNode);
       deletedNode.remove();
+      this.listeners_.forEach(l => l.onContentChange());
     }
     const root = this.nodeStore_.getDomNode(chrome.readingMode.rootId);
     if (this.hasContent() && !root?.textContent) {
@@ -240,6 +247,7 @@ export class ContentController {
 
       this.setState(ContentType.HAS_CONTENT);
       this.updateReadAloudState(contentFragment);
+      this.listeners_.forEach(l => l.onContentChange());
       return contentFragment;
     }
     return null;
@@ -288,6 +296,7 @@ export class ContentController {
     this.loadImages();
     this.setState(ContentType.HAS_CONTENT);
     this.updateImages(shadowRoot);
+    this.listeners_.forEach(l => l.onContentChange());
 
     this.updateReadAloudState(node);
     return node;
@@ -542,13 +551,18 @@ export class ContentController {
     }
     // There is some strange issue where the HTML css application does not work
     // on canvases.
-    for (const canvas of shadowRoot.querySelectorAll('canvas')) {
+    const canvases = shadowRoot.querySelectorAll('canvas');
+    const figures = shadowRoot.querySelectorAll('figure');
+    for (const canvas of canvases) {
       canvas.style.display = imagesEnabled ? '' : 'none';
       this.markTextNodesHiddenIfImagesHidden_(canvas);
     }
-    for (const canvas of shadowRoot.querySelectorAll('figure')) {
+    for (const canvas of figures) {
       canvas.style.display = imagesEnabled ? '' : 'none';
       this.markTextNodesHiddenIfImagesHidden_(canvas);
+    }
+    if (canvases.length > 0 || figures.length > 0) {
+      this.listeners_.forEach(l => l.onContentChange());
     }
   }
 

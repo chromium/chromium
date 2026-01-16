@@ -372,9 +372,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
           getWordCount(wordCountContainer.textContent) :
           0;
       chrome.readingMode.onDistilled(wordCount);
-      requestAnimationFrame(() => {
-        this.onTextLocationsChange_();
-      });
     }
   }
 
@@ -461,6 +458,12 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   onNewPageDrawn(): void {
     this.$.containerScroller.scrollTop = 0;
+  }
+
+  onContentChange(): void {
+    requestAnimationFrame(() => {
+      this.onTextLocationsChange_();
+    });
   }
 
   onPlayingFromSelection(): void {

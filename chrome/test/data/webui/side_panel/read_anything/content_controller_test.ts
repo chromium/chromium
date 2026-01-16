@@ -27,6 +27,7 @@ suite('ContentController', () => {
   let listener: ContentListener;
   let receivedContentStateChange: boolean;
   let receivedNewPageDrawn: boolean;
+  let receivedContentChange: boolean;
 
   setup(() => {
     // Clearing the DOM should always be done first.
@@ -44,12 +45,16 @@ suite('ContentController', () => {
 
     receivedContentStateChange = false;
     receivedNewPageDrawn = false;
+    receivedContentChange = false;
     listener = {
       onContentStateChange() {
         receivedContentStateChange = true;
       },
       onNewPageDrawn() {
         receivedNewPageDrawn = true;
+      },
+      onContentChange() {
+        receivedContentChange = true;
       },
     };
     contentController.addListener(listener);
@@ -196,6 +201,18 @@ suite('ContentController', () => {
     assertTrue(contentController.isEmpty());
   });
 
+  test('onNodeWillBeDeleted notifies of new content', () => {
+    const id = 12;
+    chrome.readingMode.rootId = id;
+    const node = document.createTextNode('How it\'s done done done');
+    nodeStore.setDomNode(node, id);
+    contentController.setState(ContentType.HAS_CONTENT);
+
+    contentController.onNodeWillBeDeleted(id);
+
+    assertTrue(receivedContentChange);
+  });
+
   suite('updateContent', () => {
     const rootId = 29;
     let node: HTMLElement;
@@ -285,6 +302,16 @@ suite('ContentController', () => {
       contentController.updateContent();
 
       assertTrue(receivedNewPageDrawn);
+    });
+
+    test('notifies listeners of new content', () => {
+      readingMode.getHtmlTag = () => '';
+      readingMode.getTextContent = () => 'I go Rambo';
+      stubAnimationFrame();
+
+      contentController.updateContent();
+
+      assertTrue(receivedContentChange);
     });
 
     test('estimates words seen after draw', () => {
@@ -793,6 +820,7 @@ suite('ContentController', () => {
       assertEquals('none', figure.style.display);
       assertTrue(nodeStore.areNodesAllHidden(
           [ReadAloudNode.createFromAxNode(textId)!]));
+      assertTrue(receivedContentChange);
     });
 
     test('shows images and clears hidden nodes when enabled', async () => {
@@ -810,6 +838,7 @@ suite('ContentController', () => {
       assertEquals('', figure.style.display);
       assertFalse(nodeStore.areNodesAllHidden(
           [ReadAloudNode.createFromAxNode(textId)!]));
+      assertTrue(receivedContentChange);
     });
   });
 });
