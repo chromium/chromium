@@ -66,6 +66,7 @@
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/request_type.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "components/prefs/pref_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
@@ -483,6 +484,7 @@ ChromePermissionsClient::CreatePermissionUiSelectors(
 void ChromePermissionsClient::OnPromptResolved(
     const PermissionRequest* request,
     permissions::PermissionAction action,
+    const PromptOptions& prompt_options,
     PermissionPromptDisposition prompt_disposition,
     PermissionPromptDispositionReason prompt_disposition_reason,
     std::optional<QuietUiReason> quiet_ui_reason,
@@ -553,7 +555,7 @@ void ChromePermissionsClient::OnPromptResolved(
       std::make_optional(prompt_display_duration), /*is_post_prompt=*/true,
       web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().GetURL(),
       pepc_prompt_position, initial_permission_status, base::DoNothing(),
-      request->prompt_options());
+      prompt_options);
 }
 
 std::optional<bool>

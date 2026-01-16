@@ -20,6 +20,7 @@
 #include "components/permissions/permission_util.h"
 #include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "components/permissions/request_type.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/origin.h"
 
@@ -169,6 +170,7 @@ class PermissionsClient {
   virtual void OnPromptResolved(
       const PermissionRequest* request,
       PermissionAction action,
+      const PromptOptions& prompt_options,
       PermissionPromptDisposition prompt_disposition,
       PermissionPromptDispositionReason prompt_disposition_reason,
       std::optional<QuietUiReason> quiet_ui_reason,

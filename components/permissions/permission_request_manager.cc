@@ -1243,7 +1243,7 @@ void PermissionRequestManager::CurrentRequestsDecided(
             ? base::TimeDelta::Max()
             : base::Time::Now() - current_request_first_display_time_;
     PermissionsClient::Get()->OnPromptResolved(
-        request.get(), permission_action,
+        request.get(), permission_action, request->prompt_options(),
         DetermineCurrentRequestUIDisposition(),
         DetermineCurrentRequestUIDispositionReasonForUMA(), quiet_ui_reason,
         time_since_shown, current_request_pepc_prompt_position_,

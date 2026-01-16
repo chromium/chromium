@@ -89,6 +89,7 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
   void OnPromptResolved(
       const permissions::PermissionRequest* request,
       permissions::PermissionAction action,
+      const PromptOptions& prompt_options,
       permissions::PermissionPromptDisposition prompt_disposition,
       permissions::PermissionPromptDispositionReason prompt_disposition_reason,
       std::optional<QuietUiReason> quiet_ui_reason,
