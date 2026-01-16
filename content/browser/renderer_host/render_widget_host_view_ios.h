@@ -124,6 +124,7 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void CopyFromSurface(
       const gfx::Rect& src_rect,
       const gfx::Size& dst_size,
+      base::TimeDelta timeout,
       base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback)
       override;
   ui::FilteredGestureProvider* GetFilteredGestureProviderForTesting() override;

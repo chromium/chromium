@@ -134,6 +134,7 @@ void LensOverlayBlurLayerDelegate::FetchBackgroundImage() {
       /*src_rect=*/gfx::Rect(),
       /*output_size=*/
       gfx::Size(size.width() * quality, size.height() * quality),
+      base::TimeDelta(),
       base::BindOnce(&LensOverlayBlurLayerDelegate::UpdateBackgroundImage,
                      weak_factory_.GetWeakPtr()));
 }

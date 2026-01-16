@@ -333,7 +333,7 @@ void TabContextualizationController::CaptureScreenshot(
       std::move(callback));
 
   view->CopyFromSurface(
-      /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(),
+      /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(), base::TimeDelta(),
       base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
                          std::move(callback_wrapper)));
 }

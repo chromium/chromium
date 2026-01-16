@@ -4488,7 +4488,7 @@ bool CompareWebContentsOutputToReference(
   {
     base::RunLoop run_loop;
     rwh->GetView()->CopyFromSurface(
-        gfx::Rect(), gfx::Size(),
+        gfx::Rect(), gfx::Size(), base::TimeDelta(),
         base::BindLambdaForTesting([&](const content::CopyFromSurfaceResult&
                                            result) {
           ASSERT_TRUE(result.has_value());

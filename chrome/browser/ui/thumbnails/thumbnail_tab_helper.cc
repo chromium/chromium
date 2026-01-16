@@ -265,7 +265,7 @@ void ThumbnailTabHelper::CaptureThumbnailOnTabBackgrounded() {
       source_size, scale_factor, /* include_scrollbars_in_capture */ false);
 
   source_view->CopyFromSurface(
-      copy_info.copy_rect, copy_info.target_size,
+      copy_info.copy_rect, copy_info.target_size, base::TimeDelta(),
       base::BindOnce(&ThumbnailTabHelper::StoreThumbnailForTabSwitch,
                      weak_factory_for_thumbnail_on_tab_hidden_.GetWeakPtr(),
                      time_of_call));

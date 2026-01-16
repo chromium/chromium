@@ -805,7 +805,7 @@ void LensSearchContextualizationController::StartScreenshotFlow(
 
   // Side panel is now fully closed, take screenshot and open overlay.
   view->CopyFromSurface(
-      /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(),
+      /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(), base::TimeDelta(),
       base::BindPostTask(
           base::SequencedTaskRunner::GetCurrentDefault(),
           base::BindOnce(&LensSearchContextualizationController::
@@ -830,7 +830,7 @@ void LensSearchContextualizationController::CaptureScreenshot(
   }
 
   view->CopyFromSurface(
-      /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(),
+      /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(), base::TimeDelta(),
       base::BindPostTask(
           base::SequencedTaskRunner::GetCurrentDefault(),
           base::BindOnce(&LensSearchContextualizationController::

@@ -407,7 +407,7 @@ void PasswordProtectionRequestContent::CollectVisualFeatures() {
   visual_feature_start_time_ = base::TimeTicks::Now();
 
   view->CopyFromSurface(
-      gfx::Rect(), gfx::Size(),
+      gfx::Rect(), gfx::Size(), base::TimeDelta(),
       base::BindOnce(&PasswordProtectionRequestContent::OnScreenshotTaken,
                      weak_factory_.GetWeakPtr()));
 }

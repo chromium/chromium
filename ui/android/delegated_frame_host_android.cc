@@ -193,6 +193,7 @@ const viz::FrameSinkId& DelegatedFrameHostAndroid::GetFrameSinkId() const {
 void DelegatedFrameHostAndroid::CopyFromCompositingSurface(
     const gfx::Rect& src_subrect,
     const gfx::Size& output_size,
+    base::TimeDelta timeout,
     base::OnceCallback<void(
         const base::expected<viz::CopyOutputBitmapWithMetadata, std::string>&)>
         callback,
@@ -240,8 +241,8 @@ void DelegatedFrameHostAndroid::CopyFromCompositingSurface(
   viz::SetCopyOutputRequestResultSize(request.get(), src_subrect, output_size,
                                       surface_size_in_pixels_);
 
-  host_frame_sink_manager_->RequestCopyOfOutput(surface_id, std::move(request),
-                                                capture_exact_surface_id);
+  host_frame_sink_manager_->RequestCopyOfOutput(
+      surface_id, std::move(request), capture_exact_surface_id, timeout);
 }
 
 bool DelegatedFrameHostAndroid::CanCopyFromCompositingSurface() const {

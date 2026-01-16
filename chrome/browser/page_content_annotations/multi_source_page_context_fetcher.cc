@@ -416,7 +416,7 @@ class PageContextFetcher : public content::WebContentsObserver {
 
       view->CopyFromSurface(
           gfx::Rect(),  // Copy entire surface area.
-          GetScreenshotSize(view_size),
+          GetScreenshotSize(view_size), base::TimeDelta(),
           base::BindOnce(&PageContextFetcher::ReceivedViewportBitmap,
                          GetWeakPtr()));
     }

@@ -1097,6 +1097,7 @@ uint32_t RenderWidgetHostViewAura::GetCaptureSequenceNumber() const {
 void RenderWidgetHostViewAura::CopyFromSurface(
     const gfx::Rect& src_subrect,
     const gfx::Size& dst_size,
+    base::TimeDelta timeout,
     base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
   base::WeakPtr<RenderWidgetHostImpl> popup_host;
   base::WeakPtr<DelegatedFrameHost> popup_frame_host;
@@ -1107,7 +1108,7 @@ void RenderWidgetHostViewAura::CopyFromSurface(
   }
   RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
       host()->GetWeakPtr(), delegated_frame_host_->GetWeakPtr(), popup_host,
-      popup_frame_host, src_subrect, dst_size, device_scale_factor_,
+      popup_frame_host, src_subrect, dst_size, device_scale_factor_, timeout,
       std::move(callback));
 }
 

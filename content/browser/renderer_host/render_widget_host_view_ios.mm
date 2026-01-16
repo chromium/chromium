@@ -158,13 +158,14 @@ bool RenderWidgetHostViewIOS::IsSurfaceAvailableForCopy() {
 void RenderWidgetHostViewIOS::CopyFromSurface(
     const gfx::Rect& src_rect,
     const gfx::Size& dst_size,
+    base::TimeDelta timeout,
     base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
   base::WeakPtr<RenderWidgetHostImpl> popup_host;
   base::WeakPtr<DelegatedFrameHost> popup_frame_host;
   RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
       host()->GetWeakPtr(),
       browser_compositor_->GetDelegatedFrameHost()->GetWeakPtr(), popup_host,
-      popup_frame_host, src_rect, dst_size, GetDeviceScaleFactor(),
+      popup_frame_host, src_rect, dst_size, GetDeviceScaleFactor(), timeout,
       std::move(callback));
 }
 

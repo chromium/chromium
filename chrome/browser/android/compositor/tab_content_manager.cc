@@ -78,7 +78,7 @@ class TabContentManager::TabReadbackRequest {
     gfx::Rect source_rect = gfx::Rect(view_size_in_pixels);
     gfx::Size thumbnail_size(
         gfx::ScaleToCeiledSize(view_size_in_pixels, thumbnail_scale_));
-    rwhv->CopyFromSurface(source_rect, thumbnail_size,
+    rwhv->CopyFromSurface(source_rect, thumbnail_size, base::TimeDelta(),
                           std::move(result_callback));
   }
 

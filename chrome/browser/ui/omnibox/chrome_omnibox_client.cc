@@ -618,7 +618,7 @@ void ChromeOmniboxClient::OnResultChanged(
         if (view && view->IsSurfaceAvailableForCopy()) {
           view->CopyFromSurface(
               /*src_rect=*/gfx::Rect(),
-              /*output_size=*/gfx::Size(),
+              /*output_size=*/gfx::Size(), base::TimeDelta(),
               base::BindPostTask(
                   base::SequencedTaskRunner::GetCurrentDefault(),
                   base::BindOnce(

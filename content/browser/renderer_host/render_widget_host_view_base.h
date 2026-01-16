@@ -132,6 +132,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   void CopyFromSurface(
       const gfx::Rect& src_rect,
       const gfx::Size& output_size,
+      base::TimeDelta timeout,
       base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback)
       override;
   std::unique_ptr<viz::ClientFrameSinkVideoCapturer> CreateVideoCapturer()
@@ -244,6 +245,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
       const gfx::Rect& src_subrect,
       const gfx::Size& dst_size,
       float scale_factor,
+      base::TimeDelta timeout,
       base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback);
 
   void SetWidgetType(WidgetType widget_type);

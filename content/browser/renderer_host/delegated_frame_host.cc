@@ -145,6 +145,7 @@ void DelegatedFrameHost::WasHidden(HiddenCause cause) {
 void DelegatedFrameHost::CopyFromCompositingSurface(
     const gfx::Rect& src_subrect,
     const gfx::Size& output_size,
+    base::TimeDelta timeout,
     base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
   const viz::SurfaceId surface_id(frame_sink_id_, local_surface_id_);
 
@@ -158,7 +159,7 @@ void DelegatedFrameHost::CopyFromCompositingSurface(
   CopyFromCompositingSurfaceInternal(
       src_subrect, output_size, surface_id,
       viz::CopyOutputRequest::ResultFormat::RGBA,
-      viz::CopyOutputRequest::ResultDestination::kSystemMemory,
+      viz::CopyOutputRequest::ResultDestination::kSystemMemory, timeout,
       base::BindOnce(
           [](base::OnceCallback<void(const content::CopyFromSurfaceResult&)>
                  callback,
@@ -182,7 +183,7 @@ void DelegatedFrameHost::CopyFromCompositingSurfaceAsTexture(
       src_subrect, output_size, surface_id,
       viz::CopyOutputRequest::ResultFormat::RGBA,
       viz::CopyOutputRequest::ResultDestination::kSharedImage,
-      std::move(callback));
+      base::TimeDelta(), std::move(callback));
 }
 
 void DelegatedFrameHost::CopyFromCompositingSurfaceInternal(
@@ -191,6 +192,7 @@ void DelegatedFrameHost::CopyFromCompositingSurfaceInternal(
     const viz::SurfaceId& surface_id,
     viz::CopyOutputRequest::ResultFormat format,
     viz::CopyOutputRequest::ResultDestination destination,
+    base::TimeDelta timeout,
     viz::CopyOutputRequest::CopyOutputRequestCallback callback) {
   auto request = std::make_unique<viz::CopyOutputRequest>(format, destination,
                                                           std::move(callback));
@@ -232,7 +234,9 @@ void DelegatedFrameHost::CopyFromCompositingSurfaceInternal(
         gfx::Vector2d(output_size.width(), output_size.height()));
   }
   CHECK(host_frame_sink_manager_);
-  host_frame_sink_manager_->RequestCopyOfOutput(surface_id, std::move(request));
+  host_frame_sink_manager_->RequestCopyOfOutput(
+      surface_id, std::move(request), /*capture_exact_surface_id=*/false,
+      timeout);
 }
 
 void DelegatedFrameHost::SetFrameEvictionStateAndNotifyObservers(

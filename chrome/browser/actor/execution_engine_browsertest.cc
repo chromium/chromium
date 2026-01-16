@@ -502,7 +502,7 @@ class ExecutionEnginePixelBrowserTest : public ExecutionEngineBrowserTest {
     bool found_red = false;
     base::RunLoop run_loop;
     web_contents()->GetRenderWidgetHostView()->CopyFromSurface(
-        gfx::Rect(), gfx::Size(),
+        gfx::Rect(), gfx::Size(), base::TimeDelta(),
         base::BindLambdaForTesting(
             [&](const content::CopyFromSurfaceResult& result) {
               ASSERT_TRUE(result.has_value());

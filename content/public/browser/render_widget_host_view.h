@@ -229,6 +229,10 @@ class CONTENT_EXPORT RenderWidgetHostView {
   // bitmap's size may not be the same as `src_rect.size()` due to the pixel
   // scale used by the underlying device.
   //
+  // `timeout` is the maximum amount of time once viz has received the message
+  // for a result to be produced. This will result in a timeout error being
+  // produced as the result.
+  //
   // `callback` is guaranteed to be run, either synchronously or at some point
   // in the future (depending on the platform implementation and the current
   // state of the Surface). If the copy failed, the bitmap's `drawsNothing()`
@@ -240,6 +244,7 @@ class CONTENT_EXPORT RenderWidgetHostView {
   virtual void CopyFromSurface(
       const gfx::Rect& src_rect,
       const gfx::Size& output_size,
+      base::TimeDelta timeout,
       base::OnceCallback<void(const CopyFromSurfaceResult&)> callback) = 0;
 
   // Ensures that all surfaces are synchronized for the next call to
