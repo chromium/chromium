@@ -501,10 +501,16 @@
         parseSetScreenOrientationOverrideParams(params) {
             return params;
         }
+        parseSetScreenSettingsOverrideParams(params) {
+            return params;
+        }
         parseSetScriptingEnabledParams(params) {
             return params;
         }
         parseSetTimezoneOverrideParams(params) {
+            return params;
+        }
+        parseSetTouchOverrideParams(params) {
             return params;
         }
         parseSetUserAgentOverrideParams(params) {
@@ -1222,6 +1228,24 @@
             }));
             return {};
         }
+        async setScreenSettingsOverride(params) {
+            const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(params.contexts, params.userContexts);
+            for (const browsingContextId of params.contexts ?? []) {
+                this.#contextConfigStorage.updateBrowsingContextConfig(browsingContextId, {
+                    screenArea: params.screenArea,
+                });
+            }
+            for (const userContextId of params.userContexts ?? []) {
+                this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+                    screenArea: params.screenArea,
+                });
+            }
+            await Promise.all(browsingContexts.map(async (context) => {
+                const config = this.#contextConfigStorage.getActiveConfig(context.id, context.userContext);
+                await context.setViewport(config.viewport ?? null, config.devicePixelRatio ?? null, config.screenOrientation ?? null);
+            }));
+            return {};
+        }
         async #getRelatedTopLevelBrowsingContexts(browsingContextIds, userContextIds, allowGlobal = false) {
             if (browsingContextIds === undefined && userContextIds === undefined) {
                 if (allowGlobal) {
@@ -1281,6 +1305,30 @@
             await Promise.all(browsingContexts.map(async (context) => {
                 const config = this.#contextConfigStorage.getActiveConfig(context.id, context.userContext);
                 await context.setTimezoneOverride(config.timezone ?? null);
+            }));
+            return {};
+        }
+        async setTouchOverride(params) {
+            const maxTouchPoints = params.maxTouchPoints;
+            const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(params.contexts, params.userContexts, true);
+            for (const browsingContextId of params.contexts ?? []) {
+                this.#contextConfigStorage.updateBrowsingContextConfig(browsingContextId, {
+                    maxTouchPoints,
+                });
+            }
+            for (const userContextId of params.userContexts ?? []) {
+                this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+                    maxTouchPoints,
+                });
+            }
+            if (params.contexts === undefined && params.userContexts === undefined) {
+                this.#contextConfigStorage.updateGlobalConfig({
+                    maxTouchPoints,
+                });
+            }
+            await Promise.all(browsingContexts.map(async (context) => {
+                const config = this.#contextConfigStorage.getActiveConfig(context.id, context.userContext);
+                await context.setTouchOverride(config.maxTouchPoints ?? null);
             }));
             return {};
         }
@@ -3420,7 +3468,7 @@
             sameSite: cookie.sameSite === undefined
                 ? "none"
                 : sameSiteCdpToBiDi(cookie.sameSite),
-            ...(cookie.expires >= 0 ? { expiry: cookie.expires } : undefined),
+            ...(cookie.expires >= 0 ? { expiry: Math.round(cookie.expires) } : undefined),
         };
         result[`goog:session`] = cookie.session;
         result[`goog:priority`] = cookie.priority;
@@ -5048,10 +5096,14 @@
                     return await this.#emulationProcessor.setNetworkConditions(this.#parser.parseSetNetworkConditionsParams(command.params));
                 case 'emulation.setScreenOrientationOverride':
                     return await this.#emulationProcessor.setScreenOrientationOverride(this.#parser.parseSetScreenOrientationOverrideParams(command.params));
+                case 'emulation.setScreenSettingsOverride':
+                    return await this.#emulationProcessor.setScreenSettingsOverride(this.#parser.parseSetScreenSettingsOverrideParams(command.params));
                 case 'emulation.setScriptingEnabled':
                     return await this.#emulationProcessor.setScriptingEnabled(this.#parser.parseSetScriptingEnabledParams(command.params));
                 case 'emulation.setTimezoneOverride':
                     return await this.#emulationProcessor.setTimezoneOverride(this.#parser.parseSetTimezoneOverrideParams(command.params));
+                case 'emulation.setTouchOverride':
+                    return await this.#emulationProcessor.setTouchOverride(this.#parser.parseSetTouchOverrideParams(command.params));
                 case 'emulation.setUserAgentOverride':
                     return await this.#emulationProcessor.setUserAgentOverrideParams(this.#parser.parseSetUserAgentOverrideParams(command.params));
                 case 'input.performActions':
@@ -5575,7 +5627,9 @@
         extraHeaders;
         geolocation;
         locale;
+        maxTouchPoints;
         prerenderingDisabled;
+        screenArea;
         screenOrientation;
         scriptingEnabled;
         timezone;
@@ -7356,7 +7410,8 @@
             };
         }
         async setViewport(viewport, devicePixelRatio, screenOrientation) {
-            await this.cdpTarget.setDeviceMetricsOverride(viewport, devicePixelRatio, screenOrientation);
+            const config = this.#configStorage.getActiveConfig(this.id, this.userContext);
+            await this.cdpTarget.setDeviceMetricsOverride(viewport, devicePixelRatio, screenOrientation, config.screenArea ?? null);
         }
         async handleUserPrompt(accept, userText) {
             await this.top.#cdpTarget.cdpClient.sendCommand('Page.handleJavaScriptDialog', {
@@ -7873,6 +7928,9 @@
         }
         async setEmulatedNetworkConditions(networkConditions) {
             await Promise.all(this.#getAllRelatedCdpTargets().map(async (cdpTarget) => await cdpTarget.setEmulatedNetworkConditions(networkConditions)));
+        }
+        async setTouchOverride(maxTouchPoints) {
+            await Promise.allSettled(this.#getAllRelatedCdpTargets().map(async (cdpTarget) => await cdpTarget.setTouchOverride(maxTouchPoints)));
         }
         async setExtraHeaders(cdpExtraHeaders) {
             await Promise.all(this.#getAllRelatedCdpTargets().map(async (cdpTarget) => await cdpTarget.setExtraHeaders(cdpExtraHeaders)));
@@ -8775,6 +8833,7 @@
                 Boolean(this.#response.loadingFailed) ||
                 this.#isDataUrl() ||
                 Boolean(this.#request.extraInfo) ||
+                this.#isBlockedInPhase("authRequired" ) ||
                 this.#servedFromCache ||
                 Boolean(this.#response.info && !this.#response.hasExtraInfo);
             const noInterceptionExpected = this.#isNonInterceptable();
@@ -8899,6 +8958,7 @@
             if (this.#isBlockedInPhase("authRequired" ) &&
                 this.#fetchId !== this.id) {
                 this.#interceptPhase = "authRequired" ;
+                this.#emitEventsIfReady();
             }
             else {
                 void this.#continueWithAuth({
@@ -9927,10 +9987,11 @@
                 return script.initInTarget(this, true);
             }));
         }
-        async setDeviceMetricsOverride(viewport, devicePixelRatio, screenOrientation) {
+        async setDeviceMetricsOverride(viewport, devicePixelRatio, screenOrientation, screenArea) {
             if (viewport === null &&
                 devicePixelRatio === null &&
-                screenOrientation === null) {
+                screenOrientation === null &&
+                screenArea === null) {
                 await this.cdpClient.sendCommand('Emulation.clearDeviceMetricsOverride');
                 return;
             }
@@ -9940,6 +10001,8 @@
                 deviceScaleFactor: devicePixelRatio ?? 0,
                 screenOrientation: this.#toCdpScreenOrientationAngle(screenOrientation) ?? undefined,
                 mobile: false,
+                screenWidth: screenArea?.width,
+                screenHeight: screenArea?.height,
             };
             await this.cdpClient.sendCommand('Emulation.setDeviceMetricsOverride', metricsOverride);
         }
@@ -9953,8 +10016,9 @@
             }));
             if (config.viewport !== undefined ||
                 config.devicePixelRatio !== undefined ||
-                config.screenOrientation !== undefined) {
-                promises.push(this.setDeviceMetricsOverride(config.viewport ?? null, config.devicePixelRatio ?? null, config.screenOrientation ?? null).catch(() => {
+                config.screenOrientation !== undefined ||
+                config.screenArea !== undefined) {
+                promises.push(this.setDeviceMetricsOverride(config.viewport ?? null, config.devicePixelRatio ?? null, config.screenOrientation ?? null, config.screenArea ?? null).catch(() => {
                 }));
             }
             if (config.geolocation !== undefined && config.geolocation !== null) {
@@ -9982,6 +10046,9 @@
             }
             if (config.emulatedNetworkConditions !== undefined) {
                 promises.push(this.setEmulatedNetworkConditions(config.emulatedNetworkConditions));
+            }
+            if (config.maxTouchPoints !== undefined) {
+                promises.push(this.setTouchOverride(config.maxTouchPoints));
             }
             await Promise.all(promises);
         }
@@ -10022,6 +10089,15 @@
             else {
                 throw new UnknownErrorException('Unexpected geolocation coordinates value');
             }
+        }
+        async setTouchOverride(maxTouchPoints) {
+            const touchEmulationParams = {
+                enabled: maxTouchPoints !== null,
+            };
+            if (maxTouchPoints !== null) {
+                touchEmulationParams.maxTouchPoints = maxTouchPoints;
+            }
+            await this.cdpClient.sendCommand('Emulation.setTouchEmulationEnabled', touchEmulationParams);
         }
         #toCdpScreenOrientationAngle(orientation) {
             if (orientation === null) {
@@ -11249,24 +11325,31 @@
             });
         }
         static async createAndStart(bidiTransport, cdpConnection, browserCdpClient, selfTargetId, parser, logger) {
-            const [{ browserContextIds }, { targetInfos }] = await Promise.all([
-                browserCdpClient.sendCommand('Target.getBrowserContexts'),
-                browserCdpClient.sendCommand('Target.getTargets'),
+            const [defaultUserContextId] = await Promise.all([
+                this.#getDefaultUserContextId(browserCdpClient),
                 browserCdpClient.sendCommand('Browser.setDownloadBehavior', {
                     behavior: 'default',
                     eventsEnabled: true,
                 }),
             ]);
-            let defaultUserContextId = 'default';
+            const server = new BidiServer(bidiTransport, cdpConnection, browserCdpClient, selfTargetId, defaultUserContextId, parser, logger);
+            return server;
+        }
+        static async #getDefaultUserContextId(browserCdpClient) {
+            const [{ defaultBrowserContextId, browserContextIds }, { targetInfos }] = await Promise.all([
+                browserCdpClient.sendCommand('Target.getBrowserContexts'),
+                browserCdpClient.sendCommand('Target.getTargets'),
+            ]);
+            if (defaultBrowserContextId) {
+                return defaultBrowserContextId;
+            }
             for (const info of targetInfos) {
                 if (info.browserContextId &&
                     !browserContextIds.includes(info.browserContextId)) {
-                    defaultUserContextId = info.browserContextId;
-                    break;
+                    return info.browserContextId;
                 }
             }
-            const server = new BidiServer(bidiTransport, cdpConnection, browserCdpClient, selfTargetId, defaultUserContextId, parser, logger);
-            return server;
+            return 'default';
         }
         emitOutgoingMessage(messageEntry, event) {
             this.#messageQueue.add(messageEntry, event);
@@ -16100,7 +16183,7 @@
         Session.SubscriptionSchema = z.lazy(() => z.string());
     })(Session$1 || (Session$1 = {}));
     (function (Session) {
-        Session.SubscriptionRequestSchema = z.lazy(() => z.object({
+        Session.SubscribeParametersSchema = z.lazy(() => z.object({
             events: z.array(z.string()).min(1),
             contexts: z
                 .array(BrowsingContext$1.BrowsingContextSchema)
@@ -16172,7 +16255,7 @@
     (function (Session) {
         Session.SubscribeSchema = z.lazy(() => z.object({
             method: z.literal('session.subscribe'),
-            params: Session.SubscriptionRequestSchema,
+            params: Session.SubscribeParametersSchema,
         }));
     })(Session$1 || (Session$1 = {}));
     (function (Session) {
@@ -16901,8 +16984,10 @@
         Emulation$1.SetLocaleOverrideSchema,
         Emulation$1.SetNetworkConditionsSchema,
         Emulation$1.SetScreenOrientationOverrideSchema,
+        Emulation$1.SetScreenSettingsOverrideSchema,
         Emulation$1.SetScriptingEnabledSchema,
         Emulation$1.SetTimezoneOverrideSchema,
+        Emulation$1.SetTouchOverrideSchema,
         Emulation$1.SetUserAgentOverrideSchema,
     ]));
     const EmulationResultSchema = z.lazy(() => z.union([
@@ -16912,6 +16997,7 @@
         Emulation$1.SetScreenOrientationOverrideResultSchema,
         Emulation$1.SetScriptingEnabledResultSchema,
         Emulation$1.SetTimezoneOverrideResultSchema,
+        Emulation$1.SetTouchOverrideResultSchema,
         Emulation$1.SetUserAgentOverrideResultSchema,
     ]));
     var Emulation$1;
@@ -17031,6 +17117,34 @@
         }));
     })(Emulation$1 || (Emulation$1 = {}));
     (function (Emulation) {
+        Emulation.SetNetworkConditionsResultSchema = z.lazy(() => EmptyResultSchema);
+    })(Emulation$1 || (Emulation$1 = {}));
+    (function (Emulation) {
+        Emulation.SetScreenSettingsOverrideSchema = z.lazy(() => z.object({
+            method: z.literal('emulation.setScreenSettingsOverride'),
+            params: Emulation.SetScreenSettingsOverrideParametersSchema,
+        }));
+    })(Emulation$1 || (Emulation$1 = {}));
+    (function (Emulation) {
+        Emulation.ScreenAreaSchema = z.lazy(() => z.object({
+            width: JsUintSchema,
+            height: JsUintSchema,
+        }));
+    })(Emulation$1 || (Emulation$1 = {}));
+    (function (Emulation) {
+        Emulation.SetScreenSettingsOverrideParametersSchema = z.lazy(() => z.object({
+            screenArea: z.union([Emulation.ScreenAreaSchema, z.null()]),
+            contexts: z
+                .array(BrowsingContext$1.BrowsingContextSchema)
+                .min(1)
+                .optional(),
+            userContexts: z.array(Browser$1.UserContextSchema).min(1).optional(),
+        }));
+    })(Emulation$1 || (Emulation$1 = {}));
+    (function (Emulation) {
+        Emulation.SetScreenSettingsOverrideResultSchema = z.lazy(() => EmptyResultSchema);
+    })(Emulation$1 || (Emulation$1 = {}));
+    (function (Emulation) {
         Emulation.SetScreenOrientationOverrideSchema = z.lazy(() => z.object({
             method: z.literal('emulation.setScreenOrientationOverride'),
             params: Emulation.SetScreenOrientationOverrideParametersSchema,
@@ -17122,6 +17236,25 @@
     })(Emulation$1 || (Emulation$1 = {}));
     (function (Emulation) {
         Emulation.SetTimezoneOverrideResultSchema = z.lazy(() => EmptyResultSchema);
+    })(Emulation$1 || (Emulation$1 = {}));
+    (function (Emulation) {
+        Emulation.SetTouchOverrideSchema = z.lazy(() => z.object({
+            method: z.literal('emulation.setTouchOverride'),
+            params: Emulation.SetTouchOverrideParametersSchema,
+        }));
+    })(Emulation$1 || (Emulation$1 = {}));
+    (function (Emulation) {
+        Emulation.SetTouchOverrideParametersSchema = z.lazy(() => z.object({
+            maxTouchPoints: z.union([JsUintSchema.gte(1), z.null()]),
+            contexts: z
+                .array(BrowsingContext$1.BrowsingContextSchema)
+                .min(1)
+                .optional(),
+            userContexts: z.array(Browser$1.UserContextSchema).min(1).optional(),
+        }));
+    })(Emulation$1 || (Emulation$1 = {}));
+    (function (Emulation) {
+        Emulation.SetTouchOverrideResultSchema = z.lazy(() => EmptyResultSchema);
     })(Emulation$1 || (Emulation$1 = {}));
     const NetworkCommandSchema = z.lazy(() => z.union([
         Network$1.AddDataCollectorSchema,
@@ -18953,7 +19086,7 @@
     var Session;
     (function (Session) {
         function parseSubscribeParams(params) {
-            return parseObject(params, Session$1.SubscriptionRequestSchema);
+            return parseObject(params, Session$1.SubscribeParametersSchema);
         }
         Session.parseSubscribeParams = parseSubscribeParams;
         function parseUnsubscribeParams(params) {
@@ -18989,6 +19122,10 @@
             return parseObject(params, Emulation$1.SetScreenOrientationOverrideParametersSchema);
         }
         Emulation.parseSetScreenOrientationOverrideParams = parseSetScreenOrientationOverrideParams;
+        function parseSetScreenSettingsOverrideParams(params) {
+            return parseObject(params, Emulation$1.SetScreenSettingsOverrideParametersSchema);
+        }
+        Emulation.parseSetScreenSettingsOverrideParams = parseSetScreenSettingsOverrideParams;
         function parseSetScriptingEnabledParams(params) {
             return parseObject(params, Emulation$1.SetScriptingEnabledParametersSchema);
         }
@@ -18997,6 +19134,10 @@
             return parseObject(params, Emulation$1.SetTimezoneOverrideParametersSchema);
         }
         Emulation.parseSetTimezoneOverrideParams = parseSetTimezoneOverrideParams;
+        function parseSetTouchOverrideParams(params) {
+            return parseObject(params, Emulation$1.SetTouchOverrideParametersSchema);
+        }
+        Emulation.parseSetTouchOverrideParams = parseSetTouchOverrideParams;
         function parseSetUserAgentOverrideParams(params) {
             return parseObject(params, Emulation$1.SetUserAgentOverrideParametersSchema);
         }
@@ -19247,11 +19388,17 @@
         parseSetScreenOrientationOverrideParams(params) {
             return Emulation.parseSetScreenOrientationOverrideParams(params);
         }
+        parseSetScreenSettingsOverrideParams(params) {
+            return Emulation.parseSetScreenSettingsOverrideParams(params);
+        }
         parseSetScriptingEnabledParams(params) {
             return Emulation.parseSetScriptingEnabledParams(params);
         }
         parseSetTimezoneOverrideParams(params) {
             return Emulation.parseSetTimezoneOverrideParams(params);
+        }
+        parseSetTouchOverrideParams(params) {
+            return Emulation.parseSetTouchOverrideParams(params);
         }
         parseSetUserAgentOverrideParams(params) {
             return Emulation.parseSetUserAgentOverrideParams(params);
