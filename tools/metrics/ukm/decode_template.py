@@ -15,19 +15,19 @@ HEADER = codegen.Template(basename="ukm_decode.h",
 #define {file.guard_path}
 
 #include <cstdint>
-#include <map>
 
+#include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
 
 namespace ukm {{
 namespace builders {{
 
-typedef std::map<uint64_t, const char*> MetricDecodeMap;
+typedef base::flat_map<uint64_t, const char*> MetricDecodeMap;
 struct EntryDecoder {{
   const char* name;
-  const MetricDecodeMap metric_map;
+  MetricDecodeMap metric_map;
 }};
-typedef std::map<uint64_t, EntryDecoder> DecodeMap;
+typedef base::flat_map<uint64_t, EntryDecoder> DecodeMap;
 const DecodeMap& GetDecodeMap();
 
 }}  // namespace builders

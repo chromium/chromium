@@ -105,12 +105,12 @@ const uint64_t {eventName}::k{metricName}NameHash;
                   decode_header_output)
     self.assertIn("namespace builders", decode_header_output)
     self.assertIn(
-        """typedef std::map<uint64_t, const char*> MetricDecodeMap;
+        """typedef base::flat_map<uint64_t, const char*> MetricDecodeMap;
 struct EntryDecoder {
   const char* name;
-  const MetricDecodeMap metric_map;
+  MetricDecodeMap metric_map;
 };
-typedef std::map<uint64_t, EntryDecoder> DecodeMap;
+typedef base::flat_map<uint64_t, EntryDecoder> DecodeMap;
 const DecodeMap& GetDecodeMap();""", decode_header_output)
 
     decode_impl_output = DECODE_IMPL_TEMPLATE._StampFileCode(relpath, data)
