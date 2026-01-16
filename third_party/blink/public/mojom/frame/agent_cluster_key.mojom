@@ -1,0 +1,61 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
+
+// Indicates if cross-origin isolation gives access to cross-origin isolated
+// APIs (kConcrete) or not (kLogical). The none value from the spec is
+// omitted.
+// https://html.spec.whatwg.org/multipage/document-sequences.html#cross-origin-isolation-mode
+enum CrossOriginIsolationMode {
+  kLogical,
+  kConcrete,
+};
+
+// Tracks the cross-origin isolation state of an agent cluster.
+// https://wicg.github.io/document-isolation-policy/#coi-agent-cluster-key
+struct CrossOriginIsolationKey {
+  // The origin of the document which triggered cross-origin isolation. When
+  // cross-origin isolation is enabled by DocumentIsolationPolicy, this origin
+  // matches the origin of the AgentClusterKey. When cross-origin
+  // isolation is enabled through COOP and COEP, this origin is that of the
+  // top-level document that enabled COOP and COEP for the page. In this case,
+  // the cross-origin isolation key is applied to all documents in the page, so
+  // this origin can differ from the origin in the AgentClusterKey, as the
+  // origin in the isolation key is the top-level origin, while the origin in
+  // the AgentClusterKey is the origin of the document.
+  url.mojom.Origin common_origin;
+
+  CrossOriginIsolationMode mode;
+};
+
+// This is a version of the AgentClusterKey that is keyed by origin. See
+// AgentClusterKey below for the complete AgentClusterKey definition.
+struct OriginKeyedAgentClusterKey {
+  // The origin shared by all agents in the agent cluster.
+  url.mojom.Origin origin;
+
+  // The AgentClusterKey might have a CrossOriginIsolationKey if the context is
+  // cross-origin isolated. In this case, the AgentClusterKey must be
+  // origin-keyed.
+  // https://wicg.github.io/document-isolation-policy/#coi-agent-cluster-key
+  CrossOriginIsolationKey? isolation_key;
+};
+
+// An AgentClusterKey is used to determine which execution contexts can share
+// memory. Execution contexts in the same agent cluster can share memory. Agent
+// clusters are identified by their key.
+// https://html.spec.whatwg.org/multipage/webappapis.html#agent-cluster-key
+union AgentClusterKey {
+  // The AgentClusterKey is either site-keyed or origin-keyed. In the first
+  // case, all agents in the execution context share the same site URL. In the
+  // second case, they share the same origin. Origin-keyed AgentClusterKeys
+  // might have an additional CrossOriginIsolationKey which indicates that the
+  // execution context has access to cross-origin isolated APIs.
+  url.mojom.Url site_key;
+  OriginKeyedAgentClusterKey origin_key;
+};

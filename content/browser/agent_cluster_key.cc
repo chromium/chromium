@@ -7,12 +7,13 @@
 #include <variant>
 
 #include "base/notreached.h"
+#include "content/browser/site_info.h"
 
 namespace content {
 
 AgentClusterKey::CrossOriginIsolationKey::CrossOriginIsolationKey(
     const url::Origin& common_coi_origin,
-    CrossOriginIsolationMode cross_origin_isolation_mode)
+    blink::mojom::CrossOriginIsolationMode cross_origin_isolation_mode)
     : common_coi_origin(common_coi_origin),
       cross_origin_isolation_mode(cross_origin_isolation_mode) {}
 
@@ -99,7 +100,7 @@ bool AgentClusterKey::IsCrossOriginIsolated() const {
     return false;
   }
   return isolation_key_->cross_origin_isolation_mode ==
-         CrossOriginIsolationMode::kConcrete;
+         blink::mojom::CrossOriginIsolationMode::kConcrete;
 }
 
 bool AgentClusterKey::operator==(const AgentClusterKey& b) const {
@@ -127,7 +128,7 @@ bool AgentClusterKey::operator<(const AgentClusterKey& b) const {
     if (GetCrossOriginIsolationKey()->cross_origin_isolation_mode !=
         b.GetCrossOriginIsolationKey()->cross_origin_isolation_mode) {
       return GetCrossOriginIsolationKey()->cross_origin_isolation_mode !=
-             CrossOriginIsolationMode::kConcrete;
+             blink::mojom::CrossOriginIsolationMode::kConcrete;
     }
     return GetCrossOriginIsolationKey()->common_coi_origin <
            b.GetCrossOriginIsolationKey()->common_coi_origin;
@@ -144,6 +145,32 @@ bool AgentClusterKey::operator<(const AgentClusterKey& b) const {
   // |oac_status_| is intentionally omitted from the comparison operator. See
   // the member description for more details.
   return GetSite() < b.GetSite();
+}
+
+// static
+blink::mojom::AgentClusterKeyPtr
+AgentClusterKey::CreateAgentClusterKeyForNavigationCommit(
+    const url::Origin& origin_to_commit,
+    bool is_origin_keyed,
+    const std::optional<CrossOriginIsolationKey>& coi_key) {
+  if (!is_origin_keyed && !coi_key.has_value()) {
+    // Create a site-keyed AgentClusterKey.
+    return blink::mojom::AgentClusterKey::NewSiteKey(
+        SiteInfo::GetSiteForOrigin(origin_to_commit));
+  }
+
+  // Create an origin-keyed AgentClusterKey.
+  blink::mojom::OriginKeyedAgentClusterKeyPtr origin_keyed_key =
+      blink::mojom::OriginKeyedAgentClusterKey::New();
+  origin_keyed_key->origin = origin_to_commit;
+  if (coi_key.has_value()) {
+    origin_keyed_key->isolation_key =
+        blink::mojom::CrossOriginIsolationKey::New(
+            coi_key->common_coi_origin, coi_key->cross_origin_isolation_mode);
+  }
+
+  return blink::mojom::AgentClusterKey::NewOriginKey(
+      std::move(origin_keyed_key));
 }
 
 AgentClusterKey::AgentClusterKey(
@@ -169,7 +196,7 @@ std::ostream& operator<<(std::ostream& out,
     out << ", cross_origin_isolation_mode: ";
     if (agent_cluster_key.GetCrossOriginIsolationKey()
             ->cross_origin_isolation_mode ==
-        CrossOriginIsolationMode::kConcrete) {
+        blink::mojom::CrossOriginIsolationMode::kConcrete) {
       out << "concrete";
     } else {
       out << "logical";

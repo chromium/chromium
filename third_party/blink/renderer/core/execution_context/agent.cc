@@ -26,22 +26,21 @@ bool is_web_security_disabled_set = false;
 Agent::Agent(v8::Isolate* isolate,
              const base::UnguessableToken& cluster_id,
              std::unique_ptr<v8::MicrotaskQueue> microtask_queue)
-    : Agent(isolate, cluster_id, std::move(microtask_queue), false, true) {}
+    : Agent(isolate,
+            cluster_id,
+            std::move(microtask_queue),
+            AgentClusterKey::CreateSiteKeyed(KURL())) {}
 
 Agent::Agent(v8::Isolate* isolate,
              const base::UnguessableToken& cluster_id,
              std::unique_ptr<v8::MicrotaskQueue> microtask_queue,
-             bool is_origin_agent_cluster,
-             bool origin_agent_cluster_left_as_default)
+             const AgentClusterKey& agent_cluster_key)
     : isolate_(isolate),
       rejected_promises_(RejectedPromises::Create()),
       event_loop_(base::AdoptRef(
           new scheduler::EventLoop(this, isolate, std::move(microtask_queue)))),
       cluster_id_(cluster_id),
-      origin_keyed_because_of_inheritance_(false),
-      is_origin_agent_cluster_(is_origin_agent_cluster),
-      origin_agent_cluster_left_as_default_(
-          origin_agent_cluster_left_as_default) {}
+      agent_cluster_key_(agent_cluster_key) {}
 
 Agent::~Agent() = default;
 
@@ -109,22 +108,6 @@ void Agent::SetIsIsolatedContext(bool value) {
   is_isolated_context_set = true;
 #endif
   is_isolated_context = value;
-}
-
-bool Agent::IsOriginKeyed() const {
-  return IsCrossOriginIsolated() || IsOriginKeyedForInheritance();
-}
-
-bool Agent::IsOriginKeyedForInheritance() const {
-  return is_origin_agent_cluster_ || origin_keyed_because_of_inheritance_;
-}
-
-bool Agent::IsOriginOrSiteKeyedBasedOnDefault() const {
-  return origin_agent_cluster_left_as_default_;
-}
-
-void Agent::ForceOriginKeyedBecauseOfInheritance() {
-  origin_keyed_because_of_inheritance_ = true;
 }
 
 bool Agent::IsWindowAgent() const {

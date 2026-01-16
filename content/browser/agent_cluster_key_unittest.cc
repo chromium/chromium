@@ -44,7 +44,7 @@ TEST_F(AgentClusterKeyTest, WithCrossOriginIsolationKey) {
   url::Origin common_coi_origin = url::Origin::CreateFromNormalizedTuple(
       "https", "isolation.example.com", 443);
   AgentClusterKey::CrossOriginIsolationKey isolation_key(
-      common_coi_origin, CrossOriginIsolationMode::kConcrete);
+      common_coi_origin, blink::mojom::CrossOriginIsolationMode::kConcrete);
   AgentClusterKey key = AgentClusterKey::CreateWithCrossOriginIsolationKey(
       origin, isolation_key, AgentClusterKey::OACStatus::kSiteKeyedByDefault);
 
@@ -83,13 +83,13 @@ TEST_F(AgentClusterKeyTest, Comparisons) {
 
   // With isolation key
   AgentClusterKey::CrossOriginIsolationKey coi_a(
-      origin_a, CrossOriginIsolationMode::kConcrete);
+      origin_a, blink::mojom::CrossOriginIsolationMode::kConcrete);
   AgentClusterKey::CrossOriginIsolationKey coi_b(
-      origin_b, CrossOriginIsolationMode::kConcrete);
+      origin_b, blink::mojom::CrossOriginIsolationMode::kConcrete);
   AgentClusterKey::CrossOriginIsolationKey non_coi_a(
-      origin_a, CrossOriginIsolationMode::kLogical);
+      origin_a, blink::mojom::CrossOriginIsolationMode::kLogical);
   AgentClusterKey::CrossOriginIsolationKey non_coi_b(
-      origin_b, CrossOriginIsolationMode::kLogical);
+      origin_b, blink::mojom::CrossOriginIsolationMode::kLogical);
 
   EXPECT_EQ(coi_a, coi_a);
   EXPECT_EQ(non_coi_a, non_coi_a);
@@ -148,7 +148,7 @@ TEST_F(AgentClusterKeyTest, ComparisonsIgnoreOACStatus) {
 
   // With isolation key
   AgentClusterKey::CrossOriginIsolationKey coi(
-      origin, CrossOriginIsolationMode::kConcrete);
+      origin, blink::mojom::CrossOriginIsolationMode::kConcrete);
 
   AgentClusterKey key_origin_a_coi_1 =
       AgentClusterKey::CreateWithCrossOriginIsolationKey(
@@ -190,7 +190,7 @@ TEST_F(AgentClusterKeyTest, StreamOutput) {
       AgentClusterKey::CreateWithCrossOriginIsolationKey(
           origin_a,
           AgentClusterKey::CrossOriginIsolationKey(
-              origin_b, CrossOriginIsolationMode::kConcrete),
+              origin_b, blink::mojom::CrossOriginIsolationMode::kConcrete),
           AgentClusterKey::OACStatus::kSiteKeyedByDefault);
   dump << key_origin_a_coi_b;
   EXPECT_EQ(dump.str(),

@@ -2790,12 +2790,11 @@ void WebLocalFrameImpl::CommitNavigation(
     // Most of these steps are handled in the caller
     // (RenderFrameImpl::SynchronouslyCommitAboutBlankForBug778318) but the
     // caller doesn't have access to the core frame (LocalFrame).
-    // The actual agent is determined downstream, but here we need to request
-    // whether an origin-keyed agent is needed. Since this case is only
-    // for about:blank navigations this reduces to copying the agent flag from
-    // the current document.
-    navigation_params->origin_agent_cluster =
-        GetFrame()->GetDocument()->GetAgent().IsOriginKeyedForInheritance();
+    // The actual agent is determined downstream, but here we need the
+    // AgentClusterKey. Since this case is only for about:blank navigations this
+    // reduces to copying the AgentClusterKey from the current document.
+    navigation_params->agent_cluster_key =
+        GetFrame()->GetDocument()->GetAgent().GetAgentClusterKey();
 
     KURL url = navigation_params->url;
     if (navigation_params->is_synchronous_commit_for_bug_778318 &&

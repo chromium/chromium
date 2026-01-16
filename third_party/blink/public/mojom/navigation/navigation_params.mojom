@@ -23,6 +23,7 @@ import "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.m
 import "third_party/blink/public/mojom/conversions/conversions.mojom";
 import "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
+import "third_party/blink/public/mojom/frame/agent_cluster_key.mojom";
 import "third_party/blink/public/mojom/frame/frame_policy.mojom";
 import "third_party/blink/public/mojom/frame/view_transition_state.mojom";
 import "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom";
@@ -515,14 +516,10 @@ struct CommitNavigationParams {
   // The names of origin trials to be force enabled for this navigation.
   array<string> force_enabled_origin_trials;
 
-  // Whether the page is in an origin-keyed agent cluster.
-  // https://html.spec.whatwg.org/C/#origin-keyed-agent-clusters
-  bool origin_agent_cluster = false;
-
-  // Whether the decision to use origin-keyed or site-keyed agent clustering
-  // (which itself is recorded in origin_agent_cluster, above) has been
-  // made based on absent Origin-Agent-Cluster http header.
-  bool origin_agent_cluster_left_as_default = true;
+  // Specifies the AgentCluster to use to assign an execution context to the
+  // document created by the navigation.
+  // https://html.spec.whatwg.org/multipage/webappapis.html#agent-cluster-key
+  blink.mojom.AgentClusterKey agent_cluster_key;
 
   // Client-hints enabled; this is based on the top-level frame and should be
   // further narrowed down by permissions policy.

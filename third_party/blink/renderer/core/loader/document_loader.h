@@ -70,6 +70,7 @@
 #include "third_party/blink/public/web/web_navigation_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/weak_identifier_map.h"
+#include "third_party/blink/renderer/core/execution_context/agent_cluster_key.h"
 #include "third_party/blink/renderer/core/frame/frame_types.h"
 #include "third_party/blink/renderer/core/frame/policy_container.h"
 #include "third_party/blink/renderer/core/frame/use_counter_impl.h"
@@ -795,8 +796,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // Whether the document can be scrolled on load
   bool navigation_scroll_allowed_ = true;
 
-  bool origin_agent_cluster_ = false;
-  bool origin_agent_cluster_left_as_default_ = true;
+  // The AgentClusterKey to use to select an Agent for the document.
+  AgentClusterKey agent_cluster_key_;
 
   // Whether this load request is from a cross-site navigation that swaps
   // BrowsingContextGroup.

@@ -1805,10 +1805,13 @@ class CONTENT_EXPORT NavigationRequest
   // kOriginKeyedProcessesByDefault is enabled.
   bool IsIsolationImplied();
 
+  // This function computes the AgentClusterKey that must be passed to the
+  // renderer process for commit.
+  void DetermineAgentClusterKeyForCommit();
+
   // The Origin-Agent-Cluster end result is determined early in the lifecycle of
   // a NavigationRequest, but used late. In particular, we want to trigger use
   // counters and console warnings once navigation has committed.
-  void DetermineOriginAgentClusterEndResult();
   void ProcessOriginAgentClusterEndResult();
 
   void PopulateDocumentTokenForCrossDocumentNavigation();

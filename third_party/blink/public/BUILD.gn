@@ -274,6 +274,7 @@ source_set("blink_headers") {
     "web/modules/service_worker/web_navigation_preload_request.h",
     "web/modules/service_worker/web_service_worker_context_client.h",
     "web/modules/service_worker/web_service_worker_context_proxy.h",
+    "web/web_agent_cluster_key.h",
     "web/web_array_buffer.h",
     "web/web_array_buffer_converter.h",
     "web/web_associated_url_loader.h",

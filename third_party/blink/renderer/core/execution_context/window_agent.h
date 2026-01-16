@@ -30,14 +30,13 @@ class WindowAgent final : public Agent, public AgentGroupScheduler::Agent {
   explicit WindowAgent(AgentGroupScheduler& agent_group_scheduler);
 
   // Normally you don't want to call this constructor; instead, use
-  // WindowAgentFactory::GetAgentForOrigin() so you can get the agent shared
-  // on the same-site frames. (Same as the constructor above.)
+  // WindowAgentFactory::GetAgentForAgentClusterKey() so you can get the agent
+  // shared on the same-site frames. (Same as the constructor above.)
   //
   // This constructor calls WindowAgent::WindowAgent(isolate), but also stores
   // the state of origin agent clustering.
   WindowAgent(AgentGroupScheduler& agent_group_scheduler,
-              bool is_origin_agent_cluster,
-              bool origin_agent_cluster_left_as_default);
+              const AgentClusterKey& agent_cluster_key);
 
   ~WindowAgent() override;
 

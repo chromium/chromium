@@ -6930,7 +6930,7 @@ void Document::setDomain(const String& raw_domain,
   }
 
   if (RuntimeEnabledFeatures::OriginIsolationHeaderEnabled(dom_window_) &&
-      dom_window_->GetAgent()->IsOriginKeyed()) {
+      dom_window_->GetAgent()->GetAgentClusterKey().IsOriginKeyed()) {
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kWarning,
         "document.domain mutation is ignored because the surrounding agent "

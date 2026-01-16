@@ -16,7 +16,6 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
-#include "content/browser/security/coop/cross_origin_isolation_mode.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/webui/url_data_manager_backend.h"
 #include "content/common/features.h"
@@ -653,11 +652,11 @@ std::string SiteInfo::GetDebugString() const {
                         ->common_coi_origin.GetDebugString();
     if (agent_cluster_key_.GetCrossOriginIsolationKey()
             ->cross_origin_isolation_mode ==
-        CrossOriginIsolationMode::kConcrete) {
+        blink::mojom::CrossOriginIsolationMode::kConcrete) {
       debug_string += ", concrete coi";
     } else if (agent_cluster_key_.GetCrossOriginIsolationKey()
                    ->cross_origin_isolation_mode ==
-               CrossOriginIsolationMode::kLogical) {
+               blink::mojom::CrossOriginIsolationMode::kLogical) {
       debug_string += ", logical coi";
     }
   }

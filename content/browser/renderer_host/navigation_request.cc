@@ -1416,8 +1416,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*document_ukm_source_id=*/ukm::kInvalidSourceId,
           frame_tree_node->pending_frame_policy(),
           /*force_enabled_origin_trials=*/std::vector<std::string>(),
-          /*origin_agent_cluster=*/false,
-          /*origin_agent_cluster_left_as_default=*/true,
+          blink::mojom::AgentClusterKey::NewSiteKey(GURL()),
           /*enabled_client_hints=*/
           std::vector<network::mojom::WebClientHintsType>(),
           /*is_cross_site_cross_browsing_context_group=*/false,
@@ -1572,8 +1571,7 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           /*document_ukm_source_id=*/ukm::kInvalidSourceId,
           frame_tree_node->pending_frame_policy(),
           /*force_enabled_origin_trials=*/std::vector<std::string>(),
-          /*origin_agent_cluster=*/false,
-          /*origin_agent_cluster_left_as_default=*/true,
+          blink::mojom::AgentClusterKey::NewSiteKey(GURL()),
           /*enabled_client_hints=*/
           std::vector<network::mojom::WebClientHintsType>(),
           /*is_cross_site_cross_browsing_context_group=*/false,
@@ -3982,10 +3980,11 @@ bool NavigationRequest::IsIsolationImplied() {
                             network::mojom::OriginAgentClusterValue::kAbsent;
 }
 
-void NavigationRequest::DetermineOriginAgentClusterEndResult() {
+void NavigationRequest::DetermineAgentClusterKeyForCommit() {
   DCHECK(state_ == WILL_PROCESS_RESPONSE ||
          state_ == WILL_COMMIT_WITHOUT_URL_LOADER ||
          state_ == WILL_FAIL_REQUEST || state_ == CANCELING);
+  // First, determine the final OAC status for the document.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   url::Origin origin = GetOriginToCommit().value();
   const IsolationContext& isolation_context =
@@ -4073,22 +4072,53 @@ void NavigationRequest::DetermineOriginAgentClusterEndResult() {
        network::mojom::WebSandboxFlags::kOrigin) ==
       network::mojom::WebSandboxFlags::kOrigin;
 
-  // The origin_agent_cluster navigation commit parameter communicates to the
-  // renderer about origin-keying, so it should be true for opaque origin
-  // cases (e.g., for data: URLs). origin_agent_cluster_end_result_ shouldn't be
-  // modified since it's used for warnings and use counters, i.e. things that
-  // don't apply to this sort of "automatic" origin-keying.
-  commit_params_->origin_agent_cluster = is_opaque_origin_because_sandbox ||
-                                         origin.opaque() ||
-                                         got_origin_agent_cluster;
+  // Compute whether the renderer should use an origin-keyed or a site-keyed
+  // AgentClusterKey to commit the navigation. Note that we do not update
+  // origin_agent_cluster_end_result_ since it's used for warnings and use
+  // counters, i.e. things that don't apply to this sort of "automatic"
+  // origin-keying.
+  bool is_origin_keyed_for_renderer = is_opaque_origin_because_sandbox ||
+                                      origin.opaque() ||
+                                      got_origin_agent_cluster ||
+                                      GetRenderFrameHost()
+                                          ->GetSiteInstance()
+                                          ->GetSiteInfo()
+                                          .agent_cluster_key()
+                                          .IsOriginKeyed();
 
-  // The origin_agent_cluster_left_as_default navigation commit parameter
-  // communicates to the renderer whether the origin_agent_cluster decision
-  // (recorded just above) has been made based on an absent Origin-Agent-Cluster
-  // http header.
-  commit_params_->origin_agent_cluster_left_as_default =
-      !response_head_ || response_head_->parsed_headers->origin_agent_cluster ==
-                             network::mojom::OriginAgentClusterValue::kAbsent;
+  // Cross-origin isolated pages are always origin-keyed, with a cross-origin
+  // isolation key. Currently, pages cross-origin isolated through COOP and COEP
+  // are not given a cross-origin isolated AgentClusterKey in their
+  // SiteInstance. Create one to send to the renderer process.
+  std::optional<AgentClusterKey::CrossOriginIsolationKey> coi_key =
+      GetRenderFrameHost()
+          ->GetSiteInstance()
+          ->GetSiteInfo()
+          .agent_cluster_key()
+          .GetCrossOriginIsolationKey();
+  if (!coi_key.has_value() && GetRenderFrameHost()
+                                  ->GetSiteInstance()
+                                  ->GetWebExposedIsolationInfo()
+                                  .is_isolated()) {
+    coi_key = AgentClusterKey::CrossOriginIsolationKey(
+        GetRenderFrameHost()
+            ->GetSiteInstance()
+            ->GetWebExposedIsolationInfo()
+            .origin(),
+        blink::mojom::CrossOriginIsolationMode::kConcrete);
+  }
+
+  // Update the AgentClusterKey in CommitNavigationParams to the correct
+  // AgentClusterKey to use for navigation. Unfortunately, we cannot use the
+  // AgentClusterKey of the SiteInstance directly, as there are many edge cases
+  // where the AgentClusterKey of the SiteInstance is not what we expect per
+  // spec due to particular process allocation constraints. So it is simpler to
+  // compute a brand new key here rather than relying on the SiteInstance's
+  // AgentClusterKey (except for checking its cross-origin isolation key and
+  // whether it is origin keyed).
+  commit_params_->agent_cluster_key =
+      AgentClusterKey::CreateAgentClusterKeyForNavigationCommit(
+          origin, is_origin_keyed_for_renderer, coi_key);
 }
 
 void NavigationRequest::ProcessOriginAgentClusterEndResult() {
@@ -6347,7 +6377,7 @@ void NavigationRequest::CommitErrorPage(
     const std::optional<std::string>& error_page_content) {
   DCHECK(!IsSameDocument());
 
-  DetermineOriginAgentClusterEndResult();
+  DetermineAgentClusterKeyForCommit();
 
   UpdateHistoryParamsInCommitNavigationParams();
 
@@ -6481,7 +6511,7 @@ void NavigationRequest::CommitNavigation() {
 
   CoopCoepSanityCheck();
 
-  DetermineOriginAgentClusterEndResult();
+  DetermineAgentClusterKeyForCommit();
 
   UpdateHistoryParamsInCommitNavigationParams();
   DCHECK(NeedsUrlLoader() == !!response_head_ ||
@@ -11085,7 +11115,7 @@ NavigationRequest::ComputeCrossOriginIsolationKey() {
   policy_container_builder_->SetCrossOriginIsolationEnabledByDIP();
 
   return AgentClusterKey::CrossOriginIsolationKey(
-      origin, CrossOriginIsolationMode::kConcrete);
+      origin, blink::mojom::CrossOriginIsolationMode::kConcrete);
 }
 
 std::optional<WebExposedIsolationInfo>

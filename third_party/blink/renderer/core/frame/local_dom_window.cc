@@ -2083,7 +2083,7 @@ void LocalDOMWindow::cancelAnimationFrame(int id) {
 }
 
 bool LocalDOMWindow::originAgentCluster() const {
-  return GetAgent()->IsOriginKeyed();
+  return GetAgent()->GetAgentClusterKey().IsOriginKeyed();
 }
 
 CustomElementRegistry* LocalDOMWindow::customElements(

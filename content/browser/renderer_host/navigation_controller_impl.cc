@@ -4461,8 +4461,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           /*document_ukm_source_id=*/ukm::kInvalidSourceId,
           node->pending_frame_policy(),
           /*force_enabled_origin_trials=*/std::vector<std::string>(),
-          /*origin_agent_cluster=*/false,
-          /*origin_agent_cluster_left_as_default=*/true,
+          blink::mojom::AgentClusterKey::NewSiteKey(GURL()),
           /*enabled_client_hints=*/
           std::vector<network::mojom::WebClientHintsType>(),
           /*is_cross_site_cross_browsing_context_group=*/false,

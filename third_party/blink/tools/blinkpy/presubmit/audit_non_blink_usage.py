@@ -492,6 +492,15 @@ _CONFIG = [
         ],
     },
     {
+        'paths': [
+            'third_party/blink/common/navigation/navigation_params.cc',
+        ],
+        'allowed': [
+            # To initialize the AgentClusterKey in CommitNavigationParams.
+            'GURL',
+        ],
+    },
+    {
         'paths': ['third_party/blink/public/platform/web_url.h'],
         'allowed': [
             # Conversion functions from/to WebURL for non-blink code.

@@ -423,8 +423,7 @@ struct SameSizeAsDocumentLoader
       initiator_origin_trial_features;
   const Vector<String> force_enabled_origin_trials;
   bool navigation_scroll_allowed;
-  bool origin_agent_cluster;
-  bool origin_agent_cluster_left_as_default;
+  AgentClusterKey agent_cluster_key;
   bool is_cross_site_cross_browsing_context_group;
   bool should_have_sticky_user_activation;
   std::vector<WebHistoryItem> navigation_api_back_entries
@@ -598,9 +597,7 @@ DocumentLoader::DocumentLoader(
           CopyInitiatorOriginTrials(params_->initiator_origin_trial_features)),
       force_enabled_origin_trials_(
           CopyForceEnabledOriginTrials(params_->force_enabled_origin_trials)),
-      origin_agent_cluster_(params_->origin_agent_cluster),
-      origin_agent_cluster_left_as_default_(
-          params_->origin_agent_cluster_left_as_default),
+      agent_cluster_key_(params_->agent_cluster_key),
       is_cross_site_cross_browsing_context_group_(
           params_->is_cross_site_cross_browsing_context_group),
       should_have_sticky_user_activation_(
@@ -727,9 +724,7 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   // sandbox flags and various policies are copied separately during commit in
   // CommitNavigation() and CalculateSandboxFlags().
   params->storage_key = window->GetStorageKey();
-  params->origin_agent_cluster = origin_agent_cluster_;
-  params->origin_agent_cluster_left_as_default =
-      origin_agent_cluster_left_as_default_;
+  params->agent_cluster_key = agent_cluster_key_;
   params->grant_load_local_resources = grant_load_local_resources_;
   // Various attributes that relates to the last "real" navigation that is known
   // by the browser must be carried over.
@@ -2538,26 +2533,23 @@ bool HasPotentialUniversalAccessPrivilege(LocalFrame* frame) {
 
 }  // namespace
 
-WindowAgent* GetWindowAgentForOrigin(
+WindowAgent* GetWindowAgentForAgentClusterKey(
     LocalFrame* frame,
-    SecurityOrigin* origin,
-    bool is_origin_agent_cluster,
-    bool origin_agent_cluster_left_as_default) {
+    const AgentClusterKey& agent_cluster_key) {
   // TODO(keishi): Also check if AllowUniversalAccessFromFileURLs might
   // dynamically change.
-  return frame->window_agent_factory().GetAgentForOrigin(
-      HasPotentialUniversalAccessPrivilege(frame), origin,
-      is_origin_agent_cluster, origin_agent_cluster_left_as_default);
+  return frame->window_agent_factory().GetAgentForAgentClusterKey(
+      HasPotentialUniversalAccessPrivilege(frame), agent_cluster_key);
 }
 
-// Inheriting cases use their agent's "is origin-keyed" value, which is set
+// Inheriting cases use their agent's AgentClusterKey value, which is set
 // by whatever they're inheriting from.
 //
 // javascript: URLs use the calling page as their Url() value, so we need to
 // include them explicitly.
 //
 // Discarded pages retain their Url() value so must be included explicitly.
-bool ShouldInheritExplicitOriginKeying(const KURL& url, CommitReason reason) {
+bool ShouldInheritAgentClusterKey(const KURL& url, CommitReason reason) {
   return Document::ShouldInheritSecurityOriginFromOwner(url) ||
          reason == CommitReason::kJavascriptUrl ||
          reason == CommitReason::kDiscard;
@@ -2635,35 +2627,52 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
     security_origin = CalculateOrigin(owner_document);
   }
 
-  bool origin_agent_cluster = origin_agent_cluster_;
-  // Note: this code must be kept in sync with
-  // WindowAgentFactory::GetAgentForOrigin(), as the two conditions below hand
-  // out universal WindowAgent objects, and thus override OAC.
-  if (HasPotentialUniversalAccessPrivilege(frame_.Get()) ||
-      security_origin->IsLocal()) {
+  AgentClusterKey agent_cluster_key = agent_cluster_key_;
+  if (IsPagePopupRunningInWebTest(frame_)) {
+    // Additionally, if we are a page popup in LayoutTests ensure we use the
+    // popup owner's AgentClusterKey so the tests can possibly access the
+    // document via internals API.
+    agent_cluster_key = frame_->PagePopupOwner()
+                            ->GetExecutionContext()
+                            ->GetAgent()
+                            ->GetAgentClusterKey();
+
+    // Note: this code must be kept in sync with
+    // WindowAgentFactory::GetAgentForOrigin(), as the two conditions below hand
+    // out universal WindowAgent objects, and thus override the AgentClusterKey
+    // provided by the browser process.
+  } else if (HasPotentialUniversalAccessPrivilege(frame_.Get()) ||
+             security_origin->IsLocal()) {
     // In this case we either have AllowUniversalAccessFromFileURLs enabled, or
     // WebSecurity is disabled, or it's a local scheme such as file://; any of
     // these cases forces us to use a common WindowAgent for all origins, so
-    // don't attempt to use OriginAgentCluster. Note:
+    // don't attempt to pass the AgentClusterKey sent from the browser. Instead
+    // recreate a site-keyed one based on the SecurityOrigin. For file URLs,
+    // this will be picked up by the WindowAgentFactory to assign the common
+    // file WindowAgent. Note:
     // AllowUniversalAccessFromFileURLs is deprecated as of Android R, so
     // eventually this use case will diminish.
-    origin_agent_cluster = false;
-  } else if (ShouldInheritExplicitOriginKeying(Url(), commit_reason_) &&
+    agent_cluster_key =
+        AgentClusterKey::CreateSiteKeyed(KURL(security_origin->ToString()));
+  } else if (ShouldInheritAgentClusterKey(Url(), commit_reason_) &&
              owner_document && owner_document->domWindow()) {
     // Since we're inheriting the owner document's origin, we should also use
-    // its OriginAgentCluster (OAC) in determining which WindowAgent to use,
-    // overriding the OAC value sent in the commit params. For example, when
-    // about:blank is loaded, it has OAC = false, but if we have an owner, then
-    // we are using the owner's SecurityOrigin, we should match the OAC value
-    // also. JavaScript URLs also use their owner's SecurityOrigins, and don't
-    // set OAC as part of their commit params.
+    // its AgentClusterKey to determine which WindowAgent to use, overriding the
+    // AgentClusterKey sent in the commit params. This happens mainly in two
+    // cases:
+    //   1. about:blank documents with an owner, which inherit both
+    //   SecurityOrigin and AgentClusterKey from their owner.
+    //   2. JavaScript URLs also inherit their SecurityOrigin and
+    //   AgentClusterKey from their owner (and don't pass an AgentClusterKey in
+    //   their commit params).
+    //
     // TODO(wjmaclean,domenic): we're currently verifying that the OAC
     // inheritance is correct for both XSLT documents and non-initial
     // about:blank cases. Given the relationship between OAC, SecurityOrigin,
     // and COOP/COEP, a single inheritance pathway would make sense; this work
     // is being tracked in https://crbug.com/1183935.
-    origin_agent_cluster =
-        owner_document->domWindow()->GetAgent()->IsOriginKeyedForInheritance();
+    agent_cluster_key =
+        owner_document->domWindow()->GetAgent()->GetAgentClusterKey();
   }
 
   bool inherited_has_storage_access = false;
@@ -2677,18 +2686,9 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   // Document::IsSecureTransitionTo.
   if (!ShouldReuseDOMWindow(frame_->DomWindow(), security_origin.get(),
                             window_anonymous_matching)) {
-    auto* agent = GetWindowAgentForOrigin(
-        frame_.Get(), security_origin.get(), origin_agent_cluster,
-        origin_agent_cluster_left_as_default_);
+    auto* agent =
+        GetWindowAgentForAgentClusterKey(frame_.Get(), agent_cluster_key);
     frame_->SetDOMWindow(MakeGarbageCollected<LocalDOMWindow>(*frame_, agent));
-
-    // TODO(https://crbug.com/1111897): This call is likely to happen happen
-    // multiple times per agent, since navigations can happen multiple times per
-    // agent. This is subpar.
-    if (!ShouldInheritExplicitOriginKeying(Url(), commit_reason_) &&
-        origin_agent_cluster) {
-      agent->ForceOriginKeyedBecauseOfInheritance();
-    }
 
     // No need to sync this back to the browser, since it just came from the
     // browser.
@@ -2711,9 +2711,8 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
       // window to be reused, we should not inherit the initial empty document's
       // Agent, which was a universal access Agent.
       // This happens only in android webview.
-      frame_->DomWindow()->ResetWindowAgent(GetWindowAgentForOrigin(
-          frame_.Get(), security_origin.get(), origin_agent_cluster,
-          origin_agent_cluster_left_as_default_));
+      frame_->DomWindow()->ResetWindowAgent(
+          GetWindowAgentForAgentClusterKey(frame_.Get(), agent_cluster_key));
     }
     frame_->DomWindow()->ClearForReuse();
 
