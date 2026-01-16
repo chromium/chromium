@@ -78,6 +78,7 @@ cr-composebox {
 
 cr-composebox[searchbox-layout-mode="Compact"] {
   --input-bottom-spacing: 14px;
+  --cr-composebox-context-margin-top: -12px;
 }
 
 cr-composebox[searchbox-layout-mode="Compact"]::part(context-menu-entrypoint-icon) {
