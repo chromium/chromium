@@ -383,6 +383,13 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                             mToolbarLayout.getProgressBar());
             layoutManager.addSceneOverlay(mOverlayCoordinator);
             mToolbarLayout.setOverlayCoordinator(mOverlayCoordinator);
+
+            // mOverlayCoordinator needs to receive the latest yOffset and offset tags to position
+            // the scene layer. It's better to request another update to avoid stale values.
+            if (BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()
+                    && mBrowserControls.getControlsPosition() == ControlsPosition.TOP) {
+                mTopControlsStacker.requestLayerUpdatePost(false);
+            }
         }
 
         int tabStripHeightResource = mToolbarLayout.getTabStripHeightFromResource();
