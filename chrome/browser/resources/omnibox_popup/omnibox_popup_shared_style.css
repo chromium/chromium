@@ -16,8 +16,10 @@
   --cr-composebox-font-size: 14px;
 
   --color-searchbox-results-background-hovered: var(--color-omnibox-results-background-hovered);
+  --color-searchbox-results-background-selected: var(--color-omnibox-results-background-selected);
   --color-searchbox-results-focus-indicator: var(--color-omnibox-results-focus-indicator);
   --color-searchbox-results-foreground: var(--color-omnibox-text);
+  --color-searchbox-results-foreground-selected: var(--color-omnibox-results-text-selected);
   --color-searchbox-results-icon-focused-outline: var(--color-omnibox-results-focus-indicator);
   --color-searchbox-results-icon-selected: var(--color-omnibox-results-icon-selected);
 
