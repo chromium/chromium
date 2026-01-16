@@ -175,8 +175,6 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
       _dataSource;
   /// The view containing the input text field and action buttons.
   UIView* _inputPlateContainerView;
-  /// The view that receives UIDropInteractions.
-  UIView* _dragAndDropReceiverView;
   /// The view containing containing the plusButton, mic, send, etc.. in
   /// expanded mode.
   UIView* _toolbarView;
@@ -265,10 +263,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   // --- Bottom Input Area ---
 
   // Input plate container.
-  [self setupDragAndDropReceiverView];
-  AddSameConstraints(_dragAndDropReceiverView, self.view);
   [self setupInputPlateContainerView];
-  AddSameConstraints(_inputPlateContainerView, _dragAndDropReceiverView);
+  AddSameConstraints(_inputPlateContainerView, self.view);
 
   _omniboxContainer.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -1503,19 +1499,6 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   ]];
 }
 
-/// Sets up the view that receives drop interactions for the input plate.
-- (void)setupDragAndDropReceiverView {
-  _dragAndDropReceiverView = [[UIView alloc] init];
-  _dragAndDropReceiverView.translatesAutoresizingMaskIntoConstraints = NO;
-  _dragAndDropReceiverView.backgroundColor = [UIColor clearColor];
-
-  // TODO(crbug.com/475834813): Add glow effect when dragging an item over the
-  // composebox.
-  [_dragAndDropReceiverView
-      addInteraction:[[UIDropInteraction alloc] initWithDelegate:self]];
-  [self.view addSubview:_dragAndDropReceiverView];
-}
-
 /// Sets up the main container view for the input plate.
 - (void)setupInputPlateContainerView {
   _inputPlateContainerView = [[UIView alloc] init];
@@ -1533,15 +1516,20 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                      _inputPlateContainerView);
 
   [self updateDepthShadowAppearance];
-  [_dragAndDropReceiverView addSubview:_inputPlateContainerView];
+
+  // TODO(crbug.com/475834813): Add a glow effect when dragging an item
+  // over the composebox.
+  [_inputPlateContainerView
+      addInteraction:[[UIDropInteraction alloc] initWithDelegate:self]];
+  [self.view addSubview:_inputPlateContainerView];
 
   _glowEffectView = ios::provider::CreateGlowEffect(
       CGRectZero, kInputPlateCornerRadius, /*glowWidth is deprecated*/ 0);
   if (_glowEffectView) {
     _glowEffectView.translatesAutoresizingMaskIntoConstraints = NO;
     _glowEffectView.userInteractionEnabled = NO;
-    [_dragAndDropReceiverView insertSubview:_glowEffectView
-                               aboveSubview:_inputPlateContainerView];
+    [self.view insertSubview:_glowEffectView
+                aboveSubview:_inputPlateContainerView];
     AddSameConstraints(_inputPlateContainerView, _glowEffectView);
   }
 }
