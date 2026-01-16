@@ -38,6 +38,11 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/access_token_fetcher.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -52,6 +57,34 @@ using sessions::SessionTabHelper;
 namespace contextual_tasks {
 
 namespace {
+
+constexpr net::BackoffEntry::Policy
+    kIgnoreFirstErrorRequestAccessTokenBackoffPolicy = {
+        // Number of initial errors (in sequence) to ignore before applying
+        // exponential back-off rules.
+        1,
+
+        // Initial delay for exponential back-off in ms.
+        500,
+
+        // Factor by which the waiting time will be multiplied.
+        2,
+
+        // Fuzzing percentage. ex: 10% will spread requests randomly
+        // between 90%-100% of the calculated time.
+        0.2,  // 20%
+
+        // Maximum amount of time we are willing to delay our request in ms.
+        10000,  // 10 seconds.
+
+        // Time to keep an entry from being discarded even when it
+        // has no significant state, -1 to never discard.
+        -1,
+
+        // Don't use initial delay unless the last request was an error.
+        false,
+};
+
 constexpr char kAiPageHost[] = "https://google.com";
 constexpr char kTaskQueryParam[] = "task";
 
@@ -127,7 +160,9 @@ ContextualTasksUiService::ContextualTasksUiService(
     signin::IdentityManager* identity_manager)
     : profile_(profile),
       contextual_tasks_service_(contextual_tasks_service),
-      identity_manager_(identity_manager) {
+      identity_manager_(identity_manager),
+      request_access_token_backoff_(
+          &kIgnoreFirstErrorRequestAccessTokenBackoffPolicy) {
   ai_page_hosts_.emplace_back(kAiPageHost);
   std::string forced_host = contextual_tasks::GetForcedEmbeddedPageHost();
   if (!forced_host.empty()) {
@@ -228,6 +263,52 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
           contextual_task_web_contents)
           ->SetTaskSession(task.GetTaskId(), std::move(session_handle));
     }
+  }
+}
+
+void ContextualTasksUiService::OnOAuthTokenReceived(
+    GoogleServiceAuthError error,
+    signin::AccessTokenInfo access_token_info) {
+  // Clear the fetcher as it's done.
+  access_token_fetcher_.reset();
+
+  base::UmaHistogramEnumeration("ContextualTasks.WebUI.OAuthError",
+                                error.state(),
+                                GoogleServiceAuthError::NUM_STATES);
+
+  if (error.state() != GoogleServiceAuthError::NONE) {
+    // If this is a transient error, retry with exponential backoff.
+    if (error.IsTransientError()) {
+      request_access_token_backoff_.InformOfRequest(false);
+      base::TimeDelta delay =
+          request_access_token_backoff_.GetTimeUntilRelease();
+      if (delay.is_zero()) {
+        StartAccessTokenFetch();
+      } else {
+        token_refresh_timer_.Start(
+            FROM_HERE, delay,
+            base::BindOnce(&ContextualTasksUiService::StartAccessTokenFetch,
+                           weak_ptr_factory_.GetWeakPtr()));
+      }
+      return;
+    }
+
+    // TODO(crbug.com/470109970): If at this point the token is empty, the error
+    // is not transient and a blocking error needs to shown to the user to
+    // prevent the user continuing to interact with broken UI.
+    RunPendingAccessTokenCallbacks("");
+    return;
+  }
+  request_access_token_backoff_.Reset();
+  RunPendingAccessTokenCallbacks(access_token_info.token);
+}
+
+void ContextualTasksUiService::RunPendingAccessTokenCallbacks(
+    const std::string& token) {
+  std::vector<GetAccessTokenCallback> callbacks;
+  std::swap(callbacks, pending_access_token_callbacks_);
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(token);
   }
 }
 
@@ -378,6 +459,37 @@ bool ContextualTasksUiService::HandleNavigation(
       std::move(url_params), source_contents,
       tabs::TabInterface::MaybeGetFromContents(source_contents),
       is_from_embedded_page, is_to_new_tab);
+}
+
+void ContextualTasksUiService::GetAccessToken(GetAccessTokenCallback callback) {
+  pending_access_token_callbacks_.push_back(std::move(callback));
+
+  // If a request is already in progress, or we are waiting to retry, do
+  // nothing.
+  if (access_token_fetcher_ || token_refresh_timer_.IsRunning()) {
+    return;
+  }
+
+  StartAccessTokenFetch();
+}
+
+void ContextualTasksUiService::StartAccessTokenFetch() {
+  token_refresh_timer_.Stop();
+
+  if (!identity_manager_ ||
+      !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    RunPendingAccessTokenCallbacks("");
+    return;
+  }
+
+  auto account =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+
+  access_token_fetcher_ = identity_manager_->CreateAccessTokenFetcherForAccount(
+      account.account_id, signin::OAuthConsumerId::kContextualTasks,
+      base::BindOnce(&ContextualTasksUiService::OnOAuthTokenReceived,
+                     weak_ptr_factory_.GetWeakPtr()),
+      signin::AccessTokenFetcher::Mode::kWaitUntilRefreshTokenAvailable);
 }
 
 bool ContextualTasksUiService::HandleNavigationImpl(
