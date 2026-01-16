@@ -1617,8 +1617,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
   // Generating single field suggestions.
   auto on_suggestions_returned = base::BindOnce(
       [](base::OnceCallback<void(std::vector<Suggestion>)> callback,
-         FieldGlobalId field_id, const std::vector<Suggestion>& suggestions) {
-        std::move(callback).Run(suggestions);
+         FieldGlobalId field_id, std::vector<Suggestion> suggestions) {
+        std::move(callback).Run(std::move(suggestions));
       },
       std::move(on_single_field_suggestions_callback));
   if (form_structure && autofill_field &&
