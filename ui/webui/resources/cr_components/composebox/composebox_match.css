@@ -89,7 +89,7 @@
       var(--color-searchbox-results-icon-selected);
   --cr-icon-button-icon-size: 16px;
   --cr-icon-button-hover-background-color:
-      var(--color-searchbox-results-background-hovered);
+      var(--color-searchbox-results-button-hover);
   display: none;
   position: absolute;
   top: var(--cr-composebox-match-remove-button-top, 6px);

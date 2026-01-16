@@ -17,6 +17,7 @@
 
   --color-searchbox-results-background-hovered: var(--color-omnibox-results-background-hovered);
   --color-searchbox-results-background-selected: var(--color-omnibox-results-background-selected);
+  --color-searchbox-results-button-hover: var(--color-omnibox-results-button-ink-drop-row-hovered);
   --color-searchbox-results-focus-indicator: var(--color-omnibox-results-focus-indicator);
   --color-searchbox-results-foreground: var(--color-omnibox-text);
   --color-searchbox-results-foreground-selected: var(--color-omnibox-results-text-selected);

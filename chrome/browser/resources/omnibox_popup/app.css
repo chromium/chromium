@@ -38,7 +38,6 @@
   --color-searchbox-results-action-chip-icon: var(--color-omnibox-results-button-icon);
   --color-searchbox-results-action-chip-icon-selected: var(--color-omnibox-results-button-icon-selected);
   --color-searchbox-results-background: var(--color-omnibox-results-background);
-  --color-searchbox-results-button-hover: var(--color-omnibox-results-button-ink-drop-row-hovered);
   --color-searchbox-results-button-selected-hover: var(--color-omnibox-results-button-ink-drop-row-selected);
   --color-searchbox-results-dim-selected: var(--color-omnibox-results-text-dimmed-selected);
   --color-searchbox-results-foreground-dimmed: var(--color-omnibox-results-text-dimmed);
