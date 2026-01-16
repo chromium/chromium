@@ -420,7 +420,7 @@ TEST_P(QuicSessionAttemptManagerTest, JobCompletesWhenAllRequestsCancelled) {
   InitializeWithDefaultProofVerifyDetails();
 
   MockQuicData socket_data(version_);
-  socket_data.AddConnect(ASYNC, ERR_IO_PENDING);
+  socket_data.AddConnect(SYNCHRONOUS, ERR_IO_PENDING);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create multiple pending requests.
@@ -507,7 +507,7 @@ TEST_P(QuicSessionAttemptManagerTest, OnOriginFrame) {
 
   // 1. Make a request for `kDefaultServerHostName` that will be pending.
   MockQuicData socket_data1(version_);
-  socket_data1.AddConnect(ASYNC, ERR_IO_PENDING);
+  socket_data1.AddConnect(SYNCHRONOUS, ERR_IO_PENDING);
   socket_data1.AddSocketDataToFactory(socket_factory_.get());
 
   SessionRequester requester1 = CreateRequester();

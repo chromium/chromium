@@ -145,6 +145,7 @@ void QuicSessionAttempt::PopulateNetErrorDetails(
 int QuicSessionAttempt::DoLoop(int rv) {
   CHECK(!in_loop_);
   CHECK_NE(next_state_, State::kNone);
+  CHECK_NE(rv, ERR_IO_PENDING);
 
   base::AutoReset<bool> auto_reset(&in_loop_, true);
   do {

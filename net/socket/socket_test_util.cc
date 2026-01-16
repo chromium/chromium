@@ -1051,6 +1051,7 @@ MockClientSocket::~MockClientSocket() = default;
 
 void MockClientSocket::RunCallbackAsync(CompletionOnceCallback callback,
                                         int result) {
+  CHECK_NE(result, ERR_IO_PENDING);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&MockClientSocket::RunCallback, weak_factory_.GetWeakPtr(),
@@ -1615,6 +1616,7 @@ MockSSLClientSocket::GetServerTrustAnchorIDsForRetry() {
 
 void MockSSLClientSocket::RunCallbackAsync(CompletionOnceCallback callback,
                                            int result) {
+  CHECK_NE(result, ERR_IO_PENDING);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&MockSSLClientSocket::RunCallback,
@@ -1960,6 +1962,7 @@ int MockUDPClientSocket::CompleteRead() {
 
 void MockUDPClientSocket::RunCallbackAsync(CompletionOnceCallback callback,
                                            int result) {
+  CHECK_NE(result, ERR_IO_PENDING);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&MockUDPClientSocket::RunCallback,

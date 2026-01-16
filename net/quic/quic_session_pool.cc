@@ -1908,6 +1908,7 @@ void QuicSessionPool::FinishCreateSession(
     std::optional<ConnectionManagementConfig> connection_management_config,
     int rv) {
   if (rv != OK) {
+    CHECK_NE(rv, ERR_IO_PENDING);
     std::move(callback).Run(base::unexpected(rv));
     return;
   }
