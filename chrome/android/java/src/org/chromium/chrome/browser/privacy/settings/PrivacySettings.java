@@ -112,7 +112,8 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
         Bundle extras = new Bundle();
         extras.putString(SingleCategorySettings.EXTRA_CATEGORY, "javascript_optimizer");
         SettingsNavigation navigation = SettingsNavigationFactory.createSettingsNavigation();
-        navigation.startSettings(context, SingleCategorySettings.class, extras);
+        navigation.startSettings(
+                context, SingleCategorySettings.class, extras, /* addToBackStack= */ true);
     }
 
     /** Creates {@link SpanInfo} for link which has the passed-in tag. */
@@ -166,7 +167,11 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                     // In details it is still a part of SettingsActivity, it will let user find
                     // it is an independent flow.
                     SettingsNavigationFactory.createSettingsNavigation()
-                            .startSettings(getActivity(), PrivacyGuideFragment.class);
+                            .startSettings(
+                                    getActivity(),
+                                    PrivacyGuideFragment.class,
+                                    /* fragmentArgs= */ null,
+                                    /* addToBackStack= */ true);
                     return true;
                 });
         if (getProfile().isChild()
@@ -329,7 +334,11 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                     @Override
                     public void onClick(View view) {
                         SettingsNavigationFactory.createSettingsNavigation()
-                                .startSettings(getActivity(), GoogleServicesSettings.class);
+                                .startSettings(
+                                        getActivity(),
+                                        GoogleServicesSettings.class,
+                                        /* fragmentArgs= */ null,
+                                        /* addToBackStack= */ true);
                     }
                 };
 
@@ -338,7 +347,11 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                     @Override
                     public void onClick(View view) {
                         SettingsNavigationFactory.createSettingsNavigation()
-                                .startSettings(getActivity(), ManageSyncSettings.class);
+                                .startSettings(
+                                        getActivity(),
+                                        ManageSyncSettings.class,
+                                        /* fragmentArgs= */ null,
+                                        /* addToBackStack= */ true);
                     }
                 };
         if (assumeNonNull(IdentityServicesProvider.get().getIdentityManager(getProfile()))

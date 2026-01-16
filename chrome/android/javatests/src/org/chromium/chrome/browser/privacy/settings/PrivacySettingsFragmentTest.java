@@ -431,7 +431,8 @@ public class PrivacySettingsFragmentTest {
                         .toString();
         onView(withText(containsString(footerWithoutSpans))).perform(clickOnClickableSpan(0));
 
-        verify(mSettingsNavigation).startSettings(any(), eq(GoogleServicesSettings.class));
+        verify(mSettingsNavigation)
+                .startSettings(any(), eq(GoogleServicesSettings.class), eq(null), eq(true));
     }
 
     @Test
@@ -586,6 +587,7 @@ public class PrivacySettingsFragmentTest {
                                             fragmentArgs.getString(
                                                     SingleCategorySettings.EXTRA_CATEGORY);
                                     return "javascript_optimizer".equals(category);
-                                }));
+                                }),
+                        eq(true));
     }
 }
