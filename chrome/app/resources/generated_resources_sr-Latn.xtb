@@ -738,7 +738,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1486486872607808064">Skenirajte ovaj QR kôd kamerom na uređaju na kom želite da napravite pristupni ključ za aplikaciju <ph name="APP_NAME" /></translation>
 <translation id="1486616492435615702">Napravite radnu verziju ili poboljšajte postojeći rad.</translation>
 <translation id="1487335504823219454">Uključeno – prilagođena podešavanja</translation>
-<translation id="1488513761150925974">Proverite zadatke</translation>
+<translation id="1488513761150925974">Proveri zadatke</translation>
 <translation id="1489101155914355052">Generišu se predlozi za ovaj dokument…</translation>
 <translation id="1493152297698462486">Napravi sliku pomoću Gemini-ja</translation>
 <translation id="1493892686965953381">Čeka se <ph name="LOAD_STATE_PARAMETER" />...</translation>
@@ -1538,6 +1538,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="2024195579772565064">Izbrišite pretraživač</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Precizni klik</translation>
+<translation id="2025130536872979378">prikaži izvor</translation>
 <translation id="2025632980034333559">Dodatak <ph name="APP_NAME" /> je otkazao. Kliknite na ovaj oblačić da biste ga ponovo učitali.</translation>
 <translation id="2026367923222947564">Cela stranica</translation>
 <translation id="2026377162111110983">Glas u prostoru</translation>
@@ -2782,6 +2783,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2856776373509145513">Napravite novi kontejner</translation>
 <translation id="2857047802954430547">Prijavite se da biste pristupali lozinkama, obeleživačima i drugom sadržaju na svim uređajima</translation>
 <translation id="2859741939921354763">Uvezite lozinke u <ph name="BRAND" /></translation>
+<translation id="2860284453253554297">Smernice preduzeća</translation>
 <translation id="2860710618359053450">Pomerite vilicu udesno</translation>
 <translation id="2861301611394761800">Ažuriranje sistema je dovršeno. Restartujte sistem.</translation>
 <translation id="2861402191395139055">Pretplate na Passpoint</translation>
@@ -9786,6 +9788,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="7684212569183643648">Instalirao je administrator</translation>
 <translation id="7684559058815332124">Poseti stranicu za prijavljivanje ulaznog portala</translation>
 <translation id="7684718995427157417">Da biste pravili i testirali aplikacije, omogućite Android Debug Bridge (ADB). Imajte na umu da ova radnja omogućava instaliranje Android aplikacija koje Google nije verifikovao i zahteva resetovanje na fabrička podešavanja da bi se onemogućila.</translation>
+<translation id="7684803937028953000">Organizacija je blokirala lokalno preuzimanje ovog fajla.</translation>
 <translation id="7684913007876670600">Da biste videli pojednostavljeni prikaz ove stranice, otvorite bočnu tablu i izaberite Režim čitanja</translation>
 <translation id="7685038817958445325">Prebacivanje nije uspelo</translation>
 <translation id="7685049629764448582">JavaScript memorija</translation>

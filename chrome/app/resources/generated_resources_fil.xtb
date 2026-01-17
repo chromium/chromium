@@ -1551,6 +1551,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="2024195579772565064">I-delete ang search engine</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Precision na pag-click</translation>
+<translation id="2025130536872979378">tingnan ang source</translation>
 <translation id="2025632980034333559">Nag-crash ang <ph name="APP_NAME" />. Mag-click sa lobong ito upang i-reload ang extension.</translation>
 <translation id="2026367923222947564">Buong page</translation>
 <translation id="2026377162111110983">Area voice</translation>
@@ -2798,6 +2799,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2856776373509145513">Gumawa ng bagong container</translation>
 <translation id="2857047802954430547">Mag-sign in para makuha ang iyong mga password, bookmark, at higit pa sa lahat ng device mo</translation>
 <translation id="2859741939921354763">Mag-import ng mga password sa <ph name="BRAND" /></translation>
+<translation id="2860284453253554297">Mga Patakaran sa Enterprise</translation>
 <translation id="2860710618359053450">Ipaling pakanan ang panga</translation>
 <translation id="2861301611394761800">Kumpleto na ang pag-update ng system. Paki-restart ang system.</translation>
 <translation id="2861402191395139055">Mga subscription sa Passpoint</translation>
@@ -9801,6 +9803,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="7684212569183643648">Na-install ng Iyong Administrator</translation>
 <translation id="7684559058815332124">Bisitahin ang page ng login ng captive portal</translation>
 <translation id="7684718995427157417">Para gumawa at subukan ang iyong mga app, i-enable ang Android Debug Bridge (ADB). Tandaang binibigyang-daan ng pagkilos na ito ang pag-install ng mga Android app na hindi pa na-verify ng Google, at nangangailangan ito ng factory reset para ma-disable.</translation>
+<translation id="7684803937028953000">Na-block ng iyong organisasyon ang lokal na pag-download ng file na ito.</translation>
 <translation id="7684913007876670600">Para magpakita ng pinasimpleng view ng page na ito, buksan ang panel sa gilid at piliin ang Reading mode</translation>
 <translation id="7685038817958445325">Hindi makapag-cast</translation>
 <translation id="7685049629764448582">Memorya sa JavaScript</translation>

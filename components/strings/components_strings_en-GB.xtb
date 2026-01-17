@@ -441,7 +441,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1705645336613358172">Use Affirm or Zip to pay over time</translation>
 <translation id="1706625117072057435">Zoom levels</translation>
-<translation id="1706922226983368260">Passkey • '<ph name="PHONE_NAME" />'</translation>
 <translation id="1706954506755087368">{1,plural, =1{This server could not prove that it is <ph name="DOMAIN" />; its security certificate is supposedly from tomorrow. This may be caused by a misconfiguration or an attacker intercepting your connection.}other{This server could not prove that it is <ph name="DOMAIN" />; its security certificate is supposedly from # days in the future. This may be caused by a misconfiguration or an attacker intercepting your connection.}}</translation>
 <translation id="1710259589646384581">OS</translation>
 <translation id="1711234383449478798">Ignored because <ph name="POLICY_NAME" /> is not set to <ph name="VALUE" />.</translation>
@@ -3523,6 +3522,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6635900375070654124">an authenticator device</translation>
 <translation id="6641852376826221947">Confirm your purchase</translation>
 <translation id="6643016212128521049">Clear</translation>
+<translation id="6644868143085860957">This card couldn't be saved in Google Wallet. It's been saved to Chrome on this device instead.</translation>
 <translation id="6645291930348198241">Access cookies and site data.</translation>
 <translation id="6645478838938543427">Price drop alerts will be sent to <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="6648459603387803038">Your administrator can change your browser setup remotely. Activity on this device may also be managed outside of Chrome.</translation>

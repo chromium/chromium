@@ -441,7 +441,6 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1705645336613358172">使用 Affirm 或 Zip 分期付款</translation>
 <translation id="1706625117072057435">縮放等級</translation>
-<translation id="1706922226983368260">密鑰 •「<ph name="PHONE_NAME" />」</translation>
 <translation id="1706954506755087368">{1,plural, =1{伺服器無法證明屬於 <ph name="DOMAIN" /> 網域；其安全性憑證預期於明天生效。這可能是由於設定錯誤，或有攻擊者攔截您的連線。}other{伺服器無法證明屬於 <ph name="DOMAIN" /> 網域；其安全性憑證預期於 # 天後生效。這可能是由於設定錯誤，或有攻擊者攔截您的連線。}}</translation>
 <translation id="1710259589646384581">作業系統</translation>
 <translation id="1711234383449478798">由於「<ph name="POLICY_NAME" />」未設定為「<ph name="VALUE" />」，因此被忽略。</translation>

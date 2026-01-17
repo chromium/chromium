@@ -441,7 +441,6 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1705645336613358172">Ödənişi hissə-hissə etmək üçün Affirm və ya Zip-dən istifadə edin</translation>
 <translation id="1706625117072057435">Zoom səviyyələri</translation>
-<translation id="1706922226983368260">Giriş açarı • "<ph name="PHONE_NAME" />"</translation>
 <translation id="1706954506755087368">{1,plural, =1{Bu server <ph name="DOMAIN" /> olduğunu sübut edə bilmədi; böyük ehtimal təhlükəsizlik sertifikatı sabahdan etibarən nəzərdə tutulub. Buna yanlış konfiqurasiya və ya hücumçu tərəfindən bağlantının ələ keçirilməsi səbəb ola bilər.}other{Bu server <ph name="DOMAIN" /> olduğunu sübut edə bilmədi; təhlükəsizlik sertifikatı gələcəkdə # gündən sonra nəzərdə tutulub. Buna yanlış konfiqurasiya və ya hücumçu tərəfindən bağlantının ələ keçirilməsi səbəb ola bilər.}}</translation>
 <translation id="1710259589646384581">OS</translation>
 <translation id="1711234383449478798"><ph name="POLICY_NAME" /> <ph name="VALUE" /> olaraq ayarlanmadığına görə nəzərə alınmayıb.</translation>

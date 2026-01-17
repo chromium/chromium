@@ -1549,6 +1549,7 @@ Izimvume ozinikezile ama-app kakade zingase zisebenze kule akhawunti. Ungakwazi 
 <translation id="2024195579772565064">Sula injini yosesho</translation>
 <translation id="202500043506723828">I-EID</translation>
 <translation id="2025123106058020990">Ukuchofoza ngendlela ecacile</translation>
+<translation id="2025130536872979378">buka umthombo</translation>
 <translation id="2025632980034333559">I-<ph name="APP_NAME" /> iphahlazekile. Chofoza le bhamuza ukuze uphinde ulayishe isandiso.</translation>
 <translation id="2026367923222947564">Ikhasi eligcwele</translation>
 <translation id="2026377162111110983">Izwi lendawo</translation>
@@ -2798,6 +2799,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2856776373509145513">Yenza isiqukathi esisha</translation>
 <translation id="2857047802954430547">Ngena ngemvume ukuze uthole amaphasiwedi akho, amabhukhimakhi, nokuningi kuwo wonke amadivayisi akho</translation>
 <translation id="2859741939921354763">Ngenisa amaphasiwedi ku-<ph name="BRAND" /></translation>
+<translation id="2860284453253554297">Izinqubomgomo Zebhizinisi</translation>
 <translation id="2860710618359053450">Yisa umhlathi kwesokudla</translation>
 <translation id="2861301611394761800">Ukubuyekeza isistimu kuqedile. Sicela uqale kabusha isistimu.</translation>
 <translation id="2861402191395139055">Okubhaliselwe kwe-passpoint</translation>
@@ -9800,6 +9802,7 @@ Lokhu kungabandakanya ulwazi mayelana nesofthiwe efakiwe, amafayela, ibhrawuza y
 <translation id="7684212569183643648">Kufakwe umlawuli wakho</translation>
 <translation id="7684559058815332124">Vakashela ikhasi lokungena ngemvume lephothali ethunjiwe</translation>
 <translation id="7684718995427157417">Ukuze udale uphinde uhlole izinhlelo zakho zokusebenza, nika amandla i-Android Debug Bridge (ADB). Qaphela ukuthi lesi senzo sivumela ukufakwa kwezinhlelo zokusebenza ze-Android ezingazange ziqinisekiswe i-Google, futhi sidinga ukusethwa kabusha kwasekuqaleni ukuze usikhubaze.</translation>
+<translation id="7684803937028953000">Inhlangano yakho ivimbele ukudawunilodwa kwendawo kwaleli fayela.</translation>
 <translation id="7684913007876670600">Ukuze ubonise ukubuka okwenziwe lula kwaleli khasi, vula iphaneli eseceleni bese ukhetha Imodi yokufunda</translation>
 <translation id="7685038817958445325">Ayikwazi ukusakaza</translation>
 <translation id="7685049629764448582">Imemori ye-JavaScript</translation>

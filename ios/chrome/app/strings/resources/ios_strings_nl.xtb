@@ -315,6 +315,7 @@
 <translation id="21133533946938348">Tabblad vastzetten</translation>
 <translation id="2117650889962717098">Schakel over naar de incognitomodus om privé te browsen</translation>
 <translation id="2119636449201577317">Openen in…</translation>
+<translation id="2119962645034852864">Sommige services zijn niet beschikbaar voor je account</translation>
 <translation id="2120553909046681540">Je organisatie heeft privé browsen uitgezet.</translation>
 <translation id="2122754583996902531">Je browser wordt beheerd. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">De chats van je organisatie worden niet gebruikt om onze modellen te verbeteren. Gemini kan onjuiste informatie tonen, ook over mensen. Dubbelcheck daarom de reacties. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
@@ -755,6 +756,7 @@
 <translation id="3888863481921783344">Dit wordt gebruikt om je mogelijke genodigden voor je evenement te tonen.</translation>
 <translation id="3891414008432200754">Prijs</translation>
 <translation id="3892144330757387737">Hier vind je je geschiedenis</translation>
+<translation id="3893858854379998374">Verwijder je ongebruikte bookmarks om bookmarks op te slaan in je account</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904270275864974753">Carrousel bewerken</translation>
 <translation id="3909222758573607742">Wachtwoorden en andere items opslaan in account</translation>
@@ -872,6 +874,7 @@
 <translation id="4302061870579014542">Positie instellen</translation>
 <translation id="4304713468139749426">Wachtwoordmanager</translation>
 <translation id="4309403553630140242">Dubbeltik voor meer informatie</translation>
+<translation id="4310738531374808763">Je homepage aanpassen</translation>
 <translation id="4320848494125124980">Recent</translation>
 <translation id="4322394346347055525">Andere tabbladen sluiten</translation>
 <translation id="4324735664183300693">Meldingen aanzetten</translation>
@@ -1710,6 +1713,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> procent gedownload</translation>
 <translation id="7345061034321640811">Importeren niet toegestaan</translation>
+<translation id="7347998088283246662">Importeer onder andere wachtwoorden, geschiedenis en bookmarks</translation>
 <translation id="7352651011704765696">Er is iets misgegaan</translation>
 <translation id="7364796246159120393">Bestand kiezen</translation>
 <translation id="736564850024123010">Wijzig de positie van de adresbalk voor een aangepaste functionaliteit.</translation>
@@ -2235,6 +2239,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="914781932147356857">Alles markeren…</translation>
 <translation id="9148126808321036104">Opnieuw inloggen</translation>
 <translation id="9149866541089851383">Bewerken...</translation>
+<translation id="9152637745605628097">Kies uit thema's en kleuren of upload een afbeelding</translation>
 <translation id="9159628751968616911">Webpagina verzenden</translation>
 <translation id="9162432979321511934">Zet Wachtwoorden automatisch invullen aan</translation>
 <translation id="9165320910061267720">Als je meldingen wilt krijgen over prijsdalingen, moet je meldingen aanzetten in de iOS-instellingen.</translation>

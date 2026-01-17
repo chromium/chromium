@@ -315,6 +315,7 @@
 <translation id="21133533946938348">Ghim Thẻ</translation>
 <translation id="2117650889962717098">Duyệt web riêng tư bằng cách chuyển sang chế độ ẩn danh</translation>
 <translation id="2119636449201577317">Mở trong…</translation>
+<translation id="2119962645034852864">Một số dịch vụ không dùng được cho tài khoản của bạn</translation>
 <translation id="2120553909046681540">Tổ chức của bạn đã tắt tính năng duyệt web ở chế độ riêng tư.</translation>
 <translation id="2122754583996902531">Trình duyệt của bạn thuộc diện quản lý. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">Các cuộc trò chuyện trong tổ chức của bạn sẽ không được dùng để cải thiện các mô hình của chúng tôi. Gemini có thể đưa ra thông tin không chính xác, kể cả thông tin về con người nên bạn cần xác minh các câu trả lời của Gemini. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
@@ -605,6 +606,7 @@
 <translation id="3245744387817103524">Không thể lưu thay đổi của bạn.</translation>
 <translation id="3254806613790954367">Thẻ bạn mở gần đây nhất trên tất cả thiết bị</translation>
 <translation id="325717987950204592">Nhấn vào "Quyền riêng tư và bảo mật"</translation>
+<translation id="3265736395246760288">Đăng nhập nhanh hơn trên mọi thiết bị đã đồng bộ hoá.</translation>
 <translation id="3272527697863656322">Huỷ</translation>
 <translation id="3273510436356991673">Tuỳ chỉnh màn hình chính của bạn</translation>
 <translation id="3277021493514034324">Đã sao chép địa chỉ trang web</translation>
@@ -754,6 +756,7 @@
 <translation id="3888863481921783344">Thông tin này sẽ được dùng để cho bạn biết những người bạn có thể mời tham gia sự kiện.</translation>
 <translation id="3891414008432200754">Giá</translation>
 <translation id="3892144330757387737">Bạn sẽ thấy lịch sử hoạt động ở đây</translation>
+<translation id="3893858854379998374">Để lưu dấu trang vào tài khoản của bạn, hãy xoá những dấu trang không dùng đến</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904270275864974753">Chỉnh sửa băng chuyền</translation>
 <translation id="3909222758573607742">Lưu mật khẩu và các mục khác vào tài khoản</translation>
@@ -871,6 +874,7 @@
 <translation id="4302061870579014542">Thiết lập vị trí</translation>
 <translation id="4304713468139749426">Trình quản lý mật khẩu</translation>
 <translation id="4309403553630140242">Nhấn đúp để xem thêm thông tin</translation>
+<translation id="4310738531374808763">Tuỳ chỉnh trang chủ của bạn</translation>
 <translation id="4320848494125124980">Gần đây</translation>
 <translation id="4322394346347055525">Đóng các thẻ khác</translation>
 <translation id="4324735664183300693">Bật thông báo</translation>
@@ -1709,6 +1713,7 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">Đã tải xuống <ph name="PERCENT" /> phần trăm</translation>
 <translation id="7345061034321640811">Không được phép nhập</translation>
+<translation id="7347998088283246662">Nhập mật khẩu, nhật ký, dấu trang và nhiều dữ liệu khác</translation>
 <translation id="7352651011704765696">Đã xảy ra lỗi</translation>
 <translation id="7364796246159120393">Chọn tệp</translation>
 <translation id="736564850024123010">Chuyển vị trí của thanh địa chỉ để có trải nghiệm phù hợp.</translation>
@@ -2234,6 +2239,7 @@
 <translation id="914781932147356857">Đánh dấu tất cả…</translation>
 <translation id="9148126808321036104">Đăng nhập lại</translation>
 <translation id="9149866541089851383">Chỉnh sửa...</translation>
+<translation id="9152637745605628097">Chọn trong số các giao diện màu sắc hoặc tải một hình ảnh lên</translation>
 <translation id="9159628751968616911">Gửi trang web</translation>
 <translation id="9162432979321511934">Bật tính năng Tự động điền mật khẩu</translation>
 <translation id="9165320910061267720">Để nhận thông báo giảm giá, bạn cần bật thông báo trong phần cài đặt trên iOS.</translation>

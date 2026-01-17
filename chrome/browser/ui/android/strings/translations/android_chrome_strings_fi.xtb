@@ -1641,6 +1641,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="784652447248278262">Nykyinen ikkuna</translation>
 <translation id="784934925303690534">Aikaväli</translation>
 <translation id="7851858861565204677">Muut laitteet</translation>
+<translation id="78527117619130387">Sulje kiinnitetty välilehti painamalla uudelleen ^W</translation>
 <translation id="7853202427316060426">Tapahtumat</translation>
 <translation id="7859988229622350291">Älä koskaan käännä näitä</translation>
 <translation id="7866213166286285359">Käännä sivuja täältä</translation>
@@ -1654,6 +1655,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7919123827536834358">Käännä nämä kielet automaattisesti</translation>
 <translation id="7921782882718083488">Tee yhteenveto tästä sivusta</translation>
 <translation id="7926975587469166629">Kortin lyhytnimi</translation>
+<translation id="7927073875790626822">XR</translation>
 <translation id="7929587383660661825">Chrome poistaa luvat automaattisesti sivustoilta, joilla on harhaanjohtavia ilmoituksia tai joilla et ole käynyt viime aikoina</translation>
 <translation id="7934668619883965330">Tiedostoa ei voida ladata. Tiedostomuotoa ei tueta.</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> on vanhentunut.</translation>

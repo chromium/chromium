@@ -315,6 +315,7 @@
 <translation id="21133533946938348">टॅब पिन करा</translation>
 <translation id="2117650889962717098">गुप्त मोडवर स्विच करून तुमचे ब्राउझिंग खाजगी ठेवा</translation>
 <translation id="2119636449201577317">यामध्ये उघडा…</translation>
+<translation id="2119962645034852864">तुमच्या खात्यासाठी काही सेवा उपलब्ध नाहीत</translation>
 <translation id="2120553909046681540">तुमच्या संस्थेने खाजगी ब्राउझिंग बंद केले आहे.</translation>
 <translation id="2122754583996902531">तुमचा ब्राउझर व्यवस्थापित केला आहे. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">तुमच्या संस्थेची चॅट आमच्या मॉडेलमध्ये सुधारणा करण्यासाठी वापरली जात नाहीत. Gemini लोकांच्या बाबतीतदेखील चुकीची माहिती दाखवू शकते, त्यामुळे ती दोनदा तपासा. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
@@ -755,6 +756,7 @@
 <translation id="3888863481921783344">हे तुम्हाला तुमच्या इव्हेंटसाठी संभाव्य निमंत्रितांना दाखवण्यासाठी वापरले जाईल.</translation>
 <translation id="3891414008432200754">किंमत</translation>
 <translation id="3892144330757387737">तुमचा इतिहास तुम्हाला येथे सापडेल</translation>
+<translation id="3893858854379998374">तुमच्या खात्यामध्ये बुकमार्क सेव्ह करण्यासाठी, तुमचे न वापरलेले बुकमार्क हटवा</translation>
 <translation id="3897092660631435901">मेनू</translation>
 <translation id="3904270275864974753">कॅरावसल संपादित करा</translation>
 <translation id="3909222758573607742">खात्यामध्ये पासवर्ड आणि इतर आयटम सेव्ह करा</translation>
@@ -872,6 +874,7 @@
 <translation id="4302061870579014542">स्थान सेट करा</translation>
 <translation id="4304713468139749426">पासवर्ड व्यवस्थापक</translation>
 <translation id="4309403553630140242">अधिक माहितीसाठी दोनदा टॅप करा</translation>
+<translation id="4310738531374808763">तुमचे होमपेज कस्टमाइझ करा</translation>
 <translation id="4320848494125124980">अलीकडील</translation>
 <translation id="4322394346347055525">अन्य टॅब बंद करा</translation>
 <translation id="4324735664183300693">नोटिफिकेशन सुरू करा</translation>
@@ -1711,6 +1714,7 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> टक्के डाउनलोड केले</translation>
 <translation id="7345061034321640811">इंपोर्ट करण्याची अनुमती नाही</translation>
+<translation id="7347998088283246662">पासवर्ड, इतिहास, बुकमार्क आणि आणखी बऱ्याच गोष्टी इंपोर्ट करा</translation>
 <translation id="7352651011704765696">काहीतरी चूक झाली</translation>
 <translation id="7364796246159120393">फाइल निवडा</translation>
 <translation id="736564850024123010">कस्टमाइझ केलेल्या अनुभवासाठी तुमच्या अ‍ॅड्रेस बारचे स्थान स्विच करा.</translation>
@@ -2236,6 +2240,7 @@
 <translation id="914781932147356857">सर्वांवर खूण करा…</translation>
 <translation id="9148126808321036104">पुन्हा साइन इन करा </translation>
 <translation id="9149866541089851383">संपादन...</translation>
+<translation id="9152637745605628097">थीम, रंग यांमधून निवडा किंवा इमेज अपलोड करा</translation>
 <translation id="9159628751968616911">वेबपेज पाठवा</translation>
 <translation id="9162432979321511934">ऑटोफिल पासवर्ड सुरू करा</translation>
 <translation id="9165320910061267720">किमती कमी होण्यासंबंधित इशाऱ्यांच्या सूचना मिळवण्यासाठी, तुम्ही तुमच्या iOS सेटिंग्जमध्ये सूचना सुरू करणे आवश्यक आहे.</translation>

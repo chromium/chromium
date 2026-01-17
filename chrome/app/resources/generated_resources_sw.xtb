@@ -1546,6 +1546,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="2024195579772565064">Futa mtambo huu wa kutafuta</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Mbofyo wa usahihi</translation>
+<translation id="2025130536872979378">angalia chanzo</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> imeharibika. Bofya puto ili kupakia upya kiendelezi.</translation>
 <translation id="2026367923222947564">Ukurasa kamili</translation>
 <translation id="2026377162111110983">Sauti ya eneo</translation>
@@ -2794,6 +2795,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2856776373509145513">Unda metadata mpya</translation>
 <translation id="2857047802954430547">Ingia katika akaunti ili upate manenosiri yako, alamisho na zaidi kwenye vifaa vyako vyote</translation>
 <translation id="2859741939921354763">Pakia manenosiri kwenye <ph name="BRAND" /></translation>
+<translation id="2860284453253554297">Sera za Enterprise</translation>
 <translation id="2860710618359053450">Elekeza taya kulia</translation>
 <translation id="2861301611394761800">Usasishaji mfumo umekamilika. Tafadhali zima mfumo na uuwashe.</translation>
 <translation id="2861402191395139055">Usajili wa Passpoint</translation>
@@ -9793,6 +9795,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu ulizoweka kwenye kifaa, faili, ki
 <translation id="7684212569183643648">Kiendelezi kimesakinishwa na Msimamizi Wako</translation>
 <translation id="7684559058815332124">Tembelea ukurasa wa kwanza wa kuingia katika wavuti</translation>
 <translation id="7684718995427157417">Ili kutengeneza na kujaribu programu zako, washa Zana ya Android Debug Bridge (ADB). Kumbuka kwamba hatua hii inaruhusu usakinishaji wa programu za Android ambazo hazijathibitishwa na Google na zinahitaji urejeshe mipangilio ya kiwandani ya kifaa ili kuzizima.</translation>
+<translation id="7684803937028953000">Shirika lako limezuia upakuaji wa faili hii kwenye kifaa.</translation>
 <translation id="7684913007876670600">Ili kuonyesha mwonekano uliorahisishwa wa ukurasa huu, fungua kidirisha cha pembeni na uchague hali ya Kusoma</translation>
 <translation id="7685038817958445325">Imeshindwa kutuma maudhui</translation>
 <translation id="7685049629764448582">Kumbukumbu ya JavaScript</translation>

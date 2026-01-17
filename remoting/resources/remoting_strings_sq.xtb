@@ -46,6 +46,7 @@ Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgje
 <translation id="3150823315463303127">Strehuesi nuk arriti ta lexonte politikën.</translation>
 <translation id="3171922709365450819">Pajisja nuk mbështetet nga ky klient pasi kërkohet vërtetimi nga një palë e tretë.</translation>
 <translation id="3197730452537982411">Desktopi në distancë</translation>
+<translation id="3236334139428307578">Të drejtat e autorit 2026 të "Autorëve të Chromium". Të gjitha të drejtat të rezervuara.</translation>
 <translation id="324272851072175193">Dërgo me email këto udhëzime</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> dëshiron të bëjë ndryshime.</translation>
 <translation id="3339299787263251426">Qasu në kompjuterin tënd në mënyrë të sigurt nga interneti</translation>
@@ -110,6 +111,7 @@ Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgje
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ka kërkuar qasje për të parë ekranin tënd dhe për të kontrolluar tastierën dhe miun tënd. Shtyp "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />" nëse nuk e prisje këtë kërkesë. Përndryshe zgjidh "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />" për të lejuar lidhjen kur të jesh gati.</translation>
 <translation id="5823658491130719298">Në kompjuterin ku dëshiron të kesh qasje në distancë, hap Chrome dhe vizito <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Opsionet e paraqitjes</translation>
+<translation id="5965133372831030509">Të drejtat e autorit 2026 Google LLC. Të gjitha të drejtat të rezervuara.</translation>
 <translation id="6033507038939587647">Opsionet e tastierës</translation>
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="6062854958530969723">Fillimi i strehuesit dështoi.</translation>

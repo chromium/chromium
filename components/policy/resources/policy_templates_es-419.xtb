@@ -1608,6 +1608,15 @@ Si estableces la política con el valor "1", indica que no se pueden compartir l
 <translation id="2144236546337326489">Permitir que se habilite la continuación de tareas en Phone Hub</translation>
 <translation id="2145735238144543545">Certificados de cliente obligatorios</translation>
 <translation id="2146103669166779785">El código hexadecimal de color que se usará para generar un esquema y aplicarlo en el navegador.</translation>
+<translation id="2146539033119095550">Esta política te permite establecer una lista de patrones de URL que especifiquen los orígenes de nivel superior para los que se debe inhabilitar la partición de almacenamiento de terceros (partición de almacenamiento de iframe de origen cruzado).
+
+Si no estableces esta política o si un origen de nivel superior no coincide con uno de los patrones de URL, se aplicará <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />.
+
+Para obtener información detallada sobre los patrones válidos, consulta https://chromeenterprise.google/policies/url-patterns. Ten en cuenta que los patrones que incluyas aquí se tratarán como orígenes, no como URLs, por lo que no debes especificar una ruta de acceso.
+
+Para obtener información detallada sobre la partición de almacenamiento de terceros, consulta https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.
+
+Se quitó en Chrome 145 y, en su lugar, se recomienda usar el método requestStorageAccess: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Puedes enviar comentarios en https://crbug.com/425248669.</translation>
 <translation id="2148733583160916305">Permitir la API de WebPrinting en estos sitios</translation>
 <translation id="2148769554831004951">Habilitar WebSQL de manera automática</translation>
 <translation id="214901426630414675">Restringir el modo de impresión doble</translation>
@@ -3515,6 +3524,15 @@ Si la inhabilitas, no se permitirá la escritura predictiva en el teclado físic
 <translation id="33993310248354034">Permitir la detección de entidades de texto sin formato en páginas web</translation>
 <translation id="3399859571630358395">Inhabilitar de manera automática la Vinculación rápida (vinculación rápida por Bluetooth)</translation>
 <translation id="3404681701763345449">Habilitar la integración de <ph name="GOOGLE_CALENDAR_NAME" /></translation>
+<translation id="3405276853140830214">Esta política controla si se permite la partición de almacenamiento de terceros de forma predeterminada.
+
+Si estableces esta política como 1 (AllowPartitioning) o no la estableces, se permitirá la partición de almacenamiento de terceros de forma predeterminada. Este valor predeterminado se puede anular para orígenes de nivel superior específicos por otros medios.
+
+Si estableces esta política como 2 (BlockPartitioning), se inhabilitará la partición de almacenamiento de terceros para todos los contextos.
+
+Usa <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> para inhabilitar la partición de almacenamiento de terceros para orígenes de nivel superior específicos. Para obtener información detallada sobre la partición de almacenamiento de terceros, consulta https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.
+
+Se quitó en Chrome 145 y, en su lugar, se recomienda usar el método requestStorageAccess: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Puedes enviar comentarios en https://crbug.com/425248669.</translation>
 <translation id="3405361833556012520">Esta política solo se aplica al tráfico de navegadores. Play Store, la navegación web de apps para Android y otro tráfico de usuarios, como los trabajos de impresión y el tráfico de VM de Linux, respetan las restricciones impuestas por la VPN siempre activada. Esta política solo se aplicará de manera forzosa cuando la VPN no esté conectada y solo para el tráfico del navegador del usuario. Mientras se aplique esta política, el tráfico del sistema también puede omitir la VPN siempre activada para realizar tareas como la recuperación de políticas y la sincronización del reloj del sistema.
 
 Usa esta política para abrir excepciones a determinados esquemas, subdominios de otros dominios, puertos o rutas de acceso específicas con el formato especificado en https://support.google.com/chrome/a?p=url_blocklist_filter_format. El filtro más específico determinará si una URL está en la lista de elementos bloqueados o permitidos.
@@ -5338,6 +5356,21 @@ Comportamiento anterior y heredado: en “beforeunload”, la llamada a “event
 <translation id="46321462262887935">Tratar las teclas de la fila superior como teclas de función, pero permitir que el usuario las modifique</translation>
 <translation id="4632343302005518762">Permitir que <ph name="PRODUCT_FRAME_NAME" /> gestione los tipos de contenido que figuran en la lista</translation>
 <translation id="4636354638176939375">Inhabilitar la creación de usuarios supervisados</translation>
+<translation id="4637701328641064644">Esta política controla si las URLs de BLOB se particionan durante la recuperación y la navegación.
+Si habilitas esta política o no la estableces, se particionarán las URLs de BLOB.
+Si la inhabilitas, las URLs de BLOB no se particionarán.
+
+Si tienes que utilizar la política, informa un error en
+<ph name="BUG_URL" />
+en el que expliques tu caso de uso. La política está programada para
+ofrecerse a través de la versión 146 de <ph name="PRODUCT_NAME" />,
+después de lo cual se quitará la implementación anterior.
+
+NOTA: Solo los procesos del renderizado recién iniciados reflejarán los cambios de esta
+política mientras se esté ejecutando el navegador.
+
+Para obtener información detallada sobre la partición de almacenamiento de terceros, consulta
+https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.</translation>
 <translation id="46383668315040154">Especifica el canal de versiones al que debe asociarse de forma exclusiva este dispositivo.
 
 <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> solo tiene efecto si estableces <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> como falsa.</translation>

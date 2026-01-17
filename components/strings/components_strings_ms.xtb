@@ -441,7 +441,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1703835215927279855">Surat</translation>
 <translation id="1705645336613358172">Gunakan Affirm atau Zip untuk membuat bayaran secara ansuran</translation>
 <translation id="1706625117072057435">Tahap zum</translation>
-<translation id="1706922226983368260">Kunci laluan • "<ph name="PHONE_NAME" />"</translation>
 <translation id="1706954506755087368">{1,plural, =1{Pelayan ini tidak dapat membuktikan bahawa itu <ph name="DOMAIN" />;sijil keselamatannya sepatutnya bermula esok. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang yang memintas sambungan anda.}other{Pelayan ini tidak dapat membuktikan bahawa itu <ph name="DOMAIN" />; sijil keselamatannya sepatutnya bermula # hari lagi. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang yang memintas sambungan anda.}}</translation>
 <translation id="1710259589646384581">OS</translation>
 <translation id="1711234383449478798">Diabaikan kerana <ph name="POLICY_NAME" /> tidak ditetapkan kepada <ph name="VALUE" />.</translation>
@@ -3524,6 +3523,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6635900375070654124">peranti pengesah</translation>
 <translation id="6641852376826221947">Sahkan pembelian anda</translation>
 <translation id="6643016212128521049">Kosongkan</translation>
+<translation id="6644868143085860957">Kad ini tidak dapat disimpan dalam Google Wallet. Kad ini telah disimpan pada Chrome pada peranti ini.</translation>
 <translation id="6645291930348198241">Akses kuki dan data tapak.</translation>
 <translation id="6645478838938543427">Pemakluman penurunan harga akan dihantar ke <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="6648459603387803038">Pentadbir anda boleh menukar persediaan penyemak imbas anda dari jauh. Aktiviti pada peranti ini mungkin turut diurus di luar Chrome.</translation>

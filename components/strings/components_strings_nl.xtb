@@ -441,7 +441,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1705645336613358172">Gebruik Affirm of Zip om gespreid te betalen</translation>
 <translation id="1706625117072057435">Zoomniveaus</translation>
-<translation id="1706922226983368260">Toegangssleutel • <ph name="PHONE_NAME" /></translation>
 <translation id="1706954506755087368">{1,plural, =1{Deze server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het bijbehorende beveiligingscertificaat is zogenaamd van morgen. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.}other{Deze server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het bijbehorende beveiligingscertificaat is zogenaamd van # dagen in de toekomst. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.}}</translation>
 <translation id="1710259589646384581">Besturingssysteem</translation>
 <translation id="1711234383449478798">Genegeerd omdat <ph name="POLICY_NAME" /> niet is ingesteld op <ph name="VALUE" />.</translation>
@@ -3516,6 +3515,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6635900375070654124">een authenticatorapparaat</translation>
 <translation id="6641852376826221947">Je aankoop bevestigen</translation>
 <translation id="6643016212128521049">Wissen</translation>
+<translation id="6644868143085860957">Deze kaart kan niet worden opgeslagen in Google Wallet. Deze is opgeslagen in Chrome op dit apparaat.</translation>
 <translation id="6645291930348198241">Toegang krijgen tot cookies en sitegegevens.</translation>
 <translation id="6645478838938543427">Meldingen over prijsdalingen worden naar <ph name="EMAIL_ADDRESS" /> gestuurd</translation>
 <translation id="6648459603387803038">Je beheerder kan je browserinstellingen op afstand wijzigen. Activiteit op dit apparaat kan ook buiten Chrome worden beheerd.</translation>

@@ -441,7 +441,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1705645336613358172">Az Affirm vagy a Zip használatával részletekben is fizethet</translation>
 <translation id="1706625117072057435">Nagyítási/kicsinyítési szintek</translation>
-<translation id="1706922226983368260">Azonosítókulcs • „<ph name="PHONE_NAME" />”</translation>
 <translation id="1706954506755087368">{1,plural, =1{A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványa elméletileg holnaptól érvényes. Ennek oka lehet konfigurációs hiba, de az is lehet, hogy egy támadó eltérítette az Ön kapcsolódását.}other{A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványa elméletileg # nap múlva lép érvénybe. Ennek oka lehet konfigurációs hiba, de az is lehet, hogy egy támadó eltérítette az Ön kapcsolódását.}}</translation>
 <translation id="1710259589646384581">OS</translation>
 <translation id="1711234383449478798">Figyelmen kívül hagyva, mivel a(z) <ph name="POLICY_NAME" /> nincs erre az értékre állítva: <ph name="VALUE" />.</translation>

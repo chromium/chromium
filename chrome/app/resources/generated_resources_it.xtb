@@ -1540,6 +1540,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="2024195579772565064">Elimina motore di ricerca</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Clic di precisione</translation>
+<translation id="2025130536872979378">visualizza sorgente</translation>
 <translation id="2025632980034333559">Arresto anomalo di <ph name="APP_NAME" />. Fai clic su questo fumetto per riavviare l'estensione.</translation>
 <translation id="2026367923222947564">Pagina intera</translation>
 <translation id="2026377162111110983">Voce dell'area</translation>
@@ -2784,6 +2785,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2856776373509145513">Crea un nuovo container</translation>
 <translation id="2857047802954430547">Accedi per trovare le password, i preferiti e altri dati su tutti i dispositivi</translation>
 <translation id="2859741939921354763">Importa password in <ph name="BRAND" /></translation>
+<translation id="2860284453253554297">Policy aziendali</translation>
 <translation id="2860710618359053450">Sposta la mascella a destra</translation>
 <translation id="2861301611394761800">Aggiornamento del sistema completato. Riavvia il sistema.</translation>
 <translation id="2861402191395139055">Abbonamenti a Passpoint</translation>
@@ -9781,6 +9783,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="7684212569183643648">Installata dall'amministratore</translation>
 <translation id="7684559058815332124">Visita la pagina di accesso del captive portal</translation>
 <translation id="7684718995427157417">Per creare e testare le tue app, attiva Android Debug Bridge (ADB). Tieni presente che questa azione consente l'installazione di app Android che non sono state verificate da Google. Per disattivare la funzionalità è necessario ripristinare le impostazioni di fabbrica.</translation>
+<translation id="7684803937028953000">La tua organizzazione ha bloccato il download locale di questo file.</translation>
 <translation id="7684913007876670600">Per una visualizzazione semplificata di questa pagina, apri il riquadro laterale e seleziona la modalità Lettura</translation>
 <translation id="7685038817958445325">Impossibile trasmettere</translation>
 <translation id="7685049629764448582">Memoria JavaScript</translation>

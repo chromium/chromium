@@ -1542,6 +1542,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="2024195579772565064">Dzēst meklētājprogrammu</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Precizitātes klikšķis</translation>
+<translation id="2025130536872979378">skatīt avotu</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> nobruka. Noklikšķiniet uz šī balona, lai atkārtoti ielādētu paplašinājumu.</translation>
 <translation id="2026367923222947564">Pilna lapa</translation>
 <translation id="2026377162111110983">Balss apkārtnē</translation>
@@ -2786,6 +2787,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2856776373509145513">Jauna konteinera izveide</translation>
 <translation id="2857047802954430547">Pierakstieties, lai varētu piekļūt parolēm, grāmatzīmēm un citiem datiem visās savās ierīcēs.</translation>
 <translation id="2859741939921354763">Importējiet paroles pakalpojumā <ph name="BRAND" />.</translation>
+<translation id="2860284453253554297">Uzņēmuma politikas</translation>
 <translation id="2860710618359053450">Pārvietojiet apakšžokli pa labi</translation>
 <translation id="2861301611394761800">Sistēmas atjaunināšana pabeigta. Restartējiet sistēmu.</translation>
 <translation id="2861402191395139055">Passpoint abonementi</translation>
@@ -9785,6 +9787,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="7684212569183643648">Instalēja administrators</translation>
 <translation id="7684559058815332124">Apmeklēt caurlaides lapas pieteikšanās lapu</translation>
 <translation id="7684718995427157417">Lai veidotu un testētu lietotnes, iespējojiet Android atkļūdošanas tiltu (ADB). Ņemiet vērā, ka šī darbība ļauj instalēt Android lietotnes, ko uzņēmums Google nav verificējis, un rīka atspējošanai ir nepieciešams atjaunot rūpnīcas iestatījumus.</translation>
+<translation id="7684803937028953000">Jūsu organizācija bloķēja šī faila lokālo lejupielādi.</translation>
 <translation id="7684913007876670600">Lai tiktu parādīts vienkāršots šīs lapas skats, atveriet sānu paneli un atlasiet vienumu Lasīšanas režīms.</translation>
 <translation id="7685038817958445325">Nevar veikt apraidi</translation>
 <translation id="7685049629764448582">JavaScript atmiņa</translation>

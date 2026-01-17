@@ -441,7 +441,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1705645336613358172">Utilisez Affirm ou Zip pour payer en plusieurs fois</translation>
 <translation id="1706625117072057435">Niveaux de zoom</translation>
-<translation id="1706922226983368260">Clé d'accès • "<ph name="PHONE_NAME" />"</translation>
 <translation id="1706954506755087368">{1,plural, =1{Impossible de vérifier que ce serveur est bien <ph name="DOMAIN" />, car la date d'émission de son certificat de sécurité est fixée à demain. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.}one{Impossible de vérifier que ce serveur est bien <ph name="DOMAIN" />, car la date d'émission de son certificat de sécurité est ultérieure de # jour à la date du jour. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.}other{Impossible de vérifier que ce serveur est bien <ph name="DOMAIN" />, car la date d'émission de son certificat de sécurité est ultérieure de # jours à la date du jour. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.}}</translation>
 <translation id="1710259589646384581">Système d'exploitation</translation>
 <translation id="1711234383449478798">Ignorée, car <ph name="POLICY_NAME" /> n'est pas définie sur <ph name="VALUE" />.</translation>
@@ -1002,7 +1001,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="257136025287118539">Votre administrateur déplace vos fichiers vers <ph name="CLOUD_PROVIDER" />. Vous pourrez les modifier une fois l'importation terminée.</translation>
 <translation id="2571488850200220306">Pour assurer la sécurité, il peut aussi voir l'OS de l'appareil, la version du navigateur et les logiciels installés</translation>
 <translation id="2573170131138724450">Télévisions</translation>
-<translation id="257674075312929031">Groupe</translation>
+<translation id="257674075312929031">Regrouper</translation>
 <translation id="2577522251608256362">Quartier</translation>
 <translation id="2580031090587209073">Options de partage</translation>
 <translation id="258027838577899739">Tout supprimer de l'historique</translation>

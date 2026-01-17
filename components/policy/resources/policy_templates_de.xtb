@@ -1556,6 +1556,15 @@ Ist die Richtlinie auf 1 gesetzt, lassen sich Tabgruppen nicht teilen.</translat
 <translation id="2144236546337326489">Aktivieren der Aufgabenfortsetzung für den Phone Hub zulassen</translation>
 <translation id="2145735238144543545">Erforderliche Clientzertifikate</translation>
 <translation id="2146103669166779785">Der Hex-Farbcode wird verwendet, um ein Design für den Browser zu erstellen und anzuwenden.</translation>
+<translation id="2146539033119095550">Mit dieser Richtlinie kannst du eine Liste von URL-Mustern festlegen, durch die Ursprünge der obersten Ebene angegeben werden, für die die Drittanbieter-Speicherpartitionierung (Partitionierung des ursprungsübergreifenden iFrame-Speichers) deaktiviert werden soll.
+
+Wenn diese Richtlinie nicht konfiguriert ist oder der Ursprung der obersten Ebene nicht mit einem der URL-Muster übereinstimmt, wird „<ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />“ angewendet.
+
+Ausführliche Informationen zu gültigen Mustern findest du unter https://chromeenterprise.google/policies/url-patterns. Beachte, dass die Muster, die du hier aufführst, als Ursprünge und nicht als URLs behandelt werden. Gib deshalb keinen Pfad an.
+
+Ausführliche Informationen zur Drittanbieter-Speicherpartitionierung findest du unter https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.
+
+Diese Richtlinie wurde in Chrome-Version 145 entfernt. Es wird empfohlen, stattdessen die Methode „requestStorageAccess“ zu verwenden: https://developer.mozilla.org/de/docs/Web/API/Document/requestStorageAccess. Unter https://crbug.com/425248669 kannst du Feedback geben.</translation>
 <translation id="2148733583160916305">WebPrinting API auf diesen Websites zulassen</translation>
 <translation id="2148769554831004951">Erzwingen, dass WebSQL aktiviert ist.</translation>
 <translation id="214901426630414675">Duplexdruck einschränken</translation>
@@ -3373,6 +3382,15 @@ Ist die Richtlinie deaktiviert, sind keine Wortvorschläge bei Nutzung der physi
 <translation id="33993310248354034">Erkennung von Nur-Text-Entitäten auf Webseiten zulassen.</translation>
 <translation id="3399859571630358395">Deaktivierung von schnellem Pairing (schnellem Bluetooth-Koppeln) erzwingen.</translation>
 <translation id="3404681701763345449">Dadurch wird die <ph name="GOOGLE_CALENDAR_NAME" />-Integration aktiviert.</translation>
+<translation id="3405276853140830214">Mit dieser Richtlinie wird festgelegt, ob die Drittanbieter-Speicherpartitionierung standardmäßig zulässig ist.
+
+Wenn diese Richtlinie auf „1 – AllowPartitioning“ gesetzt oder nicht konfiguriert ist, ist die Drittanbieter-Speicherpartitionierung standardmäßig zulässig. Dieser Standardwert kann für bestimmte Ursprünge der obersten Ebene auf andere Weise überschrieben werden.
+
+Ist diese Richtlinie auf „2 – BlockPartitioning“ gesetzt, wird die Drittanbieter-Speicherpartitionierung für alle Kontexte deaktiviert.
+
+Mit „<ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" />“ kannst du die Drittanbieter-Speicherpartitionierung für bestimmte Ursprünge der obersten Ebene deaktivieren. Ausführliche Informationen zur Drittanbieter-Speicherpartitionierung findest du unter https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.
+
+Diese Richtlinie wurde in Chrome-Version 145 entfernt. Es wird empfohlen, stattdessen die Methode „requestStorageAccess“ zu verwenden: https://developer.mozilla.org/de/docs/Web/API/Document/requestStorageAccess. Unter https://crbug.com/425248669 kannst du Feedback geben.</translation>
 <translation id="3405361833556012520">Diese Richtlinie gilt nur für Webtraffic. Für den Play Store, die Webnavigation von Android-Apps und anderen Nutzertraffic wie Linux-VM-Traffic oder Druckaufträge gelten weiterhin die Einschränkungen, die vom durchgehend aktiven VPN auferlegt werden. Die Richtlinie wird nur erzwungen, solange das VPN nicht verbunden ist, und gilt nur für den Webtraffic von Nutzern. Während die Richtlinie erzwungen wird, kann der Systemtraffic das durchgehend aktive VPN umgehen, um bestimmte Aufgaben wie das Abrufen von Richtlinien oder das Synchronisieren der Systemzeit auszuführen.
 
 Mit dieser Richtlinie lassen sich bei Verwendung des unter https://support.google.com/chrome/a?p=url_blocklist_filter_format angegebenen Formats Ausnahmen für bestimmte Schemas, Subdomains anderer Domains, Ports oder bestimmte Pfade festlegen. Mit dem spezifischsten Filter wird festgelegt, ob eine URL blockiert oder zulässig ist.
@@ -5146,6 +5164,15 @@ Altes Verhalten: Wenn in „beforeunload“ ein Aufruf von „event.preventDefau
 <translation id="46321462262887935">Tasten der obersten Reihe als Funktionstasten nutzen (Nutzer kann dies ändern)</translation>
 <translation id="4632343302005518762">Verarbeitung der gelisteten Inhaltstypen durch <ph name="PRODUCT_FRAME_NAME" /> zulassen</translation>
 <translation id="4636354638176939375">Erstellung von betreuten Nutzern deaktivieren</translation>
+<translation id="4637701328641064644">Mit dieser Richtlinie wird festgelegt, ob Blob-URLs beim Abrufen und Navigieren partitioniert werden.
+Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden Blob-URLs partitioniert.
+Ist die Richtlinie deaktiviert, werden Blob-URLs nicht partitioniert.
+
+Falls du die Richtlinie verwenden musst, melde auf <ph name="BUG_URL" /> einen Fehler unter Angabe deines Anwendungsfalls. Die Richtlinie kann bis zum Ende von Version 146 von <ph name="PRODUCT_NAME" /> verwendet werden. Danach wird die alte Implementierung entfernt.
+
+HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Richtlinie nur für neu gestartete Rendererprozesse übernommen.
+
+Ausführliche Informationen zur Drittanbieter-Speicherpartitionierung findest du unter https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.</translation>
 <translation id="46383668315040154">Gibt die Release-Version an, an die dieses Gerät gebunden werden soll.
 
 Die Einstellung <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> ist nur wirksam, wenn <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> auf „False“ gesetzt ist.</translation>

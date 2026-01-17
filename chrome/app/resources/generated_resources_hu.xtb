@@ -1549,6 +1549,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="2024195579772565064">Keresőmotor törlése</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Precíz kattintás</translation>
+<translation id="2025130536872979378">forrás megtekintése</translation>
 <translation id="2025632980034333559">A(z) <ph name="APP_NAME" /> összeomlott. A bővítmény ismételt betöltéséhez kattintson erre a buborékra.</translation>
 <translation id="2026367923222947564">Teljes oldal</translation>
 <translation id="2026377162111110983">Környezeti hang</translation>
@@ -2796,6 +2797,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2856776373509145513">Új tároló létrehozása</translation>
 <translation id="2857047802954430547">Bejelentkezve valamennyi eszközén hozzáférhet jelszavaihoz, könyvjelzőihez és egyebekhez.</translation>
 <translation id="2859741939921354763">Jelszavak importálása ide: <ph name="BRAND" /></translation>
+<translation id="2860284453253554297">Vállalati irányelvek</translation>
 <translation id="2860710618359053450">Állkapocs jobbra mozgatása</translation>
 <translation id="2861301611394761800">A rendszerfrissítés befejeződött. Kérjük, indítsa újra a rendszert.</translation>
 <translation id="2861402191395139055">Passpoint-előfizetések</translation>
@@ -9796,6 +9798,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="7684212569183643648">A rendszergazda telepítette</translation>
 <translation id="7684559058815332124">Hitelesítési portál bejelentkezési oldalának felkeresése</translation>
 <translation id="7684718995427157417">Alkalmazások létrehozásához és teszteléséhez engedélyezze az Android Debug Bridge (ADB) eszközt. Ne feledje, hogy ez a művelet engedélyezi a Google által nem jóváhagyott Android-alkalmazások telepítését, és az eszköz letiltásához szükség van az eszköz gyári beállításainak visszaállítására.</translation>
+<translation id="7684803937028953000">Szervezete letiltotta ennek a fájlnak a helyi letöltését.</translation>
 <translation id="7684913007876670600">Az oldal egyszerűsített nézetének megjelenítéséhez nyissa meg az oldalsó panelt, és válassza az Olvasási módot</translation>
 <translation id="7685038817958445325">Átküldés sikertelen</translation>
 <translation id="7685049629764448582">JavaScript memória</translation>

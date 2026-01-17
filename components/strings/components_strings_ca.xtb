@@ -441,7 +441,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1705645336613358172">Utilitza Affirm o Zip per pagar a terminis</translation>
 <translation id="1706625117072057435">Nivells de zoom</translation>
-<translation id="1706922226983368260">Clau d'accés • "<ph name="PHONE_NAME" />"</translation>
 <translation id="1706954506755087368">{1,plural, =1{Aquest servidor no ha pogut demostrar que sigui <ph name="DOMAIN" /> perquè, suposadament, el seu certificat de seguretat té la data de demà. Això pot ser a causa d'una configuració incorrecta o d'un atacant que intercepta la vostra connexió.}other{Aquest servidor no ha pogut demostrar que sigui <ph name="DOMAIN" />; perquè, suposadament, el seu certificat de seguretat té una data que és d'aquí a # dies. Això pot ser a causa d'una configuració incorrecta o d'un atacant que intercepta la vostra connexió.}}</translation>
 <translation id="1710259589646384581">SO</translation>
 <translation id="1711234383449478798">S'ha ignorat perquè la política <ph name="POLICY_NAME" /> no s'ha establert com a <ph name="VALUE" />.</translation>
@@ -3523,6 +3522,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6635900375070654124">un dispositiu autenticador</translation>
 <translation id="6641852376826221947">Confirma la compra</translation>
 <translation id="6643016212128521049">Esborra</translation>
+<translation id="6644868143085860957">Aquesta targeta no s'ha pogut desar a Google Wallet. S'ha desat a Chrome en aquest dispositiu.</translation>
 <translation id="6645291930348198241">Accedir a les galetes i a les dades del lloc web.</translation>
 <translation id="6645478838938543427">Les alertes de baixada de preu s'enviaran a <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="6648459603387803038">L'administrador pot modificar la configuració del navegador de manera remota. És possible que l'activitat d'aquest dispositiu també es gestioni fora de Chrome.</translation>

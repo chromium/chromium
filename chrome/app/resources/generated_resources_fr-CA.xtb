@@ -1541,6 +1541,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="2024195579772565064">Supprimer le moteur de recherche</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Clic de précision</translation>
+<translation id="2025130536872979378">afficher la source</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> a planté. Cliquez sur cette infobulle pour redémarrer l'application.</translation>
 <translation id="2026367923222947564">Page complète</translation>
 <translation id="2026377162111110983">Voix de la zone</translation>
@@ -2787,6 +2788,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2856776373509145513">Créer un conteneur</translation>
 <translation id="2857047802954430547">Connectez-vous pour accéder à vos mots de passe, vos favoris et plus encore sur tous vos appareils</translation>
 <translation id="2859741939921354763">Importer des mots de passe dans <ph name="BRAND" /></translation>
+<translation id="2860284453253554297">Politiques d'entreprise</translation>
 <translation id="2860710618359053450">Déplacez la mâchoire vers la droite</translation>
 <translation id="2861301611394761800">Mise à jour terminée. Veuillez redémarrer le système.</translation>
 <translation id="2861402191395139055">Abonnements Passpoint</translation>
@@ -9787,6 +9789,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="7684212569183643648">Élément installé par votre administrateur</translation>
 <translation id="7684559058815332124">Consulter la page de connexion au portail captif</translation>
 <translation id="7684718995427157417">Pour créer et tester vos applications, activez le pont de débogage Android (PDA). Prenez note que cette action permet d'installer des applications Android qui n'ont pas été vérifiées par Google. Pour désactiver cette fonctionnalité, vous devrez réinitialiser l'appareil.</translation>
+<translation id="7684803937028953000">Votre organisation a bloqué le téléchargement local de ce fichier.</translation>
 <translation id="7684913007876670600">Pour afficher une vue simplifiée de cette page, ouvrez le panneau latéral et sélectionnez Mode de lecture</translation>
 <translation id="7685038817958445325">Diffusion impossible</translation>
 <translation id="7685049629764448582">Mémoire pour JavaScript</translation>

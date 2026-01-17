@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Scantype</translation>
 <translation id="28682968802727151">Voorbeeld van spiegelen</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> is aangesloten.</translation>
+<translation id="3063987824612038785">Alle camerabestanden worden opgeslagen in Google Drive</translation>
 <translation id="3067436040345934772">Naar rechts schuiven</translation>
 <translation id="3081586908890909590">Naar video opnemen</translation>
 <translation id="3091480460059548935">Tekstdetectie in voorbeeld</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">Video verwerken…</translation>
 <translation id="3789724198583203151">90 graden linksom draaien</translation>
 <translation id="3810838688059735925">Video</translation>
+<translation id="386366972082231038">Alle camerabestanden worden opgeslagen in OneDrive</translation>
 <translation id="4060608699153044055">Je kunt niet opnemen vanwege onvoldoende opslagruimte op het apparaat. Als je wilt opnemen, moet je ruimte vrijmaken op je apparaat.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Opname onderbreken</translation>
@@ -157,6 +159,7 @@ Als je feedback over de afbeeldings- of videokwaliteit gaat, voeg dan een voorbe
 <translation id="7983668134180549431">Tekst gevonden.</translation>
 <translation id="8079255378695216066">Kan opname niet starten</translation>
 <translation id="8120146556401698679">Schuiven, kantelen, zoomen</translation>
+<translation id="8127459436205030819">Je bestanden zijn misschien zichtbaar voor je beheerder</translation>
 <translation id="8131740175452115882">Bevestigen</translation>
 <translation id="8145038249676204903">Naar foto maken</translation>
 <translation id="8167081290930651932">Opslaan als foto</translation>

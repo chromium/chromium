@@ -1540,6 +1540,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="2024195579772565064">Eliminar buscador</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Clic de precisión</translation>
+<translation id="2025130536872979378">ver fuente</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> ha dejado de funcionar. Haz clic en este globo a para volver a cargar la extensión.</translation>
 <translation id="2026367923222947564">Página completa</translation>
 <translation id="2026377162111110983">Voz de la zona</translation>
@@ -2785,6 +2786,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2856776373509145513">Crear un contenedor</translation>
 <translation id="2857047802954430547">Inicia sesión para acceder a tus contraseñas, marcadores y otros en todos tus dispositivos</translation>
 <translation id="2859741939921354763">Importa contraseñas a <ph name="BRAND" /></translation>
+<translation id="2860284453253554297">Políticas de empresa</translation>
 <translation id="2860710618359053450">Mover la mandíbula hacia la derecha</translation>
 <translation id="2861301611394761800">Se ha completado la actualización del sistema. Reinícialo.</translation>
 <translation id="2861402191395139055">Suscripciones a Passpoint</translation>
@@ -9783,6 +9785,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="7684212569183643648">Instalada por tu administrador</translation>
 <translation id="7684559058815332124">Visitar la página de inicio de sesión del portal cautivo</translation>
 <translation id="7684718995427157417">Para crear y probar tus aplicaciones, habilita Android Debug Bridge (ADB). Ten en cuenta que esta acción permitirá la instalación de aplicaciones Android que no han sido verificadas por Google y para inhabilitarlas es necesario restablecer la configuración de fábrica.</translation>
+<translation id="7684803937028953000">Tu organización ha bloqueado la descarga local de este archivo.</translation>
 <translation id="7684913007876670600">Para mostrar una vista simplificada de esta página, abre el panel lateral y selecciona Modo Lectura</translation>
 <translation id="7685038817958445325">No se puede enviar</translation>
 <translation id="7685049629764448582">Memoria de JavaScript</translation>

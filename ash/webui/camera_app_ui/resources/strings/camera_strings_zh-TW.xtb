@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">掃描類型</translation>
 <translation id="28682968802727151">鏡像預覽</translation>
 <translation id="2879583609344924966">已連接「<ph name="CAMERA" />」。</translation>
+<translation id="3063987824612038785">所有相機檔案都會儲存到 Google 雲端硬碟</translation>
 <translation id="3067436040345934772">向右平移</translation>
 <translation id="3081586908890909590">切換為錄影模式</translation>
 <translation id="3091480460059548935">預覽偵測到的文字</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">正在處理影片...</translation>
 <translation id="3789724198583203151">逆時針旋轉 90 度</translation>
 <translation id="3810838688059735925">影片</translation>
+<translation id="386366972082231038">所有相機檔案都會儲存至 OneDrive</translation>
 <translation id="4060608699153044055">裝置儲存空間不足，因此無法錄影。如要開始錄影，請先釋出裝置空間。</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> 百萬像素</translation>
 <translation id="4118525110028899586">暫停錄影</translation>
@@ -105,7 +107,7 @@
 <translation id="5746169159649715125">另存為 PDF</translation>
 <translation id="5753488212459587150">啟用專家模式</translation>
 <translation id="5759254179196327752">掃描文件</translation>
-<translation id="5775960006311140197">專家模式</translation>
+<translation id="5775960006311140197">專業模式</translation>
 <translation id="5860033963881614850">關閉</translation>
 <translation id="5869546221129391014">格線</translation>
 <translation id="5916664084637901428">開啟</translation>
@@ -157,6 +159,7 @@
 <translation id="7983668134180549431">偵測到文字。</translation>
 <translation id="8079255378695216066">無法開始錄影</translation>
 <translation id="8120146556401698679">平移 傾斜 縮放</translation>
+<translation id="8127459436205030819">系統管理員可能會看到你的檔案</translation>
 <translation id="8131740175452115882">確認</translation>
 <translation id="8145038249676204903">切換為拍照模式</translation>
 <translation id="8167081290930651932">儲存為相片</translation>

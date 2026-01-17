@@ -1546,6 +1546,7 @@
 <translation id="2024195579772565064">Изтриване на търсещата машина</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Кликване с точност</translation>
+<translation id="2025130536872979378">преглед на източника</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> претърпя срив. Кликнете върху това балонче, за да презаредите разширението.</translation>
 <translation id="2026367923222947564">Цяла страница</translation>
 <translation id="2026377162111110983">Нефокусиран глас</translation>
@@ -2793,6 +2794,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2856776373509145513">Създаване на нов контейнер</translation>
 <translation id="2857047802954430547">Влезте в профила си, за да получите своите пароли, отметки и др. на всичките си устройства</translation>
 <translation id="2859741939921354763">Импортиране на пароли в <ph name="BRAND" /></translation>
+<translation id="2860284453253554297">Корпоративни правила</translation>
 <translation id="2860710618359053450">Преместване на челюстта надясно</translation>
 <translation id="2861301611394761800">Системната актуализация е завършена. Моля, рестартирайте системата.</translation>
 <translation id="2861402191395139055">Абонаменти за Passpoint</translation>
@@ -9796,6 +9798,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7684212569183643648">Инсталирано от администратора ви</translation>
 <translation id="7684559058815332124">Посещаване на страницата за вход в портала за удостоверяване</translation>
 <translation id="7684718995427157417">За да създавате и тествате приложения, активирайте моста на Android за отстраняване на грешки (ADB). Обърнете внимание, че това действие позволява инсталирането на приложения за Android, които не са удостоверени от Google. За деактивирането на ADB е необходимо да бъдат възстановени фабричните настройки.</translation>
+<translation id="7684803937028953000">Организацията ви блокира локалното изтегляне на този файл.</translation>
 <translation id="7684913007876670600">За да се покаже опростен изглед на тази страница, отворете страничния панел и изберете Reading mode</translation>
 <translation id="7685038817958445325">Не може да се предава</translation>
 <translation id="7685049629764448582">Памет за JavaScript</translation>

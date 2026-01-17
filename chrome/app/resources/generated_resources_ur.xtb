@@ -1540,6 +1540,7 @@
 <translation id="2024195579772565064">سرچ انجن حذف کریں</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">درستگی کے ساتھ کلک کرنے کی سہولت</translation>
+<translation id="2025130536872979378">ماخذ دیکھیں</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> کریش ہوگیا ہے۔ ایکسٹینشن دوبارہ لوڈ کرنے کیلئے اس غبارہ پر کلک کریں۔</translation>
 <translation id="2026367923222947564">پورا صفحہ</translation>
 <translation id="2026377162111110983">ایریا وائس</translation>
@@ -2786,6 +2787,7 @@
 <translation id="2856776373509145513">ایک نیا کنٹینر تخلیق کریں</translation>
 <translation id="2857047802954430547">اپنے تمام آلات پر اپنے پاس ورڈز، بُک مارکس وغیرہ حاصل کرنے کیلئے سائن ان کریں</translation>
 <translation id="2859741939921354763"><ph name="BRAND" /> میں پاس ورڈز درآمد کریں</translation>
+<translation id="2860284453253554297">‏‫Enterprise کی پالیسیاں</translation>
 <translation id="2860710618359053450">جبڑا دائیں جانب لے جائیں</translation>
 <translation id="2861301611394761800">سسٹم اپ ڈیٹ مکمل ہوگیا۔ براہ کرم سسٹم کو دوبارہ شروع کریں۔</translation>
 <translation id="2861402191395139055">پاس پوائنٹ کی سبسکرپشنز</translation>
@@ -9781,6 +9783,7 @@
 <translation id="7684212569183643648">آپ کے منتظم نے انسٹال کیا ہے</translation>
 <translation id="7684559058815332124">کیپٹو پورٹل لاگ ان صفحہ ملاحظہ کریں</translation>
 <translation id="7684718995427157417">‏اپنی ایپس کو تخلیق کرنے اور ٹیسٹ کرنے کے لیے، Android ڈیبگ برِج (ADB) کو فعال کریں۔ نوٹ کریں کہ یہ کارروائی ان Android ایپس کو انسٹال کرنے کی اجازت دیتی ہے جن کی تصدیق Google کے ذریعے نہیں کی گئی ہے، اور غیر فعال کرنے کے لیے فیکٹری ری سیٹ کی ضرورت ہوتی ہے۔</translation>
+<translation id="7684803937028953000">آپ کی تنظیم نے اس فائل کے مقامی ڈاؤن لوڈ کو مسدود کر دیا۔</translation>
 <translation id="7684913007876670600">‏اس صفحہ کا آسان منظر دکھانے کے لیے، سائیڈ پینل کھولیں اور Reading Mode منتخب کریں</translation>
 <translation id="7685038817958445325">کاسٹ کرنے سے قاصر</translation>
 <translation id="7685049629764448582">‏JavaScript میموری</translation>

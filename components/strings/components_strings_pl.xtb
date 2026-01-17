@@ -441,7 +441,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1705645336613358172">Płać w ratach przez Affirm lub Zipa</translation>
 <translation id="1706625117072057435">Poziomy powiększenia</translation>
-<translation id="1706922226983368260">Klucz dostępu • „<ph name="PHONE_NAME" />”</translation>
 <translation id="1706954506755087368">{1,plural, =1{Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa przypuszczalnie zacznie obowiązywać od jutra. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia.}few{Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa przypuszczalnie zacznie obowiązywać za # dni. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia.}many{Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa przypuszczalnie zacznie obowiązywać za # dni. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia.}other{Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa przypuszczalnie zacznie obowiązywać za # dnia. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia.}}</translation>
 <translation id="1710259589646384581">System operacyjny</translation>
 <translation id="1711234383449478798">Zignorowano, ponieważ zasada <ph name="POLICY_NAME" /> nie została ustawiona na <ph name="VALUE" />.</translation>

@@ -46,6 +46,7 @@ Si ya está marcada la casilla "<ph name="SERVICE_SCRIPT_NAME" />", desmárcala 
 <translation id="3150823315463303127">El host no pudo leer la política.</translation>
 <translation id="3171922709365450819">Este cliente no admite este dispositivo porque requiere autenticación de terceros.</translation>
 <translation id="3197730452537982411">Escritorio remoto</translation>
+<translation id="3236334139428307578">Copyright 2026 The Chromium Authors. Todos los derechos reservados.</translation>
 <translation id="324272851072175193">Enviar estas instrucciones por correo electrónico</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> desea realizar cambios.</translation>
 <translation id="3339299787263251426">Accede a la computadora de forma segura a través de Internet.</translation>
@@ -110,6 +111,7 @@ Si ya está marcada la casilla "<ph name="SERVICE_SCRIPT_NAME" />", desmárcala 
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> solicitó acceso para ver tu pantalla y controlar el teclado y el mouse. Presiona ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' si no estás esperando esta solicitud. De lo contrario, selecciona ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' para permitir la conexión cuando esté todo listo.</translation>
 <translation id="5823658491130719298">En la computadora que quieras acceder de forma remota, abre Chrome y visita <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Opciones de la pantalla</translation>
+<translation id="5965133372831030509">Copyright 2026 Google LLC. Todos los derechos reservados.</translation>
 <translation id="6033507038939587647">Opciones del teclado</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6062854958530969723">Error al iniciar el host</translation>

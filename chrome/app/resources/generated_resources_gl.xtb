@@ -1539,6 +1539,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="2024195579772565064">Eliminar o motor de busca</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Clic de precisión</translation>
+<translation id="2025130536872979378">ver fonte</translation>
 <translation id="2025632980034333559">Produciuse un erro en <ph name="APP_NAME" />. Fai clic neste globo para volver cargar a extensión.</translation>
 <translation id="2026367923222947564">Páxina completa</translation>
 <translation id="2026377162111110983">Voz da zona</translation>
@@ -2783,6 +2784,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2856776373509145513">Crear un contedor novo</translation>
 <translation id="2857047802954430547">Inicia sesión para poder acceder aos teus contrasinais, marcadores e outros datos en todos os teus dispositivos</translation>
 <translation id="2859741939921354763">Importa os contrasinais a <ph name="BRAND" /></translation>
+<translation id="2860284453253554297">Políticas de empresa</translation>
 <translation id="2860710618359053450">Mover a mandíbula cara á dereita</translation>
 <translation id="2861301611394761800">Actualización do sistema completada. Reinicia o sistema.</translation>
 <translation id="2861402191395139055">Subscricións a Passpoint</translation>
@@ -9783,6 +9785,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="7684212569183643648">Extensión instalada polo administrador</translation>
 <translation id="7684559058815332124">Visitar a páxina de inicio de sesión do portal cautivo</translation>
 <translation id="7684718995427157417">Activa Android Debug Bridge (ADB) para poder crear e probar as túas aplicacións. Ten en conta que esta acción permite a instalación de aplicacións para Android non verificadas por Google e que require un restablecemento dos valores de fábrica para desactivarse.</translation>
+<translation id="7684803937028953000">A túa organización bloqueou a descarga local deste ficheiro.</translation>
 <translation id="7684913007876670600">Para mostrar unha vista simplificada desta páxina, abre o panel lateral e selecciona o modo de lectura</translation>
 <translation id="7685038817958445325">Non se puido levar a cabo a emisión</translation>
 <translation id="7685049629764448582">Memoria JavaScript</translation>

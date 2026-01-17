@@ -605,6 +605,7 @@
 <translation id="3245744387817103524">ለውጥዎ መቀመጥ አልቻለም።</translation>
 <translation id="3254806613790954367">በመላው መሣሪያዎችዎ ላይ የእርስዎ መጨረሻ የተከፈተ ትር</translation>
 <translation id="325717987950204592">«ግላዊነት እና ደኅንነት» ላይ መታ ያድርጉ</translation>
+<translation id="3265736395246760288">ከማናቸውም የሠመሩ መሣሪያዎችዎ በፍጥነት ይግቡ።</translation>
 <translation id="3272527697863656322">ይቅር</translation>
 <translation id="3273510436356991673">መነሻ ማያ ገፅዎን ያብጁ</translation>
 <translation id="3277021493514034324">የድር ጣቢያ አድራሻ ተቀድቷል</translation>
@@ -754,6 +755,7 @@
 <translation id="3888863481921783344">ይህ በእርስዎ ክስተት ላይ ተጋባዦች ሊሆኑ የሚችሉን ለእርስዎ ለማሳየት ሥራ ላይ ይውላል።</translation>
 <translation id="3891414008432200754">ዋጋ</translation>
 <translation id="3892144330757387737">ታሪክዎን እዚህ ያገኛሉ</translation>
+<translation id="3893858854379998374">በመለያዎ ውስጥ ዕልባቶችን ለማስቀመጥ ጥቅም ላይ ያልዋሉ ዕልባቶችዎን ይሰርዙ</translation>
 <translation id="3897092660631435901">ምናሌ</translation>
 <translation id="3904270275864974753">መዘውርን ያርትዑ</translation>
 <translation id="3909222758573607742">የይለፍ ቃላትን እና ሌሎች ንጥሎችን በመለያ ውስጥ ያስቀምጡ</translation>
@@ -871,6 +873,7 @@
 <translation id="4302061870579014542">አቀማመጥ አቀናብር</translation>
 <translation id="4304713468139749426">የይለፍ ቃል አስተዳዳሪ</translation>
 <translation id="4309403553630140242">ለተጨማሪ መረጃ ሁለቴ መታ ያድርጉ</translation>
+<translation id="4310738531374808763">መነሻ ገጽዎን ያብጁ</translation>
 <translation id="4320848494125124980">የቅርብ ጊዜ</translation>
 <translation id="4322394346347055525">ሌሎች ትሮችን ዝጋ</translation>
 <translation id="4324735664183300693">ማሳወቂያዎችን አብራ</translation>
@@ -1709,6 +1712,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> በመቶ ወርዷል</translation>
 <translation id="7345061034321640811">ማምጣት አይፈቀድም</translation>
+<translation id="7347998088283246662">የይለፍ ቃላትን፣ ታሪክን፣ ዕልባቶችን እና ሌሎችንም ያስመጡ</translation>
 <translation id="7352651011704765696">የሆነ ችግር ተፈጥሯል</translation>
 <translation id="7364796246159120393">ፋይል ምረጥ</translation>
 <translation id="736564850024123010">ብጁ ለተደረገ ተሞክሮ የአድራሻ አሞሌዎን ቦታ ይቀይሩ።</translation>
@@ -2234,6 +2238,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="914781932147356857">ሁሉንም ምልክት አድርግባቸው…</translation>
 <translation id="9148126808321036104">እንደገና ይግቡ</translation>
 <translation id="9149866541089851383">አርትዕ…</translation>
+<translation id="9152637745605628097">ከገጽታዎች፣ ቀለሞች ይምረጡ ወይም ምስል ይስቀሉ</translation>
 <translation id="9159628751968616911">ድረ-ገፅ ይላኩ</translation>
 <translation id="9162432979321511934">የይለፍ ቃላት በራስ ሰር ሙላን ያብሩ</translation>
 <translation id="9165320910061267720">የዋጋ ቅነሳ ማንቂያዎችን ማሳወቂያዎች ለማግኘት በእርስዎ iOS ቅንብሮች ውስጥ ማሳወቂያዎችን ማብራት ይኖርብዎታል።</translation>

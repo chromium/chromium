@@ -605,6 +605,7 @@
 <translation id="3245744387817103524">無法儲存變更。</translation>
 <translation id="3254806613790954367">你在所有裝置上最後開啟的分頁</translation>
 <translation id="325717987950204592">輕觸「隱私權和安全性」</translation>
+<translation id="3265736395246760288">在已同步的任一裝置上快速登入。</translation>
 <translation id="3272527697863656322">取消</translation>
 <translation id="3273510436356991673">自訂主畫面</translation>
 <translation id="3277021493514034324">已複製網站網址</translation>
@@ -754,6 +755,7 @@
 <translation id="3888863481921783344">系統會使用這些資料向你顯示活動的可能邀請對象。</translation>
 <translation id="3891414008432200754">價格</translation>
 <translation id="3892144330757387737">這裡會顯示你的歷史記錄</translation>
+<translation id="3893858854379998374">如要將書籤儲存到帳戶，請刪除未使用的書籤</translation>
 <translation id="3897092660631435901">選單</translation>
 <translation id="3904270275864974753">編輯輪轉介面</translation>
 <translation id="3909222758573607742">將密碼和其他項目儲存到帳戶</translation>
@@ -871,6 +873,7 @@
 <translation id="4302061870579014542">設定位置</translation>
 <translation id="4304713468139749426">密碼管理工具</translation>
 <translation id="4309403553630140242">輕觸兩下即可查看更多資訊</translation>
+<translation id="4310738531374808763">自訂你的首頁</translation>
 <translation id="4320848494125124980">近期存取</translation>
 <translation id="4322394346347055525">關閉其他分頁</translation>
 <translation id="4324735664183300693">啟用通知</translation>
@@ -1709,6 +1712,7 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">已下載 <ph name="PERCENT" /> %</translation>
 <translation id="7345061034321640811">不允許匯入</translation>
+<translation id="7347998088283246662">匯入密碼、歷史記錄、書籤等資料</translation>
 <translation id="7352651011704765696">發生錯誤</translation>
 <translation id="7364796246159120393">選擇檔案</translation>
 <translation id="736564850024123010">你可更動網址列位置，讓自己使用更順手。</translation>
@@ -2234,6 +2238,7 @@
 <translation id="914781932147356857">全部標示…</translation>
 <translation id="9148126808321036104">重新登入</translation>
 <translation id="9149866541089851383">編輯...</translation>
+<translation id="9152637745605628097">選擇主題、顏色或上傳圖片</translation>
 <translation id="9159628751968616911">傳送網頁</translation>
 <translation id="9162432979321511934">開啟「自動填寫密碼」</translation>
 <translation id="9165320910061267720">如要接收降價快訊通知，請在 iOS 設定中開啟通知功能。</translation>

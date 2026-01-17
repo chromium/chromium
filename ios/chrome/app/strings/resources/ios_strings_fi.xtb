@@ -315,6 +315,7 @@
 <translation id="21133533946938348">Kiinnitä välilehti</translation>
 <translation id="2117650889962717098">Selaa yksityisesti incognito-tilassa</translation>
 <translation id="2119636449201577317">Avaa…</translation>
+<translation id="2119962645034852864">Osa palveluista ei ole käytettävissä tililläsi</translation>
 <translation id="2120553909046681540">Organisaatiosi on laittanut yksityisen selaamisen pois päältä.</translation>
 <translation id="2122754583996902531">Tämä on ylläpidetty selain. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">Organisaatiosi keskusteluita ei käytetä mallien kehittämiseen. Gemini voi näyttää epätarkkoja tietoja, myös ihmisistä, joten tarkista sen vastaukset. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
@@ -605,6 +606,7 @@
 <translation id="3245744387817103524">Muutosta ei voitu tallentaa.</translation>
 <translation id="3254806613790954367">Viimeinen avoin välilehti kaikilla laitteillasi</translation>
 <translation id="325717987950204592">Valitse "Yksityisyys ja turvallisuus"</translation>
+<translation id="3265736395246760288">Kirjaudu sisään nopeammin kaikilla synkronoiduilla laitteilla.</translation>
 <translation id="3272527697863656322">Peru</translation>
 <translation id="3273510436356991673">Muokkaa aloitusnäyttöä</translation>
 <translation id="3277021493514034324">Sivuston osoite kopioitu</translation>
@@ -754,6 +756,7 @@
 <translation id="3888863481921783344">Sinulle näytetään mahdollisia osallistujia tapahtumaan.</translation>
 <translation id="3891414008432200754">Hinta</translation>
 <translation id="3892144330757387737">Näet historiasi täällä</translation>
+<translation id="3893858854379998374">Jos haluat tallentaa kirjanmerkkejä tilillesi, poista käyttämättömät kirjanmerkit</translation>
 <translation id="3897092660631435901">Valikko</translation>
 <translation id="3904270275864974753">Muokkaa karusellia</translation>
 <translation id="3909222758573607742">Tallenna salasanat ja muut tilin kohteet</translation>

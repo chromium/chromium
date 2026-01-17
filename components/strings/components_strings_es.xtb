@@ -441,7 +441,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1705645336613358172">Usa Affirm o Zip para pagar a plazos</translation>
 <translation id="1706625117072057435">Niveles de zoom</translation>
-<translation id="1706922226983368260">Llave de acceso • "<ph name="PHONE_NAME" />"</translation>
 <translation id="1706954506755087368">{1,plural, =1{Este servidor no ha podido demostrar que es <ph name="DOMAIN" />; supuestamente, su certificado de seguridad es válido a partir de mañana. Este problema puede deberse a una configuración incorrecta o a que un atacante ha interceptado la conexión.}other{Este servidor no ha podido demostrar que es <ph name="DOMAIN" />; supuestamente, su certificado de seguridad es válido dentro de # días. Este problema puede deberse a una configuración incorrecta o a que un atacante ha interceptado la conexión.}}</translation>
 <translation id="1710259589646384581">Sistema operativo</translation>
 <translation id="1711234383449478798">Ignorada porque no se le ha asignado el valor <ph name="VALUE" /> a <ph name="POLICY_NAME" />.</translation>

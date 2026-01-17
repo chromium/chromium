@@ -46,6 +46,7 @@
 <translation id="3150823315463303127">होस्‍ट, नीति को पढ़ने में विफल रहा.</translation>
 <translation id="3171922709365450819">इस क्लाइंट के ज़रिए यह डिवाइस इसलिए काम नहीं करता है क्योंकि इसे तृतीय पक्ष प्रमाणीकरण चाहिए.</translation>
 <translation id="3197730452537982411">रिमोट डेस्कटॉप</translation>
+<translation id="3236334139428307578">Copyright 2026 The Chromium Authors. सभी अधिकार सुरक्षित हैं.</translation>
 <translation id="324272851072175193">ये निर्देश ईमेल करें</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> बदलाव करना चाहता है.</translation>
 <translation id="3339299787263251426">इंटरनेट की मदद से अपना कंप्‍यूटर सुरक्षित रूप से ऐक्‍सेस करें</translation>
@@ -110,6 +111,7 @@
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ने आपकी कंप्यूटर स्क्रीन के साथ-साथ कीबोर्ड और माउस का ऐक्सेस मांगा है. अगर आप ऐक्सेस नहीं देना चाहते हैं, तो ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' को दबाएं. अगर आप ऐक्सेस देना चाहते हैं, तो कनेक्ट करने के लिए ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' को दबाएं.</translation>
 <translation id="5823658491130719298">आप जिस कंप्‍यूटर को रिमोट (दूर से) एक्‍सेस करना चाहते हैं, उस पर Chrome खोलें और <ph name="INSTALLATION_LINK" /> पर जाएं</translation>
 <translation id="5841343754884244200">डिसप्ले विकल्प</translation>
+<translation id="5965133372831030509">Copyright 2026 Google LLC. सभी अधिकार सुरक्षित हैं.</translation>
 <translation id="6033507038939587647">कीबोर्ड विकल्प</translation>
 <translation id="6040143037577758943">बंद करें</translation>
 <translation id="6062854958530969723">होस्‍ट आरंभ करना विफल रहा.</translation>

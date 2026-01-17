@@ -1548,6 +1548,7 @@
 <translation id="2024195579772565064">የፍለጋ ፕሮግራምን ይሰርዙ</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">ትክክለኛ ጠቅታ</translation>
+<translation id="2025130536872979378">ምንጭን ይመልከቱ</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> ተሰናክሏል። ቅጥያውን ዳግም ለመጫን ይህን ፊኛ ጠቅ ያድርጉ።</translation>
 <translation id="2026367923222947564">ሙሉ ገጽ</translation>
 <translation id="2026377162111110983">የአካባቢ ድምፅ</translation>
@@ -2793,6 +2794,7 @@
 <translation id="2856776373509145513">አዲስ መያዣ ይፍጠሩ</translation>
 <translation id="2857047802954430547">የእርስዎን የይለፍ ቃላት፣ እልባቶች እና ሌሎችንም በሁሉም መሣሪያዎችዎ ላይ ለማግኘት በመለያ ይግቡ</translation>
 <translation id="2859741939921354763">የይለፍ ቃላትን ወደ <ph name="BRAND" /> ያስመጡ</translation>
+<translation id="2860284453253554297">የድርጅት መመሪያዎች</translation>
 <translation id="2860710618359053450">መንጋጋን ወደ ቀኝ ይውሰዱ</translation>
 <translation id="2861301611394761800">የስርዓት ዝማኔ ተጠናቅቋል። እባክዎ ስርዓቱን ዳግም ያስጀምሩት።</translation>
 <translation id="2861402191395139055">የመተላለፊያ የደንበኝነት ምዝገባዎች</translation>
@@ -9794,6 +9796,7 @@
 <translation id="7684212569183643648">በእርስዎ አስተዳዳሪ የተጫነ</translation>
 <translation id="7684559058815332124">ተያዥ የወደብ በመለያ መግቢያ ገጽን ይጎብኙ</translation>
 <translation id="7684718995427157417">መተግበሪያዎችዎን ለመፍጠርና ለመሞከር የAndroid ማረሚያ ድልድይን (ADB) ያንቁት። ይህ እርምጃ በGoogle ያልተረጋገጡ የAndroid መተግበሪያዎች መጫንን እንደሚፈቅድ፣ እና ለማሰናከል ወደ የፋብሪካ ዳግም ማስጀመር እንደሚያስፈልግ ልብ ይበሉ።</translation>
+<translation id="7684803937028953000">ድርጅትዎ የዚህን ፋይል አካባቢያዊ ውርድ አግዶታል።</translation>
 <translation id="7684913007876670600">የዚህን ገጽ ቀለል ያለ ዕይታ ለማሳየት የጎን ፓነሉን ይክፈቱ እና የንባብ ሁነታን ይምረጡ</translation>
 <translation id="7685038817958445325">Cast ማድረግ አልተቻለም</translation>
 <translation id="7685049629764448582">ጃቫስክሪፕት ማህደረ ትውስታ</translation>

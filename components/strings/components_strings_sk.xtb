@@ -441,7 +441,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1705645336613358172">Plaťte na splátky pomocou služby Affirm alebo Zip</translation>
 <translation id="1706625117072057435">Úrovne lupy</translation>
-<translation id="1706922226983368260">Prístupový kľúč • <ph name="PHONE_NAME" /></translation>
 <translation id="1706954506755087368">{1,plural, =1{Tomuto serveru sa nepodarilo dokázať, že ide o doménu <ph name="DOMAIN" />; jej certifikát by mal začať platiť od zajtra. Môže to byť následok nesprávnej konfigurácie alebo napadnutia vášho pripojenia útočníkom.}few{Tomuto serveru sa nepodarilo dokázať, že ide o doménu <ph name="DOMAIN" />; jej certifikát by mal začať platiť o # dni. Môže to byť následok nesprávnej konfigurácie alebo napadnutia vášho pripojenia útočníkom.}many{Tomuto serveru sa nepodarilo dokázať, že ide o doménu <ph name="DOMAIN" />; jej certifikát by mal začať platiť o # dňa. Môže to byť následok nesprávnej konfigurácie alebo napadnutia vášho pripojenia útočníkom.}other{Tomuto serveru sa nepodarilo dokázať, že ide o doménu <ph name="DOMAIN" />; jej certifikát by mal začať platiť o # dní. Môže to byť následok nesprávnej konfigurácie alebo napadnutia vášho pripojenia útočníkom.}}</translation>
 <translation id="1710259589646384581">OS</translation>
 <translation id="1711234383449478798">Ignorované, pretože pravidlo <ph name="POLICY_NAME" /> nie je nastavené na <ph name="VALUE" />.</translation>
@@ -3518,6 +3517,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6635900375070654124">zariadenie s overovateľom</translation>
 <translation id="6641852376826221947">Potvrďte nákup</translation>
 <translation id="6643016212128521049">Vymazať</translation>
+<translation id="6644868143085860957">Túto kartu sa nepodarilo uložiť do Peňaženky Google. Namiesto toho bola uložená do Chromu v tomto zariadení.</translation>
 <translation id="6645291930348198241">Používať súbory cookie a údaje webov.</translation>
 <translation id="6645478838938543427">Upozornenia na pokles ceny sa budú odosielať na <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="6648459603387803038">Nastavenia prehliadača môže vzdialene zmeniť správca. Aktivita v tomto zariadení môže byť tiež spravovaná mimo Chromu.</translation>

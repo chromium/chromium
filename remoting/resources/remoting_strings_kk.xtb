@@ -46,6 +46,7 @@
 <translation id="3150823315463303127">Хост саясатты оқи алмады.</translation>
 <translation id="3171922709365450819">Үшінші тарап аутентификациясы қажет болғандықтан, клиент бұл құрылғыға қолдау көрсетпейді.</translation>
 <translation id="3197730452537982411">Remote Desktop</translation>
+<translation id="3236334139428307578">Copyright 2026 The Chromium Authors. Барлық құқығы қорғалған.</translation>
 <translation id="324272851072175193">Осы нұсқаулықтарды электрондық хатпен жіберу</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> өзгерістер жасағысы келеді.</translation>
 <translation id="3339299787263251426">Компьютеріңізге интернет арқылы қауіпсіз түрде кіру</translation>
@@ -110,6 +111,7 @@
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> экраныңызды көру, пернетақта мен тінтуірді басқару рұқсатын сұрады. Бұл сұрауды күтпесеңіз, ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' түймесін басыңыз. Не болмаса дайын болған кезде байланысқа рұқсат беру үшін, ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' түймесін басыңыз.</translation>
 <translation id="5823658491130719298">Қашықтан кіргіңіз келетін компьютерде Chrome браузерін ашып, <ph name="INSTALLATION_LINK" /> бетіне өтіңіз</translation>
 <translation id="5841343754884244200">Көрсету опциялары</translation>
+<translation id="5965133372831030509">Copyright 2026 Google LLC. Барлық құқығы қорғалған.</translation>
 <translation id="6033507038939587647">Пернетақта опциялары</translation>
 <translation id="6040143037577758943">Жабу</translation>
 <translation id="6062854958530969723">Хост инициализациясы сәтсіз аяқталды.</translation>

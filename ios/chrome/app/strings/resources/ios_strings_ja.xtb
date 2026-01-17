@@ -755,6 +755,7 @@
 <translation id="3888863481921783344">予定の招待者の候補を表示するために使用されます。</translation>
 <translation id="3891414008432200754">価格</translation>
 <translation id="3892144330757387737">履歴はここに表示されます</translation>
+<translation id="3893858854379998374">アカウントにブックマークを保存するには、使用していないブックマークを削除してください</translation>
 <translation id="3897092660631435901">メニュー</translation>
 <translation id="3904270275864974753">カルーセルの編集</translation>
 <translation id="3909222758573607742">アカウントにパスワードなどのアイテムを保存する</translation>
@@ -872,6 +873,7 @@
 <translation id="4302061870579014542">位置を設定</translation>
 <translation id="4304713468139749426">パスワード マネージャー</translation>
 <translation id="4309403553630140242">詳細を確認するにはダブルタップします</translation>
+<translation id="4310738531374808763">ホームページをカスタマイズ</translation>
 <translation id="4320848494125124980">最近使用したアイテム</translation>
 <translation id="4322394346347055525">他のタブをすべて閉じる</translation>
 <translation id="4324735664183300693">通知をオンにする</translation>
@@ -1710,6 +1712,7 @@
 <translation id="7328162502911382168">（<ph name="COUNT" />）</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" />%ダウンロード</translation>
 <translation id="7345061034321640811">インポートは許可されていません</translation>
+<translation id="7347998088283246662">パスワード、履歴、ブックマークなどをインポートできます</translation>
 <translation id="7352651011704765696">問題が発生しました</translation>
 <translation id="7364796246159120393">ファイルを選択</translation>
 <translation id="736564850024123010">アドレスバーの位置を変更して使用環境をカスタマイズできます。</translation>
@@ -2235,6 +2238,7 @@
 <translation id="914781932147356857">すべてマーク…</translation>
 <translation id="9148126808321036104">もう一度ログインする</translation>
 <translation id="9149866541089851383">編集...</translation>
+<translation id="9152637745605628097">テーマや色を選択したり、画像をアップロードしたりできます</translation>
 <translation id="9159628751968616911">ウェブページの送信</translation>
 <translation id="9162432979321511934">[パスワードを自動入力] をオンにする</translation>
 <translation id="9165320910061267720">値下げアラートの通知を受け取るには、iOS の設定で通知をオンにする必要があります。</translation>

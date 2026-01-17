@@ -138,7 +138,7 @@
 <translation id="1082214733466244292">Votre administrateur a bloqué l'accès à certaines fonctionnalités de l'appareil</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> souhaite rétablir les valeurs par défaut des paramètres Chrome. Suite à cette opération, votre page d'accueil, la page Nouvel onglet et le moteur de recherche seront la réinitialisés, vos extensions seront désactivées et tous les onglets épinglés seront supprimés. D'autres données temporaires et mises en cache seront également effacées, comme les cookies, les données relatives au contenu et les données de sites.</translation>
 <translation id="1082725763867769612">Fichiers hors connexion</translation>
-<translation id="1083050113196701330">La recherche de mise à jour a bien été effectuée. Aucune mise à jour n'était disponible.</translation>
+<translation id="1083050113196701330">Recherche de mise à jour terminée. Aucune mise à jour disponible.</translation>
 <translation id="1084026333130513768">Enregistrer, partager et caster</translation>
 <translation id="1084096383128641877">La suppression de ce mot de passe n'entraînera pas la suppression de votre compte sur <ph name="DOMAIN" />. Modifiez votre mot de passe ou supprimez votre compte sur <ph name="DOMAIN_LINK" /> pour le protéger des autres utilisateurs.</translation>
 <translation id="1084288067399862432">Le mot de passe compromis a bien été modifié.
@@ -1541,6 +1541,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="2024195579772565064">Supprimer le moteur de recherche</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Clic avec précision</translation>
+<translation id="2025130536872979378">afficher la source</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> a planté. Cliquez sur cette info-bulle pour actualiser l'extension.</translation>
 <translation id="2026367923222947564">Page pleine</translation>
 <translation id="2026377162111110983">Voix de zone</translation>
@@ -2785,6 +2786,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2856776373509145513">Créer un conteneur</translation>
 <translation id="2857047802954430547">Connectez-vous pour accéder à vos mots de passe, vos favoris et plus sur tous vos appareils</translation>
 <translation id="2859741939921354763">Importez des mots de passe dans le <ph name="BRAND" />.</translation>
+<translation id="2860284453253554297">Règles de l'entreprise</translation>
 <translation id="2860710618359053450">Se tordre la mâchoire à droite</translation>
 <translation id="2861301611394761800">Mise à jour terminée. Veuillez redémarrer le système.</translation>
 <translation id="2861402191395139055">Abonnements Passpoint</translation>
@@ -3800,7 +3802,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3567284462585300767">Vous devez être visible pour recevoir et accepter des fichiers de personnes à proximité</translation>
 <translation id="356738834800832239">Votre mot de passe est enregistré</translation>
 <translation id="3568431410312984116">Autoriser M'aider à écrire à s'ouvrir automatiquement</translation>
-<translation id="3569304198553566878">Affichage de <ph name="NUM_DISPLAYED_EVENTS" /> sur <ph name="NUM_TOTAL_EVENTS" /></translation>
+<translation id="3569304198553566878"><ph name="NUM_DISPLAYED_EVENTS" />événement(s) affiché(s) sur <ph name="NUM_TOTAL_EVENTS" /></translation>
 <translation id="3569382839528428029">Voulez-vous que l'application <ph name="APP_NAME" /> partage votre écran ?</translation>
 <translation id="3569614820047645079">Les fichiers dans Mon Drive sont automatiquement synchronisés sur votre Chromebook afin que vous puissiez y accéder sans connexion Internet.</translation>
 <translation id="3569617221227793022">Le fuseau horaire est actuellement défini sur <ph name="TIME_ZONE_ENTRY" />. Ce paramètre est géré par votre administrateur.</translation>
@@ -9785,6 +9787,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="7684212569183643648">Installée par votre administrateur</translation>
 <translation id="7684559058815332124">Accéder à la page de connexion du portail captif</translation>
 <translation id="7684718995427157417">Pour créer et tester vos applications, activez Android Debug Bridge (ADB). Notez que cette action autorise l'installation d'applications Android non vérifiées par Google et ne pourra être désactivée qu'en rétablissant la configuration d'usine.</translation>
+<translation id="7684803937028953000">Votre organisation a bloqué le téléchargement local de ce fichier.</translation>
 <translation id="7684913007876670600">Pour afficher une vue simplifiée de cette page, ouvrez le panneau latéral et sélectionnez le mode Lecture</translation>
 <translation id="7685038817958445325">Impossible de caster</translation>
 <translation id="7685049629764448582">Mémoire JavaScript </translation>

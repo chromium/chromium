@@ -315,6 +315,7 @@
 <translation id="21133533946938348">Fixa la pestanya</translation>
 <translation id="2117650889962717098">Mantén la navegació privada canviant al mode d'incògnit</translation>
 <translation id="2119636449201577317">Obre a…</translation>
+<translation id="2119962645034852864">Alguns serveis no estan disponibles per al teu compte</translation>
 <translation id="2120553909046681540">La teva organització ha desactivat la navegació privada.</translation>
 <translation id="2122754583996902531">El navegador està gestionat. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">Els xats de la teva organització no s'utilitzen per millorar els nostres models. És possible que Gemini mostri informació imprecisa, també sobre persones, així que comprova-la. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
@@ -605,6 +606,7 @@
 <translation id="3245744387817103524">No s'ha pogut desar el canvi.</translation>
 <translation id="3254806613790954367">La darrera pestanya oberta en tots els teus dispositius</translation>
 <translation id="325717987950204592">Toca Privadesa i seguretat</translation>
+<translation id="3265736395246760288">Inicia la sessió més ràpidament des de qualsevol dels teus dispositius sincronitzats.</translation>
 <translation id="3272527697863656322">Cancel·la</translation>
 <translation id="3273510436356991673">Personalitza la pantalla d'inici</translation>
 <translation id="3277021493514034324">S'ha copiat l'adreça del lloc web</translation>
@@ -754,6 +756,7 @@
 <translation id="3888863481921783344">S'utilitzarà per mostrar-te els possibles convidats al teu esdeveniment.</translation>
 <translation id="3891414008432200754">Preu</translation>
 <translation id="3892144330757387737">Trobaràs l'historial aquí</translation>
+<translation id="3893858854379998374">Per desar adreces d'interès al teu compte, suprimeix les que no utilitzis</translation>
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3904270275864974753">Edita el carrusel</translation>
 <translation id="3909222758573607742">Desa contrasenyes i altres elements al compte</translation>

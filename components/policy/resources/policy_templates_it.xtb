@@ -1596,6 +1596,15 @@ Se la policy è impostata su 1, indica che i gruppi di schede non possono essere
 <translation id="2144236546337326489">Consenti l'attivazione della continuazione di attività Phone Hub</translation>
 <translation id="2145735238144543545">Certificati client richiesti</translation>
 <translation id="2146103669166779785">Colore esadecimale che verrà utilizzato per generare e applicare un tema al browser.</translation>
+<translation id="2146539033119095550">Questa policy consente di impostare un elenco di pattern URL che specificano le origini di primo livello per le quali il partizionamento dello spazio di archiviazione di terze parti (partizionamento dello spazio di archiviazione di iframe multiorigine) deve essere disattivato.
+
+Se questa policy non viene configurata o se un'origine di primo livello non corrisponde a uno dei pattern URL, viene applicata <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />.
+
+Per informazioni dettagliate sui pattern validi, visita la pagina https://chromeenterprise.google/policies/url-patterns. Tieni presente che i pattern elencati qui vengono considerati come origini, non URL, quindi non dovresti specificare un percorso.
+
+Visita la pagina https://developers.google.com/privacy-sandbox/cookies/storage-partitioning per informazioni dettagliate sul partizionamento dello spazio di archiviazione di terze parti.
+
+Questa opzione è stata rimossa in Chrome 145 e al suo posto si consiglia di utilizzare il metodo requestStorageAccess: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Puoi lasciare un feedback all'indirizzo https://crbug.com/425248669.</translation>
 <translation id="2148733583160916305">Consenti l'API WebPrinting su questi siti</translation>
 <translation id="2148769554831004951">Forza l'attivazione di WebSQL.</translation>
 <translation id="214901426630414675">Limita la modalità di stampa fronte/retro</translation>
@@ -3442,6 +3451,15 @@ Se viene disattivata, la funzionalità di scrittura predittiva sulla tastiera fi
 <translation id="33993310248354034">Consente di rilevare entità di testo normale nelle pagine web.</translation>
 <translation id="3399859571630358395">Viene forzata la disattivazione della funzionalità Accoppiamento rapido (accoppiamento rapido tramite Bluetooth)</translation>
 <translation id="3404681701763345449">Attiva integrazione di <ph name="GOOGLE_CALENDAR_NAME" />.</translation>
+<translation id="3405276853140830214">Questa policy consente di stabilire se il partizionamento dello spazio di archiviazione di terze parti è consentito per impostazione predefinita.
+
+Se la policy viene impostata su 1 - AllowPartitioning o se non viene configurata, il partizionamento dello spazio di archiviazione di terze parti è consentito per impostazione predefinita. È possibile eseguire l'override di questa impostazione predefinita per origini di primo livello specifiche in altri modi.
+
+Se la policy viene impostata su 2 - BlockPartitioning, il partizionamento dello spazio di archiviazione di terze parti viene disattivato per tutti i contesti.
+
+Utilizza <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> per disattivare il partizionamento dello spazio di archiviazione di terze parti per origini di primo livello specifiche. Visita la pagina https://developers.google.com/privacy-sandbox/cookies/storage-partitioning per informazioni dettagliate sul partizionamento dello spazio di archiviazione di terze parti.
+
+Questa opzione è stata rimossa in Chrome 145 e al suo posto si consiglia di utilizzare il metodo requestStorageAccess: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Puoi lasciare un feedback all'indirizzo https://crbug.com/425248669.</translation>
 <translation id="3405361833556012520">Questa policy si applica solo al traffico del browser; il Play Store, la navigazione web delle app per Android e altro traffico generato dagli utenti, ad esempio il traffico delle VM Linux o i processi di stampa, continueranno a rispettare le limitazioni imposte dalla VPN sempre attiva. Questa policy viene applicata in modo forzato solo quando la VPN non è connessa e solo per il traffico generato dal browser degli utenti. Anche se questa policy viene applicata in modo forzato, il traffico generato dal sistema può anche ignorare la VPN sempre attiva per eseguire attività come il recupero delle policy e la sincronizzazione dell'orologio di sistema.
 
 Utilizza questa policy per aprire le eccezioni di alcuni schemi, sottodomini di altri domini, porte o percorsi specifici utilizzando il formato specificato all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format. Il filtro più specifico consente di determinare se un URL è bloccato o consentito.
@@ -5229,6 +5247,20 @@ Vecchio comportamento precedente: in "beforeunload", la chiamata di "event.preve
 <translation id="46321462262887935">Imposta i tasti della fila superiore come tasti funzione, ma consenti la modifica da parte degli utenti</translation>
 <translation id="4632343302005518762">Consenti a <ph name="PRODUCT_FRAME_NAME" /> di gestire i tipi di contenuti elencati</translation>
 <translation id="4636354638176939375">Disattiva la creazione di utenti supervisionati</translation>
+<translation id="4637701328641064644">Questa policy consente di stabilire se gli URL dei BLOB vengono partizionati durante il recupero e la navigazione.
+Se questa policy viene impostata su Attivata o se non viene configurata, gli URL dei BLOB verranno partizionati.
+Se questa policy viene impostata su Disattivata, gli URL dei BLOB non verranno partizionati.
+
+Se devi usare la policy, invia una segnalazione di bug all'indirizzo
+<ph name="BUG_URL" />
+spiegando il tuo caso d'uso. La policy sarà valida fino alla versione 146 di
+<ph name="PRODUCT_NAME" />, dopodiché
+la vecchia implementazione verrà rimossa.
+
+NOTA: le modifiche apportate a questa policy verranno applicate soltanto ai processi del renderer appena avviati mentre il browser è in esecuzione.
+
+Visita la pagina https://developers.google.com/privacy-sandbox/cookies/storage-partitioning
+per informazioni dettagliate sul partizionamento dello spazio di archiviazione di terze parti.</translation>
 <translation id="46383668315040154">Consente di specificare il canale di rilascio su cui deve essere bloccato questo dispositivo.
 
 L'impostazione di <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> ha effetto solo se <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> è impostato su False.</translation>

@@ -282,7 +282,7 @@
 <translation id="1177073277575830464">Швидке налаштування Android завершено. Продовжте налаштування на пристрої <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1177440945615690056">Підключитися до будь-якої сумісної мобільної мережі можна в налаштуваннях</translation>
 <translation id="1177548198167638471">Більше не запитувати</translation>
-<translation id="1177863135347784049">Спеціальне</translation>
+<translation id="1177863135347784049">Свій варіант</translation>
 <translation id="1178093605842850860">Дозволено переглядати й змінювати цей сайт</translation>
 <translation id="1178357842179817577">Захищає від небезпечних сайтів, завантажень і розширень</translation>
 <translation id="1178581264944972037">Пауза</translation>
@@ -1553,6 +1553,7 @@
 <translation id="2024195579772565064">Видалити пошукову систему</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Точне натискання</translation>
+<translation id="2025130536872979378">переглянути джерело</translation>
 <translation id="2025632980034333559">Відбулося аварійне завершення роботи розширення <ph name="APP_NAME" />. Натисніть цю спливаючу підказку, щоб перезавантажити розширення.</translation>
 <translation id="2026367923222947564">На всю сторінку</translation>
 <translation id="2026377162111110983">Чіткіший голос</translation>
@@ -2800,6 +2801,7 @@
 <translation id="2856776373509145513">Створіть новий контейнер</translation>
 <translation id="2857047802954430547">Увійдіть в обліковий запис, щоб отримати доступ до паролів, закладок і інших даних на всіх пристроях</translation>
 <translation id="2859741939921354763">Імпортуйте паролі в <ph name="BRAND" /></translation>
+<translation id="2860284453253554297">Корпоративні правила</translation>
 <translation id="2860710618359053450">Посунути щелепу праворуч</translation>
 <translation id="2861301611394761800">Оновлення системи завершено. Перезапустіть систему.</translation>
 <translation id="2861402191395139055">Підписки Passpoint</translation>
@@ -6379,7 +6381,7 @@
 <translation id="5302932258331363306">Показувати заміни</translation>
 <translation id="5305145881844743843">Цим обліковим записом керують через домен <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">Джерело не підтримується</translation>
-<translation id="5307386115243749078">Створити пару з перемикачем Bluetooth</translation>
+<translation id="5307386115243749078">Зв’язати з перемикачем Bluetooth</translation>
 <translation id="5308380583665731573">Під’єднатися</translation>
 <translation id="5308989548591363504">Перевірити на наявність зловмисного ПЗ</translation>
 <translation id="5309641450810523897">Ідентифікатор запиту до служби підтримки</translation>
@@ -9801,6 +9803,7 @@
 <translation id="7684212569183643648">Установив адміністратор</translation>
 <translation id="7684559058815332124">Перейти на сторінку входу приєднаного порталу</translation>
 <translation id="7684718995427157417">Щоб створювати й перевіряти додатки, увімкніть Android Debug Bridge (ADB). Зауважте, що цією дією ви дозволяєте встановлювати додатки для Android, які не були перевірені Google. Щоб вимкнути інструмент, доведеться відновити заводські налаштування.</translation>
+<translation id="7684803937028953000">Ваша організація заблокувала локальне завантаження цього файлу.</translation>
 <translation id="7684913007876670600">Щоб відобразити цю сторінку в режимі спрощеного перегляду, відкрийте бічну панель і виберіть режим читання</translation>
 <translation id="7685038817958445325">Не вдалося транслювати</translation>
 <translation id="7685049629764448582">Пам'ять JavaScript</translation>

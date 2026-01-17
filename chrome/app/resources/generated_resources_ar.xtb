@@ -1545,6 +1545,7 @@
 <translation id="2024195579772565064">حذف محرك البحث</translation>
 <translation id="202500043506723828">‏معرّف شريحة SIM المضمّنة (EID)</translation>
 <translation id="2025123106058020990">النقر الدقيق</translation>
+<translation id="2025130536872979378">عرض المصدر</translation>
 <translation id="2025632980034333559">لقد تعطل <ph name="APP_NAME" />. انقر على هذا البالون لإعادة تحميل الإضافة.</translation>
 <translation id="2026367923222947564">صفحة كاملة</translation>
 <translation id="2026377162111110983">صوت المنطقة</translation>
@@ -2789,6 +2790,7 @@
 <translation id="2856776373509145513">إنشاء حاوية جديدة</translation>
 <translation id="2857047802954430547">يمكنك تسجيل الدخول للوصول إلى كلمات المرور والإشارات المرجعية وغيرهما على جميع أجهزتك</translation>
 <translation id="2859741939921354763">استيراد كلمات المرور إلى "<ph name="BRAND" />"</translation>
+<translation id="2860284453253554297">سياسات المؤسسات</translation>
 <translation id="2860710618359053450">تحريك الفك إلى اليمين</translation>
 <translation id="2861301611394761800">اكتمل تحديث النظام. يُرجى إعادة تشغيل النظام.</translation>
 <translation id="2861402191395139055">اشتراكات نقطة المرور</translation>
@@ -9796,6 +9798,7 @@
 <translation id="7684212569183643648">تم التثبيت من قبل مشرفك</translation>
 <translation id="7684559058815332124">الانتقال إلى صفحة تسجيل الدخول إلى المدخل المشروط الوصول إليه</translation>
 <translation id="7684718995427157417">‏لإنشاء تطبيقاتك واختبارها، فعِّل (Android Debug Bridge (ADB. تجدر الإشارة إلى أنه يسمح هذا الإجراء بتثبيت تطبيقات Android لم يتم إثبات ملكيتها من خلال Google، ويتطلب إعادة الضبط على الإعدادات الأصلية للإيقاف.</translation>
+<translation id="7684803937028953000">حظرت مؤسستك تنزيل هذا الملف على الجهاز.</translation>
 <translation id="7684913007876670600">لإظهار عرض مبسَّط لهذه الصفحة، افتح اللوحة الجانبية واختَر "وضع القراءة".</translation>
 <translation id="7685038817958445325">تعذَّر بث المحتوى</translation>
 <translation id="7685049629764448582">‏ذاكرة JavaScript</translation>

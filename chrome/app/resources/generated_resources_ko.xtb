@@ -1551,6 +1551,7 @@
 <translation id="2024195579772565064">검색엔진 삭제</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">정밀 클릭</translation>
+<translation id="2025130536872979378">소스 보기</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" />이(가) 다운되었습니다. 확장 프로그램을 다시 로드하려면 이 풍선을 클릭하세요.</translation>
 <translation id="2026367923222947564">전체 페이지</translation>
 <translation id="2026377162111110983">영역 음성</translation>
@@ -2799,6 +2800,7 @@
 <translation id="2856776373509145513">새 컨테이너 만들기</translation>
 <translation id="2857047802954430547">모든 기기에서 비밀번호, 북마크 등을 사용하려면 로그인하세요</translation>
 <translation id="2859741939921354763"><ph name="BRAND" />로 비밀번호를 가져옵니다.</translation>
+<translation id="2860284453253554297">엔터프라이즈 정책</translation>
 <translation id="2860710618359053450">턱을 오른쪽으로 움직이기</translation>
 <translation id="2861301611394761800">시스템 업데이트가 완료되었습니다. 시스템을 다시 시작하세요.</translation>
 <translation id="2861402191395139055">Passpoint 구독</translation>
@@ -9798,6 +9800,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7684212569183643648">관리자가 설치함</translation>
 <translation id="7684559058815332124">캡티브 포털 로그인 페이지로 이동</translation>
 <translation id="7684718995427157417">앱을 만들고 테스트하려면 Android 디버그 브리지(ADB)를 사용 설정하세요. 이렇게 하면 Google에서 확인하지 않은 Android 앱을 설치할 수 있게 되며, 사용 중지하려면 초기화가 필요합니다.</translation>
+<translation id="7684803937028953000">조직에서 이 파일의 로컬 다운로드를 차단했습니다.</translation>
 <translation id="7684913007876670600">이 페이지를 간략하게 표시하려면 측면 패널을 열고 읽기 모드를 선택하세요.</translation>
 <translation id="7685038817958445325">전송할 수 없습니다</translation>
 <translation id="7685049629764448582">자바스크립트 메모리</translation>

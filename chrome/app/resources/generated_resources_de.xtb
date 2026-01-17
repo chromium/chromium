@@ -1537,6 +1537,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="2024195579772565064">Suchmaschine löschen</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Präzise Klicks</translation>
+<translation id="2025130536872979378">Quelle anzeigen</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> ist abgestürzt. Klicke auf dieses Fenster, um die Erweiterung erneut zu laden.</translation>
 <translation id="2026367923222947564">Vollständige Seite</translation>
 <translation id="2026377162111110983">Umgebung</translation>
@@ -2781,6 +2782,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2856776373509145513">Neuen Container erstellen</translation>
 <translation id="2857047802954430547">Melde dich an, damit du auf allen deinen Geräten auf deine Passwörter, Lesezeichen und andere Daten zugreifen kannst</translation>
 <translation id="2859741939921354763">Passwörter in <ph name="BRAND" /> importieren</translation>
+<translation id="2860284453253554297">Unternehmensrichtlinien</translation>
 <translation id="2860710618359053450">Kiefer nach rechts verschieben</translation>
 <translation id="2861301611394761800">Systemupdate abgeschlossen. Starte das System jetzt neu.</translation>
 <translation id="2861402191395139055">Passpoint-Abos</translation>
@@ -9775,6 +9777,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="7684212569183643648">Von deinem Administrator installiert</translation>
 <translation id="7684559058815332124">Captive Portal-Anmeldeseite besuchen</translation>
 <translation id="7684718995427157417">Aktiviere zum Erstellen und Testen deiner Apps Android Debug Bridge (ADB). Durch diese Aktion können Android-Apps installiert werden, die nicht von Google geprüft wurden. Zum Deaktivieren ist das Zurücksetzen auf die Werkseinstellungen erforderlich.</translation>
+<translation id="7684803937028953000">Deine Organisation hat den lokalen Download dieser Datei blockiert.</translation>
 <translation id="7684913007876670600">Wenn du diese Seite in einer vereinfachten Ansicht sehen möchtest, öffne die Seitenleiste und wähle den Lesemodus aus</translation>
 <translation id="7685038817958445325">Streamen nicht möglich</translation>
 <translation id="7685049629764448582">JavaScript-Speicher</translation>

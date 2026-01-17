@@ -441,7 +441,6 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1705645336613358172">Affirm 또는 Zip을 사용하여 할부로 결제하세요</translation>
 <translation id="1706625117072057435">확대/축소 수준</translation>
-<translation id="1706922226983368260">패스키 • "<ph name="PHONE_NAME" />"</translation>
 <translation id="1706954506755087368">{1,plural, =1{서버의 보안 인증서가 내일 발효될 예정이며 이에 따라 <ph name="DOMAIN" />임을 입증할 수 없습니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.}other{서버의 보안 인증서가 #일 후 발효될 예정이며 이에 따라 <ph name="DOMAIN" />임을 입증할 수 없습니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.}}</translation>
 <translation id="1710259589646384581">OS</translation>
 <translation id="1711234383449478798"><ph name="POLICY_NAME" /> 정책이 <ph name="VALUE" /> 값으로 설정되어 있지 않아 무시되었습니다.</translation>

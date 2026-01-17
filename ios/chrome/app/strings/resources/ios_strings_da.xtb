@@ -315,6 +315,7 @@
 <translation id="21133533946938348">Fastgør fane</translation>
 <translation id="2117650889962717098">Hold din internetaktivitet privat ved at skifte til inkognitotilstand</translation>
 <translation id="2119636449201577317">Åbn i…</translation>
+<translation id="2119962645034852864">Visse tjenester er ikke tilgængelige for din konto</translation>
 <translation id="2120553909046681540">Din organisation har deaktiveret privat browsing.</translation>
 <translation id="2122754583996902531">Din browser administreres. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">Din organisations chatsamtaler bruges ikke til at forbedre vores modeller. Gemini kan vise unøjagtige oplysninger, herunder om personer, så sørg for at dobbelttjekke svarene. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
@@ -755,6 +756,7 @@
 <translation id="3888863481921783344">Dette bruges til at vise dig mulige gæster til din begivenhed.</translation>
 <translation id="3891414008432200754">Pris</translation>
 <translation id="3892144330757387737">Her kan du se din historik</translation>
+<translation id="3893858854379998374">Hvis du vil gemme bogmærker på din konto, skal du slette dine ubrugte bogmærker</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904270275864974753">Rediger karrusel</translation>
 <translation id="3909222758573607742">Gem adgangskoder og andre elementer på kontoen</translation>

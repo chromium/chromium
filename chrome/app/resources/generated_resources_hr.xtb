@@ -1542,6 +1542,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="2024195579772565064">Brisanje tražilice</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Precizni klik</translation>
+<translation id="2025130536872979378">prikaži izvor</translation>
 <translation id="2025632980034333559">Aplikacija <ph name="APP_NAME" /> srušila se. Kliknite ovaj balon za ponovno učitavanje ekstenzije.</translation>
 <translation id="2026367923222947564">Cijela stranica</translation>
 <translation id="2026377162111110983">Glas u prostoru</translation>
@@ -2787,6 +2788,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2856776373509145513">Izrada novog spremnika</translation>
 <translation id="2857047802954430547">Prijavite se kako biste imali pristup svojim zaporkama, oznakama i drugim podacima na svim svojim uređajima</translation>
 <translation id="2859741939921354763">Uvoz zaporki na uslugu <ph name="BRAND" /></translation>
+<translation id="2860284453253554297">Pravila organizacije</translation>
 <translation id="2860710618359053450">Pomicanje čeljusti udesno</translation>
 <translation id="2861301611394761800">Ažuriranje sustava dovršeno. Ponovno pokrenite sustav.</translation>
 <translation id="2861402191395139055">Pretplate na Passpoint</translation>
@@ -9786,6 +9788,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="7684212569183643648">Instalirao vaš administrator</translation>
 <translation id="7684559058815332124">Posjeti stranicu za prijavu na obaveznom portalu za autentifikaciju</translation>
 <translation id="7684718995427157417">Da biste izrađivali i testirali aplikacije, omogućite Android Debug Bridge (ADB). Napominjemo da se time omogućuje instaliranje Android aplikacija koje Google nije potvrdio i da je za onemogućivanje potrebno vraćanje na tvorničke postavke.</translation>
+<translation id="7684803937028953000">Vaša je organizacija blokirala lokalno preuzimanje ove datoteke.</translation>
 <translation id="7684913007876670600">Da biste prikazali pojednostavljeni prikaz stranice, otvorite bočnu ploču i odaberite Čitački način</translation>
 <translation id="7685038817958445325">Emitiranje nije uspjelo</translation>
 <translation id="7685049629764448582">Memorija JavaScripta</translation>

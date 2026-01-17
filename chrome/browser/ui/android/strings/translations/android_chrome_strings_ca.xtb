@@ -1641,6 +1641,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="784652447248278262">Finestra actual</translation>
 <translation id="784934925303690534">Interval de temps</translation>
 <translation id="7851858861565204677">Altres dispositius</translation>
+<translation id="78527117619130387">Torna a prémer ^W per tancar la pestanya fixada</translation>
 <translation id="7853202427316060426">Activitat</translation>
 <translation id="7859988229622350291">No tradueixis mai</translation>
 <translation id="7866213166286285359">Fes clic aquí per veure el botó Tradueix pàgines</translation>
@@ -1654,6 +1655,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7919123827536834358">Tradueix automàticament aquests idiomes</translation>
 <translation id="7921782882718083488">Resumeix aquesta pàgina</translation>
 <translation id="7926975587469166629">Àlies de la targeta</translation>
+<translation id="7927073875790626822">XR</translation>
 <translation id="7929587383660661825">Chrome suprimeix automàticament els permisos dels llocs web que abusen de les notificacions o que no has visitat recentment</translation>
 <translation id="7934668619883965330">No es pot baixar el fitxer. No s'admet aquest format de fitxer.</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> no està actualitzat.</translation>

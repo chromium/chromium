@@ -441,7 +441,6 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1705645336613358172">Folosește Affirm sau Zip pentru a plăti în rate</translation>
 <translation id="1706625117072057435">Niveluri de zoom</translation>
-<translation id="1706922226983368260">Cheie de acces • <ph name="PHONE_NAME" /></translation>
 <translation id="1706954506755087368">{1,plural, =1{Acest server nu a putut dovedi că este <ph name="DOMAIN" />. Data de emitere a certificatului său de securitate este mâine. Cauza poate fi o eroare de configurare sau interceptarea conexiunii de către un atacator.}few{Acest server nu a putut dovedi că este <ph name="DOMAIN" />. Data de emitere a certificatului său de securitate este în viitor, peste # zile. Cauza poate fi o eroare de configurare sau interceptarea conexiunii de către un atacator.}other{Acest server nu a putut dovedi că este <ph name="DOMAIN" />. Data de emitere a certificatului său de securitate este în viitor, peste # de zile. Cauza poate fi o eroare de configurare sau interceptarea conexiunii de către un atacator.}}</translation>
 <translation id="1710259589646384581">Sistem de operare</translation>
 <translation id="1711234383449478798">Ignorată deoarece politica <ph name="POLICY_NAME" /> nu este setată la <ph name="VALUE" />.</translation>

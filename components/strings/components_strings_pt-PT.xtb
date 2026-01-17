@@ -186,6 +186,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1289129165308566697">Veja o seu histórico noutros dispositivos</translation>
 <translation id="1292571435393770077">Tabuleiro 16</translation>
 <translation id="1292701964462482250">"Existe software no computador que está a impedir que o Chrome se ligue à Web em segurança" (apenas para computadores com Windows)</translation>
+<translation id="1293154089865862473">O conteúdo da página de pagamento é partilhado com a Google para oferecer estas opções. Para ocultar as opções para pagar depois no preenchimento automático, aceda às <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="1293556467332435079">Ficheiros</translation>
 <translation id="1293797321964802402">Envelope 9 x 11 pol.</translation>
 <translation id="129553762522093515">Fechados recentemente</translation>
@@ -441,7 +442,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1705645336613358172">Usar a Affirm ou a Zip para pagar em prestações</translation>
 <translation id="1706625117072057435">Níveis de zoom</translation>
-<translation id="1706922226983368260">Chave de acesso • "<ph name="PHONE_NAME" />"</translation>
 <translation id="1706954506755087368">{1,plural, =1{Este servidor não conseguiu provar que é <ph name="DOMAIN" />; o seu certificado de segurança é supostamente de amanhã. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.}other{Este servidor não conseguiu provar que é <ph name="DOMAIN" />; a data do seu certificado de segurança é supostamente daqui a # dias. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.}}</translation>
 <translation id="1710259589646384581">SO</translation>
 <translation id="1711234383449478798">Ignorada porque a política <ph name="POLICY_NAME" /> não está definida como <ph name="VALUE" />.</translation>
@@ -1125,6 +1125,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2782088940970074970">Aluguer de carros</translation>
 <translation id="278436560439594386">Eletrodomésticos</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
+<translation id="2784540996156451674">O conteúdo da página de pagamento é partilhado com a Google para oferecer estas opções.</translation>
 <translation id="2784949926578158345">A ligação foi reposta.</translation>
 <translation id="2786008859124691917">Bicicletas e acessórios</translation>
 <translation id="2792012897584536778">Os administradores deste dispositivo configuraram certificados de segurança que lhes podem permitir visualizar os conteúdos dos Websites visitados por si.</translation>
@@ -2483,6 +2484,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4950898438188848926">Botão de mudança de separador: prima Enter para mudar para o separador aberto, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Ações</translation>
 <translation id="4953689047182316270">Responder a eventos de acessibilidade</translation>
+<translation id="4954891067389874142">Pague mais rapidamente quando o seu cartão for guardado. As informações do cartão são encriptadas na Carteira do Google.</translation>
 <translation id="4957080528849277028">Botão Ver o Histórico do Chrome; ative para ver e gerir o histórico de navegação nas definições do Chrome</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 site}other{+ # sites}}</translation>
 <translation id="4958444002117714549">Expandir lista</translation>
@@ -4010,6 +4012,7 @@ Detalhes adicionais:
 <translation id="7408613996403626141">Brinquedos</translation>
 <translation id="7410852728357935715">Transmitir para um dispositivo</translation>
 <translation id="741204030948306876">Sim, aceito</translation>
+<translation id="7412081313067625215">O seu cartão é guardado na Carteira do Google para que possa preenchê-lo automaticamente em compras futuras</translation>
 <translation id="7416351320495623771">Gerir palavras-passe…</translation>
 <translation id="7416898721136759658">Subsídios, bolsas e assistência financeira</translation>
 <translation id="741772962178517671">Affirm</translation>
@@ -4143,6 +4146,7 @@ Detalhes adicionais:
 <translation id="759889825892636187"><ph name="HOST_NAME" /> não consegue processar este pedido de momento.</translation>
 <translation id="7599089013883397081">A transferência excedeu o tempo limite</translation>
 <translation id="7602868996817972616">Perguntar ao Google acerca desta página</translation>
+<translation id="7606123685356405076">Modelos do Gemini 3</translation>
 <translation id="7610193165460212391">O valor está fora do intervalo <ph name="VALUE" /> .</translation>
 <translation id="761261689936461781">Grosso</translation>
 <translation id="7613889955535752492">Exp.: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

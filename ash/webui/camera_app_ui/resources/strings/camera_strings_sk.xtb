@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Typ vyhľadávania</translation>
 <translation id="28682968802727151">Ukážka zrkadlenia</translation>
 <translation id="2879583609344924966">Kamera <ph name="CAMERA" /> je pripojená.</translation>
+<translation id="3063987824612038785">Všetky súbory z kamery sa budú ukladať na Disk Google</translation>
 <translation id="3067436040345934772">Posunutie doprava</translation>
 <translation id="3081586908890909590">Prepnúť na zaznamenávanie videa</translation>
 <translation id="3091480460059548935">Rozpoznávanie textu v ukážke</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">Video sa spracúva…</translation>
 <translation id="3789724198583203151">Otočiť o 90 stupňov proti smeru hodinových ručičiek</translation>
 <translation id="3810838688059735925">Video</translation>
+<translation id="386366972082231038">Všetky súbory kamery sa budú ukladať do služby OneDrive</translation>
 <translation id="4060608699153044055">Nemôžete nahrávať, pretože v zariadení nie je dostatok priestoru. Ak chcete začať nahrávať, musíte v zariadení uvoľniť priestor.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpx</translation>
 <translation id="4118525110028899586">Pozastaviť nahrávanie</translation>
@@ -157,6 +159,7 @@ Ak sa týka kvality obrázkov či videí, priložte ukážku fotky alebo videa a
 <translation id="7983668134180549431">Bol rozpoznaný text.</translation>
 <translation id="8079255378695216066">Nahrávanie sa nedá spustiť</translation>
 <translation id="8120146556401698679">Posunúť nakloniť priblížiť</translation>
+<translation id="8127459436205030819">Vaše súbory môže vidieť váš správca</translation>
 <translation id="8131740175452115882">Potvrdiť</translation>
 <translation id="8145038249676204903">Prepnúť na fotenie</translation>
 <translation id="8167081290930651932">Uložiť ako fotku</translation>

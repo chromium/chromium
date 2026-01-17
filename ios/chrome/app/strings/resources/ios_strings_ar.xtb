@@ -605,6 +605,7 @@
 <translation id="3245744387817103524">تعذَّر حفظ التغيير.</translation>
 <translation id="3254806613790954367">آخر علامة تبويب مفتوحة على جميع أجهزتك</translation>
 <translation id="325717987950204592">النقر على "الخصوصية والأمان"</translation>
+<translation id="3265736395246760288">يمكنك تسجيل الدخول بسرعة أكبر على أي جهاز تمت مزامنته.</translation>
 <translation id="3272527697863656322">إلغاء</translation>
 <translation id="3273510436356991673">تخصيص شاشتك الرئيسية</translation>
 <translation id="3277021493514034324">تم نسخ عنوان الموقع</translation>
@@ -754,6 +755,7 @@
 <translation id="3888863481921783344">سيتم استخدام هذه البيانات لعرض المدعوين المحتملين إلى الحدث الخاص بك.</translation>
 <translation id="3891414008432200754">السعر</translation>
 <translation id="3892144330757387737">سيظهر لك السجلّ هنا</translation>
+<translation id="3893858854379998374">لحفظ إشارات مرجعية في حسابك، يجب حذف الإشارات غير المستخدمة</translation>
 <translation id="3897092660631435901">قائمة</translation>
 <translation id="3904270275864974753">تعديل لوحة العرض الدوّارة</translation>
 <translation id="3909222758573607742">حفظ كلمات المرور والعناصر الأخرى في الحساب</translation>
@@ -871,6 +873,7 @@
 <translation id="4302061870579014542">ضبط الموضع</translation>
 <translation id="4304713468139749426">مدير كلمات المرور</translation>
 <translation id="4309403553630140242">يُرجى النقر مرّتَين للحصول على المزيد من المعلومات.</translation>
+<translation id="4310738531374808763">تخصيص صفحتك الرئيسية</translation>
 <translation id="4320848494125124980">الأحدث</translation>
 <translation id="4322394346347055525">إغلاق علامات التبويب الأخرى</translation>
 <translation id="4324735664183300693">تفعيل الإشعارات</translation>
@@ -1707,6 +1710,7 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">تم تنزيل <ph name="PERCENT" /> بالمائة</translation>
 <translation id="7345061034321640811">غير مسموح بالاستيراد</translation>
+<translation id="7347998088283246662">يمكنك استيراد كلمات المرور والسجلّ والإشارات المرجعية وغيرها</translation>
 <translation id="7352651011704765696">حدث خطأ</translation>
 <translation id="7364796246159120393">اختيار ملفّ</translation>
 <translation id="736564850024123010">يمكنك تبديل مكان شريط العناوين للحصول على تجربة استخدام مخصصة.</translation>
@@ -2233,6 +2237,7 @@
 <translation id="914781932147356857">وضع علامة على الكل…</translation>
 <translation id="9148126808321036104">تسجيل الدخول مرة أخرى</translation>
 <translation id="9149866541089851383">تعديل...</translation>
+<translation id="9152637745605628097">يمكنك الاختيار من بين المظاهر والألوان المتوفّرة أو تحميل صورة</translation>
 <translation id="9159628751968616911">إرسال صفحة الويب</translation>
 <translation id="9162432979321511934">‏فعِّل AutoFill Passwords (الملء التلقائي لكلمات المرور).</translation>
 <translation id="9165320910061267720">‏لتلقِّي تنبيهات بشأن انخفاض الأسعار، عليك تفعيل الإشعارات من إعدادات iOS.</translation>

@@ -441,7 +441,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1705645336613358172">Gunakan Affirm atau Zip untuk membayar dengan cicilan</translation>
 <translation id="1706625117072057435">Tingkat perbesar/perkecil</translation>
-<translation id="1706922226983368260">Kunci sandi • "<ph name="PHONE_NAME" />"</translation>
 <translation id="1706954506755087368">{1,plural, =1{Server ini tidak dapat membuktikan bahwa ini adalah <ph name="DOMAIN" />; sertifikat keamanannya sepertinya dari esok hari. Hal ini mungkin disebabkan oleh kesalahan konfigurasi, atau ada penyerang yang memintas koneksi internet Anda.}other{Server ini tidak dapat membuktikan bahwa ini adalah <ph name="DOMAIN" />; sertifikat keamanannya sepertinya dari # hari mendatang. Hal ini mungkin disebabkan oleh kesalahan konfigurasi, atau ada penyerang yang memintas koneksi internet Anda.}}</translation>
 <translation id="1710259589646384581">OS</translation>
 <translation id="1711234383449478798">Diabaikan karena <ph name="POLICY_NAME" /> tidak disetel ke <ph name="VALUE" />.</translation>
@@ -1003,7 +1002,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="257136025287118539">Administrator memindahkan file Anda ke <ph name="CLOUD_PROVIDER" />. Anda dapat mengubah file ini setelah proses upload selesai.</translation>
 <translation id="2571488850200220306">Untuk membantu memastikan keamanan, admin juga dapat melihat OS, versi browser, dan software yang diinstal di perangkat</translation>
 <translation id="2573170131138724450">Televisi</translation>
-<translation id="257674075312929031">Grup</translation>
+<translation id="257674075312929031">Grupkan</translation>
 <translation id="2577522251608256362">Kawasan</translation>
 <translation id="2580031090587209073">Opsi berbagi</translation>
 <translation id="258027838577899739">Hapus semua dari histori</translation>

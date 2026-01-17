@@ -46,6 +46,7 @@ Si la case "<ph name="SERVICE_SCRIPT_NAME" />" est déjà cochée, décochez-la,
 <translation id="3150823315463303127">L'hôte n'est pas parvenu à lire les règles.</translation>
 <translation id="3171922709365450819">Cet appareil n'est pas accepté par ce client, car il requiert une authentification tierce.</translation>
 <translation id="3197730452537982411">Bureau à distance</translation>
+<translation id="3236334139428307578">Copyright 2026 - Auteurs de Chromium. Tous droits réservés.</translation>
 <translation id="324272851072175193">Envoyer ces instructions par e-mail</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> tente d'effectuer des modifications.</translation>
 <translation id="3339299787263251426">Accédez à votre ordinateur de manière sécurisée sur Internet.</translation>
@@ -110,6 +111,7 @@ Si la case "<ph name="SERVICE_SCRIPT_NAME" />" est déjà cochée, décochez-la,
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> demande à voir votre écran et à contrôler votre clavier et votre souris. Appuyez sur ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' si vous n'avez pas connaissance de cette demande. Sinon, sélectionnez ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' pour autoriser la connexion lorsque vous êtes prêt.</translation>
 <translation id="5823658491130719298">Sur l'ordinateur auquel vous souhaitez accéder à distance, ouvrez <ph name="INSTALLATION_LINK" /> dans Chrome</translation>
 <translation id="5841343754884244200">Options d'affichage</translation>
+<translation id="5965133372831030509">Copyright 2026 Google LLC. Tous droits réservés.</translation>
 <translation id="6033507038939587647">Options du clavier</translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6062854958530969723">Échec de l'initialisation de l'hôte.</translation>

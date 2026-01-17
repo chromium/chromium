@@ -441,7 +441,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1705645336613358172">Mit Affirm oder Zip in Raten bezahlen</translation>
 <translation id="1706625117072057435">Zoomstufen</translation>
-<translation id="1706922226983368260">Passkey • „<ph name="PHONE_NAME" />“</translation>
 <translation id="1706954506755087368">{1,plural, =1{Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat gilt vermutlich erst ab morgen. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.}other{Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat gilt vermutlich erst in # Tagen. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.}}</translation>
 <translation id="1710259589646384581">Betriebssystem</translation>
 <translation id="1711234383449478798">Ignoriert, weil <ph name="POLICY_NAME" /> nicht auf <ph name="VALUE" /> festgelegt ist.</translation>

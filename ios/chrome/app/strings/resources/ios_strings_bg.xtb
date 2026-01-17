@@ -605,6 +605,7 @@
 <translation id="3245744387817103524">Промяната ви не бе запазена.</translation>
 <translation id="3254806613790954367">Последно отвореният от вас раздел на всичките ви устройства</translation>
 <translation id="325717987950204592">Докоснете „Поверителност и сигурност“.</translation>
+<translation id="3265736395246760288">Влизайте по-бързо в профила си от което и да е от синхронизираните устройства.</translation>
 <translation id="3272527697863656322">Отказ</translation>
 <translation id="3273510436356991673">Персонализиране на началния екран</translation>
 <translation id="3277021493514034324">Адресът на сайта бе копиран</translation>
@@ -754,6 +755,7 @@
 <translation id="3888863481921783344">Това ще даде възможност да се покаже кого бихте могли да поканите на събитието си.</translation>
 <translation id="3891414008432200754">Цена</translation>
 <translation id="3892144330757387737">Тук ще се показва историята ви</translation>
+<translation id="3893858854379998374">За да се запазят отметките в профила ви, изтрийте неизползваните отметки</translation>
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3904270275864974753">Редактиране на въртележката</translation>
 <translation id="3909222758573607742">Запазване на пароли и други елементи в профила</translation>
@@ -871,6 +873,7 @@
 <translation id="4302061870579014542">Задаване на позиция</translation>
 <translation id="4304713468139749426">Мениджър на паролите</translation>
 <translation id="4309403553630140242">Докоснете два пъти за повече информация</translation>
+<translation id="4310738531374808763">Персонализиране на началната страница</translation>
 <translation id="4320848494125124980">Скорошни</translation>
 <translation id="4322394346347055525">Затваряне на другите раздели</translation>
 <translation id="4324735664183300693">Включване на известията</translation>
@@ -1709,6 +1712,7 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">Изтеглено: <ph name="PERCENT" />%</translation>
 <translation id="7345061034321640811">Импортирането не е разрешено</translation>
+<translation id="7347998088283246662">Импортиране на пароли, история, отметки и др.</translation>
 <translation id="7352651011704765696">Нещо се обърка</translation>
 <translation id="7364796246159120393">Избор на файл</translation>
 <translation id="736564850024123010">Променете позицията на адресната лента, за да персонализирате практическата си работа.</translation>
@@ -2234,6 +2238,7 @@
 <translation id="914781932147356857">Означаване на всички…</translation>
 <translation id="9148126808321036104">Влезте отново</translation>
 <translation id="9149866541089851383">Редактиране...</translation>
+<translation id="9152637745605628097">Изберете от теми, цветове или качете изображение</translation>
 <translation id="9159628751968616911">Изпращане на уеб страницата</translation>
 <translation id="9162432979321511934">Включете AutoFill Passwords</translation>
 <translation id="9165320910061267720">За да получавате известия за сигнали за понижение на цената, трябва да включите известията от настройките на iOS.</translation>

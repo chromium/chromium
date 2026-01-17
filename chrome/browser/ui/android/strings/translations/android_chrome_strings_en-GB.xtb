@@ -1641,6 +1641,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="784652447248278262">Current window</translation>
 <translation id="784934925303690534">Time range</translation>
 <translation id="7851858861565204677">Other devices</translation>
+<translation id="78527117619130387">Press ^W again to close the pinned tab</translation>
 <translation id="7853202427316060426">Activity</translation>
 <translation id="7859988229622350291">Never translate</translation>
 <translation id="7866213166286285359">Translate pages here</translation>
@@ -1654,6 +1655,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7919123827536834358">Automatically translate these languages</translation>
 <translation id="7921782882718083488">Summarise this page</translation>
 <translation id="7926975587469166629">Card nickname</translation>
+<translation id="7927073875790626822">XR</translation>
 <translation id="7929587383660661825">Chrome automatically removes permissions from sites that abuse notifications or that you haven't visited recently</translation>
 <translation id="7934668619883965330">Cannot download file. File format not supported.</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> is out of date.</translation>

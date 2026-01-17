@@ -2165,6 +2165,21 @@ Dit beleid is alleen van toepassing op nieuwe verbindingspogingen en maakt besta
       Houd er rekening mee dat voor een correcte werking van deze functie extra componenten vereist zijn die niet beschikbaar zijn buiten de Google-netwerkomgeving.</translation>
 <translation id="2536525645274582300">De gebruiker beslist of Locatieservices van Google moeten worden aangezet</translation>
 <translation id="2536717624356629471">Geluiden in Focusmodus aanzetten voor ChromeOS</translation>
+<translation id="2543785467842238592">Dit beleid beheert de <ph name="PRODUCT_NAME" />-rapportage van bezoeken aan SaaS-domeinen en contentoverdrachten voor een beheerde browser.
+
+Als je het beleid instelt, worden de URL's die overeenkomen met SaaS-domeinen gebruikt om een rapport te genereren. Niet-overeenkomende URL's worden genegeerd.
+
+Als je het beleid niet instelt of instelt op een lege lijst, wordt er geen rapport gegenereerd.
+
+De overeenkomende patronen gebruiken een vergelijkbare indeling als die voor het beleid <ph name="URL_BLOCKLIST_POLICY_NAME" /> (deze staan op https://support.google.com/chrome/a?p=url_blocklist_filter_format). Met een paar uitzonderingen hieronder:
+
+* De URL-host moet overeenkomen met de hostnaam of een subdomein zijn van de hostnaam van een van de domeinen in de lijst met SaaS-sites.
+
+ * Het URL-pad moet beginnen met het pad uit de overeenkomende vermelding in de lijst met SaaS-sites.
+
+ * Het URL-schema, de poort en de query worden genegeerd tijdens het zoeken naar overeenkomsten.
+
+Deze beleidswaarde wordt ingevuld door de infrastructuur voor cloudbeleid en beheerders kunnen deze niet rechtstreeks instellen.</translation>
 <translation id="254653220329944566">Zet cloudrapportage voor <ph name="PRODUCT_NAME" /> aan</translation>
 <translation id="2547854230073316008">Als je het beleid instelt, worden de resolutie en schaalfactor voor elk scherm ingesteld. De instellingen voor externe schermen worden toegepast op aangesloten schermen. (Het beleid wordt niet toegepast als een scherm de opgegeven resolutie of schaal niet ondersteunt.)
 
@@ -9078,6 +9093,23 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 <translation id="70681795425744184">Niet toestaan dat CRD WebAuthn API-verzoeken uitvoert die afkomstig zijn van een externe host.</translation>
 <translation id="7070525176564511548">Het wachtwoord moet elke week (168 uur) worden opgegeven</translation>
 <translation id="7072208053150563108">Wijzigingsfrequentie van computerwachtwoord</translation>
+<translation id="7072438666478490567">Dit beleid beheert de <ph name="PRODUCT_NAME" />-rapportage van bezoeken aan SaaS-domeinen en contentoverdrachten voor een beheerd profiel.
+
+Als je het beleid instelt, worden de URL's die overeenkomen met SaaS-domeinen gebruikt om een rapport te genereren. Niet-overeenkomende URL's worden genegeerd.
+
+Als je het beleid niet instelt of instelt op een lege lijst, wordt er geen rapport gegenereerd.
+
+De overeenkomende patronen gebruiken een vergelijkbare indeling als die voor het beleid <ph name="URL_BLOCKLIST_POLICY_NAME" /> (deze staan op https://support.google.com/chrome/a?p=url_blocklist_filter_format). Met een paar uitzonderingen hieronder:
+
+* De URL-host moet overeenkomen met de hostnaam of een subdomein zijn van de hostnaam van een van de domeinen in de lijst met SaaS-sites.
+
+ * Het URL-pad moet beginnen met het pad uit de overeenkomende vermelding in de lijst met SaaS-sites.
+
+ * Het URL-schema, de poort en de query worden genegeerd tijdens het zoeken naar overeenkomsten.
+
+Dit beleid kan alleen worden ingesteld als cloudgebruikersbeleid.
+
+Deze beleidswaarde wordt ingevuld door de infrastructuur voor cloudbeleid en beheerders kunnen deze niet rechtstreeks instellen.</translation>
 <translation id="7072567600438630966">Toestaan dat Phone Hub wordt aangezet.</translation>
 <translation id="7074437930865599190">Hoofdversie van tekenreeks voor User-agent vastzetten op 99</translation>
 <translation id="7075847434649667522">Door de gebruiker toegevoegde TLS-certificaten van truststores van het platform gebruiken voor serververificatie</translation>

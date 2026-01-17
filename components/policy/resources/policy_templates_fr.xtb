@@ -977,7 +977,7 @@ Pour les profils gérés, si la règle <ph name="CLOUD_PROFILE_REPORTING_ENABLED
 
       Si cette règle n'est pas configurée et que l'espace disque libre sur l'appareil est inférieur à 20 Go (valeur par défaut), le plug-in <ph name="PLUGIN_VM_NAME" /> ne peut pas être installé.
       Si cette règle est configurée, mais que l'espace disque libre sur l'appareil est inférieur à celui requis, le plug-in <ph name="PLUGIN_VM_NAME" /> ne peut pas non plus être installé.</translation>
-<translation id="1682893353675650337">Lens Overlay permet aux utilisateurs d'effectuer des recherches Google contextuelles à partir d'une capture d'écran ou en posant une question sur le contenu de la page actuelle. Cette fonctionnalité nécessite l'activation par l'utilisateur final.
+<translation id="1682893353675650337">Lens Overlay permet aux utilisateurs d'effectuer des recherches Google contextuelles à partir d'une capture d'écran ou en posant une question sur le contenu de la page actuelle. Cette fonctionnalité doit être activée par l'utilisateur final.
 
 Elle est disponible pour tous les utilisateurs dont le moteur de recherche par défaut est Google, sauf si cette règle la désactive.
 
@@ -1558,6 +1558,15 @@ Si cette règle est définie sur "1", les groupes d'onglets ne peuvent pas être
 <translation id="2144236546337326489">Autoriser l'activation de la poursuite des tâches via Phone Hub</translation>
 <translation id="2145735238144543545">Certificats client requis</translation>
 <translation id="2146103669166779785">Couleur hexadécimale qui sera utilisée pour générer et appliquer un thème au navigateur.</translation>
+<translation id="2146539033119095550">Cette règle vous permet de définir une liste de formats d'URL indiquant les origines de premier niveau pour lesquelles le partitionnement du stockage tiers (partitionnement du stockage iFrame multi-origine) doit être désactivé.
+
+Si cette règle n'est pas configurée ou si une origine de premier niveau ne correspond à aucun des formats d'URL, <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> s'applique.
+
+Pour en savoir plus sur les formats valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns. Notez que les formats que vous répertoriez ici sont traités comme des origines, et non comme des URL. Vous ne devez donc pas spécifier de chemin d'accès.
+
+Pour en savoir plus sur le partitionnement du stockage tiers, consultez https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.
+
+Cette règle a été supprimée dans Chrome 145. Nous vous recommandons d'utiliser la méthode requestStorageAccess à la place : https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Vous pouvez faire part de vos retours sur https://crbug.com/425248669.</translation>
 <translation id="2148733583160916305">Autoriser l'API WebPrinting sur ces sites</translation>
 <translation id="2148769554831004951">Forcer l'activation de WebSQL.</translation>
 <translation id="214901426630414675">Limiter l'impression en mode recto verso</translation>
@@ -3372,6 +3381,15 @@ Si elle est désactivée, la fonctionnalité d'écriture prédictive est désact
 <translation id="33993310248354034">Autoriser la détection d'entités en texte brut dans les pages Web.</translation>
 <translation id="3399859571630358395">Forcer la désactivation de l'Association express (association Bluetooth rapide).</translation>
 <translation id="3404681701763345449">Activer l'intégration de <ph name="GOOGLE_CALENDAR_NAME" />.</translation>
+<translation id="3405276853140830214">Cette règle détermine si le partitionnement du stockage tiers est autorisé par défaut.
+
+Si cette règle est définie sur "1 - AllowPartitioning" ou si elle n'est pas configurée, le partitionnement du stockage tiers est autorisé par défaut. Cette valeur par défaut peut être remplacée pour des origines de premier niveau spécifiques par d'autres moyens.
+
+Si cette règle est définie sur "2 - BlockPartitioning", le partitionnement du stockage tiers est désactivé pour tous les contextes.
+
+Utilisez <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> pour désactiver le partitionnement du stockage tiers pour des origines de premier niveau spécifiques. Pour en savoir plus sur le partitionnement du stockage tiers, consultez https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.
+
+Cette règle a été supprimée dans Chrome 145. Nous vous recommandons d'utiliser la méthode requestStorageAccess à la place : https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Vous pouvez faire part de vos retours sur https://crbug.com/425248669.</translation>
 <translation id="3405361833556012520">Cette règle ne s'applique qu'au trafic du navigateur. Le trafic Play Store, la navigation Web des applications Android et les autres types de trafic de l'utilisateur (comme le trafic des VM Linux ou les tâches d'impression) respectent toujours les restrictions imposées par le VPN permanent. Cette règle n'est appliquée que lorsque le VPN n'est pas connecté et uniquement pour le trafic du navigateur de l'utilisateur. Lorsque cette règle est appliquée, le trafic système peut également contourner le VPN permanent pour effectuer des tâches comme des récupérations de règles et la synchronisation de l'horloge système.
 
 Utilisez cette règle pour définir des exceptions à certains schémas, ports, chemins d'accès spécifiques ou sous-domaines d'autres domaines à l'aide du format spécifié sur https://support.google.com/chrome/a?p=url_blocklist_filter_format. Le filtre le plus spécifique détermine si une URL est bloquée ou non.
@@ -5157,6 +5175,15 @@ Ancien comportement : dans "beforeunload", appeler event.preventDefault() ne d�
 <translation id="46321462262887935">Considérer les touches supérieures comme des touches de fonction, mais autoriser l'utilisateur à modifier ce paramètre</translation>
 <translation id="4632343302005518762">Autoriser <ph name="PRODUCT_FRAME_NAME" /> à gérer les types de contenu répertoriés</translation>
 <translation id="4636354638176939375">Désactiver la création d'utilisateurs supervisés</translation>
+<translation id="4637701328641064644">Cette règle détermine si les URL blob sont partitionnées lors de l'extraction et de la navigation.
+Si cette règle est activée ou n'est pas configurée, les URL blob sont partitionnées.
+Si elle est désactivée, les URL blob ne sont pas partitionnées.
+
+Si vous devez utiliser cette règle, veuillez signaler un bug sur <ph name="BUG_URL" /> en expliquant votre cas d'utilisation. Cette règle sera disponible jusqu'à la version 146 de <ph name="PRODUCT_NAME" />, après quoi l'ancienne implémentation sera supprimée.
+
+REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les modifications apportées à cette règle lorsque le navigateur sera en cours d'exécution.
+
+Pour en savoir plus sur le partitionnement du stockage tiers, consultez https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.</translation>
 <translation id="46383668315040154">Indique la version sur laquelle cet appareil devrait être verrouillé.
 
 La configuration de la règle <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> n'est effective que si la règle <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> est définie sur "False".</translation>
@@ -5387,9 +5414,9 @@ Sachez que cette règle n'a pas d'incidence sur le <ph name="GOOGLE_AI_MODE_PROD
 
 0/Non configurée : les utilisateurs peuvent partager le contenu de la page ou du fichier avec le <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.
 
-1 : les utilisateurs ne peuvent pas partager le contenu de la page ou du fichier avec le <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />. Les points d'entrée pour partager le contexte seront désactivés ou masqués.
+1 : les utilisateurs ne peuvent pas partager le contenu de la page ou du fichier avec le <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />. Les points d'entrée pour partager le contexte sont alors désactivés ou masqués.
 
-Cette règle sera ignorée lorsque la <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> ne sera pas le moteur de recherche par défaut des utilisateurs, car la fonctionnalité sera désactivée.
+Cette règle est ignorée lorsque la <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> n'est pas le moteur de recherche par défaut des utilisateurs, car la fonctionnalité est désactivée.
 
 Cette règle est indépendante de la règle <ph name="AI_MODE_SETTINGS_POLICY_NAME" />. La règle <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> ne contrôle que les points d'entrée sur l'omnibox ou le champ de recherche de la page "Nouvel onglet", tandis que cette règle contrôle le partage de contexte via le panneau latéral ou les onglets.
 

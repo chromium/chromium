@@ -46,6 +46,7 @@ Jos <ph name="SERVICE_SCRIPT_NAME" /> on jo valittuna, poista valinta ja valitse
 <translation id="3150823315463303127">Isäntä ei voinut lukea käytäntöä.</translation>
 <translation id="3171922709365450819">Asiakassovellus ei tue laitetta, koska laite edellyttää kolmannen osapuolen todennusta.</translation>
 <translation id="3197730452537982411">Etäkäyttö</translation>
+<translation id="3236334139428307578">Tekijänoikeudet 2026: The Chromium Authors. Kaikki oikeudet pidätetään.</translation>
 <translation id="324272851072175193">Lähetä nämä ohjeet sähköpostilla</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> haluaa tehdä muutoksia.</translation>
 <translation id="3339299787263251426">Käytä tietokonettasi turvallisesti internetissä</translation>
@@ -110,6 +111,7 @@ Jos <ph name="SERVICE_SCRIPT_NAME" /> on jo valittuna, poista valinta ja valitse
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> on pyytänyt lupaa nähdä näyttösi ja ohjata näppäimistöäsi ja hiirtäsi. Paina ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'', jos et odottanut tätä pyyntöä. Muussa tapauksessa voit sallia yhteyden valitsemalla ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'', kun olet valmis.</translation>
 <translation id="5823658491130719298">Kun olet tietokoneella, jota haluat käyttää etänä, avaa Chrome ja siirry osoitteeseen <ph name="INSTALLATION_LINK" />.</translation>
 <translation id="5841343754884244200">Näyttöasetukset</translation>
+<translation id="5965133372831030509">Tekijänoikeudet 2026 Google LLC. Kaikki oikeudet pidätetään.</translation>
 <translation id="6033507038939587647">Näppäimistöasetukset</translation>
 <translation id="6040143037577758943">Sulje</translation>
 <translation id="6062854958530969723">Isännän alustus epäonnistui.</translation>

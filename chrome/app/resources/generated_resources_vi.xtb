@@ -1550,6 +1550,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="2024195579772565064">Xoá công cụ tìm kiếm</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Nhấp chuột chính xác</translation>
+<translation id="2025130536872979378">xem nguồn</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> đã xảy ra lỗi. Nhấp vào bong bóng này để tải lại tiện ích.</translation>
 <translation id="2026367923222947564">Toàn bộ trang</translation>
 <translation id="2026377162111110983">Giọng nói trong khu vực</translation>
@@ -2521,6 +2522,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2672142220933875349">Tệp crx không hợp lệ, không giản nén được.</translation>
 <translation id="2672200806060988299">Tiêu đề thẻ và URL của bạn sẽ được gửi cho Google và có thể được nhân viên đánh giá cho mục đích cải thiện tính năng này.</translation>
 <translation id="2673135533890720193">Đọc nhật ký duyệt web của bạn</translation>
+<translation id="2673397477544385203">Hỗ trợ các tính năng như phát hiện lừa đảo trên thiết bị. Nếu bạn tắt chế độ này, các mô hình AI tạo sinh sẽ bị xoá khỏi thiết bị và các tính năng này sẽ bị tắt.</translation>
 <translation id="2673848446870717676">Hãy đảm bảo thiết bị Bluetooth của bạn đang ở gần và đã bật chế độ ghép nối. Chỉ ghép nối với các thiết bị mà bạn tin tưởng. Tất cả các tài khoản trên Chromebook này đều có thể thấy thiết bị đã ghép nối.</translation>
 <translation id="2673873887296220733">Sao chép 1 tệp vào <ph name="CLOUD_PROVIDER" /> để mở tệp đó?</translation>
 <translation id="267442004702508783">làm mới</translation>
@@ -2797,6 +2799,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2856776373509145513">Tạo một vùng chứa mới</translation>
 <translation id="2857047802954430547">Đăng nhập để sử dụng mật khẩu, dấu trang và các dữ liệu khác trên mọi thiết bị của bạn</translation>
 <translation id="2859741939921354763">Nhập mật khẩu vào <ph name="BRAND" /></translation>
+<translation id="2860284453253554297">Chính sách doanh nghiệp</translation>
 <translation id="2860710618359053450">Di chuyển hàm sang phải</translation>
 <translation id="2861301611394761800">Đã cập nhật xong. Vui lòng khởi động lại hệ thống.</translation>
 <translation id="2861402191395139055">Gói thuê bao Passpoint</translation>
@@ -3978,6 +3981,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3678156199662914018">Tiện ích: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Những trang bạn xem trong cửa sổ này sẽ không xuất hiện trong nhật ký duyệt web của trình duyệt, cũng như không để lại dấu vết khác (chẳng hạn như cookie) trên máy tính sau khi bạn đăng xuất. Hệ thống sẽ không lưu giữ các tệp bạn tải xuống và dấu trang bạn tạo.</translation>
 <translation id="3679126865530709868">Bàn di chuột tích hợp</translation>
+<translation id="3680166671911524673">Đã bật AI tạo sinh trên thiết bị</translation>
 <translation id="3680683624079082902">Giọng nói của tính năng chuyển văn bản sang lời nói</translation>
 <translation id="3681017028939109078">Hiện đề xuất về cửa sổ khi bắt đầu chia đôi màn hình</translation>
 <translation id="3681191721636073359">Chrome cho rằng bạn không muốn sử dụng thông tin vị trí của mình trên trang web này. Do đó, các yêu cầu sẽ bị ẩn để giảm thiểu tình trạng gián đoạn.</translation>
@@ -9800,6 +9804,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="7684212569183643648">Do quản trị viên của bạn cài đặt</translation>
 <translation id="7684559058815332124">Truy cập trang đăng nhập cổng bị khóa</translation>
 <translation id="7684718995427157417">Để tạo và thử nghiệm ứng dụng của bạn, hãy bật Cầu gỡ lỗi Android (Android Debug Bridge – ADB). Xin lưu ý rằng thao tác này sẽ cho phép cài đặt các ứng dụng Android mà Google chưa xác minh. Để tắt ADB, bạn cần phải đặt lại thiết bị về trạng thái ban đầu.</translation>
+<translation id="7684803937028953000">Tổ chức của bạn đã chặn việc tải tệp này xuống thiết bị.</translation>
 <translation id="7684913007876670600">Để hiển thị chế độ xem đơn giản của trang này, hãy mở bảng điều khiển bên rồi chọn Chế độ đọc</translation>
 <translation id="7685038817958445325">Không truyền được</translation>
 <translation id="7685049629764448582">Bộ nhớ JavaScript</translation>

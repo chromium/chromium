@@ -46,6 +46,7 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 <translation id="3150823315463303127">A gazdagép nem tudta elolvasni az irányelvet.</translation>
 <translation id="3171922709365450819">Az eszközt nem támogatja a kliens, mert harmadik fél általi hitelesítés szükséges hozzá.</translation>
 <translation id="3197730452537982411">Távoli asztal</translation>
+<translation id="3236334139428307578">Copyright 2026 – A Chromium szerzői. Minden jog fenntartva.</translation>
 <translation id="324272851072175193">Utasítások elküldése e-mailben</translation>
 <translation id="3305934114213025800">A(z) <ph name="PRODUCT_NAME" /> módosításokat szeretne végezni.</translation>
 <translation id="3339299787263251426">Biztonságos hozzáférés számítógépéhez az interneten keresztül</translation>
@@ -110,6 +111,7 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> hozzáférési engedélyt kért az Ön képernyője megtekintésére illetve az egér és a billentyűzet vezérlésére. Nyomja meg a(z) „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />” gombot, ha nem várta ezt a kérelmet. A „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />” megnyomásával engedélyezheti a kapcsolatot, ha erre készen áll.</translation>
 <translation id="5823658491130719298">Nyissa meg a Chrome böngészőt azon a számítógépen, amelyhez távolról hozzá szeretne férni, majd látogasson el a következő oldalra: <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Megjelenítési beállítások</translation>
+<translation id="5965133372831030509">Copyright 2026 Google LLC. Minden jog fenntartva.</translation>
 <translation id="6033507038939587647">A billentyűzet beállításai</translation>
 <translation id="6040143037577758943">Bezárás</translation>
 <translation id="6062854958530969723">A gazdagép inicializálása sikertelen.</translation>

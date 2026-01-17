@@ -1550,6 +1550,7 @@
 <translation id="2024195579772565064">刪除搜尋引擎</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">精準點擊</translation>
+<translation id="2025130536872979378">檢視來源</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> 當機了，請按一下這個提示框來重新載入擴充功能。</translation>
 <translation id="2026367923222947564">整頁</translation>
 <translation id="2026377162111110983">區域語音</translation>
@@ -2796,6 +2797,7 @@
 <translation id="2856776373509145513">建立新容器</translation>
 <translation id="2857047802954430547">登入帳戶即可在你的所有裝置上取用密碼、書籤和其他資料</translation>
 <translation id="2859741939921354763">將密碼匯入「<ph name="BRAND" />」</translation>
+<translation id="2860284453253554297">企業政策</translation>
 <translation id="2860710618359053450">下巴向右郁</translation>
 <translation id="2861301611394761800">系統更新完成，請重新啟動系統。</translation>
 <translation id="2861402191395139055">Passpoint 訂閱</translation>
@@ -9784,6 +9786,7 @@
 <translation id="7684212569183643648">已由管理員安裝</translation>
 <translation id="7684559058815332124">前往網頁驗證入口登入網頁</translation>
 <translation id="7684718995427157417">如要建立並測試您的應用程式，請啟用「Android 偵錯橋接器」(ADB)。請注意，此操作允許安裝未經 Google 驗證的 Android 應用程式，並且需要恢復原廠設定才能停用。</translation>
+<translation id="7684803937028953000">你的機構禁止在本機下載此檔案。</translation>
 <translation id="7684913007876670600">如要簡化此頁面，請開啟側面板並選取 [閱讀模式]</translation>
 <translation id="7685038817958445325">無法投放</translation>
 <translation id="7685049629764448582">JavaScript 記憶體使用量</translation>

@@ -1114,7 +1114,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="5833984609253377421">Havolani ulashish</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5841444063256914865"><ph name="FILE_NAME" /> fayli baribir yuklab olinsinmi?</translation>
-<translation id="5847265694842662173">Chrome qoidabuzar va ishlatilmagan saytlar bildirishnoma yuborishini taqiqladi</translation>
+<translation id="5847265694842662173">Chrome qoidabuzar va ishlatilmagan saytlarning bildirishnoma yuborishini taqiqladi</translation>
 <translation id="5848257610304005265">PDF fayl <ph name="APP_NAME" /> ilovasida ochilsinmi?</translation>
 <translation id="5849288995120328556">Ulashuv tugatilsinmi?</translation>
 <translation id="5853623416121554550">pauza qilindi</translation>
@@ -1143,7 +1143,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="5956665950594638604">Chrome yordam markazini yangi varaqda ochish</translation>
 <translation id="59577092665511740">Hisobni tanlang.</translation>
 <translation id="5958275228015807058">Fayl va sahiflarni “Yuklanmalar” jildidan topish mumkin</translation>
-<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome yaqin orada borilmagan saytning bildirishnoma yuborishini taqiqladi}other{Chrome yaqin orada borilmagan saytlarning bildirishnoma yuborishini taqiqladi}}</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome siz yaqin orada kirmagan saytning bildirishnoma yuborishini taqiqladi}other{Chrome siz yaqin orada kirmagan saytning bildirishnoma yuborishini taqiqladi}}</translation>
 <translation id="5962718611393537961">Bosib yig‘ish</translation>
 <translation id="5964869237734432770">Rasm tavsiflari yuklanmasin</translation>
 <translation id="5972844218283131174">Tanlamani bekor qilish</translation>

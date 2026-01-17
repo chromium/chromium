@@ -1540,6 +1540,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="2024195579772565064">Axtarış sistemini silin</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Dəqiq klik</translation>
+<translation id="2025130536872979378">mənbəyə baxın</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> qəzaya uğradı. Artırmanı yenidən yükləmək üçün bu topa klikləyin.</translation>
 <translation id="2026367923222947564">Tam səhifə</translation>
 <translation id="2026377162111110983">Mühitin səsi</translation>
@@ -2787,6 +2788,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2856776373509145513">Yeni konteyner yaradın</translation>
 <translation id="2857047802954430547">Daxil olaraq bütün cihazlarda parolları, əlfəcinləri, və daha çoxunu əldə edin</translation>
 <translation id="2859741939921354763">Parolları <ph name="BRAND" /> bölməsinə import edin</translation>
+<translation id="2860284453253554297">Müəssisə Siyasətləri</translation>
 <translation id="2860710618359053450">Çənənizi sağa çevirin</translation>
 <translation id="2861301611394761800">Sistem güncəlləməsi tamamdır. Lütfən, sistemi yenidən başladın.</translation>
 <translation id="2861402191395139055">Keçid nöqtəsi abunələri</translation>
@@ -9783,6 +9785,7 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="7684212569183643648">Administratorunuz tərəfindən quraşdırılıb</translation>
 <translation id="7684559058815332124">Kaptiv portal login səhifəsinə keçin</translation>
 <translation id="7684718995427157417">Yaratmaq və tətbiqlərinizi sınamaq üçün Android Debug Bridge'i (ADB) aktiv edin. Nəzərə alın ki, bu əməliyyat Google tərəfindən doğrulanmamış Android tətbiqlərinin quraşdırılmasına icazə verir və deaktiv etmək üçün zavod ayarlarının bərpasını tələb edir.</translation>
+<translation id="7684803937028953000">Təşkilat bu faylın lokal olaraq endirilməsini blokladı.</translation>
 <translation id="7684913007876670600">Bu səhifənin sadə görünüşü üçün yan paneli açın və Oxu rejimini seçin</translation>
 <translation id="7685038817958445325">Yayımlamaq olmur</translation>
 <translation id="7685049629764448582">JavaScript yaddaşı</translation>

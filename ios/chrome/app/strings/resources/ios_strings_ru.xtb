@@ -315,6 +315,7 @@
 <translation id="21133533946938348">Закрепить вкладку</translation>
 <translation id="2117650889962717098">Переключитесь в режим инкогнито, чтобы сохранять конфиденциальность при посещении сайтов.</translation>
 <translation id="2119636449201577317">Открыть в сервисе…</translation>
+<translation id="2119962645034852864">Некоторые сервисы недоступны для вашего аккаунта</translation>
 <translation id="2120553909046681540">В вашей организации режим инкогнито отключен.</translation>
 <translation id="2122754583996902531">Этот браузер управляется администратором. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">Чаты вашей организации не используются для улучшения наших моделей. Gemini может показывать неточную информацию, в том числе о людях. Рекомендуем проверять ее. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
@@ -755,6 +756,7 @@
 <translation id="3888863481921783344">Эти данные будут использоваться для показа пользователей, которых можно пригласить на мероприятие.</translation>
 <translation id="3891414008432200754">Цена</translation>
 <translation id="3892144330757387737">Здесь вы найдете свою историю</translation>
+<translation id="3893858854379998374">Чтобы сохранить новые закладки в аккаунте, удалите неиспользуемые.</translation>
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3904270275864974753">Изменить карусель</translation>
 <translation id="3909222758573607742">Сохраняйте пароли и другие данные в аккаунте</translation>
@@ -872,6 +874,7 @@
 <translation id="4302061870579014542">Выбрать</translation>
 <translation id="4304713468139749426">Менеджер паролей</translation>
 <translation id="4309403553630140242">Чтобы узнать больше, нажмите дважды</translation>
+<translation id="4310738531374808763">Настройте главную страницу</translation>
 <translation id="4320848494125124980">Недавние</translation>
 <translation id="4322394346347055525">Закрыть другие вкладки</translation>
 <translation id="4324735664183300693">Включить уведомления</translation>
@@ -1710,6 +1713,7 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">Скачивается: <ph name="PERCENT" />%</translation>
 <translation id="7345061034321640811">Импорт запрещен</translation>
+<translation id="7347998088283246662">Импортируйте пароли, историю, закладки и другие данные.</translation>
 <translation id="7352651011704765696">Ошибка</translation>
 <translation id="7364796246159120393">Выберите файл</translation>
 <translation id="736564850024123010">Переместите адресную строку в удобное место.</translation>
@@ -2235,6 +2239,7 @@
 <translation id="914781932147356857">Отметить все…</translation>
 <translation id="9148126808321036104">Войти снова</translation>
 <translation id="9149866541089851383">Изменить...</translation>
+<translation id="9152637745605628097">Выберите тему, цвет или загрузите фоновое изображение.</translation>
 <translation id="9159628751968616911">Отправка веб-страницы</translation>
 <translation id="9162432979321511934">Включите параметр "Автозаполнение паролей".</translation>
 <translation id="9165320910061267720">Чтобы получать оповещения о скидках, включите уведомления в настройках iOS.</translation>

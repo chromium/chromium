@@ -46,6 +46,7 @@ Ako je okvir "<ph name="SERVICE_SCRIPT_NAME" />" već potvrđen, uklonite kvači
 <translation id="3150823315463303127">Host nije uspio pročitati pravila.</translation>
 <translation id="3171922709365450819">Klijent ne podržava taj uređaj jer je potrebna autentifikacija treće strane.</translation>
 <translation id="3197730452537982411">Udaljena radna površina</translation>
+<translation id="3236334139428307578">Autorska prava 2026. Autori Chromiuma. Sva prava pridržana.</translation>
 <translation id="324272851072175193">Pošalji te upute e-poštom</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> želi napraviti promjene.</translation>
 <translation id="3339299787263251426">Siguran pristup računalu putem interneta</translation>
@@ -110,6 +111,7 @@ Ako je okvir "<ph name="SERVICE_SCRIPT_NAME" />" već potvrđen, uklonite kvači
 <translation id="5823554426827907568">Korisnik <ph name="CLIENT_USERNAME" /> zatražio je pristup za pregled vašeg zaslona i upravljanje vašom tipkovnicom i mišem. Pritisnite <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" /> ako ne očekujete taj zahtjev. U suprotnom odaberite <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> da biste dopustili povezivanje kad budete spremni.</translation>
 <translation id="5823658491130719298">Na računalu kojemu želite daljinski pristupiti otvorite Chrome i posjetite <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Opcije prikaza</translation>
+<translation id="5965133372831030509">Autorska prava 2026. Google LLC. Sva prava pridržana.</translation>
 <translation id="6033507038939587647">Opcije tipkovnice</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6062854958530969723">Inicijalizacija hosta nije uspjela.</translation>

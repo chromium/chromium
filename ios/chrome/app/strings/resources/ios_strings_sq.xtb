@@ -605,6 +605,7 @@
 <translation id="3245744387817103524">Ndryshimi yt nuk mund të ruhej.</translation>
 <translation id="3254806613790954367">Skeda e fundit e hapur nëpër të gjitha pajisjet e tua</translation>
 <translation id="325717987950204592">Trokit te "Privatësia dhe siguria"</translation>
+<translation id="3265736395246760288">Identifikohu më shpejt nga çdo pajisje e sinkronizuar.</translation>
 <translation id="3272527697863656322">Anulo</translation>
 <translation id="3273510436356991673">Personalizo ekranin tënd bazë</translation>
 <translation id="3277021493514034324">Adresa e sajtit u kopjua</translation>
@@ -754,6 +755,7 @@
 <translation id="3888863481921783344">Kjo do të përdoret për të të shfaqur të ftuarit e mundshëm në ngjarjen tënde.</translation>
 <translation id="3891414008432200754">Çmimi</translation>
 <translation id="3892144330757387737">Këtu do të gjesh historikun tënd</translation>
+<translation id="3893858854379998374">Për të ruajtur faqeshënuesit në llogarinë tënde, fshi faqeshënuesit që nuk përdoren</translation>
 <translation id="3897092660631435901">Menyja</translation>
 <translation id="3904270275864974753">Modifiko karuselin</translation>
 <translation id="3909222758573607742">Ruaj fjalëkalimet dhe artikujt e tjerë në llogari</translation>
@@ -871,6 +873,7 @@
 <translation id="4302061870579014542">Cakto pozicionin</translation>
 <translation id="4304713468139749426">Menaxheri i fjalëkalimeve</translation>
 <translation id="4309403553630140242">Trokit dy herë për më shumë informacion</translation>
+<translation id="4310738531374808763">Personalizo faqen tënde kryesore</translation>
 <translation id="4320848494125124980">Të fundit</translation>
 <translation id="4322394346347055525">Mbyll skedat e tjera</translation>
 <translation id="4324735664183300693">Aktivizo njoftimet</translation>
@@ -1709,6 +1712,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> përqind të shkarkuara</translation>
 <translation id="7345061034321640811">Importimi nuk lejohet</translation>
+<translation id="7347998088283246662">Importo fjalëkalimet, historikun, faqeshënuesit etj.</translation>
 <translation id="7352651011704765696">Diçka shkoi keq</translation>
 <translation id="7364796246159120393">Zgjidh skedarin</translation>
 <translation id="736564850024123010">Ndërroje pozicionin e shiritit të adresave për një përvojë të personalizuar.</translation>
@@ -2234,6 +2238,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="914781932147356857">Shëno të gjitha…</translation>
 <translation id="9148126808321036104">Identifikohu sërish</translation>
 <translation id="9149866541089851383">Redakto...</translation>
+<translation id="9152637745605628097">Zgjidh nga temat, ngjyrat ose ngarko një imazh</translation>
 <translation id="9159628751968616911">Dërgo faqen e uebit</translation>
 <translation id="9162432979321511934">Aktivizo "Plotëso automatikisht fjalëkalimet"</translation>
 <translation id="9165320910061267720">Për të marrë njoftime me sinjalizime për ulje çmimi, do të duhet të aktivizosh njoftimet në cilësimet e iOS.</translation>

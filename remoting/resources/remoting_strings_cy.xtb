@@ -46,6 +46,7 @@ Os yw '<ph name="SERVICE_SCRIPT_NAME" />' eisoes wedi'i dicio, dad-diciwch ef a 
 <translation id="3150823315463303127">Mae'r gwesteiwr wedi methu â darllen y polisi.</translation>
 <translation id="3171922709365450819">Nid yw'r ddyfais hon yn cael ei chefnogi gan y cleient hwn oherwydd bod angen dilysu trydydd parti arni.</translation>
 <translation id="3197730452537982411">Remote Desktop</translation>
+<translation id="3236334139428307578">Hawlfraint 2026 The Chromium Authors. Cedwir Pob Hawl.</translation>
 <translation id="324272851072175193">E-bostio'r cyfarwyddiadau hyn</translation>
 <translation id="3305934114213025800">Mae <ph name="PRODUCT_NAME" /> eisiau gwneud newidiadau.</translation>
 <translation id="3339299787263251426">Cael mynediad at eich cyfrifiadur yn ddiogel dros y Rhyngrwyd</translation>
@@ -110,6 +111,7 @@ Os yw '<ph name="SERVICE_SCRIPT_NAME" />' eisoes wedi'i dicio, dad-diciwch ef a 
 <translation id="5823554426827907568">Mae <ph name="CLIENT_USERNAME" /> wedi gofyn am fynediad i weld eich sgrîn a rheoli eich bysellfwrdd a'ch llygoden. Pwyswch "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />" os nad ydych yn disgwyl y cais hwn. Fel arall, dewiswch "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />" i ganiatáu'r cysylltiad pan fyddwch yn barod.</translation>
 <translation id="5823658491130719298">Ar y cyfrifiadur rydych am gael mynediad ato o bell, agorwch Chrome ac ewch i <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Dangos dewisiadau</translation>
+<translation id="5965133372831030509">Hawlfraint 2026 Google LLC. Cedwir Pob Hawl.</translation>
 <translation id="6033507038939587647">Dewisiadau bysellfwrdd</translation>
 <translation id="6040143037577758943">Cau</translation>
 <translation id="6062854958530969723">Wedi methu â chychwyn y gwesteiwr.</translation>

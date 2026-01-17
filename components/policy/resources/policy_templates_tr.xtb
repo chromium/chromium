@@ -1586,6 +1586,15 @@ Politikanın 1 olarak ayarlanması sekme gruplarının paylaşılamayacağını 
 <translation id="2144236546337326489">Telefon Merkezi görev devamının etkinleştirilmesine izin ver</translation>
 <translation id="2145735238144543545">Gerekli İstemci Sertifikaları</translation>
 <translation id="2146103669166779785">Bir tema oluşturup tarayıcıya uygulamak için kullanılacak onaltılık renk.</translation>
+<translation id="2146539033119095550">Bu politika, üçüncü taraf depolama bölümlendirmesinin (çapraz kaynak iFrame depolamasını bölümlendirme) devre dışı bırakılması gereken üst düzey kaynakların belirtildiği bir URL kalıpları listesi oluşturmanıza olanak tanır.
+
+Bu politika ayarlanmadan bırakılır veya üst düzey bir kaynak, URL kalıplarından biriyle eşleşmezse <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> geçerli olur.
+
+Geçerli kalıplar hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns adresine bakabilirsiniz. Burada listelediğiniz kalıpların URL değil kaynak olarak değerlendirildiğini, bu yüzden bir yol belirtmemeniz gerektiğini unutmayın.
+
+Üçüncü taraf depolama bölümlendirmesi hakkında ayrıntılı bilgi için https://developers.google.com/privacy-sandbox/cookies/storage-partitioning adresine göz atabilirsiniz.
+
+Bu API, Chrome 145'te kaldırıldığından bunun yerine requestStorageAccess yönteminin kullanılması önerilir: https://developer.mozilla.org/tr/docs/Web/API/Document/requestStorageAccess. Geri bildirimlerinizi https://crbug.com/425248669 adresinden gönderebilirsiniz.</translation>
 <translation id="2148733583160916305">Bu sitelerde WebPrinting API'ye izin ver</translation>
 <translation id="2148769554831004951">WebSQL'yi etkinleştirilmeye zorla.</translation>
 <translation id="214901426630414675">Dupleks yazdırma modunu kısıtla</translation>
@@ -1692,7 +1701,7 @@ Bu ayar, geliştirici araçlarını veya JavaScript konsolunu açmak için klavy
 
 Bu ayar, <ph name="PRODUCT_NAME" /> sürüm 99'dan itibaren "Sayfa kaynağını görüntüle" özelliği için giriş noktalarını da kontrol eder. Bu politikayı "DeveloperToolsDisallowed" (2 değeri) olarak ayarlarsanız kullanıcılar klavye kısayollarını veya içerik menüsünü kullanarak kaynak görüntülemeye erişemez. Kaynak görüntülemeyi tamamen engellemek için <ph name="URL_BLOCKLIST_POLICY_NAME" /> politikasına "view-source:*" ifadesini de eklemeniz gerekir.
 
-Bu ayar, <ph name="PRODUCT_NAME" /> sürüm 119'dan itibaren Yalıtılmış web uygulamaları için geliştirici modunun etkinleştirilip kullanılmasını da kontrol eder.
+Bu ayar, <ph name="PRODUCT_NAME" /> sürüm 119'dan itibaren yalıtılmış web uygulamaları için geliştirici modunun etkinleştirilip kullanılmasını da kontrol eder.
 
 Bu ayar, <ph name="PRODUCT_NAME" /> sürüm 128'den itibaren <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> politikası ayarlanırsa uzantılar sayfasında geliştirici modunu kontrol etmez.
 
@@ -3455,6 +3464,15 @@ Bu politika, Devre Dışı değerine ayarlanırsa fiziksel klavyede tahmine daya
 <translation id="33993310248354034">Web sayfalarındaki düz metin öğelerinin algılanmasına izin ver.</translation>
 <translation id="3399859571630358395">Hızlı Eşleme'yi (hızlı Bluetooth eşleme) devre dışı bırakmaya zorla.</translation>
 <translation id="3404681701763345449"><ph name="GOOGLE_CALENDAR_NAME" /> entegrasyonunu etkinleştir</translation>
+<translation id="3405276853140830214">Bu politika, üçüncü taraf depolama bölümlendirmesine varsayılan olarak izin verilip verilmeyeceğini kontrol eder.
+
+Bu politika, 1 - AllowPartitioning değerine ayarlanır veya ayarlanmadan bırakılırsa üçüncü taraf depolama bölümlendirmesine varsayılan olarak izin verilir. Bu varsayılan değer, belirli üst düzey kaynaklar için başka yöntemlerle geçersiz kılınabilir.
+
+Bu politika, 2 - BlockPartitioning değerine ayarlanırsa üçüncü taraf depolama bölümlendirmesi tüm bağlamlarda devre dışı bırakılır.
+
+Belirli üst düzey kaynaklar için üçüncü taraf depolama bölümlendirmesini devre dışı bırakmak istiyorsanız <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> politikasını kullanın. Üçüncü taraf depolama bölümlendirmesi hakkında ayrıntılı bilgi için https://developers.google.com/privacy-sandbox/cookies/storage-partitioning adresine göz atabilirsiniz.
+
+Bu API, Chrome 145'te kaldırıldığından bunun yerine requestStorageAccess yönteminin kullanılması önerilir: https://developer.mozilla.org/tr/docs/Web/API/Document/requestStorageAccess. Geri bildirimlerinizi https://crbug.com/425248669 adresinden gönderebilirsiniz.</translation>
 <translation id="3405361833556012520">Bu politika yalnızca tarayıcı trafiği için geçerlidir. Play Store, Android uygulamaları web'de gezinme ve yazdırma işleri ya da Linux sanal makine trafiği gibi diğer kullanıcı trafiği, Her zaman açık VPN kısıtlamalarına uymaya devam eder. Bu politika yalnızca VPN bağlı değilken ve yalnızca kullanıcı tarayıcısı trafiği için uygulanır. Bu politika uygulanırken sistem trafiği, politika getirme ve sistem saatini senkronize etme gibi görevleri yerine getirmek için Her zaman açık VPN'i de atlayabilir.
 
 Bu politikayı, https://support.google.com/chrome/a?p=url_blocklist_filter_format adresinde belirtilen biçimi kullanarak belirli şemalar, diğer alan adlarının alt alan adları, bağlantı noktaları veya belirli yollara ilişkin istisnaları açmak için kullanın. Bir URL'nin engellenip engellenmediğini en spesifik filtre belirler.
@@ -5261,6 +5279,18 @@ Eski davranış: "beforeunload" komutunda "event.preventDefault()" çağrısı y
 <translation id="46321462262887935">Üst sıradaki tuşlara işlev tuşu olarak davran, ancak kullanıcının değişiklik yapmasına izin ver</translation>
 <translation id="4632343302005518762"><ph name="PRODUCT_FRAME_NAME" /> için listelenen içerik türlerini işlemeye izin ver</translation>
 <translation id="4636354638176939375">Gözetimli kullanıcı oluşturmayı devre dışı bırak</translation>
+<translation id="4637701328641064644">Bu politika, blob URL'lerinin getirme ve gezinme işlemleri sırasında bölümlendirilip bölümlendirilmeyeceğini kontrol eder.
+Bu politika Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa blob URL'leri bölümlendirilir.
+Bu politika Devre Dışı değerine ayarlanırsa blob URL'leri bölümlendirilmez.
+
+Bu politikayı kullanmanız gerekirse lütfen <ph name="BUG_URL" /> adresinden hata bildiriminde bulunun.
+Bildiriminizde, kullanım alanınızı açıklamayı unutmayın. Bu politikanın <ph name="PRODUCT_NAME" /> 146 sürümüyle sunulması planlanmıştır. Bu sürümden
+sonra eski uygulama kaldırılacaktır.
+
+NOT: Tarayıcı çalışırken bu politikada yapılan değişiklikleri yalnızca
+yeni başlatılan oluşturucu işlemleri yansıtır.
+
+Üçüncü taraf depolama bölümlendirmesi hakkında ayrıntılı bilgi için https://developers.google.com/privacy-sandbox/cookies/storage-partitioning adresine göz atabilirsiniz.</translation>
 <translation id="46383668315040154">Bu cihazın kilitlenmesi gereken yayın kanalını belirtir.
 
 <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> politikasının etkili olabilmesi için <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> politikasının Yanlış değerine ayarlanması şarttır.</translation>

@@ -441,7 +441,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1705645336613358172">Dùng Affirm hoặc Zip để thanh toán theo thời gian</translation>
 <translation id="1706625117072057435">Mức thu phóng</translation>
-<translation id="1706922226983368260">Khoá truy cập • "<ph name="PHONE_NAME" />"</translation>
 <translation id="1706954506755087368">{1,plural, =1{Máy chủ này không chứng minh được rằng đó là <ph name="DOMAIN" />; chứng chỉ bảo mật của máy chủ này được đề từ ngày mai. Điều này có thể do cấu hình sai hoặc có kẻ tấn công chặn kết nối của bạn.}other{Máy chủ này không chứng minh được rằng đó là <ph name="DOMAIN" />; chứng chỉ bảo mật của máy chủ này được đề # ngày trong tương lai. Điều này có thể do cấu hình sai hoặc có kẻ tấn công chặn kết nối của bạn.}}</translation>
 <translation id="1710259589646384581">OS</translation>
 <translation id="1711234383449478798">Đã bỏ qua do bạn không đặt <ph name="POLICY_NAME" /> thành <ph name="VALUE" />.</translation>
@@ -3523,6 +3522,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6635900375070654124">thiết bị xác thực</translation>
 <translation id="6641852376826221947">Xác nhận giao dịch mua</translation>
 <translation id="6643016212128521049">Xóa</translation>
+<translation id="6644868143085860957">Không lưu được thẻ này vào Google Wallet. Thay vào đó, thẻ sẽ được lưu vào Chrome trên thiết bị này.</translation>
 <translation id="6645291930348198241">Truy cập vào cookie và dữ liệu trang web.</translation>
 <translation id="6645478838938543427">Thông báo giảm giá sẽ được gửi đến <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="6648459603387803038">Quản trị viên có thể thay đổi quy trình thiết lập trình duyệt của bạn từ xa. Hoạt động trên thiết bị này cũng có thể được quản lý bên ngoài Chrome.</translation>

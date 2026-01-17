@@ -1540,6 +1540,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="2024195579772565064">Suprimeix el motor de cerca</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Clic de precisió</translation>
+<translation id="2025130536872979378">mostra la font</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> ha deixat de funcionar. Feu clic en aquest globus per tornar a carregar l'extensió.</translation>
 <translation id="2026367923222947564">Pàgina completa</translation>
 <translation id="2026377162111110983">Veu d'àrea</translation>
@@ -2508,6 +2509,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2672142220933875349">El fitxer crx és incorrecte i no s'ha pogut descomprimir.</translation>
 <translation id="2672200806060988299">Els títols i els URL de les pestanyes s'envien a Google i és possible que els revisors humans els vegin per millorar aquesta funció.</translation>
 <translation id="2673135533890720193">Llegir l'historial de navegació</translation>
+<translation id="2673397477544385203">Activa funcions com ara la detecció d'estafes localment. Si desactives aquesta opció, se suprimiran els models d'IA generativa del dispositiu i es desactivaran aquestes funcions.</translation>
 <translation id="2673848446870717676">Comprova que el dispositiu Bluetooth es trobi a prop i en mode de vinculació. Vincula'l només amb dispositius en què confiïs. Tots els comptes d'aquest Chromebook poden veure els dispositius vinculats.</translation>
 <translation id="2673873887296220733">Vols copiar 1 fitxer a <ph name="CLOUD_PROVIDER" /> per obrir-lo?</translation>
 <translation id="267442004702508783">actualitza</translation>
@@ -2784,6 +2786,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2856776373509145513">Crea un contenidor nou</translation>
 <translation id="2857047802954430547">Inicia la sessió per obtenir les teves contrasenyes, adreces d'interès i altres dades en tots els teus dispositius</translation>
 <translation id="2859741939921354763">Importa les contrasenyes a <ph name="BRAND" /></translation>
+<translation id="2860284453253554297">Polítiques empresarials</translation>
 <translation id="2860710618359053450">Moure la mandíbula cap a la dreta</translation>
 <translation id="2861301611394761800">Actualització del sistema completada. Reinicieu el sistema.</translation>
 <translation id="2861402191395139055">Subscripcions de Passpoint</translation>
@@ -3963,6 +3966,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3678156199662914018">Extensió: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Les pàgines que visualitzis en aquesta finestra no es mostraran a l'historial del navegador i no deixaran cap rastre a l'ordinador, com ara galetes, després de tancar la sessió. No es conservaran els fitxers que baixis ni les adreces d'interès que creïs.</translation>
 <translation id="3679126865530709868">Ratolí tàctil integrat</translation>
+<translation id="3680166671911524673">S'ha activat la IA generativa al dispositiu</translation>
 <translation id="3680683624079082902">Veu de text a parla</translation>
 <translation id="3681017028939109078">Mostra suggeriments de finestres en iniciar la pantalla dividida</translation>
 <translation id="3681191721636073359">Chrome creu que no vols utilitzar la teva ubicació en aquest lloc web. Per tant, les sol·licituds s'amaguen per reduir les interrupcions.</translation>
@@ -9779,6 +9783,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="7684212569183643648">Extensió instal·lada per l'administrador</translation>
 <translation id="7684559058815332124">Accedeix a la pàgina d'inici de sessió del portal captiu</translation>
 <translation id="7684718995427157417">Per crear aplicacions i provar-les, activa Android Debug Bridge (ADB). Tingues en compte que aquesta acció permet instal·lar aplicacions d'Android que Google no ha verificat. Per desactivar ADB, hauràs de restablir la configuració de fàbrica del dispositiu.</translation>
+<translation id="7684803937028953000">La teva organització ha bloquejat la baixada local d'aquest fitxer.</translation>
 <translation id="7684913007876670600">Per mostrar una visualització simplificada d'aquesta pàgina, obre el tauler lateral i selecciona el mode de lectura</translation>
 <translation id="7685038817958445325">No es pot emetre</translation>
 <translation id="7685049629764448582">Memòria de JavaScript </translation>

@@ -1553,6 +1553,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="2024195579772565064">Dileu'r peiriant chwilio</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Clic manwl</translation>
+<translation id="2025130536872979378">gweld y ffynhonnell</translation>
 <translation id="2025632980034333559">Mae <ph name="APP_NAME" /> wedi torri. Cliciwch y balŵn hwn i ail-lwytho'r estyniad.</translation>
 <translation id="2026367923222947564">Tudalen lawn</translation>
 <translation id="2026377162111110983">Llais ardal</translation>
@@ -2800,6 +2801,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2856776373509145513">Creu cynhwysydd newydd</translation>
 <translation id="2857047802954430547">Mewngofnodwch i gael eich cyfrineiriau, nodau tudalen a rhagor ar eich holl ddyfeisiau</translation>
 <translation id="2859741939921354763">Mewnforio cyfrineiriau i <ph name="BRAND" /></translation>
+<translation id="2860284453253554297">Polisïau Enterprise</translation>
 <translation id="2860710618359053450">Symudwch eich gên i'r dde</translation>
 <translation id="2861301611394761800">Wedi gorffen diweddaru'r system. Ailgychwynnwch y system.</translation>
 <translation id="2861402191395139055">Tanysgrifiadau Passpoint</translation>
@@ -9808,6 +9810,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="7684212569183643648">Wedi'i Osod gan Eich Gweinyddwr</translation>
 <translation id="7684559058815332124">Mynd i dudalen mewngofnodi'r porth caeth</translation>
 <translation id="7684718995427157417">Er mwyn creu a phrofi eich apiau, galluogwch Bont Ddadfygio Android (ADB). Sylwer bod y weithred hon yn caniatáu gosod apiau Android nad ydynt wedi'u dilysu gan Google, ac mae angen ailosod i'r gosodiadau ffatri i'w hanalluogi.</translation>
+<translation id="7684803937028953000">Rhwystrodd eich sefydliad lawrlwythiad lleol y ffeil hon.</translation>
 <translation id="7684913007876670600">I ddangos gwedd symlach o'r dudalen hon, agorwch y panel ochr a dewiswch y Modd darllen</translation>
 <translation id="7685038817958445325">Methu â chastio</translation>
 <translation id="7685049629764448582">Cof JavaScript</translation>

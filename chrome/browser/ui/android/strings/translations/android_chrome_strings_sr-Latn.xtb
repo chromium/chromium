@@ -722,7 +722,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="4180726336228139707">Samo na ovom uređaju</translation>
 <translation id="4181841719683918333">Jezici</translation>
 <translation id="4188221736490993796">Sortiraj od Z do A</translation>
-<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome je sprečio da ovaj sajt šalje obaveštenja zbog nepoželjnog ili obmanjujućeg sadržaja}one{Chrome je sprečio ove sajtove da šalju obaveštenja zbog nepoželjnog ili obmanjujućeg sadržaja}few{Chrome je sprečio ove sajtove da šalju obaveštenja zbog nepoželjnog ili obmanjujućeg sadržaja}other{Chrome je sprečio ove sajtove da šalju obaveštenja zbog nepoželjnog ili obmanjujućeg sadržaja}}</translation>
+<translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome je sprečio ovaj sajt da šalje obaveštenja zbog nepoželjnog ili obmanjujućeg sadržaja}one{Chrome je sprečio ove sajtove da šalju obaveštenja zbog nepoželjnog ili obmanjujućeg sadržaja}few{Chrome je sprečio ove sajtove da šalju obaveštenja zbog nepoželjnog ili obmanjujućeg sadržaja}other{Chrome je sprečio ove sajtove da šalju obaveštenja zbog nepoželjnog ili obmanjujućeg sadržaja}}</translation>
 <translation id="4195643157523330669">Otvori na novoj kartici</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 kartica na ovom uređaju}one{# kartica na ovom uređaju}few{# kartice na ovom uređaju}other{# kartica na ovom uređaju}}</translation>
 <translation id="4198423547019359126">Nema dostupnih lokacija za preuzimanja</translation>
@@ -1143,7 +1143,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="5956665950594638604">Otvaranje Chrome centra za pomoć na novoj kartici</translation>
 <translation id="59577092665511740">Izaberite nalog.</translation>
 <translation id="5958275228015807058">Pronađite datoteke i stranice u Preuzimanjima</translation>
-<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome je sprečio sajt koji niste nedavno posećivali da vam šalje obaveštenja}one{Chrome je sprečio sajtove koje niste nedavno posećivali da vam šalju obaveštenja}few{Chrome je sprečio sajtove koje niste nedavno posećivali da vam šalju obaveštenja}other{Chrome je sprečio sajtove koje niste nedavno posećivali da vam šalju obaveštenja}}</translation>
+<translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome je sprečio sajt koji dugo niste posetili da vam šalje obaveštenja}one{Chrome je sprečio sajtove koje dugo niste posetili da vam šalju obaveštenja}few{Chrome je sprečio sajtove koje dugo niste posetili da vam šalju obaveštenja}other{Chrome je sprečio sajtove koje dugo niste posetili da vam šalju obaveštenja}}</translation>
 <translation id="5962718611393537961">Dodirnite da biste skupili</translation>
 <translation id="5964869237734432770">Zaustavi opise slika</translation>
 <translation id="5972844218283131174">Opozovi sve</translation>

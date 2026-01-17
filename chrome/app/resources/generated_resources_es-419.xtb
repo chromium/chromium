@@ -1537,6 +1537,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="2024195579772565064">Borrar el motor de búsqueda</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Clic de precisión</translation>
+<translation id="2025130536872979378">ver fuente</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> se ha bloqueado. Haz clic en este globo para volver a cargar la extensión.</translation>
 <translation id="2026367923222947564">Página completa</translation>
 <translation id="2026377162111110983">Voz del área</translation>
@@ -2781,6 +2782,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2856776373509145513">Crea un contenedor nuevo</translation>
 <translation id="2857047802954430547">Accede para obtener tus contraseñas, favoritos y más en todos tus dispositivos</translation>
 <translation id="2859741939921354763">Importa contraseñas al <ph name="BRAND" /></translation>
+<translation id="2860284453253554297">Políticas empresariales</translation>
 <translation id="2860710618359053450">Mover la mandíbula a la derecha</translation>
 <translation id="2861301611394761800">Se completó la actualización del sistema. Reinicie el sistema.</translation>
 <translation id="2861402191395139055">Suscripciones de Passpoint</translation>
@@ -9782,6 +9784,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="7684212569183643648">Instalado por el administrador</translation>
 <translation id="7684559058815332124">Visitar la página de acceso al portal cautivo</translation>
 <translation id="7684718995427157417">Si quieres crear y probar apps, habilita Android Debug Bridge (ADB). Ten en cuenta que esta acción permite la instalación de apps para Android que Google no verificó. Si quieres inhabilitar ADB, deberás restablecer la configuración de fábrica.</translation>
+<translation id="7684803937028953000">Tu organización bloqueó la descarga local de este archivo.</translation>
 <translation id="7684913007876670600">Para mostrar una vista simplificada de esta página, abre el panel lateral y selecciona Modo de lectura</translation>
 <translation id="7685038817958445325">No es posible transmitir contenido</translation>
 <translation id="7685049629764448582">Memoria usada por JavaScript</translation>
@@ -11127,7 +11130,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Administrar extensión}other{Administrar extensiones}}</translation>
 <translation id="8599681327221583254">Hay una o más políticas que no se configuraron correctamente. Comunícate con tu administrador</translation>
 <translation id="8599864823732014237">¿Deseas omitir la inscripción empresarial?</translation>
-<translation id="8600362954032151088">Administra tus contraseñas y llaves de acceso en <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
+<translation id="8600362954032151088">Administra tus contraseñas y llaves de acceso en el <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="8601206103050338563">Autenticación de cliente TLS WWW</translation>
 <translation id="8602674530529411098">Apps (beta)</translation>
 <translation id="8602851771975208551">Otro programa en tu computadora agregó una app que puede cambiar el funcionamiento de Chrome.</translation>
@@ -11754,7 +11757,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="8999560016882908256">Error de sintaxis seccional: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Movimiento reducido en la pantalla</translation>
 <translation id="9000185763019430629">Toca el sensor de huellas dactilares en el lado derecho del dispositivo <ph name="DEVICE_TYPE" />. Los datos de las huellas dactilares se almacenan de forma segura y no salen nunca de tu <ph name="DEVICE_TYPE" />.</translation>
-<translation id="900267527532832868">Esta llave de acceso ya no funciona. Pronto se borrará de <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="900267527532832868">Esta llave de acceso ya no funciona. Pronto se borrará del <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="9003031149571024583">Ingresa el dígito <ph name="NUM_DIGIT" /> del PIN de 6 dígitos. Usa la tecla de retroceso o borrado para quitar el último dígito.</translation>
 <translation id="9003185744423389627">No se pudo establecer la conexión al servidor de Administrador de dispositivos con el estado "<ph name="STATUS_TEXT" />" a las <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">¿Quieres buscar perfiles de eSIM disponibles automáticamente?</translation>

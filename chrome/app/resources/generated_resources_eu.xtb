@@ -1540,6 +1540,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="2024195579772565064">Ezabatu bilatzailea</translation>
 <translation id="202500043506723828">EIDa</translation>
 <translation id="2025123106058020990">Klik zehatza</translation>
+<translation id="2025130536872979378">ikusi iturburua</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> aplikazioak huts egin du. Luzapena berriro kargatzeko, sakatu globo hau.</translation>
 <translation id="2026367923222947564">Orri osoa</translation>
 <translation id="2026377162111110983">Eremuko ahotsa</translation>
@@ -2784,6 +2785,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2856776373509145513">Sortu edukiontzi bat</translation>
 <translation id="2857047802954430547">Hasi saioa pasahitzak, laster-markak eta bestelako datuak gailu guztietan gordeta edukitzeko</translation>
 <translation id="2859741939921354763">Inportatu pasahitzak <ph name="BRAND" /> zerbitzura</translation>
+<translation id="2860284453253554297">Enpresa-gidalerroak</translation>
 <translation id="2860710618359053450">Masailezurra eskuinerantz mugitzea</translation>
 <translation id="2861301611394761800">Sistema eguneratu da. Berrabiarazi sistema.</translation>
 <translation id="2861402191395139055">Passpoint-eko harpidetzak</translation>
@@ -9776,6 +9778,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="7684212569183643648">Administratzaileak instalatu du</translation>
 <translation id="7684559058815332124">Joan saioa hasteko atari gatibuaren orrira</translation>
 <translation id="7684718995427157417">Zeure aplikazioak sortu eta probatzeko, gaitu Android Debug Bridge (ADB). Kontuan izan ekintza honekin baimendu egiten dela Google-k egiaztatu ez dituen Android-erako aplikazioak instalatzeko aukera eta, inoiz tresna hori desgaitu nahi izanez gero, jatorrizko datuak berrezarri beharko direla.</translation>
+<translation id="7684803937028953000">Zure erakundeak fitxategiaren deskarga lokala blokeatu du.</translation>
 <translation id="7684913007876670600">Orri honen ikuspegi sinplifikatu bat erakusteko, ireki alboko panela eta hautatu Irakurtzeko modua</translation>
 <translation id="7685038817958445325">Ezin da igorri edukia</translation>
 <translation id="7685049629764448582">JavaScript memoria</translation>

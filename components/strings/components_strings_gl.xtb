@@ -441,7 +441,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1705645336613358172">Usa Affirm ou Zip para pagar a prazos</translation>
 <translation id="1706625117072057435">Niveis de zoom</translation>
-<translation id="1706922226983368260">Clave de acceso • <ph name="PHONE_NAME" /></translation>
 <translation id="1706954506755087368">{1,plural, =1{Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque o seu certificado de seguranza supostamente é válido a partir de mañá. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.}other{Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque o seu certificado de seguranza supostamente é válido dentro de # días. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.}}</translation>
 <translation id="1710259589646384581">Sistema operativo</translation>
 <translation id="1711234383449478798">Ignorouse porque a política <ph name="POLICY_NAME" /> non se definiu co valor <ph name="VALUE" />.</translation>

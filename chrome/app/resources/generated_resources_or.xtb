@@ -1537,6 +1537,7 @@
 <translation id="2024195579772565064">ସର୍ଚ୍ଚ ଇଞ୍ଜିନକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">ପ୍ରିସିସନ କ୍ଲିକ</translation>
+<translation id="2025130536872979378">ସୋର୍ସ ଭ୍ୟୁ କରନ୍ତୁ</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> କ୍ରାସ୍ ହୋଇଯାଇଛି। ଏକ୍ସଟେନ୍‌ସନ୍‌କୁ ରିଲୋଡ୍ କରିବା ପାଇଁ ଏହି ବେଲୁନ୍‌ରେ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>
 <translation id="2026367923222947564">ପୂର୍ଣ୍ଣ ପୃଷ୍ଠା</translation>
 <translation id="2026377162111110983">ଏରିଆ ଭଏସ</translation>
@@ -2782,6 +2783,7 @@
 <translation id="2856776373509145513">ଏକ ନୂଆ କଣ୍ଟେନର ତିଆରି କରନ୍ତୁ</translation>
 <translation id="2857047802954430547">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କ ପାସୱାର୍ଡ, ବୁକମାର୍କ  ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="2859741939921354763"><ph name="BRAND" />କୁ ପାସୱାର୍ଡଗୁଡ଼ିକ ଇମ୍ପୋର୍ଟ କରନ୍ତୁ</translation>
+<translation id="2860284453253554297">ଏଣ୍ଟରପ୍ରାଇଜ ନୀତି</translation>
 <translation id="2860710618359053450">ତଳ ପାଟି ହାଡ଼କୁ ଡାହାଣପଟକୁ କରନ୍ତୁ</translation>
 <translation id="2861301611394761800">ସିଷ୍ଟମ୍‌ ଅପ୍‌ଡେଟ୍‌ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି। ଦୟାକରି, ସିଷ୍ଟମ୍‌ ପୁନରାରମ୍ଭ କରନ୍ତୁ।</translation>
 <translation id="2861402191395139055">Passpoint ସଦସ୍ୟତା</translation>
@@ -6841,7 +6843,7 @@
 <translation id="5642508497713047">CRL ସ୍ୱାକ୍ଷରକାରୀ</translation>
 <translation id="5643191124441701136">ଆପଣଙ୍କର ସୁରକ୍ଷା କୋଡ ଆପଣଙ୍କ କାର୍ଡର ସାମ୍ନାପଟେ ଅଛି</translation>
 <translation id="5643321261065707929">ମିଟର ହୋଇଥିବା ନେଟୱାର୍କ</translation>
-<translation id="5646376287012673985">ଅବସ୍ଥାନ</translation>
+<translation id="5646376287012673985">ଲୋକେସନ</translation>
 <translation id="5646558797914161501">ବ୍ୟବସାୟୀ</translation>
 <translation id="5647989922796038257">ସମସ୍ତ ଅଡିଓ ଆଉଟପୁଟ ମଧ୍ୟ ସେୟାର କରନ୍ତୁ</translation>
 <translation id="5648021990716966815">ମାଇକ୍ ଜ୍ୟାକ୍</translation>
@@ -9779,6 +9781,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7684212569183643648">ଆପଣଙ୍କର ବ୍ୟବସ୍ଥାପକଙ୍କ ଦ୍ୱାରା ଇନ୍‌ଷ୍ଟଲ୍‌ କରାଯାଇଛି</translation>
 <translation id="7684559058815332124">କ୍ୟାପ୍ଟିଭ୍ ପୋର୍ଟାଲ୍ ଲଗ୍‌ଇନ୍ ପୃଷ୍ଠା ଦେଖନ୍ତୁ</translation>
 <translation id="7684718995427157417">ଆପଣଙ୍କର ଆପ୍‍ଗୁଡ଼ିକ ତିଆରି କରିବା ଏବଂ ପରୀକ୍ଷା କରିବା ପାଇଁ Android Debug Bridge (ADB) ସକ୍ଷମ କରନ୍ତୁ। ଧ୍ୟାନ ଦିଅନ୍ତୁ ଯେ ଏହି କାର୍ଯ୍ୟ Google ଦ୍ୱାରା ଯାଞ୍ଚ କରାଯାଇନଥିବା Android ଆପ୍ସର ଇନ୍‍ଷ୍ଟଲେସନ୍‍କୁ ଅନୁମତି ଦିଏ ଏବଂ ଅକ୍ଷମ କରିବା ପାଇଁ ଏକ ଫ୍ୟାକ୍ଟୋରୀ ରିସେଟ୍ ଆବଶ୍ୟକ କରେ।</translation>
+<translation id="7684803937028953000">ଆପଣଙ୍କ ସଂସ୍ଥା ଏହି ଫାଇଲର ସ୍ଥାନୀୟ ଡାଉନଲୋଡକୁ ବ୍ଲକ କରିଛି।</translation>
 <translation id="7684913007876670600">ଏହି ପୃଷ୍ଠାର ଏକ ସରଳୀକୃତ ଭ୍ୟୁ ଦେଖାଇବା ପାଇଁ ସାଇଡ ପେନେଲ ଖୋଲି ରିଡିଂ ମୋଡକୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="7685038817958445325">କାଷ୍ଟ କରିବାରେ ଅସମର୍ଥ</translation>
 <translation id="7685049629764448582">JavaScript ମେମୋରି</translation>

@@ -605,6 +605,7 @@
 <translation id="3245744387817103524">Не ўдалося захаваць змяненне.</translation>
 <translation id="3254806613790954367">Апошняя адкрытая ўкладка на ўсіх вашых прыладах</translation>
 <translation id="325717987950204592">Націсніце "Прыватнасць і бяспека".</translation>
+<translation id="3265736395246760288">Выконвайце ўваход хутчэй з любой сінхранізаванай прылады.</translation>
 <translation id="3272527697863656322">Скасаваць</translation>
 <translation id="3273510436356991673">Наладзіць галоўны экран</translation>
 <translation id="3277021493514034324">Адрас сайта скапіраваны</translation>
@@ -754,6 +755,7 @@
 <translation id="3888863481921783344">Гэта інфармацыя будзе выкарыстоўвацца, каб паказваць вам людзей, якіх можна запрасіць прыняць удзел у падзеі.</translation>
 <translation id="3891414008432200754">Цана</translation>
 <translation id="3892144330757387737">Ваша гісторыя знаходзіцца тут</translation>
+<translation id="3893858854379998374">Каб захаваць закладкі ва ўліковым запісе, выдаліце тыя, якімі вы не карыстаецеся</translation>
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3904270275864974753">Змяніць карусель</translation>
 <translation id="3909222758573607742">Захаванне пароляў і іншых даных ва ўліковым запісе</translation>
@@ -871,6 +873,7 @@
 <translation id="4302061870579014542">Наладзіць размяшчэнне</translation>
 <translation id="4304713468139749426">Менеджар пароляў</translation>
 <translation id="4309403553630140242">Двойчы націсніце, каб даведацца больш</translation>
+<translation id="4310738531374808763">Наладзьце галоўную старонку</translation>
 <translation id="4320848494125124980">Нядаўнія</translation>
 <translation id="4322394346347055525">Закрыць іншыя ўкладкі</translation>
 <translation id="4324735664183300693">Уключыць апавяшчэнні</translation>
@@ -1709,6 +1712,7 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">Спампавана: <ph name="PERCENT" /> %</translation>
 <translation id="7345061034321640811">Імпарт не дазволены</translation>
+<translation id="7347998088283246662">Імпартуйце паролі, гісторыю, закладкі і іншыя даныя</translation>
 <translation id="7352651011704765696">Нешта пайшло не так</translation>
 <translation id="7364796246159120393">Выбраць файл</translation>
 <translation id="736564850024123010">Вы можаце змяніць пазіцыю адраснага радка для больш зручнага выкарыстання.</translation>
@@ -2234,6 +2238,7 @@
 <translation id="914781932147356857">Пазначыць усе…</translation>
 <translation id="9148126808321036104">Увайсці зноў</translation>
 <translation id="9149866541089851383">Змяніць...</translation>
+<translation id="9152637745605628097">Выберыце тэму, колер або запампуйце відарыс</translation>
 <translation id="9159628751968616911">Адпраўка вэб-старонкі</translation>
 <translation id="9162432979321511934">Уключыце аўтазапаўненне пароляў</translation>
 <translation id="9165320910061267720">Каб атрымліваць абвесткі аб зніжэнні цэн, уключыце апавяшчэнні ў наладах iOS.</translation>

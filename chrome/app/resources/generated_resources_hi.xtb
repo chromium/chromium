@@ -1551,6 +1551,7 @@
 <translation id="2024195579772565064">सर्च इंजन मिटाएं</translation>
 <translation id="202500043506723828">ईआईडी</translation>
 <translation id="2025123106058020990">सटीक क्लिक करने की सुविधा</translation>
+<translation id="2025130536872979378">सोर्स देखें</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> बंद हो गया. एक्सटेंशन को फिर से लोड करने के लिए इस गुब्बारे के निशान पर क्लिक करें.</translation>
 <translation id="2026367923222947564">पूरा पेज</translation>
 <translation id="2026377162111110983">आस-पास की आवाज़ें बेहतर बनाने वाला मोड</translation>
@@ -1707,7 +1708,7 @@
 <translation id="2133775869826239001">सेट अप करने के लिए, ज़्यादा सुविधाएं चुनें</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> को फिर से डाउनलोड करने की कोशिश करें</translation>
 <translation id="2134905185275441536">सिस्टम CA सर्टिफ़िकेट</translation>
-<translation id="2135420518376202233">ब्लूटूथ डिवाइस के नाम</translation>
+<translation id="2135420518376202233">ब्लूटूथ डिवाइसों के नाम</translation>
 <translation id="21354425047973905">पिन छिपाएं</translation>
 <translation id="2135456203358955318">स्क्रीन पर कर्सर वाले हिस्से को बड़ा करके दिखाने की सुविधा</translation>
 <translation id="2135787500304447609">&amp;फिर से शुरू करें</translation>
@@ -2798,6 +2799,7 @@
 <translation id="2856776373509145513">नया कंटेनर बनाएं</translation>
 <translation id="2857047802954430547">अपने सभी डिवाइसों से पासवर्ड, बुकमार्क वगैरह ऐक्सेस करने के लिए साइन इन करें</translation>
 <translation id="2859741939921354763"><ph name="BRAND" /> में पासवर्ड इंपोर्ट करें</translation>
+<translation id="2860284453253554297">Enterprise की नीतियां</translation>
 <translation id="2860710618359053450">जबड़े को दाईं ओर ले जाएं</translation>
 <translation id="2861301611394761800">सिस्टम अपडेट पूरा हुआ. कृपया सिस्टम को रीस्टार्ट करें.</translation>
 <translation id="2861402191395139055">पासपॉइंट की सदस्यताएं</translation>
@@ -9797,6 +9799,7 @@
 <translation id="7684212569183643648">आपके नियंत्रक द्वारा इंस्‍टॉल किया गया</translation>
 <translation id="7684559058815332124">कैप्‍टिव पोर्टल लॉगिन पेज पर जाएं</translation>
 <translation id="7684718995427157417">ऐप्लिकेशन बनाने और उसकी जांच करने के लिए, Android डीबग ब्रिज (ADB) चालू करें. ध्यान दें कि इस कार्रवाई के लिए ऐसे Android ऐप्लिकेशन इंस्टॉल करने की अनुमति दी जाती है जिनकी पुष्टि Google ने नहीं की है. साथ ही, फ़ैक्ट्री रीसेट को बंद करना ज़रूरी है.</translation>
+<translation id="7684803937028953000">आपके संगठन ने इस फ़ाइल को डिवाइस पर डाउनलोड करने पर रोक लगाई हुई है.</translation>
 <translation id="7684913007876670600">इस पेज को आसानी से देखने के लिए, साइड पैनल खोलें और Reading mode चुनें</translation>
 <translation id="7685038817958445325">कास्ट नहीं हो पाया</translation>
 <translation id="7685049629764448582">JavaScript मेमोरी</translation>

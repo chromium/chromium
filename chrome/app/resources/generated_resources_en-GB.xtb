@@ -2522,6 +2522,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2672142220933875349">Bad crx file, unpacking failed.</translation>
 <translation id="2672200806060988299">Your tab titles and URLs are sent to Google and may be seen by human reviewers to improve this feature.</translation>
 <translation id="2673135533890720193">Read your browsing history</translation>
+<translation id="2673397477544385203">Powers features like scam detection locally. Turning this off deletes GenAI models from your device and disables these features.</translation>
 <translation id="2673848446870717676">Make sure that your Bluetooth device is in pairing mode and nearby. Only pair with devices that you trust. Paired devices are visible to all accounts on this Chromebook.</translation>
 <translation id="2673873887296220733">Copy 1 file to <ph name="CLOUD_PROVIDER" /> to open?</translation>
 <translation id="267442004702508783">refresh</translation>
@@ -3980,6 +3981,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3678156199662914018">Extension: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Pages that you view in this window won't appear in the browser history and they won't leave other traces, like cookies, on the computer after you sign out. Files that you download and bookmarks that you create won't be preserved.</translation>
 <translation id="3679126865530709868">Built-in touchpad</translation>
+<translation id="3680166671911524673">On-device GenAI enabled</translation>
 <translation id="3680683624079082902">Text-to-speech voice</translation>
 <translation id="3681017028939109078">Show window suggestions when starting split-screen</translation>
 <translation id="3681191721636073359">Chrome thinks that you don't want to use your location on this site. So, requests are hidden to reduce interruptions.</translation>

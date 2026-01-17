@@ -1551,6 +1551,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="2024195579772565064">Eyða leitarvél</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Nákvæmnismellur</translation>
+<translation id="2025130536872979378">skoða frumkóða</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> hrundi. Smelltu á þessa blöðru að endurhlaða viðbótina.</translation>
 <translation id="2026367923222947564">Öll síðan</translation>
 <translation id="2026377162111110983">Svæðisrödd</translation>
@@ -2798,6 +2799,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2856776373509145513">Búa til nýjan geymi</translation>
 <translation id="2857047802954430547">Skráðu þig inn til að sækja aðgangsorð, bókamerki og fleira í öllum tækjunum þínum</translation>
 <translation id="2859741939921354763">Flytja aðgangsorð inn í <ph name="BRAND" /></translation>
+<translation id="2860284453253554297">Fyrirtækjareglur</translation>
 <translation id="2860710618359053450">Beindu vörunum til hægri</translation>
 <translation id="2861301611394761800">Kerfisuppfærslu lokið. Endurræstu kerfið.</translation>
 <translation id="2861402191395139055">Áskriftir að Aðgangspunkti</translation>
@@ -9800,6 +9802,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7684212569183643648">Kerfisstjórinn þinn setti upp</translation>
 <translation id="7684559058815332124">Fara á innskráningarsíðu auðkenningargáttar</translation>
 <translation id="7684718995427157417">Kveiktu á villuleitarbrú Android (ADB) til að búa til og prófa forritin þín. Hafðu í huga að þessi aðgerð gerir þér kleift að setja upp Android forrit sem eru ekki staðfest af Google. Núllstilla þarf tækið til að slökkva á þessu.</translation>
+<translation id="7684803937028953000">Fyrirtækið þitt/stofnunin þín lokaði fyrir staðbundið niðurhal á þessari skrá.</translation>
 <translation id="7684913007876670600">Til að birta einfaldað yfirlit þessarar síðu skaltu opna hliðargluggann og velja lesstillingu</translation>
 <translation id="7685038817958445325">Ekki hægt að varpa</translation>
 <translation id="7685049629764448582">JavaScript-minni</translation>

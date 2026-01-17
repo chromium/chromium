@@ -46,6 +46,7 @@
 <translation id="3150823315463303127">主机无法读取政策。</translation>
 <translation id="3171922709365450819">该客户端不支持此设备，因为此设备要求进行第三方身份验证。</translation>
 <translation id="3197730452537982411">远程桌面</translation>
+<translation id="3236334139428307578">版权所有 2026 The Chromium Authors。保留所有权利。</translation>
 <translation id="324272851072175193">通过电子邮件发送这些说明</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" />想进行更改。</translation>
 <translation id="3339299787263251426">通过互联网安全地访问您的计算机</translation>
@@ -110,6 +111,7 @@
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> 已请求获权查看您的屏幕并控制您的键盘和鼠标。如果您不愿批准这项请求，请按“<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />”。否则，请在准备就绪后选择“<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />”以允许建立这项关联。</translation>
 <translation id="5823658491130719298">在您要远程访问的计算机上，打开 Chrome 并访问 <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">显示选项</translation>
+<translation id="5965133372831030509">版权所有 2026 Google LLC。保留所有权利。</translation>
 <translation id="6033507038939587647">键盘选项</translation>
 <translation id="6040143037577758943">关闭</translation>
 <translation id="6062854958530969723">主机初始化失败。</translation>

@@ -162,6 +162,7 @@
 <translation id="1554477036522844996">חלון חדש</translation>
 <translation id="1558391695376153246">סגירת כרטיסיות מצב אנונימי</translation>
 <translation id="1565371473877914088">כרטיסייה פרטית חדשה</translation>
+<translation id="1567960978791353852">הצגת מצב הקריאה</translation>
 <translation id="1571780780926010134">כרטיסיות פרטיות</translation>
 <translation id="1580715474678097352">הגנה תמידית מאתרים מסוכנים</translation>
 <translation id="1580783302095112590">הדואר נשלח.</translation>
@@ -291,6 +292,7 @@
 <translation id="2015722694326466240">רוצה להציג את הסיסמאות? תחילה עליך להגדיר קוד גישה במכשיר.</translation>
 <translation id="201759455285471444">הרחבה של קבוצת הכרטיסיות.</translation>
 <translation id="202070562065520783">אשמח לקבל הסבר</translation>
+<translation id="2023713324775943812">פותחים את מצב הקריאה מסרגל הכתובות כשזה אפשרי</translation>
 <translation id="2044394949148788042">פתיחה של תצוגת הכרטיסיות</translation>
 <translation id="2044681667265133332">החשבון <ph name="USER_EMAIL" /> מנוהל על ידי <ph name="HOSTED_DOMAIN" />, שיכול להיות שיש לו גישה לחלק מהמידע. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">פריט חדש</translation>
@@ -360,6 +362,7 @@
 <translation id="2271452184061378400">קבוצות הכרטיסיות שלך נשמרות כאן</translation>
 <translation id="2273327106802955778">התפריט 'עוד'</translation>
 <translation id="2287614783861766820">{count,plural, =1{הכתובת הזו תימחק מהמכשיר.}one{הכתובות האלו יימחקו מהמכשיר.}two{הכתובות האלו יימחקו מהמכשיר.}other{הכתובות האלו יימחקו מהמכשיר.}}</translation>
+<translation id="2295236662082735391">‏כדי לערוך תמונה באינטרנט באמצעות Gemini, צריך ללחוץ עליה לחיצה ארוכה</translation>
 <translation id="2297989278479054870">‏אחרי היציאה מהחשבון, הסימניות, הסיסמאות ופרטים נוספים בחשבון Google שלך יוסרו מהמכשיר הזה.</translation>
 <translation id="2299218006564889602">‏הסיסמאות שלך מוצפנות במכשיר לפני שהן נשמרות במנהל הסיסמאות של Google.</translation>
 <translation id="2306265833370324042">הצגת הפרטים של <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -481,6 +484,7 @@
 <translation id="2761788987260570878">מצלמים תמונה של מה שרוצים לחפש.</translation>
 <translation id="2761898608071930085">חשבון אחר</translation>
 <translation id="2762000892062317888">ברגע זה</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{אפשר להוסיף תמונה אחת לכל היותר}one{אפשר להוסיף ({COUNT}) תמונות לכל היותר}two{אפשר להוסיף שתי תמונות ({COUNT}) לכל היותר}other{אפשר להוסיף {COUNT} תמונות לכל היותר}}</translation>
 <translation id="2772667768515195373">‏אפשר להשתמש בכתובות שמורות במוצרי Google. הכתובת הזו שמורה בחשבון Google שלך, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">התראות באימייל</translation>
 <translation id="2781331604911854368">מופעל</translation>
@@ -750,6 +754,7 @@
 <translation id="3888863481921783344">הפרטים האלה ישמשו להצגת מוזמנים אפשריים לאירוע.</translation>
 <translation id="3891414008432200754">מחיר</translation>
 <translation id="3892144330757387737">ההיסטוריה זמינה כאן</translation>
+<translation id="3893858854379998374">כדי לשמור סימניות בחשבון, צריך למחוק סימניות שלא בשימוש</translation>
 <translation id="3897092660631435901">תפריט</translation>
 <translation id="3904270275864974753">עריכת הקרוסלה</translation>
 <translation id="3909222758573607742">שמירת סיסמאות ופריטים אחרים בחשבון</translation>
@@ -1353,6 +1358,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6058415747854995776">צילום סרטון</translation>
 <translation id="6059830886158432458">כאן אפשר לנהל את הסטוריז והפעילות שלך</translation>
+<translation id="6063802271331271857">שינוי הסגנון של התמונה</translation>
 <translation id="6066301408025741299">יש ללחוץ כדי לבטל.</translation>
 <translation id="6074656473835429958">קבלת התראות</translation>
 <translation id="607620096698446287">לא ניתן להעלות את <ph name="FILENAME" /> ‏(<ph name="FILESIZE" />)</translation>
@@ -1871,6 +1877,7 @@
 <translation id="7899199123054742721">סימון הכול כ'לא נקרא'</translation>
 <translation id="7911190106180361398">בהתאם למדיניות הארגון שלך, אין לך אפשרות לסנכרן הכול.</translation>
 <translation id="7918999344502274923">הסתרת הפרטים של <ph name="SEARCH_ENGINE_NAME" /></translation>
+<translation id="7921559948846049514">בוחרים עיצוב, צבע או אפשרויות נוספות לרקע</translation>
 <translation id="792357691529995513">לא נמצאו בעיות</translation>
 <translation id="7925108652071887026">נתוני מילוי אוטומטי</translation>
 <translation id="7926975587469166629">כינוי הכרטיס</translation>

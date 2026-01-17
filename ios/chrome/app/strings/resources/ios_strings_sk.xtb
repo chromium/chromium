@@ -315,6 +315,7 @@
 <translation id="21133533946938348">Pripnúť kartu</translation>
 <translation id="2117650889962717098">Prejdite do režimu inkognito a zaistite súkromie svojho prehliadania</translation>
 <translation id="2119636449201577317">Otvoriť v aplikácii…</translation>
+<translation id="2119962645034852864">Niektoré služby nie sú pre váš účet k dispozícii</translation>
 <translation id="2120553909046681540">Vaša organizácia vypla anonymné prehliadanie.</translation>
 <translation id="2122754583996902531">Váš prehliadač je spravovaný. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">Naše modely sa nezlepšujú pomocou četov vašej organizácie. Gemini môže zobrazovať nepresné informácie (aj o ľuďoch), preto si jeho odpovede overujte. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
@@ -605,6 +606,7 @@
 <translation id="3245744387817103524">Zmenu sa nepodarilo uložiť.</translation>
 <translation id="3254806613790954367">Vaša posledná otvorená karta vo všetkých zariadeniach</translation>
 <translation id="325717987950204592">Klepnite na položku Ochrana súkromia a zabezpečenie.</translation>
+<translation id="3265736395246760288">Prihlasujte sa rýchlejšie v ľubovoľnom synchronizovanom zariadení.</translation>
 <translation id="3272527697863656322">Zrušiť</translation>
 <translation id="3273510436356991673">Prispôsobte si plochu</translation>
 <translation id="3277021493514034324">Adresa webu bola skopírovaná</translation>
@@ -754,6 +756,7 @@
 <translation id="3888863481921783344">Táto možnosť sa použije, aby sa vám mohli zobraziť hostia pozvaní na vašu udalosť.</translation>
 <translation id="3891414008432200754">Cena</translation>
 <translation id="3892144330757387737">Tu nájdete svoju históriu</translation>
+<translation id="3893858854379998374">Ak chcete uložiť záložky vo svojom účte, odstráňte nepoužívané záložky</translation>
 <translation id="3897092660631435901">Ponuka</translation>
 <translation id="3904270275864974753">Úprava posuvného pása</translation>
 <translation id="3909222758573607742">Uloženie hesiel a ďalších položiek v účte</translation>
@@ -871,6 +874,7 @@
 <translation id="4302061870579014542">Nastaviť umiestnenie</translation>
 <translation id="4304713468139749426">Správca hesiel</translation>
 <translation id="4309403553630140242">Ďalšie informácie získate dvojitým klepnutím</translation>
+<translation id="4310738531374808763">Prispôsobenie domovskej stránky</translation>
 <translation id="4320848494125124980">Nedávne</translation>
 <translation id="4322394346347055525">Zatvoriť ostatné karty</translation>
 <translation id="4324735664183300693">Zapnúť upozornenia</translation>
@@ -1709,6 +1713,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">Stiahnuté: <ph name="PERCENT" /> percent</translation>
 <translation id="7345061034321640811">Import nie je povolený</translation>
+<translation id="7347998088283246662">Importujte heslá, históriu, záložky a ďalší obsah</translation>
 <translation id="7352651011704765696">Niečo sa pokazilo</translation>
 <translation id="7364796246159120393">Vybrať súbor</translation>
 <translation id="736564850024123010">Zmenou umiestnenia panela s adresou získate prispôsobenejšie prostredie.</translation>
@@ -2234,6 +2239,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="914781932147356857">Označiť všetko…</translation>
 <translation id="9148126808321036104">Znova sa prihlásiť</translation>
 <translation id="9149866541089851383">Upraviť...</translation>
+<translation id="9152637745605628097">Vyberte si z motívov, farieb alebo nahrajte obrázok</translation>
 <translation id="9159628751968616911">Odoslanie webovej stránky</translation>
 <translation id="9162432979321511934">Zapnite automatické dopĺňanie hesiel</translation>
 <translation id="9165320910061267720">Ak chcete dostávať upozornenia na poklesy cien, musíte ich zapnúť v nastaveniach systému iOS.</translation>

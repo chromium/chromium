@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Skannetype</translation>
 <translation id="28682968802727151">Forhåndsvisning av speiling</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> er koblet til.</translation>
+<translation id="3063987824612038785">Alle kamerafiler lagres i Google Disk</translation>
 <translation id="3067436040345934772">Panorer til høyre</translation>
 <translation id="3081586908890909590">Bytt til video</translation>
 <translation id="3091480460059548935">Tekstgjenkjenning i forhåndsvisningen</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">Behandler videoen …</translation>
 <translation id="3789724198583203151">Rotér 90 grader mot klokken</translation>
 <translation id="3810838688059735925">Video</translation>
+<translation id="386366972082231038">Alle kamerafiler lagres i OneDrive</translation>
 <translation id="4060608699153044055">Du kan ikke ta opp på grunn av lite lagringsplass på enheten. For å starte opptaket må du frigjøre plass på enheten.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Sett opptaket på pause</translation>
@@ -157,6 +159,7 @@ Hvis tilbakemeldingen din gjelder bilde- eller videokvalitet, ber vi deg legge v
 <translation id="7983668134180549431">Oppdaget tekst.</translation>
 <translation id="8079255378695216066">Kan ikke starte opptak</translation>
 <translation id="8120146556401698679">Panorering, vipping, zooming</translation>
+<translation id="8127459436205030819">Filene dine kan være synlige for administratoren din</translation>
 <translation id="8131740175452115882">Bekreft</translation>
 <translation id="8145038249676204903">Bytt til foto</translation>
 <translation id="8167081290930651932">Lagre som bilde</translation>

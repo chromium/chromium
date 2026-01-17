@@ -1553,6 +1553,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="2024195579772565064">Paieškos variklio ištrynimas</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Tikslus paspaudimas</translation>
+<translation id="2025130536872979378">žiūrėti šaltinį</translation>
 <translation id="2025632980034333559">„<ph name="APP_NAME" />“ užstrigo. Jei norite iš naujo įkelti plėtinį, spustelėkite šį debesėlį.</translation>
 <translation id="2026367923222947564">Visas puslapis</translation>
 <translation id="2026377162111110983">Visos srities balsas</translation>
@@ -2800,6 +2801,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2856776373509145513">Naujo sudėtinio failo kūrimas</translation>
 <translation id="2857047802954430547">Prisijunkite, kad visuose įrenginiuose gautumėte slaptažodžius, žymes ir kt.</translation>
 <translation id="2859741939921354763">Slaptažodžių importavimas į „<ph name="BRAND" />“</translation>
+<translation id="2860284453253554297">Įmonės politika</translation>
 <translation id="2860710618359053450">Pasukti žandikaulį į dešinę</translation>
 <translation id="2861301611394761800">Sistema atnaujinta. Paleiskite ją iš naujo.</translation>
 <translation id="2861402191395139055">„Passpoint“ prenumeratos</translation>
@@ -9808,6 +9810,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="7684212569183643648">Įdiegė jūsų administratorius</translation>
 <translation id="7684559058815332124">Apsilankyti fiksuotojo portalo prisijungimo puslapyje</translation>
 <translation id="7684718995427157417">Kad galėtumėte kurti ir testuoti programas, įgalinkite „Android“ derinimo tiltą (ADB). Atminkite, kad atlikus šį veiksmą bus leidžiama įdiegti „Android“ programas, kurios nebuvo patvirtintos „Google“, o norint išjungti ADB, reikės atkurti gamyklinius nustatymus.</translation>
+<translation id="7684803937028953000">Jūsų organizacija užblokavo vietinį šio failo atsisiuntimą.</translation>
 <translation id="7684913007876670600">Jei norite, kad būtų rodomas supaprastintas šio puslapio rodinys, atidarykite šoninį skydelį ir pasirinkite skaitymo režimą</translation>
 <translation id="7685038817958445325">Nepavyksta perduoti</translation>
 <translation id="7685049629764448582">„JavaScript“ atmintis</translation>

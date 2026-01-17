@@ -440,7 +440,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1705645336613358172">Affirm yoki Zip orqali boʻlib toʻlash mumkin</translation>
 <translation id="1706625117072057435">Masshtab</translation>
-<translation id="1706922226983368260">Kirish kaliti • "<ph name="PHONE_NAME" />"</translation>
 <translation id="1706954506755087368">{1,plural, =1{Server bu domenni <ph name="DOMAIN" /> ekanligini tasdiqlay olmaydi. Uning xavfsizlik sertifikati ertadan boshlab shubhali hisoblanadi. Balki, server noto‘g‘ri sozlangan yoki kimdir ma’lumotlaringizni o‘g‘irlashga urinayotgan bo‘lishi mumkin.}other{Server bu domenni <ph name="DOMAIN" /> ekanligini tasdiqlay olmaydi. Uning xavfsizlik sertifikati # kundan keyin kuchga kiradi. Balki, server noto‘g‘ri sozlangan yoki kimdir ma’lumotlaringizni o‘g‘irlashga urinayotgan bo‘lishi mumkin.}}</translation>
 <translation id="1710259589646384581">OT</translation>
 <translation id="1711234383449478798"><ph name="POLICY_NAME" /> siyosatida <ph name="VALUE" /> qiymati sozlanmagani uchun inkor etildi.</translation>

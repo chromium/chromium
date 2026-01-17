@@ -186,6 +186,7 @@
 <translation id="1289129165308566697">იხილეთ თქვენი ისტორია სხვა მოწყობილობებში</translation>
 <translation id="1292571435393770077">ლანგარი 16</translation>
 <translation id="1292701964462482250">„თქვენს კომპიუტერზე დაინსტალირებული პროგრამული უზრუნველყოფა ხელს უშლის Chrome-ს ვებზე უსაფრთხოდ წვდომაში“ (მხოლოდ Windows)</translation>
+<translation id="1293154089865862473">Google-ს უზიარდება შეკვეთის გაფორმების გვერდის კონტენტი, რათა შემოგთავაზოთ ეს ვარიანტები. ავტომატურ შევსებაში მოგვიანებით გადახდის ვარიანტების დასამალად გახსენით <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="1293556467332435079">ფაილები</translation>
 <translation id="1293797321964802402">კონვერტი 9 x 11 დუიმი</translation>
 <translation id="129553762522093515">ბოლოს დახურული</translation>
@@ -441,7 +442,6 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1705645336613358172">დროში განაწილებით გადასახდელად გამოიყენეთ Affirm ან Zip</translation>
 <translation id="1706625117072057435">მასშტაბირების დონეები</translation>
-<translation id="1706922226983368260">წვდომის გასაღები • „<ph name="PHONE_NAME" />“</translation>
 <translation id="1706954506755087368">{1,plural, =1{ეს სერვერი ვერ ამტკიცებს, რომ ის არის <ph name="DOMAIN" />; მისი უსაფრთხოების სერტიფიკატი, სავარაუდოდ, ხვალინდელია. ამის მიზეზი შეიძლება იყოს არასწორი კონფიგურაცია ან შესაძლოა, თქვენი კავშირი თავდამსხმელს ჰქონდეს ხელში ჩაგდებული.}other{ეს სერვერი ვერ ამტკიცებს, რომ ის არის <ph name="DOMAIN" />; მისი უსაფრთხოების სერტიფიკატის ვადა, სავარაუდოდ, # დღის შემდეგ იწყება. ამის მიზეზი შეიძლება იყოს არასწორი კონფიგურაცია ან შესაძლოა, თქვენი კავშირი თავდამსხმელს ჰქონდეს ხელში ჩაგდებული.}}</translation>
 <translation id="1710259589646384581">OS</translation>
 <translation id="1711234383449478798">იგნორირებულია, რადგან <ph name="POLICY_NAME" />-ის მნიშვნელობა არ არის <ph name="VALUE" />.</translation>
@@ -1125,6 +1125,7 @@
 <translation id="2782088940970074970">ავტომობილების დაქირავება</translation>
 <translation id="278436560439594386">საყოფაცხოვრებო ტექნიკა</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
+<translation id="2784540996156451674">Google-ს უზიარდება შეკვეთის გაფორმების გვერდის კონტენტი, რათა შემოგთავაზოთ ეს ვარიანტები.</translation>
 <translation id="2784949926578158345">კავშირი გაწყვეტილია.</translation>
 <translation id="2786008859124691917">ველოსიპედები და აქსესუარები</translation>
 <translation id="2792012897584536778">ამ მოწყობილობის ადმინისტრატორებმა დააყენეს უსაფრთხოების სერტიფიკატები, რომელთა მეშვეობითაც შეუძლიათ თქვენ მიერ მონახულებული ვებსაიტების კონტენტის ნახვა.</translation>
@@ -2483,6 +2484,7 @@
 <translation id="4950898438188848926">ჩანართის გადართვის ღილაკი, ამ ჩანართზე გადასართველად დააჭირეთ კლავიშს „Enter“, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">ქმედებები</translation>
 <translation id="4953689047182316270">მარტივ წვდომასთან დაკავშირებულ მოვლენებზე რეაგირება</translation>
+<translation id="4954891067389874142">გადაიხადეთ სწრაფად შენახული ბარათით. ბარათის დეტალები დაშიფრულია Google საფულეში.</translation>
 <translation id="4957080528849277028">თქვენი Chrome-ის ისტორიის ნახვის ღილაკი, Chrome პარამეტრებიდან დათვალიერების ისტორიის სანახავად და სამართავად გაააქტიურეთ ის</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 საიტი}other{+ # საიტი}}</translation>
 <translation id="4958444002117714549">სიის გაშლა</translation>
@@ -4011,6 +4013,7 @@
 <translation id="7408613996403626141">სათამაშოები</translation>
 <translation id="7410852728357935715">ტრანსლირება მოწყობილობაზე</translation>
 <translation id="741204030948306876">დიახ, თანახმა ვარ</translation>
+<translation id="7412081313067625215">თქვენი ბარათი შენახულია Google საფულეში, რომ ავტომატურად შეავსოთ მისი მონაცემები მომავალი შესყიდვებისას</translation>
 <translation id="7416351320495623771">პაროლების მართვა…</translation>
 <translation id="7416898721136759658">გრანტები, სტიპენდიები და ფინანსური დახმარება</translation>
 <translation id="741772962178517671">Affirm</translation>
@@ -4144,6 +4147,7 @@
 <translation id="759889825892636187"><ph name="HOST_NAME" /> ამჟამად ვერ ამუშავებს ამ მოთხოვნას.</translation>
 <translation id="7599089013883397081">ჩამოტვირთვის დრო ამოიწურა</translation>
 <translation id="7602868996817972616">ჰკითხეთ Google-ს ამ გვერდის შესახებ</translation>
+<translation id="7606123685356405076">Gemini 3 მოდელი</translation>
 <translation id="7610193165460212391">მნიშვნელობა დიაპაზონის გარეთაა <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">სქელი</translation>
 <translation id="7613889955535752492">მოქმ.: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

@@ -1533,6 +1533,7 @@
 <translation id="2024195579772565064">删除搜索引擎</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">精确点击</translation>
+<translation id="2025130536872979378">查看源代码</translation>
 <translation id="2025632980034333559">“<ph name="APP_NAME" />”崩溃了。点击此信息框，以重新加载该扩展程序。</translation>
 <translation id="2026367923222947564">整页</translation>
 <translation id="2026377162111110983">区域收音</translation>
@@ -2776,6 +2777,7 @@
 <translation id="2856776373509145513">创建一个新容器</translation>
 <translation id="2857047802954430547">登录即可在所有设备上获取密码、书签等信息</translation>
 <translation id="2859741939921354763">将密码导入 <ph name="BRAND" /></translation>
+<translation id="2860284453253554297">企业政策</translation>
 <translation id="2860710618359053450">将下巴向右移动</translation>
 <translation id="2861301611394761800">系统更新已完成。请重新启动系统。</translation>
 <translation id="2861402191395139055">Passpoint 订阅</translation>
@@ -3791,7 +3793,7 @@
 <translation id="3567284462585300767">若要与附近的人互发文件，请将您的设备设为对他人可见</translation>
 <translation id="356738834800832239">您的密码已保存</translation>
 <translation id="3568431410312984116">允许自动打开“帮我写”功能</translation>
-<translation id="3569304198553566878">当前显示了 <ph name="NUM_DISPLAYED_EVENTS" /> 个事件（共 <ph name="NUM_TOTAL_EVENTS" /> 个）</translation>
+<translation id="3569304198553566878">当前显示了 <ph name="NUM_DISPLAYED_EVENTS" /> 个（共 <ph name="NUM_TOTAL_EVENTS" /> 个）</translation>
 <translation id="3569382839528428029">您允许 <ph name="APP_NAME" /> 共享您的屏幕吗？</translation>
 <translation id="3569614820047645079">您在“我的云端硬盘”中保存的文件会自动同步到 Chromebook，以供您在未联网的情况下访问。</translation>
 <translation id="3569617221227793022">时区当前设置为 <ph name="TIME_ZONE_ENTRY" />。此设置由您的管理员管理。</translation>
@@ -9769,6 +9771,7 @@
 <translation id="7684212569183643648">安装者：您的管理员</translation>
 <translation id="7684559058815332124">访问强制门户登录页面</translation>
 <translation id="7684718995427157417">要创建和测试您的应用，请启用 Android 调试桥 (ADB)。请注意，此操作会允许安装未经 Google 验证的 Android 应用，而且您会需要将设备恢复出厂设置才能停用 ADB。</translation>
+<translation id="7684803937028953000">贵组织已禁止在本地下载此文件。</translation>
 <translation id="7684913007876670600">若要显示此页面的简化视图，请打开侧边栏并从中选择“阅读模式”</translation>
 <translation id="7685038817958445325">无法投放</translation>
 <translation id="7685049629764448582">JavaScript 内存</translation>

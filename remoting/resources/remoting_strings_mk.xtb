@@ -46,6 +46,7 @@
 <translation id="3150823315463303127">Домаќинот не успеа да ја прочита политиката.</translation>
 <translation id="3171922709365450819">Клиентов не го поддржува уредов бидејќи бара автентикација од трета страна.</translation>
 <translation id="3197730452537982411">Далечински десктоп</translation>
+<translation id="3236334139428307578">Авторски права за 2026 г. на The Chromium Authors. Сите права се задржани.</translation>
 <translation id="324272851072175193">Испрати е-пошта со упатствава</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> сака да изврши промени.</translation>
 <translation id="3339299787263251426">Безбедно пристапете до компјутерот преку интернет</translation>
@@ -110,6 +111,7 @@
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> побара пристап да го гледа вашиот екран и да ги контролира тастатурата и глувчето. Притиснете „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />“ ако не го очекувате ова барање. Во спротивно, изберете „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />“ за да го дозволите поврзувањето кога ќе бидете спремни.</translation>
 <translation id="5823658491130719298">На компјутерот до којшто сакате да пристапите од далечина, отворете го Chrome и одете на <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Опции за приказ</translation>
+<translation id="5965133372831030509">Авторски права за 2026 г. на Google LLC. Сите права се задржани.</translation>
 <translation id="6033507038939587647">Опции за тастатура</translation>
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="6062854958530969723">Иницијализирањето на домаќинот не успеа.</translation>

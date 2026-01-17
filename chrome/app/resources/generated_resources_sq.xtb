@@ -1537,6 +1537,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="2024195579772565064">Fshi motorin e kërkimit</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Klikimi me saktësi</translation>
+<translation id="2025130536872979378">shiko burimin</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> është ndërprerë aksidentalisht. Kliko te kjo balonë për të ngarkuar përsëri shtesën.</translation>
 <translation id="2026367923222947564">Faqe e plotë</translation>
 <translation id="2026377162111110983">Zëri i zonës</translation>
@@ -2782,6 +2783,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2856776373509145513">Krijo një kontejner të ri</translation>
 <translation id="2857047802954430547">Identifikohu për të marrë fjalëkalimet, faqeshënuesit etj. në të gjitha pajisjet e tua</translation>
 <translation id="2859741939921354763">Importo fjalëkalimet te "<ph name="BRAND" />"</translation>
+<translation id="2860284453253554297">Politikat e ndërmarrjes</translation>
 <translation id="2860710618359053450">Zhvendose nofullën në të djathtë</translation>
 <translation id="2861301611394761800">Përditësimi i sistemit përfundoi. Rinis sistemin.</translation>
 <translation id="2861402191395139055">Abonimet e Passpoint</translation>
@@ -9780,6 +9782,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="7684212569183643648">Instaluar nga administratori yt</translation>
 <translation id="7684559058815332124">Vizito faqen e identifikimit të portalit mbyllës</translation>
 <translation id="7684718995427157417">Për të krijuar dhe testuar aplikacionet e tua, aktivizo "Urën e korrigjimit të Android" (ADB). Ki parasysh se ky veprim lejon instalimin e aplikacioneve të Android që nuk janë verifikuar nga Google dhe për çaktivizimin kërkohet rivendosja e cilësimeve të fabrikës.</translation>
+<translation id="7684803937028953000">Organizata jote e bllokoi shkarkimin lokal të këtij skedari.</translation>
 <translation id="7684913007876670600">Për të shfaqur një pamje të thjeshtuar të kësaj faqeje, hap panelin anësor dhe zgjidh "Modalitetin e leximit"</translation>
 <translation id="7685038817958445325">Nuk mund të transmetohet</translation>
 <translation id="7685049629764448582">Memoria e JavaScript</translation>

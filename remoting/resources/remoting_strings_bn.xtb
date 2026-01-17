@@ -46,6 +46,7 @@
 <translation id="3150823315463303127">নীতিটি পড়ার জন্য হোস্ট ব্যর্থ হয়েছে৷</translation>
 <translation id="3171922709365450819">এই ডিভাইসটি এই ক্লায়েন্টের দ্বারা সমর্থিত নয় কারণ এটিতে তৃতীয় পক্ষের যাচাইকরণ প্রয়োজন।</translation>
 <translation id="3197730452537982411">রিমোট ডেস্কটপ</translation>
+<translation id="3236334139428307578">কপিরাইট ২০২১ The Chromium Authors. সর্বস্বত্ত্ব সংরক্ষিত।</translation>
 <translation id="324272851072175193">এই নির্দেশাবলী ইমেল করুন</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> পরিবর্তন করতে চান।</translation>
 <translation id="3339299787263251426">ইন্টারনেটের মাধ্যমে নিরাপদভাবে আপনার কম্পিউটার অ্যাক্সেস করুন</translation>
@@ -110,6 +111,7 @@
 <translation id="5823554426827907568">আপনার স্ক্রিন দেখার জন্য এবং আপনার কীবোর্ড ও মাউজে অ্যাক্সেস পাওয়ার জন্য, <ph name="CLIENT_USERNAME" /> আপনাকে অনুরোধ করেছেন। আপনি এই অনুরোধটি না চাইলে ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' প্রেস করুন। অন্যথায় কানেকশন রেডি হয়ে গেলে তাতে অনুমতি দেওয়ার জন্য ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' বেছে নিন।</translation>
 <translation id="5823658491130719298">যে কম্পিউটারটি আপনি রিমোটভাবে অ্যাক্সেস করতে চান সেটিতে Chrome খুলে <ph name="INSTALLATION_LINK" />-এ যান</translation>
 <translation id="5841343754884244200">দেখার বিকল্প</translation>
+<translation id="5965133372831030509">কপিরাইট ২০২০ Google LLC. সর্বস্বত্ব সংরক্ষিত।</translation>
 <translation id="6033507038939587647">কীবোর্ড বিকল্পগুলি</translation>
 <translation id="6040143037577758943">বন্ধ</translation>
 <translation id="6062854958530969723">হোস্ট আরম্ভ করা ব্যর্থ হয়েছে।</translation>

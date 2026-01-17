@@ -441,7 +441,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1705645336613358172">Brug Affirm eller Zip til afbetaling</translation>
 <translation id="1706625117072057435">Zoomniveauer</translation>
-<translation id="1706922226983368260">Adgangsnøgle • "<ph name="PHONE_NAME" />"</translation>
 <translation id="1706954506755087368">{1,plural, =1{Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da dens sikkerhedscertifikat tilsyneladende først gælder fra i morgen. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.}one{Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da dens sikkerhedscertifikat tilsyneladende først gælder fra om # dag. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.}other{Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da dens sikkerhedscertifikat tilsyneladende først gælder fra om # dage. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.}}</translation>
 <translation id="1710259589646384581">OS</translation>
 <translation id="1711234383449478798">Ignoreret, da <ph name="POLICY_NAME" /> ikke er angivet til <ph name="VALUE" />.</translation>
@@ -3523,6 +3522,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6635900375070654124">en authenticator-enhed</translation>
 <translation id="6641852376826221947">Bekræft dit køb</translation>
 <translation id="6643016212128521049">Ryd</translation>
+<translation id="6644868143085860957">Dette kort kunne ikke gemmes i Google Wallet. Det er gemt i Chrome på denne enhed i stedet.</translation>
 <translation id="6645291930348198241">Adgang til cookies og websitedata.</translation>
 <translation id="6645478838938543427">Underretninger om prisfald sendes til <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="6648459603387803038">Din administrator kan ændre konfigurationen af din browser via fjernadgang. Aktivitet på denne enhed administreres muligvis også uden for Chrome.</translation>

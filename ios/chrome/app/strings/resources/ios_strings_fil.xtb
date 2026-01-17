@@ -605,6 +605,7 @@
 <translation id="3245744387817103524">Hindi ma-save ang iyong pagbabago.</translation>
 <translation id="3254806613790954367">Ang iyong huling nakabukas na tab sa lahat ng device mo</translation>
 <translation id="325717987950204592">I-tap ang "Privacy at Seguridad"</translation>
+<translation id="3265736395246760288">Mas mabilis na mag-sign in mula sa alinman sa iyong mga naka-sync na device.</translation>
 <translation id="3272527697863656322">Kanselahin</translation>
 <translation id="3273510436356991673">I-customize ang iyong home screen</translation>
 <translation id="3277021493514034324">Nakopya ang address ng site</translation>
@@ -754,6 +755,7 @@
 <translation id="3888863481921783344">Gagamitin ito para ipakita sa iyo ang mga posibleng inimbitahan sa event mo.</translation>
 <translation id="3891414008432200754">Presyo</translation>
 <translation id="3892144330757387737">Makikita mo rito ang iyong history</translation>
+<translation id="3893858854379998374">Para mag-save ng mga bookmark sa iyong account, i-delete ang mga hindi mo ginagamit na bookmark</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904270275864974753">I-edit ang carousel</translation>
 <translation id="3909222758573607742">I-save ang mga password at iba pang item sa account</translation>
@@ -871,6 +873,7 @@
 <translation id="4302061870579014542">Itakda ang posisyon</translation>
 <translation id="4304713468139749426">Password Manager</translation>
 <translation id="4309403553630140242">Mag-double tap para sa higit pang impormasyon</translation>
+<translation id="4310738531374808763">I-customize ang iyong homepage</translation>
 <translation id="4320848494125124980">Kamakailan</translation>
 <translation id="4322394346347055525">Isara ang Ibang Mga Tab</translation>
 <translation id="4324735664183300693">I-on ang mga notification</translation>
@@ -1709,6 +1712,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> (na) porsyento ang na-download na</translation>
 <translation id="7345061034321640811">Hindi pinapayagan ang pag-import</translation>
+<translation id="7347998088283246662">Mag-import ng mga password, history, mga bookmark, at higit pa</translation>
 <translation id="7352651011704765696">Nagkaroon ng problema</translation>
 <translation id="7364796246159120393">Pumili ng File</translation>
 <translation id="736564850024123010">Baguhin ang posisyon ng iyong address bar para sa naka-customize na experience.</translation>
@@ -2235,6 +2239,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="914781932147356857">Markahan lahat…</translation>
 <translation id="9148126808321036104">Muling mag-sign in</translation>
 <translation id="9149866541089851383">I-edit...</translation>
+<translation id="9152637745605628097">Pumili mula sa mga tema, kulay, o mag-upload ng larawan</translation>
 <translation id="9159628751968616911">Ipadala ang webpage</translation>
 <translation id="9162432979321511934">I-on ang I-autofill ang Mga Password</translation>
 <translation id="9165320910061267720">Para makatanggap ng mga notification tungkol sa mga alerto sa pagbaba ng presyo, kakailanganin mong i-on ang mga notification sa mga setting ng iyong iOS.</translation>

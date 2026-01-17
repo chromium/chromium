@@ -738,7 +738,7 @@
 <translation id="1486486872607808064">Скенирајте овај QR кôд камером на уређају на ком желите да направите приступни кључ за апликацију <ph name="APP_NAME" /></translation>
 <translation id="1486616492435615702">Направите радну верзију или побољшајте постојећи рад.</translation>
 <translation id="1487335504823219454">Укључено – прилагођена подешавања</translation>
-<translation id="1488513761150925974">Проверите задатке</translation>
+<translation id="1488513761150925974">Провери задатке</translation>
 <translation id="1489101155914355052">Генеришу се предлози за овај документ…</translation>
 <translation id="1493152297698462486">Направи слику помоћу Gemini-ја</translation>
 <translation id="1493892686965953381">Чека се <ph name="LOAD_STATE_PARAMETER" />...</translation>
@@ -1538,6 +1538,7 @@
 <translation id="2024195579772565064">Избришите претраживач</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Прецизни клик</translation>
+<translation id="2025130536872979378">прикажи извор</translation>
 <translation id="2025632980034333559">Додатак <ph name="APP_NAME" /> је отказао. Кликните на овај облачић да бисте га поново учитали.</translation>
 <translation id="2026367923222947564">Цела страница</translation>
 <translation id="2026377162111110983">Глас у простору</translation>
@@ -2782,6 +2783,7 @@
 <translation id="2856776373509145513">Направите нови контејнер</translation>
 <translation id="2857047802954430547">Пријавите се да бисте приступали лозинкама, обележивачима и другом садржају на свим уређајима</translation>
 <translation id="2859741939921354763">Увезите лозинке у <ph name="BRAND" /></translation>
+<translation id="2860284453253554297">Смернице предузећа</translation>
 <translation id="2860710618359053450">Померите вилицу удесно</translation>
 <translation id="2861301611394761800">Ажурирање система је довршено. Рестартујте систем.</translation>
 <translation id="2861402191395139055">Претплате на Passpoint</translation>
@@ -9786,6 +9788,7 @@
 <translation id="7684212569183643648">Инсталирао је администратор</translation>
 <translation id="7684559058815332124">Посети страницу за пријављивање улазног портала</translation>
 <translation id="7684718995427157417">Да бисте правили и тестирали апликације, омогућите Android Debug Bridge (ADB). Имајте на уму да ова радња омогућава инсталирање Android апликација које Google није верификовао и захтева ресетовање на фабричка подешавања да би се онемогућила.</translation>
+<translation id="7684803937028953000">Организација је блокирала локално преузимање овог фајла.</translation>
 <translation id="7684913007876670600">Да бисте видели поједностављени приказ ове странице, отворите бочну таблу и изаберите Режим читања</translation>
 <translation id="7685038817958445325">Пребацивање није успело</translation>
 <translation id="7685049629764448582">JavaScript меморија</translation>

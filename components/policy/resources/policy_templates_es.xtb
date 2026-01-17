@@ -1559,6 +1559,15 @@ Si se le asigna el valor 1, indica que no se pueden compartir grupos de pestaña
 <translation id="2144236546337326489">Permitir que se habilite la continuación de tareas de Mi teléfono</translation>
 <translation id="2145735238144543545">Certificados de cliente obligatorios</translation>
 <translation id="2146103669166779785">Color hexadecimal que se usará para generar y aplicar un tema al navegador.</translation>
+<translation id="2146539033119095550">Esta política te permite definir una lista de patrones de URL que especifiquen orígenes de nivel superior en los que se debe inhabilitar la partición del almacenamiento de terceros (la partición del almacenamiento de un iframe de orígenes cruzados).
+
+Si no se define esta política o si un origen de nivel superior no coincide con uno de los patrones de URL, se aplicará <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />.
+
+Para obtener información detallada sobre los patrones válidos, consulta https://chromeenterprise.google/policies/url-patterns. Los patrones que indiques aquí se tratarán como orígenes, no como URLs, así que no especifiques una ruta.
+
+Para obtener información detallada sobre la partición del almacenamiento de terceros, consulta https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.
+
+Se eliminó en Chrome 145 y se recomienda usar el método requestStorageAccess en su lugar: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Puedes dejar comentarios en https://crbug.com/425248669.</translation>
 <translation id="2148733583160916305">Permitir la API WebPrinting en estos sitios</translation>
 <translation id="2148769554831004951">Fuerza que se habilite WebSQL.</translation>
 <translation id="214901426630414675">Restringir impresión por las dos caras</translation>
@@ -2216,7 +2225,7 @@ Nota: Si se omite un campo, todos los valores coincidirán con ese campo concret
 <translation id="2568488785376704318">Esta política está obsoleta. Se debe usar la política <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" /> en su lugar.</translation>
 <translation id="2570059561924004903">Inhabilitar los mensajes de voz</translation>
 <translation id="2570181623957732921">Habilitar <ph name="DESK_API_NAME" /> para una lista de dominios de terceros</translation>
-<translation id="2571353268726025696">Esta política se proporciona como método para inhabilitar la función de conjuntos propios (que más tarde se pasó a llamar "<ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />").
+<translation id="2571353268726025696">Esta política se proporciona como método para inhabilitar la función de conjuntos propios (que más tarde se pasó a llamar <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />).
 
 Si esta política se habilita o no se define, se habilitará la función de conjuntos propios.
 
@@ -3380,6 +3389,15 @@ Si se inhabilita esta política, no se permitirá la función de escritura predi
 <translation id="33993310248354034">Permitir la detección de entidades de texto sin formato en las páginas web.</translation>
 <translation id="3399859571630358395">Forzar que se inhabilite Emparejamiento rápido (función que permite emparejar rápidamente mediante Bluetooth).</translation>
 <translation id="3404681701763345449">Habilita la integración con <ph name="GOOGLE_CALENDAR_NAME" />.</translation>
+<translation id="3405276853140830214">Esta política controla si se permite la partición del almacenamiento de terceros de forma predeterminada.
+
+Si se le asigna el valor 1 (AllowPartitioning) a esta política o no se define, se permitirá la partición del almacenamiento de terceros de forma predeterminada. Este valor predeterminado se puede anular para orígenes de nivel superior específicos de otras maneras.
+
+Si se le asigna el valor 2 (BlockPartitioning), la partición del almacenamiento de terceros se inhabilitará en todos los contextos.
+
+Usa <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> para inhabilitar la partición del almacenamiento de terceros en orígenes de nivel superior específicos. Para obtener información detallada sobre la partición del almacenamiento de terceros, consulta https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.
+
+Se eliminó en Chrome 145 y se recomienda usar el método requestStorageAccess en su lugar: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Puedes dejar comentarios en https://crbug.com/425248669.</translation>
 <translation id="3405361833556012520">Esta política solo se aplica al tráfico del navegador. Play Store, la navegación web de las aplicaciones Android y otros tipos de tráfico de usuarios, como el tráfico de las VMs de Linux o los trabajos de impresión, seguirán respetando las restricciones impuestas por la función VPN siempre activada. Esta política solo se aplicará cuando la VPN no esté conectada y únicamente para el tráfico del navegador del usuario. Cuando se aplique esta política, el tráfico del sistema también podrá eludir la función VPN siempre activada para realizar tareas como recoger datos de políticas y sincronizar el reloj del sistema.
 
 Utiliza esta política para abrir excepciones de determinados esquemas, subdominios de otros dominios, puertos o rutas específicas usando el formato especificado en https://support.google.com/chrome/a?p=url_blocklist_filter_format. El filtro más específico determinará si una URL está bloqueada o permitida.
@@ -5172,6 +5190,15 @@ Comportamiento antiguo: en beforeunload, si se llama a event.preventDefault(), n
 <translation id="46321462262887935">Tratar las teclas de la fila superior como teclas de función, pero permitir que el usuario cambie este ajuste</translation>
 <translation id="4632343302005518762">Permitir que <ph name="PRODUCT_FRAME_NAME" /> procese los tipos de contenido mostrados</translation>
 <translation id="4636354638176939375">Inhabilitar la creación de usuarios supervisados</translation>
+<translation id="4637701328641064644">Esta política controla si las URLs blob se particionan durante la obtención y la navegación.
+Si se habilita esta política o no se define, las URLs blob se particionarán.
+Si se inhabilita esta política, las URLs blob no se particionarán.
+
+Si tienes que usar esta política, registra un error en <ph name="BUG_URL" /> y explica cómo la quieres usar. Se prevé que esta política esté disponible en la versión 146 de <ph name="PRODUCT_NAME" />. Después, la antigua implementación se eliminará.
+
+NOTA: Solo los procesos de renderizado que se hayan iniciado recientemente reflejarán los cambios de esta política mientras se esté ejecutando el navegador.
+
+Para obtener información detallada sobre la partición del almacenamiento de terceros, consulta https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.</translation>
 <translation id="46383668315040154">Especifica el canal de lanzamiento al que se vinculará este dispositivo.
 
 Establecer <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> solo tendrá efecto si se le asigna el valor False a <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" />.</translation>

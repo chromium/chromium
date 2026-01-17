@@ -441,7 +441,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1705645336613358172">Gumamit ng Affirm o Zip para magbayad sa paglipas ng panahon</translation>
 <translation id="1706625117072057435">Mga antas ng pag-zoom</translation>
-<translation id="1706922226983368260">Passkey • "<ph name="PHONE_NAME" />"</translation>
 <translation id="1706954506755087368">{1,plural, =1{Hindi mapatunayan ng server na ito na ito ang <ph name="DOMAIN" />; tinatayang mula sa susunod na araw ang certificate ng seguridad nito. Maaaring resulta ito ng maling configuration o kaya ng isang attacker na humahadlang sa iyong koneksyon.}one{Hindi mapatunayan ng server na ito na ito ang <ph name="DOMAIN" />; tinatayang mula sa # araw sa hinaharap ang certificate ng seguridad nito. Maaaring resulta ito ng maling configuration o kaya ng isang attacker na humahadlang sa iyong koneksyon.}other{Hindi mapatunayan ng server na ito na ito ang <ph name="DOMAIN" />; tinatayang mula sa # na araw sa hinaharap ang certificate ng seguridad nito. Maaaring resulta ito ng maling configuration o kaya ng isang attacker na humahadlang sa iyong koneksyon.}}</translation>
 <translation id="1710259589646384581">OS</translation>
 <translation id="1711234383449478798">Binalewala dahil hindi nakatakda ang <ph name="POLICY_NAME" /> sa <ph name="VALUE" />.</translation>

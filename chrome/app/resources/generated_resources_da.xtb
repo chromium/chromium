@@ -2524,6 +2524,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2672142220933875349">Ugyldig CRX-fil. Udpakning mislykkedes.</translation>
 <translation id="2672200806060988299">Titlerne og webadresserne på dine faner sendes til Google og kan gennemgås af menneskelige kontrollanter for at forbedre denne funktion.</translation>
 <translation id="2673135533890720193">Læse din browserhistorik</translation>
+<translation id="2673397477544385203">Leverer funktioner som f.eks. svindelregistrering lokalt. Hvis du deaktiverer dette, slettes GenAI-modeller fra din enhed, og disse funktioner deaktiveres.</translation>
 <translation id="2673848446870717676">Sørg for, at din Bluetooth-enhed er i parringstilstand og befinder sig tæt på. Par kun med enheder, du har tillid til. Parrede enheder er synlige for alle konti på denne Chromebook.</translation>
 <translation id="2673873887296220733">Vil du kopiere 1 fil til <ph name="CLOUD_PROVIDER" />, så den kan åbnes?</translation>
 <translation id="267442004702508783">opdater</translation>
@@ -3982,6 +3983,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3678156199662914018">Udvidelse: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">De sider, du ser i dette vindue, vises ikke i browserhistorikken, og de efterlader ikke andre spor som f.eks. cookies på computeren, når du logger ud. De filer, du downloader, og bogmærker, du opretter, bliver ikke gemt.</translation>
 <translation id="3679126865530709868">Indbygget touchplade</translation>
+<translation id="3680166671911524673">GenAI på enheden er aktiveret</translation>
 <translation id="3680683624079082902">Stemme til oplæsning</translation>
 <translation id="3681017028939109078">Vis vinduesforslag, når du starter opdelt skærm</translation>
 <translation id="3681191721636073359">Chrome vurderer ikke, at du vil bruge din lokation på dette website. Derfor skjules anmodninger for at reducere afbrydelser.</translation>

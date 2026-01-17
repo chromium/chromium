@@ -441,7 +441,6 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1705645336613358172">‏אפשר להשתמש ב-Affirm או ב-Zip כדי לשלם בתשלומים</translation>
 <translation id="1706625117072057435">רמות מרחק מתצוגה</translation>
-<translation id="1706922226983368260">מפתח גישה • '<ph name="PHONE_NAME" />'</translation>
 <translation id="1706954506755087368">{1,plural, =1{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />; אישור האבטחה שלו אמור להיכנס לתוקף רק מחר. ייתכן שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך.}one{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />; אישור האבטחה שלו אמור להיכנס לתוקף רק בעוד # ימים. ייתכן שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך.}two{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />; אישור האבטחה שלו אמור להיכנס לתוקף רק בעוד יומיים. ייתכן שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך.}other{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />; אישור האבטחה שלו אמור להיכנס לתוקף רק בעוד # ימים. ייתכן שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך.}}</translation>
 <translation id="1710259589646384581">מערכת הפעלה</translation>
 <translation id="1711234383449478798">אין התייחסות למדיניות כי לא הוגדר הערך <ph name="VALUE" /> ב-<ph name="POLICY_NAME" />.</translation>
@@ -1132,6 +1131,7 @@
 <translation id="2794629552137076216">Glass (Surfaced)</translation>
 <translation id="2799223571221894425">הפעלה מחדש</translation>
 <translation id="2799758406651937857">בגדי גברים</translation>
+<translation id="2803320044666896137">המערכת מתעלמת מערך המדיניות הזה כי המשתמש לא משויך.</translation>
 <translation id="2807052079800581569">‏מיקום תמונה על ציר Y</translation>
 <translation id="2808278141522721006">‏אפשר להפעיל או להשבית את Windows Hello ב<ph name="SETTINGS" /></translation>
 <translation id="2818338148457093657">שירותי טיפוח וספא</translation>

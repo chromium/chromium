@@ -1541,6 +1541,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="2024195579772565064">Șterge motorul de căutare</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Clic de precizie</translation>
+<translation id="2025130536872979378">vezi sursa</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> s-a blocat. Dă clic pe acest balon pentru a reîncărca extensia.</translation>
 <translation id="2026367923222947564">Pagină completă</translation>
 <translation id="2026377162111110983">Voce pentru zonă</translation>
@@ -2785,6 +2786,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2856776373509145513">Creează un container nou</translation>
 <translation id="2857047802954430547">Conectează-te pentru a-ți accesa parolele, marcajele și alte date pe toate dispozitivele</translation>
 <translation id="2859741939921354763">Importă parole în <ph name="BRAND" /></translation>
+<translation id="2860284453253554297">Politicile companiei</translation>
 <translation id="2860710618359053450">Mișcă maxilarul spre dreapta</translation>
 <translation id="2861301611394761800">Sistemul a fost actualizat. Repornește-l.</translation>
 <translation id="2861402191395139055">Abonamente Passpoint</translation>
@@ -9785,6 +9787,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="7684212569183643648">Instalată de administrator</translation>
 <translation id="7684559058815332124">Accesează pagina de conectare a portalului captiv</translation>
 <translation id="7684718995427157417">Pentru a crea și testa aplicații, activează Android Debug Bridge (ADB). Reține că această acțiune permite instalarea aplicațiilor Android care nu au fost verificate de Google și pentru dezactivarea instrumentului este necesară revenirea la setările din fabrică.</translation>
+<translation id="7684803937028953000">Organizația ta a blocat descărcarea locală a acestui fișier.</translation>
 <translation id="7684913007876670600">Pentru a vedea o afișare simplificată a acestei pagini, deschide panoul lateral și selectează modul de lectură</translation>
 <translation id="7685038817958445325">Nu se poate proiecta</translation>
 <translation id="7685049629764448582">Memorie JavaScript</translation>

@@ -755,6 +755,7 @@
 <translation id="3888863481921783344">Dette brukes til å vise deg mulige personer du kan invitere til aktiviteten din.</translation>
 <translation id="3891414008432200754">Pris</translation>
 <translation id="3892144330757387737">Her finner du loggen din</translation>
+<translation id="3893858854379998374">Du må slette de ubrukte bokmerkene dine for å lagre bokmerker i kontoen din</translation>
 <translation id="3897092660631435901">Meny</translation>
 <translation id="3904270275864974753">Rediger karusell</translation>
 <translation id="3909222758573607742">Lagre passord og andre elementer i kontoen</translation>
@@ -872,6 +873,7 @@
 <translation id="4302061870579014542">Velg posisjon</translation>
 <translation id="4304713468139749426">Passordlagring</translation>
 <translation id="4309403553630140242">Dobbelttrykk for å se mer informasjon</translation>
+<translation id="4310738531374808763">Tilpass startsiden din</translation>
 <translation id="4320848494125124980">Nylige</translation>
 <translation id="4322394346347055525">Lukk andre faner</translation>
 <translation id="4324735664183300693">Slå på varsler</translation>
@@ -1710,6 +1712,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> prosent fullført</translation>
 <translation id="7345061034321640811">Import er ikke tillatt</translation>
+<translation id="7347998088283246662">Importer passord, logg, bokmerker med mer</translation>
 <translation id="7352651011704765696">Noe gikk galt</translation>
 <translation id="7364796246159120393">Velg fil</translation>
 <translation id="736564850024123010">Endre adressefeltets plassering for å få en tilpasset opplevelse.</translation>
@@ -2235,6 +2238,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="914781932147356857">Merk alle…</translation>
 <translation id="9148126808321036104">Logg på igjen</translation>
 <translation id="9149866541089851383">Endre</translation>
+<translation id="9152637745605628097">Velg blant temaer og farger, eller last opp et bilde</translation>
 <translation id="9159628751968616911">Send nettside</translation>
 <translation id="9162432979321511934">Slå på Autofyll-passord.</translation>
 <translation id="9165320910061267720">For å få varsler om avslag må du slå på varsler i iOS-innstillingene.</translation>
