@@ -105,13 +105,16 @@ TEST_F(ExtensionHooksDelegateTest, MessagingSanityChecks) {
   tester.TestConnect("", "", self_target);
 
   constexpr char kStandardMessage[] = R"({"data":"hello"})";
+  // We expect the port to remain OPEN for all these cases, as even when a
+  // callback isn't supplied we return a promise which may be fulfilled with a
+  // response if any of the associated event listeners choose to reply.
   tester.TestSendMessage("{data: 'hello'}", kStandardMessage, self_target,
-                         SendMessageTester::CLOSED);
+                         SendMessageTester::OPEN);
   tester.TestSendMessage("{data: 'hello'}, function() {}", kStandardMessage,
                          self_target, SendMessageTester::OPEN);
 
   tester.TestSendRequest("{data: 'hello'}", kStandardMessage, self_target,
-                         SendMessageTester::CLOSED);
+                         SendMessageTester::OPEN);
   tester.TestSendRequest("{data: 'hello'}, function() {}", kStandardMessage,
                          self_target, SendMessageTester::OPEN);
 

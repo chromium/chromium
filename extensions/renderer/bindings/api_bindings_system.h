@@ -42,17 +42,15 @@ class APIBindingsSystem {
       APITypeReferenceMap* type_refs,
       const BindingAccessChecker* access_checker)>;
 
-  APIBindingsSystem(
-      GetAPISchemaMethod get_api_schema,
-      BindingAccessChecker::APIAvailabilityCallback api_available,
-      BindingAccessChecker::PromiseAvailabilityCallback promises_available,
-      APIRequestHandler::SendRequestMethod send_request,
-      std::unique_ptr<InteractionProvider> interaction_provider,
-      APIEventListeners::ListenersUpdated event_listeners_changed,
-      APIEventHandler::ContextOwnerIdGetter context_owner_getter,
-      APIBinding::OnSilentRequest on_silent_request,
-      binding::AddConsoleError add_console_error,
-      APILastError last_error);
+  APIBindingsSystem(GetAPISchemaMethod get_api_schema,
+                    BindingAccessChecker::APIAvailabilityCallback api_available,
+                    APIRequestHandler::SendRequestMethod send_request,
+                    std::unique_ptr<InteractionProvider> interaction_provider,
+                    APIEventListeners::ListenersUpdated event_listeners_changed,
+                    APIEventHandler::ContextOwnerIdGetter context_owner_getter,
+                    APIBinding::OnSilentRequest on_silent_request,
+                    binding::AddConsoleError add_console_error,
+                    APILastError last_error);
 
   APIBindingsSystem(const APIBindingsSystem&) = delete;
   APIBindingsSystem& operator=(const APIBindingsSystem&) = delete;

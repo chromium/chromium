@@ -245,17 +245,20 @@ TEST_F(RuntimeHooksDelegateTest, SendMessage) {
   SendMessageTester tester(ipc_message_sender(), script_context(), 0,
                            "runtime");
 
+  // We expect the port to remain OPEN for all these cases, as even when a
+  // callback isn't supplied we return a promise which may be fulfilled with a
+  // response if any of the associated event listeners choose to reply.
   MessageTarget self_target = MessageTarget::ForExtension(extension()->id());
-  tester.TestSendMessage("''", R"("")", self_target, SendMessageTester::CLOSED);
+  tester.TestSendMessage("''", R"("")", self_target, SendMessageTester::OPEN);
 
   constexpr char kStandardMessage[] = R"({"data":"hello"})";
   tester.TestSendMessage("{data: 'hello'}", kStandardMessage, self_target,
-                         SendMessageTester::CLOSED);
+                         SendMessageTester::OPEN);
   tester.TestSendMessage("{data: 'hello'}, function() {}", kStandardMessage,
                          self_target, SendMessageTester::OPEN);
   tester.TestSendMessage("{data: 'hello'}, {includeTlsChannelId: true}",
                          kStandardMessage, self_target,
-                         SendMessageTester::CLOSED);
+                         SendMessageTester::OPEN);
   tester.TestSendMessage(
       "{data: 'hello'}, {includeTlsChannelId: true}, function() {}",
       kStandardMessage, self_target, SendMessageTester::OPEN);
@@ -266,13 +269,13 @@ TEST_F(RuntimeHooksDelegateTest, SendMessage) {
 
   tester.TestSendMessage(base::StringPrintf("'%s', {data: 'hello'}", other_id),
                          kStandardMessage, other_target,
-                         SendMessageTester::CLOSED);
+                         SendMessageTester::OPEN);
   tester.TestSendMessage(
       base::StringPrintf("'%s', {data: 'hello'}, function() {}", other_id),
       kStandardMessage, other_target, SendMessageTester::OPEN);
   tester.TestSendMessage(base::StringPrintf("'%s', 'string message'", other_id),
                          R"("string message")", other_target,
-                         SendMessageTester::CLOSED);
+                         SendMessageTester::OPEN);
 
   // The sender could omit the ID by passing null or undefined explicitly.
   // Regression tests for https://crbug.com/828664.
@@ -282,7 +285,7 @@ TEST_F(RuntimeHooksDelegateTest, SendMessage) {
   tester.TestSendMessage("null, 'test', function() {}", R"("test")",
                          self_target, SendMessageTester::OPEN);
   tester.TestSendMessage("null, 'test'", R"("test")", self_target,
-                         SendMessageTester::CLOSED);
+                         SendMessageTester::OPEN);
   tester.TestSendMessage("undefined, 'test', function() {}", R"("test")",
                          self_target, SendMessageTester::OPEN);
 
@@ -299,8 +302,7 @@ TEST_F(RuntimeHooksDelegateTest, SendMessage) {
   // But probably not worth it at this time.
   tester.TestSendMessage(
       base::StringPrintf("'%s', {includeTlsChannelId: true}", other_id),
-      R"({"includeTlsChannelId":true})", other_target,
-      SendMessageTester::CLOSED);
+      R"({"includeTlsChannelId":true})", other_target, SendMessageTester::OPEN);
   tester.TestSendMessage(
       base::StringPrintf("'%s', {includeTlsChannelId: true}, function() {}",
                          other_id),

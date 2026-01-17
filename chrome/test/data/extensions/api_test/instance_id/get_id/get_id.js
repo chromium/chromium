@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-function getIDWithoutCallback() {
+async function getIDWithoutCallback() {
   try {
-    chrome.instanceID.getID();
-    chrome.test.fail("Calling getID without callback should fail.");
-  } catch (e) {
+    const id = await chrome.instanceID.getID();
+    chrome.test.assertNe("", id, "Empty ID returned.");
     chrome.test.succeed();
+  } catch (e) {
+    chrome.test.fail("getID Promise rejected with error: " + e);
   };
 }
 

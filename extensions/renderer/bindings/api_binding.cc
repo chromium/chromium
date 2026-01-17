@@ -66,8 +66,7 @@ std::string GetJSEnumEntryName(const std::string& original) {
 }
 
 std::unique_ptr<APISignature> GetAPISignatureFromDictionary(
-    const base::Value::Dict* dict,
-    BindingAccessChecker* access_checker) {
+    const base::Value::Dict* dict) {
   const base::Value* params = dict->Find("parameters");
   if (params && !params->is_list())
     params = nullptr;
@@ -77,7 +76,7 @@ std::unique_ptr<APISignature> GetAPISignatureFromDictionary(
   if (returns_async && !returns_async->is_dict())
     returns_async = nullptr;
 
-  return APISignature::CreateFromValues(*params, returns_async, access_checker);
+  return APISignature::CreateFromValues(*params, returns_async);
 }
 
 void RunAPIBindingHandlerCallback(
@@ -222,7 +221,7 @@ APIBinding::APIBinding(const std::string& api_name,
       std::string full_name =
           base::StringPrintf("%s.%s", api_name_.c_str(), name->c_str());
 
-      auto signature = GetAPISignatureFromDictionary(func_dict, access_checker);
+      auto signature = GetAPISignatureFromDictionary(func_dict);
 
       methods_[*name] =
           std::make_unique<MethodData>(full_name, signature.get());
@@ -264,8 +263,7 @@ APIBinding::APIBinding(const std::string& api_name,
           std::string full_name =
               base::StringPrintf("%s.%s", id->c_str(), function_name->c_str());
 
-          auto signature =
-              GetAPISignatureFromDictionary(func_dict, access_checker);
+          auto signature = GetAPISignatureFromDictionary(func_dict);
 
           type_refs->AddTypeMethodSignature(full_name, std::move(signature));
         }
@@ -345,8 +343,7 @@ APIBinding::APIBinding(const std::string& api_name,
         base::Value empty_params(base::Value::Type::LIST);
         std::unique_ptr<APISignature> event_signature =
             APISignature::CreateFromValues(params ? *params : empty_params,
-                                           nullptr /*returns_async*/,
-                                           access_checker);
+                                           nullptr /*returns_async*/);
         DCHECK(!event_signature->has_async_return());
         type_refs_->AddEventSignature(full_name, std::move(event_signature));
       }

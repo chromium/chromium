@@ -16,13 +16,17 @@ function getTokenWithoutParameters() {
   };
 }
 
-function getTokenWithoutCallback() {
+async function getTokenWithoutCallback() {
   try {
-    chrome.instanceID.getToken({"authorizedEntity": "1", "scope": "GCM"});
-    chrome.test.fail(
-        "Calling getToken without callback should fail.");
-  } catch (e) {
+    const token = await chrome.instanceID.getToken(
+        {"authorizedEntity": "1", "scope": "GCM"});
+    if (!token) {
+      chrome.test.fail("Empty token returned.");
+      return;
+    }
     chrome.test.succeed();
+  } catch (e) {
+    chrome.test.fail("getToken Promise rejected with error: " + e);
   };
 }
 

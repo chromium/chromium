@@ -97,8 +97,8 @@ std::unique_ptr<APISignature> BuildAddRulesSignature(
   auto returns_async = std::make_unique<APISignature::ReturnsAsync>();
   returns_async->optional = true;
 
-  return std::make_unique<APISignature>(
-      std::move(params), std::move(returns_async), nullptr /*access_checker*/);
+  return std::make_unique<APISignature>(std::move(params),
+                                        std::move(returns_async));
 }
 
 }  // namespace

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-function getCreationTimeWithoutCallback() {
+async function getCreationTimeWithoutCallback() {
   try {
-    chrome.instanceID.getCreationTime();
-    chrome.test.fail(
-        "Calling getCreationTime without callback should fail.");
-  } catch (e) {
+    const creationTime = await chrome.instanceID.getCreationTime();
+    chrome.test.assertEq(creationTime, 0, "Creation time should be zero");
     chrome.test.succeed();
+  } catch (e) {
+    chrome.test.fail("getCreationTime Promise rejected with error: " + e);
   };
 }
 

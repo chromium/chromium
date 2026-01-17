@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-function deleteIDWithoutCallback() {
+async function deleteIDWithoutCallback() {
   try {
-    chrome.instanceID.deleteID();
-    chrome.test.fail(
-        "Calling deleteID without callback should fail.");
-  } catch (e) {
+    await chrome.instanceID.deleteID();
     chrome.test.succeed();
+  } catch (e) {
+    chrome.test.fail("deleteID Promise rejected with error: " + e);
   };
 }
 

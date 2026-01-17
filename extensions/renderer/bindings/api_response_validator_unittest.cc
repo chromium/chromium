@@ -33,7 +33,7 @@ std::unique_ptr<APISignature> OneStringCallbackSignature() {
       ArgumentSpecBuilder(ArgumentType::STRING, "str").Build());
   return std::make_unique<APISignature>(
       std::move(empty_specs),
-      ReturnsAsyncBuilder(std::move(async_specs)).Build(), nullptr);
+      ReturnsAsyncBuilder(std::move(async_specs)).Build());
 }
 
 v8::LocalVector<v8::Value> StringToV8Vector(v8::Local<v8::Context> context,
