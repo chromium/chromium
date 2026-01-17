@@ -1093,6 +1093,7 @@
 <translation id="1709916727352927457">מחיקת מפתח הגישה</translation>
 <translation id="1709972045049031556">השיתוף נכשל</translation>
 <translation id="1712143791363119140">בתהליך</translation>
+<translation id="1713120794167761305">העברת הכרטיסיות לצד</translation>
 <translation id="1714265454085143857">כרטיסיות מוצמדות</translation>
 <translation id="1714326320203665217">קובצי הרישומים של הצומת הראשי הורדו</translation>
 <translation id="1714644264617423774">ניתן להפעיל תכונות נגישות על מנת להקל את השימוש במכשיר. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
@@ -3238,6 +3239,7 @@
 <translation id="3167562202484086668">מחיקת כל הנתונים מ<ph name="BRAND" /></translation>
 <translation id="3169930038976362151">כאן אפשר לבחור את העיצוב שמתאים לך. כדי לשנות את העיצוב, הטפט, שומר המסך ופריטים נוספים, פשוט לוחצים לחיצה ארוכה על שולחן העבודה.</translation>
 <translation id="3170072451822350649">ניתן גם לדלג על הכניסה ו<ph name="LINK_START" />לגלוש כאורח<ph name="LINK_END" />.</translation>
+<translation id="3172642937040465677">העברת הכרטיסיות לחלק העליון</translation>
 <translation id="3175067642577044620">גוף ההודעה</translation>
 <translation id="3175862692832442091">יער</translation>
 <translation id="3176347586396987181">‏משתמשים במקש Z כדי ללחוץ לחיצה ארוכה על כפתור העכבר</translation>
@@ -3492,6 +3494,7 @@
 <translation id="335581015389089642">דיבור</translation>
 <translation id="335587007651175930">‏חיפוש של מה שמוצג במסך באמצעות Google Lens</translation>
 <translation id="3355936511340229503">שגיאת חיבור</translation>
+<translation id="335678817537689040">סטטית</translation>
 <translation id="3359256513598016054">מגבלות מדיניות אישורים </translation>
 <translation id="3360297538363969800">ההדפסה נכשלה. בדוק את המדפסת ונסה שוב.</translation>
 <translation id="3360306038446926262">חלונות</translation>
@@ -4191,6 +4194,7 @@
         <ph name="BREAK" />
         ניתן לנהל את ההגדרות דרך התפריט בכרטיס או לראות עוד אפשרויות ב"התאמה אישית של Chrome".</translation>
 <translation id="3801449494961771207">בחירת הקול שישמש להמרת טקסט לדיבור</translation>
+<translation id="3801748538479607989">העברת הכרטיסיות לחלק העליון</translation>
 <translation id="3802486193901166966">אין צורך בהרשאות מיוחדות או הרשאות גישה נוספות לאתרים כדי להשתמש בתוסף הזה</translation>
 <translation id="380329542618494757">שם</translation>
 <translation id="3803345858388753269">איכות הווידאו</translation>
@@ -6006,6 +6010,7 @@
 <translation id="5060419232449737386">הגדרות לכתוביות</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{תיקייה זו מכילה סימנייה. ברצונך באמת למחוק אותה?}one{תיקייה זו מכילה # סימניות. ברצונך באמת למחוק אותה?}two{תיקייה זו מכילה שתי סימניות. ברצונך באמת למחוק אותה?}other{תיקייה זו מכילה # סימניות. ברצונך באמת למחוק אותה?}}</translation>
 <translation id="5061531353537614467">טונדרה</translation>
+<translation id="5062863364865466276">תנועה</translation>
 <translation id="5062930723426326933">הכניסה לחשבון נכשלה. צריך להתחבר לאינטרנט ולנסות שוב.</translation>
 <translation id="5063480226653192405">שימוש</translation>
 <translation id="5064921774605267982">פתיחת הפרופיל <ph name="PROFILE_NAME" />. הפרופיל הזה מנוהל על ידי ההורה שלך.</translation>
@@ -6947,6 +6952,7 @@
 <translation id="5722086096420375088">ירוק ולבן</translation>
 <translation id="572328651809341494">כרטיסיות אחרונות</translation>
 <translation id="5723508132121499792">אין יישומים פועלים ברקע</translation>
+<translation id="5724723163580775373">מיקוד גדול</translation>
 <translation id="5725112283692663422">‏שליחת משוב בנושא יצירת עיצוב באמצעות AI</translation>
 <translation id="5727728807527375859">‏תוספים, Google Apps ועיצובים עלולים לפגוע במחשב שלך. להמשיך?</translation>
 <translation id="5728072125198221967">‏שירותי Google מקושרים</translation>
@@ -7194,6 +7200,7 @@
 <translation id="5888889603768021126">נכנסת באמצעות</translation>
 <translation id="5889282057229379085">המספר המרבי של רשויות אישורים ברמת ביניים: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">‏הצפנת נתונים מסונכרנים בעזרת <ph name="BEGIN_LINK" />ביטוי סיסמה אישי לסנכרון<ph name="END_LINK" />. אמצעי תשלום וכתובות שנשמרו ב-Google Pay לא יוצפנו. היסטוריית הגלישה ב-Chrome לא תסונכרן.</translation>
+<translation id="5890072287476934834">העברת הכרטיסיות לצד</translation>
 <translation id="5891688036610113830">‏רשתות Wi-Fi מועדפות</translation>
 <translation id="5894056653502215961">ביטול הבחירה בתיקייה <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">הפעלה מחדש</translation>
@@ -8351,6 +8358,7 @@
 <translation id="6702639462873609204">&amp;עריכה...</translation>
 <translation id="6702859741546259407">‏כדי להשתמש ב<ph name="FEATURE_NAME" />, צריך להפעיל את ה-Wi-Fi וה-Bluetooth.</translation>
 <translation id="6703109186846420472">,</translation>
+<translation id="670431355064244920">מיקוד קטן</translation>
 <translation id="6707122714992751648">‏הרצה של בדיקות ניתוחים לגבי ChromeOS</translation>
 <translation id="6707389671160270963">‏אישור לקוח SSL</translation>
 <translation id="6707671917294473995">לאתרים אין הרשאה להשתמש במצלמה</translation>
@@ -9342,6 +9350,7 @@
 <translation id="7389615853658756494">שינוי הסיסמה באתר</translation>
 <translation id="7392118418926456391">סריקת וירוסים נכשלה</translation>
 <translation id="7392915005464253525">פ&amp;תיחה מחדש של חלון שנסגר</translation>
+<translation id="739299645392306071">מיקוד בינוני</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{פריט אחד הועתק}one{הועתקו {COUNT} פריטים}two{הועתקו {COUNT} פריטים}other{הועתקו {COUNT} פריטים}}</translation>
 <translation id="7393435859300249877">נשלחת התראה אם מדברים כשהמיקרופון מושתק כשמשתמשים באפליקציות מסוימות, כמו אפליקציות של וידאו צ'אט. האודיו אף פעם לא נשלח מהמכשיר.</translation>
 <translation id="7395008140803590549">לא ניתן למחוק את האישור</translation>

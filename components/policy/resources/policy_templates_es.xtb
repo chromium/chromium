@@ -2226,7 +2226,7 @@ Nota: Si se omite un campo, todos los valores coincidirán con ese campo concret
 <translation id="2568488785376704318">Esta política está obsoleta. Se debe usar la política <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" /> en su lugar.</translation>
 <translation id="2570059561924004903">Inhabilitar los mensajes de voz</translation>
 <translation id="2570181623957732921">Habilitar <ph name="DESK_API_NAME" /> para una lista de dominios de terceros</translation>
-<translation id="2571353268726025696">Esta política se proporciona como método para inhabilitar la función de conjuntos propios (que más tarde se pasó a llamar "<ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />").
+<translation id="2571353268726025696">Esta política se proporciona como método para inhabilitar la función de conjuntos propios (que más tarde se pasó a llamar <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />).
 
 Si esta política se habilita o no se define, se habilitará la función de conjuntos propios.
 

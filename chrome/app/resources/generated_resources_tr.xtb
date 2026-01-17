@@ -3106,7 +3106,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3076966043108928831">Sadece bu cihaza kaydet</translation>
 <translation id="3076977359333237641">Oturum açma verileriniz silindi</translation>
 <translation id="3077734595579995578">üstkrktr</translation>
-<translation id="3080930813589868009">Kullanıcı başına güncelleyici</translation>
+<translation id="3080930813589868009">Kullanıcı bazında güncelleyici</translation>
 <translation id="3080933187214341848">Bu ağ, hesabınızla senkronize değildir. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Uygulama Adı veya Kimliği</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>

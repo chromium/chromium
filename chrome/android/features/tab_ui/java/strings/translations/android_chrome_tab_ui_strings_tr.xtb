@@ -51,7 +51,7 @@
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" ve "<ph name="TAB_GROUP_NAME_2" />" sekme grupları artık kullanılamıyor</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> sekmeyi daralt.}other{<ph name="TABS_COUNT_MANY" /> sekmeli sekme grubunu daralt.}}</translation>
 <translation id="2569352796411618312">Öneri: <ph name="NUMBER_OF_TABS" /> sekmeyi son zamanlarda hiç kullanmadınız. Bunlar kapatılsın mı?</translation>
-<translation id="257674075312929031">Grup</translation>
+<translation id="257674075312929031">Gruplandır</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme içeren, <ph name="COLOR_NAME" /> renkli sekme grubunu geri yükleyip açın.}other{<ph name="TABS_COUNT_MANY" /> sekme içeren, <ph name="COLOR_NAME" /> renkli sekme grubunu geri yükleyip açın.}}</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> puan</translation>
 <translation id="266935134738038806">Siteye git</translation>
