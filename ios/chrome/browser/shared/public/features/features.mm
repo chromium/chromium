@@ -601,7 +601,24 @@ bool IsIOSReactivationNotificationsEnabled() {
   return base::FeatureList::IsEnabled(kIOSReactivationNotifications);
 }
 
-BASE_FEATURE(kIOSExpandedTips, base::FEATURE_DISABLED_BY_DEFAULT);
+const char kIOSExpandedSetupListVariationParam[] =
+    "kIOSExpandedSetupListVariationParam";
+const char kIOSExpandedSetupListVariationParamSafariImport[] =
+    "kIOSExpandedSetupListVariationParamSafariImport";
+const char kIOSExpandedSetupListVariationParamBackgroundCustomization[] =
+    "kIOSExpandedSetupListVariationParamBackgroundCustomization";
+const char kIOSExpandedSetupListVariationParamAll[] =
+    "kIOSExpandedSetupListVariationParamAll";
+
+BASE_FEATURE(kIOSExpandedSetupList, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsIOSExpandedSetupListEnabled() {
+  return base::FeatureList::IsEnabled(kIOSExpandedSetupList);
+}
+
+BASE_FEATURE(kIOSExpandedTips,
+             "kIOSExpandedTips",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 const char kIOSExpandedTipsOrderParam[] = "expanded_tips_order";
 
 bool IsIOSExpandedTipsEnabled() {

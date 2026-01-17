@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
 
 using set_up_list_prefs::SetUpListItemState;
@@ -111,9 +112,30 @@ BOOL AllItemsComplete(NSArray<SetUpListItem*>* items) {
 // Returns an ordered list of SetUpListItemType to show.
 std::vector<SetUpListItemType> GetSetUpListItemTypeOrder() {
   std::vector<SetUpListItemType> items;
-  items.push_back(SetUpListItemType::kDefaultBrowser);
-  items.push_back(SetUpListItemType::kAutofill);
-  items.push_back(SetUpListItemType::kNotifications);
+
+  if (IsIOSExpandedSetupListEnabled()) {
+    items.push_back(SetUpListItemType::kDefaultBrowser);
+    items.push_back(SetUpListItemType::kNotifications);
+
+    std::string feature_param = GetFieldTrialParamValueByFeature(
+        kIOSExpandedSetupList, kIOSExpandedSetupListVariationParam);
+
+    if (feature_param == kIOSExpandedSetupListVariationParamSafariImport) {
+      items.push_back(SetUpListItemType::kSafariImport);
+      items.push_back(SetUpListItemType::kAutofill);
+    } else if (feature_param ==
+               kIOSExpandedSetupListVariationParamBackgroundCustomization) {
+      items.push_back(SetUpListItemType::kBackgroundCustomization);
+      items.push_back(SetUpListItemType::kAutofill);
+    } else if (feature_param == kIOSExpandedSetupListVariationParamAll) {
+      items.push_back(SetUpListItemType::kSafariImport);
+      items.push_back(SetUpListItemType::kBackgroundCustomization);
+    }
+  } else {
+    items.push_back(SetUpListItemType::kDefaultBrowser);
+    items.push_back(SetUpListItemType::kAutofill);
+    items.push_back(SetUpListItemType::kNotifications);
+  }
 
   return items;
 }

@@ -595,6 +595,17 @@ extern const char kIOSReactivationNotificationsOrderParam[];
 // Returns whether `kIOSReactivationNotifications` is enabled.
 bool IsIOSReactivationNotificationsEnabled();
 
+// Variations of expanded Setup List.
+extern const char kIOSExpandedSetupListVariationParam[];
+extern const char kIOSExpandedSetupListVariationParamSafariImport[];
+extern const char kIOSExpandedSetupListVariationParamBackgroundCustomization[];
+extern const char kIOSExpandedSetupListVariationParamAll[];
+
+// Feature flag to add new items in the Setup List.
+BASE_DECLARE_FEATURE(kIOSExpandedSetupList);
+
+bool IsIOSExpandedSetupListEnabled();
+
 // Feature flag to enable Expanded Tips.
 BASE_DECLARE_FEATURE(kIOSExpandedTips);
 
