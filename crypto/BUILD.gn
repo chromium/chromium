@@ -99,8 +99,6 @@ component("crypto") {
       "apple/keychain_v2.mm",
       "apple/scoped_keychain_user_interaction_allowed.cc",
       "apple/scoped_keychain_user_interaction_allowed.h",
-      "apple/unexportable_key_apple.h",
-      "apple/unexportable_key_apple.mm",
     ]
 
     if (is_mac) {
@@ -110,6 +108,13 @@ component("crypto") {
         "apple/security_framework_lock.cc",
         "apple/security_framework_lock.h",
         "user_verifying_key_mac.mm",
+      ]
+    }
+
+    if (!(is_ios && target_platform == "tvos")) {
+      sources += [
+        "apple/unexportable_key_apple.h",
+        "apple/unexportable_key_apple.mm",
       ]
     }
 
@@ -220,10 +225,11 @@ test("crypto_unittests") {
   }
 
   if (is_apple) {
-    sources += [
-      "apple/mock_keychain_unittest.cc",
-      "apple/unexportable_key_apple_unittest.mm",
-    ]
+    sources += [ "apple/mock_keychain_unittest.cc" ]
+
+    if (!(is_ios && target_platform == "tvos")) {
+      sources += [ "apple/unexportable_key_apple_unittest.mm" ]
+    }
   }
 
   if (is_ios) {

@@ -3676,6 +3676,9 @@ test("content_unittests") {
         "//chromeos/dbus/u2f",
       ]
     }
+    if (is_ios && use_blink) {
+      deps += [ "//crypto:test_support" ]
+    }
   }
 
   if (use_aura) {
