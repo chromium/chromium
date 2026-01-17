@@ -783,10 +783,6 @@ def ParseLines(lines):
       # Don't want '' to become '.'.
       # Thin archives' paths will get fixed in |ar.CreateThinObjectPath|.
       sym.object_path = os.path.normpath(sym.object_path)
-
-  # Filter out 0-sized sections.
-  # This comes up very infrequently with .relro_padding.
-  section_ranges = {k: r for k, r in section_ranges.items() if r[1]}
   return section_ranges, syms, extras
 
 
