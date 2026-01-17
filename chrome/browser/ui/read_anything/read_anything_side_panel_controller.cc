@@ -417,8 +417,7 @@ void ReadAnythingSidePanelController::OnReadabilityResult(bool should_show) {
   // as "ignored".
   was_last_checked_page_distillable_ = should_show;
 
-  if (!features::IsReadAnythingOmniboxChipEnabled() ||
-      (!tab_->IsActivated() && should_show)) {
+  if (!features::IsReadAnythingOmniboxChipEnabled() || !tab_->IsActivated()) {
     return;
   }
 
@@ -428,8 +427,7 @@ void ReadAnythingSidePanelController::OnReadabilityResult(bool should_show) {
 void ReadAnythingSidePanelController::UpdateOmniboxEntryPoint(
     bool should_show) {
   // Don't show the entrypoint if the tab is no longer active.
-  if (!features::IsReadAnythingOmniboxChipEnabled() ||
-      (!tab_->IsActivated() && should_show)) {
+  if (!features::IsReadAnythingOmniboxChipEnabled() || !tab_->IsActivated()) {
     return;
   }
 
