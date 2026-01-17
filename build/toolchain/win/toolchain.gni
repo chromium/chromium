@@ -408,7 +408,7 @@ template("msvc_toolchain") {
 
         rspfile_content =
             "$rustc_windows_args {{rustdeps}} {{externs}} SOURCES {{sources}}"
-        command = "$rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $rlibname -- {{source}} {{rustdeps}} {{externs}} LDFLAGS RUSTENV {{rustenv}}"
+        command = "$rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $rlibname -- {{source}} LDFLAGS RUSTENV {{rustenv}}"
         rust_sysroot = rust_sysroot_relative
       }
 
