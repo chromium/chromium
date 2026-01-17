@@ -99,7 +99,10 @@ class UserPolicyOidcSigninService : public UserPolicySigninServiceBase,
   // Attempt to restore the policies for the current profile using backup DM
   // token.
   void AttemptToRestorePolicy();
+
  private:
+  friend class UserPolicyOidcSigninServiceTestBase;
+
   // policy::CloudPolicyStore::Observer interface:
   void OnStoreLoaded(CloudPolicyStore* store) override;
   void OnStoreError(CloudPolicyStore* store) override;
