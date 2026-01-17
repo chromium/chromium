@@ -312,6 +312,11 @@ public interface AconfigFlaggedApiDelegate {
         return null;
     }
 
+    /** Checks if native-only services are available on this build of Android */
+    default boolean areNativeOnlyServicesEnabled() {
+        return false;
+    }
+
     /** Checks if {@link android.content.pm.webapp.WebAppManager} service is available. */
     default boolean isWebAppServiceEnabled() {
         return false;

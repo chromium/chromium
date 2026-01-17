@@ -15050,6 +15050,21 @@
             ]
         }
     ],
+    "JavalessRenderers": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "JavalessRenderers"
+                    ]
+                }
+            ]
+        }
+    ],
     "JobPriorityBoosting": [
         {
             "platforms": [
