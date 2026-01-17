@@ -526,6 +526,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DevTools.RemoteDebugging.ConnectionPermission"
+    enum="DevToolsRemoteDebuggingConnectionPermission"
+    expires_after="2027-01-01">
+  <owner>alexrudenko@google.com</owner>
+  <owner>hablich@google.com</owner>
+  <summary>
+    Records user's choice on the remote debugging connection dialog.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.RemoteDebugging.ServerAction"
+    enum="DevToolsRemoteDebuggingServerAction" expires_after="2027-01-01">
+  <owner>alexrudenko@google.com</owner>
+  <owner>hablich@google.com</owner>
+  <summary>
+    Actions taken on the remote debugging server on chrome://inspect.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.SourcesPanelFileDebugged" enum="DevToolsMediaType"
     expires_after="M150">
   <owner>bmeurer@google.com</owner>

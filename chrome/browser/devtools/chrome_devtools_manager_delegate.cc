@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -76,6 +77,13 @@ const char ChromeDevToolsManagerDelegate::kTypeBackgroundPage[] =
 const char ChromeDevToolsManagerDelegate::kTypePage[] = "page";
 
 namespace {
+
+// This enum is used for UMA histograms and should not be renumbered.
+enum class DevToolsRemoteDebuggingConnectionPermission {
+  kAllowed = 0,
+  kDenied = 1,
+  kMaxValue = kDenied,
+};
 
 std::optional<std::string> GetIsolatedWebAppNameAndVersion(
     content::WebContents* web_contents) {
@@ -457,7 +465,21 @@ void ChromeDevToolsManagerDelegate::UpdateDeviceDiscovery() {
 }
 
 void ChromeDevToolsManagerDelegate::AcceptDebugging(AcceptCallback callback) {
-  DevToolsConnectionDialog::Show(chrome::FindLastActive(), std::move(callback));
+  auto wrapped_callback = base::BindOnce(
+      [](AcceptCallback inner_callback,
+         content::DevToolsManagerDelegate::AcceptConnectionResult result) {
+        bool allowed =
+            result ==
+            content::DevToolsManagerDelegate::AcceptConnectionResult::kAllow;
+        base::UmaHistogramEnumeration(
+            "DevTools.RemoteDebugging.ConnectionPermission",
+            allowed ? DevToolsRemoteDebuggingConnectionPermission::kAllowed
+                    : DevToolsRemoteDebuggingConnectionPermission::kDenied);
+        std::move(inner_callback).Run(result);
+      },
+      std::move(callback));
+  DevToolsConnectionDialog::Show(chrome::FindLastActive(),
+                                 std::move(wrapped_callback));
 }
 
 void ChromeDevToolsManagerDelegate::SetActiveWebSocketConnections(

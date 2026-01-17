@@ -1609,6 +1609,16 @@ Called by update_protocol_commands_enum.py.-->
   <int value="2" label="Recording finished"/>
 </enum>
 
+<enum name="DevToolsRemoteDebuggingConnectionPermission">
+  <int value="0" label="Allowed"/>
+  <int value="1" label="Denied"/>
+</enum>
+
+<enum name="DevToolsRemoteDebuggingServerAction">
+  <int value="0" label="Started"/>
+  <int value="1" label="Stopped"/>
+</enum>
+
 <enum name="DevToolsSwatchActivated">
   <int value="0" label="Variable link"/>
   <int value="1" label="Animation name link"/>
