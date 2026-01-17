@@ -104,6 +104,13 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::vector<views::ViewTracker>,
 
 #if BUILDFLAG(IS_MAC)
 bool AcceleratorShouldCancelMenu(const ui::Accelerator& accelerator) {
+  // Only trigger menu cancellation on key press, not on key release.
+  // This prevents menus from closing when users release modifier keys after
+  // opening the menu with a keyboard shortcut.
+  if (accelerator.key_state() == ui::Accelerator::KeyState::RELEASED) {
+    return false;
+  }
+
   // Since AcceleratorShouldCancelMenu() is called quite early in key
   // event handling, it is actually invoked for modifier keys themselves
   // changing. In that case, the key code reflects that the modifier key is

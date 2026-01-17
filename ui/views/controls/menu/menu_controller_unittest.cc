@@ -3384,6 +3384,56 @@ TEST_F(MenuControllerTest, BrowserHotkeysCancelMenusAndAreRedispatched) {
   EXPECT_FALSE(press_f.handled());
   EXPECT_FALSE(press_f.stopped_propagation());
 }
+
+// This test verifies that releasing keys with modifiers does not close the
+// menu. This prevents the menu from flashing open and immediately closing when
+// users release keys after opening a menu with a keyboard shortcut containing
+// multiple modifiers.
+TEST_F(MenuControllerTest, KeyReleaseDoesNotCancelMenu) {
+  // Open the menu (simulating that it was opened by a keyboard shortcut).
+  menu_controller()->Run(owner(), nullptr, menu_item(), gfx::Rect(),
+                         MenuAnchorPosition::kTopLeft,
+                         ui::mojom::MenuSourceType::kKeyboard);
+  ASSERT_TRUE(showing());
+
+  // Simulate releasing a key while still holding modifiers (Cmd+Ctrl).
+  // This simulates the user releasing keys after opening the menu with a
+  // multi-modifier keyboard shortcut. This should NOT cancel the menu.
+  int options = ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN;
+  ui::KeyEvent release_key(ui::EventType::kKeyReleased, ui::VKEY_A, options);
+  menu_controller()->OnWillDispatchKeyEvent(&release_key);
+  EXPECT_TRUE(showing());
+
+  // Release Ctrl key while still holding Cmd.
+  // This should also NOT cancel the menu.
+  ui::KeyEvent release_ctrl(ui::EventType::kKeyReleased, ui::VKEY_CONTROL,
+                            ui::EF_COMMAND_DOWN);
+  menu_controller()->OnWillDispatchKeyEvent(&release_ctrl);
+  EXPECT_TRUE(showing());
+
+  // Release Cmd key.
+  // This should also NOT cancel the menu.
+  ui::KeyEvent release_cmd(ui::EventType::kKeyReleased, ui::VKEY_COMMAND, 0);
+  menu_controller()->OnWillDispatchKeyEvent(&release_cmd);
+  EXPECT_TRUE(showing());
+}
+
+// This test verifies that pressing a new accelerator while a menu is open
+// still closes the menu as expected.
+TEST_F(MenuControllerTest, KeyPressWithModifierCancelsMenu) {
+  // Open the menu.
+  menu_controller()->Run(owner(), nullptr, menu_item(), gfx::Rect(),
+                         MenuAnchorPosition::kTopLeft,
+                         ui::mojom::MenuSourceType::kKeyboard);
+  ASSERT_TRUE(showing());
+
+  // Press a key with a modifier - this SHOULD close the menu.
+  ui::KeyEvent press_key(ui::EventType::kKeyPressed, ui::VKEY_T,
+                         ui::EF_COMMAND_DOWN);
+  menu_controller()->OnWillDispatchKeyEvent(&press_key);
+  views::test::WaitForMenuClosureAnimation();
+  EXPECT_FALSE(showing());
+}
 #endif
 
 TEST_F(MenuControllerTest, SubmenuOpenByKey) {
