@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/form_types.h"
 
+#include "base/containers/to_vector.h"
+#include "base/strings/string_util.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -36,6 +38,13 @@ FormType FieldTypeGroupToFormType(FieldTypeGroup field_type_group) {
     case FieldTypeGroup::kAutofillAi:
       return FormType::kUnknownFormType;
   }
+}
+
+std::ostream& operator<<(std::ostream& o, DenseSet<FormType> type_set) {
+  o << "["
+    << base::JoinString(base::ToVector(type_set, &FormTypeToStringView), ", ")
+    << "]";
+  return o;
 }
 
 std::string_view FormTypeToStringView(FormType form_type) {

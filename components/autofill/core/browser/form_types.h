@@ -65,6 +65,8 @@ bool FormHasAllCreditCardFields(const FormStructure& form_structure);
 
 FormType FieldTypeGroupToFormType(FieldTypeGroup field_type_group);
 
+std::ostream& operator<<(std::ostream& o, DenseSet<FormType> form_type_set);
+
 std::string_view FormTypeToStringView(FormType form_type);
 
 }  // namespace autofill
