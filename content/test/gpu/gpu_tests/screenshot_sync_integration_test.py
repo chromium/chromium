@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import logging
 import math
 import os
 import random
@@ -120,14 +121,7 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                            red=canvasRGB.r,
                            green=canvasRGB.g,
                            blue=canvasRGB.b)
-
-    screenshot_timeout = 10
-    # TODO(crbug.com/458607668): Either remove this workaround or update this
-    # comment once we know whether increasing the timeout works around flaky
-    # failures to capture screenshots that we are seeing on Windows 11.
-    if 'win11' in self.GetPlatformTags(self.browser):
-      screenshot_timeout = 30
-    screenshot = tab.Screenshot(screenshot_timeout)
+    screenshot = tab.Screenshot(10)
 
     effective_dpr = screenshot_utils.GetEffectiveDpr(tab)
     # Avoid checking along antialiased boundary due to limited Adreno 3xx
@@ -151,7 +145,8 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     self.RestartBrowserIfNecessaryWithArgs([browser_arg])
     self._Navigate(test_path)
     repetitions = 20
-    for _ in range(0, repetitions):
+    for i in range(0, repetitions):
+      logging.info('Running iteration %d out of %d', i + 1, repetitions)
       self._CheckScreenshot()
 
   @classmethod
