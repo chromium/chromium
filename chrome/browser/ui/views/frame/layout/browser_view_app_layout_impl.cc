@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/layout_types.h"
 
@@ -361,7 +362,21 @@ void BrowserViewAppLayoutImpl::DoPostLayoutVisualAdjustments(
   // as layout of the titlebar is no longer delegated to the frame.
   if (views().web_app_window_title &&
       views().web_app_window_title->GetVisible()) {
-    [[maybe_unused]] auto& label = *views().web_app_window_title;
+    auto& label = *views().web_app_window_title;
+    // Ensure that alignment is set based on title alignment reported by the
+    // delegate; this is required in addition to placing the label in the
+    // correct place, and the choice of alignment can vary even on the same
+    // platform.
+    //
+    // A few notes:
+    //  - ALIGN_LEFT is automatically mirrored in RtL.
+    //  - Currently only leading and center alignments are supported.
+    //  - Both fetching alignment and applying it are inexpensive, unless the
+    //    alignment actually changes (which it should almost never do).
+    label.SetHorizontalAlignment(delegate().GetWindowTitleAlignment() ==
+                                         views::LayoutAlignment::kStart
+                                     ? gfx::ALIGN_LEFT
+                                     : gfx::ALIGN_CENTER);
 #if BUILDFLAG(IS_MAC)
     // The background of the title area is always opaquely drawn, but when in
     // immersive fullscreen, it is drawn in a way that isn't detected by the
@@ -370,11 +385,9 @@ void BrowserViewAppLayoutImpl::DoPostLayoutVisualAdjustments(
         delegate().GetImmersiveModeController()->IsEnabled());
 #elif BUILDFLAG(IS_WIN)
     label.SetSubpixelRenderingEnabled(false);
-    label.SetHorizontalAlignment(gfx::ALIGN_LEFT);
     label.SetAutoColorReadabilityEnabled(false);
 #elif BUILDFLAG(IS_LINUX)
     label.SetSubpixelRenderingEnabled(false);
-    label.SetHorizontalAlignment(gfx::ALIGN_LEFT);
 #endif
   }
 }
