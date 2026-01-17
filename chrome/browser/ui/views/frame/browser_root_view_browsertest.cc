@@ -11,10 +11,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/defaults.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -175,6 +179,52 @@ IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, WheelTabChange) {
 
   PerformMouseWheelOnTabStrip(kWheelDown);
   EXPECT_EQ(1, model->active_index());
+}
+
+class BrowserRootViewWithVerticalTabsBrowserTest
+    : public BrowserRootViewBrowserTest {
+ public:
+  BrowserRootViewWithVerticalTabsBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(tabs::kVerticalTabs);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserRootViewWithVerticalTabsBrowserTest,
+                       WheelTabChange) {
+  if (!browser_defaults::kScrollEventChangesTab) {
+    GTEST_SKIP() << "Test does not apply to this platform.";
+  }
+
+  TabStripModel* model = browser()->tab_strip_model();
+
+  while (model->count() < 2) {
+    ASSERT_TRUE(
+        AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_LINK));
+  }
+
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kVerticalTabsEnabled,
+                                               true);
+  RunScheduledLayouts();
+
+  model->ActivateTabAt(1);
+  ASSERT_EQ(1, model->active_index());
+
+  const gfx::Vector2d kWheelUp(0, ui::MouseWheelEvent::kWheelDelta);
+
+  // When Vertical Tabs is enabled, the active tab should not change.
+  PerformMouseWheelOnTabStrip(kWheelUp);
+  EXPECT_EQ(1, model->active_index());
+
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kVerticalTabsEnabled,
+                                               false);
+  RunScheduledLayouts();
+
+  // When Vertical Tabs is disabled, the active tab should change.
+  PerformMouseWheelOnTabStrip(kWheelUp);
+  EXPECT_EQ(0, model->active_index());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest,
