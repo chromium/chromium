@@ -58,6 +58,9 @@ typedef NS_ENUM(NSInteger, PageActionMenuFeatureType);
 // Opens the translation settings modal.
 - (void)openTranslateOptions;
 
+// Returns whether the AI entry points should be shown.
+- (BOOL)shouldShowFeatureEntryPoints;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PAGE_ACTION_MENU_UI_PAGE_ACTION_MENU_MUTATOR_H_

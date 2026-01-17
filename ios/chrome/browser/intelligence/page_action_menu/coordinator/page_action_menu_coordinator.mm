@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_options_commands.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 
 @interface PageActionMenuCoordinator () <
     PageActionMenuViewControllerDelegate,
@@ -59,6 +60,8 @@
       ios::HostContentSettingsMapFactory::GetForProfile(self.profile);
   _mediator = [[PageActionMenuMediator alloc]
             initWithWebState:activeWebState
+       authenticationService:AuthenticationServiceFactory::GetForProfile(
+                                 self.profile)
           profilePrefService:self.profile->GetPrefs()
           templateURLService:ios::TemplateURLServiceFactory::GetForProfile(
                                  self.profile)

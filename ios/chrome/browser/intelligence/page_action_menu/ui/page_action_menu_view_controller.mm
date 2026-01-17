@@ -667,30 +667,32 @@ const CGFloat kDividerWidth = 1.0;
     [self rebuildFeatureRows];
   }
 
-  // Horizontal stack view for the 2 side-by-side buttons.
-  _smallButtonsStackView = [self createSmallButtonsStackView];
-  [_contentStackView addArrangedSubview:_smallButtonsStackView];
-  [_contentStackView setCustomSpacing:kStackViewMargins
-                            afterView:_smallButtonsStackView];
+  // Horizontal stack view for the side-by-side buttons.
+  if ([self.mutator shouldShowFeatureEntryPoints]) {
+    _smallButtonsStackView = [self createSmallButtonsStackView];
+    [_contentStackView addArrangedSubview:_smallButtonsStackView];
+    [_contentStackView setCustomSpacing:kStackViewMargins
+                              afterView:_smallButtonsStackView];
 
-  // If Reader Mode is available but inactive, we use a 3-button UI. Otherwise,
-  // we just show the `buttonsStackView`, with an additional Reader mode section
-  // (above) if Reader mode is available and active.
-  if (IsReaderModeAvailable() && ![self.mutator isReaderModeActive]) {
-    // Adds the large Gemini entry point button.
-    _BWGButton = [self createBWGButton];
-    [_contentStackView addArrangedSubview:_BWGButton];
+    // If Reader Mode is available but inactive, we use a 3-button UI.
+    // Otherwise, we just show the `buttonsStackView`, with an additional Reader
+    // mode section (above) if Reader mode is available and active.
+    if (IsReaderModeAvailable() && ![self.mutator isReaderModeActive]) {
+      // Adds the large Gemini entry point button.
+      _BWGButton = [self createBWGButton];
+      [_contentStackView addArrangedSubview:_BWGButton];
 
-    [NSLayoutConstraint activateConstraints:@[
-      [_BWGButton.heightAnchor
-          constraintGreaterThanOrEqualToConstant:kLargeButtonHeight],
-    ]];
+      [NSLayoutConstraint activateConstraints:@[
+        [_BWGButton.heightAnchor
+            constraintGreaterThanOrEqualToConstant:kLargeButtonHeight],
+      ]];
+    }
   }
 }
 
 // Sets up Auto Layout constraints for scroll view and content stack.
 - (void)setupConstraints {
-  [NSLayoutConstraint activateConstraints:@[
+  NSMutableArray* constraints = [NSMutableArray arrayWithArray:@[
     // Scroll view constraints.
     [_scrollView.topAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor
@@ -714,9 +716,15 @@ const CGFloat kDividerWidth = 1.0;
         constraintEqualToAnchor:_scrollView.bottomAnchor],
     [_contentStackView.widthAnchor
         constraintEqualToAnchor:_scrollView.widthAnchor],
-    [_smallButtonsStackView.heightAnchor
-        constraintGreaterThanOrEqualToConstant:kSmallButtonHeight],
   ]];
+
+  if (_smallButtonsStackView) {
+    [constraints addObject:[_smallButtonsStackView.heightAnchor
+                               constraintGreaterThanOrEqualToConstant:
+                                   kSmallButtonHeight]];
+  }
+
+  [NSLayoutConstraint activateConstraints:constraints];
 }
 
 // Rebuilds feature rows based on current availability state.
@@ -750,7 +758,7 @@ const CGFloat kDividerWidth = 1.0;
     lastView = explanation;
   }
 
-  if (lastView) {
+  if (lastView && [self.mutator shouldShowFeatureEntryPoints]) {
     UIView* divider =
         [self createDividerWithOrientation:UILayoutConstraintAxisHorizontal];
     [_featureRowsStackView addArrangedSubview:divider];

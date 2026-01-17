@@ -8,6 +8,7 @@ include_rules = [
   "+ios/chrome/browser/contextual_panel/model",
   "+ios/chrome/browser/reader_mode",
   "+ios/chrome/browser/search_engines/model/template_url_service_factory.h",
+  "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/translate/model",
   "+ios/chrome/browser/web/model",
   "+ios/chrome/browser/infobars/model",
