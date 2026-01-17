@@ -52,7 +52,7 @@ class AutofillAiSaveUpdateEntityPromptControllerTest
         web_contents(), std::move(prompt_view),
         test::GetPassportEntityInstance(
             {.name = u"Jon doe", .record_type = record_type}),
-        prompt_closed_callback_.Get());
+        "en-US", prompt_closed_callback_.Get());
   }
 
   void SigninUser(const std::string& email,

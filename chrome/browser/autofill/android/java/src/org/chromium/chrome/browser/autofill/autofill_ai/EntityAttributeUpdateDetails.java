@@ -47,7 +47,7 @@ public class EntityAttributeUpdateDetails {
     }
 
     @CalledByNative
-    public @EntityAttributeUpdateType int getUpdateTypeName() {
+    public @EntityAttributeUpdateType int getUpdateType() {
         return mUpdateType;
     }
 }

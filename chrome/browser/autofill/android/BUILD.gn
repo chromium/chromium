@@ -189,6 +189,7 @@ android_resources("java_resources") {
   deps = [ "//components/strings:components_strings_grd" ]
   sources = [
     "java/res/drawable/store_locally_tooltip_background.xml",
+    "java/res/layout/autofill_ai_attribute_info.xml",
     "java/res/layout/autofill_ai_save_entity_prompt.xml",
     "java/res/layout/autofill_editor_base.xml",
     "java/res/layout/autofill_editor_base_buttons.xml",

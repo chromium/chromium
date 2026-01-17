@@ -11,6 +11,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -24,10 +28,13 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.autofill.R;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
+
+import java.util.List;
 
 /** Unit tests for {@link AutofillAiSaveUpdateEntityPrompt}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -108,5 +115,45 @@ public class AutofillAiSaveUpdateEntityPromptTest {
         assertEquals(
                 "negative button text",
                 propertyModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
+    }
+
+    @Test
+    @SmallTest
+    public void saveOrMigrateDetails() {
+        final EntityAttributeUpdateDetails passportNumber =
+                new EntityAttributeUpdateDetails(
+                        /* attributeName= */ "Passport number",
+                        /* attributeValue= */ "AA1111",
+                        /* oldAttributeValue= */ "",
+                        /* updateType= */ EntityAttributeUpdateType.NEW_ENTITY_ATTRIBUTE_UNCHANGED);
+        final EntityAttributeUpdateDetails passportExpirationDate =
+                new EntityAttributeUpdateDetails(
+                        /* attributeName= */ "Passport expiration date",
+                        /* attributeValue= */ "12/12/2030",
+                        /* oldAttributeValue= */ "",
+                        /* updateType= */ EntityAttributeUpdateType.NEW_ENTITY_ATTRIBUTE_UNCHANGED);
+        List<EntityAttributeUpdateDetails> updateDetailsList =
+                List.of(passportNumber, passportExpirationDate);
+
+        mPrompt.setSaveOrMigrateDetails(updateDetailsList);
+        mPrompt.show();
+
+        View dialogView = mPrompt.getDialogViewForTesting();
+        LinearLayout attributeList = dialogView.findViewById(R.id.autofill_ai_attribute_infos);
+        assertEquals(2, attributeList.getChildCount());
+
+        assertAttributeNameAndValue(attributeList.getChildAt(0), "Passport number", "AA1111");
+        assertAttributeNameAndValue(
+                /* attributeInfo= */ attributeList.getChildAt(1),
+                /* attributeName= */ "Passport expiration date",
+                /* attributeValue= */ "12/12/2030");
+    }
+
+    private void assertAttributeNameAndValue(
+            View attributeInfo, String attributeName, String attributeValue) {
+        TextView nameTextView = attributeInfo.findViewById(R.id.attribute_name);
+        assertEquals(attributeName, nameTextView.getText());
+        TextView valueTextView = attributeInfo.findViewById(R.id.attribute_value);
+        assertEquals(attributeValue, valueTextView.getText());
     }
 }

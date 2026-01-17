@@ -78,9 +78,11 @@ int GetMessageIconResourceId(const EntityInstance& entity) {
 
 AutofillAiSaveUpdateEntityFlowManager::AutofillAiSaveUpdateEntityFlowManager(
     content::WebContents* web_contents,
-    AutofillMessageController* autofill_message_controller)
+    AutofillMessageController* autofill_message_controller,
+    std::string app_locale)
     : web_contents_(web_contents),
-      autofill_message_controller_(CHECK_DEREF(autofill_message_controller)) {}
+      autofill_message_controller_(CHECK_DEREF(autofill_message_controller)),
+      app_locale_(std::move(app_locale)) {}
 
 AutofillAiSaveUpdateEntityFlowManager::
     ~AutofillAiSaveUpdateEntityFlowManager() = default;
@@ -130,7 +132,7 @@ void AutofillAiSaveUpdateEntityFlowManager::OnMessagePrimaryAction(
           web_contents_);
   save_update_entity_prompt_controller_ =
       std::make_unique<AutofillAiSaveUpdateEntityPromptController>(
-          web_contents_, std::move(prompt_view_android), entity,
+          web_contents_, std::move(prompt_view_android), entity, app_locale_,
           std::move(prompt_closed_callback_));
   save_update_entity_prompt_controller_->DisplayPrompt();
 }

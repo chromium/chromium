@@ -8,9 +8,11 @@
 #include <jni.h>
 
 #include <memory>
+#include <string>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
+#include "chrome/browser/ui/autofill/autofill_ai/entity_attribute_update_details.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 
@@ -33,6 +35,7 @@ class AutofillAiSaveUpdateEntityPromptController {
       content::WebContents* web_contents,
       std::unique_ptr<AutofillAiSaveUpdateEntityPromptView> prompt_view,
       EntityInstance entity_instance,
+      std::string app_locale,
       AutofillClient::EntityImportPromptResultCallback prompt_closed_callback);
   AutofillAiSaveUpdateEntityPromptController(
       const AutofillAiSaveUpdateEntityPromptController&) = delete;
@@ -45,6 +48,8 @@ class AutofillAiSaveUpdateEntityPromptController {
   std::u16string GetTitle() const;
   std::u16string GetPositiveButtonText() const;
   std::u16string GetNegativeButtonText() const;
+
+  std::vector<EntityAttributeUpdateDetails> GetEntityUpdateDetails() const;
 
   std::u16string GetSourceNotice() const;
 
@@ -63,6 +68,7 @@ class AutofillAiSaveUpdateEntityPromptController {
   raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<AutofillAiSaveUpdateEntityPromptView> prompt_view_;
   const EntityInstance entity_instance_;
+  const std::string app_locale_;
   // If the user explicitly accepted/dismissed/edited the entity.
   bool had_user_interaction_ = false;
   // The callback to run when the user takes action on the prompt.

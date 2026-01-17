@@ -38,7 +38,7 @@ class AutofillAiSaveUpdateEntityFlowManagerTest
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
             ChromeRenderViewHostTestHarness::profile());
     flow_manager_ = std::make_unique<AutofillAiSaveUpdateEntityFlowManager>(
-        web_contents(), &autofill_message_controller_);
+        web_contents(), &autofill_message_controller_, "en-US");
   }
 
   void TearDown() override {

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -36,7 +37,8 @@ class AutofillAiSaveUpdateEntityFlowManager {
 
   explicit AutofillAiSaveUpdateEntityFlowManager(
       content::WebContents* web_contents,
-      AutofillMessageController* autofill_message_controller);
+      AutofillMessageController* autofill_message_controller,
+      std::string app_locale);
   AutofillAiSaveUpdateEntityFlowManager(
       const AutofillAiSaveUpdateEntityFlowManager&) = delete;
   AutofillAiSaveUpdateEntityFlowManager& operator=(
@@ -70,6 +72,8 @@ class AutofillAiSaveUpdateEntityFlowManager {
   // Callback to notify the data provider about the user decision for the save
   // or update prompt.
   AutofillClient::EntityImportPromptResultCallback prompt_closed_callback_;
+
+  const std::string app_locale_;
 
   base::WeakPtrFactory<AutofillAiSaveUpdateEntityFlowManager> weak_ptr_factory_{
       this};
