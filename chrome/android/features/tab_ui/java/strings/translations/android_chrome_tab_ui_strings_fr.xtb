@@ -51,7 +51,7 @@
 <translation id="2536366509642644298">Les groupes d'onglets "<ph name="TAB_GROUP_NAME_1" />" et "<ph name="TAB_GROUP_NAME_2" />" ne sont plus disponibles</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Réduisez <ph name="TABS_COUNT_ONE" /> onglet.}one{Réduisez le groupe d'onglets qui contient <ph name="TABS_COUNT_MANY" /> onglets.}other{Réduisez le groupe d'onglets qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="2569352796411618312">Suggestion : <ph name="NUMBER_OF_TABS" /> des onglets ouverts n'ont pas été utilisés récemment. Voulez-vous les fermer ?</translation>
-<translation id="257674075312929031">Groupe</translation>
+<translation id="257674075312929031">Regrouper</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{Restaurer et ouvrir le groupe d'onglets de couleur <ph name="COLOR_NAME" /> comprenant <ph name="TABS_COUNT_ONE" /> onglet.}one{Restaurer et ouvrir le groupe d'onglets de couleur <ph name="COLOR_NAME" /> comprenant <ph name="TABS_COUNT_MANY" /> onglet.}other{Restaurer et ouvrir le groupe d'onglets de couleur <ph name="COLOR_NAME" /> comprenant <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="2662028055331606429">Note de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Accéder au site</translation>
@@ -133,7 +133,7 @@
 <translation id="5627941783489838464">Aucun onglet modifié</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lien de Chrome}one{<ph name="TABS_COUNT_MANY" /> lien de Chrome}other{<ph name="TABS_COUNT_MANY" /> liens de Chrome}}</translation>
 <translation id="5740354908255726955">{TAB_COUNT,plural, =1{Déplacer l'onglet vers la gauche}one{Déplacer l'onglet vers la gauche}other{Déplacer les onglets vers la gauche}}</translation>
-<translation id="5746204836956568669">Regrouper <ph name="NUMBER_OF_TABS" /> onglets pour travailler plus rapidement ?</translation>
+<translation id="5746204836956568669">Regrouper ces <ph name="NUMBER_OF_TABS" /> onglets pour travailler plus rapidement ?</translation>
 <translation id="5773295109010386583">Fermer automatiquement les éléments inactifs</translation>
 <translation id="58326064309361797">Faites glisser les onglets pour les regrouper</translation>
 <translation id="5972844218283131174">Tout désélectionner</translation>

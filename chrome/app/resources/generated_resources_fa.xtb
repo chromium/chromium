@@ -6654,7 +6654,7 @@
 <translation id="5542949973455282971">درحال متصل شدن به <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">در حال بررسی وضعیت...</translation>
 <translation id="5544482392629385159">دستگاه <ph name="DEVICE_INDEX" /> از <ph name="DEVICE_COUNT" />، <ph name="DEVICE_NAME" /></translation>
-<translation id="554517701842997186">ارائه‌دهنده</translation>
+<translation id="554517701842997186">پردازش‌کننده</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{افزودن زبانه به گروه}one{افزودن زبانه‌ها به گروه}other{افزودن زبانه‌ها به گروه}}</translation>
 <translation id="554535686826424776">یافتن کوپن</translation>
 <translation id="5546865291508181392">یافتن</translation>
@@ -10552,7 +10552,7 @@
 <translation id="8234795456569844941">لطفاً در رفع این مشکل به مهندسان ما کمک کنید. بگویید درست قبل از اینکه پیام خطای نمایه را دریافت کنید، چه اتفاقی افتاد.</translation>
 <translation id="8235418492073272647">صفحه هم‌رسانی‌شده از <ph name="DEVICE_NAME" /></translation>
 <translation id="8236802542508794819">این زبانه و زبانه‌های دیگر از منابع مشترکی استفاده می‌کنند که این امر می‌تواند در اشکال‌زدایی تداخل ایجاد کند.</translation>
-<translation id="8236911020904880539">خروج</translation>
+<translation id="8236911020904880539">خارج شدن</translation>
 <translation id="8236917170563564587">یا هم‌رسانی کردن این زبانه</translation>
 <translation id="8237647586961940482">صورتی تیره و قرمز</translation>
 <translation id="8239032431519548577">ثبت‌نام شرکت تکمیل شد</translation>
@@ -11933,7 +11933,7 @@
 <translation id="9143298529634201539">پیشنهاد حذف شود؟</translation>
 <translation id="9143922477019434797">محافظت از گذرواژه‌ها</translation>
 <translation id="9147392381910171771">&amp;گزینه‌ها</translation>
-<translation id="9148058034647219655">خروج</translation>
+<translation id="9148058034647219655">خارج شدن</translation>
 <translation id="9148126808321036104">ورود مجدد به سیستم</translation>
 <translation id="9148963623915467028">این سایت می‌تواند به مکان شما دسترسی داشته باشد.</translation>
 <translation id="9149866541089851383">ویرایش...</translation>
@@ -12106,7 +12106,7 @@
 <translation id="969574218206797926">«بهینه‌سازی انرژی» حافظه را از برگه‌های غیرفعال آزاد می‌کند تا برگه‌های فعال و برنامه‌های دیگر بتوانند از آن استفاده کنند</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{‏۱ برگه}one{‏# برگه}other{‏# برگه}}</translation>
 <translation id="971774202801778802">نشانی وب نشانک</translation>
-<translation id="973473557718930265">خروج</translation>
+<translation id="973473557718930265">رها کردن</translation>
 <translation id="973558314812359997">اندازه موشواره</translation>
 <translation id="973788791897303708">این گروه زبانه پر است</translation>
 <translation id="97381968209917373">حذف کردن گواهینامه <ph name="CERT_NAME" /></translation>

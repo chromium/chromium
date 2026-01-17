@@ -280,7 +280,7 @@
 <translation id="1177073277575830464">Швидке налаштування Android завершено. Продовжте налаштування на пристрої <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1177440945615690056">Підключитися до будь-якої сумісної мобільної мережі можна в налаштуваннях</translation>
 <translation id="1177548198167638471">Більше не запитувати</translation>
-<translation id="1177863135347784049">Спеціальне</translation>
+<translation id="1177863135347784049">Свій варіант</translation>
 <translation id="1178093605842850860">Дозволено переглядати й змінювати цей сайт</translation>
 <translation id="1178357842179817577">Захищає від небезпечних сайтів, завантажень і розширень</translation>
 <translation id="1178581264944972037">Пауза</translation>
@@ -6329,7 +6329,7 @@
 <translation id="5302932258331363306">Показувати заміни</translation>
 <translation id="5305145881844743843">Цим обліковим записом керують через домен <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">Джерело не підтримується</translation>
-<translation id="5307386115243749078">Створити пару з перемикачем Bluetooth</translation>
+<translation id="5307386115243749078">Зв’язати з перемикачем Bluetooth</translation>
 <translation id="5308380583665731573">Під’єднатися</translation>
 <translation id="5308989548591363504">Перевірити на наявність зловмисного ПЗ</translation>
 <translation id="5309641450810523897">Ідентифікатор запиту до служби підтримки</translation>

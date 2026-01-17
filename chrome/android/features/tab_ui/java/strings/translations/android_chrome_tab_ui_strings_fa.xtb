@@ -51,7 +51,7 @@
 <translation id="2536366509642644298">گروه‌های زبانه «<ph name="TAB_GROUP_NAME_1" />» و «<ph name="TAB_GROUP_NAME_2" />» دیگر دردسترس نیستند</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{جمع کردن <ph name="TABS_COUNT_ONE" /> زبانه.}one{جمع کردن گروه زبانه با <ph name="TABS_COUNT_MANY" /> زبانه.}other{جمع کردن گروه زبانه با <ph name="TABS_COUNT_MANY" /> زبانه.}}</translation>
 <translation id="2569352796411618312">پیشنهاد: <ph name="NUMBER_OF_TABS" /> مورد از برگه‌هایتان اخیراً استفاده نشده‌اند. آن‌ها را می‌بندید؟</translation>
-<translation id="257674075312929031">گروه</translation>
+<translation id="257674075312929031">گروه‌بندی</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{گروه زبانه‌های متشکل از <ph name="TABS_COUNT_ONE" /> زبانه، به‌رنگ <ph name="COLOR_NAME" /> بازیابی و باز می‌شود.}one{گروه زبانه‌های متشکل از <ph name="TABS_COUNT_MANY" /> زبانه، به‌رنگ <ph name="COLOR_NAME" /> بازیابی و باز می‌شود.}other{گروه زبانه‌های متشکل از <ph name="TABS_COUNT_MANY" /> زبانه، به‌رنگ <ph name="COLOR_NAME" /> بازیابی و باز می‌شود.}}</translation>
 <translation id="2662028055331606429">رده‌بندی <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">دیدن سایت</translation>

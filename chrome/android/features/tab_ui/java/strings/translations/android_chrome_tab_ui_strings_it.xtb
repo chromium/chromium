@@ -51,7 +51,7 @@
 <translation id="2536366509642644298">I gruppi di schede "<ph name="TAB_GROUP_NAME_1" />" e "<ph name="TAB_GROUP_NAME_2" />" non sono più disponibili</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Comprimi <ph name="TABS_COUNT_ONE" /> scheda.}other{Comprimi il gruppo di schede con <ph name="TABS_COUNT_MANY" /> schede.}}</translation>
 <translation id="2569352796411618312">Suggerimento: <ph name="NUMBER_OF_TABS" /> delle tue schede non sono state usate ultimamente. Vuoi chiuderle?</translation>
-<translation id="257674075312929031">Gruppo</translation>
+<translation id="257674075312929031">Raggruppa</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{Ripristina e apri il gruppo di schede con <ph name="TABS_COUNT_ONE" /> scheda, colore <ph name="COLOR_NAME" />.}other{Ripristina e apri il gruppo di schede con <ph name="TABS_COUNT_MANY" /> schede, colore <ph name="COLOR_NAME" />.}}</translation>
 <translation id="2662028055331606429">Valutazione di <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Visita il sito</translation>
@@ -133,7 +133,7 @@
 <translation id="5627941783489838464">Nessun aggiornamento della scheda</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link da Chrome}other{<ph name="TABS_COUNT_MANY" /> link da Chrome}}</translation>
 <translation id="5740354908255726955">{TAB_COUNT,plural, =1{Sposta scheda a sinistra}other{Sposta schede a sinistra}}</translation>
-<translation id="5746204836956568669">Vuoi raggruppare <ph name="NUMBER_OF_TABS" /> schede per lavorare più velocemente?</translation>
+<translation id="5746204836956568669">Raggruppare <ph name="NUMBER_OF_TABS" /> schede per lavorare più velocemente?</translation>
 <translation id="5773295109010386583">Chiudi automaticamente gli elementi non attivi</translation>
 <translation id="58326064309361797">Trascina le schede per raggrupparle</translation>
 <translation id="5972844218283131174">Deseleziona tutto</translation>

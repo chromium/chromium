@@ -51,7 +51,7 @@
 <translation id="2536366509642644298">Grup tab "<ph name="TAB_GROUP_NAME_1" />" dan "<ph name="TAB_GROUP_NAME_2" />" tidak lagi tersedia</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Ciutkan <ph name="TABS_COUNT_ONE" /> tab.}other{Ciutkan grup tab yang berisi <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="2569352796411618312">Saran: <ph name="NUMBER_OF_TABS" /> dari beberapa tab Anda belum digunakan akhir-akhir ini. Tutup?</translation>
-<translation id="257674075312929031">Grup</translation>
+<translation id="257674075312929031">Grupkan</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{Pulihkan dan buka grup tab yang berisi <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />.}other{Pulihkan dan buka grup tab yang berisi <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />.}}</translation>
 <translation id="2662028055331606429">Rating <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Buka situs</translation>
@@ -133,7 +133,7 @@
 <translation id="5627941783489838464">Tidak ada pembaruan tab</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link dari Chrome}other{<ph name="TABS_COUNT_MANY" /> link dari Chrome}}</translation>
 <translation id="5740354908255726955">{TAB_COUNT,plural, =1{Pindahkan tab ke kiri}other{Pindahkan tab ke kiri}}</translation>
-<translation id="5746204836956568669">Kelompokkan <ph name="NUMBER_OF_TABS" /> tab agar dapat bekerja lebih cepat?</translation>
+<translation id="5746204836956568669">Grupkan <ph name="NUMBER_OF_TABS" /> tab untuk bekerja lebih cepat?</translation>
 <translation id="5773295109010386583">Tutup item tidak aktif secara otomatis</translation>
 <translation id="58326064309361797">Tarik tab untuk mengelompokkannya</translation>
 <translation id="5972844218283131174">Batalkan semua pilihan</translation>
