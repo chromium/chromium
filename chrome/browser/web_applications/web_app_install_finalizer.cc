@@ -384,6 +384,15 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
         proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION);
   }
 
+  // Handle going from SUGGESTED_FROM_MIGRATION to any other state. This
+  // ensures that the apps under migration can have their state overridden by
+  // flows that are allowed to do so, like a sync install.
+  if (web_app->install_state() ==
+          proto::InstallState::SUGGESTED_FROM_MIGRATION &&
+      options.install_state != proto::InstallState::SUGGESTED_FROM_MIGRATION) {
+    web_app->SetInstallState(options.install_state);
+  }
+
   // If the app install state is explicitly set to be suggested from migration,
   // honor that over any existing values.
   if (options.install_state == proto::InstallState::SUGGESTED_FROM_MIGRATION) {
