@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_RESIZE_AREA_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_RESIZE_AREA_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "ui/views/controls/image_view.h"
@@ -14,22 +16,14 @@ namespace views {
 
 // Keyboard-accessible drag handle icon intended to be drawn on top of a
 // SidePanelResizeArea.
-class SidePanelResizeHandle : public ImageView,
-                              public views::FocusChangeListener {
+class SidePanelResizeHandle : public ImageView {
   METADATA_HEADER(SidePanelResizeHandle, ImageView)
 
  public:
   explicit SidePanelResizeHandle(SidePanel* side_panel);
 
-  void UpdateVisibility(bool visible);
-
   // ImageView:
-  void AddedToWidget() override;
-  void RemovedFromWidget() override;
-
-  // FocusChangeListener:
-  void OnWillChangeFocus(views::View* before, views::View* now) override;
-  void OnDidChangeFocus(views::View* before, views::View* now) override;
+  void OnThemeChanged() override;
 
  private:
   raw_ptr<SidePanel> side_panel_;
@@ -44,13 +38,22 @@ class SidePanelResizeArea : public ResizeArea {
  public:
   explicit SidePanelResizeArea(SidePanel* side_panel);
 
+  SidePanelResizeHandle* resize_handle_for_testing() const {
+    return resize_handle_;
+  }
+
   void OnMouseReleased(const ui::MouseEvent& event) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void OnMouseMoved(const ui::MouseEvent& event) override;
+  void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
+  void OnFocus() override;
+  void OnBlur() override;
   void Layout(PassKey) override;
 
  private:
+  void UpdateHandleVisibility(bool visible);
+
   raw_ptr<SidePanel> side_panel_;
   raw_ptr<SidePanelResizeHandle> resize_handle_;
 };
