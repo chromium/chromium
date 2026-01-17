@@ -7163,11 +7163,6 @@ inline constexpr char kEventBasedLogUploadDescription[] =
     "(e.g. crashes) occur on the device. The feature is guarded by "
     "LogUploadEnabled policy.";
 
-inline constexpr char kExcludeDisplayInMirrorModeName[] =
-    "Enable feature to exclude a display in mirror mode.";
-inline constexpr char kExcludeDisplayInMirrorModeDescription[] =
-    "Show toggles in Display Settings to exclude a display in mirror mode.";
-
 inline constexpr char kExoGamepadVibrationName[] =
     "Gamepad Vibration for Exo Clients";
 inline constexpr char kExoGamepadVibrationDescription[] =
