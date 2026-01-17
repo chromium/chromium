@@ -457,15 +457,24 @@ bool JXLImageDecoder::FrameIsReceivedAtIndex(wtf_size_t index) const {
 
 std::optional<base::TimeDelta> JXLImageDecoder::FrameTimestampAtIndex(
     wtf_size_t index) const {
-  return index < frame_buffer_cache_.size()
-             ? frame_buffer_cache_[index].Timestamp()
-             : std::nullopt;
+  // Use frame_info_ which is populated at header parsing time,
+  // not frame_buffer_cache_ which is only set after decoding.
+  if (index < frame_info_.size()) {
+    return frame_info_[index].timestamp;
+  }
+  return std::nullopt;
 }
 
 base::TimeDelta JXLImageDecoder::FrameDurationAtIndex(wtf_size_t index) const {
-  return index < frame_buffer_cache_.size()
-             ? frame_buffer_cache_[index].Duration()
-             : base::TimeDelta();
+  // Use frame_info_ which is populated at header parsing time.
+  // If the frame hasn't been discovered yet, trigger decoding to get its info.
+  if (index >= frame_info_.size() && !all_frames_discovered_ && !Failed()) {
+    const_cast<JXLImageDecoder*>(this)->Decode(index, /*only_size=*/false);
+  }
+  if (index < frame_info_.size()) {
+    return frame_info_[index].duration;
+  }
+  return base::TimeDelta();
 }
 
 int JXLImageDecoder::RepetitionCount() const {

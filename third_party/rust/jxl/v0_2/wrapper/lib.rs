@@ -49,7 +49,7 @@ mod ffi {
 
     #[derive(Debug, Clone)]
     struct JxlRsFrameHeader {
-        duration_ms: u32,
+        duration_ms: f64,
         name_length: u32,
     }
 
@@ -283,13 +283,8 @@ impl JxlRsDecoder {
 
     fn extract_frame_header(&self) -> Option<JxlRsFrameHeader> {
         let fh = self.decoder.frame_header()?;
-        let duration_ms: u32 = match fh.duration {
-            Some(d) if d.is_finite() && d >= 0.0 => d as u32,
-            _ => 0,
-        };
-
         Some(JxlRsFrameHeader {
-            duration_ms,
+            duration_ms: fh.duration.unwrap_or(0.0),
             name_length: fh.name.len() as u32,
         })
     }
@@ -485,7 +480,7 @@ impl From<&JxlBasicInfo> for JxlRsBasicInfo {
 impl Default for JxlRsFrameHeader {
     fn default() -> Self {
         Self {
-            duration_ms: 0,
+            duration_ms: 0.0,
             name_length: 0,
         }
     }

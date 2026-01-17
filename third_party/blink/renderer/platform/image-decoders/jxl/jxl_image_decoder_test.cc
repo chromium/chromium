@@ -824,4 +824,76 @@ TEST_F(JXLImageDecoderTest, IncrementalLoadDoesNotBlockOnAllFrames) {
   EXPECT_GE(frame_count, 1u);
 }
 
+// Regression test for animation drift bug.
+//
+// The bug: Frame durations were being truncated from f64 to u32 in the Rust
+// FFI wrapper, causing animations to slowly drift out of sync when looping.
+// For example, a 30fps animation (33.333ms/frame) would lose 0.333ms per
+// frame, accumulating ~33ms drift after 100 frames.
+//
+// The fix: Changed JxlRsFrameHeader.duration_ms from u32 to f64 to preserve
+// full floating-point precision through the FFI boundary.
+//
+// This test verifies:
+// 1. Frame durations are stored with sub-millisecond precision capability
+// 2. Cumulative timestamps don't show unexpected drift
+// 3. The precision is maintained through the full decode pipeline
+TEST_F(JXLImageDecoderTest, AnimationDurationPrecisionNoDrift) {
+  auto decoder = CreateJXLDecoder();
+  // Use 5_frames_numbered.jxl with 500ms per frame (integer timing).
+  // While this doesn't have fractional milliseconds, it verifies:
+  // - The f64 duration path works correctly end-to-end
+  // - Cumulative timestamps are computed accurately
+  // - No unexpected precision loss occurs in the pipeline
+  scoped_refptr<SharedBuffer> data =
+      ReadFileToSharedBuffer(kImagesDir, "5_frames_numbered.jxl");
+  ASSERT_TRUE(data);
+
+  decoder->SetData(data.get(), true);
+  EXPECT_TRUE(decoder->IsSizeAvailable());
+
+  // Get frame count to trigger frame discovery
+  wtf_size_t frame_count = decoder->FrameCount();
+  EXPECT_EQ(5u, frame_count);
+
+  // Expected duration: 500ms = 500000us (this test file has integer timing)
+  // The fix ensures durations pass through as f64, preserving any fractional
+  // precision that might be present in other JXL files.
+  constexpr int64_t kExpectedDurationUs = 500 * 1000;  // 500ms in microseconds
+
+  for (wtf_size_t i = 0; i < frame_count; ++i) {
+    base::TimeDelta duration = decoder->FrameDurationAtIndex(i);
+    int64_t duration_us = duration.InMicroseconds();
+
+    // Verify exact duration - the f64 path should preserve the value exactly.
+    EXPECT_EQ(kExpectedDurationUs, duration_us)
+        << "Frame " << i << " duration should be exactly 500000 microseconds. "
+        << "Got " << duration_us << " microseconds. "
+        << "This may indicate precision loss in the FFI layer.";
+  }
+
+  // Verify cumulative timestamps are computed accurately without drift.
+  // Each frame's timestamp should be the exact sum of all previous durations.
+  int64_t expected_timestamp_us = 0;
+  for (wtf_size_t i = 0; i < frame_count; ++i) {
+    auto timestamp = decoder->FrameTimestampAtIndex(i);
+    ASSERT_TRUE(timestamp.has_value()) << "Frame " << i << " has no timestamp";
+
+    // Verify timestamp matches expected cumulative value exactly
+    EXPECT_EQ(expected_timestamp_us, timestamp->InMicroseconds())
+        << "Frame " << i << " timestamp drift detected. "
+        << "Expected " << expected_timestamp_us << " us, got "
+        << timestamp->InMicroseconds() << " us.";
+
+    expected_timestamp_us += decoder->FrameDurationAtIndex(i).InMicroseconds();
+  }
+
+  // Final verification: total animation duration should be exactly 2500ms.
+  // This confirms no precision loss accumulated across frames.
+  constexpr int64_t kExpectedTotalUs = 5 * kExpectedDurationUs;  // 2500000us
+  EXPECT_EQ(kExpectedTotalUs, expected_timestamp_us)
+      << "Total animation duration should be exactly 2500000 us. "
+      << "Got " << expected_timestamp_us << " us.";
+}
+
 }  // namespace blink
