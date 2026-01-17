@@ -14,6 +14,7 @@ import "components/optimization_guide/proto/features/contextual_tasks_context.pr
 import "components/optimization_guide/proto/features/default.proto";
 import "components/optimization_guide/proto/features/enhanced_calendar.proto";
 import "components/optimization_guide/proto/features/forms_classifications.proto";
+import "components/optimization_guide/proto/features/gemini_antiscam_protection.proto";
 import "components/optimization_guide/proto/features/history_answer.proto";
 import "components/optimization_guide/proto/features/history_query.proto";
 import "components/optimization_guide/proto/features/history_query_intent.proto";
@@ -105,6 +106,8 @@ message LogAiDataRequest {
     ContextualTasksContextLoggingData contextual_tasks_context = 32;
 
     SkillsLoggingData skills = 33;
+
+    GeminiAntiscamProtectionLoggingData gemini_antiscam_protection = 34;
 
     DefaultLoggingData default = 1000;
   }
