@@ -8,6 +8,8 @@ option optimize_for = LITE_RUNTIME;
 
 package remoting.ftl;
 
+import "xmpp.proto";
+
 // Next Id: 6
 message ChromotingMessage {
   // Monotonically increasing sequence id for messages, starting at 1.
@@ -23,10 +25,13 @@ message ChromotingMessage {
 }
 
 // Chromoting Legacy XMPP message.
-// Next Id: 2
+// Next Id: 3
 message ChromotingXmppMessage {
   // A serialized version of the IQ stanza.
   optional string stanza = 1;
+
+  // A structured proto representing the IQ stanza.
+  optional IqStanza iq_stanza = 2;
 }
 
 // Notifies the host of a change in its status in the Directory.

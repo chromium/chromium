@@ -1,0 +1,43 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package remoting.ftl;
+
+// WebRTC ICE candidate details.
+// https://www.w3.org/TR/webrtc/#rtcicecandidate-interface
+message IceCandidate {
+  // The ICE candidate string, containing foundation, component, priority,
+  // address, port, type, etc.
+  optional string candidate = 1;
+
+  // If present, identifies the media stream ("mid") associated with the
+  // candidate.
+  optional string sdp_mid = 2;
+
+  // If present, indicates the zero-based index of the m-line in the SDP
+  // associated with the candidate.
+  optional int32 sdp_m_line_index = 3;
+}
+
+// WebRTC session description (SDP).
+// https://www.w3.org/TR/webrtc/#rtcsessiondescription-class
+message SessionDescription {
+  enum SdpType {
+    SDP_TYPE_UNSPECIFIED = 0;
+    OFFER = 1;
+    ANSWER = 2;
+  }
+  // WebRTC SDP Type as defined in https://www.w3.org/TR/webrtc/#rtcsdptype.
+  optional SdpType type = 1;
+
+  // A serialized string representation of the sdp.
+  optional string sdp = 2;
+
+  // Base64-encoded HMAC of the SDP description, for validation.
+  optional bytes signature = 3;
+}
