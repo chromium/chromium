@@ -60,11 +60,6 @@ base::TaskPriority GetTaskPriority() {
              : base::TaskPriority::BEST_EFFORT;
 }
 
-void RecordSitesToClearCount(int count) {
-  base::UmaHistogramCounts1000(
-      "FirstPartySets.Initialization.SitesToClear.Count", count);
-}
-
 }  // namespace
 
 // static
@@ -425,8 +420,6 @@ void FirstPartySetsHandlerImplInstance::OnGetSitesToClear(
                             net::FirstPartySetsCacheFilter());
     return;
   }
-
-  RecordSitesToClearCount(sites_to_clear->first.size());
 
   BrowserContext* browser_context = browser_context_getter.Run();
   if (!browser_context) {
