@@ -5,11 +5,10 @@
 #include "components/pdf/renderer/pdf_accessibility_tree_builder.h"
 
 #include <optional>
-#include <queue>
-#include <set>
 #include <string>
 
 #include "base/i18n/break_iterator.h"
+#include "base/logging.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "components/pdf/renderer/pdf_accessibility_tree_builder_heuristic.h"
 #include "components/pdf/renderer/pdf_accessibility_tree_builder_structure.h"
@@ -90,22 +89,6 @@ bool IsTextRenderModeStroke(
   }
 }
 
-void CollectTaggedTextRunStartIndices(
-    const chrome_pdf::AccessibilityStructureElement* element,
-    std::set<uint32_t>& tagged_start_indices) {
-  if (!element) {
-    return;
-  }
-
-  for (const auto& text_run_ptr : element->associated_text_runs_if_available) {
-    tagged_start_indices.insert(text_run_ptr->start_index);
-  }
-
-  for (const auto& child : element->children) {
-    CollectTaggedTextRunStartIndices(child.get(), tagged_start_indices);
-  }
-}
-
 }  // namespace
 
 namespace pdf {
@@ -164,33 +147,23 @@ PdfAccessibilityTreeBuilder::PdfAccessibilityTreeBuilder(
 
 PdfAccessibilityTreeBuilder::~PdfAccessibilityTreeBuilder() = default;
 
-bool PdfAccessibilityTreeBuilder::IsFullyTaggedPage() const {
-  if (!page_structure_tree_ || text_runs_->empty()) {
-    return false;
-  }
-
-  std::set<uint32_t> tagged_start_indices;
-  CollectTaggedTextRunStartIndices(page_structure_tree_, tagged_start_indices);
-
-  // Consider fully tagged if all text runs are referenced in the structure
-  // tree. If any text runs are missing from the structure tree, the PDF is
-  // partially tagged.
-  return tagged_start_indices.size() == text_runs_->size();
-}
-
 void PdfAccessibilityTreeBuilder::BuildPageTree() {
-  // Determine which mode to use based on structure tree availability and
-  // whether the page is fully tagged.
-  if (IsFullyTaggedPage()) {
-    VLOG(1) << "Using structure tree mode for PDF accessibility tree.";
-    // Use structure tree mode for fully-tagged PDFs.
+  // Use structure tree mode if a structure tree exists. Structure tree mode
+  // preserves semantic structure from the PDF's tags and inserts any
+  // unassociated text runs as additional content. Fall back to heuristic mode
+  // only when no structure tree is available.
+  bool use_structure_mode =
+      page_structure_tree_ &&
+      PdfAccessibilityTreeBuilderStructure::StructureTreeHasContent(
+          page_structure_tree_);
+
+  VLOG(1) << "PDF page " << page_index_ << ": "
+          << (use_structure_mode ? "structure tree" : "heuristic") << " mode";
+
+  if (use_structure_mode) {
     PdfAccessibilityTreeBuilderStructure(*this, page_structure_tree_)
         .BuildPageTree();
   } else {
-    VLOG(1) << "Using heuristic mode for PDF accessibility tree.";
-    // Fall back to heuristic mode for untagged or partially-tagged PDFs.
-    // TODO(crbug.com/40707542): Extend structure tree to handle partially
-    // tagged pages also.
     PdfAccessibilityTreeBuilderHeuristic(*this).BuildPageTree();
   }
 }
