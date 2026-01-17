@@ -22,7 +22,8 @@ UrlAttachmentDecoratorData::UrlAttachmentDecoratorData(
 UrlAttachmentDecoratorData& UrlAttachmentDecoratorData::operator=(
     UrlAttachmentDecoratorData&&) = default;
 
-UrlAttachment::UrlAttachment(const GURL& url) : url_(url) {}
+UrlAttachment::UrlAttachment(const GURL& url, ResourceType resource_type)
+    : url_(url), resource_type(resource_type) {}
 
 UrlAttachment::~UrlAttachment() = default;
 
@@ -66,6 +67,10 @@ SessionID UrlAttachment::GetTabSessionId() const {
   return decorator_data_.contextual_search_context_data.tab_session_id;
 }
 
+ResourceType UrlAttachment::GetResourceType() const {
+  return resource_type;
+}
+
 UrlAttachmentDecoratorData& UrlAttachment::GetMutableDecoratorDataForTesting() {
   return decorator_data_;
 }
@@ -77,7 +82,7 @@ UrlAttachmentDecoratorData& UrlAttachment::GetMutableDecoratorData() {
 ContextualTaskContext::ContextualTaskContext(const ContextualTask& task)
     : task_id_(task.GetTaskId()) {
   for (const auto& url_resource : task.GetUrlResources()) {
-    UrlAttachment attachment(url_resource.url);
+    UrlAttachment attachment(url_resource.url, url_resource.resource_type);
     if (url_resource.title.has_value()) {
       attachment.title_ = base::UTF8ToUTF16(url_resource.title.value());
     }

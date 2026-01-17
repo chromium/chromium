@@ -333,7 +333,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   // The default title for about:blank is "about:blank".
   std::string kTitle = "about:blank";
 
-  contextual_tasks::UrlResource resource(kUrl);
+  contextual_tasks::UrlResource resource(
+      kUrl, contextual_tasks::ResourceType::kWebpage);
   resource.title = kTitle;
   resource.tab_id = session_id;
   task.AddUrlResource(resource);
@@ -419,7 +420,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   GURL kUrl("about:blank");
   std::string kTitle = "about:blank";
 
-  contextual_tasks::UrlResource resource(kUrl);
+  contextual_tasks::UrlResource resource(
+      kUrl, contextual_tasks::ResourceType::kWebpage);
   resource.title = kTitle;
   resource.tab_id = session_id;
   task.AddUrlResource(resource);
@@ -510,7 +512,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   // Setup context with uploaded tab
   contextual_tasks::ContextualTask task(task_id);
   SessionID session_id = sessions::SessionTabHelper::IdForTab(web_contents());
-  contextual_tasks::UrlResource resource(GURL("about:blank"));
+  contextual_tasks::UrlResource resource(
+      GURL("about:blank"), contextual_tasks::ResourceType::kWebpage);
   resource.title = "about:blank";
   resource.tab_id = session_id;
   task.AddUrlResource(resource);
@@ -606,7 +609,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   // Setup context with NO tabs (or just not the active one).
   contextual_tasks::ContextualTask task(task_id);
   // Add a resource that is NOT the active tab.
-  contextual_tasks::UrlResource resource(GURL("http://example.com"));
+  contextual_tasks::UrlResource resource(
+      GURL("http://example.com"), contextual_tasks::ResourceType::kWebpage);
   resource.tab_id = SessionID::NewUnique();  // Random ID
   task.AddUrlResource(resource);
 
@@ -661,7 +665,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   GURL kUrl("http://example.com");
   std::u16string kTitle = u"Example Title";
 
-  contextual_tasks::UrlResource resource(kUrl);
+  contextual_tasks::UrlResource resource(
+      kUrl, contextual_tasks::ResourceType::kWebpage);
   resource.title = base::UTF16ToUTF8(kTitle);
   resource.tab_id = session_id;
   task.AddUrlResource(resource);
@@ -716,7 +721,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   GURL kUrl("about:blank");
   std::string kTitle = "about:blank";
 
-  contextual_tasks::UrlResource resource(kUrl);
+  contextual_tasks::UrlResource resource(
+      kUrl, contextual_tasks::ResourceType::kWebpage);
   resource.title = kTitle;
   resource.tab_id = session_id;
   task.AddUrlResource(resource);
@@ -812,7 +818,8 @@ TEST_F(
   // Setup context with uploaded tab
   contextual_tasks::ContextualTask task(task_id);
   SessionID session_id = sessions::SessionTabHelper::IdForTab(web_contents());
-  contextual_tasks::UrlResource resource(GURL("about:blank"));
+  contextual_tasks::UrlResource resource(
+      GURL("about:blank"), contextual_tasks::ResourceType::kWebpage);
   resource.title = "about:blank";
   resource.tab_id = session_id;
   task.AddUrlResource(resource);

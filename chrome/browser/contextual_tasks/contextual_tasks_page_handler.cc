@@ -52,6 +52,10 @@ std::vector<contextual_tasks::mojom::TabPtr> TabsFromContext(
   std::vector<contextual_tasks::mojom::TabPtr> tabs;
 
   for (const auto& attachment : context->GetUrlAttachments()) {
+    if (attachment.GetResourceType() !=
+        contextual_tasks::ResourceType::kWebpage) {
+      continue;
+    }
     auto tab = contextual_tasks::mojom::Tab::New();
     tab->tab_id = attachment.GetTabSessionId().id();
     tab->title = base::UTF16ToUTF8(attachment.GetTitle());
