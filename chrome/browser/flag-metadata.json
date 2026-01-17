@@ -1167,7 +1167,7 @@
   {
     "name": "bookmark-tab-group-conversion",
     "owners": [ "yuhengh@google.com", "top-chrome-desktop-ui@google.com" ],
-    "expiry_milestone": 145
+    "expiry_milestone": 150
   },
   {
     "name": "bookmarks-tree-view",
