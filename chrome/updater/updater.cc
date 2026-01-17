@@ -351,7 +351,7 @@ void EnsureEnoughMemory() {
   if (memory_status.ullAvailPageFile >= kMinMemoryNeeded) {
     return;
   }
-  if (void* alloc = []() -> void* {
+  if (void* alloc = [] -> void* {
         constexpr int kMaxTries = 25;
         constexpr int kDelayMs = 50;
         for (int tries = 0; tries < kMaxTries; ++tries) {
