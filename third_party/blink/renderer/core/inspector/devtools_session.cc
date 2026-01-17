@@ -33,6 +33,7 @@
 #include "third_party/inspector_protocol/crdtp/cbor.h"
 #include "third_party/inspector_protocol/crdtp/dispatch.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace blink {
 
@@ -101,10 +102,8 @@ class DevToolsSession::IOSession : public mojom::blink::DevToolsSession {
   void DispatchProtocolCommand(int call_id,
                                const String& method,
                                base::span<const uint8_t> message) override {
-    TRACE_EVENT_WITH_FLOW1("devtools", "IOSession::DispatchProtocolCommand",
-                           call_id,
-                           TRACE_EVENT_FLAG_FLOW_OUT | TRACE_EVENT_FLAG_FLOW_IN,
-                           "call_id", call_id);
+    TRACE_EVENT("devtools", "IOSession::DispatchProtocolCommand",
+                perfetto::Flow::ProcessScoped(call_id), "call_id", call_id);
     // Crash renderer.
     if (method == "Page.crash") {
       NOTREACHED();
@@ -239,9 +238,8 @@ void DevToolsSession::DispatchProtocolCommand(
     int call_id,
     const String& method,
     base::span<const uint8_t> message) {
-  TRACE_EVENT_WITH_FLOW1(
-      "devtools", "DevToolsSession::DispatchProtocolCommand", call_id,
-      TRACE_EVENT_FLAG_FLOW_OUT | TRACE_EVENT_FLAG_FLOW_IN, "call_id", call_id);
+  TRACE_EVENT("devtools", "DevToolsSession::DispatchProtocolCommand",
+              perfetto::Flow::ProcessScoped(call_id), "call_id", call_id);
   return DispatchProtocolCommandImpl(call_id, method, message);
 }
 
@@ -251,9 +249,8 @@ void DevToolsSession::DispatchProtocolCommandImpl(
     base::span<const uint8_t> data) {
   DCHECK(crdtp::cbor::IsCBORMessage(
       crdtp::span<uint8_t>(data.data(), data.size())));
-  TRACE_EVENT_WITH_FLOW1(
-      "devtools", "DevToolsSession::DispatchProtocolCommandImpl", call_id,
-      TRACE_EVENT_FLAG_FLOW_OUT | TRACE_EVENT_FLAG_FLOW_IN, "call_id", call_id);
+  TRACE_EVENT("devtools", "DevToolsSession::DispatchProtocolCommandImpl",
+              perfetto::Flow::ProcessScoped(call_id), "call_id", call_id);
   TRACE_EVENT1("devtools", "api_call", "method_name", method);
 
   // IOSession does not provide ordering guarantees relative to
@@ -339,9 +336,8 @@ void DevToolsSession::sendResponse(
 
 void DevToolsSession::SendProtocolResponse(int call_id,
                                            std::vector<uint8_t> message) {
-  TRACE_EVENT_WITH_FLOW1(
-      "devtools", "DevToolsSession::SendProtocolResponse", call_id,
-      TRACE_EVENT_FLAG_FLOW_OUT | TRACE_EVENT_FLAG_FLOW_IN, "call_id", call_id);
+  TRACE_EVENT("devtools", "DevToolsSession::SendProtocolResponse",
+              perfetto::Flow::ProcessScoped(call_id), "call_id", call_id);
   if (IsDetached())
     return;
   flushProtocolNotifications();

@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 
 namespace blink {
@@ -134,11 +135,10 @@ void DelegatedInkTrailPresenter::updateInkTrailStartPoint(
           point_visual_viewport, diameter_in_physical_pixels, color.Rgb(),
           evt->PlatformTimeStamp(), area, is_hovering);
 
-  TRACE_EVENT_WITH_FLOW1("delegated_ink_trails",
-                         "DelegatedInkTrailPresenter::updateInkTrailStartPoint",
-                         TRACE_ID_GLOBAL(metadata->trace_id()),
-                         TRACE_EVENT_FLAG_FLOW_OUT, "metadata",
-                         metadata->ToString());
+  TRACE_EVENT("delegated_ink_trails",
+              "DelegatedInkTrailPresenter::updateInkTrailStartPoint",
+              perfetto::Flow::Global(metadata->trace_id()), "metadata",
+              metadata->ToString());
 
   if (last_delegated_ink_metadata_timestamp_ == metadata->timestamp())
     return;

@@ -161,6 +161,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
 #include "ui/base/mojom/menu_source_type.mojom-blink-forward.h"
 #include "ui/base/mojom/window_show_state.mojom-blink.h"
@@ -857,10 +858,8 @@ void WebFrameWidgetImpl::BindInputTargetClient(
 void WebFrameWidgetImpl::FrameSinkIdAt(const gfx::PointF& point,
                                        const uint64_t trace_id,
                                        FrameSinkIdAtCallback callback) {
-  TRACE_EVENT_WITH_FLOW1("viz,benchmark", "Event.Pipeline",
-                         TRACE_ID_GLOBAL(trace_id),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                         "step", "FrameSinkIdAt");
+  TRACE_EVENT("viz,benchmark", "Event.Pipeline",
+              perfetto::Flow::Global(trace_id), "step", "FrameSinkIdAt");
 
   gfx::PointF local_point;
   viz::FrameSinkId id = GetFrameSinkIdAtPoint(point, &local_point);

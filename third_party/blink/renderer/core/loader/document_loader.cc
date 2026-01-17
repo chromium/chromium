@@ -617,8 +617,8 @@ DocumentLoader::DocumentLoader(
           params_->initial_permission_statuses)),
       force_new_document_sequence_number_(
           params_->force_new_document_sequence_number) {
-  TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::DocumentLoader",
-                         TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("loading", "DocumentLoader::DocumentLoader",
+              perfetto::Flow::FromPointer(this));
   DCHECK(frame_);
   DCHECK(params_);
 
@@ -804,8 +804,8 @@ LocalFrameClient& DocumentLoader::GetLocalFrameClient() const {
 }
 
 DocumentLoader::~DocumentLoader() {
-  TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::~DocumentLoader",
-                         TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_IN);
+  TRACE_EVENT("loading", "DocumentLoader::~DocumentLoader",
+              perfetto::TerminatingFlow::FromPointer(this));
   DCHECK_EQ(state_, kSentDidFinishLoad);
 
   // Before being collected by the GC, it is expected the DocumentLoader to be
@@ -1321,9 +1321,8 @@ DocumentLoader::TakeProcessBackgroundDataCallback() {
 }
 
 void DocumentLoader::BodyDataReceivedImpl(BodyData& data) {
-  TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::BodyDataReceivedImpl",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("loading", "DocumentLoader::BodyDataReceivedImpl",
+              perfetto::Flow::FromPointer(this));
   base::SpanOrSize<const char> encoded_data = data.EncodedData();
   if (encoded_data.size()) {
     if (response_.WasFetchedViaServiceWorker()) {
@@ -1335,10 +1334,8 @@ void DocumentLoader::BodyDataReceivedImpl(BodyData& data) {
                           main_resource_identifier_, this, encoded_data);
   }
 
-  TRACE_EVENT_WITH_FLOW1("loading", "DocumentLoader::HandleData",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                         "length", encoded_data.size());
+  TRACE_EVENT("loading", "DocumentLoader::HandleData",
+              perfetto::Flow::FromPointer(this), "length", encoded_data.size());
 
   DCHECK(!frame_->GetPage()->Paused());
   time_of_last_data_received_ = clock_->NowTicks();
@@ -1361,9 +1358,8 @@ void DocumentLoader::BodyLoadingFinished(
     int64_t total_encoded_body_length,
     int64_t total_decoded_body_length,
     const std::optional<WebURLError>& error) {
-  TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::BodyLoadingFinished",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("loading", "DocumentLoader::BodyLoadingFinished",
+              perfetto::Flow::FromPointer(this));
 
   DCHECK(frame_);
   if (!error) {
@@ -1455,9 +1451,8 @@ void DocumentLoader::LoadFailed(const ResourceError& error) {
 }
 
 void DocumentLoader::FinishedLoading(base::TimeTicks finish_time) {
-  TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::FinishedLoading",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("loading", "DocumentLoader::FinishedLoading",
+              perfetto::Flow::FromPointer(this));
   body_loader_.reset();
   virtual_time_pauser_.UnpauseVirtualTime();
 
@@ -1613,10 +1608,9 @@ void DocumentLoader::HandleResponse() {
 }
 
 void DocumentLoader::CommitData(BodyData& data) {
-  TRACE_EVENT_WITH_FLOW1("loading", "DocumentLoader::CommitData",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                         "length", data.EncodedData().size());
+  TRACE_EVENT("loading", "DocumentLoader::CommitData",
+              perfetto::Flow::FromPointer(this), "length",
+              data.EncodedData().size());
 
   // This can happen if document.close() is called by an event handler while
   // there's still pending incoming data.
@@ -2054,9 +2048,8 @@ void DocumentLoader::StartLoadingInternal() {
 }
 
 void DocumentLoader::StartLoadingResponse() {
-  TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::StartLoadingResponse",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("loading", "DocumentLoader::StartLoadingResponse",
+              perfetto::Flow::FromPointer(this));
   // TODO(dcheng): Clean up the null checks in this helper.
   if (!frame_)
     return;
@@ -2149,9 +2142,8 @@ void DocumentLoader::StartLoadingResponse() {
 }
 
 void DocumentLoader::DidInstallNewDocument(Document* document) {
-  TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::DidInstallNewDocument",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("loading", "DocumentLoader::DidInstallNewDocument",
+              perfetto::Flow::FromPointer(this));
   // This was called already during `InitializeWindow`, but it could be that we
   // didn't have a Document then (which happens when `InitializeWindow` reuses
   // the window and calls `LocalDOMWindow::ClearForReuse()`). This is
@@ -2563,9 +2555,8 @@ bool DocumentLoader::IsSameOriginInitiator() const {
 }
 
 void DocumentLoader::InitializeWindow(Document* owner_document) {
-  TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::InitializeWindow",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("loading", "DocumentLoader::InitializeWindow",
+              perfetto::Flow::FromPointer(this));
   // Javascript URLs, XSLT committed document and discarded documents must not
   // pass a new policy_container_, since they must keep the previous document
   // one.
@@ -2826,9 +2817,8 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
 }
 
 void DocumentLoader::CommitNavigation() {
-  TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::CommitNavigation",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("loading", "DocumentLoader::CommitNavigation",
+              perfetto::Flow::FromPointer(this));
   base::ScopedUmaHistogramTimer histogram_timer(
       "Navigation.DocumentLoader.CommitNavigation");
   base::ElapsedTimer timer;
@@ -3195,9 +3185,8 @@ void DocumentLoader::CommitNavigation() {
 }
 
 void DocumentLoader::CreateParserPostCommit() {
-  TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::CreateParserPostCommit",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("loading", "DocumentLoader::CreateParserPostCommit",
+              perfetto::Flow::FromPointer(this));
   base::ElapsedTimer timer;
   SpeculationRulesHeader::ProcessHeadersForDocumentResponse(
       response_, *frame_->DomWindow());
@@ -3436,10 +3425,8 @@ void DocumentLoader::RecordParentAndChildContentLanguageMetric() {
 }
 
 void DocumentLoader::RecordUseCountersForCommit() {
-  TRACE_EVENT_WITH_FLOW0("loading",
-                         "DocumentLoader::RecordUseCountersForCommit",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("loading", "DocumentLoader::RecordUseCountersForCommit",
+              perfetto::Flow::FromPointer(this));
   // Pre-commit state, count usage the use counter associated with "this"
   // (provisional document loader) instead of frame_'s document loader.
   if (response_.DidServiceWorkerNavigationPreload()) {

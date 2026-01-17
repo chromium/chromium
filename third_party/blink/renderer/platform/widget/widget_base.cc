@@ -12,7 +12,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/common/task_annotator.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_id_provider.h"
@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/platform/widget/input/main_thread_event_queue.h"
 #include "third_party/blink/renderer/platform/widget/input/widget_input_handler_manager.h"
 #include "third_party/blink/renderer/platform/widget/widget_base_client.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "ui/base/ime/mojom/text_input_state.mojom-blink.h"
 #include "ui/base/mojom/menu_source_type.mojom-blink-forward.h"
 #include "ui/display/display.h"
@@ -583,8 +584,8 @@ void WidgetBase::WasShown(bool was_evicted,
   // provisional) before changing visibility.
   DCHECK(!IsForProvisionalFrame());
 
-  TRACE_EVENT_WITH_FLOW0("renderer", "WidgetBase::WasShown", this,
-                         TRACE_EVENT_FLAG_FLOW_IN);
+  TRACE_EVENT("renderer", "WidgetBase::WasShown",
+              perfetto::TerminatingFlow::FromPointer(this));
 
   SetHidden(false);
 

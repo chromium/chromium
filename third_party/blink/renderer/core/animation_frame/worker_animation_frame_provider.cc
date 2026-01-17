@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace blink {
 
@@ -41,18 +42,17 @@ void WorkerAnimationFrameProvider::CancelCallback(int id) {
 }
 
 void WorkerAnimationFrameProvider::BeginFrame(const viz::BeginFrameArgs& args) {
-  TRACE_EVENT_WITH_FLOW0("blink", "WorkerAnimationFrameProvider::BeginFrame",
-                         TRACE_ID_GLOBAL(args.trace_id),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("blink", "WorkerAnimationFrameProvider::BeginFrame",
+              perfetto::Flow::Global(args.trace_id));
 
   context_->GetAgent()->event_loop()->EnqueueMicrotask(BindOnce(
       [](WeakPersistent<WorkerAnimationFrameProvider> provider,
          const viz::BeginFrameArgs& args) {
         if (!provider)
           return;
-        TRACE_EVENT_WITH_FLOW0(
-            "blink", "WorkerAnimationFrameProvider::RequestAnimationFrame",
-            TRACE_ID_GLOBAL(args.trace_id), TRACE_EVENT_FLAG_FLOW_IN);
+        TRACE_EVENT("blink",
+                    "WorkerAnimationFrameProvider::RequestAnimationFrame",
+                    perfetto::TerminatingFlow::Global(args.trace_id));
         {
           OffscreenCanvas::ScopedInsideWorkerRAF inside_raf_scope(args);
           for (auto& offscreen_canvas : provider->offscreen_canvases_) {

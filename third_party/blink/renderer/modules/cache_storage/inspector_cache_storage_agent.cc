@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 using blink::protocol::Array;
 // Renaming Cache since there is another blink::Cache.
@@ -251,9 +252,8 @@ class ResponsesAccumulator : public RefCounted<ResponsesAccumulator> {
 
   void Dispatch(Vector<mojom::blink::FetchAPIRequestPtr> old_requests) {
     int64_t trace_id = blink::cache_storage::CreateTraceId();
-    TRACE_EVENT_WITH_FLOW0("CacheStorage", "ResponsesAccumulator::Dispatch",
-                           TRACE_ID_GLOBAL(trace_id),
-                           TRACE_EVENT_FLAG_FLOW_OUT);
+    TRACE_EVENT("CacheStorage", "ResponsesAccumulator::Dispatch",
+                perfetto::Flow::Global(trace_id));
 
     Vector<mojom::blink::FetchAPIRequestPtr> requests;
     if (params_.path_filter.empty()) {
@@ -426,9 +426,8 @@ class GetCacheKeysForRequestData {
 
   void Dispatch(std::unique_ptr<GetCacheKeysForRequestData> self) {
     int64_t trace_id = blink::cache_storage::CreateTraceId();
-    TRACE_EVENT_WITH_FLOW0(
-        "CacheStorage", "GetCacheKeysForRequestData::Dispatch",
-        TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT);
+    TRACE_EVENT("CacheStorage", "GetCacheKeysForRequestData::Dispatch",
+                perfetto::Flow::Global(trace_id));
     cache_remote_->Keys(
         nullptr /* request */, mojom::blink::CacheQueryOptions::New(), trace_id,
         BindOnce(
@@ -637,9 +636,8 @@ void InspectorCacheStorageAgent::requestCacheNames(
     std::unique_ptr<protocol::Storage::StorageBucket> maybe_storage_bucket,
     std::unique_ptr<RequestCacheNamesCallback> callback) {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
-  TRACE_EVENT_WITH_FLOW0("CacheStorage",
-                         "InspectorCacheStorageAgent::requestCacheNames",
-                         TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("CacheStorage", "InspectorCacheStorageAgent::requestCacheNames",
+              perfetto::Flow::Global(trace_id));
   if (!!maybe_security_origin + !!maybe_storage_key + !!maybe_storage_bucket !=
       1) {
     callback->sendFailure(ProtocolResponse::InvalidParams(
@@ -734,9 +732,8 @@ void InspectorCacheStorageAgent::requestEntries(
     std::optional<String> path_filter,
     std::unique_ptr<RequestEntriesCallback> callback) {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
-  TRACE_EVENT_WITH_FLOW0("CacheStorage",
-                         "InspectorCacheStorageAgent::requestEntries",
-                         TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("CacheStorage", "InspectorCacheStorageAgent::requestEntries",
+              perfetto::Flow::Global(trace_id));
 
   auto callback_wrapper =
       RequestCallbackWrapper<RequestEntriesCallback>::Wrap(std::move(callback));
@@ -784,9 +781,8 @@ void InspectorCacheStorageAgent::deleteCache(
     const String& cache_id,
     std::unique_ptr<DeleteCacheCallback> callback) {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
-  TRACE_EVENT_WITH_FLOW0("CacheStorage",
-                         "InspectorCacheStorageAgent::deleteCache",
-                         TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("CacheStorage", "InspectorCacheStorageAgent::deleteCache",
+              perfetto::Flow::Global(trace_id));
 
   auto callback_wrapper =
       RequestCallbackWrapper<DeleteCacheCallback>::Wrap(std::move(callback));
@@ -821,9 +817,8 @@ void InspectorCacheStorageAgent::deleteEntry(
     const String& request,
     std::unique_ptr<DeleteEntryCallback> callback) {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
-  TRACE_EVENT_WITH_FLOW0("CacheStorage",
-                         "InspectorCacheStorageAgent::deleteEntry",
-                         TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("CacheStorage", "InspectorCacheStorageAgent::deleteEntry",
+              perfetto::Flow::Global(trace_id));
 
   auto callback_wrapper =
       RequestCallbackWrapper<DeleteEntryCallback>::Wrap(std::move(callback));
@@ -897,9 +892,9 @@ void InspectorCacheStorageAgent::requestCachedResponse(
         request_headers,
     std::unique_ptr<RequestCachedResponseCallback> callback) {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
-  TRACE_EVENT_WITH_FLOW0("CacheStorage",
-                         "InspectorCacheStorageAgent::requestCachedResponse",
-                         TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("CacheStorage",
+              "InspectorCacheStorageAgent::requestCachedResponse",
+              perfetto::Flow::Global(trace_id));
 
   auto callback_wrapper =
       RequestCallbackWrapper<RequestCachedResponseCallback>::Wrap(

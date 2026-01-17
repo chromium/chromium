@@ -141,14 +141,14 @@ void OpenComplete(GlobalFetch::ScopedFetcher* fetcher,
                   mojom::blink::CacheStorage::OpenResult result,
                   ScriptPromiseResolver<Cache>* resolver) {
   if (!result.has_value()) {
-    TRACE_EVENT_WITH_FLOW1("CacheStorage", "CacheStorage::Open::Callback",
-                           TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN,
-                           "status", CacheStorageTracedValue(result.error()));
+    TRACE_EVENT("CacheStorage", "CacheStorage::Open::Callback",
+                perfetto::TerminatingFlow::Global(trace_id), "status",
+                CacheStorageTracedValue(result.error()));
     RejectCacheStorageWithError(resolver, result.error());
   } else {
-    TRACE_EVENT_WITH_FLOW1("CacheStorage", "CacheStorage::Open::Callback",
-                           TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN,
-                           "status", "success");
+    TRACE_EVENT("CacheStorage", "CacheStorage::Open::Callback",
+                perfetto::TerminatingFlow::Global(trace_id), "status",
+                "success");
     // See https://bit.ly/2S0zRAS for task types.
     resolver->Resolve(MakeGarbageCollected<Cache>(
         fetcher, blob_client_list, std::move(result.value()),
@@ -192,9 +192,9 @@ void MatchComplete(int64_t trace_id,
                    CacheStorageBlobClientList* blob_client_list,
                    ScriptPromiseResolver<Response>* resolver) {
   if (!result.has_value()) {
-    TRACE_EVENT_WITH_FLOW1("CacheStorage", "CacheStorage::MatchImpl::Callback",
-                           TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN,
-                           "status", CacheStorageTracedValue(result.error()));
+    TRACE_EVENT("CacheStorage", "CacheStorage::MatchImpl::Callback",
+                perfetto::TerminatingFlow::Global(trace_id), "status",
+                CacheStorageTracedValue(result.error()));
     switch (result.error()) {
       case mojom::CacheStorageError::kErrorNotFound:
       case mojom::CacheStorageError::kErrorStorage:
@@ -209,19 +209,17 @@ void MatchComplete(int64_t trace_id,
     ScriptState::Scope scope(resolver->GetScriptState());
     auto& match_response = result.value();
     if (match_response->is_eager_response()) {
-      TRACE_EVENT_WITH_FLOW1(
-          "CacheStorage", "CacheStorage::MatchImpl::Callback",
-          TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN, "eager_response",
-          CacheStorageTracedValue(
-              match_response->get_eager_response()->response));
+      TRACE_EVENT("CacheStorage", "CacheStorage::MatchImpl::Callback",
+                  perfetto::TerminatingFlow::Global(trace_id), "eager_response",
+                  CacheStorageTracedValue(
+                      match_response->get_eager_response()->response));
       resolver->Resolve(CreateEagerResponse(
           resolver->GetScriptState(),
           std::move(match_response->get_eager_response()), blob_client_list));
     } else {
-      TRACE_EVENT_WITH_FLOW1(
-          "CacheStorage", "CacheStorage::MatchImpl::Callback",
-          TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN, "response",
-          CacheStorageTracedValue(match_response->get_response()));
+      TRACE_EVENT("CacheStorage", "CacheStorage::MatchImpl::Callback",
+                  perfetto::TerminatingFlow::Global(trace_id), "response",
+                  CacheStorageTracedValue(match_response->get_response()));
       resolver->Resolve(Response::Create(resolver->GetScriptState(),
                                          *match_response->get_response()));
     }
@@ -362,9 +360,9 @@ ScriptPromise<Cache> CacheStorage::open(ScriptState* script_state,
                                         const String& cache_name,
                                         ExceptionState& exception_state) {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
-  TRACE_EVENT_WITH_FLOW1("CacheStorage", "CacheStorage::Open",
-                         TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT,
-                         "name", CacheStorageTracedValue(cache_name));
+  TRACE_EVENT("CacheStorage", "CacheStorage::Open",
+              perfetto::Flow::Global(trace_id), "name",
+              CacheStorageTracedValue(cache_name));
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<Cache>>(
       script_state, exception_state.GetContext());
@@ -423,9 +421,9 @@ ScriptPromise<IDLBoolean> CacheStorage::has(ScriptState* script_state,
                                             const String& cache_name,
                                             ExceptionState& exception_state) {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
-  TRACE_EVENT_WITH_FLOW1("CacheStorage", "CacheStorage::Has",
-                         TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT,
-                         "name", CacheStorageTracedValue(cache_name));
+  TRACE_EVENT("CacheStorage", "CacheStorage::Has",
+              perfetto::Flow::Global(trace_id), "name",
+              CacheStorageTracedValue(cache_name));
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
       script_state, exception_state.GetContext());
@@ -467,10 +465,9 @@ void CacheStorage::HasImpl(const String& cache_name,
             base::UmaHistogramTimes(
                 "ServiceWorkerCache.CacheStorage.Renderer.Has",
                 base::TimeTicks::Now() - start_time);
-            TRACE_EVENT_WITH_FLOW1(
-                "CacheStorage", "CacheStorage::Has::Callback",
-                TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN, "status",
-                CacheStorageTracedValue(result));
+            TRACE_EVENT("CacheStorage", "CacheStorage::Has::Callback",
+                        perfetto::TerminatingFlow::Global(trace_id), "status",
+                        CacheStorageTracedValue(result));
 
             auto complete = resolver->WrapCallbackInScriptScope(
                 BindOnce(&HasComplete, result));
@@ -485,9 +482,9 @@ ScriptPromise<IDLBoolean> CacheStorage::Delete(
     const String& cache_name,
     ExceptionState& exception_state) {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
-  TRACE_EVENT_WITH_FLOW1("CacheStorage", "CacheStorage::Delete",
-                         TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT,
-                         "name", CacheStorageTracedValue(cache_name));
+  TRACE_EVENT("CacheStorage", "CacheStorage::Delete",
+              perfetto::Flow::Global(trace_id), "name",
+              CacheStorageTracedValue(cache_name));
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
       script_state, exception_state.GetContext());
@@ -529,10 +526,9 @@ void CacheStorage::DeleteImpl(const String& cache_name,
             base::UmaHistogramTimes(
                 "ServiceWorkerCache.CacheStorage.Renderer.Delete",
                 base::TimeTicks::Now() - start_time);
-            TRACE_EVENT_WITH_FLOW1(
-                "CacheStorage", "CacheStorage::Delete::Callback",
-                TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN, "status",
-                CacheStorageTracedValue(result));
+            TRACE_EVENT("CacheStorage", "CacheStorage::Delete::Callback",
+                        perfetto::TerminatingFlow::Global(trace_id), "status",
+                        CacheStorageTracedValue(result));
 
             auto complete = resolver->WrapCallbackInScriptScope(
                 BindOnce(&DeleteComplete, result));
@@ -546,8 +542,8 @@ ScriptPromise<IDLSequence<IDLString>> CacheStorage::keys(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
-  TRACE_EVENT_WITH_FLOW0("CacheStorage", "CacheStorage::Keys",
-                         TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("CacheStorage", "CacheStorage::Keys",
+              perfetto::Flow::Global(trace_id));
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<IDLString>>>(
@@ -590,10 +586,9 @@ void CacheStorage::KeysImpl(
             base::UmaHistogramTimes(
                 "ServiceWorkerCache.CacheStorage.Renderer.Keys",
                 base::TimeTicks::Now() - start_time);
-            TRACE_EVENT_WITH_FLOW1(
-                "CacheStorage", "CacheStorage::Keys::Callback",
-                TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN, "key_list",
-                CacheStorageTracedValue(keys));
+            TRACE_EVENT("CacheStorage", "CacheStorage::Keys::Callback",
+                        perfetto::TerminatingFlow::Global(trace_id), "key_list",
+                        CacheStorageTracedValue(keys));
 
             auto complete = resolver->WrapCallbackInScriptScope(BindOnce(
                 [](const Vector<String>& keys,
@@ -648,10 +643,10 @@ ScriptPromise<Response> CacheStorage::MatchImpl(
     in_range_fetch_event = global_scope->HasRangeFetchEvent(request->url());
   }
 
-  TRACE_EVENT_WITH_FLOW2("CacheStorage", "CacheStorage::MatchImpl",
-                         TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT,
-                         "request", CacheStorageTracedValue(mojo_request),
-                         "options", CacheStorageTracedValue(mojo_options));
+  TRACE_EVENT("CacheStorage", "CacheStorage::MatchImpl",
+              perfetto::Flow::Global(trace_id), "request",
+              CacheStorageTracedValue(mojo_request), "options",
+              CacheStorageTracedValue(mojo_options));
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<Response>>(
       script_state, exception_state.GetContext());
