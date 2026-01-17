@@ -41,9 +41,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
-#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -91,6 +89,37 @@ scoped_refptr<const Extension> CreateTabGroupsExtension() {
   return ExtensionBuilder("Extension with tabGroups permission")
       .AddAPIPermission("tabGroups")
       .Build();
+}
+
+tab_groups::SavedTabGroup CreateSavedTabGroupFromLocalId(
+    TabGroupId group_id,
+    TabListInterface* tab_list) {
+  std::optional<tab_groups::TabGroupVisualData> visual_data =
+      tab_list->GetTabGroupVisualData(group_id);
+  CHECK(visual_data);
+
+#if BUILDFLAG(IS_ANDROID)
+  tab_groups::LocalTabGroupID local_id = group_id.token();
+#else
+  tab_groups::LocalTabGroupID local_id = group_id;
+#endif
+
+  tab_groups::SavedTabGroup saved_group(visual_data->title(),
+                                        visual_data->color(), {}, std::nullopt,
+                                        std::nullopt, local_id);
+
+  gfx::Range tabs_range = tab_list->GetTabGroupTabIndices(group_id);
+  for (size_t i = tabs_range.start(); i < tabs_range.end(); ++i) {
+    tabs::TabInterface* tab = tab_list->GetTab(i);
+    content::WebContents* contents = tab->GetContents();
+    tab_groups::SavedTabGroupTab saved_tab(
+        contents->GetVisibleURL(), contents->GetTitle(),
+        saved_group.saved_guid(), std::nullopt);
+    saved_tab.SetLocalTabID(ExtensionTabUtil::GetTabId(contents));
+    saved_group.AddTabLocally(std::move(saved_tab));
+  }
+
+  return saved_group;
 }
 
 class TabGroupsApiBrowserTest : public ExtensionBrowserTest {
@@ -451,31 +480,28 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsUpdateError) {
   EXPECT_EQ("No group with id: 0.", error);
 }
 
-// TODO(crbug.com/405219902): Port to desktop Android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test that tabGroups.update() passes on a saved group.
-// NOTE This cannot be ported to desktop Android until an equivalent for
-// SavedTabGroupUtils::CreateSavedTabGroupFromLocalId() exists.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsUpdateSavedTab) {
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
-
-  TabGroupModel* tab_group_model = tab_strip_model->group_model();
+  ASSERT_TRUE(SupportsTabGroups());
 
   // Create a group.
-  // TODO(crbug.com/405219902): Convert call to CreateTabGroup() here and below.
-  TabGroupId group = tab_strip_model->AddToNewGroup({0, 1, 2});
+  TabGroupId group = CreateTabGroup({0, 1, 2});
   tab_groups::TabGroupVisualData visual_data(
       u"Initial title", tab_groups::TabGroupColorId::kBlue);
-  tab_strip_model->ChangeTabGroupVisuals(group, visual_data);
+  TabListInterface* tab_list = GetTabListInterface();
+  tab_list->SetTabGroupVisualData(group, visual_data);
 
   tab_groups::TabGroupSyncService* saved_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile());
   ASSERT_TRUE(saved_service);
-  saved_service->AddGroup(
-      tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(group));
+  saved_service->AddGroup(CreateSavedTabGroupFromLocalId(group, tab_list));
+
   int group_id = ExtensionTabUtil::GetGroupId(group);
+#if BUILDFLAG(IS_ANDROID)
+  ASSERT_TRUE(saved_service->GetGroup(group.token()));
+#else
   ASSERT_TRUE(saved_service->GetGroup(group));
+#endif
 
   scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
 
@@ -489,12 +515,12 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsUpdateSavedTab) {
                                           api_test_utils::FunctionMode::kNone));
 
   // Check that values were updated.
-  tab_groups::TabGroupVisualData expected_visual_data(
-      u"another title", tab_groups::TabGroupColorId::kRed);
-  ASSERT_EQ(expected_visual_data,
-            *tab_group_model->GetTabGroup(group)->visual_data());
+  std::optional<tab_groups::TabGroupVisualData> new_visual_data =
+      tab_list->GetTabGroupVisualData(group);
+  ASSERT_TRUE(new_visual_data);
+  EXPECT_EQ(u"another title", new_visual_data->title());
+  EXPECT_EQ(tab_groups::TabGroupColorId::kRed, new_visual_data->color());
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test that moving a group to the right results in the correct tab order.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsMoveRight) {
