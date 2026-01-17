@@ -36,6 +36,7 @@ using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Pair;
+using ::testing::Pointee;
 using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::UnorderedElementsAre;
@@ -45,6 +46,11 @@ constexpr char kDefaultPrompt[] = "test prompt";
 MATCHER_P(EntityDataHasSkillSpecifics, matcher, "") {
   return testing::ExplainMatchResult(matcher, arg.specifics.skill(),
                                      result_listener);
+}
+
+MATCHER_P4(HasSkill, id, name, icon, prompt, "") {
+  return arg.id == id && arg.name == name && arg.icon == icon &&
+         arg.prompt == prompt;
 }
 
 sync_pb::SkillSpecifics CreateSkillSpecifics(std::string prompt) {
@@ -112,11 +118,11 @@ class SkillsSyncBridgeTest : public testing::Test {
   void ResetBridgeAndWaitForInitialization() {
     bridge_.reset();
     base::RunLoop run_loop;
-    EXPECT_CALL(processor_, ModelReadyToSync)
+    EXPECT_CALL(mock_processor_, ModelReadyToSync)
         .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
 
     bridge_ = std::make_unique<SkillsSyncBridge>(
-        processor_.CreateForwardingProcessor(),
+        mock_processor_.CreateForwardingProcessor(),
         syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
         mock_skills_service_);
     run_loop.Run();
@@ -139,6 +145,10 @@ class SkillsSyncBridgeTest : public testing::Test {
 
   syncer::DataTypeStore& store() { return *store_; }
   SkillsSyncBridge& bridge() { return *bridge_; }
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor>&
+  mock_processor() {
+    return mock_processor_;
+  }
   testing::NiceMock<MockSkillsService>& mock_skills_service() {
     return mock_skills_service_;
   }
@@ -146,7 +156,7 @@ class SkillsSyncBridgeTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<syncer::DataTypeStore> store_;
-  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   testing::NiceMock<MockSkillsService> mock_skills_service_;
   std::unique_ptr<SkillsSyncBridge> bridge_;
 };
@@ -398,6 +408,57 @@ TEST_F(SkillsSyncBridgeTest, ApplyIncrementalSyncChanges_Delete) {
             std::nullopt);
 
   EXPECT_THAT(GetAllLocalDataFromStore(), IsEmpty());
+}
+
+TEST_F(SkillsSyncBridgeTest, ShouldPropagateUpdatesToSync) {
+  const std::string kSkillId =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+
+  Skill skill(kSkillId, "name", "icon", "prompt");
+  ON_CALL(mock_skills_service(), GetSkillById(kSkillId))
+      .WillByDefault(Return(&skill));
+
+  sync_pb::SkillSpecifics expected_specifics;
+  expected_specifics.set_guid(kSkillId);
+  expected_specifics.set_name("name");
+  expected_specifics.set_icon("icon");
+  expected_specifics.mutable_simple_skill()->set_prompt("prompt");
+
+  EXPECT_CALL(mock_processor(),
+              Put(_,
+                  Pointee(EntityDataHasSkillSpecifics(
+                      base::test::EqualsProto(expected_specifics))),
+                  _));
+  bridge().OnSkillUpdated(kSkillId, SkillsService::UpdateSource::kLocal);
+}
+
+TEST_F(SkillsSyncBridgeTest, ShouldPropagateDeletionsToSync) {
+  const std::string kSkillId =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+
+  // Simulate the skill was deleted.
+  ON_CALL(mock_skills_service(), GetSkillById(kSkillId))
+      .WillByDefault(Return(nullptr));
+
+  EXPECT_CALL(mock_processor(), Delete(kSkillId, _, _));
+  bridge().OnSkillUpdated(kSkillId, SkillsService::UpdateSource::kLocal);
+}
+
+TEST_F(SkillsSyncBridgeTest, ShouldReloadDataOnRestart) {
+  const std::string kSkillId =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+
+  // Create a local skill first.
+  Skill skill(kSkillId, "name", "icon", "prompt");
+  ON_CALL(mock_skills_service(), GetSkillById(kSkillId))
+      .WillByDefault(Return(&skill));
+  bridge().OnSkillUpdated(kSkillId, SkillsService::UpdateSource::kLocal);
+
+  // Simulate a browser restart.
+  EXPECT_CALL(mock_skills_service(),
+              LoadInitialSkills(UnorderedElementsAre(
+                  Pointee(HasSkill(kSkillId, "name", "icon", "prompt")))));
+  ResetBridgeAndWaitForInitialization();
 }
 
 }  // namespace

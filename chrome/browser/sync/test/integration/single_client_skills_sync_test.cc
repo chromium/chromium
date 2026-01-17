@@ -54,6 +54,18 @@ sync_pb::SkillSpecifics CreateSkillSpecifics(std::string guid,
   return specifics;
 }
 
+std::vector<sync_pb::SkillSpecifics> SyncEntitiesToSkillSpecifics(
+    std::vector<sync_pb::SyncEntity> entities) {
+  std::vector<sync_pb::SkillSpecifics> skills;
+  for (sync_pb::SyncEntity& entity : entities) {
+    CHECK(entity.specifics().has_skill());
+    sync_pb::SkillSpecifics specifics;
+    specifics.Swap(entity.mutable_specifics()->mutable_skill());
+    skills.push_back(std::move(specifics));
+  }
+  return skills;
+}
+
 // A checker that waits for the skills in the service on the client to match the
 // provided matcher.
 class SkillsServiceChecker : public StatusChangeChecker,
@@ -94,6 +106,34 @@ class SkillsServiceChecker : public StatusChangeChecker,
   const Matcher skills_matcher_;
 };
 
+// A checker that waits for the skills in the fake server to match the provided
+// matcher.
+class ServerSkillsMatchChecker
+    : public fake_server::FakeServerMatchStatusChecker {
+ public:
+  using Matcher = testing::Matcher<std::vector<sync_pb::SkillSpecifics>>;
+
+  explicit ServerSkillsMatchChecker(const Matcher& matcher)
+      : matcher_(matcher) {}
+
+  // fake_server::FakeServerMatchStatusChecker overrides.
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for server skills to match. ";
+
+    testing::StringMatchResultListener result_listener;
+    bool matches = testing::ExplainMatchResult(
+        matcher_,
+        SyncEntitiesToSkillSpecifics(
+            fake_server()->GetSyncEntitiesByDataType(syncer::SKILL)),
+        &result_listener);
+    *os << result_listener.str();
+    return matches;
+  }
+
+ private:
+  const Matcher matcher_;
+};
+
 class SingleClientSkillsSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
@@ -122,6 +162,16 @@ class SingleClientSkillsSyncTest
             /*client_tag=*/specifics.guid(), entity_specifics,
             /*creation_time=*/0,
             /*last_modified_time=*/0));
+  }
+
+  void InjectTombstoneToFakeServer(const std::string& skill_id) {
+    syncer::ClientTagHash client_tag_hash =
+        syncer::ClientTagHash::FromUnhashed(syncer::SKILL, skill_id);
+
+    fake_server_->InjectEntity(syncer::PersistentTombstoneEntity::CreateNew(
+        syncer::LoopbackServerEntity::CreateId(syncer::SKILL,
+                                               client_tag_hash.value()),
+        client_tag_hash.value()));
   }
 
  private:
@@ -158,19 +208,33 @@ IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest, ShouldLoadDataOnRestart) {
 IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest, ShouldApplyRemoteUpdates) {
   ASSERT_TRUE(SetupSync());
 
-  GetSkillsService().AddSkill(/*name=*/"skill1", /*icon=*/"icon1",
-                              /*prompt=*/"prompt1");
+  const skills::Skill* skill1 =
+      GetSkillsService().AddSkill(/*name=*/"skill1", /*icon=*/"icon1",
+                                  /*prompt=*/"prompt1");
   const skills::Skill* skill_to_update =
       GetSkillsService().AddSkill(/*name=*/"skill2 to update", /*icon=*/"icon2",
                                   /*prompt=*/"prompt2");
+  const skills::Skill* skill_to_delete =
+      GetSkillsService().AddSkill(/*name=*/"skill3 to delete", /*icon=*/"icon3",
+                                  /*prompt=*/"prompt3");
   const std::string skill_id_to_add =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
+
+  ASSERT_TRUE(
+      ServerSkillsMatchChecker(
+          UnorderedElementsAre(
+              HasSkillSpecifics(skill1->id, "skill1", "icon1", "prompt1"),
+              HasSkillSpecifics(skill_to_update->id, "skill2 to update",
+                                "icon2", "prompt2"),
+              HasSkillSpecifics(skill_to_delete->id, "skill3 to delete",
+                                "icon3", "prompt3")))
+          .Wait());
 
   InjectSpecificsToFakeServer(CreateSkillSpecifics(
       skill_to_update->id, "updated name", "updated icon", "updated prompt"));
   InjectSpecificsToFakeServer(CreateSkillSpecifics(
       skill_id_to_add, "new_skill_name", "new_skill_icon", "new_skill_prompt"));
-  // TODO(crbug.com/471795213): test deletion propagation.
+  InjectTombstoneToFakeServer(skill_to_delete->id);
 
   EXPECT_TRUE(SkillsServiceChecker(
                   GetSkillsService(),

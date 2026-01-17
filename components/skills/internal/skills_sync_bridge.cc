@@ -12,6 +12,7 @@
 #include "components/skills/proto/skill_local_data.pb.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skills_service.h"
+#include "components/sync/base/deletion_origin.h"
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
@@ -257,6 +258,7 @@ void SkillsSyncBridge::OnSkillUpdated(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(store_);
+  // TODO(crbug.com/471795213): consider using CHECK for tracking metadata.
 
   if (update_source == SkillsService::UpdateSource::kSync) {
     // This change was made by the remote sync service and it should not be sent
@@ -271,9 +273,16 @@ void SkillsSyncBridge::OnSkillUpdated(
   if (!skill) {
     // Skill was deleted locally.
     batch->DeleteData(skill_id);
+    change_processor()->Delete(skill_id, syncer::DeletionOrigin::Unspecified(),
+                               batch->GetMetadataChangeList());
   } else {
     // Skill was created or updated locally.
     StoreSkill(*skill, *batch);
+    change_processor()->Put(
+        skill->id,
+        std::make_unique<syncer::EntityData>(
+            SpecificsToEntityData(SkillToSpecifics(*skill))),
+        batch->GetMetadataChangeList());
   }
 
   store_->CommitWriteBatch(std::move(batch),
