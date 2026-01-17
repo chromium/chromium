@@ -94,6 +94,7 @@ export function getHtml(this: ComposeboxElement) {
           exportparts="context-menu-entrypoint-icon,
               cr-composebox-file-carousel, upload-container, voice-icon,
               carousel-divider, carousel-container, thumbnail"
+          in-composebox
           .tabSuggestions="${this.tabSuggestions}"
           .entrypointName="${this.entrypointName ? this.entrypointName : 'Composebox'}"
           @add-tab-context="${this.addTabContext_}"
@@ -111,7 +112,6 @@ export function getHtml(this: ComposeboxElement) {
           searchbox-layout-mode="${this.searchboxLayoutMode}"
           ?carousel-on-top_="${this.carouselOnTop_}"
           ?show-voice-search="${this.shouldShowVoiceSearch_()}"
-          ?in-composebox="${this.inComposebox}"
           .submitButtonShown="${this.searchboxNextEnabled && this.submitEnabled_ && this.showSubmit_}">
         <cr-composebox-dropdown
             id="matches"
