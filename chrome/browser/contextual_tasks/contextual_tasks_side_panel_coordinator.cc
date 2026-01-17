@@ -913,7 +913,7 @@ ContextualTasksSidePanelCoordinator::GetSessionHandleForActiveTabOrSidePanel() {
 }
 
 void ContextualTasksSidePanelCoordinator::NotifyActiveTaskContextProvider() {
-  active_task_context_provider_->OnSidePanelStateUpdated();
+  active_task_context_provider_->RefreshContext();
 }
 
 size_t ContextualTasksSidePanelCoordinator::GetNumberOfActiveTasks() const {
