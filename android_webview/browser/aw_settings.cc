@@ -515,7 +515,7 @@ void AwSettings::UpdateBackForwardCacheEnabledLocked(
 void AwSettings::UpdateBackForwardCacheSettingsTimeoutLocked(
     JNIEnv* env,
     const JavaRef<jobject>& obj) {
-  int timeout_in_seconds =
+  int64_t timeout_in_seconds =
       Java_AwSettings_getBackForwardCacheSettingsTimeout(env, obj);
   if (web_contents()) {
     if (timeout_in_seconds != back_forward_cache_timeout_in_seconds_) {

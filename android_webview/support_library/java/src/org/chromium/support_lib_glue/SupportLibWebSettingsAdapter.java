@@ -495,7 +495,7 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
             return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                     new SupportLibWebViewBackForwardCacheSettingsAdapter(
                             mAwSettings.getBackForwardCacheSettingsMaxPagesInCache(),
-                            mAwSettings.getBackForwardCacheSettingsTimeout()));
+                            (int) mAwSettings.getBackForwardCacheSettingsTimeout()));
         }
     }
 
@@ -576,7 +576,7 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
     }
 
     @Override
-    public void setBackForwardCacheSettingsTimeout(int timeout) {
+    public void setBackForwardCacheSettingsTimeout(long timeout) {
         try (TraceEvent ignored =
                 TraceEvent.scoped(
                         "WebView.APICall.AndroidX.BACK_FORWARD_CACHE_SETTINGS_SET_TIMEOUT_IN_SECONDS")) {
@@ -592,6 +592,26 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
                         "WebView.APICall.AndroidX.BACK_FORWARD_CACHE_SETTINGS_SET_MAX_PAGES_IN_CACHE")) {
             recordApiCall(ApiCall.BACK_FORWARD_CACHE_SETTINGS_SET_MAX_PAGES_IN_CACHE);
             mAwSettings.setBackForwardCacheMaxPagesInCache(pagesInCache);
+        }
+    }
+
+    @Override
+    public long getBackForwardCacheSettingsTimeout() {
+        try (TraceEvent ignored =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.BACK_FORWARD_CACHE_SETTINGS_GET_MAX_PAGES_IN_CACHE")) {
+            recordApiCall(ApiCall.BACK_FORWARD_CACHE_SETTINGS_GET_TIMEOUT_IN_SECONDS);
+            return mAwSettings.getBackForwardCacheSettingsTimeout();
+        }
+    }
+
+    @Override
+    public int getBackForwardCacheSettingsMaxPagesInCache() {
+        try (TraceEvent ignored =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.BACK_FORWARD_CACHE_SETTINGS_GET_MAX_PAGES_IN_CACHE")) {
+            recordApiCall(ApiCall.BACK_FORWARD_CACHE_SETTINGS_GET_MAX_PAGES_IN_CACHE);
+            return mAwSettings.getBackForwardCacheSettingsMaxPagesInCache();
         }
     }
 }

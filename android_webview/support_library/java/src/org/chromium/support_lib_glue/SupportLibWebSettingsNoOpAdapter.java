@@ -240,12 +240,22 @@ class SupportLibWebSettingsNoOpAdapter implements WebSettingsBoundaryInterface {
     }
 
     @Override
-    public void setBackForwardCacheSettingsTimeout(int timeout) {
+    public void setBackForwardCacheSettingsTimeout(long timeout) {
         recordApiCall(ApiCall.BACK_FORWARD_CACHE_SETTINGS_SET_TIMEOUT_IN_SECONDS);
     }
 
     @Override
     public void setBackForwardCacheSettingsMaxPagesInCache(int pagesInCache) {
         recordApiCall(ApiCall.BACK_FORWARD_CACHE_SETTINGS_SET_MAX_PAGES_IN_CACHE);
+    }
+
+    @Override
+    public long getBackForwardCacheSettingsTimeout() {
+        return 0;
+    }
+
+    @Override
+    public int getBackForwardCacheSettingsMaxPagesInCache() {
+        return 0;
     }
 }

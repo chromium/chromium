@@ -214,7 +214,7 @@ public class AwSettings {
     private boolean mBackForwardCacheEnabled;
     private boolean mHasCalledSetBackForwardCacheEnabledBefore;
 
-    private int mBackForwardCacheTimeoutInSeconds;
+    private long mBackForwardCacheTimeoutInSeconds;
     private int mBackForwardCacheMaxPagesInCache;
 
     private boolean mCssHexAlphaColorEnabled;
@@ -1864,7 +1864,7 @@ public class AwSettings {
         }
     }
 
-    public void setBackForwardCacheTimeoutInSeconds(int timeoutInSeconds) {
+    public void setBackForwardCacheTimeoutInSeconds(long timeoutInSeconds) {
         if (TRACE) Log.i(TAG, "setBackForwardCacheTimeoutInSeconds=" + timeoutInSeconds);
         // Setting BackForwardCacheSettings implicitly enables BFCache as well.
         setBackForwardCacheEnabled(true);
@@ -1891,7 +1891,7 @@ public class AwSettings {
     }
 
     @CalledByNative
-    public int getBackForwardCacheSettingsTimeout() {
+    public long getBackForwardCacheSettingsTimeout() {
         synchronized (mAwSettingsLock) {
             assert Thread.holdsLock(mAwSettingsLock);
             return mBackForwardCacheTimeoutInSeconds;

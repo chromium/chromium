@@ -416,7 +416,8 @@ public class Features {
     // BackForwardCacheSettings.setMaxPagesInCache
     // BackForwardCacheSettings.getTimeoutInSec
     // BackForwardCacheSettings.getMaxPagesInCache
-    public static final String BACK_FORWARD_CACHE_SETTINGS_V2 = "BACK_FORWARD_CACHE_SETTINGS_V2";
+    // V2 was deleted as it didn't get released and we made a major type change in V3.
+    public static final String BACK_FORWARD_CACHE_SETTINGS_V3 = "BACK_FORWARD_CACHE_SETTINGS_V3";
 
     // Profile.preconnect
     public static final String PRECONNECT = "PRECONNECT";
