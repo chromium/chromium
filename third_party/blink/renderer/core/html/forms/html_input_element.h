@@ -388,6 +388,10 @@ class CORE_EXPORT HTMLInputElement
 
   bool IsBaseAppearanceCombobox() const;
 
+  // Used for the (experimental) declarative WebMCP prototype.
+  bool SupportsWebMCP() const override { return true; }
+  bool FillWebMCPData(JSONValue& data) override;
+
  protected:
   void DefaultEventHandler(Event&) override;
   bool IsInnerEditorValueEmpty() const final;

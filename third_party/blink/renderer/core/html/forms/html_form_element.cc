@@ -73,10 +73,14 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/script_tools/model_context_supplement.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/json/json_parser.h"
+#include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -138,42 +142,87 @@ bool HTMLFormElement::IsValidElement() {
   return true;
 }
 
-bool HTMLFormElement::IsValidWebMcpForm() const {
+bool HTMLFormElement::IsValidWebMCPForm() const {
   return active_webmcp_tool_ && active_webmcp_tool_->IsValidTool();
 }
 
 void HTMLFormElement::HTMLFormMcpTool::ExecuteTool(
     String input_arguments,
     base::OnceCallback<void(String)> done_callback) {
-  LOG(ERROR) << "Executing declarative MCP function for tool " << tool_name_
-             << ", with arguments " << input_arguments;
+  auto fail = [&done_callback]() {
+    // Failure is represented by a null string.
+    return std::move(done_callback).Run(g_null_atom);
+  };
+  std::unique_ptr<JSONValue> json = ParseJSON(input_arguments);
+  if (!json) {
+    return fail();
+  }
+  std::unique_ptr<JSONObject> json_obj = JSONObject::From(std::move(json));
+  if (!json_obj) {
+    return fail();
+  }
+  HeapHashMap<String, Member<HTMLFormControlElement>> controls_map;
+  for (ListedElement* element : form_->ListedElements()) {
+    if (auto* form_control = DynamicTo<HTMLFormControlElement>(element)) {
+      if (form_control->SupportsWebMCP()) {
+        if (String parameter_name = form_control->GetWebMCPParameterName()) {
+          controls_map.insert(parameter_name, form_control);
+        }
+      }
+    }
+  }
+  // Now loop through what we got, and attempt to match it up.
+  for (wtf_size_t i = 0; i < json_obj->size(); ++i) {
+    JSONObject::Entry entry = json_obj->at(i);
+    const String parameter_name = String(entry.first);
+    blink::JSONValue& contents = *entry.second;
+    auto it = controls_map.find(parameter_name);
+    if (it == controls_map.end()) {
+      LOG(ERROR) << "Can't find a control with name " << parameter_name;
+      return fail();
+    }
+    if (!it->value->FillWebMCPData(contents)) {
+      return fail();
+    }
+  }
+
+  // Success. Now we can either submit the form or focus the submit button.
+  // form_->ScheduleFormSubmission(/*event*/ nullptr, /*submit_button*/
+  // nullptr);
+
   std::move(done_callback)
-      .Run("There are three flights tomorrow, 3pm, 4pm, and 5pm.");
+      .Run("The form was filled. The user now needs to submit it.");
 }
 
 String HTMLFormElement::HTMLFormMcpTool::ComputeInputSchema() {
   // Hard-coded schema for now - this is temporary.
-  return R"({
-    "$schema": "http://json-schema.org/draft-07/schema#",
+  return R"json({
     "type": "object",
-    "required": [
-      "originAirportCode",
-      "destinationAirportCode",
-      "_departureDate_"
-    ],
     "properties": {
-      "originAirportCode": {
-        "type": "string"
-      },
-      "destinationAirportCode": {
-        "type": "string"
-      },
-      "_departureDate_": {
+      "origin": {
         "type": "string",
-        "format": "date"
+        "description": "The origin city for the flight"
+      },
+      "destination": {
+        "type": "string",
+        "description": "The destination city for the flight"
+      },
+      "departureDate": {
+        "type": "string",
+        "description": "The departure date in YYYY-MM-DD format"
+      },
+      "returnDate": {
+        "type": "string",
+        "description": "The return date in YYYY-MM-DD format. Only required for round-trip flights. Omit for one-way trips."
+      },
+      "passengers": {
+        "type": "number",
+        "description": "The number of passengers (1-8)"
       }
-    }
-  })";
+    },
+    "required": [
+      "origin", "destination", "departureDate", "passengers"]
+  })json";
 }
 
 void HTMLFormElement::HTMLFormMcpTool::Trace(Visitor* visitor) const {
@@ -206,7 +255,7 @@ void HTMLFormElement::UpdateMcpDefinitionsIfNeeded() {
       is_valid_mcp_form && active_webmcp_tool_ &&
       (active_webmcp_tool_->ToolName() != name ||
        active_webmcp_tool_->ToolDescription() != description);
-  if (is_valid_mcp_form == IsValidWebMcpForm() &&
+  if (is_valid_mcp_form == IsValidWebMCPForm() &&
       !name_or_description_changed) {
     // No change.
     return;
@@ -220,7 +269,7 @@ void HTMLFormElement::UpdateMcpDefinitionsIfNeeded() {
     return;
   }
 
-  if (IsValidWebMcpForm()) {
+  if (IsValidWebMCPForm()) {
     CHECK(!is_valid_mcp_form || name_or_description_changed);
     // Unregister the tool to ensure any in-flight tool executions are aborted.
     model_context->unregisterTool(active_webmcp_tool_->ToolName(),

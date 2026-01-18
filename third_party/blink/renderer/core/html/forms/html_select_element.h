@@ -348,6 +348,10 @@ class CORE_EXPORT HTMLSelectElement final
   // and <datalist> elements.
   static bool ShouldIgnoreDescendantsForOptionTraversals(Element* element);
 
+  // Used for the (experimental) declarative WebMCP prototype.
+  bool SupportsWebMCP() const override { return true; }
+  bool FillWebMCPData(JSONValue& data) override;
+
  private:
   mojom::blink::FormControlType FormControlType() const override;
   const AtomicString& FormControlTypeAsString() const override;

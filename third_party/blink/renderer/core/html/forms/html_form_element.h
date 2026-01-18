@@ -216,7 +216,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   void RemoveFromPastNamesMap(HTMLElement&);
   bool PastNamesEmpty() const;
 
-  bool IsValidWebMcpForm() const;
+  bool IsValidWebMCPForm() const;
   void UpdateMcpDefinitionsIfNeeded();
   void ExecuteDeclarativeWebMCPFunction(String input_arguments);
   String UpdateDeclarativeWebMCPInputSchema();
