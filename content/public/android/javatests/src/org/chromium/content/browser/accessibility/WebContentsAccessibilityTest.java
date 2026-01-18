@@ -301,6 +301,25 @@ public class WebContentsAccessibilityTest {
         mActivityTestRule.focusNode(virtualViewId);
     }
 
+    /**
+     * Set focus to the node and wait until a selection event is received.
+     *
+     * <p>When focus is changed, native eventually sends a selection update event to the focused
+     * node. Tests that rely on receiving one selection event may become flaky if this event is not
+     * received before they start waiting for their own event.
+     *
+     * @param virtualViewId int virtualViewId of the node to focus.
+     */
+    private void focusNodeAndWaitForSelection(int virtualViewId) throws Throwable {
+        mTestData.setReceivedSelectionEvent(false);
+        mActivityTestRule.focusNode(virtualViewId);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mTestData.hasReceivedSelectionEvent();
+                },
+                NODE_TIMEOUT_ERROR);
+    }
+
     public AccessibilityNodeInfoCompat createAccessibilityNodeInfo(int virtualViewId) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.mNodeProvider.createAccessibilityNodeInfo(virtualViewId));
@@ -1171,7 +1190,7 @@ public class WebContentsAccessibilityTest {
         mNodeInfo = createAccessibilityNodeInfo(editTextVirtualViewId);
         Assert.assertNotEquals(mNodeInfo, null);
 
-        focusNode(editTextVirtualViewId);
+        focusNodeAndWaitForSelection(editTextVirtualViewId);
 
         // Set granularity to CHARACTER, with selection FALSE
         Bundle args = new Bundle();
@@ -1217,7 +1236,7 @@ public class WebContentsAccessibilityTest {
         mNodeInfo = createAccessibilityNodeInfo(editTextVirtualViewId);
         Assert.assertNotEquals(mNodeInfo, null);
 
-        focusNode(editTextVirtualViewId);
+        focusNodeAndWaitForSelection(editTextVirtualViewId);
 
         // Set granularity to CHARACTER, with selection TRUE
         Bundle args = new Bundle();
@@ -1296,7 +1315,7 @@ public class WebContentsAccessibilityTest {
         mNodeInfo = createAccessibilityNodeInfo(editTextVirtualViewId);
         Assert.assertNotEquals(mNodeInfo, null);
 
-        focusNode(editTextVirtualViewId);
+        focusNodeAndWaitForSelection(editTextVirtualViewId);
 
         // Set granularity to WORD, with selection FALSE
         Bundle args = new Bundle();
@@ -1345,7 +1364,7 @@ public class WebContentsAccessibilityTest {
         mNodeInfo = createAccessibilityNodeInfo(editTextVirtualViewId);
         Assert.assertNotEquals(mNodeInfo, null);
 
-        focusNode(editTextVirtualViewId);
+        focusNodeAndWaitForSelection(editTextVirtualViewId);
 
         // Set granularity to WORD, with selection TRUE
         Bundle args = new Bundle();
@@ -1426,7 +1445,7 @@ public class WebContentsAccessibilityTest {
         mNodeInfo = createAccessibilityNodeInfo(contentEditableVirtualViewId);
         Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
 
-        focusNode(contentEditableVirtualViewId);
+        focusNodeAndWaitForSelection(contentEditableVirtualViewId);
 
         // Send an end of test signal to ensure test page has fully started since some bots
         // seem to flake when the page has not fully loaded before testing begins.
