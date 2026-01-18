@@ -46,6 +46,7 @@
 <translation id="3150823315463303127">המארח לא הצליח לקרוא את המדיניות.</translation>
 <translation id="3171922709365450819">המכשיר הזה לא נתמך על-ידי הלקוח הזה כי נדרש עבורו אימות של צד שלישי.</translation>
 <translation id="3197730452537982411">Remote Desktop</translation>
+<translation id="3236334139428307578">‏זכויות יוצרים 2026‏ The Chromium Authors. כל הזכויות שמורות.</translation>
 <translation id="324272851072175193">שליחת ההוראות באימייל</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> מבקש אישור לבצע שינויים.</translation>
 <translation id="3339299787263251426">גישה אל המחשב שלך באופן מאובטח דרך האינטרנט</translation>
@@ -110,6 +111,7 @@
 <translation id="5823554426827907568">התקבלה בקשת גישה מאת <ph name="CLIENT_USERNAME" /> לצפייה במסך שלך ולשליטה במקלדת ובעכבר. צריך להקיש על "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />" אם לא ציפית לבקשה הזו. אחרת, עליך להקיש על "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />" כדי לאפשר את החיבור כשהכול מוכן.</translation>
 <translation id="5823658491130719298">‏במחשב שאליו רוצים לגשת מרחוק, יש לפתוח את Chrome ולהיכנס אל <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">אפשרויות תצוגה</translation>
+<translation id="5965133372831030509">‏זכויות יוצרים 2026‏ Google LLC. כל הזכויות שמורות.</translation>
 <translation id="6033507038939587647">אפשרויות מקלדת</translation>
 <translation id="6040143037577758943">סגירה</translation>
 <translation id="6062854958530969723">אתחול המארח נכשל.</translation>

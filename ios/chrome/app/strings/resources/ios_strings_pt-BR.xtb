@@ -315,6 +315,7 @@
 <translation id="21133533946938348">Fixar guia</translation>
 <translation id="2117650889962717098">Mantenha sua privacidade mudando para o modo de navegação anônima</translation>
 <translation id="2119636449201577317">Abrir em…</translation>
+<translation id="2119962645034852864">Alguns serviços não estão disponíveis para sua conta</translation>
 <translation id="2120553909046681540">Sua organização desativou a navegação anônima.</translation>
 <translation id="2122754583996902531">Seu navegador é gerenciado. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">As conversas da sua organização não são usadas para melhorar nossos modelos. O Gemini pode conter informações imprecisas, inclusive sobre pessoas. Por isso, cheque o conteúdo. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
@@ -873,6 +874,7 @@
 <translation id="4302061870579014542">Definir posição</translation>
 <translation id="4304713468139749426">Gerenciador de Senhas</translation>
 <translation id="4309403553630140242">Toque duas vezes para ver mais informações</translation>
+<translation id="4310738531374808763">Personalize sua página inicial</translation>
 <translation id="4320848494125124980">Recentes</translation>
 <translation id="4322394346347055525">Fechar outras guias</translation>
 <translation id="4324735664183300693">Ativar notificações</translation>
@@ -1711,6 +1713,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> por cento baixados</translation>
 <translation id="7345061034321640811">Importação não permitida</translation>
+<translation id="7347998088283246662">Importe senhas, histórico, favoritos e muito mais</translation>
 <translation id="7352651011704765696">Algo deu errado</translation>
 <translation id="7364796246159120393">Escolher arquivo</translation>
 <translation id="736564850024123010">Mude a posição da barra de endereço para personalizar sua experiência.</translation>
@@ -2236,6 +2239,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="914781932147356857">Marcar tudo…</translation>
 <translation id="9148126808321036104">Faça login novamente</translation>
 <translation id="9149866541089851383">Editar...</translation>
+<translation id="9152637745605628097">Escolha entre temas e cores ou faça upload de uma imagem</translation>
 <translation id="9159628751968616911">Enviar página da Web</translation>
 <translation id="9162432979321511934">Ative a opção "Preenchimento automático de senhas"</translation>
 <translation id="9165320910061267720">Para receber notificações de alertas de redução no preço, ative as notificações nas configurações do iOS.</translation>

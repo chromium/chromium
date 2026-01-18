@@ -186,6 +186,7 @@
 <translation id="1289129165308566697">आफ्नो हिस्ट्री अन्य डिभाइसहरूमा हेर्नुहोस्</translation>
 <translation id="1292571435393770077">ट्रे १६</translation>
 <translation id="1292701964462482250">"तपाईंको कम्प्युटरमा रहेको सफ्टवेयरले Chrome लाई सुरक्षित रूपमा वेबमा जडान हुनबाट रोकिरहेको छ" (Windows कम्प्युटरहरू मात्र)</translation>
+<translation id="1293154089865862473">यी विकल्पहरू उपलब्ध गराउन चेकआउट पेजमा भएको कन्टेन्ट Google सँग सेयर गरिन्छ। अटोफिलमा पछि भुक्तानी गर्ने विकल्पहरू लुकाउन <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> मा जानुहोस्।</translation>
 <translation id="1293556467332435079">फाइलहरू</translation>
 <translation id="1293797321964802402">Envelope 9 x 11 in</translation>
 <translation id="129553762522093515">हालैमा बन्द गरिएको</translation>
@@ -1124,6 +1125,7 @@
 <translation id="2782088940970074970">कार भाडामा दिने कम्पनी</translation>
 <translation id="278436560439594386">घरायसी उपकरणहरू</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
+<translation id="2784540996156451674">यी विकल्पहरू उपलब्ध गराउन चेकआउट पेजमा भएको कन्टेन्ट Google सँग सेयर गरिन्छ।</translation>
 <translation id="2784949926578158345">जडान पुनः कायम भयो ।</translation>
 <translation id="2786008859124691917">साइकल तथा साइकलका पाटपुर्जाहरू</translation>
 <translation id="2792012897584536778">यस डिभाइसका प्रशासकहरूले सुरक्षासम्बन्धी प्रमाणपत्रहरू सेटअप गरिसकेका हुँदा यसले उनीहरूलाई तपाईंले भ्रमण गर्नुहुने वेबसाटइका सामग्री हेर्न दिन सक्छ।</translation>
@@ -2480,6 +2482,7 @@
 <translation id="4950898438188848926">ट्याब बदल्ने बटन, खुला रहेको ट्याबमा जान Enter थिच्नुहोस्, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">कार्यहरू</translation>
 <translation id="4953689047182316270">पहुँचसम्बन्धी कार्यक्रमहरूमा प्रतिक्रिया दिनुहोस्</translation>
+<translation id="4954891067389874142">आफ्नो कार्ड सेभ गरेर अझ छिटो भुक्तानी गर्नुहोस्। कार्डसम्बन्धी जानकारी Google Wallet मा इन्क्रिप्ट गरिन्छ।</translation>
 <translation id="4957080528849277028">Chrome को ब्राउजिङ हिस्ट्री हेर्ने बटन, Chrome का सेटिङमा गई आफ्ना ब्राउजिङ हिस्ट्री हेर्न तथा व्यवस्थापन गर्न यो बटन थिच्नुहोस्</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{थप एउटा साइट}other{थप # वटा साइट}}</translation>
 <translation id="4958444002117714549">सूची विस्तारित गर्नुहोस्</translation>
@@ -4008,6 +4011,7 @@
 <translation id="7408613996403626141">खेलौनाहरू</translation>
 <translation id="7410852728357935715">कुनै डिभाइसमा कास्ट गर्नुहोस्</translation>
 <translation id="741204030948306876">हुन्छ, म सहमत छु</translation>
+<translation id="7412081313067625215">तपाईं भविष्यमा खरिदहरू गर्दा आफ्नो कार्डसम्बन्धी जानकारी अटोफिल गर्न सक्नुहोस् भन्नाका लागि तपाईंको कार्ड Google Wallet मा सेभ गरिएको छ</translation>
 <translation id="7416351320495623771">पासवर्डहरूको व्यवस्थापन गर्नुहोस्…</translation>
 <translation id="7416898721136759658">अनुदान, छात्रवृत्ति तथा आर्थिक सहयोग</translation>
 <translation id="741772962178517671">Affirm</translation>
@@ -4141,6 +4145,7 @@
 <translation id="759889825892636187"><ph name="HOST_NAME" /> हाल यस अनुरोध ह्याण्डल गर्न असमर्थ छ।</translation>
 <translation id="7599089013883397081">डाउनलोड गर्ने समय सकिएको छ</translation>
 <translation id="7602868996817972616">Google लाई यो पेजका बारेमा प्रश्न सोध्नुहोस्</translation>
+<translation id="7606123685356405076">Gemini 3 का मोडेलहरू</translation>
 <translation id="7610193165460212391">परिमाण दायरा <ph name="VALUE" /> भन्दा बाहिर छ।</translation>
 <translation id="761261689936461781">बाक्लो</translation>
 <translation id="7613889955535752492">म्याद सकिने मिति <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

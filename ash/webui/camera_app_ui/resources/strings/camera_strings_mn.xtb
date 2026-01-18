@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Скан хийх төрөл</translation>
 <translation id="28682968802727151">Тусгалын урьдчилан үзэх</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" />-г залгасан байна.</translation>
+<translation id="3063987824612038785">Камерын бүх файлыг Google Драйвт хадгална</translation>
 <translation id="3067436040345934772">Баруун тийш чиглүүлэх</translation>
 <translation id="3081586908890909590">Видео бичих рүү сэлгэх</translation>
 <translation id="3091480460059548935">Урьдчилан үзэлт дэх текст илрүүлэлт</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">Видеог боловсруулж байна...</translation>
 <translation id="3789724198583203151">Цагийн зүүний эсрэг 90 хэм эргүүлэх</translation>
 <translation id="3810838688059735925">Видео</translation>
+<translation id="386366972082231038">Камерын бүх файлыг OneDrive-т хадгална</translation>
 <translation id="4060608699153044055">Төхөөрөмжийн хадгалах сангийн зай бага байгаа тул та бичлэг хийх боломжгүй. Бичлэг хийж эхлэхийн тулд та төхөөрөмждөө сул зай гаргах хэрэгтэй.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MП</translation>
 <translation id="4118525110028899586">Бичлэгийг түр зогсоох</translation>
@@ -157,6 +159,7 @@
 <translation id="7983668134180549431">Текст илэрсэн.</translation>
 <translation id="8079255378695216066">Бичлэгийг эхлүүлэх боломжгүй</translation>
 <translation id="8120146556401698679">Чиглүүлэгч хазайлгалт томруулалт</translation>
+<translation id="8127459436205030819">Таны файлууд администраторт тань харагдаж магадгүй</translation>
 <translation id="8131740175452115882">Батлах</translation>
 <translation id="8145038249676204903">Зураг авах руу сэлгэх</translation>
 <translation id="8167081290930651932">Зургаар хадгалах</translation>

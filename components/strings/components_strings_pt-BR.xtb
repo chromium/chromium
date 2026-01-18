@@ -3522,6 +3522,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6635900375070654124">um dispositivo autenticador</translation>
 <translation id="6641852376826221947">Confirme a compra</translation>
 <translation id="6643016212128521049">Limpar</translation>
+<translation id="6644868143085860957">Não foi possível salvar o cartão na Carteira do Google. Ele foi salvo no Chrome neste dispositivo.</translation>
 <translation id="6645291930348198241">Acesso a cookies e dados do site.</translation>
 <translation id="6645478838938543427">Os alertas de redução no preço vão ser enviados para <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="6648459603387803038">O administrador pode mudar as configurações do navegador remotamente. A atividade deste dispositivo também pode ser gerenciada fora do Chrome.</translation>

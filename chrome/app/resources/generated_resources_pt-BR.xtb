@@ -2523,6 +2523,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2672142220933875349">Arquivo crx defeituoso, a descompactação falhou.</translation>
 <translation id="2672200806060988299">Os títulos e os URLs das guias são enviados ao Google e podem ser conferidos por revisores humanos para melhorar esse recurso.</translation>
 <translation id="2673135533890720193">Ler seu histórico de navegação</translation>
+<translation id="2673397477544385203">É necessária para que recursos como a Detecção de Golpe funcionem localmente. Desativar essa opção exclui os modelos de IA generativa do dispositivo e desabilita esses recursos.</translation>
 <translation id="2673848446870717676">Confira se o dispositivo Bluetooth está por perto e no modo de pareamento. Faça o pareamento apenas com dispositivos confiáveis. Os dispositivos pareados ficam visíveis para todas as contas neste Chromebook.</translation>
 <translation id="2673873887296220733">Copiar 1 arquivo para abrir no <ph name="CLOUD_PROVIDER" />?</translation>
 <translation id="267442004702508783">atualizar</translation>
@@ -3981,6 +3982,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3678156199662914018">Extensão: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">As páginas abertas nesta janela não aparecerão no histórico do navegador nem deixarão outros rastros no computador, como cookies, depois que você sair. Os downloads e favoritos não serão preservados.</translation>
 <translation id="3679126865530709868">Touchpad integrado</translation>
+<translation id="3680166671911524673">IA generativa ativada no dispositivo</translation>
 <translation id="3680683624079082902">Voz da conversão de texto em voz</translation>
 <translation id="3681017028939109078">Mostrar sugestões de janela ao iniciar a tela dividida</translation>
 <translation id="3681191721636073359">O Chrome acredita que você não quer receber notificações deste site. Por isso, as solicitações foram ocultadas para reduzir as interrupções.</translation>

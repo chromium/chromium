@@ -873,6 +873,7 @@
 <translation id="4302061870579014542">Ընտրել դիրքը</translation>
 <translation id="4304713468139749426">Գաղտնաբառերի կառավարիչ</translation>
 <translation id="4309403553630140242">Կրկնակի հպեք՝ լրացուցիչ տեղեկություններ ստանալու համար</translation>
+<translation id="4310738531374808763">Անհատականացրեք ձեր գլխավոր էջը</translation>
 <translation id="4320848494125124980">Վերջինները</translation>
 <translation id="4322394346347055525">Փակել մյուս ներդիրները</translation>
 <translation id="4324735664183300693">Միացնել ծանուցումները</translation>
@@ -1711,6 +1712,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">Ներբեռնվել է <ph name="PERCENT" /> տոկոսը</translation>
 <translation id="7345061034321640811">Ներմուծումը թույլատրված չէ</translation>
+<translation id="7347998088283246662">Ներմուծեք գաղտնաբառեր, պատմություն, էջանիշներ և այլ տվյալներ</translation>
 <translation id="7352651011704765696">Ինչ-որ սխալ տեղի ունեցավ</translation>
 <translation id="7364796246159120393">Ընտրել ֆայլ</translation>
 <translation id="736564850024123010">Տեղափոխեք հասցեագոտին ավելի հարմար տեղ։</translation>
@@ -2236,6 +2238,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="914781932147356857">Նշել բոլորը…</translation>
 <translation id="9148126808321036104">Նորից մուտք գործել</translation>
 <translation id="9149866541089851383">Փոխել…</translation>
+<translation id="9152637745605628097">Ընտրեք թեմաներից, գույներից կամ վերբեռնեք պատկեր</translation>
 <translation id="9159628751968616911">Կայքէջի ուղարկում</translation>
 <translation id="9162432979321511934">Միացրեք Գաղտնաբառերի ինքնալրացումը</translation>
 <translation id="9165320910061267720">Գների իջեցման մասին ծանուցումներ ստանալու համար միացրեք ծանուցումները ձեր iOS-ի կարգավորումներում։</translation>
