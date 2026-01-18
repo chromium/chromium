@@ -35,7 +35,7 @@
 #include "chrome/browser/extensions/external_component_loader.h"
 #include "chrome/browser/extensions/external_policy_loader.h"
 #include "chrome/browser/extensions/external_pref_loader.h"
-#include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
+#include "chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h"
 #include "chrome/browser/extensions/initial_external_extension_loader.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -50,6 +50,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/external_install_info.h"
 #include "extensions/browser/external_provider_interface.h"
+#include "extensions/browser/forced_extensions/install_stage_tracker.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
@@ -172,7 +173,7 @@ void ExternalProviderImpl::SetPrefs(base::Value::Dict prefs) {
     return;
 
   InstallStageTracker* install_stage_tracker =
-      InstallStageTracker::Get(profile_);
+      InstallStageTrackerFactory::GetForBrowserContext(profile_);
   for (auto it : prefs) {
     install_stage_tracker->ReportInstallCreationStage(
         it.first,
@@ -254,7 +255,7 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
   // Set of unsupported extensions that need to be deleted from prefs_.
   std::set<std::string> unsupported_extensions;
   InstallStageTracker* install_stage_tracker =
-      InstallStageTracker::Get(profile_);
+      InstallStageTrackerFactory::GetForBrowserContext(profile_);
 
   // Discover all the extensions this provider has.
   for (auto pref : *prefs_) {
@@ -625,7 +626,7 @@ bool ExternalProviderImpl::HandleMinProfileVersion(
     base::Version min_version(*min_profile_created_by_version);
     if (min_version.IsValid() && profile_version.CompareTo(min_version) < 0) {
       unsupported_extensions->insert(extension_id);
-      InstallStageTracker::Get(profile_)->ReportFailure(
+      InstallStageTrackerFactory::GetForBrowserContext(profile_)->ReportFailure(
           extension_id, InstallStageTracker::FailureReason::TOO_OLD_PROFILE);
       VLOG(1) << "Skip installing (or uninstall) external extension: "
               << extension_id
@@ -649,7 +650,7 @@ bool ExternalProviderImpl::HandleDoNotInstallForEnterprise(
         profile_->GetProfilePolicyConnector();
     if (connector->IsManaged()) {
       unsupported_extensions->insert(extension_id);
-      InstallStageTracker::Get(profile_)->ReportFailure(
+      InstallStageTrackerFactory::GetForBrowserContext(profile_)->ReportFailure(
           extension_id,
           InstallStageTracker::FailureReason::DO_NOT_INSTALL_FOR_ENTERPRISE);
       VLOG(1) << "Skip installing (or uninstall) external extension "

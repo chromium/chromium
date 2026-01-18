@@ -103,6 +103,7 @@ static_library("app_mode") {
     "//components/services/app_service/public/cpp:instance_update",
     "//components/user_manager",
     "//components/webapps/browser:constants",
+    "//extensions/browser/forced_extensions",
     "//extensions/browser/updater",
     "//ui/base:types",
     "//ui/views",

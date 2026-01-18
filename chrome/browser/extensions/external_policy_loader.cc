@@ -8,8 +8,9 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
-#include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
+#include "chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "extensions/browser/forced_extensions/install_stage_tracker.h"
 #include "extensions/buildflags/buildflags.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -46,7 +47,7 @@ void ExternalPolicyLoader::StartLoading() {
   switch (type_) {
     case FORCED: {
       InstallStageTracker* install_stage_tracker =
-          InstallStageTracker::Get(profile_);
+          InstallStageTrackerFactory::GetForBrowserContext(profile_);
       prefs = settings_->GetForceInstallList();
       for (auto it : prefs) {
         install_stage_tracker->ReportInstallCreationStage(

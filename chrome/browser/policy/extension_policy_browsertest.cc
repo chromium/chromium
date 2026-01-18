@@ -30,7 +30,7 @@
 #include "chrome/browser/extensions/extension_management_constants.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
-#include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
+#include "chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h"
 #include "chrome/browser/extensions/load_error_waiter.h"
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/extensions/sync/extension_sync_data.h"
@@ -70,6 +70,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/forced_extensions/install_stage_tracker.h"
 #include "extensions/browser/install_verifier.h"
 #include "extensions/browser/scoped_ignore_content_verifier_for_test.h"
 #include "extensions/browser/test_extension_registry_observer.h"
@@ -1035,7 +1036,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallForcelist) {
       .InSequence(sequence);
 
   extensions::InstallStageTracker* install_stage_tracker =
-      extensions::InstallStageTracker::Get(profile());
+      extensions::InstallStageTrackerFactory::GetForBrowserContext(profile());
   install_stage_tracker->AddObserver(&collector_observer);
   UpdateProviderPolicy(policies);
   registry_observer.WaitForExtensionWillBeInstalled();
@@ -1246,7 +1247,8 @@ class ExtensionPinningTest : public extensions::ExtensionBrowserTest {
       base::RunLoop run_loop;
       MockedInstallationCollectorObserver collector_observer(profile());
       extensions::InstallStageTracker* install_stage_tracker =
-          extensions::InstallStageTracker::Get(profile());
+          extensions::InstallStageTrackerFactory::GetForBrowserContext(
+              profile());
       install_stage_tracker->AddObserver(&collector_observer);
 
       // We expect install failure only due to no update for the extension.

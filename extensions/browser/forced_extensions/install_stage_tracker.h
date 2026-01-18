@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_FORCED_EXTENSIONS_INSTALL_STAGE_TRACKER_H_
-#define CHROME_BROWSER_EXTENSIONS_FORCED_EXTENSIONS_INSTALL_STAGE_TRACKER_H_
+#ifndef EXTENSIONS_BROWSER_FORCED_EXTENSIONS_INSTALL_STAGE_TRACKER_H_
+#define EXTENSIONS_BROWSER_FORCED_EXTENSIONS_INSTALL_STAGE_TRACKER_H_
 
 #include <map>
 #include <optional>
@@ -13,7 +13,6 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/install/crx_install_error.h"
 #include "extensions/browser/install_stage.h"
@@ -23,13 +22,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "components/user_manager/user_type.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
-
-class Profile;
 
 namespace content {
 class BrowserContext;
@@ -282,21 +275,6 @@ class InstallStageTracker : public KeyedService {
     kMaxValue = kBandwidthLimit,
   };
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // Contains information about the current user.
-  struct UserInfo {
-    UserInfo();
-    UserInfo(const UserInfo&);
-    UserInfo(user_manager::UserType user_type,
-             bool is_new_user,
-             bool is_user_present);
-
-    user_manager::UserType user_type = user_manager::UserType::kRegular;
-    const bool is_new_user = false;
-    const bool is_user_present = false;
-  };
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
   // Contains information about extension installation: failure reason, if any
   // reported, specific details in case of CRX install error, current
   // installation stage if known.
@@ -406,15 +384,6 @@ class InstallStageTracker : public KeyedService {
   InstallStageTracker(const InstallStageTracker&) = delete;
   InstallStageTracker& operator=(const InstallStageTracker&) = delete;
 
-  // Returns instance of InstallStageTracker for a BrowserContext.
-  static InstallStageTracker* Get(content::BrowserContext* context);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Returns user type of the user associated with the `profile` and whether the
-  // user is new or not if there is an active user.
-  static UserInfo GetUserInfo(Profile* profile);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
   void ReportInfoOnNoUpdatesFailure(const ExtensionId& id,
                                     const std::string& info);
 
@@ -485,4 +454,4 @@ class InstallStageTracker : public KeyedService {
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_FORCED_EXTENSIONS_INSTALL_STAGE_TRACKER_H_
+#endif  // EXTENSIONS_BROWSER_FORCED_EXTENSIONS_INSTALL_STAGE_TRACKER_H_

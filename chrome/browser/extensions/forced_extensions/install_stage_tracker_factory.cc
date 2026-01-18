@@ -5,7 +5,7 @@
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h"
 
 #include "base/no_destructor.h"
-#include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
+#include "extensions/browser/forced_extensions/install_stage_tracker.h"
 #include "extensions/buildflags/buildflags.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));

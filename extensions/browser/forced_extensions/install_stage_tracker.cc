@@ -2,23 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
+#include "extensions/browser/forced_extensions/install_stage_tracker.h"
 
 #include "base/check_op.h"
 #include "base/observer_list.h"
-#include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/install/sandboxed_unpacker_failure_reason.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/net_errors.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "components/user_manager/user.h"          // nogncheck
-#include "components/user_manager/user_manager.h"  // nogncheck
-#include "components/user_manager/user_type.h"     // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -30,28 +20,19 @@ namespace {
 bool ShouldOverrideCurrentStage(
     std::optional<InstallStageTracker::Stage> current_stage,
     InstallStageTracker::Stage new_stage) {
-  if (!current_stage)
+  if (!current_stage) {
     return true;
+  }
   // If CRX was from the cache and was damaged as a file, we would try to
   // download the CRX after reporting the INSTALLING stage.
   if (current_stage == InstallStageTracker::Stage::INSTALLING &&
-      new_stage == InstallStageTracker::Stage::DOWNLOADING)
+      new_stage == InstallStageTracker::Stage::DOWNLOADING) {
     return true;
+  }
   return new_stage > current_stage;
 }
 
 }  // namespace
-
-#if BUILDFLAG(IS_CHROMEOS)
-InstallStageTracker::UserInfo::UserInfo() = default;
-InstallStageTracker::UserInfo::UserInfo(const UserInfo&) = default;
-InstallStageTracker::UserInfo::UserInfo(user_manager::UserType user_type,
-                                        bool is_new_user,
-                                        bool is_user_present)
-    : user_type(user_type),
-      is_new_user(is_new_user),
-      is_user_present(is_user_present) {}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // InstallStageTracker::InstallationData implementation.
 
@@ -131,43 +112,23 @@ InstallStageTracker::InstallStageTracker(const content::BrowserContext* context)
 
 InstallStageTracker::~InstallStageTracker() = default;
 
-// static
-InstallStageTracker* InstallStageTracker::Get(
-    content::BrowserContext* context) {
-  return InstallStageTrackerFactory::GetForBrowserContext(context);
-}
-
-#if BUILDFLAG(IS_CHROMEOS)
-InstallStageTracker::UserInfo InstallStageTracker::GetUserInfo(
-    Profile* profile) {
-  const user_manager::User* user =
-      ash::ProfileHelper::Get()->GetUserByProfile(profile);
-  if (!user)
-    return UserInfo();
-
-  bool is_new_user = user_manager::UserManager::Get()->IsCurrentUserNew() ||
-                     profile->IsNewProfile();
-  UserInfo current_user(user->GetType(), is_new_user, /*is_user_present=*/true);
-  return current_user;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 void InstallStageTracker::ReportInfoOnNoUpdatesFailure(
     const ExtensionId& id,
     const std::string& info) {
   InstallationData& data = installation_data_map_[id];
 
   // Map the no updates info to NoUpdatesInfo enum.
-  if (info.empty())
+  if (info.empty()) {
     data.no_updates_info = NoUpdatesInfo::kEmpty;
-  else if (info == "rate limit")
+  } else if (info == "rate limit") {
     data.no_updates_info = NoUpdatesInfo::kRateLimit;
-  else if (info == "disabled by client")
+  } else if (info == "disabled by client") {
     data.no_updates_info = NoUpdatesInfo::kDisabledByClient;
-  else if (info == "bandwidth limit")
+  } else if (info == "bandwidth limit") {
     data.no_updates_info = NoUpdatesInfo::kBandwidthLimit;
-  else
+  } else {
     data.no_updates_info = NoUpdatesInfo::kUnknown;
+  }
 }
 
 void InstallStageTracker::ReportManifestInvalidFailure(
@@ -191,19 +152,22 @@ void InstallStageTracker::ReportInstallCreationStage(
   data.install_creation_stage = stage;
   for (auto& observer : observers_) {
     observer.OnExtensionInstallCreationStageChanged(id, stage);
-    observer.OnExtensionDataChangedForTesting(id, browser_context_, data);
+    observer.OnExtensionDataChangedForTesting(  // IN-TEST
+        id, browser_context_, data);
   }
 }
 
 void InstallStageTracker::ReportInstallationStage(const ExtensionId& id,
                                                   Stage stage) {
   InstallationData& data = installation_data_map_[id];
-  if (!ShouldOverrideCurrentStage(data.install_stage, stage))
+  if (!ShouldOverrideCurrentStage(data.install_stage, stage)) {
     return;
+  }
   data.install_stage = stage;
   for (auto& observer : observers_) {
     observer.OnExtensionInstallationStageChanged(id, stage);
-    observer.OnExtensionDataChangedForTesting(id, browser_context_, data);
+    observer.OnExtensionDataChangedForTesting(  // IN-TEST
+        id, browser_context_, data);
   }
 }
 
@@ -213,18 +177,20 @@ void InstallStageTracker::ReportDownloadingStage(
   InstallationData& data = installation_data_map_[id];
   data.downloading_stage = stage;
   const base::TimeTicks current_time = base::TimeTicks::Now();
-  if (stage == ExtensionDownloaderDelegate::Stage::DOWNLOADING_MANIFEST)
+  if (stage == ExtensionDownloaderDelegate::Stage::DOWNLOADING_MANIFEST) {
     data.download_manifest_started_time = current_time;
-  else if (stage == ExtensionDownloaderDelegate::Stage::MANIFEST_LOADED)
+  } else if (stage == ExtensionDownloaderDelegate::Stage::MANIFEST_LOADED) {
     data.download_manifest_finish_time = current_time;
-  else if (stage == ExtensionDownloaderDelegate::Stage::DOWNLOADING_CRX)
+  } else if (stage == ExtensionDownloaderDelegate::Stage::DOWNLOADING_CRX) {
     data.download_CRX_started_time = current_time;
-  else if (stage == ExtensionDownloaderDelegate::Stage::FINISHED)
+  } else if (stage == ExtensionDownloaderDelegate::Stage::FINISHED) {
     data.download_CRX_finish_time = current_time;
+  }
 
   for (auto& observer : observers_) {
     observer.OnExtensionDownloadingStageChanged(id, stage);
-    observer.OnExtensionDataChangedForTesting(id, browser_context_, data);
+    observer.OnExtensionDataChangedForTesting(  // IN-TEST
+        id, browser_context_, data);
   }
 }
 
@@ -234,21 +200,23 @@ void InstallStageTracker::ReportCRXInstallationStage(const ExtensionId& id,
   InstallationData& data = installation_data_map_[id];
   data.installation_stage = stage;
   const base::TimeTicks current_time = base::TimeTicks::Now();
-  if (stage == InstallationStage::kVerification)
+  if (stage == InstallationStage::kVerification) {
     data.verification_started_time = current_time;
-  else if (stage == InstallationStage::kCopying)
+  } else if (stage == InstallationStage::kCopying) {
     data.copying_started_time = current_time;
-  else if (stage == InstallationStage::kUnpacking)
+  } else if (stage == InstallationStage::kUnpacking) {
     data.unpacking_started_time = current_time;
-  else if (stage == InstallationStage::kCheckingExpectations)
+  } else if (stage == InstallationStage::kCheckingExpectations) {
     data.checking_expectations_started_time = current_time;
-  else if (stage == InstallationStage::kFinalizing)
+  } else if (stage == InstallationStage::kFinalizing) {
     data.finalizing_started_time = current_time;
-  else if (stage == InstallationStage::kComplete)
+  } else if (stage == InstallationStage::kComplete) {
     data.installation_complete_time = current_time;
+  }
 
   for (auto& observer : observers_) {
-    observer.OnExtensionDataChangedForTesting(id, browser_context_, data);
+    observer.OnExtensionDataChangedForTesting(  // IN-TEST
+        id, browser_context_, data);
   }
 }
 
@@ -261,19 +229,21 @@ void InstallStageTracker::ReportDownloadingCacheStatus(
   data.downloading_cache_status = cache_status;
   for (auto& observer : observers_) {
     observer.OnExtensionDownloadCacheStatusRetrieved(id, cache_status);
-    observer.OnExtensionDataChangedForTesting(id, browser_context_, data);
+    observer.OnExtensionDataChangedForTesting(  // IN-TEST
+        id, browser_context_, data);
   }
 }
 
 InstallStageTracker::AppStatusError
 InstallStageTracker::GetManifestInvalidAppStatusError(
     const std::string& status) {
-  if (status == "error-unknownApplication")
+  if (status == "error-unknownApplication") {
     return AppStatusError::kErrorUnknownApplication;
-  else if (status == "error-invalidAppId")
+  } else if (status == "error-invalidAppId") {
     return AppStatusError::kErrorInvalidAppId;
-  else if (status == "error-restricted" || status == "restricted")
+  } else if (status == "error-restricted" || status == "restricted") {
     return AppStatusError::kErrorRestricted;
+  }
   return AppStatusError::kUnknown;
 }
 
@@ -364,12 +334,15 @@ void InstallStageTracker::NotifyObserversOfFailure(
     const ExtensionId& id,
     FailureReason reason,
     const InstallationData& data) {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnExtensionInstallationFailed(id, reason);
+  }
   // Observer::OnExtensionInstallationFailed may change |observers_|, run the
   // loop again to call the other methods for |observers_|.
-  for (auto& observer : observers_)
-    observer.OnExtensionDataChangedForTesting(id, browser_context_, data);
+  for (auto& observer : observers_) {
+    observer.OnExtensionDataChangedForTesting(  // IN-TEST
+        id, browser_context_, data);
+  }
 }
 
 }  //  namespace extensions

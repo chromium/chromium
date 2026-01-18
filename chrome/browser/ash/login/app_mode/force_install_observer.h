@@ -10,7 +10,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
-#include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
+#include "extensions/browser/forced_extensions/install_stage_tracker.h"
 #include "extensions/common/extension_id.h"
 
 class Profile;

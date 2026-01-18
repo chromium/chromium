@@ -9,12 +9,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
-#include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
+#include "chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/policy/core/common/policy_service_impl.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/forced_extensions/install_stage_tracker.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
@@ -58,7 +59,8 @@ void ForceInstalledTestBase::SetUp() {
 
   prefs_ = profile_->GetTestingPrefService();
   registry_ = ExtensionRegistry::Get(profile_);
-  install_stage_tracker_ = InstallStageTracker::Get(profile_);
+  install_stage_tracker_ =
+      InstallStageTrackerFactory::GetForBrowserContext(profile_);
   force_installed_tracker_ =
       std::make_unique<ForceInstalledTracker>(registry_, profile_);
 }

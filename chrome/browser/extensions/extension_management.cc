@@ -30,7 +30,6 @@
 #include "chrome/browser/extensions/extension_management_internal.h"
 #include "chrome/browser/extensions/external_policy_loader.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
-#include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h"
 #include "chrome/browser/extensions/managed_installation_mode.h"
 #include "chrome/browser/extensions/managed_toolbar_pin_mode.h"
@@ -48,6 +47,7 @@
 #include "content/public/common/content_switches.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/forced_extensions/install_stage_tracker.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
@@ -902,9 +902,10 @@ void ExtensionManagement::Refresh() {
           // installed and will get stuck in CREATED stage.
           if (included_in_forcelist &&
               by_id->installation_mode != ManagedInstallationMode::kForced) {
-            InstallStageTracker::Get(profile_)->ReportFailure(
-                extension_id,
-                InstallStageTracker::FailureReason::OVERRIDDEN_BY_SETTINGS);
+            InstallStageTrackerFactory::GetForBrowserContext(profile_)
+                ->ReportFailure(
+                    extension_id,
+                    InstallStageTracker::FailureReason::OVERRIDDEN_BY_SETTINGS);
           }
         }
       }
@@ -919,7 +920,7 @@ bool ExtensionManagement::ParseById(const std::string& extension_id,
     return true;
 
   settings_by_id_.erase(extension_id);
-  InstallStageTracker::Get(profile_)->ReportFailure(
+  InstallStageTrackerFactory::GetForBrowserContext(profile_)->ReportFailure(
       extension_id,
       InstallStageTracker::FailureReason::MALFORMED_EXTENSION_SETTINGS);
   SYSLOG(WARNING) << "Malformed Extension Management settings for "
@@ -1024,7 +1025,7 @@ void ExtensionManagement::ReportExtensionManagementInstallCreationStage(
     InstallStageTracker::InstallCreationStage forced_stage,
     InstallStageTracker::InstallCreationStage other_stage) {
   InstallStageTracker* install_stage_tracker =
-      InstallStageTracker::Get(profile_);
+      InstallStageTrackerFactory::GetForBrowserContext(profile_);
   for (const auto& entry : settings_by_id_) {
     if (entry.second->installation_mode == ManagedInstallationMode::kForced) {
       install_stage_tracker->ReportInstallCreationStage(entry.first,
@@ -1059,7 +1060,7 @@ void ExtensionManagement::UpdateForcedExtensions(
     return;
 
   InstallStageTracker* install_stage_tracker =
-      InstallStageTracker::Get(profile_);
+      InstallStageTrackerFactory::GetForBrowserContext(profile_);
   for (auto it : *extension_dict) {
     if (!crx_file::id_util::IdIsValid(it.first)) {
       install_stage_tracker->ReportFailure(

@@ -5062,6 +5062,7 @@ if (!is_android) {
         "//extensions/browser/api:extensions_api_client",
         "//extensions/browser/api/storage:settings_namespace",
         "//extensions/browser/api/system_display:display_info_provider",
+        "//extensions/browser/forced_extensions",
         "//extensions/browser/updater",
         "//extensions/buildflags",
         "//extensions/common:mojom",
@@ -9525,6 +9526,7 @@ test("unit_tests") {
       "//components/themes:prefs",
       "//components/value_store:test_support",
       "//extensions/browser/api/content_settings",
+      "//extensions/browser/forced_extensions",
       "//extensions/browser/updater",
       "//extensions/strings",
     ]
