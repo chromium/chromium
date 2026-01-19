@@ -485,6 +485,15 @@ def _AnalyzeElf(native_spec, elf_info, outdir_context=None):
     raw_symbols = nm.CreateUniqueSymbols(native_spec.elf_path,
                                          elf_section_ranges)
 
+  def section_ranges_equivalent(section_name):
+    # This should compare the whole range, but our test data has not been
+    # updated to have the addresses match (only the sizes). A missing section on
+    # either side is assumed to have zero size because LLD sometimes removes
+    # empty sections (see crbug.com/476313144).
+    return (map_section_ranges.get(section_name,
+                                   (-1, 0))[1] == elf_section_ranges.get(
+                                       section_name, (-1, 0))[1])
+
   if native_spec.elf_path and native_spec.map_path:
     logging.debug('Validating section sizes')
     differing_elf_section_ranges = {}
@@ -492,13 +501,9 @@ def _AnalyzeElf(native_spec, elf_info, outdir_context=None):
     for k in sorted(set(elf_section_ranges) | set(map_section_ranges)):
       if k in _SECTION_SIZE_BLOCKLIST:
         continue
-      elf_range = elf_section_ranges.get(k, (-1, -1))
-      map_range = map_section_ranges.get(k, (-1, -1))
-      # This should compare the whole range, but our test data has not been
-      # updated to have the addresses match (only the sizes).
-      if map_range[1] != elf_range[1]:
-        differing_elf_section_ranges[k] = elf_range
-        differing_map_section_ranges[k] = map_range
+      if not section_ranges_equivalent(k):
+        differing_elf_section_ranges[k] = elf_section_ranges.get(k, (-1, -1))
+        differing_map_section_ranges[k] = map_section_ranges.get(k, (-1, -1))
     if differing_map_section_ranges:
       raise Exception('ELF file and .map file do not agree on section sizes.\n'
                       f'readelf: {differing_elf_section_ranges}\n'
