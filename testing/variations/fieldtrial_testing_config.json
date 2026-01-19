@@ -12855,6 +12855,24 @@
             ]
         }
     ],
+    "HeliosBanana": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "ShowFRERow": "true"
+                    },
+                    "enable_features": [
+                        "GeminiImageRemixTool"
+                    ]
+                }
+            ]
+        }
+    ],
     "HeliosFullChatHistory": [
         {
             "platforms": [
