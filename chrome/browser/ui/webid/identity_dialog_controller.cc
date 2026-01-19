@@ -114,12 +114,13 @@ bool IdentityDialogController::ShowAccountsDialog(
   // account.
   if (!ShouldShowFedCmUi()) {
     auto* actor_login_request = GetActorLoginRequest();
-    GURL idp_config_url = actor_login_request->idp_url();
+    url::Origin idp_origin = actor_login_request->idp_origin();
     std::string account_id = actor_login_request->account_id();
     for (const auto& account : accounts) {
       if (account->id != account_id ||
-          account->identity_provider->idp_metadata.config_url !=
-              idp_config_url) {
+          url::Origin::Create(
+              account->identity_provider->idp_metadata.config_url) !=
+              idp_origin) {
         continue;
       }
       bool is_sign_in = account->idp_claimed_login_state.value_or(
@@ -127,7 +128,8 @@ bool IdentityDialogController::ShowAccountsDialog(
                         content::IdentityRequestAccount::LoginState::kSignIn;
       if (is_sign_in) {
         std::move(on_account_selection_)
-            .Run(idp_config_url, account_id, /*is_sign_in=*/true);
+            .Run(account->identity_provider->idp_metadata.config_url,
+                 account_id, /*is_sign_in=*/true);
         return true;
       } else {
         // It is possible that the account is a sign up even though the actor
@@ -585,11 +587,11 @@ IdentityDialogController::GetFedCmClickthroughRateMetadata() {
 
 IdentityDialogController::ActorLoginRequest::ActorLoginRequest(
     content::Page& page,
-    const GURL& idp_url,
+    const url::Origin& idp_origin,
     const std::string& account_id,
     OnFederatedTokenReceivedCallback callback)
     : content::PageUserData<ActorLoginRequest>(page),
-      idp_url_(idp_url),
+      idp_origin_(idp_origin),
       account_id_(account_id),
       on_federated_token_received_callback_(std::move(callback)) {}
 
@@ -600,12 +602,12 @@ PAGE_USER_DATA_KEY_IMPL(IdentityDialogController::ActorLoginRequest);
 // static
 void IdentityDialogController::SetActorLoginRequest(
     content::Page& page,
-    const GURL& idp_url,
+    const url::Origin& idp_origin,
     const std::string& account_id,
     OnFederatedTokenReceivedCallback callback) {
   page.SetUserData(ActorLoginRequest::UserDataKey(),
                    std::make_unique<ActorLoginRequest>(
-                       page, idp_url, account_id, std::move(callback)));
+                       page, idp_origin, account_id, std::move(callback)));
 }
 
 // static

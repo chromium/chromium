@@ -171,14 +171,14 @@ class IdentityDialogController
   class ActorLoginRequest : public content::PageUserData<ActorLoginRequest> {
    public:
     ActorLoginRequest(content::Page& page,
-                      const GURL& idp_url,
+                      const url::Origin& idp_origin,
                       const std::string& account_id,
                       OnFederatedTokenReceivedCallback callback);
     ActorLoginRequest(const ActorLoginRequest&) = delete;
     ActorLoginRequest& operator=(const ActorLoginRequest&) = delete;
     ~ActorLoginRequest() override;
 
-    const GURL& idp_url() const { return idp_url_; }
+    const url::Origin& idp_origin() const { return idp_origin_; }
     const std::string& account_id() const { return account_id_; }
     OnFederatedTokenReceivedCallback on_federated_token_received_callback() {
       return std::move(on_federated_token_received_callback_);
@@ -187,7 +187,7 @@ class IdentityDialogController
     PAGE_USER_DATA_KEY_DECL();
 
    private:
-    GURL idp_url_;
+    url::Origin idp_origin_;
     std::string account_id_;
     OnFederatedTokenReceivedCallback on_federated_token_received_callback_;
   };
@@ -196,7 +196,7 @@ class IdentityDialogController
   // current pending web identity request is an actor login request, which
   // account to automatically select, and how to notify the actor.
   static void SetActorLoginRequest(content::Page& page,
-                                   const GURL& idp_url,
+                                   const url::Origin& idp_origin,
                                    const std::string& account_id,
                                    OnFederatedTokenReceivedCallback callback);
   static void UnsetActorLoginRequest(content::Page& page);
