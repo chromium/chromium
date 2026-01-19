@@ -10857,6 +10857,7 @@ from previous Chrome versions.
   <int value="-1187546444" label="MuteNotificationSnoozeAction:enabled"/>
   <int value="-1187251500" label="OmniboxPedalsBatch2NonEnglish:disabled"/>
   <int value="-1186760297" label="ForceSpectreVariant2Mitigation:disabled"/>
+  <int value="-1186638833" label="SigninLevelUpButton:enabled"/>
   <int value="-1185833629" label="AppCollectionFolderRefresh:enabled"/>
   <int value="-1185656634" label="FileSystemProviderContentCache:enabled"/>
   <int value="-1185477291" label="ImeDecoderWithSandbox:enabled"/>
@@ -13028,6 +13029,7 @@ from previous Chrome versions.
   <int value="-437937965" label="AccessibilityShakeToLocate:disabled"/>
   <int value="-437292646" label="DeferBeginMainFrameDuringLoading:enabled"/>
   <int value="-436799973" label="FederatedService:enabled"/>
+  <int value="-436652388" label="SigninLevelUpButton:disabled"/>
   <int value="-436470115" label="TouchpadAndWheelScrollLatching:enabled"/>
   <int value="-435914745" label="ClipboardContentSetting:disabled"/>
   <int value="-435636565" label="EnableLensPing:disabled"/>

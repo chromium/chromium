@@ -362,6 +362,13 @@ BASE_DECLARE_FEATURE(kRollbackDiceMigration);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kShowProfilePickerToAllUsersExperiment);
 
+#if BUILDFLAG(IS_ANDROID)
+// Experiment replacing signed out avatar with signin button on Android, see
+// crbug.com/475816843.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kSigninLevelUpButton);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Feature to control the experiment for max count of showing contextual sign-in
 // promos and UNO bubble reprompt.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

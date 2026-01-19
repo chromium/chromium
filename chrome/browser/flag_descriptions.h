@@ -5647,6 +5647,10 @@ inline constexpr char kShowTabListAnimationsName[] =
 inline constexpr char kShowTabListAnimationsDescription[] =
     "Shows animations for each tab on the tab switcher on Android XR.";
 
+inline constexpr char kSigninLevelUpButtonName[] = "Signin Level Up Button";
+inline constexpr char kSigninLevelUpButtonDescription[] =
+    "Replaces signed out avatar with signin button on Android.";
+
 inline constexpr char kSiteIsolationForPasswordSitesName[] =
     "Site Isolation For Password Sites";
 inline constexpr char kSiteIsolationForPasswordSitesDescription[] =

@@ -13504,6 +13504,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kEnableAndroidSidePanel)},
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+    {"signin-level-up-button", flag_descriptions::kSigninLevelUpButtonName,
+     flag_descriptions::kSigninLevelUpButtonDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(switches::kSigninLevelUpButton)},
+#endif
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
