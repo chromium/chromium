@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 
 namespace content {
@@ -105,6 +106,14 @@ void RequestLocationServices(content::WebContents* web_contents);
 
 // Called from tests to temporarily set system location settings enabled.
 base::AutoReset<bool> EnableSystemLocationSettingForTesting();
+
+void ResolvePermissionRequestInternal(content::WebContents* web_contents,
+                                      ContentSettingsType content_settings_type,
+                                      ContentSetting content_setting);
+
+void DismissPermissionRequestInternal(
+    content::WebContents* web_contents,
+    ContentSettingsType content_settings_type);
 
 }  // namespace permissions
 
