@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_AI_UTIL_H_
 
 #include <optional>
+#include <string_view>
 
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
@@ -29,14 +30,14 @@ AttributeTypeDataTypeToPrivateApiAttributeTypeDataType(
 std::optional<autofill::EntityInstance>
 PrivateApiEntityInstanceToEntityInstance(
     const api::autofill_private::EntityInstance& private_api_entity_instance,
-    const std::string& app_locale);
+    std::string_view app_locale);
 
 // Converts an `autofill::EntityInstance` object to an
 // `api::autofill_private::EntityInstance` object, according to a given
 // `app_locale`.
 api::autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
     const autofill::EntityInstance& entity_instance,
-    const std::string& app_locale);
+    std::string_view app_locale);
 
 // Converts `autofill::EntityInstance`s to
 // `api::autofill_private::EntityInstanceWithLabels`s according to a given
@@ -45,10 +46,10 @@ std::vector<api::autofill_private::EntityInstanceWithLabels>
 EntityInstancesToPrivateApiEntityInstancesWithLabels(
     base::span<const autofill::EntityInstance> entity_instances,
     bool obfuscate_sensitive_types,
-    const std::string& app_locale);
+    std::string_view app_locale);
 
 api::autofill_private::EntityType EntityTypeToPrivateApiEntityType(
-    const autofill::EntityType& entity_type,
+    autofill::EntityType entity_type,
     bool supports_wallet_storage);
 
 }  // namespace extensions::autofill_ai_util

@@ -40,7 +40,7 @@ constexpr size_t kMaxNumberOfLabels = 2;
 std::u16string GetInfo(const EntityInstance& entity,
                        AttributeType type,
                        bool obfuscate_sensitive_types,
-                       const std::string& app_locale) {
+                       std::string_view app_locale) {
   base::optional_ref<const AttributeInstance> attribute =
       entity.attribute(type);
   if (!attribute) {
@@ -58,7 +58,7 @@ std::u16string JoinAttributes(const EntityInstance& entity,
                               base::span<const AttributeType> attributes,
                               std::u16string_view separator,
                               bool obfuscate_sensitive_types,
-                              const std::string& app_locale) {
+                              std::string_view app_locale) {
   std::vector<std::u16string> combination;
   for (const AttributeType at : attributes) {
     if (std::u16string value =
@@ -78,7 +78,7 @@ std::pair<std::u16string, DenseSet<AttributeType>> GetValueAndTypesForLabel(
     const EntityInstance& entity,
     AttributeType type,
     bool obfuscate_sensitive_types,
-    const std::string& app_locale) {
+    std::string_view app_locale) {
   using enum AttributeTypeName;
   static constexpr std::array kAirports = {
       AttributeType(kFlightReservationDepartureAirport),
@@ -136,7 +136,7 @@ GetOrderedAttributeTypesForDisambiguation(
     base::span<const EntityInstance* const> entities,
     bool only_disambiguating_types,
     bool obfuscate_sensitive_types,
-    const std::string& app_locale) {
+    std::string_view app_locale) {
   auto should_prioritize = [&](AttributeType attribute_type) {
     if (!attribute_type.is_disambiguation_type()) {
       return false;
@@ -183,7 +183,7 @@ void ExpandEntityLabels(AttributeType type,
                         DenseSet<AttributeType>& tried_types,
                         bool only_add_to_empty_labels,
                         bool obfuscate_sensitive_types,
-                        const std::string& app_locale) {
+                        std::string_view app_locale) {
   for (auto [entity, label] : base::zip(entities, labels)) {
     if (label.size() == kMaxNumberOfLabels) {
       // No more labels can be added for this particular entity.
@@ -215,7 +215,7 @@ void AddLabelsRound(base::span<const EntityInstance* const> entities,
                     DenseSet<AttributeType>& tried_types,
                     bool only_add_to_empty_labels,
                     bool obfuscate_sensitive_types,
-                    const std::string& app_locale) {
+                    std::string_view app_locale) {
   auto labels_are_non_empty = [&] {
     return std::ranges::none_of(labels, &EntityLabel::empty);
   };
@@ -244,7 +244,7 @@ std::vector<EntityLabel> GetLabelsForEntities(
     DenseSet<AttributeType> attribute_types_to_ignore,
     bool only_disambiguating_types,
     bool obfuscate_sensitive_types,
-    const std::string& app_locale) {
+    std::string_view app_locale) {
   std::map<EntityType, std::vector<const EntityInstance*>> entities_by_type;
   for (const EntityInstance* entity : entities) {
     entities_by_type[entity->type()].push_back(entity);

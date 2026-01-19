@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_AUTOFILL_AI_LABELS_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -50,7 +51,7 @@ std::vector<EntityLabel> GetLabelsForEntities(
     DenseSet<AttributeType> attribute_types_to_ignore,
     bool only_disambiguating_types,
     bool obfuscate_sensitive_types,
-    const std::string& app_locale);
+    std::string_view app_locale);
 
 }  // namespace autofill
 
