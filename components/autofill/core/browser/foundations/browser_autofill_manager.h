@@ -515,19 +515,20 @@ class BrowserAutofillManager : public AutofillManager {
   // Suggestion flows that handle their own UI flow (e.g. FastCheckout, TTF,
   // SingleFieldFiller) are triggered from within these functions.
   //
-  // This process is split into phrases 1, 2 and 3 to support asynchronous
-  // operations (fetching affiliated plus addresses during phase 1, and
-  // OTP values fetching) in the middle.
+  // This process is split into phases 1, 2, 3 to support asynchronous
+  // operations:
+  // - Between Phase 1 and 2, BAM may fetch plus addresses.
+  // - Between Phase 2 and 3, BAM may fetch OTPs.
   //
   // Phase 3 requires the list of `plus_addresses` as these can influence how
   // address profile suggestions are shown. If `plus_addresses` is std::nullopt
   // it means that plus addresses are irrelevant for the current suggestion
   // context.
   //
-  // Other flows that rely on the
-  // `external_delegate_` to show their suggestions, pass the suggestions list
-  // to the delegate via `GenerateFooter` and `OnGenerateSuggestionsComplete`
-  // and request them to be shown (via `show_suggestions`).
+  // Other flows that rely on the `external_delegate_` to show their
+  // suggestions, pass the suggestions list to the delegate via `GenerateFooter`
+  // and `OnGenerateSuggestionsComplete` and request them to be shown (via
+  // `show_suggestions`).
   void GenerateSuggestionsAndMaybeShowUIPhase1(
       const FormData& form,
       const FormFieldData& field,

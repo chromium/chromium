@@ -692,13 +692,13 @@ std::optional<Suggestion> GenerateComposeSuggestion(
 
   auto on_suggestion_data_returned =
       [&form, &field, &client, &suggestions, &suggestion_generator](
-          std::pair<autofill::SuggestionGenerator::SuggestionDataSource,
-                    std::vector<autofill::SuggestionGenerator::SuggestionData>>
+          std::pair<SuggestionGenerator::SuggestionDataSource,
+                    std::vector<SuggestionGenerator::SuggestionData>>
               suggestion_data) {
         suggestion_generator.GenerateSuggestions(
             form, field, nullptr, nullptr, client, {std::move(suggestion_data)},
-            [&suggestions](autofill::SuggestionGenerator::ReturnedSuggestions
-                               returned_suggestions) {
+            [&suggestions](
+                SuggestionGenerator::ReturnedSuggestions returned_suggestions) {
               suggestions = std::move(returned_suggestions.second);
             });
       };
@@ -718,7 +718,7 @@ bool ShouldShowWebauthnHybridEntryPoint(const FormFieldData& field) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return false;
 #else
-  const std::optional<autofill::AutocompleteParsingResult>& autocomplete =
+  const std::optional<AutocompleteParsingResult>& autocomplete =
       field.parsed_autocomplete();
   return autocomplete.has_value() &&  // Assume no autcomplete if not parsed.
          autocomplete->webauthn &&    // Field must have "webauthn" annotation.
@@ -1351,17 +1351,17 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
 
   if (auto* delegate = client().GetPlusAddressDelegate()) {
     // The `generate_suggestions_and_maybe_show_ui_phase2` has to be wrapped
-    // such that the plus addresses are mapped from the new interface to the old
+    // so that the plus addresses are mapped from the new interface to the old
     // one.
     // TODO(crbug.com/409962888): Remove once the new suggestion generation
     // logic is launched.
     auto wrapper_callback = base::BindOnce(
-        [](std::pair<autofill::SuggestionGenerator::SuggestionDataSource,
-                     std::vector<autofill::SuggestionGenerator::SuggestionData>>
+        [](std::pair<SuggestionGenerator::SuggestionDataSource,
+                     std::vector<SuggestionGenerator::SuggestionData>>
                suggestions_pair) {
           return base::ToVector(
               std::move(suggestions_pair.second),
-              [](autofill::SuggestionGenerator::SuggestionData& suggestion) {
+              [](SuggestionGenerator::SuggestionData& suggestion) {
                 return std::get<PlusAddress>(std::move(suggestion)).value();
               });
         });
