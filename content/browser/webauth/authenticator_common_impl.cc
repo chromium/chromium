@@ -790,13 +790,6 @@ struct AuthenticatorCommonImpl::RequestState {
   std::unique_ptr<AuthenticatorRequestClientDelegate> request_delegate;
   std::unique_ptr<device::FidoRequestHandlerBase> request_handler;
   std::unique_ptr<device::FidoDiscoveryFactory> discovery_factory;
-  // This dangling raw_ptr occurred in:
-  // interactive_ui_tests:
-  // WebAuthnDevtoolsAutofillIntegrationTest.SelectAccountWithAllowCredentials
-  // https://ci.chromium.org/ui/p/chromium/builders/try/mac-rel/1357012/test-results?q=ExactID%3Aninja%3A%2F%2Fchrome%2Ftest%3Ainteractive_ui_tests%2FWebAuthnDevtoolsAutofillIntegrationTest.SelectAccountWithAllowCredentials+VHash%3A81d118f1ad0b63a6
-  raw_ptr<device::FidoDiscoveryFactory,
-          FlakyDanglingUntriaged | AcrossTasksDanglingUntriaged>
-      discovery_factory_testing_override = nullptr;
   std::variant<std::monostate,
                MakeCredentialCallback,
                GetCredentialCallback,
@@ -3270,22 +3263,15 @@ BrowserContext* AuthenticatorCommonImpl::GetBrowserContext() const {
 
 device::FidoDiscoveryFactory* AuthenticatorCommonImpl::discovery_factory() {
   DCHECK(req_state_->discovery_factory);
-  return req_state_->discovery_factory_testing_override
-             ? req_state_->discovery_factory_testing_override.get()
-             : req_state_->discovery_factory.get();
+  device::FidoDiscoveryFactory* override_factory =
+      AuthenticatorEnvironment::GetInstance()
+          ->MaybeGetDiscoveryFactoryTestOverride();
+  return override_factory ? override_factory
+                          : req_state_->discovery_factory.get();
 }
 
 void AuthenticatorCommonImpl::InitDiscoveryFactory() {
   req_state_->discovery_factory = MakeDiscoveryFactory(GetRenderFrameHost());
-  // TODO(martinkr): |discovery_factory_testing_override_| is a long-lived
-  // VirtualFidoDeviceDiscovery so that tests can maintain and alter virtual
-  // authenticator state in between requests. We should extract a longer-lived
-  // configuration object from VirtualFidoDeviceDiscovery, so we can simply
-  // stick a short-lived instance into |discovery_factory_| and eliminate
-  // |discovery_factory_testing_override_|.
-  req_state_->discovery_factory_testing_override =
-      AuthenticatorEnvironment::GetInstance()
-          ->MaybeGetDiscoveryFactoryTestOverride();
 }
 
 void AuthenticatorCommonImpl::EnableRequestProxyExtensionsAPISupport() {
