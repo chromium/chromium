@@ -36,6 +36,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/version_info/channel.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -438,7 +439,11 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneWithTrueResult) {
 #if !BUILDFLAG(IS_ANDROID)
 // On Android, syncing passwords from the profile store is only possible
 // before login db deprecation.
+// TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
+// deleted from the codebase. See ConsentLevel::kSync documentation for
+// details.
 TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneForSyncingUser) {
+  sync_service()->SetSignedIn(signin::ConsentLevel::kSync);
   LeakDetectionDelegateInterface* delegate_interface = &delegate();
   const PasswordForm form = CreateTestForm();
 
@@ -561,8 +566,6 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneLocalStore) {
 
   ASSERT_EQ(sync_util::GetPasswordSyncState(sync_service()),
             sync_util::SyncState::kActiveWithNormalEncryption);
-  ASSERT_TRUE(
-      sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service()));
 
   ExpectPasswords({}, /*store=*/account_store());
   ExpectPasswords({form}, /*store=*/profile_store());
@@ -596,8 +599,6 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneAccountStore) {
 
   ASSERT_EQ(sync_util::GetPasswordSyncState(sync_service()),
             sync_util::SyncState::kActiveWithNormalEncryption);
-  ASSERT_TRUE(
-      sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service()));
 
   ExpectPasswords({form}, /*store=*/account_store());
   ExpectPasswords({}, /*store=*/profile_store());

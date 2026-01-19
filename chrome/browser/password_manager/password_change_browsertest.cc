@@ -28,8 +28,8 @@
 #include "chrome/browser/password_manager/password_change_delegate_impl.h"
 #include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
+#include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/password_manager/passwords_navigation_observer.h"
-#include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/password_bubble_controller_base.h"
@@ -556,9 +556,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
       WebContents(),
       embedded_test_server()->GetURL("/password/simple_password.html")));
   password_manager::PasswordStoreInterface* password_store =
-      ProfilePasswordStoreFactory::GetForProfile(
-          browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
-          .get();
+      GetDefaultPasswordStore(browser()->profile());
   password_manager::PasswordForm form = CreatePasswordForm(
       WebContents()->GetLastCommittedURL(), u"test", u"pa$$word");
   password_store->AddLogin(form);

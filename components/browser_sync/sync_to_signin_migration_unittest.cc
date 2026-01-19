@@ -96,6 +96,9 @@ class SyncToSigninMigrationTestBase {
     sync_prefs_ = std::make_unique<syncer::SyncPrefs>(&pref_service_);
 
     CHECK(fake_profile_dir_.CreateUniqueTempDir());
+
+    // Sync should be initially active.
+    sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
   }
   virtual ~SyncToSigninMigrationTestBase() = default;
 

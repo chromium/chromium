@@ -24,6 +24,9 @@ class SyncFeatureStatusForMigrationsRecorderTest : public testing::Test {
   SyncFeatureStatusForMigrationsRecorderTest() {
     SyncFeatureStatusForMigrationsRecorder::RegisterProfilePrefs(
         pref_service_.registry());
+
+    // Sync should be initially active.
+    sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
   }
   ~SyncFeatureStatusForMigrationsRecorderTest() override { DestroyRecorder(); }
 
@@ -62,7 +65,8 @@ class SyncFeatureStatusForMigrationsRecorderTest : public testing::Test {
 };
 
 TEST_F(SyncFeatureStatusForMigrationsRecorderTest, AllEnabled) {
-  // All the data types are active.
+  // Sync-the-feature and all the data types are active.
+  ASSERT_TRUE(sync_service().IsSyncFeatureActive());
   ASSERT_TRUE(sync_service().GetActiveDataTypes().Has(syncer::BOOKMARKS));
   ASSERT_TRUE(sync_service().GetActiveDataTypes().Has(syncer::PASSWORDS));
   ASSERT_TRUE(sync_service().GetActiveDataTypes().Has(syncer::READING_LIST));
@@ -81,6 +85,7 @@ TEST_F(SyncFeatureStatusForMigrationsRecorderTest, NoSyncConsent) {
   // Sync-the-feature is disabled, but all the data types are active (in
   // transport mode).
   sync_service().SetSignedIn(signin::ConsentLevel::kSignin);
+  ASSERT_FALSE(sync_service().IsSyncFeatureEnabled());
   ASSERT_TRUE(sync_service().GetActiveDataTypes().Has(syncer::BOOKMARKS));
   ASSERT_TRUE(sync_service().GetActiveDataTypes().Has(syncer::PASSWORDS));
   ASSERT_TRUE(sync_service().GetActiveDataTypes().Has(syncer::READING_LIST));
@@ -101,6 +106,8 @@ TEST_F(SyncFeatureStatusForMigrationsRecorderTest, Initializing) {
   // of initializing.
   sync_service().SetMaxTransportState(
       syncer::SyncService::TransportState::INITIALIZING);
+  ASSERT_TRUE(sync_service().IsSyncFeatureEnabled());
+  ASSERT_FALSE(sync_service().IsSyncFeatureActive());
   ASSERT_TRUE(sync_service().GetActiveDataTypes().empty());
 
   CreateRecorder();
@@ -124,6 +131,7 @@ TEST_F(SyncFeatureStatusForMigrationsRecorderTest, TypesDisabled) {
                                                      selected_types);
   sync_service().SetFailedDataTypes({syncer::PASSWORDS});
 
+  ASSERT_TRUE(sync_service().IsSyncFeatureActive());
   ASSERT_FALSE(sync_service().GetActiveDataTypes().Has(syncer::BOOKMARKS));
   ASSERT_FALSE(sync_service().GetActiveDataTypes().Has(syncer::PASSWORDS));
   ASSERT_TRUE(sync_service().GetActiveDataTypes().Has(syncer::READING_LIST));
@@ -144,6 +152,8 @@ TEST_F(SyncFeatureStatusForMigrationsRecorderTest, SyncPaused) {
   sync_service().SetPersistentAuthError();
   ASSERT_EQ(sync_service().GetTransportState(),
             syncer::SyncService::TransportState::PAUSED);
+  ASSERT_TRUE(sync_service().IsSyncFeatureEnabled());
+  ASSERT_FALSE(sync_service().IsSyncFeatureActive());
   ASSERT_FALSE(sync_service().GetActiveDataTypes().Has(syncer::BOOKMARKS));
   ASSERT_FALSE(sync_service().GetActiveDataTypes().Has(syncer::PASSWORDS));
   ASSERT_FALSE(sync_service().GetActiveDataTypes().Has(syncer::READING_LIST));
@@ -162,6 +172,8 @@ TEST_F(SyncFeatureStatusForMigrationsRecorderTest, StartupSequence) {
   // Initially, everything is enabled, but SyncService is still initializing.
   sync_service().SetMaxTransportState(
       syncer::SyncService::TransportState::INITIALIZING);
+  ASSERT_TRUE(sync_service().IsSyncFeatureEnabled());
+  ASSERT_FALSE(sync_service().IsSyncFeatureActive());
   ASSERT_TRUE(sync_service().GetActiveDataTypes().empty());
 
   CreateRecorder();
@@ -206,6 +218,8 @@ TEST_F(SyncFeatureStatusForMigrationsRecorderTest, RecordsMetricsOnStartup) {
   // Initially, everything is enabled, but SyncService is still initializing.
   sync_service().SetMaxTransportState(
       syncer::SyncService::TransportState::INITIALIZING);
+  ASSERT_TRUE(sync_service().IsSyncFeatureEnabled());
+  ASSERT_FALSE(sync_service().IsSyncFeatureActive());
   ASSERT_TRUE(sync_service().GetActiveDataTypes().empty());
 
   // Once the recorder gets created, it should record the pre-existing state,

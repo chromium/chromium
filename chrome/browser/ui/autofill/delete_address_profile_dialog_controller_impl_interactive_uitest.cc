@@ -137,6 +137,8 @@ IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplTest,
 
 IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplTest,
                        InvokeUi_SyncAddressProfile) {
+  sync_service()->SetSignedIn(signin::ConsentLevel::kSync);
+
   RunTestSequence(
       ConfigureAddressSync(/*enable_address_sync=*/true),
       ShowDialog(/*is_account_address_profile=*/false),

@@ -70,8 +70,9 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
         break;
 
       case SYNC_FEATURE_ENABLED:
-        // TestSyncService by default behaves as everything enabled/active.
+        // Set TestSyncService to syncing with everything enabled/active.
         sync_service_ = std::make_unique<syncer::TestSyncService>();
+        sync_service_->SetSignedIn(signin::ConsentLevel::kSync);
 
         CHECK(sync_service_->GetDisableReasons().empty());
         CHECK_EQ(syncer::SyncService::TransportState::ACTIVE,
@@ -80,6 +81,7 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
 
       case SYNC_FEATURE_ENABLED_BUT_PAUSED:
         sync_service_ = std::make_unique<syncer::TestSyncService>();
+        sync_service_->SetSignedIn(signin::ConsentLevel::kSync);
         // Mimic the user signing out from content are (sync paused).
         sync_service_->SetPersistentAuthError();
 
@@ -101,6 +103,7 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
 
       case SYNC_FEATURE_ENABLED_BUT_PREFERENCES_NOT_SELECTED:
         sync_service_ = std::make_unique<syncer::TestSyncService>();
+        sync_service_->SetSignedIn(signin::ConsentLevel::kSync);
         sync_service_->GetUserSettings()->SetSelectedTypes(
             /*sync_everything=*/false,
             /*types=*/{});
