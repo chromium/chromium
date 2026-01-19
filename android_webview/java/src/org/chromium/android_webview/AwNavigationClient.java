@@ -190,7 +190,7 @@ public class AwNavigationClient implements Page.PageDeletionListener {
         AwPage awPage = new AwPage(page);
         // We only keep track of pages that have been the primary page (either the current primary
         // page, or a previously primary but now bfcached / pending deletion page).
-        assert !awPage.isPrerendering();
+        assert !page.isPrerendering();
         // Make sure we always track deletion of a non-prerendering page.
         page.setPageDeletionListener(this);
         mPageMap.put(page, new WeakReference<>(awPage));

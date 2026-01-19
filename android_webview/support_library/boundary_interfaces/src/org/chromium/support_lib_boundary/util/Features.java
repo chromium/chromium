@@ -425,9 +425,6 @@ public class Features {
     // WebSettingsCompat#setHyperlinkContextMenuItems
     public static final String HYPERLINK_CONTEXT_MENU_ITEMS = "HYPERLINK_CONTEXT_MENU_ITEMS";
 
-    // Page.isPrerendering
-    public static final String PAGE_IS_PRERENDERING = "PAGE_IS_PRERENDERING";
-
     // Profile.addCustomHeader
     // Profile.clearAllCustomHeaders
     // Profile.clearCustomHeader

@@ -699,7 +699,7 @@ chromium-metrics-reviews@google.com.
   <int value="158" label="BackForwardCacheSettings.getMaxPagesInCache"/>
   <int value="159" label="Profile.preconnect"/>
   <int value="160" label="WebSettingsCompat.setHyperlinkContextMenuItems"/>
-  <int value="161" label="Page.isPrerendering"/>
+  <int value="161" label="Page.isPrerendering (deprecated)"/>
   <int value="162" label="Profile.addCustomHeader"/>
   <int value="163" label="Profile.getCustomHeaders"/>
   <int value="164" label="WebSettingsCompat.setRendererLibraryPrefetchMode"/>

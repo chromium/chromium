@@ -121,7 +121,6 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.PRECONNECT,
                 Features.HYPERLINK_CONTEXT_MENU_ITEMS + Features.DEV_SUFFIX,
                 Features.ASYNC_WEBVIEW_STARTUP_ASYNC_STARTUP_LOCATIONS + Features.DEV_SUFFIX,
-                Features.PAGE_IS_PRERENDERING,
                 Features.CUSTOM_REQUEST_HEADERS,
                 Features.RENDERER_LIBRARY_PREFETCH_MODE + Features.DEV_SUFFIX,
                 Features.WEB_VIEW_NAVIGATION_LISTENER_V1,
@@ -301,7 +300,6 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         ApiCall.BACK_FORWARD_CACHE_SETTINGS_GET_MAX_PAGES_IN_CACHE,
         ApiCall.PRECONNECT,
         ApiCall.SET_HYPERLINK_CONTEXT_MENU_ITEMS,
-        ApiCall.PAGE_IS_PRERENDERING,
         ApiCall.ADD_ORIGIN_MATCHED_HEADER,
         ApiCall.GET_ORIGIN_MATCHED_HEADERS,
         ApiCall.SET_RENDERER_LIBRARY_PREFETCH_MODE,
@@ -480,7 +478,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int BACK_FORWARD_CACHE_SETTINGS_GET_MAX_PAGES_IN_CACHE = 158;
         int PRECONNECT = 159;
         int SET_HYPERLINK_CONTEXT_MENU_ITEMS = 160;
-        int PAGE_IS_PRERENDERING = 161;
+        @Deprecated int PAGE_IS_PRERENDERING = 161;
         int ADD_ORIGIN_MATCHED_HEADER = 162;
         int GET_ORIGIN_MATCHED_HEADERS = 163;
         int SET_RENDERER_LIBRARY_PREFETCH_MODE = 164;
