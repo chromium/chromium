@@ -86,13 +86,6 @@ bool CheckRectIsSolidColor(const sk_sp<SkImage>& image,
   return true;
 }
 
-// Checks if all the pixels in |image| are |expected_color|.
-bool CheckImageIsSolidColor(const sk_sp<SkImage>& image,
-                            SkColor expected_color) {
-  return CheckRectIsSolidColor(
-      image, expected_color, SkIRect::MakeWH(image->width(), image->height()));
-}
-
 // TODO(crbug.com/40266937): Implement test with Skia Graphite backend.
 class ImageTransferCacheEntryTest
     : public testing::TestWithParam<SkYUVAInfo::PlaneConfig> {
@@ -113,45 +106,6 @@ class ImageTransferCacheEntryTest
         gl::init::CreateGrGLInterface(*gl_context_->GetVersionInfo()));
     gr_context_ = GrDirectContexts::MakeGL(std::move(gl_interface));
     ASSERT_TRUE(gr_context_);
-  }
-
-  // Creates the textures for a 64x64 YUV 4:2:0 image where all the samples in
-  // all planes are 255u. This corresponds to an RGB color of (255, 121, 255)
-  // assuming the JPEG YUV-to-RGB conversion formulas. Returns a list of
-  // SkImages backed by the textures. Note that the number of textures depends
-  // on the format (obtained using GetParam()). |release_flags| is set to a list
-  // of boolean flags initialized to false. Each flag corresponds to a plane (in
-  // the same order as the returned SkImages). When the texture for that plane
-  // is released by Skia, that flag will be set to true. Returns an empty vector
-  // on failure.
-  std::vector<sk_sp<SkImage>> CreateTestYUVImage(
-      base::HeapArray<bool>& release_flags) {
-    std::vector<sk_sp<SkImage>> plane_images;
-    release_flags = base::HeapArray<bool>();
-    if (GetParam() == SkYUVAInfo::PlaneConfig::kY_U_V ||
-        GetParam() == SkYUVAInfo::PlaneConfig::kY_V_U) {
-      release_flags = base::HeapArray<bool>::CopiedFrom(
-          std::to_array<bool>({false, false, false}));
-      plane_images = {CreateSolidPlane(gr_context(), 64, 64, GL_R8_EXT,
-                                       SkColors::kWhite, &release_flags[0]),
-                      CreateSolidPlane(gr_context(), 32, 32, GL_R8_EXT,
-                                       SkColors::kWhite, &release_flags[1]),
-                      CreateSolidPlane(gr_context(), 32, 32, GL_R8_EXT,
-                                       SkColors::kWhite, &release_flags[2])};
-    } else if (GetParam() == SkYUVAInfo::PlaneConfig::kY_UV) {
-      release_flags = base::HeapArray<bool>::CopiedFrom(
-          std::to_array<bool>({false, false}));
-      plane_images = {CreateSolidPlane(gr_context(), 64, 64, GL_R8_EXT,
-                                       SkColors::kWhite, &release_flags[0]),
-                      CreateSolidPlane(gr_context(), 32, 32, GL_RG8_EXT,
-                                       SkColors::kWhite, &release_flags[1])};
-    } else {
-      NOTREACHED();
-    }
-    if (!std::ranges::contains(plane_images, nullptr)) {
-      return plane_images;
-    }
-    return {};
   }
 
   void DeletePendingTextures() {
@@ -269,103 +223,6 @@ TEST_P(ImageTransferCacheEntryTest, MAYBE_Deserialize) {
 
   client_entry.reset();
   entry.reset();
-}
-
-TEST_P(ImageTransferCacheEntryTest, HardwareDecodedNoMipsAtCreation) {
-  base::HeapArray<bool> release_flags;
-  std::vector<sk_sp<SkImage>> plane_images = CreateTestYUVImage(release_flags);
-  const size_t plane_images_size = plane_images.size();
-  ASSERT_EQ(static_cast<size_t>(SkYUVAInfo::NumPlanes(GetParam())),
-            plane_images_size);
-  ASSERT_EQ(release_flags.size(), plane_images_size);
-
-  // Create a service-side image cache entry backed by these planes and do not
-  // request generating mipmap chains. The |buffer_byte_size| is only used for
-  // accounting, so we just set it to 0u.
-  auto entry(std::make_unique<ServiceImageTransferCacheEntry>());
-  EXPECT_TRUE(entry->BuildFromHardwareDecodedImage(
-      gr_context(), std::move(plane_images),
-      GetParam() /* plane_images_format */, SkYUVAInfo::Subsampling::k420,
-      kJpegYUVColorSpace, 0u /* buffer_byte_size */, false /* needs_mips */));
-
-  // We didn't request generating mipmap chains, so the textures we created
-  // above should stay alive until after the cache entry is deleted.
-  EXPECT_TRUE(std::none_of(release_flags.begin(), release_flags.end(),
-                           [](bool released) { return released; }));
-  entry.reset();
-  EXPECT_TRUE(std::all_of(release_flags.begin(), release_flags.end(),
-                          [](bool released) { return released; }));
-}
-
-TEST_P(ImageTransferCacheEntryTest, HardwareDecodedMipsAtCreation) {
-  base::HeapArray<bool> release_flags;
-  std::vector<sk_sp<SkImage>> plane_images = CreateTestYUVImage(release_flags);
-  const size_t plane_images_size = plane_images.size();
-  ASSERT_EQ(static_cast<size_t>(SkYUVAInfo::NumPlanes(GetParam())),
-            plane_images_size);
-  ASSERT_EQ(release_flags.size(), plane_images_size);
-
-  // Create a service-side image cache entry backed by these planes and request
-  // generating mipmap chains at creation time. The |buffer_byte_size| is only
-  // used for accounting, so we just set it to 0u.
-  auto entry(std::make_unique<ServiceImageTransferCacheEntry>());
-  EXPECT_TRUE(entry->BuildFromHardwareDecodedImage(
-      gr_context(), std::move(plane_images),
-      GetParam() /* plane_images_format */, SkYUVAInfo::Subsampling::k420,
-      kJpegYUVColorSpace, 0u /* buffer_byte_size */, true /* needs_mips */));
-
-  // We requested generating mipmap chains at creation time, so the textures we
-  // created above should be released by now.
-  EXPECT_TRUE(std::all_of(release_flags.begin(), release_flags.end(),
-                          [](bool released) { return released; }));
-  DeletePendingTextures();
-
-  // Make sure that when we read the pixels from the YUV image, we get the
-  // correct RGB color corresponding to the planes created previously. This
-  // basically checks that after deleting the original YUV textures, the new
-  // YUV image is backed by the correct mipped planes.
-  ASSERT_TRUE(entry->image());
-  EXPECT_TRUE(
-      CheckImageIsSolidColor(entry->image(), SkColorSetRGB(255, 121, 255)));
-}
-
-TEST_P(ImageTransferCacheEntryTest, HardwareDecodedMipsAfterCreation) {
-  base::HeapArray<bool> release_flags;
-  std::vector<sk_sp<SkImage>> plane_images = CreateTestYUVImage(release_flags);
-  const size_t plane_images_size = plane_images.size();
-  ASSERT_EQ(static_cast<size_t>(SkYUVAInfo::NumPlanes(GetParam())),
-            plane_images_size);
-  ASSERT_EQ(release_flags.size(), plane_images_size);
-
-  // Create a service-side image cache entry backed by these planes and do not
-  // request generating mipmap chains at creation time. The |buffer_byte_size|
-  // is only used for accounting, so we just set it to 0u.
-  auto entry(std::make_unique<ServiceImageTransferCacheEntry>());
-  EXPECT_TRUE(entry->BuildFromHardwareDecodedImage(
-      gr_context(), std::move(plane_images),
-      GetParam() /* plane_images_format */, SkYUVAInfo::Subsampling::k420,
-      kJpegYUVColorSpace, 0u /* buffer_byte_size */, false /* needs_mips */));
-
-  // We didn't request generating mip chains, so the textures we created above
-  // should stay alive for now.
-  EXPECT_TRUE(std::none_of(release_flags.begin(), release_flags.end(),
-                           [](bool released) { return released; }));
-
-  // Now request generating the mip chains.
-  entry->EnsureMips();
-
-  // Now the original textures should have been released.
-  EXPECT_TRUE(std::all_of(release_flags.begin(), release_flags.end(),
-                          [](bool released) { return released; }));
-  DeletePendingTextures();
-
-  // Make sure that when we read the pixels from the YUV image, we get the
-  // correct RGB color corresponding to the planes created previously. This
-  // basically checks that after deleting the original YUV textures, the new
-  // YUV image is backed by the correct mipped planes.
-  ASSERT_TRUE(entry->image());
-  EXPECT_TRUE(
-      CheckImageIsSolidColor(entry->image(), SkColorSetRGB(255, 121, 255)));
 }
 
 std::string TestParamToString(

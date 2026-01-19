@@ -134,27 +134,6 @@ class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final
   ServiceImageTransferCacheEntry& operator=(
       ServiceImageTransferCacheEntry&& other);
 
-  // Populates this entry using the result of a hardware decode. The assumption
-  // is that |plane_images| are backed by textures that are in turn backed by a
-  // buffer (dmabuf in Chrome OS) containing the planes of the decoded image.
-  // |plane_images_format| indicates the planar layout of |plane_images|.
-  // |buffer_byte_size| is the size of the buffer. We assume the following:
-  //
-  // - The backing textures don't have mipmaps. We will generate the mipmaps if
-  //   |needs_mips| is true.
-  // - The conversion from YUV to RGB will be performed according to
-  //   |yuv_color_space|.
-  // - The colorspace of the resulting RGB image is sRGB.
-  //
-  // Returns true if the entry can be built, false otherwise.
-  bool BuildFromHardwareDecodedImage(GrDirectContext* gr_context,
-                                     std::vector<sk_sp<SkImage>> plane_images,
-                                     SkYUVAInfo::PlaneConfig plane_config,
-                                     SkYUVAInfo::Subsampling subsampling,
-                                     SkYUVColorSpace yuv_color_space,
-                                     size_t buffer_byte_size,
-                                     bool needs_mips);
-
   // ServiceTransferCacheEntry implementation:
   size_t CachedSize() const final;
   bool Deserialize(GrDirectContext* gr_context,
