@@ -170,6 +170,10 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
     config.features_enabled_and_params.push_back(
         {kEnableReaderModeOmniboxEntryPointInUS, {}});
   }
+  if ([self isRunningTest:@selector
+            (testReaderModeChipVisibleWhenLeavingReaderModeWithPSFDisabled)]) {
+    config.features_disabled.push_back(kProactiveSuggestionsFramework);
+  }
   return config;
 }
 
@@ -1083,6 +1087,31 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
   if (error) {
     GREYFail([error description]);
   }
+}
+
+// Tests that the Reader mode chip is visible when leaving Reader mode if
+// PSF is disabled.
+- (void)testReaderModeChipVisibleWhenLeavingReaderModeWithPSFDisabled {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
+
+  // Wait for the Reader mode contextual panel entry point chip to be visible.
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      ContextualPanelEntrypointImageViewMatcher()];
+
+  // Open Reader Mode UI.
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded");
+  [self assertReaderModePageIsVisible];
+
+  // Close Reader Mode UI.
+  [ChromeEarlGrey hideReaderMode];
+
+  [self assertReaderModePageIsHidden];
+
+  // Wait for the Reader mode contextual panel entry point chip to be visible.
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      ContextualPanelEntrypointImageViewMatcher()];
 }
 
 @end
