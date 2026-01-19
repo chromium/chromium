@@ -993,6 +993,11 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
     NSIndexPath* sourceIndexPath = dropItem.sourceIndexPath;
     NSIndexPath* destinationIndexPath = coordinator.destinationIndexPath;
 
+    if (!dropItem.dragItem) {
+      base::debug::DumpWithoutCrashing();
+      return;
+    }
+
     self.dragEndAtNewIndex = YES;
     _dropAnimationInProgress = YES;
     [self.delegate gridViewControllerDropAnimationWillBegin:self];
@@ -1019,6 +1024,10 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
                           toGroup:destinationItem.tabGroupItem.tabGroup];
     } else {
       TabInfo* tabInfo = static_cast<TabInfo*>(dropItem.dragItem.localObject);
+      if (!tabInfo) {
+        base::debug::DumpWithoutCrashing();
+        return;
+      }
       // If the index path of `sourceItem` < `destinationItem`, then the logic
       // will ensure that there is no animation for the replacement of
       // `destinationItem` into the new group. There is also logic ensure that

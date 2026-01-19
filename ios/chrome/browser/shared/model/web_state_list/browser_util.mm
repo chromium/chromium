@@ -9,6 +9,7 @@
 
 #import "base/check.h"
 #import "base/check_op.h"
+#import "base/debug/dump_without_crashing.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -91,6 +92,7 @@ void MoveTabToBrowser(web::WebStateID tab_id,
   BrowserAndIndex tab_info = FindBrowserAndIndex(tab_id, browsers);
 
   if (!tab_info.browser) {
+    base::debug::DumpWithoutCrashing();
     return;
   }
   MoveTabFromBrowserToBrowser(tab_info.browser, tab_info.tab_index,
