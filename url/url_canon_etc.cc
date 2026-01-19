@@ -42,9 +42,11 @@ std::basic_string_view<CHAR> DoRemoveUrlWhitespace(
     // memchr is so fast, it's unlikely to be relevant.)
     const CHAR* data = input.data();
     size_t input_len = input.length();
-    found_whitespace = UNSAFE_TODO(memchr(data, '\n', input_len)) != nullptr ||
-                       UNSAFE_TODO(memchr(data, '\r', input_len)) != nullptr ||
-                       UNSAFE_TODO(memchr(data, '\t', input_len)) != nullptr;
+    // SAFETY: `data` and `input_len` are taken from a single string_view.
+    found_whitespace =
+        UNSAFE_BUFFERS(memchr(data, '\n', input_len) != nullptr ||
+                       memchr(data, '\r', input_len) != nullptr ||
+                       memchr(data, '\t', input_len) != nullptr);
   } else {
     for (const CHAR ch : input) {
       if (!IsRemovableURLWhitespace(ch)) {
