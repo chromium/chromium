@@ -791,35 +791,35 @@ bool IsManagementFooterOption(const Suggestion& suggestion) {
 // create a new footer section if there is none. Then, it moves the webauthn
 // sign-in fallback item to the footer - before any "Manage" suggestion.
 void ReorderWebauthnFallbackToFooter(std::vector<Suggestion>& suggestions) {
-  auto use_webauthn_pos = std::ranges::find(
+  auto old_pos = std::ranges::find(
       suggestions, SuggestionType::kWebauthnSignInWithAnotherDevice,
       &Suggestion::type);
-  if (suggestions.size() < 2 || use_webauthn_pos == suggestions.end()) {
+  if (suggestions.size() < 2 || old_pos == suggestions.end()) {
     return;  // Nothing to reorder.
   }
+
   // Points to the first "Manage" item of the footer block due to `base` adding
   // an offset when converting the reverse iterator to the forward iterator.
-  auto insert_before =
+  const auto new_pos =
       std::find_if_not(suggestions.rbegin(), suggestions.rend(),
                        &IsManagementFooterOption)
           .base();
-  bool has_other_management_items =
-      insert_before != suggestions.end() &&
-      insert_before->type != SuggestionType::kWebauthnSignInWithAnotherDevice;
+  const bool has_other_management_items =
+      new_pos != suggestions.end() &&
+      new_pos->type != SuggestionType::kWebauthnSignInWithAnotherDevice;
 
-  if (use_webauthn_pos < insert_before) {
-    // The webauthn item is too far up. Rotate it to the back!
-    std::rotate(use_webauthn_pos, use_webauthn_pos + 1, insert_before);
+  // Move the webauthn item from `old_pos` to `new_pos`.
+  if (old_pos < new_pos) {
+    std::rotate(old_pos, old_pos + 1, new_pos);
   } else {
-    // The webauthn item is too far down. Rotate it to the front!
-    std::rotate(insert_before, use_webauthn_pos, use_webauthn_pos + 1);
+    std::rotate(new_pos, old_pos, old_pos + 1);
   }
 
   // Without "Manage" suggestions, ensure a separator for the footer exists.
   if (!has_other_management_items &&
       !std::ranges::contains(suggestions, SuggestionType::kSeparator,
                              &Suggestion::type)) {
-    suggestions.emplace(insert_before, SuggestionType::kSeparator);
+    suggestions.emplace(new_pos, SuggestionType::kSeparator);
   }
 }
 
