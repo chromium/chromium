@@ -4,11 +4,16 @@
 
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
 
+#import "base/base64.h"
 #import "base/notimplemented.h"
+#import "components/webauthn/ios/passkey_tab_helper.h"
+#import "ios/web/public/web_state.h"
 
 namespace webauthn {
 
-IOSWebAuthnCredentialsDelegate::IOSWebAuthnCredentialsDelegate() {}
+IOSWebAuthnCredentialsDelegate::IOSWebAuthnCredentialsDelegate(
+    web::WebState* web_state)
+    : web_state_(web_state->GetWeakPtr()) {}
 
 IOSWebAuthnCredentialsDelegate::~IOSWebAuthnCredentialsDelegate() = default;
 
@@ -20,8 +25,21 @@ void IOSWebAuthnCredentialsDelegate::LaunchSecurityKeyOrHybridFlow() {
 void IOSWebAuthnCredentialsDelegate::SelectPasskey(
     const std::string& backend_id,
     OnPasskeySelectedCallback callback) {
-  // TODO(crbug.com/459451476): Implement.
-  NOTIMPLEMENTED();
+  // Nothing can be done if the web state is not valid.
+  if (!web_state_) {
+    return;
+  }
+
+  // `backend_id` is the base64-encoded credential ID.
+  std::string selected_credential_id;
+  CHECK(base::Base64Decode(backend_id, &selected_credential_id));
+
+  PasskeyTabHelper* passkey_tab_helper =
+      PasskeyTabHelper::FromWebState(web_state_.get());
+  CHECK(passkey_tab_helper);
+
+  passkey_tab_helper->StartPasskeyAssertion(passkey_request_id_,
+                                            std::move(selected_credential_id));
 }
 
 base::expected<const std::vector<password_manager::PasskeyCredential>*,

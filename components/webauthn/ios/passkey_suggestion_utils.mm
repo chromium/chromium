@@ -4,6 +4,7 @@
 
 #import "components/webauthn/ios/passkey_suggestion_utils.h"
 
+#import "base/base64.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 
@@ -21,7 +22,8 @@ NSArray<FormSuggestion*>* FormSuggestionsFromPasskeyCredentials(
          displayDescription:base::SysUTF8ToNSString(passkey.rp_id())
                        icon:nil
                        type:autofill::SuggestionType::kWebauthnCredential
-                    payload:autofill::Suggestion::Payload()
+                    payload:autofill::Suggestion::Guid(
+                                base::Base64Encode(passkey.credential_id()))
              requiresReauth:YES];
     [passkey_suggestions addObject:suggestion];
   }

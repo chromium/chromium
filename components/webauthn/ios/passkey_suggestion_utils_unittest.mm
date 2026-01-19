@@ -4,6 +4,7 @@
 
 #import "components/webauthn/ios/passkey_suggestion_utils.h"
 
+#import "base/base64.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -55,6 +56,11 @@ TEST_F(PasskeySuggestionUtilsTest, FormSuggestionsFromPasskeyCredentials) {
   ASSERT_EQ(1u, suggestions.count);
   EXPECT_EQ(base::SysUTF8ToNSString(kUsername), suggestions[0].value);
   EXPECT_EQ(base::SysUTF8ToNSString(kRpId), suggestions[0].displayDescription);
+  ASSERT_TRUE(std::holds_alternative<autofill::Suggestion::Guid>(
+      suggestions[0].payload));
+  EXPECT_EQ(
+      std::get<autofill::Suggestion::Guid>(suggestions[0].payload).value(),
+      base::Base64Encode(passkeys[0].credential_id()));
 }
 
 // Tests that passkey and password suggestion are merged into a single array as

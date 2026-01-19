@@ -104,7 +104,8 @@ AssertionRequestParams BuildAssertionRequestParams(
 
 class FakeIOSPasskeyClient : public IOSPasskeyClient {
  public:
-  FakeIOSPasskeyClient() = default;
+  explicit FakeIOSPasskeyClient(web::WebState* web_state)
+      : delegate_(web_state) {}
   ~FakeIOSPasskeyClient() override = default;
 
   void SetIOSPasskeyClientCommandsHandler(
@@ -161,7 +162,7 @@ class PasskeyTabHelperTest : public PlatformTest {
     web::test::OverrideJavaScriptFeatures(
         &fake_browser_state_, {PasskeyJavaScriptFeature::GetInstance()});
 
-    auto client = std::make_unique<FakeIOSPasskeyClient>();
+    auto client = std::make_unique<FakeIOSPasskeyClient>(&fake_web_state_);
     client_ = client.get();
     PasskeyTabHelper::CreateForWebState(&fake_web_state_, passkey_model_.get(),
                                         std::move(client));
