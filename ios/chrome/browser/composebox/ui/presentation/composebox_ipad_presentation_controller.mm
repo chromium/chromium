@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/composebox/ui/presentation/composebox_ipad_presentation_controller.h"
 
+#import "base/check.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_constants.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -14,11 +15,20 @@ namespace {
 // The corner radius for the composebox.
 const CGFloat kComposeboxCornerRadius = 16.0f;
 
+// The additional horizontal margin to ensure the composebox covers the top
+// omnibox.
+const CGFloat kComposeboxOmniboxLayoutGuideHorizontalMargin = 10.0f;
+
+// The top offset of the composebox from the omnibox layout guide.
+const CGFloat kComposeboxOmniboxLayoutGuideTopOffset = 20.0f;
+
 }  // namespace
 
 @implementation ComposeboxiPadPresentationController {
   // The dimming view, used to dismiss the composebox when tapped.
   UIView* _dimmingView;
+  // The layout guide used to anchor the composebox.
+  UILayoutGuide* _layoutGuide;
 }
 
 - (instancetype)initWithPresentedViewController:(UIViewController*)presented
@@ -37,9 +47,14 @@ const CGFloat kComposeboxCornerRadius = 16.0f;
   }
   return self;
 }
+
 #pragma mark - UIPresentationController
 
 - (void)presentationTransitionWillBegin {
+  CHECK(self.layoutGuideCenter);
+  _layoutGuide = [self.layoutGuideCenter makeLayoutGuideNamed:kTopOmniboxGuide];
+  [self.containerView addLayoutGuide:_layoutGuide];
+
   UIView* dimmingView = _dimmingView;
   dimmingView.frame = self.containerView.bounds;
   [self.containerView insertSubview:dimmingView atIndex:0];
@@ -83,15 +98,15 @@ const CGFloat kComposeboxCornerRadius = 16.0f;
     return CGRectZero;
   }
 
-  LayoutGuideCenter* layoutGuideCenter = self.layoutGuideCenter;
-  UIView* topOmnibox =
-      [layoutGuideCenter referencedViewUnderName:kTopOmniboxGuide];
-  CGRect omniboxFrame = [topOmnibox convertRect:topOmnibox.bounds
-                                         toView:containerView];
-
-  CGFloat top = CGRectGetMinY(omniboxFrame) - 4.0;
-  CGFloat width = containerView.bounds.size.width * 0.75;
-  CGFloat x = (containerView.bounds.size.width - width) / 2.0;
+  CGRect omniboxFrame =
+      [_layoutGuide.owningView convertRect:_layoutGuide.layoutFrame
+                                    toView:containerView];
+  CGFloat top =
+      CGRectGetMinY(omniboxFrame) - kComposeboxOmniboxLayoutGuideTopOffset;
+  CGFloat width = omniboxFrame.size.width +
+                  kComposeboxOmniboxLayoutGuideHorizontalMargin * 2;
+  CGFloat x =
+      omniboxFrame.origin.x - kComposeboxOmniboxLayoutGuideHorizontalMargin;
 
   CGFloat preferredHeight =
       self.presentedViewController.preferredContentSize.height;
