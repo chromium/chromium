@@ -823,58 +823,47 @@ crbug.com/825270 external/wpt/payment-request/delegate-request.https.sub.html [ 
 crbug.com/626703 external/wpt/payment-method-basic-card/steps_for_selecting_the_payment_handler.html [ Timeout ]
 crbug.com/626703 external/wpt/payment-method-basic-card/apply_the_modifiers.html [ Timeout ]
 
-# Existing Secure Payment Confirmation failures on desktop that do not directly relate to the implementation of Browers Bound Keys.
-crbug.com/464896028 [ Mac ] external/wpt/secure-payment-confirmation/authentication-accepted-bbk-created.https.html [ Failure ]
-crbug.com/464896028 [ Win ] external/wpt/secure-payment-confirmation/authentication-accepted-bbk-created.https.html [ Failure ]
-crbug.com/464896028 [ Mac ] external/wpt/secure-payment-confirmation/authentication-accepted-bbk-reused.https.html [ Failure ]
-crbug.com/464896028 [ Win ] external/wpt/secure-payment-confirmation/authentication-accepted-bbk-reused.https.html [ Failure ]
-crbug.com/464896028 [ Mac ] external/wpt/secure-payment-confirmation/authentication-auth-another-way.https.html [ Failure Timeout ]
-crbug.com/464896028 [ Win ] external/wpt/secure-payment-confirmation/authentication-auth-another-way.https.html [ Failure Timeout ]
-crbug.com/464896028 [ Mac ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Failure Timeout ]
-crbug.com/464896028 [ Win ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Failure Timeout ]
-crbug.com/464896028 [ Mac ] external/wpt/secure-payment-confirmation/enrollment-bbk.https.html [ Failure ]
-crbug.com/464896028 [ Win ] external/wpt/secure-payment-confirmation/enrollment-bbk.https.html [ Failure ]
-crbug.com/464896028 [ Win ] external/wpt/secure-payment-confirmation/authentication-invalid-icon.https.html [ Failure ]
-crbug.com/464896028 [ Mac ] external/wpt/secure-payment-confirmation/authentication-invalid-icon.https.html [ Failure ]
-crbug.com/464896028 [ Mac ] external/wpt/secure-payment-confirmation/authentication-optout.https.html [ Failure ]
-crbug.com/464896028 [ Win ] external/wpt/secure-payment-confirmation/authentication-optout.https.html [ Failure ]
-crbug.com/464896028 [ Mac ] external/wpt/secure-payment-confirmation/authentication-icon-data-url.https.html [ Failure ]
-crbug.com/464896028 [ Win ] external/wpt/secure-payment-confirmation/authentication-icon-data-url.https.html [ Failure ]
-crbug.com/464896028 [ Mac ] external/wpt/secure-payment-confirmation/authentication-in-iframe.sub.https.html [ Failure ]
-crbug.com/464896028 [ Win ] external/wpt/secure-payment-confirmation/authentication-in-iframe.sub.https.html [ Failure ]
+# Flakey Secure Payment Confirmation tests.
+crbug.com/464896028 external/wpt/secure-payment-confirmation/authentication-accepted-bbk-created.https.html [ Failure Pass Skip ]
+crbug.com/464896028 external/wpt/secure-payment-confirmation/authentication-accepted-bbk-reused.https.html [ Failure Pass Skip ]
+crbug.com/464896028 external/wpt/secure-payment-confirmation/authentication-auth-another-way.https.html [ Failure Pass Skip ]
+crbug.com/464896028 external/wpt/secure-payment-confirmation/authentication-cannot-bypass-spc.https.html [ Failure Pass Skip ]
+crbug.com/464896028 external/wpt/secure-payment-confirmation/authentication-cross-origin.sub.https.html [ Failure Pass Skip ]
+crbug.com/464896028 external/wpt/secure-payment-confirmation/authentication-icon-data-url.https.html [ Failure Pass Skip ]
+crbug.com/464896028 external/wpt/secure-payment-confirmation/authentication-in-iframe.sub.https.html [ Failure Pass Skip ]
+crbug.com/464896028 external/wpt/secure-payment-confirmation/authentication-invalid-icon.https.html [ Failure Pass Skip ]
+crbug.com/464896028 external/wpt/secure-payment-confirmation/authentication-invalid-payment-entity-logo.https.html [ Failure Pass Skip ]
+crbug.com/464896028 external/wpt/secure-payment-confirmation/authentication-optout.https.html [ Failure Pass Skip ]
+crbug.com/464896028 external/wpt/secure-payment-confirmation/authentication-requires-user-activation.https.html [ Failure Pass Skip ]
+crbug.com/464896028 external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Failure Pass Skip ]
+crbug.com/464896028 external/wpt/secure-payment-confirmation/enrollment.https.html [ Failure Pass Skip ]
+crbug.com/464896028 external/wpt/secure-payment-confirmation/enrollment-bbk.https.html [ Failure Pass Skip ]
+crbug.com/464896028 external/wpt/secure-payment-confirmation/enrollment-bbk-per-passkey.https.html [ Failure Pass Skip ]
+crbug.com/464896028 external/wpt/secure-payment-confirmation/enrollment-in-iframe.sub.https.html [ Failure Pass Skip ]
 
 # Secure Payment Confirmation Browser Bound Keys do not work on platforms without TPMs and TPMs are not available yet on the bots that run these tests.
+# Currently all of the commented out tests are flakey even if they're passing so they are grouped under the bug above until they can be fixed properly.
 crbug.com/464896028 [ Win ] external/wpt/secure-payment-confirmation/authentication-accepted-bbk-per-passkey.https.html [ Failure ]
-crbug.com/464896028 [ Win ] external/wpt/secure-payment-confirmation/authentication-cannot-bypass-spc.https.html [ Failure ]
-crbug.com/464896028 [ Win ] external/wpt/secure-payment-confirmation/authentication-invalid-payment-entity-logo.https.html [ Failure ]
-crbug.com/464896028 [ Win ] external/wpt/secure-payment-confirmation/enrollment-bbk-per-passkey.https.html [ Failure ]
+# crbug.com/464896028 [ Win ] external/wpt/secure-payment-confirmation/authentication-cannot-bypass-spc.https.html [ Failure ]
+# crbug.com/464896028 [ Win ] external/wpt/secure-payment-confirmation/authentication-invalid-payment-entity-logo.https.html [ Failure ]
+# crbug.com/464896028 [ Win ] external/wpt/secure-payment-confirmation/enrollment-bbk-per-passkey.https.html [ Failure ]
 
 # Secure Payment Confirmation Browser Bound Keys is not supported on Linux.
-crbug.com/465137981 [ Linux ] external/wpt/secure-payment-confirmation/authentication-accepted-bbk-created.https.html [ Failure ]
-crbug.com/465137981 [ Linux ] external/wpt/secure-payment-confirmation/authentication-accepted-bbk-reused.https.html [ Failure ]
-crbug.com/465137981 [ Linux ] external/wpt/secure-payment-confirmation/authentication-auth-another-way.https.html [ Timeout ]
-crbug.com/465137981 [ Linux ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Timeout ]
-crbug.com/465137981 [ Linux ] external/wpt/secure-payment-confirmation/enrollment-bbk.https.html [ Failure ]
+# Currently all of the commented out tests are flakey even if they're passing so they are grouped under the bug above until they can be fixed properly.
+# crbug.com/465137981 [ Linux ] external/wpt/secure-payment-confirmation/authentication-accepted-bbk-created.https.html [ Failure ]
+# crbug.com/465137981 [ Linux ] external/wpt/secure-payment-confirmation/authentication-accepted-bbk-reused.https.html [ Failure ]
+# crbug.com/465137981 [ Linux ] external/wpt/secure-payment-confirmation/authentication-auth-another-way.https.html [ Timeout ]
+# crbug.com/465137981 [ Linux ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Timeout ]
+# crbug.com/465137981 [ Linux ] external/wpt/secure-payment-confirmation/enrollment-bbk.https.html [ Failure ]
 
 # Feature Policy changes same-origin allowpaymentrequest behaviour, tests need updating
 crbug.com/718155 payments/payment-request-in-iframe.html [ Failure ]
 crbug.com/718155 payments/payment-request-in-iframe-nested-not-allowed.html [ Failure ]
 
 crbug.com/338124116 external/wpt/payment-request/payment-request-hasenrolledinstrument-method.tentative.https.html [ Failure Pass ]
+
 # Expect to fail. The test is applicable only when DigitalGoods flag is disabled.
 crbug.com/1080870 http/tests/payments/payment-request-app-store-billing-mandatory-total.html [ Failure ]
-
-# TODO(crbug.com/359319433) Those tests are flaky on Mac
-crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/enrollment-in-iframe.sub.https.html [ Failure Pass Skip ]
-crbug.com/436163716 [ Win ] external/wpt/secure-payment-confirmation/enrollment-in-iframe.sub.https.html [ Crash Failure Timeout ]
-
-# TODO(crbug.com/453989940): This test requires the window to be focused, which appears to be flaky on Mac.
-# It also fails flakily because "Chrome only supports one internal authenticator per environment".
-crbug.com/453989940 [ Mac ] external/wpt/secure-payment-confirmation/authentication-invalid-payment-entity-logo.https.html [ Failure Pass ]
-
-crbug.com/359319433 external/wpt/secure-payment-confirmation/enrollment.https.html [ Failure Pass Skip ]
-# Gardener 2025-08-13 this test produces output that changes with each Chrome version
-crbug.com/359319433 external/wpt/secure-payment-confirmation/authentication-requires-user-activation.https.html [ Failure Pass ]
 
 ### ====== Payments related tests end =======
 
