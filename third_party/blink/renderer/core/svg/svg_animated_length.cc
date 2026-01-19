@@ -30,6 +30,10 @@
 
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 
+#include "third_party/blink/renderer/core/css/css_style_sheet.h"
+#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
 
 namespace blink {
@@ -45,18 +49,26 @@ bool RequireNonNegative(CSSPropertyID property_id) {
 }  // namespace
 
 SVGParsingError SVGAnimatedLength::AttributeChanged(const String& value) {
-  // TODO: Use UpdateBaseValueFromAttribute() when we can set proper initial
+  // TODO: Use correct validator when we can set proper initial
   // values on error (for example 'auto' for 'rx' and 'ry').
-  SVGParsingError parse_status =
-      SVGAnimatedProperty<SVGLength>::AttributeChanged(value);
+
+  SVGParsingError parse_status = UpdateBaseValueFromAttribute(
+      *BaseValue(), value,
+      [](const SVGLength&) { return SVGParseStatus::kNoError; },
+      ContextElement()
+          ->GetDocument()
+          .ElementSheet()
+          .Contents()
+          ->ParserContext());
 
   if (SVGLength::NegativeValuesForbiddenForAnimatedLengthAttribute(
           AttributeName())) {
-    // TODO(crbug.com/982425): Pass |kValueRangeNonNegative| to property parser
-    // to handle range checking on math functions correctly, and also to avoid
-    // this ad hoc range checking.
-    if (BaseValue()->IsNegativeNumericLiteral())
+    // TODO(crbug.com/982425): Pass |kValueRangeNonNegative| to property
+    // parser to handle range checking on math functions correctly, and also
+    // to avoid this ad hoc range checking.
+    if (BaseValue()->IsNegativeNumericLiteral()) {
       parse_status = SVGParseStatus::kNegativeValue;
+    }
   }
 
   return parse_status;

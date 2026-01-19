@@ -104,10 +104,11 @@ class SVGAnimatedPropertyBase : public GarbageCollectedMixin {
   static constexpr int kInitialValueStorageBits = 3;
   unsigned InitialValueStorage() const { return initial_value_storage_; }
 
-  template <typename Property, typename Validator>
+  template <typename Property, typename Validator, typename... Args>
   SVGParsingError UpdateBaseValueFromAttribute(Property& base_value,
                                                const String& value,
-                                               Validator&& validator);
+                                               Validator&& validator,
+                                               Args&&... args);
 
  private:
   enum ContentAttributeState : unsigned {
@@ -152,11 +153,12 @@ struct ThreadingTrait<T> {
   static constexpr ThreadAffinity kAffinity = kMainThreadOnly;
 };
 
-template <typename Property, class Validator>
+template <typename Property, class Validator, typename... Args>
 SVGParsingError SVGAnimatedPropertyBase::UpdateBaseValueFromAttribute(
     Property& base_value,
     const String& value,
-    Validator&& validator) {
+    Validator&& validator,
+    Args&&... args) {
   static_assert(Property::kInitialValueBits <= kInitialValueStorageBits,
                 "enough bits for the initial value");
 
@@ -166,7 +168,8 @@ SVGParsingError SVGAnimatedPropertyBase::UpdateBaseValueFromAttribute(
   if constexpr (Property::kInitialValueBits > 0) {
     SVGParsingError parse_status = SVGParseStatus::kNoError;
     if (!is_attr_removal) {
-      parse_status = base_value.SetValueAsString(value);
+      parse_status =
+          base_value.SetValueAsString(value, std::forward<Args>(args)...);
       if (parse_status == SVGParseStatus::kNoError) [[likely]] {
         parse_status = validator(base_value);
       }
@@ -176,7 +179,7 @@ SVGParsingError SVGAnimatedPropertyBase::UpdateBaseValueFromAttribute(
     }
     return parse_status;
   } else {
-    return base_value.SetValueAsString(value);
+    return base_value.SetValueAsString(value, std::forward<Args>(args)...);
   }
 }
 
