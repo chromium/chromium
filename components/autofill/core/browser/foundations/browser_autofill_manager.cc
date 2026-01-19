@@ -803,22 +803,23 @@ void ReorderWebauthnFallbackToFooter(std::vector<Suggestion>& suggestions) {
       std::find_if_not(suggestions.rbegin(), suggestions.rend(),
                        &IsManagementFooterOption)
           .base();
-  // Without "Manage" suggestion, ensure a separator for the footer exists.
   bool has_other_management_items =
       insert_before != suggestions.end() &&
       insert_before->type != SuggestionType::kWebauthnSignInWithAnotherDevice;
-  if (!has_other_management_items &&
-      !std::ranges::contains(suggestions, SuggestionType::kSeparator,
-                             &Suggestion::type)) {
-    suggestions.emplace_back(SuggestionType::kSeparator);
-    insert_before = suggestions.end();
-  }
+
   if (use_webauthn_pos < insert_before) {
     // The webauthn item is too far up. Rotate it to the back!
     std::rotate(use_webauthn_pos, use_webauthn_pos + 1, insert_before);
   } else {
     // The webauthn item is too far down. Rotate it to the front!
     std::rotate(insert_before, use_webauthn_pos, use_webauthn_pos + 1);
+  }
+
+  // Without "Manage" suggestions, ensure a separator for the footer exists.
+  if (!has_other_management_items &&
+      !std::ranges::contains(suggestions, SuggestionType::kSeparator,
+                             &Suggestion::type)) {
+    suggestions.emplace(insert_before, SuggestionType::kSeparator);
   }
 }
 
