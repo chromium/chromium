@@ -307,7 +307,8 @@ ApplicationModeRequestStatus ApplicationModeAvailability(
 }
 
 - (ApplicationModeForTabOpening)applicationMode {
-  CHECK(!base::FeatureList::IsEnabled(kChromeStartupParametersAsync));
+  // TODO(crbug.com/465336545): Remove this getter once the
+  // `kChromeStartupParametersAsync` is fully removed.
   return _applicationMode;
 }
 

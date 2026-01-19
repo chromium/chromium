@@ -491,17 +491,12 @@ void UserActivityBrowserAgent::RouteToCorrectTab() {
       connection_information_.startupParameters.isUnexpectedMode) {
     return;
   }
-  if (base::FeatureList::IsEnabled(kChromeStartupParametersAsync)) {
-    base::OnceCallback<void(ApplicationModeForTabOpening)> completion =
-        base::BindOnce(&UserActivityBrowserAgent::HandleRouteToCorrectTab,
-                       weak_ptr_factory_.GetWeakPtr());
-    [connection_information_.startupParameters
-        requestApplicationModeWithBlock:base::CallbackToBlock(
-                                            std::move(completion))];
-  } else {
-    HandleRouteToCorrectTab(
-        [connection_information_.startupParameters applicationMode]);
-  }
+  base::OnceCallback<void(ApplicationModeForTabOpening)> completion =
+      base::BindOnce(&UserActivityBrowserAgent::HandleRouteToCorrectTab,
+                     weak_ptr_factory_.GetWeakPtr());
+  [connection_information_.startupParameters
+      requestApplicationModeWithBlock:base::CallbackToBlock(
+                                          std::move(completion))];
 }
 
 BOOL UserActivityBrowserAgent::ProceedWithUserActivity(
@@ -682,18 +677,12 @@ BOOL UserActivityBrowserAgent::ContinueUserActivityURL(
   if (application_is_active && IsProfileStateReady(browser_)) {
     // The app is already active so the applicationDidBecomeActive: method will
     // never be called. Open the requested URL immediately.
-    if (base::FeatureList::IsEnabled(kChromeStartupParametersAsync)) {
-      base::OnceCallback<void(ApplicationModeForTabOpening)> completion =
-          base::BindOnce(&UserActivityBrowserAgent::HandleUrlOpening,
-                         weak_ptr_factory_.GetWeakPtr(), webpage_GURL);
-      [connection_information_.startupParameters
-          requestApplicationModeWithBlock:base::CallbackToBlock(
-                                              std::move(completion))];
-    } else {
-      HandleUrlOpening(
-          webpage_GURL,
-          [connection_information_.startupParameters applicationMode]);
-    }
+    base::OnceCallback<void(ApplicationModeForTabOpening)> completion =
+        base::BindOnce(&UserActivityBrowserAgent::HandleUrlOpening,
+                       weak_ptr_factory_.GetWeakPtr(), webpage_GURL);
+    [connection_information_.startupParameters
+        requestApplicationModeWithBlock:base::CallbackToBlock(
+                                            std::move(completion))];
     return YES;
   }
 
@@ -717,18 +706,13 @@ void UserActivityBrowserAgent::OpenMultipleTabs() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const std::vector<GURL>& URLs =
       connection_information_.startupParameters.URLs;
-  if (base::FeatureList::IsEnabled(kChromeStartupParametersAsync)) {
-    base::OnceCallback<void(ApplicationModeForTabOpening)> completion =
-        base::BindOnce(&UserActivityBrowserAgent::HandleMultipleUrlsOpening,
-                       weak_ptr_factory_.GetWeakPtr(), URLs);
-    [connection_information_.startupParameters
-        requestApplicationModeWithBlock:base::CallbackToBlock(
-                                            std::move(completion))];
-  } else {
-    HandleMultipleUrlsOpening(
-        URLs, [connection_information_.startupParameters applicationMode]);
+  base::OnceCallback<void(ApplicationModeForTabOpening)> completion =
+      base::BindOnce(&UserActivityBrowserAgent::HandleMultipleUrlsOpening,
+                     weak_ptr_factory_.GetWeakPtr(), URLs);
+  [connection_information_.startupParameters
+      requestApplicationModeWithBlock:base::CallbackToBlock(
+                                          std::move(completion))];
   }
-}
 
 GURL UserActivityBrowserAgent::GenerateResultGURLFromSearchQuery(
     NSString* search_query) {

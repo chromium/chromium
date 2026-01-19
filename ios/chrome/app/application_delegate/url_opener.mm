@@ -123,25 +123,15 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
       }
 
       BOOL dismissOmnibox = [params postOpeningAction] != FOCUS_OMNIBOX;
-
-      if (base::FeatureList::IsEnabled(kChromeStartupParametersAsync)) {
-        [params requestApplicationModeWithBlock:^(
-                    ApplicationModeForTabOpening applicationMode) {
-          [URLOpener handleUrlLoadParams:urlLoadParams
-                               tabOpener:tabOpener
-                               callerApp:callerApp
-                                 appMode:applicationMode
-                          dismissOmnibox:dismissOmnibox
-                              completion:tabOpenedCompletion];
-        }];
-      } else {
+      [params requestApplicationModeWithBlock:^(
+                  ApplicationModeForTabOpening applicationMode) {
         [URLOpener handleUrlLoadParams:urlLoadParams
                              tabOpener:tabOpener
                              callerApp:callerApp
-                               appMode:[params applicationMode]
+                               appMode:applicationMode
                         dismissOmnibox:dismissOmnibox
                             completion:tabOpenedCompletion];
-      }
+      }];
       return YES;
     }
     return NO;

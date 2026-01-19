@@ -1679,7 +1679,6 @@ void OnListFamilyMembersResponse(
   }
 
   BOOL canShowYoutubeIncognito =
-      base::FeatureList::IsEnabled(kChromeStartupParametersAsync) &&
       base::FeatureList::IsEnabled(kYoutubeIncognito);
   BOOL incognitoDisabled = [self isIncognitoDisabled];
 
@@ -4065,7 +4064,6 @@ using UserFeedbackDataCallback =
       (targetMode == ApplicationModeForTabOpening::UNDETERMINED ||
        targetMode == ApplicationModeForTabOpening::APP_SWITCHER_INCOGNITO);
   BOOL canShowYoutubeIncognito =
-      base::FeatureList::IsEnabled(kChromeStartupParametersAsync) &&
       base::FeatureList::IsEnabled(kYoutubeIncognito);
   return shouldShowIncognitoInterstitial ||
          (canShowYoutubeIncognito &&
