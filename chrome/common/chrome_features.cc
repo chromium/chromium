@@ -1602,7 +1602,7 @@ BASE_FEATURE(kConsiderDSEWarmUpPageAsSRP, base::FEATURE_ENABLED_BY_DEFAULT);
 #if BUILDFLAG(IS_CHROMEOS)
 // Enables Camera Cloud Storage for saving photos and videos on Google Drive
 // or OneDrive, controlled by CameraSaveLocation policy.
-BASE_FEATURE(kCameraCloudStorage, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCameraCloudStorage, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the SkyVault (cloud-first) changes, some of which are also controlled
 // by policies: removing local storage, saving downloads and screen captures to
