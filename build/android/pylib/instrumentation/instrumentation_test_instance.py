@@ -20,6 +20,7 @@ from pylib.symbols import deobfuscator
 from pylib.symbols import stack_symbolizer
 from pylib.utils import dexdump
 from pylib.utils import gold_utils
+from pylib.utils import logging_utils
 from pylib.utils import test_filter
 
 with host_paths.SysPath(host_paths.BUILD_UTIL_PATH):
@@ -1129,6 +1130,14 @@ class InstrumentationTestInstance(test_instance.TestInstance):
       for t in inflated_tests:
         logging.debug('  %s', GetUniqueTestName(t))
       logging.warning('Unmatched Filters: %s', self._test_filters)
+    filtered_tests_with_excluded = FilterTests(inflated_tests,
+                                               self._test_filters,
+                                               self._annotations, [])
+    if len(filtered_tests_with_excluded) != len(filtered_tests):
+      color = (logging_utils.BACK.YELLOW, logging_utils.FORE.BLACK)
+      with logging_utils.OverrideColor(logging.WARNING, color):
+        logging.warning('Excluded one or more disabled tests. '
+                        'Consider adding: --gtest_also_run_disabled_tests')
     return filtered_tests
 
   def IsApkForceQueryable(self, apk):

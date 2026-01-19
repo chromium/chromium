@@ -22,18 +22,18 @@ STYLE = colorama.Style
 class _ColorFormatter(logging.Formatter):
   # pylint does not see members added dynamically in the constructor.
   # pylint: disable=no-member
-  color_map = {
-    logging.DEBUG: (FORE.CYAN),
-    logging.INFO: (),  # Use default style.
-    logging.WARNING: (FORE.YELLOW),
-    logging.ERROR: (FORE.RED),
-    logging.CRITICAL: (BACK.RED),
-  }
 
-  def __init__(self, wrapped_formatter=None):
+  def __init__(self, wrapped_formatter=None, color_warnings=False):
     """Wraps a |logging.Formatter| and adds color."""
     super().__init__()
     self._wrapped_formatter = wrapped_formatter or logging.Formatter()
+    self.color_map = {
+        logging.DEBUG: (),  # Default style.
+        logging.INFO: (),
+        logging.WARNING: FORE.YELLOW if color_warnings else (),
+        logging.ERROR: FORE.RED,
+        logging.CRITICAL: (BACK.RED, FORE.WHITE),
+    }
 
   #override
   def format(self, record):
@@ -63,9 +63,11 @@ class ColorStreamHandler(logging.StreamHandler):
     logging.info('message')
 
   """
-  def __init__(self, force_color=False):
+
+  def __init__(self, force_color=False, color_warnings=False):
     super().__init__()
     self.force_color = force_color
+    self.color_warnings = color_warnings
     self.setFormatter(logging.Formatter())
 
   @property
@@ -79,7 +81,7 @@ class ColorStreamHandler(logging.StreamHandler):
   #override
   def setFormatter(self, fmt):
     if self.force_color or self.is_tty:
-      fmt = _ColorFormatter(fmt)
+      fmt = _ColorFormatter(fmt, color_warnings=self.color_warnings)
     super().setFormatter(fmt)
 
   @staticmethod
