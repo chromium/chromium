@@ -4366,16 +4366,19 @@ const ComputedStyle* LayoutObject::FirstLineStyleWithoutFallback() const {
         RuntimeEnabledFeatures::QuoteFirstLineStyleEnabled() && IsQuote()
             ? Parent()
             : this;
-    if (const ComputedStyle* parent_first_line_style =
-            layout_object->Parent()->FirstLineStyleWithoutFallback()) {
-      // A first-line style is in effect. Get uncached first line style based on
-      // parent_first_line_style and cache the result in this object's style.
-      if (const ComputedStyle* first_line_style =
-              layout_object->GetUncachedPseudoElementStyle(StyleRequest(
-                  kPseudoIdFirstLineInherited, parent_first_line_style))) {
-        return StyleRef().AddCachedPseudoElementStyle(
-            std::move(first_line_style), kPseudoIdFirstLineInherited,
-            g_null_atom);
+    if (layout_object->Parent()) {
+      if (const ComputedStyle* parent_first_line_style =
+              layout_object->Parent()->FirstLineStyleWithoutFallback()) {
+        // A first-line style is in effect. Get the uncached first-line style
+        // based on parent_first_line_style and cache the result in this
+        // object's style.
+        if (const ComputedStyle* first_line_style =
+                layout_object->GetUncachedPseudoElementStyle(StyleRequest(
+                    kPseudoIdFirstLineInherited, parent_first_line_style))) {
+          return StyleRef().AddCachedPseudoElementStyle(
+              std::move(first_line_style), kPseudoIdFirstLineInherited,
+              g_null_atom);
+        }
       }
     }
   }
