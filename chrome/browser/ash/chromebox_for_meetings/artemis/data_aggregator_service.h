@@ -7,8 +7,10 @@
 
 #include <queue>
 
+#include "base/containers/span.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/chromebox_for_meetings/artemis/artemis_features.h"
 #include "chrome/browser/ash/chromebox_for_meetings/artemis/command_source.h"
 #include "chrome/browser/ash/chromebox_for_meetings/artemis/log_source.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_observer.h"
@@ -126,6 +128,7 @@ class DataAggregatorService : public CfmObserver,
   std::map<std::string, mojo::Remote<mojom::DataSource>> data_source_map_;
 
  private:
+  void InitializeCommandSources(enum features::TelemetryVerbosity verbosity);
   void AddLocalCommandSource(const std::string& command,
                              const base::TimeDelta& poll_freq);
   void OnLocalCommandDisconnect(const std::string& command,
