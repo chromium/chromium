@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_CSS_SHAPE_INTERPOLATION_TYPE_H_
 
 #include "third_party/blink/renderer/core/animation/css_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/non_interpolable_value.h"
 
 namespace blink {
 
@@ -21,6 +22,9 @@ class CSSShapeInterpolationType : public CSSInterpolationType {
                  double underlying_fraction,
                  const InterpolationValue&,
                  double interpolation_fraction) const final;
+
+  static CORE_EXPORT bool IsShapeNonInterpolableValue(
+      const NonInterpolableValue*);
 
   static CORE_EXPORT BasicShape* CreateShape(const InterpolableValue&,
                                              const NonInterpolableValue*,

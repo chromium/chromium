@@ -590,6 +590,12 @@ bool BoxesMatches(const CSSPropertyID& property_id,
 }  // namespace
 
 // static
+bool CSSShapeInterpolationType::IsShapeNonInterpolableValue(
+    const NonInterpolableValue* value) {
+  return IsA<ShapeNonInterpolableValue>(value);
+}
+
+// static
 BasicShape* CSSShapeInterpolationType::CreateShape(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue* non_interpolable_value,

@@ -281,6 +281,9 @@ BasicShape* GetAnimatedShapeFromKeyframe(const PropertySpecificKeyframe* frame,
           PathInterpolationFunctions::IsPathNonInterpolableValue(
               *non_interpolable_value)
               ? BasicShape::kStylePathType
+          : CSSShapeInterpolationType::IsShapeNonInterpolableValue(
+                non_interpolable_value)
+              ? BasicShape::kStyleShapeType
               // This can be any shape but kStylePathType. This is needed to
               // distinguish between Path shape and other shapes in
               // CreateBasicShape function.
