@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/core/dom/explicitly_set_attr_elements_map.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
-#include "third_party/blink/renderer/core/dom/has_invalidation_flags.h"
 #include "third_party/blink/renderer/core/dom/overscroll_pseudo_element_data.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element_data.h"
@@ -377,15 +376,19 @@ class CORE_EXPORT ElementRareDataVector final
   void SetMayBeImplicitAnchor() { may_be_implicit_anchor = true; }
 
   FocusgroupData GetFocusgroupData() const {
-    return {focusgroup_behavior, focusgroup_flags};
+    return {static_cast<FocusgroupBehavior>(focusgroup_behavior_),
+            static_cast<FocusgroupFlags>(focusgroup_flags_)};
   }
   void SetFocusgroupData(FocusgroupData data) {
-    focusgroup_behavior = data.behavior;
-    focusgroup_flags = data.flags;
+    focusgroup_behavior_ = static_cast<unsigned>(data.behavior);
+    focusgroup_flags_ = static_cast<unsigned>(data.flags);
+    DCHECK_EQ(GetFocusgroupData().behavior, data.behavior);
+    DCHECK_EQ(GetFocusgroupData().flags, data.flags);
   }
   void ClearFocusgroupData() {
-    focusgroup_behavior = FocusgroupBehavior::kNoBehavior;
-    focusgroup_flags = FocusgroupFlags::kNone;
+    focusgroup_behavior_ =
+        static_cast<unsigned>(FocusgroupBehavior::kNoBehavior);
+    focusgroup_flags_ = static_cast<unsigned>(FocusgroupFlags::kNone);
     SetFocusgroupLastFocused(nullptr);
   }
   void SetFocusgroupLastFocused(Element* element);
@@ -398,85 +401,59 @@ class CORE_EXPORT ElementRareDataVector final
 
   void SetAffectedByStartingStyles() { affected_by_starting_styles = true; }
   bool AffectedByStartingStyles() const { return affected_by_starting_styles; }
-  bool AffectedBySubjectHas() const {
-    return has_invalidation_flags.affected_by_subject_has;
-  }
-  void SetAffectedBySubjectHas() {
-    has_invalidation_flags.affected_by_subject_has = true;
-  }
-  bool AffectedByNonSubjectHas() const {
-    return has_invalidation_flags.affected_by_non_subject_has;
-  }
-  void SetAffectedByNonSubjectHas() {
-    has_invalidation_flags.affected_by_non_subject_has = true;
-  }
+  bool AffectedBySubjectHas() const { return affected_by_subject_has_; }
+  void SetAffectedBySubjectHas() { affected_by_subject_has_ = true; }
+  bool AffectedByNonSubjectHas() const { return affected_by_non_subject_has_; }
+  void SetAffectedByNonSubjectHas() { affected_by_non_subject_has_ = true; }
   bool AncestorsOrAncestorSiblingsAffectedByHas() const {
-    return has_invalidation_flags
-        .ancestors_or_ancestor_siblings_affected_by_has;
+    return ancestors_or_ancestor_siblings_affected_by_has_;
   }
   void SetAncestorsOrAncestorSiblingsAffectedByHas() {
-    has_invalidation_flags.ancestors_or_ancestor_siblings_affected_by_has =
-        true;
+    ancestors_or_ancestor_siblings_affected_by_has_ = true;
   }
   unsigned GetSiblingsAffectedByHasFlags() const {
-    return has_invalidation_flags.siblings_affected_by_has;
+    return siblings_affected_by_has_;
   }
   bool HasSiblingsAffectedByHasFlags(unsigned flags) const {
-    return has_invalidation_flags.siblings_affected_by_has & flags;
+    return siblings_affected_by_has_ & flags;
   }
   void SetSiblingsAffectedByHasFlags(unsigned flags) {
-    has_invalidation_flags.siblings_affected_by_has |= flags;
+    siblings_affected_by_has_ |= flags;
   }
-  bool AffectedByPseudoInHas() const {
-    return has_invalidation_flags.affected_by_pseudos_in_has;
-  }
-  void SetAffectedByPseudoInHas() {
-    has_invalidation_flags.affected_by_pseudos_in_has = true;
-  }
+  bool AffectedByPseudoInHas() const { return affected_by_pseudos_in_has_; }
+  void SetAffectedByPseudoInHas() { affected_by_pseudos_in_has_ = true; }
   bool AncestorsOrSiblingsAffectedByHoverInHas() const {
-    return has_invalidation_flags
-        .ancestors_or_siblings_affected_by_hover_in_has;
+    return ancestors_or_siblings_affected_by_hover_in_has_;
   }
   void SetAncestorsOrSiblingsAffectedByHoverInHas() {
-    has_invalidation_flags.ancestors_or_siblings_affected_by_hover_in_has =
-        true;
+    ancestors_or_siblings_affected_by_hover_in_has_ = true;
   }
   bool AncestorsOrSiblingsAffectedByActiveInHas() const {
-    return has_invalidation_flags
-        .ancestors_or_siblings_affected_by_active_in_has;
+    return ancestors_or_siblings_affected_by_active_in_has_;
   }
   void SetAncestorsOrSiblingsAffectedByActiveInHas() {
-    has_invalidation_flags.ancestors_or_siblings_affected_by_active_in_has =
-        true;
+    ancestors_or_siblings_affected_by_active_in_has_ = true;
   }
   bool AncestorsOrSiblingsAffectedByFocusInHas() const {
-    return has_invalidation_flags
-        .ancestors_or_siblings_affected_by_focus_in_has;
+    return ancestors_or_siblings_affected_by_focus_in_has_;
   }
   void SetAncestorsOrSiblingsAffectedByFocusInHas() {
-    has_invalidation_flags.ancestors_or_siblings_affected_by_focus_in_has =
-        true;
+    ancestors_or_siblings_affected_by_focus_in_has_ = true;
   }
   bool AncestorsOrSiblingsAffectedByFocusVisibleInHas() const {
-    return has_invalidation_flags
-        .ancestors_or_siblings_affected_by_focus_visible_in_has;
+    return ancestors_or_siblings_affected_by_focus_visible_in_has_;
   }
   void SetAncestorsOrSiblingsAffectedByFocusVisibleInHas() {
-    has_invalidation_flags
-        .ancestors_or_siblings_affected_by_focus_visible_in_has = true;
+    ancestors_or_siblings_affected_by_focus_visible_in_has_ = true;
   }
   bool AffectedByLogicalCombinationsInHas() const {
-    return has_invalidation_flags.affected_by_logical_combinations_in_has;
+    return affected_by_logical_combinations_in_has_;
   }
   void SetAffectedByLogicalCombinationsInHas() {
-    has_invalidation_flags.affected_by_logical_combinations_in_has = true;
+    affected_by_logical_combinations_in_has_ = true;
   }
-  bool AffectedByMultipleHas() const {
-    return has_invalidation_flags.affected_by_multiple_has;
-  }
-  void SetAffectedByMultipleHas() {
-    has_invalidation_flags.affected_by_multiple_has = true;
-  }
+  bool AffectedByMultipleHas() const { return affected_by_multiple_has_; }
+  void SetAffectedByMultipleHas() { affected_by_multiple_has_ = true; }
 
   ContentData* GetAltContentData() const;
   void SetAltContentData(ContentData* content_data);
@@ -632,9 +609,30 @@ class CORE_EXPORT ElementRareDataVector final
   // For more see:
   // https://explainers-by-googlers.github.io/user-dictionary-leaks/
   unsigned was_last_focus_from_user_gesture : 1 = false;
-  HasInvalidationFlags has_invalidation_flags;
-  FocusgroupBehavior focusgroup_behavior = FocusgroupBehavior::kNoBehavior;
-  FocusgroupFlags focusgroup_flags = FocusgroupFlags::kNone;
+
+  // :has() invalidation flags. See has_invalidation_flags.h for description.
+  unsigned affected_by_subject_has_ : 1 = false;
+  unsigned affected_by_non_subject_has_ : 1 = false;
+  unsigned affected_by_pseudos_in_has_ : 1 = false;
+  unsigned siblings_affected_by_has_ : 2 = 0;
+  unsigned ancestors_or_ancestor_siblings_affected_by_has_ : 1 = false;
+  unsigned ancestors_or_siblings_affected_by_hover_in_has_ : 1 = false;
+  unsigned ancestors_or_siblings_affected_by_active_in_has_ : 1 = false;
+  unsigned ancestors_or_siblings_affected_by_focus_in_has_ : 1 = false;
+  unsigned ancestors_or_siblings_affected_by_focus_visible_in_has_ : 1 = false;
+  unsigned affected_by_logical_combinations_in_has_ : 1 = false;
+  unsigned affected_by_multiple_has_ : 1 = false;
+
+  // Underlying type is FocusgroupBehavior.
+  unsigned focusgroup_behavior_ : 4 =
+      static_cast<unsigned>(FocusgroupBehavior::kNoBehavior);
+
+  // Underlying type is FocusgroupFlags.
+  unsigned focusgroup_flags_ : 7 =
+      static_cast<unsigned>(FocusgroupFlags::kNone);
+
+  // Free bit(s) for future use.
+  unsigned unused_bits_ : 1 = 0;
 
   SparseVector<FieldId, Member<ElementRareDataField>> fields_;
 };

@@ -190,34 +190,7 @@ enum SiblingsAffectedByHasFlags : unsigned {
   kNoSiblingsAffectedByHasFlags = 0,
 };
 
-struct HasInvalidationFlags {
-  unsigned affected_by_subject_has : 1;
-  unsigned affected_by_non_subject_has : 1;
-  unsigned affected_by_pseudos_in_has : 1;
-
-  unsigned siblings_affected_by_has : 2;
-  unsigned ancestors_or_ancestor_siblings_affected_by_has : 1;
-
-  unsigned ancestors_or_siblings_affected_by_hover_in_has : 1;
-  unsigned ancestors_or_siblings_affected_by_active_in_has : 1;
-  unsigned ancestors_or_siblings_affected_by_focus_in_has : 1;
-  unsigned ancestors_or_siblings_affected_by_focus_visible_in_has : 1;
-  unsigned affected_by_logical_combinations_in_has : 1;
-
-  unsigned affected_by_multiple_has : 1;
-
-  HasInvalidationFlags()
-      : affected_by_subject_has(false),
-        affected_by_non_subject_has(false),
-        affected_by_pseudos_in_has(false),
-        siblings_affected_by_has(0),
-        ancestors_or_ancestor_siblings_affected_by_has(false),
-        ancestors_or_siblings_affected_by_hover_in_has(false),
-        ancestors_or_siblings_affected_by_active_in_has(false),
-        ancestors_or_siblings_affected_by_focus_in_has(false),
-        ancestors_or_siblings_affected_by_focus_visible_in_has(false),
-        affected_by_multiple_has(false) {}
-};
+// The actual storage of the flags lives in ElementRareDataVector.
 
 }  // namespace blink
 
