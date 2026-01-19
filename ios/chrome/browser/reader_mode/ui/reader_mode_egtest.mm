@@ -174,8 +174,16 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
         {kEnableReaderModeOmniboxEntryPointInUS, {}});
   }
   if ([self isRunningTest:@selector
+            (testSampleContextualChipVisibleInReaderMode)] ||
+      [self isRunningTest:@selector(testReaderModeChipHiddenInReaderMode)]) {
+    config.features_enabled_and_params.push_back(
+        {kProactiveSuggestionsFramework, {}});
+    config.features_enabled_and_params.push_back({kAskGeminiChip, {}});
+  }
+  if ([self isRunningTest:@selector
             (testReaderModeChipVisibleWhenLeavingReaderModeWithPSFDisabled)]) {
     config.features_disabled.push_back(kProactiveSuggestionsFramework);
+    config.features_disabled.push_back(kAskGeminiChip);
   }
   if ([self isRunningTest:@selector
             (testSampleContextualChipVisibleInReaderMode)]) {
