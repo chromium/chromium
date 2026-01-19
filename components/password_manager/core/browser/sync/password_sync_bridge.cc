@@ -5,7 +5,6 @@
 #include "components/password_manager/core/browser/sync/password_sync_bridge.h"
 
 #include <optional>
-#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -36,10 +35,10 @@
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
 #include "components/sync/protocol/data_type_state_helper.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 
 namespace password_manager {
-
 namespace {
 
 // Error values for reading sync metadata.
@@ -498,7 +497,8 @@ std::optional<syncer::ModelError> PasswordSyncBridge::MergeFullSyncData(
     // remote passwords, both should be merged by picking the most recently
     // created version. Password comparison is done by comparing the client
     // tags. In addition, collect the client tags of local passwords.
-    std::unordered_set<std::string> client_tags_of_local_passwords;
+    absl::flat_hash_set<std::string> client_tags_of_local_passwords;
+    client_tags_of_local_passwords.reserve(key_to_local_specifics_map.size());
     for (const auto& [primary_key, local_password_specifics] :
          key_to_local_specifics_map) {
       const std::string storage_key = base::NumberToString(primary_key.value());
@@ -596,8 +596,8 @@ std::optional<syncer::ModelError> PasswordSyncBridge::MergeFullSyncData(
          entity_data) {
       const std::string client_tag_of_remote_password =
           GetClientTag(entity_change->data());
-      if (client_tags_of_local_passwords.count(client_tag_of_remote_password) !=
-          0) {
+      if (client_tags_of_local_passwords.contains(
+              client_tag_of_remote_password)) {
         // Passwords in both local and remote models have been processed
         // already.
         continue;
