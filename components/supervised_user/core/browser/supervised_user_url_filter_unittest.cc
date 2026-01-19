@@ -686,6 +686,70 @@ TEST_F(SupervisedUserURLFilterTest,
       << "Plain filter configuration should classify urls as allowed";
 }
 
+TEST_F(SupervisedUserURLFilterTest, StripOnDefaultFilteringBehaviour) {
+  EXPECT_EQ(
+      GURL("http://example.com"),
+      supervised_user_test_environment_.url_filter()->GetEffectiveUrlToUnblock(
+          {.url = GURL("http://www.example.com"),
+           .behavior = FilteringBehavior::kBlock,
+           .reason = FilteringBehaviorReason::DEFAULT}));
+}
+
+TEST_F(SupervisedUserURLFilterTest,
+       StripOnManualFilteringBehaviourWithoutConflict) {
+  EXPECT_EQ(
+      GURL("http://example.com"),
+      supervised_user_test_environment_.url_filter()->GetEffectiveUrlToUnblock(
+          {.url = GURL("http://www.example.com"),
+           .behavior = FilteringBehavior::kBlock,
+           .reason = FilteringBehaviorReason::MANUAL}));
+}
+
+TEST_F(SupervisedUserURLFilterTest,
+       SkipStripOnManualFilteringBehaviourWithConflict) {
+  GURL full_url("http://www.example.com");
+
+  // Add an conflicting entry in the blocklist.
+  supervised_user_test_environment_.SetManualFilterForHost(full_url.GetHost(),
+                                                           /*allowlist=*/false);
+
+  EXPECT_EQ(
+      full_url,
+      supervised_user_test_environment_.url_filter()->GetEffectiveUrlToUnblock(
+          {.url = full_url,
+           .behavior = FilteringBehavior::kBlock,
+           .reason = FilteringBehaviorReason::MANUAL}));
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(SupervisedUserURLFilterTest, NormalizesUnblockingUrls) {
+  GURL full_spec_url("http://admin:password@www.example.com/path?query#ref");
+
+  // First the url has normalized trivial domain, username, password, query and
+  // ref.
+  ASSERT_EQ(
+      GURL("http://example.com/path"),
+      supervised_user_test_environment_.url_filter()->GetEffectiveUrlToUnblock(
+          {.url = full_spec_url,
+           .behavior = FilteringBehavior::kBlock,
+           .reason = FilteringBehaviorReason::MANUAL}));
+
+  // Now add it to the manual blocklist.
+  supervised_user_test_environment_.SetManualFilterForHost(
+      full_spec_url.GetHost(),
+      /*allowlist=*/false);
+
+  // This time the url is normalized without trivial domain prefixes because it
+  // was added to the manual host blocklist.
+  EXPECT_EQ(
+      GURL("http://www.example.com/path"),
+      supervised_user_test_environment_.url_filter()->GetEffectiveUrlToUnblock(
+          {.url = full_spec_url,
+           .behavior = FilteringBehavior::kBlock,
+           .reason = FilteringBehaviorReason::MANUAL}));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 class SupervisedUserURLFilteringWithConflictsTest
     : public SupervisedUserURLFilterTest,
       public testing::WithParamInterface<std::tuple<
@@ -741,7 +805,8 @@ TEST_F(SupervisedUserURLFilteringWithConflictsTest,
             FilteringBehavior::kAllow);
 
   // When there is no conflict, no entries as recorded in the conflict type
-  // histogram. A non-conflict entry is recorded on the conflict tracking histogram.
+  // histogram. A non-conflict entry is recorded on the conflict tracking
+  // histogram.
   histogram_tester.ExpectTotalCount(
       SupervisedUserURLFilter::
           GetManagedSiteListConflictTypeHistogramNameForTest(),

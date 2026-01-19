@@ -48,23 +48,21 @@ class SupervisedUserErrorContainer
   class SupervisedUserErrorInfo {
    public:
     SupervisedUserErrorInfo(
-        const GURL& request_url,
-        bool is_main_frame,
-        supervised_user::FilteringBehaviorReason filtering_behavior_reason);
+        supervised_user::SupervisedUserURLFilter::Result filtering_result,
+        bool is_main_frame);
     SupervisedUserErrorInfo() = delete;
     SupervisedUserErrorInfo(const SupervisedUserErrorInfo& other) = delete;
     SupervisedUserErrorInfo& operator=(const SupervisedUserErrorInfo& other) =
         delete;
-    bool is_main_frame() const { return is_main_frame_; }
-    supervised_user::FilteringBehaviorReason filtering_behavior_reason() const {
-      return filtering_behavior_reason_;
+
+    supervised_user::SupervisedUserURLFilter::Result filtering_result() const {
+      return filtering_result_;
     }
-    GURL request_url() const { return request_url_; }
+    bool is_main_frame() const { return is_main_frame_; }
 
    private:
+    supervised_user::SupervisedUserURLFilter::Result filtering_result_;
     bool is_main_frame_;
-    supervised_user::FilteringBehaviorReason filtering_behavior_reason_;
-    GURL request_url_;
   };
 
   // Stores info associated with a supervised user interstitial error page.

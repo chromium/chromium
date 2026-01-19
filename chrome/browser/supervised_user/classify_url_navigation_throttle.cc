@@ -189,7 +189,7 @@ void ClassifyUrlNavigationThrottle::ScheduleInterstitial(
 void ClassifyUrlNavigationThrottle::ShowInterstitial(
     SupervisedUserURLFilter::Result result) {
   SupervisedUserNavigationObserver::OnRequestBlocked(
-      navigation_handle()->GetWebContents(), result.url, result.reason,
+      navigation_handle()->GetWebContents(), result,
       navigation_handle()->GetNavigationId(),
       navigation_handle()->GetFrameTreeNodeId(),
       base::BindRepeating(&ClassifyUrlNavigationThrottle::OnInterstitialResult,

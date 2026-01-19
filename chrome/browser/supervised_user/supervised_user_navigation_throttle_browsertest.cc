@@ -407,8 +407,7 @@ class SupervisedUserIframeFilterTest
  protected:
   SupervisedUserIframeFilterTest()
       : SupervisedUserNavigationThrottleTestBase(
-            supervised_user::SupervisionMixin::SignInMode::kSupervised) {
-  }
+            supervised_user::SupervisionMixin::SignInMode::kSupervised) {}
 
   ~SupervisedUserIframeFilterTest() override = default;
 
@@ -416,7 +415,7 @@ class SupervisedUserIframeFilterTest
   void TearDownOnMainThread() override;
 
   std::vector<content::FrameTreeNodeId> GetBlockedFrames();
-  const GURL& GetBlockedFrameURL(content::FrameTreeNodeId frame_id);
+  GURL GetBlockedFrameURL(content::FrameTreeNodeId frame_id);
   bool IsInterstitialBeingShownInFrame(content::FrameTreeNodeId frame_id);
   bool IsRemoteApprovalsButtonBeingShown(content::FrameTreeNodeId frame_id);
   bool IsLocalApprovalsButtonBeingShown(content::FrameTreeNodeId frame_id);
@@ -492,14 +491,14 @@ SupervisedUserIframeFilterTest::GetBlockedFrames() {
   return blocked_frames;
 }
 
-const GURL& SupervisedUserIframeFilterTest::GetBlockedFrameURL(
+GURL SupervisedUserIframeFilterTest::GetBlockedFrameURL(
     content::FrameTreeNodeId frame_id) {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   auto* navigation_observer =
       SupervisedUserNavigationObserver::FromWebContents(tab);
   const auto& interstitials = navigation_observer->interstitials_for_test();
   DCHECK(interstitials.contains(frame_id));
-  return interstitials.at(frame_id)->url();
+  return interstitials.at(frame_id)->filtering_result().url;
 }
 
 bool SupervisedUserIframeFilterTest::IsInterstitialBeingShownInFrame(

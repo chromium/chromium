@@ -63,13 +63,10 @@ SupervisedUserErrorContainer::~SupervisedUserErrorContainer() {
 }
 
 SupervisedUserErrorContainer::SupervisedUserErrorInfo::SupervisedUserErrorInfo(
-    const GURL& request_url,
-    bool is_main_frame,
-    supervised_user::FilteringBehaviorReason filtering_behavior_reason) {
-  request_url_ = request_url;
-  is_main_frame_ = is_main_frame;
-  filtering_behavior_reason_ = filtering_behavior_reason;
-}
+    supervised_user::SupervisedUserURLFilter::Result filtering_result,
+    bool is_main_frame)
+    : filtering_result_(filtering_result), is_main_frame_(is_main_frame) {}
+
 void SupervisedUserErrorContainer::SetSupervisedUserErrorInfo(
     std::unique_ptr<SupervisedUserErrorInfo> error_info) {
   supervised_user_error_info_ = std::move(error_info);
@@ -85,11 +82,10 @@ SupervisedUserErrorContainer::CreateSupervisedUserInterstitial(
   std::unique_ptr<supervised_user::SupervisedUserInterstitial> interstitial =
       supervised_user::SupervisedUserInterstitial::Create(
           std::move(web_content_handler), supervised_user_service_.get(),
-          error_info.request_url(),
+          error_info.filtering_result(),
           // User name needed only for the local web approval flow, not
           // applicable for iOS.
-          /*supervised_user_name=*/std::u16string(),
-          error_info.filtering_behavior_reason());
+          /*supervised_user_name=*/std::u16string());
   return interstitial;
 }
 
@@ -104,7 +100,7 @@ void SupervisedUserErrorContainer::HandleCommand(
     interstitial.RequestUrlAccessRemote(
         base::BindOnce(&SupervisedUserErrorContainer::OnRequestCreated,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                       interstitial.url()));
+                       interstitial.filtering_result().url));
   } else if (command ==
              security_interstitials::SecurityInterstitialCommand::CMD_PROCEED) {
     interstitial.RequestUrlAccessLocal(base::DoNothing());
@@ -142,7 +138,8 @@ void SupervisedUserErrorContainer::URLFilterCheckCallback(
     SupervisedUserInterstitialBlockingPage* supervised_user_blocking_page =
         static_cast<SupervisedUserInterstitialBlockingPage*>(blocking_page);
     is_showing_supervised_user_interstitial_for_url =
-        supervised_user_blocking_page->interstitial().url() == result.url;
+        supervised_user_blocking_page->interstitial().filtering_result().url ==
+        result.url;
     is_main_frame = supervised_user_blocking_page->interstitial()
                         .web_content_handler()
                         ->IsMainFrame();
@@ -215,7 +212,7 @@ SupervisedUserInterstitialBlockingPage::SupervisedUserInterstitialBlockingPage(
     web::WebState* web_state)
     : security_interstitials::IOSSecurityInterstitialPage(
           web_state,
-          interstitial->url(),
+          interstitial->filtering_result().url,
           controller_client.get()),
       interstitial_(std::move(interstitial)),
       controller_client_(std::move(controller_client)),

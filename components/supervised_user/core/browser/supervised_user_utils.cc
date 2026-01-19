@@ -22,7 +22,6 @@
 #include "components/supervised_user/core/browser/proto/parent_access_callback.pb.h"
 #include "components/supervised_user/core/browser/proto/transaction_data.pb.h"
 #include "components/supervised_user/core/browser/supervised_user_log_record.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -323,39 +322,6 @@ bool EmitLogRecordHistograms(
   }
 
   return did_emit_histogram;
-}
-
-UrlFormatter::UrlFormatter(
-    const SupervisedUserURLFilter& supervised_user_url_filter,
-    FilteringBehaviorReason filtering_behavior_reason)
-    : supervised_user_url_filter_(supervised_user_url_filter),
-      filtering_behavior_reason_(filtering_behavior_reason) {}
-
-UrlFormatter::~UrlFormatter() = default;
-
-GURL UrlFormatter::FormatUrl(const GURL& url) const {
-  // Strip the trivial subdomain.
-  GURL stripped_url(url_formatter::FormatUrl(
-      url, url_formatter::kFormatUrlOmitTrivialSubdomains,
-      base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
-
-  // If the url is blocked due to an entry in the block list,
-  // check if the blocklist entry is a trivial www-subdomain conflict and skip
-  // the stripping.
-  bool skip_trivial_subdomain_strip =
-      filtering_behavior_reason_ == FilteringBehaviorReason::MANUAL &&
-      stripped_url.GetHost() != url.GetHost() &&
-      supervised_user_url_filter_->IsHostInBlocklist(url.GetHost());
-
-  GURL target_url = skip_trivial_subdomain_strip ? url : stripped_url;
-
-  // TODO(b/322484529): Standardize the url formatting for local approvals
-  // across platforms.
-#if !BUILDFLAG(IS_CHROMEOS)
-  return NormalizeUrl(target_url);
-#else
-  return target_url;
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \

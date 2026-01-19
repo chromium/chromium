@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
@@ -17,9 +18,9 @@ namespace supervised_user {
 
 class SupervisedUserSettingsService;
 
-// This base class contains all the Web Approval Intersitial functionality that
+// This base class contains all the Web Approval Interstitial functionality that
 // requires access to the current web content.
-// It contains implementation of the common methods that can be shared accross
+// It contains implementation of the common methods that can be shared across
 // platforms and can live in components.
 class WebContentHandler {
  public:
@@ -27,14 +28,13 @@ class WebContentHandler {
 
   virtual ~WebContentHandler();
 
-  // Initiates the OS specific local approval flow for a given `url`.
+  // Initiates the OS specific local approval flow for a given `target_url`.
   // Not all platforms with supervised users support this operation,
   // and they must throw an error when implementing this method.
   virtual void RequestLocalApproval(
-      const GURL& url,
+      const GURL& target_url,
+      supervised_user::SupervisedUserURLFilter::Result filtering_result,
       const std::u16string& child_display_name,
-      const UrlFormatter& url_formatter,
-      const FilteringBehaviorReason& filtering_behavior_reason,
       ApprovalRequestInitiatedCallback callback) = 0;
 
   // TODO(b/273692421): Add unit (or browser test) coverage for the moved

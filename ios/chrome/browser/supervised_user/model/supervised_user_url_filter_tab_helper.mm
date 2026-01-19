@@ -45,7 +45,7 @@ void OnURLFilteringDone(
     CHECK(container);
     container->SetSupervisedUserErrorInfo(
         std::make_unique<SupervisedUserErrorContainer::SupervisedUserErrorInfo>(
-            result.url, request_info.target_frame_is_main, result.reason));
+            result, request_info.target_frame_is_main));
     decision = CreateSupervisedUserInterstitialErrorDecision();
   }
   std::move(policy_decision_callback).Run(decision);

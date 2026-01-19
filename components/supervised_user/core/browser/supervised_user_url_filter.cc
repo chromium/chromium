@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
@@ -28,6 +29,7 @@
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/url_formatter/url_formatter.h"
 #include "components/url_matcher/url_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -303,8 +305,9 @@ std::string TrimWwwSubdomain(const std::string& pattern) {
 // opposite to those from `SupervisedUserURLFilter::HostMatchesPattern`
 // (e.g. protocol/subdomain stripping). The pattern manipulations should
 // be kept in sync between the two methods.
-bool HostHasTrivialSubdomainConflict(const std::string& pattern,
-                                     const std::set<std::string> host_list) {
+bool HostHasTrivialSubdomainConflict(
+    const std::string& pattern,
+    const std::set<std::string, std::less<>> host_list) {
   if (base::StartsWith(pattern, "*.")) {
     return false;
   }
@@ -354,7 +357,6 @@ std::optional<FilteringSubdomainConflictType> AddConflict(
           kTrivialSubdomainConflictAndOtherConflict;
   }
 }
-
 }  // namespace
 
 SupervisedUserURLFilter::SupervisedUserURLFilter(
@@ -502,7 +504,7 @@ SupervisedUserURLFilter::Result SupervisedUserURLFilter::GetFilteringBehavior(
 // www.google.*". To break the tie, we prefer blocklists over allowlists.
 // If there are no applicable manual overrides, we return INVALID.
 FilteringBehavior SupervisedUserURLFilter::GetManualFilteringBehaviorForURL(
-    const GURL& url) {
+    const GURL& url) const {
   FilteringBehavior result = FilteringBehavior::kInvalid;
   std::optional<FilteringSubdomainConflictType> conflict_type = std::nullopt;
 
@@ -570,6 +572,30 @@ FilteringBehavior SupervisedUserURLFilter::GetManualFilteringBehaviorForURL(
     }
   }
   return result;
+}
+
+GURL SupervisedUserURLFilter::GetUnnormalizedEffectiveUrlToUnblock(
+    Result result) const {
+  // If the URL is blocked because of an exact match, then the URL should be
+  // unblocked by itself to remove blocklist entry too.
+  if (blocked_host_list_.contains(result.url.host()) &&
+      result.IsFromManualList()) {
+    return result.url;
+  }
+
+  // Otherwise, prepare a canonical version of the URL to unblock.
+  return GURL(url_formatter::FormatUrl(
+      result.url, url_formatter::kFormatUrlOmitTrivialSubdomains,
+      base::UnescapeRule::SPACES, /*new_parsed=*/nullptr,
+      /*prefix_end=*/nullptr, /*offset_for_adjustment=*/nullptr));
+}
+
+GURL SupervisedUserURLFilter::GetEffectiveUrlToUnblock(Result result) const {
+#if !BUILDFLAG(IS_CHROMEOS)
+  return NormalizeUrl(GetUnnormalizedEffectiveUrlToUnblock(result));
+#else
+  return GetUnnormalizedEffectiveUrlToUnblock(result);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 bool SupervisedUserURLFilter::GetFilteringBehaviorWithAsyncChecks(
@@ -729,10 +755,6 @@ void SupervisedUserURLFilter::SetURLCheckerClientForTesting(
     std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client) {
   async_url_checker_.reset(
       new safe_search_api::URLChecker(std::move(url_checker_client)));
-}
-
-bool SupervisedUserURLFilter::IsHostInBlocklist(const std::string& host) const {
-  return blocked_host_list_.contains(host);
 }
 
 void SupervisedUserURLFilter::CheckCallback(

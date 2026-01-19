@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
-#include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/browser/web_contents.h"
@@ -85,10 +84,9 @@ SupervisedUserWebContentHandlerImpl::~SupervisedUserWebContentHandlerImpl() =
     default;
 
 void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
-    const GURL& url,
+    const GURL& target_url,
+    supervised_user::SupervisedUserURLFilter::Result filtering_result,
     const std::u16string& child_display_name,
-    const supervised_user::UrlFormatter& url_formatter,
-    const supervised_user::FilteringBehaviorReason& filtering_behavior_reason,
     ApprovalRequestInitiatedCallback callback) {
   CHECK(web_contents_);
   supervised_user::SupervisedUserSettingsService* settings_service =
@@ -102,16 +100,13 @@ void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
           favicon_handler_->GetFaviconOrFallback(),
           /*discard_transparency=*/false);
 
-  GURL target_url = url_formatter.FormatUrl(url);
-
   // Assemble the parameters for a website access request.
   parent_access_ui::mojom::ParentAccessParamsPtr params =
       parent_access_ui::mojom::ParentAccessParams::New(
           parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
           parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
               parent_access_ui::mojom::WebApprovalsParams::New(
-                  url_formatter.FormatUrl(url).GetWithEmptyPath(),
-                  child_display_name,
+                  target_url.GetWithEmptyPath(), child_display_name,
                   favicon_bitmap.value_or(std::vector<uint8_t>()))),
           /* is_disabled= */ false);
   base::TimeTicks start_time = base::TimeTicks::Now();

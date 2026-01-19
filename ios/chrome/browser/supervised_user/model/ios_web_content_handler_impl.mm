@@ -32,19 +32,18 @@ IOSWebContentHandlerImpl::IOSWebContentHandlerImpl(
 IOSWebContentHandlerImpl::~IOSWebContentHandlerImpl() = default;
 
 void IOSWebContentHandlerImpl::RequestLocalApproval(
-    const GURL& url,
+    const GURL& target_url,
+    supervised_user::SupervisedUserURLFilter::Result filtering_result,
     const std::u16string& child_display_name,
-    const supervised_user::UrlFormatter& url_formatter,
-    const supervised_user::FilteringBehaviorReason& filtering_behavior_reason,
     ApprovalRequestInitiatedCallback callback) {
   CHECK(base::FeatureList::IsEnabled(supervised_user::kLocalWebApprovals));
 
-  if (!url.has_host()) {
+  if (!filtering_result.url.has_host()) {
     // A host must exist, because this is allow-listed at the end of the flow.
     std::move(callback).Run(false);
     return;
   }
-  GURL target_url = url_formatter.FormatUrl(url);
+
   base::OnceCallback<void(
       supervised_user::LocalApprovalResult,
       std::optional<supervised_user::LocalWebApprovalErrorType>)>
@@ -57,7 +56,7 @@ void IOSWebContentHandlerImpl::RequestLocalApproval(
   [commands_handler_
       showParentAccessBottomSheetForWebState:web_state_
                                    targetURL:target_url
-                     filteringBehaviorReason:filtering_behavior_reason
+                     filteringBehaviorReason:filtering_result.reason
                                   completion:base::CallbackToBlock(std::move(
                                                  completion_callback))];
   is_bottomsheet_shown_ = true;

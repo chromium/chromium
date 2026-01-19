@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_URL_FILTER_H_
 #define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_URL_FILTER_H_
 
+#include <functional>
 #include <map>
 #include <memory>
 #include <optional>
@@ -229,13 +230,21 @@ class SupervisedUserURLFilter {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Substitutes the URL filter for testing. For use where TestingFactory cant's
+  // Substitutes the URL filter for testing. For use where TestingFactory cant
   // substitute the checker client.
   void SetURLCheckerClientForTesting(
       std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client);
 
-  // Checks if an exact match for a host exists in the host blocklist.
-  bool IsHostInBlocklist(const std::string& host) const;
+  // Returns the URL that should be sent for remote approvals to ensure that
+  // the url in the filtering result will no longer trigger interstitial.
+  // This methods prefers unnormalized url if it is already present in the block
+  // list: this way, the Family Link backend will remove this entry from the
+  // block list and add one to the allow list. Otherwise, a normalized url is
+  // returned.
+  // TODO(crbug.com/475731807): This method is Family-Link specific, and
+  // probably should live in the SupervisedUserSettingsService after it's
+  // renamed to FamilyLinkUserSettingsService.
+  GURL GetEffectiveUrlToUnblock(Result result) const;
 
  private:
   // Allows proxying deprecated calls to the filter for the time of migration.
@@ -249,7 +258,7 @@ class SupervisedUserURLFilter {
 
   virtual bool RunAsyncChecker(const GURL& url, ResultCallback callback);
 
-  FilteringBehavior GetManualFilteringBehaviorForURL(const GURL& url);
+  FilteringBehavior GetManualFilteringBehaviorForURL(const GURL& url) const;
 
   // `requested_url` is the system's input, and `checked_url` is what was sent
   // to the remote async service. Since synchronous checks use the same
@@ -264,6 +273,10 @@ class SupervisedUserURLFilter {
 
   void NotifyCallerAndObservers(ResultCallback callback, Result result) const;
 
+  // Calculates a URL that should unblock the filtering result but without the
+  // normalization it (eg. stripping username, password, query params, ref).
+  GURL GetUnnormalizedEffectiveUrlToUnblock(Result result) const;
+
   base::ObserverList<Observer>::Unchecked observers_;
 
   // Maps from a URL to whether it is manually allowed (true) or blocked
@@ -271,7 +284,7 @@ class SupervisedUserURLFilter {
   std::map<GURL, bool> url_map_;
 
   // Blocked and Allowed host lists.
-  std::set<std::string> blocked_host_list_;
+  std::set<std::string, std::less<>> blocked_host_list_;
   std::set<std::string> allowed_host_list_;
 
   // Statistics about this filter configuration

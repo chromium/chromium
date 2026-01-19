@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "url/gurl.h"
 
@@ -69,9 +70,8 @@ class SupervisedUserInterstitial {
   static std::unique_ptr<SupervisedUserInterstitial> Create(
       std::unique_ptr<WebContentHandler> web_content_handler,
       SupervisedUserService& supervised_user_service,
-      const GURL& url,
-      const std::u16string& supervised_user_name,
-      FilteringBehaviorReason reason);
+      SupervisedUserURLFilter::Result filtering_result,
+      const std::u16string& supervised_user_name);
 
 #if BUILDFLAG(IS_ANDROID)
   // Returns the HTML contents of the error page without the approvals section.
@@ -97,21 +97,19 @@ class SupervisedUserInterstitial {
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Getter methods.
-  const GURL& url() const { return url_; }
   WebContentHandler* web_content_handler() {
     return web_content_handler_.get();
   }
-  FilteringBehaviorReason filtering_behavior_reason() const {
-    return filtering_behavior_reason_;
+  SupervisedUserURLFilter::Result filtering_result() {
+    return filtering_result_;
   }
 
  private:
   SupervisedUserInterstitial(
       std::unique_ptr<WebContentHandler> web_content_handler,
       SupervisedUserService& supervised_user_service,
-      const GURL& url,
-      const std::u16string& supervised_user_name,
-      FilteringBehaviorReason reason);
+      SupervisedUserURLFilter::Result filtering_result,
+      const std::u16string& supervised_user_name);
 
   void OutputRequestPermissionSourceMetric();
 
@@ -119,11 +117,9 @@ class SupervisedUserInterstitial {
 
   std::unique_ptr<WebContentHandler> web_content_handler_;
 
-  // The last committed url for this frame.
-  GURL url_;
+  // Filtering result for the last committed url for this frame.
+  SupervisedUserURLFilter::Result filtering_result_;
   std::u16string supervised_user_name_;
-  const FilteringBehaviorReason filtering_behavior_reason_;
-  std::unique_ptr<UrlFormatter> url_formatter_;
 };
 }  // namespace supervised_user
 

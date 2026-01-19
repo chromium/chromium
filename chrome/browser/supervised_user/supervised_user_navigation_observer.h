@@ -65,12 +65,12 @@ class SupervisedUserNavigationObserver
       content::RenderFrameHost* rfh);
 
   // Called when a network request to |url| is blocked.
-  static void OnRequestBlocked(content::WebContents* web_contents,
-                               const GURL& url,
-                               supervised_user::FilteringBehaviorReason reason,
-                               int64_t navigation_id,
-                               content::FrameTreeNodeId frame_id,
-                               const OnInterstitialResultCallback& callback);
+  static void OnRequestBlocked(
+      content::WebContents* web_contents,
+      supervised_user::SupervisedUserURLFilter::Result result,
+      int64_t navigation_id,
+      content::FrameTreeNodeId frame_id,
+      const OnInterstitialResultCallback& callback);
 
   // WebContentsObserver:
   void DidFinishNavigation(
@@ -101,23 +101,23 @@ class SupervisedUserNavigationObserver
 
   explicit SupervisedUserNavigationObserver(content::WebContents* web_contents);
 
-  void OnRequestBlockedInternal(const GURL& url,
-                                supervised_user::FilteringBehaviorReason reason,
-                                int64_t navigation_id,
-                                content::FrameTreeNodeId frame_id,
-                                const OnInterstitialResultCallback& callback);
+  void OnRequestBlockedInternal(
+      supervised_user::SupervisedUserURLFilter::Result filtering_result,
+      int64_t navigation_id,
+      content::FrameTreeNodeId frame_id,
+      const OnInterstitialResultCallback& callback);
 
   void URLFilterCheckCallback(
       int render_frame_process_id,
       int render_frame_routing_id,
       supervised_user::SupervisedUserURLFilter::Result result);
 
-  void MaybeShowInterstitial(const GURL& url,
-                             supervised_user::FilteringBehaviorReason reason,
-                             bool initial_page_load,
-                             int64_t navigation_id,
-                             content::FrameTreeNodeId frame_id,
-                             const OnInterstitialResultCallback& callback);
+  void MaybeShowInterstitial(
+      supervised_user::SupervisedUserURLFilter::Result filtering_result,
+      bool initial_page_load,
+      int64_t navigation_id,
+      content::FrameTreeNodeId frame_id,
+      const OnInterstitialResultCallback& callback);
 
   // Filters the RenderFrameHost if render frame is live.
   void FilterRenderFrame(content::RenderFrameHost* render_frame_host);

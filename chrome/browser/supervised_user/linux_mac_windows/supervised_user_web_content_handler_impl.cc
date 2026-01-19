@@ -33,17 +33,15 @@ SupervisedUserWebContentHandlerImpl::~SupervisedUserWebContentHandlerImpl() =
     default;
 
 void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
-    const GURL& url,
+    const GURL& target_url,
+    supervised_user::SupervisedUserURLFilter::Result filtering_result,
     const std::u16string& child_display_name,
-    const supervised_user::UrlFormatter& url_formatter,
-    const supervised_user::FilteringBehaviorReason& filtering_reason,
     ApprovalRequestInitiatedCallback callback) {
   CHECK(base::FeatureList::IsEnabled(supervised_user::kLocalWebApprovals));
   CHECK(web_contents_);
-  GURL target_url = url_formatter.FormatUrl(url);
   base::TimeTicks start_time = base::TimeTicks::Now();
 
-  if (!url.has_host() || IsLocalApprovalInProgress()) {
+  if (!filtering_result.url.has_host() || IsLocalApprovalInProgress()) {
     // A host must exist, because this is allow-listed at the end of the flow.
     std::move(callback).Run(false);
     return;
@@ -70,7 +68,7 @@ void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
       weak_ptr_factory_.GetWeakPtr());
 
   weak_parent_access_view_ = ParentAccessView::ShowParentAccessDialog(
-      web_contents_, target_url, filtering_reason,
+      web_contents_, target_url, filtering_result.reason,
       std::move(create_observer_callback), std::move(abort_dialog_callback),
       std::move(dialog_result_observer_reset_callback));
 
