@@ -17,10 +17,10 @@
 #include "base/no_destructor.h"
 #include "base/scoped_multi_source_observation.h"
 #include "components/web_cache/public/mojom/web_cache.mojom.h"
-#include "content/public/browser/child_process_id.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace web_cache {

@@ -15,10 +15,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "content/public/browser/browser_plugin_guest_manager.h"
-#include "content/public/browser/child_process_id.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/guest_page_holder.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/child_process_id.h"
 
 namespace content {
 class BrowserContext;

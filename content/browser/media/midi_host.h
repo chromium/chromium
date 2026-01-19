@@ -18,7 +18,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/child_process_id.h"
+#include "content/public/common/child_process_id.h"
 #include "media/midi/midi_manager.h"
 #include "media/midi/midi_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

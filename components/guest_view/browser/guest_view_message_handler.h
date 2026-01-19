@@ -12,8 +12,8 @@
 
 #include "base/values.h"
 #include "components/guest_view/common/guest_view.mojom.h"
-#include "content/public/browser/child_process_id.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/common/child_process_id.h"
 
 namespace content {
 class BrowserContext;

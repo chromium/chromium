@@ -175,6 +175,7 @@ source_set("common_sources") {
     "btm_utils.h",
     "cdm_info.cc",
     "cdm_info.h",
+    "child_process_id.h",
     "color_parser.h",
     "common_param_traits.cc",
     "common_param_traits.h",

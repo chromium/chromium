@@ -7,7 +7,7 @@
 
 #include "base/debug/crash_logging.h"
 #include "content/common/buildflags.h"
-#include "content/public/browser/child_process_id.h"
+#include "content/public/common/child_process_id.h"
 
 namespace content {
 class RenderProcessHost;

@@ -7,7 +7,7 @@
 
 #include "base/observer_list_types.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/child_process_id.h"
+#include "content/public/common/child_process_id.h"
 
 namespace content {
 
