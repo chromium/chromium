@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/platform/heap/trace_traits.h"
 #include "third_party/blink/renderer/platform/region_capture_crop_id.h"
 #include "third_party/blink/renderer/platform/restriction_target_id.h"
-#include "third_party/blink/renderer/platform/sparse_vector.h"
 #include "third_party/blink/renderer/platform/tracked_element_id.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
@@ -111,9 +110,35 @@ class NodePartsListData final : public GarbageCollected<NodePartsListData>,
   void Trace(Visitor* visitor) const override;
 };
 
+// ElementRareDataVector provides sparse storage of fields for Node and Element
+// (most Elements set only 0–3 of the 50+ possible fields). It consists of two
+// parts:
+//
+//  * Fixed bit-fields that are always present (as long as the
+//    ElementRareDataVector is allocated at all), and
+//  * A variable number of Member<ElementRareDataField>s (“slots”).
+//
+// The storage scheme for the latter is very similar to SparseVector (a bit set
+// saying which values exist, and then the actual Members sorted by ID), but
+// stored in AdditionalBytes. This conserves memory and avoids a pointer
+// indirection to get to the members (although the actual values are still one
+// step away); we don't need to store a pointer, the size can be calculated from
+// the bitmap and the capacity is implicit from the size since we never delete
+// elements (it is always the size rounded up to the nearest power of two,
+// except that there is a minimum size).
+//
+// However, this means that any Set*() or Ensure*() member function can end up
+// having to reallocate the ElementRareDataVector to get more data into
+// AdditionalBytes. Thus, every such function will return the new pointer for
+// ElementRareDataVector (which may be the same as the previous one, or an
+// entirely new object), which means that the caller must update their pointer
+// in case it changed. These are all marked by [[nodiscard]] so that you do not
+// accidentally forget to do so.
 class CORE_EXPORT ElementRareDataVector final
     : public GarbageCollected<ElementRareDataVector> {
  public:
+  using PassKey = base::PassKey<ElementRareDataVector>;
+
   enum {
     kConnectedFrameCountBits = 10,  // Must fit Page::maxNumberOfFrames.
     kNumberOfElementFlags = 8,
@@ -121,44 +146,55 @@ class CORE_EXPORT ElementRareDataVector final
     // 0 bits remaining.
   };
 
-  ElementRareDataVector() = default;
+  static ElementRareDataVector* Create() {
+    return MakeGarbageCollected<ElementRareDataVector>(
+        AdditionalBytes(kMinimumVectorSize * kSlotSizeBytes), PassKey());
+  }
+
   ~ElementRareDataVector();
   ElementRareDataVector(const ElementRareDataVector&) = delete;
   ElementRareDataVector& operator=(const ElementRareDataVector&) = delete;
 
-  void ClearNodeLists() { fields_.EraseField(FieldId::kNodeLists); }
+  void ClearNodeLists() { SetFieldToNullIfExists(FieldId::kNodeLists); }
   NodeListsNodeData* NodeLists() const;
   // EnsureNodeLists() and a following NodeListsNodeData functions must be
   // wrapped with a ThreadState::GCForbiddenScope in order to avoid an
   // initialized node_lists_ is cleared by NodeRareData::TraceAfterDispatch().
-  NodeListsNodeData& EnsureNodeLists();
+  std::pair<std::reference_wrapper<NodeListsNodeData>, ElementRareDataVector*>
+  EnsureNodeLists();
 
   FlatTreeNodeData* GetFlatTreeNodeData() const;
-  FlatTreeNodeData& EnsureFlatTreeNodeData();
+  std::pair<std::reference_wrapper<FlatTreeNodeData>, ElementRareDataVector*>
+  EnsureFlatTreeNodeData();
 
   NodeMutationObserverData* MutationObserverData();
-  NodeMutationObserverData& EnsureMutationObserverData();
+  std::pair<std::reference_wrapper<NodeMutationObserverData>,
+            ElementRareDataVector*>
+  EnsureMutationObserverData();
 
-  uint16_t ConnectedSubframeCount() const { return connected_frame_count_; }
+  uint16_t ConnectedSubframeCount() const {
+    return flags_.connected_frame_count_;
+  }
   void IncrementConnectedSubframeCount();
   void DecrementConnectedSubframeCount() {
-    DCHECK(connected_frame_count_);
-    --connected_frame_count_;
+    DCHECK(flags_.connected_frame_count_);
+    --flags_.connected_frame_count_;
   }
 
   bool HasRestyleFlag(DynamicRestyleFlags mask) const {
-    return restyle_flags_ & static_cast<uint16_t>(mask);
+    return flags_.restyle_flags_ & static_cast<uint16_t>(mask);
   }
   void SetRestyleFlag(DynamicRestyleFlags mask) {
-    restyle_flags_ |= static_cast<uint16_t>(mask);
+    flags_.restyle_flags_ |= static_cast<uint16_t>(mask);
   }
-  bool HasRestyleFlags() const { return restyle_flags_; }
-  void ClearRestyleFlags() { restyle_flags_ = 0u; }
+  bool HasRestyleFlags() const { return flags_.restyle_flags_; }
+  void ClearRestyleFlags() { flags_.restyle_flags_ = 0u; }
 
-  void RegisterScrollTimeline(ScrollTimeline*);
-  void UnregisterScrollTimeline(ScrollTimeline*);
+  [[nodiscard]] ElementRareDataVector* RegisterScrollTimeline(ScrollTimeline*);
+  [[nodiscard]] ElementRareDataVector* UnregisterScrollTimeline(
+      ScrollTimeline*);
 
-  void AddDOMPart(Part& part);
+  [[nodiscard]] ElementRareDataVector* AddDOMPart(Part& part);
   void RemoveDOMPart(Part& part);
   PartsList* GetDOMParts() const;
 
@@ -167,11 +203,13 @@ class CORE_EXPORT ElementRareDataVector final
     auto* value = GetWrappedField<DOMNodeId>(FieldId::kDOMNodeId);
     return value ? *value : 0;
   }
-  DOMNodeId& NodeId() {
+  [[nodiscard]] std::pair<std::reference_wrapper<DOMNodeId>,
+                          ElementRareDataVector*>
+  NodeId() {
     return EnsureWrappedField<DOMNodeId>(FieldId::kDOMNodeId);
   }
 
-  void SetPseudoElement(
+  [[nodiscard]] ElementRareDataVector* SetPseudoElement(
       PseudoId,
       PseudoElement*,
       const AtomicString& document_transition_tag = g_null_atom);
@@ -181,83 +219,102 @@ class CORE_EXPORT ElementRareDataVector final
   bool HasScrollButtonOrMarkerGroupPseudos() const;
   PseudoElementData::PseudoElementVector GetPseudoElements() const;
 
-  void AddColumnPseudoElement(ColumnPseudoElement&);
+  [[nodiscard]] ElementRareDataVector* AddColumnPseudoElement(
+      ColumnPseudoElement&);
   const ColumnPseudoElementsVector* GetColumnPseudoElements() const;
   ColumnPseudoElement* GetColumnPseudoElement(wtf_size_t idx) const;
   void ClearColumnPseudoElements(wtf_size_t to_keep);
 
-  void AddOverscrollAreaParentPseudoElement(IndexedPseudoElement&);
+  [[nodiscard]] ElementRareDataVector* AddOverscrollAreaParentPseudoElement(
+      IndexedPseudoElement&);
   const OverscrollAreaParentPseudoElementsVector*
   GetOverscrollAreaParentPseudoElements() const;
   IndexedPseudoElement* GetOverscrollPseudoElement(wtf_size_t idx) const;
   void ClearOverscrollPseudoElements(wtf_size_t to_keep);
 
-  CSSStyleDeclaration& EnsureInlineCSSStyleDeclaration(Element* owner_element);
+  std::pair<std::reference_wrapper<CSSStyleDeclaration>, ElementRareDataVector*>
+  EnsureInlineCSSStyleDeclaration(Element* owner_element);
 
   ShadowRoot* GetShadowRoot() const;
-  void SetShadowRoot(ShadowRoot& shadow_root);
+  [[nodiscard]] ElementRareDataVector* SetShadowRoot(ShadowRoot& shadow_root);
 
   NamedNodeMap* AttributeMap() const;
-  void SetAttributeMap(NamedNodeMap* attribute_map);
+  [[nodiscard]] ElementRareDataVector* SetAttributeMap(
+      NamedNodeMap* attribute_map);
 
   DOMTokenList* GetClassList() const;
-  void SetClassList(DOMTokenList* class_list);
+  [[nodiscard]] ElementRareDataVector* SetClassList(DOMTokenList* class_list);
 
   DatasetDOMStringMap* Dataset() const;
-  void SetDataset(DatasetDOMStringMap* dataset);
+  [[nodiscard]] ElementRareDataVector* SetDataset(DatasetDOMStringMap* dataset);
 
   ScrollOffset SavedLayerScrollOffset() const;
-  void SetSavedLayerScrollOffset(ScrollOffset offset);
+  [[nodiscard]] ElementRareDataVector* SetSavedLayerScrollOffset(
+      ScrollOffset offset);
 
   ElementAnimations* GetElementAnimations();
-  void SetElementAnimations(ElementAnimations* element_animations);
+  [[nodiscard]] ElementRareDataVector* SetElementAnimations(
+      ElementAnimations* element_animations);
 
   bool HasPseudoElements() const;
   void ClearPseudoElements();
 
-  AttrNodeList& EnsureAttrNodeList();
+  std::pair<std::reference_wrapper<AttrNodeList>, ElementRareDataVector*>
+  EnsureAttrNodeList();
   AttrNodeList* GetAttrNodeList();
   void RemoveAttrNodeList();
-  void AddAttr(Attr* attr);
+  [[nodiscard]] ElementRareDataVector* AddAttr(Attr* attr);
 
   ElementIntersectionObserverData* IntersectionObserverData() const;
-  ElementIntersectionObserverData& EnsureIntersectionObserverData();
+  std::pair<std::reference_wrapper<ElementIntersectionObserverData>,
+            ElementRareDataVector*>
+  EnsureIntersectionObserverData();
 
   ContainerQueryEvaluator* GetContainerQueryEvaluator() const;
-  void SetContainerQueryEvaluator(ContainerQueryEvaluator* evaluator);
+  [[nodiscard]] ElementRareDataVector* SetContainerQueryEvaluator(
+      ContainerQueryEvaluator* evaluator);
 
   const AtomicString& GetNonce() const;
-  void SetNonce(const AtomicString& nonce);
+  [[nodiscard]] ElementRareDataVector* SetNonce(const AtomicString& nonce);
 
   const AtomicString& IsValue() const;
-  void SetIsValue(const AtomicString& is_value);
+  [[nodiscard]] ElementRareDataVector* SetIsValue(const AtomicString& is_value);
 
   EditContext* GetEditContext() const;
-  void SetEditContext(EditContext* edit_context);
+  [[nodiscard]] ElementRareDataVector* SetEditContext(
+      EditContext* edit_context);
 
-  void SetPart(DOMTokenList* part);
+  [[nodiscard]] ElementRareDataVector* SetPart(DOMTokenList* part);
   DOMTokenList* GetPart() const;
 
-  void SetPartNamesMap(const AtomicString part_names);
+  [[nodiscard]] ElementRareDataVector* SetPartNamesMap(
+      const AtomicString part_names);
   const NamesMap* PartNamesMap() const;
 
-  InlineStylePropertyMap& EnsureInlineStylePropertyMap(Element* owner_element);
+  std::pair<std::reference_wrapper<InlineStylePropertyMap>,
+            ElementRareDataVector*>
+  EnsureInlineStylePropertyMap(Element* owner_element);
   InlineStylePropertyMap* GetInlineStylePropertyMap();
 
   const ElementInternals* GetElementInternals() const;
-  ElementInternals& EnsureElementInternals(HTMLElement& target);
+  std::pair<std::reference_wrapper<ElementInternals>, ElementRareDataVector*>
+  EnsureElementInternals(HTMLElement& target);
 
-  DisplayLockContext* EnsureDisplayLockContext(Element* element);
+  std::pair<std::reference_wrapper<DisplayLockContext>, ElementRareDataVector*>
+  EnsureDisplayLockContext(Element* element);
   DisplayLockContext* GetDisplayLockContext() const;
 
-  ContainerQueryData& EnsureContainerQueryData();
+  std::pair<std::reference_wrapper<ContainerQueryData>, ElementRareDataVector*>
+  EnsureContainerQueryData();
   ContainerQueryData* GetContainerQueryData() const;
   void ClearContainerQueryData();
 
-  StyleScopeData& EnsureStyleScopeData();
+  std::pair<std::reference_wrapper<StyleScopeData>, ElementRareDataVector*>
+  EnsureStyleScopeData();
   StyleScopeData* GetStyleScopeData() const;
 
-  OutOfFlowData& EnsureOutOfFlowData();
+  std::pair<std::reference_wrapper<OutOfFlowData>, ElementRareDataVector*>
+  EnsureOutOfFlowData();
   OutOfFlowData* GetOutOfFlowData() const;
   void ClearOutOfFlowData();
 
@@ -265,10 +322,12 @@ class CORE_EXPORT ElementRareDataVector final
   const RegionCaptureCropId* GetRegionCaptureCropId() const;
   // Sets a crop-ID on the item. Must be called at most once. Cannot be used
   // to unset a previously set crop-ID.
-  void SetRegionCaptureCropId(std::unique_ptr<RegionCaptureCropId> crop_id);
+  [[nodiscard]] ElementRareDataVector* SetRegionCaptureCropId(
+      std::unique_ptr<RegionCaptureCropId> crop_id);
 
   const TrackedElementRect* GetTrackedElementRect() const;
-  void SetTrackedElementRect(std::unique_ptr<TrackedElementRect> rect);
+  [[nodiscard]] ElementRareDataVector* SetTrackedElementRect(
+      std::unique_ptr<TrackedElementRect> rect);
   void ClearTrackedElementRect();
 
   // Returns the ID backing a RestrictionTarget if one was set on the Element,
@@ -278,42 +337,52 @@ class CORE_EXPORT ElementRareDataVector final
   // or nullptr otherwise.
   // Sets an ID backing a RestrictionTarget associated with the Element.
   // Must be called at most once. Cannot be used to unset a previously set IDs.
-  void SetRestrictionTargetId(std::unique_ptr<RestrictionTargetId> id);
+  [[nodiscard]] ElementRareDataVector* SetRestrictionTargetId(
+      std::unique_ptr<RestrictionTargetId> id);
 
   using ResizeObserverDataMap =
       HeapHashMap<Member<ResizeObserver>, Member<ResizeObservation>>;
   ResizeObserverDataMap* ResizeObserverData() const;
-  ResizeObserverDataMap& EnsureResizeObserverData();
+  std::pair<std::reference_wrapper<ResizeObserverDataMap>,
+            ElementRareDataVector*>
+  EnsureResizeObserverData();
 
-  void SetCustomElementDefinition(CustomElementDefinition* definition);
+  [[nodiscard]] ElementRareDataVector* SetCustomElementDefinition(
+      CustomElementDefinition* definition);
   CustomElementDefinition* GetCustomElementDefinition() const;
 
-  void SetLastRememberedBlockSize(std::optional<LayoutUnit> size);
-  void SetLastRememberedInlineSize(std::optional<LayoutUnit> size);
+  [[nodiscard]] ElementRareDataVector* SetLastRememberedBlockSize(
+      std::optional<LayoutUnit> size);
+  [[nodiscard]] ElementRareDataVector* SetLastRememberedInlineSize(
+      std::optional<LayoutUnit> size);
   std::optional<LayoutUnit> LastRememberedBlockSize() const;
   std::optional<LayoutUnit> LastRememberedInlineSize() const;
 
   PopoverData* GetPopoverData() const;
-  PopoverData& EnsurePopoverData();
+  std::pair<std::reference_wrapper<PopoverData>, ElementRareDataVector*>
+  EnsurePopoverData();
   void RemovePopoverData();
 
   InvokerData* GetInvokerData() const;
-  InvokerData& EnsureInvokerData();
+  std::pair<std::reference_wrapper<InvokerData>, ElementRareDataVector*>
+  EnsureInvokerData();
 
   InterestInvokerTargetData* GetInterestInvokerTargetData() const;
-  InterestInvokerTargetData& EnsureInterestInvokerTargetData();
+  std::pair<std::reference_wrapper<InterestInvokerTargetData>,
+            ElementRareDataVector*>
+  EnsureInterestInvokerTargetData();
   void RemoveInterestInvokerTargetData();
 
   bool HasElementFlag(ElementFlags mask) const {
-    return element_flags_ & static_cast<uint16_t>(mask);
+    return flags_.element_flags_ & static_cast<uint16_t>(mask);
   }
   void SetElementFlag(ElementFlags mask, bool value) {
-    element_flags_ =
-        (element_flags_ & ~static_cast<uint16_t>(mask)) |
+    flags_.element_flags_ =
+        (flags_.element_flags_ & ~static_cast<uint16_t>(mask)) |
         (-static_cast<uint16_t>(value) & static_cast<uint16_t>(mask));
   }
   void ClearElementFlag(ElementFlags mask) {
-    element_flags_ &= ~static_cast<uint16_t>(mask);
+    flags_.element_flags_ &= ~static_cast<uint16_t>(mask);
   }
 
   void SetTabIndexExplicitly() {
@@ -325,150 +394,206 @@ class CORE_EXPORT ElementRareDataVector final
 
   ScrollMarkerGroupData* GetScrollMarkerGroupData() const;
   void RemoveScrollMarkerGroupData();
-  ScrollMarkerGroupData& EnsureScrollMarkerGroupData(Element*);
+  std::pair<std::reference_wrapper<ScrollMarkerGroupData>,
+            ElementRareDataVector*>
+  EnsureScrollMarkerGroupData(Element*);
 
-  void SetScrollMarkerGroupContainerData(ScrollMarkerGroupData*);
+  [[nodiscard]] ElementRareDataVector* SetScrollMarkerGroupContainerData(
+      ScrollMarkerGroupData*);
   ScrollMarkerGroupData* GetScrollMarkerGroupContainerData() const;
 
-  void CacheCSSPseudoElement(PseudoId, CSSPseudoElement&);
+  [[nodiscard]] ElementRareDataVector* CacheCSSPseudoElement(PseudoId,
+                                                             CSSPseudoElement&);
   CSSPseudoElement* GetCSSPseudoElement(PseudoId) const;
 
   ExplicitlySetAttrElementsMap* GetExplicitlySetElementsForAttr() const;
-  ExplicitlySetAttrElementsMap& EnsureExplicitlySetElementsForAttr();
+  std::pair<std::reference_wrapper<ExplicitlySetAttrElementsMap>,
+            ElementRareDataVector*>
+  EnsureExplicitlySetElementsForAttr();
 
   AnchorPositionScrollData* GetAnchorPositionScrollData() const;
   void RemoveAnchorPositionScrollData();
-  AnchorPositionScrollData& EnsureAnchorPositionScrollData(Element*);
+  std::pair<std::reference_wrapper<AnchorPositionScrollData>,
+            ElementRareDataVector*>
+  EnsureAnchorPositionScrollData(Element*);
 
-  AnchorElementObserver& EnsureAnchorElementObserver(Element*);
+  std::pair<std::reference_wrapper<AnchorElementObserver>,
+            ElementRareDataVector*>
+  EnsureAnchorElementObserver(Element*);
   AnchorElementObserver* GetAnchorElementObserver() const;
 
   bool HasCustomElementRegistrySet() const;
   CustomElementRegistry* GetCustomElementRegistry() const;
-  void SetCustomElementRegistry(CustomElementRegistry* registry);
+  [[nodiscard]] ElementRareDataVector* SetCustomElementRegistry(
+      CustomElementRegistry* registry);
   void ClearCustomElementRegistry();
 
   ElementAnimationTriggerData* AnimationTriggerData();
-  ElementAnimationTriggerData& EnsureAnimationTriggerData();
+  std::pair<std::reference_wrapper<ElementAnimationTriggerData>,
+            ElementRareDataVector*>
+  EnsureAnimationTriggerData();
 
   DisplayAdElementMonitor* GetDisplayAdElementMonitor() const;
-  DisplayAdElementMonitor& EnsureDisplayAdElementMonitor(Element*);
+  std::pair<std::reference_wrapper<DisplayAdElementMonitor>,
+            ElementRareDataVector*>
+  EnsureDisplayAdElementMonitor(Element*);
 
-  void SetDidAttachInternals() { did_attach_internals = true; }
-  bool DidAttachInternals() const { return did_attach_internals; }
-  bool HasUndoStack() const { return has_undo_stack; }
-  void SetHasUndoStack(bool value) { has_undo_stack = value; }
+  void SetDidAttachInternals() { flags_.did_attach_internals = true; }
+  bool DidAttachInternals() const { return flags_.did_attach_internals; }
+  bool HasUndoStack() const { return flags_.has_undo_stack; }
+  void SetHasUndoStack(bool value) { flags_.has_undo_stack = value; }
   void SetPseudoElementStylesChangeCounters(bool value) {
-    has_counters_styles = value;
+    flags_.has_counters_styles = value;
   }
-  bool PseudoElementStylesAffectCounters() const { return has_counters_styles; }
+  bool PseudoElementStylesAffectCounters() const {
+    return flags_.has_counters_styles;
+  }
   bool ScrollbarPseudoElementStylesDependOnFontMetrics() const {
-    return scrollbar_pseudo_element_styles_depend_on_font_metrics;
+    return flags_.scrollbar_pseudo_element_styles_depend_on_font_metrics;
   }
   void SetScrollbarPseudoElementStylesDependOnFontMetrics(bool value) {
-    scrollbar_pseudo_element_styles_depend_on_font_metrics = value;
+    flags_.scrollbar_pseudo_element_styles_depend_on_font_metrics = value;
   }
-  void SetHasBeenExplicitlyScrolled() { has_been_explicitly_scrolled = true; }
+  void SetHasBeenExplicitlyScrolled() {
+    flags_.has_been_explicitly_scrolled = true;
+  }
   bool HasBeenExplicitlyScrolled() const {
-    return has_been_explicitly_scrolled;
+    return flags_.has_been_explicitly_scrolled;
   }
-  bool MayBeImplicitAnchor() const { return may_be_implicit_anchor; }
-  void SetMayBeImplicitAnchor() { may_be_implicit_anchor = true; }
+  bool MayBeImplicitAnchor() const { return flags_.may_be_implicit_anchor; }
+  void SetMayBeImplicitAnchor() { flags_.may_be_implicit_anchor = true; }
 
   FocusgroupData GetFocusgroupData() const {
-    return {static_cast<FocusgroupBehavior>(focusgroup_behavior_),
-            static_cast<FocusgroupFlags>(focusgroup_flags_)};
+    return {static_cast<FocusgroupBehavior>(flags_.focusgroup_behavior_),
+            static_cast<FocusgroupFlags>(flags_.focusgroup_flags_)};
   }
   void SetFocusgroupData(FocusgroupData data) {
-    focusgroup_behavior_ = static_cast<unsigned>(data.behavior);
-    focusgroup_flags_ = static_cast<unsigned>(data.flags);
+    flags_.focusgroup_behavior_ = static_cast<unsigned>(data.behavior);
+    flags_.focusgroup_flags_ = static_cast<unsigned>(data.flags);
     DCHECK_EQ(GetFocusgroupData().behavior, data.behavior);
     DCHECK_EQ(GetFocusgroupData().flags, data.flags);
   }
   void ClearFocusgroupData() {
-    focusgroup_behavior_ =
+    flags_.focusgroup_behavior_ =
         static_cast<unsigned>(FocusgroupBehavior::kNoBehavior);
-    focusgroup_flags_ = static_cast<unsigned>(FocusgroupFlags::kNone);
-    SetFocusgroupLastFocused(nullptr);
+    flags_.focusgroup_flags_ = static_cast<unsigned>(FocusgroupFlags::kNone);
+    SetFieldToNullIfExists(FieldId::kFocusgroupLastFocused);
   }
-  void SetFocusgroupLastFocused(Element* element);
+  [[nodiscard]] ElementRareDataVector* SetFocusgroupLastFocused(
+      Element* element);
   Element* GetFocusgroupLastFocused() const;
-  void ClearFocusgroupLastFocused() { SetFocusgroupLastFocused(nullptr); }
+  void ClearFocusgroupLastFocused() {
+    SetFieldToNullIfExists(FieldId::kFocusgroupLastFocused);
+  }
 
-  void SetOverscrollContainer(Element* element);
+  [[nodiscard]] ElementRareDataVector* SetOverscrollContainer(Element* element);
   Element* GetOverscrollContainer() const;
-  void ClearOverscrollContainer() { SetOverscrollContainer(nullptr); }
+  void ClearOverscrollContainer() {
+    SetFieldToNullIfExists(FieldId::kOverscrollContainer);
+  }
 
-  void SetAffectedByStartingStyles() { affected_by_starting_styles = true; }
-  bool AffectedByStartingStyles() const { return affected_by_starting_styles; }
-  bool AffectedBySubjectHas() const { return affected_by_subject_has_; }
-  void SetAffectedBySubjectHas() { affected_by_subject_has_ = true; }
-  bool AffectedByNonSubjectHas() const { return affected_by_non_subject_has_; }
-  void SetAffectedByNonSubjectHas() { affected_by_non_subject_has_ = true; }
+  void SetAffectedByStartingStyles() {
+    flags_.affected_by_starting_styles = true;
+  }
+  bool AffectedByStartingStyles() const {
+    return flags_.affected_by_starting_styles;
+  }
+  bool AffectedBySubjectHas() const { return flags_.affected_by_subject_has_; }
+  void SetAffectedBySubjectHas() { flags_.affected_by_subject_has_ = true; }
+  bool AffectedByNonSubjectHas() const {
+    return flags_.affected_by_non_subject_has_;
+  }
+  void SetAffectedByNonSubjectHas() {
+    flags_.affected_by_non_subject_has_ = true;
+  }
   bool AncestorsOrAncestorSiblingsAffectedByHas() const {
-    return ancestors_or_ancestor_siblings_affected_by_has_;
+    return flags_.ancestors_or_ancestor_siblings_affected_by_has_;
   }
   void SetAncestorsOrAncestorSiblingsAffectedByHas() {
-    ancestors_or_ancestor_siblings_affected_by_has_ = true;
+    flags_.ancestors_or_ancestor_siblings_affected_by_has_ = true;
   }
   unsigned GetSiblingsAffectedByHasFlags() const {
-    return siblings_affected_by_has_;
+    return flags_.siblings_affected_by_has_;
   }
   bool HasSiblingsAffectedByHasFlags(unsigned flags) const {
-    return siblings_affected_by_has_ & flags;
+    return flags_.siblings_affected_by_has_ & flags;
   }
   void SetSiblingsAffectedByHasFlags(unsigned flags) {
-    siblings_affected_by_has_ |= flags;
+    flags_.siblings_affected_by_has_ |= flags;
   }
-  bool AffectedByPseudoInHas() const { return affected_by_pseudos_in_has_; }
-  void SetAffectedByPseudoInHas() { affected_by_pseudos_in_has_ = true; }
+  bool AffectedByPseudoInHas() const {
+    return flags_.affected_by_pseudos_in_has_;
+  }
+  void SetAffectedByPseudoInHas() { flags_.affected_by_pseudos_in_has_ = true; }
   bool AncestorsOrSiblingsAffectedByHoverInHas() const {
-    return ancestors_or_siblings_affected_by_hover_in_has_;
+    return flags_.ancestors_or_siblings_affected_by_hover_in_has_;
   }
   void SetAncestorsOrSiblingsAffectedByHoverInHas() {
-    ancestors_or_siblings_affected_by_hover_in_has_ = true;
+    flags_.ancestors_or_siblings_affected_by_hover_in_has_ = true;
   }
   bool AncestorsOrSiblingsAffectedByActiveInHas() const {
-    return ancestors_or_siblings_affected_by_active_in_has_;
+    return flags_.ancestors_or_siblings_affected_by_active_in_has_;
   }
   void SetAncestorsOrSiblingsAffectedByActiveInHas() {
-    ancestors_or_siblings_affected_by_active_in_has_ = true;
+    flags_.ancestors_or_siblings_affected_by_active_in_has_ = true;
   }
   bool AncestorsOrSiblingsAffectedByFocusInHas() const {
-    return ancestors_or_siblings_affected_by_focus_in_has_;
+    return flags_.ancestors_or_siblings_affected_by_focus_in_has_;
   }
   void SetAncestorsOrSiblingsAffectedByFocusInHas() {
-    ancestors_or_siblings_affected_by_focus_in_has_ = true;
+    flags_.ancestors_or_siblings_affected_by_focus_in_has_ = true;
   }
   bool AncestorsOrSiblingsAffectedByFocusVisibleInHas() const {
-    return ancestors_or_siblings_affected_by_focus_visible_in_has_;
+    return flags_.ancestors_or_siblings_affected_by_focus_visible_in_has_;
   }
   void SetAncestorsOrSiblingsAffectedByFocusVisibleInHas() {
-    ancestors_or_siblings_affected_by_focus_visible_in_has_ = true;
+    flags_.ancestors_or_siblings_affected_by_focus_visible_in_has_ = true;
   }
   bool AffectedByLogicalCombinationsInHas() const {
-    return affected_by_logical_combinations_in_has_;
+    return flags_.affected_by_logical_combinations_in_has_;
   }
   void SetAffectedByLogicalCombinationsInHas() {
-    affected_by_logical_combinations_in_has_ = true;
+    flags_.affected_by_logical_combinations_in_has_ = true;
   }
-  bool AffectedByMultipleHas() const { return affected_by_multiple_has_; }
-  void SetAffectedByMultipleHas() { affected_by_multiple_has_ = true; }
+  bool AffectedByMultipleHas() const {
+    return flags_.affected_by_multiple_has_;
+  }
+  void SetAffectedByMultipleHas() { flags_.affected_by_multiple_has_ = true; }
 
   ContentData* GetAltContentData() const;
-  void SetAltContentData(ContentData* content_data);
+  [[nodiscard]] ElementRareDataVector* SetAltContentData(
+      ContentData* content_data);
 
   bool WasLastFocusFromUserGesture() const {
-    return was_last_focus_from_user_gesture;
+    return flags_.was_last_focus_from_user_gesture;
   }
   void SetWasLastFocusFromUserGesture(bool value) {
-    was_last_focus_from_user_gesture = value;
+    flags_.was_last_focus_from_user_gesture = value;
   }
 
-  OverscrollAreaTracker& EnsureOverscrollAreaTracker(Element*);
+  std::pair<std::reference_wrapper<OverscrollAreaTracker>,
+            ElementRareDataVector*>
+  EnsureOverscrollAreaTracker(Element*);
   OverscrollAreaTracker* OverscrollAreaTracker() const;
 
   void Trace(Visitor*) const;
+
+  explicit ElementRareDataVector(PassKey) {}
+  ElementRareDataVector(PassKey, ElementRareDataVector&& other)
+      : flags_(other.flags_), fields_bitfield_(other.fields_bitfield_) {
+    UNSAFE_BUFFERS(
+        VectorTypeOperations<Member<ElementRareDataField>, HeapAllocator>::Move(
+            other.ArrayBase(), other.ArrayBase() + other.size(), ArrayBase(),
+            VectorOperationOrigin::kConstruction));
+
+#if DCHECK_IS_ON()
+    // Clear out the Members so that a) they are not inadvertently
+    // used on errors, and b) the DCHECK in the destructor does not fire.
+    for (unsigned i = 0; i < other.size(); ++i) {
+      UNSAFE_BUFFERS(other.ArrayBase()[i] = nullptr);
+    }
+#endif
+  }
 
  private:
   friend class ElementRareDataVectorTest;
@@ -527,8 +652,37 @@ class CORE_EXPORT ElementRareDataVector final
     kNumFields = 51,
   };
 
+  inline const Member<ElementRareDataField>* ArrayBase() const {
+    static_assert(sizeof(*this) % alignof(Member<ElementRareDataField>) == 0,
+                  "ValueArray may be improperly aligned");
+    // SAFETY: By funneling all allocation of ElementRareDataVector through
+    // Create(), we guarantee that the array will exist where we expect it.
+    return UNSAFE_BUFFERS(
+        reinterpret_cast<const Member<ElementRareDataField>*>(this + 1));
+  }
+  inline Member<ElementRareDataField>* ArrayBase() {
+    return const_cast<Member<ElementRareDataField>*>(
+        const_cast<const ElementRareDataVector*>(this)->ArrayBase());
+  }
+
+  const Member<ElementRareDataField>& ArraySlot(FieldId field_id) const {
+    // SAFETY: Every modification of fields_bitfield_ goes through
+    // SetField(), which makes sure there's always enough room
+    // in AdditionalBytes.
+    return UNSAFE_BUFFERS(ArrayBase()[GetFieldIndex(field_id)]);
+  }
+
+  Member<ElementRareDataField>& ArraySlot(FieldId field_id) {
+    // SAFETY: Every modification of fields_bitfield_ goes through
+    // SetField(), which makes sure there's always enough room
+    // in AdditionalBytes.
+    return UNSAFE_BUFFERS(ArrayBase()[GetFieldIndex(field_id)]);
+  }
+
   ElementRareDataField* GetField(FieldId field_id) const;
-  void SetField(FieldId field_id, ElementRareDataField* field);
+  [[nodiscard]] ElementRareDataVector* SetField(FieldId field_id,
+                                                ElementRareDataField* field);
+  void SetFieldToNullIfExists(FieldId field_id);
 
   template <typename T>
   class DataFieldWrapper final : public GarbageCollected<DataFieldWrapper<T>>,
@@ -545,23 +699,30 @@ class CORE_EXPORT ElementRareDataVector final
   };
 
   template <typename T, typename... Args>
-  T& EnsureField(FieldId field_id, Args&&... args) {
+  [[nodiscard]] std::pair<std::reference_wrapper<T>, ElementRareDataVector*>
+  EnsureField(FieldId field_id, Args&&... args) {
     T* field = static_cast<T*>(GetField(field_id));
+    ElementRareDataVector* vec = this;
     if (!field) {
       field = MakeGarbageCollected<T>(std::forward<Args>(args)...);
-      SetField(field_id, field);
+      vec = SetField(field_id, field);
     }
-    return *field;
+    return {*field, vec};
   }
 
   template <typename T>
-  T& EnsureWrappedField(FieldId field_id) {
-    return EnsureField<DataFieldWrapper<T>>(field_id).Get();
+  [[nodiscard]] std::pair<std::reference_wrapper<T>, ElementRareDataVector*>
+  EnsureWrappedField(FieldId field_id) {
+    auto [field, vec] = EnsureField<DataFieldWrapper<T>>(field_id);
+    return {field.get().Get(), vec};
   }
 
   template <typename T, typename U>
-  void SetWrappedField(FieldId field_id, U data) {
-    EnsureWrappedField<T>(field_id) = std::move(data);
+  [[nodiscard]] ElementRareDataVector* SetWrappedField(FieldId field_id,
+                                                       U data) {
+    auto [field, vec] = EnsureField<DataFieldWrapper<T>>(field_id);
+    field.get().Get() = std::move(data);
+    return vec;
   }
 
   template <typename T>
@@ -571,11 +732,12 @@ class CORE_EXPORT ElementRareDataVector final
   }
 
   template <typename T>
-  void SetOptionalField(FieldId field_id, std::optional<T> data) {
+  [[nodiscard]] ElementRareDataVector* SetOptionalField(FieldId field_id,
+                                                        std::optional<T> data) {
     if (data) {
-      SetWrappedField<T>(field_id, *data);
+      return SetWrappedField<T>(field_id, *data);
     } else {
-      SetField(field_id, nullptr);
+      return SetField(field_id, nullptr);
     }
   }
 
@@ -588,53 +750,100 @@ class CORE_EXPORT ElementRareDataVector final
   }
 
  private:
-  uint32_t restyle_flags_ : kNumberOfDynamicRestyleFlags = 0u;
-  uint32_t connected_frame_count_ : kConnectedFrameCountBits = 0u;
-  uint32_t element_flags_ : kNumberOfElementFlags = 0u;
+  using BitfieldType = uint64_t;
+  static constexpr size_t kMaxSize = 64;
 
-  unsigned did_attach_internals : 1 = false;
-  unsigned has_undo_stack : 1 = false;
-  unsigned scrollbar_pseudo_element_styles_depend_on_font_metrics : 1 = false;
-  // This never gets reset, since we would have to keep track for
-  // every pseudo-element whether it has counter style or not.
-  // But since situations when counter style if removed from
-  // pseudo-element are rare, we are fine with it, since
-  // it doesn't hurt performance much.
-  unsigned has_counters_styles : 1 = false;
-  unsigned has_been_explicitly_scrolled : 1 = false;
-  unsigned may_be_implicit_anchor : 1 = false;
-  unsigned affected_by_starting_styles : 1 = false;
-  // This records the last type of a focus on this element via `SetFocused`
-  // (or more accurately, the only derived value we need from that).
-  // For more see:
-  // https://explainers-by-googlers.github.io/user-dictionary-leaks/
-  unsigned was_last_focus_from_user_gesture : 1 = false;
+  using Slot = Member<ElementRareDataVector>;
+  static constexpr size_t kSlotSizeBytes = sizeof(Slot);
 
-  // :has() invalidation flags. See has_invalidation_flags.h for description.
-  unsigned affected_by_subject_has_ : 1 = false;
-  unsigned affected_by_non_subject_has_ : 1 = false;
-  unsigned affected_by_pseudos_in_has_ : 1 = false;
-  unsigned siblings_affected_by_has_ : 2 = 0;
-  unsigned ancestors_or_ancestor_siblings_affected_by_has_ : 1 = false;
-  unsigned ancestors_or_siblings_affected_by_hover_in_has_ : 1 = false;
-  unsigned ancestors_or_siblings_affected_by_active_in_has_ : 1 = false;
-  unsigned ancestors_or_siblings_affected_by_focus_in_has_ : 1 = false;
-  unsigned ancestors_or_siblings_affected_by_focus_visible_in_has_ : 1 = false;
-  unsigned affected_by_logical_combinations_in_has_ : 1 = false;
-  unsigned affected_by_multiple_has_ : 1 = false;
+  // Most RareData vectors seem to have at least one element,
+  // and due to Oilpan alignment, there's no point in having
+  // an odd number of elements, so 2 is a reasonable default.
+  //
+  // This must be a power of two.
+  static constexpr unsigned kMinimumVectorSize = 2;
 
-  // Underlying type is FocusgroupBehavior.
-  unsigned focusgroup_behavior_ : 4 =
-      static_cast<unsigned>(FocusgroupBehavior::kNoBehavior);
+  wtf_size_t size() const { return std::popcount(fields_bitfield_); }
 
-  // Underlying type is FocusgroupFlags.
-  unsigned focusgroup_flags_ : 7 =
-      static_cast<unsigned>(FocusgroupFlags::kNone);
+  // Returns whether the field exists. Time complexity is O(1).
+  bool HasField(FieldId field_id) const {
+    return fields_bitfield_ & FieldIdMask(field_id);
+  }
 
-  // Free bit(s) for future use.
-  unsigned unused_bits_ : 1 = 0;
+  static BitfieldType FieldIdMask(FieldId field_id) {
+    CHECK_LT(static_cast<wtf_size_t>(field_id), kMaxSize);
+    return static_cast<BitfieldType>(1) << static_cast<wtf_size_t>(field_id);
+  }
 
-  SparseVector<FieldId, Member<ElementRareDataField>> fields_;
+  // Returns a mask that has entries for all field IDs lower than `upper`.
+  static BitfieldType LowerFieldIdsMask(FieldId upper) {
+    return FieldIdMask(upper) - 1;
+  }
+
+  // Returns the index in `fields_` that `field_id` is stored in. If `fields_`
+  // isn't storing a field for `field_id`, then this returns the index which
+  // the data for `field_id` should be inserted into.
+  wtf_size_t GetFieldIndex(FieldId field_id) const {
+    // Then count the total population of field IDs lower than that one we
+    // are looking for. The target field ID should be located at the index of
+    // of the total population.
+    return std::popcount(fields_bitfield_ & LowerFieldIdsMask(field_id));
+  }
+
+  struct Flags {
+    uint32_t restyle_flags_ : kNumberOfDynamicRestyleFlags = 0u;
+    uint32_t connected_frame_count_ : kConnectedFrameCountBits = 0u;
+    uint32_t element_flags_ : kNumberOfElementFlags = 0u;
+
+    unsigned did_attach_internals : 1 = false;
+    unsigned has_undo_stack : 1 = false;
+    unsigned scrollbar_pseudo_element_styles_depend_on_font_metrics : 1 = false;
+    // This never gets reset, since we would have to keep track for
+    // every pseudo-element whether it has counter style or not.
+    // But since situations when counter style if removed from
+    // pseudo-element are rare, we are fine with it, since
+    // it doesn't hurt performance much.
+    unsigned has_counters_styles : 1 = false;
+    unsigned has_been_explicitly_scrolled : 1 = false;
+    unsigned may_be_implicit_anchor : 1 = false;
+    unsigned affected_by_starting_styles : 1 = false;
+    // This records the last type of a focus on this element via `SetFocused`
+    // (or more accurately, the only derived value we need from that).
+    // For more see:
+    // https://explainers-by-googlers.github.io/user-dictionary-leaks/
+    unsigned was_last_focus_from_user_gesture : 1 = false;
+
+    // :has() invalidation flags. See has_invalidation_flags.h for description.
+    unsigned affected_by_subject_has_ : 1 = false;
+    unsigned affected_by_non_subject_has_ : 1 = false;
+    unsigned affected_by_pseudos_in_has_ : 1 = false;
+    unsigned siblings_affected_by_has_ : 2 = 0;
+    unsigned ancestors_or_ancestor_siblings_affected_by_has_ : 1 = false;
+    unsigned ancestors_or_siblings_affected_by_hover_in_has_ : 1 = false;
+    unsigned ancestors_or_siblings_affected_by_active_in_has_ : 1 = false;
+    unsigned ancestors_or_siblings_affected_by_focus_in_has_ : 1 = false;
+    unsigned ancestors_or_siblings_affected_by_focus_visible_in_has_ : 1 =
+        false;
+    unsigned affected_by_logical_combinations_in_has_ : 1 = false;
+    unsigned affected_by_multiple_has_ : 1 = false;
+
+    // Underlying type is FocusgroupBehavior.
+    unsigned focusgroup_behavior_ : 4 =
+        static_cast<unsigned>(FocusgroupBehavior::kNoBehavior);
+
+    // Underlying type is FocusgroupFlags.
+    unsigned focusgroup_flags_ : 7 =
+        static_cast<unsigned>(FocusgroupFlags::kNone);
+
+    // We need to be able to distinguish between unset CustomElementRegistry
+    // and explicitly nullptr CustomElementRegistry.
+    unsigned has_custom_element_registry_ : 1 = false;
+
+    // Currently no free bits left.
+  };
+
+  Flags flags_;
+  BitfieldType fields_bitfield_ = 0;
 };
 
 template <>

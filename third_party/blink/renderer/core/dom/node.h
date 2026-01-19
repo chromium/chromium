@@ -1311,6 +1311,16 @@ class CORE_EXPORT Node : public EventTarget {
 
   void InvalidateIfHasEffectiveAppearance() const;
 
+  // Use when calling RareData().EnsureFoo() to make sure the RareData pointer
+  // is updated if needed, as all Set...() and Ensure...() in RareData can
+  // return a new, reallocated data_.
+  template <class T>
+  T& UnpackAndRefresh(std::pair<std::reference_wrapper<T>,
+                                ElementRareDataVector*> raredata_and_new_vec) {
+    data_ = raredata_and_new_vec.second;
+    return raredata_and_new_vec.first;
+  }
+
  private:
   static constexpr struct ParentNodeTag {
   } kParentNodeTag{};
@@ -1361,6 +1371,8 @@ class CORE_EXPORT Node : public EventTarget {
   Member<Node> previous_;
   Member<Node> next_;
   Member<LayoutObject> layout_object_;
+
+ protected:
   Member<ElementRareDataVector> data_;
 };
 

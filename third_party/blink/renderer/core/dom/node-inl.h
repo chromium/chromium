@@ -16,7 +16,7 @@ namespace blink {
 
 void Node::AddDOMPart(Part& part) {
   DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
-  EnsureRareData().AddDOMPart(part);
+  data_ = EnsureRareData().AddDOMPart(part);
 }
 void Node::RemoveDOMPart(Part& part) {
   DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
@@ -27,10 +27,11 @@ PartsList* Node::GetDOMParts() const {
 }
 
 DOMNodeId Node::NodeID(base::PassKey<DOMNodeIds>) const {
-  return data_ ? data_->NodeId() : kInvalidDOMNodeId;
+  return data_ ? const_cast<const ElementRareDataVector*>(data_.Get())->NodeId()
+               : kInvalidDOMNodeId;
 }
 DOMNodeId& Node::EnsureNodeID(base::PassKey<DOMNodeIds>) {
-  return EnsureRareData().NodeId();
+  return UnpackAndRefresh(EnsureRareData().NodeId());
 }
 
 bool ContainerNode::HasRestyleFlag(DynamicRestyleFlags mask) const {

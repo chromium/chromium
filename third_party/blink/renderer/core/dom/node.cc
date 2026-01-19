@@ -357,7 +357,7 @@ Node* Node::FromDomNodeId(DOMNodeId dom_node_id) {
 }
 
 ElementRareDataVector& Node::CreateRareData() {
-  data_ = MakeGarbageCollected<ElementRareDataVector>();
+  data_ = ElementRareDataVector::Create();
   return *data_;
 }
 
@@ -384,9 +384,10 @@ void Node::setNodeValue(const String&, ExceptionState&) {
 
 NodeList* Node::childNodes() {
   auto* this_node = DynamicTo<ContainerNode>(this);
+  auto& node_lists = UnpackAndRefresh(EnsureRareData().EnsureNodeLists());
   if (this_node)
-    return EnsureRareData().EnsureNodeLists().EnsureChildNodeList(*this_node);
-  return EnsureRareData().EnsureNodeLists().EnsureEmptyChildNodeList(*this);
+    return node_lists.EnsureChildNodeList(*this_node);
+  return node_lists.EnsureEmptyChildNodeList(*this);
 }
 
 // TODO(crbug.com/447642032): Implement previous / next sibling for overscroll
@@ -1687,7 +1688,7 @@ void Node::ClearNodeLists() {
 }
 
 FlatTreeNodeData& Node::EnsureFlatTreeNodeData() {
-  return EnsureRareData().EnsureFlatTreeNodeData();
+  return UnpackAndRefresh(EnsureRareData().EnsureFlatTreeNodeData());
 }
 
 FlatTreeNodeData* Node::GetFlatTreeNodeData() const {
@@ -3181,8 +3182,9 @@ void Node::RegisterMutationObserver(
     MutationObserverOptions options,
     const HashSet<AtomicString>& attribute_filter) {
   MutationObserverRegistration* registration = nullptr;
-  for (const auto& item :
-       EnsureRareData().EnsureMutationObserverData().Registry()) {
+  auto& mutation_observer_data =
+      UnpackAndRefresh(EnsureRareData().EnsureMutationObserverData());
+  for (const auto& item : mutation_observer_data.Registry()) {
     if (&item->Observer() == &observer) {
       registration = item.Get();
       registration->ResetObservation(options, attribute_filter);
@@ -3192,7 +3194,7 @@ void Node::RegisterMutationObserver(
   if (!registration) {
     registration = MakeGarbageCollected<MutationObserverRegistration>(
         observer, this, options, attribute_filter);
-    EnsureRareData().EnsureMutationObserverData().AddRegistration(registration);
+    mutation_observer_data.AddRegistration(registration);
   }
 
   GetDocument().AddMutationObserverTypes(registration->MutationTypes());
@@ -3210,14 +3212,14 @@ void Node::UnregisterMutationObserver(
   // understandable by humans.  The explicit dispose() is needed to have the
   // registration object unregister itself promptly.
   registration->Dispose();
-  EnsureRareData().EnsureMutationObserverData().RemoveRegistration(
-      registration);
+  UnpackAndRefresh(EnsureRareData().EnsureMutationObserverData())
+      .RemoveRegistration(registration);
 }
 
 void Node::RegisterTransientMutationObserver(
     MutationObserverRegistration* registration) {
-  EnsureRareData().EnsureMutationObserverData().AddTransientRegistration(
-      registration);
+  UnpackAndRefresh(EnsureRareData().EnsureMutationObserverData())
+      .AddTransientRegistration(registration);
 }
 
 void Node::UnregisterTransientMutationObserver(
@@ -3228,8 +3230,8 @@ void Node::UnregisterTransientMutationObserver(
   if (!transient_registry)
     return;
 
-  EnsureRareData().EnsureMutationObserverData().RemoveTransientRegistration(
-      registration);
+  UnpackAndRefresh(EnsureRareData().EnsureMutationObserverData())
+      .RemoveTransientRegistration(registration);
 }
 
 void Node::NotifyMutationObserversNodeWillDetach() {
@@ -3708,10 +3710,10 @@ void Node::RemovedFromFlatTree() {
 }
 
 void Node::RegisterScrollTimeline(ScrollTimeline* timeline) {
-  EnsureRareData().RegisterScrollTimeline(timeline);
+  data_ = EnsureRareData().RegisterScrollTimeline(timeline);
 }
 void Node::UnregisterScrollTimeline(ScrollTimeline* timeline) {
-  EnsureRareData().UnregisterScrollTimeline(timeline);
+  data_ = EnsureRareData().UnregisterScrollTimeline(timeline);
 }
 
 void Node::SetManuallyAssignedSlot(HTMLSlotElement* slot) {
