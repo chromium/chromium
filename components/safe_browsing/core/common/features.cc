@@ -202,6 +202,9 @@ BASE_FEATURE(kEnterpriseFileSystemAccessDeepScan,
 BASE_FEATURE(kEnterprisePasswordReuseUiRefresh,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnterpriseRealTimeUrlCheckNewUrl,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEsbAsASyncedSetting, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtendedReportingRemovePrefDependency,

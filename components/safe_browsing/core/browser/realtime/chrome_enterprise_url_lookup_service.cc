@@ -174,6 +174,13 @@ ChromeEnterpriseRealTimeUrlLookupService::GetDMTokenString() const {
 }
 
 GURL ChromeEnterpriseRealTimeUrlLookupService::GetRealTimeLookupUrl() const {
+  // TODO(471183759): Remove this after the experiment is done.
+  if (base::FeatureList::IsEnabled(kEnterpriseRealTimeUrlCheckNewUrl)) {
+    return GetUrlOverride(is_command_line_switch_supported_)
+        .value_or(
+            GURL("https://safebrowsing.google.com/enterprise/url/report"));
+  }
+
   return GetUrlOverride(is_command_line_switch_supported_)
       .value_or(GURL("https://enterprise-safebrowsing.googleapis.com/"
                      "safebrowsing/clientreport/realtime"));

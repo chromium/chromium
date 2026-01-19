@@ -9,6 +9,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
@@ -27,6 +28,7 @@
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/browser/test_safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -55,6 +57,9 @@ namespace {
 constexpr char kRealTimeLookupUrl[] =
     "https://enterprise-safebrowsing.googleapis.com/safebrowsing/clientreport/"
     "realtime";
+
+constexpr char kRealTimeLookupNewUrl[] =
+    "https://safebrowsing.google.com/enterprise/url/report";
 
 constexpr char kTestProfileEmail[] = "test@example.com";
 constexpr char kContentAreaAccountEmail[] = "area@example.com";
@@ -218,6 +223,10 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
     return enterprise_rt_service_.get();
   }
 
+  GURL GetRealTimeLookupUrl() {
+    return enterprise_rt_service_->GetRealTimeLookupUrl();
+  }
+
   void FulfillAccessTokenRequest(std::string token) {
     raw_token_fetcher_->RunAccessTokenCallback(token);
   }
@@ -262,8 +271,11 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
     *new_threat_info = threat_info;
     std::string expected_response_str;
     response.SerializeToString(&expected_response_str);
-    test_url_loader_factory_.AddResponse(kRealTimeLookupUrl,
-                                         expected_response_str);
+    test_url_loader_factory_.AddResponse(
+        base::FeatureList::IsEnabled(kEnterpriseRealTimeUrlCheckNewUrl)
+            ? kRealTimeLookupNewUrl
+            : kRealTimeLookupUrl,
+        expected_response_str);
   }
 
   // Must be the first member to be initialized first and destroyed last.
@@ -390,8 +402,11 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
   test_url_loader_factory_.ClearResponses();
   auto head = network::CreateURLResponseHead(net::HTTP_UNAUTHORIZED);
   network::URLLoaderCompletionStatus status(net::OK);
-  test_url_loader_factory_.AddResponse(GURL(kRealTimeLookupUrl),
-                                       std::move(head), "", status);
+  test_url_loader_factory_.AddResponse(
+      GURL(base::FeatureList::IsEnabled(kEnterpriseRealTimeUrlCheckNewUrl)
+               ? kRealTimeLookupNewUrl
+               : kRealTimeLookupUrl),
+      std::move(head), "", status);
 
   GURL url("http://example.test/");
   base::MockCallback<RTLookupResponseCallback> response_callback;
@@ -569,6 +584,13 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
       GURL("chrome://newtab/")));
   EXPECT_FALSE(enterprise_rt_service()->ShouldOverrideKnownSafeUrlDecision(
       GURL("http://example.com/")));
+}
+
+TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
+       TestGetRealTimeLookupUrl_FeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnterpriseRealTimeUrlCheckNewUrl);
+  EXPECT_EQ(GURL(kRealTimeLookupNewUrl), GetRealTimeLookupUrl());
 }
 
 }  // namespace safe_browsing
