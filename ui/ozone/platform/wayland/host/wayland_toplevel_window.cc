@@ -479,16 +479,11 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
   VLOG(3) << __func__ << " states=[ " << window_states.ToString() << "]";
 
   PlatformWindowState window_state = PlatformWindowState::kUnknown;
-  if (window_states.is_minimized) {
+  if ((GetLatestRequestedState().window_state ==
+           PlatformWindowState::kMinimized &&
+       !window_states.is_activated) ||
+      window_states.is_minimized) {
     window_state = PlatformWindowState::kMinimized;
-  } else if (GetLatestRequestedState().window_state ==
-             PlatformWindowState::kMinimized) {
-    if (!window_states.is_activated) {
-      window_state = PlatformWindowState::kMinimized;
-    } else {
-      // The minimize request likely wasn't processed yet.
-      window_state = PlatformWindowState::kUnknown;
-    }
   } else if (window_states.is_fullscreen) {
     window_state = PlatformWindowState::kFullScreen;
   } else if (window_states.is_maximized) {
@@ -518,9 +513,7 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
   }
 
   pending_configure_state_.tiled_edges = window_states.tiled_edges;
-  if (window_state != PlatformWindowState::kUnknown) {
-    pending_configure_state_.window_state = window_state;
-  }
+  pending_configure_state_.window_state = window_state;
 
   // Width or height set to 0 means that we should decide on width and height by
   // ourselves, but we don't want to set them to anything else. Use restored
