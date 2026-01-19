@@ -217,6 +217,10 @@ class WebHistoryService : public KeyedService {
       WebHistoryService::Request* request,
       bool success);
 
+  const std::string& server_version_info_for_test() const {
+    return server_version_info_;
+  }
+
  private:
   friend class WebHistoryServiceTest;
 

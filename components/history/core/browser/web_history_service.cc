@@ -50,9 +50,10 @@ const char kOldQueryHistoryUrl[] =
 const char kNewQueryHistoryUrl[] =
     "https://footprints-pa.googleapis.com/v1/read_chrome_history";
 
-// TODO(crbug.com/460361854): Implement history deletions based on the new API.
-const char kHistoryDeleteHistoryUrl[] =
+const char kOldHistoryDeleteHistoryUrl[] =
     "https://history.google.com/history/api/delete?client=chrome";
+const char kNewHistoryDeleteHistoryUrl[] =
+    "https://footprints-pa.googleapis.com/v1/delete_chrome_history";
 
 const char kOldQueryWebAndAppActivityUrl[] =
     "https://history.google.com/history/api/lookup?client=web_app";
@@ -332,6 +333,20 @@ GURL GetWebAndAppActivityUrl() {
   return GURL(kOldQueryWebAndAppActivityUrl);
 }
 
+GURL GetDeleteUrl(std::string_view version_info) {
+  if (base::FeatureList::IsEnabled(kWebHistoryUseNewApi)) {
+    // The new API passes the version_info as part of the post data.
+    return GURL(kNewHistoryDeleteHistoryUrl);
+  }
+  GURL url(kOldHistoryDeleteHistoryUrl);
+  // Append the version info token, if it is available, to help ensure
+  // consistency with any previous deletions.
+  if (!version_info.empty()) {
+    url = net::AppendQueryParameter(url, "kvi", version_info);
+  }
+  return url;
+}
+
 base::DictValue BuildPostDataHeader(std::string_view version_info) {
   CHECK(base::FeatureList::IsEnabled(kWebHistoryUseNewApi));
 
@@ -392,17 +407,58 @@ std::string BuildGetFacsPostData(std::string_view version_info) {
 
 // Creates a dictionary to hold the parameters for a deletion.
 // `url` may be empty, indicating a time-range deletion.
-base::Value::Dict CreateDeletion(const std::string& min_time,
-                                 const std::string& max_time,
-                                 const GURL& url) {
-  base::Value::Dict deletion;
-  deletion.Set("type", "CHROME_HISTORY");
+base::DictValue CreateDeletion(std::string_view min_time,
+                               std::string_view max_time,
+                               const GURL& url) {
+  base::DictValue deletion;
+
+  if (!base::FeatureList::IsEnabled(kWebHistoryUseNewApi)) {
+    deletion.Set("type", "CHROME_HISTORY");
+  }
+
   if (url.is_valid()) {
     deletion.Set("url", url.spec());
   }
   deletion.Set("min_timestamp_usec", min_time);
   deletion.Set("max_timestamp_usec", max_time);
   return deletion;
+}
+
+std::string BuildDeletePostData(
+    const std::vector<ExpireHistoryArgs>& expire_list,
+    std::string_view version_info) {
+  base::DictValue request;
+  if (base::FeatureList::IsEnabled(kWebHistoryUseNewApi)) {
+    request.Set("header", BuildPostDataHeader(version_info));
+  }
+
+  const base::Time now = base::Time::Now();
+  base::ListValue deletions;
+  for (const auto& expire : expire_list) {
+    // Convert the times to server timestamps.
+    std::string min_timestamp = ServerTimeString(expire.begin_time);
+    base::Time end_time = expire.end_time;
+    if (end_time.is_null() || end_time > now) {
+      end_time = now;
+    }
+    std::string max_timestamp = ServerTimeString(end_time);
+
+    for (const auto& url : expire.urls) {
+      deletions.Append(CreateDeletion(min_timestamp, max_timestamp, url));
+    }
+    // If no URLs were specified, delete everything in the time range.
+    if (expire.urls.empty()) {
+      deletions.Append(CreateDeletion(min_timestamp, max_timestamp, GURL()));
+    }
+  }
+
+  if (base::FeatureList::IsEnabled(kWebHistoryUseNewApi)) {
+    request.Set("delete_chrome_history", std::move(deletions));
+  } else {
+    request.Set("del", std::move(deletions));
+  }
+
+  return base::WriteJson(request).value_or("");
 }
 
 WebHistoryService::QueryHistoryResult ParseQueryResponseOldApi(
@@ -648,37 +704,7 @@ void WebHistoryService::ExpireHistory(
     const std::vector<ExpireHistoryArgs>& expire_list,
     ExpireWebHistoryCallback callback,
     const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation) {
-  base::Value::Dict delete_request;
-  base::Value::List deletions;
-  base::Time now = base::Time::Now();
-
-  for (const auto& expire : expire_list) {
-    // Convert the times to server timestamps.
-    std::string min_timestamp = ServerTimeString(expire.begin_time);
-    base::Time end_time = expire.end_time;
-    if (end_time.is_null() || end_time > now) {
-      end_time = now;
-    }
-    std::string max_timestamp = ServerTimeString(end_time);
-
-    for (const auto& url : expire.urls) {
-      deletions.Append(CreateDeletion(min_timestamp, max_timestamp, url));
-    }
-    // If no URLs were specified, delete everything in the time range.
-    if (expire.urls.empty()) {
-      deletions.Append(CreateDeletion(min_timestamp, max_timestamp, GURL()));
-    }
-  }
-  delete_request.Set("del", std::move(deletions));
-  std::string post_data = base::WriteJson(delete_request).value_or("");
-
-  GURL url(kHistoryDeleteHistoryUrl);
-
-  // Append the version info token, if it is available, to help ensure
-  // consistency with any previous deletions.
-  if (!server_version_info_.empty()) {
-    url = net::AppendQueryParameter(url, "kvi", server_version_info_);
-  }
+  GURL url = GetDeleteUrl(server_version_info_);
 
   // Wrap the original callback into a generic completion callback.
   CompletionCallback completion_callback =
@@ -687,7 +713,7 @@ void WebHistoryService::ExpireHistory(
 
   std::unique_ptr<Request> request(CreateRequest(
       url, std::move(completion_callback), partial_traffic_annotation));
-  request->SetPostData(post_data);
+  request->SetPostData(BuildDeletePostData(expire_list, server_version_info_));
   Request* request_ptr = request.get();
   pending_expire_requests_[request_ptr] = std::move(request);
   request_ptr->Start();
@@ -801,8 +827,14 @@ void WebHistoryService::ExpireHistoryCompletionCallback(
     return;
   }
 
-  if (const auto* version = response->FindString("version_info")) {
-    server_version_info_ = *version;
+  if (base::FeatureList::IsEnabled(kWebHistoryUseNewApi)) {
+    if (const auto* version = response->FindString("versionInfo")) {
+      server_version_info_ = *version;
+    }
+  } else {
+    if (const auto* version = response->FindString("version_info")) {
+      server_version_info_ = *version;
+    }
   }
   // Inform the observers about the history deletion.
   for (WebHistoryServiceObserver& observer : observer_list_) {

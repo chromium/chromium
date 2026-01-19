@@ -99,6 +99,8 @@ class TestingWebHistoryService : public WebHistoryService {
 
   const GURL& last_request_url() const { return last_request_url_; }
 
+  using WebHistoryService::server_version_info_for_test;
+
  protected:
   std::unique_ptr<Request> CreateRequest(
       const GURL& url,
@@ -164,6 +166,20 @@ class WebHistoryServiceTest : public testing::TestWithParam<bool> {
     bool result = false;
     web_history_service_.QueryWebAndAppActivity(
         base::BindLambdaForTesting([&](bool success) {
+          result = success;
+          run_loop.Quit();
+        }),
+        PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS);
+    run_loop.Run();
+    return result;
+  }
+
+  bool ExpireHistorySynchronous(
+      const std::vector<ExpireHistoryArgs>& expire_list) {
+    base::RunLoop run_loop;
+    bool result = false;
+    web_history_service_.ExpireHistory(
+        expire_list, base::BindLambdaForTesting([&](bool success) {
           result = success;
           run_loop.Quit();
         }),
@@ -419,6 +435,39 @@ TEST_P(WebHistoryServiceTest, QueryWebAndAppActivityMisnamedField) {
   }
 
   EXPECT_FALSE(QueryWebAndAppActivitySynchronous());
+}
+
+TEST_P(WebHistoryServiceTest, ExpireHistoryValid) {
+  if (IsNewAPIEnabled()) {
+    web_history_service_.SetResponse(net::HTTP_OK,
+                                     R"({"versionInfo": "some_token"})");
+  } else {
+    web_history_service_.SetResponse(net::HTTP_OK,
+                                     R"({"version_info": "some_token"})");
+  }
+
+  EXPECT_TRUE(ExpireHistorySynchronous({}));
+  EXPECT_EQ(web_history_service_.server_version_info_for_test(), "some_token");
+}
+
+TEST_P(WebHistoryServiceTest, ExpireHistoryValidNoVersionInfo) {
+  web_history_service_.SetResponse(net::HTTP_OK, R"({})");
+
+  // Version info in the response is optional, so this should still succeed.
+  EXPECT_TRUE(ExpireHistorySynchronous({}));
+  EXPECT_TRUE(web_history_service_.server_version_info_for_test().empty());
+}
+
+TEST_P(WebHistoryServiceTest, ExpireHistoryError) {
+  web_history_service_.SetResponse(net::HTTP_INTERNAL_SERVER_ERROR, "");
+
+  EXPECT_FALSE(ExpireHistorySynchronous({}));
+}
+
+TEST_P(WebHistoryServiceTest, ExpireHistoryMalformedResponse) {
+  web_history_service_.SetResponse(net::HTTP_OK, "this is not json");
+
+  EXPECT_FALSE(ExpireHistorySynchronous({}));
 }
 
 }  // namespace history
