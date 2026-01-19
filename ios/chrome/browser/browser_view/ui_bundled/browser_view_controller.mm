@@ -319,9 +319,6 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
 // Command handler for find in page commands.
 @property(nonatomic, weak) id<FindInPageCommands> findInPageCommandsHandler;
 
-// Command handler for Gemini commands.
-@property(nonatomic, weak) id<BWGCommands> geminiHandler;
-
 // The FullscreenController.
 @property(nonatomic, assign) FullscreenController* fullscreenController;
 
@@ -1137,7 +1134,7 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
                               if (completion) {
                                 completion();
                               }
-                              [strongSelf showGeminiFloatyIfInvoked];
+                              [strongSelf.geminiHandler showFloatyIfInvoked];
                             }];
 }
 
@@ -1207,11 +1204,8 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
   // would be changed back to `kVisible` afterwards. Fix the bug and update the
   // visibility state.
 
-  __weak BrowserViewController* weakSelf = self;
+  [self.geminiHandler hideFloatyIfInvoked];
   void (^superCall)() = ^{
-    if (weakSelf) {
-      [weakSelf.geminiHandler hideFloatyIfInvoked];
-    }
     [super presentViewController:viewControllerToPresent
                         animated:flag
                       completion:finalCompletionHandler];
@@ -1682,18 +1676,6 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
 
         [self.typingShield setHidden:YES];
       }];
-}
-
-// Helper method for dismissal block when attempting to show the Gemini floaty
-// if invoked.
-- (void)showGeminiFloatyIfInvoked {
-  // The dispatcher may not be fully connected during shutdown, so selectors may
-  // be unrecognized.
-  if (![self.geminiHandler respondsToSelector:@selector(showFloatyIfInvoked)]) {
-    return;
-  }
-
-  [self.geminiHandler showFloatyIfInvoked];
 }
 
 #pragma mark - Private Methods: UI Configuration, update and Layout

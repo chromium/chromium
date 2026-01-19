@@ -8,6 +8,8 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/time/time.h"
+#import "base/timer/timer.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/prefs/pref_service.h"
@@ -71,6 +73,10 @@ CGFloat kFullscreenEnabled = 0.0;
 
 // Used for forcing non-fullscreen progress value.
 CGFloat kFullscreenDisabled = 1.0;
+
+// Used to check if floaty visibility updates are part of a UIView dismissal or
+// presentation.
+double kViewTransitionTime = 1.0;
 
 }  // namespace
 
@@ -346,8 +352,16 @@ void BwgBrowserAgent::HideFloatyIfInvoked() {
   if (!is_floaty_invoked_) {
     return;
   }
+
   is_floaty_temporarily_hidden_ = true;
-  last_view_state_ = ios::provider::GetCurrentGeminiViewState();
+  floaty_hidden_timestamp_ = base::TimeTicks::Now();
+  ios::provider::GeminiViewState current_view_state =
+      ios::provider::GetCurrentGeminiViewState();
+
+  if (current_view_state != ios::provider::GeminiViewState::kHidden) {
+    last_view_state_ = current_view_state;
+  }
+
   ios::provider::UpdateGeminiViewState(ios::provider::GeminiViewState::kHidden);
 }
 
@@ -355,6 +369,16 @@ void BwgBrowserAgent::ShowFloatyIfInvoked() {
   if (!is_floaty_invoked_) {
     return;
   }
+
+  // `HideFloatyIfInvoked()` may be called when a view controller dismisses. If
+  // a view controller dismisses as part of presenting another view controller,
+  // the floaty should not show.
+  base::TimeDelta time_since_last_hidden =
+      base::TimeTicks::Now() - floaty_hidden_timestamp_;
+  if (time_since_last_hidden <= base::Seconds(kViewTransitionTime)) {
+    return;
+  }
+
   is_floaty_temporarily_hidden_ = false;
   ios::provider::UpdateGeminiViewState(last_view_state_);
 }
