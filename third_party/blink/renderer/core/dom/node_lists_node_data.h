@@ -36,7 +36,8 @@
 
 namespace blink {
 
-class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData> {
+class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData>,
+                                public ElementRareDataField {
  public:
   ChildNodeList* GetChildNodeList(ContainerNode& node) {
     DCHECK(!child_node_list_ || node == child_node_list_->VirtualOwnerNode());
@@ -175,7 +176,7 @@ class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData> {
     }
   }
 
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
  private:
   // Can be a ChildNodeList or an EmptyNodeList.

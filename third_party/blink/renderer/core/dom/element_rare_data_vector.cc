@@ -77,6 +77,26 @@ void ElementRareDataVector::SetField(FieldId field_id,
   }
 }
 
+NodeListsNodeData* ElementRareDataVector::NodeLists() const {
+  return static_cast<NodeListsNodeData*>(GetField(FieldId::kNodeLists));
+}
+
+NodeListsNodeData& ElementRareDataVector::EnsureNodeLists() {
+  return EnsureField<NodeListsNodeData>(FieldId::kNodeLists);
+}
+
+FlatTreeNodeData* ElementRareDataVector::GetFlatTreeNodeData() const {
+  return static_cast<FlatTreeNodeData*>(GetField(FieldId::kFlatTreeNodeData));
+}
+
+NodeMutationObserverData* ElementRareDataVector::MutationObserverData() {
+  return static_cast<NodeMutationObserverData*>(
+      GetField(FieldId::kMutationObserverData));
+}
+NodeMutationObserverData& ElementRareDataVector::EnsureMutationObserverData() {
+  return EnsureField<NodeMutationObserverData>(FieldId::kMutationObserverData);
+}
+
 bool ElementRareDataVector::HasPseudoElements() const {
   PseudoElementData* data =
       static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
@@ -702,17 +722,23 @@ OverscrollAreaTracker* ElementRareDataVector::OverscrollAreaTracker() const {
 }
 
 void ElementRareDataVector::Trace(blink::Visitor* visitor) const {
-  visitor->Trace(node_lists_);
-  visitor->Trace(mutation_observer_data_);
-  visitor->Trace(flat_tree_node_data_);
-  visitor->Trace(scroll_timelines_);
-  visitor->Trace(dom_parts_);
   visitor->Trace(fields_);
 }
 
 void NodeMutationObserverData::Trace(Visitor* visitor) const {
+  ElementRareDataField::Trace(visitor);
   visitor->Trace(registry_);
   visitor->Trace(transient_registry_);
+}
+
+void ScrollTimelineHashSet::Trace(Visitor* visitor) const {
+  ElementRareDataField::Trace(visitor);
+  visitor->Trace(set_);
+}
+
+void NodePartsListData::Trace(Visitor* visitor) const {
+  ElementRareDataField::Trace(visitor);
+  visitor->Trace(parts_list_);
 }
 
 void NodeMutationObserverData::AddTransientRegistration(
@@ -738,50 +764,55 @@ void NodeMutationObserverData::RemoveRegistration(
 }
 
 void ElementRareDataVector::RegisterScrollTimeline(ScrollTimeline* timeline) {
-  if (!scroll_timelines_) {
-    scroll_timelines_ =
-        MakeGarbageCollected<GCedHeapHashSet<Member<ScrollTimeline>>>();
-  }
-  scroll_timelines_->insert(timeline);
+  EnsureField<ScrollTimelineHashSet>(FieldId::kScrollTimelines)
+      .set_.insert(timeline);
 }
 void ElementRareDataVector::UnregisterScrollTimeline(ScrollTimeline* timeline) {
-  scroll_timelines_->erase(timeline);
+  EnsureField<ScrollTimelineHashSet>(FieldId::kScrollTimelines)
+      .set_.erase(timeline);
 }
 
 void ElementRareDataVector::AddDOMPart(Part& part) {
   DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
-  if (!dom_parts_) {
-    dom_parts_ = MakeGarbageCollected<PartsList>();
-  }
-  DCHECK(!std::ranges::contains(*dom_parts_, &part));
-  dom_parts_->push_back(&part);
+  auto& dom_parts =
+      EnsureField<NodePartsListData>(FieldId::kDomParts).parts_list_;
+  DCHECK(!std::ranges::contains(dom_parts, &part));
+  dom_parts.push_back(&part);
 }
 
 void ElementRareDataVector::RemoveDOMPart(Part& part) {
   DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
-  DCHECK(dom_parts_ && std::ranges::contains(*dom_parts_, &part));
+  NodePartsListData* parts_data =
+      static_cast<NodePartsListData*>(GetField(FieldId::kDomParts));
+  DCHECK(parts_data);
+  PartsList& dom_parts = parts_data->parts_list_;
+  DCHECK(std::ranges::contains(dom_parts, &part));
   // Common case is that one node has one part:
-  if (dom_parts_->size() == 1) {
-    DCHECK_EQ(dom_parts_->front(), &part);
-    dom_parts_->clear();
+  if (dom_parts.size() == 1) {
+    DCHECK_EQ(dom_parts.front(), &part);
+    dom_parts.clear();
   } else {
     // This is the very slow case - multiple parts for a single node.
     TemporaryPartsList new_list;
-    for (auto p : *dom_parts_) {
+    for (auto p : dom_parts) {
       if (p != &part) {
         new_list.push_back(p);
       }
     }
-    dom_parts_->Swap(new_list);
+    dom_parts.Swap(new_list);
   }
-  if (dom_parts_->empty()) {
-    dom_parts_ = nullptr;
+  if (dom_parts.empty()) {
+    SetField(FieldId::kDomParts, nullptr);
   }
 }
 
 PartsList* ElementRareDataVector::GetDOMParts() const {
-  DCHECK(!dom_parts_ || !RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
-  return dom_parts_.Get();
+  DCHECK(!fields_.HasField(FieldId::kDomParts) ||
+         !RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
+  return fields_.HasField(FieldId::kDomParts)
+             ? &static_cast<NodePartsListData*>(GetField(FieldId::kDomParts))
+                    ->parts_list_
+             : nullptr;
 }
 
 void ElementRareDataVector::IncrementConnectedSubframeCount() {
@@ -789,16 +820,8 @@ void ElementRareDataVector::IncrementConnectedSubframeCount() {
   ++connected_frame_count_;
 }
 
-NodeListsNodeData& ElementRareDataVector::CreateNodeLists() {
-  node_lists_ = MakeGarbageCollected<NodeListsNodeData>();
-  return *node_lists_;
-}
-
 FlatTreeNodeData& ElementRareDataVector::EnsureFlatTreeNodeData() {
-  if (!flat_tree_node_data_) {
-    flat_tree_node_data_ = MakeGarbageCollected<FlatTreeNodeData>();
-  }
-  return *flat_tree_node_data_;
+  return EnsureField<FlatTreeNodeData>(FieldId::kFlatTreeNodeData);
 }
 
 static_assert(static_cast<int>(ElementRareDataVector::kNumberOfElementFlags) ==

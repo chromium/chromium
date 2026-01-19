@@ -68,7 +68,8 @@ enum class ElementFlags;
 using TemporaryPartsList = HeapDeque<Member<Part>>;
 
 class NodeMutationObserverData final
-    : public GarbageCollected<NodeMutationObserverData> {
+    : public GarbageCollected<NodeMutationObserverData>,
+      public ElementRareDataField {
  public:
   NodeMutationObserverData() = default;
   NodeMutationObserverData(const NodeMutationObserverData&) = delete;
@@ -87,11 +88,28 @@ class NodeMutationObserverData final
   void AddRegistration(MutationObserverRegistration* registration);
   void RemoveRegistration(MutationObserverRegistration* registration);
 
-  void Trace(Visitor* visitor) const;
+  void Trace(Visitor* visitor) const override;
 
  private:
   HeapVector<Member<MutationObserverRegistration>> registry_;
   HeapHashSet<Member<MutationObserverRegistration>> transient_registry_;
+};
+
+class ScrollTimelineHashSet final
+    : public GarbageCollected<ScrollTimelineHashSet>,
+      public ElementRareDataField {
+ public:
+  HeapHashSet<Member<ScrollTimeline>> set_;
+
+  void Trace(Visitor* visitor) const override;
+};
+
+class NodePartsListData final : public GarbageCollected<NodePartsListData>,
+                                public ElementRareDataField {
+ public:
+  PartsList parts_list_;
+
+  void Trace(Visitor* visitor) const override;
 };
 
 class CORE_EXPORT ElementRareDataVector final
@@ -109,33 +127,18 @@ class CORE_EXPORT ElementRareDataVector final
   ElementRareDataVector(const ElementRareDataVector&) = delete;
   ElementRareDataVector& operator=(const ElementRareDataVector&) = delete;
 
-  void ClearNodeLists() { node_lists_.Clear(); }
-  NodeListsNodeData* NodeLists() const { return node_lists_.Get(); }
+  void ClearNodeLists() { fields_.EraseField(FieldId::kNodeLists); }
+  NodeListsNodeData* NodeLists() const;
   // EnsureNodeLists() and a following NodeListsNodeData functions must be
   // wrapped with a ThreadState::GCForbiddenScope in order to avoid an
   // initialized node_lists_ is cleared by NodeRareData::TraceAfterDispatch().
-  NodeListsNodeData& EnsureNodeLists() {
-    if (!node_lists_) {
-      return CreateNodeLists();
-    }
-    return *node_lists_;
-  }
+  NodeListsNodeData& EnsureNodeLists();
 
-  FlatTreeNodeData* GetFlatTreeNodeData() const {
-    return flat_tree_node_data_.Get();
-  }
+  FlatTreeNodeData* GetFlatTreeNodeData() const;
   FlatTreeNodeData& EnsureFlatTreeNodeData();
 
-  NodeMutationObserverData* MutationObserverData() {
-    return mutation_observer_data_.Get();
-  }
-  NodeMutationObserverData& EnsureMutationObserverData() {
-    if (!mutation_observer_data_) {
-      mutation_observer_data_ =
-          MakeGarbageCollected<NodeMutationObserverData>();
-    }
-    return *mutation_observer_data_;
-  }
+  NodeMutationObserverData* MutationObserverData();
+  NodeMutationObserverData& EnsureMutationObserverData();
 
   uint16_t ConnectedSubframeCount() const { return connected_frame_count_; }
   void IncrementConnectedSubframeCount();
@@ -160,8 +163,14 @@ class CORE_EXPORT ElementRareDataVector final
   void RemoveDOMPart(Part& part);
   PartsList* GetDOMParts() const;
 
-  DOMNodeId NodeId() const { return id_; }
-  DOMNodeId& NodeId() { return id_; }
+  // Mostly for accessibility.
+  DOMNodeId NodeId() const {
+    auto* value = GetWrappedField<DOMNodeId>(FieldId::kDOMNodeId);
+    return value ? *value : 0;
+  }
+  DOMNodeId& NodeId() {
+    return EnsureWrappedField<DOMNodeId>(FieldId::kDOMNodeId);
+  }
 
   void SetPseudoElement(
       PseudoId,
@@ -532,9 +541,14 @@ class CORE_EXPORT ElementRareDataVector final
     kAltContentData = 42,
     kOverscrollContainer = 43,
     kTrackedElementRect = 44,
-    kNumFields = 45,
+    kNodeLists = 45,
+    kMutationObserverData = 46,
+    kFlatTreeNodeData = 47,
+    kScrollTimelines = 48,
+    kDomParts = 49,
+    kDOMNodeId = 50,
+    kNumFields = 51,
   };
-  NodeListsNodeData& CreateNodeLists();
 
   ElementRareDataField* GetField(FieldId field_id) const;
   void SetField(FieldId field_id, ElementRareDataField* field);
@@ -600,19 +614,6 @@ class CORE_EXPORT ElementRareDataVector final
   uint32_t restyle_flags_ : kNumberOfDynamicRestyleFlags = 0u;
   uint32_t connected_frame_count_ : kConnectedFrameCountBits = 0u;
   uint32_t element_flags_ : kNumberOfElementFlags = 0u;
-
-  Member<NodeListsNodeData> node_lists_;
-  Member<NodeMutationObserverData> mutation_observer_data_;
-  Member<FlatTreeNodeData> flat_tree_node_data_;
-  // Keeps strong scroll timeline pointers linked to this node to ensure
-  // the timelines are alive as long as the node is alive.
-  Member<GCedHeapHashSet<Member<ScrollTimeline>>> scroll_timelines_;
-  // An ordered set of DOM Parts for this Node, in order of construction. This
-  // order is important, since `getParts()` returns a tree-ordered set of parts,
-  // with parts on the same `Node` returned in `Part` construction order.
-  Member<PartsList> dom_parts_;
-
-  DOMNodeId id_ = kInvalidDOMNodeId;  // Used primarily for accessibility.
 
   unsigned did_attach_internals : 1 = false;
   unsigned has_undo_stack : 1 = false;

@@ -102,7 +102,7 @@ class WebPluginContainerImpl;
 
 struct PhysicalRect;
 
-using PartsList = GCedHeapDeque<Member<Part>>;
+using PartsList = HeapDeque<Member<Part>>;
 
 const int kElementNamespaceTypeShift = 5;
 const int kNodeStyleChangeShift = 16;
