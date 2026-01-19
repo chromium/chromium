@@ -22,6 +22,10 @@
 class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase,
                                             public gfx::AnimationDelegate {
  public:
+  // Controls along which axis view bounds are animated during animate-in and
+  // animate-out transitions.
+  enum class AnimationAxis { kVertical, kHorizontal };
+
   class Delegate {
    public:
     virtual bool IsViewDragging(const views::View& child_view) const = 0;
@@ -33,7 +37,8 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase,
 
   explicit TabCollectionAnimatingLayoutManager(
       std::unique_ptr<LayoutManagerBase> target_layout_manager,
-      Delegate* delegate = nullptr);
+      Delegate* delegate = nullptr,
+      AnimationAxis animation_axis = AnimationAxis::kVertical);
   TabCollectionAnimatingLayoutManager(
       const TabCollectionAnimatingLayoutManager&) = delete;
   TabCollectionAnimatingLayoutManager& operator=(
@@ -116,6 +121,10 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase,
   double current_offset_ = 1.0;
 
   const raw_ptr<Delegate> delegate_;
+
+  // The axis along which bounds for animate-in and animate-out transitions are
+  // interpolated.
+  AnimationAxis animation_axis_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_TAB_COLLECTION_ANIMATING_LAYOUT_MANAGER_H_

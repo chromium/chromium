@@ -26,7 +26,9 @@ VerticalPinnedTabContainerView::VerticalPinnedTabContainerView(
     : collection_node_(collection_node) {
   auto* layout_manager =
       SetLayoutManager(std::make_unique<TabCollectionAnimatingLayoutManager>(
-          std::make_unique<views::DelegatingLayoutManager>(this)));
+          std::make_unique<views::DelegatingLayoutManager>(this),
+          /*delegate=*/nullptr,
+          TabCollectionAnimatingLayoutManager::AnimationAxis::kHorizontal));
   collection_node->set_remove_child_from_node(base::BindRepeating(
       &TabCollectionAnimatingLayoutManager::AnimateAndDestroyChildView,
       base::Unretained(layout_manager)));

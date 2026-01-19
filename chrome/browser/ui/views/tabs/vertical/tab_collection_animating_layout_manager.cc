@@ -31,11 +31,13 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect, kPreviousCollectionBounds)
 
 TabCollectionAnimatingLayoutManager::TabCollectionAnimatingLayoutManager(
     std::unique_ptr<LayoutManagerBase> target_layout_manager,
-    Delegate* delegate)
+    Delegate* delegate,
+    AnimationAxis animation_axis)
     : target_layout_manager_(
           CHECK_DEREF(AddOwnedLayout(std::move(target_layout_manager)))),
       animation_(this),
-      delegate_(delegate) {
+      delegate_(delegate),
+      animation_axis_(animation_axis) {
   // TODO(crbug.com/459824840): Determine the appropriate animation duration.
   // Currently set to match the duration of TabContainerImpl.
   animation_.SetSlideDuration(
@@ -255,7 +257,11 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
             value, initial_bounds, target_child.bounds);
       } else {
         gfx::Rect initial_bounds = target_child.bounds;
-        initial_bounds.set_height(0);
+        if (animation_axis_ == AnimationAxis::kVertical) {
+          initial_bounds.set_height(0);
+        } else {
+          initial_bounds.set_width(0);
+        }
         interpolated_child.bounds = gfx::Tween::RectValueBetween(
             value, initial_bounds, target_child.bounds);
       }
@@ -285,7 +291,11 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
       // `RemoveNonAnimatingPendingDeleteViews()`.
       views::ChildLayout interpolated_child = start_child;
       gfx::Rect target_bounds = start_child.bounds;
-      target_bounds.set_height(0);
+      if (animation_axis_ == AnimationAxis::kVertical) {
+        target_bounds.set_height(0);
+      } else {
+        target_bounds.set_width(0);
+      }
       interpolated_child.bounds = gfx::Tween::RectValueBetween(
           value, start_child.bounds, target_bounds);
       result.child_layouts.push_back(interpolated_child);
