@@ -316,6 +316,7 @@ chromium-metrics-reviews@google.com.
   <int value="-2012565742" label="nahm_collection">
     Native American Artists Collection
   </int>
+  <int value="-1973331307" label="_ios_gradients_collection">Gradients</int>
   <int value="-1854628278" label="landscape">Landscapes</int>
   <int value="-1343974988" label="lgbtq_artists_collection">
     LGBTQ Artists Collection
@@ -325,11 +326,18 @@ chromium-metrics-reviews@google.com.
   <int value="-1059944606" label="satellite">Earth</int>
   <int value="-1012742544" label="art_for_NTP">Art for NTP</int>
   <int value="-802608769" label="abstract_for_NTP">Abstract for NTP</int>
+  <int value="-515601162" label="_ios_architecture_collection">
+    Architectures
+  </int>
+  <int value="-360259757" label="_ios_pattern_collection">Patterns</int>
   <int value="-330191104" label="geometric_shapes_NTP">
     Geometric shapes for NTP
   </int>
   <int value="-190868901" label="material-texture_for_NTP">
     Material Texture For NTP
+  </int>
+  <int value="-72537281" label="_ios_illustration_collection">
+    Illustrations
   </int>
   <int value="-67630116" label="abstract">Life</int>
   <int value="-55617381" label="solidcolors">Colors</int>
@@ -341,6 +349,8 @@ chromium-metrics-reviews@google.com.
   </int>
   <int value="596779358" label="city">Cityscapes</int>
   <int value="755625558" label="city_for_NTP">City for NTP</int>
+  <int value="931202786" label="_ios_landscape_collection">Landscapes</int>
+  <int value="1157527614" label="_ios_google_earth_collection">Earth</int>
   <int value="1223583762" label="latinx_artists_collection">
     Latino Artists Collection
   </int>
