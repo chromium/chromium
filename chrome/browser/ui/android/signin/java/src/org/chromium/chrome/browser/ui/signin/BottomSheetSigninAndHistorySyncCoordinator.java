@@ -286,6 +286,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         assert SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
 
         mConfig = config;
+        mDidShowSigninStep = false;
         mProfileSupplier.onAvailable(this::onProfileAvailable);
     }
 
