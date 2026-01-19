@@ -246,6 +246,22 @@ HistogramBase* Histogram::Factory::Build() {
                        static_cast<Sample32>(name_hash));
     DLOG(ERROR) << "Histogram " << name_
                 << " has mismatched construction arguments";
+
+    // TODO(crbug.com/477033836): Most histograms hitting this are unmapped.
+    // Dump to find out which ones. Some known bad histograms are excluded.
+    static const std::string_view kKnownBadHistogramsHashes[] = {
+        "DevTools.IssueCreated",
+        "DevTools.ActionTaken",
+        "DevTools.DeveloperResourceLoaded",
+        "DevTools.DeveloperResourceScheme",
+        "DevTools.ExperimentEnabledAtLaunch",
+        "DevTools.PanelShown",
+    };
+    if (std::ranges::contains(kKnownBadHistogramsHashes, name_)) {
+      DEBUG_ALIAS_FOR_CSTR(hist_name, std::string(name_).c_str(), 32);
+      debug::DumpWithoutCrashing();
+    }
+
     return DummyHistogram::GetInstance();
   }
   return histogram;
