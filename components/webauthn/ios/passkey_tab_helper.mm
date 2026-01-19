@@ -189,18 +189,22 @@ void PasskeyTabHelper::HandleGetRequestedEvent(web::WebFrame* web_frame,
   if (!OriginIsAllowedToClaimRelyingPartyId(rp_id, origin)) {
     if (!PerformRemoteRpIdValidation(
             origin, rp_id, passkey_request_id,
-            base::BindOnce(&PasskeyTabHelper::OnAssertionValidated, AsWeakPtr(),
-                           std::move(params)))) {
+            base::BindOnce(&PasskeyTabHelper::OnRemoteRpIdValidationCompleted,
+                           AsWeakPtr(), std::move(params)))) {
       DeferToRenderer(web_frame, passkey_request_id);
     }
     return;
   }
 
-  HandleAssertion(web_frame, std::move(params));
+  HandleAssertion(std::move(params));
 }
 
-void PasskeyTabHelper::HandleAssertion(web::WebFrame* web_frame,
-                                       AssertionRequestParams params) {
+void PasskeyTabHelper::HandleAssertion(AssertionRequestParams params) {
+  web::WebFrame* web_frame = GetWebFrame(params.FrameId());
+  if (!web_frame) {
+    return;
+  }
+
   // Get available passkeys for the request.
   std::vector<password_manager::PasskeyCredential> filtered_passkeys =
       password_manager::PasskeyCredential::FromCredentialSpecifics(
@@ -243,22 +247,31 @@ bool PasskeyTabHelper::PerformRemoteRpIdValidation(
   return false;
 }
 
-void PasskeyTabHelper::OnAssertionValidated(AssertionRequestParams params,
-                                            ValidationStatus result) {
-  const std::string& passkey_request_id = params.RequestId();
+void PasskeyTabHelper::OnRemoteRpIdValidationCompleted(
+    PendingRequest request,
+    ValidationStatus result) {
+  const std::string& passkey_request_id = std::visit(
+      [](const auto& params) { return params.RequestId(); }, request);
   loaders_.erase(passkey_request_id);
 
-  web::WebFrame* web_frame = GetWebFrame(params.FrameId());
-  if (!web_frame) {
-    return;
-  }
+  if (std::holds_alternative<AssertionRequestParams>(request)) {
+    AssertionRequestParams params =
+        std::move(std::get<AssertionRequestParams>(request));
+    if (result != ValidationStatus::kSuccess) {
+      DeferToRenderer(params.RequestInfo());
+      return;
+    }
 
-  if (result != ValidationStatus::kSuccess) {
-    DeferToRenderer(web_frame, passkey_request_id);
-    return;
+    HandleAssertion(std::move(params));
+  } else {
+    RegistrationRequestParams params =
+        std::move(std::get<RegistrationRequestParams>(request));
+    if (result != ValidationStatus::kSuccess) {
+      DeferToRenderer(params.RequestInfo());
+      return;
+    }
+    HandleRegistration(std::move(params));
   }
-
-  HandleAssertion(web_frame, std::move(params));
 }
 
 void PasskeyTabHelper::HandleCreateRequestedEvent(
@@ -297,7 +310,7 @@ void PasskeyTabHelper::HandleCreateRequestedEvent(
   if (!OriginIsAllowedToClaimRelyingPartyId(rp_id, origin)) {
     if (!PerformRemoteRpIdValidation(
             origin, rp_id, passkey_request_id,
-            base::BindOnce(&PasskeyTabHelper::OnRegistrationValidated,
+            base::BindOnce(&PasskeyTabHelper::OnRemoteRpIdValidationCompleted,
                            AsWeakPtr(), std::move(params)))) {
       DeferToRenderer(web_frame, passkey_request_id);
     }
@@ -315,22 +328,6 @@ void PasskeyTabHelper::HandleRegistration(RegistrationRequestParams params) {
   const std::string& passkey_request_id = params.RequestId();
   registration_requests_.emplace(passkey_request_id, std::move(params));
   client_->ShowCreationBottomSheet(std::move(request_info));
-}
-
-void PasskeyTabHelper::OnRegistrationValidated(RegistrationRequestParams params,
-                                               ValidationStatus result) {
-  const std::string& passkey_request_id = params.RequestId();
-  loaders_.erase(passkey_request_id);
-
-  if (result != ValidationStatus::kSuccess) {
-    web::WebFrame* web_frame = GetWebFrame(params.FrameId());
-    if (web_frame) {
-      DeferToRenderer(web_frame, passkey_request_id);
-    }
-    return;
-  }
-
-  HandleRegistration(std::move(params));
 }
 
 bool PasskeyTabHelper::HasPendingValidationForTesting() const {

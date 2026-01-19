@@ -99,6 +99,10 @@ class PasskeyTabHelper : public web::WebStateObserver,
   friend class web::WebStateUserData<PasskeyTabHelper>;
   friend class PasskeyTabHelperTest;
 
+  // Pending requests keyed by frame ID when a WebFrame isn't yet available.
+  using PendingRequest =
+      std::variant<AssertionRequestParams, RegistrationRequestParams>;
+
   explicit PasskeyTabHelper(web::WebState* web_state,
                             PasskeyModel* passkey_model,
                             std::unique_ptr<IOSPasskeyClient> client);
@@ -145,16 +149,12 @@ class PasskeyTabHelper : public web::WebStateObserver,
       const std::string& passkey_request_id,
       base::OnceCallback<void(ValidationStatus)> callback);
 
-  // Callback for processing remote validation result for an assertion request.
-  void OnAssertionValidated(AssertionRequestParams params,
-                            ValidationStatus status);
+  // Callback for processing remote validation result for a pending request.
+  void OnRemoteRpIdValidationCompleted(PendingRequest request,
+                                       ValidationStatus status);
 
   // Handles passkey assertion request after it passes validation.
-  void HandleAssertion(web::WebFrame* web_frame, AssertionRequestParams params);
-
-  // Callback for processing validation result for a registration request.
-  void OnRegistrationValidated(RegistrationRequestParams params,
-                               ValidationStatus status);
+  void HandleAssertion(AssertionRequestParams params);
 
   // Handles passkey registration requests after it passes validation.
   void HandleRegistration(RegistrationRequestParams params);
@@ -208,9 +208,6 @@ class PasskeyTabHelper : public web::WebStateObserver,
   absl::flat_hash_map<std::string, RegistrationRequestParams>
       registration_requests_;
 
-  // Pending requests keyed by frame ID when a WebFrame isn't yet available.
-  using PendingRequest =
-      std::variant<AssertionRequestParams, RegistrationRequestParams>;
   absl::flat_hash_map<std::string, std::vector<PendingRequest>>
       pending_requests_by_frame_;
 
