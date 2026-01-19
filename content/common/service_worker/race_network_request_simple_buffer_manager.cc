@@ -25,7 +25,6 @@ void RaceNetworkRequestSimpleBufferManager::OnDataAvailable(
     base::span<const uint8_t> data) {
   TRACE_EVENT("ServiceWorker",
               "RaceNetworkRequestSimpleBufferManager::OnDataAvailable");
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   buffered_body_.append(base::as_string_view(data));
   MaybeWriteData();
 }
@@ -33,7 +32,6 @@ void RaceNetworkRequestSimpleBufferManager::OnDataAvailable(
 void RaceNetworkRequestSimpleBufferManager::OnDataComplete() {
   TRACE_EVENT("ServiceWorker",
               "RaceNetworkRequestSimpleBufferManager::OnDataComplete");
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // All data transferred to `buffered_body_`.
   drain_complete_ = true;
   MaybeWriteData();
@@ -43,7 +41,6 @@ void RaceNetworkRequestSimpleBufferManager::Clone(
     mojo::ScopedDataPipeProducerHandle producer_handle,
     base::OnceClosure callback) {
   CHECK(!producer_handle_.is_valid());
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   producer_handle_ = std::move(producer_handle);
   producer_handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(
       FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL,
@@ -62,14 +59,12 @@ void RaceNetworkRequestSimpleBufferManager::Clone(
 void RaceNetworkRequestSimpleBufferManager::OnWriteAvailable(
     MojoResult result,
     const mojo::HandleSignalsState& state) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(producer_handle_.is_valid());
   MaybeWriteData();
 }
 
 void RaceNetworkRequestSimpleBufferManager::Finish() {
   TRACE_EVENT("ServiceWorker", "RaceNetworkRequestSimpleBufferManager::Finish");
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   write_position_ = 0;
   producer_handle_.reset();
   producer_handle_watcher_.reset();
@@ -79,7 +74,6 @@ void RaceNetworkRequestSimpleBufferManager::Finish() {
 void RaceNetworkRequestSimpleBufferManager::MaybeWriteData() {
   TRACE_EVENT("ServiceWorker",
               "RaceNetworkRequestSimpleBufferManager::MaybeWriteData");
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!producer_handle_.is_valid()) {
     // A producer handle may not be valid here. For example, a teeing clone
     // operation for the body has just finished, and the manager is waiting for
@@ -114,7 +108,6 @@ void RaceNetworkRequestSimpleBufferManager::MaybeWriteData() {
 }
 
 std::string_view RaceNetworkRequestSimpleBufferManager::GetDataFromBuffer() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (drain_complete_ && write_position_ == buffered_body_.size()) {
     return std::string_view();
   }

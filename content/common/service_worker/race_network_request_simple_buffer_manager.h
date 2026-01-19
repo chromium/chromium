@@ -55,9 +55,6 @@ class CONTENT_EXPORT RaceNetworkRequestSimpleBufferManager
   std::unique_ptr<mojo::SimpleWatcher> producer_handle_watcher_;
   base::OnceClosure clone_complete_callback_;
 
-  // This ensures that all methods are called on the same sequence.
-  SEQUENCE_CHECKER(sequence_checker_);
-
   base::WeakPtrFactory<RaceNetworkRequestSimpleBufferManager> weak_factory_{
       this};
 };

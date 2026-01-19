@@ -2249,13 +2249,6 @@ BASE_FEATURE_PARAM(std::string,
                    "ignored_headers",
                    "date,alt-svc,p3p,strict-transport-security");
 
-// If true, the response data processing is handled in the background thread.
-BASE_FEATURE_PARAM(bool,
-                   kServiceWorkerSyntheticResponseOffMainThread,
-                   &kServiceWorkerSyntheticResponse,
-                   "off_main_thread",
-                   false);
-
 // If true, the browser reports crashes via `DumpWithoutCrashing()` when theare
 // was a header mismatch.
 BASE_FEATURE_PARAM(bool,

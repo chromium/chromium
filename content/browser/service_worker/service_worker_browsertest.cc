@@ -7589,7 +7589,7 @@ IN_PROC_BROWSER_TEST_F(
 // Test class for synthetic response (crbug.com/352578800) browsertest.
 class ServiceWorkerSyntheticResponseBrowserTest
     : public ServiceWorkerBrowserTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public ::testing::WithParamInterface<bool> {
  public:
   static constexpr char kHostname[] = "synthetic-response.test";
   static constexpr char kTargetPath[] =
@@ -7600,9 +7600,7 @@ class ServiceWorkerSyntheticResponseBrowserTest
     feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kServiceWorkerSyntheticResponse,
           {{blink::features::kServiceWorkerSyntheticResponseAllowedUrl.name,
-            allowed_url_.spec()},
-           {blink::features::kServiceWorkerSyntheticResponseOffMainThread.name,
-            IsOffMainThread() ? "true" : "false"}}}},
+            allowed_url_.spec()}}}},
         {});
   }
 
@@ -7657,8 +7655,7 @@ class ServiceWorkerSyntheticResponseBrowserTest
     mock_content_browser_client = std::make_unique<MockContentBrowserClient>();
     mock_content_browser_client->set_synthetic_response_enabled(true);
   }
-  bool IsDryRunMode() { return std::get<0>(GetParam()); }
-  bool IsOffMainThread() { return std::get<1>(GetParam()); }
+  bool IsDryRunMode() { return GetParam(); }
 
   std::unique_ptr<MockContentBrowserClient> mock_content_browser_client;
 
@@ -7748,7 +7745,7 @@ class ServiceWorkerSyntheticResponseBrowserTest
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ServiceWorkerSyntheticResponseBrowserTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(ServiceWorkerSyntheticResponseBrowserTest,
                        FakeRegistration) {
