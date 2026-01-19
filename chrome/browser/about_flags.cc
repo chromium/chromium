@@ -5755,15 +5755,6 @@ const FeatureEntry kFeatureEntries[] = {
     },
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-    {
-        "fluent-overlay-scrollbars",
-        flag_descriptions::kFluentOverlayScrollbarsName,
-        flag_descriptions::kFluentOverlayScrollbarsDescription,
-        kOsWin | kOsLinux,
-        FEATURE_VALUE_TYPE(features::kFluentOverlayScrollbar),
-    },
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #if BUILDFLAG(IS_CHROMEOS)
     {
         "zero-copy-video-capture",

@@ -38,7 +38,7 @@
       "fullscreen"
     ],
     "args": [
-      "--enable-features=OverlayScrollbar,FluentOverlayScrollbar",
+      "--enable-features=OverlayScrollbar",
       "--enable-threaded-compositing",
       "--enable-prefer-compositing-to-lcd-text",
       "--enable-overscroll-notifications",
@@ -1296,6 +1296,7 @@
     "expires": "Jul 14, 2025"
   },
   "RasterInducingScroll disabled due to crbug.com/349939555",
+  "TODO(crbug.com/398193016): Merge this suite into virtual/overlay-scrollbar",
   {
     "prefix": "fluent-overlay-scrollbar",
     "platforms": [
@@ -1309,7 +1310,7 @@
       "virtual/overlay-scrollbar/overlay-scrollbar-smoke-test.html"
     ],
     "args": [
-      "--enable-features=FluentOverlayScrollbar",
+      "--enable-features=OverlayScrollbar",
       "--enable-threaded-compositing",
       "--disable-features=RasterInducingScroll"
     ],
@@ -2248,7 +2249,7 @@
     ],
     "bases": [],
     "args": [
-      "--disable-features=OverlayScrollbar,FluentOverlayScrollbar"
+      "--disable-features=OverlayScrollbar"
     ],
     "expires": "never",
     "owners": [
@@ -2482,7 +2483,7 @@
       "external/wpt/css/css-ui/pointer-events-no-scrollbars-002.html"
     ],
     "args": [
-      "--enable-features=OverlayScrollbar,FluentOverlayScrollbar"
+      "--enable-features=OverlayScrollbar"
     ],
     "expires": "never",
     "owners": [

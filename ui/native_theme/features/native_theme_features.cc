@@ -27,12 +27,6 @@ BASE_FEATURE(kOverlayScrollbar, kOverlayScrollbarFeatureState);
 // screenshot is captured.
 BASE_FEATURE(kScrollbarAnimations, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Makes all native scrollbars behave as overlay scrollbars styled to fit the
-// Fluent design language.
-// TODO(crbug.com/398193016): Remove this flag and just use kOverlayScrollbar
-// on the Fluent-enabled platforms.
-BASE_FEATURE(kFluentOverlayScrollbar, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, scrollbars flash only once when a page is loaded or when they
 // become visible on the viewport instead of flashing after every scroll update.
 BASE_FEATURE(kOverlayScrollbarFlashOnlyOnceVisibleOnViewport,
@@ -60,8 +54,7 @@ bool IsFluentScrollbarEnabled() {
 }
 
 bool IsOverlayScrollbarEnabledByFeatureFlag() {
-  return base::FeatureList::IsEnabled(features::kOverlayScrollbar) ||
-         base::FeatureList::IsEnabled(features::kFluentOverlayScrollbar);
+  return base::FeatureList::IsEnabled(features::kOverlayScrollbar);
 }
 
 }  // namespace ui

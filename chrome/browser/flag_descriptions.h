@@ -2213,12 +2213,6 @@ inline constexpr char kAckCopyOutputRequestEarlyForViewTransitionDescription[] =
     "unblock navigation for ViewTransitions while CopyOutputRequests are in "
     "progress. This is a fast-path for ViewTransitions.";
 
-inline constexpr char kFluentOverlayScrollbarsName[] =
-    "Fluent Overlay scrollbars.";
-inline constexpr char kFluentOverlayScrollbarsDescription[] =
-    "Stylizes scrollbars with Microsoft Fluent design and makes them overlay "
-    "over the web's content.";
-
 inline constexpr char kFillOnAccountSelectName[] =
     "Fill passwords on account selection";
 inline constexpr char kFillOnAccountSelectDescription[] =
@@ -3270,8 +3264,7 @@ inline constexpr char kOriginKeyedProcessesByDefaultDescription[] =
 
 inline constexpr char kOverlayScrollbarsName[] = "Overlay Scrollbars";
 inline constexpr char kOverlayScrollbarsDescription[] =
-    "Enable the experimental overlay scrollbars implementation. You must also "
-    "enable threaded compositing to have the scrollbars animate.";
+    "Adjust scrollbar style to overlay web content and fade out.";
 
 inline constexpr char kOverlayScrollbarsFlashWhenMouseEnterName[] =
     "Flash Overlay Scrollbars When Mouse Enter";
