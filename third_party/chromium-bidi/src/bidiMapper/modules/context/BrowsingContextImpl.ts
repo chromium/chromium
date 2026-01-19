@@ -601,6 +601,12 @@ export class BrowsingContextImpl {
           return;
         }
 
+        if (auxData.type === 'isolated' && name === '') {
+          // This is an internal isolated realm and it is not expected to be exposed to
+          // WebDriver BiDi users. Ignore it.
+          return;
+        }
+
         let origin: string;
         let sandbox: string | undefined;
         // Only these execution contexts are supported for now.

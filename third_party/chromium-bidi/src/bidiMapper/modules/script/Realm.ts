@@ -719,12 +719,14 @@ export abstract class Realm {
   }
 
   dispose(): void {
-    this.#registerEvent({
-      type: 'event',
-      method: ChromiumBidi.Script.EventNames.RealmDestroyed,
-      params: {
-        realm: this.realmId,
-      },
-    });
+    if (!this.isHidden()) {
+      this.#registerEvent({
+        type: 'event',
+        method: ChromiumBidi.Script.EventNames.RealmDestroyed,
+        params: {
+          realm: this.realmId,
+        },
+      });
+    }
   }
 }
