@@ -257,11 +257,13 @@ chromium-metrics-reviews@google.com.
   <variant name="LocationBarLeftQuietChip"/>
   <variant name="LocationBarRightAnimatedIcon"/>
   <variant name="LocationBarRightStaticIcon"/>
+  <variant name="MacOsPrompt"/>
   <variant name="MessageUI"/>
   <variant name="MessageUILoud"/>
   <variant name="MiniInfobar"/>
   <variant name="ModalDialog"/>
   <variant name="NoneVisible"/>
+  <variant name="NotApplicable"/>
 </variants>
 
 <!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:PermissionPromptDisposition) -->
@@ -335,38 +337,7 @@ chromium-metrics-reviews@google.com.
     disposition. Suffixed by the UI disposition that the prompt used. Recorded
     when a permission prompt has been resolved.
   </summary>
-  <token key="DispositionType">
-    <variant name="AnchoredBubble"
-        summary="A bubble under the site settings padlock"/>
-    <variant name="CustomModalDialog" summary="Other custom modal dialogs"/>
-    <variant name="ElementAnchoredBubble"
-        summary="A bubble shown near the embedded permission element, when
-                 the element is clicked."/>
-    <variant name="LocationBarLeftChipAutoBubble"
-        summary="A chip on the left-hand side of the location bar that
-                 automatically shows a bubble"/>
-    <variant name="LocationBarLeftQuietAbusiveChip"
-        summary="A less prominent, non-animated version of a chip on the
-                 left-hand side of the location bar that shows a bubble when
-                 clicked"/>
-    <variant name="LocationBarLeftQuietChip"
-        summary="A less prominent version of a chip on the left-hand side of
-                 the location bar that shows a bubble when clicked"/>
-    <variant name="LocationBarRightAnimatedIcon"
-        summary="An animated indicator on the right-hand side of the location
-                 bar"/>
-    <variant name="LocationBarRightStaticIcon"
-        summary="A static indicator on the right-hand side of the location
-                 bar"/>
-    <variant name="MessageUI"
-        summary="A message bubble near top of the screen and below the
-                 location bar (alternative to Infobar UI)"/>
-    <variant name="MiniInfobar"
-        summary="An initially-collapsed infobar at the bottom of the page"/>
-    <variant name="ModalDialog" summary="A modal dialog"/>
-    <variant name="NoneVisible" summary="There was no UI being shown"/>
-    <variant name="NotApplicable" summary="No permission prompt at all"/>
-  </token>
+  <token key="DispositionType" variants="PromptDisposition"/>
 </histogram>
 
 <histogram name="Permissions.Action.{PermissionType}.CrossOriginFrame"
@@ -1854,20 +1825,7 @@ chromium-metrics-reviews@google.com.
     expired.
   </summary>
   <token key="Action" variants="Action"/>
-  <token key="Disposition">
-    <variant name="AnchoredBubble"/>
-    <variant name="CustomModalDialog"/>
-    <variant name="ElementAnchoredBubble"/>
-    <variant name="LocationBarLeftChipAutoBubble"/>
-    <variant name="LocationBarLeftQuietAbusiveChip"/>
-    <variant name="LocationBarLeftQuietChip"/>
-    <variant name="LocationBarRightAnimatedIcon"/>
-    <variant name="LocationBarRightStaticIcon"/>
-    <variant name="MessageUI"/>
-    <variant name="MiniInfobar"/>
-    <variant name="ModalDialog"/>
-    <variant name="NoneVisible"/>
-  </token>
+  <token key="Disposition" variants="PromptDisposition"/>
   <token key="PermissionType">
     <variant name="AR"/>
     <variant name="AudioAndVideoCapture"/>
