@@ -121,7 +121,6 @@ def cq_build_perf_builder(description_html, **kwargs):
         description_html = description_html + "<br>Build stats are shown in <a href=\"http://shortn/_gaAdI3x6o6\">http://shortn/_gaAdI3x6o6</a>.",
         siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
         siso_project = siso.project.DEFAULT_UNTRUSTED,
-        siso_profile_mode = "local",
         use_clang_coverage = True,
         properties = props,
         **kwargs
@@ -135,7 +134,6 @@ def ci_build_perf_builder(description_html, **kwargs):
         description_html = description_html + "<br>Build stats are shown in <a href=\"http://shortn/_gaAdI3x6o6\">http://shortn/_gaAdI3x6o6</a>.",
         siso_remote_jobs = siso.remote_jobs.DEFAULT,
         siso_project = siso.project.DEFAULT_TRUSTED,
-        siso_profile_mode = "local",
         **kwargs
     )
 
@@ -590,7 +588,6 @@ def developer_build_perf_builder(description_html, reclient_jobs = None, **kwarg
         # developer build usually interactive and not-batch build.
         siso_disable_batch_mode = True,
         siso_project = siso.project.DEFAULT_UNTRUSTED,
-        siso_profile_mode = "local",
         shadow_siso_project = None,
         properties = props,
         **kwargs
