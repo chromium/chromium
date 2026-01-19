@@ -51,8 +51,7 @@ bool XRFrameTransport::DrawingIntoSharedBuffer() {
   switch (transport_options_->transport_method) {
     case device::mojom::blink::XRPresentationTransportMethod::
         SUBMIT_AS_TEXTURE_HANDLE:
-    case device::mojom::blink::XRPresentationTransportMethod::
-        SUBMIT_AS_MAILBOX_HOLDER:
+    case device::mojom::blink::XRPresentationTransportMethod::SUBMIT_AS_TEST:
       return false;
     case device::mojom::blink::XRPresentationTransportMethod::
         DRAW_INTO_TEXTURE_MAILBOX:
@@ -139,7 +138,7 @@ bool XRFrameTransport::FrameSubmit(
 #endif
   } else if (transport_options_->transport_method ==
              device::mojom::blink::XRPresentationTransportMethod::
-                 SUBMIT_AS_MAILBOX_HOLDER) {
+                 SUBMIT_AS_TEST) {
     CHECK_EQ(image_refs.size(), 1UL);
 
     // The AcceleratedStaticBitmapImage must be kept alive until the

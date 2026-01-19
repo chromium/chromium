@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/bind_post_task.h"
@@ -362,8 +363,11 @@ void OpenXrRenderLoop::StartRuntimeFinish(
     transport_options->transport_method =
         device::mojom::XRPresentationTransportMethod::SUBMIT_AS_TEXTURE_HANDLE;
   } else {
+    // TODO(crbug.com/476100354): Verify that this path is not taken and remove
+    // it.
+    base::debug::DumpWithoutCrashing();
     transport_options->transport_method =
-        device::mojom::XRPresentationTransportMethod::SUBMIT_AS_MAILBOX_HOLDER;
+        device::mojom::XRPresentationTransportMethod::SUBMIT_AS_TEST;
   }
 
   if (graphics_binding_->IsWebGPUSession() &&

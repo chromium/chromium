@@ -411,11 +411,14 @@ struct VRStageParameters {
 enum XRPresentationTransportMethod {
   NONE = 0,
 
-  // Renderer should create a new texture handle (Windows) or
-  // texture mailbox (Android Surface path) containing the
+  // Renderer should create a new texture handle containing the
   // frame's image and supply that as a submitFrame argument.
   SUBMIT_AS_TEXTURE_HANDLE = 1,
-  SUBMIT_AS_MAILBOX_HOLDER = 2,
+
+  // Test-only path to create a new texture mailbox containing the
+  // frame's image and supply that as a submitFrame argument.
+  // TODO(crbug.com/476100354): Remove this path if possible.
+  SUBMIT_AS_TEST = 2,
 
   // Renderer should draw directly into a texture mailbox
   // provided for each frame in OnVSync.
@@ -1147,7 +1150,7 @@ interface XRPresentationProvider {
   // be called for the last animating frame when presentation ends.
   SubmitFrameMissing(int16 frame_id, gpu.mojom.SyncToken sync_token);
 
-  // XRPresentationTransportMethod SUBMIT_AS_MAILBOX_HOLDER
+  // XRPresentationTransportMethod SUBMIT_AS_TEST
   SubmitFrame(int16 frame_id,
               mojo_base.mojom.TimeDelta time_waited);
 
