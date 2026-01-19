@@ -255,7 +255,7 @@ WebSocketQuicStreamAdapter::WebSocketQuicStreamAdapter(
 
 WebSocketQuicStreamAdapter::~WebSocketQuicStreamAdapter() {
   if (websocket_quic_spdy_stream_) {
-    websocket_quic_spdy_stream_->set_delegate(nullptr);
+    websocket_quic_spdy_stream_->DetachDelegate();
   }
 }
 
@@ -319,7 +319,8 @@ int WebSocketQuicStreamAdapter::Write(
 
 void WebSocketQuicStreamAdapter::Disconnect() {
   if (websocket_quic_spdy_stream_) {
-    websocket_quic_spdy_stream_->Reset(quic::QUIC_STREAM_CANCELLED);
+    websocket_quic_spdy_stream_->DetachDelegate();
+    ClearStream();
   }
 }
 
@@ -377,14 +378,23 @@ void WebSocketQuicStreamAdapter::OnBodyAvailable() {
 
 void WebSocketQuicStreamAdapter::OnClose(int status) {
   CHECK_LE(status, 0);
+  auto self = weak_factory_.GetWeakPtr();
+  ClearStream();
+
   if (status == OK) {
     status = ERR_CONNECTION_CLOSED;
   }
   if (read_callback_) {
     std::move(read_callback_).Run(status);
+    if (!self) {  // |this| might have been destroyed.
+      return;
+    }
   }
   if (write_callback_) {
     std::move(write_callback_).Run(status);
+    if (!self) {  // |this| might have been destroyed.
+      return;
+    }
   }
   if (delegate_) {
     delegate_->OnClose(status);
