@@ -61,11 +61,17 @@ class LoginPublicAccountUserViewTest : public LoginTestBase {
     SetWidget(CreateWidgetWithContent(container));
   }
 
+  // LoginTestBase:
+  void TearDown() override {
+    focusable_view_ = nullptr;
+    public_account_view_ = nullptr;
+    LoginTestBase::TearDown();
+  }
+
   LoginUserInfo user_;
 
-  raw_ptr<LoginPublicAccountUserView, DanglingUntriaged> public_account_view_ =
-      nullptr;
-  raw_ptr<views::View, DanglingUntriaged> focusable_view_ = nullptr;
+  raw_ptr<LoginPublicAccountUserView> public_account_view_ = nullptr;
+  raw_ptr<views::View> focusable_view_ = nullptr;
 
   int user_view_tap_count_ = 0;
   int public_account_tap_count_ = 0;
