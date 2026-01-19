@@ -36,6 +36,8 @@ BASE_FEATURE(kAutofillPaymentsSheetV3Ios, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAutofillRefillForFormsIos, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAutofillUndoIos, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // LINT.IfChange(autofill_report_form_submission_errors)
 BASE_FEATURE(kAutofillReportFormSubmissionErrors,
              base::FEATURE_DISABLED_BY_DEFAULT);

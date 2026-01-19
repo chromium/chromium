@@ -561,7 +561,10 @@ function fillFormField(data, field) {
     }
 
     filled = fillUtil.setInputElementValue(sanitizedValue, field);
-    field.isAutofilled = true;
+    // If kAutofillUndoIos is enabled, avoid showing the Clear/Undo button.
+    if (!window.gCrWebPlaceholderAutofillUndo) {
+      field.isAutofilled = true;
+    }
   } else if (inferenceUtil.isSelectElement(field)) {
     filled = fillUtil.setInputElementValue(data['value'], field);
   } else if (inferenceUtil.isCheckableElement(field)) {

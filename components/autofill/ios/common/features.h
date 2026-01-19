@@ -51,6 +51,10 @@ BASE_DECLARE_FEATURE(kAutofillPaymentsSheetV3Ios);
 // expanding forms.
 BASE_DECLARE_FEATURE(kAutofillRefillForFormsIos);
 
+// Enables Undo for Autofill operations on iOS. This will replace the Clear form
+// button with the Undo autofill button in the keyboard accessory.
+BASE_DECLARE_FEATURE(kAutofillUndoIos);
+
 // Reports JS errors that occur upon handling form submission in the renderer.
 BASE_DECLARE_FEATURE(kAutofillReportFormSubmissionErrors);
 
