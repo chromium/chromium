@@ -242,7 +242,8 @@ class X11Window : public PlatformWindow,
   void CreateXWindow(const PlatformWindowInitProperties& properties);
   void CloseXWindow();
   void Map(bool inactive = false);
-  void SetFullscreen(bool fullscreen);
+  void SetWMStateFullscreen(bool fullscreen);
+  void SetWMStateMaximize(bool maximize);
   bool IsActive() const;
   bool IsTargetedBy(const x11::Event& xev) const;
   void HandleEvent(const x11::Event& xev);
