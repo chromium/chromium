@@ -11,14 +11,19 @@
 #import "components/password_manager/core/browser/passkey_credential.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/webauthn/core/browser/client_data_json.h"
+#import "components/webauthn/core/browser/common_utils.h"
+#import "components/webauthn/core/browser/passkey_model.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
+#import "components/webauthn/core/browser/remote_validation.h"
 #import "components/webauthn/core/browser/webauthn_security_utils.h"
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
 #import "components/webauthn/ios/passkey_java_script_feature.h"
 #import "crypto/hash.h"
+#import "ios/web/public/browser_state.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace webauthn {
 
@@ -179,12 +184,23 @@ void PasskeyTabHelper::HandleGetRequestedEvent(web::WebFrame* web_frame,
   CHECK(!passkey_request_id.empty());
   CHECK(web_frame);
 
-  if (!OriginIsAllowedToClaimRelyingPartyId(params.RpId(),
-                                            web_frame->GetSecurityOrigin())) {
-    DeferToRenderer(web_frame, passkey_request_id);
+  const url::Origin& origin = web_frame->GetSecurityOrigin();
+  const std::string& rp_id = params.RpId();
+  if (!OriginIsAllowedToClaimRelyingPartyId(rp_id, origin)) {
+    if (!PerformRemoteRpIdValidation(
+            origin, rp_id, passkey_request_id,
+            base::BindOnce(&PasskeyTabHelper::OnAssertionValidated, AsWeakPtr(),
+                           std::move(params)))) {
+      DeferToRenderer(web_frame, passkey_request_id);
+    }
     return;
   }
 
+  HandleAssertion(web_frame, std::move(params));
+}
+
+void PasskeyTabHelper::HandleAssertion(web::WebFrame* web_frame,
+                                       AssertionRequestParams params) {
   // Get available passkeys for the request.
   std::vector<password_manager::PasskeyCredential> filtered_passkeys =
       password_manager::PasskeyCredential::FromCredentialSpecifics(
@@ -200,6 +216,7 @@ void PasskeyTabHelper::HandleGetRequestedEvent(web::WebFrame* web_frame,
           client_->GetWebAuthnCredentialsDelegateForDriver(driver));
   CHECK(delegate);
 
+  const std::string& passkey_request_id = params.RequestId();
   // Send available passkeys to the WebAuthnCredentialsDelegate.
   delegate->OnCredentialsReceived(std::move(filtered_passkeys),
                                   passkey_request_id);
@@ -209,6 +226,39 @@ void PasskeyTabHelper::HandleGetRequestedEvent(web::WebFrame* web_frame,
   IOSPasskeyClient::RequestInfo request_info = params.RequestInfo();
   assertion_requests_.emplace(passkey_request_id, std::move(params));
   client_->ShowSuggestionBottomSheet(std::move(request_info));
+}
+
+bool PasskeyTabHelper::PerformRemoteRpIdValidation(
+    const url::Origin& origin,
+    const std::string& rp_id,
+    const std::string& passkey_request_id,
+    base::OnceCallback<void(ValidationStatus)> callback) {
+  std::unique_ptr<RemoteValidation> loader = RemoteValidation::Create(
+      origin, rp_id, web_state_->GetBrowserState()->GetSharedURLLoaderFactory(),
+      std::move(callback));
+  if (loader) {
+    loaders_[passkey_request_id] = std::move(loader);
+    return true;
+  }
+  return false;
+}
+
+void PasskeyTabHelper::OnAssertionValidated(AssertionRequestParams params,
+                                            ValidationStatus result) {
+  const std::string& passkey_request_id = params.RequestId();
+  loaders_.erase(passkey_request_id);
+
+  web::WebFrame* web_frame = GetWebFrame(params.FrameId());
+  if (!web_frame) {
+    return;
+  }
+
+  if (result != ValidationStatus::kSuccess) {
+    DeferToRenderer(web_frame, passkey_request_id);
+    return;
+  }
+
+  HandleAssertion(web_frame, std::move(params));
 }
 
 void PasskeyTabHelper::HandleCreateRequestedEvent(
@@ -237,19 +287,54 @@ void PasskeyTabHelper::HandleCreateRequestedEvent(
   CHECK(!passkey_request_id.empty());
   CHECK(web_frame);
 
-  if (!OriginIsAllowedToClaimRelyingPartyId(params.RpId(),
-                                            web_frame->GetSecurityOrigin()) ||
-      HasExcludedPasskey(params)) {
+  if (HasExcludedPasskey(params)) {
     DeferToRenderer(web_frame, passkey_request_id);
     return;
   }
 
+  const url::Origin& origin = web_frame->GetSecurityOrigin();
+  const std::string& rp_id = params.RpId();
+  if (!OriginIsAllowedToClaimRelyingPartyId(rp_id, origin)) {
+    if (!PerformRemoteRpIdValidation(
+            origin, rp_id, passkey_request_id,
+            base::BindOnce(&PasskeyTabHelper::OnRegistrationValidated,
+                           AsWeakPtr(), std::move(params)))) {
+      DeferToRenderer(web_frame, passkey_request_id);
+    }
+    return;
+  }
+
+  HandleRegistration(std::move(params));
+}
+
+void PasskeyTabHelper::HandleRegistration(RegistrationRequestParams params) {
   // Open the creation confirmation bottom sheet. A passkey will end up being
   // created by PasskeyTabHelper::StartPasskeyCreation() upon confirmation by
   // the user.
   IOSPasskeyClient::RequestInfo request_info = params.RequestInfo();
+  const std::string& passkey_request_id = params.RequestId();
   registration_requests_.emplace(passkey_request_id, std::move(params));
   client_->ShowCreationBottomSheet(std::move(request_info));
+}
+
+void PasskeyTabHelper::OnRegistrationValidated(RegistrationRequestParams params,
+                                               ValidationStatus result) {
+  const std::string& passkey_request_id = params.RequestId();
+  loaders_.erase(passkey_request_id);
+
+  if (result != ValidationStatus::kSuccess) {
+    web::WebFrame* web_frame = GetWebFrame(params.FrameId());
+    if (web_frame) {
+      DeferToRenderer(web_frame, passkey_request_id);
+    }
+    return;
+  }
+
+  HandleRegistration(std::move(params));
+}
+
+bool PasskeyTabHelper::HasPendingValidationForTesting() const {
+  return !loaders_.empty();
 }
 
 bool PasskeyTabHelper::HasCredential(const std::string& rp_id,

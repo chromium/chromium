@@ -6,3 +6,9 @@ include_rules = [
   "+components/password_manager/ios",
   "+third_party/ocmock",
 ]
+
+specific_include_rules = {
+  ".*unittest\.mm": [
+    "+services/network/test/test_url_loader_factory.h",
+  ],
+}

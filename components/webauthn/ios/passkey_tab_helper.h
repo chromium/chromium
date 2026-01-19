@@ -9,6 +9,7 @@
 
 #import "base/memory/weak_ptr.h"
 #import "components/webauthn/core/browser/passkey_model.h"
+#import "components/webauthn/core/browser/remote_validation.h"
 #import "components/webauthn/ios/ios_passkey_client.h"
 #import "components/webauthn/ios/passkey_request_params.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -91,6 +92,9 @@ class PasskeyTabHelper : public web::WebStateObserver,
   // Sets the passkey command handler.
   void SetIOSPasskeyClientCommandsHandler(id<IOSPasskeyClientCommands> handler);
 
+  // Returns whether there is a pending remote validation for testing.
+  bool HasPendingValidationForTesting() const;
+
  private:
   friend class web::WebStateUserData<PasskeyTabHelper>;
   friend class PasskeyTabHelperTest;
@@ -130,6 +134,30 @@ class PasskeyTabHelper : public web::WebStateObserver,
                                 sync_pb::WebauthnCredentialSpecifics passkey,
                                 std::string client_data_json,
                                 const SharedKeyList& shared_key_list);
+
+  // Starts remote validation for the given origin and RP ID. If validation
+  // starts successfully, the loader is stored in `loaders_` with
+  // `passkey_request_id` as the key. Returns true if validation started, false
+  // otherwise.
+  bool PerformRemoteRpIdValidation(
+      const url::Origin& origin,
+      const std::string& rp_id,
+      const std::string& passkey_request_id,
+      base::OnceCallback<void(ValidationStatus)> callback);
+
+  // Callback for processing remote validation result for an assertion request.
+  void OnAssertionValidated(AssertionRequestParams params,
+                            ValidationStatus status);
+
+  // Handles passkey assertion request after it passes validation.
+  void HandleAssertion(web::WebFrame* web_frame, AssertionRequestParams params);
+
+  // Callback for processing validation result for a registration request.
+  void OnRegistrationValidated(RegistrationRequestParams params,
+                               ValidationStatus status);
+
+  // Handles passkey registration requests after it passes validation.
+  void HandleRegistration(RegistrationRequestParams params);
 
   // Adds a passkey to the passkey model while enabling the passkey creation
   // infobar to be displayed if possible.
@@ -185,6 +213,9 @@ class PasskeyTabHelper : public web::WebStateObserver,
       std::variant<AssertionRequestParams, RegistrationRequestParams>;
   absl::flat_hash_map<std::string, std::vector<PendingRequest>>
       pending_requests_by_frame_;
+
+  // Map of request IDs to their ongoing remote validation loaders.
+  absl::flat_hash_map<std::string, std::unique_ptr<RemoteValidation>> loaders_;
 
   // This is necessary because this object could be deleted during any callback,
   // and we don't want to risk a UAF if that happens.
