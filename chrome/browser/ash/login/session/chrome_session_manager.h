@@ -52,7 +52,6 @@ class ChromeSessionManager : public session_manager::SessionManager {
 
   // session_manager::SessionManager:
   void OnUserManagerCreated(user_manager::UserManager* user_manager) override;
-  void SessionStarted() override;
   void OnSessionCreated(bool browser_restart) override;
 
   SessionLengthLimiter* GetSessionLengthLimiterForTesting() {

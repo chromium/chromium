@@ -105,11 +105,12 @@ class SystemPropertiesProviderImplTest : public testing::Test {
         user->username_hash(),
         /*new_user=*/false,
         /*has_active_session=*/false);
-    session_manager_->SessionStarted();
 
     // Logging in doesn't set the user in UserManager as the active user if
     // there already is an active user, do so manually.
     SwitchActiveUser(account_id);
+
+    session_manager_->SessionStarted();
     return user;
   }
 

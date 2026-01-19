@@ -478,14 +478,6 @@ void ChromeSessionManager::Shutdown() {
   session_length_limiter_.reset();
 }
 
-void ChromeSessionManager::SessionStarted() {
-  session_manager::SessionManager::SessionStarted();
-  SetSessionState(session_manager::SessionState::ACTIVE);
-
-  // Notifies UserManager so that it can update login state.
-  user_manager()->OnSessionStarted();
-}
-
 void ChromeSessionManager::OnSessionCreated(bool browser_restart) {
   if (user_manager()->GetLoggedInUsers().size() == 1) {
     InitFeaturesSessionType(user_manager()->GetPrimaryUser());

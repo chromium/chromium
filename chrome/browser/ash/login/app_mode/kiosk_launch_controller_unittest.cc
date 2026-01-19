@@ -61,10 +61,13 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/forced_extensions/install_stage_tracker.h"
@@ -187,6 +190,13 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
       delete;
 
   void SetUp() override {
+    session_manager_ = std::make_unique<session_manager::SessionManager>(
+        std::make_unique<session_manager::FakeSessionManagerDelegate>());
+    user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
+        std::make_unique<user_manager::FakeUserManagerDelegate>(),
+        TestingBrowserProcess::GetGlobal()->GetTestingLocalState()));
+    session_manager_->OnUserManagerCreated(user_manager_.Get());
+
     can_configure_network_for_testing_ =
         NetworkUiController::SetCanConfigureNetworkForTesting(true);
     SetDeviceEnterpriseManaged();
@@ -235,6 +245,8 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
     keyboard_controller_client_.reset();
     extensions::ExtensionServiceTestBase::TearDown();
     policy::BrowserPolicyConnectorBase::SetPolicyServiceForTesting(nullptr);
+    session_manager_.reset();
+    user_manager_.Reset();
   }
 
   KioskLaunchController& controller() { return *controller_; }
@@ -363,11 +375,13 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
         });
   }
 
-  TestingProfile profile_;
-  session_manager::SessionManager session_manager_{
-      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
+  user_manager::ScopedUserManager user_manager_;
+
+  std::unique_ptr<session_manager::SessionManager> session_manager_;
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
       keyboard_controller_client_;
+
+  TestingProfile profile_;
 
   base::test::
       TestFuture<const KioskAppId&, Profile*, const std::optional<std::string>&>

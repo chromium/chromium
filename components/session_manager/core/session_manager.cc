@@ -105,6 +105,11 @@ void SessionManager::SessionStarted() {
   bool is_primary = sessions_.size() == 1;
   for (auto& observer : observers_)
     observer.OnUserSessionStarted(is_primary);
+
+  SetSessionState(session_manager::SessionState::ACTIVE);
+
+  // Notifies UserManager so that it can update login state.
+  user_manager_->OnSessionStarted();
 }
 
 bool SessionManager::HasSessionForAccountId(const AccountId& account_id) const {
