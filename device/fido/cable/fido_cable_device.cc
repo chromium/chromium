@@ -43,7 +43,10 @@ std::optional<std::vector<uint8_t>> ConstructV1Nonce(
 
 }  // namespace
 
-FidoCableDevice::EncryptionData::EncryptionData() = default;
+FidoCableDevice::EncryptionData::EncryptionData(
+    base::span<const uint8_t, 32> session_key)
+    : reader(crypto::Aead::AES_256_GCM, session_key),
+      writer(crypto::Aead::AES_256_GCM, session_key) {}
 FidoCableDevice::EncryptionData::~EncryptionData() = default;
 
 FidoCableDevice::FidoCableDevice(BluetoothAdapter* adapter,
@@ -217,9 +220,7 @@ void FidoCableDevice::SetV1EncryptionData(
     base::span<const uint8_t, 8> nonce) {
   // Encryption data must be set at most once during Cable handshake protocol.
   DCHECK(!encryption_data_);
-  encryption_data_.emplace();
-  encryption_data_->read_key = fido_parsing_utils::Materialize(session_key);
-  encryption_data_->write_key = fido_parsing_utils::Materialize(session_key);
+  encryption_data_.emplace(session_key);
   encryption_data_->nonce = fido_parsing_utils::Materialize(nonce);
 }
 
@@ -350,14 +351,10 @@ bool FidoCableDevice::EncryptOutgoingMessage(
   if (!nonce)
     return false;
 
-  crypto::Aead aes_key(crypto::Aead::AES_256_GCM);
-  aes_key.Init(encryption_data_->write_key);
-  DCHECK_EQ(nonce->size(), aes_key.NonceLength());
-
   const uint8_t additional_data[1] = {
       base::strict_cast<uint8_t>(FidoBleDeviceCommand::kMsg)};
-  std::vector<uint8_t> ciphertext =
-      aes_key.Seal(*message_to_encrypt, *nonce, additional_data);
+  std::vector<uint8_t> ciphertext = encryption_data_->writer.Seal(
+      *message_to_encrypt, *nonce, additional_data);
   message_to_encrypt->swap(ciphertext);
   return true;
 }
@@ -369,14 +366,10 @@ bool FidoCableDevice::DecryptIncomingMessage(FidoBleFrame* incoming_frame) {
   if (!nonce)
     return false;
 
-  crypto::Aead aes_key(crypto::Aead::AES_256_GCM);
-  aes_key.Init(encryption_data_->read_key);
-  DCHECK_EQ(nonce->size(), aes_key.NonceLength());
-
   const uint8_t additional_data[1] = {
       base::strict_cast<uint8_t>(incoming_frame->command())};
-  std::optional<std::vector<uint8_t>> plaintext =
-      aes_key.Open(incoming_frame->data(), *nonce, additional_data);
+  std::optional<std::vector<uint8_t>> plaintext = encryption_data_->reader.Open(
+      incoming_frame->data(), *nonce, additional_data);
   if (!plaintext) {
     FIDO_LOG(ERROR) << "Failed to decrypt caBLE message.";
     return false;
