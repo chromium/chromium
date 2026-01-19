@@ -1597,6 +1597,10 @@ const char kVariationsSeedCorpusDescription[] =
     "The value of the 'corpus' parameter in the variations seed request. "
     "If unspecified, the 'corpus' parameter is omitted from the request.";
 
+const char kViewCertificateInformationName[] = "View Certificate Information";
+const char kViewCertificateInformationDescription[] =
+    "Enables viewing detailed certificate information in Page Info.";
+
 const char kWaitThresholdMillisecondsForCapabilitiesApiName[] =
     "Maximum wait time (in seconds) for a response from the Account "
     "Capabilities API";

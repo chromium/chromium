@@ -7387,6 +7387,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "page-info-certificate-information",
+    "owners": [ "xiaoweigao@microsoft.com" , "fsenra@google.com"],
+    "expiry_milestone": 155
+  },
+  {
     "name": "page-visibility-page-content-annotations",
     "owners": [ "sophiechang@chromium.org", "mcrouse@chromium.org", "chrome-intelligence-core@google.com"],
     "expiry_milestone": 130
