@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/browser_action_util.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
@@ -66,6 +68,52 @@ using ::optimization_guide::proto::ClickAction;
 using ::optimization_guide::proto::TabObservation;
 using ::page_content_annotations::FetchPageContextResult;
 using ::testing::Property;
+
+// Helper class to observe journal entries and wait for a specific condition.
+class JournalObserver : public actor::AggregatedJournal::Observer {
+ public:
+  using Predicate =
+      base::RepeatingCallback<bool(const actor::mojom::JournalEntry&)>;
+
+  explicit JournalObserver(actor::AggregatedJournal* journal)
+      : journal_(journal) {
+    journal_->AddObserver(this);
+  }
+
+  ~JournalObserver() override { journal_->RemoveObserver(this); }
+
+  void WillAddJournalEntry(
+      const actor::AggregatedJournal::Entry& entry) override {
+    if (wait_predicate_ && wait_predicate_.Run(*entry.data)) {
+      if (run_loop_) {
+        run_loop_->Quit();
+      }
+    }
+  }
+
+  // Waits until a journal entry matching the predicate is observed.
+  // NOTE: Only entries added after this method is called will be considered.
+  void WaitUntil(Predicate predicate) {
+    wait_predicate_ = std::move(predicate);
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
+  }
+
+ private:
+  raw_ptr<actor::AggregatedJournal> journal_;
+  Predicate wait_predicate_;
+  std::unique_ptr<base::RunLoop> run_loop_;
+};
+
+bool JournalEntryHasError(const actor::mojom::JournalEntry& entry,
+                          const std::string& error_message) {
+  for (const auto& detail : entry.details) {
+    if (detail->key == "error" && detail->value == error_message) {
+      return true;
+    }
+  }
+  return false;
+}
 
 // Helper to mock the result returned on a TabObservation built using
 // actor::BuildActionsResultWithObservations. While live, use the provided
@@ -596,10 +644,17 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest, PauseAndResumeInvalidTask) {
   TaskId invalid_task_id = TaskId(12345);
   ASSERT_EQ(actor_keyed_service()->GetTask(invalid_task_id), nullptr);
 
-  // Pausing an invalid task should be a no-op.
+  JournalObserver observer(&actor_keyed_service()->GetJournal());
+  // Pausing an invalid task should be a no-op and log an error.
   PauseActorTask(invalid_task_id,
                  glic::mojom::ActorTaskPauseReason::kPausedByUser,
                  active_tab()->GetHandle());
+  observer.WaitUntil(
+      base::BindRepeating([](const actor::mojom::JournalEntry& entry) {
+        return entry.event == "Failed to pause task" &&
+               JournalEntryHasError(entry, "No such task");
+      }));
+
   EXPECT_THAT(
       ResumeActorTask(invalid_task_id,
                       glic::mojom::GetTabContextOptions().To<base::Value>()),
@@ -618,9 +673,16 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest, PauseAndResumeInactiveTask) {
   EXPECT_EQ(ActorTask::State::kFinished, task_completion_state.Get())
       << "Task " << task_id << " did not reach kFinished state.";
 
-  // Pausing an inactive task should be a no-op.
+  JournalObserver observer(&actor_keyed_service()->GetJournal());
+  // Pausing an inactive task should be a no-op and log an error.
   PauseActorTask(task_id, glic::mojom::ActorTaskPauseReason::kPausedByUser,
                  active_tab()->GetHandle());
+  observer.WaitUntil(
+      base::BindRepeating([](const actor::mojom::JournalEntry& entry) {
+        return entry.event == "Failed to pause task" &&
+               JournalEntryHasError(entry, "No such task");
+      }));
+
   // Resuming a completed task should fail as it doesn't exist anymore.
   EXPECT_THAT(
       ResumeActorTask(task_id,
@@ -713,6 +775,29 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest, PauseActiveTask) {
 
   StopActorTask(task_id, glic::mojom::ActorTaskStopReason::kTaskComplete);
   EXPECT_EQ(ActorTask::State::kFinished, task_completion_state.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
+                       InterruptAndUninterruptInvalidTask) {
+  JournalObserver observer(&actor_keyed_service()->GetJournal());
+  TaskId invalid_task_id = TaskId(12345);
+  ASSERT_EQ(actor_keyed_service()->GetTask(invalid_task_id), nullptr);
+
+  // Interrupting an invalid task should be a no-op and log an error.
+  InterruptActorTask(invalid_task_id);
+  observer.WaitUntil(
+      base::BindRepeating([](const actor::mojom::JournalEntry& entry) {
+        return entry.event == "Failed to interrupt task" &&
+               JournalEntryHasError(entry, "No such task");
+      }));
+
+  // Uninterrupting an invalid task should be a no-op and log an error.
+  UninterruptActorTask(invalid_task_id);
+  observer.WaitUntil(
+      base::BindRepeating([](const actor::mojom::JournalEntry& entry) {
+        return entry.event == "Failed to uninterrupt task" &&
+               JournalEntryHasError(entry, "No such task");
+      }));
 }
 
 IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
