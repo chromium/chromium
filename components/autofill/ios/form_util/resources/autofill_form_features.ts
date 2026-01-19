@@ -37,7 +37,7 @@ let autofillDisallowMoreHyphenLikeLabels: boolean = false;
 /**
  * If true, checkboxes and radio buttons aren't extracted anymore.
  */
-let autofillIgnoreCheckableElements: boolean = false;
+let autofillIgnoreCheckableElements: boolean = true;
 // LINT.ThenChange(//components/autofill/core/common/autofill_features.cc:autofill_ignore_checkable_elements)
 
 // LINT.IfChange(autofill_correct_user_edited_bit_in_parsed_field)

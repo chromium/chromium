@@ -1308,7 +1308,8 @@ TEST_F(PasswordControllerJsTest, FillUsernameField_NonText) {
   web::test::LoadHtml(
       @"<html><body>"
        "<form name='login_form' action='action1'>"
-       "  Username: <input type='radio' name='username' id='username'>"
+       "  Username: <select name='username' id='username'><option "
+       "value=on></option></select>"
        "  Password: <input type='password' name='password' id='password'>"
        "</form>"
        "</body></html>",

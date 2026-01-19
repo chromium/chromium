@@ -277,9 +277,6 @@ public final class ProductionSupportedFlagList {
                 "Disallows labels that only contain em dashes, minuses, fullwidth hyphens and other"
                         + " special characters."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_IGNORE_CHECKABLE_ELEMENTS,
-                "Does not extract checkboxes and radio buttons"),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_MOVE_SMALL_FORM_LOGIC_TO_CLIENT,
                 "Moves the small form handling from Autofill server to client."),
         Flag.baseFeature(
@@ -1189,7 +1186,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "IDBDatabaseExternalMemoryAccounting",
                 "Report external memory held by IndexedDB connections, so it's taken into account"
-                    + " in GC heuristics."),
+                        + " in GC heuristics."),
         Flag.baseFeature(
                 "VariationsStickyPersistence",
                 "Controls how prefs are written and persisted for tracking sticky study activation."

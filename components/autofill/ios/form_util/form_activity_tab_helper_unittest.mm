@@ -713,17 +713,14 @@ TEST_F(FormMutationTest, RemoveFormlessFields) {
   const FieldRendererId phone_id = FieldRendererId(4);
   const FieldRendererId url_id = FieldRendererId(5);
   const FieldRendererId number_id = FieldRendererId(6);
-  const FieldRendererId checkbox_id = FieldRendererId(7);
-  const FieldRendererId radio_id = FieldRendererId(8);
-  const FieldRendererId select_id = FieldRendererId(9);
-  const FieldRendererId textarea_id = FieldRendererId(10);
+  const FieldRendererId select_id = FieldRendererId(7);
+  const FieldRendererId textarea_id = FieldRendererId(8);
 
   EXPECT_THAT(form_removal_params.value().removed_forms, IsEmpty());
 
   EXPECT_THAT(form_removal_params.value().removed_unowned_fields,
               UnorderedElementsAre(password_id, text_id, email_id, phone_id,
-                                   url_id, number_id, checkbox_id, radio_id,
-                                   select_id, textarea_id));
+                                   url_id, number_id, select_id, textarea_id));
 }
 
 // Tests that a new form triggers form_changed event.

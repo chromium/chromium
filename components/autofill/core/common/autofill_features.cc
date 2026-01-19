@@ -684,7 +684,7 @@ BASE_FEATURE(kAutofillGreekRegexes, base::FEATURE_ENABLED_BY_DEFAULT);
 // - autofill::FormControlType::kInputCheckbox
 // - autofill::FormControlType::kInputRadio
 BASE_FEATURE(kAutofillIgnoreCheckableElements,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // LINT.ThenChange(//components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_ignore_checkable_elements)
 
 // When enabled, address field swapping suggestions will not include a

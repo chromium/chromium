@@ -1911,45 +1911,6 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldAutofilled) {
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result);
 }
 
-// We should be able to extract a radio or a checkbox field that has been
-// autofilled.
-TEST_F(FormAutofillTest, WebFormControlElementToClickableFormField) {
-  LoadHTML(R"(<input type=checkbox id=checkbox value=mail checked>
-              <input type=radio id=radio value=male>)");
-
-  WebLocalFrame* frame = GetMainFrame();
-  ASSERT_NE(nullptr, frame);
-
-  WebInputElement element = GetInputElementById("checkbox");
-  element.SetAutofillState(WebAutofillState::kAutofilled);
-  FormFieldData result;
-  WebFormControlElementToFormFieldForTesting(WebFormElement(), element, nullptr,
-                                             &result);
-
-  FormFieldData expected;
-  expected.set_id_attribute(u"checkbox");
-  expected.set_name(expected.id_attribute());
-  expected.set_value(u"mail");
-  expected.set_form_control_type(FormControlType::kInputCheckbox);
-  expected.set_max_length(0);
-  expected.set_is_autofilled(true);
-  expected.set_check_status(FormFieldData::CheckStatus::kChecked);
-  EXPECT_FORM_FIELD_DATA_EQUALS(expected, result);
-
-  element = GetInputElementById("radio");
-  element.SetAutofillState(WebAutofillState::kAutofilled);
-  WebFormControlElementToFormFieldForTesting(WebFormElement(), element, nullptr,
-                                             &result);
-  expected.set_id_attribute(u"radio");
-  expected.set_name(expected.id_attribute());
-  expected.set_value(u"male");
-  expected.set_form_control_type(FormControlType::kInputRadio);
-  expected.set_max_length(0);
-  expected.set_is_autofilled(true);
-  expected.set_check_status(FormFieldData::CheckStatus::kCheckableButUnchecked);
-  EXPECT_FORM_FIELD_DATA_EQUALS(expected, result);
-}
-
 // We should be able to extract a <select> field.
 TEST_F(FormAutofillTest, WebFormControlElementToFormFieldSelect) {
   LoadHTML(R"(<select id=element>
