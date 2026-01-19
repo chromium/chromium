@@ -113,6 +113,14 @@ Actions MakeWaitForTaskId(std::optional<base::TimeDelta> duration,
   return action;
 }
 
+Actions MakeNavigateForTaskId(tabs::TabHandle tab_handle,
+                              std::string_view target_url_spec,
+                              TaskId task_id) {
+  Actions action = MakeNavigate(tab_handle, target_url_spec);
+  action.set_task_id(task_id.value());
+  return action;
+}
+
 // Helper class that utilizes content::DOMMessageQueue to capture the result of
 // an asynchronous PerformActions call. It listens for messages sent via
 // domAutomationController and filters by request ID to ensure the correct
@@ -424,6 +432,18 @@ class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
     return base::ok(static_cast<mojom::ActionResultCode>(action_result_int));
   }
 
+  // Helper to call the InterruptActorTask TS API.
+  void InterruptActorTask(TaskId task_id) {
+    std::string script = "window.client.browser.interruptActorTask($1);";
+    EXPECT_OK(EvalJsInGlic(content::JsReplace(script, task_id.value())));
+  }
+
+  // Helper to call the UninterruptActorTask TS API.
+  void UninterruptActorTask(TaskId task_id) {
+    std::string script = "window.client.browser.uninterruptActorTask($1);";
+    EXPECT_OK(EvalJsInGlic(content::JsReplace(script, task_id.value())));
+  }
+
   // Helper to call the CreateActorTab TS API.
   // Returns the TabId of the newly created tab, or base::unexpected on failure.
   base::expected<tabs::TabHandle, std::string> CreateActorTab(
@@ -486,8 +506,8 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
   // Construct the Actions proto.
   const GURL target_url =
       embedded_test_server()->GetURL("/actor/blank.html?target");
-  Actions action = MakeNavigate(active_tab()->GetHandle(), target_url.spec());
-  action.set_task_id(task_id.value());
+  Actions action = MakeNavigateForTaskId(active_tab()->GetHandle(),
+                                         target_url.spec(), task_id);
 
   EXPECT_THAT(PerformActions(action),
               ValueIs(HasResultCode(mojom::ActionResultCode::kOk)));
@@ -548,8 +568,8 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest, PauseAndResumeCreatedTask) {
 
   const GURL target_url =
       embedded_test_server()->GetURL("/actor/blank.html?target");
-  Actions action = MakeNavigate(active_tab()->GetHandle(), target_url.spec());
-  action.set_task_id(task_id.value());
+  Actions action = MakeNavigateForTaskId(active_tab()->GetHandle(),
+                                         target_url.spec(), task_id);
 
   // Performing an action on a paused task should fail.
   EXPECT_THAT(PerformActions(action),
@@ -684,10 +704,97 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest, PauseActiveTask) {
   // Verify new Actions can be performed after the task is resumed.
   const GURL target_url =
       embedded_test_server()->GetURL("/actor/blank.html?target");
-  optimization_guide::proto::Actions nav_action =
-      MakeNavigate(active_tab()->GetHandle(), target_url.spec());
-  nav_action.set_task_id(task_id.value());
+  optimization_guide::proto::Actions nav_action = MakeNavigateForTaskId(
+      active_tab()->GetHandle(), target_url.spec(), task_id);
 
+  EXPECT_THAT(PerformActions(nav_action),
+              base::test::ValueIs(HasResultCode(mojom::ActionResultCode::kOk)));
+  EXPECT_EQ(target_url, web_contents()->GetURL());
+
+  StopActorTask(task_id, glic::mojom::ActorTaskStopReason::kTaskComplete);
+  EXPECT_EQ(ActorTask::State::kFinished, task_completion_state.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
+                       InterruptAndUninterruptTaskWithCompletedActions) {
+  ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
+  EXPECT_NE(task_id, TaskId());
+
+  TestFuture<ActorTask::State> task_completion_state;
+  base::CallbackListSubscription subscription =
+      CreateTaskCompletionSubscription(task_id, task_completion_state);
+
+  const GURL target_url =
+      embedded_test_server()->GetURL("/actor/blank.html?target");
+  Actions action = MakeNavigateForTaskId(active_tab()->GetHandle(),
+                                         target_url.spec(), task_id);
+
+  EXPECT_THAT(PerformActions(action),
+              ValueIs(HasResultCode(mojom::ActionResultCode::kOk)));
+  EXPECT_EQ(target_url, web_contents()->GetURL());
+
+  InterruptActorTask(task_id);
+  ActorTaskStateWaiter waiting_waiter(actor_keyed_service(), task_id,
+                                      ActorTask::State::kWaitingOnUser);
+  waiting_waiter.Wait();
+
+  // Ensure uninterrupting a task with no pending actions sets the state
+  // to kReflecting
+  UninterruptActorTask(task_id);
+  ActorTaskStateWaiter reflecting_waiter(actor_keyed_service(), task_id,
+                                         ActorTask::State::kReflecting);
+  reflecting_waiter.Wait();
+
+  StopActorTask(task_id, glic::mojom::ActorTaskStopReason::kTaskComplete);
+  EXPECT_EQ(ActorTask::State::kFinished, task_completion_state.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
+                       InterruptAndUninterruptActiveTaskAndPerformActions) {
+  ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
+  EXPECT_NE(task_id, TaskId());
+
+  TestFuture<ActorTask::State> task_completion_state;
+  base::CallbackListSubscription subscription =
+      CreateTaskCompletionSubscription(task_id, task_completion_state);
+
+  // Use a long wait to ensure we can interrupt before it completes.
+  optimization_guide::proto::Actions wait_action =
+      MakeWaitForTaskId(kLongWaitTime, active_tab()->GetHandle(), task_id);
+  std::unique_ptr<AsyncActionWaiter> action_waiter =
+      PerformActionsAsync(wait_action);
+
+  // Wait for the task to start acting before interrupting.
+  ActorTaskStateWaiter initial_acting_waiter(actor_keyed_service(), task_id,
+                                             ActorTask::State::kActing);
+  initial_acting_waiter.Wait();
+
+  InterruptActorTask(task_id);
+  ActorTaskStateWaiter waiting_on_user_waiter(actor_keyed_service(), task_id,
+                                              ActorTask::State::kWaitingOnUser);
+  waiting_on_user_waiter.Wait();
+
+  // Ensure uninterrupting a task with previously pending actions sets the state
+  // to kActing
+  UninterruptActorTask(task_id);
+  ActorTaskStateWaiter post_interrupt_acting_waiter(
+      actor_keyed_service(), task_id, ActorTask::State::kActing);
+  post_interrupt_acting_waiter.Wait();
+
+  // Since the ongoing long wait action must be completed before sending another
+  // async action, we need to use the CancelActions API to cancel all the
+  // ongoing actions on the task.
+  EXPECT_THAT(CancelActions(task_id),
+              base::test::ValueIs(glic::mojom::CancelActionsResult::kSuccess));
+  EXPECT_THAT(
+      action_waiter->Wait(),
+      ValueIs(HasResultCode(mojom::ActionResultCode::kActionsCancelled)));
+
+  // Ensure the task can still perform actions after being uninterrupted.
+  const GURL target_url =
+      embedded_test_server()->GetURL("/actor/blank.html?target");
+  optimization_guide::proto::Actions nav_action = MakeNavigateForTaskId(
+      active_tab()->GetHandle(), target_url.spec(), task_id);
   EXPECT_THAT(PerformActions(nav_action),
               base::test::ValueIs(HasResultCode(mojom::ActionResultCode::kOk)));
   EXPECT_EQ(target_url, web_contents()->GetURL());
@@ -799,9 +906,8 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest, CancelActions) {
   const GURL target_url = embedded_test_server()->GetURL("/title1.html");
   content::TestNavigationManager navigation_manager(web_contents(), target_url);
 
-  optimization_guide::proto::Actions action =
-      MakeNavigate(active_tab()->GetHandle(), target_url.spec());
-  action.set_task_id(task_id.value());
+  optimization_guide::proto::Actions action = MakeNavigateForTaskId(
+      active_tab()->GetHandle(), target_url.spec(), task_id);
   std::unique_ptr<AsyncActionWaiter> waiter = PerformActionsAsync(action);
 
   // WaitForRequestStart() also pauses the navigation.
