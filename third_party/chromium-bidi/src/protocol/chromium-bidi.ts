@@ -19,6 +19,7 @@ import type * as Cdp from './cdp.js';
 import type * as WebDriverBidiBluetooth from './generated/webdriver-bidi-bluetooth.js';
 import type * as WebDriverBidiSpeculation from './generated/webdriver-bidi-nav-speculation.ts';
 import type * as WebDriverBidiPermissions from './generated/webdriver-bidi-permissions.js';
+import type * as WebDriverBidiUAClientHints from './generated/webdriver-bidi-ua-client-hints.js';
 import type * as WebDriverBidi from './generated/webdriver-bidi.js';
 
 export type EventNames =
@@ -139,6 +140,7 @@ export type Command = (
   | Cdp.Command
   | ExternalSpecCommand<WebDriverBidiPermissions.PermissionsCommand>
   | ExternalSpecCommand<WebDriverBidiBluetooth.BluetoothCommand>
+  | ExternalSpecCommand<WebDriverBidiUAClientHints.UserAgentClientHintsCommand>
 ) & {'goog:channel'?: GoogChannel};
 
 export type CommandResponse =

@@ -133,6 +133,35 @@ jobs:
           name: nav-speculation-cddl
           path: nav-speculation/nav-speculation.cddl
 
+  build_ua_client_hints_cddl:
+    name: Build UA Client Hints CDDL
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install dependencies
+        run: |
+          cargo install cddlconv@0.1.7;
+          npm install parse5
+      - name: Check out the main spec repository
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          repository: ${{ github.event.inputs.repository || 'w3c/webdriver-bidi' }}
+          ref: ${{ github.event.inputs.source_ref || 'main' }}
+          path: webdriver-bidi
+      - name: Check out WICG/ua-client-hints spec repository
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          repository: WICG/ua-client-hints
+          ref: main
+          path: ua-client-hints
+      - name: Generate WebDriverBidi CDDL for ua-client-hints
+        run: ../webdriver-bidi/scripts/cddl/generate.js ./index.bs && mv all.cddl ua-client-hints.cddl
+        working-directory: ua-client-hints
+      - name: Upload WebDriverBidi CDDL for ua-client-hints
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: ua-client-hints-cddl
+          path: ua-client-hints/ua-client-hints.cddl
+
   pr:
     name: Send PR
     needs:
@@ -141,6 +170,7 @@ jobs:
         build_permissions,
         build_bluetooth_cddl,
         build_speculation_cddl,
+        build_ua_client_hints_cddl,
       ]
     # Run even if some CDDL's are not built.
     if: always()
@@ -191,6 +221,13 @@ jobs:
           name: nav-speculation-cddl
         # Tolerate missing files.
         continue-on-error: true
+      - name: Download WebDriverBidi CDDL for ua-client-hints
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: ua-client-hints-cddl
+          path: ua-client-hints
+        # Tolerate missing files.
+        continue-on-error: true
       - name: Generate TypeScript types for the main spec
         run: node tools/generate-bidi-types.mjs --cddl-file all.cddl
         # Tolerate errors during generating types.
@@ -205,6 +242,10 @@ jobs:
         continue-on-error: true
       - name: Generate TypeScript types for nav-speculation spec
         run: node tools/generate-bidi-types.mjs --cddl-file nav-speculation.cddl --ts-file src/protocol/generated/webdriver-bidi-nav-speculation.ts --zod-file src/protocol-parser/generated/webdriver-bidi-nav-speculation.ts
+        # Tolerate errors during generating types.
+        continue-on-error: true
+      - name: Generate TypeScript types for ua-client-hints spec
+        run: node tools/generate-bidi-types.mjs --cddl-file ua-client-hints.cddl --ts-file src/protocol/generated/webdriver-bidi-ua-client-hints.ts --zod-file src/protocol-parser/generated/webdriver-bidi-ua-client-hints.ts
         # Tolerate errors during generating types.
         continue-on-error: true
       - run: git diff

@@ -28,6 +28,7 @@ import type {
   Permissions,
   Bluetooth,
   WebExtension,
+  UAClientHints,
 } from '../protocol/protocol.js';
 
 import type {BidiCommandParameterParser} from './BidiParser.js';
@@ -186,6 +187,11 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
 
   // Emulation module
   // keep-sorted start block=yes
+  parseSetClientHintsOverrideParams(
+    params: unknown,
+  ): UAClientHints.Emulation.SetClientHintsOverrideParameters {
+    return params as UAClientHints.Emulation.SetClientHintsOverrideParameters;
+  }
   parseSetForcedColorsModeThemeOverrideParams(
     params: unknown,
   ): Emulation.SetForcedColorsModeThemeOverrideParameters {

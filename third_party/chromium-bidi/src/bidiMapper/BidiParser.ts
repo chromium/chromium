@@ -28,6 +28,7 @@ import type {
   Session,
   Storage,
   WebExtension,
+  UAClientHints,
 } from '../protocol/protocol.js';
 
 export interface BidiCommandParameterParser {
@@ -122,6 +123,9 @@ export interface BidiCommandParameterParser {
 
   // Emulation module
   // keep-sorted start block=yes
+  parseSetClientHintsOverrideParams(
+    params: unknown,
+  ): UAClientHints.Emulation.SetClientHintsOverrideParameters;
   parseSetForcedColorsModeThemeOverrideParams(
     params: unknown,
   ): Emulation.SetForcedColorsModeThemeOverrideParameters;

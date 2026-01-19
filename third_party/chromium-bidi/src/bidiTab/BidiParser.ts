@@ -28,6 +28,7 @@ import type {
   Session,
   Storage,
   WebExtension,
+  UAClientHints,
 } from '../protocol/protocol.js';
 import * as Parser from '../protocol-parser/protocol-parser.js';
 
@@ -187,6 +188,11 @@ export class BidiParser implements BidiCommandParameterParser {
 
   // Emulation module
   // keep-sorted start block=yes
+  parseSetClientHintsOverrideParams(
+    params: unknown,
+  ): UAClientHints.Emulation.SetClientHintsOverrideParameters {
+    return Parser.Emulation.parseSetClientHintsOverrideParams(params);
+  }
   parseSetForcedColorsModeThemeOverrideParams(
     params: unknown,
   ): Emulation.SetForcedColorsModeThemeOverrideParameters {

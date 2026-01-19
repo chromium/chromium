@@ -26,6 +26,7 @@ import {InvalidArgumentException} from '../protocol/protocol.js';
 
 import * as WebDriverBidiBluetooth from './generated/webdriver-bidi-bluetooth.js';
 import * as WebDriverBidiPermissions from './generated/webdriver-bidi-permissions.js';
+import * as WebDriverBidiUAClientHints from './generated/webdriver-bidi-ua-client-hints.js';
 import * as WebDriverBidi from './generated/webdriver-bidi.js';
 
 export function parseObject<T extends ZodType>(
@@ -346,6 +347,20 @@ export namespace Session {
 export namespace Emulation {
   // keep-sorted start block=yes
 
+  export function parseSetClientHintsOverrideParams(params: unknown) {
+    const SetClientHintsOverrideParametersSchema = z.object({
+      clientHints: z.union([
+        WebDriverBidiUAClientHints.Emulation.ClientHintsMetadataSchema,
+        z.null(),
+      ]),
+      contexts: z.array(z.string()).min(1).optional(),
+      userContexts: z.array(z.string()).min(1).optional(),
+    });
+    return parseObject(
+      params,
+      SetClientHintsOverrideParametersSchema,
+    ) as Protocol.UAClientHints.Emulation.SetClientHintsOverrideParameters;
+  }
   export function parseSetForcedColorsModeThemeOverrideParams(params: unknown) {
     return parseObject(
       params,
