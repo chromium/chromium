@@ -47,7 +47,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Histogram.BadConstructionArguments" enum="HistogramNameHash"
     expires_after="never">
-<!-- expires-never: Needed for tracking missing histogram data. -->
+<!-- expires-never: Needed for tracking bad histogram data. -->
 
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -59,7 +59,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Histogram.MismatchedConstructionArguments"
-    enum="HistogramNameHash" expires_after="2026-02-28">
+    enum="HistogramNameHash" expires_after="never">
+<!-- expires-never: Needed for tracking bad histogram data. -->
+
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -71,7 +73,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Histogram.TooManyBuckets.1000" enum="HistogramNameHash"
-    expires_after="2026-02-28">
+    expires_after="never">
+<!-- expires-never: Needed for tracking bad histogram data. -->
+
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
