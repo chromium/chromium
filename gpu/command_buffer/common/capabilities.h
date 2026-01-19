@@ -27,9 +27,6 @@
 
 namespace gpu {
 
-// NOTE: When adding members to this struct, also add corresponding
-// entries in gpu/ipc/common/gpu_command_buffer_traits_multi.h.
-
 struct GPU_COMMAND_BUFFER_COMMON_EXPORT Capabilities {
   Capabilities();
   Capabilities(const Capabilities& other);
@@ -78,6 +75,8 @@ struct GPU_COMMAND_BUFFER_COMMON_EXPORT Capabilities {
   uint64_t drm_device_id = 0;
 };
 
+// NOTE: When adding members to this struct, also add corresponding
+// entries in gpu/ipc/common/gpu_command_buffer_traits_multi.h.
 struct GPU_COMMAND_BUFFER_COMMON_EXPORT GLCapabilities {
   GLCapabilities();
   GLCapabilities(const GLCapabilities& other);

@@ -345,8 +345,8 @@ mojom("interfaces") {
           cpp = "::gpu::Capabilities"
         },
       ]
-      traits_headers = [ "gpu_command_buffer_traits.h" ]
-      traits_public_deps = [ ":command_buffer_traits_sources" ]
+      traits_headers = [ "capabilities_mojom_traits.h" ]
+      traits_public_deps = [ ":mojom_traits" ]
     },
     {
       types = [
@@ -784,6 +784,8 @@ source_set("mojom_traits") {
   visibility = [ ":*" ]
 
   sources = [
+    "capabilities_mojom_traits.cc",
+    "capabilities_mojom_traits.h",
     "context_result_mojom_traits.h",
     "gpu_peak_memory_mojom_traits.h",
     "mailbox_mojom_traits.cc",
@@ -800,7 +802,6 @@ source_set("mojom_traits") {
     "//gpu/command_buffer/common",
     "//mojo/public/cpp/bindings",
   ]
-
   if (enable_vulkan) {
     public_deps += [ "//gpu/vulkan" ]
   }

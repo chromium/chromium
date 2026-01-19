@@ -115,7 +115,6 @@ _NATIVE_ALLOWLIST = {
     'content.mojom.ScrollbarButtonsPlacement',
     'content.mojom.ScrollerStyle',
     'content.mojom.WebPluginInfo',
-    'gpu.mojom.Capabilities',
     'gpu.mojom.ContextLostReason',
     'gpu.mojom.Error',
     'gpu.mojom.GLCapabilities',
