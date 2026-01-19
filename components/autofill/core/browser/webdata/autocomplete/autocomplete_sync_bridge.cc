@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 #include <set>
-#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -28,6 +27,7 @@
 #include "components/sync/model/sync_metadata_store_change_list.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/webdata/common/web_database.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 using sync_pb::AutofillSpecifics;
 using syncer::ClientTagBasedDataTypeProcessor;
@@ -419,12 +419,12 @@ AutocompleteSyncBridge::AutocompleteSyncBridge::GetDataForCommit(
     return nullptr;
   }
 
-  std::unordered_set<std::string> keys_set(storage_keys.begin(),
-                                           storage_keys.end());
+  absl::flat_hash_set<std::string> keys_set(storage_keys.begin(),
+                                            storage_keys.end());
   auto batch = std::make_unique<MutableDataBatch>();
   for (const AutocompleteEntry& entry : entries) {
     std::string key = GetStorageKeyFromModel(entry.key());
-    if (keys_set.find(key) != keys_set.end()) {
+    if (keys_set.contains(key)) {
       batch->Put(key, CreateEntityData(entry));
     }
   }
