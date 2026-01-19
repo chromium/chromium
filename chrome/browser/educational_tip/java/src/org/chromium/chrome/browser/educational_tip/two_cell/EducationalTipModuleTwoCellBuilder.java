@@ -15,7 +15,7 @@ import org.chromium.chrome.browser.educational_tip.R;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.magic_stack.ModuleProviderBuilder;
-import org.chromium.components.segmentation_platform.InputContext;
+import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -26,12 +26,18 @@ import org.chromium.ui.modelutil.PropertyModel;
 @NullMarked
 public class EducationalTipModuleTwoCellBuilder implements ModuleProviderBuilder {
     private final EducationTipModuleActionDelegate mActionDelegate;
+    private final @Nullable Integer mManualRank;
 
     /**
      * @param actionDelegate The instance of {@link EducationTipModuleActionDelegate}.
      */
     public EducationalTipModuleTwoCellBuilder(EducationTipModuleActionDelegate actionDelegate) {
+        // TODO(crbug.com/469425754): Make this builder more generic by accepting the ModuleType in
+        // the constructor rather than hardcoding SETUP_LIST_TWO_CELL_CONTAINER.
         mActionDelegate = actionDelegate;
+        mManualRank =
+                SetupListModuleUtils.getManualRank(
+                        ModuleDelegate.ModuleType.SETUP_LIST_TWO_CELL_CONTAINER);
     }
 
     // ModuleProviderBuilder implementation.
@@ -57,16 +63,7 @@ public class EducationalTipModuleTwoCellBuilder implements ModuleProviderBuilder
     }
 
     @Override
-    public boolean hasManualOrdering() {
-        // The two-cell setup list container should always be manually placed at the top
-        // when it's active.
-        return true;
-    }
-
-    @Override
-    @Nullable
-    public InputContext createInputContext() {
-        // Setup list modules have manual ranking
-        return null;
+    public @Nullable Integer getManualRank() {
+        return mManualRank;
     }
 }

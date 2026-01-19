@@ -35,8 +35,12 @@ import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.components.segmentation_platform.ProcessedValue;
 import org.chromium.components.user_prefs.UserPrefs;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /** Utility class for the magic stack. */
 @NullMarked
@@ -317,5 +321,22 @@ public class HomeModulesUtils {
                     sharedPreferencesManager.readBoolean(javaKey, /* defaultValue= */ false);
             UserPrefs.get(profile).setBoolean(cKey, value);
         }
+    }
+
+    /**
+     * Sorts a list of module types based on a provided rank map.
+     *
+     * @param rankMap A map from ModuleType to its integer rank.
+     * @return List of sorted modules
+     */
+    public static List<Integer> sortModulesByRank(Map<Integer, Integer> rankMap) {
+        List<Integer> modules = new ArrayList<>(rankMap.keySet());
+        modules.sort(
+                (a, b) -> {
+                    int orderA = Objects.requireNonNull(rankMap.get(a));
+                    int orderB = Objects.requireNonNull(rankMap.get(b));
+                    return Integer.compare(orderA, orderB);
+                });
+        return modules;
     }
 }
