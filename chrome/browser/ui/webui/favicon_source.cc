@@ -15,11 +15,15 @@
 #include "chrome/browser/favicon/history_ui_favicon_request_handler_factory.h"
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/favicon/core/history_ui_favicon_request_handler.h"
 #include "components/favicon_base/favicon_url_parser.h"
+#include "components/google/core/common/google_util.h"
 #include "components/history/core/browser/top_sites.h"
+#include "components/search_engines/search_terms_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -40,6 +44,9 @@ namespace {
 
 // Name of histogram to track whether the default response was returned.
 const char kDefaultResponseHistogramName[] = "Favicons.DefaultResponse";
+
+const char kGoogleLogoMismatchHistogramName[] =
+    "Settings.SearchEngines.GoogleIconMismatches";
 
 // Generous cap to guard against out-of-memory issues.
 constexpr int kMaxDesiredSizeInPixel = 2048;
@@ -250,6 +257,7 @@ void FaviconSource::OnFaviconDataAvailable(
     const content::WebContents::Getter& wc_getter,
     const favicon_base::FaviconRawBitmapResult& bitmap_result) {
   if (bitmap_result.is_valid()) {
+    LogFaviconResult(parsed, wc_getter, bitmap_result);
     // Forward the data along to the networking system.
     std::move(callback).Run(bitmap_result.bitmap_data.get());
   } else {
@@ -328,4 +336,45 @@ base::RefCountedMemory* FaviconSource::LoadIconBytes(float scale_factor,
                                                      int resource_id) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
       resource_id, ui::GetSupportedResourceScaleFactor(scale_factor));
+}
+
+void FaviconSource::LogFaviconResult(
+    const chrome::ParsedFaviconPath& parsed,
+    const content::WebContents::Getter& wc_getter,
+    const favicon_base::FaviconRawBitmapResult& bitmap_result) {
+  auto* web_contents = wc_getter.Run();
+  if (!web_contents) {
+    return;
+  }
+
+  // If on a search engines page, report instances of a non-Google page URL
+  // using the Google Search logo as a potential spoof.
+  const GURL settings_url(chrome::kChromeUISettingsURL);
+  const GURL& last_url = web_contents->GetLastCommittedURL();
+  if (last_url != settings_url.Resolve(chrome::kSearchSubPage) &&
+      last_url != settings_url.Resolve(chrome::kSearchEnginesSubPage)) {
+    return;
+  }
+
+  constexpr char kGoogleLogoURL[] =
+      "https://www.gstatic.com/images/branding/searchlogo/ico/favicon.ico";
+  if (bitmap_result.icon_url != GURL(kGoogleLogoURL) ||
+      google_util::IsGoogleAssociatedDomainUrl(GURL(parsed.page_url))) {
+    return;
+  }
+
+  bool is_dse = false;
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile_);
+  if (template_url_service && template_url_service->loaded()) {
+    const TemplateURL* default_provider =
+        template_url_service->GetDefaultSearchProvider();
+    if (default_provider &&
+        default_provider->url_ref().GetHost(SearchTermsData()) ==
+            GURL(parsed.page_url).host()) {
+      is_dse = true;
+    }
+  }
+
+  base::UmaHistogramBoolean(kGoogleLogoMismatchHistogramName, is_dse);
 }

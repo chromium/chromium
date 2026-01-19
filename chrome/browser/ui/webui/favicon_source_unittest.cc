@@ -10,17 +10,21 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/favicon/history_ui_favicon_request_handler_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/favicon/core/history_ui_favicon_request_handler.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/favicon_base/favicon_url_parser.h"
+#include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -144,6 +148,8 @@ class FaviconSourceTestBase : public testing::Test {
   }
 
   NiceMock<TestFaviconSource>& source() { return source_; }
+
+  TestingProfile& profile() { return profile_; }
 
  private:
   ui::MockOsSettingsProvider os_settings_provider_;
@@ -411,4 +417,141 @@ TEST_P(FaviconSourceTestWithFavicon2Format, ValidateGetSource) {
   EXPECT_EQ(serve_untrusted ? chrome::kChromeUIUntrustedFavicon2URL
                             : chrome::kChromeUIFavicon2Host,
             source().GetSource());
+}
+
+class FaviconResultReportingTest : public FaviconSourceTestBase {
+ public:
+  FaviconResultReportingTest()
+      : FaviconSourceTestBase(chrome::FaviconUrlFormat::kFavicon2,
+                              /*serve_untrusted=*/true) {}
+
+ protected:
+  static constexpr char kGoogleIconURL[] =
+      "https://www.gstatic.com/images/branding/searchlogo/ico/favicon.ico";
+  static constexpr char kNotGoogleIconURL[] =
+      "https://www.gstatic.com/images/branding/notsearchlogo/ico/favicon.ico";
+
+  favicon_base::FaviconRawBitmapResult CreateFaviconResult(
+      const GURL& icon_url) {
+    favicon_base::FaviconRawBitmapResult result;
+    result.icon_url = icon_url;
+    result.bitmap_data =
+        base::MakeRefCounted<base::RefCountedBytes>(std::vector<uint8_t>(1));
+    return result;
+  }
+
+  void StartDataRequest(const GURL& page_url) {
+    source().StartDataRequest(
+        GURL(base::StrCat(
+            {kDummyPrefix, "?size=16&scaleFactor=2x&pageUrl=" +
+                               base::EscapeQueryParamValue(
+                                   page_url.spec(), /*use_plus=*/false)})),
+        test_web_contents_getter(), base::DoNothing());
+  }
+};
+
+TEST_F(FaviconResultReportingTest, GoogleIconMismatchReported) {
+  EXPECT_CALL(mock_favicon_service(), GetRawFaviconForPageURL)
+      .Times(1)
+      .WillOnce([&](auto, auto, auto, auto,
+                    favicon_base::FaviconRawBitmapCallback callback, auto) {
+        std::move(callback).Run(CreateFaviconResult(GURL(kGoogleIconURL)));
+        return kDummyTaskId;
+      });
+  content::WebContentsTester::For(test_web_contents())
+      ->SetLastCommittedURL(GURL("chrome://settings/searchEngines"));
+
+  base::HistogramTester tester;
+  StartDataRequest(GURL("https://www.notgoogle.com"));
+
+  tester.ExpectTotalCount("Settings.SearchEngines.GoogleIconMismatches", 1);
+  tester.ExpectBucketCount("Settings.SearchEngines.GoogleIconMismatches", false,
+                           1);
+}
+
+TEST_F(FaviconResultReportingTest, GoogleIconMismatchReportedForDSE) {
+  EXPECT_CALL(mock_favicon_service(), GetRawFaviconForPageURL)
+      .Times(1)
+      .WillOnce([&](auto, auto, auto, auto,
+                    favicon_base::FaviconRawBitmapCallback callback, auto) {
+        std::move(callback).Run(CreateFaviconResult(GURL(kGoogleIconURL)));
+        return kDummyTaskId;
+      });
+  content::WebContentsTester::For(test_web_contents())
+      ->SetLastCommittedURL(GURL("chrome://settings/searchEngines"));
+
+  TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+      &profile(),
+      base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
+  TemplateURLService* service =
+      TemplateURLServiceFactory::GetForProfile(&profile());
+  ASSERT_NE(nullptr, service);
+  service->Load();
+
+  TemplateURLData data;
+  data.SetShortName(u"Engine");
+  data.SetKeyword(u"notgoogle");
+  data.SetURL("https://www.notgoogle.com/search?q={searchTerms}");
+  TemplateURL* t_url = service->Add(std::make_unique<TemplateURL>(data));
+  service->SetUserSelectedDefaultSearchProvider(t_url);
+
+  base::HistogramTester tester;
+  StartDataRequest(GURL("https://www.notgoogle.com"));
+
+  tester.ExpectTotalCount("Settings.SearchEngines.GoogleIconMismatches", 1);
+  tester.ExpectBucketCount("Settings.SearchEngines.GoogleIconMismatches", true,
+                           1);
+}
+
+TEST_F(FaviconResultReportingTest,
+       GoogleIconMismatchNotReportedOnGoogleDomain) {
+  EXPECT_CALL(mock_favicon_service(), GetRawFaviconForPageURL)
+      .Times(1)
+      .WillOnce([&](auto, auto, auto, auto,
+                    favicon_base::FaviconRawBitmapCallback callback, auto) {
+        std::move(callback).Run(CreateFaviconResult(GURL(kGoogleIconURL)));
+        return kDummyTaskId;
+      });
+  content::WebContentsTester::For(test_web_contents())
+      ->SetLastCommittedURL(GURL("chrome://settings/searchEngines"));
+
+  base::HistogramTester tester;
+  StartDataRequest(GURL("https://www.google.com"));
+  tester.ExpectTotalCount("Settings.SearchEngines.GoogleIconMismatches", 0);
+}
+
+TEST_F(FaviconResultReportingTest,
+       GoogleIconMismatchNotReportedOnNonSearchEnginePage) {
+  EXPECT_CALL(mock_favicon_service(), GetRawFaviconForPageURL)
+      .Times(1)
+      .WillOnce([&](auto, auto, auto, auto,
+                    favicon_base::FaviconRawBitmapCallback callback, auto) {
+        std::move(callback).Run(CreateFaviconResult(GURL(kGoogleIconURL)));
+        return kDummyTaskId;
+      });
+  content::WebContentsTester::For(test_web_contents())
+      ->SetLastCommittedURL(GURL("chrome://settings/notsearchEngines"));
+
+  base::HistogramTester tester;
+  StartDataRequest(GURL("https://www.notgoogle.com"));
+
+  tester.ExpectTotalCount("Settings.SearchEngines.GoogleIconMismatches", 0);
+}
+
+TEST_F(FaviconResultReportingTest,
+       GoogleIconMismatchNotReportedForNonSearchIcon) {
+  EXPECT_CALL(mock_favicon_service(), GetRawFaviconForPageURL)
+      .Times(1)
+      .WillOnce([&](auto, auto, auto, auto,
+                    favicon_base::FaviconRawBitmapCallback callback, auto) {
+        std::move(callback).Run(CreateFaviconResult(GURL(kNotGoogleIconURL)));
+        return kDummyTaskId;
+      });
+  content::WebContentsTester::For(test_web_contents())
+      ->SetLastCommittedURL(GURL("chrome://settings/searchEngines"));
+
+  base::HistogramTester tester;
+  StartDataRequest(GURL("https://www.google.com"));
+
+  tester.ExpectTotalCount("Settings.SearchEngines.GoogleIconMismatches", 0);
 }

@@ -1352,6 +1352,17 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   <token key="LifecycleEvent" variants="SafetyHubLifecycleEvent"/>
 </histogram>
 
+<histogram name="Settings.SearchEngines.GoogleIconMismatches" enum="Boolean"
+    expires_after="2027-01-15">
+  <owner>alsan@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records the number of times a Google Search icon was loaded for a non-Google
+    search engine on the settings page. The boolean value indicates whether the
+    search engine is the current default.
+  </summary>
+</histogram>
+
 <histogram name="Settings.SearchEngines.Interactions"
     enum="SettingsSearchEnginesInteractions" expires_after="2026-05-24">
   <owner>yoangela@chromium.org</owner>

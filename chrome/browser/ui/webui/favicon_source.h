@@ -109,6 +109,12 @@ class FaviconSource : public content::URLDataSource {
                            bool dark_mode,
                            DefaultFaviconBehavior behavior);
 
+  // Records metrics for the result of a fetched favicon.
+  void LogFaviconResult(
+      const chrome::ParsedFaviconPath& parsed,
+      const content::WebContents::Getter& wc_getter,
+      const favicon_base::FaviconRawBitmapResult& bitmap_result);
+
   chrome::FaviconUrlFormat url_format_;
 
   base::CancelableTaskTracker cancelable_task_tracker_;
