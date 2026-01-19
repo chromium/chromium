@@ -16,6 +16,10 @@ public class AwPage extends AwSupportLibIsomorphic {
         mPage = page;
     }
 
+    public String getUrl() {
+        return mPage.getUrl().getSpec();
+    }
+
     public Page getInternalPageForTesting() {
         return mPage;
     }

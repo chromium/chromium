@@ -4,9 +4,13 @@
 
 package org.chromium.support_lib_glue;
 
+import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.recordApiCall;
+
 import org.chromium.android_webview.AwPage;
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.base.TraceEvent;
 import org.chromium.support_lib_boundary.WebViewPageBoundaryInterface;
+import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
 import java.util.concurrent.Callable;
 
@@ -26,5 +30,13 @@ class SupportLibWebViewPageAdapter implements WebViewPageBoundaryInterface {
     @Override
     public Object getOrCreatePeer(Callable<Object> creationCallable) {
         return mPage.getOrCreateSupportLibObject(creationCallable);
+    }
+
+    @Override
+    public String getUrl() {
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.PAGE_GET_URL")) {
+            recordApiCall(ApiCall.PAGE_GET_URL);
+            return mPage.getUrl();
+        }
     }
 }

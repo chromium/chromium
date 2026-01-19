@@ -441,4 +441,7 @@ public class Features {
 
     // WebViewBuilder.applyTo
     public static final String WEBVIEW_BUILDER_V2 = "WEBVIEW_BUILDER_V2";
+
+    // Page.getUrl
+    public static final String PAGE_GET_URL = "PAGE_GET_URL";
 }

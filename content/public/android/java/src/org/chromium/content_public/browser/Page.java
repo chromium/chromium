@@ -9,12 +9,14 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.url.GURL;
 
 /** JNI bridge with content::Page */
 @JNINamespace("content")
 @NullMarked
 public class Page {
     private boolean mIsPrerendering;
+    private GURL mUrl = GURL.emptyGURL();
 
     private @Nullable PageDeletionListener mListener;
 
@@ -51,5 +53,13 @@ public class Page {
 
     public void setIsPrerendering(boolean isPrerendering) {
         mIsPrerendering = isPrerendering;
+    }
+
+    public GURL getUrl() {
+        return mUrl;
+    }
+
+    public void setUrl(GURL url) {
+        mUrl = url;
     }
 }

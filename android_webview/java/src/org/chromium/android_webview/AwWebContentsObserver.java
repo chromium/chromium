@@ -185,6 +185,8 @@ public class AwWebContentsObserver extends WebContentsObserver {
 
         mCommittedNavigation = true;
 
+        navigation.getCommittedPage().setUrl(navigation.getUrl());
+
         AwContentsClient client = mAwContentsClient.get();
         if (client != null) {
             // OnPageStarted is not called for in-page navigations, which include fragment

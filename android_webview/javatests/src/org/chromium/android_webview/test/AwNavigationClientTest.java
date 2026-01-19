@@ -24,6 +24,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwPage;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -56,6 +57,14 @@ public class AwNavigationClientTest extends AwParameterizedTest {
                 <body>
                         <div style="font-size: 0.5em">First LCP Trigger</div>
                         <div id="second-lcp" style="font-size: 1.5em"></div>
+                </body>
+                </html>
+            """;
+    private static final String SIMPLE_PAGE_HTML =
+            """
+                <html>
+                <body>
+                        <div>Hello</div>
                 </body>
                 </html>
             """;
@@ -356,5 +365,47 @@ public class AwNavigationClientTest extends AwParameterizedTest {
                     expectedMarkName,
                     listenerMark.markName);
         }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testPageGetUrl() throws Throwable {
+        final String url = mWebServer.setResponse("/page.html", SIMPLE_PAGE_HTML, null);
+
+        // Load the page
+        mActivityTestRule.loadUrlSync(
+                mTestContainerView.getAwContents(), mContentsClient.getOnPageFinishedHelper(), url);
+
+        // Verify the page URL
+        AwPage page = mNavigationListener.getLastPageWithLoadEventFired();
+        Assert.assertNotNull(page);
+        Assert.assertEquals(url, page.getUrl());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testPageGetUrlSameDocument() throws Throwable {
+        final String url = mWebServer.setResponse("/page.html", SIMPLE_PAGE_HTML, null);
+        final String fragmentUrl = url + "#ref";
+
+        // Load the page
+        mActivityTestRule.loadUrlSync(
+                mTestContainerView.getAwContents(), mContentsClient.getOnPageFinishedHelper(), url);
+        AwPage page = mNavigationListener.getLastPageWithLoadEventFired();
+        Assert.assertNotNull(page);
+
+        // Verify the page URL
+        Assert.assertEquals(url, page.getUrl());
+
+        // Load the page with a fragment
+        mActivityTestRule.loadUrlSync(
+                mTestContainerView.getAwContents(),
+                mContentsClient.getOnPageFinishedHelper(),
+                fragmentUrl);
+
+        // Verify the page URL is the fragment URL
+        Assert.assertEquals(fragmentUrl, page.getUrl());
     }
 }
