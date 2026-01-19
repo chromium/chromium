@@ -146,7 +146,7 @@ bool PasswordNotesTable::InsertOrReplace(FormPrimaryKey parent_id,
   s.BindInt(0, parent_id.value());
   s.BindString16(1, note.unique_display_name);
   s.BindString(2, encrypted_value);
-  s.BindInt64(3, note.date_created.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  s.BindTime(3, note.date_created);
   s.BindBool(4, note.hide_by_default);
 
   return s.Run() && db_->GetLastChangeCount();

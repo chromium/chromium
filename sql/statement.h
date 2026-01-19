@@ -156,30 +156,18 @@ class COMPONENT_EXPORT(SQL) Statement {
   // for the database, which by default means > 1GB.
   void BindBlobForStreaming(int param_index, uint64_t size);
 
-  // Conforms with base::Time serialization recommendations.
+  // Serializes a `base::Time` in full fidelity (the number of microseconds
+  // since the Windows epic in UTC). This form of binding is preferred over
+  // `t.ToInternalValue()` or `t.ToDeltaSinceWindowsEpoch().InMicroseconds()`.
   //
-  // This is equivalent to the following snippets, which should be replaced.
-  // * BindInt64(col, val.ToInternalValue())
-  // * BindInt64(col, val.ToDeltaSinceWindowsEpoch().InMicroseconds())
-  //
-  // Features that serialize base::Time in other ways, such as ToTimeT() or
-  // InMillisecondsSinceUnixEpoch(), will require a database migration to be
+  // Legacy serializations of `base::Time` via other ways, such as `ToTimeT()`
+  // or `InMillisecondsSinceUnixEpoch()`, require a database migration to be
   // converted to this (recommended) serialization method.
-  //
-  // TODO(crbug.com/40176243): Migrate all time serialization to this method,
-  // and
-  //                          then remove the migration details above.
   void BindTime(int param_index, base::Time time);
 
-  // Conforms with base::TimeDelta serialization recommendations.
-  //
-  // This is equivalent to the following snippets, which should be replaced.
-  // * BindInt64(col, delta.ToInternalValue())
-  // * BindInt64(col, delta.InMicroseconds())
-  //
-  // TODO(crbug.com/40251269): Migrate all TimeDelta serialization to this
-  // method
-  //                          and remove the migration details above.
+  // Serializes a `base::TimeDelta` in full fidelity (a number of microseconds).
+  // This form of binding is preferred over `d.ToInternalValue()` or
+  // `d.InMicroseconds()`.
   void BindTimeDelta(int param_index, base::TimeDelta delta);
 
   // Retrieving ----------------------------------------------------------------

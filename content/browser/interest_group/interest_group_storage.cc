@@ -4375,9 +4375,9 @@ bool DoRecordDebugReportLockout(sql::Database& db,
 
   debug_lockout.Reset(true);
   // Ceil to nearest hour to be stored in DB.
-  debug_lockout.BindInt64(0, starting_time.ToDeltaSinceWindowsEpoch()
-                                 .CeilToMultiple(base::Hours(1))
-                                 .InMicroseconds());
+  base::Time starting_time_ceil = base::Time::FromDeltaSinceWindowsEpoch(
+      starting_time.ToDeltaSinceWindowsEpoch().CeilToMultiple(base::Hours(1)));
+  debug_lockout.BindTime(0, starting_time_ceil);
   debug_lockout.BindTimeDelta(1, duration);
   return debug_lockout.Run();
 }
@@ -4467,9 +4467,9 @@ bool DoRecordDebugReportCooldown(sql::Database& db,
   debug_cooldown.Reset(true);
   debug_cooldown.BindString(0, Serialize(origin));
   // Ceil to nearest hour to be stored in DB.
-  debug_cooldown.BindInt64(1, cooldown_start.ToDeltaSinceWindowsEpoch()
-                                  .CeilToMultiple(base::Hours(1))
-                                  .InMicroseconds());
+  base::Time cooldown_start_ceil = base::Time::FromDeltaSinceWindowsEpoch(
+      cooldown_start.ToDeltaSinceWindowsEpoch().CeilToMultiple(base::Hours(1)));
+  debug_cooldown.BindTime(1, cooldown_start_ceil);
   debug_cooldown.BindInt(2, static_cast<int>(cooldown_type));
 
   return debug_cooldown.Run();
