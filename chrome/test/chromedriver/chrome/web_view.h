@@ -33,6 +33,13 @@ struct CallFunctionOptions {
   bool include_shadow_root = false;
 };
 
+// Responsible for locking a WebViewImpl and its associated data structure to
+// prevent them from being freed while they are still in use.
+class WebViewHolder {
+ public:
+  virtual ~WebViewHolder() = default;
+};
+
 class WebView {
  public:
   typedef base::RepeatingCallback<Status(bool* is_condition_met)>
@@ -328,6 +335,10 @@ class WebView {
                               const std::optional<std::string>& text) = 0;
 
   virtual WebView* FindContainerForFrame(const std::string& frame_id) = 0;
+
+  // Locks WebView to prevent it from being disposed, so that calling functions
+  // on it doesn't result in null reference errors.
+  virtual std::unique_ptr<WebViewHolder> GetHolder() = 0;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_WEB_VIEW_H_

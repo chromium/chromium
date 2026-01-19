@@ -152,6 +152,7 @@ class StubWebView : public WebView {
   bool IsTab() const override;
   std::string GetTabId() override;
   PageTracker* GetPageTracker() const override;
+  std::unique_ptr<WebViewHolder> GetHolder() override;
   void SetupChildView(std::unique_ptr<StubWebView> child);
 
  private:
