@@ -1760,12 +1760,34 @@ void RenderWidgetHostViewMac::OnFirstResponderChanged(bool is_first_responder) {
   is_first_responder_ = is_first_responder;
   accessibility_focus_overrider_.SetViewIsFirstResponder(is_first_responder_);
 
+  // Propagate focus changes to RenderWidgetHost only under the following
+  // conditions:
+  //
+  // - Headless mode:
+  //   IsHeadless() implies there is no NSWindow, so force focus change
+  //   propagation.
+  //
+  // - Gaining focus:
+  //   - When Focus() is being explicitly requested (is_getting_focus is true),
+  //   or
+  //   - When the window is key.
+  //   This avoids a race where claiming focus while the window is non-key could
+  //   be treated as invalid, resulting in a subsequent resignFirstResponder
+  //   overwriting the valid focus set by OnWindowIsKeyChanged.
+  //
+  // - Losing focus:
+  //   - Only when the host is currently focused.
+  //   This prevents duplicate LostFocus notifications.
   if (is_first_responder_) {
-    host()->GotFocus();
-    SetTextInputActive(true);
+    if (IsHeadless() || is_getting_focus_ || is_window_key_) {
+      host()->GotFocus();
+      SetTextInputActive(true);
+    }
   } else {
-    SetTextInputActive(false);
-    host()->LostFocus();
+    if (IsHeadless() || host()->is_focused()) {
+      SetTextInputActive(false);
+      host()->LostFocus();
+    }
   }
 }
 

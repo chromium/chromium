@@ -70,7 +70,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -1139,6 +1138,27 @@ class WebModalShowWaiter
 
 void WaitForWebModalDialog(content::WebContents* web_contents) {
   WebModalShowWaiter(web_contents).Wait();
+}
+
+WebContentsFocusEventTracker::WebContentsFocusEventTracker(
+    content::WebContents* web_contents)
+    : content::WebContentsObserver(web_contents) {}
+
+WebContentsFocusEventTracker::~WebContentsFocusEventTracker() = default;
+
+void WebContentsFocusEventTracker::OnWebContentsFocused(
+    content::RenderWidgetHost* render_widget_host) {
+  focused_count_++;
+}
+
+void WebContentsFocusEventTracker::OnWebContentsLostFocus(
+    content::RenderWidgetHost* render_widget_host) {
+  lost_focus_count_++;
+}
+
+void WebContentsFocusEventTracker::Reset() {
+  focused_count_ = 0;
+  lost_focus_count_ = 0;
 }
 
 }  // namespace ui_test_utils

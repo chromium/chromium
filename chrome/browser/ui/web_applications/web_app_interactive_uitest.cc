@@ -4,10 +4,17 @@
 
 #include <string>
 
+#include "base/test/run_until.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
+#include "chrome/test/base/interactive_test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/find_in_page/find_types.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -123,6 +130,56 @@ IN_PROC_BROWSER_TEST_F(WebAppInteractiveUiTest,
     EXPECT_EQ(4, original_browser->tab_strip_model()->count());
 #endif
   }
+}
+
+// Tests that opening and closing the Find bar triggers the correct focus
+// events in PWA windows.
+// - Opening find bar: OnWebContentsLostFocus called once, OnWebContentsFocused
+//   NOT called
+// - Closing find bar: OnWebContentsFocused called once, OnWebContentsLostFocus
+//   NOT called
+IN_PROC_BROWSER_TEST_F(WebAppInteractiveUiTest, FindBarFocusEvents) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url =
+      embedded_test_server()->GetURL("app.site.test", "/simple.html");
+  auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
+  web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
+  const webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
+  Browser* const app_browser = LaunchWebAppBrowser(app_id);
+  content::WebContents* web_contents =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+
+  // Create focus event tracker.
+  ui_test_utils::WebContentsFocusEventTracker focus_tracker(web_contents);
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+#if BUILDFLAG(IS_MAC)
+  // On Mac, PWA windows auto-gain focus on launch. Need to wait for the initial
+  // focus event to complete before opening the find bar.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return focus_tracker.focused_count() == 1; }));
+#endif  // BUILDFLAG(IS_MAC)
+
+  // Reset tracker for the open operation.
+  focus_tracker.Reset();
+  // Open the find bar.
+  chrome::Find(app_browser);
+  // Wait for the lost focus event to be processed correctly.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return focus_tracker.lost_focus_count() == 1 &&
+           focus_tracker.focused_count() == 0;
+  }));
+
+  // Reset tracker for the close operation.
+  focus_tracker.Reset();
+  // Close the find bar.
+  app_browser->GetFeatures().GetFindBarController()->EndFindSession(
+      find_in_page::SelectionAction::kKeep, find_in_page::ResultAction::kKeep);
+  // Wait for the focus event to be processed correctly.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return focus_tracker.focused_count() == 1 &&
+           focus_tracker.lost_focus_count() == 0;
+  }));
 }
 
 }  // namespace web_app
