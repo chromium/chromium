@@ -57,6 +57,17 @@ void TabModelObserverJniBridge::WillCloseTab(JNIEnv* env, TabAndroid* tab) {
   }
 }
 
+void TabModelObserverJniBridge::DidRemoveTabForClosure(JNIEnv* env,
+                                                       TabAndroid* tab) {
+  CHECK(tab);
+  for (auto& observer : model_observers_) {
+    observer.DidRemoveTabForClosure(tab);
+  }
+  for (auto& observer : interface_observers_) {
+    observer.OnTabRemoved(tab);
+  }
+}
+
 void TabModelObserverJniBridge::OnFinishingTabClosure(JNIEnv* env,
                                                       TabAndroid* tab,
                                                       int source) {
@@ -127,6 +138,9 @@ void TabModelObserverJniBridge::TabClosureUndone(JNIEnv* env, TabAndroid* tab) {
   for (auto& observer : model_observers_) {
     observer.TabClosureUndone(tab);
   }
+  for (auto& observer : interface_observers_) {
+    observer.OnTabAdded(tab, tab_model_->GetIndexOfTab(tab->GetHandle()));
+  }
 }
 
 void TabModelObserverJniBridge::OnTabCloseUndone(
@@ -134,6 +148,11 @@ void TabModelObserverJniBridge::OnTabCloseUndone(
     const std::vector<TabAndroid*>& tabs) {
   for (auto& observer : model_observers_) {
     observer.OnTabCloseUndone(tabs);
+  }
+  for (auto& observer : interface_observers_) {
+    for (TabAndroid* tab : tabs) {
+      observer.OnTabAdded(tab, tab_model_->GetIndexOfTab(tab->GetHandle()));
+    }
   }
 }
 

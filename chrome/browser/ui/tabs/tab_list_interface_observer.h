@@ -29,8 +29,9 @@ class TabListInterfaceObserver : public base::CheckedObserver {
   // never null.
   virtual void OnActiveTabChanged(tabs::TabInterface* tab) {}
 
-  // Called when a tab is removed from the tab list. `tab` is the removed tab
-  // and may be null after this call.
+  // Called when a tab is removed from the tab list. This may be the result of
+  // detaching the tab for reparenting, or for the tab being closed. `tab` is
+  // the removed tab and may be null after this call.
   virtual void OnTabRemoved(tabs::TabInterface* tab) {}
 
   // Called when a tab is moved within the tab list from `from_index` to

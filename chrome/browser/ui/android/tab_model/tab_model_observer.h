@@ -34,6 +34,10 @@ class TabModelObserver {
   // Called when a |tab| starts closing.
   virtual void WillCloseTab(TabAndroid* tab);
 
+  // Called after a tab has been removed due to closure. At this point the tab
+  // is no longer in the TabModel.
+  virtual void DidRemoveTabForClosure(TabAndroid* tab);
+
   // Called right before a |tab| has been destroyed.
   virtual void OnFinishingTabClosure(TabAndroid* tab,
                                      TabModel::TabClosingSource source);

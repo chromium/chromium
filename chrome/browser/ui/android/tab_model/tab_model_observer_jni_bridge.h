@@ -48,6 +48,8 @@ class TabModelObserverJniBridge {
 
   void WillCloseTab(JNIEnv* env, TabAndroid* tab);
 
+  void DidRemoveTabForClosure(JNIEnv* env, TabAndroid* tab);
+
   void OnFinishingTabClosure(JNIEnv* env, TabAndroid* tab, int source);
 
   void OnFinishingMultipleTabClosure(JNIEnv* env,

@@ -60,6 +60,14 @@ class TabModelObserverJniBridge implements TabModelObserver {
     }
 
     @Override
+    public final void didRemoveTabForClosure(Tab tab) {
+        assert mNativeTabModelObserverJniBridge != 0;
+        assert tab.isInitialized();
+        TabModelObserverJniBridgeJni.get()
+                .didRemoveTabForClosure(mNativeTabModelObserverJniBridge, tab);
+    }
+
+    @Override
     public final void onFinishingTabClosure(Tab tab, @TabClosingSource int source) {
         assert mNativeTabModelObserverJniBridge != 0;
         TabModelObserverJniBridgeJni.get()
@@ -213,6 +221,9 @@ class TabModelObserverJniBridge implements TabModelObserver {
                 int lastId);
 
         void willCloseTab(long nativeTabModelObserverJniBridge, @JniType("TabAndroid*") Tab tab);
+
+        void didRemoveTabForClosure(
+                long nativeTabModelObserverJniBridge, @JniType("TabAndroid*") Tab tab);
 
         void onFinishingTabClosure(
                 long nativeTabModelObserverJniBridge,
