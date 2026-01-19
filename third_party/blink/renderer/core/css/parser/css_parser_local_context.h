@@ -98,7 +98,7 @@ class CORE_EXPORT CSSParserLocalContext {
   // For standard CSS properties, need to pass CSSPropertyName with unresolved
   // property id.
   explicit CSSParserLocalContext(CSSPropertyName property_name)
-      : property_name_(property_name) {}
+      : unresolved_property_name_(property_name) {}
 
   CSSParserLocalContext WithCurrentShorthand(
       CSSPropertyID current_shorthand) const {
@@ -110,22 +110,25 @@ class CORE_EXPORT CSSParserLocalContext {
   void IncrementRandomValueCount() { ++random_value_count_; }
 
   bool UseAliasParsing() const {
-    if (!property_name_) {
+    if (!unresolved_property_name_) {
       return false;
     }
-    if (property_name_->IsCustomProperty()) {
+    if (unresolved_property_name_->IsCustomProperty()) {
       return false;
     }
-    return IsPropertyAlias(property_name_->Id());
+    return IsPropertyAlias(unresolved_property_name_->Id());
   }
 
   CSSPropertyID CurrentShorthand() const { return current_shorthand_; }
 
-  std::optional<CSSPropertyName> PropertyName() const { return property_name_; }
+  std::optional<CSSPropertyName> UnresolvedPropertyName() const {
+    return unresolved_property_name_;
+  }
 
   const AtomicString PropertyNameAndRandomCount() const {
     StringBuilder str;
-    if (property_name_.has_value()) {
+    if (unresolved_property_name_.has_value() &&
+        unresolved_property_name_->Id() != CSSPropertyID::kInvalid) {
       // Use string of form "PROPERTY {property_name} {property_value_index}"
       // as name, this is later used for caching random values [0]. The prefix
       // "PROPERTY" is needed since we need to make distinguish between custom
@@ -134,7 +137,12 @@ class CORE_EXPORT CSSParserLocalContext {
       // [0] https://drafts.csswg.org/css-values-5/#random-caching-key
       // [1] https://drafts.csswg.org/css-values-5/#typedef-random-value-sharing
       str.Append("PROPERTY ");
-      str.Append(property_name_->ToAtomicString());
+      CSSPropertyName resolved_property_name =
+          unresolved_property_name_->IsCustomProperty()
+              ? *unresolved_property_name_
+              : CSSPropertyName(
+                    ResolveCSSPropertyID(unresolved_property_name_->Id()));
+      str.Append(resolved_property_name.ToAtomicString());
       str.Append(" ");
       str.AppendNumber(random_value_count_);
     }
@@ -147,7 +155,7 @@ class CORE_EXPORT CSSParserLocalContext {
   CSSParserLocalContext() = default;
 
   CSSPropertyID current_shorthand_ = CSSPropertyID::kInvalid;
-  std::optional<CSSPropertyName> property_name_;
+  std::optional<CSSPropertyName> unresolved_property_name_;
   wtf_size_t random_value_count_ = 0;
 };
 

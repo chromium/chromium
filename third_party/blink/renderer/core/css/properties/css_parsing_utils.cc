@@ -8718,8 +8718,8 @@ bool ConsumeRadii(std::array<CSSValue*, 4>& horizontal_radii,
   } else {
     // Legacy syntax: -webkit-border-radius: l1 l2; is equivalent to
     // border-radius: l1 / l2;
-    if (local_context.PropertyName().has_value() &&
-        local_context.PropertyName()->Id() ==
+    if (local_context.UnresolvedPropertyName().has_value() &&
+        local_context.UnresolvedPropertyName()->Id() ==
             CSSPropertyID::kAliasWebkitBorderRadius &&
         horizontal_value_count == 2) {
       vertical_radii[0] = horizontal_radii[1];
