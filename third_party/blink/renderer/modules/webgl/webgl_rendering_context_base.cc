@@ -3504,13 +3504,15 @@ GLint WebGLRenderingContextBase::getAttribLocation(WebGLProgram* program,
     return -1;
   if (!ValidateString("getAttribLocation", name))
     return -1;
-  if (IsPrefixReserved(name))
-    return -1;
   if (!program->LinkStatus(this)) {
     SynthesizeGLError(GL_INVALID_OPERATION, "getAttribLocation",
                       "program not linked");
     return -1;
   }
+  if (IsPrefixReserved(name)) {
+    return -1;
+  }
+
   return ContextGL()->GetAttribLocation(ObjectOrZero(program),
                                         name.Utf8().c_str());
 }
