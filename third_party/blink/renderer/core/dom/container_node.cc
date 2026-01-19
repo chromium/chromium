@@ -1921,15 +1921,17 @@ String ContainerNode::getHTML(const GetHTMLOptions* options,
 
 WritableStream* ContainerNode::streamAppendHTMLUnsafe(
     ScriptState* script_state,
+    SetHTMLUnsafeOptions* options,
     ExceptionState& exception_state) {
-  return HTMLStream::Create(script_state, this, exception_state);
+  return HTMLStream::Create(script_state, this, options, exception_state);
 }
 
 WritableStream* ContainerNode::streamHTMLUnsafe(
     ScriptState* script_state,
+    SetHTMLUnsafeOptions* options,
     ExceptionState& exception_state) {
   WritableStream* stream =
-      HTMLStream::Create(script_state, this, exception_state);
+      HTMLStream::Create(script_state, this, options, exception_state);
   if (!exception_state.HadException()) {
     RemoveChildren();
   }

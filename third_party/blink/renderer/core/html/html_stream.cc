@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/html_stream.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_set_html_unsafe_options.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -22,7 +23,9 @@ namespace blink {
 namespace {
 class HTMLSink : public UnderlyingSinkBase {
  public:
-  explicit HTMLSink(ContainerNode& new_target) : target(new_target) {
+  explicit HTMLSink(ContainerNode& new_target,
+                    SetHTMLUnsafeOptions* new_options)
+      : target(new_target), options(new_options) {
     CHECK(target->IsElementNode() || target->IsShadowRoot());
   }
 
@@ -30,6 +33,7 @@ class HTMLSink : public UnderlyingSinkBase {
     UnderlyingSinkBase::Trace(visitor);
     visitor->Trace(target);
     visitor->Trace(parser);
+    visitor->Trace(options);
   }
 
   ScriptPromise<IDLUndefined> start(ScriptState* script_state,
@@ -45,7 +49,10 @@ class HTMLSink : public UnderlyingSinkBase {
     // FIXME(nrosenthal): custom element registry support?
     parser = MakeGarbageCollected<HTMLDocumentParser>(
         target, context_element,
-        ParserContentPolicy::kAllowScriptingContentAndDoNotMarkAlreadyStarted,
+        options->runScripts()
+            ? ParserContentPolicy::
+                  kAllowScriptingContentAndDoNotMarkAlreadyStarted
+            : ParserContentPolicy::kAllowScriptingContent,
         ParserPrefetchPolicy::kDisallowPrefetching, /*registry*/ nullptr);
     return ToResolvedUndefinedPromise(script_state);
   }
@@ -86,15 +93,17 @@ class HTMLSink : public UnderlyingSinkBase {
 
   Member<ContainerNode> target;
   Member<DocumentParser> parser;
+  Member<SetHTMLUnsafeOptions> options;
 };
 }  // namespace
 
 // static
 WritableStream* HTMLStream::Create(ScriptState* script_state,
                                    ContainerNode* target,
+                                   SetHTMLUnsafeOptions* options,
                                    ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
-  HTMLSink* sink = MakeGarbageCollected<HTMLSink>(*target);
+  HTMLSink* sink = MakeGarbageCollected<HTMLSink>(*target, options);
   return WritableStream::CreateWithCountQueueingStrategy(script_state, sink, 1);
 }
 }  // namespace blink

@@ -9,6 +9,7 @@ namespace blink {
 class ContainerNode;
 class ExceptionState;
 class ScriptState;
+class SetHTMLUnsafeOptions;
 class WritableStream;
 
 // This creates a Writable stream that takes string and inserts them into an
@@ -17,6 +18,7 @@ class HTMLStream {
  public:
   static WritableStream* Create(ScriptState*,
                                 ContainerNode* target,
+                                SetHTMLUnsafeOptions* options,
                                 ExceptionState&);
 };
 }  // namespace blink
