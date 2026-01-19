@@ -230,4 +230,7 @@ BASE_FEATURE(kWebAuthenticationWindowsHints, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kWebAuthnEnableRefreshingStateOfGpmEnclaveController,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enabled by default in M146. Remove in or after M149.
+BASE_FEATURE(kWebAuthnHmacSecretMcExtension, base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace device

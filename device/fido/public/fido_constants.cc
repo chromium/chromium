@@ -217,8 +217,10 @@ const char kCableClientHelloMessage[] = "caBLE v1 client hello";
 const char kCtap2Version[] = "FIDO_2_0";
 const char kU2fVersion[] = "U2F_V2";
 const char kCtap2_1Version[] = "FIDO_2_1";
+const char kCtap2_2Version[] = "FIDO_2_2";
 
 const char kExtensionHmacSecret[] = "hmac-secret";
+const char kExtensionHmacSecretMc[] = "hmac-secret-mc";
 const char kExtensionCredProtect[] = "credProtect";
 const char kExtensionLargeBlob[] = "largeBlob";
 const char kExtensionLargeBlobKey[] = "largeBlobKey";

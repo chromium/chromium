@@ -185,6 +185,10 @@ BASE_DECLARE_FEATURE(kWebAuthenticationWindowsHints);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnEnableRefreshingStateOfGpmEnclaveController);
 
+// Support CTAP2.2 hmac-secret-mc extension in make credential request.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_DECLARE_FEATURE(kWebAuthnHmacSecretMcExtension);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_PUBLIC_FEATURES_H_

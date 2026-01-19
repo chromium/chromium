@@ -35,8 +35,10 @@ namespace {
 constexpr size_t kResponseCodeLength = 1;
 
 ProtocolVersion ConvertStringToProtocolVersion(std::string_view version) {
-  if (version == kCtap2Version || version == kCtap2_1Version)
+  if (version == kCtap2Version || version == kCtap2_1Version ||
+      version == kCtap2_2Version) {
     return ProtocolVersion::kCtap2;
+  }
   if (version == kU2fVersion)
     return ProtocolVersion::kU2f;
 
@@ -49,6 +51,9 @@ std::optional<Ctap2Version> ConvertStringToCtap2Version(
     return Ctap2Version::kCtap2_0;
   if (version == kCtap2_1Version)
     return Ctap2Version::kCtap2_1;
+  if (version == kCtap2_2Version) {
+    return Ctap2Version::kCtap2_2;
+  }
 
   return std::nullopt;
 }
@@ -442,6 +447,8 @@ std::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
         options.supports_min_pin_length_extension = true;
       } else if (extension_str == kExtensionHmacSecret) {
         options.supports_hmac_secret = true;
+      } else if (extension_str == kExtensionHmacSecretMc) {
+        options.supports_hmac_secret_mc = true;
       } else if (extension_str == kExtensionPRF) {
         options.supports_prf = true;
       } else if (extension_str == kExtensionLargeBlob) {

@@ -24,6 +24,7 @@ enum class ProtocolVersion {
 enum class Ctap2Version {
   kCtap2_0,
   kCtap2_1,
+  kCtap2_2,
 };
 
 enum class CredentialType { kPublicKey };

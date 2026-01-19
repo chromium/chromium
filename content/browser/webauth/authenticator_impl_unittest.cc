@@ -5491,6 +5491,272 @@ TEST_F(PINAuthenticatorImplTest, MakeCredentialHMACSecret) {
   }
 }
 
+TEST_F(PINAuthenticatorImplTest, PRFOnCreate) {
+  // WebAuthn PRF client registration extension allows a Relying Party
+  // to evaluate outputs from a PRF associated with the credential to be
+  // registered.
+  // Some hybrid and platform authenticators (i.e. QR code) supports this
+  // with PRF extension, some others (i.e. security keys) supports this
+  // with hmac-secret-mc extension.
+  enum ExtensionSupport {
+    kNone,
+    kPRF,
+    kHmacSecretMc,
+  };
+
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  // Verifies PRF-on-create with or without hmac-secret-mc support flag set.
+  for (bool feature_enabled : {true, false}) {
+    base::test::ScopedFeatureList feature_list;
+    if (!feature_enabled) {
+      feature_list.InitAndDisableFeature(
+          device::kWebAuthnHmacSecretMcExtension);
+    }
+    // Verifies PRF-on-create with authenticator's extension support cases.
+    for (ExtensionSupport extension_support : {kPRF, kHmacSecretMc, kNone}) {
+      // Verifies PRF result values depending on whether authenticator supports
+      // user verification or not.
+      for (bool uv_required : {true, false}) {
+        SCOPED_TRACE(::testing::Message()
+                     << "feature_enabled: " << feature_enabled << ", "
+                     << "extension_support: " << extension_support << ", "
+                     << "uv_required: " << uv_required);
+        ResetVirtualDevice();
+
+        // Configure virtual CTAP2 device.
+        device::VirtualCtap2Device::Config config;
+        switch (extension_support) {
+          case kPRF:
+            // authenticator supports PRF extension.
+            config.prf_support = true;
+            config.internal_account_chooser = true;
+            break;
+          case kHmacSecretMc:
+            // authenticator supports hmac-secret-mc extension.
+            config.hmac_secret_support = true;
+            config.hmac_secret_mc_support = true;
+            break;
+          case kNone:
+            // authenticator doesn't support the extensions.
+            break;
+        }
+        if (uv_required) {
+          // Set authenticator supports pin for the case with 'required'
+          // user verification requirement option.
+          config.pin_support = true;
+        }
+        config.pin_uv_auth_token_support = true;
+        config.ctap2_versions = {device::Ctap2Version::kCtap2_2};
+        // Set authenticator creates the hmac secret key for the new
+        // credential, filled with 3 for the uv unsupported authenticators,
+        // with 4 for the uv supported authenticators.
+        config.make_credential_hmac_key_byte.emplace(3, 4);
+        virtual_device_factory_->SetCtap2Config(config);
+
+        if (uv_required) {
+          test_client_.expected = {{PINReason::kSet, kTestPIN16,
+                                    device::kMaxPinRetries,
+                                    device::kMinPinLength}};
+        } else {
+          test_client_.expected.clear();
+        }
+
+        // Prepare expected PRF results.
+        device::PRFInput prf_input_eval;
+        prf_input_eval.input1 = std::vector<uint8_t>(32, 1);
+        prf_input_eval.input2 = std::vector<uint8_t>(32, 2);
+        prf_input_eval.HashInputsIntoSalts();
+        auto make_prf_results_eval =
+            [&prf_input_eval](
+                uint8_t hmac_key_byte) -> const std::vector<uint8_t> {
+          return device::PRFInput::EvaluateHMAC(
+              std::vector<uint8_t>(32, hmac_key_byte), prf_input_eval.salt1,
+              prf_input_eval.salt2);
+        };
+        const std::vector<uint8_t> prf_results_eval =
+            uv_required ? make_prf_results_eval(
+                              config.make_credential_hmac_key_byte->second)
+                        : make_prf_results_eval(
+                              config.make_credential_hmac_key_byte->first);
+
+        // Make credential with prf input, and get result.
+        auto options = make_credential_options(
+            uv_required ? device::UserVerificationRequirement::kRequired
+                        : device::UserVerificationRequirement::kPreferred);
+        options->prf_enable = true;
+        options->prf_input = blink::mojom::PRFValues::New();
+        options->prf_input->first = prf_input_eval.input1;
+        options->prf_input->second = prf_input_eval.input2;
+        MakeCredentialResult result =
+            AuthenticatorMakeCredential(std::move(options));
+
+        // Verify make credential result.
+        EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+        EXPECT_TRUE(result.response->echo_prf);
+        switch (extension_support) {
+          case kHmacSecretMc:
+            if (!feature_enabled) {
+              // In case that authenticator supports hmac-secret-mc
+              // extension but the feature flag is disabled, the
+              // make credential result doesn't contain prf results.
+              EXPECT_TRUE(result.response->prf);
+              ASSERT_FALSE(result.response->prf_results);
+              break;
+            }
+            ABSL_FALLTHROUGH_INTENDED;
+          case kPRF:
+            // In case that authenticator supports PRF extension, or
+            // authenticator supports hmac-secret-mc extension and
+            // the feature flag is enabled, the make credential result
+            // contains prf results.
+            EXPECT_TRUE(result.response->prf);
+            ASSERT_TRUE(result.response->prf_results);
+            EXPECT_EQ(result.response->prf_results->first.size(), 32u);
+            EXPECT_EQ(result.response->prf_results->second->size(), 32u);
+            // validate the prf results in the make credential result.
+            EXPECT_EQ(result.response->prf_results->first,
+                      std::vector<uint8_t>(&prf_results_eval[0],
+                                           &prf_results_eval[32]));
+            EXPECT_EQ(result.response->prf_results->second,
+                      std::vector<uint8_t>(prf_results_eval.begin() + 32,
+                                           prf_results_eval.end()));
+            break;
+          case kNone:
+            EXPECT_FALSE(result.response->prf);
+            ASSERT_FALSE(result.response->prf_results);
+            break;
+        }
+
+        // Verify make credential authentication data.
+        device::AuthenticatorData parsed_auth_data =
+            AuthDataFromMakeCredentialResponse(result.response);
+        bool has_hmac_secret = false;
+        bool has_hmac_secret_mc = false;
+        const auto& extensions = parsed_auth_data.extensions();
+        if (extensions) {
+          CHECK(extensions->is_map());
+          const cbor::Value::MapValue& extensions_map = extensions->GetMap();
+
+          const auto hmac_secret_it =
+              extensions_map.find(cbor::Value(device::kExtensionHmacSecret));
+          // Verify hmac-secret extension response if exists.
+          if (hmac_secret_it != extensions_map.end()) {
+            ASSERT_TRUE(hmac_secret_it->second.is_bool());
+            EXPECT_TRUE(hmac_secret_it->second.GetBool());
+            has_hmac_secret = true;
+          }
+
+          const auto hmac_secret_mc_it =
+              extensions_map.find(cbor::Value(device::kExtensionHmacSecretMc));
+          // Verify hmac-secret-mc extension response if exists.
+          if (hmac_secret_mc_it != extensions_map.end()) {
+            ASSERT_TRUE(hmac_secret_mc_it->second.is_bytestring());
+            // Since the authenticator encrypts and returns the hashed
+            // hmac secret key generated for the requested credentials,
+            // the hmac-secret-mc response in the authentication data
+            // must be different from the hashed secret key generated
+            // by the authenticator.
+            EXPECT_NE(prf_results_eval,
+                      hmac_secret_mc_it->second.GetBytestring());
+            has_hmac_secret_mc = true;
+          }
+        }
+        switch (extension_support) {
+          case kPRF:
+          case kNone:
+            EXPECT_FALSE(has_hmac_secret);
+            EXPECT_FALSE(has_hmac_secret_mc);
+            break;
+          case kHmacSecretMc:
+            EXPECT_TRUE(has_hmac_secret);
+            if (feature_enabled) {
+              EXPECT_TRUE(has_hmac_secret_mc);
+            } else {
+              EXPECT_FALSE(has_hmac_secret_mc);
+            }
+            break;
+        }
+      }
+    }
+  }
+}
+
+TEST_F(PINAuthenticatorImplTest, HmacSecretMcWithVirtualAuthenticator) {
+  // Test PRF-on-create with a VirtualAuthenticator that supports
+  // hmac-secret-mc extension and doesn't support user verification.
+
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  virtual_device_factory_ = nullptr;
+  content::AuthenticatorEnvironment* authenticator_environment =
+      content::AuthenticatorEnvironment::GetInstance();
+  authenticator_environment->Reset();
+  FrameTreeNode* frame_tree_node =
+      static_cast<content::RenderFrameHostImpl*>(main_rfh())->frame_tree_node();
+  authenticator_environment->EnableVirtualAuthenticatorFor(frame_tree_node,
+                                                           /*enable_ui=*/false);
+  VirtualAuthenticatorManagerImpl* virtual_authenticator_manager =
+      authenticator_environment->MaybeGetVirtualAuthenticatorManager(
+          frame_tree_node);
+  VirtualAuthenticator::Options virt_auth_options;
+  virt_auth_options.protocol = device::ProtocolVersion::kCtap2;
+  virt_auth_options.ctap2_version = device::Ctap2Version::kCtap2_2;
+  virt_auth_options.has_hmac_secret_mc = true;
+  VirtualAuthenticator* authenticator =
+      virtual_authenticator_manager->AddAuthenticatorAndReturnNonOwningPointer(
+          virt_auth_options);
+
+  test_client_.expected.clear();
+
+  auto options =
+      make_credential_options(device::UserVerificationRequirement::kPreferred);
+  options->prf_enable = true;
+  options->prf_input = blink::mojom::PRFValues::New();
+  options->prf_input->first = std::vector<uint8_t>(32, 1);
+  options->prf_input->second = std::vector<uint8_t>(32, 2);
+
+  MakeCredentialResult result = AuthenticatorMakeCredential(std::move(options));
+  EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+
+  EXPECT_TRUE(result.response->prf);
+  ASSERT_TRUE(result.response->prf_results);
+  EXPECT_EQ(result.response->prf_results->first.size(), 32u);
+  EXPECT_EQ(result.response->prf_results->second->size(), 32u);
+
+  device::AuthenticatorData parsed_auth_data =
+      AuthDataFromMakeCredentialResponse(result.response);
+
+  bool has_hmac_secret = false;
+  bool has_hmac_secret_mc = false;
+  const auto& extensions = parsed_auth_data.extensions();
+  if (extensions) {
+    CHECK(extensions->is_map());
+    const cbor::Value::MapValue& extensions_map = extensions->GetMap();
+
+    const auto hmac_secret_it =
+        extensions_map.find(cbor::Value(device::kExtensionHmacSecret));
+    if (hmac_secret_it != extensions_map.end()) {
+      ASSERT_TRUE(hmac_secret_it->second.is_bool());
+      EXPECT_TRUE(hmac_secret_it->second.GetBool());
+      has_hmac_secret = true;
+    }
+
+    const auto hmac_secret_mc_it =
+        extensions_map.find(cbor::Value(device::kExtensionHmacSecretMc));
+    if (hmac_secret_mc_it != extensions_map.end()) {
+      ASSERT_TRUE(hmac_secret_mc_it->second.is_bytestring());
+      has_hmac_secret_mc = true;
+    }
+  }
+
+  EXPECT_TRUE(has_hmac_secret);
+  EXPECT_TRUE(has_hmac_secret_mc);
+
+  EXPECT_TRUE(
+      authenticator->registrations().contains(result.response->info->raw_id));
+}
+
 TEST_F(PINAuthenticatorImplTest, GetAssertion) {
   typedef std::array<int, 3> UvRequirement;
   typedef std::array<UvRequirement, 3> Expectations;

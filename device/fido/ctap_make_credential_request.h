@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "device/fido/ctap_request_common.h"
 #include "device/fido/json_request.h"
 #include "device/fido/pin.h"
 #include "device/fido/prf_input.h"
@@ -83,6 +84,11 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapMakeCredentialRequest {
   // prf indicates that the "prf" extension should be asserted to request that
   // the authenticator associate a PRF with the credential.
   bool prf = false;
+
+  std::optional<HMACSecret> hmac_secret_mc;
+
+  // The ephemeral key use to encrypt PIN material.
+  std::optional<pin::KeyAgreementResponse> pin_key_agreement;
 
   // prf_input contains the hashed salts for doing a PRF evaluation at
   // credential creation time. This is only possible when the authenticator
