@@ -146,8 +146,8 @@ TEST_F(BookmarkSpotlightManagerTest, testParentFolderNamesForNode) {
                    prefService:pref_service_];
 
   const bookmarks::BookmarkNode* root = bookmark_model_->mobile_node();
-  static const std::string model_string("a 1:[ b c ] d 2:[ 21:[ e ] f g ] h ");
-  bookmarks::test::AddNodesFromModelString(bookmark_model_, root, model_string);
+  static const char kModelString[] = "a 1:[ b c ] d 2:[ 21:[ e ] f g ] h ";
+  bookmarks::test::AddNodesFromModelString(bookmark_model_, root, kModelString);
   const bookmarks::BookmarkNode* eNode =
       root->children()[3]->children().front()->children().front().get();
   NSMutableArray* folderNames = [manager parentFolderNamesForNode:eNode];

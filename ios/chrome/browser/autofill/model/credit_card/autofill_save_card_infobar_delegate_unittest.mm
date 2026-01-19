@@ -36,7 +36,7 @@ using SaveCreditCardOptions =
 constexpr int kNavEntryId = 10;
 constexpr std::string_view kSaveCreditCardPromptOfferBaseHistogram =
     "Autofill.SaveCreditCardPromptOffer.IOS";
-const std::string kSaveCreditCardPromptResultIOSPrefix =
+constexpr std::string_view kSaveCreditCardPromptResultIOSPrefix =
     "Autofill.SaveCreditCardPromptResult.IOS";
 }  // namespace
 

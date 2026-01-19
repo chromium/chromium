@@ -46,15 +46,10 @@ source_set("unit_tests") {
     "//ios/chrome/browser/contextual_panel/model:public",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/web/public/test",
     "//testing/gtest",
     "//ui/base",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("feature") {

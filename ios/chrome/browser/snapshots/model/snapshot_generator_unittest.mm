@@ -22,9 +22,9 @@
 namespace {
 
 // Valid URL for testing.
-const std::string kTestURL = "https://www.chromium.org/";
+constexpr std::string_view kTestURL = "https://www.chromium.org/";
 // Valid URL for NTP.
-const std::string kNewTabURL = "chrome://newtab";
+constexpr std::string_view kNewTabURL = "chrome://newtab";
 
 // Dimension of the WebState's view.
 constexpr CGSize kWebStateViewSize = {300, 400};

@@ -32,7 +32,7 @@ namespace {
 const char kTestUrl[] = "https://www.merchant.com/price_drop_product";
 const char kTestSecondUrl[] =
     "https://www.merchant.com/second_price_drop_product";
-std::string kTestTitle = "Product";
+constexpr std::string_view kTestTitle = "Product";
 
 }  // namespace
 

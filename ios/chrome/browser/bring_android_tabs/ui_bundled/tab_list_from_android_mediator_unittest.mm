@@ -22,8 +22,8 @@
 #import "url/gurl.h"
 
 namespace {
-const std::vector<std::string> kTestUrls{
-    "http://chromium.org", "http://google.com", "http://example.com"};
+constexpr auto kTestUrls = std::to_array<std::string_view>(
+    {"http://chromium.org", "http://google.com", "http://example.com"});
 }  // namespace
 
 // Test fixture for TabListFromAndroidMediator.
@@ -50,7 +50,7 @@ class TabListFromAndroidMediatorTest : public PlatformTest {
   // open.
   std::vector<std::unique_ptr<synced_sessions::DistantTab>> SetOfTabs() {
     std::vector<std::unique_ptr<synced_sessions::DistantTab>> tabs;
-    for (std::string url : kTestUrls) {
+    for (std::string_view url : kTestUrls) {
       std::unique_ptr<synced_sessions::DistantTab> tab =
           std::make_unique<synced_sessions::DistantTab>();
       tab->virtual_url = GURL(url);

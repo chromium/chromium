@@ -244,10 +244,6 @@ source_set("ios_web_general_unittests") {
     "web_client_unittest.mm",
     "web_thread_unittest.cc",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("ios_web_navigation_unittests") {

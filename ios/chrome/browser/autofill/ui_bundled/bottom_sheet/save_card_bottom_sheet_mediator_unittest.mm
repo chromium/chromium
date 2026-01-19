@@ -48,19 +48,19 @@ using SaveCreditCardPromptResultIOS =
 
 constexpr std::string_view kSaveCreditCardPromptOfferBaseHistogram =
     "Autofill.SaveCreditCardPromptOffer.IOS";
-const std::string kSaveCreditCardPromptResultIOSPrefix =
+constexpr std::string_view kSaveCreditCardPromptResultIOSPrefix =
     "Autofill.SaveCreditCardPromptResult.IOS.Server.BottomSheet.NumStrikes.0."
     "NoFixFlow";
-const std::string kSaveCreditCardPromptResultIOSPrefixForLocalSave =
+constexpr std::string_view kSaveCreditCardPromptResultIOSPrefixForLocalSave =
     "Autofill.SaveCreditCardPromptResult.IOS.Local.BottomSheet.NumStrikes.0."
     "NoFixFlow";
-const std::string kCreditCardUploadLoadingShownPrefix =
+constexpr std::string_view kCreditCardUploadLoadingShownPrefix =
     "Autofill.CreditCardUpload.LoadingShown";
-const std::string kCreditCardUploadLoadingResultPrefix =
+constexpr std::string_view kCreditCardUploadLoadingResultPrefix =
     "Autofill.CreditCardUpload.LoadingResult";
-const std::string kCreditCardUploadSuccessConfirmationShownPrefix =
+constexpr std::string_view kCreditCardUploadSuccessConfirmationShownPrefix =
     "Autofill.CreditCardUpload.ConfirmationShown";
-const std::string kCreditCardUploadSuccessConfirmationResultPrefix =
+constexpr std::string_view kCreditCardUploadSuccessConfirmationResultPrefix =
     "Autofill.CreditCardUpload.ConfirmationResult";
 
 autofill::AutofillSaveCardUiInfo CreateAutofillSaveCardUiInfo(bool for_upload) {

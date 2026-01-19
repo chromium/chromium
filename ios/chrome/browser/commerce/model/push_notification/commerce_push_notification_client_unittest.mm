@@ -56,7 +56,7 @@ namespace {
 constexpr char kHintKey[] = "https://www.merchant.com/price_drop_product";
 constexpr char kBookmarkFoundHistogramName[] =
     "Commerce.PriceTracking.Untrack.BookmarkFound";
-std::string kBookmarkTitle = "My product title";
+constexpr std::string_view kBookmarkTitle = "My product title";
 constexpr uint64_t kClusterId = 12345L;
 constexpr char kPayloadValue[] = "value";
 NSString* const kSerializedPayloadKey = @"op";

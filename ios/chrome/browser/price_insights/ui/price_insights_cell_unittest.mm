@@ -22,8 +22,8 @@ const char kUrl[] = "https://www.merchant.com/price_drop_product";
 
 NSString* const kTitle = @"Product title";
 NSString* const kVariant = @"Product variant";
-std::string kCurrency = "USD";
-std::string kCountryCode = "us";
+constexpr char kCurrency[] = "USD";
+constexpr char kCountryCode[] = "us";
 
 // Retrieves a view of a specified class with a given accessibility identifier
 // within a given view hierarchy.
