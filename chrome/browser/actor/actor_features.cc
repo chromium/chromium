@@ -103,6 +103,8 @@ BASE_FEATURE(kGlicNavigateWithoutUserGesture, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicPerformActionsReturnsBeforeStateChange,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicEarlyAddTaskTabs, base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicSkipBeforeUnloadDialogAndNavigate,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -4,6 +4,7 @@
 
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -43,34 +44,6 @@ using content::WebContents;
 namespace actor {
 
 namespace {
-
-class ExecutionEngineStateWaiter : public ExecutionEngine::StateObserver {
- public:
-  ExecutionEngineStateWaiter(base::OnceClosure callback,
-                             ExecutionEngine* execution_engine,
-                             ExecutionEngine::State target_state)
-      : callback_(std::move(callback)),
-        execution_engine_(execution_engine),
-        target_state_(target_state) {
-    execution_engine_->AddObserver(this);
-  }
-  ~ExecutionEngineStateWaiter() override {
-    execution_engine_->RemoveObserver(this);
-  }
-
-  // `ExecutionEngine::StateObserver`:
-  void OnStateChanged(ExecutionEngine::State old_state,
-                      ExecutionEngine::State new_state) override {
-    if (new_state == target_state_) {
-      std::move(callback_).Run();
-    }
-  }
-
- private:
-  base::OnceClosure callback_;
-  const raw_ptr<ExecutionEngine> execution_engine_;
-  ExecutionEngine::State target_state_;
-};
 
 class ActorToolAgnosticBrowserTest : public ActorToolsTest {
  public:
@@ -533,6 +506,63 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
   }
 }
 
+// TODO(b/472640712): Test runs only when this flag is enabled, remove the
+// unique test-suite once the change lands safely and the flag is removed.
+class ActorEarlyAddTaskTabsBrowserTest : public ActorToolAgnosticBrowserTest {
+ public:
+  ActorEarlyAddTaskTabsBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(kGlicEarlyAddTaskTabs);
+  }
+  ~ActorEarlyAddTaskTabsBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Ensure that a tab-scoped action associates the tab with the ActorTask
+// immediately after calling Act.
+IN_PROC_BROWSER_TEST_F(ActorEarlyAddTaskTabsBrowserTest,
+                       TabScopedToolRequestAddsTabImmediately) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  std::optional<int> button_id =
+      GetDOMNodeId(*main_frame(), "button#clickable");
+  ASSERT_TRUE(button_id);
+
+  std::unique_ptr<ToolRequest> action =
+      MakeClickRequest(*main_frame(), button_id.value());
+  tabs::TabHandle tab = action->GetTabHandle();
+  ASSERT_NE(tab, tabs::TabHandle::Null());
+  ASSERT_FALSE(actor_task().GetTabs().contains(tab));
+
+  // Tab-scoped actions require async site_policy checks.
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+
+  // Tabs are added asynchronously so the execution engine isn't started until
+  // tabs are added. Wait until tabs are added.
+  ASSERT_EQ(actor_task().GetExecutionEngine()->state(),
+            ExecutionEngine::State::kInit);
+  base::test::TestFuture<void> started_future;
+  ExecutionEngineStateWaiter waiter(started_future.GetCallback(),
+                                    *actor_task().GetExecutionEngine(),
+                                    ExecutionEngine::State::kStartAction);
+  ASSERT_TRUE(started_future.Wait());
+
+  // Now that tabs have been added the execution engine should be in an async
+  // site policy checks state before the tool is created.
+  ASSERT_EQ(actor_task().GetExecutionEngine()->state(),
+            ExecutionEngine::State::kStartAction);
+  ASSERT_FALSE(result.IsReady());
+
+  // Ensure the tab is added to the task without waiting for those checks to
+  // resolve. This is needed as the site policy checks may query task tabs (e.g.
+  // a "Switch To Tab" button while confirming a non-allowlisted URL).
+  EXPECT_TRUE(actor_task().GetTabs().contains(tab));
+}
+
 // This test is for behavior guarded by a killswitch.
 class ActorToolAgnosticBrowserTestWithDeferWhileInterrupted
     : public ActorToolAgnosticBrowserTest {
@@ -604,7 +634,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTestWithDeferWhileInterrupted,
   // Uninterrupting the task should unblock everything to completion.
   base::test::TestFuture<void> completion_future;
   ExecutionEngineStateWaiter waiter(completion_future.GetCallback(),
-                                    actor_task().GetExecutionEngine(),
+                                    *actor_task().GetExecutionEngine(),
                                     ExecutionEngine::State::kComplete);
   actor_task().Uninterrupt(ActorTask::State::kActing);
   ASSERT_TRUE(completion_future.Wait());
@@ -642,14 +672,30 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTestWithCustomDelay,
       GetDOMNodeId(*main_frame(), "button#clickable");
   ASSERT_TRUE(button_id);
 
+  ActResultFuture result;
+  base::test::TestFuture<void> start_future;
+  ExecutionEngineStateWaiter state_waiter(start_future.GetCallback(),
+                                          *actor_task().GetExecutionEngine(),
+                                          ExecutionEngine::State::kToolInvoke);
+
   std::unique_ptr<ToolRequest> action =
       MakeClickRequest(*main_frame(), button_id.value());
-  ActResultFuture result;
+  tabs::TabHandle tab_handle = action->GetTabHandle();
   actor_task().Act(ToRequestList(action), result.GetCallback());
+
+  // Wait until the tab has been associated with the task but before the tool
+  // finishes invoking in ExecutionEngine.
+  ASSERT_TRUE(start_future.Wait());
+  ASSERT_EQ(actor_task().GetExecutionEngine()->state(),
+            ExecutionEngine::State::kToolInvoke);
+  ASSERT_TRUE(actor_task().GetTabs().contains(tab_handle));
+  ASSERT_FALSE(result.IsReady());
+
   web_contents()->Close();
   // ActorTask::OnTabWillDetach will return kError before renderer tool
-  // completes.
-  ExpectErrorResult(result, mojom::ActionResultCode::kTabWentAway);
+  // completes. The code is kTaskWentAway because removing a tab causes the task
+  // to be stopped.
+  ExpectErrorResult(result, mojom::ActionResultCode::kTaskWentAway);
 
   // Continue running so tool finish callback from ToolController can proceed
   // after WebContents closed, it should not crash.
@@ -673,7 +719,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTestWithCustomDelay,
 
   base::test::TestFuture<void> tool_invoke_future;
   ExecutionEngineStateWaiter waiter(tool_invoke_future.GetCallback(),
-                                    actor_task().GetExecutionEngine(),
+                                    *actor_task().GetExecutionEngine(),
                                     ExecutionEngine::State::kToolInvoke);
   std::unique_ptr<ToolRequest> action =
       MakeClickRequest(*main_frame(), button_id.value());

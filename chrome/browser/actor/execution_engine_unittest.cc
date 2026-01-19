@@ -413,8 +413,10 @@ TEST_F(ExecutionEngineTest, ActFailsWhenAddTabFails) {
           base::BindRepeating(MakeNotImplementedResult)));
   EXPECT_FALSE(
       Act(GURL("http://localhost/"), MakeClickCallback(kFakeContentNodeId)));
-  histograms_.ExpectUniqueSample(kActionResultHistogram,
-                                 mojom::ActionResultCode::kNotImplemented, 1);
+
+  // Because AddTab occurs before entering ExecutionEngine, we don't expect a
+  // result to be recorded.
+  histograms_.ExpectTotalCount(kActionResultHistogram, 0);
 }
 
 TEST_F(ExecutionEngineTest, ActFailsWhenTabDestroyed) {
@@ -446,9 +448,14 @@ TEST_F(ExecutionEngineTest, CrossOriginNavigationBeforeAction) {
   fake_chrome_render_frame.OverrideBinder(main_rfh());
 
   ActResultFuture result;
+  base::test::TestFuture<void> start_future;
+  ExecutionEngineStateWaiter state_waiter(start_future.GetCallback(),
+                                          *task_->GetExecutionEngine(),
+                                          ExecutionEngine::State::kStartAction);
   std::unique_ptr<ToolRequest> action =
       MakeClickCallback(kFakeContentNodeId).Run();
   task_->Act(ToRequestList(std::move(action)), result.GetCallback());
+  ASSERT_TRUE(start_future.Wait());
 
   // Before the action happens, commit a cross-origin navigation.
   ASSERT_FALSE(result.IsReady());

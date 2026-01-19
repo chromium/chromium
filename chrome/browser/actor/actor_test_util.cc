@@ -657,4 +657,28 @@ std::string EncodeURI(const std::string& component) {
   return std::string(encoded.view());
 }
 
+ExecutionEngineStateWaiter::ExecutionEngineStateWaiter(
+    base::OnceClosure callback,
+    ExecutionEngine& execution_engine,
+    ExecutionEngine::State target_state)
+    : callback_(std::move(callback)),
+      execution_engine_(execution_engine.GetWeakPtr()),
+      target_state_(target_state) {
+  execution_engine_->AddObserver(this);
+}
+
+ExecutionEngineStateWaiter::~ExecutionEngineStateWaiter() {
+  if (execution_engine_) {
+    execution_engine_->RemoveObserver(this);
+  }
+}
+
+void ExecutionEngineStateWaiter::OnStateChanged(
+    ExecutionEngine::State old_state,
+    ExecutionEngine::State new_state) {
+  if (new_state == target_state_) {
+    std::move(callback_).Run();
+  }
+}
+
 }  // namespace actor

@@ -78,6 +78,9 @@ BASE_DECLARE_FEATURE(kGlicPerformActionsReturnsBeforeStateChange);
 
 BASE_DECLARE_FEATURE(kGlicDeferActUntilUninterrupted);
 
+// Kill switch for adding tabs to an ActorTask earlier during action handling.
+BASE_DECLARE_FEATURE(kGlicEarlyAddTaskTabs);
+
 // Enables a full page screenshot to be taken rather than only the viewport.
 extern const base::FeatureParam<bool> kFullPageScreenshot;
 

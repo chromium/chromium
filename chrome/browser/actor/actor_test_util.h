@@ -16,6 +16,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
@@ -242,6 +243,26 @@ base::expected<ProtoType, std::string> ParseBase64Proto(
   proto_result.ParseFromString(decoded_result);
   return base::ok(proto_result);
 }
+
+// Helper used to wait on an ExecutionEngine state transition. The provided
+// callback is synchronously invoked when ExecutionEngine transitions to the
+// target state.
+class ExecutionEngineStateWaiter : public ExecutionEngine::StateObserver {
+ public:
+  ExecutionEngineStateWaiter(base::OnceClosure callback,
+                             ExecutionEngine& execution_engine,
+                             ExecutionEngine::State target_state);
+  ~ExecutionEngineStateWaiter() override;
+
+  // `ExecutionEngine::StateObserver`:
+  void OnStateChanged(ExecutionEngine::State old_state,
+                      ExecutionEngine::State new_state) override;
+
+ private:
+  base::OnceClosure callback_;
+  const base::WeakPtr<ExecutionEngine> execution_engine_;
+  ExecutionEngine::State target_state_;
+};
 
 }  // namespace actor
 

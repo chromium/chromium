@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/cancelable_callback.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
@@ -154,7 +155,7 @@ class ActorTask {
 
   // Cancels any pending actions. Returns true if the task is still running, and
   // false otherwise.
-  bool CancelOngoingActions();
+  bool CancelOngoingActions(mojom::ActionResultCode reason);
 
   // Returns true if the task hasn't completed and is under control of the user.
   // That is, the actor cannot send actions and the user is able to interact
@@ -262,6 +263,9 @@ class ActorTask {
   void RecomputeHasVisibleTab();
   void UpdateVisibilityTimes();
 
+  void DidEarlyAddTabs(std::vector<std::unique_ptr<ToolRequest>>&& actions,
+                       std::vector<mojom::ActionResultPtr> add_tab_results);
+
   State state_ = State::kCreated;
   raw_ptr<Profile> profile_;
 
@@ -288,6 +292,10 @@ class ActorTask {
 
   // The callback to notify the client of the result of calling Act().
   ActCallback callback_for_act_;
+
+  using DidAddTabsCallback =
+      base::CancelableOnceCallback<void(std::vector<mojom::ActionResultPtr>)>;
+  DidAddTabsCallback did_add_tabs_callback_;
 
   // A timer for the current state.
   base::ElapsedTimer current_state_timer_;

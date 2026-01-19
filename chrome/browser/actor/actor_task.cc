@@ -8,6 +8,8 @@
 #include <optional>
 #include <ostream>
 
+#include "base/barrier_callback.h"
+#include "base/cancelable_callback.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/state_transitions.h"
@@ -21,6 +23,7 @@
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/actor_webui.mojom.h"
@@ -305,9 +308,29 @@ void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
   action_tracker_for_metrics_->WillAct(actions);
   callback_for_act_ = std::move(callback);
 
-  execution_engine_->Act(std::move(actions),
-                         base::BindOnce(&ActorTask::OnFinishedAct,
-                                        weak_ptr_factory_.GetWeakPtr()));
+  // TODO(b/474410401): ActorTask tabs should be explicitly added by the client.
+  if (base::FeatureList::IsEnabled(kGlicEarlyAddTaskTabs)) {
+    absl::flat_hash_set<tabs::TabHandle> tabs_to_add;
+    for (const std::unique_ptr<ToolRequest>& request : actions) {
+      CHECK(request);
+      tabs::TabHandle tab = request->GetTabHandle();
+      if (tab != tabs::TabHandle::Null()) {
+        tabs_to_add.insert(tab);
+      }
+    }
+
+    did_add_tabs_callback_.Reset(base::BindOnce(
+        &ActorTask::DidEarlyAddTabs, GetWeakPtr(), std::move(actions)));
+    auto add_tabs_barrier = base::BarrierCallback<mojom::ActionResultPtr>(
+        tabs_to_add.size(), did_add_tabs_callback_.callback());
+    for (const tabs::TabHandle& tab : tabs_to_add) {
+      AddTab(tab, add_tabs_barrier);
+    }
+  } else {
+    execution_engine_->Act(std::move(actions),
+                           base::BindOnce(&ActorTask::OnFinishedAct,
+                                          weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void ActorTask::OnFinishedAct(
@@ -324,6 +347,16 @@ void ActorTask::OnFinishedAct(
                       .Add("Not in kActing state", base::ToString(state_))
                       .Build());
   }
+
+  // TODO(b/472322151): There's a subtle bug here - when we pause a task
+  // callback_for_act_ is invoked immediately and
+  // ExecutionEngine::CancelOngoingActions is used to terminate ExecutionEngine.
+  // This relies on ActorTask's state not changing until the callback from
+  // ExecutionEngine (this function) is invoked. However, if that takes longer
+  // than expected and the task is resumed and a new action is sent to Act we
+  // could end up here from the canceled call and acting on a new
+  // `callback_for_act_`. Consider using a cancelable callback or specially
+  // handling a pause result code.
 
   // The callback may already have been called, if the task was stopped or
   // paused.
@@ -355,13 +388,8 @@ void ActorTask::Stop(StoppedReason stop_reason) {
              /*action_results=*/{});
   }
 
-  // TODO(bokan): execution_engine_ is always passed in constructor and never
-  // reset so we should be able to CHECK and assume it's non-null.
-  if (execution_engine_) {
-    execution_engine_->CancelOngoingActions(
-        mojom::ActionResultCode::kTaskWentAway);
-    execution_engine_->RunUserTakeoverCallbackIfExists(/*should_cancel=*/true);
-  }
+  CancelOngoingActions(mojom::ActionResultCode::kTaskWentAway);
+
   end_time_ = base::Time::Now();
   State final_state = GetTaskStateFromStoppedReason(stop_reason);
   stopped_reason_ = stop_reason;
@@ -400,13 +428,8 @@ void ActorTask::Pause(bool from_actor) {
              /*index_of_failed_action=*/std::nullopt, /*action_results=*/{});
   }
 
-  // TODO(bokan): execution_engine_ is always passed in constructor and never
-  // reset so we should be able to CHECK and assume it's non-null.
-  if (execution_engine_) {
-    execution_engine_->CancelOngoingActions(
-        mojom::ActionResultCode::kTaskPaused);
-    execution_engine_->RunUserTakeoverCallbackIfExists(/*should_cancel=*/false);
-  }
+  CancelOngoingActions(mojom::ActionResultCode::kTaskPaused);
+
   if (from_actor) {
     SetState(State::kPausedByActor);
   } else {
@@ -443,12 +466,23 @@ void ActorTask::Uninterrupt(State resumed_state) {
   }
 }
 
-bool ActorTask::CancelOngoingActions() {
+bool ActorTask::CancelOngoingActions(mojom::ActionResultCode reason) {
   if (!execution_engine_ || IsCompleted()) {
     return false;
   }
-  execution_engine_->CancelOngoingActions(
-      mojom::ActionResultCode::kActionsCancelled);
+  did_add_tabs_callback_.Cancel();
+  execution_engine_->CancelOngoingActions(reason);
+
+  if (reason == mojom::ActionResultCode::kTaskWentAway) {
+    execution_engine_->RunUserTakeoverCallbackIfExists(/*should_cancel=*/true);
+  } else if (reason == mojom::ActionResultCode::kTaskPaused) {
+    execution_engine_->RunUserTakeoverCallbackIfExists(/*should_cancel=*/false);
+  } else if (reason == mojom::ActionResultCode::kActionsCancelled) {
+    // TODO(bokan): Should this also call RunUserTakeoverCallbackIfExists?
+  } else {
+    NOTREACHED();
+  }
+
   return true;
 }
 
@@ -621,6 +655,26 @@ void ActorTask::OnTabWillDetach(tabs::TabInterface* tab,
 
   actor::ActorKeyedService::Get(profile_)->StopTask(
       id(), StoppedReason::kTabDetached);
+}
+
+void ActorTask::DidEarlyAddTabs(
+    std::vector<std::unique_ptr<ToolRequest>>&& actions,
+    std::vector<mojom::ActionResultPtr> add_tab_results) {
+  CHECK(base::FeatureList::IsEnabled(kGlicEarlyAddTaskTabs));
+
+  // If any tabs failed to be added, return the first failing result and respond
+  // with failure.
+  for (mojom::ActionResultPtr& result : add_tab_results) {
+    if (!IsOk(*result)) {
+      OnFinishedAct(std::move(result), /*index_of_failed_action=*/std::nullopt,
+                    /*action_results=*/{});
+      return;
+    }
+  }
+
+  execution_engine_->Act(std::move(actions),
+                         base::BindOnce(&ActorTask::OnFinishedAct,
+                                        weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ActorTask::UpdateVisibilityTimes() {
