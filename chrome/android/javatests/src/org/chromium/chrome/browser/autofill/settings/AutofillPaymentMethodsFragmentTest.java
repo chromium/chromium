@@ -110,6 +110,7 @@ import java.util.concurrent.TimeoutException;
     ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS,
     ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO,
     ChromeFeatureList.AUTOFILL_ENABLE_FLAT_RATE_CARD_BENEFITS_FROM_CURINOS,
+    ChromeFeatureList.AUTOFILL_ENABLE_WALLET_BRANDING,
 })
 @Batch(Batch.PER_CLASS)
 public class AutofillPaymentMethodsFragmentTest {
@@ -1078,7 +1079,10 @@ public class AutofillPaymentMethodsFragmentTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
-    public void testDeleteSavedCvcsButton_whenClicked_confirmationDialogIsShown() throws Exception {
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_WALLET_BRANDING})
+    public void
+            testDeleteSavedCvcsButton_whenClicked_confirmationDialogIsShown_walletBrandingDisabled()
+                    throws Exception {
         mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_WITH_CVC);
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
@@ -1094,6 +1098,37 @@ public class AutofillPaymentMethodsFragmentTest {
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
         onView(withText(R.string.autofill_delete_saved_cvcs_confirmation_dialog_message))
+                .check(matches(isDisplayed()));
+        onView(
+                        withText(
+                                R.string
+                                        .autofill_delete_saved_cvcs_confirmation_dialog_delete_button_label))
+                .check(matches(isDisplayed()));
+        onView(withText(android.R.string.cancel)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE,
+        ChromeFeatureList.AUTOFILL_ENABLE_WALLET_BRANDING
+    })
+    public void testDeleteSavedCvcsButton_whenClicked_confirmationDialogIsShown() throws Exception {
+        mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_WITH_CVC);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        Preference deleteSavedCvcsToggle =
+                getPreferenceScreen(activity)
+                        .findPreference(AutofillPaymentMethodsFragment.PREF_DELETE_SAVED_CVCS);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    deleteSavedCvcsToggle.performClick();
+                });
+
+        onView(withText(R.string.autofill_delete_saved_cvcs_confirmation_dialog_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.autofill_delete_saved_cvcs_in_wallet_confirmation_dialog_message))
                 .check(matches(isDisplayed()));
         onView(
                         withText(

@@ -9,6 +9,8 @@ import android.content.Context;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -52,8 +54,13 @@ public class AutofillDeleteSavedCvcsConfirmationDialog {
                         .with(
                                 ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                                 mContext.getString(
-                                        R.string
-                                                .autofill_delete_saved_cvcs_confirmation_dialog_message))
+                                        ChromeFeatureList.isEnabled(
+                                                        AutofillFeatures
+                                                                .AUTOFILL_ENABLE_WALLET_BRANDING)
+                                                ? R.string
+                                                        .autofill_delete_saved_cvcs_in_wallet_confirmation_dialog_message
+                                                : R.string
+                                                        .autofill_delete_saved_cvcs_confirmation_dialog_message))
                         .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 mContext.getString(
