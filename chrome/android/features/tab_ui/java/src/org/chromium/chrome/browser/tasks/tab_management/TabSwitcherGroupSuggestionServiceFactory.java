@@ -87,6 +87,7 @@ public class TabSwitcherGroupSuggestionServiceFactory {
 
                     @Override
                     public void onShowSuggestion(List<@TabId Integer> tabIdsSortedByIndex) {
+                        if (tabIdsSortedByIndex.isEmpty()) return;
                         @TabId
                         int lastTabId = tabIdsSortedByIndex.get(tabIdsSortedByIndex.size() - 1);
                         int lastCardIndex = tabListCoordinator.getTabIndexFromTabId(lastTabId) + 1;

@@ -414,6 +414,7 @@ public class TabSwitcherGroupSuggestionService {
         if (filter == null) return;
 
         TabModel tabModel = filter.getTabModel();
+        if (tabModel.getCount() == 0) return;
         List<Integer> tabIds = new ArrayList<>();
 
         // Collect the bottom-most tabs that are not already in a group.
@@ -425,6 +426,7 @@ public class TabSwitcherGroupSuggestionService {
                 tabIds.add(tab.getId());
             }
         }
+        if (tabIds.isEmpty()) return;
 
         // To order it by index, reverse the list.
         Collections.reverse(tabIds);
