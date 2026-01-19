@@ -592,13 +592,13 @@ TEST_F(ComputedStyleTest, AnimationFlags) {
                     ComputedStyle::Difference::kInherited,
                     kCompositingReasonsChanged);
   TestAnimationFlag(FLAG_PARAMS(IsRunningTransformAnimationOnCompositor),
-                    ComputedStyle::Difference::kEqual, kNoChanges);
+                    ComputedStyle::Difference::kNonInherited, kNoChanges);
   TestAnimationFlag(FLAG_PARAMS(IsRunningScaleAnimationOnCompositor),
-                    ComputedStyle::Difference::kEqual, kNoChanges);
+                    ComputedStyle::Difference::kNonInherited, kNoChanges);
   TestAnimationFlag(FLAG_PARAMS(IsRunningRotateAnimationOnCompositor),
-                    ComputedStyle::Difference::kEqual, kNoChanges);
+                    ComputedStyle::Difference::kNonInherited, kNoChanges);
   TestAnimationFlag(FLAG_PARAMS(IsRunningTranslateAnimationOnCompositor),
-                    ComputedStyle::Difference::kEqual, kNoChanges);
+                    ComputedStyle::Difference::kNonInherited, kNoChanges);
   TestAnimationFlag(FLAG_PARAMS(IsRunningOpacityAnimationOnCompositor),
                     ComputedStyle::Difference::kEqual, kNoChanges);
   TestAnimationFlag(FLAG_PARAMS(IsRunningFilterAnimationOnCompositor),

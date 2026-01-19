@@ -2054,12 +2054,15 @@ class ComputedStyle final : public ComputedStyleBase {
            HasCurrentTransformRelatedAnimation() ||
            HasCurrentFilterAnimation() || HasCurrentBackdropFilterAnimation();
   }
-  bool RequiresPropertyNodeForAnimation() const {
-    return IsRunningOpacityAnimationOnCompositor() ||
-           IsRunningTransformAnimationOnCompositor() ||
+  bool IsRunningTransformRelatedAnimationOnCompositor() const {
+    return IsRunningTransformAnimationOnCompositor() ||
            IsRunningScaleAnimationOnCompositor() ||
            IsRunningRotateAnimationOnCompositor() ||
-           IsRunningTranslateAnimationOnCompositor() ||
+           IsRunningTranslateAnimationOnCompositor();
+  }
+  bool RequiresPropertyNodeForAnimation() const {
+    return IsRunningOpacityAnimationOnCompositor() ||
+           IsRunningTransformRelatedAnimationOnCompositor() ||
            IsRunningFilterAnimationOnCompositor() ||
            IsRunningBackdropFilterAnimationOnCompositor();
   }
