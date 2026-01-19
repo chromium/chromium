@@ -6,16 +6,11 @@
 #define CHROME_BROWSER_UI_TEST_TEST_BROWSER_CLOSED_WAITER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
-
-class Browser;
-class BrowserWindowInterface;
+#include "chrome/browser/ui/browser_list_observer.h"
 
 // A helper class to wait for a particular browser to be closed.
-class TestBrowserClosedWaiter : public BrowserCollectionObserver {
+class TestBrowserClosedWaiter : public BrowserListObserver {
  public:
   explicit TestBrowserClosedWaiter(Browser* browser);
 
@@ -24,11 +19,9 @@ class TestBrowserClosedWaiter : public BrowserCollectionObserver {
   [[nodiscard]] bool WaitUntilClosed();
 
  private:
-  void OnBrowserClosed(BrowserWindowInterface* browser) override;
+  void OnBrowserRemoved(Browser* browser) override;
 
   raw_ptr<Browser> browser_ = nullptr;
-  base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
-      browser_collection_observation_{this};
   base::test::TestFuture<void> future_;
 };
 

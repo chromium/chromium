@@ -8,9 +8,8 @@
 #include "base/location.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window/public/browser_collection.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/organization/trigger.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -22,37 +21,35 @@ TabOrganizationTriggerObserver::TabOrganizationTriggerObserver(
     : trigger_logic_(std::move(trigger_logic)),
       on_trigger_(on_trigger),
       browser_context_(browser_context) {
-  Profile* profile = Profile::FromBrowserContext(browser_context_);
-  ProfileBrowserCollection* collection =
-      ProfileBrowserCollection::GetForProfile(profile);
-  collection->ForEach([this](BrowserWindowInterface* browser) {
-    OnBrowserCreated(browser);
-    return true;
-  });
-  browser_collection_observation_.Observe(collection);
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this](BrowserWindowInterface* browser) {
+        OnBrowserAdded(browser->GetBrowserForMigrationOnly());
+        return true;
+      });
+  BrowserList::GetInstance()->AddObserver(this);
 }
 
-TabOrganizationTriggerObserver::~TabOrganizationTriggerObserver() = default;
+TabOrganizationTriggerObserver::~TabOrganizationTriggerObserver() {
+  BrowserList::GetInstance()->RemoveObserver(this);
+  // TabStripModelObserver destructor will stop observing the TabStripModels.
+}
 
-void TabOrganizationTriggerObserver::OnBrowserCreated(
-    BrowserWindowInterface* browser) {
-  if (browser_context_ != browser->GetProfile()) {
+void TabOrganizationTriggerObserver::OnBrowserAdded(Browser* browser) {
+  if (browser_context_ != browser->profile()) {
     return;
   }
 
-  tab_strip_model_to_browser_map_.emplace(
-      browser->GetTabStripModel(), browser->GetBrowserForMigrationOnly());
-  browser->GetTabStripModel()->AddObserver(this);
+  tab_strip_model_to_browser_map_.emplace(browser->tab_strip_model(), browser);
+  browser->tab_strip_model()->AddObserver(this);
 }
 
-void TabOrganizationTriggerObserver::OnBrowserClosed(
-    BrowserWindowInterface* browser) {
-  if (browser_context_ != browser->GetProfile()) {
+void TabOrganizationTriggerObserver::OnBrowserRemoved(Browser* browser) {
+  if (browser_context_ != browser->profile()) {
     return;
   }
 
-  tab_strip_model_to_browser_map_.erase(browser->GetTabStripModel());
-  browser->GetTabStripModel()->RemoveObserver(this);
+  tab_strip_model_to_browser_map_.erase(browser->tab_strip_model());
+  browser->tab_strip_model()->RemoveObserver(this);
 }
 
 void TabOrganizationTriggerObserver::OnTabStripModelChanged(

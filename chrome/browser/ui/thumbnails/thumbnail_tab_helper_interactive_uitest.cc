@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -16,10 +15,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/performance_controls/test_support/memory_saver_interactive_test_mixin.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
@@ -62,26 +60,24 @@ class ThumbnailObserver : public ui::test::StateObserver<bool> {
 };
 
 class BrowserRemovedObserver : public ui::test::StateObserver<bool>,
-                               public BrowserCollectionObserver {
+                               public BrowserListObserver {
  public:
   explicit BrowserRemovedObserver(Browser* browser) : browser_(browser) {
-    browser_collection_observation_.Observe(
-        ProfileBrowserCollection::GetForProfile(browser_->profile()));
+    BrowserList::AddObserver(this);
   }
   ~BrowserRemovedObserver() override = default;
 
  protected:
-  void OnBrowserClosed(BrowserWindowInterface* browser) override {
+  void OnBrowserRemoved(Browser* browser) override {
     if (browser_ == browser) {
       OnStateObserverStateChanged(true);
       browser_ = nullptr;
+      BrowserList::RemoveObserver(this);
     }
   }
 
  private:
   raw_ptr<Browser> browser_;
-  base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
-      browser_collection_observation_{this};
 };
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
