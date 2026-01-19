@@ -26,7 +26,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &device::kAuthenticatorPasswordsOnlyImmediateRequests,
     &device::kWebAuthnAndroidSignal,
     &device::kWebAuthnImmediateGet,
-    &device::kWebAuthnPasskeyUpgrade,
     &kGenericSensorExtraClasses,
     &kBatteryStatusManagerBroadcastReceiverInBackground,
     &device::features::kGmsCoreLocationRequestParamOverride};

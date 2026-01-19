@@ -141,12 +141,6 @@ BASE_FEATURE(kWebAuthnAndroidSignal,
 BASE_FEATURE(kDigitalCredentialsHybridLinking,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Default enabled on Desktop in M136 and Android in M142. Remove in or after
-// M145.
-BASE_FEATURE(kWebAuthnPasskeyUpgrade,
-             "WebAuthenticationPasskeyUpgrade",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Disabled by default.
 BASE_FEATURE(kWebAuthnEnclaveAttestation,
              "WebAuthenticationEnclaveAttestation",

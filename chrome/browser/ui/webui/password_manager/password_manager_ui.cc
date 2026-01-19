@@ -653,10 +653,6 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
   source->AddBoolean("canAddShortcut", web_app::AreWebAppsEnabled(profile));
 
   source->AddBoolean(
-      "passkeyUpgradeSettingsToggleVisible",
-      base::FeatureList::IsEnabled(device::kWebAuthnPasskeyUpgrade));
-
-  source->AddBoolean(
       "enableActorLoginPermissions",
       base::FeatureList::IsEnabled(password_manager::features::kActorLogin));
 

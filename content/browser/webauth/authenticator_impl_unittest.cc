@@ -872,14 +872,9 @@ TEST_F(AuthenticatorImplTest, GetClientCapabilities_RelatedOrigins) {
 }
 
 TEST_F(AuthenticatorImplTest, GetClientCapabilities_ConditionalCreate) {
-  for (const bool enabled : {false, true}) {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatureState(device::kWebAuthnPasskeyUpgrade, enabled);
-    NavigateAndCommit(GURL(kTestOrigin1));
-    ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
-    ExpectCapability(capabilities, client_capabilities::kConditionalCreate,
-                     enabled);
-  }
+  NavigateAndCommit(GURL(kTestOrigin1));
+  ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
+  ExpectCapability(capabilities, client_capabilities::kConditionalCreate, true);
 }
 
 TEST_F(AuthenticatorImplTest, GetClientCapabilities_ImmediateGet) {

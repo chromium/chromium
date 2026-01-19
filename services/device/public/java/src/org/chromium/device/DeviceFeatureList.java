@@ -27,7 +27,6 @@ public abstract class DeviceFeatureList {
     public static final String WEBAUTHN_AUTHENTICATOR_PASSWORDS_ONLY_IMMEDIATE_REQUESTS =
             "AuthenticatorPasswordsOnlyImmediateRequests";
     public static final String WEBAUTHN_ANDROID_SIGNAL = "WebAuthenticationAndroidSignal";
-    public static final String WEBAUTHN_PASSKEY_UPGRADE = "WebAuthenticationPasskeyUpgrade";
     public static final String WEBAUTHN_IMMEDIATE_GET = "WebAuthenticationImmediateGet";
 
     public static final MutableFlagWithSafeDefault sGmsCoreLocationRequestParamOverride =

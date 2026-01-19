@@ -3944,9 +3944,6 @@ class EnclaveAuthenticatorConditionalCreateBrowserTest
  protected:
   EnclaveAuthenticatorConditionalCreateBrowserTest() {
     sync_feature_enabled_ = GetParam();
-
-    scoped_feature_list_.InitAndEnableFeature(device::kWebAuthnPasskeyUpgrade);
-    CHECK(base::FeatureList::IsEnabled(device::kWebAuthnPasskeyUpgrade));
   }
 
   bool use_account_password_store() { return !sync_feature_enabled_; }
@@ -4012,8 +4009,6 @@ class EnclaveAuthenticatorConditionalCreateBrowserTest
     passkey_model().AddNewPasskeyForTesting(passkey);
     return passkey;
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(WithSyncFeatureEnabled,

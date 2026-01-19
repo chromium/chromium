@@ -5840,13 +5840,6 @@
       name: "WebAuthenticationChallengeUrl",
       status: "experimental",
     },
-    // https://w3c.github.io/webauthn/#dom-clientcapability-conditionalcreate
-    {
-      name: "WebAuthenticationConditionalCreate",
-      status: "test",
-      base_feature: "none",
-      public: true,
-    },
     // Prototyping https://github.com/w3c/webauthn/issues/2228
     {
       name: "WebAuthenticationImmediateGet",

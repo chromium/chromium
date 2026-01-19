@@ -45,7 +45,6 @@ import org.chromium.url.Origin;
 @Batch(Batch.UNIT_TESTS)
 @SmallTest
 @EnableFeatures({
-    DeviceFeatureList.WEBAUTHN_PASSKEY_UPGRADE,
     DeviceFeatureList.WEBAUTHN_IMMEDIATE_GET,
     DeviceFeatureList.WEBAUTHN_ANDROID_SIGNAL
 })

@@ -1980,11 +1980,9 @@ AuthenticationCredentialsContainer::create(
                    std::move(user_id_for_payment_extension)));
     }
   } else {
-    if (RuntimeEnabledFeatures::WebAuthenticationConditionalCreateEnabled()) {
-      mojo_options->is_conditional =
-          options->mediation() ==
-          V8CredentialMediationRequirement::Enum::kConditional;
-    }
+    mojo_options->is_conditional =
+        options->mediation() ==
+        V8CredentialMediationRequirement::Enum::kConditional;
     authenticator->MakeCredential(
         std::move(mojo_options),
         BindOnce(&OnMakePublicKeyCredentialComplete,

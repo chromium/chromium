@@ -177,11 +177,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
             return;
         }
 
-        boolean isConditionalCreate =
-                options.isConditional
-                        && DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_PASSKEY_UPGRADE);
-
-        if (mCreateConfirmationUiDelegate != null && !isConditionalCreate) {
+        if (mCreateConfirmationUiDelegate != null && !options.isConditional) {
             if (!mCreateConfirmationUiDelegate.show(
                     () -> continueMakeCredential(options),
                     () -> {
@@ -373,14 +369,10 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
                                     createWebAuthnClientCapability(
                                             AuthenticatorConstants.CAPABILITY_UVPAA,
                                             couldSupportUvpaa() && isUvpaa));
-                            boolean conditionalCreateEnabled =
-                                    couldSupportConditionalMediation()
-                                            && DeviceFeatureMap.isEnabled(
-                                                    DeviceFeatureList.WEBAUTHN_PASSKEY_UPGRADE);
                             capabilities.add(
                                     createWebAuthnClientCapability(
                                             AuthenticatorConstants.CAPABILITY_CONDITIONAL_CREATE,
-                                            isUvpaa && conditionalCreateEnabled));
+                                            isUvpaa && couldSupportConditionalMediation()));
                             capabilities.add(
                                     createWebAuthnClientCapability(
                                             AuthenticatorConstants.CAPABILITY_IMMEDIATE_GET,

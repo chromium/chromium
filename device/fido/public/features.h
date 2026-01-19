@@ -102,10 +102,6 @@ BASE_DECLARE_FEATURE(kWebAuthnSkipHybridConfigIfSystemSupported);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kDigitalCredentialsHybridLinking);
 
-// Enable passkey upgrade requests in Google Password Manager.
-COMPONENT_EXPORT(FIDO_PUBLIC)
-BASE_DECLARE_FEATURE(kWebAuthnPasskeyUpgrade);
-
 // Checks attestation from the enclave service.
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnEnclaveAttestation);

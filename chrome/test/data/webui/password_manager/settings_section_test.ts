@@ -932,20 +932,7 @@ suite('SettingsSectionTest', function() {
     assertTrue(isVisible($$(section, 'full-data-reset')));
   });
 
-  test('passkey upgrade toggle not shown with feature disabled', async () => {
-    loadTimeData.overrideValues({passkeyUpgradeSettingsToggleVisible: false});
-    const settings = document.createElement('settings-section');
-    settings.prefs = makePasswordManagerPrefs();
-    document.body.appendChild(settings);
-    await flushTasks();
-
-    const passkeyUpgradeToggle =
-        settings.shadowRoot!.querySelector('#passkeyUpgradeToggle');
-    assertFalse(!!passkeyUpgradeToggle);
-  });
-
   test('passkey upgrade toggle changes pref value', async () => {
-    loadTimeData.overrideValues({passkeyUpgradeSettingsToggleVisible: true});
     const settings = document.createElement('settings-section');
     settings.prefs = makePasswordManagerPrefs();
     document.body.appendChild(settings);
@@ -970,8 +957,6 @@ suite('SettingsSectionTest', function() {
   test(
       'passkey upgrade toggle hides with password toggle unchecked',
       async () => {
-        loadTimeData.overrideValues(
-            {passkeyUpgradeSettingsToggleVisible: true});
         const settings = document.createElement('settings-section');
         settings.prefs = makePasswordManagerPrefs();
         document.body.appendChild(settings);
