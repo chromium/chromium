@@ -1234,5 +1234,8 @@ public final class ProductionSupportedFlagList {
                         + " at 60Hz on 120Hz devices."),
         Flag.baseFeature("JobPriorityBoosting"),
         Flag.baseFeature("IsolatesPriorityUseProcessPriority"),
+        Flag.baseFeature(
+                "UseLockFreeX509Verification",
+                "Enables lock-free certificate verification codepath."),
     };
 }
