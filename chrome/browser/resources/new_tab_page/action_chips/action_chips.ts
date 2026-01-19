@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import type {ContextualUpload, TabUpload} from 'chrome://resources/cr_components/composebox/common.js';
+import {TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
 import {ComposeboxMode} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -173,6 +174,7 @@ export class ActionChipsElement extends CrLitElement {
       url: tab.url,
       title: tab.title,
       delayUpload: this.delayTabUploads_,
+      origin: TabUploadOrigin.ACTION_CHIP,
     };
     this.onActionChipClick_(
         chip.suggestion, [deepDiveTabInfo], ComposeboxMode.DEFAULT);
@@ -192,6 +194,7 @@ export class ActionChipsElement extends CrLitElement {
       url: tab.url,
       title: tab.title,
       delayUpload: this.delayTabUploads_,
+      origin: TabUploadOrigin.ACTION_CHIP,
     };
     this.onActionChipClick_(
         ActionChipsConstants.EMPTY_QUERY_STRING, [recentTabInfo],

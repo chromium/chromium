@@ -24,7 +24,7 @@ import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/ung
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {ComposeboxFile, ContextualUpload} from './common.js';
-import {recordContextAdditionMethod} from './common.js';
+import {recordContextAdditionMethod, TabUploadOrigin} from './common.js';
 import {FileUploadErrorType, FileUploadStatus} from './composebox_query.mojom-webui.js';
 import {type ContextMenuEntrypointElement, GlifAnimationState} from './context_menu_entrypoint.js';
 import {getCss} from './contextual_entrypoint_and_carousel.css.js';
@@ -334,9 +334,11 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   setContextFiles(files: ContextualUpload[]) {
     for (const file of files) {
       if ('tabId' in file) {
-        // If the composebox is being initialized with tab context, we want to
-        // keep the context menu open to allow for multi-tab selection.
-        if (this.contextMenuEnabled_ && !file.delayUpload) {
+        // If the composebox is being initialized with tab context from the
+        // context menu, we want to keep the context menu open to allow for
+        // multi-tab selection.
+        if (this.contextMenuEnabled_ &&
+            file.origin === TabUploadOrigin.CONTEXT_MENU) {
           this.$.contextEntrypoint.openMenuForMultiSelection();
         }
         this.addTabContext_(new CustomEvent('addTabContext', {
@@ -346,6 +348,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
             url: file.url,
             delayUpload: file.delayUpload,
             replaceAutoActiveTabToken: false,
+            origin: file.origin,
           },
         }));
       } else {
@@ -498,6 +501,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         url: tab.url,
         delayUpload: /*delay_upload=*/ true,
         replaceAutoActiveTabToken: true,
+        origin: TabUploadOrigin.OTHER,
       },
     }));
   }
@@ -529,6 +533,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         url: tabAttachment.url,
         delayUpload: /*delay_upload=*/ false,
         replaceAutoActiveTabToken: false,
+        origin: TabUploadOrigin.OTHER,
       },
     }));
   }
@@ -729,6 +734,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     url: Url,
     delayUpload: boolean,
     replaceAutoActiveTabToken: boolean,
+    origin: TabUploadOrigin,
   }>) {
     e.stopPropagation();
 
@@ -737,6 +743,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       title: e.detail.title,
       url: e.detail.url,
       delayUpload: e.detail.delayUpload,
+      origin: e.detail.origin,
       onContextAdded: (file: ComposeboxFile) => {
         this.files_ = new Map([...this.files_.entries(), [file.uuid, file]]);
         this.addedTabsIds_ = new Map(

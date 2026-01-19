@@ -12,7 +12,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
-import {recordContextAdditionMethod} from './common.js';
+import {recordContextAdditionMethod, TabUploadOrigin} from './common.js';
 import {getCss} from './recent_tab_chip.css.js';
 import {getHtml} from './recent_tab_chip.html.js';
 
@@ -65,6 +65,7 @@ export class RecentTabChipElement extends RecentTabChipBase {
       title: this.recentTab.title,
       url: this.recentTab.url,
       delayUpload: this.delayTabUploads_,
+      origin: TabUploadOrigin.RECENT_TAB_CHIP,
     });
     recordContextAdditionMethod(
         ComposeboxContextAddedMethod.RECENT_TAB_CHIP, this.composeboxSource_);

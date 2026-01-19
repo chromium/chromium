@@ -20,7 +20,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {recordContextAdditionMethod} from './common.js';
+import {recordContextAdditionMethod, TabUploadOrigin} from './common.js';
 import {getCss} from './context_menu_entrypoint.css.js';
 import {getHtml} from './context_menu_entrypoint.html.js';
 
@@ -235,6 +235,7 @@ export class ContextMenuEntrypointElement extends
       title: tabInfo.title,
       url: tabInfo.url,
       delayUpload: false,
+      origin: TabUploadOrigin.CONTEXT_MENU,
     });
     if (!this.enableMultiTabSelection_ || this.entrypointName === 'Realbox' ||
         this.searchboxLayoutMode === TALL_BOTTOM_CONTEXT_LAYOUT_MODE) {

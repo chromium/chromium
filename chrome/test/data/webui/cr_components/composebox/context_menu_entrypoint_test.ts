@@ -6,6 +6,7 @@ import 'chrome://new-tab-page/strings.m.js';
 import 'chrome://resources/cr_components/composebox/context_menu_entrypoint.js';
 
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
+import {TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import type {ContextMenuEntrypointElement} from 'chrome://resources/cr_components/composebox/context_menu_entrypoint.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -597,7 +598,8 @@ suite('ContextMenuEntrypoint', () => {
     // Act by clicking on tab to initiate upload flow.
     const whenTabContextAdded = eventToPromise('add-tab-context', entrypoint);
     tab.click();
-    await whenTabContextAdded;
+    const event = await whenTabContextAdded;
+    assertEquals(TabUploadOrigin.CONTEXT_MENU, event.detail.origin);
 
     // Assert context menu is still open.
     assertTrue(entrypoint.$.menu.open);
