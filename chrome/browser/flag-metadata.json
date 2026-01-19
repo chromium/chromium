@@ -7523,7 +7523,7 @@
       "hempjudith@google.com",
       "//components/permissions/PERMISSIONS_OWNERS"
     ],
-    "expiry_milestone": 144
+    "expiry_milestone": 150
   },
   {
     "name": "permission-site-settings-radio-button",
