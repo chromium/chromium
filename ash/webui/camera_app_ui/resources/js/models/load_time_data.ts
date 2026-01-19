@@ -88,17 +88,25 @@ export function getPathRelativeToRoot(): string {
 }
 
 /**
+ * Returns the cloud destination where the camera app saves files or empty
+ * string if it saves files locally.
+ */
+export function getCloudDestination(): string {
+  return loadTimeData.getString('cloud_destination');
+}
+
+/**
  * Returns whether the camera app saves files on cloud.
  */
 export function isCloudDestination(): boolean {
-  return !!loadTimeData.getString('cloud_destination');
+  return getCloudDestination() !== '';
 }
 
 /**
  * Returns whether the camera app saves files on Microsoft OneDrive.
  */
 export function isCloudDestinationOnedrive(): boolean {
-  return loadTimeData.getString('cloud_destination') === 'microsoft_onedrive';
+  return getCloudDestination() === 'microsoft_onedrive';
 }
 
 /**

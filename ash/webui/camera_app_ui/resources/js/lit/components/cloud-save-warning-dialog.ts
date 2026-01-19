@@ -24,6 +24,7 @@ import {
 import {assertExists} from '../../assert.js';
 import {I18nString} from '../../i18n_string.js';
 import {
+  getCloudDestination,
   getI18nMessage,
   isCloudDestination,
   isCloudDestinationOnedrive,
@@ -69,6 +70,16 @@ export class CloudSaveWarningDialog extends LitElement {
 
   constructor() {
     super();
+
+    const lastCloudDestination =
+        localStorage.getString(LocalStorageKey.PREF_LAST_CLOUD_DESTINATION);
+    const cloudDestination = getCloudDestination();
+    if (lastCloudDestination !== cloudDestination) {
+      // Reset the skip preference if the cloud destination has changed.
+      localStorage.remove(LocalStorageKey.PREF_SKIP_CLOUD_SAVE_WARNING);
+      localStorage.set(
+          LocalStorageKey.PREF_LAST_CLOUD_DESTINATION, cloudDestination);
+    }
     this.skipCloudSaveWarning = !isCloudDestination() ||
         localStorage.getBool(LocalStorageKey.PREF_SKIP_CLOUD_SAVE_WARNING);
   }
