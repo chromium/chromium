@@ -201,6 +201,27 @@ id<GREYMatcher> SearchIconButton() {
       performAction:grey_tap()];
 }
 
+- (void)starAndEditCurrentTabWithSnackbarTitle:(NSString*)title {
+  [self starCurrentTab];
+  if (title) {
+    // Verify the snackbar title.
+    [ChromeEarlGrey
+        waitForUIElementToAppearWithMatcher:grey_accessibilityLabel(title)];
+  }
+  // Tap on the snackbar edit button.
+  NSString* snackbarLabel =
+      l10n_util::GetNSString(IDS_IOS_BOOKMARK_SNACKBAR_EDIT_BOOKMARK);
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityLabel(snackbarLabel),
+                                   grey_userInteractionEnabled(),
+                                   grey_not(TabGridEditButton()), nil)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBookmarkEditViewContainerIdentifier)]
+      assertWithMatcher:grey_notNil()];
+}
+
 - (void)addFolderWithName:(NSString*)name
                 inStorage:(BookmarkStorageType)storageType {
   // Wait for folder picker to appear.

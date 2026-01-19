@@ -390,7 +390,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   [self.inactiveTabsCoordinator hide];
 
-  [_bookmarksCoordinator dismissBookmarkModalControllerAnimated:YES];
+  [_bookmarksCoordinator dismissBookmarkModalControllerAnimated:NO];
   // History may be presented on top of the tab grid.
   if (self.historyCoordinator) {
     [self closeHistoryWithCompletion:completion];

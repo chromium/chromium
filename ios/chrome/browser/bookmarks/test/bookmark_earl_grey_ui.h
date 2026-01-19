@@ -98,6 +98,11 @@ id<GREYMatcher> SearchIconButton();
 // Adds a bookmark for the current tab. Must be called when on a tab.
 - (void)starCurrentTab;
 
+// Adds a bookmark, then tap on the edit button in the snack bar. Checks the
+// editor is displayed. Must be called when on a tab that is not in the
+// bookmarks. If title is nil, title is not checked.
+- (void)starAndEditCurrentTabWithSnackbarTitle:(NSString*)title;
+
 // Creates a new folder in `storageType` starting from the folder picker.
 // Passing a `name` of 0 length will use the default value.
 - (void)addFolderWithName:(NSString*)name

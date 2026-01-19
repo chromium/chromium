@@ -47,6 +47,7 @@ chrome_ios_eg2_test("ios_chrome_bookmarks_eg2tests_module") {
   xcode_test_application_name = "ios_chrome_eg2tests"
 
   deps = [
+    "//ios/chrome/browser/bookmarks/editor/test:eg2_tests",
     "//ios/chrome/browser/bookmarks/folder_chooser/test:eg2_tests",
     "//ios/chrome/browser/bookmarks/test:eg2_tests",
     "//ios/chrome/browser/bookmarks/ui_bundled/home:eg2_tests",

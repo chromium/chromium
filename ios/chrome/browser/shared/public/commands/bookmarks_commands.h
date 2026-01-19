@@ -42,6 +42,10 @@ class WebState;
 // corresponding to `URL`.
 - (void)showBookmarkInBookmarksUI:(GURL)URL;
 
+// Removes any bookmark modal controller from view if visible.
+// override this method.
+- (void)dismissBookmarkModalControllerAnimated:(BOOL)animated;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_BOOKMARKS_COMMANDS_H_
