@@ -48,6 +48,11 @@ class AppListKeyboardControllerTest : public AshTestBase,
     }
   }
 
+  void TearDown() override {
+    app_list_test_helper_ = nullptr;
+    AshTestBase::TearDown();
+  }
+
   void PressDown() {
     ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
     generator.PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
@@ -82,7 +87,7 @@ class AppListKeyboardControllerTest : public AshTestBase,
   }
 
  private:
-  raw_ptr<AppListTestHelper, DanglingUntriaged> app_list_test_helper_ = nullptr;
+  raw_ptr<AppListTestHelper> app_list_test_helper_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(IsInTabletMode,
