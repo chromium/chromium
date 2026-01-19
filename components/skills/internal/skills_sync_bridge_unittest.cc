@@ -40,6 +40,7 @@ using ::testing::Pointee;
 using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::UnorderedElementsAre;
+using ::testing::WithArgs;
 
 constexpr char kDefaultPrompt[] = "test prompt";
 
@@ -459,6 +460,44 @@ TEST_F(SkillsSyncBridgeTest, ShouldReloadDataOnRestart) {
               LoadInitialSkills(UnorderedElementsAre(
                   Pointee(HasSkill(kSkillId, "name", "icon", "prompt")))));
   ResetBridgeAndWaitForInitialization();
+}
+
+TEST_F(SkillsSyncBridgeTest, ShouldDeleteAllDataOnDisableSync) {
+  const std::string kSkillId1 =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  const std::string kSkillId2 =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+
+  // Create local skills first.
+  std::vector<std::unique_ptr<Skill>> skills;
+  skills.push_back(
+      std::make_unique<Skill>(kSkillId1, "name1", "icon1", "prompt1"));
+  skills.push_back(
+      std::make_unique<Skill>(kSkillId2, "name2", "icon2", "prompt2"));
+  ON_CALL(mock_skills_service(), GetSkillById(kSkillId1))
+      .WillByDefault(Return(skills[0].get()));
+  ON_CALL(mock_skills_service(), GetSkillById(kSkillId2))
+      .WillByDefault(Return(skills[1].get()));
+  ON_CALL(mock_skills_service(), GetSkills()).WillByDefault(ReturnRef(skills));
+  bridge().OnSkillUpdated(kSkillId1, SkillsService::UpdateSource::kLocal);
+  bridge().OnSkillUpdated(kSkillId2, SkillsService::UpdateSource::kLocal);
+
+  ASSERT_THAT(GetAllLocalDataFromStore(),
+              UnorderedElementsAre(Pair(kSkillId1, _), Pair(kSkillId2, _)));
+
+  // Disable sync and verify that all data was deleted.
+  EXPECT_CALL(mock_skills_service(),
+              DeleteSkill(_, SkillsService::UpdateSource::kSync))
+      .Times(2)
+      .WillRepeatedly(WithArgs<0>([&skills](std::string_view skill_id) {
+        std::erase_if(skills, [skill_id](const std::unique_ptr<Skill>& skill) {
+          return skill->id == skill_id;
+        });
+      }));
+  bridge().ApplyDisableSyncChanges(/*delete_metadata_change_list=*/nullptr);
+
+  EXPECT_THAT(GetAllLocalDataFromStore(), IsEmpty());
+  EXPECT_THAT(skills, IsEmpty());
 }
 
 }  // namespace

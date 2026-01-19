@@ -197,7 +197,24 @@ std::string SkillsSyncBridge::GetStorageKey(
 void SkillsSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTIMPLEMENTED();
+
+  std::vector<std::string> skills_to_delete;
+  skills_to_delete.reserve(skills_service_->GetSkills().size());
+  for (const std::unique_ptr<Skill>& skill : skills_service_->GetSkills()) {
+    skills_to_delete.push_back(skill->id);
+  }
+
+  for (const std::string& skill_id : skills_to_delete) {
+    skills_service_->DeleteSkill(skill_id, SkillsService::UpdateSource::kSync);
+  }
+
+  // All skills must be deleted from the service.
+  CHECK(skills_service_->GetSkills().empty());
+
+  // Do not use `delete_metadata_change_list` as all data and metadata should be
+  // deleted.
+  store_->DeleteAllDataAndMetadata(base::BindOnce(
+      &SkillsSyncBridge::OnDatabaseSave, weak_ptr_factory_.GetWeakPtr()));
   return;
 }
 

@@ -29,6 +29,7 @@
 namespace {
 
 using testing::Contains;
+using testing::IsEmpty;
 using testing::Pointee;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
@@ -264,5 +265,44 @@ IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest, ShouldMergeRemoteData) {
                                Pointee(HasSkill("skill2", "icon2", "prompt2"))))
           .Wait());
 }
+
+// TODO(crbug.com/471795213): add a test to verify that skills can't be created
+// when sync is disabled.
+
+// ChromeOS does not support signout.
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest,
+                       ShouldDeleteAllDataOnDisableSync) {
+  InjectSpecificsToFakeServer(
+      CreateSkillSpecifics(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           "skill1", "icon1", "prompt1"));
+  InjectSpecificsToFakeServer(
+      CreateSkillSpecifics(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                           "skill2", "icon2", "prompt2"));
+
+  ASSERT_TRUE(SetupSync());
+
+  ASSERT_THAT(
+      GetSkillsService().GetSkills(),
+      UnorderedElementsAre(Pointee(HasSkill("skill1", "icon1", "prompt1")),
+                           Pointee(HasSkill("skill2", "icon2", "prompt2"))));
+
+  // Sign out the primary account to disable sync and verify that all data was
+  // deleted.
+  GetClient(0)->SignOutPrimaryAccount();
+
+  EXPECT_TRUE(SkillsServiceChecker(GetSkillsService(), IsEmpty()).Wait());
+
+  // Sign in again to re-enable sync and verify that the data was re-synced.
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+
+  EXPECT_TRUE(
+      SkillsServiceChecker(
+          GetSkillsService(),
+          UnorderedElementsAre(Pointee(HasSkill("skill1", "icon1", "prompt1")),
+                               Pointee(HasSkill("skill2", "icon2", "prompt2"))))
+          .Wait());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
