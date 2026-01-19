@@ -8,9 +8,9 @@
 #include <map>
 
 #include "base/containers/span.h"
+#include "components/legion/attestation/handler.h"
 #include "components/legion/attestation/server_verification_key.h"
 #include "components/legion/attestation/verification_key_utils.h"
-#include "components/legion/attestation_handler.h"
 
 namespace legion {
 

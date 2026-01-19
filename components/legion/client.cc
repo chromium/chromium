@@ -12,7 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
-#include "components/legion/attestation_handler_impl.h"
+#include "components/legion/attestation/handler_impl.h"
 #include "components/legion/client_impl.h"
 #include "components/legion/features.h"
 #include "components/legion/phosphor/token_manager.h"

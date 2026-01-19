@@ -14,7 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/legion/attestation/server_evidence.h"
-#include "components/legion/attestation_handler.h"
+#include "components/legion/attestation/handler.h"
 #include "components/legion/legion_common.h"
 #include "components/legion/secure_session.h"
 #include "components/legion/transport.h"

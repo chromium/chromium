@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/legion/attestation_handler_impl.h"
+#include "components/legion/attestation/handler_impl.h"
 
 #include <vector>
 

@@ -15,7 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "components/legion/attestation_handler.h"
+#include "components/legion/attestation/handler.h"
 #include "components/legion/legion_common.h"
 #include "components/legion/proto/legion.pb.h"
 #include "components/legion/proto_utils/attestation_evidence_utils.h"

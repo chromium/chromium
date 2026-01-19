@@ -18,7 +18,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "components/legion/attestation_handler.h"
+#include "components/legion/attestation/handler.h"
 #include "components/legion/legion_common.h"
 #include "components/legion/secure_channel.h"
 #include "components/legion/secure_session.h"
