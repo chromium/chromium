@@ -11,7 +11,8 @@ import Foundation
   @objc func onCredentialsTranslated(
     passwords: [CredentialExchangePassword],
     passkeys: [CredentialExchangePasskey],
-    exporterDisplayName: NSString)
+    exporterDisplayName: NSString,
+    stats: ImportStats)
 }
 
 /// Handles importing user credentials through ASCredentialImportManager.
@@ -47,7 +48,8 @@ import Foundation
         delegate?.onCredentialsTranslated(
           passwords: translatedData.passwords,
           passkeys: translatedData.passkeys,
-          exporterDisplayName: credentialData.exporterDisplayName as NSString
+          exporterDisplayName: credentialData.exporterDisplayName as NSString,
+          stats: translatedData.stats
         )
       } catch {
         // TODO(crbug.com/445889307): Handle errors.
@@ -59,9 +61,13 @@ import Foundation
   @available(iOS 26, *)
   private func translateCredentialData(
     _ credentialData: ASExportedCredentialData
-  ) -> (passwords: [CredentialExchangePassword], passkeys: [CredentialExchangePasskey]) {
+  ) -> (
+    passwords: [CredentialExchangePassword], passkeys: [CredentialExchangePasskey],
+    stats: ImportStats
+  ) {
     var passwords: [CredentialExchangePassword] = []
     var passkeys: [CredentialExchangePasskey] = []
+    let stats = ImportStats()
 
     for account in credentialData.accounts {
       for item in account.items {
@@ -72,11 +78,13 @@ import Foundation
         for i in 0..<credentials.count {
           switch credentials[i] {
           case .basicAuthentication(let basicAuth):
+            stats.basicAuthenticationCount += 1
             // If the next credential is of type note, treat it as note for password.
             var note = ""
             let nextIndex = i + 1
             if nextIndex < credentials.count {
               if case .note(let noteData) = credentials[nextIndex] {
+                stats.noteForPasswordCount += 1
                 note = noteData.content.value
               }
             }
@@ -88,6 +96,7 @@ import Foundation
                 note: note
               ))
           case .passkey(let passkey):
+            stats.passkeyCount += 1
             passkeys.append(
               CredentialExchangePasskey(
                 credentialId: passkey.credentialID,
@@ -96,14 +105,41 @@ import Foundation
                 userDisplayName: passkey.userDisplayName,
                 userId: passkey.userHandle,
                 privateKey: passkey.key))
-          default:
-            // TODO(crbug.com/445889706): Add logging to assess dropped types.
-            continue
+          case .address:
+            stats.addressCount += 1
+          case .apiKey:
+            stats.apiKeyCount += 1
+          case .creditCard:
+            stats.creditCardCount += 1
+          case .customFields:
+            stats.customFieldsCount += 1
+          case .driversLicense:
+            stats.driversLicenseCount += 1
+          case .generatedPassword:
+            stats.generatedPasswordCount += 1
+          case .identityDocument:
+            stats.identityDocumentCount += 1
+          case .itemReference:
+            stats.itemReferenceCount += 1
+          case .note:
+            stats.noteCount += 1
+          case .passport:
+            stats.passportCount += 1
+          case .personName:
+            stats.personNameCount += 1
+          case .sshKey:
+            stats.sshKeyCount += 1
+          case .totp:
+            stats.totpCount += 1
+          case .wifi:
+            stats.wifiCount += 1
+          @unknown default:
+            break
           }
         }
       }
     }
 
-    return (passwords, passkeys)
+    return (passwords, passkeys, stats)
   }
 }

@@ -15,6 +15,7 @@ source_set("model") {
     ":credential_exchange_types",
     ":credential_export_manager_swift",
     ":credential_import_manager_swift",
+    ":metrics_util",
     "//base",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/import:importer",
@@ -29,12 +30,25 @@ source_set("model") {
   ]
 }
 
+source_set("metrics_util") {
+  sources = [
+    "metrics_util.h",
+    "metrics_util.mm",
+  ]
+  deps = [
+    ":credential_exchange_types",
+    "//base",
+  ]
+}
+
 source_set("credential_exchange_types") {
   sources = [
     "credential_exchange_passkey.h",
     "credential_exchange_passkey.mm",
     "credential_exchange_password.h",
     "credential_exchange_password.mm",
+    "import_stats.h",
+    "import_stats.mm",
   ]
 }
 

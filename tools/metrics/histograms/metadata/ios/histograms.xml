@@ -850,6 +850,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.CredentialExchange.CredentialsReceivedCount.{Type}"
+    units="count" expires_after="2026-07-01">
+  <owner>rgod@google.com</owner>
+  <owner>sinhasourav@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Counts the occurrences of {Type} credential on the credential list received
+    from an exporting password manager app.
+  </summary>
+  <token key="Type">
+    <variant name="Address"/>
+    <variant name="APIKey"/>
+    <variant name="BasicAuthentication"/>
+    <variant name="CreditCard"/>
+    <variant name="CustomFields"/>
+    <variant name="DriversLicense"/>
+    <variant name="GeneratedPassword"/>
+    <variant name="IdentityDocument"/>
+    <variant name="ItemReference"/>
+    <variant name="Note"/>
+    <variant name="NoteForPassword"/>
+    <variant name="Passkey"/>
+    <variant name="Passport"/>
+    <variant name="PersonName"/>
+    <variant name="SSHKey"/>
+    <variant name="TOTP"/>
+    <variant name="WiFi"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.CredentialExtension.CopyCreationDateCount" units="count"
     expires_after="2025-04-01">
   <owner>tmartino@chromium.org</owner>

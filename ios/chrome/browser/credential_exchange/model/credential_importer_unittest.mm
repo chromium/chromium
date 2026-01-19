@@ -10,6 +10,7 @@
 
 #import "base/functional/bind.h"
 #import "base/memory/scoped_refptr.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
@@ -21,6 +22,7 @@
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exchange_password.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_import_manager_swift.h"
+#import "ios/chrome/browser/credential_exchange/model/import_stats.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -135,7 +137,8 @@ TEST_F(CredentialImporterTest, ImportsValidPassword) {
   [importer_ onCredentialsTranslatedWithPasswords:@[ CreateTestPassword(
                                                       @"https://example.com") ]
                                          passkeys:@[]
-                              exporterDisplayName:@""];
+                              exporterDisplayName:@""
+                                            stats:[[ImportStats alloc] init]];
 
   FakePasswordStoreObserver observer;
   GetAccountStore().AddObserver(&observer);
@@ -161,7 +164,8 @@ TEST_F(CredentialImporterTest, ImportsPasswordWithoutHttpsScheme) {
   [importer_ onCredentialsTranslatedWithPasswords:@[ CreateTestPassword(
                                                       @"example.com") ]
                                          passkeys:@[]
-                              exporterDisplayName:@""];
+                              exporterDisplayName:@""
+                                            stats:[[ImportStats alloc] init]];
 
   FakePasswordStoreObserver observer;
   GetAccountStore().AddObserver(&observer);
@@ -193,7 +197,8 @@ TEST_F(CredentialImporterTest, DoesNotImportPasswordWithoutUrl) {
     passwordWithoutUrl, CreateTestPassword(@"example.com")
   ]
                                          passkeys:@[]
-                              exporterDisplayName:@""];
+                              exporterDisplayName:@""
+                                            stats:[[ImportStats alloc] init]];
 
   FakePasswordStoreObserver observer;
   GetAccountStore().AddObserver(&observer);
@@ -213,6 +218,57 @@ TEST_F(CredentialImporterTest, DoesNotImportPasswordWithoutUrl) {
   EXPECT_EQ(forms[0].password_value, u"password");
   EXPECT_EQ(forms[0].GetNoteWithEmptyUniqueDisplayName(), u"note");
   EXPECT_EQ(forms[0].in_store, PasswordForm::Store::kAccountStore);
+}
+
+TEST_F(CredentialImporterTest, RecordsCredentialsReceivedMetrics) {
+  base::HistogramTester histogram_tester;
+
+  ImportStats* stats = [[ImportStats alloc] init];
+  stats.addressCount = 1;
+  stats.apiKeyCount = 2;
+  stats.basicAuthenticationCount = 3;
+  stats.creditCardCount = 4;
+  stats.customFieldsCount = 5;
+  stats.driversLicenseCount = 6;
+  stats.generatedPasswordCount = 7;
+  stats.identityDocumentCount = 8;
+  stats.itemReferenceCount = 9;
+  stats.noteCount = 10;
+  stats.noteForPasswordCount = 11;
+  stats.passkeyCount = 12;
+  stats.passportCount = 13;
+  stats.personNameCount = 14;
+  stats.sshKeyCount = 15;
+  stats.totpCount = 16;
+  stats.wifiCount = 17;
+
+  [importer_ onCredentialsTranslatedWithPasswords:@[]
+                                         passkeys:@[]
+                              exporterDisplayName:@""
+                                            stats:stats];
+
+  const std::map<std::string, int> expected_counts = {
+      {"Address", 1},
+      {"APIKey", 2},
+      {"BasicAuthentication", 3},
+      {"CreditCard", 4},
+      {"CustomFields", 5},
+      {"DriversLicense", 6},
+      {"GeneratedPassword", 7},
+      {"IdentityDocument", 8},
+      {"ItemReference", 9},
+      {"Note", 10},
+      {"NoteForPassword", 11},
+      {"Passkey", 12},
+      {"Passport", 13},
+      {"PersonName", 14},
+      {"SSHKey", 15},
+      {"TOTP", 16},
+      {"WiFi", 17}};
+  for (const auto& [suffix, count] : expected_counts) {
+    histogram_tester.ExpectUniqueSample(
+        "IOS.CredentialExchange.CredentialsReceivedCount." + suffix, count, 1);
+  }
 }
 
 }  // namespace
