@@ -71,6 +71,7 @@ class ClipboardNudgeControllerTestBase : public AshTestBase {
 
   void TearDown() override {
     nudge_controller_->ClearClockOverrideForTesting();
+    nudge_controller_ = nullptr;
     AshTestBase::TearDown();
   }
 
@@ -101,7 +102,7 @@ class ClipboardNudgeControllerTestBase : public AshTestBase {
   base::HistogramTester& histograms() { return histograms_; }
 
   // Owned by ClipboardHistoryController.
-  raw_ptr<ClipboardNudgeController, DanglingUntriaged> nudge_controller_;
+  raw_ptr<ClipboardNudgeController> nudge_controller_;
 
  private:
   base::SimpleTestClock test_clock_;
