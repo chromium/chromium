@@ -42,7 +42,7 @@ void NamesMap::Add(const AtomicString& key, const AtomicString& value) {
 }
 
 // Parser for HTML exportparts attribute. See
-// http://drafts.csswg.org/css-shadow-parts/.
+// http://drafts.csswg.org/css-shadow/#part
 //
 // Summary is that we are parsing a comma-separated list of part-mappings. A
 // part mapping is a part name or 2 colon-separated part names. If any

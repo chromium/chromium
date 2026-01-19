@@ -28,11 +28,11 @@ using FunctionRuleMap =
 // This helper function takes a list of name-defining rules, and outputs
 // the winner while taking cascade layers into account.
 //
-// Note that one set of winners exists per tree-scope. See css-scoping-1 [2]
+// Note that one set of winners exists per tree-scope. See css-shadow-1 [2]
 // for an explanation of how tree-scoped names work.
 //
 // [1] https://drafts.csswg.org/css-cascade-5/#layering
-// [2] https://drafts.csswg.org/css-scoping/#shadow-names
+// [2] https://drafts.csswg.org/css-shadow/#shadow-names
 template <typename T>
 void AddNameDefiningRules(const HeapVector<CascadeLayered<T>>& input_rules,
                           const CascadeLayerMap* cascade_layer_map,

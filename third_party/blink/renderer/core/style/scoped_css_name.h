@@ -56,8 +56,8 @@ class CORE_EXPORT ScopedCSSName : public GarbageCollected<ScopedCSSName> {
 
 // Represents a list of tree-scoped names (or tree-scoped references).
 //
-// https://drafts.csswg.org/css-scoping/#css-tree-scoped-name
-// https://drafts.csswg.org/css-scoping/#css-tree-scoped-reference
+// https://drafts.csswg.org/css-shadow/#css-tree-scoped-name
+// https://drafts.csswg.org/css-shadow/#css-tree-scoped-reference
 class CORE_EXPORT ScopedCSSNameList
     : public GarbageCollected<ScopedCSSNameList> {
  public:

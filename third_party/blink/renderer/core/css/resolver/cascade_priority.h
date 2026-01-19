@@ -29,7 +29,7 @@ inline uint32_t EncodeOriginImportance(CascadeOrigin origin, bool important) {
 // Tree order bits are flipped for important declarations to reverse the
 // priority [1].
 //
-// [1] https://drafts.csswg.org/css-scoping/#shadow-cascading
+// [1] https://drafts.csswg.org/css-shadow/#shadow-cascading
 inline uint32_t EncodeTreeOrder(uint16_t tree_order, bool important) {
   if (important) {
     return tree_order ^ 0xFFFF;
@@ -78,7 +78,7 @@ inline wtf_size_t DecodeDeclarationIndex(uint32_t position) {
 // StyleCascade for each call to StyleCascade::Apply.
 //
 // [1] https://drafts.csswg.org/css-cascade/#cascading
-// [2] https://drafts.csswg.org/css-scoping/#shadow-cascading
+// [2] https://drafts.csswg.org/css-shadow/#shadow-cascading
 // [3] https://drafts.csswg.org/css-cascade/#style-attr
 // [4] https://drafts.csswg.org/css-cascade-5/#layer-ordering
 class CORE_EXPORT CascadePriority {
@@ -130,8 +130,8 @@ class CORE_EXPORT CascadePriority {
                         /* layer_order */ 0,
                         /* position */ 0) {}
 
-  // For an explanation of 'tree_order', see css-scoping:
-  // https://drafts.csswg.org/css-scoping/#shadow-cascading
+  // For an explanation of 'tree_order', see css-shadow:
+  // https://drafts.csswg.org/css-shadow/#shadow-cascading
   CascadePriority(CascadeOrigin origin,
                   bool important,
                   uint16_t tree_order,

@@ -61,7 +61,7 @@ class CORE_EXPORT CSSLengthResolver {
   // Invoked to notify the resolver that there is a function with
   // a tree-scoped reference, e.g. anchor(--a top).
   //
-  // https://drafts.csswg.org/css-scoping-1/#css-tree-scoped-reference
+  // https://drafts.csswg.org/css-shadow-1/#css-tree-scoped-reference
   virtual void ReferenceTreeScope() const = 0;
 
   // Called when anchor() or anchor-size() functions are evaluated.

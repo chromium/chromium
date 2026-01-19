@@ -173,7 +173,7 @@ class CORE_EXPORT SelectorChecker {
     // the Document associated with `element` as the tree scope.
     //
     // [1] https://drafts.csswg.org/selectors-4/#match-a-selector-against-a-tree
-    // [2] https://drafts.csswg.org/css-scoping-1/#tree-context
+    // [2] https://drafts.csswg.org/css-shadow-1/#tree-context
     // [3] https://dom.spec.whatwg.org/#concept-tree-root
     const TreeScope* tree_scope = nullptr;
     // The scoping root [1], whenever the selector is scoped [2].

@@ -90,8 +90,8 @@ dictionary SetHTMLUnsafeOptions {
     [RaisesException, CEReactions] Element? insertAdjacentElement(DOMString where, Element element);
     [RaisesException] undefined insertAdjacentText(DOMString where, DOMString data);
 
-    // CSS Shadow Parts
-    // https://drafts.csswg.org/css-shadow-parts/#idl
+    // CSS Shadow
+    // https://drafts.csswg.org/css-shadow/#idl
     [SameObject, PerWorldBindings, PutForwards=value] readonly attribute DOMTokenList part;
 
     // Pointer Events

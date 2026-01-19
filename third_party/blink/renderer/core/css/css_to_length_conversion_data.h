@@ -310,7 +310,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     kDynamicViewport = 1u << 5,
     // cq*
     kContainerRelative = 1u << 6,
-    // https://drafts.csswg.org/css-scoping-1/#css-tree-scoped-reference
+    // https://drafts.csswg.org/css-shadow-1/#css-tree-scoped-reference
     kTreeScopedReference = 1u << 7,
     // vi, vb, cqi, cqb, etc
     kLogicalDirectionRelative = 1u << 8,
