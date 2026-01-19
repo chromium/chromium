@@ -14,6 +14,7 @@
 #include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/supervised_user/core/browser/supervised_user_log_record.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/storage_partition.h"

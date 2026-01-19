@@ -44,5 +44,5 @@ bool FamilyLinkUserMetricsProvider::ProvideHistograms() {
             GetForProfile(profile),
         g_browser_process->device_parental_controls()));
   }
-  return supervised_user::EmitLogRecordHistograms(records);
+  return supervised_user::SupervisedUserLogRecord::EmitHistograms(records);
 }

@@ -30,5 +30,5 @@ bool IOSFamilyLinkUserMetricsProvider::ProvideHistograms() {
             GetForProfile(profile),
         GetApplicationContext()->GetDeviceParentalControls()));
   }
-  return supervised_user::EmitLogRecordHistograms(records);
+  return supervised_user::SupervisedUserLogRecord::EmitHistograms(records);
 }

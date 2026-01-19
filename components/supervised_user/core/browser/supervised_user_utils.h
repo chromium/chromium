@@ -13,7 +13,6 @@
 #include "components/safe_search_api/url_checker.h"
 #include "components/supervised_user/core/browser/proto/families_common.pb.h"
 #include "components/supervised_user/core/browser/proto/parent_access_callback.pb.h"
-#include "components/supervised_user/core/browser/supervised_user_log_record.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "url/gurl.h"
 
@@ -90,12 +89,6 @@ std::string FamilyRoleToString(kidsmanagement::FamilyRole role);
 
 // Strips user-specific tokens in a URL to generalize it.
 GURL NormalizeUrl(const GURL& url);
-
-// Given a list of records that map to the supervision state of primary
-// accounts on the user's device, emits metrics that reflect the supervision
-// status of the user. Returns true if one or more histograms were emitted.
-bool EmitLogRecordHistograms(
-    const std::vector<SupervisedUserLogRecord>& records);
 
 // Returns the right URL of the PACP widget for iOS and Desktop platforms (other
 // platforms are undefined).
