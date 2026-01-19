@@ -110,7 +110,9 @@ std::u16string AutofillSnackbarControllerImpl::GetMessageText() const {
           IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT);
     case AutofillSnackbarType::kSaveServerIbanSuccess:
       return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_SERVER_IBAN_SUCCESS_SNACKBAR_MESSAGE_TEXT);
+          base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)
+              ? IDS_AUTOFILL_SAVE_SERVER_IBAN_TO_WALLET_SUCCESS_SNACKBAR_MESSAGE_TEXT
+              : IDS_AUTOFILL_SAVE_SERVER_IBAN_SUCCESS_SNACKBAR_MESSAGE_TEXT);
     case AutofillSnackbarType::kPlusAddressEmailOverride:
       return l10n_util::GetStringUTF16(
           IDS_PLUS_ADDRESS_SNACKBAR_UNDO_EMAIL_SWAP_DESCRIPTION_TEXT_ANDROID);
