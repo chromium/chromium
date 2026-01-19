@@ -287,11 +287,13 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
           .Set("src", version_entry->src().spec())
           .Set("update_channel", task_params_.update_channel().ToString()));
 
-  ASSIGN_OR_RETURN(
-      const WebApp& iwa,
-      GetIsolatedWebAppById(*registrar_, task_params_.url_info().app_id()),
-      [&](const std::string&) { FailWith(Error::kIwaNotInstalled); });
-  const auto& isolation_data = *iwa.isolation_data();
+  const WebApp* iwa = registrar_->GetAppById(task_params_.url_info().app_id(),
+                                             WebAppFilter::IsIsolatedApp());
+  if (!iwa) {
+    FailWith(Error::kIwaNotInstalled);
+    return;
+  }
+  const auto& isolation_data = *iwa->isolation_data();
   currently_installed_version_ = isolation_data.version();
   debug_log_.Set("currently_installed_version",
                  currently_installed_version_->GetString());

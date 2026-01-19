@@ -97,17 +97,11 @@ std::optional<std::string> GetIsolatedWebAppNameAndVersion(
   if (!provider) {
     return std::nullopt;
   }
-  // In this case we will not modify any data and reading stale data is
-  // fine, since the app will already be installed and open in the case
-  // it needs to be checked in DevTools.
-  const web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
-  const web_app::WebApp* web_app = registrar.GetAppById(*app_id);
-
-  if (web_app &&
-      registrar.AppMatches(*app_id, web_app::WebAppFilter::IsIsolatedApp())) {
+  if (const web_app::WebApp* iwa = provider->registrar_unsafe().GetAppById(
+          *app_id, web_app::WebAppFilter::IsIsolatedApp())) {
     // Version is a key part of IWA so should be displayed in inspect tool
-    return base::StrCat({registrar.GetAppShortName(*app_id), " (",
-                         web_app->isolation_data()->version().GetString(),
+    return base::StrCat({provider->registrar_unsafe().GetAppShortName(*app_id),
+                         " (", iwa->isolation_data()->version().GetString(),
                          ")"});
   }
 

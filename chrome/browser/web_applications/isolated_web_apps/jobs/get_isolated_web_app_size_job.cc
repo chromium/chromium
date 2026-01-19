@@ -138,8 +138,8 @@ void GetIsolatedWebAppSizeJob::Start(
 
   const WebAppRegistrar& web_app_registrar =
       lock_with_app_resources_->registrar();
-  const WebApp iwa = CHECK_DEREF(web_app_registrar.GetAppById(app_id_));
-  CHECK(iwa.isolation_data());
+  const WebApp iwa = CHECK_DEREF(
+      web_app_registrar.GetAppById(app_id_, WebAppFilter::IsIsolatedApp()));
 
   iwa_origin_ = url::Origin::Create(iwa.scope());
 

@@ -57,8 +57,9 @@ GetIwaSourceWithTrustCheck(base::WeakPtr<Profile> profile,
   }
   WebAppRegistrar& registrar =
       WebAppProvider::GetForWebApps(profile.get())->registrar_unsafe();
-  const WebApp* iwa = registrar.GetAppById(iwa_id);
-  if (!iwa || !iwa->isolation_data()) {
+  const WebApp* iwa =
+      registrar.GetAppById(iwa_id, WebAppFilter::IsIsolatedApp());
+  if (!iwa) {
     return base::unexpected(SourceRequestError{
         .net_error = net::ERR_FAILED,
         .error_description = base::StringPrintf(

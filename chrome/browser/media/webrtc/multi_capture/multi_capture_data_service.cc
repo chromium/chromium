@@ -9,7 +9,6 @@
 #include "base/types/expected_macros.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -194,13 +193,13 @@ void MultiCaptureDataService::OnIconReceived(const webapps::AppId& app_id,
 bool MultiCaptureDataService::MaybeAddAppToCaptureAppLists(
     const webapps::AppId& app_id) {
   const web_app::WebAppRegistrar& registrar = provider_->registrar_unsafe();
-  ASSIGN_OR_RETURN(const web_app::WebApp& iwa,
-                   web_app::GetIsolatedWebAppById(registrar, app_id),
-                   [](const std::string& error) { return false; });
-  ASSIGN_OR_RETURN(const web_app::IsolatedWebAppUrlInfo& url_info,
-                   web_app::IsolatedWebAppUrlInfo::Create(iwa.manifest_id()),
-                   [](const std::string& error) { return false; });
-  const std::string& bundle_id = url_info.web_bundle_id().id();
+  const web_app::WebApp* iwa =
+      registrar.GetAppById(app_id, web_app::WebAppFilter::IsIsolatedApp());
+  if (!iwa) {
+    return false;
+  }
+  const std::string bundle_id =
+      web_app::IwaOrigin::Create(iwa->scope())->web_bundle_id().id();
   const bool capture_allowed_by_policy =
       std::ranges::any_of(multi_screen_capture_allowlist_on_login_,
                           [&bundle_id](const base::Value& value) {

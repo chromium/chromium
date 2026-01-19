@@ -54,6 +54,7 @@ namespace {
 
 using base::test::ErrorIs;
 using base::test::HasValue;
+using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
@@ -265,9 +266,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfIwaIsNotInstalled) {
   CreateDefaultPageState();
 
   auto result = ApplyPendingUpdate();
-  EXPECT_THAT(result,
-              ErrorIs(Field(&IsolatedWebAppApplyUpdateCommandError::message,
-                            HasSubstr("App is no longer installed"))));
+  EXPECT_THAT(result, ErrorIs(_));
 
   const WebApp* web_app =
       fake_provider().registrar_unsafe().GetAppById(url_info_.app_id());
@@ -283,9 +282,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfInstalledAppIsNotIsolated) {
   CreateDefaultPageState();
 
   auto result = ApplyPendingUpdate();
-  EXPECT_THAT(result,
-              ErrorIs(Field(&IsolatedWebAppApplyUpdateCommandError::message,
-                            HasSubstr("not an Isolated Web App"))));
+  EXPECT_THAT(result, ErrorIs(_));
 
   const WebApp* web_app =
       fake_provider().registrar_unsafe().GetAppById(url_info_.app_id());

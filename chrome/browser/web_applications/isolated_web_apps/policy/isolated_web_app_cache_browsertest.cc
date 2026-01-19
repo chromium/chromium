@@ -594,11 +594,8 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
   }
 
   const WebApp* GetIsolatedWebApp(const SignedWebBundleId& bundle_id) {
-    ASSIGN_OR_RETURN(const WebApp& iwa,
-                     GetIsolatedWebAppById(provider().registrar_unsafe(),
-                                           GetAppId(bundle_id)),
-                     [](const std::string&) { return nullptr; });
-    return &iwa;
+    return provider().registrar_unsafe().GetAppById(
+        GetAppId(bundle_id), WebAppFilter::IsIsolatedApp());
   }
 
   SessionMixin CreateSessionMixin(SessionType session_type) {

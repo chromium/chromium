@@ -65,13 +65,6 @@ void CleanupLocationIfOwned(const base::FilePath& profile_dir,
                             const IsolatedWebAppStorageLocation& location,
                             base::OnceClosure closure);
 
-// Gets a web app from `registrar` for the given `iwa_id` and validates that
-// it's a valid IWA (i.e. features `isolation_data`). Returns an error if
-// there's no web app or `isolation_data` is missing.
-base::expected<std::reference_wrapper<const WebApp>, std::string>
-GetIsolatedWebAppById(const WebAppRegistrar& registrar,
-                      const webapps::AppId& iwa_id);
-
 enum class KeyRotationLookupResult { kNoKeyRotation, kKeyFound, kKeyBlocked };
 
 // Queries the `IwaKeyDistributionInfoProvider` whether there's

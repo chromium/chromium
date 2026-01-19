@@ -39,6 +39,7 @@
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -184,16 +185,17 @@ void InstallIsolatedWebAppCommand::CheckCanBeInstalled(
   }
 
   // Check 2: App is not already installed
-  ASSIGN_OR_RETURN(
-      const WebApp& app,
-      GetIsolatedWebAppById(lock_->registrar(), url_info_.app_id()),
-      [&next_step_callback](const std::string&) {
-        std::move(next_step_callback).Run();
-      });
+  const WebApp* iwa = lock_->registrar().GetAppById(
+      url_info_.app_id(), WebAppFilter::IsIsolatedApp());
+  if (!iwa) {
+    // App is not installed; safe to proceed with installation.
+    std::move(next_step_callback).Run();
+    return;
+  }
 
-  if (app.GetSources().Has(
+  if (iwa->GetSources().Has(
           ConvertInstallSurfaceToWebAppSource(install_surface_)) ||
-      app.IsIwaPolicyInstalledApp()) {
+      iwa->IsIwaPolicyInstalledApp()) {
     // The app is already installed from the same source or from policy.
     ReportFailure(InstallIwaError::kAppIsNotInstallable,
                   webapps::InstallResultCode::kNotInstallable,
@@ -308,15 +310,14 @@ void InstallIsolatedWebAppCommand::ProcessInstallInfoResultAndProceed(
 
   // As IWAs can have more than one install source at a time, the app might
   // already be installed.
-  auto iwa_result =
-      GetIsolatedWebAppById(lock_->registrar(), url_info_.app_id());
+  const WebApp* iwa = lock_->registrar().GetAppById(
+      url_info_.app_id(), WebAppFilter::IsIsolatedApp());
 
   // Policy source always takes precedence over the user installed
   // version, even if it is lower. Such scenario requires user data clearance
   // before downgrading.
-  if (iwa_result.has_value() &&
-      install_info.isolated_web_app_version() <
-          iwa_result.value().get().isolation_data()->version()) {
+  if (iwa && install_info.isolated_web_app_version() <
+                 iwa->isolation_data()->version()) {
     web_app::RemoveIsolatedWebAppBrowsingData(
         &profile(), url_info_.origin(),
         base::BindOnce(std::move(next_step_callback), std::move(install_info)));

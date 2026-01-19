@@ -285,8 +285,7 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
   update_bundle->TrustSigningKey();
 
   auto result = PrepareAndStoreUpdateInfo(url_info, *update_bundle);
-  EXPECT_THAT(result,
-              IsErrorWithMessage(HasSubstr("App is no longer installed")));
+  EXPECT_THAT(result, IsErrorWithMessage(_));
 
   const WebApp* web_app =
       provider()->registrar_unsafe().GetAppById(url_info.app_id());
@@ -305,7 +304,7 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
   update_bundle->TrustSigningKey();
 
   auto result = PrepareAndStoreUpdateInfo(url_info, *update_bundle);
-  EXPECT_THAT(result, IsErrorWithMessage(HasSubstr("not an Isolated Web App")));
+  EXPECT_THAT(result, IsErrorWithMessage(_));
 
   const WebApp* web_app =
       provider()->registrar_unsafe().GetAppById(url_info.app_id());

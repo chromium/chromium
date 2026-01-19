@@ -723,7 +723,8 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
 
   app->description =
       provider_->registrar_unsafe().GetAppDescription(web_app->app_id());
-  if (web_app->isolation_data().has_value()) {
+  if (provider_->registrar_unsafe().AppMatches(web_app->app_id(),
+                                               WebAppFilter::IsIsolatedApp())) {
     // Show the version of Isolated Web App in ChromeOS Settings
     app->version = web_app->isolation_data()->version().GetString();
   }
@@ -750,7 +751,8 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
   app->permissions = CreatePermissions(web_app);
 
   // Isolated web apps can only be opened in window.
-  app->allow_window_mode_selection = !web_app->isolation_data().has_value();
+  app->allow_window_mode_selection = !provider_->registrar_unsafe().AppMatches(
+      web_app->app_id(), WebAppFilter::IsIsolatedApp());
 
   SetWebAppShowInFields(web_app, *app);
 

@@ -135,20 +135,22 @@ void IwaBundleCacheManager::SetProvider(base::PassKey<WebAppProvider>,
 }
 
 void IwaBundleCacheManager::OnWebAppInstalled(const webapps::AppId& app_id) {
-  ASSIGN_OR_RETURN(const WebApp& iwa,
-                   GetIsolatedWebAppById(provider_->registrar_unsafe(), app_id),
-                   [](const std::string&) { return; });
+  const WebApp* iwa = provider_->registrar_unsafe().GetAppById(
+      app_id, WebAppFilter::IsIsolatedApp());
+  if (!iwa) {
+    return;
+  }
 
   // In ephemeral sessions `IsolatedWebAppUpdateManager` checks for updates
   // before IWAs are installed from cache (without updating IWAs even when the
   // update is available, since only installed IWAs can be updated). Triggering
   // the update check manually here after the IWA installation to avoid waiting
   // for the next scheduled update check.
-  TriggerIwaUpdateCheck(iwa);
+  TriggerIwaUpdateCheck(*iwa);
 
   // Both update command and remove obsolete versions command take app lock,
   // so it is fine to call them here at the same time.
-  RemoveObsoleteIwaVersionsCache(iwa);
+  RemoveObsoleteIwaVersionsCache(*iwa);
 }
 
 void IwaBundleCacheManager::OnWebAppInstallManagerDestroyed() {

@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_util.h"
@@ -124,10 +125,8 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
                               test::GetDefaultEd25519WebBundleId())
                               .app_id();
   {
-    ASSERT_OK_AND_ASSIGN(
-        const WebApp& iwa,
-        GetIsolatedWebAppById(provider().registrar_unsafe(), app_id));
-
+    const WebApp& iwa = CHECK_DEREF(provider().registrar_unsafe().GetAppById(
+        app_id, WebAppFilter::IsIsolatedApp()));
     EXPECT_EQ(iwa.isolation_data()->version(), *IwaVersion::Create("1.0.0"));
     EXPECT_EQ(iwa.isolation_data()->update_manifest_url(), update_manifest_url);
     EXPECT_EQ(iwa.isolation_data()->update_channel(),
@@ -153,10 +152,8 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
         app_id, update_future.GetCallback<const std::string&>());
     EXPECT_THAT(update_future.Get(), HasSubstr("Update to v2.0.0 successful"));
 
-    ASSERT_OK_AND_ASSIGN(
-        const WebApp& iwa,
-        GetIsolatedWebAppById(provider().registrar_unsafe(), app_id));
-
+    const WebApp& iwa = CHECK_DEREF(provider().registrar_unsafe().GetAppById(
+        app_id, WebAppFilter::IsIsolatedApp()));
     EXPECT_EQ(iwa.isolation_data()->version(), *IwaVersion::Create("2.0.0"));
     EXPECT_EQ(iwa.isolation_data()->update_manifest_url(), update_manifest_url);
     EXPECT_EQ(iwa.isolation_data()->update_channel(),
@@ -172,9 +169,8 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
         app_id, beta_channel.ToString(), set_channel_future.GetCallback());
     EXPECT_TRUE(set_channel_future.Get());
 
-    ASSERT_OK_AND_ASSIGN(
-        const WebApp& iwa,
-        GetIsolatedWebAppById(provider().registrar_unsafe(), app_id));
+    const WebApp& iwa = CHECK_DEREF(provider().registrar_unsafe().GetAppById(
+        app_id, WebAppFilter::IsIsolatedApp()));
     EXPECT_EQ(iwa.isolation_data()->version(), *IwaVersion::Create("2.0.0"));
     EXPECT_EQ(iwa.isolation_data()->update_manifest_url(), update_manifest_url);
     EXPECT_EQ(iwa.isolation_data()->update_channel(), beta_channel);
@@ -198,10 +194,8 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
         app_id, update_future.GetCallback<const std::string&>());
     EXPECT_THAT(update_future.Get(), HasSubstr("Update to v2.1.0 successful"));
 
-    ASSERT_OK_AND_ASSIGN(
-        const WebApp& iwa,
-        GetIsolatedWebAppById(provider().registrar_unsafe(), app_id));
-
+    const WebApp& iwa = CHECK_DEREF(provider().registrar_unsafe().GetAppById(
+        app_id, WebAppFilter::IsIsolatedApp()));
     EXPECT_EQ(iwa.isolation_data()->version(), *IwaVersion::Create("2.1.0"));
     EXPECT_EQ(iwa.isolation_data()->update_manifest_url(), update_manifest_url);
     EXPECT_EQ(iwa.isolation_data()->update_channel(), beta_channel);
@@ -246,10 +240,8 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
         app_id, update_future.GetCallback<const std::string&>());
     EXPECT_THAT(update_future.Get(), HasSubstr("Update to v2.3.0 successful"));
 
-    ASSERT_OK_AND_ASSIGN(
-        const WebApp& iwa,
-        GetIsolatedWebAppById(provider().registrar_unsafe(), app_id));
-
+    const WebApp& iwa = CHECK_DEREF(provider().registrar_unsafe().GetAppById(
+        app_id, WebAppFilter::IsIsolatedApp()));
     EXPECT_EQ(iwa.isolation_data()->version(), *IwaVersion::Create("2.3.0"));
     EXPECT_EQ(iwa.isolation_data()->update_manifest_url(), update_manifest_url);
     EXPECT_EQ(iwa.isolation_data()->update_channel(), beta_channel);
@@ -263,10 +255,8 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
         app_id, update_future.GetCallback<const std::string&>());
     EXPECT_THAT(update_future.Get(), HasSubstr("Update to v2.4.0 successful"));
 
-    ASSERT_OK_AND_ASSIGN(
-        const WebApp& iwa,
-        GetIsolatedWebAppById(provider().registrar_unsafe(), app_id));
-
+    const WebApp& iwa = CHECK_DEREF(provider().registrar_unsafe().GetAppById(
+        app_id, WebAppFilter::IsIsolatedApp()));
     EXPECT_EQ(iwa.isolation_data()->version(), *IwaVersion::Create("2.4.0"));
   }
 
@@ -283,10 +273,8 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
         app_id, update_future.GetCallback<const std::string&>());
     EXPECT_THAT(update_future.Get(), HasSubstr("Update to v2.3.0 successful"));
 
-    ASSERT_OK_AND_ASSIGN(
-        const WebApp& iwa,
-        GetIsolatedWebAppById(provider().registrar_unsafe(), app_id));
-
+    const WebApp& iwa = CHECK_DEREF(provider().registrar_unsafe().GetAppById(
+        app_id, WebAppFilter::IsIsolatedApp()));
     EXPECT_EQ(iwa.isolation_data()->version(), *IwaVersion::Create("2.3.0"));
   }
 }
@@ -354,10 +342,8 @@ IN_PROC_BROWSER_TEST_F(
         HasSubstr(
             "Update failed: Error::kPinnedVersionNotFoundInUpdateManifest"));
 
-    ASSERT_OK_AND_ASSIGN(
-        const WebApp& iwa,
-        GetIsolatedWebAppById(provider().registrar_unsafe(), app_id));
-
+    const WebApp& iwa = CHECK_DEREF(provider().registrar_unsafe().GetAppById(
+        app_id, WebAppFilter::IsIsolatedApp()));
     // Expect the app to stay at v1.0.0.
     EXPECT_EQ(iwa.isolation_data()->version(), *IwaVersion::Create("1.0.0"));
   }

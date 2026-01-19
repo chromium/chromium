@@ -121,7 +121,8 @@ class WebAppRegistrar {
 
   bool is_empty() const { return registry_.empty(); }
 
-  const WebApp* GetAppById(const webapps::AppId& app_id) const;
+  const WebApp* GetAppById(const webapps::AppId& app_id,
+                           std::optional<WebAppFilter> = std::nullopt) const;
 
   // TODO(crbug.com/40170773): should be removed when id is introduced to
   // manifest.
@@ -473,8 +474,7 @@ class WebAppRegistrar {
   // |isolated_web_app_id|. Both the primary and any <controlledframe>
   // StoragePartitions will be returned.
   std::vector<content::StoragePartitionConfig>
-  GetIsolatedWebAppStoragePartitionConfigs(
-      const webapps::AppId& isolated_web_app_id) const;
+  GetIsolatedWebAppStoragePartitionConfigs(const webapps::AppId& app_id) const;
 
   // Saves a record of the |partition_name| in
   // |isolated_web_app_in_memory_controlled_frame_partitions_|.

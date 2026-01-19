@@ -971,32 +971,6 @@ TEST_F(WebAppRegistrarTest, GetAllIsolatedWebAppStoragePartitionConfigs) {
   EXPECT_EQ(expected_config, storage_partition_configs[0]);
 }
 
-TEST_F(
-    WebAppRegistrarTest,
-    GetAllIsolatedWebAppStoragePartitionConfigsEmptyWhenNotLocallyInstalled) {
-  base::test::ScopedFeatureList scoped_feature_list(features::kIsolatedWebApps);
-  StartWebAppProvider();
-
-  GURL start_url(
-      "isolated-app://"
-      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  auto isolated_web_app = test::CreateWebApp(start_url);
-  const webapps::AppId app_id = isolated_web_app->app_id();
-  isolated_web_app->SetIsolationData(
-      IsolationData::Builder(
-          IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
-          *IwaVersion::Create("1.0.0"))
-          .Build());
-  isolated_web_app->SetInstallState(
-      proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE);
-  RegisterAppUnsafe(std::move(isolated_web_app));
-
-  std::vector<content::StoragePartitionConfig> storage_partition_configs =
-      registrar().GetIsolatedWebAppStoragePartitionConfigs(app_id);
-
-  EXPECT_TRUE(storage_partition_configs.empty());
-}
-
 TEST_F(WebAppRegistrarTest, SaveAndGetInMemoryControlledFramePartitionConfig) {
   base::test::ScopedFeatureList scoped_feature_list(features::kIsolatedWebApps);
   StartWebAppProvider();

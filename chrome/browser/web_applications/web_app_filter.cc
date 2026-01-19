@@ -37,14 +37,28 @@ WebAppFilter WebAppFilter::CapturesLinksInScope() {
 // static
 WebAppFilter WebAppFilter::IsIsolatedApp() {
   WebAppFilter filter;
-  filter.is_isolated_app_ = true;
+  filter.isolated_app_filter_ = {{}};
+  return filter;
+}
+
+// static
+WebAppFilter WebAppFilter::IsDevModeIsolatedApp() {
+  WebAppFilter filter;
+  filter.isolated_app_filter_ = {{.must_be_in_dev_mode = true}};
   return filter;
 }
 
 // static
 WebAppFilter WebAppFilter::PolicyInstalledIsolatedWebApp() {
   WebAppFilter filter;
-  filter.is_policy_installed_iwa = true;
+  filter.isolated_app_filter_ = {{.must_be_policy_installed = true}};
+  return filter;
+}
+
+// static
+WebAppFilter WebAppFilter::IsIsolatedWebAppWithOnlyUserManagement() {
+  WebAppFilter filter;
+  filter.isolated_app_filter_ = {{.must_have_no_external_management = true}};
   return filter;
 }
 

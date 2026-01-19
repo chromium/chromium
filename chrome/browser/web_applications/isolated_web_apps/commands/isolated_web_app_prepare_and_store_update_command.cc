@@ -170,12 +170,14 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::ReportVersionValidationFailure(
 
 void IsolatedWebAppUpdatePrepareAndStoreCommand::CheckIfUpdateIsStillApplicable(
     base::OnceClosure next_step_callback) {
-  ASSIGN_OR_RETURN(
-      const WebApp& iwa,
-      GetIsolatedWebAppById(lock_->registrar(), url_info_.app_id()),
-      [&](const std::string& error) { ReportFailure(error); });
+  const WebApp* iwa = lock_->registrar().GetAppById(
+      url_info_.app_id(), WebAppFilter::IsIsolatedApp());
+  if (!iwa) {
+    ReportFailure("App is not installed.");
+    return;
+  }
 
-  const auto& isolation_data = *iwa.isolation_data();
+  const auto& isolation_data = *iwa->isolation_data();
   installed_version_ = isolation_data.version();
 
   GetMutableDebugValue().Set("installed_version",

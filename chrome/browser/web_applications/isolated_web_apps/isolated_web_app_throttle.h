@@ -39,13 +39,11 @@ class IsolatedWebAppThrottle : public content::NavigationThrottle {
 
   virtual void OnComponentsReady();
 
-  bool NeedsManifestFetch();
+  bool NeedsManifestFetch() const;
   void OnCachePopulated(bool success);
 
-  Profile* profile();
-  bool is_isolated_web_app_navigation();
-
-  raw_ptr<IwaPermissionsPolicyCache> cache_;
+  Profile* profile() const;
+  bool is_isolated_web_app_navigation() const;
 
   base::WeakPtrFactory<IsolatedWebAppThrottle> weak_ptr_factory_{this};
 };

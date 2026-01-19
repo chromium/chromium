@@ -14,11 +14,14 @@
 #include <vector>
 
 #include "ash/constants/web_app_id_constants.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/containers/enum_set.h"
+#include "base/containers/extend.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/map_util.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -810,8 +813,14 @@ WebAppRegistrar::GetSingleTrustedAppIconForSecuritySurfaces(
   return less_than_required_icon_size->second;
 }
 
-const WebApp* WebAppRegistrar::GetAppById(const webapps::AppId& app_id) const {
-  return base::FindPtrOrNull(registry_, app_id);
+const WebApp* WebAppRegistrar::GetAppById(
+    const webapps::AppId& app_id,
+    std::optional<WebAppFilter> filter) const {
+  const WebApp* web_app = base::FindPtrOrNull(registry_, app_id);
+  if (!filter) {
+    return web_app;
+  }
+  return web_app && AppMatches(app_id, *filter) ? web_app : nullptr;
 }
 
 const WebApp* WebAppRegistrar::GetAppByStartUrl(const GURL& start_url) const {
@@ -1023,12 +1032,25 @@ bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
   }
 #endif
 
-  if (filter.is_isolated_app_) {
-    return IsIsolated(app_id);
-  }
-
-  if (filter.is_policy_installed_iwa) {
-    return IsIsolated(app_id) && IsInstalledByPolicy(app_id);
+  if (const auto& iwa_filter = filter.isolated_app_filter_) {
+    if (!IsIsolated(app_id)) {
+      return false;
+    }
+    const WebApp& iwa = CHECK_DEREF(GetAppById(app_id));
+    bool matches = true;
+    if (iwa_filter->must_be_in_dev_mode) {
+      matches &= iwa.isolation_data()->location().dev_mode();
+    }
+    if (iwa_filter->must_be_policy_installed) {
+      matches &= IsInstalledByPolicy(app_id);
+    }
+    if (iwa_filter->must_have_no_external_management) {
+      matches &=
+          !iwa.GetSources().HasAny({web_app::WebAppManagement::kKiosk,
+                                    web_app::WebAppManagement::kIwaShimlessRma,
+                                    web_app::WebAppManagement::kIwaPolicy});
+    }
+    return matches;
   }
 
   if (filter.is_crafted_app_) {
@@ -1192,7 +1214,7 @@ bool WebAppRegistrar::IsInstalledByPolicy(const webapps::AppId& app_id) const {
   }
 
   WebAppManagementTypes sources = web_app->GetSources();
-  if (web_app->isolation_data().has_value()) {
+  if (AppMatches(app_id, WebAppFilter::IsIsolatedApp())) {
     return sources.Has(WebAppManagement::Type::kIwaPolicy);
   }
   return sources.Has(WebAppManagement::Type::kPolicy);
@@ -1286,55 +1308,40 @@ int WebAppRegistrar::CountUserInstalledDiyApps() const {
 
 std::vector<content::StoragePartitionConfig>
 WebAppRegistrar::GetIsolatedWebAppStoragePartitionConfigs(
-    const webapps::AppId& isolated_web_app_id) const {
+    const webapps::AppId& app_id) const {
   if (!content::AreIsolatedWebAppsEnabled(profile_)) {
     return {};
   }
-  const WebApp* isolated_web_app = GetAppById(isolated_web_app_id);
-  if (!isolated_web_app) {
-    return {};
-  }
-  // Note: This function is called after is_installed is set to true, so regular
-  // helper functions cannot be used.
-  if (isolated_web_app->install_state() !=
-          proto::INSTALLED_WITH_OS_INTEGRATION &&
-      isolated_web_app->install_state() !=
-          proto::INSTALLED_WITHOUT_OS_INTEGRATION) {
+  // Note: This function is called after is_uninstalling is set to true.
+  const WebApp* iwa =
+      GetAppById(app_id, WebAppFilter::IsIsolatedWebAppIncludingUninstalling());
+  if (!iwa) {
     return {};
   }
 
-  if (!isolated_web_app->isolation_data()) {
-    return {};
-  }
-
-  base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
-      IsolatedWebAppUrlInfo::Create(isolated_web_app->scope());
-  if (!url_info.has_value()) {
-    LOG(ERROR) << "Invalid Isolated Web App: " << isolated_web_app->app_id()
-               << ", " << url_info.error();
-    return {};
-  }
+  auto url_info = *IsolatedWebAppUrlInfo::Create(iwa->scope());
 
   // Start with IWA's base on-disk partition.
   std::vector<content::StoragePartitionConfig> partitions = {
-      url_info->storage_partition_config(profile_)};
+      url_info.storage_partition_config(profile_)};
+
+  auto collect_partitions = [&](const auto& partitions, bool in_memory) {
+    return base::ToVector(partitions, [&](const std::string& partition) {
+      return url_info.GetStoragePartitionConfigForControlledFrame(
+          profile_, partition, in_memory);
+    });
+  };
 
   // Get all on-disk Controlled Frame partitions.
-  for (const std::string& partition :
-       isolated_web_app->isolation_data()->controlled_frame_partitions()) {
-    partitions.push_back(url_info->GetStoragePartitionConfigForControlledFrame(
-        profile_, partition, /*in_memory=*/false));
-  }
-
+  base::Extend(
+      partitions,
+      collect_partitions(iwa->isolation_data()->controlled_frame_partitions(),
+                         /*in_memory=*/false));
   // Get all in-memory Controlled Frame partitions.
-  auto it = isolated_web_app_in_memory_controlled_frame_partitions_.find(
-      isolated_web_app_id);
-  if (it != isolated_web_app_in_memory_controlled_frame_partitions_.end()) {
-    for (const std::string& partition : it->second) {
-      partitions.push_back(
-          url_info->GetStoragePartitionConfigForControlledFrame(
-              profile_, partition, /*in_memory=*/true));
-    }
+  if (auto* stored_partitions = base::FindOrNull(
+          isolated_web_app_in_memory_controlled_frame_partitions_, app_id)) {
+    base::Extend(partitions,
+                 collect_partitions(*stored_partitions, /*in_memory=*/true));
   }
 
   return partitions;
@@ -1344,11 +1351,7 @@ std::optional<content::StoragePartitionConfig>
 WebAppRegistrar::SaveAndGetInMemoryControlledFramePartitionConfig(
     const IsolatedWebAppUrlInfo& url_info,
     const std::string& partition_name) {
-  if (!IsInstallState(
-          url_info.app_id(),
-          {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-           proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-           proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION})) {
+  if (!AppMatches(url_info.app_id(), WebAppFilter::IsIsolatedApp())) {
     return std::nullopt;
   }
 

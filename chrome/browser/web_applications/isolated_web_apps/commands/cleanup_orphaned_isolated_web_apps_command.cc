@@ -33,28 +33,25 @@ std::set<base::FilePath> RetrieveAllInstalledIsolatedWebAppsPaths(
     const Profile& profile) {
   std::set<base::FilePath> isolated_web_apps_paths;
   const WebAppRegistrar& registrar = lock.registrar();
-  for (const webapps::AppId& app_id : registrar.GetAppIds()) {
-    const WebApp& app = CHECK_DEREF(registrar.GetAppById(app_id));
-    if (const auto& isolation_data = app.isolation_data()) {
-      const auto* owned_bundle =
+  for (const auto& iwa : registrar.GetApps(WebAppFilter::IsIsolatedApp())) {
+    const auto* owned_bundle =
+        std::get_if<IsolatedWebAppStorageLocation::OwnedBundle>(
+            &iwa.isolation_data()->location().variant());
+    if (!owned_bundle) {
+      continue;
+    }
+
+    isolated_web_apps_paths.insert(
+        owned_bundle->GetPath(profile.GetPath()).DirName());
+
+    if (const auto& pending_update_info =
+            iwa.isolation_data()->pending_update_info()) {
+      const auto* pending_update_location =
           std::get_if<IsolatedWebAppStorageLocation::OwnedBundle>(
-              &isolation_data->location().variant());
-      if (!owned_bundle) {
-        continue;
-      }
-
-      isolated_web_apps_paths.insert(
-          owned_bundle->GetPath(profile.GetPath()).DirName());
-
-      if (const auto& pending_update_info =
-              isolation_data->pending_update_info()) {
-        const auto* pending_update_location =
-            std::get_if<IsolatedWebAppStorageLocation::OwnedBundle>(
-                &pending_update_info->location.variant());
-        if (pending_update_location) {
-          isolated_web_apps_paths.insert(
-              pending_update_location->GetPath(profile.GetPath()).DirName());
-        }
+              &pending_update_info->location.variant());
+      if (pending_update_location) {
+        isolated_web_apps_paths.insert(
+            pending_update_location->GetPath(profile.GetPath()).DirName());
       }
     }
   }
