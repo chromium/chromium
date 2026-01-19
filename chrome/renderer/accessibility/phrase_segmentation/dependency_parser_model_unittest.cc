@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/base_paths.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
@@ -25,7 +26,8 @@ base::File CreateInvalidModelFile() {
   base::File file(file_path, (base::File::FLAG_CREATE | base::File::FLAG_READ |
                               base::File::FLAG_WRITE |
                               base::File::FLAG_CAN_DELETE_ON_CLOSE));
-  EXPECT_TRUE(UNSAFE_TODO(file.WriteAtCurrentPos("12345", 5)));
+  EXPECT_TRUE(
+      file.WriteAtCurrentPosAndCheck(base::byte_span_from_cstring("12345")));
   return file;
 }
 
