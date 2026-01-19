@@ -13,21 +13,20 @@
 
 @interface ResizedAvatarCache ()
 
-// Size of resized avatar.
-@property(nonatomic, assign) CGSize expectedSize;
-// Default avatar at `self.expectedSize` size.
+// Default avatar at `_expectedSize` size.
 @property(nonatomic, strong) UIImage* defaultResizedAvatar;
-// Retains resized images. Key is Chrome Identity.
-@property(nonatomic, strong)
-    NSCache<id<SystemIdentity>, UIImage*>* resizedImages;
-// Holds weak references to the cached avatar image from the
-// SystemIdentityManager. Key is Chrome Identity.
-@property(nonatomic, strong)
-    NSMapTable<id<SystemIdentity>, UIImage*>* originalImages;
 
 @end
 
-@implementation ResizedAvatarCache
+@implementation ResizedAvatarCache {
+  // Size of resized avatar.
+  CGSize _expectedSize;
+  // Retains resized images. Key is Chrome Identity.
+  NSCache<id<SystemIdentity>, UIImage*>* _resizedImages;
+  // Holds weak references to the cached avatar image from the
+  // SystemIdentityManager. Key is Chrome Identity.
+  NSMapTable<id<SystemIdentity>, UIImage*>* _originalImages;
+}
 
 - (instancetype)initWithIdentityAvatarSize:(IdentityAvatarSize)avatarSize {
   self = [super init];
@@ -66,8 +65,8 @@
   [_originalImages setObject:image forKey:identity];
 
   // Resize the profile image if it is not of the expected size.
-  if (!CGSizeEqualToSize(image.size, self.expectedSize)) {
-    image = ResizeImage(image, self.expectedSize, ProjectionMode::kAspectFit);
+  if (!CGSizeEqualToSize(image.size, _expectedSize)) {
+    image = ResizeImage(image, _expectedSize, ProjectionMode::kAspectFit);
   }
   [_resizedImages setObject:image forKey:identity];
   return image;
@@ -86,7 +85,7 @@
   if (!_defaultResizedAvatar) {
     UIImage* image = ios::provider::GetSigninDefaultAvatar();
     _defaultResizedAvatar =
-        ResizeImage(image, self.expectedSize, ProjectionMode::kAspectFit);
+        ResizeImage(image, _expectedSize, ProjectionMode::kAspectFit);
   }
   return _defaultResizedAvatar;
 }
