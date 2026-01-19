@@ -599,6 +599,7 @@ bool IsIOSReactivationNotificationsEnabled();
 extern const char kIOSExpandedSetupListVariationParam[];
 extern const char kIOSExpandedSetupListVariationParamSafariImport[];
 extern const char kIOSExpandedSetupListVariationParamBackgroundCustomization[];
+extern const char kIOSExpandedSetupListVariationParamAllExceptCPE[];
 extern const char kIOSExpandedSetupListVariationParamAll[];
 
 // Feature flag to add new items in the Setup List.

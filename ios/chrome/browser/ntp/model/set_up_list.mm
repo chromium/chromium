@@ -127,9 +127,14 @@ std::vector<SetUpListItemType> GetSetUpListItemTypeOrder() {
                kIOSExpandedSetupListVariationParamBackgroundCustomization) {
       items.push_back(SetUpListItemType::kBackgroundCustomization);
       items.push_back(SetUpListItemType::kAutofill);
+    } else if (feature_param ==
+               kIOSExpandedSetupListVariationParamAllExceptCPE) {
+      items.push_back(SetUpListItemType::kSafariImport);
+      items.push_back(SetUpListItemType::kBackgroundCustomization);
     } else if (feature_param == kIOSExpandedSetupListVariationParamAll) {
       items.push_back(SetUpListItemType::kSafariImport);
       items.push_back(SetUpListItemType::kBackgroundCustomization);
+      items.push_back(SetUpListItemType::kAutofill);
     }
   } else {
     items.push_back(SetUpListItemType::kDefaultBrowser);

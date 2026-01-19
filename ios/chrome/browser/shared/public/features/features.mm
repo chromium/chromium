@@ -607,6 +607,8 @@ const char kIOSExpandedSetupListVariationParamSafariImport[] =
     "kIOSExpandedSetupListVariationParamSafariImport";
 const char kIOSExpandedSetupListVariationParamBackgroundCustomization[] =
     "kIOSExpandedSetupListVariationParamBackgroundCustomization";
+extern const char kIOSExpandedSetupListVariationParamAllExceptCPE[] =
+    "kIOSExpandedSetupListVariationParamAllExceptCPE";
 const char kIOSExpandedSetupListVariationParamAll[] =
     "kIOSExpandedSetupListVariationParamAll";
 

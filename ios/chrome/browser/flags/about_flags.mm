@@ -1459,6 +1459,10 @@ const FeatureEntry::FeatureParam
         {kIOSExpandedSetupListVariationParam,
          kIOSExpandedSetupListVariationParamBackgroundCustomization}};
 
+const FeatureEntry::FeatureParam kIOSExpandedSetupListAllExceptCPE[] = {
+    {kIOSExpandedSetupListVariationParam,
+     kIOSExpandedSetupListVariationParamAllExceptCPE}};
+
 const FeatureEntry::FeatureParam kIOSExpandedSetupListAll[] = {
     {kIOSExpandedSetupListVariationParam,
      kIOSExpandedSetupListVariationParamAll}};
@@ -1469,9 +1473,11 @@ const FeatureEntry::FeatureVariation kIOSExpandedSetupListVariations[] = {
     {"Home Background Customization",
      kIOSExpandedSetupListBackgroundCustomization,
      std::size(kIOSExpandedSetupListBackgroundCustomization), nullptr},
-    {"Safari Data Import & Home Background Customization",
-     kIOSExpandedSetupListAll, std::size(kIOSExpandedSetupListAll), nullptr},
-};
+    {"Safari Data Import & Home Background Customization (without CPE)",
+     kIOSExpandedSetupListAll, std::size(kIOSExpandedSetupListAllExceptCPE),
+     nullptr},
+    {"Safari Data Import, Home Background Customization, CPE",
+     kIOSExpandedSetupListAll, std::size(kIOSExpandedSetupListAll), nullptr}};
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
