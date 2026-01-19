@@ -172,6 +172,15 @@ bool BwgBrowserAgent::HasCompletedFirstRun() {
   return pref_service->GetBoolean(prefs::kIOSBwgConsent);
 }
 
+CGFloat BwgBrowserAgent::GetFloatyOffsetFromFullscreenController(
+    FullscreenController* controller) {
+  CGFloat fullyExpandedBottomToolbarHeight =
+      controller->GetMaxViewportInsets().bottom;
+  CGFloat offset = fullyExpandedBottomToolbarHeight +
+                   kOverlayFullscreenOffset * (1.0 - controller->GetProgress());
+  return offset;
+}
+
 void BwgBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
                                     UIImage* image_attachment,
                                     gemini::EntryPoint entry_point,
@@ -409,10 +418,7 @@ void BwgBrowserAgent::OnGeminiTabHelperDestroyed(BwgTabHelper* tab_helper) {
 void BwgBrowserAgent::FullscreenProgressUpdated(
     FullscreenController* controller,
     CGFloat progress) {
-  CGFloat fullyExpandedBottomToolbarHeight =
-      fullscreen_controller_->GetMaxViewportInsets().bottom;
-  CGFloat offset = fullyExpandedBottomToolbarHeight +
-                   kOverlayFullscreenOffset * (1.0 - progress);
+  CGFloat offset = GetFloatyOffsetFromFullscreenController(controller);
 
   // When fullscreen mode is disabled (progress == 1), the offset will be a
   // positive value equal to the `fullyExpandedBottomToolbarHeight`. When
@@ -490,6 +496,10 @@ void BwgBrowserAgent::PresentFloatyWithState(
   config.pageContext.uniquePageContext = std::move(page_context_proto);
   config.pageContext.favicon = FetchPageFavicon();
   ApplyUserPrefsToPageContext(config.pageContext);
+  if (IsGeminiCopresenceEnabled()) {
+    config.initialBottomOffset =
+        GetFloatyOffsetFromFullscreenController(fullscreen_controller_);
+  }
 
   // Start the overlay and update the tab helper to reflect this.
   ios::provider::StartBwgOverlay(config);

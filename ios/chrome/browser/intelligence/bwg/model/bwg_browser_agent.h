@@ -172,6 +172,10 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
   // Returns true if the user has completed the FRE.
   bool HasCompletedFirstRun();
 
+  // Returns the floaty offset from a FullscreenController.
+  CGFloat GetFloatyOffsetFromFullscreenController(
+      FullscreenController* controller);
+
   // The gateway for bridging internal protocols.
   __strong id<BWGGatewayProtocol> bwg_gateway_ = nullptr;
 

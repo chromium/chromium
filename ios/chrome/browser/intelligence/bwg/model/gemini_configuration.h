@@ -92,6 +92,9 @@ class PageContext;
 // Whether to show the Gemini image remix in-product help in the Floaty.
 @property(nonatomic, assign) BOOL imageRemixIPHShouldShow;
 
+// The initial bottom offset of the floaty.
+@property(nonatomic) CGFloat initialBottomOffset;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_CONFIGURATION_H_
