@@ -274,6 +274,8 @@ source_set("system_identity_manager") {
     "system_identity_manager.h",
     "system_identity_manager.mm",
     "system_identity_manager_observer.h",
+    "system_identity_manager_observer_bridge.h",
+    "system_identity_manager_observer_bridge.mm",
   ]
   frameworks = [ "Foundation.framework" ]
   public_deps = [ "//base" ]
