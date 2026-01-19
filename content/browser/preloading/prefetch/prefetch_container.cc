@@ -792,6 +792,11 @@ PrefetchContainer::PrepareUpdateHeaders(const GURL& url) const {
   // `Sec-Purpose`:
   updates_for_resource_request.modified_headers.SetHeader(
       blink::kSecPurposeHeaderName, GetSecPurposeHeaderValue(url));
+  if (base::FeatureList::IsEnabled(
+          features::kPrefetchFixHeaderUpdatesOnRedirect)) {
+    updates_for_follow_redirect.modified_headers.SetHeader(
+        blink::kSecPurposeHeaderName, GetSecPurposeHeaderValue(url));
+  }
 
   // ------------------------------------------------------------------------
   // `Sec-Speculation-Tags`:
