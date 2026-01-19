@@ -30,7 +30,6 @@
 #include "chrome/browser/resource_coordinator/tab_manager_resource_coordinator_signal_observer.h"
 #include "chrome/browser/resource_coordinator/time.h"
 #include "chrome/browser/resource_coordinator/utils.h"
-#include "chrome/browser/sessions/tab_loader.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"

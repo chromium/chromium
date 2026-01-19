@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest, RecentTabsMenuTabDisposition) {
 
   // For the two test tabs we've just received "READY" DOM message.
   // But there won't be such message from the "about:blank" tab.
-  // And it is possible that TabLoader hasn't loaded it yet.
+  // And it is possible that session restore hasn't loaded it yet.
   // Thus we should wait for "load stop" event before we will perform
   // CheckVisbility on "about:blank".
   {

@@ -43,18 +43,15 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_window.h"
-#include "chrome/browser/resource_coordinator/session_restore_policy.h"
 #include "chrome/browser/sessions/app_session_service.h"
 #include "chrome/browser/sessions/app_session_service_factory.h"
 #include "chrome/browser/sessions/app_session_service_test_helper.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
-#include "chrome/browser/sessions/session_restore_test_utils.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/session_service_log.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
-#include "chrome/browser/sessions/tab_loader_delegate.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/tab_contents/web_contents_collection.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
@@ -475,9 +472,6 @@ class SmartSessionRestoreTest : public SessionRestoreTest {
  protected:
   static const size_t kExpectedNumTabs;
   static const std::array<const char*, 6> kUrls;
-
- private:
-  testing::ScopedAlwaysLoadSessionRestoreTestPolicy test_policy_;
 };
 
 // static

@@ -16,7 +16,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/resource_coordinator/session_restore_policy.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/session_restore_test_utils.h"
 #include "chrome/browser/ui/browser.h"

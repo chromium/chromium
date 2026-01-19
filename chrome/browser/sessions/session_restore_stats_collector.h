@@ -49,8 +49,8 @@ class SessionRestoreStatsCollector : public content::RenderWidgetHostObserver {
   };
 
   // Houses all of the statistics gathered by the SessionRestoreStatsCollector
-  // while the underlying TabLoader is active. These statistics are all reported
-  // at once via the reporting delegate.
+  // while a session restore is active. These statistics are all reported at
+  // once via the reporting delegate.
   struct TabLoaderStats {
     // Constructor that initializes everything to zero.
     TabLoaderStats();
@@ -152,7 +152,7 @@ class SessionRestoreStatsCollector : public content::RenderWidgetHostObserver {
   // to a bool indicating whether the tab was ever hidden or occluded.
   std::map<content::RenderWidgetHost*, bool> tracked_tabs_occluded_map_;
 
-  // Statistics gathered regarding the TabLoader.
+  // Statistics gathered regarding tab loading during session restore.
   TabLoaderStats tab_loader_stats_;
 
   // The reporting delegate used to report gathered statistics.
@@ -175,7 +175,7 @@ class SessionRestoreStatsCollector::StatsReportingDelegate {
 
   virtual ~StatsReportingDelegate() = default;
 
-  // Called when TabLoader has completed its work.
+  // Called when tab loading is finished.
   virtual void ReportTabLoaderStats(const TabLoaderStats& tab_loader_stats) = 0;
 };
 

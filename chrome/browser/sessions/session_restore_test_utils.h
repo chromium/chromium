@@ -7,38 +7,10 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/resource_coordinator/session_restore_policy.h"
 
 class Profile;
 
 namespace testing {
-
-// SessionRestorePolicy that always allow tabs to load.
-class AlwayLoadSessionRestorePolicy
-    : public resource_coordinator::SessionRestorePolicy {
- public:
-  AlwayLoadSessionRestorePolicy() = default;
-  ~AlwayLoadSessionRestorePolicy() override = default;
-
-  // Always allow tabs to load so we can test the behavior of SessionRestore
-  // independently from the policy logic.
-  bool ShouldLoad(content::WebContents* contents) const override;
-};
-
-class ScopedAlwaysLoadSessionRestoreTestPolicy {
- public:
-  ScopedAlwaysLoadSessionRestoreTestPolicy();
-
-  ScopedAlwaysLoadSessionRestoreTestPolicy(
-      const ScopedAlwaysLoadSessionRestoreTestPolicy&) = delete;
-  ScopedAlwaysLoadSessionRestoreTestPolicy& operator=(
-      const ScopedAlwaysLoadSessionRestoreTestPolicy&) = delete;
-
-  ~ScopedAlwaysLoadSessionRestoreTestPolicy();
-
- private:
-  AlwayLoadSessionRestorePolicy policy_;
-};
 
 // This class waits for a specified number of sessions to be restored.
 class SessionsRestoredWaiter {

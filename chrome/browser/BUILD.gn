@@ -1267,8 +1267,6 @@ static_library("browser") {
     "renderer_preferences_util.h",
     "resource_coordinator/resource_coordinator_parts.cc",
     "resource_coordinator/resource_coordinator_parts.h",
-    "resource_coordinator/session_restore_policy.cc",
-    "resource_coordinator/session_restore_policy.h",
     "resource_coordinator/tab_helper.cc",
     "resource_coordinator/tab_helper.h",
     "resource_coordinator/tab_load_tracker.cc",
@@ -8232,10 +8230,6 @@ static_library("browser") {
       "sessions/session_service_lookup.h",
       "sessions/session_service_utils.cc",
       "sessions/session_service_utils.h",
-      "sessions/tab_loader.cc",
-      "sessions/tab_loader.h",
-      "sessions/tab_loader_delegate.cc",
-      "sessions/tab_loader_delegate.h",
     ]
     deps += [
       "//chrome/browser/ui/webui/tab_strip_internals",
@@ -9167,8 +9161,6 @@ static_library("test_support") {
       "sessions/session_service_base_test_helper.h",
       "sessions/session_service_test_helper.cc",
       "sessions/session_service_test_helper.h",
-      "sessions/tab_loader_tester.cc",
-      "sessions/tab_loader_tester.h",
       "sessions/tab_restore_service_load_waiter.cc",
       "sessions/tab_restore_service_load_waiter.h",
       "speech/fake_speech_recognition_service.cc",
