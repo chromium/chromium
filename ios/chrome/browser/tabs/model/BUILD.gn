@@ -226,6 +226,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "ios_chrome_synced_tab_delegate_unittest.mm",
+    "tab_helper_util_unittest.mm",
     "tab_sync_util_unittest.mm",
     "tab_title_util_unittest.mm",
     "tabs_closer_unittest.mm",
@@ -247,7 +248,9 @@ source_set("unit_tests") {
     "//components/sync_sessions:test_support",
     "//components/tab_groups",
     "//ios/chrome/browser/download/model",
+    "//ios/chrome/browser/lens/model",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
+    "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/sessions/model",
     "//ios/chrome/browser/sessions/model:fake",
