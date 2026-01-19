@@ -847,6 +847,18 @@ PrefetchContainer::PrepareUpdateHeaders(const GURL& url) const {
     }
     AddClientHintsHeaders(url::Origin::Create(url),
                           &updates_for_resource_request.modified_headers);
+
+    if (base::FeatureList::IsEnabled(
+            features::kPrefetchFixHeaderUpdatesOnRedirect)) {
+      updates_for_follow_redirect.removed_headers.reserve(
+          updates_for_follow_redirect.removed_headers.size() +
+          client_hints.size());
+      for (const auto& [_, header] : client_hints) {
+        updates_for_follow_redirect.removed_headers.push_back(header);
+      }
+      AddClientHintsHeaders(url::Origin::Create(url),
+                            &updates_for_follow_redirect.modified_headers);
+    }
   }
 
   // ------------------------------------------------------------------------

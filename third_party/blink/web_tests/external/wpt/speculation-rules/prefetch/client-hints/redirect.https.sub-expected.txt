@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Client Hints headers should be updated on redirects (drop)
-  assert_equals: sec-ch-device-memory expected (undefined) undefined but got (string) "8"
-[FAIL] Client Hints headers should be updated on redirects (add)
-  assert_not_equals: sec-ch-device-memory got disallowed value undefined
-Harness: the test ran to completion.
-
