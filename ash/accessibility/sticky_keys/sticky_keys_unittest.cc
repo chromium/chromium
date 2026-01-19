@@ -37,6 +37,12 @@ class StickyKeysTest : public AshTestBase {
     root_window_ = target_->GetRootWindow();
   }
 
+  void TearDown() override {
+    root_window_ = nullptr;
+    target_ = nullptr;
+    AshTestBase::TearDown();
+  }
+
   virtual void OnShortcutPressed() {
     if (target_) {
       delete target_;
@@ -188,9 +194,9 @@ class StickyKeysTest : public AshTestBase {
 
  private:
   // Owned by root window of shell, but we can still delete |target_| safely.
-  raw_ptr<aura::Window, DanglingUntriaged> target_ = nullptr;
+  raw_ptr<aura::Window> target_ = nullptr;
   // The root window of |target_|. Not owned.
-  raw_ptr<aura::Window, DanglingUntriaged> root_window_ = nullptr;
+  raw_ptr<aura::Window> root_window_ = nullptr;
 };
 
 TEST_F(StickyKeysTest, BasicOneshotScenarioTest) {
