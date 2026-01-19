@@ -2522,6 +2522,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2672142220933875349">File crx yang buruk. Gagal membuka kemasan.</translation>
 <translation id="2672200806060988299">Judul dan URL tab Anda dikirim ke Google dan mungkin dilihat oleh petugas peninjau untuk meningkatkan kualitas fitur ini.</translation>
 <translation id="2673135533890720193">Membaca histori penjelajahan Anda</translation>
+<translation id="2673397477544385203">Mendukung fitur seperti deteksi scam secara lokal. Jika tombol ini dinonaktifkan, model AI generatif akan dihapuskan dari perangkat Anda dan fitur tersebut akan dinonaktifkan.</translation>
 <translation id="2673848446870717676">Pastikan perangkat Bluetooth Anda dalam mode penyambungan dan berada di sekitar. Hanya sambungkan dengan perangkat yang Anda percayai. Perangkat yang disambungkan dapat dilihat oleh semua akun di Chromebook ini.</translation>
 <translation id="2673873887296220733">Salin 1 file ke <ph name="CLOUD_PROVIDER" /> untuk dibuka?</translation>
 <translation id="267442004702508783">menyegarkan halaman</translation>
@@ -3980,6 +3981,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3678156199662914018">Ekstensi: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Halaman yang Anda lihat di jendela ini tidak akan muncul di histori browser dan tidak akan meninggalkan jejak lain, seperti cookie, di komputer setelah Anda logout. File yang didownload dan bookmark yang dibuat tidak akan disimpan.</translation>
 <translation id="3679126865530709868">Touchpad Bawaan</translation>
+<translation id="3680166671911524673">GenAI di Perangkat Diaktifkan</translation>
 <translation id="3680683624079082902">Suara text-to-speech</translation>
 <translation id="3681017028939109078">Tampilkan saran jendela saat memulai layar terpisah</translation>
 <translation id="3681191721636073359">Chrome menganggap Anda tidak ingin menggunakan lokasi Anda di situs ini. Jadi, permintaan disembunyikan untuk mengurangi gangguan.</translation>

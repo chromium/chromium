@@ -2522,6 +2522,7 @@
 <translation id="2672142220933875349">crx 檔案損毀，無法解除套件。</translation>
 <translation id="2672200806060988299">分頁標題和網址會傳送給 Google，並可能交由人手審查以改善有關功能。</translation>
 <translation id="2673135533890720193">讀取您的瀏覽記錄</translation>
+<translation id="2673397477544385203">支援本機詐騙偵測等功能。關閉此設定會從裝置刪除生成式 AI 模型，並停用這些功能。</translation>
 <translation id="2673848446870717676">請確保藍牙裝置在附近，且已處於配對模式。請只與你信任的裝置配對。在此 Chromebook 上，所有帳戶都能看到已配對的裝置。</translation>
 <translation id="2673873887296220733">要將 1 個檔案複製到 <ph name="CLOUD_PROVIDER" /> 開啟嗎？</translation>
 <translation id="267442004702508783">重新整理</translation>
@@ -3977,6 +3978,7 @@
 <translation id="3678156199662914018">擴充功能：<ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">您在這個視窗瀏覽的網頁不會在瀏覽器記錄中顯示，而在登出之後，電腦也不會保留 Cookie 等資料。此外，系統不會保留您下載的檔案和建立的書籤。</translation>
 <translation id="3679126865530709868">內置觸控板</translation>
+<translation id="3680166671911524673">已啟用裝置內置生成式 AI</translation>
 <translation id="3680683624079082902">「文字轉語音」語音</translation>
 <translation id="3681017028939109078">啟用分割螢幕時顯示視窗建議</translation>
 <translation id="3681191721636073359">Chrome 判斷你不想在此網站使用位置資料，因此會隱藏要求，減少干擾。</translation>

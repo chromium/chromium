@@ -2268,6 +2268,21 @@ Kebijakan ini hanya berlaku untuk upaya koneksi baru dan tidak membatalkan konek
       Perlu diperhatikan bahwa fitur ini memerlukan komponen tambahan yang tidak tersedia di luar lingkungan jaringan Google agar dapat berfungsi sebagaimana mestinya.</translation>
 <translation id="2536525645274582300">Pengguna memutuskan apakah akan mengaktifkan layanan lokasi Google</translation>
 <translation id="2536717624356629471">Mengaktifkan Suara dalam Mode Fokus untuk ChromeOS</translation>
+<translation id="2543785467842238592">Kebijakan ini mengontrol pelaporan <ph name="PRODUCT_NAME" /> terkait kunjungan domain SaaS dan transfer konten untuk browser terkelola.
+
+Jika kebijakan ini disetel, URL yang cocok dengan domain SaaS akan digunakan untuk membuat laporan. URL yang tidak cocok akan diabaikan.
+
+Jika kebijakan tidak disetel atau disetel ke daftar kosong, tidak ada laporan yang akan dibuat.
+
+Pola yang cocok akan menggunakan format yang serupa dengan kebijakan '<ph name="URL_BLOCKLIST_POLICY_NAME" />' yang didokumentasikan di https://support.google.com/chrome/a?p=url_blocklist_filter_format. Dengan beberapa pengecualian di bawah:
+
+ * Host URL harus cocok dengan nama host atau menjadi subdomain dari nama host salah satu domain dari daftar situs SaaS.
+
+ * Jalur URL harus diawali dengan jalur dari entri daftar situs SaaS yang cocok.
+
+ * Skema URL, port, kueri tidak dipertimbangkan selama proses pencocokan.
+
+Nilai kebijakan ini diisi oleh infrastruktur kebijakan cloud dan admin tidak dapat menyetelnya secara langsung.</translation>
 <translation id="254653220329944566">Mengaktifkan pelaporan cloud <ph name="PRODUCT_NAME" /></translation>
 <translation id="2547854230073316008">Menyetel kebijakan akan menyetel resolusi dan faktor penskalaan untuk setiap tampilan. Setelan tampilan eksternal akan berlaku untuk tampilan yang terhubung. (Kebijakan tidak berlaku jika tampilan tidak mendukung resolusi atau skala yang ditentukan.)
 
@@ -9530,6 +9545,23 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang di
 <translation id="70681795425744184">Jangan izinkan CRD mengeksekusi permintaan WebAuthn API yang di-proxy dari host jarak jauh.</translation>
 <translation id="7070525176564511548">Sandi harus dimasukkan setiap minggu (168 jam)</translation>
 <translation id="7072208053150563108">Tingkat perubahan sandi mesin</translation>
+<translation id="7072438666478490567">Kebijakan ini mengontrol pelaporan <ph name="PRODUCT_NAME" /> terkait kunjungan domain SaaS dan transfer konten untuk profil terkelola.
+
+Jika kebijakan ini disetel, URL yang cocok dengan domain SaaS akan digunakan untuk membuat laporan. URL yang tidak cocok akan diabaikan.
+
+Jika kebijakan tidak disetel atau disetel ke daftar kosong, tidak ada laporan yang akan dibuat.
+
+Pola yang cocok akan menggunakan format yang serupa dengan kebijakan '<ph name="URL_BLOCKLIST_POLICY_NAME" />' yang didokumentasikan di https://support.google.com/chrome/a?p=url_blocklist_filter_format. Dengan beberapa pengecualian di bawah:
+
+ * Host URL harus cocok dengan nama host atau menjadi subdomain dari nama host salah satu domain dari daftar situs SaaS.
+
+ * Jalur URL harus diawali dengan jalur dari entri daftar situs SaaS yang cocok.
+
+ * Skema URL, port, kueri tidak dipertimbangkan selama proses pencocokan.
+
+Kebijakan ini hanya dapat disetel sebagai kebijakan pengguna cloud.
+
+Nilai kebijakan ini diisi oleh infrastruktur kebijakan cloud dan admin tidak dapat menyetelnya secara langsung.</translation>
 <translation id="7072567600438630966">Izinkan pengaktifan Phone Hub.</translation>
 <translation id="7074437930865599190">Membekukan versi utama string Agen Pengguna ke 99</translation>
 <translation id="7075847434649667522">Menggunakan sertifikat TLS yang ditambahkan pengguna dari trust store platform untuk autentikasi server</translation>

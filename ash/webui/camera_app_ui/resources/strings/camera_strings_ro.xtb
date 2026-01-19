@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Tip de scanare</translation>
 <translation id="28682968802727151">Previzualizarea oglindirii</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> este conectată.</translation>
+<translation id="3063987824612038785">Toate fișierele din aplicația Cameră foto vor fi salvate în Google Drive.</translation>
 <translation id="3067436040345934772">Deplasează la dreapta</translation>
 <translation id="3081586908890909590">Comută pentru a înregistra un videoclip</translation>
 <translation id="3091480460059548935">Detectarea textului în previzualizare</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">Se procesează videoclipul...</translation>
 <translation id="3789724198583203151">Rotește spre stânga cu 90 de grade</translation>
 <translation id="3810838688059735925">Video</translation>
+<translation id="386366972082231038">Toate fișierele din aplicația Cameră foto vor fi salvate în OneDrive.</translation>
 <translation id="4060608699153044055">Nu poți înregistra din cauza spațiului de stocare redus de pe dispozitiv. Pentru a începe înregistrarea, trebuie să eliberezi spațiu pe dispozitiv.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Întrerupe înregistrarea</translation>
@@ -157,6 +159,7 @@ Dacă feedbackul tău se referă la calitatea video sau a imaginii, atașează u
 <translation id="7983668134180549431">A fost detectat text.</translation>
 <translation id="8079255378695216066">Înregistrarea nu poate începe</translation>
 <translation id="8120146556401698679">Deplasează Înclină Mărește / micșorează</translation>
+<translation id="8127459436205030819">Fișierele tale pot fi vizibile administratorului.</translation>
 <translation id="8131740175452115882">Confirmați</translation>
 <translation id="8145038249676204903">Comută pentru a fotografia</translation>
 <translation id="8167081290930651932">Salvează ca fotografie</translation>

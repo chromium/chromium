@@ -1098,7 +1098,6 @@
 <translation id="5765780083710877561">Նկարագրություն`</translation>
 <translation id="5776970333778123608">Ոչ կարևոր տվյալներ</translation>
 <translation id="5793665092639000975">Օգտագործվում է՝ <ph name="SPACE_USED" />/<ph name="SPACE_AVAILABLE" /></translation>
-<translation id="5795872532621730126">Որոնում և դիտարկում</translation>
 <translation id="5797949256525811424">Թեման արգելափակված է</translation>
 <translation id="580893287573699959">Կառավարեք ձեզ հետաքրքրող թեմաները և որոնման հարցումները</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# ժամ առաջ}one{# ժամ առաջ}other{# ժամ առաջ}}</translation>
@@ -1415,7 +1414,6 @@
 <translation id="6937524809504266803">Անհատականացում և կապում</translation>
 <translation id="6937876069006524083">Կեղծանուն (պարտադիր չէ)</translation>
 <translation id="6942665639005891494">Դուք ցանկացած ժամանակ կարող եք փոխել ներբեռնումների կանխադրված պանակը կարգավորումներում</translation>
-<translation id="694267552845942083">Այս պահին դուք համաժամացման կարգավորումների էջում եք։ Համաժամացումը միացնելու համար սեղմեք «Հաստատել» կոճակը էկրանի ներքևի հատվածում: Անցնել վերև</translation>
 <translation id="6945221475159498467">Ընտրել</translation>
 <translation id="6955535239952325894">Այս կարգավորումը ցուցադրվում է կառավարվող դիտարկիչներում</translation>
 <translation id="6963766334940102469">Ջնջել էջանիշները</translation>
@@ -1934,7 +1932,6 @@
 <translation id="9073805459138993880"><ph name="TAB_TITLE" />, ընտրված ներդիր, որը հասանելի է այլ օգտատերերի</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9081543426177426948">Ինկոգնիտո ռեժիմում այցելած կայքերի մասին տեղեկությունները չեն պահվում</translation>
-<translation id="9086302186042011942">Համաժամացում</translation>
 <translation id="9086455579313502267">Հնարավոր չէ մուտք գործել ցանց</translation>
 <translation id="9093915805850895575">Բացել Chrome-ի պատուհանում</translation>
 <translation id="909756639352028172">Դիտարկիչի աշխատանքն անհատականացնելու համար ներառեք Chrome-ը Վեբ որոնման և հավելվածների պատմության և Google-ի կապված ծառայությունների մեջ</translation>

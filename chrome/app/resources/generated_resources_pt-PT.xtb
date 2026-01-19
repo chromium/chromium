@@ -2509,6 +2509,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2672142220933875349">Ficheiro crx em mau estado. Falha ao descompactar.</translation>
 <translation id="2672200806060988299">Os URLs e os títulos dos separadores são enviados para a Google e podem ser vistos por revisores humanos para melhorar esta funcionalidade.</translation>
 <translation id="2673135533890720193">Ler o seu histórico de navegação</translation>
+<translation id="2673397477544385203">Potencia funcionalidades como a deteção de fraudes localmente. Se desativar esta opção, os modelos de IA gen são eliminados do seu dispositivo e estas funcionalidades são desativadas.</translation>
 <translation id="2673848446870717676">Certifique-se de que o dispositivo Bluetooth está no modo de sincronização e nas proximidades. Sincronize apenas com dispositivos nos quais confia. Os dispositivos sincronizados são visíveis para todas as contas neste Chromebook.</translation>
 <translation id="2673873887296220733">Copiar 1 ficheiro para o <ph name="CLOUD_PROVIDER" /> para abrir?</translation>
 <translation id="267442004702508783">atualizar</translation>
@@ -3968,6 +3969,7 @@ Quer pará-lo?</translation>
 <translation id="3678156199662914018">Extensão: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">As páginas visualizadas nesta janela não serão apresentadas no histórico do navegador nem no histórico de pesquisas e não deixarão outros vestígios, como cookies, no computador depois de terminar sessão. Os ficheiros transferidos e os marcadores criados não serão preservados.</translation>
 <translation id="3679126865530709868">Touchpad incorporado</translation>
+<translation id="3680166671911524673">IA gen no dispositivo ativada</translation>
 <translation id="3680683624079082902">Voz da conversão de texto em voz</translation>
 <translation id="3681017028939109078">Mostre sugestões de janelas quando iniciar o ecrã dividido</translation>
 <translation id="3681191721636073359">O Chrome considera que não quer usar a sua localização neste site. Por isso, os pedidos são ocultados para reduzir as interrupções.</translation>
@@ -4324,7 +4326,7 @@ Quer pará-lo?</translation>
 <translation id="3887764720741098847">Informações guardadas</translation>
 <translation id="3888501106166145415">Redes Wi-Fi associadas</translation>
 <translation id="3890064827463908288">Ative a Sincronização do Chrome para utilizar o Sync Wi-Fi</translation>
-<translation id="389313931326656921">Atribua um interruptor para "Seguinte"</translation>
+<translation id="389313931326656921">Atribua um switch para "Seguinte"</translation>
 <translation id="3893268973182382220">Não é possível carregar este painel neste momento</translation>
 <translation id="3893536212201235195">Ler e alterar as suas definições de acessibilidade</translation>
 <translation id="3893630138897523026">ChromeVox (respostas faladas)</translation>

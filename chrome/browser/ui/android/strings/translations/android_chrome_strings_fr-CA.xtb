@@ -1098,7 +1098,6 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="5765780083710877561">Description :</translation>
 <translation id="5776970333778123608">Données non importantes</translation>
 <translation id="5793665092639000975"><ph name="SPACE_USED" /> sur <ph name="SPACE_AVAILABLE" /> utilisés</translation>
-<translation id="5795872532621730126">Rechercher et parcourir</translation>
 <translation id="5797949256525811424">Sujet bloqué</translation>
 <translation id="580893287573699959">Gérez les sujets et les sites qui vous intéressent</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Il y a # heure}one{Il y a # heure}other{Il y a # heures}}</translation>
@@ -1415,7 +1414,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6937524809504266803">Personnalisation, association</translation>
 <translation id="6937876069006524083">Pseudo (facultatif)</translation>
 <translation id="6942665639005891494">Vous pouvez changer le dossier de téléchargement par défaut en tout temps grâce à l'option de menu Paramètres.</translation>
-<translation id="694267552845942083">Vous êtes en train de personnaliser vos paramètres de synchronisation. Pour valider l'activation de la synchronisation, touchez le bouton Confirmer dans le bas de l'écran. Revenir en haut</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="6955535239952325894">Ce paramètre est désactivé sur les navigateurs gérés</translation>
 <translation id="6963766334940102469">Supprimer des favoris</translation>
@@ -1934,7 +1932,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="9073805459138993880"><ph name="TAB_TITLE" />, onglet multisélectionné avec partage en cours</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9081543426177426948">Les sites que vous visitez ne sont pas enregistrés en mode de navigation privée</translation>
-<translation id="9086302186042011942">Synchronisation en cours...</translation>
 <translation id="9086455579313502267">Échec d'accès au réseau</translation>
 <translation id="9093915805850895575">Ouvrir dans une fenêtre Chrome</translation>
 <translation id="909756639352028172">Pour bénéficier de l'expérience la plus personnalisée possible, incluez Chrome dans l'activité sur le Web et dans les applications et les services Google associés</translation>

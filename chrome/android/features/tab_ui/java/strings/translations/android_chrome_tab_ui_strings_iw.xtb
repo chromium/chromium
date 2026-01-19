@@ -130,7 +130,7 @@
 <translation id="5465437530117042974">השינויים בגיליון התחתון של הכרטיסייה נסגרו.</translation>
 <translation id="5490235265819901748">קבוצת כרטיסיות הורחבה</translation>
 <translation id="5494920125229734069">בחירת הכול</translation>
-<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{אפשר להוסיף עד קובץ, כרטיסייה או תמונה <ph name="LIMIT_COUNT_ONE" />}one{אפשר להוסיף עד <ph name="LIMIT_COUNT_MANY" /> קבצים, כרטיסיות או תמונות}two{אפשר להוסיף עד <ph name="LIMIT_COUNT_MANY" /> קבצים, כרטיסיות או תמונות}other{אפשר להוסיף עד <ph name="LIMIT_COUNT_MANY" /> קבצים, כרטיסיות או תמונות}}</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{אפשר להוסיף עוד קובץ אחד, כרטיסייה אחת או תמונה אחת (<ph name="LIMIT_COUNT_ONE" />)}one{אפשר להוסיף עד <ph name="LIMIT_COUNT_MANY" /> קבצים, כרטיסיות או תמונות}two{אפשר להוסיף עד <ph name="LIMIT_COUNT_MANY" /> קבצים, כרטיסיות או תמונות}other{אפשר להוסיף עד <ph name="LIMIT_COUNT_MANY" /> קבצים, כרטיסיות או תמונות}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{סגירה של קבוצת הכרטיסיות שמכילה כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />), בצבע <ph name="COLOR_NAME" />.}one{סגירה של קבוצת הכרטיסיות שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}two{סגירה של קבוצת הכרטיסיות שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}other{סגירה של קבוצת הכרטיסיות שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">ניתן להציג את פרטי החנות. האפשרות זמינה בחלק העליון של המסך</translation>
 <translation id="5627941783489838464">אף כרטיסייה לא התעדכנה</translation>

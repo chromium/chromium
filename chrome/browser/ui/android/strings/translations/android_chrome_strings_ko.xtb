@@ -1098,7 +1098,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5765780083710877561">설명:</translation>
 <translation id="5776970333778123608">중요하지 않은 데이터</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" /> 중 <ph name="SPACE_USED" /> 사용 중</translation>
-<translation id="5795872532621730126">검색 및 탐색</translation>
 <translation id="5797949256525811424">주제를 차단했습니다.</translation>
 <translation id="580893287573699959">관심 있는 주제 및 사이트 관리</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{#시간 전}other{#시간 전}}</translation>
@@ -1415,7 +1414,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6937524809504266803">맞춤설정 및 연결</translation>
 <translation id="6937876069006524083">닉네임(선택사항)</translation>
 <translation id="6942665639005891494">언제든지 설정 메뉴 옵션으로 기본 다운로드 위치 변경 가능</translation>
-<translation id="694267552845942083">현재 동기화 설정을 맞춤설정 중입니다. 동기화 사용 설정을 마무리하려면 화면 하단 근처에 있는 확인 버튼을 탭하세요. 위로 이동</translation>
 <translation id="6945221475159498467">선택</translation>
 <translation id="6955535239952325894">관리 브라우저에서 설정이 사용 중지됨</translation>
 <translation id="6963766334940102469">북마크 삭제</translation>
@@ -1934,7 +1932,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="9073805459138993880"><ph name="TAB_TITLE" />, 여러 개 선택되고 공유 중인 탭</translation>
 <translation id="9074739597929991885">블루투스</translation>
 <translation id="9081543426177426948">시크릿 모드에서는 방문한 사이트가 저장되지 않음</translation>
-<translation id="9086302186042011942">동기화 중</translation>
 <translation id="9086455579313502267">네트워크에 액세스할 수 없습니다.</translation>
 <translation id="9093915805850895575">Chrome 창에서 열기</translation>
 <translation id="909756639352028172">최적의 맞춤형 환경을 이용하려면 웹 및 앱 활동과 연결된 Google 서비스에 Chrome을 포함합니다.</translation>

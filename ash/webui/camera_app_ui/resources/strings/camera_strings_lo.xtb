@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">ປະເພດການສະແກນ</translation>
 <translation id="28682968802727151">ຕົວຢ່າງການສະທ້ອນ</translation>
 <translation id="2879583609344924966">ສຽບສາຍ <ph name="CAMERA" /> ແລ້ວ.</translation>
+<translation id="3063987824612038785">ໄຟລ໌ທັງໝົດຈາກກ້ອງຈະບັນທຶກໄວ້ໃນ Google Drive</translation>
 <translation id="3067436040345934772">ເລື່ອນໄປຂວາ</translation>
 <translation id="3081586908890909590">ປ່ຽນເປັນບັນທຶກວິດີໂອ</translation>
 <translation id="3091480460059548935">ການກວດຫາຂໍ້ຄວາມໃນຕົວຢ່າງ</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">ກຳລັງປະມວນຜົນວິດີໂອ...</translation>
 <translation id="3789724198583203151">ໝຸນ 90 ອົງສາທວນເຂັມໂມງ</translation>
 <translation id="3810838688059735925">ວິ​ດີ​ໂອ</translation>
+<translation id="386366972082231038">ໄຟລ໌ທັງໝົດຈາກກ້ອງຈະບັນທຶກໄວ້ໃນ OneDrive</translation>
 <translation id="4060608699153044055">ທ່ານບໍ່ສາມາດບັນທຶກໄດ້ເນື່ອງຈາກພື້ນທີ່ຈັດເກັບຂໍ້ມູນອຸປະກອນເຫຼືອໜ້ອຍ. ເພື່ອເລີ່ມການບັນທຶກ, ທ່ານຈະຕ້ອງສ້າງພື້ນທີ່ຫວ່າງຢູ່ອຸປະກອນຂອງທ່ານກ່ອນ.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">ຢຸດການບັນທຶກໄວ້ຊົ່ວຄາວ</translation>
@@ -157,6 +159,7 @@
 <translation id="7983668134180549431">ກວດພົບຂໍ້ຄວາມ.</translation>
 <translation id="8079255378695216066">ບໍ່ສາມາດເລີ່ມການບັນທຶກໄດ້</translation>
 <translation id="8120146556401698679">ເລື່ອນ ອຽງ ຊູມ</translation>
+<translation id="8127459436205030819">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານອາດເຫັນໄຟລ໌ຂອງທ່ານ</translation>
 <translation id="8131740175452115882">ຢືນ​ຢັນ</translation>
 <translation id="8145038249676204903">ປ່ຽນເປັນຖ່າຍຮູບ</translation>
 <translation id="8167081290930651932">ບັນທຶກເປັນຮູບພາບ</translation>
