@@ -39,6 +39,8 @@ public class ManifestMetadataUtilTest {
             "android.webkit.MetaDataHolderService";
     private static final String MULTI_PROFILE_NAME_TAG_KEY_METADATA_NAME =
             "android.webkit.WebView.MultiProfileNameTagKey";
+    private static final String FORCE_SYNC_BROWSER_STARTUP_METADATA_NAME =
+            "android.webkit.WebView.ForceSyncBrowserStartup";
 
     private ManifestMetadataMockApplicationContext mContext;
     private ComponentName mMetadataServiceName;
@@ -164,5 +166,43 @@ public class ManifestMetadataUtilTest {
                 ManifestMetadataUtil.getMetadataHolderServiceMetadata(mContext);
         Assert.assertNull(
                 ManifestMetadataUtil.getAppMultiProfileProfileNameTagKey(holderServiceMetadata));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Manifest"})
+    public void testForceSynchronousStartupDefault() throws Exception {
+        Bundle holderServiceMetadata =
+                ManifestMetadataUtil.getMetadataHolderServiceMetadata(mContext);
+        Assert.assertFalse(
+                ManifestMetadataUtil.shouldForceSyncBrowserStartup(holderServiceMetadata));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Manifest"})
+    public void testForceSynchronousStartupOptIn() throws Exception {
+        var bundle = new Bundle();
+        bundle.putBoolean(FORCE_SYNC_BROWSER_STARTUP_METADATA_NAME, true);
+        mContext.putServiceMetadata(mMetadataServiceName, bundle);
+
+        Bundle holderServiceMetadata =
+                ManifestMetadataUtil.getMetadataHolderServiceMetadata(mContext);
+        var preference = ManifestMetadataUtil.shouldForceSyncBrowserStartup(holderServiceMetadata);
+        Assert.assertTrue(preference);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Manifest"})
+    public void testForceSynchronousStartupOptOut() throws Exception {
+        var bundle = new Bundle();
+        bundle.putBoolean(FORCE_SYNC_BROWSER_STARTUP_METADATA_NAME, false);
+        mContext.putServiceMetadata(mMetadataServiceName, bundle);
+
+        Bundle holderServiceMetadata =
+                ManifestMetadataUtil.getMetadataHolderServiceMetadata(mContext);
+        var preference = ManifestMetadataUtil.shouldForceSyncBrowserStartup(holderServiceMetadata);
+        Assert.assertFalse(preference);
     }
 }

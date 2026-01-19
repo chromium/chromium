@@ -43,6 +43,10 @@ public class ManifestMetadataUtil {
     private static final String METADATA_HOLDER_SERVICE_NAME =
             "android.webkit.MetaDataHolderService";
 
+    // Do not change value, it is used by external AndroidManifest.xml files
+    private static final String FORCE_SYNC_BROWSER_STARTUP_METADATA_NAME =
+            "android.webkit.WebView.ForceSyncBrowserStartup";
+
     /**
      * @noinspection unused Suppress warnings to keep this field in the code for the future.
      * @deprecated This was previously used, and is maintained here to avoid accidental reuse in the
@@ -67,6 +71,7 @@ public class ManifestMetadataUtil {
         private final @Nullable Boolean mContextExperimentValue;
         private final @Nullable Boolean mSafeBrowsingOptInPreference;
         private final @Nullable Integer mAppMultiProfileProfileNameTagKey;
+        private final boolean mForceSyncBrowserStartup;
 
         public MetadataCache(Context context) {
             // Cache app level metadata.
@@ -80,6 +85,7 @@ public class ManifestMetadataUtil {
             mAppMultiProfileProfileNameTagKey =
                     getAppMultiProfileProfileNameTagKey(metadataHolderServiceMetadata);
             mContextExperimentValue = shouldEnableContextExperiment(metadataHolderServiceMetadata);
+            mForceSyncBrowserStartup = shouldForceSyncBrowserStartup(metadataHolderServiceMetadata);
         }
     }
 
@@ -171,6 +177,26 @@ public class ManifestMetadataUtil {
             value = appMetadata.getBoolean(SAFE_BROWSING_OPT_IN_METADATA_NAME);
         }
         return value;
+    }
+
+    /**
+     * Checks the application manifest for forcing synchronous WebView browser startup.
+     *
+     * @return true if app forces synchronous startup by setting the manifest metadata to true,
+     *     false otherwise.
+     */
+    public static boolean shouldForceSyncBrowserStartup() {
+        return getMetadataCache().mForceSyncBrowserStartup;
+    }
+
+    @VisibleForTesting
+    public static boolean shouldForceSyncBrowserStartup(
+            @Nullable Bundle metadataHolderServiceMetadata) {
+        if (metadataHolderServiceMetadata == null) {
+            return false;
+        }
+        return metadataHolderServiceMetadata.getBoolean(
+                FORCE_SYNC_BROWSER_STARTUP_METADATA_NAME, false);
     }
 
     /**

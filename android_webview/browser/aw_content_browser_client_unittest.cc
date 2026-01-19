@@ -56,18 +56,19 @@ class AwContentBrowserClientTest
     : public testing::TestWithParam<StartupTaskExperiment> {
  public:
   AwContentBrowserClientTest() {
-    auto* command_line = base::CommandLine::ForCurrentProcess();
     switch (GetParam()) {
       case StartupTaskExperiment::kNone:
         break;
       case StartupTaskExperiment::kUseStartupTasksLogic:
-        command_line->AppendSwitch(switches::kWebViewUseStartupTasksLogic);
+        client_.set_startup_tasks_logic_enabled_for_testing(true);
         break;
       case StartupTaskExperiment::kUseStartupTasksLogicP2:
-        command_line->AppendSwitch(switches::kWebViewUseStartupTasksLogicP2);
+        client_.set_startup_tasks_logic_p2_enabled_for_testing(true);
         break;
       case StartupTaskExperiment::kStartupTasksYieldToNative:
-        command_line->AppendSwitch(switches::kWebViewStartupTasksYieldToNative);
+        client_
+            .set_startup_tasks_yield_to_native_experiment_enabled_for_testing(
+                true);
         break;
       default:
         CHECK(false) << "Unhandled experiment";
