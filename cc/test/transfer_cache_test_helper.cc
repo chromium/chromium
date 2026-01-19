@@ -10,15 +10,23 @@
 #include "base/check.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
+#include "third_party/skia/include/gpu/ganesh/mock/GrMockTypes.h"
 
 namespace cc {
 
-TransferCacheTestHelper::TransferCacheTestHelper(GrDirectContext* context)
-    : context_(context) {
-  if (!context_) {
-    owned_context_ = GrDirectContext::MakeMock(nullptr);
-    context_ = owned_context_.get();
-  }
+TransferCacheTestHelper::TransferCacheTestHelper() {
+  GrMockOptions options;
+  options.fMipmapSupport = true;
+  options.fConfigOptions[static_cast<int>(GrColorType::kGray_8)].fTexturable =
+      true;
+  options.fConfigOptions[static_cast<int>(GrColorType::kRGBA_F16)].fTexturable =
+      true;
+  options.fConfigOptions[static_cast<int>(GrColorType::kAlpha_16)].fTexturable =
+      true;
+  options.fConfigOptions[static_cast<int>(GrColorType::kAlpha_F16)]
+      .fTexturable = true;
+
+  context_ = GrDirectContext::MakeMock(&options);
 }
 TransferCacheTestHelper::~TransferCacheTestHelper() = default;
 
@@ -35,8 +43,8 @@ void TransferCacheTestHelper::CreateEntryDirect(const EntryKey& key,
     return;
   }
 
-  bool success =
-      service_entry->Deserialize(context_, /*graphite_recorder=*/nullptr, data);
+  bool success = service_entry->Deserialize(
+      context_.get(), /*graphite_recorder=*/nullptr, data);
   if (!success) {
     return;
   }
@@ -73,10 +81,6 @@ void TransferCacheTestHelper::DeleteEntryDirect(const EntryKey& key) {
   locked_entries_.erase(key);
   local_entries_.erase(key);
   entries_.erase(key);
-}
-
-void TransferCacheTestHelper::SetGrContext(GrDirectContext* context) {
-  context_ = context;
 }
 
 void TransferCacheTestHelper::SetCachedItemsLimit(size_t limit) {
