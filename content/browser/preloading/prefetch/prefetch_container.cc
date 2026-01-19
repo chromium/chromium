@@ -778,6 +778,23 @@ void PrefetchContainer::OnEligibilityCheckComplete(
   }
 }
 
+void PrefetchContainer::AddSpeculationTagsHeader(
+    const GURL& request_url,
+    net::HttpRequestHeaders& headers) const {
+  // Sec-Speculation-Tags is set only when the prefetch is triggered
+  // by speculation rules and it is not cross-site prefetch.
+  // To see more details:
+  // https://github.com/WICG/nav-speculation/blob/main/speculation-rules-tags.md#the-cross-site-case
+  if (request().speculation_rules_tags().has_value() &&
+      !IsCrossSiteRequest(url::Origin::Create(request_url))) {
+    std::optional<std::string> serialized_list =
+        request().speculation_rules_tags()->ConvertStringToHeaderString();
+    CHECK(serialized_list.has_value());
+    headers.SetHeader(blink::kSecSpeculationTagsHeaderName,
+                      serialized_list.value());
+  }
+}
+
 std::tuple<PrefetchUpdateHeadersParams, PrefetchUpdateHeadersParams>
 PrefetchContainer::PrepareUpdateHeaders(const GURL& url) const {
   // There are sometimes other headers that are modified during navigation
@@ -800,20 +817,9 @@ PrefetchContainer::PrepareUpdateHeaders(const GURL& url) const {
 
   // ------------------------------------------------------------------------
   // `Sec-Speculation-Tags`:
-  // Sec-Speculation-Tags is set only when the prefetch is triggered
-  // by speculation rules and it is not cross-site prefetch redirection.
-  // To see more details:
-  // https://github.com/WICG/nav-speculation/blob/main/speculation-rules-tags.md#the-cross-site-case
   updates_for_resource_request.removed_headers.push_back(
       blink::kSecSpeculationTagsHeaderName);
-  if (request().speculation_rules_tags().has_value() &&
-      !IsCrossSiteRequest(url::Origin::Create(url))) {
-    std::optional<std::string> serialized_list =
-        request().speculation_rules_tags()->ConvertStringToHeaderString();
-    CHECK(serialized_list.has_value());
-    updates_for_resource_request.modified_headers.SetHeader(
-        blink::kSecSpeculationTagsHeaderName, serialized_list.value());
-  }
+  AddSpeculationTagsHeader(url, updates_for_resource_request.modified_headers);
 
   // ------------------------------------------------------------------------
   // WebContents override (`User-Agent`):
@@ -1625,18 +1631,7 @@ void PrefetchContainer::MakeResourceRequest() {
                                       GetSecPurposeHeaderValue(url));
   resource_request->headers.SetHeader("Upgrade-Insecure-Requests", "1");
 
-  // Sec-Speculation-Tags is set only when the prefetch is triggered
-  // by speculation rules and it is not cross-site prefetch.
-  // To see more details:
-  // https://github.com/WICG/nav-speculation/blob/main/speculation-rules-tags.md#the-cross-site-case
-  if (request().speculation_rules_tags().has_value() &&
-      !IsCrossSiteRequest(origin)) {
-    std::optional<std::string> serialized_list =
-        request().speculation_rules_tags()->ConvertStringToHeaderString();
-    CHECK(serialized_list.has_value());
-    resource_request->headers.SetHeader(blink::kSecSpeculationTagsHeaderName,
-                                        serialized_list.value());
-  }
+  AddSpeculationTagsHeader(url, resource_request->headers);
 
   // There are sometimes other headers that are set during navigation.  These
   // aren't yet supported for prefetch, including browsing topics.
