@@ -15,10 +15,8 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "media/base/audio_glitch_info.h"
-#include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -161,7 +159,6 @@ class AudioInputDeviceTest
   const AudioGlitchInfo glitch_info_{.duration = base::Microseconds(20000),
                                      .count = 2};
   raw_ptr<AudioInputBuffer> buffer_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Regular construction.
@@ -210,40 +207,6 @@ TEST_P(AudioInputDeviceTest, CreateStream) {
 TEST_P(AudioInputDeviceTest, CaptureCallback) {
   base::test::TaskEnvironment ste;
 
-  scoped_feature_list_.InitWithFeatures(
-      {}, {base::test::FeatureRef(media::kAudioInputConfirmReadsViaShmem)});
-
-  CreateInputDevice();
-
-  uint32_t buffer_index = 0;
-  browser_socket_.Send(base::byte_span_from_ref(buffer_index));
-
-  EXPECT_CALL(*capture_callback_, OnCaptureError(_, _)).Times(0);
-  EXPECT_CALL(*capture_callback_, VerifyCapture(capture_time_, glitch_info_));
-
-  device_->Start();
-  ste.RunUntilIdle();
-
-  // The capture occurs on another thread, wait for it.
-  capture_callback_->WaitForCapture();
-
-  // We expect to get 1 as the confirmation that the AudioInputDevice has read
-  // the buffer.
-  uint32_t confirmation_signal;
-  size_t bytes_read =
-      browser_socket_.Receive(base::byte_span_from_ref(confirmation_signal));
-  EXPECT_EQ(bytes_read, sizeof(confirmation_signal));
-  EXPECT_EQ(confirmation_signal, 1u);
-
-  device_->Stop();
-}
-
-TEST_P(AudioInputDeviceTest, ConfirmReadsViaShmemFlag) {
-  base::test::TaskEnvironment ste;
-
-  scoped_feature_list_.InitWithFeatures(
-      {base::test::FeatureRef(media::kAudioInputConfirmReadsViaShmem)}, {});
-
   CreateInputDevice();
 
   // Set the confirmation flag to 1. The AudioInputDevice should reset this to 0
@@ -274,7 +237,7 @@ TEST_P(AudioInputDeviceTest, ConfirmReadsViaShmemFlag) {
   }
   EXPECT_TRUE(got_confirmation_signal);
 
-  // When the optimization is enabled, we don't send confirmation signals.
+  // We don't send confirmation signals via the socket.
   EXPECT_EQ(browser_socket_.Peek(), 0u);
 
   device_->Stop();

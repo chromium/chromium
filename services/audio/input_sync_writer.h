@@ -194,10 +194,6 @@ class InputSyncWriter final : public InputController::SyncWriter {
   // Glitch info that has yet to be successfully communicated to the renderer.
   media::AudioGlitchInfo pending_glitch_info_;
 
-  // Enables an experimental synchronization model where consumer side puts read
-  // confirmations in shared memory instead of sending socket messages.
-  const bool confirm_reads_via_shmem_;
-
   // Represents the glitch info of one dropped buffer.
   const media::AudioGlitchInfo dropped_buffer_glitch_;
 };

@@ -1399,10 +1399,6 @@ BASE_FEATURE(kAudioFocusDuckFlash,
 #endif
 );
 
-// Enables an optimization where audio input stream read confirmations are
-// written to shared memory instead of being sent through socket messages.
-BASE_FEATURE(kAudioInputConfirmReadsViaShmem, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the internal Media Session logic without enabling the Media Session
 // service.
 BASE_FEATURE(kInternalMediaSession,
