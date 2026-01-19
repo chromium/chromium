@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <deque>
 #include <map>
 #include <utility>
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -32,6 +34,7 @@
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "net/http/http_status_code.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -441,6 +444,198 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_TRUE(bitmaps.manifest_icons.empty());
   EXPECT_TRUE(bitmaps.trusted_icons.empty());
+}
+
+class ExternalAppResolutionCommandCspBrowserTest
+    : public ExternalAppResolutionCommandBrowserTest {
+ public:
+  struct ResponseMap {
+    std::queue<net::HttpStatusCode> manifest_response_codes;
+    std::queue<net::HttpStatusCode> icon_response_codes;
+  };
+
+  void SetUp() override {
+    https_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+        [&](const net::test_server::HttpRequest& request)
+            -> std::unique_ptr<net::test_server::HttpResponse> {
+          std::unique_ptr<net::test_server::BasicHttpResponse> response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          if (request.relative_url == "/manifest_test_page.html") {
+            EXPECT_FALSE(response_map_.manifest_response_codes.empty());
+            response->set_code(response_map_.manifest_response_codes.front());
+            response_map_.manifest_response_codes.pop();
+            return std::move(response);
+          } else if (request.relative_url == "/icon.png") {
+            const net::HttpStatusCode status_code =
+                response_map_.icon_response_codes.front();
+            response_map_.icon_response_codes.pop();
+            response->set_code(status_code);
+            if (status_code == net::HttpStatusCode::HTTP_OK) {
+              response->set_content_type("image/x-icon");
+              std::string icon_data = std::string(
+                  "\x00\x00\x01\x00\x01\x00\x01\x01\x00\x00\x01\x00\x20\x00\x2C"
+                  "\x00\x00\x00\x16\x00\x00\x00\x28\x00\x00\x00\x01\x00\x00\x00"
+                  "\x02\x00\x00\x00\x01\x00\x20\x00\x00\x00\x00\x00\x04\x00\x00"
+                  "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+                  "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+                  70);
+              response->set_content(icon_data);
+            }
+          } else {
+            response->set_code(net::HTTP_NOT_FOUND);
+          }
+          return response;
+        }));
+    ExternalAppResolutionCommandBrowserTest::SetUp();
+  }
+
+  void SetResponseMap(ResponseMap response_map) {
+    response_map_ = std::move(response_map);
+  }
+
+ private:
+  ResponseMap response_map_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ExternalAppResolutionCommandCspBrowserTest,
+    PlaceholderInstallAfterRedirectWithCustomIconLoadSuccessful) {
+  const GURL kWebAppUrl = https_server()->GetURL("/manifest_test_page.html");
+
+  std::queue<net::HttpStatusCode> manifest_response_codes(
+      {net::HttpStatusCode::HTTP_PERMANENT_REDIRECT});
+  std::queue<net::HttpStatusCode> icon_response_codes(
+      {// First URL navigation.
+       net::HttpStatusCode::HTTP_OK,
+       // Icon load.
+       net::HttpStatusCode::HTTP_OK});
+  SetResponseMap({.manifest_response_codes = std::move(manifest_response_codes),
+                  .icon_response_codes = icon_response_codes});
+
+  ExternalInstallOptions install_options(
+      kWebAppUrl, mojom::UserDisplayMode::kStandalone,
+      ExternalInstallSource::kInternalDefault);
+  install_options.install_placeholder = true;
+  install_options.force_reinstall = true;
+  // Set a custom icon.
+  install_options.override_icon_url = https_server()->GetURL("/icon.png");
+
+  base::test::TestFuture<ExternallyManagedAppManager::InstallResult> future;
+  provider().scheduler().InstallExternallyManagedApp(
+      install_options,
+      /*installed_placeholder_app_id=*/"someplaceholderappid",
+      future.GetCallback());
+
+  const ExternallyManagedAppManager::InstallResult& result =
+      future.Get<ExternallyManagedAppManager::InstallResult>();
+  const webapps::AppId& app_id = *result.app_id;
+  webapps::InstallResultCode install_code = result.code;
+  EXPECT_EQ(install_code, webapps::InstallResultCode::kSuccessNewInstall);
+  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
+
+  base::test::TestFuture<WebAppIconManager::WebAppBitmaps> icon_future;
+  provider().icon_manager().ReadAllIcons(app_id, icon_future.GetCallback());
+  const WebAppIconManager::WebAppBitmaps bitmaps = icon_future.Get();
+
+  EXPECT_FALSE(bitmaps.manifest_icons.empty());
+  EXPECT_FALSE(bitmaps.trusted_icons.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ExternalAppResolutionCommandCspBrowserTest,
+    PlaceholderInstallAfterRedirectWithCustomIconLoadNavigationFailsAndRetriesSuccessful) {
+  const GURL kWebAppUrl = https_server()->GetURL("/manifest_test_page.html");
+
+  std::queue<net::HttpStatusCode> manifest_response_codes(
+      {net::HttpStatusCode::HTTP_PERMANENT_REDIRECT});
+  std::queue<net::HttpStatusCode> icon_response_codes(
+      {// First URL navigation fails --> triggers retry.
+       net::HttpStatusCode::HTTP_NOT_FOUND,
+       // Second URL navigation succeeds.
+       net::HttpStatusCode::HTTP_OK,
+       // Icon load succeeds.
+       net::HttpStatusCode::HTTP_OK});
+  SetResponseMap({.manifest_response_codes = std::move(manifest_response_codes),
+                  .icon_response_codes = icon_response_codes});
+
+  ExternalInstallOptions install_options(
+      kWebAppUrl, mojom::UserDisplayMode::kStandalone,
+      ExternalInstallSource::kInternalDefault);
+  install_options.install_placeholder = true;
+  install_options.force_reinstall = true;
+  // Set a custom icon.
+  install_options.override_icon_url = https_server()->GetURL("/icon.png");
+
+  base::test::TestFuture<ExternallyManagedAppManager::InstallResult> future;
+  provider().scheduler().InstallExternallyManagedApp(
+      install_options,
+      /*installed_placeholder_app_id=*/"someplaceholderappid",
+      future.GetCallback());
+
+  const ExternallyManagedAppManager::InstallResult& result =
+      future.Get<ExternallyManagedAppManager::InstallResult>();
+  const webapps::AppId& app_id = *result.app_id;
+  webapps::InstallResultCode install_code = result.code;
+  EXPECT_EQ(install_code, webapps::InstallResultCode::kSuccessNewInstall);
+  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
+
+  base::test::TestFuture<WebAppIconManager::WebAppBitmaps> icon_future;
+  provider().icon_manager().ReadAllIcons(app_id, icon_future.GetCallback());
+  const WebAppIconManager::WebAppBitmaps bitmaps = icon_future.Get();
+
+  EXPECT_FALSE(bitmaps.manifest_icons.empty());
+  EXPECT_FALSE(bitmaps.trusted_icons.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ExternalAppResolutionCommandCspBrowserTest,
+    PlaceholderInstallAfterRedirectWithCustomIconLoadFailsAndRetriesSuccessful) {
+  const GURL kWebAppUrl = https_server()->GetURL("/manifest_test_page.html");
+
+  std::queue<net::HttpStatusCode> manifest_response_codes(
+      {net::HttpStatusCode::HTTP_PERMANENT_REDIRECT});
+  std::queue<net::HttpStatusCode> icon_response_codes(
+      {// URL navigation succeeds.
+       net::HttpStatusCode::HTTP_OK,
+       // First icon load fails --> triggers retry.
+       net::HttpStatusCode::HTTP_NOT_FOUND,
+       // URL navigation succeeds.
+       net::HttpStatusCode::HTTP_OK,
+       // Second icon load succeeds.
+       net::HttpStatusCode::HTTP_OK});
+  SetResponseMap({.manifest_response_codes = std::move(manifest_response_codes),
+                  .icon_response_codes = icon_response_codes});
+
+  ExternalInstallOptions install_options(
+      kWebAppUrl, mojom::UserDisplayMode::kStandalone,
+      ExternalInstallSource::kInternalDefault);
+  install_options.install_placeholder = true;
+  install_options.force_reinstall = true;
+  // Set a custom icon.
+  install_options.override_icon_url = https_server()->GetURL("/icon.png");
+
+  base::test::TestFuture<ExternallyManagedAppManager::InstallResult> future;
+  provider().scheduler().InstallExternallyManagedApp(
+      install_options,
+      /*installed_placeholder_app_id=*/"someplaceholderappid",
+      future.GetCallback());
+
+  const ExternallyManagedAppManager::InstallResult& result =
+      future.Get<ExternallyManagedAppManager::InstallResult>();
+  const webapps::AppId& app_id = *result.app_id;
+  webapps::InstallResultCode install_code = result.code;
+  EXPECT_EQ(install_code, webapps::InstallResultCode::kSuccessNewInstall);
+  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
+
+  base::test::TestFuture<WebAppIconManager::WebAppBitmaps> icon_future;
+  provider().icon_manager().ReadAllIcons(app_id, icon_future.GetCallback());
+  const WebAppIconManager::WebAppBitmaps bitmaps = icon_future.Get();
+
+  EXPECT_FALSE(bitmaps.manifest_icons.empty());
+  EXPECT_FALSE(bitmaps.trusted_icons.empty());
 }
 
 }  // namespace web_app
