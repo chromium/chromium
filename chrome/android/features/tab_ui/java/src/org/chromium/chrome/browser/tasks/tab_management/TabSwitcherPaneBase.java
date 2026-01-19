@@ -111,8 +111,8 @@ public abstract class TabSwitcherPaneBase extends PaneBase
     private final TabSwitcherCustomViewManager mTabSwitcherCustomViewManager =
             new TabSwitcherCustomViewManager();
 
-    private final SettableObservableSupplier<TabSwitcherPaneCoordinator>
-            mTabSwitcherPaneCoordinatorSupplier = ObservableSuppliers.createMonotonic();
+    private final SettableNullableObservableSupplier<TabSwitcherPaneCoordinator>
+            mTabSwitcherPaneCoordinatorSupplier = ObservableSuppliers.createNullable();
 
     private final NonNullObservableSupplier<Boolean> mHandleBackPressChangedSupplier =
             mTabSwitcherPaneCoordinatorSupplier.createTransitiveNonNull(
@@ -618,7 +618,7 @@ public abstract class TabSwitcherPaneBase extends PaneBase
     }
 
     /** Returns an observable supplier that hold the current coordinator. */
-    protected ObservableSupplier<TabSwitcherPaneCoordinator>
+    protected NullableObservableSupplier<TabSwitcherPaneCoordinator>
             getTabSwitcherPaneCoordinatorSupplier() {
         return mTabSwitcherPaneCoordinatorSupplier;
     }
@@ -656,7 +656,7 @@ public abstract class TabSwitcherPaneBase extends PaneBase
     void destroyTabSwitcherPaneCoordinator() {
         TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
         if (coordinator == null) return;
-        mTabSwitcherPaneCoordinatorSupplier.destroy();
+        mTabSwitcherPaneCoordinatorSupplier.set(null);
         mRootView.removeAllViews();
         mTabSwitcherCustomViewManager.setDelegate(null);
         coordinator.destroy();

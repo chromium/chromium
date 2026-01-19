@@ -47,7 +47,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
     }
 
     private static @Nullable TabBrowserControlsConstraintsHelper safeGet(@Nullable Tab tab) {
-        return tab == null ? null : get(tab);
+        return tab == null || tab.isDestroyed() ? null : get(tab);
     }
 
     public static @Nullable TabBrowserControlsConstraintsHelper get(Tab tab) {

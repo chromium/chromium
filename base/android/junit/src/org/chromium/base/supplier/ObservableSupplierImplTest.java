@@ -7,11 +7,13 @@ package org.chromium.base.supplier;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import android.os.Handler;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
@@ -313,6 +315,18 @@ public class ObservableSupplierImplTest {
         assertThrows(AssertionError.class, () -> supplier.asNonNull());
         supplier.set("some value");
         assertEquals("some value", supplier.asNonNull().get());
+    }
+
+    @Test
+    public void testDestroy() {
+        mSupplier.set("foo");
+        mSupplier.addSyncObserver(Assert::fail);
+        mSupplier.destroy();
+        assertFalse(mSupplier.hasObservers());
+        assertNull(mSupplier.get());
+        // set() should be ignored.
+        mSupplier.set("bar");
+        assertNull(mSupplier.get());
     }
 
     private void checkState(
