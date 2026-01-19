@@ -111,6 +111,8 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   BubbleViewControllerPresenter* _bottomToolbarTipBubblePresenter;
   BubbleViewControllerPresenter* _discoverFeedHeaderMenuTipBubblePresenter;
   BubbleViewControllerPresenter* _homeCustomizationMenuTipBubblePresenter;
+  BubbleViewControllerPresenter*
+      _homeBackgroundCustomizationMenuTipBubblePresenter;
   BubbleViewControllerPresenter* _readingListTipBubblePresenter;
   BubbleViewControllerPresenter* _defaultPageModeTipBubblePresenter;
   BubbleViewControllerPresenter* _whatsNewBubblePresenter;
@@ -190,6 +192,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   [_bottomToolbarTipBubblePresenter dismissAnimated:NO];
   [_discoverFeedHeaderMenuTipBubblePresenter dismissAnimated:NO];
   [_homeCustomizationMenuTipBubblePresenter dismissAnimated:NO];
+  [_homeBackgroundCustomizationMenuTipBubblePresenter dismissAnimated:NO];
   [_readingListTipBubblePresenter dismissAnimated:NO];
   [_priceNotificationsWhileBrowsingBubbleTipPresenter dismissAnimated:NO];
   [_whatsNewBubblePresenter dismissAnimated:NO];
@@ -259,10 +262,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 
 - (void)presentHomeCustomizationTipBubble {
   NSString* text =
-      IsNTPBackgroundCustomizationEnabled()
-          ? l10n_util::GetNSStringWithFixup(
-                IDS_IOS_HOME_BACKGROUND_CUSTOMIZATION_IPH)
-          : l10n_util::GetNSStringWithFixup(IDS_IOS_HOME_CUSTOMIZATION_IPH);
+      l10n_util::GetNSStringWithFixup(IDS_IOS_HOME_CUSTOMIZATION_IPH);
 
   UIView* menuButton =
       [_layoutGuideCenter referencedViewUnderName:kFeedIPHNamedGuide];
@@ -292,6 +292,40 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   }
 
   _homeCustomizationMenuTipBubblePresenter = presenter;
+}
+
+- (void)presentHomeBackgroundCustomizationTipBubble {
+  NSString* text = l10n_util::GetNSStringWithFixup(
+      IDS_IOS_HOME_BACKGROUND_CUSTOMIZATION_IPH);
+
+  UIView* menuButton =
+      [_layoutGuideCenter referencedViewUnderName:kFeedIPHNamedGuide];
+  // Checks "canPresentBubble" after checking that the NTP with feed is visible.
+  // This ensures that the feature tracker doesn't trigger the IPH event if the
+  // bubble isn't shown, which would prevent it from ever being shown again.
+  if (!menuButton || ![self canPresentBubble]) {
+    return;
+  }
+  CGPoint customizationMenuAnchor =
+      [menuButton.superview convertPoint:menuButton.frame.origin toView:nil];
+
+  // Slightly move IPH to ensure that the bubble doesn't bleed out the screen.
+  customizationMenuAnchor.x += menuButton.frame.size.width / 2;
+  customizationMenuAnchor.y += menuButton.frame.size.height;
+
+  BubbleViewControllerPresenter* presenter =
+      [self presentBubbleForFeature:
+                feature_engagement::kIPHiOSPromoBackgroundCustomizationFeature
+                          direction:BubbleArrowDirectionUp
+                          alignment:BubbleAlignmentTopOrLeading
+                               text:text
+              voiceOverAnnouncement:text
+                        anchorPoint:customizationMenuAnchor];
+  if (!presenter) {
+    return;
+  }
+
+  _homeBackgroundCustomizationMenuTipBubblePresenter = presenter;
 }
 
 - (void)presentDefaultSiteViewTipBubbleWithSettingsMap:
@@ -1238,6 +1272,11 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   if (!_engagementTracker) {
     return;
   }
+  // Don't alert FET if bubble was force presented, because in that case, the
+  // FET was never informed of the initial presentation.
+  if ([self shouldForcePresentBubbleForFeature:feature]) {
+    return;
+  }
   _engagementTracker->Dismissed(feature);
 }
 
@@ -1279,8 +1318,16 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 }
 
 // Return YES if the bubble should always be presented. Ex. if force present
-// bubble set by system experimental settings.
+// bubble set by system experimental settings. The bubble presenter will not
+// inform the FET of dismissal in this case. The client is responsible for
+// informing the FET.
 - (BOOL)shouldForcePresentBubbleForFeature:(const base::Feature&)feature {
+  // The background customization feature bubble is tied in with other IPH, so
+  // the feature engagement tracker is checked externally to this class.
+  if (feature.name ==
+      feature_engagement::kIPHiOSPromoBackgroundCustomizationFeature.name) {
+    return YES;
+  }
   return NO;
 }
 

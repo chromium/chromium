@@ -66,6 +66,39 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     return config;
   }
 
+  if (kIPHiOSPromoBackgroundCustomizationFeature.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(ANY, 0);
+    config.storage_type = StorageType::PROFILE;
+    config.used =
+        EventConfig(events::kHomeBackgroundCustomizationMenuUsed,
+                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    config.trigger =
+        EventConfig("background_customization_promo_trigger",
+                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+
+    // Also make sure that the user didn't see the older customization promos
+    // recently.
+    config.event_configs.insert(
+        EventConfig(events::kHomeCustomizationPromoTriggered,
+                    Comparator(EQUAL, 0), 30, 30));
+
+    // An alternate trigger event was provided via Finch to re-show the IPH to
+    // users when the background customization feature was being experimented
+    // with.
+    config.event_configs.insert(
+        EventConfig("home_customization_menu_iph_triggered_2",
+                    Comparator(EQUAL, 0), 30, 30));
+
+    // Make sure the First Run Experience occurred more than 3 days ago.
+    config.event_configs.insert(
+        EventConfig(events::kIOSFirstRunComplete, Comparator(EQUAL, 0), 3, 3));
+  }
+
   if (kIPHiOSPromoGenericDefaultBrowserFeature.name == feature->name) {
     FeatureConfig config;
     config.valid = true;

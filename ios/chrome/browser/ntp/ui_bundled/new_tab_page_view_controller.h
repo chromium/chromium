@@ -17,11 +17,24 @@
 typedef NS_ENUM(NSInteger, FeedLayoutUpdateType);
 @protocol HelpCommands;
 @class MagicStackCollectionViewController;
+@protocol NewTabPageCommands;
 @protocol NewTabPageContentDelegate;
 @protocol NewTabPageShortcutsHandler;
 @class NewTabPageHeaderViewController;
 @protocol NewTabPageMutator;
+@class NewTabPageViewController;
 @protocol OverscrollActionsControllerDelegate;
+
+namespace feature_engagement {
+class Tracker;
+}
+
+@protocol NewTabPageViewControllerDelegate
+
+- (void)showCustomizationMenuForUserEducationFromNewTabPageViewController:
+    (NewTabPageViewController*)newTabPageViewController;
+
+@end
 
 // View controller containing all the content presented on a standard,
 // non-incognito new tab page.
@@ -69,6 +82,9 @@ typedef NS_ENUM(NSInteger, FeedLayoutUpdateType);
 // In-product help handle for displaying IPH bubbles relating to the NTP.
 @property(nonatomic, weak) id<HelpCommands> helpHandler;
 
+// Delegate to control behavior
+@property(nonatomic, weak) id<NewTabPageViewControllerDelegate> delegate;
+
 // Whether or not this NTP has fully appeared for the first time yet. This value
 // remains YES if viewDidAppear has been called.
 @property(nonatomic, assign) BOOL viewDidAppear;
@@ -97,6 +113,9 @@ typedef NS_ENUM(NSInteger, FeedLayoutUpdateType);
 
 // Whether incognito is disabled (e.g. by privacy policy).
 @property(nonatomic, assign) BOOL incognitoDisabled;
+
+// Engagement tracker to use for checking whether IPH should show.
+@property(nonatomic, assign) feature_engagement::Tracker* engagementTracker;
 
 // Initializes the new tab page view controller.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;

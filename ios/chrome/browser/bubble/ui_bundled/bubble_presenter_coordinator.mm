@@ -221,6 +221,10 @@
       [_presenter presentPinSiteToMostVisitedTilesBubble];
       break;
     }
+    case InProductHelpType::kHomeBackgroundCustomization: {
+      [_presenter presentHomeBackgroundCustomizationTipBubble];
+      break;
+    }
   }
 }
 

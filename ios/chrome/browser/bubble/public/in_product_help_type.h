@@ -51,6 +51,8 @@ enum class InProductHelpType : NSInteger {
   kGeminiImageRemix,
   /// Help bubble for pinning a site to the most visited tiles.
   kPinSiteToMostVisited,
+  /// Help bubble for Home Background Customization.
+  kHomeBackgroundCustomization,
 };
 
 #endif  // IOS_CHROME_BROWSER_BUBBLE_PUBLIC_IN_PRODUCT_HELP_TYPE_H_

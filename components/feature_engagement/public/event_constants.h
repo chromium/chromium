@@ -299,6 +299,13 @@ extern const char
 // The user has tapped the Home customization menu's entrypoint.
 extern const char kHomeCustomizationMenuUsed[];
 
+// The user has opened the Home customization menu with background customization
+// enabled..
+extern const char kHomeBackgroundCustomizationMenuUsed[];
+
+// The user has seen the `kIPHHomeCustomizationMenuFeature` iph.
+extern const char kHomeCustomizationPromoTriggered[];
+
 // The user has tapped on the lens overlay entrypoint.
 extern const char kLensOverlayEntrypointUsed[];
 

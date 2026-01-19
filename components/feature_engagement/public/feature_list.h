@@ -269,6 +269,8 @@ DEFINE_VARIATION_PARAM(kIPHiOSFeedSwipeStaticFeature,
 DEFINE_VARIATION_PARAM(kIPHiOSPromoAppStoreFeature, "IPH_iOSPromoAppStore");
 DEFINE_VARIATION_PARAM(kIPHiOSLensKeyboardFeature, "IPH_iOSLensKeyboard");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoWhatsNewFeature, "IPH_iOSPromoWhatsNew");
+DEFINE_VARIATION_PARAM(kIPHiOSPromoBackgroundCustomizationFeature,
+                       "IPH_iOSPromoBackgroundCustomization");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoSigninFullscreenFeature,
                        "IPH_iOSPromoSigninFullscreen");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoPostRestoreFeature,
@@ -696,6 +698,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHiOSLensKeyboardFeature),
         VARIATION_ENTRY(kIPHiOSPromoAppStoreFeature),
         VARIATION_ENTRY(kIPHiOSPromoWhatsNewFeature),
+        VARIATION_ENTRY(kIPHiOSPromoBackgroundCustomizationFeature),
         VARIATION_ENTRY(kIPHiOSPromoPostRestoreFeature),
         VARIATION_ENTRY(kIPHiOSPromoCredentialProviderExtensionFeature),
         VARIATION_ENTRY(kIPHiOSHistoryOnOverflowMenuFeature),
