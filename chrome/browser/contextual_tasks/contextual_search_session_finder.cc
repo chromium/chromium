@@ -7,7 +7,7 @@
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
@@ -39,12 +39,12 @@ contextual_search::ContextualSearchSessionHandle* FindSessionForTask(
     }
   }
 
-  TabStripModel* tab_strip_model = browser_window->GetTabStripModel();
-  if (tab_strip_model) {
+  TabListInterface* tab_list = TabListInterface::From(browser_window);
+  if (tab_list) {
     for (auto tab_id :
          contextual_tasks_service->GetTabsAssociatedWithTask(task_id)) {
-      for (int i = 0; i < tab_strip_model->count(); ++i) {
-        tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(i);
+      for (int i = 0; i < tab_list->GetTabCount(); ++i) {
+        tabs::TabInterface* tab = tab_list->GetTab(i);
         if (sessions::SessionTabHelper::IdForTab(tab->GetContents()) ==
             tab_id) {
           if (auto* helper = ContextualSearchWebContentsHelper::FromWebContents(
