@@ -43,9 +43,6 @@ namespace policies {
 
 namespace {
 
-// Pointer to the instance of itself.
-BackgroundTabLoadingPolicy* g_background_tab_loading_policy = nullptr;
-
 const char kDescriberName[] = "BackgroundTabLoadingPolicy";
 
 }  // namespace
@@ -81,7 +78,7 @@ BackgroundTabLoadingPolicy::PageNodeData::operator=(const PageNodeData& other) =
 BackgroundTabLoadingPolicy::PageNodeData::~PageNodeData() = default;
 
 bool CanScheduleLoadForRestoredTabs() {
-  return BackgroundTabLoadingPolicy::GetInstance();
+  return BackgroundTabLoadingPolicy::GetFromGraph();
 }
 
 void ScheduleLoadForRestoredTabs(
@@ -129,27 +126,27 @@ void ScheduleLoadForRestoredTabs(
         content->GetLastCommittedURL(), notification_permission);
   }
 
-  auto* policy = BackgroundTabLoadingPolicy::GetInstance();
+  auto* policy = BackgroundTabLoadingPolicy::GetFromGraph();
   CHECK(policy);
   policy->ScheduleLoadForRestoredTabs(std::move(page_node_data_vector));
 }
 
 void InstallBackgroundTabLoadingPolicyForTesting(
     base::RepeatingClosure all_restored_tabs_loaded_callback) {
-  CHECK(!BackgroundTabLoadingPolicy::GetInstance());
+  CHECK(!BackgroundTabLoadingPolicy::GetFromGraph());
   PerformanceManager::GetGraph()->PassToGraph(
       std::make_unique<BackgroundTabLoadingPolicy>(
           std::move(all_restored_tabs_loaded_callback)));
 }
 
 void SetMaxLoadedBackgroundTabCountForTesting(size_t max_tabs_to_load) {
-  auto* policy = BackgroundTabLoadingPolicy::GetInstance();
+  auto* policy = BackgroundTabLoadingPolicy::GetFromGraph();
   CHECK(policy);
   policy->SetMaxLoadedTabCountForTesting(max_tabs_to_load);  // IN-TEST
 }
 
 void SetMaxSimultaneousBackgroundTabLoadsForTesting(size_t loading_slots) {
-  auto* policy = BackgroundTabLoadingPolicy::GetInstance();
+  auto* policy = BackgroundTabLoadingPolicy::GetFromGraph();
   CHECK(policy);
   policy->SetMaxSimultaneousLoadsForTesting(loading_slots);  // IN-TEST
 }
@@ -163,17 +160,12 @@ BackgroundTabLoadingPolicy::BackgroundTabLoadingPolicy(
           FROM_HERE,
           base::MemoryPressureListenerTag::kBackgroundTabLoadingPolicy,
           this) {
-  DCHECK(!g_background_tab_loading_policy);
-  g_background_tab_loading_policy = this;
   max_simultaneous_tab_loads_ = CalculateMaxSimultaneousTabLoads(
       kMinSimultaneousTabLoads, kMaxSimultaneousTabLoads,
       kCoresPerSimultaneousTabLoad, base::SysInfo::NumberOfProcessors());
 }
 
-BackgroundTabLoadingPolicy::~BackgroundTabLoadingPolicy() {
-  DCHECK_EQ(this, g_background_tab_loading_policy);
-  g_background_tab_loading_policy = nullptr;
-}
+BackgroundTabLoadingPolicy::~BackgroundTabLoadingPolicy() = default;
 
 void BackgroundTabLoadingPolicy::OnPassedToGraph(Graph* graph) {
   graph->AddPageNodeObserver(this);
@@ -339,11 +331,6 @@ void BackgroundTabLoadingPolicy::SetFreeMemoryForTesting(
 
 void BackgroundTabLoadingPolicy::ResetPolicyForTesting() {
   tab_loads_started_ = 0;
-}
-
-// TODO(crbug.com/427952137): This could use GraphRegistered.
-BackgroundTabLoadingPolicy* BackgroundTabLoadingPolicy::GetInstance() {
-  return g_background_tab_loading_policy;
 }
 
 BackgroundTabLoadingPolicy::PageNodeToLoadData::PageNodeToLoadData(

@@ -14,6 +14,7 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/system_node.h"
@@ -35,10 +36,11 @@ namespace policies {
 // This policy manages loading of background tabs created by session restore. It
 // is responsible for assigning priorities and controlling the load of
 // background tab loading at all times.
-class BackgroundTabLoadingPolicy : public GraphOwned,
-                                   public NodeDataDescriberDefaultImpl,
-                                   public PageNodeObserver,
-                                   public base::MemoryPressureListener {
+class BackgroundTabLoadingPolicy
+    : public GraphOwnedAndRegistered<BackgroundTabLoadingPolicy>,
+      public NodeDataDescriberDefaultImpl,
+      public PageNodeObserver,
+      public base::MemoryPressureListener {
  public:
   // `all_restored_tabs_loaded_callback` is invoked when all tabs passed to
   // ScheduleLoadForRestoredTabs() are loaded.
@@ -86,9 +88,6 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
   void SetMaxSimultaneousLoadsForTesting(size_t loading_slots);
   void SetFreeMemoryForTesting(size_t free_memory_mb);
   void ResetPolicyForTesting();
-
-  // Returns the instance of BackgroundTabLoadingPolicy within the graph.
-  static BackgroundTabLoadingPolicy* GetInstance();
 
  private:
   friend class ::performance_manager::BackgroundTabLoadingBrowserTest;
