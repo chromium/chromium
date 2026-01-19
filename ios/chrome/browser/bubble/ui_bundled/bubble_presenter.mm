@@ -898,6 +898,8 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
       voiceOverAnnouncement:text
       anchorPoint:CGPoint(pageActionMenuEntrypointAnchor.x + anchorXOffset,
                           pageActionMenuEntrypointAnchor.y)
+      anchorViewFrame:
+          [self anchorViewFrameForGuide:kPageActionMenuEntrypointGuide]
       presentAction:^{
         [pageActionMenuEntryPointHandler toggleEntryPointHighlight:YES];
       }
@@ -1005,6 +1007,28 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                          dismissAction:nil];
 }
 
+// Convenience method that calls -presentBubbleForFeature with a CGRectZero
+// `anchorViewFrame`.
+- (BubbleViewControllerPresenter*)
+    presentBubbleForFeature:(const base::Feature&)feature
+                  direction:(BubbleArrowDirection)direction
+                  alignment:(BubbleAlignment)alignment
+                       text:(NSString*)text
+      voiceOverAnnouncement:(NSString*)voiceOverAnnouncement
+                anchorPoint:(CGPoint)anchorPoint
+              presentAction:(ProceduralBlock)presentAction
+              dismissAction:(void (^)(IPHDismissalReasonType))dismissAction {
+  return [self presentBubbleForFeature:feature
+                             direction:direction
+                             alignment:alignment
+                                  text:text
+                 voiceOverAnnouncement:voiceOverAnnouncement
+                           anchorPoint:anchorPoint
+                       anchorViewFrame:CGRectZero
+                         presentAction:presentAction
+                         dismissAction:dismissAction];
+}
+
 // Presents and returns a bubble view controller for the `feature` with an arrow
 // `direction`, an arrow `alignment` and a `text` on an `anchorPoint`.
 - (BubbleViewControllerPresenter*)
@@ -1014,6 +1038,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                        text:(NSString*)text
       voiceOverAnnouncement:(NSString*)voiceOverAnnouncement
                 anchorPoint:(CGPoint)anchorPoint
+            anchorViewFrame:(CGRect)anchorViewFrame
               presentAction:(ProceduralBlock)presentAction
               dismissAction:(void (^)(IPHDismissalReasonType))dismissAction {
   DCHECK(_engagementTracker);
@@ -1035,7 +1060,8 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
       [self startAnimatedFullscreenDisabler];
     }
     [presenter presentInViewController:self.rootViewController
-                           anchorPoint:anchorPoint];
+                           anchorPoint:anchorPoint
+                       anchorViewFrame:anchorViewFrame];
     if (presentAction) {
       presentAction();
     }
@@ -1070,6 +1096,19 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                               toView:guide.owningView.window];
   [self.rootViewController.view removeLayoutGuide:guide];
   return anchorPointInWindow;
+}
+
+// Returns the frame of a layout guide used as anchor view for a bubble. The
+// frame is in the window coordinates.
+- (CGRect)anchorViewFrameForGuide:(GuideName*)guideName {
+  UILayoutGuide* guide = [_layoutGuideCenter makeLayoutGuideNamed:guideName];
+  CHECK(guide);
+  [self.rootViewController.view addLayoutGuide:guide];
+  CGRect frame = guide.layoutFrame;
+  CGRect frameInWindow = [guide.owningView convertRect:frame
+                                                toView:guide.owningView.window];
+  [self.rootViewController.view removeLayoutGuide:guide];
+  return frameInWindow;
 }
 
 // Returns whether the tab can present a bubble tip.
