@@ -238,7 +238,7 @@ BASE_FEATURE(kEnterpriseProfileBadgingForMenu,
 // Enables enterprise badging for managed browsers on the new tab page footer.
 // On managed browsers, a building icon and "Managed by <domain>" string will be
 // shown in the footer, unless the icon and label are customized by the admin.
-BASE_FEATURE(kEnterpriseBadgingForNtpFooter, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnterpriseBadgingForNtpFooter, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables enterprise badging for managed browsers with local management only on
 // the new tab page footer. On managed browsers, a building icon and "Managed by
