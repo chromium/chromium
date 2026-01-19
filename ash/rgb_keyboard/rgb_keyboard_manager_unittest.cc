@@ -43,6 +43,7 @@ class RgbKeyboardManagerTest : public testing::Test {
   ~RgbKeyboardManagerTest() override {
     // Ordering for deletion is Manger -> Client -> IME Controller
     manager_.reset();
+    client_ = nullptr;
     RgbkbdClient::Shutdown();
     ime_controller_.reset();
   }
@@ -59,7 +60,7 @@ class RgbKeyboardManagerTest : public testing::Test {
   // ImeControllerImpl must be destroyed after RgbKeyboardManager.
   std::unique_ptr<ImeControllerImpl> ime_controller_;
   std::unique_ptr<RgbKeyboardManager> manager_;
-  raw_ptr<FakeRgbkbdClient, DanglingUntriaged> client_;
+  raw_ptr<FakeRgbkbdClient> client_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
