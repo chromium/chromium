@@ -212,8 +212,7 @@ class AutofillPrivateApiUnitTest : public extensions::ExtensionApiTest {
              {{wallet::kWalletablePassDetectionCountryAllowlist.name, "US"}}},
         },
         /*disabled_features=*/
-        {autofill::features::kAutofillAiIgnoreLocale,
-         autofill::features::kAutofillAiNationalIdCard,
+        {autofill::features::kAutofillAiNationalIdCard,
          autofill::features::kAutofillAiKnownTravelerNumber,
          autofill::features::kAutofillAiRedressNumber});
   }
@@ -410,33 +409,6 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, SetAutofillAiOptIn) {
 
   EXPECT_TRUE(RunAutofillSubtest("optOutOfAutofillAi"));
   EXPECT_FALSE(autofill::GetAutofillAiOptInStatus(*autofill_client()));
-  EXPECT_TRUE(RunAutofillSubtest("verifyUserOptedOutOfAutofillAi"));
-}
-
-// Tests that the scenario where the user becomes ineligible and then tries
-// opting into Autofill AI behaves as expected.
-IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest,
-                       SetAutofillAiOptIn_SwitchEligibility) {
-  autofill_client()->set_entity_data_manager(
-      autofill::AutofillEntityDataManagerFactory::GetForProfile(profile()));
-  autofill_client()->SetUpPrefsAndIdentityForAutofillAi();
-
-  ASSERT_TRUE(autofill::MayPerformAutofillAiAction(
-      *autofill_client(), autofill::AutofillAiAction::kOptIn));
-  EXPECT_TRUE(autofill::SetAutofillAiOptInStatus(
-      *autofill_client(), autofill::AutofillAiOptInStatus::kOptedIn));
-
-  // Verify that we can opt out of Autofill AI while eligible.
-  ASSERT_TRUE(RunAutofillSubtest("optOutOfAutofillAi"));
-  EXPECT_TRUE(RunAutofillSubtest("verifyUserOptedOutOfAutofillAi"));
-
-  // Become ineligible.
-  autofill_client()->set_app_locale("de-DE");
-  ASSERT_FALSE(autofill::MayPerformAutofillAiAction(
-      *autofill_client(), autofill::AutofillAiAction::kOptIn));
-
-  // Verify that we cannot opt into Autofill AI anymore.
-  ASSERT_TRUE(RunAutofillSubtest("optIntoAutofillAi"));
   EXPECT_TRUE(RunAutofillSubtest("verifyUserOptedOutOfAutofillAi"));
 }
 

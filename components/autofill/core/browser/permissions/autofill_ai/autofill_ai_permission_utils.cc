@@ -449,17 +449,6 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
       break;
   }
 
-  // App-locale.
-  if (app_locale != "en-US" &&
-      !base::FeatureList::IsEnabled(features::kAutofillAiIgnoreLocale)) {
-    // If the user changes their app-locale, the feature might stop working,
-    // but the data should not disappear.
-    if (!(IsRelevantForDataTransparency(action) && has_entity_data_saved)) {
-      MaybeOutputReason(debug_message, "Unsupported locale.");
-      return false;
-    }
-  }
-
   // If the user changes their GeoIp, the feature might stop working, but the
   // data should not disappear.
   if (!IsPermittedGeoIp(country_code) &&
