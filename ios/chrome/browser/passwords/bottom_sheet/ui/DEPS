@@ -1,0 +1,3 @@
+include_rules = [
+  "+ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h",
+]
