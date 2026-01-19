@@ -314,7 +314,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.EntropySourceType" enum="UmaEntropySourceType"
-    expires_after="2026-02-28">
+    expires_after="2027-02-28">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -324,7 +324,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.ExternalExperiment.GroupCount" units="groups"
-    expires_after="2026-02-28">
+    expires_after="2027-02-28">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -336,7 +336,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.FileMetricsProvider.AccessResult"
-    enum="FileMetricsProviderAccessResult" expires_after="2026-02-28">
+    enum="FileMetricsProviderAccessResult" expires_after="2027-02-28">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -356,7 +356,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.FileMetricsProvider.InitialAccessResult"
-    enum="FileMetricsProviderAccessResult" expires_after="2026-02-28">
+    enum="FileMetricsProviderAccessResult" expires_after="2027-02-28">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -366,7 +366,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.FileMetricsProvider.{Source}.MergedHistogramsCount"
-    units="histograms" expires_after="2026-02-28">
+    units="histograms" expires_after="2027-02-28">
   <owner>lucnguyen@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -481,7 +481,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.LogUpload.ResponseOrErrorCode.HTTP"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-02-28">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2027-02-28">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -519,7 +519,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.MetricsReporting.Toggle" enum="MetricsReportingChange"
-    expires_after="2026-02-28">
+    expires_after="2027-02-28">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -589,7 +589,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.MetricsService.PendingOngoingLogOnDisable" enum="Boolean"
-    expires_after="2026-02-28">
+    expires_after="2027-02-28">
   <owner>lucnguyen@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -616,7 +616,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.MetricsService.PeriodicOngoingLog.CloseTime" units="ms"
-    expires_after="2026-02-28">
+    expires_after="2027-02-28">
   <owner>lucnguyen@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -628,7 +628,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.MetricsService.PushPendingLogsToPersistentStorageReason"
-    enum="MetricsLogCreateReason" expires_after="2026-02-28">
+    enum="MetricsLogCreateReason" expires_after="2027-02-28">
   <owner>hiramahmood@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>Logs the trigger source of a manual metrics log upload.</summary>
@@ -645,7 +645,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.NegativeSamples.Histogram" enum="HistogramNameHash"
-    expires_after="2026-02-28">
+    expires_after="2027-02-28">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -654,7 +654,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.NegativeSamples.Increment" units="increment"
-    expires_after="2026-02-28">
+    expires_after="2027-02-28">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -663,7 +663,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.NegativeSamples.Reason" enum="NegativeSampleReason"
-    expires_after="2026-02-28">
+    expires_after="2027-02-28">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -705,8 +705,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UMA.PersistentHistograms.MountExistingCountsStorage"
-    enum="MountExistingCountsStorageResult" expires_after="2026-02-28">
+<histogram name="UMA.PersistentHistograms.MountExistingCountsStorageResult"
+    enum="MountExistingCountsStorageResult" expires_after="2027-02-28">
   <owner>rogerm@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -1065,7 +1065,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.UnsentLogs.PersistedSizeInKB" units="KB"
-    expires_after="2026-02-28">
+    expires_after="2027-02-28">
   <owner>michaelbai@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>lucnguyen@google.com</owner>
@@ -1078,7 +1078,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.UnsentLogs.SentCount" units="samples"
-    expires_after="2026-02-28">
+    expires_after="2027-02-28">
   <owner>michaelbai@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>lucnguyen@google.com</owner>
@@ -1090,7 +1090,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.UnsentLogs.UnsentCount" units="samples"
-    expires_after="2026-02-28">
+    expires_after="2027-02-28">
   <owner>michaelbai@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>lucnguyen@google.com</owner>
@@ -1102,7 +1102,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.UnsentLogs.UnsentPercentage" units="%"
-    expires_after="2026-02-28">
+    expires_after="2027-02-28">
   <owner>michaelbai@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>lucnguyen@google.com</owner>
@@ -1114,7 +1114,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.UserActionsCount" enum="Boolean"
-    expires_after="2026-02-28">
+    expires_after="2027-02-28">
   <owner>mpearson@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
