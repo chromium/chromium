@@ -56,8 +56,16 @@
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
-
 namespace {
+
+inline String RustStrToWtfString(rust::Str str) {
+  return String::FromUTF8(base::RustStrToStringView(str));
+}
+
+inline AtomicString RustStrToAtomicString(rust::Str str) {
+  return AtomicString::FromUTF8(base::RustStrToStringView(str));
+}
+
 inline bool HasNoStyleInformation(Document* document) {
   if (document->SawElementsInKnownNamespaces()) {
     return false;
@@ -77,14 +85,6 @@ inline bool HasNoStyleInformation(Document* document) {
   }
 
   return true;
-}
-
-String RustStrToWtfString(rust::Str str) {
-  return String::FromUTF8(base::RustStrToStringView(str));
-}
-
-AtomicString RustStrToAtomicString(rust::Str str) {
-  return AtomicString::FromUTF8(base::RustStrToStringView(str));
 }
 
 bool HandleNamespaceAttributes(
@@ -120,25 +120,17 @@ bool CollectElementAttributes(
     Vector<Attribute, kAttributePrealloc>& prefixed_attributes,
     xml_ffi::AttributesIterator& attributes,
     ExceptionState& exception_state) {
-  rust::String local_name;
-  rust::String prefix;
-  rust::String ns;
-  rust::String value;
-  while (attributes_next(attributes, local_name, ns, prefix, value)) {
-    AtomicString attr_q_name =
-        prefix.empty() ? RustStrToAtomicString(local_name)
-                       : AtomicString(StrCat({RustStrToWtfString(prefix), ":",
-                                              RustStrToWtfString(local_name)}));
-    AtomicString attr_ns = RustStrToAtomicString(ns);
-    std::optional<QualifiedName> parsed_name =
-        Element::ParseAttributeName(attr_ns, attr_q_name, exception_state);
+  xml_ffi::AttributeView attribute_view;
+  while (attributes_next(attributes, attribute_view)) {
+    std::optional<QualifiedName> parsed_name = Element::ParseAttributeName(
+        attribute_view.attr_ns, attribute_view.q_name, exception_state);
     if (!parsed_name) {
       DCHECK(exception_state.HadException());
       return false;
     }
 
     prefixed_attributes.push_back(
-        Attribute(std::move(*parsed_name), RustStrToAtomicString(value)));
+        Attribute(std::move(*parsed_name), attribute_view.value));
   }
   return true;
 }

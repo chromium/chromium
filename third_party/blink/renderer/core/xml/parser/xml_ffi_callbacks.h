@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_XML_PARSER_XML_FFI_CALLBACKS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_XML_PARSER_XML_FFI_CALLBACKS_H_
 
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/rust/cxx/v1/cxx.h"
 
 namespace xml_ffi {
@@ -36,6 +37,14 @@ class XmlCallbacks {
                        rust::Str public_id,
                        rust::Str system_id) = 0;
   virtual void EndDocument() = 0;
+};
+
+struct AttributeView {
+  blink::AtomicString q_name;
+  blink::AtomicString attr_ns;
+  blink::AtomicString value;
+
+  void Populate(rust::Str q_name_a, rust::Str attr_ns_a, rust::Str value_a);
 };
 
 }  // namespace xml_ffi

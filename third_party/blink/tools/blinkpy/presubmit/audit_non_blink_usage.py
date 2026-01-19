@@ -2873,6 +2873,7 @@ _CONFIG = [
         'paths': [
             'third_party/blink/renderer/core/xml/parser/xml_document_parser_rs.cc',
             'third_party/blink/renderer/core/xml/parser/xml_document_parser_rs.h',
+            'third_party/blink/renderer/core/xml/parser/xml_ffi_callbacks.cc',
             'third_party/blink/renderer/core/xml/parser/xml_ffi_callbacks.h',
         ],
         'allowed': [

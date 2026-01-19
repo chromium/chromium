@@ -19,7 +19,7 @@ use xml::{
     Encoding, ParserConfig,
 };
 
-use crate::ffi::{AttributeNameValue, StandaloneInfo, XmlCallbacks};
+use crate::ffi::{AttributeNameValue, AttributeView, StandaloneInfo, XmlCallbacks};
 use entities::{HTML5_MAP, LAT1_MAP, SPECIAL_MAP, SYMBOL_MAP};
 use std::pin::Pin;
 
@@ -258,17 +258,33 @@ fn saw_error(read_state: &XmlReadState) -> bool {
 
 fn attributes_next<'a>(
     attributes: &mut AttributesIterator<'a>,
-    local_name: &mut String,
-    ns: &mut String,
-    prefix: &mut String,
-    value: &'a mut String,
+    mut attribute_view: Pin<&mut AttributeView>,
 ) -> bool {
     if let Some(attribute) = attributes.attributes.next() {
         let name = &attribute.name;
-        *local_name = name.local_name.clone();
-        *ns = name.namespace.clone().unwrap_or_default();
-        *prefix = name.prefix.clone().unwrap_or_default();
-        *value = attribute.value.clone();
+        // Prepare qualified name according to expectations of QualifiedName
+        // parser, concatenate here to avoid extra string conversions and
+        // allocations on the Blink C++ side.
+        match &name.prefix {
+            Some(pref) => {
+                let mut q_name = String::with_capacity(pref.len() + 1 + name.local_name.len());
+                q_name.push_str(&pref);
+                q_name.push(':');
+                q_name.push_str(&name.local_name);
+                attribute_view.as_mut().Populate(
+                    &q_name,
+                    name.namespace.as_deref().unwrap_or_default(),
+                    &attribute.value,
+                );
+            }
+            _ => {
+                attribute_view.as_mut().Populate(
+                    &name.local_name,
+                    name.namespace.as_deref().unwrap_or_default(),
+                    &attribute.value,
+                );
+            }
+        }
         return true;
     }
     false
@@ -302,10 +318,7 @@ fn namespaces_next(
     false
 }
 
-fn parse_attributes(
-    attributes_string: &[u8],
-    success: &mut bool,
-) -> Vec<AttributeNameValue> {
+fn parse_attributes(attributes_string: &[u8], success: &mut bool) -> Vec<AttributeNameValue> {
     let mut reader = create_reader();
 
     let buffer = reader.source_mut().get_mut();
@@ -387,6 +400,9 @@ mod ffi {
         fn Comment(self: Pin<&mut XmlCallbacks>, comment: &str);
         fn DocType(self: Pin<&mut XmlCallbacks>, name: &str, public_id: &str, system_id: &str);
         fn EndDocument(self: Pin<&mut XmlCallbacks>);
+
+        type AttributeView;
+        fn Populate(self: Pin<&mut AttributeView>, q_name: &str, attr_ns: &str, value: &str);
     }
 
     extern "Rust" {
@@ -419,10 +435,7 @@ mod ffi {
 
         unsafe fn attributes_next<'a>(
             attributes: &mut AttributesIterator<'a>,
-            local_name: &mut String,
-            ns: &mut String,
-            prefix: &mut String,
-            value: &'a mut String,
+            mut attribute_view: Pin<&mut AttributeView>,
         ) -> bool;
         unsafe fn namespaces_next<'a>(
             namespaces_iterator: &mut NamespacesIterator<'a>,

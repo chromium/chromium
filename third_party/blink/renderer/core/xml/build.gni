@@ -24,6 +24,7 @@ blink_core_sources_xml = [
   "parser/xml_errors.cc",
   "parser/xml_errors.h",
   "parser/xml_parser_input.h",
+  "parser/xml_ffi_callbacks.cc",
   "parser/xml_ffi_callbacks.h",
   "xml_serializer.cc",
   "xml_serializer.h",
