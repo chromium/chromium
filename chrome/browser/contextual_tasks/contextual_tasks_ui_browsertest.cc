@@ -228,6 +228,42 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
+                       RequestOAuthTokenRefreshesOnRefreshTokenUpdate) {
+  // Setup
+  testing::NiceMock<MockContextualTasksPage> mock_page;
+  mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> handler_receiver;
+  controller_->CreatePageHandler(mock_page.BindAndGetRemote(),
+                                 std::move(handler_receiver));
+
+  // Respond to the first request.
+  identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kTestToken, base::Time::Now() + base::Days(10));
+
+  // Wait for the page to receive the initial token.
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_page, SetOAuthToken(kTestToken))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+  run_loop.Run();
+
+  // Trigger refresh token update.
+  CoreAccountId account_id =
+      identity_test_env_->identity_manager()->GetPrimaryAccountId(
+          signin::ConsentLevel::kSignin);
+  signin::SetRefreshTokenForAccount(identity_test_env_->identity_manager(),
+                                    account_id, "updated_refresh_token");
+
+  // Pass a different token to the second request.
+  identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "new_token", base::Time::Now() + base::Days(10));
+
+  // Verify for the page receives the new token.
+  base::RunLoop run_loop2;
+  EXPECT_CALL(mock_page, SetOAuthToken("new_token"))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop2, &base::RunLoop::Quit));
+  run_loop2.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
                        OnSidePanelStateChanged_InTab) {
   testing::NiceMock<MockContextualTasksPage> mock_page;
 

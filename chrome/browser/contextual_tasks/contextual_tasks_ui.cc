@@ -71,6 +71,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -118,6 +119,15 @@ std::string GetEncodedHandshakeMessage() {
   std::vector<uint8_t> serialized_message(size);
   message.SerializeToArray(&serialized_message[0], size);
   return base::Base64Encode(serialized_message);
+}
+
+bool IsPrimaryAccount(Profile* profile, const CoreAccountId& account_id) {
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager) {
+    return false;
+  }
+  return identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin) ==
+         account_id;
 }
 
 }  // namespace
@@ -169,6 +179,11 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
           contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
               Profile::FromBrowserContext(
                   web_ui->GetWebContents()->GetBrowserContext()))) {
+  if (auto* identity_manager =
+          IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui))) {
+    identity_manager_observation_.Observe(identity_manager);
+  }
+
   inner_web_contents_creation_observer_ =
       std::make_unique<InnerFrameCreationObvserver>(
           web_ui->GetWebContents(),
@@ -409,6 +424,13 @@ void ContextualTasksUI::OnOAuthTokenReceived(
         FROM_HERE, access_token_info.expiration_time - base::Time::Now(),
         base::BindOnce(&ContextualTasksUI::RequestOAuthToken,
                        weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void ContextualTasksUI::OnRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info) {
+  if (IsPrimaryAccount(Profile::FromWebUI(web_ui()), account_info.account_id)) {
+    RequestOAuthToken();
   }
 }
 
