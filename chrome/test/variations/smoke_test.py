@@ -54,12 +54,12 @@ def test_basic_rendering(driver_factory: drivers.DriverFactory,
     driver.set_window_size(800, 600)
     driver.get(url)
     driver_factory.wait_for_screenshot()
-    body = WebDriverWait(driver, 5).until(
+    WebDriverWait(driver, 5).until(
       EC.presence_of_element_located((By.TAG_NAME, 'body')))
 
     status, error_msg = skia_gold_util.compare(
       name='body',
-      png_data=skia_gold_util.screenshot_from_element(body))
+      png_data=driver.get_screenshot_as_png())
 
     assert status == 0, error_msg
 
