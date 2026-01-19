@@ -17,6 +17,7 @@
 #include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/page_info/android/page_info_client.h"
 #include "components/page_info/core/features.h"
@@ -158,13 +159,8 @@ void PageInfoControllerAndroid::SetPermissionInfo(
   // a particular order, but only if their value is different from the
   // default. This order comes from https://crbug.com/610358.
   std::vector<ContentSettingsType> permissions_to_display;
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kApproximateGeolocationPermission)) {
-    permissions_to_display.push_back(
-        ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
-  } else {
-    permissions_to_display.push_back(ContentSettingsType::GEOLOCATION);
-  }
+  permissions_to_display.push_back(
+      content_settings::GeolocationContentSettingsType());
   permissions_to_display.push_back(ContentSettingsType::MEDIASTREAM_CAMERA);
   permissions_to_display.push_back(ContentSettingsType::MEDIASTREAM_MIC);
   permissions_to_display.push_back(ContentSettingsType::NOTIFICATIONS);
