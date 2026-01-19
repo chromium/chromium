@@ -398,8 +398,12 @@ void BwgTabHelper::SetLocationBarBadgeCommandsHandler(
 
 void BwgTabHelper::WasShown(web::WebState* web_state) {
   if (is_bwg_session_active_in_background_) {
-    [bwg_commands_handler_
-        startGeminiFlowWithEntryPoint:gemini::EntryPoint::TabReopen];
+    if (IsGeminiCopresenceEnabled()) {
+      [bwg_commands_handler_ updateFloatyVisibilityForWebState:web_state];
+    } else {
+      [bwg_commands_handler_
+          startGeminiFlowWithEntryPoint:gemini::EntryPoint::TabReopen];
+    }
     cached_snapshot_ = nil;
   }
 }
@@ -409,7 +413,12 @@ void BwgTabHelper::WasHidden(web::WebState* web_state) {
     cached_snapshot_ =
         bwg_snapshot_utils::GetCroppedFullscreenSnapshot(web_state_->GetView());
     is_bwg_session_active_in_background_ = true;
-    [bwg_commands_handler_ dismissGeminiFlowWithCompletion:nil];
+
+    if (IsGeminiCopresenceEnabled()) {
+      [bwg_commands_handler_ updateFloatyVisibilityForWebState:web_state];
+    } else {
+      [bwg_commands_handler_ dismissGeminiFlowWithCompletion:nil];
+    }
   }
 
   UpdateWebStateSnapshotInStorage();
@@ -470,6 +479,10 @@ void BwgTabHelper::DidStartNavigation(
 void BwgTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
+  if (IsGeminiCopresenceEnabled()) {
+    [bwg_commands_handler_ updateFloatyVisibilityForWebState:web_state];
+  }
+
   const GURL& current_url = navigation_context->GetUrl().GetWithoutRef();
   if (previous_main_frame_url_ == current_url) {
     return;

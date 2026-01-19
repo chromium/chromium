@@ -105,8 +105,12 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
   // cleaning up the floaty can be done by resetting the Gemini instance.
   void HideFloatyIfInvoked();
 
-  // Show Gemini floaty. Used to re-show an invoked Gemini floaty.
+  // Show Gemini floaty. Used to re-show an invoked Gemini floaty with the
+  // `last_view_state_`.
   void ShowFloatyIfInvoked();
+
+  // Collapses floaty if invoked.
+  void CollapseFloatyIfInvoked();
 
  private:
   explicit BwgBrowserAgent(Browser* browser);

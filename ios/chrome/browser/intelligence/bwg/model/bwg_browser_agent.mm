@@ -90,8 +90,6 @@ BwgBrowserAgent::BwgBrowserAgent(Browser* browser) : BrowserUserData(browser) {
   if (bwg_gateway_) {
     bwg_link_opening_handler_ = [[BWGLinkOpeningHandler alloc]
         initWithURLLoader:UrlLoadingBrowserAgent::FromBrowser(browser_)];
-    bwg_gateway_.linkOpeningHandler = bwg_link_opening_handler_;
-
     bwg_page_state_change_handler_ = [[BWGPageStateChangeHandler alloc]
         initWithPrefService:browser_->GetProfile()->GetPrefs()];
     bwg_gateway_.pageStateChangeHandler = bwg_page_state_change_handler_;
@@ -102,8 +100,11 @@ BwgBrowserAgent::BwgBrowserAgent(Browser* browser) : BrowserUserData(browser) {
       gemini_view_state_handler_ = [[GeminiViewStateChangeHandler alloc]
           initWithBrowserAgent:weak_factory_.GetWeakPtr()];
       bwg_session_handler_.geminiViewStateDelegate = gemini_view_state_handler_;
+      bwg_link_opening_handler_.geminiViewStateDelegate =
+          gemini_view_state_handler_;
     }
     bwg_gateway_.sessionHandler = bwg_session_handler_;
+    bwg_gateway_.linkOpeningHandler = bwg_link_opening_handler_;
 
     gemini_suggestion_handler_ = [[GeminiSuggestionHandler alloc]
         initWithWebStateList:browser_->GetWebStateList()];
@@ -326,6 +327,15 @@ void BwgBrowserAgent::OnGeminiViewStateExpanded() {
                        weak_factory_.GetWeakPtr()),
         /*full_page_context=*/true);
   }
+}
+
+void BwgBrowserAgent::CollapseFloatyIfInvoked() {
+  if (!is_floaty_invoked_) {
+    return;
+  }
+
+  ios::provider::UpdateGeminiViewState(
+      ios::provider::GeminiViewState::kCollapsed);
 }
 
 void BwgBrowserAgent::DismissFloaty() {

@@ -3284,6 +3284,22 @@ const char kChromeAppStoreUrl[] =
   _BWGCoordinator = nil;
 }
 
+// TODO(crbug.com/476145805): Move function to BWGTabHelper.
+- (void)updateFloatyVisibilityForWebState:(web::WebState*)webState {
+  BwgService* BWGService = BwgServiceFactory::GetForProfile(self.profile);
+  BwgBrowserAgent* geminiBrowserAgent =
+      BwgBrowserAgent::FromBrowser(self.browser);
+  if (!IsGeminiCopresenceEnabled() || !BWGService || !geminiBrowserAgent) {
+    return;
+  }
+
+  if (BWGService->IsBwgAvailableForWebState(webState)) {
+    geminiBrowserAgent->ShowFloatyIfInvoked();
+  } else {
+    geminiBrowserAgent->HideFloatyIfInvoked();
+  }
+}
+
 - (void)showBWGPromoIfPageIsEligible {
   BwgService* BWGService = BwgServiceFactory::GetForProfile(self.profile);
   if (BWGService->IsBwgAvailableForWebState(self.activeWebState)) {

@@ -25,4 +25,14 @@
   }
 }
 
+- (void)switchToViewState:(ios::provider::GeminiViewState)viewState {
+  if (!_agent) {
+    return;
+  }
+
+  if (viewState == ios::provider::GeminiViewState::kCollapsed) {
+    _agent->CollapseFloatyIfInvoked();
+  }
+}
+
 @end

@@ -15,6 +15,9 @@
 // Called when the view state changes.
 - (void)didSwitchToViewState:(ios::provider::GeminiViewState)viewState;
 
+// Switch to `viewState`.
+- (void)switchToViewState:(ios::provider::GeminiViewState)viewState;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_VIEW_STATE_DELEGATE_H_
