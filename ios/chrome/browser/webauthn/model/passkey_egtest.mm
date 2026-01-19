@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/webauthn/model/ios_chrome_passkey_client_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/default_handlers.h"
@@ -18,6 +19,16 @@
 #import "net/test/embedded_test_server/http_response.h"
 #import "net/test/embedded_test_server/request_handler_util.h"
 #import "ui/base/l10n/l10n_util.h"
+
+namespace {
+
+// Returns the matcher for the "Create" button.
+id<GREYMatcher> CreatePasskeyButton() {
+  return chrome_test_util::StaticTextWithAccessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_PASSKEY_CREATION_BOTTOM_SHEET_CREATE));
+}
+
+}  // namespace
 
 @interface PasskeyEGTest : ChromeTestCase
 
@@ -66,7 +77,10 @@
 - (void)testModalPasskeyCreationInfobar {
   [self loadPasskeyCreationPage];
 
-  // TODO(crbug.com/460485496): Add UI interactions here when the UI is created.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CreatePasskeyButton()];
+
+  [[EarlGrey selectElementWithMatcher:CreatePasskeyButton()]
+      performAction:grey_tap()];
 
   std::u16string infobarTitleText =
       l10n_util::GetStringUTF16(IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_SAVED);

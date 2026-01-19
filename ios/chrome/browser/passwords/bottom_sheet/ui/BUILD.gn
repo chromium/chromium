@@ -12,6 +12,7 @@ source_set("ui") {
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/settings/ui_bundled/password:title_view",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/bottom_sheet:bottom_sheet_view_controller",
     "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",

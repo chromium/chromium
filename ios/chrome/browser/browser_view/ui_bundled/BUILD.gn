@@ -189,6 +189,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/overscroll_actions/ui_bundled",
     "//ios/chrome/browser/page_info/coordinator",
     "//ios/chrome/browser/page_info/requirements",
+    "//ios/chrome/browser/passwords/bottom_sheet/coordinator",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/passwords/ui_bundled",
     "//ios/chrome/browser/passwords/ui_bundled/bottom_sheet",

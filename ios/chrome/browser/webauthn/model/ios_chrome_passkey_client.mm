@@ -89,16 +89,7 @@ void IOSChromePasskeyClient::ShowSuggestionBottomSheet(
 }
 
 void IOSChromePasskeyClient::ShowCreationBottomSheet(RequestInfo request_info) {
-  // TODO(crbug.com/460486095): Open the creation confirmation bottom sheet.
-  // TODO(crbug.com/460485496): remove the code below and related dependencies
-  // once the bottom sheet is implemented.
-  webauthn::PasskeyTabHelper* passkey_tab_helper =
-      webauthn::PasskeyTabHelper::FromWebState(web_state_.get());
-  if (!passkey_tab_helper) {
-    return;
-  }
-
-  passkey_tab_helper->StartPasskeyCreation(request_info.request_id);
+  [command_handler_ showPasskeyCreationBottomSheet:request_info.request_id];
 }
 
 void IOSChromePasskeyClient::AllowPasskeyCreationInfobar(bool allowed) {

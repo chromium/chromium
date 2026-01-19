@@ -87,14 +87,12 @@
 - (void)confirmationAlertPrimaryAction {
   // TODO(crbug.com/460485496): Perform user authentication if required.
   [_mediator createPasskey];
-
-  // TODO(crbug.com/460485496): Dismiss the bottom sheet properly.
+  [self.browserCoordinatorCommandsHandler dismissPasskeyCreation];
 }
 
 - (void)confirmationAlertSecondaryAction {
   [_mediator deferPasskeyCreationToRenderer];
-
-  // TODO(crbug.com/460485496): Dismiss the bottom sheet properly.
+  [self.browserCoordinatorCommandsHandler dismissPasskeyCreation];
 }
 
 #pragma mark - Private

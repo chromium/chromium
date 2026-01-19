@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -88,7 +89,7 @@ ButtonStackConfiguration* SetUpButtons() {
 - (void)didMoveToParentViewController:(UIViewController*)parent {
   [super didMoveToParentViewController:parent];
   if (!parent) {
-    // TODO(crbug.com/460485496): Dismiss the bottom sheet properly.
+    [_handler dismissPasskeyCreation];
   }
 }
 

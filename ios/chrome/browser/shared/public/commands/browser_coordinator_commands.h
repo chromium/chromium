@@ -107,6 +107,9 @@ enum class TrustedVaultUserActionTriggerForUMA;
 // Dismiss the payments suggestions.
 - (void)dismissPaymentSuggestions;
 
+// Dismisses the passkey creation bottom sheet.
+- (void)dismissPasskeyCreation;
+
 // Dismiss the card unmask authentication prompt.
 - (void)dismissCardUnmaskAuthentication;
 

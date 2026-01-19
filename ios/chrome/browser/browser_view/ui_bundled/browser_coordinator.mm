@@ -158,6 +158,7 @@
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
 #import "ios/chrome/browser/page_info/coordinator/page_info_coordinator.h"
 #import "ios/chrome/browser/page_info/requirements/page_info_presentation.h"
+#import "ios/chrome/browser/passwords/bottom_sheet/coordinator/passkey_creation_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/passwords/model/password_controller_delegate.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/credential_suggestion_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/passwords/ui_bundled/password_breach_coordinator.h"
@@ -767,6 +768,9 @@ const char kChromeAppStoreUrl[] =
   // The coordinator for managing the Synced Set Up flow.
   SyncedSetUpCoordinator* _syncedSetUpCoordinator;
 
+  // The coordinator for the passkey creation bottom sheet.
+  PasskeyCreationBottomSheetCoordinator* _passkeyCreationBottomSheetCoordinator;
+
   // Block to run after the Synced Set Up UI has finished dismissing.
   ProceduralBlock _runAfterSyncedSetUpDismissal;
 }
@@ -1018,6 +1022,9 @@ const char kChromeAppStoreUrl[] =
 
   [_dataControlsDialogCoordinator stop];
   _dataControlsDialogCoordinator = nil;
+
+  [_passkeyCreationBottomSheetCoordinator stop];
+  _passkeyCreationBottomSheetCoordinator = nil;
 
   if (IsSyncedSetUpEnabled()) {
     [self stopSyncedSetUpCoordinator];
@@ -1639,6 +1646,9 @@ const char kChromeAppStoreUrl[] =
   /* paymentsSuggestionBottomSheetCoordinator is created and started by a
    * BrowserCommand */
 
+  /* _passkeyCreationBottomSheetCoordinator is created and started by a
+   * BrowserCommand */
+
   /* saveCardBottomSheetCoordinator is created and started by a
    * BrowserCommand */
 
@@ -1883,6 +1893,9 @@ const char kChromeAppStoreUrl[] =
 
   [_dataControlsDialogCoordinator stop];
   _dataControlsDialogCoordinator = nil;
+
+  [_passkeyCreationBottomSheetCoordinator stop];
+  _passkeyCreationBottomSheetCoordinator = nil;
 
   if (IsSyncedSetUpEnabled()) {
     [self stopSyncedSetUpCoordinator];
@@ -2349,8 +2362,15 @@ const char kChromeAppStoreUrl[] =
 
 #pragma mark - IOSPasskeyClientCommands
 
-- (void)showPasskeyCreationBottomSheet:(const std::string&)requestId {
-  // TODO(crbug.com/460485496) : Add implementation.
+- (void)showPasskeyCreationBottomSheet:(const std::string&)requestID {
+  _passkeyCreationBottomSheetCoordinator =
+      [[PasskeyCreationBottomSheetCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser
+                           requestID:requestID];
+  _passkeyCreationBottomSheetCoordinator.browserCoordinatorCommandsHandler =
+      HandlerForProtocol(self.dispatcher, BrowserCoordinatorCommands);
+  [_passkeyCreationBottomSheetCoordinator start];
 }
 
 - (void)showPasskeySuggestionBottomSheet:(const std::string&)requestId {
@@ -2608,6 +2628,11 @@ const char kChromeAppStoreUrl[] =
 - (void)dismissPaymentSuggestions {
   [self.paymentsSuggestionBottomSheetCoordinator stop];
   self.paymentsSuggestionBottomSheetCoordinator = nil;
+}
+
+- (void)dismissPasskeyCreation {
+  [_passkeyCreationBottomSheetCoordinator stop];
+  _passkeyCreationBottomSheetCoordinator = nil;
 }
 
 - (void)dismissCardUnmaskAuthentication {
