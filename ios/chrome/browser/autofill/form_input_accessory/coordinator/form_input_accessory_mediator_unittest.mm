@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_mediator.h"
 
 #import "base/metrics/histogram_base.h"
+#import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/filling/filling_product.h"
@@ -14,7 +15,9 @@
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/test_form_activity_tab_helper.h"
 #import "components/test/ios/test_utils.h"
+#import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_mediator+testing.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_mediator_handler.h"
+#import "ios/chrome/browser/autofill/form_input_accessory/coordinator/keyboard_accessory_optional_update_scheduler.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/ui/form_input_accessory_consumer.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/features.h"
@@ -40,6 +43,12 @@ using autofill::FormActivityParams;
 
 namespace {
 
+// A period for unit tests to fast forward time to observe the result of
+// optional updates. This is used to wait out cooldowns and delays. The 10ms
+// buffer is added to create a slighly longer time delta.
+const base::TimeDelta kDelayForAcceptingOptionalUpdates =
+    kOptionalUpdateCooldownPeriod + base::Milliseconds(10);
+
 FormActivityParams CreateFormActivityParams(const std::string field_type) {
   FormActivityParams params;
   params.form_name = "form";
@@ -49,6 +58,14 @@ FormActivityParams CreateFormActivityParams(const std::string field_type) {
   params.value = "value";
   params.input_missing = false;
   return params;
+}
+
+void PostKeyboardWillShowNotifications(int count = 1) {
+  for (int i = 0; i < count; ++i) {
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:UIKeyboardWillShowNotification
+                      object:nil];
+  }
 }
 
 }  // namespace
@@ -125,6 +142,8 @@ class FormInputAccessoryMediatorTest : public PlatformTest {
 
     AutofillBottomSheetTabHelper::CreateForWebState(test_web_state_.get());
 
+    test_web_state_->WasShown();
+
     web_state_list_.InsertWebState(
         std::move(test_web_state_),
         WebStateList::InsertionParams::Automatic().Activate());
@@ -151,7 +170,8 @@ class FormInputAccessoryMediatorTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      web::WebTaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<web::FakeWebState> test_web_state_;
   std::unique_ptr<web::FakeWebFrame> main_frame_;
@@ -430,4 +450,152 @@ TEST_F(FormInputAccessoryMediatorTest, DidSelectSuggestion_NoReauth) {
                                      /*expected_count=*/1);
 
   EXPECT_OCMOCK_VERIFY(formInputSuggestionProviderMock);
+}
+
+// Tests that suggestion refreshes triggered by `keyboardWillShow` are not
+// throttled when none of the feature flags are enabled.
+// The relationship of the two feature flags used in this test and a few other
+// tests below it.
+// - `kSuppressKeyboardWillShowSuggestionRefresh` has the highest impact.
+//   If it is enabled, it will suppress all suggestion refreshes from
+//   `keyboardWillShow`.
+// - `kAutofillThrottleOptionalSuggestionRefresh` has a chance to work
+//   only when kSuppressKeyboardWillShowSuggestionRefresh is disabled.
+TEST_F(FormInputAccessoryMediatorTest,
+       keyboardWillShowRefresh_NotThrottledOrSuppressed) {
+  base::test::ScopedFeatureList scoped_featurelist;
+  scoped_featurelist.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{kSuppressKeyboardWillShowSuggestionRefresh,
+                             kAutofillThrottleOptionalSuggestionRefresh});
+
+  FormActivityParams params = CreateFormActivityParams("text");
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),
+                                                        params);
+
+  FormInputAccessoryMediator* mock_mediator_ = OCMPartialMock(mediator_);
+  __block int count = 0;
+  OCMStub([mock_mediator_
+              retrieveSuggestionsForForm:params
+                                webState:static_cast<web::WebState*>(
+                                             [OCMArg anyPointer])])
+      .ignoringNonObjectArgs()
+      .andDo(^(NSInvocation*) {
+        count++;
+      });
+
+  PostKeyboardWillShowNotifications(3);
+  EXPECT_EQ(count, 3);
+}
+
+// Tests that suggestion refreshes triggered by keyboardWillShow are throttled
+// when only kAutofillThrottleOptionalSuggestionRefresh is enabled.
+TEST_F(FormInputAccessoryMediatorTest, keyboardWillShowRefresh_Throttled) {
+  base::test::ScopedFeatureList scoped_featurelist;
+  scoped_featurelist.InitWithFeatures(
+      /*enabled_features=*/{kAutofillThrottleOptionalSuggestionRefresh},
+      /*disabled_features=*/{kSuppressKeyboardWillShowSuggestionRefresh});
+
+  FormActivityParams params = CreateFormActivityParams("text");
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),
+                                                        params);
+  task_environment_.FastForwardBy(kDelayForAcceptingOptionalUpdates);
+
+  FormInputAccessoryMediator* mock_mediator_ = OCMPartialMock(mediator_);
+  __block int count = 0;
+  OCMStub([mock_mediator_
+              retrieveSuggestionsForForm:params
+                                webState:static_cast<web::WebState*>(
+                                             [OCMArg anyPointer])])
+      .ignoringNonObjectArgs()
+      .andDo(^(NSInvocation*) {
+        count++;
+      });
+
+  PostKeyboardWillShowNotifications(3);
+  // Update isn't immediately triggered -- delayed.
+  EXPECT_EQ(count, 0);
+
+  task_environment_.FastForwardBy(kOptionalUpdateDelay +
+                                  base::Milliseconds(10));
+  // Update is triggered once -- throttled.
+  EXPECT_EQ(count, 1);
+}
+
+// Tests that suggestion refreshes triggered by keyboardWillShow restarts the
+// delay when throttled.
+TEST_F(FormInputAccessoryMediatorTest,
+       keyboardWillShowRefresh_Throttled_RollingOver) {
+  base::test::ScopedFeatureList scoped_featurelist;
+  scoped_featurelist.InitWithFeatures(
+      /*enabled_features=*/{kAutofillThrottleOptionalSuggestionRefresh},
+      /*disabled_features=*/{kSuppressKeyboardWillShowSuggestionRefresh});
+
+  FormActivityParams params = CreateFormActivityParams("text");
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),
+                                                        params);
+  task_environment_.FastForwardBy(kDelayForAcceptingOptionalUpdates);
+
+  FormInputAccessoryMediator* mock_mediator_ = OCMPartialMock(mediator_);
+  __block int count = 0;
+  OCMStub([mock_mediator_
+              retrieveSuggestionsForForm:params
+                                webState:static_cast<web::WebState*>(
+                                             [OCMArg anyPointer])])
+      .ignoringNonObjectArgs()
+      .andDo(^(NSInvocation*) {
+        count++;
+      });
+
+  const base::TimeDelta halfDelay =
+      kOptionalUpdateDelay / 2 + base::Milliseconds(10);
+
+  // keyboardWillShow notification should not trigger a refresh immediately.
+  PostKeyboardWillShowNotifications(1);
+  EXPECT_EQ(count, 0);
+
+  // After half of the delay, no refreshes should be triggered.
+  task_environment_.FastForwardBy(halfDelay);
+  EXPECT_EQ(count, 0);
+
+  // A new notification restarts the delay. So, no refreshes should be triggered
+  // after the delay since the first event.
+  PostKeyboardWillShowNotifications(1);
+  task_environment_.FastForwardBy(halfDelay);
+  EXPECT_EQ(count, 0);
+
+  // After another half delay, the refresh should now be triggered.
+  task_environment_.FastForwardBy(halfDelay);
+  EXPECT_EQ(count, 1);
+}
+
+// Tests that suggestion refreshes triggered by keyboardWillShow are suppressed
+// when kSuppressKeyboardWillShowSuggestionRefresh is enabled.
+TEST_F(FormInputAccessoryMediatorTest, keyboardWillShowRefresh_Suppressed) {
+  base::test::ScopedFeatureList scoped_featurelist;
+  scoped_featurelist.InitWithFeatures(
+      /*enabled_features=*/{kSuppressKeyboardWillShowSuggestionRefresh},
+      /*disabled_features=*/{kAutofillThrottleOptionalSuggestionRefresh});
+
+  FormActivityParams params = CreateFormActivityParams("text");
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),
+                                                        params);
+  task_environment_.FastForwardBy(kDelayForAcceptingOptionalUpdates);
+
+  FormInputAccessoryMediator* mock_mediator_ = OCMPartialMock(mediator_);
+  __block int count = 0;
+  OCMStub([mock_mediator_
+              retrieveSuggestionsForForm:params
+                                webState:static_cast<web::WebState*>(
+                                             [OCMArg anyPointer])])
+      .ignoringNonObjectArgs()
+      .andDo(^(NSInvocation*) {
+        count++;
+      });
+
+  PostKeyboardWillShowNotifications(3);
+  EXPECT_EQ(count, 0);
+
+  task_environment_.FastForwardBy(kDelayForAcceptingOptionalUpdates);
+  EXPECT_EQ(count, 0);
 }

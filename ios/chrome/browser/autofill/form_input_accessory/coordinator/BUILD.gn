@@ -9,6 +9,8 @@ source_set("coordinator") {
     "form_input_accessory_mediator.h",
     "form_input_accessory_mediator.mm",
     "form_input_accessory_mediator_handler.h",
+    "keyboard_accessory_optional_update_scheduler.h",
+    "keyboard_accessory_optional_update_scheduler.mm",
   ]
   deps = [
     "//base",
@@ -67,7 +69,10 @@ source_set("coordinator") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "form_input_accessory_mediator_unittest.mm" ]
+  sources = [
+    "form_input_accessory_mediator+testing.h",
+    "form_input_accessory_mediator_unittest.mm",
+  ]
   deps = [
     ":coordinator",
     "//base/test:test_support",

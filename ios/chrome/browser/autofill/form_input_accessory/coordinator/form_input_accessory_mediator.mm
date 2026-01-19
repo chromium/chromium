@@ -25,6 +25,7 @@
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_mediator_handler.h"
+#import "ios/chrome/browser/autofill/form_input_accessory/coordinator/keyboard_accessory_optional_update_scheduler.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/public/form_input_accessory_chromium_text_data.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/public/scoped_form_input_accessory_reauth_module_override.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/ui/form_input_accessory_consumer.h"
@@ -103,14 +104,16 @@ bool IsStateless() {
 
 }  // namespace
 
-@interface FormInputAccessoryMediator () <AutofillBottomSheetObserving,
-                                          BooleanObserver,
-                                          FormActivityObserver,
-                                          FormInputAccessoryViewDelegate,
-                                          CRWWebStateObserver,
-                                          PasswordCounterObserver,
-                                          PersonalDataManagerObserver,
-                                          WebStateListObserving>
+@interface FormInputAccessoryMediator () <
+    AutofillBottomSheetObserving,
+    BooleanObserver,
+    FormActivityObserver,
+    FormInputAccessoryViewDelegate,
+    CRWWebStateObserver,
+    PasswordCounterObserver,
+    PersonalDataManagerObserver,
+    WebStateListObserving,
+    KeyboardAccessoryOptionalUpdateSchedulerDelegate>
 
 // The main consumer for this mediator.
 @property(nonatomic, weak) id<FormInputAccessoryConsumer> consumer;
@@ -198,6 +201,10 @@ bool IsStateless() {
   // The current FormSuggestionProvider that matches the current suggestions.
   // Set to nil if there are no current suggestions. Only used when Stateless.
   __weak id<FormSuggestionProvider> _currentSuggestionProvider;
+
+  // The scheduler for optional updates.
+  std::optional<KeyboardAccessoryOptionalUpdateScheduler>
+      _optionalUpdateScheduler;
 }
 
 - (instancetype)
@@ -309,6 +316,8 @@ bool IsStateless() {
     }
 
     _currentSuggestionProvider = nil;
+
+    _optionalUpdateScheduler.emplace(self);
   }
   return self;
 }
@@ -323,6 +332,7 @@ bool IsStateless() {
 }
 
 - (void)disconnect {
+  _optionalUpdateScheduler->CancelOptionalUpdate();
   _formActivityObserverBridge.reset();
   _autofillBottomSheetObserverBridge.reset();
   _personalDataManagerObserver = nullptr;
@@ -384,8 +394,19 @@ bool IsStateless() {
 #pragma mark - KeyboardNotification
 
 - (void)keyboardWillShow:(NSNotification*)notification {
-  [self updateSuggestionsIfNeeded];
   _keyboardHeightChangeNotificationsEnabled = YES;
+
+  if (base::FeatureList::IsEnabled(
+          kSuppressKeyboardWillShowSuggestionRefresh)) {
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          kAutofillThrottleOptionalSuggestionRefresh)) {
+    [self scheduleOptionalUpdate];
+  } else {
+    [self updateSuggestionsIfNeeded];
+  }
 }
 
 - (void)keyboardWillChangeFrame:(NSNotification*)notification {
@@ -712,6 +733,9 @@ bool IsStateless() {
   DCHECK_EQ(webState, self.webState);
   DCHECK(_hasLastSeenParams);
 
+  _optionalUpdateScheduler->RestartCooldownTimer();
+  _optionalUpdateScheduler->CancelOptionalUpdate();
+
   __weak id<FormInputSuggestionsProvider> weakProvider = self.provider;
   __weak __typeof(self) weakSelf = self;
 
@@ -952,6 +976,42 @@ bool IsStateless() {
 - (SuggestionProviderType)getProviderTypeFromSuggestion:
     (FormSuggestion*)suggestion {
   return IsStateless() ? suggestion.provider.type : self.currentProvider.type;
+}
+
+// Schedules an optional update to happen after a short delay.
+// Optional updates are updates requested as the result of a `keyboardWillShow`
+// event. Such updates are not tied to any specific feature. It used to trigger
+// an immediate -retrieveSuggestions call, which can be redundant. With the
+// scheduler, we are adding a delay and a cooldown timer to it to
+// 1. avoid calling -retrieveSuggestions too often which leads to costly UI
+// refreshes.
+// 2. avoid triggering a -retrieveSuggestions call with stale data just before
+// -webState:didRegisterFormActivity:inFrame:.
+//
+// The graph below shows the timeline of optional updates.
+//           suggestions                     update
+//             request                         ^
+//    delay    v    cooldown period       delay
+//  +------+...+---------------------+---------+.....
+//  ^      :   :          ^          ^   ^
+//  :      v   v          :          :   :
+//  : update   update optional       :   :
+//  :                  update        : optional
+//  optional         (rejected)      : update (reset delay)
+//  update                         optional
+//  (scheduled)                     update
+//                                (scheduled)
+// In the graph above:
+
+// An optional update is scheduled and after a short delay:
+// 1. triggers a -retrieveSuggestions call if it is not in a cooldown period.
+// 2. is rejected if it is in a cooldown period.
+//
+// A new optional update resets the delay to start again.
+// -retrieveSuggestions restarts the cooldown period, also cancels all pending
+// the optional update.
+- (void)scheduleOptionalUpdate {
+  _optionalUpdateScheduler->ScheduleOptionalUpdate();
 }
 
 @end

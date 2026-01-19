@@ -73,12 +73,7 @@ NSArray<FormSuggestion*>* SimpleFormSuggestions(int count) {
 
 class FormInputAccessoryViewControllerTest : public PlatformTest {
  public:
-  FormInputAccessoryViewControllerTest() {}
-
- protected:
-  void SetUp() override {
-    PlatformTest::SetUp();
-
+  FormInputAccessoryViewControllerTest() {
     view_controller_ = [[FormInputAccessoryViewController alloc]
         initWithFormInputAccessoryViewControllerDelegate:nil];
     view_controller_.brandingViewController =
@@ -86,6 +81,7 @@ class FormInputAccessoryViewControllerTest : public PlatformTest {
     [view_controller_ loadView];
   }
 
+ protected:
   FormInputAccessoryViewController* view_controller_;
 };
 

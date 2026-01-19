@@ -17,6 +17,12 @@ BASE_FEATURE(kStatelessFormSuggestionControllerWithRequestDeduping,
 BASE_FEATURE(kThrottleFormInputAccessorySuggestionRefresh,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAutofillThrottleOptionalSuggestionRefresh,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSuppressKeyboardWillShowSuggestionRefresh,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kFormInputAccessorySkipInputViewReloadInBackground,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
