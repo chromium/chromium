@@ -46,6 +46,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -2874,3 +2875,74 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
 }
 
 #endif  // BUILDFLAG(IS_MAC)
+
+TEST_F(AuthenticatorRequestDialogControllerTest, PopulatePasswordsWithOrigin) {
+  auto model =
+      base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
+  AuthenticatorRequestDialogController controller(model.get(), main_rfh());
+
+  // Setup TransportAvailabilityInfo
+  device::FidoRequestHandlerBase::TransportAvailabilityInfo tai;
+  tai.request_type = device::FidoRequestType::kGetAssertion;
+  tai.available_transports = {};
+
+  // Create PasswordCredentials
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> passwords;
+
+  // 1. Exact Match
+  auto exact_match = std::make_unique<password_manager::PasswordForm>();
+  exact_match->username_value = u"user_exact";
+  exact_match->url = GURL("https://example.com/login");
+  exact_match->signon_realm = "https://example.com/";
+  exact_match->match_type = password_manager::PasswordForm::MatchType::kExact;
+  passwords.push_back(std::move(exact_match));
+
+  // 2. PSL Match
+  auto psl_match = std::make_unique<password_manager::PasswordForm>();
+  psl_match->username_value = u"user_psl";
+  psl_match->url = GURL("https://sub.example.com/login");
+  psl_match->signon_realm = "https://sub.example.com/";
+  psl_match->match_type = password_manager::PasswordForm::MatchType::kPSL;
+  passwords.push_back(std::move(psl_match));
+
+  // Start Flow
+  model->relying_party_id = "example.com";
+  UpdateModelBeforeStartFlow(model.get(), tai, /*is_off_the_record=*/false);
+  controller.StartFlow(std::move(tai), std::move(passwords));
+
+  // Verify Mechanisms
+  ASSERT_EQ(model->mechanisms.size(), 2u);
+
+  // Helper to find mechanism by username
+  auto find_mechanism = [&](const std::u16string& username)
+      -> const AuthenticatorRequestDialogModel::Mechanism* {
+    for (const auto& mech : model->mechanisms) {
+      if (mech.name == username) {
+        return &mech;
+      }
+    }
+    return nullptr;
+  };
+
+  auto get_origin = [](const AuthenticatorRequestDialogModel::Mechanism* mech)
+      -> std::optional<std::u16string> {
+    if (const auto* password =
+            std::get_if<AuthenticatorRequestDialogModel::Mechanism::Password>(
+                &mech->type)) {
+      return password->value().origin;
+    }
+    return std::nullopt;
+  };
+
+  // 1. Exact Match: Origin should be empty
+  const auto* mech_exact = find_mechanism(u"user_exact");
+  ASSERT_TRUE(mech_exact);
+  EXPECT_FALSE(get_origin(mech_exact).has_value());
+
+  // 2. PSL Match: Origin should be "https://sub.example.com/"
+  const auto* mech_psl = find_mechanism(u"user_psl");
+  ASSERT_TRUE(mech_psl);
+  auto origin_psl = get_origin(mech_psl);
+  EXPECT_TRUE(origin_psl.has_value());
+  EXPECT_EQ(origin_psl.value(), u"sub.example.com");
+}

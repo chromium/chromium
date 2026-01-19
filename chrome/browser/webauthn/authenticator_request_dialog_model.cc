@@ -353,8 +353,10 @@ bool AuthenticatorRequestDialogModel::Mechanism::CredentialInfo::operator==(
     const CredentialInfo&) const = default;
 
 AuthenticatorRequestDialogModel::Mechanism::PasswordInfo::PasswordInfo(
-    std::optional<base::Time> last_used_time_in)
-    : last_used_time(std::move(last_used_time_in)) {}
+    std::optional<base::Time> last_used_time_in,
+    std::optional<std::u16string> origin_in)
+    : last_used_time(std::move(last_used_time_in)),
+      origin(std::move(origin_in)) {}
 AuthenticatorRequestDialogModel::Mechanism::PasswordInfo::PasswordInfo(
     const PasswordInfo&) = default;
 AuthenticatorRequestDialogModel::Mechanism::PasswordInfo::~PasswordInfo() =

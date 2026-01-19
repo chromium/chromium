@@ -58,8 +58,10 @@
 #include "components/device_event_log/device_event_log.h"
 #include "components/password_manager/core/browser/credential_manager_utils.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/webauthn/core/browser/gpm_user_verification_policy.h"
 #include "components/webauthn/core/browser/passkey_model.h"
@@ -2476,9 +2478,17 @@ void AuthenticatorRequestDialogController::StartPasskeyUpgradeRequest() {
 
 void AuthenticatorRequestDialogController::PopulatePasswords() {
   for (const auto& password : passwords_) {
+    std::optional<std::u16string> origin;
+    if (password->match_type.has_value() &&
+        password_manager_util::GetMatchType(*password) !=
+            password_manager_util::GetLoginMatchType::kExact) {
+      origin = url_formatter::FormatUrlForSecurityDisplay(
+          password->url, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
+    }
+
     Mechanism::Type mechanism_type = Mechanism::Password(
         AuthenticatorRequestDialogModel::Mechanism::PasswordInfo(
-            password->date_last_used));
+            password->date_last_used, std::move(origin)));
     Mechanism mechanism(
         mechanism_type, password->username_value,
         GetMechanismIcon(mechanism_type, ui_presentation()),
@@ -2489,6 +2499,7 @@ void AuthenticatorRequestDialogController::PopulatePasswords() {
                            password->password_value)));
     mechanism.description = l10n_util::GetStringUTF16(
         IDS_PASSWORD_MANAGER_PASSWORD_FROM_GOOGLE_PASSWORD_MANAGER);
+
     model_->mechanisms.emplace_back(std::move(mechanism));
   }
 }

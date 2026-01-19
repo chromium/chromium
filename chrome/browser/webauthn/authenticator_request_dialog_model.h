@@ -334,13 +334,16 @@ struct AuthenticatorRequestDialogModel
     using Credential = base::StrongAlias<class CredentialTag, CredentialInfo>;
 
     struct PasswordInfo {
-      explicit PasswordInfo(std::optional<base::Time> last_used_time_in);
+      explicit PasswordInfo(
+          std::optional<base::Time> last_used_time_in,
+          std::optional<std::u16string> origin_in = std::nullopt);
 
       PasswordInfo(const PasswordInfo&);
       ~PasswordInfo();
       bool operator==(const PasswordInfo& other) const;
 
       const std::optional<base::Time> last_used_time;
+      const std::optional<std::u16string> origin;
     };
     using Password = base::StrongAlias<class PasswordTag, PasswordInfo>;
     using Transport =
