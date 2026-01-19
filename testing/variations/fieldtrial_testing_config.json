@@ -24712,15 +24712,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledExcludeCacheResponses",
                     "params": {
-                        "chunk_size": "524288",
-                        "enabled_for_cache_response": "true",
-                        "max_chunks_per_request": "8",
-                        "max_chunks_total": "32",
-                        "memory_pressure_disable_level": "MODERATE",
-                        "min_buffer_size": "32768",
-                        "require_priority": "MEDIUM"
+                        "enabled_for_cache_response": "false"
                     },
                     "enable_features": [
                         "SlopBucket"
