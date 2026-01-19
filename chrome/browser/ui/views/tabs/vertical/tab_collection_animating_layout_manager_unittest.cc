@@ -114,36 +114,37 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest, AddChild) {
   widget()->SetBounds(gfx::Rect(0, 0, 100, 100));
   widget()->LayoutRootViewIfNecessary();
 
-  // Add an initial child, the first layout should snap to target.
-  auto* const child1 =
-      host_view()->AddChildView(std::make_unique<views::View>());
-  host_view()->InvalidateLayout();
-  widget()->LayoutRootViewIfNecessary();
+  const auto add_child_and_animate_to_target = [&]() {
+    // Add an empty child.
+    auto* const child =
+        host_view()->AddChildView(std::make_unique<views::View>());
+
+    // Trigger an initial layout.
+    host_view()->InvalidateLayout();
+    widget()->LayoutRootViewIfNecessary();
+
+    // Height should start at 0 with empty bounds.
+    EXPECT_EQ(child->height(), 0);
+    EXPECT_TRUE(child->bounds().IsEmpty());
+
+    // Expect callback when animation ends.
+    EXPECT_CALL(*layout_manager_delegate(), OnAnimationEnded());
+
+    // Advance time such that the animation has time to complete.
+    task_environment()->FastForwardBy(base::Seconds(1));
+
+    // Ensure final layout is applied.
+    widget()->LayoutRootViewIfNecessary();
+
+    return child;
+  };
+
+  // Add the first child, verify it animates to target bounds.
+  const auto* child1 = add_child_and_animate_to_target();
   EXPECT_EQ(child1->bounds(), gfx::Rect(0, 0, 100, 20));
 
-  // Add an empty child, which will eventually animate to a non empty animation
-  // target.
-  auto* const child2 =
-      host_view()->AddChildView(std::make_unique<views::View>());
-
-  // Trigger an initial layout.
-  host_view()->InvalidateLayout();
-  widget()->LayoutRootViewIfNecessary();
-
-  // Height should start at 0 with empty bounds.
-  EXPECT_EQ(child2->height(), 0);
-  EXPECT_TRUE(child2->bounds().IsEmpty());
-
-  // Expect callback when animation ends.
-  EXPECT_CALL(*layout_manager_delegate(), OnAnimationEnded());
-
-  // Advance time such that the animation has time to complete.
-  task_environment()->FastForwardBy(base::Seconds(1));
-
-  // Ensure final layout is applied.
-  widget()->LayoutRootViewIfNecessary();
-
-  // Child should have animated to target bounds.
+  // Add another child, verify it also animates to target bounds.
+  const auto* child2 = add_child_and_animate_to_target();
   EXPECT_EQ(child2->bounds(), gfx::Rect(0, 20, 100, 20));
 }
 

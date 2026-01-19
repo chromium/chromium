@@ -144,10 +144,9 @@ void TabCollectionAnimatingLayoutManager::RecalculateTarget() {
     return;
   }
 
-  // If this is the first layout and we are not animating, just snap to target.
   // Animating horizontal bounds is not supported and layout should immediately
   // snap to target for horizontal bounds changes.
-  if ((target_layout_.child_layouts.empty() && !animation_.is_animating()) ||
+  if (!current_layout_.host_size.IsEmpty() &&
       (current_layout_.host_size.width() != new_target.host_size.width())) {
     target_layout_ = new_target;
     current_layout_ = new_target;
@@ -208,7 +207,7 @@ void TabCollectionAnimatingLayoutManager::AnimateAndReparentView(
     std::unique_ptr<views::View> view_to_reparent,
     const gfx::Rect& previous_bounds_in_screen) {
   auto* child_view = host_view()->AddChildView(std::move(view_to_reparent));
-  if (delegate_ && !delegate_->IsViewDragging(*child_view)) {
+  if (!delegate_ || !delegate_->IsViewDragging(*child_view)) {
     child_view->SetPaintToLayer();
     child_view->SetProperty(kPreviousCollectionBounds,
                             previous_bounds_in_screen);
@@ -243,7 +242,7 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
           gfx::Tween::RectValueBetween(value, it->second, target_child.bounds);
       // Snap visibility to target.
       interpolated_child.visible = target_child.visible;
-    } else if (delegate_ &&
+    } else if (!delegate_ ||
                !delegate_->IsViewDragging(*target_child.child_view)) {
       // Added child.
       // Animate-in new Views from empty bounds.
