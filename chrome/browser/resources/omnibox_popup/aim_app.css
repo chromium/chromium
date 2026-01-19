@@ -88,11 +88,6 @@ cr-composebox[searchbox-layout-mode="Compact"]::part(context-menu-entrypoint-ico
   top: 14px;
 }
 
-cr-composebox[searchbox-layout-mode='']::part(voice-icon) {
-  margin-inline-end: 14px;
-  margin-inline-start: auto;
-}
-
 cr-composebox::part(voice-icon) {
   --cr-icon-button-fill-color: var(--cr-composebox-voice-icon-fill-color);
 }
