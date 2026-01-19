@@ -236,7 +236,11 @@ class NetworkListViewControllerTest : public AshTestBase,
 
   void TearDown() override {
     network_list_view_controller_impl_.reset();
+    network_detailed_network_view_ = nullptr;
     widget_.reset();
+    detailed_view_delegate_.reset();
+    cros_network_.reset();
+    fake_multidevice_setup_.reset();
 
     AshTestBase::TearDown();
   }
@@ -488,8 +492,8 @@ class NetworkListViewControllerTest : public AshTestBase,
   std::unique_ptr<views::Widget> widget_;
 
   // Owned by `widget_`.
-  raw_ptr<NetworkDetailedNetworkViewImpl, DanglingUntriaged>
-      network_detailed_network_view_ = nullptr;
+  raw_ptr<NetworkDetailedNetworkViewImpl> network_detailed_network_view_ =
+      nullptr;
 
   std::unique_ptr<NetworkListViewControllerImpl>
       network_list_view_controller_impl_;
