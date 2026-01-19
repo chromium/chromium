@@ -820,6 +820,12 @@ PrefetchContainer::PrepareUpdateHeaders(const GURL& url) const {
   updates_for_resource_request.removed_headers.push_back(
       blink::kSecSpeculationTagsHeaderName);
   AddSpeculationTagsHeader(url, updates_for_resource_request.modified_headers);
+  if (base::FeatureList::IsEnabled(
+          features::kPrefetchFixHeaderUpdatesOnRedirect)) {
+    updates_for_follow_redirect.removed_headers.push_back(
+        blink::kSecSpeculationTagsHeaderName);
+    AddSpeculationTagsHeader(url, updates_for_follow_redirect.modified_headers);
+  }
 
   // ------------------------------------------------------------------------
   // WebContents override (`User-Agent`):
