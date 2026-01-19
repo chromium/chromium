@@ -50,7 +50,6 @@ source_set("impl") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/common",
-    "//components/zoom",
     "//content/public/browser",
     "//ui/views",
     "//ui/webui",

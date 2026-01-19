@@ -39,6 +39,9 @@ class TopChromeWebUIController : public ui::MojoWebUIController {
   TopChromeWebUIController& operator=(const TopChromeWebUIController&) = delete;
   ~TopChromeWebUIController() override;
 
+  // ui::MojoWebUIController overrides:
+  void WebUIPrimaryPageChanged(content::Page& page) override;
+
   void set_embedder(base::WeakPtr<Embedder> embedder) { embedder_ = embedder; }
   base::WeakPtr<Embedder> embedder() { return embedder_; }
 

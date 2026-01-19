@@ -62,6 +62,7 @@ source_set("impl") {
     "//chrome/browser/ui/prefs",
     "//chrome/common",
     "//components/site_engagement/content",
+    "//components/zoom",
     "//content/public/browser",
     "//ui/base",
     "//ui/webui",

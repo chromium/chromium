@@ -25,7 +25,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/webui_toolbar_resources.h"
 #include "chrome/grit/webui_toolbar_resources_map.h"
-#include "components/zoom/zoom_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -97,15 +96,6 @@ void WebUIToolbarUI::CreatePageHandler(
   webui_toolbar_page_handler_ = std::make_unique<WebUIToolbarPageHandler>(
       std::move(receiver), std::move(page), web_contents, command_updater,
       delegate_);
-
-  // Manually set zoom level to disable any zoom other than 100%.
-  // TODO(crbug.com/475836809) Fix this for all top chrome WebUIs.
-  auto* zoom_controller = zoom::ZoomController::FromWebContents(web_contents);
-  if (!zoom_controller) {
-    zoom_controller = zoom::ZoomController::CreateForWebContents(web_contents);
-  }
-  zoom_controller->SetZoomMode(zoom::ZoomController::ZOOM_MODE_ISOLATED);
-  zoom_controller->SetZoomLevel(0);
 }
 
 void WebUIToolbarUI::SetDelegate(
