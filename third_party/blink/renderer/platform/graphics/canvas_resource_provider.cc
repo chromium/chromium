@@ -1714,9 +1714,6 @@ void CanvasResourceProvider::Clear() {
   else
     Canvas().clear(SkColors::kTransparent);
 
-  if (!recorder_->HasReleasableDrawOps()) {
-    return;
-  }
   auto timer = CreateScopedRasterTimer();
 
   clear_frame_ = true;
