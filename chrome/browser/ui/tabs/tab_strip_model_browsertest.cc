@@ -14,9 +14,11 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
@@ -86,21 +88,27 @@ constexpr bool kShouldPreventClose = false;
 }  // namespace
 
 class TabStripModelPreventCloseTest : public PreventCloseTestBase,
-                                      public BrowserListObserver,
+                                      public BrowserCollectionObserver,
                                       public TabStripModelObserver {
  public:
-  TabStripModelPreventCloseTest() { BrowserList::AddObserver(this); }
+  TabStripModelPreventCloseTest() = default;
 
   explicit TabStripModelPreventCloseTest(const PreventCloseTestBase&) = delete;
   TabStripModelPreventCloseTest& operator=(
       const TabStripModelPreventCloseTest&) = delete;
 
-  ~TabStripModelPreventCloseTest() override {
-    BrowserList::RemoveObserver(this);
+  ~TabStripModelPreventCloseTest() override = default;
+
+  void SetUpOnMainThread() override {
+    PreventCloseTestBase::SetUpOnMainThread();
+    browser_collection_observation_.Observe(
+        GlobalBrowserCollection::GetInstance());
   }
 
-  // BrowserListObserver:
-  void OnBrowserRemoved(Browser* browser) override { observer_.Reset(); }
+  // BrowserCollectionObserver:
+  void OnBrowserClosed(BrowserWindowInterface* browser) override {
+    observer_.Reset();
+  }
 
   // TabStripModelObserver:
   MOCK_METHOD(void,
@@ -112,6 +120,8 @@ class TabStripModelPreventCloseTest : public PreventCloseTestBase,
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
   base::ScopedObservation<TabStripModel, TabStripModelPreventCloseTest>
       observer_{this};
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
 IN_PROC_BROWSER_TEST_F(TabStripModelPreventCloseTest,

@@ -9,9 +9,9 @@
 #include "base/feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
@@ -100,7 +100,8 @@ TestBrowserWindow::TestBrowserWindow() {
   // TestBrowserWindow will always be instantiated before its Browser.
   // TODO(crbug.com/413168662): This can be removed once Browser is updated to
   // always own its BrowserWindow.
-  browser_list_observer_.Observe(BrowserList::GetInstance());
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
 }
 
 TestBrowserWindow::~TestBrowserWindow() {
@@ -410,9 +411,10 @@ void TestBrowserWindow::SetIsTabModalPopupDeprecated(
   is_tab_modal_popup_deprecated_ = is_tab_modal_popup_deprecated;
 }
 
-void TestBrowserWindow::OnBrowserAdded(Browser* browser) {
-  if (browser->create_params().window == this) {
-    browser_ = browser;
-    browser_list_observer_.Reset();
+void TestBrowserWindow::OnBrowserCreated(BrowserWindowInterface* browser) {
+  Browser* created_browser = browser->GetBrowserForMigrationOnly();
+  if (created_browser->create_params().window == this) {
+    browser_ = created_browser;
+    browser_collection_observation_.Reset();
   }
 }

@@ -9,8 +9,9 @@
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -93,29 +94,31 @@ std::unique_ptr<sessions::SessionWindow> DeepCopySessionWindow(
 TabStripInternalsObserver::TabStripInternalsObserver(Profile* profile,
                                                      UpdateCallback callback)
     : callback_(std::move(callback)) {
-  BrowserList::AddObserver(this);
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [this](BrowserWindowInterface* browser) {
-        StartObservingBrowser(browser);
-        return true;
-      });
+  ProfileBrowserCollection* collection =
+      ProfileBrowserCollection::GetForProfile(profile);
+  collection->ForEach([this](BrowserWindowInterface* browser) {
+    StartObservingBrowser(browser);
+    return true;
+  });
+  browser_collection_observation_.Observe(collection);
   StartObservingTabRestore(profile);
   SessionRestore::AddObserver(this);
 }
 
 TabStripInternalsObserver::~TabStripInternalsObserver() {
-  BrowserList::RemoveObserver(this);
   TabStripModelObserver::StopObservingAll(this);
   StopObservingTabRestore();
   SessionRestore::RemoveObserver(this);
 }
 
-void TabStripInternalsObserver::OnBrowserAdded(Browser* browser) {
+void TabStripInternalsObserver::OnBrowserCreated(
+    BrowserWindowInterface* browser) {
   StartObservingBrowser(browser);
   FireUpdate();
 }
 
-void TabStripInternalsObserver::OnBrowserRemoved(Browser* browser) {
+void TabStripInternalsObserver::OnBrowserClosed(
+    BrowserWindowInterface* browser) {
   StopObservingBrowser(browser);
   FireUpdate();
 }
