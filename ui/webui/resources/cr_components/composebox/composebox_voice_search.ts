@@ -59,6 +59,8 @@ enum State {
 enum Error {
   // Error given when voice search permission enabled.
   NOT_ALLOWED = 0,
+  // All other errors, like network.
+  OTHER = 1,
 }
 
 // TODO(crbug.com/40449919): Remove when bug is fixed.
@@ -71,6 +73,7 @@ declare global {
 export interface ComposeboxVoiceSearchElement {
   $: {
     input: HTMLInputElement,
+    closeButton: HTMLElement,
   };
 }
 
@@ -229,13 +232,25 @@ export class ComposeboxVoiceSearchElement extends
       case State.AUDIO_RECEIVED:
       case State.SPEECH_RECEIVED:
       case State.RESULT_RECEIVED:
-        this.fire('voice-search-cancel');
+        // No metric recorded:
+        this.fire('voice-search-cancel', /*canceled-by-user=*/ false);
         return;
       case State.ERROR_RECEIVED:
         // All other errors should close voice search.
         if (this.error_ !== Error.NOT_ALLOWED) {
+          /* Cannot abort voice recognition here; will call `onEnd()_`
+           * again if do that again, leading to infinite recursion.
+           */
           this.resetState_();
-          this.fire('voice-search-cancel');
+          /* No metric recorded through this event firing.
+           * This event is fired just to hide voice overlay:
+           */
+          this.fire('voice-search-cancel', /*canceled-by-user=*/ false);
+          // Metric recorded through this event firing:
+          this.fire('voice-search-error', /*canceled-by-error=*/ true);
+        } else {
+          // Metric recorded through this event firing:
+          this.fire('voice-search-error', /*canceled-by-error=*/ false);
         }
         return;
       case State.RESULT_FINAL:  // Query already submitted if is this state
@@ -249,10 +264,11 @@ export class ComposeboxVoiceSearchElement extends
     this.state_ = State.ERROR_RECEIVED;
     switch (webkitError) {
       case 'not-allowed':
-        this.error_ = Error.NOT_ALLOWED;
         this.errorMessage_ = loadTimeData.getString('voicePermissionError');
+        this.error_ = Error.NOT_ALLOWED;
         return;
       default:
+        this.error_ = Error.OTHER;
         return;
     }
   }
@@ -267,13 +283,17 @@ export class ComposeboxVoiceSearchElement extends
       return;
     }
     this.state_ = State.RESULT_FINAL;
+    // Metric recorded through this event firing:
     this.fire('voice-search-final-result', this.finalResult_);
     this.voiceModeEndCleanup_();
   }
 
   protected onCloseClick_() {
     this.voiceModeEndCleanup_();
-    this.fire('voice-search-cancel');
+    // Record metric by setting canceled-by-user param to true in this event:
+    this.fire(
+        'voice-search-cancel',
+        /*canceled-by-user=*/ true);
   }
 
   private resetState_() {
@@ -292,7 +312,10 @@ export class ComposeboxVoiceSearchElement extends
     if (href) {
       this.pageHandler_.navigateUrl({url: href});
     }
-    this.fire('voice-search-cancel');
+    /* Do not record metric by setting canceled-by-user
+     * param to false in this event:
+     */
+    this.fire('voice-search-cancel', /*canceled-by-user=*/ false);
   }
 }
 

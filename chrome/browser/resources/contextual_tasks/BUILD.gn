@@ -32,6 +32,7 @@ build_webui("build") {
   ts_files = [
     "app.ts",
     "app.html.ts",
+    "constants.ts",
     "composebox.ts",
     "composebox.html.ts",
     "error_page.ts",

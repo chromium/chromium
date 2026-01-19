@@ -235,6 +235,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="ContextualTasks.VoiceSearch.State" enum="VoiceSearchState"
+    expires_after="2026-06-10">
+  <owner>jamesleung@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Tracks user interactions with the voice search feature on the Contextual
+    Tasks composebox.
+  </summary>
+</histogram>
+
 <histogram name="ContextualTasks.WebUI.OAuthError"
     units="GoogleServiceAuthError" expires_after="2026-06-01">
   <owner>mercerd@chromium.org</owner>

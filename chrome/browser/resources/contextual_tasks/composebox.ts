@@ -16,8 +16,19 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
+import {VoiceSearchState} from './constants.js';
 import type {ContextualTasksOnboardingTooltipElement} from './onboarding_tooltip.js';
 
+function recordVoiceSearchAction(voiceSearchState: VoiceSearchState) {
+  // Safety return statement in rare case chrome metrics is not available.
+  if (!chrome.metricsPrivate) {
+    return;
+  }
+
+  chrome.metricsPrivate.recordEnumerationValue(
+      'ContextualTasks.VoiceSearch.State', voiceSearchState,
+      VoiceSearchState.MAX_VALUE + 1);
+}
 export interface ContextualTasksComposeboxElement {
   $: {
     composebox: ComposeboxElement,
@@ -141,7 +152,31 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
             this.updateTooltipVisibility_();
           });
 
+      this.eventTracker_.add(
+          composebox, 'composebox-voice-search-start', () => {
+            recordVoiceSearchAction(
+                VoiceSearchState.VOICE_SEARCH_BUTTON_CLICKED);
+          });
 
+      this.eventTracker_.add(
+          composebox, 'composebox-voice-search-transcription-success', () => {
+            recordVoiceSearchAction(VoiceSearchState.SUCCESSFUL_TRANSCRIPT);
+          });
+
+      this.eventTracker_.add(
+          composebox, 'composebox-voice-search-error', () => {
+            recordVoiceSearchAction(VoiceSearchState.VOICE_SEARCH_ERROR);
+          });
+      this.eventTracker_.add(
+          composebox, 'composebox-voice-search-error-and-canceled', () => {
+            recordVoiceSearchAction(
+                VoiceSearchState.VOICE_SEARCH_ERROR_AND_CANCELED);
+          });
+      this.eventTracker_.add(
+          composebox, 'composebox-voice-search-user-canceled', () => {
+            recordVoiceSearchAction(VoiceSearchState.VOICE_SEARCH_CANCELED);
+          });
+      // Initial check.
       this.updateTooltipVisibility_();
 
       this.resizeObserver_ = new ResizeObserver(() => {
