@@ -59,6 +59,11 @@
   max-width: 189px;
 }
 
+#tooltip::part(tooltip) {
+  font-size: 13px;
+  line-height: 20px;
+}
+
 #expandButton {
   align-self: start;
   /* Set to vertically align with the checkbox and title. */

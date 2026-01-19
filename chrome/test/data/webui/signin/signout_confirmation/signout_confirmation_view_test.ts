@@ -6,7 +6,7 @@ import 'chrome://signout-confirmation/signout_confirmation.js';
 
 import {SignoutConfirmationBrowserProxyImpl} from 'chrome://signout-confirmation/signout_confirmation.js';
 import type {ExtensionsSectionElement, PageRemote, SignoutConfirmationAppElement} from 'chrome://signout-confirmation/signout_confirmation.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import type {ModifiersParam} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
@@ -93,6 +93,15 @@ suite('SignoutConfirmationViewTest', function() {
 
     assertTrue(!!extensionsSection);
     assertTrue(isVisible(extensionsSection));
+
+    // Verify the tooltip text format.
+    const crTooltip = extensionsSection.shadowRoot.querySelector('cr-tooltip');
+    assertTrue(!!crTooltip);
+    const tooltipInner = crTooltip.shadowRoot.querySelector('#tooltip');
+    assertTrue(!!tooltipInner);
+    const computedStyle = window.getComputedStyle(tooltipInner);
+    assertEquals('20px', computedStyle.getPropertyValue('line-height'));
+    assertEquals('13px', computedStyle.getPropertyValue('font-size'));
 
     // Now check the checkbox in the extensions section.
     assertFalse(extensionsSection.checked());
