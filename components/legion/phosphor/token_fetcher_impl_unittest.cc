@@ -22,9 +22,11 @@
 #include "components/legion/features.h"
 #include "components/legion/phosphor/blind_sign_auth_factory.h"
 #include "components/legion/phosphor/blind_sign_auth_factory_impl.h"
+#include "components/legion/phosphor/config_http.h"
 #include "components/legion/phosphor/mock_blind_sign_auth.h"
 #include "components/legion/phosphor/oauth_token_provider.h"
 #include "components/legion/phosphor/token_fetcher_helper.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -507,42 +509,54 @@ TEST_F(TokenFetcherImplTest, CalculateBackoffNoJitter) {
   check_fn(kFailedBSA400, default_bug_backoff_, true);
 }
 
-// `OAuthTokenProvider` that uses production implementation of
-// `CreateBlindSignAuth()`.
-class ProdBlindSignAuthTokenFetcherImplOAuthTokenProvider
-    : public OAuthTokenProvider {
- public:
-  ProdBlindSignAuthTokenFetcherImplOAuthTokenProvider() = default;
-
-  ~ProdBlindSignAuthTokenFetcherImplOAuthTokenProvider() override = default;
-
-  // OAuthTokenProvider override:
-  bool IsTokenFetchEnabled() override { return true; }
-  void RequestOAuthToken(RequestOAuthTokenCallback callback) override {}
-};
-
 class ProdBlindSignAuthTokenFetcherImplTest : public testing::Test {
  public:
   ProdBlindSignAuthTokenFetcherImplTest() = default;
   ~ProdBlindSignAuthTokenFetcherImplTest() override = default;
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   network::TestURLLoaderFactory test_url_loader_factory_;
+  MockOAuthTokenProvider oauth_token_provider_;
 };
 
-// Tests that TokenFetcherImpl that uses
-// `ProdBlindSignAuthTokenFetcherImplOAuthTokenProvider` can safely be created
-// and destroyed.
-TEST_F(ProdBlindSignAuthTokenFetcherImplTest, CtorAndDtor) {
-  ProdBlindSignAuthTokenFetcherImplOAuthTokenProvider oauth_token_provider;
+// Tests that TokenFetcherImpl fails gracefully when the blind sign auth token
+// fetch fails. This is an integration test of TokenFetcherImpl,
+// BlindSignAuthFactoryImpl, and ConfigHttp.
+TEST_F(ProdBlindSignAuthTokenFetcherImplTest, FetchFails) {
   BlindSignAuthFactoryImpl bsa_factory;
 
   auto bsa = bsa_factory.CreateBlindSignAuth(
       test_url_loader_factory_.GetSafeWeakWrapper()->Clone());
 
-  TokenFetcherImpl fetcher(&oauth_token_provider, std::move(bsa));
+  TokenFetcherImpl fetcher(&oauth_token_provider_, std::move(bsa));
+
+  // Set up BSA to fail.
+  GURL::Replacements replacements;
+  const std::string path = ConfigHttp::GetInitialDataPath();
+  replacements.SetPathStr(path);
+  GURL expected_url =
+      ConfigHttp::GetServerUrl().ReplaceComponents(replacements);
+  test_url_loader_factory_.AddResponse(
+      expected_url, network::mojom::URLResponseHead::New(), "",
+      network::URLLoaderCompletionStatus(net::ERR_FAILED));
+
+  base::test::TestFuture<
+      base::expected<std::vector<BlindSignedAuthToken>, base::Time>>
+      tokens_future;
+  fetcher.GetAuthnTokens(1, tokens_future.GetCallback());
+
+  ASSERT_TRUE(tokens_future.Wait());
+  auto& result = tokens_future.Get();
+  EXPECT_FALSE(result.has_value());
+  if (result.has_value()) {
+    return;
+  }
+  EXPECT_THAT(
+      result.error() - base::Time::Now(),
+      IsNearWithJitter(legion::kLegionTryGetAuthTokensTransientBackoff.Get()));
 }
 
 }  // namespace legion::phosphor
