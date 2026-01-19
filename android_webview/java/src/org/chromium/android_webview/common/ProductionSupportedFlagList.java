@@ -1192,11 +1192,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BlinkFeatures.TEXT_SCALE_META_TAG,
                 "When enabled, <meta name=\"text-scale\" content=\"scale\"> takes effect"),
-        Flag.baseFeature(
-                CcFeatures.DROP_METRICS_FROM_NON_PRODUCED_FRAMES_ONLY_IF_THEY_HAD_NO_DAMAGE,
-                "Whether LayerTreeHostImpl::DidNotProduceFrame() should only drop event metrics"
-                        + " from frames that weren't produced due to no damage (but preserve event"
-                        + " metrics from frames that weren't produced for other reasons)."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
 

@@ -3994,9 +3994,7 @@ void LayerTreeHostImpl::DidNotProduceFrame(const viz::BeginFrameAck& ack,
   if (layer_tree_frame_sink_) {
     layer_tree_frame_sink_->DidNotProduceFrame(ack, reason);
   }
-  if (reason == FrameSkippedReason::kNoDamage ||
-      !base::FeatureList::IsEnabled(
-          features::kDropMetricsFromNonProducedFramesOnlyIfTheyHadNoDamage)) {
+  if (reason == FrameSkippedReason::kNoDamage) {
     // While scrolling, we save all event metrics. It is possible that this
     // results in a 0 delta scroll, which has no damage. We drop the metrics
     // here so that they are terminated now. This prevents them from being

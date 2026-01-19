@@ -18383,7 +18383,6 @@ struct PreservationTestCase {
     kScrollUpdatesAndEndsOnly,
   };
   std::string test_name;
-  bool enable_feature;
   FrameSkippedReason reason;
   Preserve should_preserve;
   bool should_metrics_cause_frame_update;
@@ -18397,33 +18396,14 @@ INSTANTIATE_TEST_SUITE_P(
     LayerTreeHostImplEventMetricPreservationTest,
     LayerTreeHostImplEventMetricPreservationTest,
     testing::ValuesIn<PreservationTestCase>({
-        // If `features::kDropMetricsFromNonProducedFramesOnlyIfTheyHadNoDamage`
-        // is disabled, `LayerTreeHostImpl::DidNotProduceFrame()` should NEVER
-        // preserve all metrics (regardless of the reason why the frame wasn't
-        // produced). It should always preserve only GSUs/GSEs.
-        {.test_name = "FeatureDisabledWaitingOnMain",
-         .enable_feature = false,
-         .reason = FrameSkippedReason::kWaitingOnMain,
-         .should_preserve =
-             PreservationTestCase::Preserve::kScrollUpdatesAndEndsOnly,
-         .should_metrics_cause_frame_update = false},
-        {.test_name = "FeatureDisabledNoDamage",
-         .enable_feature = false,
-         .reason = FrameSkippedReason::kNoDamage,
-         .should_preserve =
-             PreservationTestCase::Preserve::kScrollUpdatesAndEndsOnly,
-         .should_metrics_cause_frame_update = false},
-        // If `features::kDropMetricsFromNonProducedFramesOnlyIfTheyHadNoDamage`
-        // is enabled, `LayerTreeHostImpl::DidNotProduceFrame()` should
-        // preserve all metrics UNLESS the frame wasn't produced because there
-        // was no damage, in which case it should preserve only GSUs/GSEs.
-        {.test_name = "FeatureEnabledWaitingOnMain",
-         .enable_feature = true,
+        // `LayerTreeHostImpl::DidNotProduceFrame()` should preserve all metrics
+        // UNLESS the frame wasn't produced because there was no damage, in
+        // which case it should preserve only GSUs/GSEs.
+        {.test_name = "WaitingOnMain",
          .reason = FrameSkippedReason::kWaitingOnMain,
          .should_preserve = PreservationTestCase::Preserve::kAllMetrics,
          .should_metrics_cause_frame_update = true},
-        {.test_name = "FeatureEnabledNoDamage",
-         .enable_feature = true,
+        {.test_name = "NoDamage",
          .reason = FrameSkippedReason::kNoDamage,
          .should_preserve =
              PreservationTestCase::Preserve::kScrollUpdatesAndEndsOnly,
@@ -18435,10 +18415,6 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 TEST_P(LayerTreeHostImplEventMetricPreservationTest, PreserveMetrics) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatureState(
-      features::kDropMetricsFromNonProducedFramesOnlyIfTheyHadNoDamage,
-      GetParam().enable_feature);
   SetupViewportLayersInnerScrolls(gfx::Size(50, 50), gfx::Size(100, 100));
 
   std::vector<EventMetrics*> expected_preserved_metrics_ptrs;

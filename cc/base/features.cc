@@ -261,9 +261,6 @@ const base::FeatureParam<std::string> kHistogramEmissionPolicy(
 
 BASE_FEATURE(kManualBeginFrame, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDropMetricsFromNonProducedFramesOnlyIfTheyHadNoDamage,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kUnlockDuringGpuImageOperations,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
