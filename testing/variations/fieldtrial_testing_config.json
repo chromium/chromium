@@ -3624,6 +3624,21 @@
             ]
         }
     ],
+    "AvoidDoubleMultiwindowChanges": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AvoidDoubleMultiwindowChanges"
+                    ]
+                }
+            ]
+        }
+    ],
     "AvoidDuplicateDelayBeginFrame": [
         {
             "platforms": [
