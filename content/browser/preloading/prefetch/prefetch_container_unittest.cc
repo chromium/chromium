@@ -188,7 +188,10 @@ void AddRedirectHop(PrefetchContainer* container, const GURL& url) {
   redirect_info.new_url = url;
   redirect_info.new_site_for_cookies = net::SiteForCookies::FromUrl(url);
   container->AddRedirectHop(redirect_info);
-  container->UpdateResourceRequest(redirect_info);
+  auto [updates_for_resource_request, updates_for_follow_redirect] =
+      container->PrepareUpdateHeaders(redirect_info.new_url);
+  container->UpdateResourceRequest(redirect_info,
+                                   std::move(updates_for_resource_request));
 }
 
 }  // namespace

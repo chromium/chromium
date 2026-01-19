@@ -7,8 +7,10 @@
 
 #include <optional>
 
+#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
@@ -196,6 +198,23 @@ enum class PrefetchServiceWorkerState {
 
 using OnServiceWorkerStateDeterminedCallback =
     base::OnceCallback<void(PrefetchServiceWorkerState)>;
+
+// Indicates the modification to the network request upon redirect, which should
+// be applied to `PrefetchContainer::resource_request_` or passed to
+// `FollowRedirect()`.
+struct CONTENT_EXPORT PrefetchUpdateHeadersParams final {
+  PrefetchUpdateHeadersParams();
+  ~PrefetchUpdateHeadersParams();
+  PrefetchUpdateHeadersParams(PrefetchUpdateHeadersParams&&);
+  PrefetchUpdateHeadersParams& operator=(PrefetchUpdateHeadersParams&&);
+  PrefetchUpdateHeadersParams(const PrefetchUpdateHeadersParams&) = delete;
+  PrefetchUpdateHeadersParams& operator=(const PrefetchUpdateHeadersParams&) =
+      delete;
+
+  std::vector<std::string> removed_headers;
+  net::HttpRequestHeaders modified_headers;
+  net::HttpRequestHeaders modified_cors_exempt_headers;
+};
 
 }  // namespace content
 

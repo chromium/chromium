@@ -724,7 +724,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
 
   ASSERT_TRUE(streaming_loader);
   streaming_loader->HandleRedirect(PrefetchRedirectStatus::kFollow,
-                                   redirect_info, std::move(redirect_head));
+                                   redirect_info, std::move(redirect_head),
+                                   /*update_headers_params=*/{});
   on_follow_redirect_loop.Run();
 
   // Switch to a new ResponseReader.
@@ -876,7 +877,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, IneligibleRedirect) {
 
   ASSERT_TRUE(streaming_loader);
   streaming_loader->HandleRedirect(PrefetchRedirectStatus::kFail, redirect_info,
-                                   std::move(redirect_head));
+                                   std::move(redirect_head),
+                                   /*update_headers_params=*/{});
 
   // Streaming loader deletes itself asynchronously on redirect failure.
   EXPECT_TRUE(streaming_loader);
@@ -930,7 +932,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, RedirectSwitchInNetworkContext) {
   ASSERT_TRUE(streaming_loader);
   streaming_loader->HandleRedirect(
       PrefetchRedirectStatus::kSwitchNetworkContext, redirect_info,
-      std::move(redirect_head));
+      std::move(redirect_head), /*update_headers_params=*/{});
 
   // Streaming loader deletes itself asynchronously on a switching redirect.
   EXPECT_TRUE(streaming_loader);

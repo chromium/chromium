@@ -76,17 +76,17 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   void SetResponseReader(base::WeakPtr<PrefetchResponseReader> response_reader);
 
   // Informs the URL loader of how to handle the most recent redirect. This
-  // should only be called after |on_prefetch_redirect_callback_| is called. The
-  // value of |new_status| should only be one of the following:
-  // - |kFollowRedirect|, if the redirect should be followed by |this|.
-  // - |kStopSwitchInNetworkContextForRedirect|, if the redirect will be
-  //   followed by a different |PrefetchStreamingURLLoader| due to a change in
-  //   network context.
-  // - |kFailedInvalidRedirect|, if the redirect should not be followed by
-  //   |this|.
+  // should only be called after `on_prefetch_redirect_callback_` is called. The
+  // value of `redirect_status` should be:
+  // - `kFollow`, if the redirect should be followed by `this`.
+  //   `update_headers_params` must be provided.
+  // - `kSwitchNetworkContext`, if the redirect will be followed by a different
+  //   `PrefetchStreamingURLLoader` due to a change in network context.
+  // - `kFail`, if the redirect should not be followed by `this`.
   void HandleRedirect(PrefetchRedirectStatus redirect_status,
                       const net::RedirectInfo& redirect_info,
-                      network::mojom::URLResponseHeadPtr redirect_head);
+                      network::mojom::URLResponseHeadPtr redirect_head,
+                      PrefetchUpdateHeadersParams update_headers_params);
 
   // Called from PrefetchResponseReader.
   void SetPriority(net::RequestPriority priority, int32_t intra_priority_value);

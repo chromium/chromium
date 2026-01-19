@@ -1310,18 +1310,18 @@ void PrefetchService::OnGotEligibilityForRedirect(
 
     if (!UsePrefetchScheduler()) {
       active_prefetch_ = std::nullopt;
-      streaming_url_loader->HandleRedirect(PrefetchRedirectStatus::kFail,
-                                           redirect_info,
-                                           std::move(redirect_head));
+      streaming_url_loader->HandleRedirect(
+          PrefetchRedirectStatus::kFail, redirect_info,
+          std::move(redirect_head), /*update_headers_params=*/{});
 
       Prefetch();
     } else {
       // Remove first as it requires that `PrefetchContainer` is available.
       RemoveFromSchedulerAndProgressAsync(*prefetch_container);
 
-      streaming_url_loader->HandleRedirect(PrefetchRedirectStatus::kFail,
-                                           redirect_info,
-                                           std::move(redirect_head));
+      streaming_url_loader->HandleRedirect(
+          PrefetchRedirectStatus::kFail, redirect_info,
+          std::move(redirect_head), /*update_headers_params=*/{});
 
       // TODO(crbug.com/400761083): Use
       // `ResetPrefetchContainerAndProgressAsync()` instead.
@@ -1329,7 +1329,11 @@ void PrefetchService::OnGotEligibilityForRedirect(
     return;
   }
 
-  prefetch_container->UpdateResourceRequest(redirect_info);
+  auto [updates_for_resource_request, updates_for_follow_redirect] =
+      prefetch_container->PrepareUpdateHeaders(redirect_info.new_url);
+
+  prefetch_container->UpdateResourceRequest(
+      redirect_info, std::move(updates_for_resource_request));
 
   prefetch_container->NotifyPrefetchRequestWillBeSent(&redirect_head);
 
@@ -1342,7 +1346,7 @@ void PrefetchService::OnGotEligibilityForRedirect(
           ->IsIsolatedNetworkContextRequiredForPreviousRedirectHop()) {
     streaming_url_loader->HandleRedirect(
         PrefetchRedirectStatus::kSwitchNetworkContext, redirect_info,
-        std::move(redirect_head));
+        std::move(redirect_head), /*update_headers_params=*/{});
     // The new ResponseReader is associated with the new streaming URL loader at
     // the PrefetchStreamingURLLoader constructor.
     SendPrefetchRequest(prefetch_container);
@@ -1352,7 +1356,8 @@ void PrefetchService::OnGotEligibilityForRedirect(
 
   // Otherwise, follow the redirect in the same streaming URL loader.
   streaming_url_loader->HandleRedirect(PrefetchRedirectStatus::kFollow,
-                                       redirect_info, std::move(redirect_head));
+                                       redirect_info, std::move(redirect_head),
+                                       std::move(updates_for_follow_redirect));
   // Associate the new ResponseReader with the current streaming URL loader.
   streaming_url_loader->SetResponseReader(
       prefetch_container->GetResponseReaderForCurrentPrefetch());
@@ -1835,9 +1840,9 @@ void PrefetchService::OnPrefetchRedirect(
           PrefetchStatus::kPrefetchFailedInvalidRedirect);
       if (auto streaming_url_loader =
               prefetch_container->GetStreamingURLLoader()) {
-        streaming_url_loader->HandleRedirect(PrefetchRedirectStatus::kFail,
-                                             redirect_info,
-                                             std::move(redirect_head));
+        streaming_url_loader->HandleRedirect(
+            PrefetchRedirectStatus::kFail, redirect_info,
+            std::move(redirect_head), /*update_headers_params=*/{});
       }
 
       Prefetch();
@@ -1853,9 +1858,9 @@ void PrefetchService::OnPrefetchRedirect(
 
       if (auto streaming_url_loader =
               prefetch_container->GetStreamingURLLoader()) {
-        streaming_url_loader->HandleRedirect(PrefetchRedirectStatus::kFail,
-                                             redirect_info,
-                                             std::move(redirect_head));
+        streaming_url_loader->HandleRedirect(
+            PrefetchRedirectStatus::kFail, redirect_info,
+            std::move(redirect_head), /*update_headers_params=*/{});
       }
 
       // TODO(crbug.com/400761083): Use

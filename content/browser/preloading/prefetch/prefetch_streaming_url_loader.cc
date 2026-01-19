@@ -258,7 +258,8 @@ void PrefetchStreamingURLLoader::OnReceiveRedirect(
 void PrefetchStreamingURLLoader::HandleRedirect(
     PrefetchRedirectStatus redirect_status,
     const net::RedirectInfo& redirect_info,
-    network::mojom::URLResponseHeadPtr redirect_head) {
+    network::mojom::URLResponseHeadPtr redirect_head,
+    PrefetchUpdateHeadersParams update_headers_params) {
   TRACE_EVENT("loading", "PrefetchStreamingURLLoader::HandleRedirect", flow_);
 
   if (!is_waiting_handle_redirect_from_prefetch_service_) {
@@ -276,9 +277,9 @@ void PrefetchStreamingURLLoader::HandleRedirect(
     case PrefetchRedirectStatus::kFollow:
       CHECK(prefetch_url_loader_);
       prefetch_url_loader_->FollowRedirect(
-          /*removed_headers=*/std::vector<std::string>(),
-          /*modified_headers=*/net::HttpRequestHeaders(),
-          /*modified_cors_exempt_headers=*/net::HttpRequestHeaders(),
+          std::move(update_headers_params.removed_headers),
+          std::move(update_headers_params.modified_headers),
+          std::move(update_headers_params.modified_cors_exempt_headers),
           /*new_url=*/std::nullopt);
       break;
     case PrefetchRedirectStatus::kSwitchNetworkContext:
