@@ -630,6 +630,10 @@ IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, ImageRole) {
   RunTaggedPDFTest("/structured_doc_only_image_role.html");
 }
 
+IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, OrderedList) {
+  RunTaggedPDFTest("/structured_doc_ordered_list.html");
+}
+
 IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Strong) {
   RunTaggedPDFTest("/structured_doc_strong.html");
 }

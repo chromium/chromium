@@ -16,11 +16,15 @@
       "~children": [ {
          "type": "LI",
          "~children": [ {
+            "type": "Lbl"
+         }, {
             "type": "NonStruct"
          } ]
       }, {
          "type": "LI",
          "~children": [ {
+            "type": "Lbl"
+         }, {
             "type": "NonStruct"
          } ]
       } ]

@@ -1,0 +1,22 @@
+{
+   "lang": "en",
+   "type": "Document",
+   "~children": [ {
+      "type": "L",
+      "~children": [ {
+         "type": "LI",
+         "~children": [ {
+            "type": "Lbl"
+         }, {
+            "type": "NonStruct"
+         } ]
+      }, {
+         "type": "LI",
+         "~children": [ {
+            "type": "Lbl"
+         }, {
+            "type": "NonStruct"
+         } ]
+      } ]
+   } ]
+}
