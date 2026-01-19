@@ -318,6 +318,8 @@ chromium-metrics-reviews@google.com.
       summary="Gemini contextual cue chip on the omnibox"/>
   <variant name="IPH_iOSGeminiFullscreenPromoFeature"
       summary="showing the fullscreen Gemini promo on iOS"/>
+  <variant name="IPH_iOSGeminiImageRemix"
+      summary="showing the Gemini Image Remix IPH on iOS"/>
   <variant name="IPH_iOSHistoryOnOverflowMenuFeature"
       summary="history item on the overflow menu on iOS"/>
   <variant name="IPH_iOSHomepageCustomizationNewBadge"

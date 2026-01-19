@@ -5,6 +5,7 @@ include_rules = [
 "+ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h",
 "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
 "+ios/chrome/browser/fullscreen/ui_bundled",
+"+ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h",
 "+ios/chrome/browser/intelligence/features",
 "+ios/chrome/browser/metrics/model/metrics_app_interface.h",
 "+ios/chrome/browser/ntp/shared/metrics",

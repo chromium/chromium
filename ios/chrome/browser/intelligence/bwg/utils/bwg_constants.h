@@ -27,7 +27,9 @@ enum class EntryPoint {
   AppBar = 5,
   // Gemini was opened via the image long-press context menu.
   ImageContextMenu = 6,
-  kMaxValue = ImageContextMenu,
+  // Gemini was opened via tapping the image remix in-product help.
+  ImageRemixIPH = 7,
+  kMaxValue = ImageRemixIPH,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiEntryPoint)
 

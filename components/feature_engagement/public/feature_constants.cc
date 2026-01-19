@@ -868,6 +868,10 @@ BASE_FEATURE(kIPHiOSGeminiContextualCueChip,
              "IPH_iOSGeminiContextualCueChip",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIPHiOSGeminiImageRemixFeature,
+             "IPH_iOSGeminiImageRemixFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \

@@ -690,6 +690,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Tab Reopen"/>
   <int value="5" label="App Bar"/>
   <int value="6" label="Image long-press context menu"/>
+  <int value="7" label="Image Remix in-product help"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h:EntryPoint) -->

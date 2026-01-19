@@ -18,12 +18,17 @@ class WebStateList;
 
 @protocol BWGMediatorDelegate;
 
+namespace gemini {
+enum class EntryPoint;
+}  // namespace gemini
+
 // BWG Mediator.
 @interface BWGMediator : NSObject <BWGConsentMutator>
 
 - (instancetype)initWithPrefService:(PrefService*)prefService
                        webStateList:(WebStateList*)webStateList
                  baseViewController:(UIViewController*)baseViewController
+                         entryPoint:(gemini::EntryPoint)entryPoint
                          BWGService:(BwgService*)BWGService
                     BWGBrowserAgent:(BwgBrowserAgent*)BWGBrowserAgent
                             tracker:(feature_engagement::Tracker*)tracker;
