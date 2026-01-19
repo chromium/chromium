@@ -77,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, GlicFreShown_SingleInstance) {
                  mojom::InvocationSource::kOsButton);
 
   EXPECT_EQ(user_action_tester.GetActionCount("Glic.Fre.Dismissed.Onboarding"),
-            0);
+            1);
 }
 
 class GlicMetricsMultiInstanceBrowserTest : public GlicMetricsBrowserTest {

@@ -8,9 +8,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/host/glic.mojom.h"
-#include "chrome/browser/glic/host/glic_features.mojom-features.h"
-#include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -293,11 +290,8 @@ class GlicEnablingTrustFirstOnboardingTest
  public:
   void SetUp() override {
     GlicEnablingProfileReadyStateTestBase::SetUp();
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {features::kGlicTrustFirstOnboarding, features::kGlicMultiInstance,
-         mojom::features::kGlicMultiTab, features::kGlicMultitabUnderlines},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kGlicTrustFirstOnboarding);
   }
 
  private:
@@ -341,12 +335,8 @@ class GlicEnablingAnyFreModeTest : public GlicEnablingProfileReadyStateTestBase,
   void SetUp() override {
     GlicEnablingProfileReadyStateTestBase::SetUp();
     if (GetParam()) {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kGlicTrustFirstOnboarding,
-                                features::kGlicMultiInstance,
-                                mojom::features::kGlicMultiTab,
-                                features::kGlicMultitabUnderlines},
-          /*disabled_features=*/{});
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kGlicTrustFirstOnboarding);
     } else {
       scoped_feature_list_.InitAndDisableFeature(
           features::kGlicTrustFirstOnboarding);

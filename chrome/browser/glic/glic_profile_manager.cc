@@ -301,7 +301,7 @@ void GlicProfileManager::DidSelectProfile(Profile* profile) {
       GlicKeyedServiceFactory::GetGlicKeyedService(profile);
 
   if (!GlicEnabling::HasConsentedForProfile(profile) &&
-      !GlicEnabling::IsTrustFirstOnboardingEnabled()) {
+      !base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding)) {
 #if !BUILDFLAG(IS_ANDROID)
     // Open a browser and show the FRE in a new tab.
     chrome::ScopedTabbedBrowserDisplayer displayer(profile);

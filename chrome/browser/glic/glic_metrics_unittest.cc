@@ -12,8 +12,6 @@
 #include "chrome/browser/glic/host/context/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
-#include "chrome/browser/glic/host/glic_features.mojom-features.h"
-#include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
@@ -978,10 +976,6 @@ TEST_F(GlicMetricsTest, OnRecordUseCounter) {
 class GlicMetricsTrustFirstOnboardingTest : public GlicMetricsTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kGlicTrustFirstOnboarding, features::kGlicMultiInstance,
-         mojom::features::kGlicMultiTab, features::kGlicMultitabUnderlines},
-        {});
     GlicMetricsTest::SetUp();
     // Revert FRE status to NotStarted to simulate new user for this experiment.
     profile()->GetPrefs()->SetInteger(
@@ -990,7 +984,8 @@ class GlicMetricsTrustFirstOnboardingTest : public GlicMetricsTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kGlicTrustFirstOnboarding};
 };
 
 TEST_F(GlicMetricsTrustFirstOnboardingTest, ShownAndDismissed) {
