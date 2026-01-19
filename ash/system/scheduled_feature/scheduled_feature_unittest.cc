@@ -283,7 +283,9 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
   }
 
   void TearDown() override {
+    timer_ptr_ = nullptr;
     feature_.reset();
+    geolocation_controller_ = nullptr;
     NoSessionAshTestBase::TearDown();
   }
 
@@ -427,8 +429,8 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
   // in the return value of `Now()` and defaults to 0.
   base::TimeDelta wall_clock_artificial_advancement_;
   std::unique_ptr<TestScheduledFeature> feature_;
-  raw_ptr<GeolocationController, DanglingUntriaged> geolocation_controller_;
-  raw_ptr<base::OneShotTimer, DanglingUntriaged> timer_ptr_;
+  raw_ptr<GeolocationController> geolocation_controller_;
+  raw_ptr<base::OneShotTimer> timer_ptr_;
   Geoposition position_;
 };
 
