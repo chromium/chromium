@@ -42,6 +42,8 @@ class VerticalSplitTabView : public views::View, public views::LayoutDelegate {
     return hover_controller_.get();
   }
 
+  void OnTabDragOver();
+
  private:
   void ResetCollectionNode();
   void OnDataChanged();

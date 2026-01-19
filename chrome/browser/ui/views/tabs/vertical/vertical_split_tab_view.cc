@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/glow_hover_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_drag_handler.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
@@ -195,6 +197,12 @@ void VerticalSplitTabView::UpdateHovered(bool hovered) {
   }
 
   SchedulePaint();
+}
+
+void VerticalSplitTabView::OnTabDragOver() {
+  auto* controller = collection_node_->GetController();
+  CHECK(controller);
+  controller->GetDragHandler().DraggedTabsOverNode(*collection_node_);
 }
 
 BEGIN_METADATA(VerticalSplitTabView)

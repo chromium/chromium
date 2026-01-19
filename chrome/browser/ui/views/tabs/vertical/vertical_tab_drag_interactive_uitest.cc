@@ -4,6 +4,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/test/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
 #include "chrome/common/chrome_constants.h"
@@ -117,8 +119,17 @@ class VerticalTabDragHandlerTest
   auto MoveMouseToTabAsync(int tab_index) {
     const char kTabToMoveMouseTo[] = "Tab to move mouse to";
     return Steps(
-        NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
-                                                  kTabToMoveMouseTo, tab_index),
+        NameView(
+            kTabToMoveMouseTo, base::BindLambdaForTesting([&, tab_index]() {
+              TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+              tabs::TabInterface* tab =
+                  tab_strip_model->GetTabAtIndex(tab_index);
+              RootTabCollectionNode* root_node =
+                  GetBrowserView()
+                      .vertical_tab_strip_region_view_for_testing()
+                      ->root_node_for_testing();
+              return root_node->GetNodeForHandle(tab->GetHandle())->view();
+            })),
         WithView(
             kTabToMoveMouseTo, base::BindOnce([](views::View* view) {
               const gfx::Point point = view->GetBoundsInScreen().CenterPoint();
@@ -320,6 +331,129 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
         EXPECT_EQ(GURL(chrome::kChromeUISettingsURL),
                   tab_strip_model->GetWebContentsAt(2)->GetURL());
       }));
+}
+
+// TODO(crbug.com/476509652): This test flakes because drag handling hit tests
+// against the view's position in the layout (skipping animation), which means
+// that if a layout cycle hasn't happened between drag loop iterations then
+// the tab strip model updates might bounce. This should be fixed once a more
+// robust hit-testing approach is implemented.
+IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest, DISABLED_DragOverSplit) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  ASSERT_NE(nullptr, tab_strip_model);
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
+      AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
+      AddInstrumentedTab(kFourthTab, GURL(chrome::kChromeUIVersionURL), 3),
+      Do([&]() {
+        tab_strip_model->ActivateTabAt(
+            2, TabStripUserGestureDetails(
+                   TabStripUserGestureDetails::GestureType::kOther));
+        tab_strip_model->AddToNewSplit(
+            {3}, {}, split_tabs::SplitTabCreatedSource::kTabContextMenu);
+      }),
+      PollState(kTabOrderPoller, GetTabOrder(tab_strip_model)),
+      WaitForState(kTabOrderPoller, URLs({
+                                        url::kAboutBlankURL,
+                                        chrome::kChromeUIBookmarksURL,
+                                        chrome::kChromeUISettingsURL,
+                                        chrome::kChromeUIVersionURL,
+                                    })),
+      DragTabTo(1, GetBrowserView().GetBoundsInScreen().top_right() +
+                       gfx::Vector2d(50, 50)),
+      PollState(kDragStatePoller, GetDragActive()), MoveMouseToTabAsync(0),
+      WaitForState(kTabOrderPoller, URLs({
+                                        chrome::kChromeUIBookmarksURL,
+                                        url::kAboutBlankURL,
+                                        chrome::kChromeUISettingsURL,
+                                        chrome::kChromeUIVersionURL,
+                                    })),
+      // Dragging from index 0 to index 2 (split) should put the dragged tab to
+      // index 3.
+      MoveMouseToTabAsync(2),
+      WaitForState(kTabOrderPoller, URLs({
+                                        url::kAboutBlankURL,
+                                        chrome::kChromeUISettingsURL,
+                                        chrome::kChromeUIVersionURL,
+                                        chrome::kChromeUIBookmarksURL,
+                                    })),
+      // Dragging from index 3 to index 2 (split) should put the dragged tab to
+      // index 1.
+      MoveMouseToTabAsync(2),
+      WaitForState(kTabOrderPoller, URLs({
+                                        url::kAboutBlankURL,
+                                        chrome::kChromeUIBookmarksURL,
+                                        chrome::kChromeUISettingsURL,
+                                        chrome::kChromeUIVersionURL,
+                                    })),
+      ReleaseMouseAsync());
+}
+
+// TODO(crbug.com/476509652): This test flakes because drag handling hit tests
+// against the view's position in the layout (skipping animation), which means
+// that if a layout cycle hasn't happened between drag loop iterations then
+// the tab strip model updates might bounce. This should be fixed once a more
+// robust hit-testing approach is implemented.
+IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
+                       DISABLED_DragOverSplitInGroup) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  ASSERT_NE(nullptr, tab_strip_model);
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
+      AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
+      AddInstrumentedTab(kFourthTab, GURL(chrome::kChromeUIVersionURL), 3),
+      AddTabsToNewGroup({2, 3}), Do([&]() {
+        tab_strip_model->ActivateTabAt(
+            2, TabStripUserGestureDetails(
+                   TabStripUserGestureDetails::GestureType::kOther));
+        tab_strip_model->AddToNewSplit(
+            {3}, {}, split_tabs::SplitTabCreatedSource::kTabContextMenu);
+      }),
+      PollState(kTabOrderPoller, GetTabOrder(tab_strip_model)),
+      WaitForState(kTabOrderPoller, URLs({
+                                        url::kAboutBlankURL,
+                                        chrome::kChromeUIBookmarksURL,
+                                        TabGroupURLs({
+                                            chrome::kChromeUISettingsURL,
+                                            chrome::kChromeUIVersionURL,
+                                        }),
+                                    })),
+      DragTabTo(1, GetBrowserView().GetBoundsInScreen().top_right() +
+                       gfx::Vector2d(50, 50)),
+      PollState(kDragStatePoller, GetDragActive()), MoveMouseToTabAsync(0),
+      WaitForState(kTabOrderPoller, URLs({
+                                        chrome::kChromeUIBookmarksURL,
+                                        url::kAboutBlankURL,
+                                        TabGroupURLs({
+                                            chrome::kChromeUISettingsURL,
+                                            chrome::kChromeUIVersionURL,
+                                        }),
+                                    })),
+      // Dragging from index 0 to index 2 (split) should put the dragged tab to
+      // index 3.
+      MoveMouseToTabAsync(2),
+      WaitForState(kTabOrderPoller, URLs({
+                                        url::kAboutBlankURL,
+                                        TabGroupURLs({
+                                            chrome::kChromeUISettingsURL,
+                                            chrome::kChromeUIVersionURL,
+                                            chrome::kChromeUIBookmarksURL,
+                                        }),
+                                    })),
+      // Dragging from index 3 to index 2 (split) should put the dragged tab to
+      // index 1.
+      MoveMouseToTabAsync(2),
+      WaitForState(kTabOrderPoller, URLs({
+                                        url::kAboutBlankURL,
+                                        TabGroupURLs({
+                                            chrome::kChromeUIBookmarksURL,
+                                            chrome::kChromeUISettingsURL,
+                                            chrome::kChromeUIVersionURL,
+                                        }),
+                                    })),
+      ReleaseMouseAsync());
 }
 
 // TODO(crbug.com/40249472): Disabled because this flakes on all platforms.

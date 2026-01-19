@@ -118,6 +118,7 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
 
   // Handlers for drag operations over various node types.
   void HandleTabDragOverTab(const TabCollectionNode& node);
+  void HandleTabDragOverSplit(const TabCollectionNode& node);
   void HandleTabDragOverGroup(const TabCollectionNode& node);
   void HandleTabDragOverUnpinnedContainer(const TabCollectionNode& node);
 
