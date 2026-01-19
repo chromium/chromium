@@ -261,19 +261,20 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(
     kHandleNonDamagingInputsInScrollJankV4Metric);
 
-// Whether non-damaging frames should count towards scroll jank v4 UMA
-// histograms' fixed window frame count.
+// `ScrollJankV4HistogramEmitter`'s histogram emission policy with regards to
+// non-damaging frames and scrolls.
 //
-// When disabled, `ScrollJankV4HistogramEmitter` will emit fixed window UMA
-// histograms after each window of 64 damaging frames. Missed VSyncs of
-// non-damaging frames will count towards the next damaging frame as long as
-// it's within the same scroll.
+// `kEmitForAllScrolls`: all frames in ALL scrolls (regardless of damage, even
+// if the scroll is completely non-damaging) count towards the UMA histograms.
 //
-// When enabled, `ScrollJankV4HistogramEmitter` will emit fixed window UMA
-// histograms after each window of 64 frames (both damaging and non-damaging).
-CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kCountNonDamagingFramesTowardsHistogramFrameCount);
+// `kEmitForDamagingScrolls`: all frames in DAMAGING scrolls (containing at
+// least one damaging frame) count towards the UMA histograms. Jank identified
+// in frames in a non-damaging scroll (containing only non-damaging frames)
+// won't be reported in the UMA histograms.
+CC_BASE_EXPORT extern const base::FeatureParam<std::string>
+    kHistogramEmissionPolicy;
+CC_BASE_EXPORT extern const char kEmitForAllScrolls[];
+CC_BASE_EXPORT extern const char kEmitForDamagingScrolls[];
 
 // When enabled, AsyncLayerTreeFrameSink will generate its own BeginFrameArgs
 // when auto_needs_begin_frame_ is enabled.

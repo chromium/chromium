@@ -7,6 +7,7 @@
 #include <memory>
 #include <variant>
 
+#include "base/feature_list.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
@@ -30,11 +31,10 @@ class ProcessorResultConsumer
                      const ScrollJankV4Frame::ScrollDamage& damage,
                      const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
                      const ScrollJankV4Result& result) override {
-    bool counts_towards_histogram_frame_count =
-        std::holds_alternative<ScrollJankV4Frame::DamagingFrame>(damage) ||
-        features::kCountNonDamagingFramesTowardsHistogramFrameCount.Get();
-    histogram_emitter_.OnFrameWithScrollUpdates(
-        result.missed_vsyncs_per_reason, counts_towards_histogram_frame_count);
+    bool is_damaging =
+        std::holds_alternative<ScrollJankV4Frame::DamagingFrame>(damage);
+    histogram_emitter_.OnFrameWithScrollUpdates(result.missed_vsyncs_per_reason,
+                                                is_damaging);
     ScrollJankV4TracingRecorder::RecordTraceEvents(updates, damage, args,
                                                    result);
   }
