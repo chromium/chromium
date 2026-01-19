@@ -51,7 +51,7 @@ public class PopupMultiwindowPTTest {
     @Before
     public void setUp() {
         mEntryPage = mCtaTestRule.startOnBlankPage();
-        PopupCreator.setArePopupsEnabledForTesting(true);
+        PopupCreator.setSetMovableTaskRequiredForPopupsForTesting(false);
     }
 
     @Test

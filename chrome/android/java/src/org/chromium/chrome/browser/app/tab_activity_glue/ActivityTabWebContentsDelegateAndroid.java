@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.app.tab_activity_glue;
 
 import static android.view.Display.INVALID_DISPLAY;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -248,54 +250,15 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         // Skip opening a new Tab if it doesn't make sense.
         if (mTab.isClosing()) return false;
 
-        WindowAndroid window = mTab.getWindowAndroid();
-        boolean openingPopup =
-                window != null
-                        && PopupCreator.arePopupsEnabled(windowFeatures, window.getDisplay())
-                        && (disposition == WindowOpenDisposition.NEW_POPUP);
-        boolean openingDocumentPip =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.DOCUMENT_PICTURE_IN_PICTURE_API)
-                        && disposition == WindowOpenDisposition.NEW_PICTURE_IN_PICTURE
-                        && pictureInPictureWindowOptions != null
-                        && window != null
-                        && PopupCreator.isTaskMoveAllowedOnDisplay(
-                                pictureInPictureWindowOptions.windowBounds,
-                                window.getDisplay()); // Require task move enabled for docpip;
-        if (disposition == WindowOpenDisposition.NEW_POPUP) {
-            RecordHistogram.recordBooleanHistogram(
-                    "Android.MultiWindowMode.PopupOpensInNewWindow", openingPopup);
-        }
-
-        if (openingDocumentPip) {
-            // Document pip doesn't require a tab to be created, so we can return early.
-            assert pictureInPictureWindowOptions != null;
-
-            PopupCreator.moveWebContentsToNewDocumentPictureInPictureWindow(
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOCUMENT_PICTURE_IN_PICTURE_API)
+                && disposition == WindowOpenDisposition.NEW_PICTURE_IN_PICTURE) {
+            assertNonNull(pictureInPictureWindowOptions);
+            return PopupCreator.moveWebContentsToNewDocumentPictureInPictureWindow(
                     webContents, pictureInPictureWindowOptions);
-            return true;
-        } else if (disposition == WindowOpenDisposition.NEW_PICTURE_IN_PICTURE) {
-            // We are unable to open a document pip window
-            return false;
         }
 
-        // Auxiliary navigations starting in a PWA will always cause a tab reparenting, we
-        // want to prevent UI effects caused by adding the Tab to the TabModel.
-        // This check is done before the tab is even created and the Tab where navigation started
-        // will be used to extract some information. The destination WebContents is provided to
-        // extract the missing features of this navigation that cannot be extracted from this
-        // InterceptNavigationDelegateImpl instance.
-        // TODO(crbug.com/404767741): enable early navigation capturing to address captured
-        // navigations UI jank.
-        var navigationTabHelper = InterceptNavigationDelegateTabHelper.getFromTab(mTab);
-        boolean willReparentTab =
-                navigationTabHelper != null
-                        && navigationTabHelper
-                                .getInterceptNavigationDelegate()
-                                .shouldReparentTab(targetUrl);
-
-        final CompletableFuture<Boolean> addTabToModel =
-                CompletableFuture.completedFuture(!openingPopup && !willReparentTab);
-        Tab tab =
+        final CompletableFuture<Boolean> addTabToModel = new CompletableFuture<Boolean>();
+        final Tab tab =
                 tabCreator.createTabWithWebContents(
                         mTab,
                         /* shouldPin= */ false,
@@ -305,12 +268,20 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                         addTabToModel);
         if (tab == null) return false;
 
-        assert addTabToModel.isDone();
-
-        if (openingPopup) {
-            assert window != null;
-            PopupCreator.moveTabToNewPopup(tab, windowFeatures);
+        if (disposition == WindowOpenDisposition.NEW_POPUP) {
+            final boolean launchedMovablePopup =
+                    ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
+                            && PopupCreator.moveTabToNewPopup(tab, windowFeatures);
+            addTabToModel.complete(!launchedMovablePopup);
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.MultiWindowMode.PopupOpensInNewWindow", launchedMovablePopup);
+        } else if (willNavigationBeIntercepted(mTab, targetUrl)) {
+            addTabToModel.complete(false);
+        } else {
+            addTabToModel.complete(true);
         }
+
+        assert addTabToModel.isDone();
 
         if (disposition == WindowOpenDisposition.NEW_FOREGROUND_TAB) {
             RecordUserAction.record("LinkNavigationOpenedInForegroundTab");
@@ -788,5 +759,22 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     @Override
     public void destroy() {
         mTab.removeObserver(mTabObserver);
+    }
+
+    private boolean willNavigationBeIntercepted(Tab sourceTab, GURL targetUrl) {
+        // Auxiliary navigations starting in a PWA will always cause a tab reparenting, we want to
+        // prevent UI effects caused by adding the Tab to the TabModel.
+        // The Tab where navigation started will be used to extract some information. The
+        // destination WebContents is provided to extract the missing features of this navigation
+        // that cannot be extracted from this InterceptNavigationDelegateImpl instance.
+        // TODO(crbug.com/404767741): enable early navigation capturing to address captured
+        // navigations UI jank.
+        final InterceptNavigationDelegateTabHelper navigationTabHelper =
+                InterceptNavigationDelegateTabHelper.getFromTab(sourceTab);
+        if (navigationTabHelper == null) {
+            return false;
+        }
+
+        return navigationTabHelper.getInterceptNavigationDelegate().shouldReparentTab(targetUrl);
     }
 }

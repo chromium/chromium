@@ -5,14 +5,16 @@
 package org.chromium.chrome.browser.app.tab_activity_glue;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.app.tab_activity_glue.PopupCreator.EXTRA_REQUESTED_WINDOW_FEATURES;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.content.ComponentName;
 import android.content.Context;
@@ -20,6 +22,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.util.AndroidRuntimeException;
 import android.view.Display;
 
 import androidx.core.graphics.Insets;
@@ -48,7 +51,9 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.chrome.browser.util.WindowFeatures;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroidManager;
@@ -73,6 +78,7 @@ public class PopupCreatorUnitTest {
     @Mock Resources mResources;
     @Mock InsetObserver mInsetObserver;
     @Mock WindowInsetsCompat mWindowInsetsCompat;
+    @Mock WebContents mWebContents;
 
     private static final int DISPLAY_ID = 73;
     private static final float DENSITY = 1.0f;
@@ -123,73 +129,16 @@ public class PopupCreatorUnitTest {
         doReturn(TOOLBAR_HAIRLINE_HEIGHT)
                 .when(mResources)
                 .getDimensionPixelSize(R.dimen.toolbar_hairline_height);
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
-    public void testPopupsDisabledWhenFeatureDisabled() {
-        Assert.assertFalse(
-                "Popups should not be enabled when the feature is disabled",
-                PopupCreator.arePopupsEnabled(new WindowFeatures(), mDisplay));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
-    public void testPopupsDisabledWhenDelegateReturnsFalse() {
-        AconfigFlaggedApiDelegate.setInstanceForTesting(mFlaggedApiDelegate);
-        doReturn(false)
-                .when(mFlaggedApiDelegate)
-                .isTaskMoveAllowedOnDisplay(any(ActivityManager.class), eq(DISPLAY_ID));
-
-        Assert.assertFalse(
-                "Popups should not be enabled if the delegate returns false when"
-                        + " isTaskMoveAllowedOnDisplay is called",
-                PopupCreator.arePopupsEnabled(new WindowFeatures(), mDisplay));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
-    public void testPopupsDisabledWhenFlaggedApiDelegateNull() {
-        AconfigFlaggedApiDelegate.setInstanceForTesting(null);
-        Assert.assertFalse(
-                "Popups should not be enabled if the delegate is null",
-                PopupCreator.arePopupsEnabled(new WindowFeatures(), mDisplay));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
-    public void testPopupsEnabledWhenDelegateReturnsTrue() {
-        AconfigFlaggedApiDelegate.setInstanceForTesting(mFlaggedApiDelegate);
-        doReturn(true)
-                .when(mFlaggedApiDelegate)
-                .isTaskMoveAllowedOnDisplay(any(ActivityManager.class), eq(DISPLAY_ID));
-
-        Assert.assertTrue(
-                "Popups should be enabled if the delegate returns true when"
-                        + " isTaskMoveAllowedOnDisplay is called",
-                PopupCreator.arePopupsEnabled(new WindowFeatures(), mDisplay));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
-    public void testPopupsEnabledWhenDelegateReturnsTrue_WindowFeaturesOnDifferentDisplay() {
-        final WindowFeatures windowFeatures =
-                new WindowFeatures(100, 200, 300, 400); // left, top, width, height
-        final Rect windowBounds = new Rect(100, 200, 400, 600); // left, top, right, bottom
-        doReturn(mExternalDisplay).when(mDisplayAndroidManager).getDisplayMatching(windowBounds);
 
         AconfigFlaggedApiDelegate.setInstanceForTesting(mFlaggedApiDelegate);
-        doReturn(false)
+        doAnswer(
+                        invocation -> {
+                            return invocation.getArgument(0);
+                        })
                 .when(mFlaggedApiDelegate)
-                .isTaskMoveAllowedOnDisplay(any(ActivityManager.class), eq(DISPLAY_ID));
-        doReturn(true)
-                .when(mFlaggedApiDelegate)
-                .isTaskMoveAllowedOnDisplay(any(ActivityManager.class), eq(EXTERNAL_DISPLAY_ID));
+                .setMovableTaskRequired(any());
 
-        Assert.assertTrue(
-                "Popups should be enabled if the delegate returns true when"
-                        + " isTaskMoveAllowedOnDisplay is called",
-                PopupCreator.arePopupsEnabled(windowFeatures, mDisplay));
+        doReturn(mWindow).when(mWebContents).getTopLevelNativeWindow();
     }
 
     @Test
@@ -296,6 +245,20 @@ public class PopupCreatorUnitTest {
         Assert.assertNull(
                 "The launch bounds specified in ActivityOptions should be null",
                 activityOptions.getLaunchBounds());
+        verify(mFlaggedApiDelegate).setMovableTaskRequired(any());
+    }
+
+    @Test
+    public void testActivityOptionsWhenWindowFeaturesDegenerated_trivialApiDelegate() {
+        doReturn(null).when(mFlaggedApiDelegate).setMovableTaskRequired(any());
+
+        WindowFeatures windowFeatures = new WindowFeatures(null, null, null, 100);
+
+        Assert.assertFalse(
+                "moveTabToNewPopup should have returned false",
+                PopupCreator.moveTabToNewPopup(mTab, windowFeatures));
+        verify(mReparentingTask, never()).begin(any(), any(), any(), any());
+        verify(mFlaggedApiDelegate).setMovableTaskRequired(any());
     }
 
     @Test
@@ -454,5 +417,101 @@ public class PopupCreatorUnitTest {
                 "The launch bounds specified in ActivityOptions is incorrect",
                 targetBounds,
                 activityOptions.getLaunchBounds());
+    }
+
+    @Test
+    public void testMoveWebContentsToNewDocPipWindow_startsActivity() {
+        ContextUtils.initApplicationContextForTests(mContext);
+        final PictureInPictureWindowOptions windowOptions = new PictureInPictureWindowOptions();
+
+        PopupCreator.moveWebContentsToNewDocumentPictureInPictureWindow(
+                mWebContents, windowOptions);
+
+        verify(mFlaggedApiDelegate).setMovableTaskRequired(any());
+        verify(mContext).startActivity(any(), any());
+    }
+
+    @Test
+    public void testMoveWebContentsToNewDocPipWindow_trivialApiDelegate() {
+        doReturn(null).when(mFlaggedApiDelegate).setMovableTaskRequired(any());
+
+        ContextUtils.initApplicationContextForTests(mContext);
+        final PictureInPictureWindowOptions windowOptions = new PictureInPictureWindowOptions();
+
+        Assert.assertFalse(
+                "moveWebContentsToNewDocumentPictureInPictureWindow should have returned false",
+                PopupCreator.moveWebContentsToNewDocumentPictureInPictureWindow(
+                        mWebContents, windowOptions));
+        verify(mFlaggedApiDelegate).setMovableTaskRequired(any());
+        verify(mContext, never()).startActivity(any(), any());
+    }
+
+    @Test
+    public void testTryStartActivity_success() {
+        final Intent intent = mock(Intent.class);
+        final Bundle ao = new Bundle();
+
+        Assert.assertTrue(
+                "tryStartActivity should have returned true due to success",
+                PopupCreator.tryStartActivity(mContext, intent, ao));
+        verify(mContext).startActivity(intent, ao);
+    }
+
+    @Test
+    public void testTryStartActivity_securityException() {
+        final Intent intent = mock(Intent.class);
+        final Bundle ao = new Bundle();
+        doThrow(new SecurityException()).when(mContext).startActivity(intent, ao);
+
+        Assert.assertFalse(
+                "tryStartActivity should have returned false due to an exception being thrown",
+                PopupCreator.tryStartActivity(mContext, intent, ao));
+        verify(mContext).startActivity(intent, ao);
+    }
+
+    @Test
+    public void testTryStartActivity_infeasibleActivityOptionsException() {
+        final Intent intent = mock(Intent.class);
+        final Bundle ao = new Bundle();
+        final AndroidRuntimeException e = new AndroidRuntimeException();
+        doThrow(e).when(mContext).startActivity(intent, ao);
+        doReturn(true).when(mFlaggedApiDelegate).isInfeasibleActivityOptionsException(e);
+
+        Assert.assertFalse(
+                "tryStartActivity should have returned false due to an exception being thrown",
+                PopupCreator.tryStartActivity(mContext, intent, ao));
+        verify(mContext).startActivity(intent, ao);
+        verify(mFlaggedApiDelegate).isInfeasibleActivityOptionsException(e);
+    }
+
+    @Test
+    public void testTryStartActivity_genericArtException() {
+        final Intent intent = mock(Intent.class);
+        final Bundle ao = new Bundle();
+        final AndroidRuntimeException e = new AndroidRuntimeException("Test message");
+        doThrow(e).when(mContext).startActivity(intent, ao);
+        doReturn(false).when(mFlaggedApiDelegate).isInfeasibleActivityOptionsException(e);
+
+        final AndroidRuntimeException thrown =
+                Assert.assertThrows(
+                        AndroidRuntimeException.class,
+                        () -> PopupCreator.tryStartActivity(mContext, intent, ao));
+        Assert.assertEquals(e, thrown);
+        verify(mContext).startActivity(intent, ao);
+    }
+
+    @Test
+    public void testTryStartActivity_genericRuntimeException() {
+        final Intent intent = mock(Intent.class);
+        final Bundle ao = new Bundle();
+        final RuntimeException e = new RuntimeException("Test message");
+        doThrow(e).when(mContext).startActivity(intent, ao);
+
+        final RuntimeException thrown =
+                Assert.assertThrows(
+                        RuntimeException.class,
+                        () -> PopupCreator.tryStartActivity(mContext, intent, ao));
+        Assert.assertEquals(e, thrown);
+        verify(mContext).startActivity(intent, ao);
     }
 }

@@ -8,13 +8,14 @@ import static android.view.Display.INVALID_DISPLAY;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 
-import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.Bundle;
+import android.util.AndroidRuntimeException;
 import android.util.Pair;
 
 import androidx.core.graphics.Insets;
@@ -57,9 +58,10 @@ public class PopupCreator implements PopupIntentCreator {
             "chrome.browser.app.tab_activity_glue.PopupCreator.EXTRA_REQUESTED_WINDOW_FEATURES";
 
     private static final String TAG = "PopupCreator";
-    private static @Nullable Boolean sArePopupsEnabledForTesting;
     private static @Nullable ReparentingTask sReparentingTaskForTesting;
     private static @Nullable Insets sInsetsForecastForTesting;
+    private static @Nullable Boolean sMoveTabToNewPopupResultForTesting;
+    private static @Nullable Boolean sSetMovableTaskRequiredForPopupsForTesting;
 
     /**
      * Initializes {@link PopupIntentCreator} with top-level dependencies so lower-level code can
@@ -74,7 +76,7 @@ public class PopupCreator implements PopupIntentCreator {
 
     @Override
     public Intent createPopupIntent(@Nullable WindowFeatures windowFeatures, boolean isIncognito) {
-        Intent intent = initializePopupIntent();
+        final Intent intent = initializePopupIntent();
         if (windowFeatures != null) {
             intent.putExtra(EXTRA_REQUESTED_WINDOW_FEATURES, windowFeatures.toBundle());
         }
@@ -90,17 +92,28 @@ public class PopupCreator implements PopupIntentCreator {
      *
      * @param tab The {@link Tab} to move.
      * @param windowFeatures The {@link WindowFeatures} to use for the new Custom Tab popup window.
+     * @return {@code true} if the tab was successfully reparented to a new movable Task, {@code
+     *     false} otherwise
      */
-    public static void moveTabToNewPopup(Tab tab, WindowFeatures windowFeatures) {
-        initializePopupIntentCreator();
-        var popupIntentCreator = assertNonNull(PopupIntentCreatorProvider.getInstance());
-        Intent intent =
-                popupIntentCreator.createPopupIntent(windowFeatures, tab.isIncognitoBranded());
-        final Rect windowBounds = getWindowBoundsFromWindowFeatures(windowFeatures);
-        ActivityOptions activityOptions =
-                createPopupActivityOptions(windowBounds, tab.getWindowAndroid());
+    public static boolean moveTabToNewPopup(Tab tab, WindowFeatures windowFeatures) {
+        if (sMoveTabToNewPopupResultForTesting != null) {
+            return sMoveTabToNewPopupResultForTesting;
+        }
 
-        getReparentingTask(tab)
+        final Rect windowBounds = getWindowBoundsFromWindowFeatures(windowFeatures);
+        final ActivityOptions activityOptions =
+                createPopupActivityOptions(windowBounds, tab.getWindowAndroid());
+        if (activityOptions == null) {
+            return false;
+        }
+
+        initializePopupIntentCreator();
+        final PopupIntentCreator popupIntentCreator =
+                assertNonNull(PopupIntentCreatorProvider.getInstance());
+        final Intent intent =
+                popupIntentCreator.createPopupIntent(windowFeatures, tab.isIncognitoBranded());
+
+        return getReparentingTask(tab)
                 .begin(
                         ContextUtils.getApplicationContext(),
                         intent,
@@ -115,74 +128,18 @@ public class PopupCreator implements PopupIntentCreator {
      * @param windowOptions The {@link PictureInPictureWindowOptions} to use for the new Document
      *     Picture-in-Picture window.
      */
-    public static void moveWebContentsToNewDocumentPictureInPictureWindow(
+    public static boolean moveWebContentsToNewDocumentPictureInPictureWindow(
             WebContents webContents, PictureInPictureWindowOptions windowOptions) {
-        Intent intent = initializeDocumentPipIntent(webContents, windowOptions);
-        ActivityOptions activityOptions =
+        final ActivityOptions activityOptions =
                 createDocumentPipActivityOptions(
                         windowOptions.windowBounds, webContents.getTopLevelNativeWindow());
-        ContextUtils.getApplicationContext().startActivity(intent, activityOptions.toBundle());
-    }
-
-    /**
-     * Checks if popups are enabled.
-     *
-     * <p>This method first checks if the {@link
-     * ChromeFeatureList#ANDROID_WINDOW_POPUP_LARGE_SCREEN} feature is enabled. If it is, it then
-     * checks if tasks can be moved on the target display by calling {@link
-     * #isTaskMoveAllowedOnDisplay}.
-     *
-     * @param windowFeatures The window features used to determine the target display.
-     * @param openerDisplay The display to check if {@code windowFeatures} do not resolve to a
-     *     specific display.
-     * @return {@code true} if the feature is enabled and tasks can be moved on the display, {@code
-     *     false} otherwise.
-     */
-    public static boolean arePopupsEnabled(
-            WindowFeatures windowFeatures, DisplayAndroid openerDisplay) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)) {
+        if (activityOptions == null) {
             return false;
         }
 
-        if (sArePopupsEnabledForTesting != null) {
-            return sArePopupsEnabledForTesting;
-        }
-
-        return isTaskMoveAllowedOnDisplay(
-                getWindowBoundsFromWindowFeatures(windowFeatures), openerDisplay);
-    }
-
-    /**
-     * Checks if tasks can be moved on a display determined from the provided arguments.
-     *
-     * <p>The check is performed using {@link ActivityManager#isTaskMoveAllowedOnDisplay}.
-     *
-     * @param windowBounds The global bounds of the window to be opened. If {@code null}, the opener
-     *     display is used.
-     * @param openerDisplay The display to check if {@code windowBounds} do not resolve to a
-     *     specific display.
-     * @return {@code true} if {@link ActivityManager#isTaskMoveAllowedOnDisplay} returns true for
-     *     the determined display, {@code false} otherwise.
-     */
-    public static boolean isTaskMoveAllowedOnDisplay(
-            @Nullable Rect windowBounds, DisplayAndroid openerDisplay) {
-        AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-        if (delegate == null) {
-            return false;
-        }
-
-        final Pair<DisplayAndroid, Rect> localCoordinates =
-                windowBounds == null
-                        ? null
-                        : DisplayUtil.convertGlobalDipToLocalPxCoordinates(windowBounds);
-        final int targetDisplayId =
-                (localCoordinates == null)
-                        ? openerDisplay.getDisplayId()
-                        : localCoordinates.first.getDisplayId();
-
-        ActivityManager am =
-                ContextUtils.getApplicationContext().getSystemService(ActivityManager.class);
-        return delegate.isTaskMoveAllowedOnDisplay(am, targetDisplayId);
+        final Intent intent = initializeDocumentPipIntent(webContents, windowOptions);
+        return tryStartActivity(
+                ContextUtils.getApplicationContext(), intent, activityOptions.toBundle());
     }
 
     /**
@@ -436,9 +393,47 @@ public class PopupCreator implements PopupIntentCreator {
         return customTabsHeaderHeightPx + toolbarHairlineHeightPx;
     }
 
-    public static void setArePopupsEnabledForTesting(boolean value) {
-        sArePopupsEnabledForTesting = value;
-        ResettersForTesting.register(() -> sArePopupsEnabledForTesting = null);
+    /**
+     * Starts an activity using given {@link android.content.Context}, {@link
+     * android.content.Intent}, and {@link android.os.Bundle} of ActivityOptions. Catches exceptions
+     * likely to be thrown when {@link android.app.ActivityOptions#setMovableTaskRequired(boolean)}
+     * is set to {@code true} in the {@link android.app.ActivityOptions} object represented by the
+     * {@link android.os.Bundle} provided.
+     *
+     * @param context The Context on which the {@link
+     *     android.content.Context#startActivity(android.content.Intent, android.os.Bundle)} method
+     *     will be executed.
+     * @param intent The Intent passed to the {@code startActivity} call.
+     * @param activityOptions The Bundle passed to the {@code startActivity} call.
+     * @return {@code true} if succeeded, {@code false} otherwise.
+     * @see android.app.ActivityOptions#toBundle()
+     * @see android.app.ActivityOptions#setMovableTaskRequired(boolean)
+     */
+    public static boolean tryStartActivity(
+            Context context, Intent intent, @Nullable Bundle activityOptions) {
+        try {
+            context.startActivity(intent, activityOptions);
+        } catch (SecurityException e) {
+            Log.w(TAG, "tryStartActivity: no permission to start a movable task", e);
+            return false;
+        } catch (AndroidRuntimeException e) {
+            final AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+            if (delegate == null) {
+                Log.w(TAG, "tryStartActivity: AconfigFlaggedApiDelegate is null");
+                return false;
+            }
+
+            if (delegate.isInfeasibleActivityOptionsException(e)) {
+                Log.w(
+                        TAG,
+                        "tryStartActivity: startActivity threw InfeasibleActivityOptionsException");
+                return false;
+            }
+
+            throw e;
+        }
+
+        return true;
     }
 
     public static void setReparentingTaskForTesting(ReparentingTask task) {
@@ -453,6 +448,22 @@ public class PopupCreator implements PopupIntentCreator {
     public static void setInsetsForecastForTesting(Insets insets) {
         sInsetsForecastForTesting = insets;
         ResettersForTesting.register(() -> sInsetsForecastForTesting = null);
+    }
+
+    /** Overrides values returned by {@link moveTabToNewPopup}. */
+    public static void setMoveTabToNewPopupResultForTesting(Boolean moveTabToNewPopupResult) {
+        sMoveTabToNewPopupResultForTesting = moveTabToNewPopupResult;
+        ResettersForTesting.register(() -> sMoveTabToNewPopupResultForTesting = null);
+    }
+
+    /**
+     * If this is set to {@code false}, contextual popups will be launched without specifying the
+     * {@link android.app.ActivityOptions#setMovableTaskRequired(boolean)} option.
+     */
+    public static void setSetMovableTaskRequiredForPopupsForTesting(
+            Boolean setMovableTaskRequiredForPopups) {
+        sSetMovableTaskRequiredForPopupsForTesting = setMovableTaskRequiredForPopups;
+        ResettersForTesting.register(() -> sSetMovableTaskRequiredForPopupsForTesting = null);
     }
 
     private static Intent initializePopupIntent() {
@@ -479,7 +490,7 @@ public class PopupCreator implements PopupIntentCreator {
         return intent;
     }
 
-    private static ActivityOptions createPopupActivityOptions(
+    private static @Nullable ActivityOptions createPopupActivityOptions(
             @Nullable Rect windowBounds, @Nullable WindowAndroid sourceWindow) {
         return createPopupActivityOptions(
                 windowBounds,
@@ -488,18 +499,32 @@ public class PopupCreator implements PopupIntentCreator {
                         ChromeFeatureList.ANDROID_WINDOW_POPUP_PREDICT_FINAL_BOUNDS));
     }
 
-    private static ActivityOptions createDocumentPipActivityOptions(
+    private static @Nullable ActivityOptions createDocumentPipActivityOptions(
             @Nullable Rect windowBounds, @Nullable WindowAndroid sourceWindow) {
         // TODO(crbug.com/465413462): Add support for predicting final bounds.
         return createPopupActivityOptions(
                 windowBounds, sourceWindow, /* predictFinalBounds= */ false);
     }
 
-    private static ActivityOptions createPopupActivityOptions(
+    private static @Nullable ActivityOptions createPopupActivityOptions(
             @Nullable Rect windowBounds,
             @Nullable WindowAndroid sourceWindow,
             boolean predictFinalBounds) {
         ActivityOptions activityOptions = ActivityOptions.makeBasic();
+
+        if (sSetMovableTaskRequiredForPopupsForTesting == null
+                || sSetMovableTaskRequiredForPopupsForTesting) {
+            final AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+            if (delegate == null) {
+                Log.w(TAG, "createPopupActivityOptions: AconfigFlaggedApiDelegate is null");
+                return null;
+            }
+
+            activityOptions = delegate.setMovableTaskRequired(activityOptions);
+            if (activityOptions == null) {
+                return null;
+            }
+        }
 
         if (windowBounds == null) {
             return activityOptions;

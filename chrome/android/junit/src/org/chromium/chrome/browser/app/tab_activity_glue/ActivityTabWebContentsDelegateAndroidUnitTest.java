@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.app.tab_activity_glue;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -303,9 +304,74 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
+    public void testAddNewContentsAddToTabModelWhenPopupFlagNotEnabled() {
+        WebContents newWebContents = mock(WebContents.class);
+        Tab newTab = mock(Tab.class);
+        doReturn(newTab)
+                .when(mTabCreator)
+                .createTabWithWebContents(any(), anyBoolean(), any(), anyInt(), any(), any());
+
+        mTabWebContentsDelegateAndroid.addNewContents(
+                mWebContents,
+                newWebContents,
+                new GURL("https://foo.com"),
+                WindowOpenDisposition.NEW_POPUP,
+                new WindowFeatures(),
+                true,
+                null);
+
+        ArgumentCaptor<CompletableFuture> futureCaptor =
+                ArgumentCaptor.forClass(CompletableFuture.class);
+        verify(mTabCreator, times(1))
+                .createTabWithWebContents(
+                        any(), anyBoolean(), any(), anyInt(), any(), futureCaptor.capture());
+        CompletableFuture<Boolean> capturedFuture = futureCaptor.getValue();
+        assertTrue(
+                "The final decision to add the tab to the TabModel should have already been made",
+                capturedFuture.isDone());
+        assertTrue(
+                "The final decision to add the tab to the TabModel should be positive",
+                capturedFuture.getNow(null));
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
-    public void testAddNewContentsAddToTabModelWhenPopupsNotEnabled() {
-        PopupCreator.setArePopupsEnabledForTesting(false);
+    public void testAddNewContentsDoesNotAddToTabModelWhenMovingTabToPopupIsSuccessful() {
+        PopupCreator.setMoveTabToNewPopupResultForTesting(true);
+        WebContents newWebContents = mock(WebContents.class);
+        Tab newTab = mock(Tab.class);
+        doReturn(newTab)
+                .when(mTabCreator)
+                .createTabWithWebContents(any(), anyBoolean(), any(), anyInt(), any(), any());
+
+        mTabWebContentsDelegateAndroid.addNewContents(
+                mWebContents,
+                newWebContents,
+                new GURL("https://foo.com"),
+                WindowOpenDisposition.NEW_POPUP,
+                new WindowFeatures(),
+                true,
+                null);
+
+        ArgumentCaptor<CompletableFuture> futureCaptor =
+                ArgumentCaptor.forClass(CompletableFuture.class);
+        verify(mTabCreator, times(1))
+                .createTabWithWebContents(
+                        any(), anyBoolean(), any(), anyInt(), any(), futureCaptor.capture());
+        CompletableFuture<Boolean> capturedFuture = futureCaptor.getValue();
+        assertTrue(
+                "The final decision to add the tab to the TabModel should have already been made",
+                capturedFuture.isDone());
+        assertFalse(
+                "The final decision to add the tab to the TabModel should be negative",
+                capturedFuture.getNow(null));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
+    public void testAddNewContentsAddToTabModelWhenMovingTabToPopupIsUnsuccessful() {
+        PopupCreator.setMoveTabToNewPopupResultForTesting(false);
         WebContents newWebContents = mock(WebContents.class);
         Tab newTab = mock(Tab.class);
         doReturn(newTab)
