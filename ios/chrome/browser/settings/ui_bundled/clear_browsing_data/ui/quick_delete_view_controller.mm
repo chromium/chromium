@@ -379,6 +379,7 @@ CGFloat TrashIconSize() {
 }
 
 - (void)setPasswordsSelection:(BOOL)selected {
+  CHECK(!IsPasswordRemovalFromDeleteBrowsingDataEnabled());
   _passwordsSelected = selected;
   [self updatePrimaryActionButtonEnabledStatus];
 }

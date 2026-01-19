@@ -32,6 +32,8 @@ enum class TimePeriod;
 // Sets the ViewController with the cache summary.
 - (void)setCacheSummary:(NSString*)cacheSummary;
 
+// TODO(crbug.com/463402932): Remove once
+// `kPasswordRemovalFromDeleteBrowsingData` is enabled by default.
 // Sets the ViewController with the passwords summary.
 - (void)setPasswordsSummary:(NSString*)passwordsSummary;
 
@@ -50,6 +52,8 @@ enum class TimePeriod;
 // Sets the boolean value for the cache pref selection.
 - (void)setCacheSelection:(BOOL)selected;
 
+// TODO(crbug.com/463402932): Remove once
+// `kPasswordRemovalFromDeleteBrowsingData` is enabled by default.
 // Sets the boolean value for the passwords pref selection.
 - (void)setPasswordsSelection:(BOOL)selected;
 

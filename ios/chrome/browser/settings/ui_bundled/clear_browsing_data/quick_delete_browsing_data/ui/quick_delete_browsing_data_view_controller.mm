@@ -10,6 +10,7 @@
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public/quick_delete_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_browsing_data/ui/quick_delete_browsing_data_view_controller_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/ui/quick_delete_mutator.h"
@@ -49,9 +50,28 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   ItemIdentifierTabs,
   ItemIdentifierSiteData,
   ItemIdentifierCache,
+  // TODO(crbug.com/463402932): Remove once
+  // `kPasswordRemovalFromDeleteBrowsingData` is enabled by default.
   ItemIdentifierPasswords,
   ItemIdentifierAutofill,
 };
+
+// Returns the array of item identifiers for the Browsing Data section.
+NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
+  NSMutableArray<NSNumber*>* items = [NSMutableArray array];
+  [items addObject:@(ItemIdentifierHistory)];
+  [items addObject:@(ItemIdentifierTabs)];
+  [items addObject:@(ItemIdentifierSiteData)];
+  [items addObject:@(ItemIdentifierCache)];
+
+  // Conditionally add the Passwords item.
+  if (!IsPasswordRemovalFromDeleteBrowsingDataEnabled()) {
+    [items addObject:@(ItemIdentifierPasswords)];
+  }
+
+  [items addObject:@(ItemIdentifierAutofill)];
+  return items;
+}
 
 }  // namespace
 
@@ -62,12 +82,16 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   NSString* _historySummary;
   NSString* _tabsSummary;
   NSString* _cacheSummary;
+  // TODO(crbug.com/463402932): Remove once
+  // `kPasswordRemovalFromDeleteBrowsingData` is enabled by default.
   NSString* _passwordsSummary;
   NSString* _autofillSummary;
   BOOL _historySelected;
   BOOL _tabsSelected;
   BOOL _siteDataSelected;
   BOOL _cacheSelected;
+  // TODO(crbug.com/463402932): Remove once
+  // `kPasswordRemovalFromDeleteBrowsingData` is enabled by default.
   BOOL _passwordsSelected;
   BOOL _autofillSelected;
   BOOL _shouldShowFooter;
@@ -118,11 +142,8 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   [snapshot appendSectionsWithIdentifiers:@[
     @(SectionIdentifierBrowsingData), @(SectionIdentifierFooter)
   ]];
-  [snapshot appendItemsWithIdentifiers:@[
-    @(ItemIdentifierHistory), @(ItemIdentifierTabs), @(ItemIdentifierSiteData),
-    @(ItemIdentifierCache), @(ItemIdentifierPasswords),
-    @(ItemIdentifierAutofill)
-  ]
+
+  [snapshot appendItemsWithIdentifiers:BrowsingDataItemIdentifiers()
              intoSectionWithIdentifier:@(SectionIdentifierBrowsingData)];
 
   [_dataSource applySnapshot:snapshot animatingDifferences:NO];
@@ -231,6 +252,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 }
 
 - (void)setPasswordsSummary:(NSString*)passwordsSummary {
+  CHECK(!IsPasswordRemovalFromDeleteBrowsingDataEnabled());
   _passwordsSummary = passwordsSummary;
   [self updateSnapshotForItemIdentifier:ItemIdentifierPasswords];
 }
@@ -261,6 +283,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 }
 
 - (void)setPasswordsSelection:(BOOL)selected {
+  CHECK(!IsPasswordRemovalFromDeleteBrowsingDataEnabled());
   _passwordsSelected = selected;
   [self updateSnapshotForItemIdentifier:ItemIdentifierPasswords];
 }
@@ -327,7 +350,9 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   [_mutator updateTabsSelection:_tabsSelected];
   [_mutator updateSiteDataSelection:_siteDataSelected];
   [_mutator updateCacheSelection:_cacheSelected];
-  [_mutator updatePasswordsSelection:_passwordsSelected];
+  if (!IsPasswordRemovalFromDeleteBrowsingDataEnabled()) {
+    [_mutator updatePasswordsSelection:_passwordsSelected];
+  }
   [_mutator updateAutofillSelection:_autofillSelected];
   [_delegate dismissBrowsingDataPage];
 }
@@ -403,6 +428,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
           accessibilityIdentifier:kQuickDeleteBrowsingDataCacheIdentifier];
     }
     case ItemIdentifierPasswords: {
+      CHECK(!IsPasswordRemovalFromDeleteBrowsingDataEnabled());
       return [self
               createCellWithTitle:l10n_util::GetNSString(
                                       IDS_IOS_CLEAR_SAVED_PASSWORDS)
@@ -452,6 +478,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       break;
     }
     case ItemIdentifierPasswords: {
+      CHECK(!IsPasswordRemovalFromDeleteBrowsingDataEnabled());
       _passwordsSelected = !_passwordsSelected;
       break;
     }

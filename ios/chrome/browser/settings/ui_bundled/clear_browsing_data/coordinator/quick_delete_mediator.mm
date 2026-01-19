@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/ui_blocker_target.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/coordinator/quick_delete_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/model/browsing_data_counter_wrapper_producer.h"
+#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/ui/quick_delete_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/ui/quick_delete_presentation_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -127,6 +128,8 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
   // yet returned.
   NSString* _browsingHistorySummary;
   NSString* _tabsSummary;
+  // TODO(crbug.com/463402932): Remove once
+  // `kPasswordRemovalFromDeleteBrowsingData` is enabled by default.
   NSString* _passwordsSummary;
   NSString* _addressesSummary;
   NSString* _paymentMethodsSummary;
@@ -263,8 +266,11 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
                                       browsing_data::prefs::kDeleteCookies)];
   [_consumer
       setCacheSelection:_prefs->GetBoolean(browsing_data::prefs::kDeleteCache)];
-  [_consumer setPasswordsSelection:_prefs->GetBoolean(
-                                       browsing_data::prefs::kDeletePasswords)];
+  if (!IsPasswordRemovalFromDeleteBrowsingDataEnabled()) {
+    [_consumer
+        setPasswordsSelection:_prefs->GetBoolean(
+                                  browsing_data::prefs::kDeletePasswords)];
+  }
   [_consumer setAutofillSelection:_prefs->GetBoolean(
                                       browsing_data::prefs::kDeleteFormData)];
 
@@ -346,7 +352,8 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
     removeMask |= BrowsingDataRemoveMask::REMOVE_CACHE;
   }
 
-  if (_prefs->GetBoolean(browsing_data::prefs::kDeletePasswords)) {
+  if (_prefs->GetBoolean(browsing_data::prefs::kDeletePasswords) &&
+      !IsPasswordRemovalFromDeleteBrowsingDataEnabled()) {
     removeMask |= BrowsingDataRemoveMask::REMOVE_PASSWORDS;
   }
 
@@ -486,6 +493,7 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
 }
 
 - (void)updatePasswordsSelection:(BOOL)selected {
+  CHECK(!IsPasswordRemovalFromDeleteBrowsingDataEnabled());
   BOOL current_state =
       _prefs->GetBoolean(browsing_data::prefs::kDeletePasswords);
   if (current_state == selected) {
@@ -580,7 +588,9 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
   [self createCounter:browsing_data::prefs::kDeleteBrowsingHistory];
   [self createCounter:browsing_data::prefs::kCloseTabs];
   [self createCounter:browsing_data::prefs::kDeleteCache];
-  [self createCounter:browsing_data::prefs::kDeletePasswords];
+  if (!IsPasswordRemovalFromDeleteBrowsingDataEnabled()) {
+    [self createCounter:browsing_data::prefs::kDeletePasswords];
+  }
   [self createCounter:browsing_data::prefs::kDeleteFormData];
 }
 
@@ -603,7 +613,7 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
   }
 }
 
-// Restarts the counters created in `createdCounters` with `_selectedTimeRange`.
+// Restarts the counters created in `createCounters` with `_selectedTimeRange`.
 // Restarting the counters results on the browsing data summary being updated in
 // the ViewController.
 - (void)restartCounters {
@@ -669,6 +679,7 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
     _cachedTabsInfo = tabsResult->cached_tabs_info();
     _tabsSummary = [self tabsSummary:tabsResult];
   } else if (prefName == browsing_data::prefs::kDeletePasswords) {
+    CHECK(!IsPasswordRemovalFromDeleteBrowsingDataEnabled());
     _passwordsSummary = [self
         passwordsSummary:static_cast<const browsing_data::PasswordsCounter::
                                          PasswordsResult*>(result)];
@@ -690,7 +701,9 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
   // `BrowsingDataCounter::Result`. Meaning that eventually this if condition
   // will evaluate to true and a non-placeholder browsing data summary will be
   // dispatched.
-  if (_browsingHistorySummary && _tabsSummary && _passwordsSummary &&
+  BOOL passwordsSummaryReady =
+      _passwordsSummary || IsPasswordRemovalFromDeleteBrowsingDataEnabled();
+  if (_browsingHistorySummary && _tabsSummary && passwordsSummaryReady &&
       _addressesSummary && _paymentMethodsSummary && _suggestionsSummary) {
     [self dispatchBrowsingDataSummary];
   }
@@ -724,7 +737,8 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
                       IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CACHED_FILES)];
   }
 
-  if (_prefs->GetBoolean(browsing_data::prefs::kDeletePasswords)) {
+  if (!IsPasswordRemovalFromDeleteBrowsingDataEnabled() &&
+      _prefs->GetBoolean(browsing_data::prefs::kDeletePasswords)) {
     if (_passwordsSummary && _passwordsSummary.length > 0) {
       [summaryItems addObject:_passwordsSummary];
     }
@@ -895,6 +909,7 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
   }
 
   if (prefName == browsing_data::prefs::kDeletePasswords) {
+    CHECK(!IsPasswordRemovalFromDeleteBrowsingDataEnabled());
     [_consumer setPasswordsSummary:summary];
     return;
   }
@@ -932,7 +947,8 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
     return;
   }
 
-  if (preferenceName == browsing_data::prefs::kDeletePasswords) {
+  if (!IsPasswordRemovalFromDeleteBrowsingDataEnabled() &&
+      preferenceName == browsing_data::prefs::kDeletePasswords) {
     [_consumer setPasswordsSelection:_prefs->GetBoolean(preferenceName)];
     return;
   }
