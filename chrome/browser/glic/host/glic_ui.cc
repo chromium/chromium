@@ -251,10 +251,9 @@ GlicUI::GlicUI(content::WebUI* web_ui)
   source->AddString("glicFreURL", GetFreURL(profile).spec());
   source->AddBoolean("isUnifiedFre",
                      GlicEnabling::IsUnifiedFreEnabled(profile));
-  source->AddBoolean(
-      "shouldShowFre",
-      !base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding) &&
-          !GlicEnabling::HasConsentedForProfile(profile));
+  source->AddBoolean("shouldShowFre",
+                     !GlicEnabling::IsTrustFirstOnboardingEnabled() &&
+                         !GlicEnabling::HasConsentedForProfile(profile));
   source->AddInteger("reloadMaxLoadingTimeMs",
                      features::kGlicReloadMaxLoadingTimeMs.Get());
   source->AddBoolean("caaGuestError", base::FeatureList::IsEnabled(
