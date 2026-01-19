@@ -71,6 +71,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/skills/features.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -1231,7 +1232,7 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
     allowed_types.Put(syncer::AUTOFILL_VALUABLE_METADATA);
   }
 
-  if (base::FeatureList::IsEnabled(syncer::kSyncSkill)) {
+  if (base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
     allowed_types.Put(syncer::SKILL);
   }
 

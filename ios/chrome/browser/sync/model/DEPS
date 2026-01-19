@@ -5,6 +5,7 @@ include_rules = [
   "+components/collaboration/public/collaboration_service.h",
   "+components/saved_tab_groups/public/tab_group_sync_service.h",
   "+components/sharing_message",
+  "+components/skills",
   "+components/trusted_vault",
   "+components/webauthn/core/browser",
   "+ios/chrome/browser/bookmarks/model",

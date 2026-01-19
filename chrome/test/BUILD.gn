@@ -7353,6 +7353,7 @@ test("unit_tests") {
     "//components/site_engagement/content",
     "//components/site_engagement/core",
     "//components/site_isolation",
+    "//components/skills:features",
     "//components/spellcheck:buildflags",
     "//components/spellcheck/browser",
     "//components/spellcheck/common",

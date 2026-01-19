@@ -9,6 +9,7 @@
 #import "base/task/thread_pool/thread_pool_instance.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/data_sharing/public/features.h"
+#import "components/skills/features.h"
 #import "components/sync/base/command_line_switches.h"
 #import "components/sync/base/data_type.h"
 #import "components/sync/base/features.h"
@@ -108,7 +109,7 @@ class SyncServiceFactoryTest : public PlatformTest {
     if (base::FeatureList::IsEnabled(syncer::kSyncContextualTask)) {
       datatypes.Put(syncer::CONTEXTUAL_TASK);
     }
-    if (base::FeatureList::IsEnabled(syncer::kSyncSkill)) {
+    if (base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
       datatypes.Put(syncer::SKILL);
     }
     return datatypes;

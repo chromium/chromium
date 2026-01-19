@@ -234,6 +234,7 @@ source_set("unit_tests") {
     "//components/data_sharing/public",
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/browser/features:password_features",
+    "//components/skills:features",
     "//components/supervised_user/core/common:buildflags",
     "//components/sync",
     "//components/sync:test_support",

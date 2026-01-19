@@ -48,6 +48,7 @@ static_library("browser_sync") {
     "//components/search_engines",
     "//components/send_tab_to_self",
     "//components/sharing_message",
+    "//components/skills:features",
     "//components/skills/public",
     "//components/supervised_user/core/common:buildflags",
     "//components/sync/invalidations",

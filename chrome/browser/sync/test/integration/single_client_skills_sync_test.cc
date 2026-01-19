@@ -13,6 +13,7 @@
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "components/skills/features.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skills_service.h"
 #include "components/sync/base/client_tag_hash.h"
@@ -140,7 +141,8 @@ class SingleClientSkillsSyncTest
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   SingleClientSkillsSyncTest() : SyncTest(SINGLE_CLIENT) {
-    std::vector<base::test::FeatureRef> enabled_features = {syncer::kSyncSkill};
+    std::vector<base::test::FeatureRef> enabled_features = {
+        features::kSkillsEnabled};
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
       enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
     }

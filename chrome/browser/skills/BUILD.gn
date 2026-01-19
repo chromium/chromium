@@ -23,6 +23,7 @@ source_set("skills") {
     "//chrome/browser/ui/browser_window",
     "//chrome/common:channel_info",
     "//components/keyed_service/core",
+    "//components/skills:features",
     "//components/skills/internal",
     "//components/skills/public",
     "//components/sync/model",

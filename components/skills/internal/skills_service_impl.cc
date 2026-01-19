@@ -10,7 +10,6 @@
 #include "components/skills/internal/skills_sync_bridge.h"
 #include "components/skills/public/skill.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_type_controller_delegate.h"
@@ -20,15 +19,11 @@ namespace skills {
 SkillsServiceImpl::SkillsServiceImpl(
     version_info::Channel channel,
     syncer::OnceDataTypeStoreFactory create_store_callback) {
-  // TODO(crbug.com/471795213): consider using a common flag to control the
-  // whole service.
-  if (base::FeatureList::IsEnabled(syncer::kSyncSkill)) {
-    sync_bridge_ = std::make_unique<SkillsSyncBridge>(
-        std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
-            syncer::SKILL,
-            base::BindRepeating(&syncer::ReportUnrecoverableError, channel)),
-        std::move(create_store_callback), *this);
-  }
+  sync_bridge_ = std::make_unique<SkillsSyncBridge>(
+      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
+          syncer::SKILL,
+          base::BindRepeating(&syncer::ReportUnrecoverableError, channel)),
+      std::move(create_store_callback), *this);
 }
 
 SkillsServiceImpl::~SkillsServiceImpl() = default;

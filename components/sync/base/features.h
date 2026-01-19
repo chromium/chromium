@@ -48,9 +48,6 @@ BASE_DECLARE_FEATURE(kSyncAIThread);
 // Enables syncing of contextual tasks.
 BASE_DECLARE_FEATURE(kSyncContextualTask);
 
-// Enables syncing of skills.
-BASE_DECLARE_FEATURE(kSyncSkill);
-
 #if !BUILDFLAG(IS_CHROMEOS)
 // Flag that controls Uno fast-follow features which are:
 // On Android:

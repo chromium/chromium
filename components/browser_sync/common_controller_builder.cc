@@ -63,6 +63,7 @@
 #include "components/sharing_message/sharing_message_bridge.h"
 #include "components/sharing_message/sharing_message_data_type_controller.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/skills/features.h"
 #include "components/skills/public/skills_service.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -947,7 +948,7 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (!disabled_types.Has(syncer::SKILL) &&
-      base::FeatureList::IsEnabled(syncer::kSyncSkill)) {
+      base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
     // TODO(rushans): In CL #4, register the type, i.e. instantiate
     // the DataTypeController. There is more than one way to go about it,
     // but one option is:
