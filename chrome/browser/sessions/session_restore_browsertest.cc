@@ -303,8 +303,12 @@ class SessionRestoreTest : public InProcessBrowserTest {
     std::vector<std::unique_ptr<content::DOMMessageQueue>> queues;
     auto subscription = content::RegisterWebContentsCreationCallback(
         base::BindLambdaForTesting([&](content::WebContents* contents) {
-          queues.emplace_back(
-              std::make_unique<content::DOMMessageQueue>(contents));
+          if (!contents->GetPrimaryMainFrame()
+                   ->GetProcess()
+                   ->IsForInitialWebUI()) {
+            queues.emplace_back(
+                std::make_unique<content::DOMMessageQueue>(contents));
+          }
         }));
 
     Browser* restored = QuitBrowserAndRestore(browser);
