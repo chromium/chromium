@@ -141,9 +141,12 @@ TEST_F(SimpleFeatureTest, IsAvailableNullCase) {
 }
 
 TEST_F(SimpleFeatureTest, Allowlist) {
-  const HashedExtensionId kIdFoo("fooabbbbccccddddeeeeffffgggghhhh");
-  const HashedExtensionId kIdBar("barabbbbccccddddeeeeffffgggghhhh");
-  const HashedExtensionId kIdBaz("bazabbbbccccddddeeeeffffgggghhhh");
+  const HashedExtensionId kIdFoo(
+      ExtensionId("fooabbbbccccddddeeeeffffgggghhhh"));
+  const HashedExtensionId kIdBar(
+      ExtensionId("barabbbbccccddddeeeeffffgggghhhh"));
+  const HashedExtensionId kIdBaz(
+      ExtensionId("bazabbbbccccddddeeeeffffgggghhhh"));
   SimpleFeature feature;
   feature.set_allowlist({kIdFoo.value().c_str(), kIdBar.value().c_str()});
 
@@ -198,10 +201,11 @@ TEST_F(SimpleFeatureTest, HashedIdAllowlist) {
 
   EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             feature
-                .IsAvailableToManifest(
-                    HashedExtensionId(kIdFoo), Manifest::Type::kUnknown,
-                    ManifestLocation::kInvalidLocation, -1,
-                    Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
+                .IsAvailableToManifest(HashedExtensionId(ExtensionId(kIdFoo)),
+                                       Manifest::Type::kUnknown,
+                                       ManifestLocation::kInvalidLocation, -1,
+                                       Feature::UNSPECIFIED_PLATFORM,
+                                       kUnspecifiedContextId)
                 .result());
   EXPECT_NE(Feature::AvailabilityResult::kIsAvailable,
             feature
@@ -214,7 +218,8 @@ TEST_F(SimpleFeatureTest, HashedIdAllowlist) {
       Feature::AvailabilityResult::kNotFoundInAllowlist,
       feature
           .IsAvailableToManifest(
-              HashedExtensionId("slightlytoooolongforanextensionid"),
+              HashedExtensionId(
+                  ExtensionId("slightlytoooolongforanextensionid")),
               Manifest::Type::kUnknown, ManifestLocation::kInvalidLocation, -1,
               Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
           .result());
@@ -222,16 +227,19 @@ TEST_F(SimpleFeatureTest, HashedIdAllowlist) {
       Feature::AvailabilityResult::kNotFoundInAllowlist,
       feature
           .IsAvailableToManifest(
-              HashedExtensionId("tooshortforanextensionid"),
+              HashedExtensionId(ExtensionId("tooshortforanextensionid")),
               Manifest::Type::kUnknown, ManifestLocation::kInvalidLocation, -1,
               Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
           .result());
 }
 
 TEST_F(SimpleFeatureTest, Blocklist) {
-  const HashedExtensionId kIdFoo("fooabbbbccccddddeeeeffffgggghhhh");
-  const HashedExtensionId kIdBar("barabbbbccccddddeeeeffffgggghhhh");
-  const HashedExtensionId kIdBaz("bazabbbbccccddddeeeeffffgggghhhh");
+  const HashedExtensionId kIdFoo(
+      ExtensionId("fooabbbbccccddddeeeeffffgggghhhh"));
+  const HashedExtensionId kIdBar(
+      ExtensionId("barabbbbccccddddeeeeffffgggghhhh"));
+  const HashedExtensionId kIdBaz(
+      ExtensionId("bazabbbbccccddddeeeeffffgggghhhh"));
   SimpleFeature feature;
   feature.set_blocklist({kIdFoo.value().c_str(), kIdBar.value().c_str()});
 
@@ -277,10 +285,11 @@ TEST_F(SimpleFeatureTest, HashedIdBlocklist) {
 
   EXPECT_EQ(Feature::AvailabilityResult::kFoundInBlocklist,
             feature
-                .IsAvailableToManifest(
-                    HashedExtensionId(kIdFoo), Manifest::Type::kUnknown,
-                    ManifestLocation::kInvalidLocation, -1,
-                    Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
+                .IsAvailableToManifest(HashedExtensionId(ExtensionId(kIdFoo)),
+                                       Manifest::Type::kUnknown,
+                                       ManifestLocation::kInvalidLocation, -1,
+                                       Feature::UNSPECIFIED_PLATFORM,
+                                       kUnspecifiedContextId)
                 .result());
   EXPECT_NE(Feature::AvailabilityResult::kFoundInBlocklist,
             feature
@@ -293,7 +302,8 @@ TEST_F(SimpleFeatureTest, HashedIdBlocklist) {
       Feature::AvailabilityResult::kIsAvailable,
       feature
           .IsAvailableToManifest(
-              HashedExtensionId("slightlytoooolongforanextensionid"),
+              HashedExtensionId(
+                  ExtensionId("slightlytoooolongforanextensionid")),
               Manifest::Type::kUnknown, ManifestLocation::kInvalidLocation, -1,
               Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
           .result());
@@ -301,7 +311,7 @@ TEST_F(SimpleFeatureTest, HashedIdBlocklist) {
       Feature::AvailabilityResult::kIsAvailable,
       feature
           .IsAvailableToManifest(
-              HashedExtensionId("tooshortforanextensionid"),
+              HashedExtensionId(ExtensionId("tooshortforanextensionid")),
               Manifest::Type::kUnknown, ManifestLocation::kInvalidLocation, -1,
               Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
           .result());
@@ -365,7 +375,8 @@ TEST_F(SimpleFeatureTest, Context) {
   EXPECT_EQ(u"", error);
   ASSERT_TRUE(extension.get());
 
-  feature.set_allowlist({"monkey"});
+  feature.set_allowlist(
+      {HashedExtensionId(ExtensionId("monkey")).value().c_str()});
   EXPECT_EQ(Feature::AvailabilityResult::kNotFoundInAllowlist,
             feature
                 .IsAvailableToContext(extension.get(),
