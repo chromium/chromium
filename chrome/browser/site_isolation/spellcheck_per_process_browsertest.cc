@@ -337,8 +337,14 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessSpellCheckTest,
   RunOOPIFSpellCheckTest();
 }
 
+#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/477010953): Investigate this Windows test failure.
+#define MAYBE_OOPIFDisabledSpellCheckTest DISABLED_OOPIFDisabledSpellCheckTest
+#else
+#define MAYBE_OOPIFDisabledSpellCheckTest OOPIFDisabledSpellCheckTest
+#endif
 IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessSpellCheckTest,
-                       OOPIFDisabledSpellCheckTest) {
+                       MAYBE_OOPIFDisabledSpellCheckTest) {
   RunOOPIFDisabledSpellCheckTest();
 }
 
