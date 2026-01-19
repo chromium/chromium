@@ -115,7 +115,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private final MonotonicObservableSupplier<Boolean> mIsNtpWithFakeboxShowingSupplier;
     private final MonotonicObservableSupplier<Boolean> mIsIncognitoNtpShowingSupplier;
     private final MonotonicObservableSupplier<Boolean> mIsTabSwitcherFinishedShowingSupplier;
-    private final MonotonicObservableSupplier<Boolean> mIsOmniboxFocusedSupplier;
+    private final NonNullObservableSupplier<Boolean> mIsOmniboxFocusedSupplier;
     private final MonotonicObservableSupplier<Boolean> mIsFormFieldFocusedSupplier;
     private final MonotonicObservableSupplier<Boolean> mIsFindInPageShowingSupplier;
     private final ControlContainer mControlContainer;
@@ -187,7 +187,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             MonotonicObservableSupplier<Boolean> isNtpWithFakeboxShowingSupplier,
             MonotonicObservableSupplier<Boolean> isIncognitoNtpShowingSupplier,
             MonotonicObservableSupplier<Boolean> isTabSwitcherFinishedShowingSupplier,
-            MonotonicObservableSupplier<Boolean> isOmniboxFocusedSupplier,
+            NonNullObservableSupplier<Boolean> isOmniboxFocusedSupplier,
             MonotonicObservableSupplier<Boolean> isFormFieldFocusedSupplier,
             MonotonicObservableSupplier<Boolean> isFindInPageShowingSupplier,
             NonNullObservableSupplier<Integer> keyboardAccessoryHeightSupplier,

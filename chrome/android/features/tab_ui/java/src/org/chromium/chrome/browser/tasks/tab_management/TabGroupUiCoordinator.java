@@ -26,6 +26,7 @@ import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.build.annotations.Initializer;
@@ -83,7 +84,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     private final TabGroupUiToolbarView mToolbarView;
     private final ViewGroup mTabListContainerView;
     private final ScrimManager mScrimManager;
-    private final MonotonicObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
+    private final NonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     private final BottomSheetController mBottomSheetController;
     private final DataSharingTabManager mDataSharingTabManager;
     private final TabModelSelector mTabModelSelector;
@@ -112,7 +113,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             ViewGroup parentView,
             BrowserControlsStateProvider browserControlsStateProvider,
             ScrimManager scrimManager,
-            MonotonicObservableSupplier<Boolean> omniboxFocusStateSupplier,
+            NonNullObservableSupplier<Boolean> omniboxFocusStateSupplier,
             BottomSheetController bottomSheetController,
             DataSharingTabManager dataSharingTabManager,
             TabModelSelector tabModelSelector,
@@ -199,7 +200,8 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     public void initializeWithNative(
             BottomControlsCoordinator.BottomControlsVisibilityController visibilityController,
             Callback<Object> onSnapshotTokenChange) {
-        ObservableSupplierImpl<Object> tabStripTokenSupplier = new ObservableSupplierImpl<>();
+        SettableMonotonicObservableSupplier<Object> tabStripTokenSupplier =
+                ObservableSuppliers.createMonotonic();
 
         var currentTabGroupModelFilterSupplier =
                 mTabModelSelector.getCurrentTabGroupModelFilterSupplier();

@@ -103,12 +103,12 @@ public class TabGroupUiMediator implements BackPressHandler {
 
     /** Wraps a child component's token with information from this component. */
     private static class NestedSnapshot {
-        private final Object mChildSnapshot;
+        private final @Nullable Object mChildSnapshot;
         private final @ColorInt int mBackgroundColor;
         private final int mWidthPx;
 
         /* package */ NestedSnapshot(
-                Object childSnapshot, @ColorInt int backgroundColor, int widthPx) {
+                @Nullable Object childSnapshot, @ColorInt int backgroundColor, int widthPx) {
             mChildSnapshot = childSnapshot;
             mBackgroundColor = backgroundColor;
             mWidthPx = widthPx;
@@ -147,7 +147,7 @@ public class TabGroupUiMediator implements BackPressHandler {
             mVisibilityController;
     private final @Nullable LazyOneshotSupplier<DialogController> mTabGridDialogControllerSupplier;
     private final Callback<TabModel> mCurrentTabModelObserver;
-    private final MonotonicObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
+    private final NonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     private final SettableNonNullObservableSupplier<Boolean> mHandleBackPressChangedSupplier;
     private final ThemeColorProvider mThemeColorProvider;
     private final Callback<Object> mOnSnapshotTokenChange;
@@ -178,12 +178,12 @@ public class TabGroupUiMediator implements BackPressHandler {
             TabCreatorManager tabCreatorManager,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             @Nullable LazyOneshotSupplier<DialogController> dialogControllerSupplier,
-            MonotonicObservableSupplier<Boolean> omniboxFocusStateSupplier,
+            NonNullObservableSupplier<Boolean> omniboxFocusStateSupplier,
             @Nullable SharedImageTilesCoordinator sharedImageTilesCoordinator,
             SharedImageTilesConfig.@Nullable Builder sharedImageTilesConfigBuilder,
             ThemeColorProvider themeColorProvider,
             Callback<Object> onSnapshotTokenChange,
-            ObservableSupplierImpl<Object> childTokenSupplier) {
+            MonotonicObservableSupplier<Object> childTokenSupplier) {
         mResetHandler = resetHandler;
         mModel = model;
         mTabModelSelector = tabModelSelector;
@@ -475,15 +475,10 @@ public class TabGroupUiMediator implements BackPressHandler {
         handler.post(() -> mModel.set(INITIAL_SCROLL_INDEX, indexSupplier.get()));
     }
 
-    private boolean isOmniboxFocused() {
-        @Nullable Boolean focused = mOmniboxFocusStateSupplier.get();
-        return Boolean.TRUE.equals(focused);
-    }
-
     private void resetTabStrip() {
         if (!mTabModelSelector.isTabStateInitialized()) return;
 
-        if (mIsShowingHub || isOmniboxFocused()) {
+        if (mIsShowingHub || mOmniboxFocusStateSupplier.get()) {
             hideTabStrip();
             return;
         }

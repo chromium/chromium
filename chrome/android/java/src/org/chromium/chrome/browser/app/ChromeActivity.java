@@ -301,8 +301,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     private final long mActivityId;
 
     @SuppressWarnings("HidingField")
-    protected final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerSupplier =
-            new ObservableSupplierImpl<>();
+    protected final SettableMonotonicObservableSupplier<EdgeToEdgeController>
+            mEdgeToEdgeControllerSupplier = ObservableSuppliers.createMonotonic();
 
     protected final SettableMonotonicObservableSupplier<ManualFillingComponent>
             mManualFillingComponentSupplier = ObservableSuppliers.createMonotonic();
@@ -3131,7 +3131,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         return mIsRecreatingForTabletModeChange;
     }
 
-    public ObservableSupplierImpl<EdgeToEdgeController>
+    public SettableMonotonicObservableSupplier<EdgeToEdgeController>
             getEdgeToEdgeControllerSupplierForTesting() {
         return mEdgeToEdgeControllerSupplier;
     }
