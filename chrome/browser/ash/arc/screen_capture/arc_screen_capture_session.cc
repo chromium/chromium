@@ -255,7 +255,8 @@ void ArcScreenCaptureSession::SetOutputBuffer(
 void ArcScreenCaptureSession::QueryCompleted(
     uint32_t query_id,
     std::unique_ptr<DesktopTexture> desktop_texture,
-    std::unique_ptr<PendingBuffer> pending_buffer) {
+    std::unique_ptr<PendingBuffer> pending_buffer,
+    gpu::SyncToken sync_token) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto* ri = GetContextProvider()->RasterInterface();
@@ -266,8 +267,8 @@ void ArcScreenCaptureSession::QueryCompleted(
   }
 
   // Return CopyOutputResult resources after texture copy happens.
-  gpu::SyncToken sync_token;
-  ri->GenSyncTokenCHROMIUM(sync_token.GetData());
+  int8_t* sync_token_data = sync_token.GetData();
+  ri->VerifySyncTokensCHROMIUM(&sync_token_data, 1);
   std::move(desktop_texture->release_callback_).Run(sync_token, false);
 
   // Notify ARC++ that the buffer is ready.
@@ -352,16 +353,17 @@ void ArcScreenCaptureSession::CopyDesktopTextureToGpuBuffer(
   ri->CopySharedImage(desktop_texture->mailbox_,
                       pending_buffer->shared_image_->mailbox(), 0, 0, 0, 0,
                       size_.width(), size_.height());
-  gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
+  gpu::SyncToken sync_token =
+      gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
   ri->EndQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM);
 
   // The query will be signalled after the copy operation has finished on the
   // GPU and ARC++ can safely read from the buffer.
   context_provider->ContextSupport()->SignalQuery(
-      query_id,
-      base::BindOnce(&ArcScreenCaptureSession::QueryCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), query_id,
-                     std::move(desktop_texture), std::move(pending_buffer)));
+      query_id, base::BindOnce(&ArcScreenCaptureSession::QueryCompleted,
+                               weak_ptr_factory_.GetWeakPtr(), query_id,
+                               std::move(desktop_texture),
+                               std::move(pending_buffer), sync_token));
 }
 
 void ArcScreenCaptureSession::OnAnimationStep(base::TimeTicks timestamp) {
