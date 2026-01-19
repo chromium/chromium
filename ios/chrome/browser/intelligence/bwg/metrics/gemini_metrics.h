@@ -113,6 +113,20 @@ enum class IOSGeminiSessionType {
   kMaxValue = kAbandoned,
 };
 
+// Enum for the IOS.Gemini.Feedback histogram.
+// LINT.IfChange(IOSGeminiFeedback)
+enum class IOSGeminiFeedback {
+  kThumbsUp = 0,
+  kThumbsDown = 1,
+  kMaxValue = kThumbsDown,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiFeedback)
+
+// UMA histogram key for IOS.Gemini.Feedback.
+extern const char kFeedbackHistogram[];
+
+// Records user feedback on a Gemini response.
+void RecordGeminiFeedback(IOSGeminiFeedback feedback);
 // Records the duration of a Gemini session.
 void RecordGeminiSessionTime(base::TimeDelta session_duration);
 

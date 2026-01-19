@@ -211,6 +211,20 @@ IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
   RecordGeminiNewChatButtonTapped();
 }
 
+// Called when a feedback button is tapped in the Gemini UI.
+- (void)didTapFeedbackButton:(GeminiFeedbackType)feedbackType
+                   sessionID:(NSString*)sessionID
+              conversationID:(NSString*)conversationID {
+  switch (feedbackType) {
+    case GeminiFeedbackType::kThumbsUp:
+      RecordGeminiFeedback(IOSGeminiFeedback::kThumbsUp);
+      break;
+    case GeminiFeedbackType::kThumbsDown:
+      RecordGeminiFeedback(IOSGeminiFeedback::kThumbsDown);
+      break;
+  }
+}
+
 #pragma mark - Private
 
 // Finds the web state with the given client ID as unique identifier.

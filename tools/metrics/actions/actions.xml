@@ -26772,6 +26772,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileGeminiFeedbackThumbsDown">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    The user tapped the thumbs down feedback button for a Gemini response.
+  </description>
+</action>
+
+<action name="MobileGeminiFeedbackThumbsUp">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    The user tapped the thumbs up feedback button for a Gemini response.
+  </description>
+</action>
+
 <action name="MobileGeminiFirstPromptSubmitted">
   <owner>kanouche@google.com</owner>
   <owner>bling-alchemy@google.com</owner>

@@ -25,6 +25,8 @@ const char kEligibilityHistogram[] = "IOS.Gemini.Eligibility";
 
 const char kEntryPointHistogram[] = "IOS.Gemini.EntryPoint";
 
+const char kFeedbackHistogram[] = "IOS.Gemini.Feedback";
+
 const char kFREEntryPointHistogram[] = "IOS.Gemini.FRE.EntryPoint";
 
 const char kPromoActionHistogram[] = "IOS.Gemini.FRE.PromoAction";
@@ -240,4 +242,19 @@ void RecordAIHubIconTapped() {
 
 void RecordGeminiPromptSent() {
   base::RecordAction(base::UserMetricsAction("MobileGeminiPromptSent"));
+}
+
+void RecordGeminiFeedback(IOSGeminiFeedback feedback) {
+  base::UmaHistogramEnumeration(kFeedbackHistogram, feedback);
+
+  switch (feedback) {
+    case IOSGeminiFeedback::kThumbsUp:
+      base::RecordAction(
+          base::UserMetricsAction("MobileGeminiFeedbackThumbsUp"));
+      break;
+    case IOSGeminiFeedback::kThumbsDown:
+      base::RecordAction(
+          base::UserMetricsAction("MobileGeminiFeedbackThumbsDown"));
+      break;
+  }
 }
