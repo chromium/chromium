@@ -546,6 +546,8 @@ TEST_P(AccountMenuMediatorTest, TestTapErrorButtonBookmarksLimitExceeded) {
 
   OCMExpect([sync_error_settings_mock_ openBookmarksLimitExceededHelp]);
   [mediator_ didTapErrorButton];
+  EXPECT_EQ(1, user_actions_.GetActionCount(
+                   "Signin_AccountMenu_ErrorButton_BookmarksLimitExceeded"));
 }
 
 // Tests the effect of didTapManageYourGoogleAccount.

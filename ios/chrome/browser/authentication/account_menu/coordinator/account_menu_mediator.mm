@@ -363,7 +363,8 @@
               openTrustedVaultReauthForDegradedRecoverability];
       break;
     case syncer::SyncService::UserActionableError::kBookmarksLimitExceeded:
-      // TODO(crbug.com/452968646): Add metrics similar to other cases.
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_AccountMenu_ErrorButton_BookmarksLimitExceeded"));
       [self.syncErrorSettingsCommandHandler openBookmarksLimitExceededHelp];
       break;
     case syncer::SyncService::UserActionableError::kNone:
