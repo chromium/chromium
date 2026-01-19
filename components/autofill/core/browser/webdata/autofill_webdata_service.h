@@ -121,6 +121,9 @@ class AutofillWebDataService : public WebDataServiceBase {
   WebDataServiceBase::Handle GetLoyaltyCards(
       WebDataServiceRequestCallback consumer);
 
+  // Updates the `ValuableMetadata` for a valuable.
+  void UpdateValuableMetadata(const ValuableMetadata& metadata);
+
   // Schedules a task to count the number of unique autofill values contained
   // in the time interval [|begin|, |end|). |begin| and |end| can be null
   // to indicate no time limitation.

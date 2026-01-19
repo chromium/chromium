@@ -180,6 +180,10 @@ class AutofillWebDataBackendImpl final
   // Retrieves LoyaltyCards from the database.
   std::unique_ptr<WDTypedResult> GetLoyaltyCards(WebDatabase* db);
 
+  // Updates the ValuableMetadata for a valuable.
+  WebDatabase::State UpdateValuableMetadata(const ValuableMetadata& metadata,
+                                            WebDatabase* db);
+
   // Returns the number of values such that all for autofill entries with that
   // value, the interval between creation date and last usage is entirely
   // contained between [|begin|, |end|).

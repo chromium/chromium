@@ -175,6 +175,14 @@ WebDataServiceBase::Handle AutofillWebDataService::GetLoyaltyCards(
       std::move(consumer));
 }
 
+void AutofillWebDataService::UpdateValuableMetadata(
+    const ValuableMetadata& metadata) {
+  wdbs_->ScheduleDBTask(
+      FROM_HERE,
+      base::BindOnce(&AutofillWebDataBackendImpl::UpdateValuableMetadata,
+                     autofill_backend_, metadata));
+}
+
 WebDataServiceBase::Handle
 AutofillWebDataService::GetCountOfValuesContainedBetween(
     base::Time begin,

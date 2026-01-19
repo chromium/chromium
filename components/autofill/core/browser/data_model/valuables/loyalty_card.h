@@ -84,6 +84,10 @@ class LoyaltyCard final {
     valuable_metadata_ = std::move(metadata);
   }
 
+  // Updates the last time the loyalty card was used to fill a form and
+  // increases the use count.
+  void RecordLoyaltyCardUsed(base::Time use_date);
+
   // Checks if this loyalty card is valid. A valid loyalty card contains a
   // non-empty loyalty card id and a logo URL which should be either empty or
   // valid.

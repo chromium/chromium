@@ -51,4 +51,9 @@ LoyaltyCard::AffiliationCategory LoyaltyCard::GetAffiliationCategory(
                                : AffiliationCategory::kNonAffiliated;
 }
 
+void LoyaltyCard::RecordLoyaltyCardUsed(base::Time date) {
+  valuable_metadata_.use_date = date;
+  ++valuable_metadata_.use_count;
+}
+
 }  // namespace autofill

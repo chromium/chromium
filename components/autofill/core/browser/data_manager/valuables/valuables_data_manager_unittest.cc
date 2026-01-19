@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/valuables_data_test_utils.h"
@@ -271,6 +272,23 @@ TEST_F(ValuablesDataManagerPaymentMethodsOffTest,
 
   EXPECT_THAT(valuables_data_manager.GetLoyaltyCardById(card1.id()),
               testing::Eq(std::nullopt));
+}
+
+TEST_F(ValuablesDataManagerTest, RecordLoyaltyCardUsed) {
+  const LoyaltyCard card = test::CreateLoyaltyCard();
+  valuables_table().SetLoyaltyCards({card});
+
+  ValuablesDataManager valuables_data_manager(&webdata_service(), &prefs(),
+                                              &image_fetcher());
+  helper().WaitUntilIdle();
+
+  base::Time use_date = base::Time::Now();
+  valuables_data_manager.RecordLoyaltyCardUsed(card.id(), use_date);
+
+  helper().WaitUntilIdle();
+
+  EXPECT_EQ(valuables_table().GetValuableMetadata(card.id()),
+            ValuableMetadata(card.id(), use_date, 1));
 }
 
 }  // namespace

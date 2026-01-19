@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 
+#include <cstdint>
+
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/valuables/valuable_types.h"
 #include "components/autofill/core/browser/test_utils/valuables_data_test_utils.h"
@@ -54,6 +56,17 @@ TEST(LoyaltyCardTest, Equality) {
 
   EXPECT_EQ(card1, test::CreateLoyaltyCard());
   EXPECT_NE(card1, test::CreateLoyaltyCard2());
+}
+
+TEST(LoyaltyCardTest, RecordLoyaltyCardUsed) {
+  LoyaltyCard card = test::CreateLoyaltyCard();
+  int64_t initial_count = card.use_count();
+
+  base::Time time = base::Time::Now();
+  card.RecordLoyaltyCardUsed(time);
+
+  EXPECT_EQ(card.use_count(), initial_count + 1);
+  EXPECT_EQ(card.use_date(), time);
 }
 
 }  // namespace
