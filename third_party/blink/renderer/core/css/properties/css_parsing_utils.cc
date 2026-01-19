@@ -8217,9 +8217,10 @@ cssvalue::CSSShapeValue* ConsumeBasicShapeShape(
           return nullptr;
         }
 
-        if (args.ConsumeIncludingWhitespace().Id() != CSSValueID::kWith) {
+        if (args.Peek().Id() != CSSValueID::kWith) {
           return nullptr;
         }
+        args.ConsumeIncludingWhitespace();
 
         CSSValueID control_point_origin_1 = CSSValueID::kInvalid;
 
