@@ -7257,6 +7257,7 @@ test("unit_tests") {
     "//components/plus_addresses/core/browser/resources/strings",
     "//components/policy:generated",
     "//components/policy/content",
+    "//components/policy/core/browser:incognito_mode_policy_test_support",
     "//components/policy/core/browser:test_support",
     "//components/policy/core/common:common_constants",
     "//components/privacy_sandbox",

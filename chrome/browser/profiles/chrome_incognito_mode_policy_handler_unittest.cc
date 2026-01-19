@@ -8,6 +8,7 @@
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
 #include "components/policy/core/browser/configuration_policy_pref_store_test.h"
+#include "components/policy/core/browser/incognito/incognito_mode_policy_handler_test.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
@@ -16,7 +17,7 @@ namespace policy {
 
 // Tests Incognito mode availability preference setting.
 class ChromeIncognitoModePolicyHandlerTest
-    : public ConfigurationPolicyPrefStoreTest {
+    : public IncognitoModePolicyHandlerTestBase {
  public:
   void SetUp() override {
     handler_list_.AddHandler(base::WrapUnique<ConfigurationPolicyHandler>(
@@ -24,36 +25,31 @@ class ChromeIncognitoModePolicyHandlerTest
   }
 
  protected:
-  static const int kIncognitoModeAvailabilityNotSet = -1;
-
   enum ObsoleteIncognitoEnabledValue {
     INCOGNITO_ENABLED_UNKNOWN,
     INCOGNITO_ENABLED_TRUE,
     INCOGNITO_ENABLED_FALSE
   };
 
-  void SetPolicies(ObsoleteIncognitoEnabledValue incognito_enabled,
-                   int availability) {
-    PolicyMap policy;
-    if (incognito_enabled != INCOGNITO_ENABLED_UNKNOWN) {
-      policy.Set(key::kIncognitoEnabled, POLICY_LEVEL_MANDATORY,
-                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-                 base::Value(incognito_enabled == INCOGNITO_ENABLED_TRUE),
-                 nullptr);
-    }
-    if (availability >= 0) {
-      policy.Set(key::kIncognitoModeAvailability, POLICY_LEVEL_MANDATORY,
-                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-                 base::Value(availability), nullptr);
-    }
-    UpdateProviderPolicy(policy);
+  void SetIncognitoEnabled(ObsoleteIncognitoEnabledValue incognito_enabled) {
+    ASSERT_NE(incognito_enabled, INCOGNITO_ENABLED_UNKNOWN);
+    policies_.Set(key::kIncognitoEnabled, POLICY_LEVEL_MANDATORY,
+                  POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                  base::Value(incognito_enabled == INCOGNITO_ENABLED_TRUE),
+                  nullptr);
   }
 
-  void VerifyValues(policy::IncognitoModeAvailability availability) {
-    const base::Value* value = nullptr;
-    EXPECT_TRUE(store_->GetValue(
-        policy::policy_prefs::kIncognitoModeAvailability, &value));
-    EXPECT_EQ(base::Value(static_cast<int>(availability)), *value);
+  void SetAvailabilityPolicies(
+      ObsoleteIncognitoEnabledValue incognito_enabled,
+      std::optional<policy::IncognitoModeAvailability> availability) {
+    PolicyMap policy;
+    if (incognito_enabled != INCOGNITO_ENABLED_UNKNOWN) {
+      SetIncognitoEnabled(incognito_enabled);
+    }
+    if (availability.has_value()) {
+      SetIncognitoModeAvailability(availability.value());
+    }
+    ApplyPolicies();
   }
 };
 
@@ -62,28 +58,28 @@ class ChromeIncognitoModePolicyHandlerTest
 // from IncognitoModeAvailability policy to pref "as is".
 TEST_F(ChromeIncognitoModePolicyHandlerTest,
        NoObsoletePolicyAndIncognitoEnabled) {
-  SetPolicies(INCOGNITO_ENABLED_UNKNOWN,
-              static_cast<int>(policy::IncognitoModeAvailability::kEnabled));
-  VerifyValues(policy::IncognitoModeAvailability::kEnabled);
+  SetAvailabilityPolicies(INCOGNITO_ENABLED_UNKNOWN,
+                          policy::IncognitoModeAvailability::kEnabled);
+  VerifyAvailabilityPref(policy::IncognitoModeAvailability::kEnabled);
 }
 
 TEST_F(ChromeIncognitoModePolicyHandlerTest,
        NoObsoletePolicyAndIncognitoDisabled) {
-  SetPolicies(INCOGNITO_ENABLED_UNKNOWN,
-              static_cast<int>(policy::IncognitoModeAvailability::kDisabled));
-  VerifyValues(policy::IncognitoModeAvailability::kDisabled);
+  SetAvailabilityPolicies(INCOGNITO_ENABLED_UNKNOWN,
+                          policy::IncognitoModeAvailability::kDisabled);
+  VerifyAvailabilityPref(policy::IncognitoModeAvailability::kDisabled);
 }
 
 TEST_F(ChromeIncognitoModePolicyHandlerTest,
        NoObsoletePolicyAndIncognitoForced) {
-  SetPolicies(INCOGNITO_ENABLED_UNKNOWN,
-              static_cast<int>(policy::IncognitoModeAvailability::kForced));
-  VerifyValues(policy::IncognitoModeAvailability::kForced);
+  SetAvailabilityPolicies(INCOGNITO_ENABLED_UNKNOWN,
+                          policy::IncognitoModeAvailability::kForced);
+  VerifyAvailabilityPref(policy::IncognitoModeAvailability::kForced);
 }
 
 TEST_F(ChromeIncognitoModePolicyHandlerTest,
        NoObsoletePolicyAndNoIncognitoAvailability) {
-  SetPolicies(INCOGNITO_ENABLED_UNKNOWN, kIncognitoModeAvailabilityNotSet);
+  SetAvailabilityPolicies(INCOGNITO_ENABLED_UNKNOWN, std::nullopt);
   const base::Value* value = nullptr;
   EXPECT_FALSE(store_->GetValue(
       policy::policy_prefs::kIncognitoModeAvailability, &value));
@@ -94,28 +90,57 @@ TEST_F(ChromeIncognitoModePolicyHandlerTest,
 // the IncognitoModeAvailability policy is not specified.
 TEST_F(ChromeIncognitoModePolicyHandlerTest,
        ObsoletePolicyDoesNotAffectAvailabilityEnabled) {
-  SetPolicies(INCOGNITO_ENABLED_FALSE,
-              static_cast<int>(policy::IncognitoModeAvailability::kEnabled));
-  VerifyValues(policy::IncognitoModeAvailability::kEnabled);
+  SetAvailabilityPolicies(INCOGNITO_ENABLED_FALSE,
+                          policy::IncognitoModeAvailability::kEnabled);
+  VerifyAvailabilityPref(policy::IncognitoModeAvailability::kEnabled);
 }
 
 TEST_F(ChromeIncognitoModePolicyHandlerTest,
        ObsoletePolicyDoesNotAffectAvailabilityForced) {
-  SetPolicies(INCOGNITO_ENABLED_TRUE,
-              static_cast<int>(policy::IncognitoModeAvailability::kForced));
-  VerifyValues(policy::IncognitoModeAvailability::kForced);
+  SetAvailabilityPolicies(INCOGNITO_ENABLED_TRUE,
+                          policy::IncognitoModeAvailability::kForced);
+  VerifyAvailabilityPref(policy::IncognitoModeAvailability::kForced);
 }
 
 TEST_F(ChromeIncognitoModePolicyHandlerTest,
        ObsoletePolicySetsPreferenceToEnabled) {
-  SetPolicies(INCOGNITO_ENABLED_TRUE, kIncognitoModeAvailabilityNotSet);
-  VerifyValues(policy::IncognitoModeAvailability::kEnabled);
+  SetAvailabilityPolicies(INCOGNITO_ENABLED_TRUE, std::nullopt);
+  VerifyAvailabilityPref(policy::IncognitoModeAvailability::kEnabled);
 }
 
 TEST_F(ChromeIncognitoModePolicyHandlerTest,
        ObsoletePolicySetsPreferenceToDisabled) {
-  SetPolicies(INCOGNITO_ENABLED_FALSE, kIncognitoModeAvailabilityNotSet);
-  VerifyValues(policy::IncognitoModeAvailability::kDisabled);
+  SetAvailabilityPolicies(INCOGNITO_ENABLED_FALSE, std::nullopt);
+  VerifyAvailabilityPref(policy::IncognitoModeAvailability::kDisabled);
+}
+
+TEST_F(ChromeIncognitoModePolicyHandlerTest,
+       ObsoletePolicyGetsOverridenByAllowlist) {
+  SetIncognitoEnabled(INCOGNITO_ENABLED_FALSE);
+  SetIncognitoModeUrlAllowlist(default_allowlist_.Clone());
+  ApplyPolicies();
+  VerifyAvailabilityPref(policy::IncognitoModeAvailability::kEnabled);
+  VerifyBlocklistPref(base::Value::List().Append("*"));
+  VerifyAllowlistPref(default_allowlist_);
+}
+
+TEST_F(ChromeIncognitoModePolicyHandlerTest,
+       ObsoletePolicyGetsOverridenByAllowlistWithBlocklist) {
+  SetIncognitoEnabled(INCOGNITO_ENABLED_FALSE);
+  SetIncognitoModeUrlAllowlist(default_allowlist_.Clone());
+  SetIncognitoModeUrlBlocklist(default_blocklist_.Clone());
+  ApplyPolicies();
+  VerifyAvailabilityPref(policy::IncognitoModeAvailability::kEnabled);
+  VerifyBlocklistPref(base::Value::List().Append("*"));
+  VerifyAllowlistPref(default_allowlist_);
+}
+
+TEST_F(ChromeIncognitoModePolicyHandlerTest,
+       ObsoletePolicySetsPreferenceToDisabledWithBlocklistSet) {
+  SetIncognitoEnabled(INCOGNITO_ENABLED_FALSE);
+  SetIncognitoModeUrlBlocklist(default_blocklist_.Clone());
+  ApplyPolicies();
+  VerifyAvailabilityPref(policy::IncognitoModeAvailability::kDisabled);
 }
 
 }  // namespace policy

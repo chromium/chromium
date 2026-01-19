@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
+#include "components/policy/core/browser/incognito/incognito_mode_policy_handler.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -27,32 +28,19 @@ ChromeIncognitoModePolicyHandler::~ChromeIncognitoModePolicyHandler() = default;
 bool ChromeIncognitoModePolicyHandler::CheckPolicySettings(
     const PolicyMap& policies,
     PolicyErrorMap* errors) {
-  // It is safe to use `GetValueUnsafe()` because type checking is performed
-  // before the value is used.
-  const base::Value* availability =
-      policies.GetValueUnsafe(key::kIncognitoModeAvailability);
-  if (availability) {
-    if (!availability->is_int()) {
-      errors->AddError(key::kIncognitoModeAvailability, IDS_POLICY_TYPE_ERROR,
-                       base::Value::GetTypeName(base::Value::Type::INTEGER));
-      return false;
-    }
-    policy::IncognitoModeAvailability availability_enum_value;
-    if (!IncognitoModePrefs::IntToAvailability(availability->GetInt(),
-                                               &availability_enum_value)) {
-      errors->AddError(key::kIncognitoModeAvailability,
-                       IDS_POLICY_OUT_OF_RANGE_ERROR,
-                       base::NumberToString(availability->GetInt()));
-      return false;
-    }
-    return true;
+  if (!IncognitoModePolicyHandler::CheckPolicySettings(policies, errors)) {
+    return false;
   }
 
   // It is safe to use `GetValueUnsafe()` because type checking is performed
   // before the value is used.
+  const base::Value* availability =
+      policies.GetValueUnsafe(key::kIncognitoModeAvailability);
   const base::Value* deprecated_enabled =
       policies.GetValueUnsafe(key::kIncognitoEnabled);
-  if (deprecated_enabled && !deprecated_enabled->is_bool()) {
+  // kIncognitoEnabled value is checked only if kIncognitoModeAvailability is
+  // not set, since otherwise kIncognitoEnabled is ignored.
+  if (!availability && deprecated_enabled && !deprecated_enabled->is_bool()) {
     errors->AddError(key::kIncognitoEnabled, IDS_POLICY_TYPE_ERROR,
                      base::Value::GetTypeName(base::Value::Type::BOOLEAN));
     return false;
@@ -74,27 +62,32 @@ void ChromeIncognitoModePolicyHandler::ApplyPolicySettings(
     return;
   }
 #endif
-
+  std::optional<policy::IncognitoModeAvailability> final_availability_value;
   const base::Value* availability = policies.GetValue(
       key::kIncognitoModeAvailability, base::Value::Type::INTEGER);
-  const base::Value* deprecated_enabled =
-      policies.GetValue(key::kIncognitoEnabled, base::Value::Type::BOOLEAN);
   if (availability) {
     policy::IncognitoModeAvailability availability_enum_value;
     if (IncognitoModePrefs::IntToAvailability(availability->GetInt(),
                                               &availability_enum_value)) {
-      prefs->SetInteger(policy::policy_prefs::kIncognitoModeAvailability,
-                        static_cast<int>(availability_enum_value));
+      final_availability_value = availability_enum_value;
     }
-  } else if (deprecated_enabled) {
+  } else {
     // If kIncognitoModeAvailability is not specified, check the obsolete
     // kIncognitoEnabled.
-    prefs->SetInteger(
-        policy::policy_prefs::kIncognitoModeAvailability,
-        static_cast<int>(deprecated_enabled->GetBool()
-                             ? policy::IncognitoModeAvailability::kEnabled
-                             : policy::IncognitoModeAvailability::kDisabled));
+    const base::Value* deprecated_enabled =
+        policies.GetValue(key::kIncognitoEnabled, base::Value::Type::BOOLEAN);
+    if (deprecated_enabled) {
+      final_availability_value =
+          deprecated_enabled->GetBool()
+              ? policy::IncognitoModeAvailability::kEnabled
+              : policy::IncognitoModeAvailability::kDisabled;
+    }
   }
+
+  // Call the base class method with the final availability value. Base class
+  // logic handles dependencies with allowlist and blocklist policies.
+  IncognitoModePolicyHandler::ApplyPolicySettings(policies, prefs,
+                                                  final_availability_value);
 }
 
 }  // namespace policy

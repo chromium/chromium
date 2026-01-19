@@ -460,12 +460,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kServiceWorkerAutoPreloadEnabled,
     prefs::kServiceWorkerAutoPreloadEnabled,
     base::Value::Type::BOOLEAN },
-  { key::kIncognitoModeUrlBlocklist,
-    policy_prefs::kIncognitoModeUrlBlocklist,
-    base::Value::Type::LIST },
-  { key::kIncognitoModeUrlAllowlist,
-    policy_prefs::kIncognitoModeUrlAllowlist,
-    base::Value::Type::LIST },
   { key::kStaticStorageQuotaEnabled,
     prefs::kStaticStorageQuotaEnabled,
     base::Value::Type::BOOLEAN },
@@ -2553,6 +2547,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       key::kAutofillCreditCardEnabled,
       autofill::prefs::kAutofillCreditCardEnabled));
   handlers->AddHandler(std::make_unique<autofill::AutofillPolicyHandler>());
+  handlers->AddHandler(std::make_unique<ChromeIncognitoModePolicyHandler>());
   handlers->AddHandler(
       std::make_unique<enterprise_reporting::CloudReportingPolicyHandler>());
   handlers->AddHandler(
@@ -2561,7 +2556,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(
       std::make_unique<enterprise_reporting::LegacyTechReportPolicyHandler>());
   handlers->AddHandler(std::make_unique<DefaultSearchPolicyHandler>());
-  handlers->AddHandler(std::make_unique<ChromeIncognitoModePolicyHandler>());
   handlers->AddHandler(
       std::make_unique<bookmarks::ManagedBookmarksPolicyHandler>(
           chrome_schema));

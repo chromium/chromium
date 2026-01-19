@@ -12,6 +12,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -293,6 +294,114 @@ IN_PROC_BROWSER_TEST_P(IncognitoUrlBlockingPolicyTest,
   CheckURLIsBlocked(
       test_browser, both_blocked_url,
       /*is_blocked_by_incognito_policy=*/IsBrowserInIncognitoMode());
+}
+
+IN_PROC_BROWSER_TEST_F(IncognitoUrlBlockingPolicyTest, IncognitoAllowlistOnly) {
+  // Checks that setting only the Incognito allowlist allows specific URLs
+  // and blocks others in Incognito mode.
+  Browser* incognito_browser =
+      OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const std::string allowed_url =
+      embedded_test_server()->GetURL("allowed.com", "/empty.html").spec();
+  const std::string blocked_url =
+      embedded_test_server()->GetURL("blocked.com", "/empty.html").spec();
+
+  // Only set the Incognito allowlist.
+  base::Value::List allowlist;
+  allowlist.Append("allowed.com");
+  PolicyMap policies;
+  policies.Set(key::kIncognitoModeUrlAllowlist, POLICY_LEVEL_MANDATORY,
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+               base::Value(std::move(allowlist)), nullptr);
+
+  UpdateProviderPolicy(policies);
+  FlushBlocklistPolicy();
+
+  CheckCanOpenURL(incognito_browser, allowed_url);
+  CheckURLIsBlocked(incognito_browser, blocked_url,
+                    /*is_blocked_by_incognito_policy=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(IncognitoUrlBlockingPolicyTest,
+                       IncognitoAllowlistAndIncognitoDisabled) {
+  // Checks that the Incognito allowlist allows specific URLs even if
+  // IncognitoModeAvailability is set to disabled.
+  Browser* incognito_browser =
+      OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const std::string allowed_url =
+      embedded_test_server()->GetURL("allowed.com", "/empty.html").spec();
+  const std::string blocked_url =
+      embedded_test_server()->GetURL("blocked.com", "/empty.html").spec();
+
+  PolicyMap policies;
+  // Disable Incognito mode generally.
+  policies.Set(key::kIncognitoModeAvailability, POLICY_LEVEL_MANDATORY,
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+               base::Value(static_cast<int>(
+                   policy::IncognitoModeAvailability::kDisabled)),
+               nullptr);
+
+  // Set an Incognito allowlist.
+  base::Value::List allowlist;
+  allowlist.Append("allowed.com");
+  policies.Set(key::kIncognitoModeUrlAllowlist, POLICY_LEVEL_MANDATORY,
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+               base::Value(std::move(allowlist)), nullptr);
+
+  UpdateProviderPolicy(policies);
+  FlushBlocklistPolicy();
+
+  CheckCanOpenURL(incognito_browser, allowed_url);
+  CheckURLIsBlocked(incognito_browser, blocked_url,
+                    /*is_blocked_by_incognito_policy=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(IncognitoUrlBlockingPolicyTest,
+                       IncognitoAllowlistBlocklistAndIncognitoDisabled) {
+  // Checks that the Incognito allowlist allows specific URLs even if
+  // IncognitoModeAvailability is set to disabled, and blocklist is set.
+  Browser* incognito_browser =
+      OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const std::string allowed_url =
+      embedded_test_server()->GetURL("allowed.com", "/empty.html").spec();
+  const std::string blocked_url =
+      embedded_test_server()->GetURL("blocked.com", "/empty.html").spec();
+  const std::string other_blocked_url =
+      embedded_test_server()->GetURL("other.com", "/empty.html").spec();
+
+  PolicyMap policies;
+  // Disable Incognito mode generally.
+  policies.Set(key::kIncognitoModeAvailability, POLICY_LEVEL_MANDATORY,
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+               base::Value(static_cast<int>(
+                   policy::IncognitoModeAvailability::kDisabled)),
+               nullptr);
+
+  // Set an Incognito allowlist.
+  base::Value::List allowlist;
+  allowlist.Append("allowed.com");
+  policies.Set(key::kIncognitoModeUrlAllowlist, POLICY_LEVEL_MANDATORY,
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+               base::Value(std::move(allowlist)), nullptr);
+
+  // Set an Incognito blocklist.
+  base::Value::List blocklist;
+  blocklist.Append("blocked.com");
+  policies.Set(key::kIncognitoModeUrlBlocklist, POLICY_LEVEL_MANDATORY,
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+               base::Value(std::move(blocklist)), nullptr);
+
+  UpdateProviderPolicy(policies);
+  FlushBlocklistPolicy();
+
+  CheckCanOpenURL(incognito_browser, allowed_url);
+  CheckURLIsBlocked(incognito_browser, blocked_url,
+                    /*is_blocked_by_incognito_policy=*/true);
+  CheckURLIsBlocked(incognito_browser, other_blocked_url,
+                    /*is_blocked_by_incognito_policy=*/true);
 }
 
 }  // namespace policy
