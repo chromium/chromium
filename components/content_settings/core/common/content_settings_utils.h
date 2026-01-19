@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 
 namespace base {
 class Value;
@@ -46,6 +47,9 @@ ContentSetting ToContentSetting(PermissionOption option);
 
 // Converts a ContentSetting enum to a PermissionOption.
 PermissionOption ToPermissionOption(ContentSetting setting);
+
+// Returns the ContentSettingsType for geolocation permission.
+ContentSettingsType GeolocationContentSettingsType();
 
 }  // namespace content_settings
 
