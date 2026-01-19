@@ -1342,7 +1342,7 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sTabBottomSheet =
             newMutableFlagWithSafeDefault(TAB_BOTTOM_SHEET, false);
     public static final MutableFlagWithSafeDefault sTabFreezingUsesDiscard =
-            newMutableFlagWithSafeDefault(TAB_FREEZING_USES_DISCARD, false);
+            newMutableFlagWithSafeDefault(TAB_FREEZING_USES_DISCARD, true);
     public static final MutableFlagWithSafeDefault sTabSwitcherGroupSuggestionsAndroid =
             newMutableFlagWithSafeDefault(TAB_SWITCHER_GROUP_SUGGESTIONS_ANDROID, false);
     public static final MutableFlagWithSafeDefault sTabSwitcherGroupSuggestionsTestModeAndroid =
