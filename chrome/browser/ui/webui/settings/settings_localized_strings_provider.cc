@@ -933,9 +933,6 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
               features::kGlicWebActuationToggleConsiderUnexpectedResultsURL
                   .Get())));
   html_source->AddBoolean(
-      "glicClosedCaptionsFeatureEnabled",
-      base::FeatureList::IsEnabled(features::kGlicClosedCaptioning));
-  html_source->AddBoolean(
       "glicExtensionsFeatureEnabled",
       base::FeatureList::IsEnabled(features::kGlicExtensions));
   html_source->AddBoolean(

@@ -836,8 +836,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         base::FeatureList::IsEnabled(features::kGlicDefaultTabContextSetting);
     state->default_tab_context_setting_enabled =
         pref_service_->GetBoolean(prefs::kGlicDefaultTabContextEnabled);
-    state->enable_closed_captioning_feature =
-        base::FeatureList::IsEnabled(features::kGlicClosedCaptioning);
     state->closed_captioning_setting_enabled =
         pref_service_->GetBoolean(prefs::kGlicClosedCaptioningEnabled);
     state->enable_maybe_refresh_user_status =
@@ -1386,12 +1384,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void SetClosedCaptioningSetting(
       bool enabled,
       SetClosedCaptioningSettingCallback callback) override {
-    if (!base::FeatureList::IsEnabled(features::kGlicClosedCaptioning)) {
-      receiver_.ReportBadMessage(
-          "Client should not be able to call SetClosedCaptioningSetting "
-          "without the GlicClosedCaptioning feature enabled.");
-      return;
-    }
     pref_service_->SetBoolean(prefs::kGlicClosedCaptioningEnabled, enabled);
     if (enabled) {
       base::RecordAction(
@@ -1603,13 +1595,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void OnClosedCaptionsShown() override {
-    if (!base::FeatureList::IsEnabled(features::kGlicClosedCaptioning)) {
-      receiver_.ReportBadMessage(
-          "Client should not be able to call OnClosedCaptionsShown "
-          "without the GlicClosedCaptioning feature enabled.");
-      return;
-    }
-
     glic_service_->metrics()->LogClosedCaptionsShown();
   }
 
