@@ -348,8 +348,8 @@ void LogAutocompletePredictionCollisionTypeMetrics(
     const FormStructure& form_structure) {
   for (size_t i = 0; i < form_structure.field_count(); ++i) {
     const AutofillField* field = form_structure.field(i);
-    auto heuristic_type = field->heuristic_type();
-    auto server_type = field->server_type();
+    FieldType heuristic_type = field->heuristic_type();
+    FieldType server_type = field->server_type();
 
     auto prediction_state = AutofillMetrics::PredictionState::kNone;
     if (IsFillableFieldType(heuristic_type)) {
