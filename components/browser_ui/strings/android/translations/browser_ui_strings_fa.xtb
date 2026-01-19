@@ -412,6 +412,7 @@
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ ۱ مورد دیگر)}one{(+ # مورد دیگر)}other{(+ # مورد دیگر)}}</translation>
 <translation id="5403592356182871684">نام‌ها</translation>
 <translation id="5407203562970638234">امنیت خود را بهبود دهید</translation>
+<translation id="5436307623797390637">برنامه‌های موجود در دستگاه</translation>
 <translation id="5438097262470833822">این گزینه همه اجازه‌های <ph name="WEBSITE" /> را بازنشانی خواهد کرد</translation>
 <translation id="5459413148890178711">هرگاه روشن باشد، سایت‌ها می‌توانند مکان شما را درخواست کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند مکان شما را ببینند.</translation>
 <translation id="5489227211564503167">زمان سپری‌شده: <ph name="ELAPSED_TIME" /> از <ph name="TOTAL_TIME" />.</translation>

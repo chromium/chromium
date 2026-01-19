@@ -3975,7 +3975,7 @@ Als je het beleid instelt op 2, wordt voorkomen dat geïsoleerde web-app-oorspro
           Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of overschrijven.
 
           Als dit beleid niet is ingesteld, staat dicteren in eerste instantie uit op het inlogscherm. De gebruiker kan deze functie op elk gewenst moment aanzetten.</translation>
-<translation id="3811407842708673996">Als je dit beleid toepast of niet instelt, kunnen gebruikers het menu-item voor regio doorzoeken van <ph name="GOOGLE_LENS_PRODUCT_NAME" /> in het contextmenu zien en gebruiken. Als je dit beleid niet toepast, kunnen gebruikers het menu-item voor regio doorzoeken van <ph name="GOOGLE_LENS_PRODUCT_NAME" /> niet zien in het contextmenu als regio doorzoeken voor <ph name="GOOGLE_LENS_PRODUCT_NAME" /> wordt ondersteund.
+<translation id="3811407842708673996">Als je dit beleid toepast of niet instelt, kunnen gebruikers het menu-item 'regio doorzoeken' van <ph name="GOOGLE_LENS_PRODUCT_NAME" /> in het contextmenu zien en gebruiken. Als je dit beleid niet toepast, kunnen gebruikers het menu-item 'regio doorzoeken' van <ph name="GOOGLE_LENS_PRODUCT_NAME" /> niet zien in het contextmenu als doorzoeken van een regio voor <ph name="GOOGLE_LENS_PRODUCT_NAME" /> wordt ondersteund.
 Vanaf <ph name="PRODUCT_NAME" /> 147 wordt dit beleid beëindigd. IT-beheerders kunnen <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> gebruiken om deze functie in de toekomst te beheren.</translation>
 <translation id="3811562426301733860">Advertenties toestaan op alle sites</translation>
 <translation id="3816312845600780067">Sneltoets voor automatisch inloggen aanzetten</translation>
@@ -5394,7 +5394,7 @@ Dit beleid heeft geen invloed op <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> op he
 
 Dit beleid wordt genegeerd als <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> niet de standaard zoekmachine van gebruikers is, omdat de functie dan uitstaat.
 
-Dit beleid is onafhankelijk van het beleid <ph name="AI_MODE_SETTINGS_POLICY_NAME" />. Het beleid <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> bepaalt alleen startpunten in de omnibox of het zoekvak op de pagina Nieuw tabblad, terwijl dit beleid context delen via het zijvenster of tabbladen beheert.
+Dit beleid is onafhankelijk van het beleid <ph name="AI_MODE_SETTINGS_POLICY_NAME" />. Het beleid <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> bepaalt alleen startpunten in de omnibox of het zoekvak op de pagina Nieuw tabblad, terwijl dit beleid het delen van context via het zijvenster of tabbladen beheert.
 
 Dit beleid beheert ook niet de integratie van <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />. Deze kan worden uitgezet door <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
 

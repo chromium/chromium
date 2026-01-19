@@ -82,6 +82,7 @@
 <translation id="3619255692378312441">مدیریت دسترسی</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{بستن مورد}one{بستن مورد}other{بستن موارد}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">«برگ زیرین زبانه» در ارتفاع نیمه.</translation>
 <translation id="374923079891132274">ریزعکس پیش‌نمایش برگ هم‌رسانی.</translation>
 <translation id="3776329373944672717">عنوان گروه زبانه‌ها: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">مدیریت</translation>
@@ -126,6 +127,7 @@
 <translation id="5339733443032484186">آخرین زبانه شما</translation>
 <translation id="5380159289133845234">بایگانی کردن برگه‌های تکراری</translation>
 <translation id="5446043142172831860">برداشتن زبانه و ترک کردن گروه</translation>
+<translation id="5465437530117042974">تغییرات «برگ زیرین» بسته شد.</translation>
 <translation id="5490235265819901748">گروه زبانه گسترده شد</translation>
 <translation id="5494920125229734069">انتخاب همه</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{تا <ph name="LIMIT_COUNT_ONE" /> فایل، زبانه، یا تصویر اضافه کنید}one{تا <ph name="LIMIT_COUNT_MANY" /> فایل، زبانه، یا تصویر اضافه کنید}other{تا <ph name="LIMIT_COUNT_MANY" /> فایل، زبانه، یا تصویر اضافه کنید}}</translation>
@@ -141,6 +143,7 @@
 <translation id="6040143037577758943">بستن</translation>
 <translation id="6051432659151380973">گروه‌های زبانه به‌طور خودکار ذخیره می‌شود</translation>
 <translation id="6054741997831917303">قیمت این محصول اخیراً از <ph name="PREVIOUS_PRICE" /> به <ph name="NEW_PRICE" /> کاهش یافته است</translation>
+<translation id="606985262342505139">برگ زیرین زبانه با ارتفاع کامل.</translation>
 <translation id="6109251075362363230">همه برگه‌های تکراری اکنون بایگانی نیز خواهند شد، به‌غیراز نسخه‌ای که آخرین بار استفاده شده است.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{بستن <ph name="TABS_COUNT_ONE" /> مورد انتخاب‌شده}one{بستن <ph name="TABS_COUNT_MANY" /> مورد انتخاب‌شده}other{بستن <ph name="TABS_COUNT_MANY" /> مورد انتخاب‌شده}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{انتقال گروه به پنجره جدید}one{انتقال گروه به پنجره دیگر}other{انتقال گروه به پنجره دیگر}}</translation>
