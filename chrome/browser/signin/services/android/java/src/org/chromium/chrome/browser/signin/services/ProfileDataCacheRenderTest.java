@@ -5,9 +5,6 @@
 package org.chromium.chrome.browser.signin.services;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
@@ -62,7 +59,6 @@ import java.util.List;
 @Batch(ProfileDataCacheRenderTest.PROFILE_DATA_BATCH_NAME)
 public class ProfileDataCacheRenderTest {
     public static final String PROFILE_DATA_BATCH_NAME = "profile_data";
-    public static final String ACCOUNT_EMAIL = "test@gmail.com";
     private static final long NATIVE_IDENTITY_MANAGER = 10002L;
 
     @ClassParameter
@@ -155,9 +151,6 @@ public class ProfileDataCacheRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testProfileDataPopulatedWithoutGmsProfileDataSource() throws IOException {
-        when(mIdentityManagerNativeMock.findExtendedAccountInfoByEmailAddress(
-                        anyLong(), eq(ACCOUNT_EMAIL)))
-                .thenReturn(TestAccounts.ACCOUNT1);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -210,10 +203,6 @@ public class ProfileDataCacheRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testPlaceholderIsScaled() throws IOException {
-        // Test the case where there is no data for an account.
-        when(mIdentityManagerNativeMock.findExtendedAccountInfoByEmailAddress(
-                        anyLong(), eq(TestAccounts.ACCOUNT1.getEmail())))
-                .thenReturn(null);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -226,9 +215,6 @@ public class ProfileDataCacheRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testAvatarIsScaled() throws IOException {
-        when(mIdentityManagerNativeMock.findExtendedAccountInfoByEmailAddress(
-                        anyLong(), eq(TestAccounts.ACCOUNT1.getEmail())))
-                .thenReturn(TestAccounts.ACCOUNT1);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

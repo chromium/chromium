@@ -287,7 +287,7 @@ public class SigninTestRule implements TestRule {
                     Criteria.checkThat(
                             IdentityServicesProvider.get()
                                     .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
-                                    .findExtendedAccountInfoByEmailAddress(accountInfo.getEmail())
+                                    .findExtendedAccountInfoByAccountId(accountInfo.getId())
                                     .getAccountCapabilities()
                                     .isSubjectToParentalControls(),
                             is(Tribool.TRUE));
