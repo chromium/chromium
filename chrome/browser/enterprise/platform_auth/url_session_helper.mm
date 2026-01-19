@@ -9,9 +9,14 @@
 #include "base/apple/foundation_util.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
+#include "base/no_destructor.h"
+#include "base/strings/string_split.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/time/time.h"
+#include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #include "net/base/apple/url_conversions.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -25,50 +30,19 @@ namespace {
 
 constexpr NSString* kNsOrigin = @"Origin";
 
-// These lists contain the minimum required for Okta SSO request to work.
-constexpr auto kRequestHeadersAllowlist =
-    base::MakeFixedFlatSet<std::string_view>({
-        "accept",
-        "accept-language",
-        "content-type",
-        "user-agent",
-        "x-okta-user-agent-extended",
-    });
+base::flat_set<std::string> ParseCommaSeparatedList(std::string raw_param) {
+  std::vector<std::string> parts = base::SplitString(
+      raw_param, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  return base::flat_set<std::string>(std::move(parts));
+}
 
-constexpr auto kFixedRequestHeaders =
-    base::MakeFixedFlatMap<std::string_view, std::string_view>({
-        {"Ceche-Control", "no-cache"},
-        {"Pragma", "no-cache"},
-        {"Priority", "u=1, i"},
-        {"Sec-Fetch-Dest", "empty"},
-        {"Sec-Fetch-Mode", "cors"},
-        {"Sec-Fetch-Site", "same-origin"},
-    });
-
-constexpr auto kResponseHeadersAllowlist =
-    base::MakeFixedFlatSet<std::string_view>({
-        "accept-ch",
-        "access-control-allow-credentials",
-        "access-control-allow-headers",
-        "access-control-allow-origin",
-        "cache-control",
-        "challengerequest",
-        "content-security-policy",
-        "content-security-policy-report-only",
-        "content-type",
-        "date",
-        "expires",
-        "referrer-policy",
-        "server",
-        "strict-transport-security",
-        "vary",
-        "www-authenticate",
-        "x-content-type-options",
-        "x-okta-request-id",
-        "x-rate-limit-limit",
-        "x-rate-limit-remaining",
-        "x-robots-tag",
-    });
+base::flat_map<std::string, std::string> ParseFixedRequestHeaders() {
+  std::string raw_param = enterprise_auth::kOktaSsoFixedRequestHeaders.Get();
+  base::StringPairs pairs;
+  base::SplitStringIntoKeyValuePairs(raw_param, ';', '|', &pairs);
+  base::flat_map<std::string, std::string> headers(std::move(pairs));
+  return headers;
+}
 
 // Will ignore headers where conversion between std::string and NSString failed.
 // Never returns nil, if all headers were skipped an empty dictionary will be
@@ -78,8 +52,13 @@ NSMutableDictionary* ConvertHttpRequestHeaders(
     const net::HttpRequestHeaders& headers) {
   NSMutableDictionary* headers_dict = [NSMutableDictionary dictionary];
 
+  static const base::NoDestructor<base::flat_set<std::string>>
+      kRequestHeadersAllowlist(ParseCommaSeparatedList(
+          enterprise_auth::kOktaSsoRequestHeadersAllowlist.Get()));
+
   for (const auto& header : headers.GetHeaderVector()) {
-    if (kRequestHeadersAllowlist.contains(base::ToLowerASCII(header.key))) {
+    if (kRequestHeadersAllowlist->empty() ||
+        kRequestHeadersAllowlist->contains(base::ToLowerASCII(header.key))) {
       NSString* ns_key = base::SysUTF8ToNSString(header.key);
       NSString* ns_value = base::SysUTF8ToNSString(header.value);
       if (ns_key && ns_value) {
@@ -88,7 +67,10 @@ NSMutableDictionary* ConvertHttpRequestHeaders(
     }
   }
 
-  for (const auto& [key, value] : kFixedRequestHeaders) {
+  static const base::NoDestructor<base::flat_map<std::string, std::string>>
+      kFixedRequestHeaders(ParseFixedRequestHeaders());
+
+  for (const auto& [key, value] : *kFixedRequestHeaders) {
     NSString* ns_key = base::SysUTF8ToNSString(key);
     NSString* ns_value = base::SysUTF8ToNSString(value);
     if (ns_key && ns_value) {
@@ -156,10 +138,15 @@ scoped_refptr<net::HttpResponseHeaders> ConvertNSHTTPURLResponseToHeaders(
   std::vector<std::pair<std::string, std::string>> headers_to_add;
   headers_to_add.reserve(headers.count);
 
+  static const base::NoDestructor<base::flat_set<std::string>>
+      kResponseHeadersAllowlist(ParseCommaSeparatedList(
+          enterprise_auth::kOktaSsoResponseHeadersAllowlist.Get()));
+
   for (NSString* key in headers) {
     NSString* value = headers[key];
     std::string header_name = base::SysNSStringToUTF8(key);
-    if (!kResponseHeadersAllowlist.contains(base::ToLowerASCII(header_name))) {
+    if (!kResponseHeadersAllowlist->empty() &&
+        !kResponseHeadersAllowlist->contains(base::ToLowerASCII(header_name))) {
       continue;
     }
 
