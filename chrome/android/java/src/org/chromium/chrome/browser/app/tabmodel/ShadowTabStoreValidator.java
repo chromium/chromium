@@ -99,10 +99,10 @@ public class ShadowTabStoreValidator {
 
         for (CreateFrozenTabArguments arguments : mShadowTabCreator.createFrozenTabArgumentsList) {
             Tab tab = mTabModel.getTabById(arguments.id);
-            if (tab == null || arguments.state.contentsState == null) continue;
+            if (tab == null || arguments.state.url == null) continue;
 
             String authUrl = tab.getUrl().getSpec();
-            String shadowUrl = arguments.state.contentsState.getVirtualUrlFromState();
+            String shadowUrl = arguments.state.url.getSpec();
 
             if (!TextUtils.equals(authUrl, shadowUrl)) {
                 long timeDelta = tab.getTimestampMillis() - arguments.state.timestampMillis;
