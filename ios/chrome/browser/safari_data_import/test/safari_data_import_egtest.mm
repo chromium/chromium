@@ -115,6 +115,7 @@ NSString* const kInvalidPasswordUsername = @"Superman";
     /// Show the First Run UI at startup.
     firstRunConfig.additional_args.push_back("-FirstRunForceEnabled");
     firstRunConfig.additional_args.push_back("true");
+    firstRunConfig.features_disabled.push_back(kBestOfAppFRE);
     firstRunConfig.relaunch_policy = ForceRelaunchByCleanShutdown;
     [[AppLaunchManager sharedManager]
         ensureAppLaunchedWithConfiguration:firstRunConfig];
