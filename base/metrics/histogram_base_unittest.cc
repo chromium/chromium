@@ -159,36 +159,6 @@ TEST_F(HistogramBaseTest, DeserializeSparseHistogram) {
   EXPECT_EQ(0, deserialized->flags());
 }
 
-TEST_F(HistogramBaseTest, AddKilo) {
-  HistogramBase* histogram =
-      LinearHistogram::FactoryGet("TestAddKiloHistogram", 1, 1000, 100, 0);
-
-  histogram->AddKilo(100, 1000);
-  histogram->AddKilo(200, 2000);
-  histogram->AddKilo(300, 1500);
-
-  std::unique_ptr<HistogramSamples> samples = histogram->SnapshotSamples();
-  EXPECT_EQ(1, samples->GetCount(100));
-  EXPECT_EQ(2, samples->GetCount(200));
-  EXPECT_LE(1, samples->GetCount(300));
-  EXPECT_GE(2, samples->GetCount(300));
-}
-
-TEST_F(HistogramBaseTest, AddKiB) {
-  HistogramBase* histogram =
-      LinearHistogram::FactoryGet("TestAddKiBHistogram", 1, 1000, 100, 0);
-
-  histogram->AddKiB(100, 1024);
-  histogram->AddKiB(200, 2048);
-  histogram->AddKiB(300, 1536);
-
-  std::unique_ptr<HistogramSamples> samples = histogram->SnapshotSamples();
-  EXPECT_EQ(1, samples->GetCount(100));
-  EXPECT_EQ(2, samples->GetCount(200));
-  EXPECT_LE(1, samples->GetCount(300));
-  EXPECT_GE(2, samples->GetCount(300));
-}
-
 TEST_F(HistogramBaseTest, AddTimeMillisecondsGranularityOverflow) {
   const HistogramBase::Sample32 sample_max =
       std::numeric_limits<HistogramBase::Sample32>::max() / 2;

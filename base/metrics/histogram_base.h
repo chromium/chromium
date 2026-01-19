@@ -191,15 +191,6 @@ class BASE_EXPORT HistogramBase {
   // than or equal to 1.
   virtual void AddCount(Sample32 value, int count) = 0;
 
-  // Similar to above but divides |count| by the |scale| amount. Probabilistic
-  // rounding is used to yield a reasonably accurate total when many samples
-  // are added. Methods for common cases of scales 1000 and 1024 are included.
-  // The ScaledLinearHistogram (which can also used be for enumerations) may be
-  // a better (and faster) solution.
-  void AddScaled(Sample32 value, int count, int scale);
-  void AddKilo(Sample32 value, int count);  // scale=1000
-  void AddKiB(Sample32 value, int count);   // scale=1024
-
   // Convenient functions that call Add(Sample32).
   void AddTime(const TimeDelta& time) { AddTimeMillisecondsGranularity(time); }
   void AddTimeMillisecondsGranularity(const TimeDelta& time);
