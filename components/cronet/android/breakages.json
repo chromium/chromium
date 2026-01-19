@@ -82,6 +82,12 @@
       "good_change_ids": ["Ic335c4142fb5d9fbf0ecf4989ef22b94fa3ee0bf"],
       "bugs": ["b/410846554"],
       "comment": "JniAndroid class not found when app is already crashing."
+    },
+    {
+      "bad_change_id": "Ic093a54054d2410f214e360a86e07b638a5e65b5",
+      "good_change_ids": ["I02cf0d2701be036d121b05ab58f01132a132fb44"],
+      "bugs": ["b/469760313"],
+      "comment": "HttpEngine crashing due to cflags / ldflags mismatch."
     }
   ],
   "_end_comment": "Add new breakages to the top of the list"
