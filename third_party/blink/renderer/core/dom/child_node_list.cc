@@ -24,7 +24,7 @@
 #include "third_party/blink/renderer/core/dom/child_node_list.h"
 
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/dom/node_rare_data.h"
+#include "third_party/blink/renderer/core/dom/element_rare_data_vector.h"
 
 namespace blink {
 

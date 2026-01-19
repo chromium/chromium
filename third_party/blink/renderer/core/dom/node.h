@@ -40,11 +40,11 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer_options.h"
-#include "third_party/blink/renderer/core/dom/node_rare_data.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/custom_spaces.h"
@@ -67,6 +67,7 @@ class ContainerNode;
 class DOMNodeIds;
 class Document;
 class Element;
+class ElementRareDataVector;
 class Event;
 class EventDispatchHandlingState;
 class ExceptionState;
@@ -84,7 +85,6 @@ class MutationObserverRegistration;
 class NodeCloningData;
 class NodeList;
 class NodeListsNodeData;
-class NodeRareData;
 class Part;
 class QualifiedName;
 class RegisteredEventListener;
@@ -101,6 +101,8 @@ class V8UnionStringOrTrustedScript;
 class WebPluginContainerImpl;
 
 struct PhysicalRect;
+
+using PartsList = GCedHeapDeque<Member<Part>>;
 
 const int kElementNamespaceTypeShift = 5;
 const int kNodeStyleChangeShift = 16;
@@ -1086,24 +1088,12 @@ class CORE_EXPORT Node : public EventTarget {
   void RegisterScrollTimeline(ScrollTimeline*);
   void UnregisterScrollTimeline(ScrollTimeline*);
 
-  void AddDOMPart(Part& part) {
-    DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
-    EnsureRareData().AddDOMPart(part);
-  }
-  void RemoveDOMPart(Part& part) {
-    DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
-    EnsureRareData().RemoveDOMPart(part);
-  }
-  PartsList* GetDOMParts() const {
-    return data_ ? data_->GetDOMParts() : nullptr;
-  }
-
-  DOMNodeId NodeID(base::PassKey<DOMNodeIds>) const {
-    return data_ ? data_->NodeId() : kInvalidDOMNodeId;
-  }
-  DOMNodeId& EnsureNodeID(base::PassKey<DOMNodeIds>) {
-    return EnsureRareData().NodeId();
-  }
+  // Defined in node-inl.h.
+  inline void AddDOMPart(Part& part);
+  inline void RemoveDOMPart(Part& part);
+  inline PartsList* GetDOMParts() const;
+  inline DOMNodeId NodeID(base::PassKey<DOMNodeIds>) const;
+  inline DOMNodeId& EnsureNodeID(base::PassKey<DOMNodeIds>);
 
   // For the imperative slot distribution API.
   void SetManuallyAssignedSlot(HTMLSlotElement* slot);
@@ -1299,8 +1289,10 @@ class CORE_EXPORT Node : public EventTarget {
                                        Document& new_document);
 
   // |RareData| cannot be replaced or removed once assigned.
-  NodeRareData* RareData() const { return data_.Get(); }
-  NodeRareData& EnsureRareData() { return data_ ? *data_ : CreateRareData(); }
+  ElementRareDataVector* RareData() const { return data_.Get(); }
+  ElementRareDataVector& EnsureRareData() {
+    return data_ ? *data_ : CreateRareData();
+  }
 
   void SetHasCustomStyleCallbacks() {
     SetFlag(true, kHasCustomStyleCallbacksFlag);
@@ -1342,7 +1334,7 @@ class CORE_EXPORT Node : public EventTarget {
   }
 
   // Used exclusively by |EnsureRareData|.
-  NodeRareData& CreateRareData();
+  ElementRareDataVector& CreateRareData();
 
   void MaybeAddNodeInsertedTraceEvent();
 
@@ -1369,7 +1361,7 @@ class CORE_EXPORT Node : public EventTarget {
   Member<Node> previous_;
   Member<Node> next_;
   Member<LayoutObject> layout_object_;
-  Member<NodeRareData> data_;
+  Member<ElementRareDataVector> data_;
 };
 
 inline void Node::SetParentNode(ContainerNode* parent) {

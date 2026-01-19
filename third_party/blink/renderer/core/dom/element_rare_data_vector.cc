@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/dom/element_rare_data_vector.h"
 
 #include "third_party/blink/renderer/core/animation/element_animations.h"
+#include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/css/container_query_data.h"
 #include "third_party/blink/renderer/core/css/cssom/inline_style_property_map.h"
 #include "third_party/blink/renderer/core/css/inline_css_style_declaration.h"
@@ -12,17 +13,22 @@
 #include "third_party/blink/renderer/core/css/style_scope_data.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/dom/attr.h"
+#include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/css_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/dataset_dom_string_map.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/element_rare_data_vector.h"
 #include "third_party/blink/renderer/core/dom/explicitly_set_attr_elements_map.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_node_data.h"
 #include "third_party/blink/renderer/core/dom/has_invalidation_flags.h"
 #include "third_party/blink/renderer/core/dom/interest_invoker_target_data.h"
 #include "third_party/blink/renderer/core/dom/invoker_data.h"
+#include "third_party/blink/renderer/core/dom/mutation_observer_registration.h"
 #include "third_party/blink/renderer/core/dom/named_node_map.h"
 #include "third_party/blink/renderer/core/dom/names_map.h"
-#include "third_party/blink/renderer/core/dom/node_rare_data.h"
+#include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
+#include "third_party/blink/renderer/core/dom/part.h"
 #include "third_party/blink/renderer/core/dom/popover_data.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_data.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -36,18 +42,20 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/overscroll/overscroll_area_tracker.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observation.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/content_data.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
-
-ElementRareDataVector::ElementRareDataVector() = default;
 
 ElementRareDataVector::~ElementRareDataVector() {
   DCHECK(!GetField(FieldId::kPseudoElementData));
@@ -595,7 +603,8 @@ CustomElementRegistry* ElementRareDataVector::GetCustomElementRegistry() const {
       fields_.GetField(FieldId::kCustomElementRegistry).Get());
 }
 
-void ElementRareDataVector::SetCustomElementRegistry(CustomElementRegistry* registry) {
+void ElementRareDataVector::SetCustomElementRegistry(
+    CustomElementRegistry* registry) {
   // An element's custom element registry should only be set once unless the
   // registry is a global registry and can be reset during cross document node
   // adoption.
@@ -693,8 +702,111 @@ OverscrollAreaTracker* ElementRareDataVector::OverscrollAreaTracker() const {
 }
 
 void ElementRareDataVector::Trace(blink::Visitor* visitor) const {
+  visitor->Trace(node_lists_);
+  visitor->Trace(mutation_observer_data_);
+  visitor->Trace(flat_tree_node_data_);
+  visitor->Trace(scroll_timelines_);
+  visitor->Trace(dom_parts_);
   visitor->Trace(fields_);
-  NodeRareData::Trace(visitor);
 }
+
+void NodeMutationObserverData::Trace(Visitor* visitor) const {
+  visitor->Trace(registry_);
+  visitor->Trace(transient_registry_);
+}
+
+void NodeMutationObserverData::AddTransientRegistration(
+    MutationObserverRegistration* registration) {
+  transient_registry_.insert(registration);
+}
+
+void NodeMutationObserverData::RemoveTransientRegistration(
+    MutationObserverRegistration* registration) {
+  DCHECK(transient_registry_.Contains(registration));
+  transient_registry_.erase(registration);
+}
+
+void NodeMutationObserverData::AddRegistration(
+    MutationObserverRegistration* registration) {
+  registry_.push_back(registration);
+}
+
+void NodeMutationObserverData::RemoveRegistration(
+    MutationObserverRegistration* registration) {
+  DCHECK(registry_.Contains(registration));
+  registry_.EraseAt(registry_.Find(registration));
+}
+
+void ElementRareDataVector::RegisterScrollTimeline(ScrollTimeline* timeline) {
+  if (!scroll_timelines_) {
+    scroll_timelines_ =
+        MakeGarbageCollected<GCedHeapHashSet<Member<ScrollTimeline>>>();
+  }
+  scroll_timelines_->insert(timeline);
+}
+void ElementRareDataVector::UnregisterScrollTimeline(ScrollTimeline* timeline) {
+  scroll_timelines_->erase(timeline);
+}
+
+void ElementRareDataVector::AddDOMPart(Part& part) {
+  DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
+  if (!dom_parts_) {
+    dom_parts_ = MakeGarbageCollected<PartsList>();
+  }
+  DCHECK(!std::ranges::contains(*dom_parts_, &part));
+  dom_parts_->push_back(&part);
+}
+
+void ElementRareDataVector::RemoveDOMPart(Part& part) {
+  DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
+  DCHECK(dom_parts_ && std::ranges::contains(*dom_parts_, &part));
+  // Common case is that one node has one part:
+  if (dom_parts_->size() == 1) {
+    DCHECK_EQ(dom_parts_->front(), &part);
+    dom_parts_->clear();
+  } else {
+    // This is the very slow case - multiple parts for a single node.
+    TemporaryPartsList new_list;
+    for (auto p : *dom_parts_) {
+      if (p != &part) {
+        new_list.push_back(p);
+      }
+    }
+    dom_parts_->Swap(new_list);
+  }
+  if (dom_parts_->empty()) {
+    dom_parts_ = nullptr;
+  }
+}
+
+PartsList* ElementRareDataVector::GetDOMParts() const {
+  DCHECK(!dom_parts_ || !RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
+  return dom_parts_.Get();
+}
+
+void ElementRareDataVector::IncrementConnectedSubframeCount() {
+  SECURITY_CHECK((connected_frame_count_ + 1) <= Page::MaxNumberOfFrames());
+  ++connected_frame_count_;
+}
+
+NodeListsNodeData& ElementRareDataVector::CreateNodeLists() {
+  node_lists_ = MakeGarbageCollected<NodeListsNodeData>();
+  return *node_lists_;
+}
+
+FlatTreeNodeData& ElementRareDataVector::EnsureFlatTreeNodeData() {
+  if (!flat_tree_node_data_) {
+    flat_tree_node_data_ = MakeGarbageCollected<FlatTreeNodeData>();
+  }
+  return *flat_tree_node_data_;
+}
+
+static_assert(static_cast<int>(ElementRareDataVector::kNumberOfElementFlags) ==
+                  static_cast<int>(ElementFlags::kNumberOfElementFlags),
+              "kNumberOfElementFlags must match.");
+static_assert(
+    static_cast<int>(ElementRareDataVector::kNumberOfDynamicRestyleFlags) ==
+        static_cast<int>(DynamicRestyleFlags::kNumberOfDynamicRestyleFlags),
+    "kNumberOfDynamicRestyleFlags must match.");
 
 }  // namespace blink

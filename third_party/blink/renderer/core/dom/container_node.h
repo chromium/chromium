@@ -197,122 +197,38 @@ class CORE_EXPORT ContainerNode : public Node {
 
   void RemovedFrom(ContainerNode& insertion_point) override;
 
-  bool ChildrenOrSiblingsAffectedByFocus() const {
-    return HasRestyleFlag(
-        DynamicRestyleFlags::kChildrenOrSiblingsAffectedByFocus);
-  }
-  void SetChildrenOrSiblingsAffectedByFocus() {
-    SetRestyleFlag(DynamicRestyleFlags::kChildrenOrSiblingsAffectedByFocus);
-  }
+  // Defined in node-inl.h.
+  inline bool ChildrenOrSiblingsAffectedByFocus() const;
+  inline void SetChildrenOrSiblingsAffectedByFocus();
+  inline bool ChildrenOrSiblingsAffectedByFocusVisible() const;
+  inline void SetChildrenOrSiblingsAffectedByFocusVisible();
+  inline bool ChildrenOrSiblingsAffectedByFocusWithin() const;
+  inline void SetChildrenOrSiblingsAffectedByFocusWithin();
+  inline bool ChildrenOrSiblingsAffectedByHover() const;
+  inline void SetChildrenOrSiblingsAffectedByHover();
+  inline bool ChildrenOrSiblingsAffectedByActive() const;
+  inline void SetChildrenOrSiblingsAffectedByActive();
+  inline bool ChildrenOrSiblingsAffectedByDrag() const;
+  inline void SetChildrenOrSiblingsAffectedByDrag();
+  inline bool ChildrenAffectedByFirstChildRules() const;
+  inline void SetChildrenAffectedByFirstChildRules();
+  inline bool ChildrenAffectedByLastChildRules() const;
+  inline void SetChildrenAffectedByLastChildRules();
+  inline bool ChildrenAffectedByDirectAdjacentRules() const;
+  inline void SetChildrenAffectedByDirectAdjacentRules();
+  inline bool ChildrenAffectedByIndirectAdjacentRules() const;
+  inline void SetChildrenAffectedByIndirectAdjacentRules();
+  inline bool ChildrenAffectedByForwardPositionalRules() const;
+  inline void SetChildrenAffectedByForwardPositionalRules();
+  inline bool ChildrenAffectedByBackwardPositionalRules() const;
+  inline void SetChildrenAffectedByBackwardPositionalRules();
+  inline bool AffectedByFirstChildRules() const;
+  inline void SetAffectedByFirstChildRules();
+  inline bool AffectedByLastChildRules() const;
+  inline void SetAffectedByLastChildRules();
 
-  bool ChildrenOrSiblingsAffectedByFocusVisible() const {
-    return HasRestyleFlag(
-        DynamicRestyleFlags::kChildrenOrSiblingsAffectedByFocusVisible);
-  }
-  void SetChildrenOrSiblingsAffectedByFocusVisible() {
-    SetRestyleFlag(
-        DynamicRestyleFlags::kChildrenOrSiblingsAffectedByFocusVisible);
-  }
-
-  bool ChildrenOrSiblingsAffectedByFocusWithin() const {
-    return HasRestyleFlag(
-        DynamicRestyleFlags::kChildrenOrSiblingsAffectedByFocusWithin);
-  }
-  void SetChildrenOrSiblingsAffectedByFocusWithin() {
-    SetRestyleFlag(
-        DynamicRestyleFlags::kChildrenOrSiblingsAffectedByFocusWithin);
-  }
-
-  bool ChildrenOrSiblingsAffectedByHover() const {
-    return HasRestyleFlag(
-        DynamicRestyleFlags::kChildrenOrSiblingsAffectedByHover);
-  }
-  void SetChildrenOrSiblingsAffectedByHover() {
-    SetRestyleFlag(DynamicRestyleFlags::kChildrenOrSiblingsAffectedByHover);
-  }
-
-  bool ChildrenOrSiblingsAffectedByActive() const {
-    return HasRestyleFlag(
-        DynamicRestyleFlags::kChildrenOrSiblingsAffectedByActive);
-  }
-  void SetChildrenOrSiblingsAffectedByActive() {
-    SetRestyleFlag(DynamicRestyleFlags::kChildrenOrSiblingsAffectedByActive);
-  }
-
-  bool ChildrenOrSiblingsAffectedByDrag() const {
-    return HasRestyleFlag(
-        DynamicRestyleFlags::kChildrenOrSiblingsAffectedByDrag);
-  }
-  void SetChildrenOrSiblingsAffectedByDrag() {
-    SetRestyleFlag(DynamicRestyleFlags::kChildrenOrSiblingsAffectedByDrag);
-  }
-
-  bool ChildrenAffectedByFirstChildRules() const {
-    return HasRestyleFlag(
-        DynamicRestyleFlags::kChildrenAffectedByFirstChildRules);
-  }
-  void SetChildrenAffectedByFirstChildRules() {
-    SetRestyleFlag(DynamicRestyleFlags::kChildrenAffectedByFirstChildRules);
-  }
-
-  bool ChildrenAffectedByLastChildRules() const {
-    return HasRestyleFlag(
-        DynamicRestyleFlags::kChildrenAffectedByLastChildRules);
-  }
-  void SetChildrenAffectedByLastChildRules() {
-    SetRestyleFlag(DynamicRestyleFlags::kChildrenAffectedByLastChildRules);
-  }
-
-  bool ChildrenAffectedByDirectAdjacentRules() const {
-    return HasRestyleFlag(
-        DynamicRestyleFlags::kChildrenAffectedByDirectAdjacentRules);
-  }
-  void SetChildrenAffectedByDirectAdjacentRules() {
-    SetRestyleFlag(DynamicRestyleFlags::kChildrenAffectedByDirectAdjacentRules);
-  }
-
-  bool ChildrenAffectedByIndirectAdjacentRules() const {
-    return HasRestyleFlag(
-        DynamicRestyleFlags::kChildrenAffectedByIndirectAdjacentRules);
-  }
-  void SetChildrenAffectedByIndirectAdjacentRules() {
-    SetRestyleFlag(
-        DynamicRestyleFlags::kChildrenAffectedByIndirectAdjacentRules);
-  }
-
-  bool ChildrenAffectedByForwardPositionalRules() const {
-    return HasRestyleFlag(
-        DynamicRestyleFlags::kChildrenAffectedByForwardPositionalRules);
-  }
-  void SetChildrenAffectedByForwardPositionalRules() {
-    SetRestyleFlag(
-        DynamicRestyleFlags::kChildrenAffectedByForwardPositionalRules);
-  }
-
-  bool ChildrenAffectedByBackwardPositionalRules() const {
-    return HasRestyleFlag(
-        DynamicRestyleFlags::kChildrenAffectedByBackwardPositionalRules);
-  }
-  void SetChildrenAffectedByBackwardPositionalRules() {
-    SetRestyleFlag(
-        DynamicRestyleFlags::kChildrenAffectedByBackwardPositionalRules);
-  }
-
-  bool AffectedByFirstChildRules() const {
-    return HasRestyleFlag(DynamicRestyleFlags::kAffectedByFirstChildRules);
-  }
-  void SetAffectedByFirstChildRules() {
-    SetRestyleFlag(DynamicRestyleFlags::kAffectedByFirstChildRules);
-  }
-
-  bool AffectedByLastChildRules() const {
-    return HasRestyleFlag(DynamicRestyleFlags::kAffectedByLastChildRules);
-  }
-  void SetAffectedByLastChildRules() {
-    SetRestyleFlag(DynamicRestyleFlags::kAffectedByLastChildRules);
-  }
-
-  bool NeedsAdjacentStyleRecalc() const;
+  // Defined in node-inl.h.
+  inline bool NeedsAdjacentStyleRecalc() const;
 
   // FIXME: These methods should all be renamed to something better than
   // "check", since it's not clear that they alter the style bits of siblings
@@ -574,18 +490,9 @@ class CORE_EXPORT ContainerNode : public Node {
       NodeVector& post_insertion_notification_targets);
   void NotifyNodeRemoved(Node&);
 
-  bool HasRestyleFlag(DynamicRestyleFlags mask) const {
-    if (const NodeRareData* data = RareData()) {
-      return data->HasRestyleFlag(mask);
-    }
-    return false;
-  }
-  bool HasRestyleFlags() const {
-    if (const NodeRareData* data = RareData()) {
-      return data->HasRestyleFlags();
-    }
-    return false;
-  }
+  // Defined in node-inl.h.
+  inline bool HasRestyleFlag(DynamicRestyleFlags mask) const;
+  inline bool HasRestyleFlags() const;
   void SetRestyleFlag(DynamicRestyleFlags);
 
   bool RecheckNodeInsertionStructuralPrereq(const NodeVector&,
@@ -617,13 +524,6 @@ inline bool ContainerNode::HasChildCount(unsigned count) const {
 inline ContainerNode::ContainerNode(TreeScope* tree_scope,
                                     ConstructionType type)
     : Node(tree_scope, type), first_child_(nullptr) {}
-
-inline bool ContainerNode::NeedsAdjacentStyleRecalc() const {
-  if (!ChildrenAffectedByDirectAdjacentRules() &&
-      !ChildrenAffectedByIndirectAdjacentRules())
-    return false;
-  return ChildNeedsStyleRecalc() || ChildNeedsStyleInvalidation();
-}
 
 inline unsigned Node::CountChildren() const {
   auto* this_node = DynamicTo<ContainerNode>(*this);

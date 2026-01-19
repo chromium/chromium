@@ -109,7 +109,6 @@ class Element;
 class ElementAnimations;
 class ElementInternals;
 class ElementIntersectionObserverData;
-class ElementRareDataVector;
 class ExceptionState;
 class FocusOptions;
 class GetAnimationsOptions;
@@ -2528,9 +2527,6 @@ class CORE_EXPORT Element : public ContainerNode {
       std::variant<std::monostate, SetHTMLOptions*, SetHTMLUnsafeOptions*>
           options,
       ExceptionState&);
-
-  ElementRareDataVector* GetElementRareData() const;
-  ElementRareDataVector& EnsureElementRareData();
 
   void RemoveAttrNodeList();
   void DetachAllAttrNodesFromElement();

@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/dom/explicitly_set_attr_elements_map.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
 #include "third_party/blink/renderer/core/dom/has_invalidation_flags.h"
-#include "third_party/blink/renderer/core/dom/node_rare_data.h"
 #include "third_party/blink/renderer/core/dom/overscroll_pseudo_element_data.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element_data.h"
@@ -56,124 +55,113 @@ class OutOfFlowData;
 class HTMLElement;
 class Element;
 class OverscrollAreaTracker;
+enum class DynamicRestyleFlags;
+enum class ElementFlags;
+class FlatTreeNodeData;
+class MutationObserverRegistration;
+class NodeListsNodeData;
+class Part;
+class ScrollTimeline;
 
 enum class ElementFlags;
 
-class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
- private:
-  friend class ElementRareDataVectorTest;
-  enum class FieldId : unsigned {
-    kDataset = 0,
-    kShadowRoot = 1,
-    kClassList = 2,
-    kAttributeMap = 3,
-    kAttrNodeList = 4,
-    kCssomWrapper = 5,
-    kElementAnimations = 6,
-    kIntersectionObserverData = 7,
-    kPseudoElementData = 8,
-    kEditContext = 9,
-    kPart = 10,
-    kCssomMapWrapper = 11,
-    kElementInternals = 12,
-    kDisplayLockContext = 13,
-    kContainerQueryData = 14,
-    kRegionCaptureCropId = 15,
-    kResizeObserverData = 16,
-    kCustomElementDefinition = 17,
-    kPopoverData = 18,
-    kPartNamesMap = 19,
-    kNonce = 20,
-    kIsValue = 21,
-    kSavedLayerScrollOffset = 22,
-    kAnchorPositionScrollData = 23,
-    kAnchorElementObserver = 24,
-    kMayBeImplicitAnchor = 25,
-    kLastRememberedBlockSize = 26,
-    kLastRememberedInlineSize = 27,
-    kRestrictionTargetId = 28,
-    kStyleScopeData = 29,
-    kOutOfFlowData = 30,
-    kInvokerData = 31,
-    kInterestInvokerTargetData = 32,
-    kScrollMarkerGroupData = 33,
-    kScrollMarkerGroupContainerData = 34,
-    kExplicitlySetElementsForAttr = 35,
-    kCSSPseudoElementData = 36,
-    kCustomElementRegistry = 37,
-    kAnimationTriggerData = 38,
-    kFocusgroupLastFocused = 39,
-    kDisplayAdElementMonitor = 40,
-    kOverscrollAreaTracker = 41,
-    kAltContentData = 42,
-    kOverscrollContainer = 43,
-    kTrackedElementRect = 44,
-    kNumFields = 45,
-  };
+using TemporaryPartsList = HeapDeque<Member<Part>>;
 
-  ElementRareDataField* GetField(FieldId field_id) const;
-  void SetField(FieldId field_id, ElementRareDataField* field);
-
-  template <typename T>
-  class DataFieldWrapper final : public GarbageCollected<DataFieldWrapper<T>>,
-                                 public ElementRareDataField {
-   public:
-    T& Get() { return data_; }
-    void Trace(Visitor* visitor) const override {
-      ElementRareDataField::Trace(visitor);
-      TraceIfNeeded<T>::Trace(visitor, data_);
-    }
-
-   private:
-    T data_;
-  };
-
-  template <typename T, typename... Args>
-  T& EnsureField(FieldId field_id, Args&&... args) {
-    T* field = static_cast<T*>(GetField(field_id));
-    if (!field) {
-      field = MakeGarbageCollected<T>(std::forward<Args>(args)...);
-      SetField(field_id, field);
-    }
-    return *field;
-  }
-
-  template <typename T>
-  T& EnsureWrappedField(FieldId field_id) {
-    return EnsureField<DataFieldWrapper<T>>(field_id).Get();
-  }
-
-  template <typename T, typename U>
-  void SetWrappedField(FieldId field_id, U data) {
-    EnsureWrappedField<T>(field_id) = std::move(data);
-  }
-
-  template <typename T>
-  T* GetWrappedField(FieldId field_id) const {
-    auto* wrapper = static_cast<DataFieldWrapper<T>*>(GetField(field_id));
-    return wrapper ? &wrapper->Get() : nullptr;
-  }
-
-  template <typename T>
-  void SetOptionalField(FieldId field_id, std::optional<T> data) {
-    if (data) {
-      SetWrappedField<T>(field_id, *data);
-    } else {
-      SetField(field_id, nullptr);
-    }
-  }
-
-  template <typename T>
-  std::optional<T> GetOptionalField(FieldId field_id) const {
-    if (auto* value = GetWrappedField<T>(field_id)) {
-      return *value;
-    }
-    return std::nullopt;
-  }
-
+class NodeMutationObserverData final
+    : public GarbageCollected<NodeMutationObserverData> {
  public:
-  ElementRareDataVector();
-  ~ElementRareDataVector() override;
+  NodeMutationObserverData() = default;
+  NodeMutationObserverData(const NodeMutationObserverData&) = delete;
+  NodeMutationObserverData& operator=(const NodeMutationObserverData&) = delete;
+
+  const HeapVector<Member<MutationObserverRegistration>>& Registry() {
+    return registry_;
+  }
+
+  const HeapHashSet<Member<MutationObserverRegistration>>& TransientRegistry() {
+    return transient_registry_;
+  }
+
+  void AddTransientRegistration(MutationObserverRegistration* registration);
+  void RemoveTransientRegistration(MutationObserverRegistration* registration);
+  void AddRegistration(MutationObserverRegistration* registration);
+  void RemoveRegistration(MutationObserverRegistration* registration);
+
+  void Trace(Visitor* visitor) const;
+
+ private:
+  HeapVector<Member<MutationObserverRegistration>> registry_;
+  HeapHashSet<Member<MutationObserverRegistration>> transient_registry_;
+};
+
+class CORE_EXPORT ElementRareDataVector final
+    : public GarbageCollected<ElementRareDataVector> {
+ public:
+  enum {
+    kConnectedFrameCountBits = 10,  // Must fit Page::maxNumberOfFrames.
+    kNumberOfElementFlags = 8,
+    kNumberOfDynamicRestyleFlags = 14
+    // 0 bits remaining.
+  };
+
+  ElementRareDataVector() = default;
+  ~ElementRareDataVector();
+  ElementRareDataVector(const ElementRareDataVector&) = delete;
+  ElementRareDataVector& operator=(const ElementRareDataVector&) = delete;
+
+  void ClearNodeLists() { node_lists_.Clear(); }
+  NodeListsNodeData* NodeLists() const { return node_lists_.Get(); }
+  // EnsureNodeLists() and a following NodeListsNodeData functions must be
+  // wrapped with a ThreadState::GCForbiddenScope in order to avoid an
+  // initialized node_lists_ is cleared by NodeRareData::TraceAfterDispatch().
+  NodeListsNodeData& EnsureNodeLists() {
+    if (!node_lists_) {
+      return CreateNodeLists();
+    }
+    return *node_lists_;
+  }
+
+  FlatTreeNodeData* GetFlatTreeNodeData() const {
+    return flat_tree_node_data_.Get();
+  }
+  FlatTreeNodeData& EnsureFlatTreeNodeData();
+
+  NodeMutationObserverData* MutationObserverData() {
+    return mutation_observer_data_.Get();
+  }
+  NodeMutationObserverData& EnsureMutationObserverData() {
+    if (!mutation_observer_data_) {
+      mutation_observer_data_ =
+          MakeGarbageCollected<NodeMutationObserverData>();
+    }
+    return *mutation_observer_data_;
+  }
+
+  uint16_t ConnectedSubframeCount() const { return connected_frame_count_; }
+  void IncrementConnectedSubframeCount();
+  void DecrementConnectedSubframeCount() {
+    DCHECK(connected_frame_count_);
+    --connected_frame_count_;
+  }
+
+  bool HasRestyleFlag(DynamicRestyleFlags mask) const {
+    return restyle_flags_ & static_cast<uint16_t>(mask);
+  }
+  void SetRestyleFlag(DynamicRestyleFlags mask) {
+    restyle_flags_ |= static_cast<uint16_t>(mask);
+  }
+  bool HasRestyleFlags() const { return restyle_flags_; }
+  void ClearRestyleFlags() { restyle_flags_ = 0u; }
+
+  void RegisterScrollTimeline(ScrollTimeline*);
+  void UnregisterScrollTimeline(ScrollTimeline*);
+
+  void AddDOMPart(Part& part);
+  void RemoveDOMPart(Part& part);
+  PartsList* GetDOMParts() const;
+
+  DOMNodeId NodeId() const { return id_; }
+  DOMNodeId& NodeId() { return id_; }
 
   void SetPseudoElement(
       PseudoId,
@@ -504,9 +492,138 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   OverscrollAreaTracker& EnsureOverscrollAreaTracker(Element*);
   OverscrollAreaTracker* OverscrollAreaTracker() const;
 
-  void Trace(blink::Visitor*) const override;
+  void Trace(Visitor*) const;
 
  private:
+  friend class ElementRareDataVectorTest;
+  enum class FieldId : unsigned {
+    kDataset = 0,
+    kShadowRoot = 1,
+    kClassList = 2,
+    kAttributeMap = 3,
+    kAttrNodeList = 4,
+    kCssomWrapper = 5,
+    kElementAnimations = 6,
+    kIntersectionObserverData = 7,
+    kPseudoElementData = 8,
+    kEditContext = 9,
+    kPart = 10,
+    kCssomMapWrapper = 11,
+    kElementInternals = 12,
+    kDisplayLockContext = 13,
+    kContainerQueryData = 14,
+    kRegionCaptureCropId = 15,
+    kResizeObserverData = 16,
+    kCustomElementDefinition = 17,
+    kPopoverData = 18,
+    kPartNamesMap = 19,
+    kNonce = 20,
+    kIsValue = 21,
+    kSavedLayerScrollOffset = 22,
+    kAnchorPositionScrollData = 23,
+    kAnchorElementObserver = 24,
+    kMayBeImplicitAnchor = 25,
+    kLastRememberedBlockSize = 26,
+    kLastRememberedInlineSize = 27,
+    kRestrictionTargetId = 28,
+    kStyleScopeData = 29,
+    kOutOfFlowData = 30,
+    kInvokerData = 31,
+    kInterestInvokerTargetData = 32,
+    kScrollMarkerGroupData = 33,
+    kScrollMarkerGroupContainerData = 34,
+    kExplicitlySetElementsForAttr = 35,
+    kCSSPseudoElementData = 36,
+    kCustomElementRegistry = 37,
+    kAnimationTriggerData = 38,
+    kFocusgroupLastFocused = 39,
+    kDisplayAdElementMonitor = 40,
+    kOverscrollAreaTracker = 41,
+    kAltContentData = 42,
+    kOverscrollContainer = 43,
+    kTrackedElementRect = 44,
+    kNumFields = 45,
+  };
+  NodeListsNodeData& CreateNodeLists();
+
+  ElementRareDataField* GetField(FieldId field_id) const;
+  void SetField(FieldId field_id, ElementRareDataField* field);
+
+  template <typename T>
+  class DataFieldWrapper final : public GarbageCollected<DataFieldWrapper<T>>,
+                                 public ElementRareDataField {
+   public:
+    T& Get() { return data_; }
+    void Trace(Visitor* visitor) const override {
+      ElementRareDataField::Trace(visitor);
+      TraceIfNeeded<T>::Trace(visitor, data_);
+    }
+
+   private:
+    T data_;
+  };
+
+  template <typename T, typename... Args>
+  T& EnsureField(FieldId field_id, Args&&... args) {
+    T* field = static_cast<T*>(GetField(field_id));
+    if (!field) {
+      field = MakeGarbageCollected<T>(std::forward<Args>(args)...);
+      SetField(field_id, field);
+    }
+    return *field;
+  }
+
+  template <typename T>
+  T& EnsureWrappedField(FieldId field_id) {
+    return EnsureField<DataFieldWrapper<T>>(field_id).Get();
+  }
+
+  template <typename T, typename U>
+  void SetWrappedField(FieldId field_id, U data) {
+    EnsureWrappedField<T>(field_id) = std::move(data);
+  }
+
+  template <typename T>
+  T* GetWrappedField(FieldId field_id) const {
+    auto* wrapper = static_cast<DataFieldWrapper<T>*>(GetField(field_id));
+    return wrapper ? &wrapper->Get() : nullptr;
+  }
+
+  template <typename T>
+  void SetOptionalField(FieldId field_id, std::optional<T> data) {
+    if (data) {
+      SetWrappedField<T>(field_id, *data);
+    } else {
+      SetField(field_id, nullptr);
+    }
+  }
+
+  template <typename T>
+  std::optional<T> GetOptionalField(FieldId field_id) const {
+    if (auto* value = GetWrappedField<T>(field_id)) {
+      return *value;
+    }
+    return std::nullopt;
+  }
+
+ private:
+  uint32_t restyle_flags_ : kNumberOfDynamicRestyleFlags = 0u;
+  uint32_t connected_frame_count_ : kConnectedFrameCountBits = 0u;
+  uint32_t element_flags_ : kNumberOfElementFlags = 0u;
+
+  Member<NodeListsNodeData> node_lists_;
+  Member<NodeMutationObserverData> mutation_observer_data_;
+  Member<FlatTreeNodeData> flat_tree_node_data_;
+  // Keeps strong scroll timeline pointers linked to this node to ensure
+  // the timelines are alive as long as the node is alive.
+  Member<GCedHeapHashSet<Member<ScrollTimeline>>> scroll_timelines_;
+  // An ordered set of DOM Parts for this Node, in order of construction. This
+  // order is important, since `getParts()` returns a tree-ordered set of parts,
+  // with parts on the same `Node` returned in `Part` construction order.
+  Member<PartsList> dom_parts_;
+
+  DOMNodeId id_ = kInvalidDOMNodeId;  // Used primarily for accessibility.
+
   // Using inheritance instead of composition to pack bytes better.
   struct Fields : public SparseVector<FieldId, Member<ElementRareDataField>> {
     unsigned did_attach_internals : 1 = false;
@@ -531,6 +648,11 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     FocusgroupFlags focusgroup_flags = FocusgroupFlags::kNone;
   };
   Fields fields_;
+};
+
+template <>
+struct ThreadingTrait<blink::ElementRareDataVector> {
+  static constexpr ThreadAffinity kAffinity = kMainThreadOnly;
 };
 
 }  // namespace blink
