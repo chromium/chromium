@@ -3435,7 +3435,6 @@
                'kainino+watch@chromium.org'],
     'webid': ['yigu+watch@chromium.org',
               'cbiesinger@chromium.org',
-              'icer@chromium.org',
               'npm+watch@chromium.org'],
     'webnn': ['qjw@chromium.org', 'ningxin.hu@intel.com'],
     'webotp': ['yigu+watch@chromium.org'],
