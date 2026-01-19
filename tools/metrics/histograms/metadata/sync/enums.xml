@@ -142,6 +142,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Sync Error Message"/>
   <int value="2" label="Profile Menu"/>
   <int value="3" label="Identity Error Info Pill"/>
+  <int value="4" label="Account Menu"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/service/sync_service.h:BookmarksLimitExceededHelpClickedSource) -->

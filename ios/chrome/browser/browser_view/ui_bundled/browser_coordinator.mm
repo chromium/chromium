@@ -40,6 +40,7 @@
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
+#import "components/sync/service/sync_service.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "components/webauthn/ios/ios_passkey_client.h"
@@ -308,6 +309,7 @@
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator_delegate.h"
 #import "ios/chrome/browser/supervised_user/coordinator/parent_access_coordinator.h"
 #import "ios/chrome/browser/sync/model/sync_error_browser_agent.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_coordinator.h"
 #import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_coordinator_delegate.h"
 #import "ios/chrome/browser/synced_set_up/utils/utils.h"
@@ -4207,6 +4209,13 @@ const char kChromeAppStoreUrl[] =
 }
 
 - (void)showBookmarksLimitExceededHelp {
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForProfile(self.browser->GetProfile());
+  if (syncService) {
+    syncService->AcknowledgeBookmarksLimitExceededError(
+        syncer::SyncService::BookmarksLimitExceededHelpClickedSource::
+            kSyncErrorMessage);
+  }
   GURL helpUrl(kBookmarksLimitExceededHelpCenter);
   UrlLoadParams params = UrlLoadParams::InNewTab(helpUrl);
   params.append_to = OpenPosition::kCurrentTab;

@@ -7,6 +7,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/sync/service/sync_service_utils.h"
+#import "components/sync/test/mock_sync_service.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_mediator.h"
@@ -41,6 +42,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -87,8 +89,22 @@ class AccountMenuCoordinatorTest : public PlatformTest,
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetFactoryWithDelegate(
             std::make_unique<FakeAuthenticationServiceDelegate>()));
+    builder.AddTestingFactory(
+        SyncServiceFactory::GetInstance(),
+        base::BindRepeating(
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<syncer::MockSyncService>();
+            }));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
+
+    ON_CALL(*GetMockSyncService(), GetTypesWithUnsyncedData)
+        .WillByDefault(
+            [](syncer::DataTypeSet,
+               base::OnceCallback<void(
+                   absl::flat_hash_map<syncer::DataType, size_t>)> callback) {
+              std::move(callback).Run({});
+            });
 
     stub_browser_interface_provider_ =
         [[StubBrowserProviderInterface alloc] init];
@@ -203,6 +219,11 @@ class AccountMenuCoordinatorTest : public PlatformTest,
   raw_ptr<FakeSystemIdentityManager> fake_system_identity_manager_;
   // The view owned by the view controller.
   UIView* view_;
+
+  syncer::MockSyncService* GetMockSyncService() {
+    return static_cast<syncer::MockSyncService*>(
+        SyncServiceFactory::GetForProfile(profile_.get()));
+  }
 
  private:
   // Stops the coordinator.
@@ -337,6 +358,11 @@ TEST_P(AccountMenuCoordinatorTest, testMDMError) {
 
 // Tests that `openBookmarksLimitExceededHelp` opens the help center article.
 TEST_P(AccountMenuCoordinatorTest, testBookmarksLimitExceededHelp) {
+  EXPECT_CALL(*GetMockSyncService(),
+              AcknowledgeBookmarksLimitExceededError(
+                  syncer::SyncService::BookmarksLimitExceededHelpClickedSource::
+                      kAccountMenu));
+
   OCMExpect([mock_scene_handler_ closePresentedViewsAndOpenURL:[OCMArg any]]);
   [coordinator_ openBookmarksLimitExceededHelp];
   AssertOpenAndStop();

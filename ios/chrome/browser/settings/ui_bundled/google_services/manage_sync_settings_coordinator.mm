@@ -665,6 +665,11 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 }
 
 - (void)openBookmarksLimitExceededHelp {
+  if (self.syncService) {
+    self.syncService->AcknowledgeBookmarksLimitExceededError(
+        syncer::SyncService::BookmarksLimitExceededHelpClickedSource::
+            kSettings);
+  }
   GURL helpUrl(kBookmarksLimitExceededHelpCenter);
   UrlLoadParams params = UrlLoadParams::InNewTab(helpUrl);
   params.append_to = OpenPosition::kCurrentTab;

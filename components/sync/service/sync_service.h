@@ -488,7 +488,8 @@ class SyncService : public KeyedService {
     kSyncErrorMessage = 1,
     kProfileMenu = 2,
     kIdentityErrorInfoPill = 3,
-    kMaxValue = kIdentityErrorInfoPill,
+    kAccountMenu = 4,
+    kMaxValue = kAccountMenu,
   };
   // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:BookmarksLimitExceededHelpClickedSource)
 
