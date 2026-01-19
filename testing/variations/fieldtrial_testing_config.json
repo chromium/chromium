@@ -16969,6 +16969,23 @@
             ]
         }
     ],
+    "NeuralResidualEchoEstimation": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Fishfood",
+                    "enable_features": [
+                        "WebRtcAudioNeuralResidualEchoEstimation"
+                    ]
+                }
+            ]
+        }
+    ],
     "NewContentForCheckerboardedScrollsPerFrame": [
         {
             "platforms": [
