@@ -27,7 +27,7 @@
 class AccountCapabilities;
 class AccountCapabilitiesFetcher;
 class AccountCapabilitiesFetcherFactory;
-class AccountInfoFetcher;
+class GaiaAccountInfoFetcher;
 class AccountTrackerService;
 class ProfileOAuth2TokenService;
 class PrefRegistrySimple;
@@ -119,7 +119,7 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   void OnRefreshTokensLoaded() override;
 
  private:
-  friend class AccountInfoFetcher;
+  friend class GaiaAccountInfoFetcher;
 
   void RefreshAllAccountInfo(bool only_fetch_if_invalid);
 
@@ -150,7 +150,7 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   void RefreshAccountInfo(const CoreAccountId& account_id,
                           bool only_fetch_if_invalid);
 
-  // Called by AccountInfoFetcher.
+  // Called by GaiaAccountInfoFetcher.
   void OnUserInfoFetchSuccess(const CoreAccountId& account_id,
                               const base::Value::Dict& user_info);
   void OnUserInfoFetchFailure(const CoreAccountId& account_id);
@@ -181,7 +181,7 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   std::unique_ptr<signin::PersistentRepeatingTimer> repeating_timer_;
 
   // Holds references to account info fetchers keyed by account_id.
-  std::unordered_map<CoreAccountId, std::unique_ptr<AccountInfoFetcher>>
+  std::unordered_map<CoreAccountId, std::unique_ptr<GaiaAccountInfoFetcher>>
       user_info_requests_;
 
   std::unique_ptr<AccountCapabilitiesFetcherFactory>

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_INFO_FETCHER_H_
-#define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_INFO_FETCHER_H_
+#ifndef COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_GAIA_ACCOUNT_INFO_FETCHER_H_
+#define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_GAIA_ACCOUNT_INFO_FETCHER_H_
 
 #include <memory>
 
@@ -23,22 +23,20 @@ class ProfileOAuth2TokenService;
 // An account information fetcher that gets an OAuth token of appropriate
 // scope and uses it to fetch account information. This does not handle
 // refreshing the information and is meant to be used in a one shot fashion.
-class AccountInfoFetcher : public OAuth2AccessTokenManager::Consumer,
-                           public gaia::GaiaOAuthClient::Delegate {
+// Fetching is started automatically as soon as an instance is created.
+class GaiaAccountInfoFetcher : public OAuth2AccessTokenManager::Consumer,
+                               public gaia::GaiaOAuthClient::Delegate {
  public:
-  AccountInfoFetcher(
+  GaiaAccountInfoFetcher(
       ProfileOAuth2TokenService* token_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       AccountFetcherService* service,
       const CoreAccountId& account_id);
 
-  AccountInfoFetcher(const AccountInfoFetcher&) = delete;
-  AccountInfoFetcher& operator=(const AccountInfoFetcher&) = delete;
+  GaiaAccountInfoFetcher(const GaiaAccountInfoFetcher&) = delete;
+  GaiaAccountInfoFetcher& operator=(const GaiaAccountInfoFetcher&) = delete;
 
-  ~AccountInfoFetcher() override;
-
-  // Start fetching the account information.
-  void Start();
+  ~GaiaAccountInfoFetcher() override;
 
   // OAuth2AccessTokenManager::Consumer implementation.
   void OnGetTokenSuccess(
@@ -53,6 +51,9 @@ class AccountInfoFetcher : public OAuth2AccessTokenManager::Consumer,
   void OnNetworkError(int response_code) override;
 
  private:
+  // Start fetching the account information.
+  void Start();
+
   raw_ptr<ProfileOAuth2TokenService> token_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   raw_ptr<AccountFetcherService> service_;
@@ -62,4 +63,4 @@ class AccountInfoFetcher : public OAuth2AccessTokenManager::Consumer,
   std::unique_ptr<gaia::GaiaOAuthClient> gaia_oauth_client_;
 };
 
-#endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_INFO_FETCHER_H_
+#endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_GAIA_ACCOUNT_INFO_FETCHER_H_
