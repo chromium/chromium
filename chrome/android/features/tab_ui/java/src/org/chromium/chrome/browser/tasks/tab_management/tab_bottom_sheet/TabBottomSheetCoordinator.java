@@ -47,7 +47,7 @@ public class TabBottomSheetCoordinator {
     }
 
     /** Shows the bottom sheet. */
-    public void showBottomSheet(TabBottomSheetToolbar tabBottomSheetToolbar) {
+    public void showBottomSheet(View toolbarView, View webUiView) {
         if (mIsSheetCurrentlyManagedByController) {
             return;
         }
@@ -57,8 +57,10 @@ public class TabBottomSheetCoordinator {
         // Build the bottom sheet.
         mContentView = LayoutInflater.from(mContext).inflate(R.layout.tab_bottom_sheet, null);
         ViewGroup toolbarContainer = mContentView.findViewById(R.id.toolbar_container);
+        ViewGroup webUiContainer = mContentView.findViewById(R.id.web_ui_container);
 
-        toolbarContainer.addView(tabBottomSheetToolbar.getToolbarView());
+        toolbarContainer.addView(toolbarView);
+        webUiContainer.addView(webUiView);
 
         mViewBinder =
                 PropertyModelChangeProcessor.create(

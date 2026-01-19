@@ -1602,7 +1602,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private void initiateTabBottomSheetManagers() {
         if (TabBottomSheetUtils.isTabBottomSheetEnabled()) {
             mTabBottomSheetManager =
-                    new TabBottomSheetManager(mActivity, getBottomSheetController());
+                    new TabBottomSheetManager(
+                            mActivity,
+                            mProfileSupplier.get(),
+                            mWindowAndroid,
+                            getBottomSheetController());
             mTabBottomSheetSimpleManager =
                     new TabBottomSheetSimpleManager(
                             mActivity,

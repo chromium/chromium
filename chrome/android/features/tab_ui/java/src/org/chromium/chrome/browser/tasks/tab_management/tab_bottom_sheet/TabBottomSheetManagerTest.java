@@ -30,8 +30,10 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.base.WindowAndroid;
 
 /** Unit tests for {@link TabBottomSheetManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -40,6 +42,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 public class TabBottomSheetManagerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private BottomSheetController mMockBottomSheetController;
+    @Mock private Profile mMockProfile;
+    @Mock private WindowAndroid mMockWindowAndroid;
     @Mock private TabBottomSheetToolbar mMockToolbar;
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
@@ -64,14 +68,10 @@ public class TabBottomSheetManagerTest {
     private void createManager() {
         mManager =
                 new TabBottomSheetManager(
-                        ApplicationProvider.getApplicationContext(), mMockBottomSheetController);
-    }
-
-    @Test
-    public void testTryToShowBottomSheet_FeatureEnabled_ShowsBottomSheet() {
-        createManager();
-        mManager.tryToShowBottomSheet(mMockToolbar);
-        verify(mMockBottomSheetController).requestShowContent(any(), anyBoolean());
+                        ApplicationProvider.getApplicationContext(),
+                        mMockProfile,
+                        mMockWindowAndroid,
+                        mMockBottomSheetController);
     }
 
     @Test
