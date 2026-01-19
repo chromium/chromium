@@ -115,6 +115,8 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
     perfetto::Category("config.scheduler.record_task_post_time").SetDescription(
       "Controls details emitted by TaskAnnotator::EmitTaskTimingDetails"),
     perfetto::Category("content"),
+    perfetto::Category("content.digitalcredentials").SetDescription(
+        "Traces for the Digital Credentials API"),
     perfetto::Category("content.fedcm").SetDescription(
         "Traces for the Federated Credential Management API"),
     perfetto::Category("content_capture"),

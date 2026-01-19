@@ -18,6 +18,7 @@
 #include "base/location.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "content/browser/webid/delegation/sd_jwt.h"
 #include "content/browser/webid/flags.h"
@@ -472,6 +473,8 @@ void DigitalIdentityRequestImpl::Get(
     std::vector<blink::mojom::DigitalCredentialGetRequestPtr>
         digital_credential_requests,
     GetCallback callback) {
+  TRACE_EVENT("content.digitalcredentials", "DigitalIdentityRequestImpl::Get",
+              "size", digital_credential_requests.size());
   if (!webid::IsDigitalCredentialsEnabled()) {
     std::move(callback).Run(RequestDigitalIdentityStatus::kError,
                             /*protocol=*/std::nullopt, /*token=*/std::nullopt);

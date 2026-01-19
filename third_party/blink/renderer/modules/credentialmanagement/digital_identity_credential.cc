@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/trace_event/trace_event.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "third_party/blink/public/mojom/webid/digital_identity_request.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -85,6 +86,9 @@ void OnCompleteRequest(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
                        RequestDigitalIdentityStatus status,
                        const String& protocol,
                        std::optional<base::Value> token) {
+  TRACE_EVENT("content.digitalcredentials", "OnCompleteRequest", "status",
+              status, "request_type", request_type, "protocol", protocol);
+
   switch (status) {
     case RequestDigitalIdentityStatus::kErrorTooManyRequests: {
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -194,6 +198,8 @@ bool IsDigitalIdentityCredentialType(const CredentialCreationOptions& options) {
 void DiscoverDigitalIdentityCredentialFromExternalSource(
     ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
     const CredentialRequestOptions& options) {
+  TRACE_EVENT("content.digitalcredentials",
+              "DiscoverDigitalIdentityCredentialFromExternalSource");
   CHECK(IsDigitalIdentityCredentialType(options));
   CHECK(RuntimeEnabledFeatures::WebIdentityDigitalCredentialsEnabled(
       resolver->GetExecutionContext()));
