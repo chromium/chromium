@@ -4879,7 +4879,7 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="AndroidWebView.APICall.{ApiName}">
+<action name="AndroidWebView.ApiCall.{ApiName}">
   <owner>abhijithnair@chromium.org</owner>
   <owner>android_webview/OWNERS</owner>
   <description>
