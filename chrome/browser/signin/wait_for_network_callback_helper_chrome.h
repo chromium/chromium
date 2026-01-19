@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "components/signin/public/base/wait_for_network_callback_helper.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/mojom/network_change_manager.mojom-forward.h"
@@ -18,7 +19,8 @@ class WaitForNetworkCallbackHelperChrome
     : public network::NetworkConnectionTracker::NetworkConnectionObserver,
       public WaitForNetworkCallbackHelper {
  public:
-  WaitForNetworkCallbackHelperChrome();
+  explicit WaitForNetworkCallbackHelperChrome(
+      bool should_disable_metrics_for_testing);
 
   WaitForNetworkCallbackHelperChrome(
       const WaitForNetworkCallbackHelperChrome&) = delete;
@@ -34,12 +36,17 @@ class WaitForNetworkCallbackHelperChrome
   bool AreNetworkCallsDelayed() override;
   void DelayNetworkCall(base::OnceClosure callback) override;
 
+  // Logs some metrics about delayed callbacks. Public for testing.
+  void LogMetrics();
+
  private:
   std::vector<base::OnceClosure> delayed_callbacks_;
   base::ScopedObservation<
       network::NetworkConnectionTracker,
       network::NetworkConnectionTracker::NetworkConnectionObserver>
       network_connection_observer_{this};
+
+  base::RepeatingTimer metrics_timer_;
   base::WeakPtrFactory<WaitForNetworkCallbackHelperChrome> weak_ptr_factory_{
       this};
 };

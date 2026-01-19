@@ -217,7 +217,8 @@ ChromeSigninClient::ChromeSigninClient(Profile* profile)
 #if BUILDFLAG(IS_CHROMEOS)
           std::make_unique<WaitForNetworkCallbackHelperAsh>()
 #else
-          std::make_unique<WaitForNetworkCallbackHelperChrome>()
+          std::make_unique<WaitForNetworkCallbackHelperChrome>(
+              profile->AsTestingProfile())
 #endif
               ),
       profile_(profile),

@@ -1431,6 +1431,27 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.DelayedNetworkCallQueueSize.{EffectiveConnectionType}"
+    units="callbacks" expires_after="2026-06-01">
+  <owner>ahijazi@chromium.org</owner>
+  <owner>alexilin@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the size of the delayed network call queue when the effective
+    connection type is {EffectiveConnectionType}. This is used to understand how
+    often network calls are delayed despite having a valid network connection.
+    This metric is emitted every 30 minutes.
+  </summary>
+  <token key="EffectiveConnectionType">
+    <variant name="2G"/>
+    <variant name="3G"/>
+    <variant name="4G"/>
+    <variant name="Offline"/>
+    <variant name="Slow-2G"/>
+    <variant name="Unknown"/>
+  </token>
+</histogram>
+
 <histogram
     name="Signin.DeviceBoundSessions.OAuthMultilogin.CreateSessionsResult"
     enum="DeviceBoundSessionCreateSessionsResult" expires_after="2026-06-01">
