@@ -12263,9 +12263,18 @@
             ],
             "experiments": [
                 {
-                    "name": "Experiment_NewBehaviorCountAllFrames",
+                    "name": "Experiment_NewBehaviorCountAllScrolls",
                     "params": {
-                        "count_non_damaging_frames_towards_histogram_frame_count": "true"
+                        "histogram_emission_policy": "emit_for_all_scrolls"
+                    },
+                    "enable_features": [
+                        "HandleNonDamagingInputsInScrollJankV4Metric"
+                    ]
+                },
+                {
+                    "name": "Experiment_NewBehaviorCountDamagingScrolls",
+                    "params": {
+                        "histogram_emission_policy": "emit_for_damaging_scrolls"
                     },
                     "enable_features": [
                         "HandleNonDamagingInputsInScrollJankV4Metric"
