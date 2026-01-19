@@ -274,7 +274,6 @@ void SetUpSyncInTransportMode(Profile* profile) {
                 return std::make_unique<syncer::TestSyncService>();
               })));
   sync_service->SetSignedIn(signin::ConsentLevel::kSignin);
-  ASSERT_FALSE(sync_service->IsSyncFeatureEnabled());
 }
 
 class PasswordEventObserver
@@ -2012,8 +2011,8 @@ class PasswordsPrivateDelegateImplFetchFamilyMembersTest
             version_info::Channel::DEFAULT,
             profile_url_loader_factory().GetSafeWeakWrapper(),
             identity_test_env_.identity_manager()));
-    identity_test_env_.MakePrimaryAccountAvailable("test@email.com",
-                                                   signin::ConsentLevel::kSync);
+    identity_test_env_.MakePrimaryAccountAvailable(
+        "test@email.com", signin::ConsentLevel::kSignin);
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
   }
 
@@ -2191,6 +2190,9 @@ TEST_F(PasswordsPrivateDelegateImplFetchFamilyMembersTest,
   task_environment()->RunUntilIdle();
 }
 
+// TODO(crbug.com/40066949): Remove this test after kSync users are migrated to
+// kSignin in phase 3. As it will be identical to GetCredentialGroups_Butter.
+// See ConsentLevel::kSync documentation for details.
 TEST_F(PasswordsPrivateDelegateImplTest, GetCredentialGroups_SyncOn) {
   sync_service()->SetSignedIn(signin::ConsentLevel::kSync);
 
