@@ -132,9 +132,17 @@ template("rust_cxx") {
       output_cc,
       "--rustc-print-cfg-path",
       rebase_path(rustc_print_cfg_path, root_build_dir),
-      "{{source}}",
       "--",
+      "{{rustflags}}",
+      "RUSTFLAGS_SEPARATOR",
+      "{{source}}",
     ]
+
+    # To ensure that `--rustflags` above sees the same `--cfg=...` flags as the
+    # main Rust library.
+    if (defined(invoker.configs)) {
+      configs = invoker.configs
+    }
 
     if (invoker.export_symbols) {
       # See explanation of 'export_symbols' above for what this does.

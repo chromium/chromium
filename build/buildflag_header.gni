@@ -169,9 +169,12 @@ template("buildflag_header") {
         _name = _split[0]
         _value = _split[1]
         if (_value == "true" || _value == "1") {
-          rustflags += [ "--cfg=$_name" ]
+          rustflags += [ "--cfg=${_name}" ]
         } else {
-          not_needed([ "_name" ])
+          # TODO(https://crbug.com/436606652): Stop using `_BUILDFLAG_NOT_SET_`
+          # prefix and instead use `--check-cfg` in `run_cxxbridge.py` to
+          # detect buildflag names.
+          rustflags += [ "--cfg=_BUILDFLAG_NOT_SET_${_name}" ]
         }
 
         # TODO(https://crbug.com/448742518): Consider adding:

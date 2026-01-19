@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/rust/rust_static_library.gni")
 import("//testing/test.gni")
 
@@ -9,9 +10,19 @@ source_set("test_cxx_cfg") {
   testonly = true
   sources = [ "cxx_cfg_unittests.cc" ]
   deps = [
+    ":custom_buildflags",
     ":rust_lib",
     "//testing/gtest",
   ]
+}
+
+buildflag_header("custom_buildflags") {
+  header = "custom_buildflags.h"
+  flags = [
+    # Arbitrarily using `is_win` to switch the value.
+    "MY_TEST_CONFIG=$is_win",
+  ]
+  visibility = [ ":*" ]
 }
 
 rust_static_library("rust_lib") {
@@ -20,4 +31,5 @@ rust_static_library("rust_lib") {
   cxx_bindings = [ crate_root ]
   allow_unsafe = true
   visibility = [ ":*" ]
+  configs += [ ":custom_buildflags_rust_cfg" ]
 }

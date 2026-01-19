@@ -14,8 +14,7 @@ mod ffi {
                             // dumps.
         fn reenter_rust(); // step 3
 
-        // TODO(https://crbug.com/436606652): Ideally we would just say something
-        // like `#[cfg(IS_ASAN)]` here...
+        #[cfg(IS_ASAN)]
         fn crash_in_rust_with_overflow(); // separate crash trigger
     }
 
@@ -57,12 +56,4 @@ fn crash_in_rust_with_overflow() {
         let bad_array_ptr = array_ptr.offset(4);
         std::ptr::write_volatile(bad_array_ptr, 42);
     }
-}
-
-// TODO(https://crbug.com/436606652): Ideally we wouldn't need to define a no-op
-// function below - this requires the ability to suppress generation of FFI
-// bindings in the `cxx::bridge` above - see another TODO comment over there.
-#[cfg(not(IS_ASAN))]
-fn crash_in_rust_with_overflow() {
-    unreachable!()
 }

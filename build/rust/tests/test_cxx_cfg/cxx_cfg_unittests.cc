@@ -5,12 +5,13 @@
 #include <stdint.h>
 
 #include "build/build_config.h"
+#include "build/rust/tests/test_cxx_cfg/custom_buildflags.h"
 #include "build/rust/tests/test_cxx_cfg/cxx_cfg_lib.rs.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
-TEST(RustCxxCfgTest, MainTest) {
+TEST(RustCxxCfgTest, TargetFamily) {
 // `#[cfg(target_family = "unix")]` covers Fuchsia, but
 // `BUILD_FLAG(IS_POSIX)` does not cover Fuchsia.
 //
@@ -20,6 +21,15 @@ TEST(RustCxxCfgTest, MainTest) {
   uint32_t actual = rust_test::double_unix_value(123);
 #else
   uint32_t actual = rust_test::double_non_unix_value(123);
+#endif
+  EXPECT_EQ(actual, 123u * 2u);
+}
+
+TEST(RustCxxCfgTest, CustomConfigViaRustFlags) {
+#if BUILDFLAG(MY_TEST_CONFIG)
+  uint32_t actual = rust_test::double_my_test_config(123);
+#else
+  uint32_t actual = rust_test::double_not_my_test_config(123);
 #endif
   EXPECT_EQ(actual, 123u * 2u);
 }
