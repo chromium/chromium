@@ -70,9 +70,7 @@ class ScrollJankV4HistogramEmitterTest : public testing::Test {
 
 TEST_F(ScrollJankV4HistogramEmitterTest,
        EmitsFixedWindowHistogramsEvery64Frames) {
-  // First window: NO histograms should be emitted for the first 64 frames. Note
-  // that the first fixed window contains 65 frames to compensate for the fact
-  // that the very first frame can never be janky.
+  // First window: NO histograms should be emitted for the first 63 frames.
   {
     base::HistogramTester histogram_tester;
 
@@ -139,15 +137,15 @@ TEST_F(ScrollJankV4HistogramEmitterTest,
       }));
     }
 
-    // Frames 56-64: Non-janky.
-    for (int i = 56; i <= 64; i++) {
+    // Frames 56-63: Non-janky.
+    for (int i = 56; i <= 63; i++) {
       histogram_emitter_->OnFrameWithScrollUpdates(kNonJankyFrame);
     }
 
     ExpectNoScrollJankHistograms(histogram_tester);
   }
 
-  // UMA histograms SHOULD be emitted for the 65th frame.
+  // UMA histograms SHOULD be emitted for the 64th frame.
   {
     base::HistogramTester histogram_tester;
 
@@ -223,7 +221,6 @@ TEST_F(ScrollJankV4HistogramEmitterTest,
         "Event.ScrollJank.DelayedFramesPercentage4.PerScroll", 0);
   }
 }
-
 TEST_F(ScrollJankV4HistogramEmitterTest,
        EmitsPerScrollHistogramsAtEndOfScroll) {
   // NO histograms for the first scroll should be emitted before it ends.
@@ -414,7 +411,7 @@ of fixed window and per-scroll histograms is independent (e.g. a scroll ending
 in the middle of a fixed window shouldn't affect the fixed window calculation
 and vice versa).
 
-Presented frame: :1        33:34       65:66       97:98      129:
+Presented frame: :1        32:33       64:65       96:97      128:
 Fixed windows:   |<-------window 1------>|<-------window 2------>|
 Scrolls:         |<scroll 1->|<------scroll 2------->|<scroll 3->|
 Delayed frames:  :     1     :     2     :     4     :     8     :
@@ -440,8 +437,8 @@ TEST_F(ScrollJankV4HistogramEmitterTest,
         {JankReason::kMissedVsyncDuringFling, 4},
     }));
 
-    // Frames 12-33: Non-janky.
-    for (int i = 12; i <= 33; i++) {
+    // Frames 12-32: Non-janky.
+    for (int i = 12; i <= 32; i++) {
       histogram_emitter_->OnFrameWithScrollUpdates(kNonJankyFrame);
     }
 
@@ -456,7 +453,7 @@ TEST_F(ScrollJankV4HistogramEmitterTest,
 
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.DelayedFramesPercentage4.PerScroll",
-        1 * 100 / 33 /* Frame 11 */, 1);
+        1 * 100 / 32 /* Frame 11 */, 1);
     histogram_tester.ExpectTotalCount(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow", 0);
     histogram_tester.ExpectTotalCount(
@@ -481,14 +478,14 @@ TEST_F(ScrollJankV4HistogramEmitterTest,
         "Event.ScrollJank.MissedVsyncsMax4.FixedWindow", 0);
   }
 
-  // Start of scroll 2, frames 33-64: NO histograms should be emitted.
+  // Start of scroll 2, frames 33-63: NO histograms should be emitted.
   {
     base::HistogramTester histogram_tester;
 
     histogram_emitter_->OnScrollStarted();
 
-    // Frames 34-50: Non-janky.
-    for (int i = 34; i <= 50; i++) {
+    // Frames 33-50: Non-janky.
+    for (int i = 33; i <= 50; i++) {
       histogram_emitter_->OnFrameWithScrollUpdates(kNonJankyFrame);
     }
 
@@ -499,15 +496,15 @@ TEST_F(ScrollJankV4HistogramEmitterTest,
       }));
     }
 
-    // Frames 53-64: Non-janky.
-    for (int i = 53; i <= 64; i++) {
+    // Frames 53-63: Non-janky.
+    for (int i = 53; i <= 63; i++) {
       histogram_emitter_->OnFrameWithScrollUpdates(kNonJankyFrame);
     }
 
     ExpectNoScrollJankHistograms(histogram_tester);
   }
 
-  // Frame 65: Fixed window histograms SHOULD be emitted.
+  // Frame 64: Fixed window histograms SHOULD be emitted.
   {
     base::HistogramTester histogram_tester;
 
@@ -541,12 +538,12 @@ TEST_F(ScrollJankV4HistogramEmitterTest,
         "Event.ScrollJank.DelayedFramesPercentage4.PerScroll", 0);
   }
 
-  // Frames 66-97: NO histograms should be emitted.
+  // Frames 65-96: NO histograms should be emitted.
   {
     base::HistogramTester histogram_tester;
 
-    // Frames 66-80: Non-janky.
-    for (int i = 66; i <= 80; i++) {
+    // Frames 65-80: Non-janky.
+    for (int i = 65; i <= 80; i++) {
       histogram_emitter_->OnFrameWithScrollUpdates(kNonJankyFrame);
     }
 
@@ -557,8 +554,8 @@ TEST_F(ScrollJankV4HistogramEmitterTest,
       }));
     }
 
-    // Frames 85-97: Non-janky.
-    for (int i = 85; i <= 97; i++) {
+    // Frames 85-96: Non-janky.
+    for (int i = 85; i <= 96; i++) {
       histogram_emitter_->OnFrameWithScrollUpdates(kNonJankyFrame);
     }
 
@@ -598,14 +595,14 @@ TEST_F(ScrollJankV4HistogramEmitterTest,
         "Event.ScrollJank.MissedVsyncsMax4.FixedWindow", 0);
   }
 
-  // Start of scroll 3, frames 98-128: NO histograms should be emitted.
+  // Start of scroll 3, frames 97-127: NO histograms should be emitted.
   {
     base::HistogramTester histogram_tester;
 
     histogram_emitter_->OnScrollStarted();
 
-    // Frames 98-110: Non-janky.
-    for (int i = 98; i <= 110; i++) {
+    // Frames 97-110: Non-janky.
+    for (int i = 97; i <= 110; i++) {
       histogram_emitter_->OnFrameWithScrollUpdates(kNonJankyFrame);
     }
 
@@ -617,15 +614,15 @@ TEST_F(ScrollJankV4HistogramEmitterTest,
       }));
     }
 
-    // Frames 119-128: Non-janky.
-    for (int i = 119; i <= 128; i++) {
+    // Frames 119-127: Non-janky.
+    for (int i = 119; i <= 127; i++) {
       histogram_emitter_->OnFrameWithScrollUpdates(kNonJankyFrame);
     }
 
     ExpectNoScrollJankHistograms(histogram_tester);
   }
 
-  // Frame 129: Fixed window histograms SHOULD be emitted.
+  // Frame 128: Fixed window histograms SHOULD be emitted.
   {
     base::HistogramTester histogram_tester;
 
@@ -861,7 +858,7 @@ TEST_F(ScrollJankV4HistogramEmitterTest,
         kNonJankyFrame,
         /* counts_towards_histogram_frame_count= */ false);
 
-    for (int frame = 61; frame <= 64; frame++) {
+    for (int frame = 61; frame <= 63; frame++) {
       histogram_emitter_->OnFrameWithScrollUpdates(kNonJankyFrame);
     }
 
@@ -900,6 +897,29 @@ TEST_F(ScrollJankV4HistogramEmitterTest,
     histogram_tester.ExpectTotalCount(
         "Event.ScrollJank.DelayedFramesPercentage4.PerScroll", 0);
   }
+}
+
+// Regression test for https://crbug.com/475797611.
+TEST_F(ScrollJankV4HistogramEmitterTest,
+       ShouldNotCrashWhenFirstFrameWhichCountsTowardsHistogramIsJanky) {
+  base::HistogramTester histogram_tester;
+
+  // 1. One non-janky non-damaging frame which does NOT count towards fixed
+  // window histograms.
+  histogram_emitter_->OnFrameWithScrollUpdates(
+      kNonJankyFrame,
+      /* counts_towards_histogram_frame_count= */ false);
+
+  // 2. 64 janky damaging frames which COUNT towards fixed window histograms.
+  for (int i = 0; i < 64; i++) {
+    histogram_emitter_->OnFrameWithScrollUpdates(
+        MakeMissedVsyncCounts(
+            {{JankReason::kMissedVsyncDueToDeceleratingInputFrameDelivery, 1}}),
+        /* counts_towards_histogram_frame_count= */ true);
+  }
+
+  histogram_tester.ExpectUniqueSample(
+      "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow", 100, 1);
 }
 
 }  // namespace cc
