@@ -1437,7 +1437,7 @@ TEST_P(ScrollingTest, NonCompositedMainThreadRepaintWithTrackedElement) {
 
   auto highlight_id = base::Token(1, 2);
   auto highlight =
-      TrackedElementRect::CreateFull(TrackedElementId(highlight_id));
+      std::make_unique<TrackedElementRect>(TrackedElementId(highlight_id));
   Document& document = *GetFrame()->GetDocument();
   document.getElementById(AtomicString("highlight"))
       ->SetTrackedElementRect(std::move(highlight));

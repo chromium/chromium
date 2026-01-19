@@ -3021,8 +3021,9 @@ void BoxFragmentPainter::RecordRegionCaptureAndTrackedElementData(
   }
 
   if (element && element->GetTrackedElementRect()) {
+    const auto* tracked_element_rect = element->GetTrackedElementRect();
     paint_info.context.GetPaintController().RecordTrackedElementData(
-        display_item_client, element->GetTrackedElementRect()->id,
+        display_item_client, *tracked_element_rect,
         ToPixelSnappedRect(paint_rect));
   }
 }

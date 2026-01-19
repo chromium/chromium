@@ -30,7 +30,7 @@ void BoxPainter::RecordTrackedElementAndRegionCaptureData(
     const TrackedElementRect* rect = element->GetTrackedElementRect();
     if (rect) {
       paint_info.context.GetPaintController().RecordTrackedElementData(
-          background_client, rect->id, ToPixelSnappedRect(paint_rect));
+          background_client, *rect, ToPixelSnappedRect(paint_rect));
     }
   }
 }

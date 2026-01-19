@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_display_item_fragment.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
 #include "third_party/blink/renderer/platform/graphics/paint/subsequence_recorder.h"
+#include "third_party/blink/renderer/platform/graphics/paint/tracked_element_data.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -2179,7 +2180,9 @@ TEST_P(PaintControllerTest, RecordTrackedElementData) {
     AutoCommitPaintController paint_controller(GetPersistentData());
     GraphicsContext context(paint_controller);
     InitRootChunk(paint_controller);
-    paint_controller.RecordTrackedElementData(client, kId, kBounds);
+    auto tracked_element_rect = std::make_unique<TrackedElementRect>(kId);
+    paint_controller.RecordTrackedElementData(client, *tracked_element_rect,
+                                              kBounds);
   }
 
   ASSERT_EQ(1u, GetPersistentData().GetPaintChunks().size());

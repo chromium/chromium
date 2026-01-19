@@ -15,26 +15,45 @@
 
 namespace blink {
 
-// Represents a single tracked element, currently it tracks full element
-// rectangle, will be extended to allow tracking of subsection with a specific
-// rectangle.
+// Represents a single tracked element, either tracking a full element
+// rectangle, or an arbitrary rectangle relative to the element.
 struct PLATFORM_EXPORT TrackedElementRect {
-  TrackedElementRect() = default;
-  explicit TrackedElementRect(TrackedElementId id) : id(id) {}
+  struct SubRect {
+    enum class Type {
+      // While tracking the rectangle, the output is intersection of specified
+      // sub-rectangle and the element box rectangle.
+      kIntersectWithElementRect,
+      // While tracking the rectangle, the output is just the rectangle relative
+      // to the element. It may be actually located, or be larger then element
+      // box.
+      kNoIntersection,
+    };
 
-  static std::unique_ptr<TrackedElementRect> CreateFull(TrackedElementId id) {
-    return std::make_unique<TrackedElementRect>(id);
-  }
+    // A subset relative to this element's visual/painted rect. The visual rect
+    // includes all effects from the element like shadow, filter etc.
+    gfx::Rect rect;
+    Type type = Type::kIntersectWithElementRect;
+
+    bool operator==(const SubRect& other) const = default;
+  };
+
+  TrackedElementRect() = default;
+  explicit TrackedElementRect(TrackedElementId id,
+                              std::optional<SubRect> sub_rect = std::nullopt)
+      : id(id), sub_rect(sub_rect) {}
 
   TrackedElementId id;
+  std::optional<SubRect> sub_rect;
 
   // Comparison operators for use with WTF::HashSet and other containers.
   bool operator==(const TrackedElementRect& other) const {
-    return id == other.id;
+    return id == other.id && sub_rect == other.sub_rect;
   }
   bool operator!=(const TrackedElementRect& other) const {
     return !(*this == other);
   }
+
+  gfx::Rect GetEffectiveBounds(const gfx::Rect& element_paint_rect) const;
 };
 
 // Wraps a map from a tracked element identifier, which is a randomly

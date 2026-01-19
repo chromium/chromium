@@ -26,4 +26,19 @@ String TrackedElementData::ToString() const {
   return sb.ToString();
 }
 
+gfx::Rect TrackedElementRect::GetEffectiveBounds(
+    const gfx::Rect& element_paint_rect) const {
+  if (!sub_rect) {
+    return element_paint_rect;
+  }
+  gfx::Rect rect(
+      element_paint_rect.origin() + sub_rect->rect.OffsetFromOrigin(),
+      sub_rect->rect.size());
+  if (sub_rect->type ==
+      TrackedElementRect::SubRect::Type::kIntersectWithElementRect) {
+    rect.Intersect(element_paint_rect);
+  }
+  return rect;
+}
+
 }  // namespace blink
