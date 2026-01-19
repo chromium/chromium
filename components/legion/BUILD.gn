@@ -7,10 +7,13 @@ import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
+  proto_in_dir = "//"
   sources = [
     "proto/google_rpc_code.proto",
     "proto/legion.proto",
   ]
+
+  deps = [ "//components/optimization_guide/proto:optimization_guide_proto" ]
 }
 
 # Generate serialization helper.
@@ -19,7 +22,11 @@ proto_extras("proto_extras") {
     "proto/google_rpc_code.proto",
     "proto/legion.proto",
   ]
+
   deps = [ ":proto" ]
+  extras_deps = [
+    "//components/optimization_guide/proto:optimization_guide_proto_extras",
+  ]
 }
 
 source_set("features") {

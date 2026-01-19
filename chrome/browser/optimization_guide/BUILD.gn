@@ -202,6 +202,9 @@ source_set("unit_tests") {
       # Android uses a different way of showing browser windows.
       "optimization_guide_tab_url_provider_unittest.cc",
     ]
-    deps += [ "//components/legion" ]
+    deps += [
+      "//components/legion",
+      "//components/legion:proto",
+    ]
   }
 }

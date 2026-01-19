@@ -33,7 +33,6 @@ namespace optimization_guide {
 
 namespace {
 
-constexpr char kGoogleAPITypeName[] = "type.googleapis.com/";
 
 net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
     ModelBasedCapabilityKey feature) {
@@ -448,12 +447,8 @@ void ModelExecutionFetcherImpl::ExecuteModel(
   model_execution_feature_ = feature;
   model_execution_callback_ = std::move(callback);
 
-  proto::ExecuteRequest execute_request;
-  execute_request.set_feature(ToModelExecutionFeatureProto(feature));
-  proto::Any* any_metadata = execute_request.mutable_request_metadata();
-  any_metadata->set_type_url(
-      base::StrCat({kGoogleAPITypeName, request_metadata.GetTypeName()}));
-  request_metadata.SerializeToString(any_metadata->mutable_value());
+  proto::ExecuteRequest execute_request =
+      ToExecuteRequest(feature, request_metadata);
   std::string serialized_request;
   execute_request.SerializeToString(&serialized_request);
 

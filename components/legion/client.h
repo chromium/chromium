@@ -34,6 +34,10 @@ class Client {
   using OnGenerateContentRequestCompletedCallback = base::OnceCallback<void(
       base::expected<proto::GenerateContentResponse, ErrorCode> result)>;
 
+  // Callback for when a `SendPaicRequest` operation completes.
+  using OnPaicMessageRequestCompletedCallback = base::OnceCallback<void(
+      base::expected<proto::PaicMessage, ErrorCode> result)>;
+
   // Callback for when a `EstablishSession` operation completes.
   using OnEstablishSessionCompletedCallback =
       base::OnceCallback<void(base::expected<void, ErrorCode>)>;
@@ -77,6 +81,12 @@ class Client {
       const proto::GenerateContentRequest& request,
       OnGenerateContentRequestCompletedCallback callback,
       const RequestOptions& options) = 0;
+
+  // Sends a `PaicMessage` request.
+  virtual void SendPaicRequest(proto::FeatureName feature_name,
+                               const proto::PaicMessage& request,
+                               OnPaicMessageRequestCompletedCallback callback,
+                               const RequestOptions& options) = 0;
 };
 
 }  // namespace legion

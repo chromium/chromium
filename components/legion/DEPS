@@ -4,6 +4,7 @@ include_rules = [
   "+crypto",
   "+mojo/public/cpp",
   "+net",
+  "+components/optimization_guide/proto/model_execution.proto",
   "+services/network",
   "+services/network/public/cpp",
   "+services/network/public/mojom",

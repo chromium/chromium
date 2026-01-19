@@ -9,15 +9,17 @@ edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 
+import "components/optimization_guide/proto/model_execution.proto";
+
 package legion.proto;
 
-// Next ID: 13
 message LegionRequest {
   FeatureName feature_name = 1;
 
   oneof request {
     GenerateContentRequest generate_content_request = 4;
     AnonymousTokenRequest anonymous_token_request = 8;
+    PaicMessage paic_request = 14;
   }
 
   // Unique id used to represent the request which can be used to correlate the
@@ -28,10 +30,10 @@ message LegionRequest {
   int32 request_id = 5;
 }
 
-// Next ID: 10
 message LegionResponse {
   oneof response {
     GenerateContentResponse generate_content_response = 3;
+    PaicMessage paic_response = 11;
   }
 
   // Unique id used to represent the response which can be used to correlate the
@@ -49,6 +51,17 @@ enum FeatureName {
   FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION = 700;
 }
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:LegionFeatureName)
+
+message PaicMessage {
+  FeatureName feature_name = 1;
+
+  // extensions 530000000 to max;
+  // The original PaicMessage defines extensions. However extensions create
+  // static initializers which are not allowed in Chromium, so we use optional
+  // fields instead which have the same serialized format.
+  optimization_guide.proto.ExecuteRequest execute_request_ext = 530000002;
+  optimization_guide.proto.ExecuteResponse execute_response_ext = 530000003;
+}
 
 message GenerateContentRequest {
   // This field is meant for fast prototyping and will only be respected when

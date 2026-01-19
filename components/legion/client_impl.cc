@@ -22,7 +22,7 @@ namespace legion {
 
 namespace {
 
-void OnGenerateContentRequestCompleted(
+void ReceiveTextRequest(
     Client::OnTextRequestCompletedCallback cb,
     base::expected<proto::GenerateContentResponse, ErrorCode> result) {
   if (!result.has_value()) {
@@ -40,8 +40,42 @@ void OnGenerateContentRequestCompleted(
   std::move(cb).Run(text.value());
 }
 
-void OnRequestSent(
+void ReceiveGenerateContentResponse(
     Client::OnGenerateContentRequestCompletedCallback cb,
+    base::expected<proto::LegionResponse, ErrorCode> legion_response) {
+  if (!legion_response.has_value()) {
+    std::move(cb).Run(base::unexpected(legion_response.error()));
+    return;
+  }
+
+  if (!legion_response->has_generate_content_response()) {
+    LOG(ERROR) << "LegionResponse did not contain a "
+                  "generate_content_response";
+    std::move(cb).Run(base::unexpected(ErrorCode::kNoResponse));
+    return;
+  }
+  std::move(cb).Run(std::move(legion_response->generate_content_response()));
+}
+
+void ReceivePaicMessage(
+    Client::OnPaicMessageRequestCompletedCallback cb,
+    base::expected<proto::LegionResponse, ErrorCode> legion_response) {
+  if (!legion_response.has_value()) {
+    std::move(cb).Run(base::unexpected(legion_response.error()));
+    return;
+  }
+
+  if (!legion_response->has_paic_response()) {
+    LOG(ERROR) << "LegionResponse did not contain a "
+                  "paic_response";
+    std::move(cb).Run(base::unexpected(ErrorCode::kNoResponse));
+    return;
+  }
+  std::move(cb).Run(std::move(legion_response->paic_response()));
+}
+
+void ReceiveLegionResponse(
+    ClientImpl::OnLegionRequestCompletedCallback cb,
     base::expected<ClientImpl::BinaryEncodedProtoResponse, ErrorCode> result) {
   if (!result.has_value()) {
     std::move(cb).Run(base::unexpected(result.error()));
@@ -55,14 +89,7 @@ void OnRequestSent(
     return;
   }
 
-  if (!legion_response.has_generate_content_response()) {
-    LOG(ERROR) << "LegionResponse did not contain a "
-                  "generate_content_response";
-    std::move(cb).Run(base::unexpected(ErrorCode::kNoResponse));
-    return;
-  }
-
-  std::move(cb).Run(legion_response.generate_content_response());
+  std::move(cb).Run(std::move(legion_response));
 }
 
 ClientImpl::BinaryEncodedProtoRequest CreateClientAttestationRequest(
@@ -199,7 +226,7 @@ void ClientImpl::SendTextRequest(proto::FeatureName feature_name,
   part->set_text(text);
 
   auto text_response_callback =
-      base::BindOnce(&OnGenerateContentRequestCompleted, std::move(callback));
+      base::BindOnce(&ReceiveTextRequest, std::move(callback));
 
   SendGenerateContentRequest(feature_name, request,
                              std::move(text_response_callback), options);
@@ -210,24 +237,50 @@ void ClientImpl::SendGenerateContentRequest(
     const proto::GenerateContentRequest& request,
     OnGenerateContentRequestCompletedCallback callback,
     const RequestOptions& options) {
+  proto::LegionRequest request_proto;
+  *request_proto.mutable_generate_content_request() = request;
+
+  auto response_callback =
+      base::BindOnce(&ReceiveGenerateContentResponse, std::move(callback));
+
+  SendLegionRequest(feature_name, std::move(request_proto),
+                    std::move(response_callback), options);
+}
+
+void ClientImpl::SendPaicRequest(proto::FeatureName feature_name,
+                                 const proto::PaicMessage& request,
+                                 OnPaicMessageRequestCompletedCallback callback,
+                                 const RequestOptions& options) {
+  proto::LegionRequest legion_request;
+  *legion_request.mutable_paic_request() = request;
+
+  auto response_callback =
+      base::BindOnce(&ReceivePaicMessage, std::move(callback));
+
+  SendLegionRequest(feature_name, std::move(legion_request),
+                    std::move(response_callback), options);
+}
+
+void ClientImpl::SendLegionRequest(proto::FeatureName feature_name,
+                                   proto::LegionRequest legion_request,
+                                   OnLegionRequestCompletedCallback callback,
+                                   const RequestOptions& options) {
   int32_t request_id = CreateRequestId();
 
-  proto::LegionRequest request_proto;
-  request_proto.set_feature_name(feature_name);
-  request_proto.set_request_id(request_id);
-  *request_proto.mutable_generate_content_request() = request;
+  legion_request.set_feature_name(feature_name);
+  legion_request.set_request_id(request_id);
 
   base::UmaHistogramSparse("Legion.Client.FeatureName",
                            static_cast<int>(feature_name));
 
   std::string serialized_request;
-  request_proto.SerializeToString(&serialized_request);
+  legion_request.SerializeToString(&serialized_request);
   BinaryEncodedProtoRequest binary_encoded_proto_request(
       serialized_request.begin(), serialized_request.end());
 
   // The callback for when the response is received.
   auto response_parsing_callback =
-      base::BindOnce(&OnRequestSent, std::move(callback));
+      base::BindOnce(&ReceiveLegionResponse, std::move(callback));
 
   SendRequest(request_id, std::move(binary_encoded_proto_request),
               std::move(response_parsing_callback), options.timeout);

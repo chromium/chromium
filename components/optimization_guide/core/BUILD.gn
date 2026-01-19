@@ -225,6 +225,7 @@ source_set("model_execution") {
       "model_execution/model_execution_features.h",
       "model_execution/model_execution_features_controller.cc",
       "model_execution/model_execution_features_controller.h",
+      "model_execution/model_execution_fetcher.cc",
       "model_execution/model_execution_fetcher.h",
       "model_execution/model_execution_fetcher_impl.cc",
       "model_execution/model_execution_fetcher_impl.h",
