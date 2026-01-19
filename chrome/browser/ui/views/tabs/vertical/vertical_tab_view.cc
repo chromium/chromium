@@ -214,12 +214,6 @@ void VerticalTabView::UpdateHovered(bool hovered) {
   UpdateCloseButtonVisibility();
 }
 
-void VerticalTabView::OnTabDragOver() {
-  auto* controller = collection_node_->GetController();
-  CHECK(controller);
-  controller->GetDragHandler().DraggedTabsOverNode(*collection_node_);
-}
-
 bool VerticalTabView::OnKeyPressed(const ui::KeyEvent& event) {
   if (event.key_code() == ui::VKEY_RETURN && selected_) {
     collection_node_->GetController()->SelectTab(GetTabInterface(),

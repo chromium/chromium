@@ -35,7 +35,7 @@ class VerticalTabDragHandler {
   virtual void EndDrag(EndDragReason reason) = 0;
 
   // Handles tab strip model updates to reflect a drag over a give tab node.
-  virtual void DraggedTabsOverNode(const TabCollectionNode& node) = 0;
+  virtual void HandleDraggedTabsOverNode(const TabCollectionNode& node) = 0;
 
   // Returns the drag context for this handler.
   virtual TabDragContext* GetDragContext() = 0;
@@ -73,7 +73,7 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
   bool ContinueDrag(views::View& event_source_view,
                     const ui::MouseEvent& event) override;
   void EndDrag(EndDragReason reason) override;
-  void DraggedTabsOverNode(const TabCollectionNode& node) override;
+  void HandleDraggedTabsOverNode(const TabCollectionNode& node) override;
   TabDragContext* GetDragContext() override;
   bool IsViewDragging(const views::View& view) const override;
 

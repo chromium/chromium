@@ -199,11 +199,5 @@ void VerticalSplitTabView::UpdateHovered(bool hovered) {
   SchedulePaint();
 }
 
-void VerticalSplitTabView::OnTabDragOver() {
-  auto* controller = collection_node_->GetController();
-  CHECK(controller);
-  controller->GetDragHandler().DraggedTabsOverNode(*collection_node_);
-}
-
 BEGIN_METADATA(VerticalSplitTabView)
 END_METADATA

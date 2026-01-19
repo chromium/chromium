@@ -53,8 +53,7 @@ class VerticalTabGroupView
 
   bool IsCollapsed() const;
 
-  // Handler when a tab that is not in the group is dragged over this.
-  void OnTabDragOver();
+  const TabCollectionNode* collection_node() const { return collection_node_; }
 
   VerticalTabGroupHeaderView* group_header_for_testing() {
     return group_header_;

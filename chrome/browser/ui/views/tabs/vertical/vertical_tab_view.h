@@ -55,7 +55,7 @@ class VerticalTabView : public views::View,
   void StepLoadingAnimation(const base::TimeDelta& elapsed_time);
   void UpdateHovered(bool hovered);
 
-  void OnTabDragOver();
+  const TabCollectionNode* collection_node() const { return collection_node_; }
   const TabStyle* tab_style() { return tab_style_; }
   const TabRendererData& tab_data() const { return tab_data_; }
   TabCloseButton* close_button_for_testing() { return close_button_; }

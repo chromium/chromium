@@ -126,7 +126,7 @@ void VerticalTabDragHandlerImpl::EndDrag(EndDragReason reason) {
   ResetDragState();
 }
 
-void VerticalTabDragHandlerImpl::DraggedTabsOverNode(
+void VerticalTabDragHandlerImpl::HandleDraggedTabsOverNode(
     const TabCollectionNode& node) {
   if (!drag_controller_) {
     // Do nothing if the drag is not attached to our context yet (e.g. on the
