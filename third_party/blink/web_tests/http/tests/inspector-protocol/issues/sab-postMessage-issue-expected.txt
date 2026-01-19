@@ -7,8 +7,8 @@ Creation issue: {
             sharedArrayBufferIssueDetails : {
                 isWarning : true
                 sourceCodeLocation : {
-                    columnNumber : 13
-                    lineNumber : 0
+                    columnNumber : 49
+                    lineNumber : 1
                     scriptId : <string>
                     url :
                 }
@@ -26,8 +26,8 @@ Deprecation issue: {
                     frameId : <string>
                 }
                 sourceCodeLocation : {
-                    columnNumber : 13
-                    lineNumber : 0
+                    columnNumber : 49
+                    lineNumber : 1
                     scriptId : <string>
                     url :
                 }

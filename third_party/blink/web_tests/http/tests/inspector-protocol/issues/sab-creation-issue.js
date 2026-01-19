@@ -5,7 +5,7 @@
 
   await dp.Audits.enable();
   session.evaluate(
-      `new WebAssembly.Memory({ shared:true, initial:0, maximum:0 });`);
+      `new WebAssembly.Memory({ shared:true, initial:0, maximum:0 }).buffer;`);
   const issue = await dp.Audits.onceIssueAdded();
 
   testRunner.log(issue.params, 'Inspector issue: ');
