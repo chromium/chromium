@@ -181,10 +181,6 @@ const base::FeatureParam<bool> kDevToolsGdpProfilesStarterBadgeEnabled{
     &kDevToolsGdpProfiles, "starter_badge_enabled",
     /*default_value=*/true};
 
-// Whether DevTools Live Edit (Debugger.setScriptSource usage in CDP) is
-// enabled.
-BASE_FEATURE(kDevToolsLiveEdit, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDevToolsIndividualRequestThrottling,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

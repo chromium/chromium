@@ -253,6 +253,10 @@ const base::FeatureParam<base::TimeDelta>
 BASE_FEATURE(kDeviceBoundSessionTerminationEvictBackForwardCache,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether DevTools Live Edit (Debugger.setScriptSource usage in CDP) is
+// enabled.
+BASE_FEATURE(kDevToolsLiveEdit, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, the DevTools Privacy UI is displayed.
 BASE_FEATURE(kDevToolsPrivacyUI, base::FEATURE_ENABLED_BY_DEFAULT);
 
