@@ -4101,26 +4101,25 @@ void LayoutObject::SetNeedsPaintPropertyUpdate() {
   if (IsOverscrollContainer()) {
     auto* container = IsPseudo(kPseudoIdOverscrollAreaParent) ? Parent() : this;
     CHECK(container);
-    CHECK(container->StyleRef().IsInternalOverscrollAreaAuto());
-    CHECK(container->GetNode());
 
-    if (auto* overscroll_area_parent_vector =
-            To<Element>(*container->GetNode())
-                .GetOverscrollAreaParentPseudoElements()) {
-      for (const auto& overscroll_area_parent :
-           *overscroll_area_parent_vector) {
-        if (auto* object = overscroll_area_parent->GetLayoutObject()) {
-          object->bitfields_.SetNeedsPaintPropertyUpdate(true);
+    if (auto* container_element = DynamicTo<Element>(container->GetNode())) {
+      if (auto* overscroll_area_parent_vector =
+              container_element->GetOverscrollAreaParentPseudoElements()) {
+        for (const auto& overscroll_area_parent :
+             *overscroll_area_parent_vector) {
+          if (auto* object = overscroll_area_parent->GetLayoutObject()) {
+            object->bitfields_.SetNeedsPaintPropertyUpdate(true);
+          }
         }
-      }
 
-      container->bitfields_.SetNeedsPaintPropertyUpdate(true);
-      // Note that we mark descendants needing property update starting from
-      // container, as opposed to container's parent, since we invalidated the
-      // direct children of the container
-      // (::-internal-overscroll-area-parent).
-      container->SetDescendantNeedsPaintPropertyUpdate();
-      return;
+        container->bitfields_.SetNeedsPaintPropertyUpdate(true);
+        // Note that we mark descendants needing property update starting from
+        // container, as opposed to container's parent, since we invalidated the
+        // direct children of the container
+        // (::-internal-overscroll-area-parent).
+        container->SetDescendantNeedsPaintPropertyUpdate();
+        return;
+      }
     }
   }
 
