@@ -451,6 +451,7 @@ void V8MetricsRecorder::AddMainThreadEvent(
     builder.SetReason(event.reason)
         .SetReduceMemory(event.reduce_memory)
         .SetIsLoading(event.is_loading)
+        .SetIsInputHandling(event.is_input_handling)
         .SetReason_IncrementalMarking(event.incremental_marking_reason)
         .SetDuration_SinceLastMarkCompact(
             ukm::GetExponentialBucketMinForFineUserTiming(
