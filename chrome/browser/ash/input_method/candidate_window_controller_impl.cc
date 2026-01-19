@@ -26,7 +26,9 @@ CandidateWindowControllerImpl::~CandidateWindowControllerImpl() {
   IMEBridge::Get()->SetCandidateWindowHandler(nullptr);
   if (candidate_window_view_) {
     candidate_window_view_->RemoveObserver(this);
+    candidate_window_view_->GetWidget()->RemoveObserver(this);
   }
+  CHECK(!IsInObserverList());
 }
 
 void CandidateWindowControllerImpl::InitCandidateWindowView() {
@@ -47,9 +49,7 @@ void CandidateWindowControllerImpl::InitCandidateWindowView() {
   candidate_window_view_->SetCursorAndCompositionBounds(cursor_bounds_,
                                                         composition_bounds_);
   views::Widget* widget = candidate_window_view_->InitWidget();
-  widget->MakeCloseSynchronous(base::BindOnce(
-      &CandidateWindowControllerImpl::OnCandidateWindowWidgetDestroying,
-      weak_ptr_factory_.GetWeakPtr()));
+  widget->AddObserver(this);
   widget->Show();
   for (auto& observer : observers_) {
     observer.CandidateWindowOpened();
@@ -156,9 +156,7 @@ void CandidateWindowControllerImpl::UpdateLookupTable(
     infolist_window_ =
         new ui::ime::InfolistWindow(candidate_window_view_, infolist_entries);
     infolist_window_->InitWidget();
-    infolist_window_->GetWidget()->MakeCloseSynchronous(base::BindOnce(
-        &CandidateWindowControllerImpl::OnInfolistWidgetDestroying,
-        weak_ptr_factory_.GetWeakPtr()));
+    infolist_window_->GetWidget()->AddObserver(this);
   }
   infolist_window_->ShowWithDelay();
 }
@@ -187,20 +185,19 @@ void CandidateWindowControllerImpl::OnCandidateCommitted(int index) {
   }
 }
 
-void CandidateWindowControllerImpl::OnCandidateWindowWidgetDestroying(
-    views::Widget::ClosedReason reason) {
-  if (candidate_window_view_) {
+void CandidateWindowControllerImpl::OnWidgetClosing(views::Widget* widget) {
+  if (infolist_window_ && widget == infolist_window_->GetWidget()) {
+    widget->RemoveObserver(this);
+    infolist_window_ = nullptr;
+  } else if (candidate_window_view_ &&
+             widget == candidate_window_view_->GetWidget()) {
+    widget->RemoveObserver(this);
     candidate_window_view_->RemoveObserver(this);
     candidate_window_view_ = nullptr;
     for (auto& observer : observers_) {
       observer.CandidateWindowClosed();
     }
   }
-}
-
-void CandidateWindowControllerImpl::OnInfolistWidgetDestroying(
-    views::Widget::ClosedReason reason) {
-  infolist_window_ = nullptr;
 }
 
 void CandidateWindowControllerImpl::AddObserver(

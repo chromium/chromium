@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/ash/input_method/candidate_window_view.h"
 #include "ui/base/ime/ash/ime_candidate_window_handler_interface.h"
 #include "ui/base/ime/infolist_entry.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace ui {
 class CandidateWindow;
@@ -34,6 +35,7 @@ namespace input_method {
 class CandidateWindowControllerImpl
     : public CandidateWindowController,
       public ui::ime::CandidateWindowView::Observer,
+      public views::WidgetObserver,
       public IMECandidateWindowHandlerInterface {
  public:
   CandidateWindowControllerImpl();
@@ -56,6 +58,12 @@ class CandidateWindowControllerImpl
       bool* has_highlighted);
 
  private:
+  // ui::ime::CandidateWindowView::Observer implementation.
+  void OnCandidateCommitted(int index) override;
+
+  // views::WidgetObserver implementation.
+  void OnWidgetClosing(views::Widget* widget) override;
+
   // IMECandidateWindowHandlerInterface implementation.
   void SetCursorAndCompositionBounds(
       const gfx::Rect& cursor_bounds,
@@ -69,12 +77,6 @@ class CandidateWindowControllerImpl
   void FocusStateChanged(bool is_focused) override;
 
   void InitCandidateWindowView();
-
-  // ui::ime::CandidateWindowView::Observer implementation.
-  void OnCandidateCommitted(int index) override;
-
-  void OnCandidateWindowWidgetDestroying(views::Widget::ClosedReason reason);
-  void OnInfolistWidgetDestroying(views::Widget::ClosedReason reason);
 
   // The candidate window view.
   raw_ptr<ui::ime::CandidateWindowView> candidate_window_view_ = nullptr;
@@ -92,7 +94,6 @@ class CandidateWindowControllerImpl
   std::vector<ui::InfolistEntry> latest_infolist_entries_;
 
   base::ObserverList<CandidateWindowController::Observer>::Unchecked observers_;
-  base::WeakPtrFactory<CandidateWindowControllerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace input_method
