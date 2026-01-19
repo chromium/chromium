@@ -282,7 +282,7 @@ void InputStream::OnError(InputController::ErrorCode error_code) {
 }
 
 void InputStream::OnLog(std::string_view message) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+  // No sequence check: |log_| is thread-safe and id_ is const.
   if (log_)
     log_->OnLogMessage(std::string(message) + " [id=" + id_.ToString() + "]");
 }

@@ -223,7 +223,7 @@ class InputController final {
   void SetOutputDeviceForAec(const std::string& output_device_id);
 
  private:
-  class DelayReporter;
+  class StatsReporter;
   friend class InputControllerTestHelper;
 
   // Used to log the result of capture startup.
@@ -343,8 +343,8 @@ class InputController final {
 
   StreamType type_;
 
-  // Helper class to report capture delay UMA stats.
-  std::unique_ptr<DelayReporter> delay_reporter_;
+  // Helper class to report logs and UMA stats for delay and capture glitches.
+  std::unique_ptr<StatsReporter> stats_reporter_;
 
   double max_volume_ = 0.0;
 
