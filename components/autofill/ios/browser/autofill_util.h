@@ -7,9 +7,9 @@
 
 #import <optional>
 #import <set>
-#import <variant>
 
 #import "base/strings/string_number_conversions.h"
+#import "base/types/expected.h"
 #import "base/unguessable_token.h"
 #import "base/values.h"
 #import "components/autofill/core/common/unique_ids.h"
@@ -117,10 +117,10 @@ std::optional<FormData> ExtractFormData(
 // `host_frame` is the isolated world frame corresponding to the page content
 // world frame where the forms were extracted. For forms extracted in the
 // isolated world pass a null `host_frame` as the frame token is derived from
-// `frame_id`. Returns a std::variant containing either a FormData if the
+// `frame_id`. Returns a base::expected containing either a FormData if the
 // conversion succeeds, or an ExtractFormDataFailure enum indicating the reason
 // for failure.
-std::variant<FormData, ExtractFormDataFailure> ExtractFormDataOrFailure(
+base::expected<FormData, ExtractFormDataFailure> ExtractFormDataOrFailure(
     const base::Value::Dict& form,
     bool filtered,
     const std::u16string& form_name,

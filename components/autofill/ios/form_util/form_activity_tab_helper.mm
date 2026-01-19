@@ -7,7 +7,6 @@
 #import <Foundation/Foundation.h>
 
 #import <optional>
-#import <variant>
 
 #import "base/debug/crash_logging.h"
 #import "base/debug/dump_without_crashing.h"
@@ -21,6 +20,7 @@
 #import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/types/expected.h"
 #import "base/values.h"
 #import "components/autofill/core/common/autofill_data_validation.h"
 #import "components/autofill/core/common/autofill_util.h"
@@ -497,20 +497,19 @@ void FormActivityTabHelper::FormSubmissionHandler(
   // the id of the frame that contains the forms. For page world forms, we set
   // FormData::host_frame with the corresponding isolated world frame in
   // `local_frame_token`.
-  std::variant<FormData, ExtractFormDataFailure> form_or_failure =
+  base::expected<FormData, ExtractFormDataFailure> form_or_failure =
       autofill::ExtractFormDataOrFailure(
           *form_data, true, base::UTF8ToUTF16(form_name),
           web_state->GetLastCommittedURL(), sender_frame->GetSecurityOrigin(),
           *fieldDataManager, *frame_id, local_frame_token);
 
-  if (std::holds_alternative<ExtractFormDataFailure>(form_or_failure)) {
+  if (!form_or_failure.has_value()) {
     RecordFormSubmissionOutcome(FormSubmissionOutcome::kFormExtractionFailure);
-    RecordFormExtractionFailure(
-        std::get<ExtractFormDataFailure>(form_or_failure));
+    RecordFormExtractionFailure(form_or_failure.error());
     return;
   }
 
-  FormData form = std::get<FormData>(form_or_failure);
+  FormData form = std::move(form_or_failure).value();
 
   if (std::optional<bool> programmatic_submission =
           message_body.FindBool("programmaticSubmission")) {

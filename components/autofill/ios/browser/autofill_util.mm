@@ -164,17 +164,17 @@ std::optional<FormData> ExtractFormData(
     const FieldDataManager& field_data_manager,
     const std::string& frame_id,
     LocalFrameToken host_frame) {
-  std::variant<FormData, ExtractFormDataFailure> form_or_failure =
+  base::expected<FormData, ExtractFormDataFailure> form_or_failure =
       ExtractFormDataOrFailure(form, filtered, form_name, main_frame_url,
                                form_frame_origin, field_data_manager, frame_id);
-  if (std::holds_alternative<ExtractFormDataFailure>(form_or_failure)) {
+  if (!form_or_failure.has_value()) {
     return std::nullopt;
   }
 
-  return std::get<FormData>(form_or_failure);
+  return std::move(form_or_failure).value();
 }
 
-std::variant<FormData, ExtractFormDataFailure> ExtractFormDataOrFailure(
+base::expected<FormData, ExtractFormDataFailure> ExtractFormDataOrFailure(
     const base::Value::Dict& form,
     bool filtered,
     const std::u16string& form_name,
@@ -187,24 +187,24 @@ std::variant<FormData, ExtractFormDataFailure> ExtractFormDataOrFailure(
   // Form data is copied into a FormData object field-by-field.
   const std::string* name = form.FindString("name");
   if (!name) {
-    return ExtractFormDataFailure::kMissingName;
+    return base::unexpected(ExtractFormDataFailure::kMissingName);
   }
   form_data.set_name(base::UTF8ToUTF16(*name));
   if (filtered && form_name != form_data.name()) {
-    return ExtractFormDataFailure::kFilteredNameMismatch;
+    return base::unexpected(ExtractFormDataFailure::kFilteredNameMismatch);
   }
 
   // Origin is mandatory.
   const std::string* origin_ptr = form.FindString("origin");
   if (!origin_ptr) {
-    return ExtractFormDataFailure::kMissingOrigin;
+    return base::unexpected(ExtractFormDataFailure::kMissingOrigin);
   }
   std::u16string origin = base::UTF8ToUTF16(*origin_ptr);
 
   // Use GURL object to verify origin of host frame URL.
   form_data.set_url(GURL(origin));
   if (!form_frame_origin.IsSameOriginWith(form_data.url())) {
-    return ExtractFormDataFailure::kOriginMismatch;
+    return base::unexpected(ExtractFormDataFailure::kOriginMismatch);
   }
 
   bool include_frame_metadata =
@@ -216,7 +216,7 @@ std::variant<FormData, ExtractFormDataFailure> ExtractFormDataOrFailure(
   // Frame ID of the frame containing this form is mandatory.
   const std::string* host_frame_param = form.FindString("host_frame");
   if (!host_frame_param) {
-    return ExtractFormDataFailure::kMissingHostFrame;
+    return base::unexpected(ExtractFormDataFailure::kMissingHostFrame);
   }
 
   // Use provided isolated world host frame or derive it from frame id.
@@ -228,7 +228,7 @@ std::variant<FormData, ExtractFormDataFailure> ExtractFormDataOrFailure(
                  DeserializeJavaScriptFrameId(*host_frame_param)) {
     form_data.set_host_frame(LocalFrameToken(*host_frame_token));
   } else {
-    return ExtractFormDataFailure::kInvalidHostFrame;
+    return base::unexpected(ExtractFormDataFailure::kInvalidHostFrame);
   }
 
   if (base::FeatureList::IsEnabled(features::kAutofillAcrossIframesIos) &&
@@ -236,7 +236,7 @@ std::variant<FormData, ExtractFormDataFailure> ExtractFormDataOrFailure(
     // Invalidate parsing when the frame for which extraction was done
     // doesn't correspond to the frame where extraction actually happened.
     // This is to prevent associating the form data with the wrong frame.
-    return ExtractFormDataFailure::kFrameIdMismatch;
+    return base::unexpected(ExtractFormDataFailure::kFrameIdMismatch);
   }
 
   // main_frame_origin is used for logging UKM.
@@ -283,7 +283,7 @@ std::variant<FormData, ExtractFormDataFailure> ExtractFormDataOrFailure(
   // Field list (mandatory) is extracted.
   const base::Value::List* fields_list = form.FindList("fields");
   if (!fields_list) {
-    return ExtractFormDataFailure::kMissingFields;
+    return base::unexpected(ExtractFormDataFailure::kMissingFields);
   }
   std::vector<FormFieldData> fields;
   fields.reserve(fields_list->size());
@@ -302,7 +302,7 @@ std::variant<FormData, ExtractFormDataFailure> ExtractFormDataOrFailure(
 
       fields.push_back(std::move(field_data));
     } else {
-      return ExtractFormDataFailure::kInvalidField;
+      return base::unexpected(ExtractFormDataFailure::kInvalidField);
     }
   }
   form_data.set_fields(std::move(fields));
