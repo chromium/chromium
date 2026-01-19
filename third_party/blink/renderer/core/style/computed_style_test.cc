@@ -74,6 +74,29 @@ class ComputedStyleTest : public testing::Test {
     return GetDocument().getElementById(AtomicString(id))->ComputedStyleRef();
   }
 
+  enum ExpectedChanges { kNoChanges, kCompositingReasonsChanged };
+
+  template <typename SetFlag, typename GetFlag>
+  void TestAnimationFlag(const SetFlag& set_flag,
+                         const GetFlag& get_flag,
+                         ComputedStyle::Difference expected_difference,
+                         ExpectedChanges expected_changes) {
+    ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+    set_flag(&builder);
+    const ComputedStyle* style = builder.TakeStyle();
+    EXPECT_TRUE(get_flag(style));
+    const ComputedStyle* other = InitialComputedStyle();
+    EXPECT_FALSE(get_flag(other));
+    EXPECT_EQ(expected_difference,
+              ComputedStyle::ComputeDifference(style, other));
+    StyleDifference diff = style->VisualInvalidationDiff(GetDocument(), *other);
+    bool expect_compositing_reasons_changed =
+        expected_changes == kCompositingReasonsChanged;
+    EXPECT_EQ(expect_compositing_reasons_changed, diff.HasDifference());
+    EXPECT_EQ(expect_compositing_reasons_changed,
+              diff.CompositingReasonsChanged());
+  }
+
  private:
   test::TaskEnvironment task_environment_;
   std::unique_ptr<DummyPageHolder> dummy_page_holder_;
@@ -538,54 +561,53 @@ TEST_F(ComputedStyleTest, BorderStyle) {
   EXPECT_FALSE(style->HasBorder());
 }
 
-#define TEST_ANIMATION_FLAG(flag, inherited)                     \
-  do {                                                           \
-    auto builder = CreateComputedStyleBuilder();                 \
-    builder.Set##flag(true);                                     \
-    const auto* style = builder.TakeStyle();                     \
-    EXPECT_TRUE(style->flag());                                  \
-    const auto* other = InitialComputedStyle();                  \
-    EXPECT_FALSE(other->flag());                                 \
-    EXPECT_EQ(ComputedStyle::Difference::inherited,              \
-              ComputedStyle::ComputeDifference(style, other));   \
-    auto diff = style->VisualInvalidationDiff(document, *other); \
-    EXPECT_TRUE(diff.HasDifference());                           \
-    EXPECT_TRUE(diff.CompositingReasonsChanged());               \
-  } while (false)
-
-#define TEST_ANIMATION_FLAG_NO_DIFF(flag)                        \
-  do {                                                           \
-    auto builder = CreateComputedStyleBuilder();                 \
-    builder.Set##flag(true);                                     \
-    const auto* style = builder.TakeStyle();                     \
-    EXPECT_TRUE(style->flag());                                  \
-    const auto* other = InitialComputedStyle();                  \
-    EXPECT_FALSE(other->flag());                                 \
-    EXPECT_EQ(ComputedStyle::Difference::kEqual,                 \
-              ComputedStyle::ComputeDifference(style, other));   \
-    auto diff = style->VisualInvalidationDiff(document, *other); \
-    EXPECT_FALSE(diff.HasDifference());                          \
-    EXPECT_FALSE(diff.CompositingReasonsChanged());              \
-  } while (false)
+// The two first parameters to TestAnimationFlag().
+#define FLAG_PARAMS(flag)                                          \
+  [](ComputedStyleBuilder* builder) { builder->Set##flag(true); }, \
+      [](const ComputedStyle* style) { return style->flag(); }
 
 TEST_F(ComputedStyleTest, AnimationFlags) {
-  Document& document = GetDocument();
-  TEST_ANIMATION_FLAG(HasCurrentTransformAnimation, kNonInherited);
-  TEST_ANIMATION_FLAG(HasCurrentScaleAnimation, kNonInherited);
-  TEST_ANIMATION_FLAG(HasCurrentRotateAnimation, kNonInherited);
-  TEST_ANIMATION_FLAG(HasCurrentTranslateAnimation, kNonInherited);
-  TEST_ANIMATION_FLAG(HasCurrentOpacityAnimation, kNonInherited);
-  TEST_ANIMATION_FLAG(HasCurrentFilterAnimation, kNonInherited);
-  TEST_ANIMATION_FLAG(HasCurrentBackdropFilterAnimation, kNonInherited);
-  TEST_ANIMATION_FLAG(SubtreeWillChangeContents, kInherited);
-  TEST_ANIMATION_FLAG_NO_DIFF(IsRunningTransformAnimationOnCompositor);
-  TEST_ANIMATION_FLAG_NO_DIFF(IsRunningScaleAnimationOnCompositor);
-  TEST_ANIMATION_FLAG_NO_DIFF(IsRunningRotateAnimationOnCompositor);
-  TEST_ANIMATION_FLAG_NO_DIFF(IsRunningTranslateAnimationOnCompositor);
-  TEST_ANIMATION_FLAG_NO_DIFF(IsRunningOpacityAnimationOnCompositor);
-  TEST_ANIMATION_FLAG_NO_DIFF(IsRunningFilterAnimationOnCompositor);
-  TEST_ANIMATION_FLAG_NO_DIFF(IsRunningBackdropFilterAnimationOnCompositor);
+  TestAnimationFlag(FLAG_PARAMS(HasCurrentTransformAnimation),
+                    ComputedStyle::Difference::kNonInherited,
+                    kCompositingReasonsChanged);
+  TestAnimationFlag(FLAG_PARAMS(HasCurrentScaleAnimation),
+                    ComputedStyle::Difference::kNonInherited,
+                    kCompositingReasonsChanged);
+  TestAnimationFlag(FLAG_PARAMS(HasCurrentRotateAnimation),
+                    ComputedStyle::Difference::kNonInherited,
+                    kCompositingReasonsChanged);
+  TestAnimationFlag(FLAG_PARAMS(HasCurrentTranslateAnimation),
+                    ComputedStyle::Difference::kNonInherited,
+                    kCompositingReasonsChanged);
+  TestAnimationFlag(FLAG_PARAMS(HasCurrentOpacityAnimation),
+                    ComputedStyle::Difference::kNonInherited,
+                    kCompositingReasonsChanged);
+  TestAnimationFlag(FLAG_PARAMS(HasCurrentFilterAnimation),
+                    ComputedStyle::Difference::kNonInherited,
+                    kCompositingReasonsChanged);
+  TestAnimationFlag(FLAG_PARAMS(HasCurrentBackdropFilterAnimation),
+                    ComputedStyle::Difference::kNonInherited,
+                    kCompositingReasonsChanged);
+  TestAnimationFlag(FLAG_PARAMS(SubtreeWillChangeContents),
+                    ComputedStyle::Difference::kInherited,
+                    kCompositingReasonsChanged);
+  TestAnimationFlag(FLAG_PARAMS(IsRunningTransformAnimationOnCompositor),
+                    ComputedStyle::Difference::kEqual, kNoChanges);
+  TestAnimationFlag(FLAG_PARAMS(IsRunningScaleAnimationOnCompositor),
+                    ComputedStyle::Difference::kEqual, kNoChanges);
+  TestAnimationFlag(FLAG_PARAMS(IsRunningRotateAnimationOnCompositor),
+                    ComputedStyle::Difference::kEqual, kNoChanges);
+  TestAnimationFlag(FLAG_PARAMS(IsRunningTranslateAnimationOnCompositor),
+                    ComputedStyle::Difference::kEqual, kNoChanges);
+  TestAnimationFlag(FLAG_PARAMS(IsRunningOpacityAnimationOnCompositor),
+                    ComputedStyle::Difference::kEqual, kNoChanges);
+  TestAnimationFlag(FLAG_PARAMS(IsRunningFilterAnimationOnCompositor),
+                    ComputedStyle::Difference::kEqual, kNoChanges);
+  TestAnimationFlag(FLAG_PARAMS(IsRunningBackdropFilterAnimationOnCompositor),
+                    ComputedStyle::Difference::kEqual, kNoChanges);
 }
+
+#undef FLAG_PARAMS
 
 TEST_F(ComputedStyleTest, CustomPropertiesEqual_Values) {
   css_test_helpers::RegisterProperty(GetDocument(), "--x", "<length>", "0px",
