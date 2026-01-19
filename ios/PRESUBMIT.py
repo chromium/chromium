@@ -52,7 +52,8 @@ def _CheckNullabilityAnnotations(input_api, output_api):
 
     errors = []
     for f in input_api.AffectedFiles():
-        if f.LocalPath().startswith('ios/web_view/public/'):
+        if (f.LocalPath().startswith('ios/web_view/public/') or
+            f.LocalPath().startswith('ios/third_party/')):
             # ios/web_view/public tries to mimic an existing API that
             # might have nullability in it and that is acceptable.
             continue
