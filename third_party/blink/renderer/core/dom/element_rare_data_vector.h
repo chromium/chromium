@@ -346,41 +346,37 @@ class CORE_EXPORT ElementRareDataVector final
   DisplayAdElementMonitor* GetDisplayAdElementMonitor() const;
   DisplayAdElementMonitor& EnsureDisplayAdElementMonitor(Element*);
 
-  void SetDidAttachInternals() { fields_.did_attach_internals = true; }
-  bool DidAttachInternals() const { return fields_.did_attach_internals; }
-  bool HasUndoStack() const { return fields_.has_undo_stack; }
-  void SetHasUndoStack(bool value) { fields_.has_undo_stack = value; }
+  void SetDidAttachInternals() { did_attach_internals = true; }
+  bool DidAttachInternals() const { return did_attach_internals; }
+  bool HasUndoStack() const { return has_undo_stack; }
+  void SetHasUndoStack(bool value) { has_undo_stack = value; }
   void SetPseudoElementStylesChangeCounters(bool value) {
-    fields_.has_counters_styles = value;
+    has_counters_styles = value;
   }
-  bool PseudoElementStylesAffectCounters() const {
-    return fields_.has_counters_styles;
-  }
+  bool PseudoElementStylesAffectCounters() const { return has_counters_styles; }
   bool ScrollbarPseudoElementStylesDependOnFontMetrics() const {
-    return fields_.scrollbar_pseudo_element_styles_depend_on_font_metrics;
+    return scrollbar_pseudo_element_styles_depend_on_font_metrics;
   }
   void SetScrollbarPseudoElementStylesDependOnFontMetrics(bool value) {
-    fields_.scrollbar_pseudo_element_styles_depend_on_font_metrics = value;
+    scrollbar_pseudo_element_styles_depend_on_font_metrics = value;
   }
-  void SetHasBeenExplicitlyScrolled() {
-    fields_.has_been_explicitly_scrolled = true;
-  }
+  void SetHasBeenExplicitlyScrolled() { has_been_explicitly_scrolled = true; }
   bool HasBeenExplicitlyScrolled() const {
-    return fields_.has_been_explicitly_scrolled;
+    return has_been_explicitly_scrolled;
   }
-  bool MayBeImplicitAnchor() const { return fields_.may_be_implicit_anchor; }
-  void SetMayBeImplicitAnchor() { fields_.may_be_implicit_anchor = true; }
+  bool MayBeImplicitAnchor() const { return may_be_implicit_anchor; }
+  void SetMayBeImplicitAnchor() { may_be_implicit_anchor = true; }
 
   FocusgroupData GetFocusgroupData() const {
-    return {fields_.focusgroup_behavior, fields_.focusgroup_flags};
+    return {focusgroup_behavior, focusgroup_flags};
   }
   void SetFocusgroupData(FocusgroupData data) {
-    fields_.focusgroup_behavior = data.behavior;
-    fields_.focusgroup_flags = data.flags;
+    focusgroup_behavior = data.behavior;
+    focusgroup_flags = data.flags;
   }
   void ClearFocusgroupData() {
-    fields_.focusgroup_behavior = FocusgroupBehavior::kNoBehavior;
-    fields_.focusgroup_flags = FocusgroupFlags::kNone;
+    focusgroup_behavior = FocusgroupBehavior::kNoBehavior;
+    focusgroup_flags = FocusgroupFlags::kNone;
     SetFocusgroupLastFocused(nullptr);
   }
   void SetFocusgroupLastFocused(Element* element);
@@ -391,102 +387,96 @@ class CORE_EXPORT ElementRareDataVector final
   Element* GetOverscrollContainer() const;
   void ClearOverscrollContainer() { SetOverscrollContainer(nullptr); }
 
-  void SetAffectedByStartingStyles() {
-    fields_.affected_by_starting_styles = true;
-  }
-  bool AffectedByStartingStyles() const {
-    return fields_.affected_by_starting_styles;
-  }
+  void SetAffectedByStartingStyles() { affected_by_starting_styles = true; }
+  bool AffectedByStartingStyles() const { return affected_by_starting_styles; }
   bool AffectedBySubjectHas() const {
-    return fields_.has_invalidation_flags.affected_by_subject_has;
+    return has_invalidation_flags.affected_by_subject_has;
   }
   void SetAffectedBySubjectHas() {
-    fields_.has_invalidation_flags.affected_by_subject_has = true;
+    has_invalidation_flags.affected_by_subject_has = true;
   }
   bool AffectedByNonSubjectHas() const {
-    return fields_.has_invalidation_flags.affected_by_non_subject_has;
+    return has_invalidation_flags.affected_by_non_subject_has;
   }
   void SetAffectedByNonSubjectHas() {
-    fields_.has_invalidation_flags.affected_by_non_subject_has = true;
+    has_invalidation_flags.affected_by_non_subject_has = true;
   }
   bool AncestorsOrAncestorSiblingsAffectedByHas() const {
-    return fields_.has_invalidation_flags
+    return has_invalidation_flags
         .ancestors_or_ancestor_siblings_affected_by_has;
   }
   void SetAncestorsOrAncestorSiblingsAffectedByHas() {
-    fields_.has_invalidation_flags
-        .ancestors_or_ancestor_siblings_affected_by_has = true;
+    has_invalidation_flags.ancestors_or_ancestor_siblings_affected_by_has =
+        true;
   }
   unsigned GetSiblingsAffectedByHasFlags() const {
-    return fields_.has_invalidation_flags.siblings_affected_by_has;
+    return has_invalidation_flags.siblings_affected_by_has;
   }
   bool HasSiblingsAffectedByHasFlags(unsigned flags) const {
-    return fields_.has_invalidation_flags.siblings_affected_by_has & flags;
+    return has_invalidation_flags.siblings_affected_by_has & flags;
   }
   void SetSiblingsAffectedByHasFlags(unsigned flags) {
-    fields_.has_invalidation_flags.siblings_affected_by_has |= flags;
+    has_invalidation_flags.siblings_affected_by_has |= flags;
   }
   bool AffectedByPseudoInHas() const {
-    return fields_.has_invalidation_flags.affected_by_pseudos_in_has;
+    return has_invalidation_flags.affected_by_pseudos_in_has;
   }
   void SetAffectedByPseudoInHas() {
-    fields_.has_invalidation_flags.affected_by_pseudos_in_has = true;
+    has_invalidation_flags.affected_by_pseudos_in_has = true;
   }
   bool AncestorsOrSiblingsAffectedByHoverInHas() const {
-    return fields_.has_invalidation_flags
+    return has_invalidation_flags
         .ancestors_or_siblings_affected_by_hover_in_has;
   }
   void SetAncestorsOrSiblingsAffectedByHoverInHas() {
-    fields_.has_invalidation_flags
-        .ancestors_or_siblings_affected_by_hover_in_has = true;
+    has_invalidation_flags.ancestors_or_siblings_affected_by_hover_in_has =
+        true;
   }
   bool AncestorsOrSiblingsAffectedByActiveInHas() const {
-    return fields_.has_invalidation_flags
+    return has_invalidation_flags
         .ancestors_or_siblings_affected_by_active_in_has;
   }
   void SetAncestorsOrSiblingsAffectedByActiveInHas() {
-    fields_.has_invalidation_flags
-        .ancestors_or_siblings_affected_by_active_in_has = true;
+    has_invalidation_flags.ancestors_or_siblings_affected_by_active_in_has =
+        true;
   }
   bool AncestorsOrSiblingsAffectedByFocusInHas() const {
-    return fields_.has_invalidation_flags
+    return has_invalidation_flags
         .ancestors_or_siblings_affected_by_focus_in_has;
   }
   void SetAncestorsOrSiblingsAffectedByFocusInHas() {
-    fields_.has_invalidation_flags
-        .ancestors_or_siblings_affected_by_focus_in_has = true;
+    has_invalidation_flags.ancestors_or_siblings_affected_by_focus_in_has =
+        true;
   }
   bool AncestorsOrSiblingsAffectedByFocusVisibleInHas() const {
-    return fields_.has_invalidation_flags
+    return has_invalidation_flags
         .ancestors_or_siblings_affected_by_focus_visible_in_has;
   }
   void SetAncestorsOrSiblingsAffectedByFocusVisibleInHas() {
-    fields_.has_invalidation_flags
+    has_invalidation_flags
         .ancestors_or_siblings_affected_by_focus_visible_in_has = true;
   }
   bool AffectedByLogicalCombinationsInHas() const {
-    return fields_.has_invalidation_flags
-        .affected_by_logical_combinations_in_has;
+    return has_invalidation_flags.affected_by_logical_combinations_in_has;
   }
   void SetAffectedByLogicalCombinationsInHas() {
-    fields_.has_invalidation_flags.affected_by_logical_combinations_in_has =
-        true;
+    has_invalidation_flags.affected_by_logical_combinations_in_has = true;
   }
   bool AffectedByMultipleHas() const {
-    return fields_.has_invalidation_flags.affected_by_multiple_has;
+    return has_invalidation_flags.affected_by_multiple_has;
   }
   void SetAffectedByMultipleHas() {
-    fields_.has_invalidation_flags.affected_by_multiple_has = true;
+    has_invalidation_flags.affected_by_multiple_has = true;
   }
 
   ContentData* GetAltContentData() const;
   void SetAltContentData(ContentData* content_data);
 
   bool WasLastFocusFromUserGesture() const {
-    return fields_.was_last_focus_from_user_gesture;
+    return was_last_focus_from_user_gesture;
   }
   void SetWasLastFocusFromUserGesture(bool value) {
-    fields_.was_last_focus_from_user_gesture = value;
+    was_last_focus_from_user_gesture = value;
   }
 
   OverscrollAreaTracker& EnsureOverscrollAreaTracker(Element*);
@@ -624,30 +614,28 @@ class CORE_EXPORT ElementRareDataVector final
 
   DOMNodeId id_ = kInvalidDOMNodeId;  // Used primarily for accessibility.
 
-  // Using inheritance instead of composition to pack bytes better.
-  struct Fields : public SparseVector<FieldId, Member<ElementRareDataField>> {
-    unsigned did_attach_internals : 1 = false;
-    unsigned has_undo_stack : 1 = false;
-    unsigned scrollbar_pseudo_element_styles_depend_on_font_metrics : 1 = false;
-    // This never gets reset, since we would have to keep track for
-    // every pseudo-element whether it has counter style or not.
-    // But since situations when counter style if removed from
-    // pseudo-element are rare, we are fine with it, since
-    // it doesn't hurt performance much.
-    unsigned has_counters_styles : 1 = false;
-    unsigned has_been_explicitly_scrolled : 1 = false;
-    unsigned may_be_implicit_anchor : 1 = false;
-    unsigned affected_by_starting_styles : 1 = false;
-    // This records the last type of a focus on this element via `SetFocused`
-    // (or more accurately, the only derived value we need from that).
-    // For more see:
-    // https://explainers-by-googlers.github.io/user-dictionary-leaks/
-    unsigned was_last_focus_from_user_gesture : 1 = false;
-    HasInvalidationFlags has_invalidation_flags;
-    FocusgroupBehavior focusgroup_behavior = FocusgroupBehavior::kNoBehavior;
-    FocusgroupFlags focusgroup_flags = FocusgroupFlags::kNone;
-  };
-  Fields fields_;
+  unsigned did_attach_internals : 1 = false;
+  unsigned has_undo_stack : 1 = false;
+  unsigned scrollbar_pseudo_element_styles_depend_on_font_metrics : 1 = false;
+  // This never gets reset, since we would have to keep track for
+  // every pseudo-element whether it has counter style or not.
+  // But since situations when counter style if removed from
+  // pseudo-element are rare, we are fine with it, since
+  // it doesn't hurt performance much.
+  unsigned has_counters_styles : 1 = false;
+  unsigned has_been_explicitly_scrolled : 1 = false;
+  unsigned may_be_implicit_anchor : 1 = false;
+  unsigned affected_by_starting_styles : 1 = false;
+  // This records the last type of a focus on this element via `SetFocused`
+  // (or more accurately, the only derived value we need from that).
+  // For more see:
+  // https://explainers-by-googlers.github.io/user-dictionary-leaks/
+  unsigned was_last_focus_from_user_gesture : 1 = false;
+  HasInvalidationFlags has_invalidation_flags;
+  FocusgroupBehavior focusgroup_behavior = FocusgroupBehavior::kNoBehavior;
+  FocusgroupFlags focusgroup_flags = FocusgroupFlags::kNone;
+
+  SparseVector<FieldId, Member<ElementRareDataField>> fields_;
 };
 
 template <>
