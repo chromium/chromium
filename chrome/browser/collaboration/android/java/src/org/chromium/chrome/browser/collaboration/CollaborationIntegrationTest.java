@@ -741,7 +741,6 @@ public class CollaborationIntegrationTest {
     @MediumTest
     @Feature({"RenderTest"})
     @Restriction(DeviceFormFactor.PHONE)
-    @DisabledTest(message = "crbug.com/475253781")
     public void testTilesBottomStripRender() throws Exception {
         mDataSharingUIDelegate.overrideAvatarColor(ACCOUNT1.getGaiaId(), Color.RED);
         mDataSharingUIDelegate.overrideAvatarColor(ACCOUNT2.getGaiaId(), Color.BLUE);
