@@ -1718,8 +1718,6 @@ void CanvasResourceProvider::Clear() {
     return;
   }
   auto timer = CreateScopedRasterTimer();
-  bool want_to_print = false;
-  bool preserve_recording = want_to_print && clear_frame_;
 
   clear_frame_ = true;
   cc::PaintRecord recording;
@@ -1728,8 +1726,7 @@ void CanvasResourceProvider::Clear() {
   // Images are locked for the duration of the rasterization, in case they get
   // used multiple times. We can unlock them once the rasterization is complete.
   ReleaseLockedImages();
-  last_recording_ =
-      preserve_recording ? std::optional(recording) : std::nullopt;
+  last_recording_ = std::nullopt;
 }
 
 uint32_t CanvasResourceProvider::ContentUniqueID() const {
