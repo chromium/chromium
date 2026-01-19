@@ -520,12 +520,6 @@ IN_PROC_BROWSER_TEST_F(SettingsGlicSubpageLocationToggleLearnMoreTest,
           "runMochaSuite('GlicSubpage LocationToggleLearnMoreEnabled')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsBrowserTest,
-                       SettingsGlicSubageClosedCaptionsToggleEnabled) {
-  RunTest("settings/glic_subpage_test.js",
-          "runMochaSuite('GlicSubpage ClosedCaptionsToggleEnabled')");
-}
-
 class SettingsGlicSubpageKeepSidepanelOpenOnNewTabsToggleTest
     : public SettingsBrowserTest {
  public:
@@ -584,6 +578,22 @@ class SettingsGlicSubPageTestBase : public SettingsBrowserTest {
     signin::UpdateAccountInfoForAccount(identity_manager, primary_account);
   }
 };
+
+class SettingsGlicSubPageClosedCaptionsToggleTest
+    : public SettingsGlicSubPageTestBase {};
+
+IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageClosedCaptionsToggleTest,
+                       ToggleHiddenForUserWithoutAccountCapability) {
+  RunTest("settings/glic_subpage_test.js",
+          "runMochaSuite('GlicSubpage ClosedCaptionsToggleHidden')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageClosedCaptionsToggleTest,
+                       ToggleVisibleForUserWithAccountCapability) {
+  SigninAndEnableAccountCapability();
+  RunTest("settings/glic_subpage_test.js",
+          "runMochaSuite('GlicSubpage ClosedCaptionsToggleVisible')");
+}
 
 class SettingsGlicSubPageMicrophoneToggleTest
     : public SettingsGlicSubPageTestBase {};
