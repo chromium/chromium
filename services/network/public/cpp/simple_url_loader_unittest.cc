@@ -733,6 +733,10 @@ class SimpleURLLoaderTestBase {
   }
 
  protected:
+  // This must be first as `ScopedFeatureList` must outlive all async operations
+  // once initialized (i.e. `test_server_` and `task_environment`).
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<network::mojom::NetworkService> network_service_;
@@ -885,9 +889,6 @@ class SimpleURLLoaderTest
                                    net::SiteForCookies());
     return CreateHelper(std::move(resource_request), url_loader_factory);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Upload methods and retries do not work for in-progress loads so they are
