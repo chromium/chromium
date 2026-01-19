@@ -603,6 +603,69 @@ TEST_F(ReaderModeTabHelperTest, TestEligibleContentIsDisplayed) {
   histogram_tester_.ExpectTotalCount(kReaderModeCustomizationHistogram, 0);
 }
 
+// Tests that when Reading Mode is activated multiple times on the same URL
+// that the reader mode state is shown the same number of times.
+TEST_F(ReaderModeTabHelperTest, TestMultipleActivationsOnURL) {
+  GURL test_url("https://test.url");
+  LoadWebpage(web_state(), test_url);
+  SetReaderModeState(web_state(), test_url,
+                     ReaderModeHeuristicResult::kReaderModeEligible, "Content");
+
+  // Initially, no observer methods should be called.
+  WaitForPageLoadDelayAndRunUntilIdle();
+
+  // When ActivateReader() is called and distillation completes,
+  // ReaderModeWebStateDidBecomeAvailable should be called.
+  reader_mode_tab_helper()->ActivateReader(
+      ReaderModeAccessPoint::kContextualChip);
+  WaitForAvailableReaderModeContentInWebState(web_state());
+
+  reader_mode_tab_helper()->DeactivateReader(
+      ReaderModeDeactivationReason::kHostTabDestructionDeactivated);
+
+  // Activate the reader a second time.
+  reader_mode_tab_helper()->ActivateReader(
+      ReaderModeAccessPoint::kContextualChip);
+  WaitForAvailableReaderModeContentInWebState(web_state());
+
+  // The metrics for the navigation are recorded.
+  FlushMetrics();
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
+              BucketsAre(Bucket(ReaderModeState::kReaderShown, 2)));
+}
+
+// Tests that when Reading Mode is activated multiple times on the same fragment
+// URL that the reader mode state is shown the same number of times. Regression
+// test for crbug.com/454302739.
+TEST_F(ReaderModeTabHelperTest, TestMultipleActivationsOnFragmentURL) {
+  GURL test_url("https://test.url/page#fragment");
+  LoadWebpage(web_state(), test_url);
+  SetReaderModeState(web_state(), test_url,
+                     ReaderModeHeuristicResult::kReaderModeEligible, "Content");
+
+  // Initially, no observer methods should be called.
+  WaitForPageLoadDelayAndRunUntilIdle();
+
+  // When ActivateReader() is called and distillation completes,
+  // ReaderModeWebStateDidBecomeAvailable should be called.
+  reader_mode_tab_helper()->ActivateReader(
+      ReaderModeAccessPoint::kContextualChip);
+  WaitForAvailableReaderModeContentInWebState(web_state());
+
+  reader_mode_tab_helper()->DeactivateReader(
+      ReaderModeDeactivationReason::kHostTabDestructionDeactivated);
+
+  // Activate the reader a second time.
+  reader_mode_tab_helper()->ActivateReader(
+      ReaderModeAccessPoint::kContextualChip);
+  WaitForAvailableReaderModeContentInWebState(web_state());
+
+  // The metrics for the navigation are recorded.
+  FlushMetrics();
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
+              BucketsAre(Bucket(ReaderModeState::kReaderShown, 2)));
+}
+
 // Tests that distillation that takes longer than the expected timeout will
 // abort and deactivate reader.
 TEST_F(ReaderModeTabHelperTest, TestDistillationTimeout) {
