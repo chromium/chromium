@@ -75,38 +75,33 @@ foreach(i, _grit_environment_vars) {
   ]
 }
 
-# When cross-compiling, explicitly pass the target system to grit.
-# There's an exception for Chrome OS, as the toolchain can be the same
-# as linux, but the target platform still must be set.
-if (current_toolchain != host_toolchain || is_chromeos) {
-  _target_platform = ""
+_target_platform = ""
 
-  if (is_android) {
-    _target_platform = "android"
-  }
-  if (is_fuchsia) {
-    _target_platform = "fuchsia"
-  }
-  if (is_ios) {
-    _target_platform = "ios"
-  }
-  if (is_linux) {
-    _target_platform = "linux"
-  }
-  if (is_chromeos) {
-    _target_platform = "chromeos"
-  }
-  if (is_mac) {
-    _target_platform = "darwin"
-  }
-  if (is_win) {
-    _target_platform = "win32"
-  }
+if (is_android) {
+  _target_platform = "android"
+}
+if (is_fuchsia) {
+  _target_platform = "fuchsia"
+}
+if (is_ios) {
+  _target_platform = "ios"
+}
+if (is_linux) {
+  _target_platform = "linux"
+}
+if (is_chromeos) {
+  _target_platform = "chromeos"
+}
+if (is_mac) {
+  _target_platform = "darwin"
+}
+if (is_win) {
+  _target_platform = "win32"
+}
 
-  if (_target_platform != "") {
-    grit_args += [
-      "-t",
-      _target_platform,
-    ]
-  }
+if (_target_platform != "") {
+  grit_args += [
+    "-t",
+    _target_platform,
+  ]
 }
