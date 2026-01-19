@@ -584,7 +584,12 @@ CSSValue* AtRuleDescriptorParser::ParseAtRouteDescriptor(
       return nullptr;
   }
 
-  return css_parsing_utils::ConsumeString(stream);
+  CSSValue* value = css_parsing_utils::ConsumeString(stream);
+  stream.ConsumeWhitespace();
+  if (!stream.AtEnd()) {
+    return nullptr;
+  }
+  return value;
 }
 
 bool AtRuleDescriptorParser::ParseDescriptorValue(
