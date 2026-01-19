@@ -2005,6 +2005,8 @@ void RequestService::CompleteRequest(
   if (!auth_request_token_callback_) {
     return;
   }
+  // We don't just return if `complete_request_delayed_` is true because in the
+  // case of abort() we still want to invoke the callback.
   if (!complete_request_delayed_) {
     // Record metrics and console errors only the first time we complete the
     // request, even if the callback is delayed.
@@ -2022,6 +2024,7 @@ void RequestService::CompleteRequest(
     CompleteRequestInternal(result, token_error, selected_idp_config_url,
                             std::move(token_data), is_auto_selected);
   } else {
+    DCHECK(!complete_request_delayed_);
     complete_request_delayed_ = true;
     base::TimeDelta delay = GetRandomRejectionTime();
     TRACE_EVENT_INSTANT("content.fedcm", "Delaying FedCM rejection",
