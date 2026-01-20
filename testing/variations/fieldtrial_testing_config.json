@@ -162,22 +162,6 @@
             ]
         }
     ],
-    "AccessibilityAtomicLiveRegions": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AccessibilityAtomicLiveRegions"
-                    ]
-                }
-            ]
-        }
-    ],
     "AccessibilityCheckJavaNodeCacheFreshness": [
         {
             "platforms": [
@@ -269,7 +253,7 @@
             ]
         }
     ],
-    "AccessibilityImproveLiveRegionAnnounce": [
+    "AccessibilityImproveLiveRegionsOnAndroid": [
         {
             "platforms": [
                 "android",
@@ -277,8 +261,25 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "OnlyNonAtomicEnabled",
                     "enable_features": [
+                        "AccessibilityImproveLiveRegionAnnounce"
+                    ],
+                    "disable_features": [
+                        "AccessibilityAtomicLiveRegions"
+                    ]
+                },
+                {
+                    "name": "BothAtomicAndNonAtomicEnabled",
+                    "enable_features": [
+                        "AccessibilityAtomicLiveRegions",
+                        "AccessibilityImproveLiveRegionAnnounce"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "AccessibilityAtomicLiveRegions",
                         "AccessibilityImproveLiveRegionAnnounce"
                     ]
                 }
