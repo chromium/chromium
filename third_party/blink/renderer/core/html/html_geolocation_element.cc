@@ -86,7 +86,7 @@ HTMLGeolocationElement::CreateEmbeddedPermissionRequestDescriptor() {
   return descriptor;
 }
 
-void HTMLGeolocationElement::AttributeChanged(
+void HTMLGeolocationElement::ParseAttribute(
     const AttributeModificationParams& params) {
   // The "preciselocation" attribute does not have a special meaning on the
   // geolocation element. It is handled by the generic HTMLElement attribute
@@ -95,7 +95,7 @@ void HTMLGeolocationElement::AttributeChanged(
   // attribute is removed entirely along with the "geolocation" permission
   // element type.
   if (params.name == html_names::kPreciselocationAttr) {
-    HTMLElement::AttributeChanged(params);
+    HTMLElement::ParseAttribute(params);
     return;
   } else if (params.name == html_names::kAutolocateAttr) {
     if (params.new_value) {
@@ -112,7 +112,7 @@ void HTMLGeolocationElement::AttributeChanged(
 
   // If it's not a geolocation element specific attribute, the base class
   // permission element can handle attributes.
-  HTMLPermissionElement::AttributeChanged(params);
+  HTMLPermissionElement::ParseAttribute(params);
 }
 
 void HTMLGeolocationElement::DefaultEventHandler(Event& event) {

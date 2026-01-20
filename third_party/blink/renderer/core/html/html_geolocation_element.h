@@ -66,7 +66,7 @@ class CORE_EXPORT HTMLGeolocationElement final : public HTMLPermissionElement {
   void UpdatePermissionStatusAndAppearance() override;
   mojom::blink::EmbeddedPermissionRequestDescriptorPtr
   CreateEmbeddedPermissionRequestDescriptor() override;
-  void AttributeChanged(const AttributeModificationParams& params) override;
+  void ParseAttribute(const AttributeModificationParams& params) override;
   void DefaultEventHandler(Event&) override;
   void OnPermissionStatusChange(mojom::blink::PermissionName,
                                 mojom::blink::PermissionStatus) override;

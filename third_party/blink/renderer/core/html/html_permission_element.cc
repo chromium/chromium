@@ -854,7 +854,7 @@ void HTMLPermissionElement::LangAttributeChanged() {
   HTMLElement::LangAttributeChanged();
 }
 
-void HTMLPermissionElement::AttributeChanged(
+void HTMLPermissionElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == html_names::kTypeAttr) {
     setType(params.new_value);
@@ -866,7 +866,7 @@ void HTMLPermissionElement::AttributeChanged(
     SetPreciseLocation(params.new_value != nullptr);
   }
 
-  HTMLElement::AttributeChanged(params);
+  HTMLElement::ParseAttribute(params);
 }
 
 void HTMLPermissionElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
