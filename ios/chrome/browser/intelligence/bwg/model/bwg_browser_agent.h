@@ -175,8 +175,6 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
                              FullscreenAnimator* animator) override;
   void FullscreenDidAnimate(FullscreenController* controller,
                             FullscreenAnimatorStyle style) override;
-  void FullscreenEnabledStateChanged(FullscreenController* controller,
-                                     bool enabled) override;
   void FullscreenControllerWillShutDown(
       FullscreenController* controller) override;
 
