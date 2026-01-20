@@ -27,6 +27,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
@@ -94,6 +95,26 @@ void UmaHistogramCounts10000WithBatteryStateVariant(const char* histogram_name,
 
   base::UmaHistogramCounts10000(base::StrCat({histogram_name, suffix}), value);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void UmaHistogramCounts10000WithTabStripModeVariant(
+    const char* histogram_name,
+    const TabStatsTracker::TabStripInterface& tab_strip) {
+  // Guest mode and incognito should not count for the per-profile metrics
+  if (tab_strip.GetProfile()->IsOffTheRecord()) {
+    return;
+  }
+
+  const char* suffix = tabs::IsVerticalTabsFeatureEnabled() &&
+                               tab_strip.GetProfile()->GetPrefs()->GetBoolean(
+                                   prefs::kVerticalTabsEnabled)
+                           ? ".VerticalTabStrip"
+                           : ".HorizontalTabStrip";
+
+  base::UmaHistogramCounts10000(base::StrCat({histogram_name, suffix}),
+                                tab_strip.GetTabCount());
+}
+#endif
 
 }  // namespace
 
@@ -861,6 +882,9 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportHeartbeatMetrics(
     if (!tab_strip.IsInNormalBrowser()) {
       return;
     }
+
+    UmaHistogramCounts10000WithTabStripModeVariant(kTabCountHistogramName,
+                                                   tab_strip);
 
     const ui::BaseWindow* window =
         tab_strip.browser_window_interface()->GetWindow();
