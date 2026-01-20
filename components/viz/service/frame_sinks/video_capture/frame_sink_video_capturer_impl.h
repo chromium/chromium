@@ -33,7 +33,7 @@
 #include "components/viz/service/viz_service_export.h"
 #include "media/base/video_frame.h"
 #include "media/capture/content/video_capture_oracle.h"
-#include "media/video/renderable_gpu_memory_buffer_video_frame_pool.h"
+#include "media/video/renderable_mappable_shared_image_video_frame_pool.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -80,7 +80,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
       public mojom::FrameSinkVideoCapturer {
  public:
   using GpuMemoryBufferVideoFramePoolContext =
-      media::RenderableGpuMemoryBufferVideoFramePool::Context;
+      media::RenderableMappableSharedImageVideoFramePool::Context;
   // `frame_sink_manager` must outlive this instance. Binds this instance to the
   // Mojo message pipe endpoint in `receiver`, but `receiver` may be empty for
   // unit testing.

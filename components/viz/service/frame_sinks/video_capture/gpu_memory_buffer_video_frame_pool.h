@@ -11,7 +11,7 @@
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/frame_sinks/video_capture/video_frame_pool.h"
 #include "components/viz/service/viz_service_export.h"
-#include "media/video/renderable_gpu_memory_buffer_video_frame_pool.h"
+#include "media/video/renderable_mappable_shared_image_video_frame_pool.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
 
 namespace viz {
@@ -66,7 +66,7 @@ class VIZ_SERVICE_EXPORT GpuMemoryBufferVideoFramePool : public VideoFramePool {
   raw_ptr<GmbVideoFramePoolContextProvider> context_provider_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  std::unique_ptr<media::RenderableGpuMemoryBufferVideoFramePool>
+  std::unique_ptr<media::RenderableMappableSharedImageVideoFramePool>
       video_frame_pool_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Number of reserved video frames.

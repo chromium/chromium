@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/video/renderable_gpu_memory_buffer_video_frame_pool.h"
+#include "media/video/renderable_mappable_shared_image_video_frame_pool.h"
 
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
@@ -75,21 +75,22 @@ class FrameResources {
   gpu::SyncToken sync_token_;
 };
 
-// The owner of the RenderableGpuMemoryBufferVideoFramePool::Client needs to be
-// reference counted to ensure that not be destroyed while there still exist any
-// FrameResources.
-// Although this class is not generally safe for concurrent use, it extends
-// RefCountedThreadSafe in order to allow destruction on a different thread.
-// Specifically, blink::WebRtcVideoFrameAdapter::SharedResources lazily creates
-// a RenderableGpuMemoryBufferVideoFramePool when it needs to convert a frame on
-// the IO thread, but ends up destroying the object on the main thread.
+// The owner of the RenderableMappableSharedImageVideoFramePool::Client needs to
+// be reference counted to ensure that not be destroyed while there still exist
+// any FrameResources. Although this class is not generally safe for concurrent
+// use, it extends RefCountedThreadSafe in order to allow destruction on a
+// different thread. Specifically,
+// blink::WebRtcVideoFrameAdapter::SharedResources lazily creates a
+// RenderableMappableSharedImageVideoFramePool when it needs to convert a frame
+// on the IO thread, but ends up destroying the object on the main thread.
 class InternalRefCountedPool
     : public base::RefCountedThreadSafe<InternalRefCountedPool> {
  public:
   REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
 
   explicit InternalRefCountedPool(
-      std::unique_ptr<RenderableGpuMemoryBufferVideoFramePool::Context> context,
+      std::unique_ptr<RenderableMappableSharedImageVideoFramePool::Context>
+          context,
       VideoPixelFormat format,
       bool requires_cpu_access);
 
@@ -107,7 +108,7 @@ class InternalRefCountedPool
 
   // Return the Context for accessing the SharedImageInterface. Never returns
   // nullptr.
-  RenderableGpuMemoryBufferVideoFramePool::Context* GetContext() const;
+  RenderableMappableSharedImageVideoFramePool::Context* GetContext() const;
 
  private:
   friend class base::RefCountedThreadSafe<InternalRefCountedPool>;
@@ -119,7 +120,7 @@ class InternalRefCountedPool
                              const gpu::SyncToken& sync_token);
 
   const VideoPixelFormat format_;
-  const std::unique_ptr<RenderableGpuMemoryBufferVideoFramePool::Context>
+  const std::unique_ptr<RenderableMappableSharedImageVideoFramePool::Context>
       context_;
   std::list<std::unique_ptr<FrameResources>> available_frame_resources_;
   bool shutting_down_ = false;
@@ -128,13 +129,14 @@ class InternalRefCountedPool
   bool requires_cpu_access_ = true;
 };
 
-// Implementation of the RenderableGpuMemoryBufferVideoFramePool abstract
+// Implementation of the RenderableMappableSharedImageVideoFramePool abstract
 // class.
-class RenderableGpuMemoryBufferVideoFramePoolImpl
-    : public RenderableGpuMemoryBufferVideoFramePool {
+class RenderableMappableSharedImageVideoFramePoolImpl
+    : public RenderableMappableSharedImageVideoFramePool {
  public:
-  explicit RenderableGpuMemoryBufferVideoFramePoolImpl(
-      std::unique_ptr<RenderableGpuMemoryBufferVideoFramePool::Context> context,
+  explicit RenderableMappableSharedImageVideoFramePoolImpl(
+      std::unique_ptr<RenderableMappableSharedImageVideoFramePool::Context>
+          context,
       VideoPixelFormat format,
       bool requires_cpu_access);
 
@@ -142,7 +144,7 @@ class RenderableGpuMemoryBufferVideoFramePoolImpl
       const gfx::Size& visible_size,
       const gfx::ColorSpace& color_space) override;
 
-  ~RenderableGpuMemoryBufferVideoFramePoolImpl() override;
+  ~RenderableMappableSharedImageVideoFramePoolImpl() override;
 
   const VideoPixelFormat format_;
   const scoped_refptr<InternalRefCountedPool> pool_internal_;
@@ -293,7 +295,8 @@ void FrameResources::SetSharedImageReleaseSyncToken(
 // InternalRefCountedPool
 
 InternalRefCountedPool::InternalRefCountedPool(
-    std::unique_ptr<RenderableGpuMemoryBufferVideoFramePool::Context> context,
+    std::unique_ptr<RenderableMappableSharedImageVideoFramePool::Context>
+        context,
     const VideoPixelFormat format,
     bool requires_cpu_access)
     : format_(format),
@@ -363,7 +366,7 @@ void InternalRefCountedPool::Shutdown() {
   available_frame_resources_.clear();
 }
 
-RenderableGpuMemoryBufferVideoFramePool::Context*
+RenderableMappableSharedImageVideoFramePool::Context*
 InternalRefCountedPool::GetContext() const {
   return context_.get();
 }
@@ -374,11 +377,11 @@ InternalRefCountedPool::~InternalRefCountedPool() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// RenderableGpuMemoryBufferVideoFramePoolImpl
+// RenderableMappableSharedImageVideoFramePoolImpl
 
-RenderableGpuMemoryBufferVideoFramePoolImpl::
-    RenderableGpuMemoryBufferVideoFramePoolImpl(
-        std::unique_ptr<RenderableGpuMemoryBufferVideoFramePool::Context>
+RenderableMappableSharedImageVideoFramePoolImpl::
+    RenderableMappableSharedImageVideoFramePoolImpl(
+        std::unique_ptr<RenderableMappableSharedImageVideoFramePool::Context>
             context,
         const VideoPixelFormat format,
         bool requires_cpu_access)
@@ -389,29 +392,29 @@ RenderableGpuMemoryBufferVideoFramePoolImpl::
                                                        requires_cpu_access)) {}
 
 scoped_refptr<VideoFrame>
-RenderableGpuMemoryBufferVideoFramePoolImpl::MaybeCreateVideoFrame(
+RenderableMappableSharedImageVideoFramePoolImpl::MaybeCreateVideoFrame(
     const gfx::Size& visible_size,
     const gfx::ColorSpace& color_space) {
   return pool_internal_->MaybeCreateVideoFrame(visible_size, color_space);
 }
 
-RenderableGpuMemoryBufferVideoFramePoolImpl::
-    ~RenderableGpuMemoryBufferVideoFramePoolImpl() {
+RenderableMappableSharedImageVideoFramePoolImpl::
+    ~RenderableMappableSharedImageVideoFramePoolImpl() {
   pool_internal_->Shutdown();
 }
 
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
-// media::RenderableGpuMemoryBufferVideoFramePool
+// media::RenderableMappableSharedImageVideoFramePool
 
 // static
-std::unique_ptr<RenderableGpuMemoryBufferVideoFramePool>
-RenderableGpuMemoryBufferVideoFramePool::Create(
+std::unique_ptr<RenderableMappableSharedImageVideoFramePool>
+RenderableMappableSharedImageVideoFramePool::Create(
     std::unique_ptr<Context> context,
     VideoPixelFormat format,
     bool requires_cpu_access) {
-  return std::make_unique<RenderableGpuMemoryBufferVideoFramePoolImpl>(
+  return std::make_unique<RenderableMappableSharedImageVideoFramePoolImpl>(
       std::move(context), format, requires_cpu_access);
 }
 

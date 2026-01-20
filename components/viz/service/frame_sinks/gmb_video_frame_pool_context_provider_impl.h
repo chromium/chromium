@@ -9,7 +9,7 @@
 
 #include "components/viz/service/frame_sinks/gmb_video_frame_pool_context_provider.h"
 #include "components/viz/service/viz_service_export.h"
-#include "media/video/renderable_gpu_memory_buffer_video_frame_pool.h"
+#include "media/video/renderable_mappable_shared_image_video_frame_pool.h"
 
 namespace viz {
 
@@ -27,7 +27,7 @@ class VIZ_SERVICE_EXPORT GmbVideoFramePoolContextProviderImpl
 
   ~GmbVideoFramePoolContextProviderImpl() override;
 
-  std::unique_ptr<media::RenderableGpuMemoryBufferVideoFramePool::Context>
+  std::unique_ptr<media::RenderableMappableSharedImageVideoFramePool::Context>
   CreateContext(base::OnceClosure on_context_lost) override;
 
  private:

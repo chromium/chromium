@@ -51,7 +51,8 @@ bool IsApproxEquals(const gfx::Rect& a, const gfx::Rect& b) {
          IsApproxEquals(a.height(), b.height());
 }
 
-class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
+class Context
+    : public media::RenderableMappableSharedImageVideoFramePool::Context {
  public:
   explicit Context(
       scoped_refptr<viz::RasterContextProvider> raster_context_provider)
@@ -244,7 +245,7 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
       source_frame->format() != media::PIXEL_FORMAT_NV12) {
     if (!accelerated_frame_pool_) {
       accelerated_frame_pool_ =
-          media::RenderableGpuMemoryBufferVideoFramePool::Create(
+          media::RenderableMappableSharedImageVideoFramePool::Create(
               std::make_unique<Context>(raster_context_provider));
     }
 
@@ -376,7 +377,7 @@ void WebRtcVideoFrameAdapter::SharedResources::ScaleAndMapFrameAsync(
           raster_context_provider->ContextCapabilities())) {
     if (!accelerated_frame_pool_) {
       accelerated_frame_pool_ =
-          media::RenderableGpuMemoryBufferVideoFramePool::Create(
+          media::RenderableMappableSharedImageVideoFramePool::Create(
               std::make_unique<Context>(raster_context_provider));
     }
 

@@ -28,7 +28,7 @@ class RasterInterface;
 }  // namespace gpu
 
 namespace media {
-class RenderableGpuMemoryBufferVideoFramePool;
+class RenderableMappableSharedImageVideoFramePool;
 class VideoFrame;
 }  // namespace media
 
@@ -82,7 +82,8 @@ class PLATFORM_EXPORT WebGraphicsContext3DVideoFramePool {
  private:
   base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>
       weak_context_provider_;
-  const std::unique_ptr<media::RenderableGpuMemoryBufferVideoFramePool> pool_;
+  const std::unique_ptr<media::RenderableMappableSharedImageVideoFramePool>
+      pool_;
   base::AtomicSequenceNumber trace_flow_seqno_;
 
   Deque<std::unique_ptr<base::CancelableOnceClosure>>

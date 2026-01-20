@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_VIDEO_RENDERABLE_GPU_MEMORY_BUFFER_VIDEO_FRAME_POOL_H_
-#define MEDIA_VIDEO_RENDERABLE_GPU_MEMORY_BUFFER_VIDEO_FRAME_POOL_H_
+#ifndef MEDIA_VIDEO_RENDERABLE_MAPPABLE_SHARED_IMAGE_VIDEO_FRAME_POOL_H_
+#define MEDIA_VIDEO_RENDERABLE_MAPPABLE_SHARED_IMAGE_VIDEO_FRAME_POOL_H_
 
 #include <memory>
 
@@ -37,7 +37,7 @@ class VideoFrame;
 
 // A video frame pool that returns MappableSharedImage-backed VideoFrames. All
 // access to this class must be on the thread on which it was created.
-class MEDIA_EXPORT RenderableGpuMemoryBufferVideoFramePool {
+class MEDIA_EXPORT RenderableMappableSharedImageVideoFramePool {
  public:
   // Interface to GPU functionality. This particular interface (as opposed to,
   // say, exposing a SharedImageInterface) is
@@ -70,7 +70,7 @@ class MEDIA_EXPORT RenderableGpuMemoryBufferVideoFramePool {
   // pool). Only NV12 and ARGB formats are supported.
   // |requires_cpu_access| determines whether linear CPU mappable buffers will
   // be used.
-  static std::unique_ptr<RenderableGpuMemoryBufferVideoFramePool> Create(
+  static std::unique_ptr<RenderableMappableSharedImageVideoFramePool> Create(
       std::unique_ptr<Context> context,
       VideoPixelFormat format = PIXEL_FORMAT_NV12,
       bool requires_cpu_access = true);
@@ -82,9 +82,9 @@ class MEDIA_EXPORT RenderableGpuMemoryBufferVideoFramePool {
       const gfx::Size& coded_size,
       const gfx::ColorSpace& color_space) = 0;
 
-  virtual ~RenderableGpuMemoryBufferVideoFramePool() = default;
+  virtual ~RenderableMappableSharedImageVideoFramePool() = default;
 };
 
 }  // namespace media
 
-#endif  // MEDIA_VIDEO_RENDERABLE_GPU_MEMORY_BUFFER_VIDEO_FRAME_POOL_H_
+#endif  // MEDIA_VIDEO_RENDERABLE_MAPPABLE_SHARED_IMAGE_VIDEO_FRAME_POOL_H_

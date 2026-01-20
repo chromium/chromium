@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/video/renderable_gpu_memory_buffer_video_frame_pool.h"
+#include "media/video/renderable_mappable_shared_image_video_frame_pool.h"
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
@@ -42,7 +42,8 @@ gfx::ColorSpace GetColorSpaceForPixelFormat(media::VideoPixelFormat format) {
   }
 }
 
-class FakeContext : public RenderableGpuMemoryBufferVideoFramePool::Context {
+class FakeContext
+    : public RenderableMappableSharedImageVideoFramePool::Context {
  public:
   FakeContext()
       : context_provider_(viz::TestContextProvider::CreateGLES()),
@@ -60,7 +61,7 @@ class FakeContext : public RenderableGpuMemoryBufferVideoFramePool::Context {
                                 usage, sync_token);
     return context_provider_->SharedImageInterface()->CreateSharedImage(
         {si_format, size, color_space, usage,
-         "RenderableGpuMemoryBufferVideoFramePoolTest"},
+         "RenderableMappableSharedImageVideoFramePoolTest"},
         gpu::kNullSurfaceHandle, buffer_usage);
   }
 
@@ -87,10 +88,10 @@ class FakeContext : public RenderableGpuMemoryBufferVideoFramePool::Context {
   base::WeakPtrFactory<FakeContext> weak_factory_;
 };
 
-class RenderableGpuMemoryBufferVideoFramePoolTest
+class RenderableMappableSharedImageVideoFramePoolTest
     : public testing::TestWithParam<VideoPixelFormat> {
  public:
-  RenderableGpuMemoryBufferVideoFramePoolTest() : format_(GetParam()) {}
+  RenderableMappableSharedImageVideoFramePoolTest() : format_(GetParam()) {}
 
  protected:
   void VerifySharedImageCreation(FakeContext* context) {
@@ -116,17 +117,17 @@ class RenderableGpuMemoryBufferVideoFramePoolTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_P(RenderableGpuMemoryBufferVideoFramePoolTest, SimpleLifetimes) {
+TEST_P(RenderableMappableSharedImageVideoFramePoolTest, SimpleLifetimes) {
   base::test::SingleThreadTaskEnvironment task_environment;
   const gfx::Size size0(128, 256);
   const gfx::ColorSpace color_space0 = GetColorSpaceForPixelFormat(format_);
 
   base::WeakPtr<FakeContext> context;
-  std::unique_ptr<RenderableGpuMemoryBufferVideoFramePool> pool;
+  std::unique_ptr<RenderableMappableSharedImageVideoFramePool> pool;
   {
     auto context_strong = std::make_unique<FakeContext>();
     context = context_strong->GetWeakPtr();
-    pool = RenderableGpuMemoryBufferVideoFramePool::Create(
+    pool = RenderableMappableSharedImageVideoFramePool::Create(
         std::move(context_strong), format_);
   }
 
@@ -169,17 +170,17 @@ TEST_P(RenderableGpuMemoryBufferVideoFramePoolTest, SimpleLifetimes) {
   EXPECT_FALSE(!!context);
 }
 
-TEST_P(RenderableGpuMemoryBufferVideoFramePoolTest, FrameFreedAfterPool) {
+TEST_P(RenderableMappableSharedImageVideoFramePoolTest, FrameFreedAfterPool) {
   base::test::SingleThreadTaskEnvironment task_environment;
   const gfx::Size size0(128, 256);
   const gfx::ColorSpace color_space0 = GetColorSpaceForPixelFormat(format_);
 
   base::WeakPtr<FakeContext> context;
-  std::unique_ptr<RenderableGpuMemoryBufferVideoFramePool> pool;
+  std::unique_ptr<RenderableMappableSharedImageVideoFramePool> pool;
   {
     auto context_strong = std::make_unique<FakeContext>();
     context = context_strong->GetWeakPtr();
-    pool = RenderableGpuMemoryBufferVideoFramePool::Create(
+    pool = RenderableMappableSharedImageVideoFramePool::Create(
         std::move(context_strong), format_);
   }
   // Create a new frame.
@@ -203,14 +204,14 @@ TEST_P(RenderableGpuMemoryBufferVideoFramePoolTest, FrameFreedAfterPool) {
   EXPECT_FALSE(!!context);
 }
 
-TEST_P(RenderableGpuMemoryBufferVideoFramePoolTest, CrossThread) {
+TEST_P(RenderableMappableSharedImageVideoFramePoolTest, CrossThread) {
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   const gfx::Size size0(128, 256);
   const gfx::ColorSpace color_space0 = GetColorSpaceForPixelFormat(format_);
 
   // Create a pool on the main thread.
-  auto pool = RenderableGpuMemoryBufferVideoFramePool::Create(
+  auto pool = RenderableMappableSharedImageVideoFramePool::Create(
       std::make_unique<FakeContext>(), format_);
 
   base::ThreadPool::CreateSequencedTaskRunner({})->PostTaskAndReplyWithResult(
@@ -228,7 +229,7 @@ TEST_P(RenderableGpuMemoryBufferVideoFramePoolTest, CrossThread) {
   task_environment.RunUntilIdle();
 }
 
-TEST_P(RenderableGpuMemoryBufferVideoFramePoolTest,
+TEST_P(RenderableMappableSharedImageVideoFramePoolTest,
        VideoFramesDestroyedConcurrently) {
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -237,11 +238,11 @@ TEST_P(RenderableGpuMemoryBufferVideoFramePoolTest,
 
   // Create a pool and several frames on the main thread.
   base::WeakPtr<FakeContext> context;
-  std::unique_ptr<RenderableGpuMemoryBufferVideoFramePool> pool;
+  std::unique_ptr<RenderableMappableSharedImageVideoFramePool> pool;
   {
     auto context_strong = std::make_unique<FakeContext>();
     context = context_strong->GetWeakPtr();
-    pool = RenderableGpuMemoryBufferVideoFramePool::Create(
+    pool = RenderableMappableSharedImageVideoFramePool::Create(
         std::move(context_strong), format_);
   }
 
@@ -267,14 +268,15 @@ TEST_P(RenderableGpuMemoryBufferVideoFramePoolTest,
   EXPECT_FALSE(!!context);
 }
 
-TEST_P(RenderableGpuMemoryBufferVideoFramePoolTest, ConcurrentCreateDestroy) {
+TEST_P(RenderableMappableSharedImageVideoFramePoolTest,
+       ConcurrentCreateDestroy) {
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   const gfx::Size size0(128, 256);
   const gfx::ColorSpace color_space0 = GetColorSpaceForPixelFormat(format_);
 
   // Create a pool on the main thread.
-  auto pool = RenderableGpuMemoryBufferVideoFramePool::Create(
+  auto pool = RenderableMappableSharedImageVideoFramePool::Create(
       std::make_unique<FakeContext>(), format_);
 
   // Create a frame on the main thread.
@@ -295,7 +297,8 @@ TEST_P(RenderableGpuMemoryBufferVideoFramePoolTest, ConcurrentCreateDestroy) {
   task_environment.RunUntilIdle();
 }
 
-TEST_P(RenderableGpuMemoryBufferVideoFramePoolTest, RespectSizeAndColorSpace) {
+TEST_P(RenderableMappableSharedImageVideoFramePoolTest,
+       RespectSizeAndColorSpace) {
   base::test::SingleThreadTaskEnvironment task_environment;
   const gfx::Size size0(128, 256);
   const gfx::ColorSpace color_space0 = GetColorSpaceForPixelFormat(format_);
@@ -303,11 +306,11 @@ TEST_P(RenderableGpuMemoryBufferVideoFramePoolTest, RespectSizeAndColorSpace) {
   const gfx::ColorSpace color_space1 = gfx::ColorSpace::CreateREC601();
 
   base::WeakPtr<FakeContext> context;
-  std::unique_ptr<RenderableGpuMemoryBufferVideoFramePool> pool;
+  std::unique_ptr<RenderableMappableSharedImageVideoFramePool> pool;
   {
     auto context_strong = std::make_unique<FakeContext>();
     context = context_strong->GetWeakPtr();
-    pool = RenderableGpuMemoryBufferVideoFramePool::Create(
+    pool = RenderableMappableSharedImageVideoFramePool::Create(
         std::move(context_strong), format_);
   }
 
@@ -361,24 +364,24 @@ TEST_P(RenderableGpuMemoryBufferVideoFramePoolTest, RespectSizeAndColorSpace) {
 }
 
 // Verifies that the requires_cpu_access flag controls gfx::BufferUsage in
-// RenderableGpuMemoryBufferVideoFramePool allocations. On Linux,
+// RenderableMappableSharedImageVideoFramePool allocations. On Linux,
 // setting the flag to false avoids GBM linear allocations by switching
 // from SCANOUT_CPU_READ_WRITE to SCANOUT. Ensures that the expected
 // buffer usage value propagates to the shared image creation code path.
-TEST_P(RenderableGpuMemoryBufferVideoFramePoolTest,
+TEST_P(RenderableMappableSharedImageVideoFramePoolTest,
        RequiresCpuAccessAffectsBufferUsage) {
   base::test::SingleThreadTaskEnvironment task_environment;
   const gfx::Size size(128, 256);
   const gfx::ColorSpace color_space = GetColorSpaceForPixelFormat(format_);
 
   base::WeakPtr<FakeContext> context;
-  std::unique_ptr<RenderableGpuMemoryBufferVideoFramePool> pool;
+  std::unique_ptr<RenderableMappableSharedImageVideoFramePool> pool;
 
   // Case 1: requires_cpu_access = true
   {
     auto context_strong = std::make_unique<FakeContext>();
     context = context_strong->GetWeakPtr();
-    pool = RenderableGpuMemoryBufferVideoFramePool::Create(
+    pool = RenderableMappableSharedImageVideoFramePool::Create(
         std::move(context_strong), format_, /*requires_cpu_access=*/true);
   }
 
@@ -414,7 +417,7 @@ TEST_P(RenderableGpuMemoryBufferVideoFramePoolTest,
   {
     auto context_strong = std::make_unique<FakeContext>();
     context = context_strong->GetWeakPtr();
-    pool = RenderableGpuMemoryBufferVideoFramePool::Create(
+    pool = RenderableMappableSharedImageVideoFramePool::Create(
         std::move(context_strong), format_, /*requires_cpu_access=*/false);
   }
 
@@ -448,7 +451,7 @@ TEST_P(RenderableGpuMemoryBufferVideoFramePoolTest,
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    RenderableGpuMemoryBufferVideoFramePoolTest,
+    RenderableMappableSharedImageVideoFramePoolTest,
     testing::Values(media::VideoPixelFormat::PIXEL_FORMAT_NV12,
                     media::VideoPixelFormat::PIXEL_FORMAT_ARGB,
                     media::VideoPixelFormat::PIXEL_FORMAT_ABGR));

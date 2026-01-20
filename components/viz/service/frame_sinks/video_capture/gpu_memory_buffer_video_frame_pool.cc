@@ -79,10 +79,11 @@ void GpuMemoryBufferVideoFramePool::RecreateVideoFramePool() {
   // Determine whether the video frame pool should use CPU mappable buffers.
   // If the caller prefers SharedImage with native handle (i.e., no CPU
   // mapping), pass false. Otherwise, default to requiring CPU access.
-  video_frame_pool_ = media::RenderableGpuMemoryBufferVideoFramePool::Create(
-      std::move(pool_context), format_,
-      buffer_format_preference_ !=
-          mojom::BufferFormatPreference::kPreferSharedImageWithNativeHandle);
+  video_frame_pool_ =
+      media::RenderableMappableSharedImageVideoFramePool::Create(
+          std::move(pool_context), format_,
+          buffer_format_preference_ != mojom::BufferFormatPreference::
+                                           kPreferSharedImageWithNativeHandle);
 
   video_frame_pool_generation_++;
   num_reserved_frames_ = 0;
