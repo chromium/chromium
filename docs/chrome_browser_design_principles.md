@@ -1,88 +1,169 @@
 # `//chrome/browser` design principles
 
-These design principles make it easier to write, debug, and maintain desktop
-code in  `//chrome/browser`. Most, but not all code in `//chrome/browser` is
-desktop code. Some code is used on Android.
+These design principles make it easier to write, debug, and maintain code in
+`//chrome/browser`.
 
-## Caveats:
+## Disclaimer:
 * These are recommendations, not requirements.
 * These are not intended to be static. If you think a
   principle doesn't make sense, reach out to `//chrome/OWNERS`.
 * These are intended to apply to new code and major refactors. We do not expect
   existing features to be refactored, except as need arises.
+* To better understand the relationship between `//chrome/browser` and the rest
+  of the code base, see [Google internal
+  documentation](http://go/anatomy-of-the-browser).
 
-## Structure, modularity:
-* Features should be modular.
-    * For most features, all code should live in some combination of
-      `//component/<feature>` and `//chrome/browser/<feature>` (or
-      `//chrome/browser/ui/<feature>`), and not in `//chrome/browser/ui/views`.
-        * The historical rule restricting access to views in `//chrome/browser`
-          and `//chrome/browser/ui` has been removed.
-        * The historical rule disallowing ui code in `//chrome/browser` has been
-          removed.
+## Architecture
+
+There are 4 major conceptual primitives: profile, browser window, tab, and
+`WebContents`.
+
+A profile logically represents all data and settings associated with a single
+user. This includes all cookies, saved passwords, browsing history, installed
+extensions, etc. Multiple profiles may represent a single person who wants to
+have multiple different tranches of data, or may represent multiple people
+who are sharing a single device and want to keep their data separated.
+
+A browser window is the core UI surface for Chrome. There exist other windows
+(e.g. profile picker), but the majority of user time in Chrome is spent
+interacting with browser windows.
+
+A browser window contains a set of tabs, which can be navigated to websites.
+
+`WebContents` is the core primitive vended by `//content`. It renders websites.
+Note that each tab corresponds to exactly 1 `WebContents`, but not every
+`WebContents` is a tab. For example, the profile picker in a standalone window
+uses a WebContents to render the UI, but it is not a tab, and is not associated
+with a browser window.
+
+The expression of these primitives in code:
+* Global state that is shared across profiles is stored in `BrowserProcess`,
+  specifically `GlobalFeatures`. For example, there is a single network stack,
+  and a single graphics stack.
+* `class Profile` represents a profile. State is stored in
+  `ProfileKeyedService`.
+* `class BrowserWindowInterface` represents a browser window. State is stored in
+  `BrowserWindowFeatures`.
+* `class TabInterface` represents a tab, and state is stored in `TabFeatures`.
+
+For legacy reasons, `class Browser` is a god-object anti-pattern that is used
+prolifically within `//chrome/browser`. Project Bedrock is an umbrella project
+that covers several workstreams to fix this. See [Google internal
+documentation](http://go/chrome-project-bedrock). Public contributors can visit
+[Project Bedrock -
+Public](https://docs.google.com/document/d/1aQRPDX9RjWHE48rAHntsV64VU1-4uZO_nkL6A7ohr2k/).
+
+To keep the dependency graph as precise as possible, we use a pattern called
+[UnownedUserData](ui/base/unowned_user_data/README.md). This allows consumers of
+`BrowserWindowInterface` and `TabInterface` to depend on a specific
+`BrowserWindowFeature` or `TabFeature` without depending on features. This also
+allows for easier unit and integration testing.
+
+## Feature Design Example
+
+All features should be designed in accordance with the above architecture.
+Consider the following simplified example of a Chrome feature: Users can
+opt-into the goat-counting feature. Enabling this feature adds a button to the
+operating system menu bar, and to every chrome window. Clicking either button
+will pop open a new window that shows goats, one for each time the current web
+page has used the window.alert API.
+
+* The opt-in state, like most Chrome settings, should be scoped to a profile. We
+  will create a new ProfileKeyedService subclass that tracks this state. We'll
+  call this GoatKeyedService. This also means that the user would need to enable
+  this feature on a per-profile basis.
+* The operating system button must be shared by all profiles. We will create a
+  new GoatOsButtonFeature stored in GlobalFeatures. This will observe
+  GoatKeyedServices to determine whether to show the button, and what clicking
+  the button will do.
+* The window button is per-window. We will create a new GoatWindowFeature stored
+  in BrowserWindowFeatures.
+* We must store state that is specific to each tab: number of calls to
+  window.alert. We will create a GoatTabFeature (one per tab) that is
+  responsible for tracking this on a per-tab basis. If the web-page navigates,
+  the count is reset.
+* When the user clicks either button, the new window will be scoped to the tab.
+  So closing the tab will close the new window. This means that the controller
+  for the new window will also be scoped to the GoatTabFeature.
+
+Observation: All state should be scoped to the appropriate primitive, so that
+different layers don't need to know about each other. As an example, it's an
+anti-pattern to have a profile service care about or track state of individual
+tabs. This pattern also prevents categories of use-after-free and similar bugs.
+
+## Modularity
+All features should be logically grouped in the directory structure with
+well-defined API surfaces. Dependencies should be injected during construction.
+
+Modularity has many positive externalities:
+* Smaller, co-located logical units reduces cognitive complexity in
+  understanding and modifying the code base.
+* Separation of interface from implementation prevents tight coupling between
+  features. This in turn reduces spooky action at a distance, where seemingly
+  innocuous changes break a distant, supposedly unrelated feature.
+* Dependency injection exposes circular dependencies, which is a common
+  source of fragility/bugs.
+* Dependency injection allows for more targeted testing, which reduces test
+  flakiness, and avoids a common bug where test behavior diverges from
+  production behavior.
+
+Requirements:
+* For most features, all code should live in some combination of
+  `//component/<feature>` and `//chrome/browser/<feature>` (or
+  `//chrome/browser/ui/<feature>`), and not in `//chrome/browser/ui/views`.
+    * The historical rule restricting access to views in `//chrome/browser`
+      and `//chrome/browser/ui` has been removed.
+    * The historical rule disallowing ui code in `//chrome/browser` has been
+      removed.
     * WebUI resources are the only exception. They will continue to live in
       `//chrome/browser/resources/<feature>` alongside standalone `BUILD.gn`
-      files.
-    * This directory should have a standalone `BUILD.gn` and `OWNERS` file.
+      files. This keeps all html/TS/CSS code in `//chrome/browser` in one
+      place.
+* Each child directory of `//chrome/browser` or `//chrome/browser/ui/` must
+  have a standalone `BUILD.gn` and `OWNERS` file.
     * All files in the directory should belong to targets in the `BUILD.gn`.
-        * Do NOT add to `//chrome/browser/BUILD.gn:browser`,
-          `//chrome/test/BUILD.gn` or `//chrome/browser/ui/BUILD.gn:ui`.
-    * gn circular dependencies are disallowed. Logical
-      circular dependencies are allowed (for legacy reasons) but discouraged.
-        * [cookie
-          controls](https://chromium-review.googlesource.com/c/chromium/src/+/5771416/5/chrome/browser/ui/cookie_controls/BUILD.gn)
-          is an example of a feature with logical circular dependencies.
-            * The header files are moved into a "cookie_controls" target with no
-              circular dependencies.
-            * The cc files are moved into a "impl" target, with circular
-              dependencies allowed with `//chrome/browser:browser` and
-              `//chrome/browser/ui:ui`. These circular dependencies will
-              disappear when all sources are removed from `//chrome/browser:browser` and `//chrome/browser/ui:ui`.
-            * The separation between header and cc files is functionally
-              equivalent to creating abstract base classes in one target, with
-              h/cc files in a separate target. This just skips the boilerplate
-              of creating the abstract base classes.
-            * Even though there are no build circular dependencies, there are
-              still logical circular dependencies from the cc files. This
-              discrepancy is because C++ allows headers to forward declare
-              dependencies, which do not need to be reflected in gn.
-        * [Lens
-          overlay](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/lens/BUILD.gn;drc=8e2c1c747f15a93c55ab2f10ebc8b32801ba129e)
-          is an example with *almost* no circular dependencies.
-            * It has a logical circular dependency on `//chrome/browser/browser/ui:ui`,
-              which will no longer be necessary once NTP is also modularized (crbug.com/382237520).
-            * The BUILD.gn should use public/sources separation.
-                * The main reason for this is to guard against future, unexpected usage
-                  of parts of the code that were intended to be private. This makes it
-                  difficult to change implementation details in the future.
-                * This directory may have a public/ subdirectory to enforce further
-                  encapsulation, though this example does not use it.
-    * This directory may have its own namespace.
-    * Corollary: There are several global functions that facilitate dependency
-      inversion. It will not be possible to call them from modularized features
-      (no dependency cycles), and their usage in non-modularized features is
-      considered a red flag:
-        * `chrome::FindBrowserWithTab` (and everything in browser_finder.h)
-        * `GetBrowserViewForNativeWindow`  (via browser_view.h)
-        * `FindBrowserWindowWithWebContents` (via browser_window.h)
-    * Corollary: Don't use `Browser*`. This is functionally a container of
-      hundreds of other pointers. It is impossible to specify dependencies,
-      since `Browser*` functionally depends on everything. Instead, pass in the
-      relevant pointers, e.g. `Profile*`, `FooFeatureController`, etc.
-        * Code that uses `Browser*` is also impossible to properly unit test.
-    * Rationale: Modularity enforces the creation of API surfaces and explicit
-      dependencies. This has several positive externalities:
-        * Separation of interface from implementation prevents unnecessarly
-          tight coupling between features. This in turn reduces spooky action at
-          a distance, where seemingly innocuous changes break a distant,
-          supposedly unrelated feature.
-        * Explicit listing of circular dependencies exposes the likely fragile
-          areas of code.
-        * Alongside the later guidance of global functions must be pure,
-          modularity adds the requirement that test-code perform dependency
-          injection. This eliminates a common bug where test behavior diverges
-          from production behavior, and logic is added to production code to
-          work around test-only behaviors.
+    * Do NOT add to `//chrome/browser/BUILD.gn:browser`,
+      `//chrome/test/BUILD.gn` or `//chrome/browser/ui/BUILD.gn:ui`.
+* gn circular dependencies are disallowed. Logical
+  circular dependencies are allowed (for legacy reasons) but discouraged.
+    * [cookie
+      controls](https://chromium-review.googlesource.com/c/chromium/src/+/5771416/5/chrome/browser/ui/cookie_controls/BUILD.gn)
+      is an example of a feature with logical circular dependencies.
+        * The header files are moved into a "cookie_controls" target with no
+          circular dependencies.
+        * The cc files are moved into a "impl" target, with circular
+          dependencies allowed with `//chrome/browser:browser` and
+          `//chrome/browser/ui:ui`. These circular dependencies will
+          disappear when all sources are removed from `//chrome/browser:browser` and `//chrome/browser/ui:ui`.
+        * The separation between header and cc files is functionally
+          equivalent to creating abstract base classes in one target, with
+          h/cc files in a separate target. This just skips the boilerplate
+          of creating the abstract base classes.
+        * Even though there are no build circular dependencies, there are
+          still logical circular dependencies from the cc files. This
+          discrepancy is because C++ allows headers to forward declare
+          dependencies, which do not need to be reflected in gn.
+    * [Lens
+      overlay](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/lens/BUILD.gn;drc=8e2c1c747f15a93c55ab2f10ebc8b32801ba129e)
+      is an example with *almost* no circular dependencies.
+        * It has a logical circular dependency on `//chrome/browser/browser/ui:ui`,
+          which will no longer be necessary once NTP is also modularized (crbug.com/382237520).
+        * The BUILD.gn should use public/sources separation.
+            * The main reason for this is to guard against future, unexpected usage
+              of parts of the code that were intended to be private. This makes it
+              difficult to change implementation details in the future.
+            * This directory may have a public/ subdirectory to enforce further
+              encapsulation, though this example does not use it.
+* This directory may have its own namespace.
+* There are several global functions that facilitate dependency
+  inversion. It will not be possible to call them from modularized features
+  (no dependency cycles), and their usage in non-modularized features is
+  discouraged:
+    * `chrome::FindBrowserWithTab` (and everything in browser_finder.h)
+    * `GetBrowserViewForNativeWindow`  (via browser_view.h)
+    * `FindBrowserWindowWithWebContents` (via browser_window.h)
+* Don't use `class Browser `. This is a god-object anti-pattern that makes
+  modularization impossible.
 
 ```cpp
 // Do not do this:
@@ -94,6 +175,7 @@ FooFeature(PrefService* prefs) : prefs_(prefs) {}
 FooFeature::DoStuff() { DoStuffWith(prefs_); }
 ```
 
+## Feature design details
 * Features should have a core controller with precise lifetime semantics. The
   core controller for most desktop features should be owned and instantiated by
   one of the following classes:
