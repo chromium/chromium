@@ -75,6 +75,7 @@ void MockActorLoginService::AttemptLogin(
     const actor_login::Credential& credential,
     bool should_store_permission,
     base::WeakPtr<actor_login::ActorLoginQualityLoggerInterface> mqls_logger,
+    base::TimeTicks attempt_login_tool_start_time,
     actor_login::LoginStatusResultOrErrorReply callback) {
   last_credential_used_ = credential;
   last_permission_was_permanent_ = should_store_permission;

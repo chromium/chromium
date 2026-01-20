@@ -43,6 +43,7 @@ class ActorLoginCredentialFiller {
       bool should_store_permission,
       password_manager::PasswordManagerClient* client,
       base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+      base::TimeTicks attempt_login_start_time,
       IsTaskInFocus is_task_in_focus,
       LoginStatusResultOrErrorReply callback);
   ~ActorLoginCredentialFiller();
@@ -169,6 +170,10 @@ class ActorLoginCredentialFiller {
 
   // Used to compute the request duration. Excludes reauth duration.
   base::TimeTicks start_time_;
+
+  // Used to compute the time it took from the tool creation
+  // until different actions in the filler.
+  const base::TimeTicks attempt_login_start_time_;
 
   // Used to compute the reauth duration if it was initiated. The duration is
   // subtracted from the request duration.
