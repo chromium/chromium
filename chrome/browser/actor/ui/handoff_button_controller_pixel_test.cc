@@ -87,23 +87,5 @@ IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerPixelTest,
                        InvokeUi_TakeOverTask) {
   ShowAndVerifyUi();
 }
-
-class ActorUiHandoffButtonHiddenPixelTest
-    : public ActorUiHandoffButtonControllerPixelTest {
- public:
-  ActorUiHandoffButtonHiddenPixelTest() {
-    override_feature_list_.InitAndDisableFeature(
-        features::kGlicHandoffButtonHiddenClientControl);
-  }
-
- private:
-  base::test::ScopedFeatureList override_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonHiddenPixelTest,
-                       InvokeUi_TakeOverTask) {
-  ownership_ = HandoffButtonState::ControlOwnership::kClient;
-  ShowAndVerifyUi();
-}
 }  // namespace
 }  // namespace actor::ui

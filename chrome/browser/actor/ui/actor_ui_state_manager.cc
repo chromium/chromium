@@ -64,9 +64,7 @@ const UiTabState& GetWaitingOnUserUiTabState() {
 const UiTabState& GetPausedUiTabState() {
   static const UiTabState kPausedState = {
       .actor_overlay = {.is_active = false, .border_glow_visible = false},
-      .handoff_button = {.is_active = !base::FeatureList::IsEnabled(
-                             features::kGlicHandoffButtonHiddenClientControl),
-                         .controller = kClient},
+      .handoff_button = {.is_active = false, .controller = kClient},
       .tab_indicator = TabIndicatorStatus::kNone,
       .border_glow_visible = false,
   };

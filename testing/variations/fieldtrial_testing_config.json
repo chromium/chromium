@@ -11850,23 +11850,6 @@
             ]
         }
     ],
-    "GlicHandoffButtonHiddenClientControl": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GlicHandoffButtonHiddenClientControl"
-                    ]
-                }
-            ]
-        }
-    ],
     "GlicMediaData": [
         {
             "platforms": [

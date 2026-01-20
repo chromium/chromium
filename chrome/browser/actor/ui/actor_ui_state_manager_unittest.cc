@@ -50,8 +50,7 @@ class ActorUiStateManagerTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlicActorUi,
-                              features::kGlicHandoffButtonHiddenClientControl},
+        /*enabled_features=*/{features::kGlicActorUi},
         /*disabled_features=*/{});
     profile_ = TestingProfile::Builder()
                    .AddTestingFactory(

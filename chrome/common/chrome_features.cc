@@ -288,10 +288,6 @@ BASE_FEATURE(kGlicActorUiTabIndicatorSpinnerIgnoreReducedMotion,
 // and other elements.
 BASE_FEATURE(kActorUiThemed, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, hides handoff button when the client is in control.
-BASE_FEATURE(kGlicHandoffButtonHiddenClientControl,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, shows handoff button in immersive mode.
 BASE_FEATURE(kGlicHandoffButtonShowInImmersiveMode,
              base::FEATURE_ENABLED_BY_DEFAULT);
