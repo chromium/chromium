@@ -1617,8 +1617,7 @@ message ClientIncidentReport {
         optional string target_dll = 2;
       }
       repeated Patch patches = 3;
-      message NetworkProvider {}
-      repeated NetworkProvider network_providers = 4;
+      reserved 4;
       enum Channel {
         CHANNEL_UNKNOWN = 0;
         CHANNEL_CANARY = 1;
