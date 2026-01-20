@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_DOM_SHARED_ARRAY_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_DOM_SHARED_ARRAY_BUFFER_H_
 
-#include "base/compiler_specific.h"
 #include "partition_alloc/oom.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
@@ -33,14 +32,13 @@ class CORE_EXPORT DOMSharedArrayBuffer final : public DOMArrayBufferBase {
     return Create(std::move(contents));
   }
 
-  static DOMSharedArrayBuffer* Create(const void* source,
-                                      unsigned byte_length) {
+  static DOMSharedArrayBuffer* Create(base::span<const uint8_t> source) {
     ArrayBufferContents contents(
-        byte_length, 1, ArrayBufferContents::kShared,
+        source.size(), 1, ArrayBufferContents::kShared,
         ArrayBufferContents::kDontInitialize,
         ArrayBufferContents::AllocationFailureBehavior::kCrash);
     CHECK(contents.IsValid());
-    UNSAFE_TODO(memcpy(contents.DataShared(), source, byte_length));
+    contents.ByteSpanShared().copy_from(source);
     return Create(std::move(contents));
   }
 
