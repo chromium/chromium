@@ -165,6 +165,11 @@ The Chromium CQ supports a variety of options that can change what it checks.
   Skip-Clang-Tidy-Checks: modernize-*,readability-*
   ```
 
+* `Merge-Approval-Bypass: <reason>`
+
+  Bypasses merge-approval check on release branches. Googlers can read more at
+  http://go/chrome-merge-process.
+
 ## Google-internal CQ Builders
 
 A small subset of builders on the CQ are "Google-internal". This means they
