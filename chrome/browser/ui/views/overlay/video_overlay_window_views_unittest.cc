@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -1060,6 +1061,22 @@ TEST_F(VideoOverlayWindowViewsTest, DisplaysOrigin) {
 
   overlay_window().SetSourceTitle(u"google.com");
   EXPECT_EQ(origin->GetText(), u"google.com");
+}
+
+TEST_F(VideoOverlayWindowViewsTest, OriginLabelHasCorrectDirectionality) {
+  views::Label* origin = overlay_window().origin_for_testing();
+  ASSERT_NE(nullptr, origin);
+
+  // The directionality should be LTR to prevent spoofing.
+  EXPECT_EQ(base::i18n::LEFT_TO_RIGHT, origin->GetTextDirectionForTesting());
+
+  // Set the source title to a RTL string.
+  const char16_t kRtl[] = u"אבג";
+  overlay_window().SetSourceTitle(kRtl);
+  EXPECT_EQ(kRtl, origin->GetText());
+
+  // The directionality should still be LTR to prevent spoofing.
+  EXPECT_EQ(base::i18n::LEFT_TO_RIGHT, origin->GetTextDirectionForTesting());
 }
 
 TEST_F(VideoOverlayWindowViewsTest,

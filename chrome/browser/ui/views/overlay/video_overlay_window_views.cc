@@ -64,6 +64,7 @@
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/resize_utils.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -1107,9 +1108,9 @@ void VideoOverlayWindowViews::SetUpViews() {
   auto favicon_view = std::make_unique<views::ImageView>();
   favicon_view->SetSize(kFaviconSize);
 
-  auto origin = std::make_unique<views::Label>(std::u16string(),
-                                               views::style::CONTEXT_LABEL,
-                                               views::style::STYLE_BODY_4);
+  auto origin = std::make_unique<views::Label>(
+      std::u16string(), views::style::CONTEXT_LABEL, views::style::STYLE_BODY_4,
+      gfx::DirectionalityMode::DIRECTIONALITY_AS_URL);
   origin->SetEnabledColor(ui::kColorSysOnSurface);
   origin->SetBackgroundColor(SK_ColorTRANSPARENT);
   origin->SetHorizontalAlignment(gfx::ALIGN_LEFT);

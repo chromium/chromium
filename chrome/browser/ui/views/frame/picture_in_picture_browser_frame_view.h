@@ -184,6 +184,7 @@ class PictureInPictureBrowserFrameView
   views::View* GetBackToTabButtonForTesting();
   views::View* GetCloseButtonForTesting();
   views::Label* GetWindowTitleForTesting();
+  void SetWindowTitleForTesting(const std::u16string& title);
   PictureInPictureWidgetFadeAnimator* GetFadeAnimatorForTesting();
 
   // These values are persisted to logs. Entries should not be renumbered and

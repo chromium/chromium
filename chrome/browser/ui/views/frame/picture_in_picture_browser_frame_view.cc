@@ -48,6 +48,7 @@
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_container.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/compositor_animation_runner.h"
@@ -595,9 +596,12 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
 
   // Creates the window title.
   top_bar_container_view_->AddChildView(
-      views::Builder<views::Label>()
+      views::Builder<views::Label>(
+          std::make_unique<views::Label>(
+              location_bar_model_->GetURLForDisplay(),
+              views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY,
+              gfx::DirectionalityMode::DIRECTIONALITY_AS_URL))
           .CopyAddressTo(&window_title_)
-          .SetText(location_bar_model_->GetURLForDisplay())
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetElideBehavior(elide_behavior)
           .SetProperty(
@@ -1551,6 +1555,12 @@ views::View* PictureInPictureBrowserFrameView::GetCloseButtonForTesting() {
 
 views::Label* PictureInPictureBrowserFrameView::GetWindowTitleForTesting() {
   return window_title_;
+}
+
+void PictureInPictureBrowserFrameView::SetWindowTitleForTesting(  // IN-TEST
+    const std::u16string& title) {
+  CHECK(window_title_);
+  window_title_->SetText(title);
 }
 
 PictureInPictureWidgetFadeAnimator*
