@@ -45,7 +45,7 @@ bool MayReturnNullRenderingStyleForPseudoElement(
     PseudoId pseudo_id,
     const ComputedStyle* parent_style) {
   switch (pseudo_id) {
-    // We always create styles for ::column pseduo-elements to collect
+    // We always create styles for ::column pseudo-elements to collect
     // pseudo-element styles even if there are no matched properties.
     // E.g. if we only have ::column::scroll-marker {} rule, we need to create
     // a style for ::column.

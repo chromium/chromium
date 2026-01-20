@@ -120,7 +120,7 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter
       base::RepeatingClosure menu_closed_callback,
       const ClipboardHistory* clipboard_history);
 
-  // Advances the pseduo focus from the selected history item view (backward if
+  // Advances the pseudo focus from the selected history item view (backward if
   // `reverse` is true).
   void AdvancePseudoFocusFromSelectedItem(bool reverse);
 
