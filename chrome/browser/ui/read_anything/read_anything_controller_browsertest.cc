@@ -776,6 +776,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
+  controller->LockDistillationStateForTesting();
 
   // Show Immersive UI
   controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
@@ -880,6 +881,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
+  controller->LockDistillationStateForTesting();
   controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
   WaitForOverlayVisibility(true);
   AssertOverlayVisibility(true);
@@ -975,13 +977,13 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   EXPECT_NE(GetImmersiveWebContents(), starting_contents);
 }
 
-// TODO(crbug.com/476203141): Reenable the test
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
-                       DISABLED_ShowImmersiveUI_ClosesSidePanel) {
+                       ShowImmersiveUI_ClosesSidePanel) {
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
+  controller->LockDistillationStateForTesting();
   auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
 
   // Open Side Panel
@@ -1162,13 +1164,13 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
             ReadAnythingController::PresentationState::kInactive);
 }
 
-// TODO(crbug.com/476203141): Reenable the test
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
-                       DISABLED_ToggleImmersiveUI_ClosesSidePanel) {
+                       ToggleImmersiveUI_ClosesSidePanel) {
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
+  controller->LockDistillationStateForTesting();
   auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
 
   // Open Side Panel
@@ -1221,7 +1223,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
             ReadAnythingController::PresentationState::kInSidePanel);
 }
 
-// TODO(crbug.com/476203141): Reenable the test
 IN_PROC_BROWSER_TEST_F(
     ReadAnythingControllerBrowserTest,
     DISABLED_TogglePresentation_FromSidePanel_OpensImmersive) {
@@ -1229,6 +1230,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
+  controller->LockDistillationStateForTesting();
   auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
 
   // Open Side Panel

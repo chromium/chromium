@@ -506,9 +506,17 @@ void ReadAnythingController::SetMainContentsAccessible(
 
 void ReadAnythingController::OnDistillationStateChanged(
     DistillationState new_state) {
+  if (distillation_state_locked_for_testing_) {
+    return;
+  }
+
   if (new_state == DistillationState::kDistillationEmpty &&
       GetPresentationState() == PresentationState::kInImmersiveOverlay) {
     TogglePresentation();
   }
   distillation_state_ = new_state;
+}
+
+void ReadAnythingController::LockDistillationStateForTesting() {
+  distillation_state_locked_for_testing_ = true;
 }

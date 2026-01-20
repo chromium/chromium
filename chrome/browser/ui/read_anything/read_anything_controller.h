@@ -142,6 +142,7 @@ class ReadAnythingController {
   void SetPresentationState(PresentationState new_state);
 
   void OnDistillationStateChanged(DistillationState new_state);
+  void LockDistillationStateForTesting();
 
   // Lazily creates and returns the WebUIContentsWrapper for the
   // Reading Mode WebUI. Transfers ownership of the WebUIContentsWrapper to the
@@ -239,6 +240,7 @@ class ReadAnythingController {
   void SetMainContentsAccessible(bool should_be_accessible);
 
   DistillationState distillation_state_ = DistillationState::kUndefined;
+  bool distillation_state_locked_for_testing_ = false;
 
   // The handle returned by web_contents_->IncrementCapturerCount. This is used
   // to release the capture when the ReadAnythingController is destroyed.
