@@ -12,11 +12,13 @@
 #include "base/test/run_until.h"
 #include "chrome/browser/autofill/automated_tests/cache_replayer.h"
 #include "chrome/browser/autofill/captured_sites_test_utils.h"
+#include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
+#include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/password_manager/password_manager_uitest_util.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -30,6 +32,7 @@
 #include "components/password_manager/core/browser/password_manager_switches.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/fake_password_store_backend.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync/test/test_sync_service.h"
@@ -125,9 +128,8 @@ class CapturedSitesPasswordManagerBrowserTest
   bool AddCredential(const std::string& origin,
                      const std::string& username,
                      const std::string& password) override {
-    scoped_refptr<password_manager::PasswordStoreInterface> password_store =
-        ProfilePasswordStoreFactory::GetForProfile(
-            browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS);
+    scoped_refptr<password_manager::TestPasswordStore> password_store =
+        GetDefaultPasswordStore(browser()->profile());
     password_manager::PasswordForm signin_form;
     signin_form.url = GURL(origin);
     signin_form.signon_realm = origin;
@@ -193,9 +195,8 @@ class CapturedSitesPasswordManagerBrowserTest
   bool HasChromeStoredCredential(const std::string& origin,
                                  const std::string& username,
                                  const std::string& password) override {
-    scoped_refptr<password_manager::PasswordStoreInterface> password_store =
-        ProfilePasswordStoreFactory::GetForProfile(
-            browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS);
+    scoped_refptr<password_manager::TestPasswordStore> password_store =
+        GetDefaultPasswordStore(browser()->profile());
     password_manager::FakePasswordStoreBackend* fake_backend =
         static_cast<password_manager::FakePasswordStoreBackend*>(
             password_store->GetBackendForTesting());
@@ -235,6 +236,12 @@ class CapturedSitesPasswordManagerBrowserTest
                       context, base::BindRepeating(&BuildTestSyncService));
 
                   ProfilePasswordStoreFactory::GetInstance()->SetTestingFactory(
+                      context,
+                      base::BindRepeating(
+                          &password_manager::BuildPasswordStoreWithFakeBackend<
+                              content::BrowserContext>));
+
+                  AccountPasswordStoreFactory::GetInstance()->SetTestingFactory(
                       context,
                       base::BindRepeating(
                           &password_manager::BuildPasswordStoreWithFakeBackend<
