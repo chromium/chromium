@@ -25,7 +25,7 @@ namespace content {
 class CONTENT_EXPORT ServiceWorkerSyntheticResponseManager {
  public:
   // Indicates the current status to dispatch SyntheticResponse.
-  // `kNotReady`: required data pipes are not clreated, or there is no local
+  // `kNotReady`: required data pipes are not created, or there is no local
   // response header in `ServiceWorkerVersion`.
   // `kReady`: required data pipes are all created, and there is a local
   // response header in `ServiceWorkerVersion` already.
@@ -104,6 +104,13 @@ class CONTENT_EXPORT ServiceWorkerSyntheticResponseManager {
   // calls `stream_callback_->OnCompleted()`.
   void OnCloneCompleted();
 
+  // These are helpers for thread offloading to clone the response body data to
+  // the other data pipe.
+  static void CloneBufferInBackground(
+      mojo::ScopedDataPipeConsumerHandle consumer,
+      mojo::ScopedDataPipeProducerHandle producer,
+      base::OnceCallback<void()> callback);
+
   SyntheticResponseStatus status_ = SyntheticResponseStatus::kNotReady;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   mojo::PendingRemote<network::mojom::URLLoader> url_loader_;
@@ -121,6 +128,8 @@ class CONTENT_EXPORT ServiceWorkerSyntheticResponseManager {
   base::TimeTicks response_received_time_;
 
   static bool dry_run_mode_for_testing_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ServiceWorkerSyntheticResponseManager> weak_factory_{
       this};
