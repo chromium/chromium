@@ -801,16 +801,17 @@ def _PackageApk(options, build):
   # such as --shared-lib can be supported.
   link_command += ['-o', build.arsc_path]
 
+  # aapt2 link can be slow, so run it and do some work in the meantime.
+  def before_join():
+    # Create .res.info file in parallel.
+    if options.info_path:
+      logging.debug('Creating .res.info file')
+      _CreateResourceInfoFile(path_info, build.info_path, all_res_zips)
+      logging.debug('Finished .res.info file')
+
   logging.debug('Starting: aapt2 link')
-  link_proc = subprocess.Popen(link_command)
+  build_utils.CheckOutput(link_command, before_join_callback=before_join)
 
-  # Create .res.info file in parallel.
-  if options.info_path:
-    logging.debug('Creating .res.info file')
-    _CreateResourceInfoFile(path_info, build.info_path, all_res_zips)
-
-  exit_code = link_proc.wait()
-  assert exit_code == 0, f'aapt2 link cmd failed with {exit_code=}'
   logging.debug('Finished: aapt2 link')
 
   if options.shared_resources:
@@ -818,9 +819,6 @@ def _PackageApk(options, build):
     # Need to resolve references because unused resource removal tool does not
     # support references in R.txt files.
     resource_utils.ResolveStyleableReferences(build.r_txt_path)
-
-  if exit_code:
-    raise subprocess.CalledProcessError(exit_code, link_command)
 
   if options.proguard_file and (options.shared_resources
                                 or options.app_as_shared_lib):

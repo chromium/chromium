@@ -789,10 +789,12 @@ packageIdTransform);
 
 def ExtractBinaryManifestValues(aapt2_path, apk_path):
   """Returns (version_code, version_name, package_name) for the given apk."""
-  output = subprocess.check_output([
+  cmd = [
       aapt2_path, 'dump', 'xmltree', apk_path, '--file', 'AndroidManifest.xml'
-  ],
-                                   encoding='utf-8')
+  ]
+  filter_func = lambda output: build_utils.FilterLines(
+      output, r'warn: unexpected chunk type')
+  output = build_utils.CheckOutput(cmd, stderr_filter=filter_func)
   version_code = re.search(r'versionCode.*?=(\d*)', output).group(1)
   version_name = re.search(r'versionName.*?="(.*?)"', output).group(1)
   package_name = re.search(r'package.*?="(.*?)"', output).group(1)
