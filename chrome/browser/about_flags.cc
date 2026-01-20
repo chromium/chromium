@@ -1695,13 +1695,10 @@ const FeatureEntry::FeatureParam kComposeboxNextSingleContext[] = {
 };
 const FeatureEntry::FeatureParam kComposeboxNextSingleContextForRealboxNext[] =
     {
-        {"MaxNumFiles", "1"},
-        {"ShowContextMenu", "true"},
-        {"ShowComposeboxZps", "true"},
-        {"ShowComposeboxTypedSuggest", "true"},
-        {"ShowToolsAndModels", "true"},
-        {"ShowRecentTabChip", "true"},
-        {"ShowSubmit", "true"},
+        {"MaxNumFiles", "1"},           {"ShowContextMenu", "true"},
+        {"ShowComposeboxZps", "true"},  {"ShowComposeboxTypedSuggest", "true"},
+        {"ShowToolsAndModels", "true"}, {"ShowRecentTabChip", "true"},
+        {"ShowSubmit", "true"},         {"EnableThreadsRail", "true"},
 };
 const FeatureEntry::FeatureParam kComposeboxNextForRealboxNext[] = {
     {"ShowContextMenu", "true"},
@@ -1711,7 +1708,9 @@ const FeatureEntry::FeatureParam kComposeboxNextForRealboxNext[] = {
     {"ShowRecentTabChip", "true"},
     {"ContextMenuEnableMultiTabSelection", "true"},
     {"ShowSubmit", "true"},
-    {"EnableEphemeralContextMenuDescription", "true"}};
+    {"EnableEphemeralContextMenuDescription", "true"},
+    {"EnableThreadsRail", "true"},
+};
 
 const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
     {"- Show Contextual Input Menu and Suggest, 5 File Limit",
