@@ -195,6 +195,9 @@ enum class PrefetchServiceWorkerState {
   // `kEligible` state is above as the reserved client.
   kControlled,
 };
+CONTENT_EXPORT std::ostream& operator<<(
+    std::ostream& ostream,
+    PrefetchServiceWorkerState service_worker_state);
 
 using OnServiceWorkerStateDeterminedCallback =
     base::OnceCallback<void(PrefetchServiceWorkerState)>;

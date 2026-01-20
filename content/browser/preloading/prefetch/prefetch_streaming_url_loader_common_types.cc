@@ -13,4 +13,16 @@ PrefetchUpdateHeadersParams::PrefetchUpdateHeadersParams(
 PrefetchUpdateHeadersParams& PrefetchUpdateHeadersParams::operator=(
     PrefetchUpdateHeadersParams&&) = default;
 
+std::ostream& operator<<(std::ostream& ostream,
+                         PrefetchServiceWorkerState service_worker_state) {
+  switch (service_worker_state) {
+    case PrefetchServiceWorkerState::kDisallowed:
+      return ostream << "Disallowed";
+    case PrefetchServiceWorkerState::kAllowed:
+      return ostream << "Allowed";
+    case PrefetchServiceWorkerState::kControlled:
+      return ostream << "Controlled";
+  }
+}
+
 }  // namespace content

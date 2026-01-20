@@ -61,6 +61,10 @@ enum class PrefetchPotentialCandidateCollectResult {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/prefetch/enums.xml)
 
+CONTENT_EXPORT std::ostream& operator<<(
+    std::ostream& ostream,
+    PrefetchPotentialCandidateCollectResult collect_result);
+
 // Represents the serving result with the detailed reason per potentially
 // matching candidate. Only used for metrics purpose.
 //
@@ -140,6 +144,10 @@ enum class PrefetchPotentialCandidateServingResult {
   kMaxValue = kNotServedNoCandidates,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/prefetch/enums.xml)
+
+CONTENT_EXPORT std::ostream& operator<<(
+    std::ostream& ostream,
+    PrefetchPotentialCandidateServingResult serving_result);
 
 // Manages matching process of prefetch
 // https://wicg.github.io/nav-speculation/prefetch.html#wait-for-a-matching-prefetch-record
@@ -425,9 +433,6 @@ bool IsCandidateAvailable(
     PrefetchPotentialCandidateCollectResult* collect_result) {
   switch (servable_state) {
     case PrefetchServableState::kNotServable:
-      DVLOG(1) << "CollectMatchCandidatesGeneric: skipped because not "
-                  "servable: candidate = "
-               << candidate;
       *collect_result =
           PrefetchPotentialCandidateCollectResult::kUnavailableNotServable;
       return false;
@@ -440,10 +445,6 @@ bool IsCandidateAvailable(
   switch (servable_state) {
     case PrefetchServableState::kShouldBlockUntilEligibilityGot:
       if (!is_nav_prerender) {
-        DVLOG(1)
-            << "CollectMatchCandidatesGeneric: skipped because it's checking "
-               "eligibility and the navigation is not a prerender: candidate = "
-            << candidate;
         *collect_result = PrefetchPotentialCandidateCollectResult::
             kUnavailableNavigationIsNotPrerenderAndPrefetchEligibilityNotGotYet;
         return false;
@@ -456,9 +457,6 @@ bool IsCandidateAvailable(
   }
 
   if (candidate.IsDecoy()) {
-    DVLOG(1) << "CollectMatchCandidatesGeneric: skipped because prefetch is a "
-                "decoy: candidate = "
-             << candidate;
     *collect_result =
         PrefetchPotentialCandidateCollectResult::kUnavailablePrefetchIsDecoy;
     return false;
@@ -471,16 +469,11 @@ bool IsCandidateAvailable(
     // second NavigationRequest to this prefetch's URL. The first
     // NavigationRequest would call GetPrefetch, which might set this
     // PrefetchContainer's status to kPrefetchNotUsedCookiesChanged.
-    DVLOG(1) << "CollectMatchCandidatesGeneric: skipped because cookies for "
-                "url have changed since prefetch completed: candidate = "
-             << candidate;
     *collect_result = PrefetchPotentialCandidateCollectResult::
         kUnavailablePrefetchStatusNotUsedCookiesChanged;
     return false;
   }
 
-  DVLOG(1) << "CollectMatchCandidatesGeneric: matched: candidate = "
-           << candidate;
   *collect_result = PrefetchPotentialCandidateCollectResult::kAvailable;
   return true;
 }
@@ -539,6 +532,8 @@ CollectMatchCandidatesGeneric(
         candidate->GetServableState(PrefetchCacheableDuration());
     const bool is_available = IsCandidateAvailable(
         *candidate, servable_state, is_nav_prerender, &collect_result);
+    DVLOG(1) << "Serving " << *candidate
+             << ": collect_result=" << collect_result;
     if (is_available) {
       candidates_available.push_back(candidate);
       servable_states.emplace(candidate->key(), servable_state);

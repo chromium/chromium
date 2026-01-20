@@ -202,6 +202,72 @@ void PrefetchMatchResolver::FindPrefetchInternal1(
                             std::move(serving_page_metrics_container));
 }
 
+std::ostream& operator<<(
+    std::ostream& ostream,
+    PrefetchPotentialCandidateCollectResult collect_result) {
+  switch (collect_result) {
+    case PrefetchPotentialCandidateCollectResult::kUninitialized:
+      return ostream << "kUninitialized";
+    case PrefetchPotentialCandidateCollectResult::kAvailable:
+      return ostream << "kAvailable";
+    case PrefetchPotentialCandidateCollectResult::
+        kUnavailablePrefetchIsNotInPrefetchService:
+      return ostream << "kUnavailablePrefetchIsNotInPrefetchService";
+    case PrefetchPotentialCandidateCollectResult::kUnavailableNotServable:
+      return ostream << "kUnavailableNotServable";
+    case PrefetchPotentialCandidateCollectResult::
+        kUnavailableNavigationIsNotPrerenderAndPrefetchEligibilityNotGotYet:
+      return ostream << "kUnavailableNavigationIsNotPrerenderAndPrefetchEligibi"
+                        "lityNotGotYet";
+    case PrefetchPotentialCandidateCollectResult::kUnavailablePrefetchIsDecoy:
+      return ostream << "kUnavailablePrefetchIsDecoy";
+    case PrefetchPotentialCandidateCollectResult::
+        kUnavailablePrefetchStatusNotUsedCookiesChanged:
+      return ostream << "kUnavailablePrefetchStatusNotUsedCookiesChanged";
+  }
+}
+
+std::ostream& operator<<(
+    std::ostream& ostream,
+    PrefetchPotentialCandidateServingResult serving_result) {
+  switch (serving_result) {
+    case PrefetchPotentialCandidateServingResult::kServed:
+      return ostream << "kServed";
+    case PrefetchPotentialCandidateServingResult::
+        kNotServedOtherCandidatesAreMatched:
+      return ostream << "kNotServedOtherCandidatesAreMatched";
+    case PrefetchPotentialCandidateServingResult::kNotServedCookiesChanged:
+      return ostream << "kNotServedCookiesChanged";
+    case PrefetchPotentialCandidateServingResult::
+        kNotServedPrefetchWillBeDestroyed:
+      return ostream << "kNotServedPrefetchWillBeDestroyed";
+    case PrefetchPotentialCandidateServingResult::kNotServedIneligiblePrefetch:
+      return ostream << "kNotServedIneligiblePrefetch";
+    case PrefetchPotentialCandidateServingResult::
+        kNotServedPrefetchServiceWorkerStateMismatch:
+      return ostream << "kNotServedPrefetchServiceWorkerStateMismatch";
+    case PrefetchPotentialCandidateServingResult::
+        kNotServedDeterminedNVSHeaderMismatch:
+      return ostream << "kNotServedDeterminedNVSHeaderMismatch";
+    case PrefetchPotentialCandidateServingResult::
+        kNotServedBlockUntilHeadTimeout:
+      return ostream << "kNotServedBlockUntilHeadTimeout";
+    case PrefetchPotentialCandidateServingResult::
+        kNotServedOnDeterminedHeadWithShouldBlockUntilHeadReceived:
+      return ostream
+             << "kNotServedOnDeterminedHeadWithShouldBlockUntilHeadReceived";
+    case PrefetchPotentialCandidateServingResult::
+        kNotServedOnDeterminedHeadWithServableExpired:
+      return ostream << "kNotServedOnDeterminedHeadWithServableExpired";
+    case PrefetchPotentialCandidateServingResult::kNotServedIneligibleRedirect:
+      return ostream << "kNotServedIneligibleRedirect";
+    case PrefetchPotentialCandidateServingResult::kNotServedLoadFailed:
+      return ostream << "kNotServedLoadFailed";
+    case PrefetchPotentialCandidateServingResult::kNotServedNoCandidates:
+      return ostream << "kNotServedNoCandidates";
+  }
+}
+
 void PrefetchMatchResolver::FindPrefetchInternal2(
     PrefetchService& prefetch_service,
     base::WeakPtr<PrefetchServingPageMetricsContainer>
@@ -244,6 +310,11 @@ void PrefetchMatchResolver::FindPrefetchInternal2(
       // not matching.
       CHECK(base::FeatureList::IsEnabled(features::kPrefetchServiceWorker));
       RegisterCandidate(*prefetch_container);
+    } else {
+      DVLOG(1) << "Serving " << *prefetch_container
+               << ": dropped due to ServiceWorkerState ("
+               << prefetch_container->service_worker_state() << " vs. "
+               << expected_service_worker_state_ << ")";
     }
   }
   prefetch_match_metrics_->n_initial_candidates = candidates_.size();
@@ -419,6 +490,9 @@ void PrefetchMatchResolver::UnregisterCandidate(
 
   CHECK(candidate_data->prefetch_container);
   PrefetchContainer& prefetch_container = *candidate_data->prefetch_container;
+
+  DVLOG(1) << "Serving " << prefetch_container
+           << ": Unregistered from PMR: " << serving_result;
 
   if (PreloadServingMetricsCapsule::IsFeatureEnabled()) {
     if (&prefetch_container == prefetch_ahead_of_prerender_for_metrics_.get()) {
@@ -686,6 +760,9 @@ void PrefetchMatchResolver::UnblockForNoCandidates() {
           navigated_key_);
     }
   }
+
+  DVLOG(1) << "Serving PrefetchContainer: No candidate at PMR for "
+           << navigated_key_;
 
   UnblockInternal({});
 }
