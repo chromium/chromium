@@ -310,9 +310,17 @@ const CGFloat kBackgroundHorizontalInset = 5.0;
   // wants to be visible.
   badgeViewShouldBeVisibleFinal = _badgeViewShouldBeVisible;
 
-  // Other badges can be visible only outside of Reader mode unless badge
-  // support is explicitly enabled.
-  if (!_readerModeChipShouldBeVisible) {
+  if (_readerModeChipShouldBeVisible) {
+    // `_readerModeChipShouldBeVisible` is true when Reader mode is active.
+    // Then the contextual entrypoint should only be visible if PSF is enabled,
+    // and the contextual chip wants to be visible, and the contextual panel
+    // item is NOT the Reader Mode availability contextual chip.
+    contextualPanelEntrypointShouldBeVisibleFinal =
+        IsProactiveSuggestionsFrameworkEnabled() &&
+        _contextualPanelEntrypointShouldBeVisible &&
+        (_contextualPanelItemType != ContextualPanelItemType::ReaderModeItem);
+  } else {
+    // `_readerModeChipShouldBeVisible` is false when Reader mode is inactive.
     // The contextual panel entrypoint can only be visible if it wants to be
     // visible and if one of these conditions is verified:
     // 1. The contextual panel has a loud moment (animating to large entrypoint)
@@ -323,17 +331,17 @@ const CGFloat kBackgroundHorizontalInset = 5.0;
     // 4. The placeholder type is NOT the page action menu placeholder.
     contextualPanelEntrypointShouldBeVisibleFinal =
         _contextualPanelEntrypointShouldBeVisible &&
-        !readerModeChipShouldBeVisibleFinal &&
         (_contextualPanelCurrentlyAnimating || badgeViewShouldBeVisibleFinal ||
          _contextualPanelItemType != ContextualPanelItemType::ReaderModeItem ||
          _placeholderType != LocationBarPlaceholderType::kPageActionMenu);
-    // Finally the placeholder is visible if the badge view, Reader Mode, and
-    // contextual panel entrypoint are hidden.
-    placeholderViewShouldBeVisibleFinal =
-        !badgeViewShouldBeVisibleFinal &&
-        !contextualPanelEntrypointShouldBeVisibleFinal &&
-        !readerModeChipShouldBeVisibleFinal;
   }
+
+  // Finally the placeholder is visible if the badge view, and contextual panel
+  // entrypoint are hidden, and only outside of Reader mode.
+  placeholderViewShouldBeVisibleFinal =
+      !badgeViewShouldBeVisibleFinal &&
+      !contextualPanelEntrypointShouldBeVisibleFinal &&
+      !_readerModeChipShouldBeVisible;
 
   SetViewHiddenIfNecessary(self.readerModeChipView,
                            !readerModeChipShouldBeVisibleFinal);

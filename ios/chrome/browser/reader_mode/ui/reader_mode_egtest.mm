@@ -170,7 +170,10 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
     config.features_enabled_and_params.push_back({kEnableReaderModeInUS, {}});
   }
   if ([self isRunningTest:@selector(testTurnOnReaderModeViaPageActionMenu)] ||
-      [self isRunningTest:@selector(testReaderModeChipShowsAIHubIfAvailable)]) {
+      [self isRunningTest:@selector(testReaderModeChipShowsAIHubIfAvailable)] ||
+      [self isRunningTest:@selector
+            (testSampleContextualChipVisibleInReaderMode)] ||
+      [self isRunningTest:@selector(testReaderModeChipHiddenInReaderMode)]) {
     config.features_enabled_and_params.push_back({kPageActionMenu, {}});
   } else {
     config.features_disabled.push_back(kPageActionMenu);
@@ -187,6 +190,11 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
   if ([self isRunningTest:@selector
             (testReaderModeChipVisibleWhenLeavingReaderModeWithPSFDisabled)]) {
     config.features_disabled.push_back(kProactiveSuggestionsFramework);
+  }
+  if ([self isRunningTest:@selector
+            (testSampleContextualChipVisibleInReaderMode)]) {
+    config.features_enabled_and_params.push_back(
+        {kContextualPanelForceShowEntrypoint, {}});
   }
   return config;
 }
@@ -840,6 +848,49 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 
   [self assertReaderModePageIsVisible];
   EXPECT_EQ(1, CountNumLinks());
+}
+
+// Tests that a sample contextual chip stays visible inside Reader mode if
+// kAskGeminiChip is enabled.
+- (void)testSampleContextualChipVisibleInReaderMode {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
+
+  // Open Reader Mode UI.
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded");
+  [self assertReaderModePageIsVisible];
+
+  // Check that the sample contextual chip is visible.
+  [[EarlGrey
+      selectElementWithMatcher:ContextualPanelEntrypointImageViewMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the Reader mode contextual chip is hidden inside Reader mode if
+// kAskGeminiChip is enabled.
+- (void)testReaderModeChipHiddenInReaderMode {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
+
+  // Wait for the Reader Mode contextual entrypoint to appear.
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      ContextualPanelEntrypointImageViewMatcher()];
+
+  // Open Reader Mode UI.
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded");
+  [self assertReaderModePageIsVisible];
+
+  // The Reader Mode contextual entrypoint should be hidden.
+  [[EarlGrey
+      selectElementWithMatcher:ContextualPanelEntrypointImageViewMatcher()]
+      assertWithMatcher:grey_notVisible()];
+  // The Reader mode badge button should be visible instead.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kBadgeButtonReaderModeAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests that the user can turn on Reader Mode from the page action menu.
