@@ -67,8 +67,8 @@
 #include "content/public/renderer/render_frame.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
+#include "third_party/blink/public/platform/web_runtime_features_base.h"
 #include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
@@ -1082,7 +1082,7 @@ void AutofillAgent::ApplyFieldsAction(
   } else {
     was_last_action_fill_ = true;
 
-    if (base::FeatureList::IsEnabled(blink::features::kAutofillEvent) &&
+    if (blink::WebRuntimeFeaturesBase::IsAutofillEventEnabled() &&
         action_type == mojom::FormActionType::kFill) {
       form_util::DispatchAutofillEvent(document, fields, fill_id,
                                        supports_refill);

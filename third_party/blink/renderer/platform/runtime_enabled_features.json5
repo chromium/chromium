@@ -671,6 +671,7 @@
     {
       name: "AutofillEvent",
       status: "experimental",
+      public: true,
     },
     {
       name: "AutomationControlled",
