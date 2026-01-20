@@ -37,6 +37,7 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "services/on_device_model/public/cpp/capabilities.h"
+#include "services/on_device_model/public/cpp/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-shared.h"
@@ -670,6 +671,14 @@ AILanguageModel::GetLanguageModelInstanceInfo() {
     }
   }
 
+  // TODO(crbug.com/462283904): Obtain canonical model input format parameters.
+  std::optional<int> audio_sample_rate_hz = std::nullopt;
+  std::optional<int> audio_channel_count = std::nullopt;
+  if (base::FeatureList::IsEnabled(
+          on_device_model::features::kOnDeviceModelLitertLmBackend)) {
+    audio_sample_rate_hz = 16000;
+    audio_channel_count = 1;
+  }
   uint32_t max_tokens = GetMaxTokens(model_client_.get());
   uint32_t total_tokens =
       context_->initial_tokens() + context_->current_tokens();
@@ -677,7 +686,8 @@ AILanguageModel::GetLanguageModelInstanceInfo() {
       max_tokens, total_tokens,
       blink::mojom::AILanguageModelSamplingParams::New(
           session_params_->top_k, session_params_->temperature),
-      std::move(input_types).extract());
+      std::move(input_types).extract(), audio_sample_rate_hz,
+      audio_channel_count);
 }
 
 mojo::PendingRemote<blink::mojom::AILanguageModel>

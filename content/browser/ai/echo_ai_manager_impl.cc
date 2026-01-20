@@ -395,7 +395,9 @@ void EchoAIManagerImpl::ReturnAILanguageModelCreationResult(
           kMaxContextSizeInTokens, initial_input_usage,
           std::move(model_sampling_params),
           std::vector<blink::mojom::AILanguageModelPromptType>(
-              enabled_input_types.begin(), enabled_input_types.end())));
+              enabled_input_types.begin(), enabled_input_types.end()),
+          /*audio_sample_rate_hz=*/std::nullopt,
+          /*audio_channel_count=*/std::nullopt));
 }
 
 void EchoAIManagerImpl::DoMockDownloadingAndReturn(base::OnceClosure callback) {

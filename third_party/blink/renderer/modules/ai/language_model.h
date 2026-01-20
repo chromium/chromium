@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/modules/ai/language_model_params.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 
@@ -87,11 +86,10 @@ class LanguageModel final : public EventTarget, public ExecutionContextClient {
       const V8LanguageModelPrompt* input,
       const LanguageModelPromptOptions* options,
       ExceptionState& exception_state);
-  double inputQuota() const { return input_quota_; }
-  double inputUsage() const { return input_usage_; }
-
-  uint32_t topK() const { return top_k_; }
-  float temperature() const { return temperature_; }
+  double inputQuota() const { return info_->input_quota; }
+  double inputUsage() const { return info_->input_usage; }
+  uint32_t topK() const { return info_->sampling_params->top_k; }
+  float temperature() const { return info_->sampling_params->temperature; }
 
   ScriptPromise<LanguageModel> clone(ScriptState* script_state,
                                      const LanguageModelCloneOptions* options,
@@ -143,15 +141,10 @@ class LanguageModel final : public EventTarget, public ExecutionContextClient {
                                 const LanguageModelPromptOptions* options,
                                 ExceptionState& exception_state);
 
-  uint64_t input_usage_;
-  uint64_t input_quota_ = 0;
-  uint32_t top_k_ = 0;
-  float temperature_ = 0.0;
-  // Prompt types supported by the language model in this session.
-  HashSet<mojom::blink::AILanguageModelPromptType> input_types_;
-
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapMojoRemote<mojom::blink::AILanguageModel> language_model_remote_;
+  // Info about the language model's supported types and instance state.
+  blink::mojom::blink::AILanguageModelInstanceInfoPtr info_;
 };
 
 }  // namespace blink
