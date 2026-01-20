@@ -38,7 +38,7 @@ namespace sync_integration_test_util {
 bool IsCurrentTestAllowlistedForE2EMode() {
   const std::string current_test_name =
       ::testing::UnitTest::GetInstance()->current_test_info()->name();
-  return base::EndsWith(current_test_name, "E2ETest");
+  return current_test_name.contains("E2ETest");
 }
 
 }  // namespace sync_integration_test_util
