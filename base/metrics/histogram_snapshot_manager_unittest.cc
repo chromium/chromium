@@ -32,14 +32,14 @@ void UmaStabilityHistogramBoolean(const std::string& name, bool sample) {
 
 }  // namespace
 
-class HistogramFlattenerDeltaRecorder : public HistogramFlattener {
+class HistogramSnapshotManagerDeltaRecorder : public HistogramSnapshotManager {
  public:
-  HistogramFlattenerDeltaRecorder() = default;
+  HistogramSnapshotManagerDeltaRecorder() = default;
 
-  HistogramFlattenerDeltaRecorder(const HistogramFlattenerDeltaRecorder&) =
-      delete;
-  HistogramFlattenerDeltaRecorder& operator=(
-      const HistogramFlattenerDeltaRecorder&) = delete;
+  HistogramSnapshotManagerDeltaRecorder(
+      const HistogramSnapshotManagerDeltaRecorder&) = delete;
+  HistogramSnapshotManagerDeltaRecorder& operator=(
+      const HistogramSnapshotManagerDeltaRecorder&) = delete;
 
   void RecordDelta(const HistogramBase& histogram,
                    const HistogramSamples& snapshot) override {
@@ -76,19 +76,16 @@ class HistogramFlattenerDeltaRecorder : public HistogramFlattener {
 class HistogramSnapshotManagerTest : public testing::Test {
  protected:
   HistogramSnapshotManagerTest()
-      : statistics_recorder_(StatisticsRecorder::CreateTemporaryForTesting()),
-        histogram_snapshot_manager_(&histogram_flattener_delta_recorder_) {}
+      : statistics_recorder_(StatisticsRecorder::CreateTemporaryForTesting()) {}
 
   ~HistogramSnapshotManagerTest() override = default;
 
   int64_t GetRecordedDeltaHistogramSum(const std::string& name) {
-    return histogram_flattener_delta_recorder_.GetRecordedDeltaHistogramSum(
-        name);
+    return histogram_snapshot_manager_.GetRecordedDeltaHistogramSum(name);
   }
 
   std::unique_ptr<StatisticsRecorder> statistics_recorder_;
-  HistogramFlattenerDeltaRecorder histogram_flattener_delta_recorder_;
-  HistogramSnapshotManager histogram_snapshot_manager_;
+  HistogramSnapshotManagerDeltaRecorder histogram_snapshot_manager_;
 };
 
 TEST_F(HistogramSnapshotManagerTest, PrepareDeltasNoFlagsFilter) {
@@ -102,8 +99,7 @@ TEST_F(HistogramSnapshotManagerTest, PrepareDeltasNoFlagsFilter) {
 
   // Verify that the snapshots were recorded.
   const std::vector<raw_ptr<const HistogramBase, VectorExperimental>>&
-      histograms =
-          histogram_flattener_delta_recorder_.GetRecordedDeltaHistograms();
+      histograms = histogram_snapshot_manager_.GetRecordedDeltaHistograms();
   ASSERT_EQ(2U, histograms.size());
   ASSERT_EQ(kHistogramName, histograms[0]->histogram_name());
   EXPECT_EQ(GetRecordedDeltaHistogramSum(kHistogramName), 1);
@@ -127,8 +123,7 @@ TEST_F(HistogramSnapshotManagerTest, PrepareDeltasUmaHistogramFlagFilter) {
 
   // Verify that the snapshots were recorded.
   const std::vector<raw_ptr<const HistogramBase, VectorExperimental>>&
-      histograms =
-          histogram_flattener_delta_recorder_.GetRecordedDeltaHistograms();
+      histograms = histogram_snapshot_manager_.GetRecordedDeltaHistograms();
   ASSERT_EQ(2U, histograms.size());
   ASSERT_EQ(kHistogramName, histograms[0]->histogram_name());
   EXPECT_EQ(GetRecordedDeltaHistogramSum(kHistogramName), 1);
@@ -152,8 +147,7 @@ TEST_F(HistogramSnapshotManagerTest,
 
   // Verify that only the stability histogram was snapshotted and recorded.
   const std::vector<raw_ptr<const HistogramBase, VectorExperimental>>&
-      histograms =
-          histogram_flattener_delta_recorder_.GetRecordedDeltaHistograms();
+      histograms = histogram_snapshot_manager_.GetRecordedDeltaHistograms();
   ASSERT_EQ(1U, histograms.size());
   ASSERT_EQ(kStabilityHistogramName, histograms[0]->histogram_name());
   EXPECT_EQ(GetRecordedDeltaHistogramSum(kStabilityHistogramName), 1);

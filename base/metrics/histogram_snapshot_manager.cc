@@ -10,18 +10,13 @@
 #include "base/debug/crash_logging.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_flattener.h"
+#include "base/metrics/bucket_ranges.h"
+#include "base/metrics/histogram.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 
 namespace base {
-
-HistogramSnapshotManager::HistogramSnapshotManager(
-    HistogramFlattener* histogram_flattener)
-    : histogram_flattener_(histogram_flattener) {
-  DCHECK(histogram_flattener_);
-}
 
 HistogramSnapshotManager::~HistogramSnapshotManager() = default;
 
@@ -50,7 +45,6 @@ void HistogramSnapshotManager::PrepareFinalDelta(
 
 void HistogramSnapshotManager::PrepareSamples(const HistogramBase* histogram,
                                               const HistogramSamples& samples) {
-  DCHECK(histogram_flattener_);
   if (samples.TotalCount() <= 0) {
     return;
   }
@@ -99,7 +93,7 @@ void HistogramSnapshotManager::PrepareSamples(const HistogramBase* histogram,
     return;
   }
 
-  histogram_flattener_->RecordDelta(*histogram, samples);
+  RecordDelta(*histogram, samples);
 }
 
 }  // namespace base

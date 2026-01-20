@@ -4,7 +4,7 @@
 
 #include "chromecast/cast_core/runtime/browser/cast_runtime_histogram_flattener.h"
 
-#include "base/metrics/histogram_flattener.h"
+#include "base/metrics/histogram.h"
 #include "base/metrics/histogram_snapshot_manager.h"
 #include "base/metrics/statistics_recorder.h"
 
@@ -14,14 +14,16 @@ namespace {
 // This is an ephemeral utility class for interacting with StatisticsRecorder
 // and HistogramSnapshotManager.  It collects histogram samples via
 // PrepareDeltas and then puts them in cast::metrics::Histogram form.
-class CastRuntimeHistogramFlattener final : public base::HistogramFlattener {
+class CastRuntimeHistogramSnapshotManager
+    : public base::HistogramSnapshotManager {
  public:
-  CastRuntimeHistogramFlattener() : snapshot_manager_(this) {}
-  ~CastRuntimeHistogramFlattener() override = default;
+  CastRuntimeHistogramSnapshotManager() {}
+  ~CastRuntimeHistogramSnapshotManager() override = default;
 
-  CastRuntimeHistogramFlattener(const CastRuntimeHistogramFlattener&) = delete;
-  CastRuntimeHistogramFlattener& operator=(
-      const CastRuntimeHistogramFlattener&) = delete;
+  CastRuntimeHistogramSnapshotManager(
+      const CastRuntimeHistogramSnapshotManager&) = delete;
+  CastRuntimeHistogramSnapshotManager& operator=(
+      const CastRuntimeHistogramSnapshotManager&) = delete;
 
   std::vector<cast::metrics::Histogram> GetDeltas() {
     DCHECK(deltas_.empty());
@@ -34,7 +36,7 @@ class CastRuntimeHistogramFlattener final : public base::HistogramFlattener {
         // Do not set flags on histograms.
         base::Histogram::kNoFlags,
         // Only upload metrics marked for UMA upload.
-        base::Histogram::kUmaTargetedHistogramFlag, &snapshot_manager_);
+        base::Histogram::kUmaTargetedHistogramFlag, this);
 
     return std::move(deltas_);
   }
@@ -64,14 +66,13 @@ class CastRuntimeHistogramFlattener final : public base::HistogramFlattener {
     deltas_.push_back(std::move(converted));
   }
 
-  base::HistogramSnapshotManager snapshot_manager_;
   std::vector<cast::metrics::Histogram> deltas_;
 };
 
 }  // namespace
 
 std::vector<cast::metrics::Histogram> GetHistogramDeltas() {
-  return CastRuntimeHistogramFlattener().GetDeltas();
+  return CastRuntimeHistogramSnapshotManager().GetDeltas();
 }
 
 }  // namespace chromecast

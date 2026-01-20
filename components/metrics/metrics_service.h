@@ -21,7 +21,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
-#include "base/metrics/histogram_flattener.h"
+#include "base/metrics/histogram.h"
 #include "base/metrics/histogram_snapshot_manager.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/metrics/user_metrics.h"
@@ -413,10 +413,6 @@ class MetricsService {
     // SnapshotStatisticsRecorderHistograms().
     const base::HistogramBase::Flags required_flags_;
 
-    // Used to write histograms to the log passed in the constructor. Null after
-    // `NotifyLogBeingFinalized()`.
-    std::unique_ptr<base::HistogramFlattener> flattener_;
-
     // Used to snapshot histograms.
     std::unique_ptr<base::HistogramSnapshotManager> histogram_snapshot_manager_;
   };
@@ -456,7 +452,6 @@ class MetricsService {
 
    private:
     std::unique_ptr<MetricsLog> log_;
-    std::unique_ptr<base::HistogramFlattener> flattener_;
     std::unique_ptr<base::HistogramSnapshotManager> snapshot_manager_;
     bool run_called_ = false;
 

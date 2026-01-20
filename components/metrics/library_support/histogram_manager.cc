@@ -16,8 +16,6 @@
 
 namespace metrics {
 
-HistogramManager::HistogramManager() : histogram_snapshot_manager_(this) {}
-
 HistogramManager::~HistogramManager() = default;
 
 // static
@@ -45,8 +43,7 @@ bool HistogramManager::GetDeltas(std::vector<uint8_t>* data)
     // other means.
     base::StatisticsRecorder::PrepareDeltas(
         false, base::Histogram::kNoFlags,
-        base::Histogram::kUmaTargetedHistogramFlag,
-        &histogram_snapshot_manager_);
+        base::Histogram::kUmaTargetedHistogramFlag, this);
     int32_t data_size = uma_proto_.ByteSizeLong();
     data->resize(data_size);
     if (data_size == 0 || uma_proto_.SerializeToArray(data->data(), data_size))

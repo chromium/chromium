@@ -79,7 +79,7 @@ void ChildHistogramFetcherImpl::GetChildNonPersistentHistogramData(
 
   if (!histogram_delta_serialization_) {
     histogram_delta_serialization_ =
-        std::make_unique<base::HistogramDeltaSerialization>("ChildProcess");
+        std::make_unique<base::HistogramDeltaSerialization>();
   }
 
   std::vector<std::string> deltas;

@@ -15,8 +15,8 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
-#include "base/metrics/histogram_flattener.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_snapshot_manager.h"
 #include "base/metrics/metrics_hashes.h"
@@ -1035,10 +1035,10 @@ TEST_P(StatisticsRecorderTest, GetHistogramsExcludeFlags) {
               UnorderedElementsAre(histograms[0]));
 }
 
-class MockHistogramFlattener : public base::HistogramFlattener {
+class MockHistogramSnapshotManager : public base::HistogramSnapshotManager {
  public:
-  MockHistogramFlattener() = default;
-  ~MockHistogramFlattener() override = default;
+  MockHistogramSnapshotManager() = default;
+  ~MockHistogramSnapshotManager() override = default;
 
   MOCK_METHOD(void,
               RecordDelta,
@@ -1061,10 +1061,9 @@ TEST_P(StatisticsRecorderTest, PrepareDeltasDoesNotExcludeHistograms) {
   EXPECT_EQ(histogram,
             StatisticsRecorder::RegisterOrDeleteDuplicate(histogram));
 
-  MockHistogramFlattener flattener;
-  HistogramSnapshotManager histogram_manager(&flattener);
+  MockHistogramSnapshotManager histogram_manager;
 
-  EXPECT_CALL(flattener, RecordDelta(_, _)).Times(1);
+  EXPECT_CALL(histogram_manager, RecordDelta(_, _)).Times(1);
 
   StatisticsRecorder::PrepareDeltas(
       true, HistogramBase::Flags::kNoFlags,

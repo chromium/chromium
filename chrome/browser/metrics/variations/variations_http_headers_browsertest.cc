@@ -269,7 +269,6 @@ class VariationsHttpHeadersBrowserTest
   }
 
   GURL GetExampleUrl() const { return GetExampleUrlWithPath("/landing.html"); }
-
   void WaitForRequest(const GURL& url) {
     auto it = received_headers_.find(url);
     if (it != received_headers_.end())

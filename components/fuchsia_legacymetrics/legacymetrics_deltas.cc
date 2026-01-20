@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/fuchsia_legacymetrics/legacymetrics_histogram_flattener.h"
+#include "components/fuchsia_legacymetrics/legacymetrics_deltas.h"
 
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/logging.h"
+#include "base/metrics/histogram.h"
+#include "base/metrics/histogram_snapshot_manager.h"
 #include "base/metrics/statistics_recorder.h"
 
 namespace fuchsia_legacymetrics {
@@ -17,15 +19,16 @@ namespace {
 // Serializes changes to histogram metrics as FIDL structs.
 // Cannot be used in conjunction with other metrics collection systems (e.g.
 // UMA).
-class LegacyMetricsHistogramFlattener : public base::HistogramFlattener {
+class LegacyMetricsHistogramSnapshotManager
+    : public base::HistogramSnapshotManager {
  public:
-  LegacyMetricsHistogramFlattener() : histogram_snapshot_manager_(this) {}
-  ~LegacyMetricsHistogramFlattener() override = default;
+  LegacyMetricsHistogramSnapshotManager() {}
+  ~LegacyMetricsHistogramSnapshotManager() override = default;
 
-  LegacyMetricsHistogramFlattener(const LegacyMetricsHistogramFlattener&) =
-      delete;
-  LegacyMetricsHistogramFlattener& operator=(
-      const LegacyMetricsHistogramFlattener&) = delete;
+  LegacyMetricsHistogramSnapshotManager(
+      const LegacyMetricsHistogramSnapshotManager&) = delete;
+  LegacyMetricsHistogramSnapshotManager& operator=(
+      const LegacyMetricsHistogramSnapshotManager&) = delete;
 
   // Returns a vector of changes to histogram data made since the last call to
   // this method. Returns all histogram data when invoked for the first time.
@@ -40,14 +43,13 @@ class LegacyMetricsHistogramFlattener : public base::HistogramFlattener {
         // Do not set flags on histograms.
         base::Histogram::kNoFlags,
         // Only upload metrics marked for UMA upload.
-        base::Histogram::kUmaTargetedHistogramFlag,
-        &histogram_snapshot_manager_);
+        base::Histogram::kUmaTargetedHistogramFlag, this);
 
     return std::move(histogram_deltas_);
   }
 
  private:
-  // base::HistogramFlattener implementation.
+  // base::HistogramSnapshotManager implementation.
   // Appends the contents of |snapshot| for the specified |histogram| within
   // |histogram_deltas_|.
   void RecordDelta(const base::HistogramBase& histogram,
@@ -79,14 +81,13 @@ class LegacyMetricsHistogramFlattener : public base::HistogramFlattener {
     histogram_deltas_.emplace_back(std::move(converted));
   }
 
-  base::HistogramSnapshotManager histogram_snapshot_manager_;
   std::vector<fuchsia::legacymetrics::Histogram> histogram_deltas_;
 };
 
 }  // namespace
 
 std::vector<fuchsia::legacymetrics::Histogram> GetLegacyMetricsDeltas() {
-  return LegacyMetricsHistogramFlattener().GetDeltas();
+  return LegacyMetricsHistogramSnapshotManager().GetDeltas();
 }
 
 }  // namespace fuchsia_legacymetrics

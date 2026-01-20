@@ -477,7 +477,6 @@ component("base") {
     "metrics/histogram_base.h",
     "metrics/histogram_delta_serialization.cc",
     "metrics/histogram_delta_serialization.h",
-    "metrics/histogram_flattener.h",
     "metrics/histogram_functions.cc",
     "metrics/histogram_functions.h",
     "metrics/histogram_functions_internal_overloads.h",

@@ -16,7 +16,7 @@ namespace base {
 TEST(HistogramDeltaSerializationTest, DeserializeHistogramAndAddSamples) {
   std::unique_ptr<StatisticsRecorder> statistic_recorder(
       StatisticsRecorder::CreateTemporaryForTesting());
-  HistogramDeltaSerialization serializer("HistogramDeltaSerializationTest");
+  HistogramDeltaSerialization serializer;
   std::vector<std::string> deltas;
   // Nothing was changed yet.
   serializer.PrepareAndSerializeDeltas(&deltas, true);

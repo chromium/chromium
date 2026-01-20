@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/fuchsia_legacymetrics/legacymetrics_histogram_flattener.h"
+#include "components/fuchsia_legacymetrics/legacymetrics_deltas.h"
 
 #include <string_view>
 
@@ -19,8 +19,9 @@ constexpr char kHistogramCount1M[] = "Foo.Bar";
 
 int64_t GetCount(int64_t value, const std::vector<HistogramBucket>& buckets) {
   for (const HistogramBucket& bucket : buckets) {
-    if (value >= bucket.min && value < bucket.max)
+    if (value >= bucket.min && value < bucket.max) {
       return bucket.count;
+    }
   }
 
   return 0;
@@ -30,16 +31,17 @@ const fuchsia::legacymetrics::Histogram* LookupHistogram(
     std::string_view name,
     const std::vector<Histogram>& histograms) {
   for (const auto& histogram : histograms) {
-    if (histogram.name() == name)
+    if (histogram.name() == name) {
       return &histogram;
+    }
   }
   return nullptr;
 }
 
-class LegacyMetricsHistogramFlattenerTest : public testing::Test {
+class LegacyMetricsHistogramSnapshotManagerTest : public testing::Test {
  public:
-  LegacyMetricsHistogramFlattenerTest() = default;
-  ~LegacyMetricsHistogramFlattenerTest() override = default;
+  LegacyMetricsHistogramSnapshotManagerTest() = default;
+  ~LegacyMetricsHistogramSnapshotManagerTest() override = default;
 
   void SetUp() override {
     // Flush all histogram deltas from prior tests executed in this process.
@@ -47,11 +49,11 @@ class LegacyMetricsHistogramFlattenerTest : public testing::Test {
   }
 };
 
-TEST_F(LegacyMetricsHistogramFlattenerTest, NoHistogramData) {
+TEST_F(LegacyMetricsHistogramSnapshotManagerTest, NoHistogramData) {
   EXPECT_TRUE(GetLegacyMetricsDeltas().empty());
 }
 
-TEST_F(LegacyMetricsHistogramFlattenerTest, Boolean) {
+TEST_F(LegacyMetricsHistogramSnapshotManagerTest, Boolean) {
   constexpr char kBooleanHistogram[] = "Foo.Bar.Boolean";
   UMA_HISTOGRAM_BOOLEAN(kBooleanHistogram, true);
   UMA_HISTOGRAM_BOOLEAN(kBooleanHistogram, true);
@@ -64,7 +66,7 @@ TEST_F(LegacyMetricsHistogramFlattenerTest, Boolean) {
             GetCount(1, LookupHistogram(kBooleanHistogram, deltas)->buckets()));
 }
 
-TEST_F(LegacyMetricsHistogramFlattenerTest, Linear) {
+TEST_F(LegacyMetricsHistogramSnapshotManagerTest, Linear) {
   constexpr char kLinearHistogram[] = "Foo.Bar.Linear";
 
   for (int i = 0; i < 200; ++i) {
@@ -79,12 +81,13 @@ TEST_F(LegacyMetricsHistogramFlattenerTest, Linear) {
   }
 }
 
-TEST_F(LegacyMetricsHistogramFlattenerTest, Percentage) {
+TEST_F(LegacyMetricsHistogramSnapshotManagerTest, Percentage) {
   constexpr char kPercentageHistogram[] = "Foo.Bar.Percentage";
 
   for (int i = 0; i <= 100; ++i) {
-    for (int j = 0; j < i; ++j)
+    for (int j = 0; j < i; ++j) {
       UMA_HISTOGRAM_PERCENTAGE(kPercentageHistogram, i);
+    }
   }
 
   auto deltas = GetLegacyMetricsDeltas();
@@ -103,7 +106,7 @@ enum Fruit {
   FRUIT_MAX = PEAR,
 };
 
-TEST_F(LegacyMetricsHistogramFlattenerTest, Enumeration) {
+TEST_F(LegacyMetricsHistogramSnapshotManagerTest, Enumeration) {
   constexpr char kEnumHistogram[] = "Foo.Bar.Enumeration";
 
   UMA_HISTOGRAM_ENUMERATION(kEnumHistogram, APPLE, FRUIT_MAX);
@@ -122,7 +125,7 @@ TEST_F(LegacyMetricsHistogramFlattenerTest, Enumeration) {
             GetCount(PEAR, LookupHistogram(kEnumHistogram, deltas)->buckets()));
 }
 
-TEST_F(LegacyMetricsHistogramFlattenerTest, NoNewData) {
+TEST_F(LegacyMetricsHistogramSnapshotManagerTest, NoNewData) {
   UMA_HISTOGRAM_COUNTS_1M(kHistogramCount1M, 20);
 
   auto deltas = GetLegacyMetricsDeltas();
@@ -134,7 +137,7 @@ TEST_F(LegacyMetricsHistogramFlattenerTest, NoNewData) {
   EXPECT_TRUE(deltas.empty());
 }
 
-TEST_F(LegacyMetricsHistogramFlattenerTest, MultipleHistograms) {
+TEST_F(LegacyMetricsHistogramSnapshotManagerTest, MultipleHistograms) {
   constexpr char kAnotherHistogram[] = "Foo.Bar2";
 
   UMA_HISTOGRAM_COUNTS_1M(kHistogramCount1M, 20);
@@ -148,7 +151,7 @@ TEST_F(LegacyMetricsHistogramFlattenerTest, MultipleHistograms) {
       2, GetCount(1000, LookupHistogram(kAnotherHistogram, deltas)->buckets()));
 }
 
-TEST_F(LegacyMetricsHistogramFlattenerTest, MultipleBuckets) {
+TEST_F(LegacyMetricsHistogramSnapshotManagerTest, MultipleBuckets) {
   UMA_HISTOGRAM_COUNTS_1M(kHistogramCount1M, 20);
   UMA_HISTOGRAM_COUNTS_1M(kHistogramCount1M, 1000);
 

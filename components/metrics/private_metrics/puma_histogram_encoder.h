@@ -6,7 +6,7 @@
 #define COMPONENTS_METRICS_PRIVATE_METRICS_PUMA_HISTOGRAM_ENCODER_H_
 
 #include "base/metrics/histogram_base.h"
-#include "base/metrics/histogram_flattener.h"
+#include "base/metrics/histogram_snapshot_manager.h"
 #include "base/metrics/puma_histogram_functions.h"
 #include "third_party/metrics_proto/private_metrics/private_user_metrics.pb.h"
 
@@ -14,7 +14,7 @@ namespace metrics::private_metrics {
 
 // PumaHistogramEncoder is responsible for encoding histograms into PUMA protos,
 // which then can be used to upload PUMA records.
-class PumaHistogramEncoder : public base::HistogramFlattener {
+class PumaHistogramEncoder : public base::HistogramSnapshotManager {
  public:
   // Creates a new encoder which will encode histograms into the given proto.
   explicit PumaHistogramEncoder(
@@ -32,7 +32,7 @@ class PumaHistogramEncoder : public base::HistogramFlattener {
       ::private_metrics::PrivateUserMetrics& puma_proto);
 
  private:
-  // base::HistogramFlattener:
+  // base::HistogramSnapshotManager:
   void RecordDelta(const base::HistogramBase& histogram,
                    const base::HistogramSamples& snapshot) override;
 

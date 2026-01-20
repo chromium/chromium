@@ -6,6 +6,7 @@
 
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_snapshot_manager.h"
 #include "base/metrics/statistics_recorder.h"
@@ -35,10 +36,6 @@ void DeserializeHistogramAndAddSamples(PickleIterator* iter) {
 
 }  // namespace
 
-HistogramDeltaSerialization::HistogramDeltaSerialization(
-    const std::string& caller_name)
-    : histogram_snapshot_manager_(this), serialized_deltas_(nullptr) {}
-
 HistogramDeltaSerialization::~HistogramDeltaSerialization() = default;
 
 void HistogramDeltaSerialization::PrepareAndSerializeDeltas(
@@ -50,9 +47,9 @@ void HistogramDeltaSerialization::PrepareAndSerializeDeltas(
   // Note: Before serializing, we set the kIPCSerializationSourceFlag for all
   // the histograms, so that the receiving process can distinguish them from the
   // local histograms.
-  StatisticsRecorder::PrepareDeltas(
-      include_persistent, Histogram::kIPCSerializationSourceFlag,
-      Histogram::kNoFlags, &histogram_snapshot_manager_);
+  StatisticsRecorder::PrepareDeltas(include_persistent,
+                                    Histogram::kIPCSerializationSourceFlag,
+                                    Histogram::kNoFlags, this);
   serialized_deltas_ = nullptr;
 }
 
