@@ -6360,7 +6360,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.AndroidX.MethodCacheEviction" enum="Boolean"
-    expires_after="2026-03-01">
+    expires_after="2027-01-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -6377,7 +6377,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.AndroidX.MethodCacheGetResult"
-    enum="BooleanCacheHit" expires_after="2026-03-01">
+    enum="BooleanCacheHit" expires_after="2027-01-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
