@@ -142,4 +142,41 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, LinkPreload) {
             static_cast<int>(blink::mojom::ResourceType::kScript));
 }
 
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, LinkModulePreload) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL main_url =
+      embedded_test_server()->GetURL("a.test", kSameOriginAllowlistedPage);
+  GURL allowed_url = embedded_test_server()->GetURL("a.test", "/allow.js");
+  GURL denied_url = embedded_test_server()->GetURL("b.test", "/deny.js");
+
+  URLLoaderMonitor monitor;
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  EXPECT_TRUE(ExecJs(shell()->web_contents(),
+                     content::JsReplace(R"(
+            var allowed_link = document.createElement('link');
+            allowed_link.href = $1;
+            allowed_link.rel = 'modulepreload';
+
+            var denied_link = document.createElement('link');
+            denied_link.href = $2;
+            denied_link.rel = 'modulepreload';
+
+            document.body.appendChild(allowed_link);
+            document.body.appendChild(denied_link);
+          )",
+                                        allowed_url, denied_url)));
+
+  monitor.WaitForUrls({allowed_url, denied_url});
+  EXPECT_EQ(monitor.WaitForRequestCompletion(denied_url).error_code,
+            net::ERR_NETWORK_ACCESS_REVOKED);
+  EXPECT_EQ(monitor.WaitForRequestCompletion(allowed_url).error_code, net::OK);
+  std::optional<network::ResourceRequest> request =
+      monitor.GetRequestInfo(allowed_url);
+  ASSERT_TRUE(request.has_value());
+  EXPECT_EQ(request->resource_type,
+            static_cast<int>(blink::mojom::ResourceType::kScript));
+}
+
 }  // namespace content
