@@ -484,6 +484,8 @@ should be able to be added at any place in this file.
   <variant name="_iOSPromoAllTabs"
       summary="For All Tabs default browser promo."/>
   <variant name="_iOSPromoAppStore" summary="For iOSPromoAppStore feature"/>
+  <variant name="_iOSPromoBackgroundCustomization"
+      summary="For iOSPromoBackgroundCustomization feature."/>
   <variant name="_iOSPromoCredentialProviderExtension"
       summary="For iOSPromoCredentialProviderExtension feature"/>
   <variant name="_iOSPromoDefaultBrowser"

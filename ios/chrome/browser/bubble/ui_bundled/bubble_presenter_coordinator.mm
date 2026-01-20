@@ -216,6 +216,10 @@
                                   pageActionMenuEntryPointHandler];
       break;
     }
+    case InProductHelpType::kHomeBackgroundCustomization: {
+      [_presenter presentHomeBackgroundCustomizationTipBubble];
+      break;
+    }
   }
 }
 

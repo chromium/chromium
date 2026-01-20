@@ -154,6 +154,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSLensKeyboardFeature,
     &kIPHiOSPromoAppStoreFeature,
     &kIPHiOSPromoWhatsNewFeature,
+    &kIPHiOSPromoBackgroundCustomizationFeature,
     &kIPHiOSPromoSigninFullscreenFeature,
     &kIPHiOSPromoPostRestoreFeature,
     &kIPHiOSPromoCredentialProviderExtensionFeature,

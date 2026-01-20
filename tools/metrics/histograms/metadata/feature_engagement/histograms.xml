@@ -357,6 +357,8 @@ chromium-metrics-reviews@google.com.
       summary="showing All Tabs default browser promo"/>
   <variant name="IPH_iOSPromoAppStore"
       summary="showing the App Store Promo on iOS"/>
+  <variant name="IPH_iOSPromoBackgroundCustomization"
+      summary="Background customization feature for the iOS NTP"/>
   <variant name="IPH_iOSPromoCredentialProviderExtension"
       summary="showing the Credential Provider Extension Promo on iOS"/>
   <variant name="IPH_iOSPromoDefaultBrowser"

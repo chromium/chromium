@@ -13,6 +13,7 @@
 #import "base/feature_list.h"
 #import "base/ios/block_types.h"
 #import "base/task/sequenced_task_runner.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/public/magic_stack_constants.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_collection_view.h"
 #import "ios/chrome/browser/content_suggestions/public/ntp_home_constants.h"
@@ -347,8 +348,20 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
       presentInProductHelpWithType:InProductHelpType::kDiscoverFeedMenu];
 
   if (!IsFirstRunRecent(base::Days(3))) {
-    [self.helpHandler
-        presentInProductHelpWithType:InProductHelpType::kHomeCustomizationMenu];
+    if (IsNTPBackgroundCustomizationEnabled()) {
+      if (self.engagementTracker &&
+          self.engagementTracker->ShouldTriggerHelpUI(
+              feature_engagement::kIPHiOSPromoBackgroundCustomizationFeature)) {
+        [self.helpHandler presentInProductHelpWithType:
+                              InProductHelpType::kHomeBackgroundCustomization];
+        [self.delegate
+            showCustomizationMenuForUserEducationFromNewTabPageViewController:
+                self];
+      }
+    } else {
+      [self.helpHandler presentInProductHelpWithType:
+                            InProductHelpType::kHomeCustomizationMenu];
+    }
   }
 
   // Scrolls NTP into feed initially if `shouldScrollIntoFeed`.
