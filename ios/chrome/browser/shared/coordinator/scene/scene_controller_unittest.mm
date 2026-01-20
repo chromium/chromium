@@ -228,7 +228,6 @@ TEST_F(SceneControllerTest, DISABLED_TestOpenIncognitoSearchForShortcutItem) {
       localizedTitle:kShortcutNewIncognitoSearch];
   [scene_controller_ performActionForShortcutItem:shortcut
                                 completionHandler:nil];
-  EXPECT_TRUE(scene_state_.startupHadExternalIntent);
   EXPECT_EQ(ApplicationModeForTabOpening::INCOGNITO,
             [scene_controller_ applicationMode]);
   EXPECT_EQ(FOCUS_OMNIBOX,
@@ -243,7 +242,6 @@ TEST_F(SceneControllerTest, TestOpenNewSearchForShortcutItem) {
                                        localizedTitle:kShortcutNewSearch];
   [scene_controller_ performActionForShortcutItem:shortcut
                                 completionHandler:nil];
-  EXPECT_TRUE(scene_state_.startupHadExternalIntent);
   EXPECT_EQ(ApplicationModeForTabOpening::NORMAL,
             [scene_controller_ applicationMode]);
   EXPECT_EQ(FOCUS_OMNIBOX,
@@ -258,7 +256,6 @@ TEST_F(SceneControllerTest, TestOpenVoiceSearchForShortcutItem) {
                                        localizedTitle:kShortcutVoiceSearch];
   [scene_controller_ performActionForShortcutItem:shortcut
                                 completionHandler:nil];
-  EXPECT_TRUE(scene_state_.startupHadExternalIntent);
   EXPECT_EQ(ApplicationModeForTabOpening::NORMAL,
             [scene_controller_ applicationMode]);
   EXPECT_EQ(START_VOICE_SEARCH,
@@ -273,7 +270,6 @@ TEST_F(SceneControllerTest, TestOpenQRScannerForShortcutItem) {
                                        localizedTitle:kShortcutQRScanner];
   [scene_controller_ performActionForShortcutItem:shortcut
                                 completionHandler:nil];
-  EXPECT_TRUE(scene_state_.startupHadExternalIntent);
   EXPECT_EQ(ApplicationModeForTabOpening::NORMAL,
             [scene_controller_ applicationMode]);
   EXPECT_EQ(START_QR_CODE_SCANNER,

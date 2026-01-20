@@ -262,6 +262,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "scene_controller_unittest.mm",
+    "scene_delegate_unittests.mm",
     "scene_util_unittest.mm",
   ]
   deps = [
@@ -275,6 +276,8 @@ source_set("unit_tests") {
     "//components/supervised_user/test_support",
     "//components/variations",
     "//components/variations:test_support",
+    "//ios/chrome/app:app_internal",
+    "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/favicon/model",

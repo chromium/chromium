@@ -167,12 +167,14 @@ void SyncBreadcrumbsLog() {
 - (void)windowScene:(UIWindowScene*)windowScene
     performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
                completionHandler:(void (^)(BOOL succeeded))completionHandler {
+  _sceneState.startupHadExternalIntent = YES;
   [_sceneController performActionForShortcutItem:shortcutItem
                                completionHandler:completionHandler];
 }
 
 - (void)scene:(UIScene*)scene
     continueUserActivity:(NSUserActivity*)userActivity {
+  _sceneState.startupHadExternalIntent = YES;
   _sceneState.pendingUserActivity = userActivity;
 }
 

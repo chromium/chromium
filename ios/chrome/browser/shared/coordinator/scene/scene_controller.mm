@@ -806,8 +806,6 @@ void OnListFamilyMembersResponse(
     return;
   }
 
-  self.sceneState.startupHadExternalIntent = YES;
-
   // Perform the action in incognito when only incognito mode is available.
   if ([self isIncognitoForced]) {
     [self.startupParameters
@@ -839,7 +837,6 @@ void OnListFamilyMembersResponse(
   }
 
   BOOL sceneIsActive = [self canHandleIntents];
-  self.sceneState.startupHadExternalIntent = YES;
 
   PrefService* prefs = self.currentInterface.profile->GetPrefs();
   UserActivityBrowserAgent* userActivityBrowserAgent =
