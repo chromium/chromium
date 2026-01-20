@@ -838,6 +838,8 @@ void FetchCallback(
   TabInterface* const tab = tab_handle.Get();
 
   if (!GetTabObservationResultOverrideForTesting().is_null()) {
+    // TODO(bokan): result might not have a value in which case this CHECKs (but
+    // this is a test-only issue).
     GetTabObservationResultOverrideForTesting().Run(tab_observation, **result);
     return;
   }
