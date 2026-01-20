@@ -152,7 +152,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "content/public/test/test_utils.h"
 #include "content/public/test/test_web_ui.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "net/dns/mock_host_resolver.h"
@@ -1954,7 +1953,7 @@ void WebAppIntegrationTestDriver::LaunchFromAppShimFallback(Site site) {
     // this is expecting.
     ASSERT_TRUE(ChromeBrowserMainParts::ProcessSingletonNotificationForTesting(
         command_line));
-    content::RunAllTasksUntilIdle();
+    provider()->command_manager().AwaitAllCommandsCompleteForTesting();
     browser_added_waiter.Wait();
     app_browser_ = browser_added_waiter.browser_added();
     active_app_id_ = app_id;
@@ -1962,7 +1961,7 @@ void WebAppIntegrationTestDriver::LaunchFromAppShimFallback(Site site) {
   } else {
     ASSERT_TRUE(ChromeBrowserMainParts::ProcessSingletonNotificationForTesting(
         command_line));
-    content::RunAllTasksUntilIdle();
+    provider()->command_manager().AwaitAllCommandsCompleteForTesting();
   }
   AfterStateChangeAction();
 }
@@ -4634,7 +4633,7 @@ void WebAppIntegrationTestDriver::LaunchFile(Site site,
   }
   browser_creator.Start(command_line, profile()->GetPath(),
                         {profile(), StartupProfileMode::kBrowserWindow}, {});
-  content::RunAllTasksUntilIdle();
+  provider()->command_manager().AwaitAllCommandsCompleteForTesting();
 #endif
 }
 
@@ -4646,7 +4645,7 @@ void WebAppIntegrationTestDriver::LaunchAppStartupBrowserCreator(
   ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
       command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
       {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
-  content::RunAllTasksUntilIdle();
+  provider()->command_manager().AwaitAllCommandsCompleteForTesting();
 }
 
 #if BUILDFLAG(IS_MAC)
