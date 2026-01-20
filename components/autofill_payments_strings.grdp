@@ -213,6 +213,9 @@
     <message name="IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_UPLOAD_IOS" desc="Explanation text for the Autofill save CVC prompt that offers to upload CVC to the Sync server for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission on IOS devices.">
       For faster checkout, save this CVC in your account, <ph name="ACCOUNT_EMAIL">$1<ex>youraccount@email.com</ex></ph>
     </message>
+    <message name="IDS_AUTOFILL_SAVE_CVC_TO_WALLET_PROMPT_EXPLANATION_UPLOAD_IOS" desc="Explanation text for the Autofill save CVC prompt that offers to upload CVC to the Sync server for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission on IOS devices. The wording specifically references Google Wallet instead of Google Account.">
+      For faster checkout, save this CVC in Google Wallet (<ph name="ACCOUNT_EMAIL">$1<ex>youraccount@email.com</ex></ph>)
+    </message>
     <message name="IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_LOCAL_SAVE_IOS" desc="Explanation text for the Autofill save CVC prompt that offers to save CVC to this device for existing local cards. This prompt is shown if a CVC is detected for an existing local card on form submission on IOS devices.">
       For faster checkout, save this CVC on your device
     </message>

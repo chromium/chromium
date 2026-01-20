@@ -572,9 +572,35 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
 // upload-CVC-only-save message.
 TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
        VerifyAttributesForCvcSaveOnlyMessage) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableCvcStorageAndFilling,
+                            features::kAutofillEnableWalletBranding},
+      /*disabled_features=*/{});
+  auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
+      /*options=*/{.card_save_type = CardSaveType::kCvcSaveOnly},
+      is_chrome_branded());
 
+  EXPECT_EQ(ui_info.logo_icon_id, IDR_AUTOFILL_CC_GENERIC_PRIMARY_OLD);
+  EXPECT_EQ(
+      ui_info.title_text,
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_TO_CLOUD));
+  EXPECT_EQ(ui_info.description_text,
+            l10n_util::GetStringFUTF16(
+                IDS_AUTOFILL_SAVE_CVC_TO_WALLET_PROMPT_EXPLANATION_UPLOAD_IOS,
+                base::UTF8ToUTF16(AccountInfo().email)));
+  EXPECT_EQ(ui_info.confirm_text,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT));
+}
+
+// Verify that AutofillSaveCardUiInfo attributes are correctly set for the
+// upload-CVC-only-save message.
+TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
+       VerifyAttributesForCvcSaveOnlyMessage_WalletBrandingDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableCvcStorageAndFilling},
+      /*disabled_features=*/{features::kAutofillEnableWalletBranding});
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
       /*options=*/{.card_save_type = CardSaveType::kCvcSaveOnly},
       is_chrome_branded());
