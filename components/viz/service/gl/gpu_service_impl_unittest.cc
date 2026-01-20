@@ -58,8 +58,7 @@ class GpuServiceTest : public testing::Test {
 
   void BlockIOThread() {
     wait_.Reset();
-    io_runner()->PostTask(FROM_HERE, base::BindOnce(&base::WaitableEvent::Wait,
-                                                    base::Unretained(&wait_)));
+    io_runner()->PostTask(FROM_HERE, wait_.GetWaitCallbackForTesting());
   }
 
   void UnblockIOThread() {

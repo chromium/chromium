@@ -358,9 +358,8 @@ TEST_F(SpeechRecognizerImplTest, StopBeforeDeviceInfoReceived) {
                             base::WaitableEvent::InitialState::NOT_SIGNALED);
 
   // Block audio thread.
-  audio_manager_->GetTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&base::WaitableEvent::Wait, base::Unretained(&event)));
+  audio_manager_->GetTaskRunner()->PostTask(FROM_HERE,
+                                            event.GetWaitCallbackForTesting());
 
   recognizer_->StartRecognition(
       media::AudioDeviceDescription::kDefaultDeviceId);
@@ -386,9 +385,8 @@ TEST_F(SpeechRecognizerImplTest, CancelBeforeDeviceInfoReceived) {
                             base::WaitableEvent::InitialState::NOT_SIGNALED);
 
   // Block audio thread.
-  audio_manager_->GetTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&base::WaitableEvent::Wait, base::Unretained(&event)));
+  audio_manager_->GetTaskRunner()->PostTask(FROM_HERE,
+                                            event.GetWaitCallbackForTesting());
 
   recognizer_->StartRecognition(
       media::AudioDeviceDescription::kDefaultDeviceId);

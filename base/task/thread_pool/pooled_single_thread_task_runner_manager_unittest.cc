@@ -524,8 +524,7 @@ TEST_F(PooledSingleThreadTaskRunnerManagerJoinTest, ConcurrentJoin) {
         FROM_HERE,
         BindOnce(&TestWaitableEvent::Signal, Unretained(&task_running))));
     EXPECT_TRUE(task_runner->PostTask(
-        FROM_HERE,
-        BindOnce(&TestWaitableEvent::Wait, Unretained(&task_blocking))));
+        FROM_HERE, task_blocking.GetWaitCallbackForTesting()));
   }
 
   task_running.Wait();
@@ -553,8 +552,7 @@ TEST_F(PooledSingleThreadTaskRunnerManagerJoinTest,
         FROM_HERE,
         BindOnce(&TestWaitableEvent::Signal, Unretained(&task_running))));
     EXPECT_TRUE(task_runner->PostTask(
-        FROM_HERE,
-        BindOnce(&TestWaitableEvent::Wait, Unretained(&task_blocking))));
+        FROM_HERE, task_blocking.GetWaitCallbackForTesting()));
     EXPECT_TRUE(task_runner->PostTask(FROM_HERE, DoNothing()));
   }
 

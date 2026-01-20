@@ -244,8 +244,7 @@ TEST_P(ThreadGroupImplImplTestParam, PostTasksWithOneAvailableWorker) {
             GetParam(), &mock_pooled_task_runner_delegate_),
         GetParam()));
     EXPECT_TRUE(blocked_task_factories.back()->PostTask(
-        PostNestedTask::NO,
-        BindOnce(&TestWaitableEvent::Wait, Unretained(&event))));
+        PostNestedTask::NO, event.GetWaitCallbackForTesting()));
     blocked_task_factories.back()->WaitForAllTasksToRun();
   }
 
@@ -280,9 +279,8 @@ TEST_P(ThreadGroupImplImplTestParam, Saturate) {
         CreatePooledTaskRunnerWithExecutionMode(
             GetParam(), &mock_pooled_task_runner_delegate_),
         GetParam()));
-    EXPECT_TRUE(factories.back()->PostTask(
-        PostNestedTask::NO,
-        BindOnce(&TestWaitableEvent::Wait, Unretained(&event))));
+    EXPECT_TRUE(factories.back()->PostTask(PostNestedTask::NO,
+                                           event.GetWaitCallbackForTesting()));
     factories.back()->WaitForAllTasksToRun();
   }
 
@@ -1143,8 +1141,7 @@ TEST_F(ThreadGroupImplBlockingTest, MayBlockIncreaseCapacityNestedWillBlock) {
   // Saturate the thread group so that a MAY_BLOCK ScopedBlockingCall would
   // increment the max tasks.
   for (size_t i = 0; i < kMaxTasks - 1; ++i) {
-    task_runner->PostTask(
-        FROM_HERE, BindOnce(&TestWaitableEvent::Wait, Unretained(&can_return)));
+    task_runner->PostTask(FROM_HERE, can_return.GetWaitCallbackForTesting());
   }
 
   TestWaitableEvent can_instantiate_will_block;

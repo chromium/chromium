@@ -132,9 +132,8 @@ class TaskAnnotatorBacktraceIntegrationTest
     // upcoming VerifyTraceAndPost() will race to read the state saved in the
     // BeforeRunTask() hook preceding the current task.
     AutoLock auto_lock(on_before_run_task_lock_);
-    task_runner->PostTask(
-        FROM_HERE,
-        BindOnce(&WaitableEvent::Wait, Unretained(wait_before_next_task)));
+    task_runner->PostTask(FROM_HERE,
+                          wait_before_next_task->GetWaitCallbackForTesting());
     VerifyTraceAndPost(task_runner, posted_from, next_from_here, expected_trace,
                        expected_ipc_hash, std::move(task));
   }

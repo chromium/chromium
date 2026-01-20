@@ -580,8 +580,7 @@ TEST_P(ThreadPoolImplTest_CoverAllSchedulingOptions,
   CreateTaskRunnerAndExecutionMode(thread_pool_.get(), GetTraits(),
                                    GetExecutionMode(),
                                    SingleThreadTaskRunnerThreadMode::DEDICATED)
-      ->PostTask(FROM_HERE,
-                 BindOnce(&TestWaitableEvent::Wait, Unretained(&unblock_task)));
+      ->PostTask(FROM_HERE, unblock_task.GetWaitCallbackForTesting());
 
   TestWaitableEvent flush_event;
   thread_pool_->FlushAsyncForTesting(

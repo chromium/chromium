@@ -111,8 +111,7 @@ TEST_F(SyncWebSocketImplTest, SendReceiveTimeout) {
   base::WaitableEvent server_reply_allowed(
       base::WaitableEvent::ResetPolicy::AUTOMATIC,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
-  server_.SetMessageCallback(base::BindOnce(
-      &base::WaitableEvent::Wait, base::Unretained(&server_reply_allowed)));
+  server_.SetMessageCallback(server_reply_allowed.GetWaitCallbackForTesting());
 
   ASSERT_TRUE(sock.Connect(server_.web_socket_url()));
   ASSERT_TRUE(sock.Send("hi"));

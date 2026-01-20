@@ -212,8 +212,8 @@ TEST_F(ThreadTest, StartWithOptions_NonJoinable) {
   // Make the thread block until |block_event| is signaled.
   WaitableEvent block_event(WaitableEvent::ResetPolicy::AUTOMATIC,
                             WaitableEvent::InitialState::NOT_SIGNALED);
-  a->task_runner()->PostTask(
-      FROM_HERE, BindOnce(&WaitableEvent::Wait, Unretained(&block_event)));
+  a->task_runner()->PostTask(FROM_HERE,
+                             block_event.GetWaitCallbackForTesting());
 
   a->StopSoon();
   EXPECT_TRUE(a->IsRunning());

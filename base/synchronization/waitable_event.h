@@ -11,6 +11,8 @@
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
+#include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
@@ -23,7 +25,6 @@
 #include <memory>
 
 #include "base/apple/scoped_mach_port.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <utility>
@@ -98,7 +99,7 @@ class BASE_EXPORT WaitableEvent {
   //   SendToOtherThread(e);
   //   e->Wait();
   //   delete e;
-  NOT_TAIL_CALLED void Wait();
+  NOT_TAIL_CALLED void Wait(const Location& location = Location::Current());
 
   // Wait up until wait_delta has passed for the event to be signaled
   // (real-time; ignores time overrides).  Returns true if the event was
@@ -106,7 +107,9 @@ class BASE_EXPORT WaitableEvent {
   // have elapsed if this returns false.
   //
   // TimedWait can synchronise its own destruction like |Wait|.
-  NOT_TAIL_CALLED bool TimedWait(TimeDelta wait_delta);
+  NOT_TAIL_CALLED bool TimedWait(
+      TimeDelta wait_delta,
+      const Location& location = Location::Current());
 
 #if BUILDFLAG(IS_WIN)
   HANDLE handle() const { return handle_.get(); }
@@ -135,6 +138,10 @@ class BASE_EXPORT WaitableEvent {
   // If more than one WaitableEvent is signaled to unblock WaitMany, the lowest
   // index among them is returned.
   NOT_TAIL_CALLED static size_t WaitMany(base::span<WaitableEvent*> waitables);
+
+  // Convenience method which returns a callback which calls Wait() on this
+  // object. The callback must *not* outlive this object.
+  OnceClosure GetWaitCallbackForTesting();
 
   // For asynchronous waiting, see WaitableEventWatcher
 
