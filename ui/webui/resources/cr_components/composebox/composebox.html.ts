@@ -79,6 +79,9 @@ export function getHtml(this: ComposeboxElement) {
           `: ''}
         </div>
       </div>
+      <!-- A seperate container is needed for the submit button so the
+      expand/collapse animation can be applied without affecting the submit
+      button enabled/disabled state. -->
       <div id="cancelContainer" class="icon-fade" part="cancel">
         <cr-icon-button
             class="action-icon icon-clear"
@@ -131,9 +134,6 @@ export function getHtml(this: ComposeboxElement) {
         ${this.searchboxNextEnabled ? submitContainer : ''}
       </contextual-entrypoint-and-carousel>
     </div>
-    <!-- A seperate container is needed for the submit button so the
-    expand/collapse animation can be applied without affecting the submit
-    button enabled/disabled state. -->
     ${this.showLensButton ? html`<cr-icon-button
         class="action-icon"
         id="lensIcon"
