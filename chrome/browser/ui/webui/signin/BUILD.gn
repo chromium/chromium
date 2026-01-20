@@ -17,6 +17,7 @@ if (!is_chromeos) {
 
     public_deps = [ "//base" ]
     deps = [
+      "//components/sync/base:features",
       "//chrome/app:branded_strings",
       "//chrome/app:generated_resources",
       "//google_apis",
