@@ -22,6 +22,7 @@
 #include "media/base/bitrate.h"
 #include "media/base/media_log.h"
 #include "media/base/video_encoder.h"
+#include "media/base/video_frame_converter.h"
 #include "media/gpu/android/ndk_media_codec_wrapper.h"
 #include "media/gpu/android/video_frame_gl_surface_renderer.h"
 #include "media/gpu/media_gpu_export.h"
@@ -246,6 +247,8 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
   scoped_refptr<CommandBufferHelper> command_buffer_helper_;
 
   std::unique_ptr<VEAEncodingLatencyMetricsHelper> metrics_helper_;
+
+  VideoFrameConverter video_frame_converter_;
 
   base::WeakPtrFactory<NdkVideoEncodeAccelerator> weak_ptr_factory_{this};
 };

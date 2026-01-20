@@ -31,7 +31,6 @@
 #include "media/parsers/h264_level_limits.h"
 #include "media/parsers/h264_parser.h"
 #include "media/parsers/temporal_scalability_id_extractor.h"
-#include "third_party/libyuv/include/libyuv.h"
 #include "ui/gl/gl_switches.h"
 
 #pragma clang attribute push DEFAULT_REQUIRES_ANDROID_API( \
@@ -999,7 +998,8 @@ void NdkVideoEncodeAccelerator::OnSyncDone(VideoFrame::ID frame_id) {
 
 void NdkVideoEncodeAccelerator::FeedInputBuffer(scoped_refptr<VideoFrame> frame,
                                                 base::TimeDelta timestamp) {
-  TRACE_EVENT0("media", "NdkVideoEncodeAccelerator::FeedInputBuffer");
+  TRACE_EVENT1("media", "NdkVideoEncodeAccelerator::FeedInputBuffer",
+               "timestamp", timestamp.InMicroseconds());
   const size_t buffer_idx = media_codec_->TakeInput();
   auto mc_input_buffer = media_codec_->GetInputBuffer(buffer_idx);
   if (mc_input_buffer.empty()) {
@@ -1011,7 +1011,6 @@ void NdkVideoEncodeAccelerator::FeedInputBuffer(scoped_refptr<VideoFrame> frame,
   const auto visible_size =
       aligned_size_.value_or(frame->visible_rect().size());
 
-  const int dst_stride_y = input_buffer_stride_;
   const int dst_stride_uv = input_buffer_stride_;
   const gfx::Size uv_plane_size = VideoFrame::PlaneSizeInSamples(
       PIXEL_FORMAT_NV12, VideoFrame::Plane::kUV, visible_size);
@@ -1035,40 +1034,38 @@ void NdkVideoEncodeAccelerator::FeedInputBuffer(scoped_refptr<VideoFrame> frame,
     return;
   }
 
-  auto dst_y = mc_input_buffer.first(y_plane_len);
-  auto dst_uv = mc_input_buffer.subspan(y_plane_len, uv_plane_len);
+  const size_t y_plane_size =
+      input_buffer_stride_ * input_buffer_yplane_height_;
+  const std::vector<ColorPlaneLayout> dst_planes = {
+      ColorPlaneLayout(/*stride=*/static_cast<size_t>(input_buffer_stride_),
+                       /*offset=*/0, /*size=*/y_plane_size),
+      ColorPlaneLayout(/*stride=*/static_cast<size_t>(input_buffer_stride_),
+                       /*offset=*/y_plane_size, /*size=*/uv_plane_len),
+  };
 
-  bool converted = false;
-  if (frame->format() == PIXEL_FORMAT_I420) {
-    TRACE_EVENT0("media", "libyuv::I420ToNV12");
-    converted =
-        !libyuv::I420ToNV12(frame->visible_data(VideoFrame::Plane::kY),
-                            frame->stride(VideoFrame::Plane::kY),
-                            frame->visible_data(VideoFrame::Plane::kU),
-                            frame->stride(VideoFrame::Plane::kU),
-                            frame->visible_data(VideoFrame::Plane::kV),
-                            frame->stride(VideoFrame::Plane::kV), dst_y.data(),
-                            dst_stride_y, dst_uv.data(), dst_stride_uv,
-                            visible_size.width(), visible_size.height());
-  } else if (frame->format() == PIXEL_FORMAT_NV12) {
-    TRACE_EVENT0("media", "libyuv::NV12Copy");
-    converted =
-        !libyuv::NV12Copy(frame->visible_data(VideoFrame::Plane::kY),
-                          frame->stride(VideoFrame::Plane::kY),
-                          frame->visible_data(VideoFrame::Plane::kUV),
-                          frame->stride(VideoFrame::Plane::kUV), dst_y.data(),
-                          dst_stride_y, dst_uv.data(), dst_stride_uv,
-                          visible_size.width(), visible_size.height());
-  } else {
-    NotifyErrorStatus({EncoderStatus::Codes::kUnsupportedFrameFormat,
-                       "Unexpected frame format: " +
-                           VideoPixelFormatToString(frame->format())});
+  auto dst_layout = VideoFrameLayout::CreateWithPlanes(
+      PIXEL_FORMAT_NV12, visible_size, dst_planes);
+  if (!dst_layout) {
+    NotifyErrorStatus({EncoderStatus::Codes::kInvalidOutputBuffer,
+                       "Failed to create dst_layout"});
     return;
   }
 
-  if (!converted) {
+  auto dst_frame = VideoFrame::WrapExternalDataWithLayout(
+      *dst_layout, gfx::Rect(visible_size), visible_size, mc_input_buffer,
+      timestamp);
+
+  if (!dst_frame) {
+    NotifyErrorStatus({EncoderStatus::Codes::kInvalidOutputBuffer,
+                       "Failed to create dst_frame"});
+    return;
+  }
+
+  auto convert_status =
+      video_frame_converter_.ConvertAndScale(*frame, *dst_frame);
+  if (!convert_status.is_ok()) {
     NotifyErrorStatus({EncoderStatus::Codes::kFormatConversionError,
-                       "Failed to copy pixels to input buffer"});
+                       std::string(convert_status.message())});
     return;
   }
 
@@ -1097,7 +1094,8 @@ media_status_t NdkVideoEncodeAccelerator::SendEndOfStream() {
 void NdkVideoEncodeAccelerator::FeedGLSurface(scoped_refptr<VideoFrame> frame,
                                               base::TimeDelta timestamp) {
   DCHECK(use_surface_as_input_);
-  TRACE_EVENT0("media", "NdkVideoEncodeAccelerator::FeedGLSurface");
+  TRACE_EVENT1("media", "NdkVideoEncodeAccelerator::FeedGLSurface", "timestamp",
+               timestamp.InMicroseconds());
   if (!gl_renderer_) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderHardwareDriverError,
                        "GL renderer is not initialized"});
