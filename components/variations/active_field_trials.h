@@ -136,7 +136,7 @@ bool IsInSyntheticTrialGroup(std::string_view trial_name,
 // TODO(crbug.com/41187035): Move this to field_trials_provider once it moves
 // into components/variations
 COMPONENT_EXPORT(VARIATIONS)
-void SetSeedVersion(const std::string& seed_version);
+void SetSeedVersion(std::string_view seed_version);
 
 // Gets the version of the seed that the current set of FieldTrials was
 // generated from.

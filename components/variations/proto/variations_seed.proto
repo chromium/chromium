@@ -11,7 +11,9 @@ package variations;
 
 import "study.proto";
 import "layer.proto";
+import "google/protobuf/cpp_features.proto";
 
+option features.(pb.cpp).string_type = VIEW;
 option features.utf8_validation = NONE;
 
 // The VariationsSeed is a protobuf response from the server that contains the

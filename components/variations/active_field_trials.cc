@@ -162,7 +162,7 @@ bool IsInSyntheticTrialGroup(std::string_view trial_name,
       base::StringPrintf("%x-%x", HashName(trial_name), HashName(trial_group)));
 }
 
-void SetSeedVersion(const std::string& seed_version) {
+void SetSeedVersion(std::string_view seed_version) {
   GetSeedVersionInternal() = seed_version;
   SetVariationsSeedVersionCrashKey(seed_version);
 }
