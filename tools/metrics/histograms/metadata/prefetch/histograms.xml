@@ -381,7 +381,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prefetch.PrefetchContainer.PrefetchStartedToPrefetchCompletedSuccessfully.{TriggerTypeAndEagerness}"
-    units="ms" expires_after="2026-05-17">
+    units="ms" expires_after="2026-07-19">
   <owner>taiyo@chromium.org</owner>
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
@@ -400,7 +400,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prefetch.PrefetchContainer.PrefetchStartedToURLRequestStarted.{TriggerTypeAndEagerness}"
-    units="ms" expires_after="2026-05-17">
+    units="ms" expires_after="2026-07-19">
   <owner>taiyo@chromium.org</owner>
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
@@ -420,7 +420,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prefetch.PrefetchContainer.ServedCount.{TriggerTypeAndEagerness}"
-    units="count" expires_after="2026-05-17">
+    units="count" expires_after="2026-07-19">
   <owner>taiyo@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -533,7 +533,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prefetch.PrefetchPotentialCandidateServingResult.PerMatchingCandidate.{TriggerTypeAndEagerness}"
-    enum="PrefetchPotentialCandidateServingResult" expires_after="2026-05-17">
+    enum="PrefetchPotentialCandidateServingResult" expires_after="2026-07-19">
   <owner>taiyo@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -788,7 +788,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.BodyLength" units="bytes"
-    expires_after="2026-05-17">
+    expires_after="2026-07-19">
   <owner>kouhei@chromium.org</owner>
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
@@ -803,7 +803,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.ConnectTime" units="ms"
-    expires_after="2026-05-17">
+    expires_after="2026-07-19">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -826,7 +826,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.NetError"
-    enum="NetErrorCodes" expires_after="2026-05-17">
+    enum="NetErrorCodes" expires_after="2026-07-19">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>

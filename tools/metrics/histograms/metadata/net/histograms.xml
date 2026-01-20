@@ -800,7 +800,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.IsNoStore{Type}" enum="Boolean"
-    expires_after="2026-05-17">
+    expires_after="2026-07-19">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -844,7 +844,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.NoVarySearch.DirectoryCreateError.Dedicated"
-    enum="PlatformFileError" expires_after="2026-05-17">
+    enum="PlatformFileError" expires_after="2026-07-19">
   <owner>ricea@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
@@ -1169,7 +1169,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="HttpCache.NoVarySearch.RenameOrDeleteResult.{Directory}.{File}"
-    enum="NoVarySearchRenameOrDeleteResult" expires_after="2026-05-17">
+    enum="NoVarySearchRenameOrDeleteResult" expires_after="2026-07-19">
   <owner>ricea@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
@@ -2079,7 +2079,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DeviceBoundSessions.GoogleRegistrationIsFromStandard"
-    enum="Boolean" expires_after="2026-05-17">
+    enum="Boolean" expires_after="2026-07-19">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3195,7 +3195,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.UpgradeConfig.HasPublicInsecureNameserver"
-    enum="Boolean" expires_after="2026-05-14">
+    enum="Boolean" expires_after="2026-07-19">
   <owner>awillia@chromium.org</owner>
   <owner>src/net/dns/OWNERS</owner>
   <summary>
@@ -3230,7 +3230,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.UpgradeConfig.InsecureUpgradeSucceeded" enum="Boolean"
-    expires_after="2026-05-14">
+    expires_after="2026-07-19">
   <owner>awillia@chromium.org</owner>
   <owner>src/net/dns/OWNERS</owner>
   <summary>
@@ -4202,7 +4202,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.NetworkTransaction.InitializeStreamBlocked{HostType}.{Protocol}"
-    enum="Boolean" expires_after="2026-05-17">
+    enum="Boolean" expires_after="2026-07-19">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -4816,7 +4816,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicMultiPort.NumMultiPortFailureWhenPathDegrading"
-    units="times" expires_after="2026-05-17">
+    units="times" expires_after="2026-07-19">
   <owner>dmcardle@chromium.org</owner>
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
@@ -4827,7 +4827,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicMultiPort.NumMultiPortFailureWhenPathNotDegrading"
-    units="times" expires_after="2026-05-17">
+    units="times" expires_after="2026-07-19">
   <owner>dmcardle@chromium.org</owner>
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
@@ -4838,7 +4838,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicMultiPort.NumProbeAttempts" units="times"
-    expires_after="2026-05-17">
+    expires_after="2026-07-19">
   <owner>dmcardle@chromium.org</owner>
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
@@ -4846,7 +4846,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicMultiPort.NumSuccessfulProbes" units="times"
-    expires_after="2026-05-17">
+    expires_after="2026-07-19">
   <owner>dmcardle@chromium.org</owner>
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
@@ -6550,7 +6550,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.QuicSession.SessionKeyMismatch.MismatchedFieldCombination{HostType}"
-    enum="QuicSessionKeyMismatchedFieldCombination" expires_after="2026-05-17">
+    enum="QuicSessionKeyMismatchedFieldCombination" expires_after="2026-07-19">
   <owner>suzukikeita@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -6564,7 +6564,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.SessionKeyMismatch.MismatchedField{HostType}"
-    enum="QuicSessionKeyMismatchedField" expires_after="2026-05-17">
+    enum="QuicSessionKeyMismatchedField" expires_after="2026-07-19">
   <owner>suzukikeita@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -6577,7 +6577,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.QuicSession.SessionKeyMismatch.TotalMismatchedField{HostType}"
-    units="count" expires_after="2026-05-17">
+    units="count" expires_after="2026-07-19">
   <owner>suzukikeita@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -6590,7 +6590,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.SessionKeyMismatch{HostType}"
-    enum="QuicSessionKeyPartialMatchResult" expires_after="2026-05-17">
+    enum="QuicSessionKeyPartialMatchResult" expires_after="2026-07-19">
   <owner>suzukikeita@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -6965,7 +6965,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSessionAttempt.CompleteTime.{SuccessOrFailure}"
-    units="ms" expires_after="2026-05-17">
+    units="ms" expires_after="2026-07-19">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -7391,7 +7391,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SessionCreate.GoogleSearch.Preconnect2.Quic.CompletionResult{JobType}"
-    enum="NetErrorCodes" expires_after="2026-05-17">
+    enum="NetErrorCodes" expires_after="2026-07-19">
   <owner>suzukikeita@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -8851,7 +8851,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.URLLoader.AcceptCH.RunObserverCall" enum="Boolean"
-    expires_after="2026-05-17">
+    expires_after="2026-07-19">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -9200,7 +9200,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SimpleCache.{CacheInstance}ConsistencyResultAfterIndexFilesDeleted"
-    enum="SimpleCacheConsistencyResult" expires_after="2026-05-17">
+    enum="SimpleCacheConsistencyResult" expires_after="2026-07-19">
   <owner>wanderview@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -9327,7 +9327,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.{CacheInstance}Eviction.TimeToSelectEntries"
-    units="ms" expires_after="2026-05-17">
+    units="ms" expires_after="2026-07-19">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>Time spent selecting entries for eviction. {CacheInstance}</summary>
@@ -9344,7 +9344,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.{CacheInstance}IndexCreatedEntryCount"
-    units="units" expires_after="2026-05-17">
+    units="units" expires_after="2026-07-19">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -9363,7 +9363,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.{CacheInstance}IndexInitializeMethod"
-    enum="SimpleCacheIndexInitializeMethod" expires_after="2026-05-17">
+    enum="SimpleCacheIndexInitializeMethod" expires_after="2026-07-19">
   <owner>wanderview@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -9399,7 +9399,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.{CacheInstance}OpenEntryIndexState"
-    enum="SimpleCacheOpenEntryIndexState" expires_after="2026-05-17">
+    enum="SimpleCacheOpenEntryIndexState" expires_after="2026-07-19">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -9410,7 +9410,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SimpleCache.{CacheInstance}OriginalConsistencyResultBeforeSuccessfulRetry"
-    enum="SimpleCacheConsistencyResult" expires_after="2026-05-17">
+    enum="SimpleCacheConsistencyResult" expires_after="2026-07-19">
   <owner>wanderview@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -9421,7 +9421,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.{CacheInstance}RetryConsistencyResult"
-    enum="SimpleCacheConsistencyResult" expires_after="2026-05-17">
+    enum="SimpleCacheConsistencyResult" expires_after="2026-07-19">
   <owner>wanderview@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -9436,7 +9436,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.{CacheInstance}StaleIndexExtraEntryCount"
-    units="entries" expires_after="2026-05-17">
+    units="entries" expires_after="2026-07-19">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -9447,7 +9447,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.{CacheInstance}StaleIndexMissedEntryCount"
-    units="entries" expires_after="2026-05-17">
+    units="entries" expires_after="2026-07-19">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -9458,7 +9458,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.{CacheInstance}StaleIndexQuality"
-    enum="SimpleCacheStaleIndexQuality" expires_after="2026-05-17">
+    enum="SimpleCacheStaleIndexQuality" expires_after="2026-07-19">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>

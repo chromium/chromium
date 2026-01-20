@@ -473,7 +473,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.MerchantTrustStatus"
-    enum="MerchantTrustStatus" expires_after="2026-05-17">
+    enum="MerchantTrustStatus" expires_after="2026-07-19">
   <owner>tommasin@chromium.org</owner>
   <owner>privacy-on-the-web@google.com</owner>
   <summary>
@@ -884,7 +884,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.CreateOpenerProxiesTime" units="microseconds"
-    expires_after="2026-05-17">
+    expires_after="2026-07-19">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>nasko@chromium.org</owner>

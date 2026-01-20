@@ -670,7 +670,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DataProtection.URLVerdictSource"
-    enum="DataProtectionURLVerdictSource" expires_after="2026-05-17">
+    enum="DataProtectionURLVerdictSource" expires_after="2026-07-19">
   <owner>alshawwa@chromium.org</owner>
   <owner>cbe-cep-eng@google.com</owner>
   <summary>
@@ -2600,7 +2600,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.IOS.WebState.DataControls.Clipboard.{Action}.Verdict"
-    enum="EnterpriseDlpPolicyLevel" expires_after="2026-04-30">
+    enum="EnterpriseDlpPolicyLevel" expires_after="2026-07-19">
   <owner>eic@google.com</owner>
   <owner>bling-enterprise@google.com</owner>
   <summary>
@@ -3994,7 +3994,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.{ContentAnalysisProtocol}Request.{ContentAnalysisRequestType}.Duration"
-    units="ms" expires_after="2026-05-17">
+    units="ms" expires_after="2026-07-19">
   <owner>nancylanxiao@google.com</owner>
   <owner>domfc@chromium.org</owner>
   <owner>cbe-cep-eng@google.com</owner>

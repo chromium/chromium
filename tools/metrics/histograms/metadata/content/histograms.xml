@@ -400,7 +400,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.RegularProfile.DefaultAutoVerifySetting"
-    enum="ContentSetting" expires_after="2026-05-17">
+    enum="ContentSetting" expires_after="2026-07-19">
   <owner>ryankalla@google.com</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>

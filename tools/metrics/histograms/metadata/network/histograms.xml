@@ -1822,7 +1822,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Network.ContentDecodingInterceptor.CreateDataPipeSuccess.{ContentDecodingInterceptorClientType}"
-    enum="Boolean" expires_after="2026-04-26">
+    enum="Boolean" expires_after="2026-07-19">
   <owner>horo@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -2398,7 +2398,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.PrefetchMatches.FirstHeaderMissingFromPrefetch"
-    enum="RequestHeader" expires_after="2026-05-18">
+    enum="RequestHeader" expires_after="2026-07-19">
   <owner>ricea@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -2411,7 +2411,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.PrefetchMatches.FirstHeaderValueMismatch"
-    enum="RequestHeader" expires_after="2026-05-18">
+    enum="RequestHeader" expires_after="2026-07-19">
   <owner>ricea@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -2425,7 +2425,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.PrefetchMatches.FirstMismatch"
-    enum="PrefetchMatchesResourceRequestField" expires_after="2026-05-18">
+    enum="PrefetchMatchesResourceRequestField" expires_after="2026-07-19">
   <owner>ricea@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -2436,7 +2436,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.PrefetchMatches.HeaderOnlyInPrefetch"
-    enum="RequestHeader" expires_after="2026-05-18">
+    enum="RequestHeader" expires_after="2026-07-19">
   <owner>ricea@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -2451,7 +2451,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.PrefetchMatches.Result" enum="Boolean"
-    expires_after="2026-05-18">
+    expires_after="2026-07-19">
   <owner>ricea@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>

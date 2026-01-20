@@ -258,7 +258,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.EnclaveEvent"
-    enum="WebAuthenticationEnclaveEvent" expires_after="2026-05-17">
+    enum="WebAuthenticationEnclaveEvent" expires_after="2026-07-19">
   <owner>agl@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
@@ -548,7 +548,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.MakeCredential.Result"
-    enum="WebAuthenticationCredentialRequestResult" expires_after="2026-05-17">
+    enum="WebAuthenticationCredentialRequestResult" expires_after="2026-07-19">
   <owner>kenrb@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>Records the result of a make credential request.</summary>
@@ -720,7 +720,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.Windows.KeyCredentialCreation"
-    enum="WindowsKeyCredentialCreateResult" expires_after="2026-05-17">
+    enum="WindowsKeyCredentialCreateResult" expires_after="2026-07-19">
   <owner>kenrb@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>

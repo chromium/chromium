@@ -419,7 +419,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.SafeMode.LoadSafeSeed.SignatureValidity"
-    enum="VariationSeedSignature" expires_after="2026-05-17">
+    enum="VariationSeedSignature" expires_after="2026-07-19">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -432,7 +432,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.SafeMode.StoreSafeSeed.Result"
-    enum="VariationsSeedStoreResult" expires_after="2026-05-17">
+    enum="VariationsSeedStoreResult" expires_after="2026-07-19">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -574,7 +574,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.SeedFileRead.{SeedFile}" enum="BooleanSuccess"
-    expires_after="2026-05-17">
+    expires_after="2026-07-19">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>

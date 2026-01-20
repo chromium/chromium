@@ -171,7 +171,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Session.{SessionType}.ContextTokens" units="tokens"
-    expires_after="2026-05-19">
+    expires_after="2026-07-19">
   <owner>cduvall@chromium.org</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
   <summary>
@@ -182,7 +182,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Session.{SessionType}.Crashed" enum="BooleanYesNo"
-    expires_after="2026-05-19">
+    expires_after="2026-07-19">
   <owner>cduvall@chromium.org</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
   <summary>

@@ -721,7 +721,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.AudioInputSampleRateUnexpected" units="Hz"
-    expires_after="2026-05-11">
+    expires_after="2026-07-19">
   <owner>saza@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -746,7 +746,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.AudioOutputSampleRateUnexpected" units="Hz"
-    expires_after="2026-05-11">
+    expires_after="2026-07-19">
   <owner>saza@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1776,7 +1776,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.ValidBundledPayloadTypes" enum="Boolean"
-    expires_after="2026-05-17">
+    expires_after="2026-07-19">
   <owner>hbos@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <owner>phancke@microsoft.com</owner>
@@ -2548,7 +2548,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Video.HarmonicFrameRate" units="fps"
-    expires_after="2026-05-17">
+    expires_after="2026-07-19">
   <owner>ssilkin@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>

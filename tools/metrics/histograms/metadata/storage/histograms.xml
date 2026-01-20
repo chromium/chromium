@@ -405,7 +405,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IndexedDB.CalculateBlockingStatusLongTimes" units="ms"
-    expires_after="2026-05-17">
+    expires_after="2026-07-19">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -416,7 +416,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IndexedDB.CalculateBlockingStatusRequestQueueSize"
-    units="count" expires_after="2026-05-17">
+    units="count" expires_after="2026-07-19">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -713,7 +713,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IndexedDB.RemoveTransactionConnectionTxnCount" units="count"
-    expires_after="2026-05-17">
+    expires_after="2026-07-19">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -724,7 +724,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IndexedDB.RemoveTransactionLongTimes" units="ms"
-    expires_after="2026-05-17">
+    expires_after="2026-07-19">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -735,7 +735,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IndexedDB.RemoveTransactionRequestQueueSize" units="count"
-    expires_after="2026-05-17">
+    expires_after="2026-07-19">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
