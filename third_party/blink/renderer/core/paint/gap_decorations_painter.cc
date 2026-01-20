@@ -31,8 +31,6 @@ bool IsRuleSegmentVisible(const GridTrackSizingDirection track_direction,
   switch (rule_visibility) {
     case RuleVisibilityItems::kAll:
       return true;
-    case RuleVisibilityItems::kNone:
-      return false;
     case RuleVisibilityItems::kAround:
       // Paint if either side of the segment is occupied (i.e. not empty on both
       // sides).

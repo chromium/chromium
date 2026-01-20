@@ -1216,8 +1216,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kIntersection;
     case CSSPropertyID::kColumnRuleVisibilityItems:
     case CSSPropertyID::kRowRuleVisibilityItems:
-      return value_id == CSSValueID::kNone || value_id == CSSValueID::kAll ||
-             value_id == CSSValueID::kAround ||
+      return value_id == CSSValueID::kAll || value_id == CSSValueID::kAround ||
              value_id == CSSValueID::kBetween;
     case CSSPropertyID::kDirection:
       return value_id == CSSValueID::kLtr || value_id == CSSValueID::kRtl;

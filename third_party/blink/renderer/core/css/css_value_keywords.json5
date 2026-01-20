@@ -1309,13 +1309,11 @@
     // spanning-item
 
     // column-rule-visibility-items
-    // none
     // all
     "around",
     "between",
 
     // row-rule-visibility-items
-    // none
     // all
     // around
     // between
