@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './passcode_input.html.js';
-
-type ForEachCallback = (el: HTMLElement, index: number) => void;
+import {getCss} from './passcode_input.css.js';
+import {getHtml} from './passcode_input.html.js';
 
 export interface PasscodeInputElement {
   $: {
@@ -15,60 +15,44 @@ export interface PasscodeInputElement {
   };
 }
 
-export class PasscodeInputElement extends PolymerElement {
+export class PasscodeInputElement extends CrLitElement {
   static get is() {
     return 'c2c-passcode-input';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      ariaLabel: {
-        type: String,
-        value: '',
-      },
-      charDisplayBoxes: Array,
-      disabled: {
-        type: Boolean,
-        observer: 'disabledChange',
-      },
-      length: Number,
-      value: {
-        type: String,
-        value: '',
-        observer: 'valueChange',
-        notify: true,
-        reflectToAttribute: true,
-      },
+      charDisplayBoxes: {type: Array},
+      disabled: {type: Boolean},
+      focused: {type: Boolean},
+      length: {type: Number},
+      startIndex: {type: Number},
+      endIndex: {type: Number},
+      value: {type: String, notify: true, reflect: true},
     };
   }
 
-  declare ariaLabel: string;
-  declare private charDisplayBoxes: string[];
-  declare disabled: boolean;
-  declare length: number;
-  declare value: string;
-  focused: boolean;
-  private afterFirstRender: boolean;
+  protected accessor charDisplayBoxes: string[] = [];
+  accessor disabled: boolean = false;
+  accessor length: number = 0;
+  accessor value: string = '';
+  accessor focused: boolean = false;
+  private accessor startIndex: number = -1;
+  private accessor endIndex: number = -1;
 
   private static readonly PASSCODE_INPUT_SIZE = 40;
   private static readonly PASSCODE_BOX_SPACING = 8;
 
-  constructor() {
-    super();
-    this.focused = false;
-    this.afterFirstRender = false;
-    afterNextRender(this, () => {
-      this.afterFirstRender = true;
-    });
-  }
-
-  override ready() {
-    super.ready();
-    this.charDisplayBoxes = Array(this.length).fill('');
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
     const boxWithMarginWidth = PasscodeInputElement.PASSCODE_INPUT_SIZE +
       PasscodeInputElement.PASSCODE_BOX_SPACING;
     const elementBaseWidth = boxWithMarginWidth * this.length;
@@ -77,67 +61,53 @@ export class PasscodeInputElement extends PolymerElement {
       PasscodeInputElement.PASSCODE_BOX_SPACING + 'px';
     const inputEl = this.$.inputElement;
     inputEl.style.width = (elementBaseWidth + /* input border */ 2) + 'px';
-    inputEl.maxLength = this.length;
-
-    // Set event listeners
-    inputEl.addEventListener('blur', () => {
-      this.handleOnBlur();
-    });
-    inputEl.addEventListener('click', () => {
-      this.renderSelection();
-    });
-    inputEl.addEventListener('focus', () => {
-      this.handleOnFocus();
-    });
-    inputEl.addEventListener('input', () => {
-      this.handleOnInput();
-    });
-    inputEl.addEventListener('keyup', () => {
-      this.renderSelection();
-    });
-    inputEl.addEventListener('select', () => {
-      this.renderSelection();
-    });
   }
 
-  getCharBox(boxIndex: number) {
-    return this.shadowRoot!.querySelector<HTMLElement>('#char-box-' + boxIndex)!
-        ;
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has('length') || changedProperties.has('value')) {
+      const newBoxes = Array(this.length).fill('');
+      for (let i = 0; i < this.length; i++) {
+        newBoxes[i] = i < this.value.length ? this.value[i] : '';
+      }
+      this.charDisplayBoxes = newBoxes;
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('value')) {
+      if (this.$.inputElement.value.toUpperCase() !== this.value) {
+        this.$.inputElement.value = this.value;
+      }
+      // Make sure value is all uppercase.
+      this.value = this.value.toUpperCase();
+    }
   }
 
   getDisplayChar(charIndex: number) {
-    return this.shadowRoot!.querySelector<HTMLElement>('#char-' + charIndex)!;
+    return this.shadowRoot.querySelector<HTMLElement>('#char-' + charIndex)!;
   }
 
   focusInput() {
-    this.afterPageLoaded(() => {
-      this.$.inputElement.focus();
-      this.handleOnFocus();
-      this.renderSelection();
-    });
+    this.$.inputElement.focus();
+    this.focused = true;
+    this.renderSelection();
   }
 
-  private disabledChange() {
-    this.afterPageLoaded(() => {
-      if (this.disabled) {
-        this.forEach('char', (char) => {
-          char.classList.add('disabled');
-        });
-      } else {
-        this.forEach('char', (char) => {
-          char.classList.remove('disabled');
-        });
-      }
-    });
+  protected getDisabledClass(): string {
+    return this.disabled ? 'disabled' : '';
   }
 
-  private valueChange() {
-    if (this.$.inputElement.value.toUpperCase() !== this.value) {
-      this.$.inputElement.value = this.value;
-    }
-    this.afterPageLoaded(() => {
-      this.displayChars();
-    });
+  protected getCharBoxClass(index: number): string {
+    const focused = this.focused ? 'focused' : '';
+    const active = (this.endIndex === -1 && index === this.startIndex) ||
+            (this.endIndex > -1 && index >= this.startIndex &&
+             index < this.endIndex) ?
+        'active' :
+        '';
+    return [focused, active].join(' ');
   }
 
   // Make the char boxes from startIndex to endIndex (including startIndex and
@@ -145,17 +115,11 @@ export class PasscodeInputElement extends PolymerElement {
   // startIndex is passed, then make active only that char box. Passing -1
   // makes all boxes inactive.
   private makeActive(startIndex: number, endIndex?: number) {
-    this.forEach('char-box', (charbox, index) => {
-      if ((!endIndex && index === startIndex) ||
-          (endIndex && index >= startIndex && index < endIndex)) {
-        charbox.classList.add('active');
-      } else {
-        charbox.classList.remove('active');
-      }
-    });
+    this.startIndex = startIndex;
+    this.endIndex = endIndex === undefined ? -1 : endIndex;
   }
 
-  private renderSelection() {
+  protected renderSelection() {
     if (!this.focused) {
       return;
     }
@@ -197,56 +161,26 @@ export class PasscodeInputElement extends PolymerElement {
   }
 
   private removeCursor() {
-    this.forEach('char', (char) => {
+    const chars = this.shadowRoot.querySelectorAll<HTMLElement>('.char');
+    chars.forEach(char => {
       char.classList.remove('cursor-filled', 'cursor-empty', 'cursor-start');
     });
   }
 
-  private forEach(elementType: 'char'|'char-box', callback: ForEachCallback) {
-    let el: HTMLElement|null;
-    for (let i = 0; i < this.length; i++) {
-      el = this.shadowRoot!.querySelector('#' + elementType + '-' + i);
-      if (el !== null) {
-        callback(el, i);
-      }
-    }
-  }
-
-  private handleOnFocus() {
+  protected handleOnFocus() {
     this.focused = true;
-    this.forEach('char-box', (charBox) => {
-      charBox.classList.add('focused');
-    });
   }
 
-  private handleOnBlur() {
+  protected handleOnBlur() {
     this.focused = false;
     this.removeCursor();
     this.makeActive(-1);
-    this.forEach('char-box', (charBox) => {
-      charBox.classList.remove('focused');
-    });
   }
 
-  private handleOnInput() {
-    this.displayChars();
+  protected async handleOnInput() {
+    this.value = this.$.inputElement.value.toUpperCase();
+    await this.updateComplete;
     this.renderSelection();
-  }
-
-  private displayChars() {
-    const input = this.$.inputElement;
-    this.set('value', input.value.toUpperCase());
-    this.forEach('char', (char, index) => {
-      char.innerText = index < this.value.length ? this.value[index] : '';
-    });
-  }
-
-  private afterPageLoaded(callback: () => void) {
-    if (this.afterFirstRender) {
-      callback();
-    } else {
-      afterNextRender(this, callback);
-    }
   }
 }
 

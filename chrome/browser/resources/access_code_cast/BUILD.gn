@@ -11,18 +11,20 @@ build_webui("build") {
 
   static_files = [ "index.html" ]
 
-  web_component_files = [
-    "access_code_cast.ts",
-    "passcode_input/passcode_input.ts",
-  ]
+  web_component_files = [ "access_code_cast.ts" ]
 
   ts_files = [
     "browser_proxy.ts",
-    "error_message/error_message.ts",
     "error_message/error_message.html.ts",
+    "error_message/error_message.ts",
+    "passcode_input/passcode_input.html.ts",
+    "passcode_input/passcode_input.ts",
   ]
 
-  css_files = [ "error_message/error_message.css" ]
+  css_files = [
+    "error_message/error_message.css",
+    "passcode_input/passcode_input.css",
+  ]
 
   mojo_files_deps = [
     "//chrome/browser/ui/webui/access_code_cast:mojo_bindings_ts__generator",
