@@ -1828,6 +1828,9 @@
     // @import scope()
     "scope",
 
+    // contrast-color()
+    "contrast-color",
+
     // initial-letter
     "drop",
     "raise",

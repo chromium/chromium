@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_color_mix_value.h"
 #include "third_party/blink/renderer/core/css/css_content_distribution_value.h"
+#include "third_party/blink/renderer/core/css/css_contrast_color_value.h"
 #include "third_party/blink/renderer/core/css/css_counter_value.h"
 #include "third_party/blink/renderer/core/css/css_crossfade_value.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
@@ -2044,10 +2045,8 @@ bool IsAllowedValueInParserContext(
   return true;
 }
 
-}  // namespace
-
 // https://www.w3.org/TR/css-color-5/#color-mix
-static CSSValue* ConsumeColorMixFunction(
+CSSValue* ConsumeColorMixFunction(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     CSSParserLocalContext& local_context,
@@ -2147,9 +2146,35 @@ static CSSValue* ConsumeColorMixFunction(
   return result;
 }
 
-static bool ParseHexColor(CSSParserTokenStream& stream,
-                          Color& result,
-                          bool accept_quirky_colors) {
+// https://www.w3.org/TR/css-color-5/#contrast-color
+CSSValue* ConsumeContrastColorFunction(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context,
+    const ColorParserContext& color_parser_context) {
+  CHECK(RuntimeEnabledFeatures::CSSContrastColorEnabled());
+  DCHECK_EQ(stream.Peek().FunctionId(), CSSValueID::kContrastColor);
+
+  CSSParserTokenStream::RestoringBlockGuard guard(stream);
+  stream.ConsumeWhitespace();
+
+  CSSValue* color = ConsumeColorInternal(stream, context, local_context,
+                                         /*accept_quirky_colors=*/false,
+                                         color_parser_context);
+
+  if (!color || !stream.AtEnd()) {
+    return nullptr;
+  }
+
+  guard.Release();
+  stream.ConsumeWhitespace();
+
+  return MakeGarbageCollected<cssvalue::CSSContrastColorValue>(color);
+}
+
+bool ParseHexColor(CSSParserTokenStream& stream,
+                   Color& result,
+                   bool accept_quirky_colors) {
   const CSSParserToken& token = stream.Peek();
   if (token.GetType() == kHashToken) {
     if (!Color::ParseHexColor(token.Value(), result)) {
@@ -2188,8 +2213,6 @@ static bool ParseHexColor(CSSParserTokenStream& stream,
   return true;
 }
 
-namespace {
-
 bool SystemAccentColorAllowed(const CSSParserContext& context) {
   if (!RuntimeEnabledFeatures::CSSAccentColorKeywordEnabled()) {
     return false;
@@ -2218,6 +2241,12 @@ CSSValue* ConsumeColorInternal(CSSParserTokenStream& stream,
     CSSValue* color = ConsumeColorMixFunction(stream, context, local_context,
                                               color_parser_context);
     return color;
+  }
+
+  if (RuntimeEnabledFeatures::CSSContrastColorEnabled() &&
+      stream.Peek().FunctionId() == CSSValueID::kContrastColor) {
+    return ConsumeContrastColorFunction(stream, context, local_context,
+                                        color_parser_context);
   }
 
   CSSValueID id = stream.Peek().Id();

@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_color_mix_value.h"
 #include "third_party/blink/renderer/core/css/css_content_distribution_value.h"
+#include "third_party/blink/renderer/core/css/css_contrast_color_value.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_dynamic_range_limit_mix_value.h"
 #include "third_party/blink/renderer/core/css/css_font_family_value.h"
@@ -2939,6 +2940,13 @@ StyleColor ResolveColorValueImpl(const CSSValue& value,
     } else {
       return StyleColor(unresolved_relative_color);
     }
+  }
+
+  if (auto* contrast_color_value =
+          DynamicTo<cssvalue::CSSContrastColorValue>(value)) {
+    // TODO(crbug.com/40142548): Implement black/white result depending on color
+    // parameter.
+    return ResolveColorValueImpl(contrast_color_value->Color(), context);
   }
 
   if (auto* unresolved_color_value =

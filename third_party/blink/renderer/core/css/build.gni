@@ -104,6 +104,8 @@ blink_core_sources_css = [
   "css_content_distribution_value.h",
   "css_contents_mixin_rule.cc",
   "css_contents_mixin_rule.h",
+  "css_contrast_color_value.cc",
+  "css_contrast_color_value.h",
   "css_counter_content_value.cc",
   "css_counter_content_value.h",
   "css_counter_value.cc",
