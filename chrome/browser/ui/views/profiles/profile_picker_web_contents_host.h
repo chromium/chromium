@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_WEB_CONTENTS_HOST_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_WEB_CONTENTS_HOST_H_
 
-#include <variant>
-
 #include "base/functional/callback.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
@@ -16,7 +14,6 @@
 
 class GURL;
 class ForceSigninUIError;
-class SigninUIError;
 
 namespace content {
 class WebContents;
@@ -67,10 +64,9 @@ class ProfilePickerWebContentsHost {
   virtual void Reset(StepSwitchFinishedCallback callback) = 0;
 
   // Used as a callback of type `StepSwitchFinishedCallback`. Allows to show the
-  // Signin error dialog after completing a step switch.
-  virtual void ShowSigninErrorDialog(
-      const std::variant<ForceSigninUIError, SigninUIError>& error,
-      bool success) = 0;
+  // ForceSignin error dialog after completing a step switch.
+  virtual void ShowForceSigninErrorDialog(const ForceSigninUIError& error,
+                                          bool success) = 0;
 
   // Changes the visibility of the host's native toolbar, which shows a back
   // button.

@@ -20,13 +20,6 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace {
-
-std::u16string ErrorTypeToString(SigninUIError::Type error_type) {
-  return u"Error " + base::NumberToString16(std::to_underlying(error_type));
-}
-}  // namespace
-
 // ------------------------------ SigninUIError --------------------------------
 
 // static
@@ -96,23 +89,19 @@ SigninUIError SigninUIError::FromCredentialProviderUiExitCode(
 #endif
 
 SigninUIError SigninUIError::NoProfile(const std::string& email) {
-  return SigninUIError(Type::kNoProfile, email,
-                       ErrorTypeToString(Type::kNoProfile));
+  return SigninUIError(Type::kNoProfile, email, std::u16string());
 }
 
 SigninUIError SigninUIError::SigninDisallowed(const std::string& email) {
-  return SigninUIError(Type::kSigninDisallowed, email,
-                       ErrorTypeToString(Type::kSigninDisallowed));
+  return SigninUIError(Type::kSigninDisallowed, email, std::u16string());
 }
 
 SigninUIError SigninUIError::SigninCookiesDisallowed(const std::string& email) {
-  return SigninUIError(Type::kSigninCookiesDisallowed, email,
-                       ErrorTypeToString(Type::kSigninCookiesDisallowed));
+  return SigninUIError(Type::kSigninCookiesDisallowed, email, std::u16string());
 }
 
 SigninUIError SigninUIError::NoIdentityManager(const std::string& email) {
-  return SigninUIError(Type::kNoIdentityManager, email,
-                       ErrorTypeToString(Type::kNoIdentityManager));
+  return SigninUIError(Type::kNoIdentityManager, email, std::u16string());
 }
 
 SigninUIError::SigninUIError(const SigninUIError& other) = default;

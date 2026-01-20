@@ -420,9 +420,10 @@ ProfilePickerHandler* ProfilePickerUI::GetProfilePickerHandlerForTesting() {
   return profile_picker_handler_;
 }
 
-void ProfilePickerUI::ShowSigninErrorDialog(
-    const std::variant<ForceSigninUIError, SigninUIError>& error) {
-  profile_picker_handler_->DisplaySigninErrorDialog(base::FilePath(), error);
+void ProfilePickerUI::ShowForceSigninErrorDialog(
+    const ForceSigninUIError& error) {
+  profile_picker_handler_->DisplayForceSigninErrorDialog(base::FilePath(),
+                                                         error);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ProfilePickerUI)
