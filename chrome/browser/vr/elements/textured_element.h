@@ -49,6 +49,18 @@ class VR_UI_EXPORT TexturedElement : public UiElement {
   bool PrepareToDraw() final;
 
  private:
+  class ContentTexture {
+   public:
+    ContentTexture(const gfx::Size& size,
+                   base::FunctionRef<void(SkCanvas*)> paint);
+    ~ContentTexture();
+
+    GLuint texture_id() const { return texture_id_; }
+
+   private:
+    GLuint texture_id_;
+  };
+
   // Subclasses must return true if redrawing a texture depends on measurement
   // (text, for example).  If true, a texture dirtied by user input (after
   // measurement) will not be redrawn until the following frame.
@@ -59,9 +71,7 @@ class VR_UI_EXPORT TexturedElement : public UiElement {
   gfx::Size texture_size_;
   bool initialized_ = false;
 
-  raw_ptr<SkiaSurfaceProvider, DanglingUntriaged> provider_ = nullptr;
-
-  std::unique_ptr<SkiaSurfaceProvider::Texture> skia_texture_;
+  std::unique_ptr<ContentTexture> skia_texture_;
 };
 
 }  // namespace vr

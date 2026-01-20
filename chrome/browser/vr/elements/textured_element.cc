@@ -13,14 +13,38 @@
 
 namespace vr {
 
+TexturedElement::ContentTexture::ContentTexture(
+    const gfx::Size& size,
+    base::FunctionRef<void(SkCanvas*)> paint) {
+  // Create SkSurface backed by CPU memory and draw contents to it.
+  auto surface = SkSurfaces::Raster(
+      SkImageInfo::Make(size.width(), size.height(), kRGBA_8888_SkColorType,
+                        kPremul_SkAlphaType));
+  paint(surface->getCanvas());
+  SkPixmap pixmap;
+  surface->peekPixels(&pixmap);
+
+  GLint prev_texture = 0;
+  glGetIntegerv(GL_TEXTURE_BINDING_2D, &prev_texture);
+
+  glGenTextures(1, &texture_id_);
+  glBindTexture(GL_TEXTURE_2D, texture_id_);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.width(), size.height(), 0,
+               GL_RGBA, GL_UNSIGNED_BYTE, pixmap.addr());
+
+  glBindTexture(GL_TEXTURE_2D, prev_texture);
+}
+
+TexturedElement::ContentTexture::~ContentTexture() {
+  glDeleteTextures(1, &texture_id_);
+}
+
 TexturedElement::TexturedElement() = default;
 
 TexturedElement::~TexturedElement() = default;
 
 void TexturedElement::Initialize(SkiaSurfaceProvider* provider) {
   TRACE_EVENT0("gpu", "TexturedElement::Initialize");
-  DCHECK(provider);
-  provider_ = provider;
   DCHECK(GetTexture());
   GetTexture()->OnInitialized();
   initialized_ = true;
@@ -59,7 +83,7 @@ void TexturedElement::UpdateTexture() {
   }
 
   if (!texture_size_.IsEmpty()) {
-    skia_texture_ = provider_->CreateTextureWithSkia(
+    skia_texture_ = std::make_unique<ContentTexture>(
         texture_size_, [this](SkCanvas* canvas) {
           GetTexture()->DrawTexture(canvas, texture_size_);
         });
