@@ -74,9 +74,7 @@ TOTAL_DEVICE_POLICY_EXTERNAL_DATA_MAX_SIZE = 1024 * 1024 * 100
 # when you mark a policy with sensitive: True
 SENSITIVE_POLICIES_WITH_MANUAL_NOTICE = [
     "RestoreOnStartupURLs",
-    "FirstPartySetsOverrides",
     "AutoOpenFileTypes",
-    "MetricsReportingEnabled",
 ]
 
 
