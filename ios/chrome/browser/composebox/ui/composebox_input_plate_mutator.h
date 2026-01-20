@@ -17,6 +17,9 @@ class GURL;
 /// Sends `text` to start a query.
 - (void)sendText:(NSString*)text;
 
+/// Processes the given `text`.
+- (void)processText:(NSString*)text;
+
 /// Attaches the current tab's content to the context.
 - (void)attachCurrentTabContent;
 
@@ -26,7 +29,7 @@ class GURL;
 /// Processes the given `PDFFileURL` for a file.
 - (void)processPDFFileURL:(GURL)PDFFileURL;
 
-// Processes the given `itemProvider` for an image.
+/// Processes the given `itemProvider` for an image.
 - (void)processImageItemProvider:(NSItemProvider*)itemProvider
                          assetID:(NSString*)assetID;
 

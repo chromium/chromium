@@ -316,6 +316,10 @@
   [_omniboxTextController insertTextToOmnibox:text];
 }
 
+- (void)refineWithText:(NSString*)text {
+  [_omniboxTextController refineWithText:base::SysNSStringToUTF16(text)];
+}
+
 - (OmniboxPopupCoordinator*)createPopupCoordinator:
     (id<OmniboxPopupPresenterDelegate>)presenterDelegate {
   DCHECK(!_popupCoordinator);
