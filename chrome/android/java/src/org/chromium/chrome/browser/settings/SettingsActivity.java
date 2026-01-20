@@ -315,6 +315,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 mTitleUpdater = new TitleUpdater();
                 fragmentManager.registerFragmentLifecycleCallbacks(
                         mTitleUpdater, /* recursive= */ true);
+                createSearchCoordinator();
             }
         }
 
@@ -444,6 +445,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (mMultiColumnSettings != null) {
             mMultiColumnSettings.setOnCreateViewRunnable(mSearchCoordinator::initializeSearchUi);
             mMultiColumnSettings.addObserver(mSearchCoordinator);
+        } else {
+            mSearchCoordinator.initializeSearchUi();
         }
     }
 

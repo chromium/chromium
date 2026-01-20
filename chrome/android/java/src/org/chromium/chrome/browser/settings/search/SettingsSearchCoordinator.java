@@ -47,7 +47,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.accessibility.settings.ChromeAccessibilitySettingsDelegate;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.MultiColumnSettings;
@@ -60,8 +59,6 @@ import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItemController;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItemDecoration;
 import org.chromium.components.browser_ui.widget.containment.ContainmentViewStyler;
-import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
-import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizerUtil;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
@@ -98,8 +95,6 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
     private @Nullable Fragment mResultsFragment;
     private @Nullable Runnable mSearchRunnable;
     private @Nullable Runnable mRemoveResultChildViewListener;
-    private @Nullable UiConfig mBoxUiConfig;
-    private @Nullable UiConfig mQueryUiConfig;
     private @Nullable Runnable mTurnOffHighlight;
     private @Nullable ContainmentItemController mContainmentController;
 
@@ -210,18 +205,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
         if (mMultiColumnSettings != null) {
             mHandler.post(this::initializeMultiColumnSearchUi);
         } else {
-            // For single-column fragment, use ViewResizer to maintain the start/end padding.
-            int defaultPadding =
-                    ChromeFeatureList.sAndroidSettingsContainment.isEnabled()
-                            ? getPixelSize(R.dimen.settings_single_column_layout_margin)
-                            : 0;
-            int minWidePaddingPixels = getPixelSize(R.dimen.settings_wide_display_min_padding);
-            mBoxUiConfig = new UiConfig(searchBox);
-            ViewResizer.createAndAttach(
-                    searchBox, mBoxUiConfig, defaultPadding, minWidePaddingPixels);
-            mQueryUiConfig = new UiConfig(query);
-            ViewResizer.createAndAttach(
-                    query, mQueryUiConfig, defaultPadding, minWidePaddingPixels);
+            observeFragmentForVisibilityChange();
         }
 
         EditText queryEdit = mActivity.findViewById(R.id.search_query);
@@ -298,19 +282,29 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
                         false);
     }
 
-    private void showUiInSingleColumn(View searchBox, boolean show) {
-        if (mUseMultiColumn) return;
+    private void observeFragmentForVisibilityChange() {
+        getSettingsFragmentManager()
+                .registerFragmentLifecycleCallbacks(
+                        new FragmentManager.FragmentLifecycleCallbacks() {
+                            @Override
+                            public void onFragmentResumed(FragmentManager fm, Fragment f) {
+                                View searchBox = mActivity.findViewById(R.id.search_box);
+                                showUiInSingleColumn(searchBox, f.getClass() == MainSettings.class);
+                            }
+                        },
+                        false);
+        updateSearchUiWidth();
+    }
 
+    private void showUiInSingleColumn(View searchBox, boolean show) {
         TransitionManager.beginDelayedTransition(
                 (ViewGroup) searchBox.getParent(), new AutoTransition());
         searchBox.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     private boolean isShowingMainSettings() {
-        if (mMultiColumnSettings != null) {
-            return mUseMultiColumn ? true : !mMultiColumnSettings.isLayoutOpen();
-        }
-        return false; // Immaterial, as search will be using multi-column settings.
+        assert mMultiColumnSettings != null : "Should be used with multi-column-settings#enabled";
+        return mUseMultiColumn ? true : !mMultiColumnSettings.isLayoutOpen();
     }
 
     private @Nullable View getHelpMenuView() {
@@ -565,15 +559,12 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
 
     // Update search UI width/location when multi-column settings fragment is enabled.
     private void updateSearchUiWidth() {
-        assert mMultiColumnSettings != null;
-        if (mMultiColumnSettings == null) return;
-
         View searchBox = mActivity.findViewById(R.id.search_box);
         View query = mActivity.findViewById(R.id.search_query_container);
         int settingsMargin = getPixelSize(R.dimen.settings_item_margin);
         boolean showBackIcon = mFragmentState != FS_SEARCH;
+        View menuView = getHelpMenuView();
         if (mUseMultiColumn) {
-            View menuView = getHelpMenuView();
             int detailPaneWidth = mActivity.findViewById(R.id.preferences_detail).getWidth();
             if (detailPaneWidth == 0 || menuView == null) {
                 mHandler.post(this::updateSearchUiWidth);
@@ -590,6 +581,10 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
 
             showBackIcon = true;
         } else {
+            if (menuView == null) {
+                mHandler.post(this::updateSearchUiWidth);
+                return;
+            }
             updateSingleColumnSearchUiWidth();
         }
         assumeNonNull(mActivity.getSupportActionBar()).setDisplayHomeAsUpEnabled(showBackIcon);
@@ -661,8 +656,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
                         updateSearchUiWidth();
                     });
         } else {
-            assumeNonNull(mBoxUiConfig).updateDisplayStyle();
-            assumeNonNull(mQueryUiConfig).updateDisplayStyle();
+            updateSearchUiWidth();
         }
     }
 
