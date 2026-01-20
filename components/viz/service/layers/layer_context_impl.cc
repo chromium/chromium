@@ -1899,6 +1899,7 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
       update->may_throttle_if_undrawn_frames);
   host_impl_->set_viewport_mobile_optimized(
       update->is_viewport_mobile_optimized);
+  layers.set_is_animating_hud_contents(update->is_animating_hud_contents);
 
   {
     TRACE_EVENT1("viz", "DeserializeTilings", "TilingCount",

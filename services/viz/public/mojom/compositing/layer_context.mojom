@@ -234,6 +234,9 @@ struct LayerTreeUpdate {
 
   // Whether the viewport is mobile optimized.
   bool is_viewport_mobile_optimized;
+
+  // Equivalent to hud_layer() && hud_layer()->IsANimatingHUDContents().
+  bool is_animating_hud_contents;
 };
 
 // Drives updates to a GPU-side LayerTreeHostImpl from its corresponding

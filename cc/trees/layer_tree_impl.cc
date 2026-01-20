@@ -3193,6 +3193,13 @@ bool LayerTreeImpl::HasViewTransitionSaveRequest() const {
   return false;
 }
 
+bool LayerTreeImpl::IsAnimatingHUDContents() const {
+  if (settings().trees_in_viz_in_viz_process) {
+    return is_animating_hud_contents_;
+  }
+  return hud_layer() && hud_layer()->IsAnimatingHUDContents();
+}
+
 base::flat_set<blink::ViewTransitionToken>
 LayerTreeImpl::GetCaptureViewTransitionTokens() const {
   base::flat_set<blink::ViewTransitionToken> result;

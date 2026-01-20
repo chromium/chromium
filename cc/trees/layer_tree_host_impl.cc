@@ -1393,8 +1393,7 @@ uint32_t LayerTreeHostImpl::GetHasDamageData() const {
     has_damage_data |= kHasCopyRequestsMask;
   }
 
-  if (active_tree->hud_layer() &&
-      active_tree->hud_layer()->IsAnimatingHUDContents()) {
+  if (active_tree->IsAnimatingHUDContents()) {
     has_damage_data |= kHudWantsToDrawMask;
   }
 
