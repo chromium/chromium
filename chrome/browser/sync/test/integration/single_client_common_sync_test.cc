@@ -106,23 +106,42 @@ class GetUpdatesObserver : public FakeServer::Observer {
   DataTypeSet updated_types_;
 };
 
-class SingleClientCommonSyncTest : public SyncTest {
+class SingleClientCommonSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientCommonSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  SingleClientCommonSyncTest() : SyncTest(SINGLE_CLIENT) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+  }
   ~SingleClientCommonSyncTest() override = default;
   SingleClientCommonSyncTest(const SingleClientCommonSyncTest&) = delete;
   SingleClientCommonSyncTest& operator=(const SingleClientCommonSyncTest&) =
       delete;
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientCommonSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
 
 // Android doesn't currently support PRE_ tests, see crbug.com/1117345.
 #if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientCommonSyncTest,
                        PRE_ShouldNotIssueGetUpdatesOnBrowserRestart) {
   ASSERT_TRUE(SetupSync());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientCommonSyncTest,
                        ShouldNotIssueGetUpdatesOnBrowserRestart) {
   GetUpdatesObserver get_updates_observer(GetFakeServer());
 
@@ -163,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
 
 // Note: See also SyncErrorTest.ClientDataObsoleteTest, which ensures the cache
 // GUID does *not* get reused if the client's data needs to be reset.
-IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientCommonSyncTest,
                        ReusesCacheGuidAfterSignoutAndSignin) {
   ASSERT_TRUE(SetupSync());
 
@@ -195,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientCommonSyncTest,
                        ReusesCacheGuidOnlyForSameAccount) {
   ASSERT_TRUE(SetupClients());
 
@@ -240,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientCommonSyncTest,
                        E2E_ENABLED(ShouldCrashAwaitQuiescenceForE2ETest)) {
   ASSERT_TRUE(SetupSync());
   EXPECT_CHECK_DEATH_WITH(
@@ -248,9 +267,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
       "AwaitQuiescence is not supported for E2E tests.");
 }
 
-class SingleClientGetUnsyncedTypesTest : public SingleClientCommonSyncTest {
+class SingleClientGetUnsyncedTypesTest : public SyncTest {
  public:
-  SingleClientGetUnsyncedTypesTest() {
+  SingleClientGetUnsyncedTypesTest() : SyncTest(SINGLE_CLIENT) {
 #if !BUILDFLAG(IS_ANDROID)
     // These features are required to enable THEMES and BOOKMARK in transport
     // mode.
@@ -414,6 +433,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientGetUnsyncedTypesTest, SignInPendingState) {
 
 // Android doesn't currently support PRE_ tests, see crbug.com/1117345.
 #if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/353425612): Modernize SingleClientFeatureToTransportSyncTest.
 class SingleClientFeatureToTransportSyncTest : public SyncTest {
  public:
   SingleClientFeatureToTransportSyncTest() : SyncTest(SINGLE_CLIENT) {
@@ -564,6 +584,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientFeatureToTransportSyncTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+// TODO(crbug.com/353425612): Modernize SingleClientPolicySyncTest.
 class SingleClientPolicySyncTest : public SyncTest {
  public:
   SingleClientPolicySyncTest() : SyncTest(SINGLE_CLIENT) {}
