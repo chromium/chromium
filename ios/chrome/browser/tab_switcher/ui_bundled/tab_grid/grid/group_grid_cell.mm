@@ -139,13 +139,6 @@ const CGFloat kTopBarLargeInset = 20;
     [contentContainer addSubview:_groupSnapshotsView];
     [contentContainer addSubview:_closeTapTargetButton];
     _opacity = 1.0;
-
-    self.contentView.backgroundColor =
-        [UIColor colorNamed:kSecondaryBackgroundColor];
-
-    _groupSnapshotsView.backgroundColor =
-        [UIColor colorNamed:kSecondaryBackgroundColor];
-    _topBar.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
     _titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     _closeIconView.tintColor = [UIColor colorNamed:kCloseButtonColor];
 
@@ -239,7 +232,6 @@ const CGFloat kTopBarLargeInset = 20;
 - (void)prepareForReuse {
   [super prepareForReuse];
   self.title = nil;
-  self.groupColor = nil;
   self.selected = NO;
   self.opacity = 1.0;
   self.hidden = NO;
@@ -345,21 +337,38 @@ const CGFloat kTopBarLargeInset = 20;
 }
 
 - (void)setGroupColor:(UIColor*)groupColor {
-  _groupColor = groupColor;
-  _dotContainer.color = groupColor;
+  // The group has the wrong theme when created, this ensures the groupColor is
+  // retrieved using the current theme.
+  _groupColor =
+      [groupColor resolvedColorWithTraitCollection:self.traitCollection];
 
   if (!IsTabGroupColorOnSurfaceEnabled()) {
-    return;
-  }
-  if (!groupColor) {
+    // Apply the default coloring to each surfaces.
+    _dotContainer.color = _groupColor;
+    UIColor* backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+    _topBar.backgroundColor = backgroundColor;
+    self.contentView.backgroundColor = backgroundColor;
+    _groupSnapshotsView.backgroundColor = backgroundColor;
     return;
   }
 
+  // Generate a color palette fromt the group color.
   TabGroupColorPalette* tabGroupColorPalette =
-      [[TabGroupColorPalette alloc] initWithSeedColor:groupColor];
+      [[TabGroupColorPalette alloc] initWithSeedColor:_groupColor];
 
-  // Apply the right tone to surfaces.
-  _dotContainer.color = tabGroupColorPalette.commonColor;
+  // Apply the right tone to each surfaces.
+  UIColor* commonColor = tabGroupColorPalette.commonColor;
+  UIColor* backgroundColor = tabGroupColorPalette.backgroundColor;
+
+  _border.layer.borderColor = commonColor.CGColor;
+  _dotContainer.color = commonColor;
+  _topBar.backgroundColor = backgroundColor;
+  self.contentView.backgroundColor = backgroundColor;
+  _groupSnapshotsView.backgroundColor = backgroundColor;
+  self.containerView.backgroundColor = backgroundColor;
+
+  // Forward the palette to subviews.
+  _groupSnapshotsView.tabGroupColorPalette = tabGroupColorPalette;
 }
 
 - (void)setTitle:(NSString*)title {

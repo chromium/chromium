@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+@class TabGroupColorPalette;
+
 typedef NS_ENUM(NSInteger, EmptyThumbnailLayoutType);
 
 // The GroupTabView is a UIView that displays combinations of snapshots,
@@ -32,6 +34,9 @@ typedef NS_ENUM(NSInteger, EmptyThumbnailLayoutType);
 
 // The current layout configuration that should be used by the empty thumbnail.
 @property(nonatomic, assign) EmptyThumbnailLayoutType layoutType;
+
+// The color palette containing different tones of the group color.
+@property(nonatomic) TabGroupColorPalette* tabGroupColorPalette;
 
 - (instancetype)initWithIsCell:(BOOL)isCell NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
