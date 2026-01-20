@@ -117,9 +117,6 @@ void GlicFocusedTabManager::OnFocusedBrowserChanged(
   // can be in a different browser window (i.e., the user drag-n-drop the
   // focused tab into a new window). Let the subscribers to decide what to do in
   // this case.
-  //
-  // TODO(crbug.com/393578218): We should have dedicated subscription lists for
-  // different types of notifications.
   MaybeUpdateFocusedTab(/*force_notify=*/true);
 }
 
