@@ -180,12 +180,16 @@
       !shouldConstraintToKeyboard && self.locationIndicatorActive;
 
   // Whether to show the secondary toolbar as a location indicator when keyboard
-  // is active for web content. Bottom omnibox exclusive.
+  // is active for web content or the Find navigator is visible. Bottom omnibox
+  // exclusive.
   BOOL keyboardActiveForWebContent =
       [self.keyboardStateProvider keyboardIsActiveForWebContent];
-  BOOL showLocationIndicator = shouldConstraintToKeyboard &&
-                               keyboardActiveForWebContent &&
-                               !hideLocationIndicator;
+  BOOL findNavigatorVisible =
+      [self.keyboardStateProvider isFindNavigatorVisibleForWebContent];
+  BOOL showLocationIndicator =
+      shouldConstraintToKeyboard &&
+      (keyboardActiveForWebContent || findNavigatorVisible) &&
+      !hideLocationIndicator;
 
   // Whether the toolbar containing the omnibox should follow the keyboard.
   BOOL followSteadyStateEnabled =

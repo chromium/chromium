@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_tab_group_state.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/secondary_toolbar_consumer.h"
+#import "ios/web/public/find_in_page/crw_find_interaction.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
 
@@ -85,6 +86,15 @@
     return _webStateList->GetActiveWebState()
         ->GetWebViewProxy()
         .keyboardVisible;
+  }
+  return NO;
+}
+
+- (BOOL)isFindNavigatorVisibleForWebContent {
+  if (_webStateList && _webStateList->GetActiveWebState()) {
+    return _webStateList->GetActiveWebState()
+        ->GetFindInteraction()
+        .isFindNavigatorVisible;
   }
   return NO;
 }

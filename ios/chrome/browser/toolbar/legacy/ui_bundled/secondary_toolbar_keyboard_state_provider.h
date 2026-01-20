@@ -12,6 +12,9 @@
 /// with the app's UI.
 - (BOOL)keyboardIsActiveForWebContent;
 
+/// Returns whether the find navigator is visible for web content.
+- (BOOL)isFindNavigatorVisibleForWebContent;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_SECONDARY_TOOLBAR_KEYBOARD_STATE_PROVIDER_H_
