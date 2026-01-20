@@ -41,7 +41,10 @@ import org.chromium.ui.test.util.DeviceRestriction;
     ContentFeatureList.ACCESSIBILITY_UNIFIED_SNAPSHOTS,
     ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API
 })
-@EnableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
+@EnableFeatures({
+    ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
+    ContentFeatureList.ACCESSIBILITY_SET_SELECTABLE_ON_ALL_NODES_WITH_TEXT
+})
 @TestAnimations.EnableAnimations
 public class WebContentsAccessibilityTreeTest {
     // File path that holds all the relevant tests.
