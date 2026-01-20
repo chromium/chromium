@@ -244,10 +244,12 @@ void WebInstallServiceImpl::Install(blink::mojom::InstallOptionsPtr options,
   // these, as only the 0 parameter signature can do current document installs.
   install_options_ = std::move(options);
 
-  // If the given url to install matches the current url, skip
-  // requesting permission since the user is still installing the current
-  // document, even though it's in the background.
-  if (install_target == last_committed_url_) {
+  // Skip requesting permission in two cases:
+  // 1. The install URL matches the current document URL (user is installing
+  //    the page they're on, even if using background install syntax).
+  // 2. Install triggered from the <install> element (permission is handled
+  //    by the element itself). In both cases, the install dialog is shown.
+  if (triggered_from_element_ || install_target == last_committed_url_) {
     OnPermissionDecided(
         std::move(callback_with_metrics),
         std::vector<content::PermissionResult>({content::PermissionResult(
@@ -470,15 +472,6 @@ void WebInstallServiceImpl::RequestWebInstallPermission(
       break;
   }
 
-  if (triggered_from_element_) {
-    // Do not show permission prompt for installs from an element entry point.
-    // Grant permission by default if not already granted or denied.
-    std::move(callback).Run(
-        std::vector<content::PermissionResult>({content::PermissionResult(
-            PermissionStatus::GRANTED,
-            content::PermissionStatusSource::UNSPECIFIED)}));
-    return;
-  }
   GURL requesting_origin = origin().GetURL();
   // User gesture requirement is enforced in NavigatorWebInstall::InstallImpl.
   permission_controller->RequestPermissionsFromCurrentDocument(

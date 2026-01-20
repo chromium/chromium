@@ -296,14 +296,18 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, Install_DenyPermission) {
   EXPECT_EQ(provider().registrar_unsafe().GetAppIds().size(), 1u);
 }
 
-// Test that when permission is denied for background document install, no
-// install occurs.
+// Test that when permission is denied for background document install, install
+// still occurs. <install> elements bypass permission.
 IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest,
-                       InstallWithUrl_DenyPermission) {
+                       InstallWithUrl_IgnoreDeniedPermission) {
   // Navigate to a page with <install> elements.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       https_server()->GetURL("/web_apps/install_element/index.html")));
+
+  // Setup test listeners and dialog auto-accepts.
+  auto auto_accept_pwa_install_confirmation =
+      SetAutoAcceptPWAInstallConfirmationForTesting();
 
   // Dynamically set the installurl attribute to a background document URL.
   const GURL install_url =
@@ -313,15 +317,22 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest,
   // Block the web install permission for this origin.
   BlockWebInstallPermission(install_url);
 
-  // Click the install element.
+  // Click the install element and wait for the app to open.
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   ClickElementWithId(kInstallElementId);
+  Browser* web_app_browser = browser_created_observer.Wait();
 
-  // When permission is already denied, promptdismiss should fire without
-  // showing an actual prompt.
-  WaitForDismissEvent(kInstallElementId);
+  // Verify promptaction event was fired.
+  WaitForPromptActionEvent(kInstallElementId);
 
-  // Verify that no app was installed by checking the app count hasn't changed.
-  EXPECT_EQ(provider().registrar_unsafe().GetAppIds().size(), 0u);
+  // Verify the app launched.
+  ASSERT_TRUE(AppBrowserController::IsWebApp(web_app_browser));
+  const WebAppBrowserController* app_controller =
+      WebAppBrowserController::From(web_app_browser);
+  EXPECT_EQ(app_controller->GetTitle(), u"Simple web app with a custom id");
+
+  // The registrar should now have one app installed.
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIds().size(), 1u);
 }
 
 }  // namespace web_app
