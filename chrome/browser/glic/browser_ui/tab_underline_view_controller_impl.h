@@ -106,11 +106,16 @@ class TabUnderlineViewControllerImpl
     kUserInputSubmitted,
   };
 
-  enum class UnderlineState {
-    kHidden,
-    kShowingForGlic,
-    kShowingForContextualTasks,
+  // Bitmask representing the features that are currently sourcing (requesting)
+  // the tab underline to be shown.
+  enum UnderlineSource {
+    kNone = 0,
+    kGlic = 1 << 0,
+    kContextualTasks = 1 << 1,
   };
+
+  void AddSource(UnderlineSource source);
+  void RemoveSource(UnderlineSource source);
 
   GlicKeyedService* GetGlicKeyedService();
 
@@ -183,9 +188,9 @@ class TabUnderlineViewControllerImpl
   // TODO(crbug.com/469102481): Remove after missing underlines cause is found.
   int32_t tab_handle_id_ = 0;
 
-  // The current showing state of the underline, used to differentiate between
-  // underlines that were shown due to signals from Glic vs Contextual Tasks.
-  UnderlineState state_ = UnderlineState::kHidden;
+  // The current set of active sources for the underline. The underline is
+  // hidden only when this bitmask is UnderlineSource::kNone.
+  int active_sources_ = UnderlineSource::kNone;
 };
 
 }  // namespace glic

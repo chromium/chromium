@@ -375,41 +375,40 @@ void TabUnderlineViewControllerImpl::UpdateUnderlineView(
       // ignore reset signals from contextual tasks as the backend sends reset
       // signals much more frequently (e.g. for every tab switch event) even
       // though contextual tasks side panel isn't open.
-      if (state_ == UnderlineState::kShowingForGlic) {
-        return;
-      }
-      underline_view_->StopShowing();
+      HideUnderline(/*triggered_by_glic=*/false);
       break;
   }
 }
 
 void TabUnderlineViewControllerImpl::ShowAndAnimateUnderline(
     bool triggered_by_glic) {
-  state_ = triggered_by_glic ? UnderlineState::kShowingForGlic
-                             : UnderlineState::kShowingForContextualTasks;
+  AddSource(triggered_by_glic ? UnderlineSource::kGlic
+                              : UnderlineSource::kContextualTasks);
   underline_view_->StopShowing();
   underline_view_->Show();
 }
 
 void TabUnderlineViewControllerImpl::HideUnderline(bool triggered_by_glic) {
-  if (!underline_view_->IsShowing()) {
+  RemoveSource(triggered_by_glic ? UnderlineSource::kGlic
+                                 : UnderlineSource::kContextualTasks);
+  if (active_sources_ != UnderlineSource::kNone) {
     return;
   }
 
-  // Ignore the signal from Glic if the underline is being shown
-  // due to a signal from contextual tasks.
-  if (triggered_by_glic &&
-      state_ == UnderlineState::kShowingForContextualTasks) {
-    return;
-  }
-
-  state_ = UnderlineState::kHidden;
-
-  if (base::FeatureList::IsEnabled(features::kGlicDisableUnderlineAnimations)) {
+  if (!triggered_by_glic ||
+      base::FeatureList::IsEnabled(features::kGlicDisableUnderlineAnimations)) {
     underline_view_->StopShowing();
   } else {
     underline_view_->StartRampingDown();
   }
+}
+
+void TabUnderlineViewControllerImpl::AddSource(UnderlineSource source) {
+  active_sources_ |= source;
+}
+
+void TabUnderlineViewControllerImpl::RemoveSource(UnderlineSource source) {
+  active_sources_ &= ~source;
 }
 
 void TabUnderlineViewControllerImpl::AnimateUnderline() {
