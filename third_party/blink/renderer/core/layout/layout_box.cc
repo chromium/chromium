@@ -529,7 +529,6 @@ bool LayoutBox::TransformsChangeMayRequireLayout() const {
 
 void LayoutBox::WillBeDestroyed() {
   NOT_DESTROYED();
-  ClearOverrideContainingBlockContentSize();
 
   ShapeOutsideInfo::RemoveInfo(*this);
 
@@ -1999,15 +1998,6 @@ void LayoutBox::SetOverrideContainingBlockContentLogicalWidth(
   EnsureRareData().override_containing_block_content_logical_width_ =
       logical_width;
   EnsureRareData().has_override_containing_block_content_logical_width_ = true;
-}
-
-// TODO (lajava) Shouldn't we implement these functions based on physical
-// direction ?.
-void LayoutBox::ClearOverrideContainingBlockContentSize() {
-  NOT_DESTROYED();
-  if (!rare_data_)
-    return;
-  EnsureRareData().has_override_containing_block_content_logical_width_ = false;
 }
 
 bool LayoutBox::HitTestAllPhases(HitTestResult& result,

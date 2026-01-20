@@ -533,7 +533,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutUnit OverrideContainingBlockContentLogicalWidth() const;
   bool HasOverrideContainingBlockContentLogicalWidth() const;
   void SetOverrideContainingBlockContentLogicalWidth(LayoutUnit);
-  void ClearOverrideContainingBlockContentSize();
 
   enum PageBoundaryRule { kAssociateWithFormerPage, kAssociateWithLatterPage };
 
