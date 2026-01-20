@@ -908,7 +908,7 @@ TimelineType* GetTimeline(const CSSTimelineMap<TimelineType>* timelines,
 
 DeferredTimeline* GetTimelineAttachment(
     const TimelineAttachmentMap* timeline_attachments,
-    ScrollSnapshotTimeline* timeline) {
+    ScrollTimeline* timeline) {
   if (!timeline_attachments) {
     return nullptr;
   }
@@ -3183,7 +3183,7 @@ void CSSAnimations::TimelineData::SetViewTimeline(const AtomicString& name,
 }
 
 void CSSAnimations::TimelineData::SetTimelineAttachment(
-    ScrollSnapshotTimeline* attached_timeline,
+    ScrollTimeline* attached_timeline,
     DeferredTimeline* deferred_timeline) {
   if (deferred_timeline == nullptr) {
     timeline_attachments_.erase(attached_timeline);
@@ -3193,7 +3193,7 @@ void CSSAnimations::TimelineData::SetTimelineAttachment(
 }
 
 DeferredTimeline* CSSAnimations::TimelineData::GetTimelineAttachment(
-    ScrollSnapshotTimeline* attached_timeline) {
+    ScrollTimeline* attached_timeline) {
   auto i = timeline_attachments_.find(attached_timeline);
   return i != timeline_attachments_.end() ? i->value.Get() : nullptr;
 }

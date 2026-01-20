@@ -247,8 +247,8 @@ class CORE_EXPORT CSSAnimations final {
       return deferred_timeline_map_;
     }
 
-    void SetTimelineAttachment(ScrollSnapshotTimeline*, DeferredTimeline*);
-    DeferredTimeline* GetTimelineAttachment(ScrollSnapshotTimeline*);
+    void SetTimelineAttachment(ScrollTimeline*, DeferredTimeline*);
+    DeferredTimeline* GetTimelineAttachment(ScrollTimeline*);
     const TimelineAttachmentMap& GetTimelineAttachments() const {
       return timeline_attachments_;
     }

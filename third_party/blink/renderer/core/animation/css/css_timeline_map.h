@@ -18,7 +18,6 @@ namespace blink {
 
 class DeferredTimeline;
 class Document;
-class ScrollSnapshotTimeline;
 class ScrollTimeline;
 class ViewTimeline;
 
@@ -27,7 +26,7 @@ using CSSTimelineMap = HeapHashMap<AtomicString, Member<TimelineType>>;
 using CSSViewTimelineMap = CSSTimelineMap<ViewTimeline>;
 using CSSScrollTimelineMap = CSSTimelineMap<ScrollTimeline>;
 using TimelineAttachmentMap =
-    HeapHashMap<Member<ScrollSnapshotTimeline>, Member<DeferredTimeline>>;
+    HeapHashMap<Member<ScrollTimeline>, Member<DeferredTimeline>>;
 
 // CSSDeferredTimelineMap, logically, contains one DeferredTimeline for every
 // possible key, except that only the names matching the specified filter

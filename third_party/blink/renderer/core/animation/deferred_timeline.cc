@@ -4,13 +4,19 @@
 
 #include "third_party/blink/renderer/core/animation/deferred_timeline.h"
 
+#include "third_party/blink/renderer/core/animation/scroll_timeline.h"
+
 namespace blink {
 
 DeferredTimeline::DeferredTimeline(Document* document)
     : ScrollSnapshotTimeline(document) {}
 
-void DeferredTimeline::AttachTimeline(ScrollSnapshotTimeline* timeline) {
-  ScrollSnapshotTimeline* original_timeline = SingleAttachedTimeline();
+AnimationTimeline* DeferredTimeline::ExposedTimeline() {
+  return SingleAttachedTimeline();
+}
+
+void DeferredTimeline::AttachTimeline(ScrollTimeline* timeline) {
+  ScrollTimeline* original_timeline = SingleAttachedTimeline();
 
   attached_timelines_.push_back(timeline);
 
@@ -19,8 +25,8 @@ void DeferredTimeline::AttachTimeline(ScrollSnapshotTimeline* timeline) {
   }
 }
 
-void DeferredTimeline::DetachTimeline(ScrollSnapshotTimeline* timeline) {
-  ScrollSnapshotTimeline* original_timeline = SingleAttachedTimeline();
+void DeferredTimeline::DetachTimeline(ScrollTimeline* timeline) {
+  ScrollTimeline* original_timeline = SingleAttachedTimeline();
 
   wtf_size_t i = attached_timelines_.Find(timeline);
   if (i != kNotFound) {
@@ -38,16 +44,14 @@ void DeferredTimeline::Trace(Visitor* visitor) const {
 }
 
 DeferredTimeline::ScrollAxis DeferredTimeline::GetAxis() const {
-  if (const ScrollSnapshotTimeline* attached_timeline =
-          SingleAttachedTimeline()) {
+  if (const ScrollTimeline* attached_timeline = SingleAttachedTimeline()) {
     return attached_timeline->GetAxis();
   }
   return ScrollAxis::kBlock;
 }
 
 DeferredTimeline::TimelineState DeferredTimeline::ComputeTimelineState() const {
-  if (const ScrollSnapshotTimeline* attached_timeline =
-          SingleAttachedTimeline()) {
+  if (const ScrollTimeline* attached_timeline = SingleAttachedTimeline()) {
     return attached_timeline->ComputeTimelineState();
   }
   return TimelineState();
