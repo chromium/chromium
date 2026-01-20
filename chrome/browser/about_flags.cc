@@ -10670,9 +10670,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBatteryChargeLimitDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kBatteryChargeLimit)},
 
-    {"mahi", flag_descriptions::kMahiName, flag_descriptions::kMahiDescription,
-     kOsCrOS, FEATURE_VALUE_TYPE(chromeos::features::kMahi)},
-
     {"mahi-debugging", flag_descriptions::kMahiDebuggingName,
      flag_descriptions::kMahiDebuggingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kMahiDebugging)},

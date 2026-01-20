@@ -7435,9 +7435,6 @@ inline constexpr char kLockScreenNotificationName[] =
 inline constexpr char kLockScreenNotificationDescription[] =
     "Enable notifications on the lock screen.";
 
-inline constexpr char kMahiName[] = "Mahi feature";
-inline constexpr char kMahiDescription[] = "Enable Mahi feature on ChromeOS.";
-
 inline constexpr char kMahiDebuggingName[] = "Mahi Debugging";
 inline constexpr char kMahiDebuggingDescription[] =
     "Enable debugging for mahi.";
