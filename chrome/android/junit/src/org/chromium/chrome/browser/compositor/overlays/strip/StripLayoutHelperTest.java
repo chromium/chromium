@@ -746,6 +746,40 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    public void testPushPlaceholdersForTabs_MediaState() {
+        // Create StripLayoutHelper with startup info to create placeholders.
+        mStripLayoutHelper = createStripLayoutHelper(false, false);
+        mStripLayoutHelper.setTabModelStartupInfo(1, 0, false);
+
+        StripLayoutTab[] stripTabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        assertEquals(1, stripTabs.length);
+        assertTrue("Tab should be a placeholder.", stripTabs[0].getIsPlaceholder());
+        assertEquals(
+                "Placeholder media state should be NONE.",
+                MediaState.NONE,
+                stripTabs[0].getMediaState());
+
+        // Add a tab with media state to the tab model and update the tab model in the strip.
+        MockTabModel tabModel = new MockTabModel(mProfile, null);
+        Tab tabWithMedia = new MockTab(0, mProfile);
+        tabWithMedia.setMediaState(MediaState.RECORDING);
+        tabModel.addTab(
+                tabWithMedia, 0, TabLaunchType.FROM_RESTORE, TabCreationState.FROZEN_ON_RESTORE);
+        tabModel.setIndex(0, TabSelectionType.FROM_NEW);
+        tabModel.setActive(true);
+        mStripLayoutHelper.setTabModel(tabModel, mTabCreator, false);
+
+        // StripLayoutTab should have updated the former placeholder's media state.
+        stripTabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        assertEquals(1, stripTabs.length);
+        assertEquals(
+                "Media state should be propagated to the former placeholder.",
+                MediaState.RECORDING,
+                stripTabs[0].getMediaState());
+        assertFalse("Tab should no longer be a placeholder.", stripTabs[0].getIsPlaceholder());
+    }
+
+    @Test
     public void testRebuildStripTabs_MediaState() {
         // Initialize with 2 tabs.
         initializeTest(false, false, 0, 2);
