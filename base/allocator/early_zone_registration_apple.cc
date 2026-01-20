@@ -192,6 +192,22 @@ void EarlyMallocZoneRegistration() {
   // it should replace the delegating zone.
   g_delegating_zone.zone_name = allocator_shim::kDelegatingZoneName.data();
 
+  // This function `EarlyMallocZoneRegistration` must be called only once.
+  // Check the zone name rather than the zone address so that we can detect
+  // a duplicate even when a binary copy of this code exists.
+  if (allocator_shim::IsZoneAlreadyRegistered(
+          allocator_shim::kDelegatingZoneName)) {
+    abort_report_np(
+        "The delegating default zone has unexpectedly already been "
+        "registered.");
+  }
+  if (allocator_shim::IsZoneAlreadyRegistered(
+          allocator_shim::kPartitionAllocZoneName)) {
+    abort_report_np(
+        "The PartitionAlloc default zone has unexpectedly already been "
+        "registered.");
+  }
+
   // Register puts the new zone at the end, unregister swaps the new zone with
   // the last one.
   // The zone array is, after these lines, in order:
