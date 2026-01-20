@@ -485,6 +485,13 @@ export class LineFocusController {
     const sortedRects =
         Array.from(new Set(unsortedRects)).sort((a, b) => a.bottom - b.bottom);
     const combinedRects: DOMRect[] = [sortedRects[0]!];
+    // The smaller the line spacing, the larger the threshold needs to be, since
+    // it is more likely for lines to have overlapping bounds. Thus, invert the
+    // line spacing value and multiply by 10 to ensure it is above 1.
+    const lineHeight =
+        chrome.readingMode.getLineSpacingValue(chrome.readingMode.lineSpacing);
+    const threshold =
+        Math.max(1, chrome.readingMode.fontSize) * (1 / lineHeight) * 10;
     for (let i = 1; i < sortedRects.length; i++) {
       const currentRect = sortedRects[i]!;
       const lastRect = combinedRects[combinedRects.length - 1]!;
@@ -502,7 +509,6 @@ export class LineFocusController {
       // even though the lines are visually distinct.
       const isIntersecting = lastRect.bottom > currentRect.top &&
           lastRect.bottom <= currentRect.bottom;
-      const threshold = Math.max(1, chrome.readingMode.fontSize);
       if (isIntersecting && (lastRect.bottom - currentRect.top) > threshold) {
         combinedRects.pop();
       }
