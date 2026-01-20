@@ -86,6 +86,8 @@ class GlicInstanceCoordinatorImpl
   // per profile.
   void OnWillCreateFloaty() override;
   void UnbindTabFromAnyInstance(tabs::TabInterface* tab) override;
+  // Sorts conversations by recency and returns the ConversationInfoPtr of each
+  // conversation. Used by the web client to get recent conversations.
   std::vector<glic::mojom::ConversationInfoPtr> GetRecentlyActiveConversations(
       size_t limit) override;
   void ContextAccessIndicatorChanged(GlicInstanceImpl& instance,
@@ -97,16 +99,20 @@ class GlicInstanceCoordinatorImpl
   // GlicWindowController implementation
   HostManager& host_manager() override;
   GlicInstance* GetInstanceForTab(const tabs::TabInterface* tab) const override;
-  std::vector<ConversationInfo> GetRecentConversations(size_t limit) override;
+  // Sorts instances by recency and returns the instance id and
+  // conversation title of each conversation.
+  std::vector<ConversationInfo> GetRecentlyActiveInstances(
+      size_t limit) override;
 
   // Creates a new conversation and pins the given tabs.
   // This overrides any conversation that was already associated with any
   // of the given tabs.
   void CreateNewConversationForTabs(
       const std::vector<tabs::TabInterface*>& tabs) override;
-  // Moves the given tabs to the conversation with the provided ID.
-  void MoveTabsToConversation(const std::vector<tabs::TabInterface*>& tabs,
-                              const std::string& conversation_id) override;
+
+  // Pins the given tabs to the instance with the given id.
+  void ShowInstanceForTabs(const std::vector<tabs::TabInterface*>& tabs,
+                           const InstanceId& instance_id) override;
 
   // Toggles the side panel for the active tab if `browser` is provided,
   // otherwise toggles the floating window for the instance. Focus is given
@@ -179,6 +185,9 @@ class GlicInstanceCoordinatorImpl
   GlicInstanceImpl* CreateGlicInstance();
   std::unique_ptr<GlicInstanceImpl> CreateInstanceImpl();
   void CreateWarmedInstance();
+
+  // Helper method to get a list of recently active instances sorted by time.
+  std::vector<GlicInstanceImpl*> GetSortedRecentInstances(size_t limit) const;
 
   void ShowInstanceForTabs(GlicInstanceImpl* instance,
                            const std::vector<tabs::TabInterface*>& tabs,

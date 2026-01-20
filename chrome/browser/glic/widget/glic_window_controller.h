@@ -49,7 +49,7 @@ class GlicKeyedService;
 enum class AttachChangeReason;
 
 struct ConversationInfo {
-  std::string id;
+  InstanceId instance_id;
   std::string title;
 };
 
@@ -74,10 +74,9 @@ class GlicWindowController {
       const tabs::TabInterface* tab) const = 0;
   virtual void CreateNewConversationForTabs(
       const std::vector<tabs::TabInterface*>& tabs) = 0;
-  virtual void MoveTabsToConversation(
-      const std::vector<tabs::TabInterface*>& tabs,
-      const std::string& conversation_id) = 0;
-  virtual std::vector<ConversationInfo> GetRecentConversations(
+  virtual void ShowInstanceForTabs(const std::vector<tabs::TabInterface*>& tabs,
+                                   const InstanceId& instance_id) = 0;
+  virtual std::vector<ConversationInfo> GetRecentlyActiveInstances(
       size_t limit) = 0;
 
   // Show, summon, or activate the panel if needed, or close it if it's already

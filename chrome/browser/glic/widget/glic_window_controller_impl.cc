@@ -460,14 +460,14 @@ void GlicWindowControllerImpl::CreateNewConversationForTabs(
   NOTIMPLEMENTED();
 }
 
-void GlicWindowControllerImpl::MoveTabsToConversation(
+void GlicWindowControllerImpl::ShowInstanceForTabs(
     const std::vector<tabs::TabInterface*>& tabs,
-    const std::string& conversation_id) {
+    const InstanceId& instance_id) {
   NOTIMPLEMENTED();
 }
 
-std::vector<ConversationInfo> GlicWindowControllerImpl::GetRecentConversations(
-    size_t limit) {
+std::vector<ConversationInfo>
+GlicWindowControllerImpl::GetRecentlyActiveInstances(size_t limit) {
   return {};
 }
 

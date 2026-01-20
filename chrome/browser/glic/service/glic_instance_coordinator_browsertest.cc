@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   instance2->RegisterConversation(std::move(info), base::DoNothing());
 
   // Move tab1 to instance2's conversation.
-  coordinator().MoveTabsToConversation({tab1}, kTargetConversationId);
+  coordinator().ShowInstanceForTabs({tab1}, instance2->id());
 
   EXPECT_EQ(coordinator().GetInstanceForTab(tab1), instance2);
   EXPECT_EQ(coordinator().GetInstanceForTab(tab2), instance2);

@@ -31,7 +31,7 @@ GlicTabSubMenuModel::GlicTabSubMenuModel(TabStripModel* tab_strip_model,
           l10n_util::GetStringUTF16(IDS_TAB_CXMENU_GLIC_CREATE_NEW_CHAT));
 
   recent_conversations_ =
-      glic_service->window_controller().GetRecentConversations(
+      glic_service->window_controller().GetRecentlyActiveInstances(
           kMaxRecentConversations);
 
   if (!recent_conversations_.empty()) {
@@ -82,8 +82,8 @@ void GlicTabSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
              command_id <= kMaxRecentConversationCommandId) {
     size_t conversation_index = command_id - kMinRecentConversationCommandId;
     CHECK_LT(conversation_index, recent_conversations_.size());
-    service->window_controller().MoveTabsToConversation(
-        tabs, recent_conversations_[conversation_index].id);
+    service->window_controller().ShowInstanceForTabs(
+        tabs, recent_conversations_[conversation_index].instance_id);
   }
 }
 
