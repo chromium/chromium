@@ -172,9 +172,6 @@ extern const char kCacheIdentityListInChromeDescription[];
 extern const char kChromeNextIaName[];
 extern const char kChromeNextIaDescription[];
 
-extern const char kChromeStartupParametersAsyncName[];
-extern const char kChromeStartupParametersAsyncDescription[];
-
 extern const char kCloseOtherTabsName[];
 extern const char kCloseOtherTabsDescription[];
 

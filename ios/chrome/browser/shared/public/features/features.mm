@@ -553,8 +553,6 @@ BASE_FEATURE(kSeparateProfilesForManagedAccountsForceMigration,
 
 BASE_FEATURE(kOmahaResyncTimerOnForeground, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kChromeStartupParametersAsync, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kYoutubeIncognito, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kYoutubeIncognitoTargetApps[] = "youtube-incognito-target-apps";

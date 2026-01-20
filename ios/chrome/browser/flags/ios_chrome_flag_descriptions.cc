@@ -283,12 +283,6 @@ const char kCacheIdentityListInChromeDescription[] =
 const char kChromeNextIaName[] = "ChromeNextIa";
 const char kChromeNextIaDescription[] = "Enables the chrome_next_ia feature.";
 
-const char kChromeStartupParametersAsyncName[] =
-    "Enable the async chrome startup";
-const char kChromeStartupParametersAsyncDescription[] =
-    "When enabled the async version of the chrome startup method is used. This "
-    "method is used to parse the startup parameters.";
-
 const char kCloseOtherTabsName[] = "CloseOtherTabs";
 const char kCloseOtherTabsDescription[] = "Enables the CloseOtherTabs feature.";
 
