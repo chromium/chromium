@@ -510,6 +510,7 @@ void maybeShowSettingsIPH(Browser* browser) {
   GURL helpUrl(kBookmarksLimitExceededHelpCenter);
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:helpUrl];
+  command.appendTo = OpenPosition::kCurrentTab;
   id<SceneCommands> handler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
   [handler closePresentedViewsAndOpenURL:command];

@@ -671,11 +671,13 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
             kSettings);
   }
   GURL helpUrl(kBookmarksLimitExceededHelpCenter);
-  UrlLoadParams params = UrlLoadParams::InNewTab(helpUrl);
-  params.append_to = OpenPosition::kCurrentTab;
-  params.user_initiated = YES;
-  params.in_incognito = self.browser->GetProfile()->IsOffTheRecord();
-  UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
+  OpenNewTabCommand* command = [OpenNewTabCommand
+      commandWithURLFromChrome:helpUrl
+                   inIncognito:self.browser->GetProfile()->IsOffTheRecord()];
+  command.appendTo = OpenPosition::kCurrentTab;
+  id<SceneCommands> handler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  [handler closePresentedViewsAndOpenURL:command];
 }
 
 - (void)openPrimaryAccountReauthDialog {

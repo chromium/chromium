@@ -65,7 +65,6 @@
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
-#import "ios/chrome/browser/url_loading/model/test_scene_url_loading_service.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -151,10 +150,6 @@ class BrowserCoordinatorTest : public PlatformTest {
                                   : Browser::Type::kRegular);
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     UrlLoadingBrowserAgent::CreateForBrowser(browser_.get());
-    scene_url_loading_service_ = std::make_unique<TestSceneUrlLoadingService>();
-    scene_url_loading_service_->current_browser_ = browser_.get();
-    UrlLoadingBrowserAgent::FromBrowser(browser_.get())
-        ->SetSceneService(scene_url_loading_service_.get());
     LensBrowserAgent::CreateForBrowser(browser_.get());
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
     WebUsageEnablerBrowserAgent::CreateForBrowser(browser_.get());
@@ -178,17 +173,17 @@ class BrowserCoordinatorTest : public PlatformTest {
     // Set up SceneCommands mock. Because SceneCommands conforms
     // to SettingsCommands, that needs to be mocked and dispatched
     // as well.
-    id mockSceneHandler = OCMProtocolMock(@protocol(SceneCommands));
+    mock_scene_handler_ = OCMProtocolMock(@protocol(SceneCommands));
     id mockSettingsCommandHandler =
         OCMProtocolMock(@protocol(SettingsCommands));
-    [dispatcher startDispatchingToTarget:mockSceneHandler
+    [dispatcher startDispatchingToTarget:mock_scene_handler_
                              forProtocol:@protocol(SceneCommands)];
     [dispatcher startDispatchingToTarget:mockSettingsCommandHandler
                              forProtocol:@protocol(SettingsCommands)];
 
     IncognitoReauthSceneAgent* reauthAgent = [[IncognitoReauthSceneAgent alloc]
         initWithReauthModule:[[ReauthenticationModule alloc] init]
-                sceneHandler:mockSceneHandler];
+                sceneHandler:mock_scene_handler_];
     [scene_state_ addAgent:reauthAgent];
     [dispatcher startDispatchingToTarget:reauthAgent
                              forProtocol:@protocol(IncognitoReauthCommands)];
@@ -245,7 +240,7 @@ class BrowserCoordinatorTest : public PlatformTest {
   UIViewController* base_view_controller_;
   std::unique_ptr<TestBrowser> browser_;
   SceneState* scene_state_;
-  std::unique_ptr<TestSceneUrlLoadingService> scene_url_loading_service_;
+  id<SceneCommands> mock_scene_handler_;
 };
 
 // Tests if the URL to open the downlads directory from files.app is valid.
@@ -573,9 +568,11 @@ TEST_F(BrowserCoordinatorTest, ShowBookmarksLimitExceededHelp) {
                   syncer::SyncService::BookmarksLimitExceededHelpClickedSource::
                       kSyncErrorMessage));
 
-  ASSERT_EQ(0, browser_->GetWebStateList()->count());
+  OCMExpect([mock_scene_handler_ closePresentedViewsAndOpenURL:[OCMArg any]]);
+
   [browser_coordinator showBookmarksLimitExceededHelp];
-  EXPECT_EQ(1, browser_->GetWebStateList()->count());
+
+  EXPECT_OCMOCK_VERIFY((OCMockObject*)mock_scene_handler_);
 
   [browser_coordinator stop];
 }

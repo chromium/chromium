@@ -251,6 +251,7 @@
 #import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/non_modal_signin_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/commands/parent_access_commands.h"
@@ -4235,11 +4236,13 @@ const char kChromeAppStoreUrl[] =
             kSyncErrorMessage);
   }
   GURL helpUrl(kBookmarksLimitExceededHelpCenter);
-  UrlLoadParams params = UrlLoadParams::InNewTab(helpUrl);
-  params.append_to = OpenPosition::kCurrentTab;
-  params.user_initiated = YES;
-  params.in_incognito = self.isOffTheRecord;
-  _urlLoadingBrowserAgent->Load(params);
+  OpenNewTabCommand* command =
+      [OpenNewTabCommand commandWithURLFromChrome:helpUrl
+                                      inIncognito:self.isOffTheRecord];
+  command.appendTo = OpenPosition::kCurrentTab;
+  id<SceneCommands> handler =
+      HandlerForProtocol(self.dispatcher, SceneCommands);
+  [handler closePresentedViewsAndOpenURL:command];
 }
 
 #pragma mark - SyncPresenterCommands helper
