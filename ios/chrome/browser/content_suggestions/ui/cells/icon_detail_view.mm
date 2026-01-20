@@ -11,6 +11,9 @@
 #import "ios/chrome/browser/content_suggestions/ui/cells/icon_detail_view_configuration.h"
 #import "ios/chrome/browser/content_suggestions/ui/cells/icon_view.h"
 #import "ios/chrome/browser/content_suggestions/ui/cells/icon_view_configuration.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -240,6 +243,8 @@ UIView* BadgeIconInContainer(UIImageView* icon,
   // UI tap gesture recognizer. This recognizer detects taps on the view
   // and triggers the appropriate action.
   UITapGestureRecognizer* _tapGestureRecognizer;
+  // The container view for the image, if one exists.
+  UIView* _imageContainerView;
 }
 
 - (instancetype)initWithConfiguration:
@@ -247,6 +252,11 @@ UIView* BadgeIconInContainer(UIImageView* icon,
   if ((self = [super initWithFrame:CGRectZero])) {
     CHECK(configuration);
     _configuration = [configuration copy];
+
+    if (IsNTPBackgroundCustomizationEnabled()) {
+      [self registerForTraitChanges:@[ NewTabPageTrait.class ]
+                         withAction:@selector(applyBackgroundColors)];
+    }
   }
   return self;
 }
@@ -267,6 +277,13 @@ UIView* BadgeIconInContainer(UIImageView* icon,
 }
 
 #pragma mark - Private
+
+- (void)applyBackgroundColors {
+  NewTabPageColorPalette* colorPalette =
+      [self.traitCollection objectForNewTabPageTrait];
+  _imageContainerView.backgroundColor =
+      colorPalette.tertiaryColor ?: [UIColor colorNamed:kGrey100Color];
+}
 
 // Creates and configures the subviews for the `IconDetailView`. This method
 // sets up the icon, title, description, and optional chevron, arranging them
@@ -339,7 +356,7 @@ UIView* BadgeIconInContainer(UIImageView* icon,
   // When the item is displayed in a hero-style layout, the icon is more
   // prominently displayed via an icon container view.
   if (isHeroLayout) {
-    UIView* imageContainerView =
+    _imageContainerView =
         [self imageInContainer:image
              useLargeContainer:(_configuration.backgroundImage != nil)];
 
@@ -347,14 +364,14 @@ UIView* BadgeIconInContainer(UIImageView* icon,
     if (_configuration.showCheckmark) {
       UIImageView* checkmark = CheckmarkIcon();
 
-      [imageContainerView addSubview:checkmark];
+      [_imageContainerView addSubview:checkmark];
 
       [NSLayoutConstraint activateConstraints:@[
         [checkmark.topAnchor
-            constraintEqualToAnchor:imageContainerView.topAnchor
+            constraintEqualToAnchor:_imageContainerView.topAnchor
                            constant:kCheckmarkTopOffset],
         [checkmark.trailingAnchor
-            constraintEqualToAnchor:imageContainerView.trailingAnchor
+            constraintEqualToAnchor:_imageContainerView.trailingAnchor
                            constant:kCheckmarkTrailingOffset],
       ]];
     }
@@ -367,7 +384,7 @@ UIView* BadgeIconInContainer(UIImageView* icon,
           BadgeIconInContainer(badge, _configuration.badgeBackgroundColor,
                                _configuration.badgeShapeConfig);
 
-      [imageContainerView addSubview:badgeWithContainer];
+      [_imageContainerView addSubview:badgeWithContainer];
 
       // Calculate the offset to equally space the badge from the right and
       // bottom.
@@ -376,15 +393,15 @@ UIView* BadgeIconInContainer(UIImageView* icon,
 
       [NSLayoutConstraint activateConstraints:@[
         [badgeWithContainer.bottomAnchor
-            constraintEqualToAnchor:imageContainerView.bottomAnchor
+            constraintEqualToAnchor:_imageContainerView.bottomAnchor
                            constant:-badgeOffset],
         [badgeWithContainer.trailingAnchor
-            constraintEqualToAnchor:imageContainerView.trailingAnchor
+            constraintEqualToAnchor:_imageContainerView.trailingAnchor
                            constant:-badgeOffset],
       ]];
     }
 
-    [arrangedSubviews addObject:imageContainerView];
+    [arrangedSubviews addObject:_imageContainerView];
   } else {
     [arrangedSubviews addObject:image];
   }
@@ -442,6 +459,8 @@ UIView* BadgeIconInContainer(UIImageView* icon,
                                               action:@selector(handleTap:)];
 
   [self addGestureRecognizer:_tapGestureRecognizer];
+
+  [self applyBackgroundColors];
 }
 
 // Called when the view is tapped. This method notifies the `tapDelegate`
@@ -461,7 +480,6 @@ UIView* BadgeIconInContainer(UIImageView* icon,
           useLargeContainer:(BOOL)useLargeContainer {
   UIView* iconContainer = [[UIView alloc] init];
 
-  iconContainer.backgroundColor = _configuration.iconContainerBackgroundColor;
   iconContainer.layer.cornerRadius = kIconContainerCornerRadius;
 
   [iconContainer addSubview:icon];

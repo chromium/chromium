@@ -15,8 +15,7 @@
 @class TipsModuleState;
 
 // A view displaying the Tips module in the Magic Stack.
-@interface TipsModuleView
-    : UIView <NewTabPageColorUpdating, TipsMagicStackConsumer>
+@interface TipsModuleView : UIView <TipsMagicStackConsumer>
 
 // Initializes the `TipsModuleView` with `state`.
 - (instancetype)initWithState:(TipsModuleState*)state;

@@ -14,6 +14,8 @@
 #import "ios/chrome/browser/content_suggestions/tab_resumption/public/tab_resumption_constants.h"
 #import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_commands.h"
 #import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_item.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/price_notifications/ui_bundled/cells/price_notifications_price_chip_view.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -107,6 +109,10 @@ bool HasPriceDropOnTab(TabResumptionItem* item) {
   self = [super init];
   if (self) {
     _item = item;
+    if (IsNTPBackgroundCustomizationEnabled()) {
+      [self registerForTraitChanges:@[ NewTabPageTrait.class ]
+                         withAction:@selector(applyBackgroundColors)];
+    }
   }
   return self;
 }
@@ -179,6 +185,8 @@ bool HasPriceDropOnTab(TabResumptionItem* item) {
 
   [self addSubview:_containerStackView];
   AddSameConstraints(_containerStackView, self);
+
+  [self applyBackgroundColors];
 }
 
 - (void)clearSubviews {
@@ -374,7 +382,6 @@ bool HasPriceDropOnTab(TabResumptionItem* item) {
     [containerView addSubview:contentImageView];
     AddSameConstraints(contentImageView, containerView);
   } else {
-    containerView.backgroundColor = [UIColor colorNamed:kGrey100Color];
     containerSize = kImageEmptyContainerSize;
   }
 
@@ -472,6 +479,18 @@ bool HasPriceDropOnTab(TabResumptionItem* item) {
   label.textColor = [UIColor colorNamed:kTextSecondaryColor];
 
   return label;
+}
+
+- (void)applyBackgroundColors {
+  // Only set background color if item does not have content image.
+  BOOL hasContentImage = _item.contentImage && _item.contentImage.size.width &&
+                         _item.contentImage.size.height;
+  if (!hasContentImage) {
+    NewTabPageColorPalette* colorPalette =
+        [self.traitCollection objectForNewTabPageTrait];
+    _imageContainerView.backgroundColor =
+        colorPalette.tertiaryColor ?: [UIColor colorNamed:kGrey100Color];
+  }
 }
 
 // Returns the tab hostname from the given `URL`.

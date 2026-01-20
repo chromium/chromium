@@ -143,21 +143,11 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip,
 
   // The root view of the Tips module.
   UIView* _contentView;
-
-  // The background color of the container if the symbol is rendered in a
-  // container.
-  UIColor* _symbolContainerBackgroundColor;
 }
 
 - (instancetype)initWithState:(TipsModuleState*)state {
   if ((self = [super init])) {
     _state = state;
-
-    if (IsNTPBackgroundCustomizationEnabled()) {
-      [self registerForTraitChanges:@[ NewTabPageTrait.class ]
-                         withAction:@selector(applyBackgroundColors)];
-    }
-    [self applyBackgroundColors];
   }
 
   return self;
@@ -196,20 +186,6 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip,
   CHECK_NE(tip, TipIdentifier::kUnknown);
 
   [self.audience didSelectTip:tip];
-}
-
-#pragma mark - NewTabPageColorUpdating
-
-- (void)applyBackgroundColors {
-  NewTabPageColorPalette* colorPalette =
-      [self.traitCollection objectForNewTabPageTrait];
-
-  _symbolContainerBackgroundColor = colorPalette
-                                        ? colorPalette.tertiaryColor
-                                        : [UIColor colorNamed:kGrey100Color];
-
-  // Redraws the view by removing and recreating the content view.
-  [self tipsStateDidChange:_state];
 }
 
 #pragma mark - Private methods
@@ -270,7 +246,6 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip,
     viewConfig.iconName = base::SysUTF8ToNSString(symbol.name);
     viewConfig.symbolColorPalette = [self symbolColorPalette:tip];
     viewConfig.symbolBackgroundColor = [self symbolBackgroundColor:tip];
-    viewConfig.iconContainerBackgroundColor = _symbolContainerBackgroundColor;
     viewConfig.usesDefaultSymbol = symbol.is_default_symbol;
     viewConfig.iconWidth = kSymbolWidth;
 
@@ -296,7 +271,6 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip,
   viewConfig.iconName = base::SysUTF8ToNSString(symbol.name);
   viewConfig.symbolColorPalette = [self symbolColorPalette:tip];
   viewConfig.symbolBackgroundColor = [self symbolBackgroundColor:tip];
-  viewConfig.iconContainerBackgroundColor = _symbolContainerBackgroundColor;
   viewConfig.usesDefaultSymbol = symbol.is_default_symbol;
   viewConfig.accessibilityIdentifier = [self accessibilityIdentifier:tip];
 

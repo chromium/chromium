@@ -44,7 +44,6 @@ constexpr CGFloat kBadgeIconSquareContainerRadius = 4;
                         iconSource:IconViewSourceType::kSymbol
                 symbolColorPalette:@[ [UIColor whiteColor] ]
              symbolBackgroundColor:[UIColor colorNamed:kBackgroundColor]
-      iconContainerBackgroundColor:[UIColor colorNamed:kGrey100Color]
                  usesDefaultSymbol:NO
                          iconWidth:kIconSize
                      showCheckmark:NO
@@ -76,7 +75,6 @@ constexpr CGFloat kBadgeIconSquareContainerRadius = 4;
                         iconSource:IconViewSourceType::kSymbol
                 symbolColorPalette:@[ [UIColor whiteColor] ]
              symbolBackgroundColor:[UIColor colorNamed:kBackgroundColor]
-      iconContainerBackgroundColor:[UIColor colorNamed:kGrey100Color]
                  usesDefaultSymbol:NO
                          iconWidth:kIconSize
                      showCheckmark:NO
@@ -98,7 +96,6 @@ constexpr CGFloat kBadgeIconSquareContainerRadius = 4;
                        iconSource:(IconViewSourceType)iconSource
                symbolColorPalette:(NSArray<UIColor*>*)symbolColorPalette
             symbolBackgroundColor:(UIColor*)symbolBackgroundColor
-     iconContainerBackgroundColor:(UIColor*)iconContainerBackgroundColor
                 usesDefaultSymbol:(BOOL)usesDefaultSymbol
                         iconWidth:(CGFloat)iconWidth
                     showCheckmark:(BOOL)showCheckmark
@@ -117,7 +114,6 @@ constexpr CGFloat kBadgeIconSquareContainerRadius = 4;
     _iconSource = iconSource;
     _symbolColorPalette = [symbolColorPalette copy];
     _symbolBackgroundColor = symbolBackgroundColor;
-    _iconContainerBackgroundColor = iconContainerBackgroundColor;
     _usesDefaultSymbol = usesDefaultSymbol;
     _iconWidth = iconWidth;
     _showCheckmark = showCheckmark;
@@ -160,7 +156,6 @@ constexpr CGFloat kBadgeIconSquareContainerRadius = 4;
                         iconSource:self.iconSource
                 symbolColorPalette:self.symbolColorPalette
              symbolBackgroundColor:self.symbolBackgroundColor
-      iconContainerBackgroundColor:self.iconContainerBackgroundColor
                  usesDefaultSymbol:self.usesDefaultSymbol
                          iconWidth:self.iconWidth
                      showCheckmark:self.showCheckmark
