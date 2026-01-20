@@ -146,6 +146,9 @@ class BASE_EXPORT ThreadController {
   virtual void DetachFromMessagePump() = 0;
 #endif
 
+  // Initializes features for this class. See `base::features::Init()`.
+  static void InitializeFeatures();
+
   // Enables TimeKeeper metrics. `thread_name` will be used as a suffix.
   // Setting `wall_time_based_metrics_enabled_for_testing` adds wall-time
   // based metrics for this thread. It also also disables subsampling.

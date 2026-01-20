@@ -4,6 +4,7 @@
 
 #include "base/task/sequence_manager/thread_controller.h"
 
+#include <atomic>
 #include <string_view>
 
 #include "base/check.h"
@@ -11,6 +12,7 @@
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -21,6 +23,34 @@
 namespace base::sequence_manager::internal {
 
 namespace {
+
+// TODO(crbug.com/458682617): Remove this. It is an artifact of a feature which
+// had the unintentional side-effect of adding a memory barrier at the end of
+// each "ThreadController active". Hiding some TSAN failures which need fixing
+// before we can lift this. It is disabled when FeatureList gets initialized (as
+// the feature was), but FeatureList isn't initialized in all test suites...
+std::atomic<bool> g_fortuitous_memory_barrier_on_sleep{
+#if defined(THREAD_SANITIZER)
+    true};
+#else
+    false};
+#endif
+
+void PerformFortuitousMemoryBarrierIfNecessary() {
+  if (g_fortuitous_memory_barrier_on_sleep.load(std::memory_order_relaxed)) {
+    static constinit std::atomic_uint shared_int{0};
+    // This is the minimum requirement (side-effect from the previous
+    // AutoLock) to reproduce crbug.com/458682617 (and mask TSAN failures).
+    // Toggling this to std::memory_order_relaxed exposes the TSAN failures.
+    // Note: We use `fetch_add` because a `store` isn't allowed to have
+    // `acquire` semantics and we need acquire-release semantics to force any
+    // kind of synchronization. We use an atomic variable instead of a full
+    // `std::atomic_thread_fence` as this only aligns threads which pass
+    // through this code path (as AutoLock would) instead of aligning with
+    // other threads and their own unrelated memory barriers.
+    shared_int.fetch_add(1, std::memory_order_acq_rel);
+  }
+}
 
 // ThreadController interval metrics are mostly of interest for intervals that
 // are not trivially short. Under a certain threshold it's unlikely that
@@ -58,6 +88,13 @@ ThreadController::RunLevelTracker::~RunLevelTracker() {
 
   // There shouldn't be any remaining |run_levels_| by the time this unwinds.
   DCHECK_EQ(run_levels_.size(), 0u);
+}
+
+// static
+void ThreadController::InitializeFeatures() {
+  // Disable fortuitous barriers whenever FeatureList is initialized to minimize
+  // the surface where this is applied.
+  g_fortuitous_memory_barrier_on_sleep.store(false, std::memory_order_relaxed);
 }
 
 std::string_view ThreadController::RunLevelTracker::RunLevel::GetThreadName() {
@@ -442,6 +479,11 @@ void ThreadController::RunLevelTracker::RunLevel::UpdateState(
                         time_keeper_->MaybeEmitIncomingWakeupFlow(ctx);
                       });
   } else {
+    // TODO(crbug.com/458682617): Remove this after fixing
+    // HeadlessBrowserUAHeaderTest.* (which only need the memory barrier when
+    // ThreadControllerActive ends).
+    PerformFortuitousMemoryBarrierIfNecessary();
+
     LogOnIdleMetrics(lazy_now);
 
     TRACE_EVENT_END("base", lazy_now.Now());
