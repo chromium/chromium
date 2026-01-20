@@ -5,7 +5,6 @@
 #include "chrome/browser/sync_file_system/drive_backend/metadata_database_index_on_disk.h"
 
 #include <array>
-#include <unordered_set>
 
 #include "base/format_macros.h"
 #include "base/logging.h"
@@ -17,6 +16,7 @@
 #include "chrome/browser/sync_file_system/drive_backend/leveldb_wrapper.h"
 #include "chrome/browser/sync_file_system/drive_backend/metadata_database.pb.h"
 #include "chrome/browser/sync_file_system/logger.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
 // LevelDB database schema
@@ -210,7 +210,7 @@ void RemoveUnreachableItemsFromDB(LevelDBWrapper* db,
 
   // Delete all unreachable trackers, and list all |file_id| referred by
   // remained trackers.
-  std::unordered_set<std::string> referred_file_ids;
+  absl::flat_hash_set<std::string> referred_file_ids;
   {
     std::unique_ptr<LevelDBWrapper::Iterator> itr = db->NewIterator();
     for (itr->Seek(kFileTrackerKeyPrefix); itr->Valid(); itr->Next()) {
