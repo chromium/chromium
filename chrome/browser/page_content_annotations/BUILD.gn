@@ -60,8 +60,7 @@ source_set("fetcher") {
   public_deps = [
     "//base",
     "//components/content_extraction/content/browser",
-    "//components/optimization_guide/content/browser",
-    "//ui/gfx/geometry",
+    "//components/page_content_annotations/content",
   ]
 }
 

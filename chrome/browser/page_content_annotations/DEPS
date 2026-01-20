@@ -1,3 +1,7 @@
+include_rules = [
+  "+components/page_content_annotations/content",
+]
+
 specific_include_rules = {
   "multi_source_page_context_fetcher\.*": [
     "+components/paint_preview/common",

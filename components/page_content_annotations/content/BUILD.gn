@@ -2,21 +2,43 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//pdf/features.gni")
+
 source_set("content") {
   sources = [
     "page_content_screenshot_service.cc",
     "page_content_screenshot_service.h",
+    "page_context_fetcher.cc",
+    "page_context_fetcher.h",
   ]
+
   public_deps = [
     "//base",
+    "//components/content_extraction/content/browser",
+    "//components/optimization_guide/content/browser",
     "//components/paint_preview/browser",
     "//components/paint_preview/common",
     "//components/paint_preview/common/mojom",
     "//components/paint_preview/public",
-  ]
-  deps = [
-    "//components/services/paint_preview_compositor/public/mojom",
     "//content/public/browser",
+    "//skia",
     "//ui/gfx/geometry",
+    "//url",
   ]
+
+  deps = [
+    "//components/optimization_guide/content/browser:page_context_eligibility",
+    "//components/page_content_annotations/core",
+    "//components/pdf/common:constants",
+    "//components/services/paint_preview_compositor/public/mojom",
+    "//components/tabs:public",
+    "//components/viz/common",
+  ]
+
+  if (enable_pdf) {
+    deps += [
+      "//components/pdf/browser",
+      "//pdf/mojom",
+    ]
+  }
 }

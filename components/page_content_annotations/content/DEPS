@@ -3,10 +3,19 @@
 # found in the LICENSE file.
 
 include_rules = [
+    "+components/content_extraction/content/browser",
+    "+components/optimization_guide/content/browser",
     "+components/paint_preview",
+    "+components/pdf/browser",
+    "+components/pdf/common",
     "+components/services/paint_preview_compositor",
+    "+components/tabs",
+    "+components/viz/common/frame_sinks",
     "+content/public/browser",
     "+mojo/public/cpp/base",
+    "+net/base",
+    "+pdf/mojom",
+    "+third_party/blink/public/mojom/content_extraction",
     "+third_party/skia",
     "+ui/gfx",
 ]
