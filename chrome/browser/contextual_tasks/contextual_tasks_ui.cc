@@ -993,6 +993,10 @@ void ContextualTasksUI::CreatePageHandler(
 
 void ContextualTasksUI::OnTaskChanged() {
   composebox_handler_->OnTaskChanged();
+  if (!IsShownInTab()) {
+    // Update the suggested tab chip.
+    OnActiveTabContextStatusChanged();
+  }
 }
 
 // static
