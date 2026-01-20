@@ -4923,7 +4923,12 @@ static_library("ui") {
     }
 
     if (is_chromeos) {
-      sources += [ "views/status_icons/status_tray_chromeos.cc" ]
+      sources += [
+        "views/status_icons/status_icon_chromeos.cc",
+        "views/status_icons/status_icon_chromeos.h",
+        "views/status_icons/status_tray_chromeos.cc",
+        "views/status_icons/status_tray_chromeos.h",
+      ]
 
       deps += [
         "//chromeos/ash/experiences/arc/intent_helper:arc_intent_helper_constants",
