@@ -424,7 +424,6 @@ class DeterminePossibleFieldTypesForUploadTest : public ::testing::Test {
   DeterminePossibleFieldTypesForUploadTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kAutofillAiWithDataSchema,
-         features::kAutofillAiVoteForFormatStringsForAffixes,
          features::kAutofillAiVoteForFormatStringsForFlightNumbers,
          features::kAutofillEnableLoyaltyCardsFilling},
         {});
