@@ -1571,7 +1571,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         MultiInstancePersistentStore.writeLastAccessedTime(mInstanceId);
 
         // Notify Recent Tabs page that the instance is closing.
-        notifyInstanceClosed(mInstanceId, /* isPermanentDeletion= */ false);
+        int normalTabCount = MultiInstancePersistentStore.readNormalTabCount(mInstanceId);
+        notifyInstanceClosed(mInstanceId, /* isPermanentDeletion= */ normalTabCount == 0);
 
         if (mInstanceId != INVALID_WINDOW_ID) {
             ApplicationStatus.unregisterActivityStateListener(this);

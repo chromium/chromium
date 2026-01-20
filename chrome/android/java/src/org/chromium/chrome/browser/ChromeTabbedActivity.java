@@ -873,7 +873,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                                 boolean isPendingClosure, boolean shouldRemoveWindowWithZeroTabs) {
                             if (getTabModelSelector().getTotalTabCount() == 0) {
                                 if (shouldRemoveWindowWithZeroTabs) {
-                                    finishAndRemoveTask();
+                                    mMultiInstanceManager.closeChromeWindowIfEmpty(mWindowId);
                                 } else if (HomepageManager.getInstance()
                                         .shouldCloseAppWithZeroTabs()) {
                                     // If the last tab is closed, and homepage is enabled, then exit
