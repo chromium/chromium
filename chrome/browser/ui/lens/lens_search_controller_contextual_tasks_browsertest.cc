@@ -5,6 +5,7 @@
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -101,10 +102,18 @@ class ContextualTasksLensInteractionBrowserTest : public InProcessBrowserTest {
         LensSearchController::From(browser()->GetActiveTabInterface()));
   }
 
-  bool IsSidePanelOpen() {
+  bool IsLensSidePanelOpen() {
     auto* coordinator =
         GetLensSearchController()->lens_overlay_side_panel_coordinator();
     return coordinator && coordinator->IsEntryShowing();
+  }
+
+  bool IsContextualTasksSidePanelOpen() {
+    auto* contextual_tasks_coordinator =
+        contextual_tasks::ContextualTasksSidePanelCoordinator::From(
+            GetBrowserWindowInterface());
+    return contextual_tasks_coordinator &&
+           contextual_tasks_coordinator->IsSidePanelOpenForContextualTask();
   }
 
   // Lens overlay takes a screenshot of the tab. In order to take a screenshot
@@ -129,6 +138,10 @@ class ContextualTasksLensInteractionBrowserTest : public InProcessBrowserTest {
   }
 
  private:
+  BrowserWindowInterface* GetBrowserWindowInterface() {
+    return browser()->GetActiveTabInterface()->GetBrowserWindowInterface();
+  }
+
   base::test::ScopedFeatureList feature_list_;
   ui::UserDataFactory::ScopedOverride lens_search_controller_override_;
 };
@@ -164,8 +177,49 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensInteractionBrowserTest,
   // remain open.
 
   // Verify Side Panel is NOT open (Lens results panel shouldn't open).
-  EXPECT_FALSE(IsSidePanelOpen());
+  EXPECT_FALSE(IsLensSidePanelOpen());
 
   // Verify Overlay state is STILL showing.
   EXPECT_TRUE(controller->IsShowingUI());
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksLensInteractionBrowserTest,
+                       OverlayClosesOnNavigation) {
+  // Wait for the page to be painted to prevent flakiness when screenshotting.
+  WaitForPaint();
+
+  auto* controller = GetLensSearchController();
+  ASSERT_TRUE(controller);
+
+  // Open Lens Overlay via App Menu.
+  controller->OpenLensOverlay(lens::LensOverlayInvocationSource::kAppMenu);
+
+  // Wait for the screenshot to be captured and overlay to be shown.
+  WaitForOverlayToOpen(controller);
+  ASSERT_TRUE(controller->IsShowingUI());
+
+  // Simulate a region selection which calls IssueLensRegionRequest.
+  auto region = lens::mojom::CenterRotatedBox::New();
+  region->box = gfx::RectF(0.5, 0.5, 0.1, 0.1);
+  region->coordinate_type =
+      lens::mojom::CenterRotatedBox_CoordinateType::kNormalized;
+  controller->lens_overlay_controller()->IssueLensRegionRequestForTesting(
+      std::move(region), /*is_click=*/false);
+
+  // This should trigger the logic to capture the region, but the overlay should
+  // remain open. It should also open the side panel.
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return IsContextualTasksSidePanelOpen(); }));
+  ASSERT_TRUE(controller->IsShowingUI());
+
+  // Navigate to a new URL.
+  const GURL new_url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), new_url));
+
+  // Verify Overlay state is kOff.
+  auto* overlay_controller = controller->lens_overlay_controller();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return overlay_controller->state() == LensOverlayController::State::kOff;
+  }));
+  ASSERT_FALSE(controller->IsShowingUI());
 }

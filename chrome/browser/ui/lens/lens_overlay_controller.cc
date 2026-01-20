@@ -273,10 +273,21 @@ class LensOverlayController::UnderlyingWebContentsObserver
       return;
     }
 
+    auto* lens_search_controller =
+        lens_overlay_controller_->lens_search_controller_.get();
+    // If routing to contextual tasks, always close the overlay instead of
+    // hiding as the contextual tasks panel is not dependent on the overlay
+    // remaining alive and hidden.
+    if (lens_search_controller->should_route_to_contextual_tasks()) {
+      lens_search_controller->CloseLensAsync(
+          lens::LensOverlayDismissalSource::kPageChanged);
+      return;
+    }
+
     // If the page changes, only the overlay needs to be hidden, possibly
     // leaving the side panel open. The search controller will handle whether
     // the side panel should stay open or the entire session should terminate.
-    lens_overlay_controller_->lens_search_controller_->HideOverlay(
+    lens_search_controller->HideOverlay(
         lens::LensOverlayDismissalSource::kPageChanged);
     return;
   }
