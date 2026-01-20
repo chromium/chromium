@@ -274874,6 +274874,19 @@
         {}
        ]
       ],
+      "centered-paint-offset.html": [
+       "216075914c00e799c4d10885655514c5c73c45dc",
+       [
+        null,
+        [
+         [
+          "/css/css-view-transitions/scoped/centered-paint-offset-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "clip-on-target-in-callback-2.html": [
        "8937f299d8420fc0d419b6d8249697c5c84c6d21",
        [
@@ -396232,7 +396245,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "0adec1177498f94b197073a5051e9d4755495d9f",
+      "e3a905a80eb1a91f066101e45aa196f301d0c32c",
       []
      ],
      "accent-color-checkbox-checked-001-notref.html": [
@@ -396257,7 +396270,7 @@
      ],
      "animation": {
       "WEB_FEATURES.yml": [
-       "3a82d31a0ee9727d47669ee95306e38bba4f2b82",
+       "476428cd11fabb1eaaae590e7909298d441a9e97",
        []
       ]
      },
@@ -396517,7 +396530,7 @@
      ],
      "parsing": {
       "WEB_FEATURES.yml": [
-       "c75834863631ff0d45c7ef741cc9c7031ac27c0e",
+       "6bcc410021a852f6b7b902c58926d840a26aad5c",
        []
       ],
       "canonical-order-outline-sub-properties-001-expected.txt": [
@@ -399444,6 +399457,10 @@
       ],
       "box-decoration-painting-ref.html": [
        "c75f9d2352976ce45b6b7905304432648a51a0d2",
+       []
+      ],
+      "centered-paint-offset-ref.html": [
+       "50637f9855297c19f189ffe80ebd72d1e9c3f5b5",
        []
       ],
       "clip-on-target-in-callback-2-ref.html": [
@@ -537220,13 +537237,6 @@
      ],
      "fontface-override-descriptor-getter-setter.sub.html": [
       "a3d8ccec3681d9124458106da9ff85be03fccdb0",
-      [
-       null,
-       {}
-      ]
-     ],
-     "fontfaceset-add-css-connected.html": [
-      "874558ca8592b36084f368490bee4d872a6d6c47",
       [
        null,
        {}

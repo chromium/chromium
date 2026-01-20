@@ -38,3 +38,8 @@ features:
 - name: text-overflow
   files:
   - text-overflow-*
+- name: cursor
+  files:
+  - canvas-cursor-*
+  - cursor-*
+  - select-cursor-*
