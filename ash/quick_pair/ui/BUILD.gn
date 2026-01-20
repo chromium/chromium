@@ -30,6 +30,8 @@ source_set("ui") {
     "//ash/strings",
     "//base",
     "//components/cross_device/logging",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
     "//third_party/protobuf:protobuf_lite",
     "//ui/base",
     "//ui/gfx",
