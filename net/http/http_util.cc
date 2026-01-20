@@ -27,6 +27,7 @@
 #include "net/base/parse_number.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -52,17 +53,17 @@ class AcceptLanguageBuilder {
  public:
   // Adds a language to the string.
   // Duplicates are ignored.
-  void AddLanguageCode(const std::string& language) {
+  void AddLanguageCode(std::string_view language) {
     // No Q score supported, only supports ASCII.
-    DCHECK_EQ(std::string::npos, language.find_first_of("; "));
+    DCHECK_EQ(std::string_view::npos, language.find_first_of("; \0"));
     DCHECK(base::IsStringASCII(language));
-    if (seen_.find(language) == seen_.end()) {
+    if (!seen_.contains(language)) {
       if (str_.empty()) {
-        base::StringAppendF(&str_, "%s", language.c_str());
+        str_.assign(language);
       } else {
-        base::StringAppendF(&str_, ",%s", language.c_str());
+        base::StrAppend(&str_, {",", language});
       }
-      seen_.insert(language);
+      seen_.emplace(language);
     }
   }
 
@@ -73,15 +74,17 @@ class AcceptLanguageBuilder {
   // The string that contains the list of languages, comma-separated.
   std::string str_;
   // Set the remove duplicates.
-  std::unordered_set<std::string> seen_;
+  absl::flat_hash_set<std::string> seen_;
 };
 
 // Extract the base language code from a language code.
 // If there is no '-' in the code, the original code is returned.
-std::string GetBaseLanguageCode(const std::string& language_code) {
-  std::vector<std::string> tokens = base::SplitString(
-      language_code, "-", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  return tokens.empty() ? "" : std::move(tokens[0]);
+std::string_view GetBaseLanguageCode(std::string_view language_code) {
+  size_t pos = language_code.find('-');
+  if (pos != std::string_view::npos) {
+    language_code = language_code.substr(0, pos);
+  }
+  return base::TrimWhitespaceASCII(language_code, base::TRIM_ALL);
 }
 
 }  // namespace
@@ -747,8 +750,8 @@ std::string HttpUtil::ConvertHeadersBackToHTTPResponse(const std::string& str) {
   return disassembled_headers;
 }
 
-std::string HttpUtil::ExpandLanguageList(const std::string& language_prefs) {
-  const std::vector<std::string> languages = base::SplitString(
+std::string HttpUtil::ExpandLanguageList(std::string_view language_prefs) {
+  const std::vector<std::string_view> languages = base::SplitStringPiece(
       language_prefs, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   if (languages.empty())
@@ -758,11 +761,11 @@ std::string HttpUtil::ExpandLanguageList(const std::string& language_prefs) {
 
   const size_t size = languages.size();
   for (size_t i = 0; i < size; ++i) {
-    const std::string& language = languages[i];
+    const std::string_view language = languages[i];
     builder.AddLanguageCode(language);
 
     // Extract the primary language subtag.
-    const std::string& base_language = GetBaseLanguageCode(language);
+    const std::string_view base_language = GetBaseLanguageCode(language);
 
     // Skip 'x' and 'i' as a primary language subtag per RFC 5646 section 2.1.1.
     if (base_language == "x" || base_language == "i")

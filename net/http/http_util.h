@@ -226,7 +226,7 @@ class NET_EXPORT HttpUtil {
   // cases as explained at this w3c doc:
   // https://www.w3.org/International/questions/qa-lang-priorities#langtagdetail
   // Note that we do not support Q values (e.g. ;q=0.9) in |language_prefs|.
-  static std::string ExpandLanguageList(const std::string& language_prefs);
+  static std::string ExpandLanguageList(std::string_view language_prefs);
 
   // Given a comma separated ordered list of language codes, return
   // the list with a qvalue appended to each language.
