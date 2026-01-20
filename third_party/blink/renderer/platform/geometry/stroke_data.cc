@@ -28,9 +28,7 @@
 
 #include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 
-#include <memory>
-
-#include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 
 namespace blink {
 
@@ -42,13 +40,13 @@ void StrokeData::SetLineDash(const DashArray& dashes, float dash_offset) {
   }
 
   wtf_size_t count = !(dash_length % 2) ? dash_length : dash_length * 2;
-  auto intervals = std::make_unique<SkScalar[]>(count);
+  auto intervals = base::HeapArray<float>::Uninit(count);
 
   for (wtf_size_t i = 0; i < count; i++) {
-    UNSAFE_TODO(intervals[i]) = dashes[i % dash_length];
+    intervals[i] = dashes[i % dash_length];
   }
 
-  dash_ = cc::PathEffect::MakeDash(intervals.get(), count, dash_offset);
+  dash_ = cc::PathEffect::MakeDash(intervals.data(), count, dash_offset);
 }
 
 void StrokeData::SetDashEffect(sk_sp<cc::PathEffect> dash_effect) {
