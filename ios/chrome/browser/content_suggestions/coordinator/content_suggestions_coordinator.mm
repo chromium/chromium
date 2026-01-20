@@ -21,6 +21,7 @@
 #import "components/commerce/core/shopping_service.h"
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
+#import "components/keyed_service/core/service_access_type.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/ntp_tiles/pref_names.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -98,6 +99,7 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/favicon/model/large_icon_cache.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_delegate.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
@@ -324,6 +326,10 @@ using segmentation_platform::TipIdentifier;
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
 
+  history::HistoryService* historyService =
+      ios::HistoryServiceFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS);
+
   feature_engagement::Tracker* engagementTracker =
       feature_engagement::TrackerFactory::GetForProfile(profile);
 
@@ -331,6 +337,7 @@ using segmentation_platform::TipIdentifier;
 
   _mostVisitedTilesMediator = [[MostVisitedTilesMediator alloc]
       initWithMostVisitedSite:std::move(mostVisitedFactory)
+               historyService:historyService
                   prefService:prefs
              largeIconService:largeIconService
                largeIconCache:cache

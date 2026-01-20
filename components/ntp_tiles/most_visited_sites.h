@@ -176,7 +176,7 @@ class MostVisitedSites :
   // Note: like |max_num_sites|, only observers that require the same
   // |max_num_non_custom_sites| could observe the same MostVisitedSites
   // instance. Otherwise, a new Instance should be created for the observer.
-  void AddMostVisitedURLsObserver(
+  virtual void AddMostVisitedURLsObserver(
       Observer* observer,
       size_t max_num_sites,
       std::optional<size_t> max_num_non_custom_sites);

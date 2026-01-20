@@ -10,6 +10,7 @@ source_set("coordinator") {
   deps = [
     "//base",
     "//components/feature_engagement/public",
+    "//components/history/core/browser",
     "//components/ntp_tiles",
     "//components/ntp_tiles:pref_names",
     "//components/prefs",
@@ -52,12 +53,17 @@ source_set("unit_tests") {
   deps = [
     ":coordinator",
     "//base",
+    "//base/test:test_support",
     "//components/feature_engagement/test:test_support",
+    "//components/history/core/browser",
+    "//components/history/core/test",
+    "//components/keyed_service/core",
     "//components/ntp_tiles",
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/content_suggestions/model:metrics_recorder",
     "//ios/chrome/browser/content_suggestions/most_visited_tiles/ui",
     "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/metrics/model:constants",
     "//ios/chrome/browser/ntp/ui_bundled",
     "//ios/chrome/browser/shared/model/application_context",
@@ -65,6 +71,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:test_support",
     "//ios/chrome/test:test_support",
@@ -72,5 +79,6 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//url",
   ]
 }

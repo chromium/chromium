@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_observer.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
 #import "ios/chrome/browser/ntp/shared/metrics/new_tab_page_metrics_constants.h"
@@ -100,6 +101,9 @@ class NewTabPageCoordinatorTest : public PlatformTest {
             [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
               return std::make_unique<commerce::MockShoppingService>();
             }));
+    test_profile_builder.AddTestingFactory(
+        ios::HistoryServiceFactory::GetInstance(),
+        ios::HistoryServiceFactory::GetDefaultFactory());
     test_profile_builder.AddTestingFactory(
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetInstance(),

@@ -21,6 +21,10 @@ namespace feature_engagement {
 class Tracker;
 }  // namespace feature_engagement
 
+namespace history {
+class HistoryService;
+}  // namespace history
+
 namespace ntp_tiles {
 class MostVisitedSites;
 }  // namespace ntp_tiles
@@ -86,6 +90,7 @@ class UrlLoadingBrowserAgent;
 - (instancetype)
     initWithMostVisitedSite:
         (std::unique_ptr<ntp_tiles::MostVisitedSites>)mostVisitedSites
+             historyService:(history::HistoryService*)historyService
                 prefService:(PrefService*)prefService
            largeIconService:(favicon::LargeIconService*)largeIconService
              largeIconCache:(LargeIconCache*)largeIconCache
