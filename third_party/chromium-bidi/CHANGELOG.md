@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [13.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v12.1.0...chromium-bidi-v13.0.0) (2026-01-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* **chrome:** update the pinned browser version to 146.0.7635.0 ([#3980](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3980))
+
+### Features
+
+* **chrome:** update the pinned browser version to 146.0.7635.0 ([#3980](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3980)) ([5359e36](https://github.com/GoogleChromeLabs/chromium-bidi/commit/5359e36e7419c710672535d59730b3fc8912f65a))
+* implement `emulation.setClientHintsOverride` ([#3990](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3990)) ([de084cb](https://github.com/GoogleChromeLabs/chromium-bidi/commit/de084cb55cbfdcaad7c774086c430b261b1bc0a1))
+
 ## [12.1.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v12.0.1...chromium-bidi-v12.1.0) (2026-01-14)
 
 
