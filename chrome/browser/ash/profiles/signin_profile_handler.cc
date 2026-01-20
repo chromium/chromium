@@ -18,7 +18,7 @@
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/crx_file/id_util.h"
@@ -126,15 +126,14 @@ void SigninProfileHandler::ClearSigninProfile(base::OnceClosure callback) {
   login::SigninPartitionManager::Factory::GetForBrowserContext(signin_profile)
       ->CloseCurrentSigninSession(on_clear_profile_stage_finished_);
 
-  BrowserList::CloseAllBrowsersWithProfile(
-      signin_profile,
+  chrome::CloseAllBrowsersWithProfile(
+      signin_profile, true /* skip_beforeunload */,
       base::BindRepeating(
           &WrapAsBrowsersCloseCallback,
           on_clear_profile_stage_finished_) /* on_close_success */,
       base::BindRepeating(
           &WrapAsBrowsersCloseCallback,
-          on_clear_profile_stage_finished_) /* on_close_aborted */,
-      true /* skip_beforeunload */);
+          on_clear_profile_stage_finished_) /* on_close_aborted */);
 
   // Unload all extensions that could possibly leak the SigninProfile for
   // unauthorized usage.
