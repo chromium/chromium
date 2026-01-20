@@ -372,6 +372,21 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
                     tab_strip_type == TabStripType::kVertical);
   }
 
+  // Position the vertical tabstrip top corner.
+  if (IsParentedTo(views().vertical_tab_strip_top_corner,
+                   views().browser_view)) {
+    gfx::Rect corner_bounds;
+    const bool top_corner_visible = tab_strip_type == TabStripType::kVertical &&
+                                    !vertical_tabstrip_collapsed;
+    if (top_corner_visible) {
+      const auto preferred =
+          views().vertical_tab_strip_top_corner->GetPreferredSize();
+      corner_bounds = gfx::Rect(params.visual_client_area.origin(), preferred);
+    }
+    layout.AddChild(views().vertical_tab_strip_top_corner, corner_bounds,
+                    top_corner_visible);
+  }
+
   // Position the vertical tabstrip bottom corner.
   if (IsParentedTo(views().vertical_tab_strip_bottom_corner,
                    views().browser_view)) {
@@ -927,13 +942,6 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
     }
     case TabStripType::kVertical: {
       if (window_state != WindowState::kFullscreen) {
-        // Draw leading corner if vertical tabstrip is directly adjacent to
-        // toolbar. This happens when the vertical tabstrip goes all the way to
-        // the top of the window.
-        if (vertical_tab_strip_reaches_top) {
-          toolbar_corners.upper_leading.type =
-              CustomCornersBackground::CornerType::kRoundedWithBackground;
-        }
         // Curve trailing corner when it goes all the way to the edge of the
         // browser.
         if (params.trailing_exclusion.IsEmpty()) {
