@@ -54,7 +54,7 @@ public class CustomTabActivityTabFactory {
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final TabCreatorManager mTabCreatorManager;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
-    private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
+    private final Supplier<@Nullable CompositorViewHolder> mCompositorViewHolderSupplier;
     private final CipherFactory mCipherFactory;
 
     private @Nullable CustomTabsTabModelOrchestrator mTabModelOrchestrator;
@@ -69,7 +69,7 @@ public class CustomTabActivityTabFactory {
             BrowserServicesIntentDataProvider intentDataProvider,
             TabCreatorManager tabCreatorManager,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
-            Supplier<CompositorViewHolder> compositorViewHolderSupplier,
+            Supplier<@Nullable CompositorViewHolder> compositorViewHolderSupplier,
             CipherFactory cipherFactory) {
         mActivity = activity;
         mPersistencePolicy = persistencePolicy;

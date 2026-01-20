@@ -27,7 +27,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
@@ -65,9 +67,9 @@ public class HubTabSwitcherMetricsRecorderUnitTest {
     private MockTabModel mIncognitoTabModel;
 
     private UserActionTester mActionTester;
-    private ObservableSupplierImpl<Pane> mFocusedPaneSupplier;
-    private ObservableSupplierImpl<TabModel> mCurrentTabModelSupplier;
-    private ObservableSupplierImpl<Boolean> mHubVisibilitySupplier;
+    private SettableMonotonicObservableSupplier<Pane> mFocusedPaneSupplier;
+    private SettableMonotonicObservableSupplier<TabModel> mCurrentTabModelSupplier;
+    private SettableNonNullObservableSupplier<Boolean> mHubVisibilitySupplier;
 
     private HubTabSwitcherMetricsRecorder mMetricsRecorder;
 
@@ -111,17 +113,16 @@ public class HubTabSwitcherMetricsRecorderUnitTest {
         when(mTabModelSelector.getModel(false)).thenReturn(mRegularTabModel);
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
 
-        mCurrentTabModelSupplier = new ObservableSupplierImpl<>();
+        mCurrentTabModelSupplier = ObservableSuppliers.createMonotonic();
         mCurrentTabModelSupplier.set(mRegularTabModel);
         when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mCurrentTabModelSupplier);
 
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
         when(mIncognitoTabSwitcherPane.getPaneId()).thenReturn(PaneId.INCOGNITO_TAB_SWITCHER);
-        mFocusedPaneSupplier = new ObservableSupplierImpl<>();
+        mFocusedPaneSupplier = ObservableSuppliers.createMonotonic();
         mFocusedPaneSupplier.set(mTabSwitcherPane);
 
-        mHubVisibilitySupplier = new ObservableSupplierImpl<>();
-        mHubVisibilitySupplier.set(false);
+        mHubVisibilitySupplier = ObservableSuppliers.createNonNull(false);
 
         mActionTester = new UserActionTester();
 

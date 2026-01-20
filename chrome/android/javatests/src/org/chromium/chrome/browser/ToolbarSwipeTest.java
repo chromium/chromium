@@ -281,7 +281,7 @@ public class ToolbarSwipeTest {
     }
 
     private LayoutManagerChrome updateTabsViewSize() {
-        View tabsView = mActivityTestRule.getActivity().getTabsView();
+        View tabsView = mActivityTestRule.getActivity().getTabsViewForTesting();
         mTabsViewWidthDp = tabsView.getWidth() * mPxToDp;
         return mActivityTestRule.getActivity().getLayoutManager();
     }

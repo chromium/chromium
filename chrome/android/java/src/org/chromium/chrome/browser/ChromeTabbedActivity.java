@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser;
 
 import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.incognito.reauth.IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING;
 import static org.chromium.chrome.browser.incognito.reauth.IncognitoReauthControllerImpl.PREVIOUS_VERSION_CODE;
 import static org.chromium.chrome.browser.notifications.tips.TipsPromoCoordinator.INVALID_TIPS_NOTIFICATION_FEATURE_TYPE;
@@ -1000,7 +1001,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
         try (TraceEvent e =
                 TraceEvent.scoped("ChromeTabbedActivity.setupCompositorContentForPhone")) {
-            CompositorViewHolder compositorViewHolder = getCompositorViewHolderSupplier().get();
+            CompositorViewHolder compositorViewHolder =
+                    assertNonNull(getCompositorViewHolderSupplier().get());
 
             mLayoutManager =
                     new LayoutManagerChromePhone(
@@ -1025,7 +1027,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
         try (TraceEvent e =
                 TraceEvent.scoped("ChromeTabbedActivity.setupCompositorContentForTablet")) {
-            CompositorViewHolder compositorViewHolder = getCompositorViewHolderSupplier().get();
+            CompositorViewHolder compositorViewHolder =
+                    assertNonNull(getCompositorViewHolderSupplier().get());
 
             ViewStub tabHoverCardViewStub = findViewById(R.id.tab_hover_card_holder_stub);
             View toolbarContainerView = findViewById(R.id.toolbar_container);
@@ -1460,7 +1463,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
             recordFirstAppLaunchTimestampIfNeeded();
             // TODO(jinsukkim): Let these classes handle the registration by themselves.
-            mCompositorViewHolder = getCompositorViewHolderSupplier().get();
+            mCompositorViewHolder = assertNonNull(getCompositorViewHolderSupplier().get());
             getTabObscuringHandler().addObserver(mCompositorViewHolder);
 
             ChromeAccessibilityUtil.get().addObserver(mLayoutManager);
@@ -3526,7 +3529,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         OneshotSupplier<ProfileProvider> profileProviderSupplier = getProfileProviderSupplier();
         AsyncTabParamsManager asyncTabParamsManager = AsyncTabParamsManagerSingleton.getInstance();
         Supplier<TabModelSelector> tabModelSelectorSupplier = getTabModelSelectorSupplier();
-        Supplier<CompositorViewHolder> compositorViewHolderSupplier =
+        Supplier<@Nullable CompositorViewHolder> compositorViewHolderSupplier =
                 getCompositorViewHolderSupplier();
 
         if (useRedirectTabCreator) {
@@ -3846,8 +3849,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             profile)
                     .handleAddToGroupAction(currentTab);
         } else if (id == R.id.all_bookmarks_menu_id) {
-            getCompositorViewHolderSupplier()
-                    .get()
+            assumeNonNull(getCompositorViewHolderSupplier().get())
                     .hideKeyboard(
                             () -> {
                                 mBookmarkManagerOpenerSupplier
@@ -4368,7 +4370,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
         if (isInOverviewMode()) {
             if (didFinishNativeInitialization()) {
-                getCompositorViewHolderSupplier().get().hideKeyboard(CallbackUtils.emptyRunnable());
+                assumeNonNull(getCompositorViewHolderSupplier().get())
+                        .hideKeyboard(CallbackUtils.emptyRunnable());
             }
         }
 
@@ -4379,8 +4382,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         if (currentTab == null) {
             mLayoutManager.showLayout(layoutTypeToShow, false);
         } else {
-            getCompositorViewHolderSupplier()
-                    .get()
+            assumeNonNull(getCompositorViewHolderSupplier().get())
                     .hideKeyboard(() -> mLayoutManager.showLayout(layoutTypeToShow, true));
         }
     }
@@ -4654,14 +4656,14 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         data.addAll(KeyboardShortcuts.createShortcutGroup(this));
     }
 
-    @VisibleForTesting
-    public View getTabsView() {
+    public @Nullable View getTabsViewForTesting() {
         return getCompositorViewHolderSupplier().get();
     }
 
     @VisibleForTesting
     public LayoutManagerChrome getLayoutManager() {
-        return (LayoutManagerChrome) getCompositorViewHolderSupplier().get().getLayoutManager();
+        return (LayoutManagerChrome)
+                assumeNonNull(getCompositorViewHolderSupplier().get()).getLayoutManager();
     }
 
     @VisibleForTesting

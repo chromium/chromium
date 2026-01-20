@@ -67,7 +67,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -183,7 +185,8 @@ public class HubLayoutUnitTest {
 
     private SyncOneshotSupplierImpl<HubLayoutAnimator> mHubLayoutAnimatorSupplier;
     private Supplier<TabModelSelector> mTabModelSelectorSupplier;
-    private final ObservableSupplierImpl<Pane> mPaneSupplier = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<Pane> mPaneSupplier =
+            ObservableSuppliers.createMonotonic();
     private HubShowPaneHelper mHubShowPaneHelper;
 
     @Before
@@ -682,7 +685,8 @@ public class HubLayoutUnitTest {
 
     @Test
     public void testHubLayoutAnimationListener() {
-        ObservableSupplierImpl<Boolean> isAnimatingSupplier = new ObservableSupplierImpl<>();
+        SettableNonNullObservableSupplier<Boolean> isAnimatingSupplier =
+                ObservableSuppliers.createNonNull(false);
         HubLayoutAnimationListenerImpl listener =
                 new HubLayoutAnimationListenerImpl(isAnimatingSupplier);
 

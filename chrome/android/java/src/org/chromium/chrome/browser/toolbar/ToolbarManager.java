@@ -303,8 +303,8 @@ public class ToolbarManager
     private ActivityTabProvider.ActivityTabTabObserver mActivityTabTabObserver;
     private final ActivityTabProvider mActivityTabProvider;
     private final LocationBarModel mLocationBarModel;
-    private MonotonicObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
-    private final ValueChangedCallback<BookmarkModel> mBookmarkModelSupplierObserver =
+    private NullableObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
+    private final ValueChangedCallback<@Nullable BookmarkModel> mBookmarkModelSupplierObserver =
             new ValueChangedCallback<>(this::setBookmarkModel);
     private final ToolbarIphController mIphController;
     private @MonotonicNonNull TemplateUrlService mTemplateUrlService;
@@ -791,7 +791,7 @@ public class ToolbarManager
             ToolbarActionModeCallback toolbarActionModeCallback,
             FindToolbarManager findToolbarManager,
             MonotonicObservableSupplier<@Nullable Profile> profileSupplier,
-            MonotonicObservableSupplier<BookmarkModel> bookmarkModelSupplier,
+            NullableObservableSupplier<BookmarkModel> bookmarkModelSupplier,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             OneshotSupplier<AppMenuCoordinator> appMenuCoordinatorSupplier,
             boolean canShowUpdateBadge,

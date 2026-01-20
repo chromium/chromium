@@ -17,7 +17,8 @@ import androidx.preference.PreferenceScreen;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -34,7 +35,7 @@ public class SearchResultsPreferenceFragment extends ChromeBaseSettingsFragment 
     // |MultiColumnTitleUpdater| from adding titles every time a new fragment instance is created
     // and replaced with the existing one upon user keystrokes entering queries.
     // TODO(crbug.com/444464896): Avoid using the static instance.
-    private static @Nullable MonotonicObservableSupplier<String> sTitleSupplier;
+    private static @Nullable SettableMonotonicObservableSupplier<String> sTitleSupplier;
 
     /** Interface for opening the setting selected from the search results. */
     public interface SelectedCallback {
@@ -120,7 +121,8 @@ public class SearchResultsPreferenceFragment extends ChromeBaseSettingsFragment 
     public MonotonicObservableSupplier<String> getPageTitle() {
         if (sTitleSupplier == null) {
             var title = assumeNonNull(getContext()).getString(R.string.search_in_settings_results);
-            sTitleSupplier = new ObservableSupplierImpl<String>(title);
+            sTitleSupplier = ObservableSuppliers.createMonotonic();
+            sTitleSupplier.set(title);
         }
         return sTitleSupplier;
     }

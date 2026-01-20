@@ -413,7 +413,8 @@ public abstract class TabSwitcherPaneBase extends PaneBase
                     Rect finalRect;
                     Rect viewportRect = new Rect();
 
-                    CompositorViewHolder viewHolder = mCompositorViewHolderSupplier.get();
+                    CompositorViewHolder viewHolder =
+                            assumeNonNull(mCompositorViewHolderSupplier.get());
                     RectF viewportRectf = new RectF();
                     viewHolder.getVisibleViewport(viewportRectf);
                     viewportRectf.round(viewportRect);

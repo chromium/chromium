@@ -23,8 +23,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -91,10 +91,10 @@ public class HistoryManager
     private @Nullable HistoryManagerToolbar mToolbar;
     private TextView mEmptyView;
     private final SnackbarManager mSnackbarManager;
-    private final ObservableSupplierImpl<Boolean> mShouldShowPrivacyDisclaimerSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<Boolean> mShouldShowClearBrowsingDataSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<Boolean>
+            mShouldShowPrivacyDisclaimerSupplier = ObservableSuppliers.createMonotonic();
+    private final SettableMonotonicObservableSupplier<Boolean>
+            mShouldShowClearBrowsingDataSupplier = ObservableSuppliers.createMonotonic();
 
     private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier =
             ObservableSuppliers.createNonNull(false);

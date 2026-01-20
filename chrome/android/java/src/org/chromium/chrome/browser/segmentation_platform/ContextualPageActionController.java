@@ -97,7 +97,7 @@ public class ContextualPageActionController {
             NullableObservableSupplier<Tab> tabSupplier,
             AdaptiveToolbarButtonController adaptiveToolbarButtonController,
             Supplier<ShoppingService> shoppingServiceSupplier,
-            Supplier<BookmarkModel> bookmarkModelSupplier) {
+            Supplier<@Nullable BookmarkModel> bookmarkModelSupplier) {
         mProfileSupplier = profileSupplier;
         mTabSupplier = tabSupplier;
         mAdaptiveToolbarButtonController = adaptiveToolbarButtonController;
@@ -148,7 +148,7 @@ public class ContextualPageActionController {
     @VisibleForTesting
     protected void initActionProviders(
             Supplier<ShoppingService> shoppingServiceSupplier,
-            Supplier<BookmarkModel> bookmarkModelSupplier) {
+            Supplier<@Nullable BookmarkModel> bookmarkModelSupplier) {
         removeProviders();
         mActionProviders.put(
                 AdaptiveToolbarButtonVariant.PRICE_TRACKING,

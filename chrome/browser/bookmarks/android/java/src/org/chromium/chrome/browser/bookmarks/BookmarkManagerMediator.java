@@ -1673,7 +1673,6 @@ class BookmarkManagerMediator
                 };
 
         PowerBookmarkUtils.setPriceTrackingEnabledWithSnackbars(
-                mBookmarkModel,
                 assumeNonNull(entry.getBookmarkItem()).getId(),
                 enabled,
                 mSnackbarManager,

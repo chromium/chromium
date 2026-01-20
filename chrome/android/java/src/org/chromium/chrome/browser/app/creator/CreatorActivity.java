@@ -14,7 +14,6 @@ import android.view.MenuItem;
 
 import androidx.appcompat.widget.Toolbar;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.Initializer;
@@ -32,6 +31,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -64,7 +64,7 @@ public class CreatorActivity extends SnackbarActivity {
                 @Nullable BottomSheetController controller,
                 ActivityLifecycleDispatcherImpl lifecycleDispatcher,
                 ActivityTabProvider tabProvider,
-                ObservableSupplierImpl tabModelSelectorProvider,
+                Supplier<TabModelSelector> tabModelSelectorProvider,
                 Supplier profileSupplier,
                 ShareSheetDelegate delegate,
                 boolean isCustomTab) {
@@ -124,7 +124,7 @@ public class CreatorActivity extends SnackbarActivity {
                         mBottomSheetController,
                         mLifecycleDispatcher,
                         mActivityTabProvider,
-                        /* tabModelSelectProvider */ new ObservableSupplierImpl<>(),
+                        /* tabModelSelectProvider */ ObservableSuppliers.createMonotonic(),
                         getProfileSupplier(),
                         new ShareDelegateImpl.ShareSheetDelegate(),
                         /* isCustomTab= */ false);
@@ -155,7 +155,7 @@ public class CreatorActivity extends SnackbarActivity {
                         mBottomSheetController,
                         mLifecycleDispatcher,
                         mActivityTabProvider,
-                        /* tabModelSelectProvider */ new ObservableSupplierImpl<>(),
+                        /* tabModelSelectProvider */ ObservableSuppliers.createMonotonic(),
                         getProfileSupplier(),
                         new ShareDelegateImpl.ShareSheetDelegate(),
                         /* isCustomTab= */ false,

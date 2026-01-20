@@ -105,7 +105,6 @@ public class PowerBookmarkUtils {
     /**
      * Checks if the given {@link BookmarkId} is price-tracked.
      *
-     * @param bookmarkModel The BookmarkModel used to query bookmarks.
      * @param bookmarkId The BookmarkId to check the price-tracking status of.
      * @param enabled Whether price-tracking should be enabled.
      * @param snackbarManager Manages snackbars, non-null if a message should be sent to alert the
@@ -117,7 +116,6 @@ public class PowerBookmarkUtils {
      * @param priceDropNotificationManager Manages price drop notifications.
      */
     public static void setPriceTrackingEnabledWithSnackbars(
-            BookmarkModel bookmarkModel,
             @Nullable BookmarkId bookmarkId,
             boolean enabled,
             SnackbarManager snackbarManager,
@@ -146,7 +144,6 @@ public class PowerBookmarkUtils {
                     @Override
                     public void onAction(@Nullable Object actionData) {
                         setPriceTrackingEnabledWithSnackbars(
-                                bookmarkModel,
                                 bookmarkId,
                                 enabled,
                                 snackbarManager,

@@ -34,6 +34,7 @@ import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
@@ -112,7 +113,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     protected final Supplier<ReadAloudController> mReadAloudControllerSupplier;
 
     private CallbackController mCallbackController = new CallbackController();
-    private MonotonicObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
+    private final NullableObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     private @Nullable ModelList mModelList;
     private int mReadAloudPos;
     protected @Nullable Runnable mReadAloudAppMenuResetter;
@@ -173,7 +174,8 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
      *     activity.
      * @param layoutStateProvidersSupplier An {@link MonotonicObservableSupplier} for the {@link
      *     LayoutStateProvider} associated with the containing activity.
-     * @param bookmarkModelSupplier An {@link MonotonicObservableSupplier} for the {@link BookmarkModel}
+     * @param bookmarkModelSupplier An {@link MonotonicObservableSupplier} for the {@link
+     *     BookmarkModel}
      */
     protected AppMenuPropertiesDelegateImpl(
             Context context,
@@ -183,7 +185,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
             ToolbarManager toolbarManager,
             View decorView,
             @Nullable OneshotSupplier<LayoutStateProvider> layoutStateProvidersSupplier,
-            MonotonicObservableSupplier<BookmarkModel> bookmarkModelSupplier,
+            NullableObservableSupplier<BookmarkModel> bookmarkModelSupplier,
             Supplier<ReadAloudController> readAloudControllerSupplier) {
         mContext = context;
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
@@ -1222,11 +1224,6 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     static void setPageBookmarkedForTesting(Boolean bookmarked) {
         sItemBookmarkedForTesting = bookmarked;
         ResettersForTesting.register(() -> sItemBookmarkedForTesting = null);
-    }
-
-    void setBookmarkModelSupplierForTesting(
-            MonotonicObservableSupplier<BookmarkModel> bookmarkModelSupplier) {
-        mBookmarkModelSupplier = bookmarkModelSupplier;
     }
 
     /**

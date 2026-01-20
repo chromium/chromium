@@ -126,8 +126,6 @@ public class NewTabAnimationLayoutUnitTest {
 
     private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
             ObservableSuppliers.createNullable();
-    private final SettableMonotonicObservableSupplier<CompositorViewHolder>
-            mCompositorViewHolderSupplier = ObservableSuppliers.createMonotonic();
     private final SettableNonNullObservableSupplier<Boolean> mScrimVisibilitySupplier =
             ObservableSuppliers.createNonNull(false);
     private final SettableMonotonicObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier =
@@ -188,7 +186,6 @@ public class NewTabAnimationLayoutUnitTest {
         when(mToolbarManager.getCustomTabCount()).thenReturn(mCustomTabCount);
         when(mToolbarManager.getNtpSearchBoxTransitionPercentageSupplier())
                 .thenReturn(mNtpSearchBoxTransitionPercentageSupplier);
-        mCompositorViewHolderSupplier.set(mCompositorViewHolder);
         mTopInsetProviderSupplier.set(mTopInsetProvider);
         mScrimVisibilitySupplier.set(false);
         doAnswer(
@@ -214,7 +211,7 @@ public class NewTabAnimationLayoutUnitTest {
                                 mRenderHost,
                                 mLayoutStateProvider,
                                 mContentContainer,
-                                mCompositorViewHolderSupplier,
+                                mCompositorViewHolder,
                                 mAnimationHostView,
                                 mToolbarManager,
                                 mBrowserControlsManager,

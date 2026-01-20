@@ -168,10 +168,13 @@ public class BottomSheetControllerTest {
     public void testSheetPeek_hideKeyboard() {
         KeyboardVisibilityDelegate keyboardDelegate = KeyboardVisibilityDelegate.getInstance();
         ThreadUtils.runOnUiThreadBlocking(
-                () -> keyboardDelegate.showKeyboard(mActivity.getTabsView()));
+                () -> keyboardDelegate.showKeyboard(mActivity.getTabsViewForTesting()));
         requestContentInSheet(mLowPriorityContent, true);
         ThreadUtils.runOnUiThreadBlocking(
-                () -> assertFalse(keyboardDelegate.isKeyboardShowing(mActivity.getTabsView())));
+                () ->
+                        assertFalse(
+                                keyboardDelegate.isKeyboardShowing(
+                                        mActivity.getTabsViewForTesting())));
         BottomSheetTestSupport.waitForContentChange(mSheetController, mLowPriorityContent);
         BottomSheetTestSupport.waitForState(mSheetController, SheetState.PEEK);
     }

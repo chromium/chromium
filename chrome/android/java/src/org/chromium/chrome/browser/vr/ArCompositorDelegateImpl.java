@@ -17,8 +17,6 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.components.webxr.ArCompositorDelegate;
 import org.chromium.content_public.browser.WebContents;
 
-import java.util.function.Supplier;
-
 /** Concrete, Chrome-specific implementation of ArCompositorDelegate interface. */
 @NullMarked
 public class ArCompositorDelegateImpl implements ArCompositorDelegate {
@@ -29,9 +27,7 @@ public class ArCompositorDelegateImpl implements ArCompositorDelegate {
     ArCompositorDelegateImpl(WebContents webContents) {
         mActivity = assumeNonNull(ChromeActivity.fromWebContents(webContents));
 
-        Supplier<CompositorViewHolder> compositorViewHolderSupplier =
-                mActivity.getCompositorViewHolderSupplier();
-        mCompositorViewHolder = compositorViewHolderSupplier.get();
+        mCompositorViewHolder = assumeNonNull(mActivity.getCompositorViewHolderSupplier().get());
         mCompositorView = mCompositorViewHolder.getCompositorView();
     }
 

@@ -73,7 +73,7 @@ public class SplashController extends CustomTabTabObserver
     private final TabObserverRegistrar mTabObserverRegistrar;
     private final TwaFinishHandler mFinishHandler;
     private final CustomTabActivityTabProvider mTabProvider;
-    private final Supplier<CompositorViewHolder> mCompositorViewHolder;
+    private final Supplier<@Nullable CompositorViewHolder> mCompositorViewHolder;
 
     private @Nullable SplashDelegate mDelegate;
 
@@ -107,7 +107,7 @@ public class SplashController extends CustomTabTabObserver
             TabObserverRegistrar tabObserverRegistrar,
             TwaFinishHandler finishHandler,
             CustomTabActivityTabProvider tabProvider,
-            Supplier<CompositorViewHolder> compositorViewHolder,
+            Supplier<@Nullable CompositorViewHolder> compositorViewHolder,
             CustomTabOrientationController customTabOrientationController) {
         mActivity = activity;
         mLifecycleDispatcher = lifecycleDispatcher;
@@ -259,8 +259,7 @@ public class SplashController extends CustomTabTabObserver
         // Delay hiding the splash screen till the compositor has finished drawing the next frame.
         // Without this callback we were seeing a short flash of white between the splash screen and
         // the web content (crbug.com/734500).
-        mCompositorViewHolder
-                .get()
+        assumeNonNull(mCompositorViewHolder.get())
                 .getCompositorView()
                 .surfaceRedrawNeededAsync(
                         () -> {

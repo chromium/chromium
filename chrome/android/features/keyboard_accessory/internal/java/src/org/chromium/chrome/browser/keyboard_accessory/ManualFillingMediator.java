@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.FIELD_BOUNDS;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.IS_CREDENTIAL_FIELD_OR_HAS_AUTOFILL_SUGGESTIONS;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.IS_FULLSCREEN;
@@ -679,9 +680,7 @@ class ManualFillingMediator
             mAccessorySheet.hide();
             // The compositor should relayout the view when the sheet is hidden. This is necessary
             // to trigger events that rely on the relayout (like toggling the overview button):
-            Supplier<CompositorViewHolder> compositorViewHolderSupplier =
-                    mActivity.getCompositorViewHolderSupplier();
-            var compositorViewHolder = compositorViewHolderSupplier.get();
+            var compositorViewHolder = mActivity.getCompositorViewHolderSupplier().get();
             if (compositorViewHolder != null) {
                 // The CompositorViewHolder is null when the activity is in the process of being
                 // destroyed which also renders relayouting pointless.
@@ -835,7 +834,7 @@ class ManualFillingMediator
 
     private @NotchPosition int getNotchPositionForDynamicPositioning() {
         CompositorViewHolder compositorViewHolder =
-                mActivity.getCompositorViewHolderSupplier().get();
+                assumeNonNull(mActivity.getCompositorViewHolderSupplier().get());
         RectF viewport = new RectF();
         compositorViewHolder.getVisibleViewport(viewport);
 

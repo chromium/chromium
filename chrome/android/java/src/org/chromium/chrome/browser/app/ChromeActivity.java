@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.app;
 
 import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -61,11 +62,11 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityUtils;
@@ -311,8 +312,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     private final SettableMonotonicObservableSupplier<ShareDelegate> mShareDelegateSupplier =
             ObservableSuppliers.createMonotonic();
 
-    private final ObservableSupplierImpl<TabModelOrchestrator> mTabModelOrchestratorSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<TabModelOrchestrator>
+            mTabModelOrchestratorSupplier = ObservableSuppliers.createMonotonic();
 
     /** Used to access the {@link TabModelSelector} from {@link WindowAndroid}. */
     private final SettableMonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier =
@@ -323,8 +324,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             mEphemeralTabCoordinatorSupplier = ObservableSuppliers.createMonotonic();
 
     /** Used to hold a mutable reference to a {@link TabCreatorManager}. */
-    private final ObservableSupplierImpl<TabCreatorManager> mTabCreatorManagerSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<TabCreatorManager>
+            mTabCreatorManagerSupplier = ObservableSuppliers.createMonotonic();
 
     // TODO(crbug.com/40182241): Move ownership to RootUiCoordinator.
     private final SettableMonotonicObservableSupplier<BrowserControlsManager>
@@ -332,16 +333,16 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     protected final TabModelSelectorProfileSupplier mTabModelProfileSupplier =
             new TabModelSelectorProfileSupplier(mTabModelSelectorSupplier);
-    protected final ObservableSupplierImpl<BookmarkModel> mBookmarkModelSupplier =
-            new ObservableSupplierImpl<>();
-    protected final ObservableSupplierImpl<TabBookmarker> mTabBookmarkerSupplier =
-            new ObservableSupplierImpl<>();
-    protected final ObservableSupplierImpl<BookmarkManagerOpener> mBookmarkManagerOpenerSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<CompositorViewHolder> mCompositorViewHolderSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<LayoutManagerImpl> mLayoutManagerSupplier =
-            new ObservableSupplierImpl<>();
+    protected final SettableNullableObservableSupplier<BookmarkModel> mBookmarkModelSupplier =
+            ObservableSuppliers.createNullable();
+    protected final SettableMonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier =
+            ObservableSuppliers.createMonotonic();
+    protected final SettableMonotonicObservableSupplier<BookmarkManagerOpener>
+            mBookmarkManagerOpenerSupplier = ObservableSuppliers.createMonotonic();
+    private final SettableMonotonicObservableSupplier<CompositorViewHolder>
+            mCompositorViewHolderSupplier = ObservableSuppliers.createMonotonic();
+    private final SettableMonotonicObservableSupplier<LayoutManagerImpl> mLayoutManagerSupplier =
+            ObservableSuppliers.createMonotonic();
 
     /** A means of providing the foreground tab of the activity to different features. */
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
@@ -668,9 +669,10 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
             // Set up the animation placeholder to be the SurfaceView. This disables the
             // SurfaceView's 'hole' clipping during animations that are notified to the window.
+            CompositorViewHolder compositorViewHolder = mCompositorViewHolderSupplier.get();
+            assumeNonNull(compositorViewHolder);
             getWindowAndroid()
-                    .setAnimationPlaceholderView(
-                            mCompositorViewHolderSupplier.get().getCompositorView());
+                    .setAnimationPlaceholderView(compositorViewHolder.getCompositorView());
 
             initializeTabModels();
             if (isFinishing()) return;
@@ -730,7 +732,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             // If onStart was called before postLayoutInflation (because inflation was done in a
             // background thread) then make sure to call the relevant methods belatedly.
             if (mStarted) {
-                mCompositorViewHolderSupplier.get().onStart();
+                compositorViewHolder.onStart();
             }
         }
     }
@@ -860,14 +862,15 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         mRootUiCoordinator.getStatusBarColorController().updateStatusBarColor();
 
         ViewGroup rootView = (ViewGroup) getWindow().getDecorView().getRootView();
-        mCompositorViewHolderSupplier.set(
-                (CompositorViewHolder) findViewById(R.id.compositor_view_holder));
+        CompositorViewHolder viewHolder = findViewById(R.id.compositor_view_holder);
+        assert viewHolder != null;
+        mCompositorViewHolderSupplier.set(viewHolder);
 
         // If the UI was inflated on a background thread, then the CompositorView may not have been
         // fully initialized yet as that may require the creation of a handler which is not allowed
         // outside the UI thread. This call should fully initialize the CompositorView if it hasn't
         // been yet.
-        mCompositorViewHolderSupplier.get().setRootView(rootView);
+        viewHolder.setRootView(rootView);
 
         super.onInitialLayoutInflationComplete();
     }
@@ -1015,8 +1018,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         getTabContentManager().initWithNative();
         Profile originalProfile = getProfileProviderSupplier().get().getOriginalProfile();
         PrefService prefs = UserPrefs.get(originalProfile);
-        mCompositorViewHolderSupplier
-                .get()
+        assumeNonNull(mCompositorViewHolderSupplier.get())
                 .onNativeLibraryReady(getWindowAndroid(), getTabContentManager(), prefs);
         mRootUiCoordinator.createContextualSearchManager(originalProfile);
         TraceEvent.end("ChromeActivity:CompositorInitialization");
@@ -1794,8 +1796,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 compositorViewHolder.getLayoutManager().removeSceneChangeObserver(this);
             }
             compositorViewHolder.shutDown();
-            mCompositorViewHolderSupplier.set(null);
         }
+        mCompositorViewHolderSupplier.destroy();
 
         // crbug.com/352365937: Let the pip controller clear up to prevent a leak.
         if (mFullscreenVideoPictureInPictureController != null) {
@@ -1843,8 +1845,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
         destroyTabModels();
 
+        // set(null) rather than destroy() so that listeners can unlisten to BookmarkModel.
         mBookmarkModelSupplier.set(null);
-
         mShareDelegateSupplier.destroy();
         mTabModelSelectorSupplier.destroy();
         EphemeralTabCoordinatorSupplier.destroy(mEphemeralTabCoordinatorSupplier);
@@ -2341,7 +2343,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         mLayoutManagerSupplier.set(layoutManager);
 
         layoutManager.addSceneChangeObserver(this);
-        CompositorViewHolder compositorViewHolder = mCompositorViewHolderSupplier.get();
+        CompositorViewHolder compositorViewHolder =
+                assumeNonNull(mCompositorViewHolderSupplier.get());
         compositorViewHolder.setLayoutManager(layoutManager);
         compositorViewHolder.setFocusable(false);
         compositorViewHolder.setControlContainer(controlContainer);
@@ -2388,8 +2391,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     }
 
     /**
-     * @return An {@link MonotonicObservableSupplier} that will supply the {@link CompositorViewHolder} when
-     *         it is ready.
+     * @return An {@link MonotonicObservableSupplier} that will supply the {@link
+     *     CompositorViewHolder} when it is ready.
      */
     public MonotonicObservableSupplier<CompositorViewHolder> getCompositorViewHolderSupplier() {
         return mCompositorViewHolderSupplier;
@@ -2730,7 +2733,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
         if (id == R.id.disable_price_tracking_menu_id) {
             PowerBookmarkUtils.setPriceTrackingEnabledWithSnackbars(
-                    mBookmarkModelSupplier.get(),
                     mBookmarkModelSupplier.get().getUserBookmarkIdForTab(currentTab),
                     /* enabled= */ false,
                     mSnackbarManager,
@@ -3152,7 +3154,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     }
 
     /** Returns a {@link CompositorViewHolder} instance for testing. */
-    public CompositorViewHolder getCompositorViewHolderForTesting() {
+    public @Nullable CompositorViewHolder getCompositorViewHolderForTesting() {
         return mCompositorViewHolderSupplier.get();
     }
 

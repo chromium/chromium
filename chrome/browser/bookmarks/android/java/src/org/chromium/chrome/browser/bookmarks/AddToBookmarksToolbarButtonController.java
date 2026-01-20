@@ -13,7 +13,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -41,7 +40,7 @@ public class AddToBookmarksToolbarButtonController extends BaseButtonDataProvide
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final Supplier<TabBookmarker> mTabBookmarkerSupplier;
     private final Supplier<@Nullable Tracker> mTrackerSupplier;
-    private final MonotonicObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
+    private final NullableObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     private final ButtonSpec mFilledButtonSpec;
     private final ButtonSpec mEmptyButtonSpec;
     private final Context mContext;
@@ -49,10 +48,10 @@ public class AddToBookmarksToolbarButtonController extends BaseButtonDataProvide
     private CurrentTabObserver mCurrentTabObserver;
     private boolean mIsTablet;
 
-    private final Callback<BookmarkModel> mBookmarkModelSupplierObserver =
+    private final Callback<@Nullable BookmarkModel> mBookmarkModelSupplierObserver =
             new Callback<>() {
                 @Override
-                public void onResult(BookmarkModel result) {
+                public void onResult(@Nullable BookmarkModel result) {
                     if (mObservedBookmarkModel != null) {
                         mObservedBookmarkModel.removeObserver(mBookmarkModelObserver);
                     }
@@ -88,7 +87,7 @@ public class AddToBookmarksToolbarButtonController extends BaseButtonDataProvide
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             Supplier<TabBookmarker> tabBookmarkerSupplier,
             Supplier<@Nullable Tracker> trackerSupplier,
-            MonotonicObservableSupplier<BookmarkModel> bookmarkModelSupplier) {
+            NullableObservableSupplier<BookmarkModel> bookmarkModelSupplier) {
         // By default use the empty star drawable with an "Add to bookmarks" description.
         super(
                 activeTabSupplier,
@@ -207,9 +206,7 @@ public class AddToBookmarksToolbarButtonController extends BaseButtonDataProvide
             mObservedBookmarkModel = null;
         }
 
-        if (mBookmarkModelSupplier != null) {
-            mBookmarkModelSupplier.removeObserver(mBookmarkModelSupplierObserver);
-        }
+        mBookmarkModelSupplier.removeObserver(mBookmarkModelSupplierObserver);
 
         if (mCurrentTabObserver != null) {
             mCurrentTabObserver.destroy();

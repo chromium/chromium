@@ -327,7 +327,7 @@ public class RootUiCoordinator
     private final SettableMonotonicObservableSupplier<ScrimManager> mScrimManagerSupplier =
             ObservableSuppliers.createMonotonic();
     protected final MonotonicObservableSupplier<Profile> mProfileSupplier;
-    protected final MonotonicObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
+    protected final NullableObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     protected final MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     private final OneshotSupplierImpl<AppMenuCoordinator> mAppMenuSupplier;
     private BottomSheetObserver mBottomSheetObserver;
@@ -463,7 +463,7 @@ public class RootUiCoordinator
             @NonNull MonotonicObservableSupplier<ShareDelegate> shareDelegateSupplier,
             @NonNull ActivityTabProvider tabProvider,
             @NonNull MonotonicObservableSupplier<Profile> profileSupplier,
-            @NonNull MonotonicObservableSupplier<BookmarkModel> bookmarkModelSupplier,
+            @NonNull NullableObservableSupplier<BookmarkModel> bookmarkModelSupplier,
             @NonNull MonotonicObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             @NonNull MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             @NonNull OneshotSupplier<TabSwitcher> tabSwitcherSupplier,

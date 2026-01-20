@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -55,7 +56,7 @@ public class ReadingListBackPressHandler implements BackPressHandler, Destroyabl
     public ReadingListBackPressHandler(
             Activity activity,
             ActivityTabProvider activityTabProvider,
-            MonotonicObservableSupplier<BookmarkModel> bookmarkModelSupplier,
+            NullableObservableSupplier<BookmarkModel> bookmarkModelSupplier,
             MonotonicObservableSupplier<BookmarkManagerOpener> bookmarkManagerOpenerSupplier) {
         mActivity = activity;
         mActivityTabProvider = activityTabProvider;

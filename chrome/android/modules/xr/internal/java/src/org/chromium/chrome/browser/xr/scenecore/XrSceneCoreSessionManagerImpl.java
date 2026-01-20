@@ -17,7 +17,8 @@ import androidx.xr.scenecore.impl.JxrPlatformAdapterAxr;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.task.ChromiumExecutorServiceFactory;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -38,7 +39,7 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
     // If not null, a request to change XR space mode is in progress.
     private @Nullable Boolean mIsFullSpaceModeRequested;
     private @Nullable Runnable mXrModeSwitchCallback;
-    private final ObservableSupplierImpl<Boolean> mIsFullSpaceModeNowSupplier;
+    private final SettableNonNullObservableSupplier<Boolean> mIsFullSpaceModeNowSupplier;
     private final ActivitySpace.OnBoundsChangedListener mBoundsChangedListener =
             this::boundsChangeCallback;
 
@@ -52,7 +53,7 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
         // Initialize the supplier with the current mode.
         boolean isXrFullSpaceMode =
                 mJxrPlatformAdapter.getActivitySpace().getBounds().width == Float.POSITIVE_INFINITY;
-        mIsFullSpaceModeNowSupplier = new ObservableSupplierImpl<>(isXrFullSpaceMode);
+        mIsFullSpaceModeNowSupplier = ObservableSuppliers.createNonNull(isXrFullSpaceMode);
     }
 
     private JxrPlatformAdapterAxr createJxrPlatformAdapter(Activity activity) {

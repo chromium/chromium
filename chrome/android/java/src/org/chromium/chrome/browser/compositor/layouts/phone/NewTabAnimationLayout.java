@@ -142,7 +142,7 @@ public class NewTabAnimationLayout extends Layout {
             LayoutRenderHost renderHost,
             LayoutStateProvider layoutStateProvider,
             ViewGroup contentContainer,
-            MonotonicObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
+            CompositorViewHolder compositorViewHolder,
             ViewGroup animationHostView,
             ToolbarManager toolbarManager,
             BrowserControlsManager browserControlsManager,
@@ -151,7 +151,7 @@ public class NewTabAnimationLayout extends Layout {
         super(context, updateHost, renderHost);
         mLayoutStateProvider = layoutStateProvider;
         mContentContainer = contentContainer;
-        mCompositorViewHolder = compositorViewHolderSupplier.get();
+        mCompositorViewHolder = compositorViewHolder;
         mBlackHoleEventFilter = new BlackHoleEventFilter(context);
         mAnimationHostView = animationHostView;
         mHandler = new Handler();

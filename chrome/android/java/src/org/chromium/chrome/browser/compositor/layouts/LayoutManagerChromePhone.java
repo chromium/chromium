@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.layouts;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Context;
 import android.view.ViewGroup;
 
@@ -38,7 +40,7 @@ import java.util.function.Supplier;
 public class LayoutManagerChromePhone extends LayoutManagerChrome {
     // TODO(crbug.com/40282469): Rename SimpleAnimationLayout to NewTabAnimationLayout once it is
     // rolled out.
-    private final MonotonicObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
+    private final Supplier<@Nullable CompositorViewHolder> mCompositorViewHolderSupplier;
     private final MonotonicObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier;
     private final MonotonicObservableSupplier<Boolean> mScrimVisibilitySupplier;
     private final ToolbarManager mToolbarManager;
@@ -70,7 +72,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
             HubLayoutDependencyHolder hubLayoutDependencyHolder,
-            MonotonicObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
+            Supplier<@Nullable CompositorViewHolder> compositorViewHolderSupplier,
             ViewGroup contentView,
             ToolbarManager toolbarManager,
             MonotonicObservableSupplier<Boolean> scrimVisibilitySupplier,
@@ -118,7 +120,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
                             renderHost,
                             this,
                             getContentContainer(),
-                            mCompositorViewHolderSupplier,
+                            assertNonNull(mCompositorViewHolderSupplier.get()),
                             mContentView,
                             mToolbarManager,
                             getBrowserControlsManager(),
