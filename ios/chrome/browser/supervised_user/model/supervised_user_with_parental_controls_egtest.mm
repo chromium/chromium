@@ -299,16 +299,9 @@ static const char* kInterstitialDetails = "Details";
 
 // Tests that the user is correctly signed out after signin is disabled via
 // policy.
-// TODO(crbug.com/476358542): This test is flaky on iPhone simulator. Reenable
+// TODO(crbug.com/476358542): This test is flaky on iOS simulator. Reenable
 // this test.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testSupervisedUserSignedOutOnPolicyChange \
-  testSupervisedUserSignedOutOnPolicyChange
-#else
-#define MAYBE_testSupervisedUserSignedOutOnPolicyChange \
-  FLAKY_testSupervisedUserSignedOutOnPolicyChange
-#endif
-- (void)MAYBE_testSupervisedUserSignedOutOnPolicyChange {
+- (void)FLAKY_testSupervisedUserSignedOutOnPolicyChange {
   [self signInSupervisedUser];
 
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
