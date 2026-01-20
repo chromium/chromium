@@ -53,8 +53,8 @@ function displayList() {
     });
 
     // `log.message` is already escaped on the C++ side with EscapeForHTML().
-    logMessage.innerHTML =
-        sanitizeInnerHtml(`[${log.logSeverity}][${timestamp}] ${log.message}`);
+    logMessage.innerHTML = sanitizeInnerHtml(
+        `[${timestamp}:${log.logSeverity}:${log.fileAndLine}] ${log.message}`);
     logMessageContainer.appendChild(logMessage);
   });
 }

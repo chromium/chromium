@@ -14,6 +14,7 @@ export interface Log {
   logSource: string;
   logSeverity: string;
   message: string;
+  fileAndLine: string;
   location: string;
   timestamp: string;
 }

@@ -14,6 +14,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
@@ -92,6 +93,16 @@ std::string GetLineURL(std::string_view file, int line) {
       last_change.substr(0, last_change.find('-')).c_str());
 }
 
+// GetFileBasename("/a/b/c.txt") -> "c.txt"
+std::string_view GetFileBasename(std::string_view file) {
+  size_t pos = file.find_last_of("/\\");
+  return pos == std::string_view::npos ? file : file.substr(pos + 1);
+}
+
+std::string GetFileAndLine(std::string_view file, int line) {
+  return base::StrCat({GetFileBasename(file), ":", base::NumberToString(line)});
+}
+
 // Checks if the log has been if the list for at least `kTimeToLive` minutes.
 bool IsLogExpired(PolicyLogger::Log& log) {
   return base::Time::Now() - log.timestamp() >= PolicyLogger::kTimeToLive;
@@ -164,13 +175,13 @@ void PolicyLogger::LogHelper::StreamLog() const {
 }
 
 base::Value::Dict PolicyLogger::Log::GetAsDict() const {
-  base::Value::Dict log_dict;
-  log_dict.Set("message", base::EscapeForHTML(message_));
-  log_dict.Set("logSeverity", GetLogSeverity(log_severity_));
-  log_dict.Set("logSource", GetLogSourceValue(log_source_));
-  log_dict.Set("location", GetLineURL(file_, line_));
-  log_dict.Set("timestamp", base::TimeFormatHTTP(timestamp_));
-  return log_dict;
+  return base::Value::Dict()
+      .Set("message", base::EscapeForHTML(message_))
+      .Set("logSeverity", GetLogSeverity(log_severity_))
+      .Set("logSource", GetLogSourceValue(log_source_))
+      .Set("fileAndLine", GetFileAndLine(file_, line_))
+      .Set("location", GetLineURL(file_, line_))
+      .Set("timestamp", base::TimeFormatHTTP(timestamp_));
 }
 
 PolicyLogger::PolicyLogger() = default;
