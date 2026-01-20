@@ -1401,6 +1401,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.ChildProcessConnection.FallbackService"
+    enum="AndroidChildProcessConnectionServiceNames" expires_after="2026-07-12">
+  <owner>boliu@chromium.org</owner>
+  <owner>smaier@chromium.org</owner>
+  <summary>
+    Records the name of the fallback service that is used in
+    ChildProcessConnection. This is recorded when a fallback to a different
+    service happens.
+  </summary>
+</histogram>
+
 <histogram name="Android.ChildProcessConnection.OnServiceConnectedCounts"
     units="count" expires_after="2026-05-31">
   <owner>boliu@chromium.org</owner>

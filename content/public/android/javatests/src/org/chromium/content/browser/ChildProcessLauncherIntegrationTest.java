@@ -160,7 +160,7 @@ public class ChildProcessLauncherIntegrationTest {
     @DisabledTest(message = "No released Android version which supports this yet")
     public void testCrossDomainNavigationJavaless() throws Throwable {
         testCrossDomainNavigationDoNotLoseImportance(
-                "org.chromium.content.app.NativeServiceSandboxedProcessService");
+                "org.chromium.content.app.NativeOnlySandboxedProcessService");
     }
 
     private void testCrossDomainNavigationDoNotLoseImportance(String serviceName) throws Throwable {

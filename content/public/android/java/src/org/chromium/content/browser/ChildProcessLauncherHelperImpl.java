@@ -695,6 +695,7 @@ public final class ChildProcessLauncherHelperImpl {
                                 freeSlotRunnable,
                                 packageName,
                                 ChildProcessCreationParamsImpl.getSandboxedServicesName(),
+                                ChildProcessCreationParamsImpl.getBackupSandboxedServicesName(),
                                 bindToCaller,
                                 bindAsExternalService,
                                 sandboxed);

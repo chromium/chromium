@@ -1306,10 +1306,7 @@ by a child template that "extends" this file.
       {% if javaless_renderers is defined %}
       <!-- Restricting to just 2 native-only services, one for zygote and one for non-zygote. -->
       {% for i in range(2) %}
-      <!-- For now, the name of a native-only service must be prefixed with "NativeService". This is
-           only for the prototype, and once it actually lands in the Android tree, there will be a
-           better mechanism than this. -->
-      <service android:name="org.chromium.content.app.NativeServiceSandboxedProcessService{{ i }}"
+      <service android:name="org.chromium.content.app.NativeOnlySandboxedProcessService{{ i }}"
           android:nativeService="true"
           android:process=":sandboxed_process{{ i }}"
           android:permission="{{ manifest_package }}.permission.CHILD_SERVICE"
