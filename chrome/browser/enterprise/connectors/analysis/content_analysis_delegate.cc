@@ -65,6 +65,7 @@
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
 #include "net/base/mime_util.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 
@@ -99,13 +100,13 @@ void OnContentAnalysisComplete(
     ContentAnalysisDelegate::ForFilesCompletionCallback callback,
     const ContentAnalysisDelegate::Data& data,
     ContentAnalysisDelegate::Result& result) {
-  std::set<size_t> file_indexes_to_block =
+  absl::flat_hash_set<size_t> file_indexes_to_block =
       files_scan_data->IndexesToBlock(result.paths_results);
 
   std::vector<bool> allowed;
   allowed.reserve(files_scan_data->base_paths().size());
   for (size_t i = 0; i < files_scan_data->base_paths().size(); ++i) {
-    allowed.push_back(file_indexes_to_block.count(i) == 0);
+    allowed.push_back(!file_indexes_to_block.contains(i));
   }
 
   std::move(callback).Run(files_scan_data->take_base_paths(),

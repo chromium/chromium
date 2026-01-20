@@ -10,6 +10,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace enterprise_connectors {
 
@@ -88,14 +89,14 @@ void FilesScanData::ExpandPaths(base::OnceClosure done_closure) {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-std::set<size_t> FilesScanData::IndexesToBlock(
+absl::flat_hash_set<size_t> FilesScanData::IndexesToBlock(
     const std::vector<bool>& allowed_paths) {
   if (allowed_paths.size() != expanded_paths_indexes_.size() ||
       expanded_paths_.size() != allowed_paths.size()) {
     return {};
   }
 
-  std::set<size_t> indexes_to_block;
+  absl::flat_hash_set<size_t> indexes_to_block;
   for (size_t i = 0; i < allowed_paths.size(); ++i) {
     if (allowed_paths[i])
       continue;

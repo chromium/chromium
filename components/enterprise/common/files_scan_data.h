@@ -6,12 +6,12 @@
 #define COMPONENTS_ENTERPRISE_COMMON_FILES_SCAN_DATA_H_
 
 #include <map>
-#include <set>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/base/clipboard/file_info.h"
 
 namespace enterprise_connectors {
@@ -63,7 +63,8 @@ class FilesScanData final {
   // due to content analysis violations based on `expanded_paths_` verdicts. The
   // size of `allowed_paths` and its indexes are expected to match
   // `expanded_paths_`.
-  std::set<size_t> IndexesToBlock(const std::vector<bool>& allowed_paths);
+  absl::flat_hash_set<size_t> IndexesToBlock(
+      const std::vector<bool>& allowed_paths);
 
   // Once ExpandPaths() is called, accessing base paths is not allowed until
   // the done closure is called.  After take_base_paths() is called, further
