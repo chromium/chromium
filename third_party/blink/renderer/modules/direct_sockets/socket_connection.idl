@@ -21,6 +21,6 @@ dictionary TCPServerSocketOpenInfo {
   // A readable stream of TCPSocket objects.
   required ReadableStream readable;
 
-  DOMString localAddress;
-  unsigned short localPort;
+  required DOMString localAddress;
+  required unsigned short localPort;
 };
