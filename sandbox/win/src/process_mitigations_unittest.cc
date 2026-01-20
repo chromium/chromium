@@ -11,6 +11,7 @@
 #include <ntstatus.h>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
@@ -532,12 +533,10 @@ SBOX_TESTS_COMMAND int CheckWin10FontLoad(int argc, wchar_t** argv) {
     return SBOX_TEST_NOT_FOUND;
   font_data.resize(len);
 
-  int read =
-      UNSAFE_TODO(file.Read(0, &font_data[0], base::checked_cast<int>(len)));
-  file.Close();
-
-  if (read != len)
+  if (!file.ReadAndCheck(0, base::as_writable_byte_span(font_data))) {
     return SBOX_TEST_NOT_FOUND;
+  }
+  file.Close();
 
   DWORD font_count = 0;
   HANDLE font_handle = ::AddFontMemResourceEx(
