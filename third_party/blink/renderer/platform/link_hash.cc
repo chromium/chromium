@@ -65,8 +65,7 @@ LinkHash VisitedLinkHash(const KURL& base, const AtomicString& relative) {
   if (!ResolveRelative(base, relative.GetString(), &buffer))
     return 0;
 
-  return Platform::Current()->VisitedLinkHash(
-      std::string_view(buffer.data(), buffer.length()));
+  return Platform::Current()->VisitedLinkHash(buffer.view());
 }
 
 LinkHash PartitionedVisitedLinkFingerprint(
@@ -85,7 +84,7 @@ LinkHash PartitionedVisitedLinkFingerprint(
   if (!ResolveRelative(base_link_url, relative_link_url.GetString(), &buffer)) {
     return 0;
   }
-  std::string_view link_url = std::string_view(buffer.data(), buffer.length());
+  std::string_view link_url = buffer.view();
 
   return Platform::Current()->PartitionedVisitedLinkFingerprint(
       link_url, top_level_site, WebSecurityOrigin(frame_origin));

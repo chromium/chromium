@@ -3017,33 +3017,33 @@ TEST_F(URLCanonTest, IDNToASCII) {
   // Basic ASCII test.
   std::u16string str = u"hello";
   EXPECT_TRUE(IDNToASCII(str, &output));
-  EXPECT_EQ(u"hello", std::u16string(output.data()));
+  EXPECT_EQ(u"hello", output.view());
   output.set_length(0);
 
   // Mixed ASCII/non-ASCII.
   str = u"hellö";
   EXPECT_TRUE(IDNToASCII(str, &output));
-  EXPECT_EQ(u"xn--hell-8qa", std::u16string(output.data()));
+  EXPECT_EQ(u"xn--hell-8qa", output.view());
   output.set_length(0);
 
   // All non-ASCII.
   str = u"你好";
   EXPECT_TRUE(IDNToASCII(str, &output));
-  EXPECT_EQ(u"xn--6qq79v", std::u16string(output.data()));
+  EXPECT_EQ(u"xn--6qq79v", output.view());
   output.set_length(0);
 
   // Characters that need mapping (the resulting Punycode is the encoding for
   // "1⁄4").
   str = u"¼";
   EXPECT_TRUE(IDNToASCII(str, &output));
-  EXPECT_EQ(u"xn--14-c6t", std::u16string(output.data()));
+  EXPECT_EQ(u"xn--14-c6t", output.view());
   output.set_length(0);
 
   // String to encode already starts with "xn--", and all ASCII. Should not
   // modify the string.
   str = u"xn--hell-8qa";
   EXPECT_TRUE(IDNToASCII(str, &output));
-  EXPECT_EQ(u"xn--hell-8qa", std::u16string(output.data()));
+  EXPECT_EQ(u"xn--hell-8qa", output.view());
   output.set_length(0);
 
   // String to encode already starts with "xn--", and mixed ASCII/non-ASCII.

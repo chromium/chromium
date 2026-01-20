@@ -85,8 +85,7 @@ std::unique_ptr<RemoteValidation> RemoteValidation::Create(
   url::CanonicalizeHostVerbose(relying_party_id,
                                url::Component(0, relying_party_id.size()),
                                &canon_output, &host_info);
-  const std::string_view canonicalized_domain(canon_output.data(),
-                                              canon_output.length());
+  const std::string_view canonicalized_domain = canon_output.view();
   if (host_info.family != url::CanonHostInfo::Family::NEUTRAL ||
       !net::IsCanonicalizedHostCompliant(canonicalized_domain)) {
     // The RP ID must look like a hostname, e.g. not an IP address.

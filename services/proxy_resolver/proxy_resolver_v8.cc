@@ -250,11 +250,9 @@ bool GetHostnameArgument(const v8::FunctionCallbackInfo<v8::Value>& args,
   // |punycode_output| should now be ASCII; convert it to a std::string.
   // (We could use UTF16ToASCII() instead, but that requires an extra string
   // copy. Since ASCII is a subset of UTF8 the following is equivalent).
-  bool success = base::UTF16ToUTF8(punycode_output.data(),
-                                   punycode_output.length(), hostname);
-  DCHECK(success);
+  *hostname = base::UTF16ToUTF8(punycode_output.view());
   DCHECK(base::IsStringASCII(*hostname));
-  return success;
+  return true;
 }
 
 // Wrapper around an IP address that stores the original string as well as a

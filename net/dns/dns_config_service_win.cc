@@ -381,10 +381,7 @@ std::string ParseDomainASCII(std::wstring_view widestr) {
   // |punycode_output| should now be ASCII; convert it to a std::string.
   // (We could use UTF16ToASCII() instead, but that requires an extra string
   // copy. Since ASCII is a subset of UTF8 the following is equivalent).
-  std::string converted;
-  bool success =
-      base::UTF16ToUTF8(punycode.data(), punycode.length(), &converted);
-  DCHECK(success);
+  std::string converted = base::UTF16ToUTF8(punycode.view());
   DCHECK(base::IsStringASCII(converted));
   return converted;
 }

@@ -92,15 +92,14 @@ void ICUCharsetConverter::ConvertFromUTF16(std::u16string_view input,
   // be represented in the destination character set.
   AppendHandlerInstaller handler(converter_);
 
-  int begin_offset = output->length();
-  int dest_capacity = output->capacity() - begin_offset;
+  size_t begin_offset = output->length();
   output->set_length(output->length());
 
   do {
     UErrorCode err = U_ZERO_ERROR;
-    char* dest = &UNSAFE_TODO(output->data()[begin_offset]);
+    base::span<char> dest = output->Span().subspan(begin_offset);
     int required_capacity =
-        ucnv_fromUChars(converter_, dest, dest_capacity, input.data(),
+        ucnv_fromUChars(converter_, dest.data(), dest.size(), input.data(),
                         base::checked_cast<int32_t>(input.size()), &err);
     if (err != U_BUFFER_OVERFLOW_ERROR) {
       output->set_length(begin_offset + required_capacity);
@@ -108,8 +107,7 @@ void ICUCharsetConverter::ConvertFromUTF16(std::u16string_view input,
     }
 
     // Output didn't fit, expand
-    dest_capacity = required_capacity;
-    output->Resize(begin_offset + dest_capacity);
+    output->Resize(begin_offset + required_capacity);
   } while (true);
 }
 

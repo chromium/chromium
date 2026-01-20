@@ -300,23 +300,19 @@ TEST_F(URLUtilTest, DecodeURLEscapeSequences) {
     RawCanonOutputT<char16_t> output;
     DecodeURLEscapeSequences(decode_case.input,
                              DecodeURLMode::kUTF8OrIsomorphic, &output);
-    EXPECT_EQ(decode_case.output, base::UTF16ToUTF8(std::u16string(
-                                      output.data(), output.length())));
+    EXPECT_EQ(decode_case.output, base::UTF16ToUTF8(output.view()));
 
     RawCanonOutputT<char16_t> output_utf8;
     DecodeURLEscapeSequences(decode_case.input, DecodeURLMode::kUTF8,
                              &output_utf8);
-    EXPECT_EQ(decode_case.output,
-              base::UTF16ToUTF8(
-                  std::u16string(output_utf8.data(), output_utf8.length())));
+    EXPECT_EQ(decode_case.output, base::UTF16ToUTF8(output_utf8.view()));
   }
 
   // Our decode should decode %00
   const char zero_input[] = "%00";
   RawCanonOutputT<char16_t> zero_output;
   DecodeURLEscapeSequences(zero_input, DecodeURLMode::kUTF8, &zero_output);
-  EXPECT_NE("%00", base::UTF16ToUTF8(std::u16string(zero_output.data(),
-                                                    zero_output.length())));
+  EXPECT_NE("%00", base::UTF16ToUTF8(zero_output.view()));
 
   // Test the error behavior for invalid UTF-8.
   struct Utf8DecodeCase {
@@ -341,13 +337,13 @@ TEST_F(URLUtilTest, DecodeURLEscapeSequences) {
     DecodeURLEscapeSequences(utf8_decode_case.input,
                              DecodeURLMode::kUTF8OrIsomorphic, &output_iso);
     EXPECT_EQ(std::u16string(utf8_decode_case.expected_iso.data()),
-              std::u16string(output_iso.data(), output_iso.length()));
+              output_iso.view());
 
     RawCanonOutputT<char16_t> output_utf8;
     DecodeURLEscapeSequences(utf8_decode_case.input, DecodeURLMode::kUTF8,
                              &output_utf8);
     EXPECT_EQ(std::u16string(utf8_decode_case.expected_utf8.data()),
-              std::u16string(output_utf8.data(), output_utf8.length()));
+              output_utf8.view());
   }
 }
 
@@ -378,8 +374,7 @@ TEST_F(URLUtilTest, TestEncodeURIComponent) {
   for (const auto& encode_case : encode_cases) {
     RawCanonOutputT<char> buffer;
     EncodeURIComponent(encode_case.input, &buffer);
-    std::string output(buffer.data(), buffer.length());
-    EXPECT_EQ(encode_case.output, output);
+    EXPECT_EQ(encode_case.output, buffer.view());
   }
 }
 
