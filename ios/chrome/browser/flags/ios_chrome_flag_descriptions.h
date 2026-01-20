@@ -184,9 +184,6 @@ extern const char kComposeboxAIMDisabledDescription[];
 extern const char kComposeboxAIMNudgeName[];
 extern const char kComposeboxAIMNudgeDescription[];
 
-extern const char kComposeboxAdditionalAdvancedToolsName[];
-extern const char kComposeboxAdditionalAdvancedToolsDescription[];
-
 extern const char kComposeboxAttachmentsTypedStateName[];
 extern const char kComposeboxAttachmentsTypedStateDescription[];
 
