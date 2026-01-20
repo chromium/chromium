@@ -83,9 +83,9 @@ public class ScrimManager {
     private final SettableNonNullObservableSupplier<Boolean> mScrimVisibilitySupplier =
             ObservableSuppliers.createNonNull(false);
     private final SettableNonNullObservableSupplier<Integer> mStatusBarColorSupplier =
-            ObservableSuppliers.createNonNull(ScrimProperties.INVALID_COLOR);
+            ObservableSuppliers.createNonNull(Color.TRANSPARENT);
     private final SettableNonNullObservableSupplier<Integer> mNavigationBarColorSupplier =
-            ObservableSuppliers.createNonNull(ScrimProperties.INVALID_COLOR);
+            ObservableSuppliers.createNonNull(Color.TRANSPARENT);
 
     private final Context mContext;
     private final ViewGroup mParent;
@@ -115,8 +115,8 @@ public class ScrimManager {
         }
         mModelToScrim.clear();
         mScrimVisibilitySupplier.set(false);
-        mStatusBarColorSupplier.set(ScrimProperties.INVALID_COLOR);
-        mNavigationBarColorSupplier.set(ScrimProperties.INVALID_COLOR);
+        mStatusBarColorSupplier.set(Color.TRANSPARENT);
+        mNavigationBarColorSupplier.set(Color.TRANSPARENT);
     }
 
     /** Temporary alternative to {@link #getScrimVisibilitySupplier()} to make migration easier. */
