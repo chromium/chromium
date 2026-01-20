@@ -17,6 +17,10 @@ namespace contextual_tasks {
 // Enables the contextual tasks side panel while browsing.
 BASE_FEATURE(kContextualTasks, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the use of the kSearchResultsOAuth2Scope instead of the
+// kChromeSyncOAuth2Scope.
+BASE_FEATURE(kContextualTasksScopeChange, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables relevant context determination for contextual tasks.
 BASE_FEATURE(kContextualTasksContext, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -277,6 +281,10 @@ std::string GetContextualTasksHelpUrl() {
 bool GetEnableContextualTasksSmartCompose() {
   return base::FeatureList::IsEnabled(kContextualTasks) &&
          kEnableContextualTasksSmartCompose.Get();
+}
+
+bool ShouldUseSearchResultsScope() {
+  return base::FeatureList::IsEnabled(kContextualTasksScopeChange);
 }
 
 namespace flag_descriptions {

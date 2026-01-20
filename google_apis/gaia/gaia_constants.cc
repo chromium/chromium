@@ -105,6 +105,10 @@ const char kPhotosOAuth2Scope[] = "https://www.googleapis.com/auth/photos";
 extern const char kSecureConnectOAuth2Scope[] =
     "https://www.googleapis.com/auth/bce.secureconnect";
 
+// OAuth2 scope for access to personalized web search results.
+const char kSearchResultsOAuth2Scope[] =
+    "https://www.googleapis.com/auth/searchresults";
+
 // OAuth2 scope for access to Cast backdrop API.
 const char kCastBackdropOAuth2Scope[] =
     "https://www.googleapis.com/auth/cast.backdrop";

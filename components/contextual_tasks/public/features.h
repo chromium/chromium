@@ -14,6 +14,9 @@
 namespace contextual_tasks {
 
 BASE_DECLARE_FEATURE(kContextualTasks);
+// When enabled, it should instead request the kSearchResultsOAuth2Scope instead
+// of the kChromeSyncOAuth2Scope
+BASE_DECLARE_FEATURE(kContextualTasksScopeChange);
 BASE_DECLARE_FEATURE(kContextualTasksContext);
 BASE_DECLARE_FEATURE(kContextualTasksContextLibrary);
 BASE_DECLARE_FEATURE(kContextualTasksContextLogging);
@@ -157,6 +160,10 @@ extern std::string GetContextualTasksHelpUrl();
 
 // Returns whether smart compose is enabled for Contextual Tasks.
 extern bool GetEnableContextualTasksSmartCompose();
+
+// Returns whether the kSearchResultsOAuth2Scope should be used instead of the
+// kChromeSyncOAuth2Scope.
+extern bool ShouldUseSearchResultsScope();
 
 namespace flag_descriptions {
 
