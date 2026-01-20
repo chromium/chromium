@@ -95,7 +95,7 @@ class DownloadRequestLimiterTest : public ChromeRenderViewHostTestHarness {
   void OnUserInteractionFor(WebContents* web_contents,
                             blink::WebInputEvent::Type type) {
     DownloadRequestLimiter::TabDownloadState* state =
-        download_request_limiter_->GetDownloadState(web_contents, false);
+        download_request_limiter_->GetDownloadState(web_contents);
     if (!state)
       return;
     std::unique_ptr<blink::WebInputEvent> event;
@@ -134,7 +134,7 @@ class DownloadRequestLimiterTest : public ChromeRenderViewHostTestHarness {
   void UpdateContentSettings(WebContents* web_contents,
                              ContentSetting setting) {
     // Ensure a download state exists.
-    download_request_limiter_->GetDownloadState(web_contents, true);
+    download_request_limiter_->GetOrCreateDownloadState(web_contents);
     SetHostContentSetting(web_contents, setting);
   }
 

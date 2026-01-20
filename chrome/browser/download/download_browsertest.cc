@@ -987,8 +987,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadResourceThrottleCancels) {
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   DownloadRequestLimiter::TabDownloadState* tab_download_state =
-      g_browser_process->download_request_limiter()->GetDownloadState(
-          web_contents, true);
+      g_browser_process->download_request_limiter()->GetOrCreateDownloadState(
+          web_contents);
   ASSERT_TRUE(tab_download_state);
   tab_download_state->set_download_seen();
   tab_download_state->SetDownloadStatusAndNotify(
@@ -1038,8 +1038,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTest,
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   DownloadRequestLimiter::TabDownloadState* tab_download_state =
-      g_browser_process->download_request_limiter()->GetDownloadState(
-          web_contents, true);
+      g_browser_process->download_request_limiter()->GetOrCreateDownloadState(
+          web_contents);
   ASSERT_TRUE(tab_download_state);
   // Let the first download to fail.
   tab_download_state->set_download_seen();
@@ -1093,8 +1093,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderDownloadTest,
   // those cannot be done in prerendering.
   auto* web_contents = GetWebContents();
   DownloadRequestLimiter::TabDownloadState* tab_download_state =
-      g_browser_process->download_request_limiter()->GetDownloadState(
-          web_contents, true);
+      g_browser_process->download_request_limiter()->GetOrCreateDownloadState(
+          web_contents);
   ASSERT_TRUE(tab_download_state);
   tab_download_state->SetDownloadStatusAndNotify(
       url::Origin::Create(kInitialUrl),
@@ -1114,7 +1114,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderDownloadTest,
   // the test DownloadRequestLimiterTest.ResetOnNavigation).
   ASSERT_EQ(tab_download_state,
             g_browser_process->download_request_limiter()->GetDownloadState(
-                web_contents, false));
+                web_contents));
   ASSERT_EQ(tab_download_state->download_status(),
             DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD);
 
@@ -1173,8 +1173,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameDownloadTest,
   // those cannot be done in a fenced frame.
   auto* web_contents = GetWebContents();
   DownloadRequestLimiter::TabDownloadState* tab_download_state =
-      g_browser_process->download_request_limiter()->GetDownloadState(
-          web_contents, true);
+      g_browser_process->download_request_limiter()->GetOrCreateDownloadState(
+          web_contents);
   ASSERT_TRUE(tab_download_state);
   tab_download_state->SetDownloadStatusAndNotify(
       url::Origin::Create(kInitialUrl),
@@ -1196,7 +1196,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameDownloadTest,
   // in the test DownloadRequestLimiterTest.ResetOnNavigation).
   ASSERT_EQ(tab_download_state,
             g_browser_process->download_request_limiter()->GetDownloadState(
-                web_contents, false));
+                web_contents));
   ASSERT_EQ(tab_download_state->download_status(),
             DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD);
 

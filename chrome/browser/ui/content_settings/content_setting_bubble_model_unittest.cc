@@ -1705,7 +1705,7 @@ TEST_F(ContentSettingBubbleModelUnusedPermissionRevocationForAllSurfacesTest,
   DownloadRequestLimiter* limiter =
       g_browser_process->download_request_limiter();
   DownloadRequestLimiter::TabDownloadState* tab_download_state =
-      limiter->GetDownloadState(web_contents(), /* create */ true);
+      limiter->GetOrCreateDownloadState(web_contents());
   tab_download_state->set_download_seen();
   tab_download_state->SetDownloadStatusAndNotify(
       url::Origin::Create(url), DownloadRequestLimiter::DOWNLOADS_NOT_ALLOWED);
