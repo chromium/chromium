@@ -212,9 +212,7 @@ class AutofillPrivateApiUnitTest : public extensions::ExtensionApiTest {
              {{wallet::kWalletablePassDetectionCountryAllowlist.name, "US"}}},
         },
         /*disabled_features=*/
-        {autofill::features::kAutofillAiNationalIdCard,
-         autofill::features::kAutofillAiKnownTravelerNumber,
-         autofill::features::kAutofillAiRedressNumber});
+        {});
   }
   AutofillPrivateApiUnitTest(const AutofillPrivateApiUnitTest&) = delete;
   AutofillPrivateApiUnitTest& operator=(const AutofillPrivateApiUnitTest&) =

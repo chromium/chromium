@@ -205,12 +205,6 @@ BASE_FEATURE_PARAM(std::string,
 BASE_FEATURE(kAutofillAiIgnoresWhetherAddressPrefIsEnabled,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, AutofillAi supports known traveler numbers.
-BASE_FEATURE(kAutofillAiKnownTravelerNumber, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, AutofillAi supports national id cards.
-BASE_FEATURE(kAutofillAiNationalIdCard, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, this makes the autofill classification logic prefer the
 // AutofillAi predictions sent via the server response over local heuristic
 // predictions.
@@ -222,9 +216,6 @@ BASE_FEATURE(kAutofillAiPreferModelResponseOverHeuristics,
 // suggestion generation time.
 // TODO(crbug.com/468236932): Remove once feature is launched.
 BASE_FEATURE(kAutofillAiReauthRequired, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, AutofillAi supports redress number.
-BASE_FEATURE(kAutofillAiRedressNumber, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, a HaTS survey is shown after the save prompt for a walletable
 // entity was interacted with.
