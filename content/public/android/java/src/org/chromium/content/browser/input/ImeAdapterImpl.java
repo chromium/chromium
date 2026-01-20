@@ -31,6 +31,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.BaseInputConnection;
+import android.view.inputmethod.CorrectionInfo;
 import android.view.inputmethod.DeleteGesture;
 import android.view.inputmethod.DeleteRangeGesture;
 import android.view.inputmethod.EditorInfo;
@@ -79,6 +80,7 @@ import org.chromium.content_public.browser.InputMethodManagerWrapper;
 import org.chromium.content_public.browser.StylusWritingImeCallback;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContents.UserDataFactory;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.mojo.system.MessagePipeHandle;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.mojo.system.impl.CoreImpl;
@@ -190,6 +192,8 @@ public class ImeAdapterImpl
     private final ArrayDeque<KeyEvent> mKeyDownEvents = new ArrayDeque<>();
 
     private String[] mSupportedMimeTypes = {};
+
+    private @Nullable AutocorrectManager mAutocorrectManager;
 
     /**
      * {@ResultReceiver} passed in InputMethodManager#showSoftInput}. We need this to scroll to the
@@ -320,6 +324,9 @@ public class ImeAdapterImpl
         mInputMethodManagerWrapper = wrapper;
         mNativeImeAdapterAndroid = ImeAdapterImplJni.get().init(ImeAdapterImpl.this, mWebContents);
         WindowEventObserverManager.from(mWebContents).addObserver(this);
+        if (ContentFeatureMap.isEnabled(ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE)) {
+            mAutocorrectManager = new AutocorrectManager();
+        }
     }
 
     @Override
@@ -556,6 +563,17 @@ public class ImeAdapterImpl
         mInputConnectionFactory = factory;
     }
 
+    @VisibleForTesting
+    void setAutocorrectManagerForTesting(AutocorrectManager autocorrectManager) {
+        mAutocorrectManager = autocorrectManager;
+    }
+
+    @VisibleForTesting
+    @Nullable AutocorrectManager getAutocorrectManagerForTesting() {
+        return mAutocorrectManager;
+    }
+
+    @VisibleForTesting
     ChromiumBaseInputConnection.@Nullable Factory getInputConnectionFactoryForTest() {
         return mInputConnectionFactory;
     }
@@ -1877,6 +1895,13 @@ public class ImeAdapterImpl
     void performSpellCheck() {
         if (!isValid()) return;
         ImeAdapterImplJni.get().performSpellCheck(mNativeImeAdapterAndroid);
+    }
+
+    void commitCorrection(CorrectionInfo correctionInfo) {
+        if (!isValid()) return;
+        if (mAutocorrectManager != null) {
+            mAutocorrectManager.handlePendingCorrection(correctionInfo);
+        }
     }
 
     @NativeMethods

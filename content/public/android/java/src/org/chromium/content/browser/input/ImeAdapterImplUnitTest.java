@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser.input;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -19,6 +21,7 @@ import static org.mockito.Mockito.when;
 import android.os.SystemClock;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
+import android.view.inputmethod.CorrectionInfo;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -33,6 +36,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.EventType;
 import org.chromium.blink_public.web.WebInputEventModifier;
@@ -40,11 +44,13 @@ import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ImeEventObserver;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.ime.TextInputType;
 import org.chromium.ui.test.util.TestViewAndroidDelegate;
 
 /** Unit tests for {@link ImeAdapterImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures(ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE)
 public class ImeAdapterImplUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -52,6 +58,8 @@ public class ImeAdapterImplUnitTest {
     @Mock private ViewGroup mContainerView;
     @Mock private ImeEventObserver mImeEventObserver;
     @Mock private ImeAdapterImpl.Natives mImeAdapterImplJni;
+    @Mock private CorrectionInfo mCorrectionInfo;
+    @Mock private AutocorrectManager mAutocorrectManager;
 
     @Before
     public void setUp() {
@@ -242,5 +250,31 @@ public class ImeAdapterImplUnitTest {
         adapter.performSpellCheck();
 
         verify(mImeAdapterImplJni).performSpellCheck(anyLong());
+    }
+
+    @Test
+    public void testCommitCorrection() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.setAutocorrectManagerForTesting(mAutocorrectManager);
+        adapter.onConnectedToRenderProcess();
+
+        adapter.commitCorrection(mCorrectionInfo);
+
+        verify(mAutocorrectManager).handlePendingCorrection(mCorrectionInfo);
+    }
+
+    @Test
+    @EnableFeatures(ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE)
+    public void testAutocorrectManagerInitialisationWhenFlagEnabled() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+
+        assertNotNull(adapter.getAutocorrectManagerForTesting());
+    }
+
+    @Test
+    public void testAutocorrectManagerInitialisationWhenFlagDisabled() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+
+        assertNull(adapter.getAutocorrectManagerForTesting());
     }
 }

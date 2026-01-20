@@ -20,6 +20,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.view.KeyCharacterMap;
 import android.view.View;
+import android.view.inputmethod.CorrectionInfo;
 import android.view.inputmethod.ExtractedText;
 import android.view.inputmethod.ExtractedTextRequest;
 import android.view.inputmethod.InputConnection;
@@ -43,6 +44,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.common.ContentFeatures;
 
 import java.util.concurrent.Callable;
 
@@ -58,6 +60,7 @@ public class ThreadedInputConnectionTest {
     View mView;
     Context mContext;
     boolean mRunningOnUiThread;
+    @Mock CorrectionInfo mCorrectionInfo;
 
     @Before
     public void setUp() {
@@ -364,5 +367,13 @@ public class ThreadedInputConnectionTest {
         mInOrder.verify(mImeAdapter, never())
                 .updateExtractedText(anyInt(), any(ExtractedText.class));
         mInOrder.verify(mImeAdapter).updateSelection(0, 0, -1, -1);
+    }
+
+    @Test
+    @EnableFeatures(ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE)
+    public void testCommitCorrection() {
+        assertTrue(mConnection.commitCorrection(mCorrectionInfo));
+
+        mInOrder.verify(mImeAdapter).commitCorrection(mCorrectionInfo);
     }
 }

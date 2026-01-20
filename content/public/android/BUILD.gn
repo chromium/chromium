@@ -317,6 +317,7 @@ android_library("content_full_java") {
     "java/src/org/chromium/content/browser/framehost/NavigationControllerImpl.java",
     "java/src/org/chromium/content/browser/framehost/RenderFrameHostDelegate.java",
     "java/src/org/chromium/content/browser/framehost/RenderFrameHostImpl.java",
+    "java/src/org/chromium/content/browser/input/AutocorrectManager.java",
     "java/src/org/chromium/content/browser/input/ChromiumBaseInputConnection.java",
     "java/src/org/chromium/content/browser/input/CursorAnchorInfoController.java",
     "java/src/org/chromium/content/browser/input/DateTimeChooserAndroid.java",
@@ -724,6 +725,7 @@ android_library("content_javatests") {
 robolectric_binary("content_junit_tests") {
   resources_package = "org.chromium.content"
   sources = [
+    "java/src/org/chromium/content/browser/input/AutocorrectManagerUnitTest.java",
     "java/src/org/chromium/content/browser/input/ImeAdapterImplUnitTest.java",
     "java/src/org/chromium/content/browser/input/ImeUtilsTest.java",
     "junit/src/org/chromium/content/browser/BindingManagerTest.java",

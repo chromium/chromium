@@ -39,6 +39,8 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.blink.mojom.StylusWritingGestureData;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.ContentFeatureMap;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.net.MimeTypeFilter;
 
 import java.util.Arrays;
@@ -806,6 +808,11 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
                     TAG,
                     "commitCorrection [%s]",
                     ImeUtils.getCorrectionInfoDebugString(correctionInfo));
+        }
+        if (ContentFeatureMap.isEnabled(ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE)) {
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT, () -> mImeAdapter.commitCorrection(correctionInfo));
+            return true;
         }
         return false;
     }
