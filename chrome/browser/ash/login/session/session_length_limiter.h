@@ -7,12 +7,13 @@
 
 #include <memory>
 
+#include "base/scoped_observation.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
+#include "chrome/browser/ash/login/session/session_start_time_tracker.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "ui/base/user_activity/user_activity_observer.h"
 
 class PrefRegistrySimple;
 
@@ -20,7 +21,8 @@ namespace ash {
 
 // Enforces a session length limit by terminating the session when the limit is
 // reached.
-class SessionLengthLimiter : public ui::UserActivityObserver {
+class SessionLengthLimiter
+    : public session_manager::SessionStartTimeTracker::Observer {
  public:
   class Delegate {
    public:
@@ -44,39 +46,28 @@ class SessionLengthLimiter : public ui::UserActivityObserver {
   // valid |session_start_time_|. Otherwise, returns 0.
   base::TimeDelta GetSessionDuration() const;
 
-  // ui::UserActivityObserver:
-  void OnUserActivity(const ui::Event* event) override;
+  // SessionStartTimeTracker::Observer
+  void OnSessionStartTimeUpdated() override;
 
   void SetDelegateForTesting(std::unique_ptr<Delegate> delegate) {
     delegate_ = std::move(delegate);
   }
 
  private:
-  // Attempt to restore the session start time and the flag indicating user
-  // activity from local state. Return |true| if the restore is successful.
-  bool RestoreStateAfterCrash();
-
-  // Update the session start time if possible:
-  // * If instructed to wait for initial user activity, the session start time
-  //   advances every time this method is called as long as no user activity has
-  //   occurred yet. The time is not persisted in local state.
-  // * If instructed not to wait for initial user activity, the session start
-  //   time is set and persisted in local state the first time this method is
-  //   called.
-  // The pref indicating whether to wait for initial user activity may change at
-  // any time, switching between the two behaviors.
-  void UpdateSessionStartTime();
-
   void UpdateLimit();
 
   base::ThreadChecker thread_checker_;
 
   std::unique_ptr<Delegate> delegate_;
+  std::unique_ptr<session_manager::SessionStartTimeTracker>
+      session_start_time_tracker_;
   PrefChangeRegistrar pref_change_registrar_;
 
   std::unique_ptr<base::WallClockTimer> timer_;
-  base::Time session_start_time_;
-  bool user_activity_seen_;
+
+  base::ScopedObservation<session_manager::SessionStartTimeTracker,
+                          session_manager::SessionStartTimeTracker::Observer>
+      observation_{this};
 };
 
 }  // namespace ash

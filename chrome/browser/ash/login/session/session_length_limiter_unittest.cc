@@ -27,6 +27,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/user_activity/user_activity_detector.h"
 
 namespace ash {
 
@@ -137,11 +138,13 @@ void SessionLengthLimiterTest::SetUp() {
   runner_ = new base::TestMockTimeTaskRunner;
   wall_clock_forwarder_ = std::make_unique<WallClockForwarder>(runner_.get());
   runner_->FastForwardBy(base::TimeDelta::FromInternalValue(1000));
+  ui::UserActivityDetector::Get()->ResetStateForTesting();
 }
 
 void SessionLengthLimiterTest::TearDown() {
   wall_clock_forwarder_.reset();
   session_length_limiter_.reset();
+  ui::UserActivityDetector::Get()->ResetStateForTesting();
 }
 
 void SessionLengthLimiterTest::SetSessionUserActivitySeenPref(
@@ -206,8 +209,7 @@ void SessionLengthLimiterTest::SetWaitForInitialUserActivityPref(
 }
 
 void SessionLengthLimiterTest::SimulateUserActivity() {
-  if (session_length_limiter_)
-    session_length_limiter_->OnUserActivity(nullptr);
+  ui::UserActivityDetector::Get()->HandleExternalUserActivity();
   UpdateSessionStartTimeIfWaitingForUserActivity();
   user_activity_seen_ = true;
 }
