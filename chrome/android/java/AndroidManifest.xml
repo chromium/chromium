@@ -168,6 +168,9 @@ by a child template that "extends" this file.
 
     <uses-permission android:name="com.google.android.apps.now.CURRENT_ACCOUNT_ACCESS" />
 
+    <!-- Permission for using pinned windowing layer for document picture-in-picture. -->
+    <uses-permission android:name="android.permission.USE_PINNED_WINDOWING_LAYER" />
+
     {% block extra_uses_permissions %}
     {% endblock %}
 

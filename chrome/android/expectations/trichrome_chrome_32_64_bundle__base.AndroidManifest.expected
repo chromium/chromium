@@ -56,6 +56,7 @@
   <uses-permission android:name="android.permission.REPOSITION_SELF_WINDOWS"/>
   <uses-permission android:name="android.permission.RUN_USER_INITIATED_JOBS"/>
   <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
+  <uses-permission android:name="android.permission.USE_PINNED_WINDOWING_LAYER"/>
   <uses-permission android:name="android.permission.VIBRATE"/>
   <uses-permission android:name="android.permission.WAKE_LOCK"/>
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>

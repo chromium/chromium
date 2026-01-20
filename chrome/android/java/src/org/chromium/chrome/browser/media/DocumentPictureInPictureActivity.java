@@ -5,13 +5,17 @@
 package org.chromium.chrome.browser.media;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityManager.AppTask;
 import android.content.Intent;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.ViewGroup;
 
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -28,6 +32,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -82,6 +87,8 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
             return;
         }
         mWindowOptions = new PictureInPictureWindowOptions(windowOptionsBundle);
+
+        goIntoPinnedMode();
     }
 
     /**
@@ -128,6 +135,41 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
                     }
                 };
         mInitiatorTab.addObserver(mInitiatorTabObserver);
+    }
+
+    private void goIntoPinnedMode() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.BAKLAVA) {
+            Log.e(TAG, "SDK version is too low, minimum required is 36.");
+            finish();
+            return;
+        }
+
+        final AconfigFlaggedApiDelegate aconfigFlaggedApiDelegate =
+                AconfigFlaggedApiDelegate.getInstance();
+        if (aconfigFlaggedApiDelegate == null) {
+            Log.e(TAG, "AconfigFlaggedApiDelegate is null");
+            finish();
+            return;
+        }
+
+        final AppTask appTask = AndroidTaskUtils.getAppTaskFromId(this, getTaskId());
+        if (appTask == null) {
+            Log.e(TAG, "AppTask is null");
+            finish();
+            return;
+        }
+
+        aconfigFlaggedApiDelegate
+                .requestPinnedWindowingLayer(appTask, getMainExecutor())
+                .then(
+                        CallbackUtils.emptyCallback(),
+                        (e) -> {
+                            Log.e(
+                                    TAG,
+                                    "Failed to request pinned windowing layer."
+                                            + (e == null ? "" : e.getMessage()));
+                            finish();
+                        });
     }
 
     @Override
