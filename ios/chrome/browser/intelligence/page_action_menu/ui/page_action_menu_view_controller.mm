@@ -301,11 +301,7 @@ const CGFloat kDividerWidth = 1.0;
   [buttonContentStack addArrangedSubview:labelStack];
 
   // Add trailing icon.
-  UIImageView* trailingIcon = [[UIImageView alloc]
-      initWithImage:DefaultSymbolWithPointSize(kChevronRightSymbol,
-                                               kSmallButtonIconSize)];
-  trailingIcon.translatesAutoresizingMaskIntoConstraints = NO;
-  trailingIcon.tintColor = [UIColor colorNamed:kTextSecondaryColor];
+  UIImageView* trailingIcon = [self createNavigationChevron];
   [buttonContentStack addArrangedSubview:trailingIcon];
 
   // Create button with `buttonContentStack` as content.
