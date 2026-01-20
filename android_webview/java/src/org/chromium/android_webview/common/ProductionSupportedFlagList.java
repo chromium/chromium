@@ -921,7 +921,9 @@ public final class ProductionSupportedFlagList {
                     + " - caches any chromium startup exception and rethrows it if startup is"
                     + " retried without a restart.\n"
                     + " Note: WebViewUseStartupTasksLogicP2 and kWebViewStartupTasksYieldToNative"
-                    + " also enable the same behaviour as this flag."),
+                    + " also enable the same behaviour as this flag. Additionally, developer"
+                    + " preferences via the AndroidX API or manifest metadata supersedes this"
+                    + " flag."),
         Flag.baseFeature(
                 BlinkFeatures.ASYNC_SET_COOKIE,
                 "When enabled, the communication between renderer and network service is "
@@ -980,7 +982,9 @@ public final class ProductionSupportedFlagList {
                     + " which also starts browser processes asynchronously, when starting webview"
                     + " asynchronously.\n"
                     + " Note: This also enables the same behaviour as WebViewUseStartupTasksLogic"
-                    + " and WebViewStartupTasksYieldToNative with minor differences."),
+                    + " and WebViewStartupTasksYieldToNative with minor differences. Additionally,"
+                    + " developer preferences via the AndroidX API or manifest metadata supersedes"
+                    + " this flag."),
         Flag.baseFeature("ServiceWorkerAutoPreload"),
         Flag.baseFeature(GpuFeatures.WEB_GPU_USE_SPIRV14, "Use WebGPU's SPIR-V 1.4"),
         Flag.commandLine(
@@ -988,7 +992,9 @@ public final class ProductionSupportedFlagList {
                 "Enables running native startup tasks asynchronously if WebView startup is"
                     + " asynchronous.\n"
                     + " Note: This also enables the same behaviour as WebViewUseStartupTasksLogic"
-                    + " and WebViewUseStartupTasksLogicP2, with minor additions."),
+                    + " and WebViewUseStartupTasksLogicP2, with minor additions. Additionally,"
+                    + " developer preferences via the AndroidX API or manifest metadata supersedes"
+                    + " this flag."),
         Flag.commandLine(
                 AwSwitches.WEBVIEW_STARTUP_TASKS_PLUS_MULTI_PROCESS,
                 "Enables running native startup tasks asynchronously if WebView startup is"

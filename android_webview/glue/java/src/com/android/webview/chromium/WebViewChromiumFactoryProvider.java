@@ -721,14 +721,28 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         }
     }
 
+    // The startup tasks are setup to run based on the following logic:
+    // 1. The AndroidX preference is checked first,
+    // 2. If it's not set, the manifest metadata is checked,
+    // 3. Then the commandline switch is checked,
+    // 4. Finally, the feature flag is checked.
     private void setupStartupTaskExperiments(AndroidXProcessGlobalConfig androidXConfig) {
         switch (androidXConfig.getUiThreadStartupMode()) {
             case ProcessGlobalConfigConstants.UI_THREAD_STARTUP_MODE_DEFAULT:
-                setStartupTaskExperimentValues(
-                        shouldEnableStartupTasksExperiment(),
-                        shouldEnableStartupTasksExperimentP2(),
-                        shouldEnableStartupTasksYieldToNativeExperiment());
-                return;
+                {
+                    if (ManifestMetadataUtil.shouldForceSyncBrowserStartup()) {
+                        setStartupTaskExperimentValues(
+                                /* enablePhase1= */ false,
+                                /* enablePhase2= */ false,
+                                /* enableYieldToNative= */ false);
+                    } else {
+                        setStartupTaskExperimentValues(
+                                shouldEnableStartupTasksExperiment(),
+                                shouldEnableStartupTasksExperimentP2(),
+                                shouldEnableStartupTasksYieldToNativeExperiment());
+                    }
+                    return;
+                }
             case ProcessGlobalConfigConstants.UI_THREAD_STARTUP_MODE_SYNC:
                 setStartupTaskExperimentValues(
                         /* enablePhase1= */ false,

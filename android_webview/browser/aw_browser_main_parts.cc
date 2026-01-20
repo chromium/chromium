@@ -508,23 +508,17 @@ void AwBrowserMainParts::PostCreateThreads() {
 
 bool AwBrowserMainParts::isWebViewStartupTasksExperimentEnabled() {
   return Java_AwBrowserMainParts_isWebViewStartupTasksLogicEnabled(
-             base::android::AttachCurrentThread()) ||
-         base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kWebViewUseStartupTasksLogic);
+      base::android::AttachCurrentThread());
 }
 
 bool AwBrowserMainParts::isWebViewStartupTasksExperimentEnabledP2() {
   return Java_AwBrowserMainParts_isWebViewStartupTasksExperimentEnabledP2(
-             base::android::AttachCurrentThread()) ||
-         base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kWebViewUseStartupTasksLogicP2);
+      base::android::AttachCurrentThread());
 }
 
 bool AwBrowserMainParts::isStartupTaskYieldToNativeExperimentEnabled() {
   return Java_AwBrowserMainParts_isWebViewStartupTasksYieldToNativeExperimentEnabled(
-             base::android::AttachCurrentThread()) ||
-         base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kWebViewStartupTasksYieldToNative);
+      base::android::AttachCurrentThread());
 }
 
 }  // namespace android_webview

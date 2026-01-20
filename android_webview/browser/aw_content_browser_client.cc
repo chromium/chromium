@@ -323,10 +323,13 @@ AwContentBrowserClient::CreateBrowserMainParts(bool /* is_integration_test */) {
   return std::make_unique<AwBrowserMainParts>(this);
 }
 
-bool IsAnyStartupTaskExperimentEnabled() {
+bool AwContentBrowserClient::IsAnyStartupTaskExperimentEnabled() {
   return AwBrowserMainParts::isWebViewStartupTasksExperimentEnabled() ||
          AwBrowserMainParts::isWebViewStartupTasksExperimentEnabledP2() ||
-         AwBrowserMainParts::isStartupTaskYieldToNativeExperimentEnabled();
+         AwBrowserMainParts::isStartupTaskYieldToNativeExperimentEnabled() ||
+         startup_tasks_logic_enabled_for_testing_ ||
+         startup_tasks_logic_p2_enabled_for_testing_ ||
+         startup_tasks_yield_to_native_experiment_enabled_for_testing_;
 }
 
 void AwContentBrowserClient::PostAfterStartupTask(
@@ -356,7 +359,8 @@ void AwContentBrowserClient::OnStartupComplete() {
   DCHECK(!startup_info_.startup_complete);
 
   startup_info_.startup_complete = true;
-  if (AwBrowserMainParts::isStartupTaskYieldToNativeExperimentEnabled()) {
+  if (AwBrowserMainParts::isStartupTaskYieldToNativeExperimentEnabled() ||
+      startup_tasks_yield_to_native_experiment_enabled_for_testing_) {
     YieldToLooperChecker::GetInstance().SetStartupRunning(false);
   }
 
@@ -383,7 +387,8 @@ void AwContentBrowserClient::OnUiTaskRunnerReady(
   startup_info_.enable_native_task_execution_callback =
       std::move(enable_native_task_execution_callback);
 
-  if (AwBrowserMainParts::isStartupTaskYieldToNativeExperimentEnabled()) {
+  if (AwBrowserMainParts::isStartupTaskYieldToNativeExperimentEnabled() ||
+      startup_tasks_yield_to_native_experiment_enabled_for_testing_) {
     YieldToLooperChecker::GetInstance().SetStartupRunning(true);
   }
 }
