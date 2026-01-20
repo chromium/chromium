@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
 
 #include <algorithm>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -17,6 +18,7 @@
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -47,6 +49,7 @@
 #include "chrome/browser/ui/webui/profile_helper.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
+#include "chrome/browser/ui/webui/signin/signin_error_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/pref_names.h"
@@ -403,7 +406,7 @@ void ProfilePickerHandler::TryLaunchLockedProfile(
     // Glic version cannot run the reauth steps, show a dialog instead that
     // will redirect the user to the regular version of the picker.
     if (is_glic_version_) {
-      DisplayForceSigninErrorDialog(
+      DisplaySigninErrorDialog(
           /*profile_path=*/base::FilePath(),
           ForceSigninUIError::ReauthNotSupportedByGlicFlow());
       OnResetPickerButtons(false);
@@ -441,7 +444,7 @@ void ProfilePickerHandler::TryLaunchLockedProfile(
 
   // Do not allow users to sign in to a pre-existing locked profile, as this may
   // force unexpected profile data merge.
-  DisplayForceSigninErrorDialog(
+  DisplaySigninErrorDialog(
       /*profile_path=*/base::FilePath(),
       ForceSigninUIError::ReauthNotAllowed());
   OnResetPickerButtons(false);
@@ -459,15 +462,42 @@ void ProfilePickerHandler::OnProfileLoadedForSwitchToReauth(Profile* profile) {
                      weak_factory_.GetWeakPtr(), profile->GetPath()));
 }
 
+void ProfilePickerHandler::DisplaySigninErrorDialog(
+    const base::FilePath& profile_path,
+    const std::variant<ForceSigninUIError, SigninUIError>& error) {
+  AllowJavascript();
+
+  if (std::holds_alternative<ForceSigninUIError>(error)) {
+    CHECK(signin_util::IsForceSigninEnabled());
+    const ForceSigninUIError& force_signin_error =
+        std::get<ForceSigninUIError>(error);
+    DisplayForceSigninErrorDialog(profile_path, force_signin_error);
+    return;
+  }
+
+  const SigninUIError& generic_signin_error = std::get<SigninUIError>(error);
+  CHECK(!generic_signin_error.message().empty());
+  FireDisplaySigninErrorDialog(
+      SigninErrorUI::GetTitle(generic_signin_error.email()),
+      generic_signin_error.message(),
+      /*profile_path=*/std::u16string());
+}
+
 void ProfilePickerHandler::DisplayForceSigninErrorDialog(
     const base::FilePath& profile_path,
     const ForceSigninUIError& error) {
   AllowJavascript();
-
   const auto& [title, body] = error.GetErrorTexts();
+  FireDisplaySigninErrorDialog(title, body, profile_path.AsUTF16Unsafe());
+}
+
+void ProfilePickerHandler::FireDisplaySigninErrorDialog(
+    const std::u16string& title,
+    const std::u16string& body,
+    const std::u16string& profile_path) {
+  AllowJavascript();
   FireWebUIListener("display-signin-error-dialog", base::Value(title),
-                    base::Value(body),
-                    base::Value(profile_path.AsUTF16Unsafe()));
+                    base::Value(body), base::Value(profile_path));
 }
 
 void ProfilePickerHandler::HandleLaunchAllProfiles(

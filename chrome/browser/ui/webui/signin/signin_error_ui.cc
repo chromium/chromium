@@ -62,6 +62,17 @@ void SigninErrorUI::InitializeMessageHandlerForProfilePicker() {
   Initialize(nullptr, /*from_profile_picker=*/true);
 }
 
+// static
+std::u16string SigninErrorUI::GetTitle(const std::u16string& email) {
+  if (email.empty()) {
+    // TODO(crbug.com/40150925): investigate whether an empty email
+    // string is ever passed and possibly add a DCHECK.
+    return l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_TITLE);
+  } else {
+    return l10n_util::GetStringFUTF16(IDS_SIGNIN_ERROR_EMAIL_TITLE, email);
+  }
+}
+
 void SigninErrorUI::Initialize(Browser* browser, bool from_profile_picker) {
   Profile* webui_profile = Profile::FromWebUI(web_ui());
   std::unique_ptr<SigninErrorHandler> handler =
@@ -90,16 +101,7 @@ void SigninErrorUI::Initialize(Browser* browser, bool from_profile_picker) {
   LoginUIService* login_ui_service =
       LoginUIServiceFactory::GetForProfile(webui_profile);
   const SigninUIError last_login_error = login_ui_service->GetLastLoginError();
-
-  if (last_login_error.email().empty()) {
-    // TODO(crbug.com/40150925): investigate whether an empty email
-    // string is ever passed and possibly add a DCHECK.
-    source->AddLocalizedString("signinErrorTitle", IDS_SIGNIN_ERROR_TITLE);
-  } else {
-    source->AddString("signinErrorTitle",
-                      l10n_util::GetStringFUTF16(IDS_SIGNIN_ERROR_EMAIL_TITLE,
-                                                 last_login_error.email()));
-  }
+  source->AddString("signinErrorTitle", GetTitle(last_login_error.email()));
 
   // Tweak the dialog UI depending on whether the signin error is
   // username-in-use error and the error UI is shown with a browser window.

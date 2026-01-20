@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
 
 #include <memory>
+#include <variant>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
@@ -17,11 +18,13 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
@@ -42,6 +45,7 @@
 // and not in the webui directory because they manipulate views.
 namespace {
 constexpr char kEmail[] = "joe@gmail.com";
+constexpr char kOtherEmail[] = "other@gmail.com";
 
 struct ProfilePickerTestParam {
   PixelTestParam pixel_test_param;
@@ -55,7 +59,8 @@ struct ProfilePickerTestParam {
   bool is_profile_picker_first_run = true;
   bool open_all_profiles_experiment_enabled = false;
   std::string text_variation_feature_param;
-  std::optional<ForceSigninUIError::Type> signin_error_dialog_type;
+  std::optional<std::variant<ForceSigninUIError::Type, SigninUIError::Type>>
+      signin_error_dialog_type;
   bool error_with_signin_button = false;
 };
 
@@ -154,18 +159,28 @@ const ProfilePickerTestParam kTestParams[] = {
                               "OpenAllProfilesExperimentButtonShown"},
      .use_multiple_profiles = true,
      .open_all_profiles_experiment_enabled = true},
+    /* Force Signin UI error dialog params */
     {.pixel_test_param = {.test_suffix = "SigninErrorDialogPattern"},
      .signin_error_dialog_type =
          ForceSigninUIError::Type::kSigninPatternNotMatching},
     {.pixel_test_param = {.test_suffix = "SigninErrorDialogReauthNotAllowed",
                           .use_dark_theme = true},
      .signin_error_dialog_type = ForceSigninUIError::Type::kReauthNotAllowed},
-    {.pixel_test_param = {.test_suffix = "SigninErrorDialogReauthWrongAccountRTL", .use_right_to_left_language = true},
+    {.pixel_test_param = {.test_suffix =
+                              "SigninErrorDialogReauthWrongAccountRTL",
+                          .use_right_to_left_language = true},
      .signin_error_dialog_type = ForceSigninUIError::Type::kReauthWrongAccount,
      .error_with_signin_button = true},
     {.pixel_test_param = {.test_suffix = "SigninErrorDialogReauthWrongAccount"},
      .signin_error_dialog_type = ForceSigninUIError::Type::kReauthWrongAccount,
      .error_with_signin_button = true},
+    /* Signin UI error dialog params */
+    {.pixel_test_param = {.test_suffix = "GoogleServiceAuthError"},
+     .signin_error_dialog_type =
+         SigninUIError::Type::kFromGoogleServiceAuthError},
+    {.pixel_test_param = {.test_suffix = "SigninErrorCookiesNotAllowed",
+                          .use_dark_theme = true},
+     .signin_error_dialog_type = SigninUIError::Type::kSigninCookiesDisallowed},
 };
 
 enum class ProfileStatus {
@@ -281,7 +296,10 @@ class ProfilePickerUIPixelTest
   }
 
   ForceSigninUIError GetForceSigninUIError() {
-    switch (GetParam().signin_error_dialog_type.value()) {
+    CHECK(GetParam().signin_error_dialog_type.has_value());
+    ForceSigninUIError::Type error_type = std::get<ForceSigninUIError::Type>(
+        GetParam().signin_error_dialog_type.value());
+    switch (error_type) {
       case ForceSigninUIError::Type::kNone:
         NOTREACHED();
       case ForceSigninUIError::Type::kReauthNotAllowed:
@@ -295,6 +313,48 @@ class ProfilePickerUIPixelTest
       case ForceSigninUIError::Type::kReauthNotSupportedByGlicFlow:
         return ForceSigninUIError::ReauthNotSupportedByGlicFlow();
     }
+  }
+
+  SigninUIError GetSigninUIError() {
+    CHECK(GetParam().signin_error_dialog_type.has_value());
+    SigninUIError::Type error_type = std::get<SigninUIError::Type>(
+        GetParam().signin_error_dialog_type.value());
+    switch (error_type) {
+      case SigninUIError::Type::kOk:
+        NOTREACHED();
+      case SigninUIError::Type::kUsernameNotAllowedByPatternFromPrefs:
+        return SigninUIError::UsernameNotAllowedByPatternFromPrefs(kEmail);
+      case SigninUIError::Type::kWrongReauthAccount:
+        return SigninUIError::WrongReauthAccount(kEmail, kOtherEmail);
+      case SigninUIError::Type::kProfileWasUsedByAnotherAccount:
+        // This error uses a dedicated profile picker view, not the modal error
+        // dialog. See `ProfilePickerSignInProvider::ShowSigninError`.
+        NOTREACHED();
+      case SigninUIError::Type::kFromGoogleServiceAuthError:
+        return SigninUIError::FromGoogleServiceAuthError(
+            kEmail, GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                        GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                            CREDENTIALS_REJECTED_BY_SERVER));
+      case SigninUIError::Type::kFromCredentialProviderUiExitCode:
+        // Error not applicable in the profile picker.
+        NOTREACHED();
+      case SigninUIError::Type::kNoProfile:
+        return SigninUIError::NoProfile(kEmail);
+      case SigninUIError::Type::kSigninDisallowed:
+        return SigninUIError::SigninDisallowed(kEmail);
+      case SigninUIError::Type::kSigninCookiesDisallowed:
+        return SigninUIError::SigninCookiesDisallowed(kEmail);
+      case SigninUIError::Type::kNoIdentityManager:
+        return SigninUIError::NoIdentityManager(kEmail);
+    }
+  }
+
+  std::variant<ForceSigninUIError, SigninUIError> GetSigninUIErrorFromParam() {
+    if (std::holds_alternative<ForceSigninUIError::Type>(
+            GetParam().signin_error_dialog_type.value())) {
+      return GetForceSigninUIError();
+    }
+    return GetSigninUIError();
   }
 
   void ShowUi(const std::string& name) override {
@@ -385,14 +445,20 @@ class ProfilePickerUIPixelTest
       CHECK(web_contents);
       ProfilePickerUI* web_ui =
           web_contents->GetWebUI()->GetController()->GetAs<ProfilePickerUI>();
+      signin_util::ScopedForceSigninSetterForTesting force_signin_setter(
+          std::holds_alternative<ForceSigninUIError::Type>(
+              GetParam().signin_error_dialog_type.value()));
 
-      const ForceSigninUIError& error = GetForceSigninUIError();
       if (!GetParam().error_with_signin_button) {
-        web_ui->ShowForceSigninErrorDialog(error);
+        web_ui->ShowSigninErrorDialog(GetSigninUIErrorFromParam());
       } else {
-        web_ui->GetProfilePickerHandlerForTesting()
-            ->DisplayForceSigninErrorDialog(
-                base::FilePath(FILE_PATH_LITERAL("path")), error);
+        // Sign-in re-auth button applies only to errors of type
+        // ForceSigninUIError.
+        CHECK(std::holds_alternative<ForceSigninUIError::Type>(
+            GetParam().signin_error_dialog_type.value()));
+        web_ui->GetProfilePickerHandlerForTesting()->DisplaySigninErrorDialog(
+            base::FilePath(FILE_PATH_LITERAL("path")),
+            GetSigninUIErrorFromParam());
       }
     }
   }

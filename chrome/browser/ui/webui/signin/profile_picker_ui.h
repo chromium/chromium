@@ -18,6 +18,7 @@
 class ProfilePickerHandler;
 class ForceSigninUIError;
 class ProfilePickerUI;
+class SigninUIError;
 
 class ProfilePickerUIConfig
     : public content::DefaultWebUIConfig<ProfilePickerUI> {
@@ -42,7 +43,8 @@ class ProfilePickerUI : public TopChromeWebUIController,
           pending_receiver);
 
   // Shows a signin error dialog on top of the ProfilePicker.
-  void ShowForceSigninErrorDialog(const ForceSigninUIError& error);
+  void ShowSigninErrorDialog(
+      const std::variant<ForceSigninUIError, SigninUIError>& error);
 
   // Get the minimum size for the picker UI.
   static gfx::Size GetMinimumSize();
