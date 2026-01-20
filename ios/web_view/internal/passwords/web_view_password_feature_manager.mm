@@ -21,7 +21,7 @@ bool WebViewPasswordFeatureManager::IsAccountStorageEnabled() const {
   // Although ios/web_view will only write to the account store, this should
   // still be controlled on a per user basis to ensure that the logged out user
   // remains with account storage disabled.
-  return password_manager::features_util::IsAccountStorageEnabled(
+  return password_manager::features_util::IsAccountStorageActive(
       sync_service_);
 }
 

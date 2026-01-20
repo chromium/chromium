@@ -40,64 +40,64 @@ class PasswordManagerFeaturesUtilTest : public testing::Test {
   syncer::TestSyncService sync_service_;
 };
 
-TEST_F(PasswordManagerFeaturesUtilTest, IsAccountStorageEnabled_SignedOut) {
+TEST_F(PasswordManagerFeaturesUtilTest, IsAccountStorageActive_SignedOut) {
   sync_service_.SetSignedOut();
 
-  EXPECT_FALSE(IsAccountStorageEnabled(&sync_service_));
+  EXPECT_FALSE(IsAccountStorageActive(&sync_service_));
 }
 
 TEST_F(PasswordManagerFeaturesUtilTest,
-       IsAccountStorageEnabled_SignedInWithLocalSyncEnabled) {
+       IsAccountStorageActive_SignedInWithLocalSyncEnabled) {
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
   sync_service_.SetLocalSyncEnabled(true);
 
-  EXPECT_FALSE(IsAccountStorageEnabled(&sync_service_));
+  EXPECT_FALSE(IsAccountStorageActive(&sync_service_));
 }
 
 TEST_F(PasswordManagerFeaturesUtilTest,
-       IsAccountStorageEnabled_SignedInWithAuthError) {
+       IsAccountStorageActive_SignedInWithAuthError) {
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
   sync_service_.SetPersistentAuthError();
 
-  EXPECT_FALSE(IsAccountStorageEnabled(&sync_service_));
+  EXPECT_FALSE(IsAccountStorageActive(&sync_service_));
 }
 
 TEST_F(PasswordManagerFeaturesUtilTest,
-       IsAccountStorageEnabled_SignedInWithPassphraseError) {
+       IsAccountStorageActive_SignedInWithPassphraseError) {
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
   sync_service_.SetPassphraseRequired();
 
-  EXPECT_FALSE(IsAccountStorageEnabled(&sync_service_));
+  EXPECT_FALSE(IsAccountStorageActive(&sync_service_));
 }
 
 TEST_F(PasswordManagerFeaturesUtilTest,
-       IsAccountStorageEnabled_SignedInWithTrustedVaultError) {
+       IsAccountStorageActive_SignedInWithTrustedVaultError) {
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
   sync_service_.SetTrustedVaultKeyRequired(true);
 
-  EXPECT_FALSE(IsAccountStorageEnabled(&sync_service_));
+  EXPECT_FALSE(IsAccountStorageActive(&sync_service_));
 }
 
 TEST_F(PasswordManagerFeaturesUtilTest,
-       IsAccountStorageEnabled_SignedInWithPasswordsDataTypeDisabled) {
+       IsAccountStorageActive_SignedInWithPasswordsDataTypeDisabled) {
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
   sync_service_.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords, false);
 
-  EXPECT_FALSE(IsAccountStorageEnabled(&sync_service_));
+  EXPECT_FALSE(IsAccountStorageActive(&sync_service_));
 }
 
 TEST_F(PasswordManagerFeaturesUtilTest,
-       IsAccountStorageEnabled_SignedInHealthy) {
+       IsAccountStorageActive_SignedInHealthy) {
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
 
-  EXPECT_TRUE(IsAccountStorageEnabled(&sync_service_));
+  EXPECT_TRUE(IsAccountStorageActive(&sync_service_));
 }
 
-TEST_F(PasswordManagerFeaturesUtilTest, IsAccountStorageEnabled_Syncing) {
+TEST_F(PasswordManagerFeaturesUtilTest, IsAccountStorageActive_Syncing) {
   sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
 
-  EXPECT_EQ(IsAccountStorageEnabled(&sync_service_), BUILDFLAG(IS_ANDROID));
+  EXPECT_EQ(IsAccountStorageActive(&sync_service_), BUILDFLAG(IS_ANDROID));
 }
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)

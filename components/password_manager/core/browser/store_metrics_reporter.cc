@@ -753,8 +753,10 @@ StoreMetricsReporter::StoreMetricsReporter(
   custom_passphrase_enabled_ = IsCustomPassphraseEnabled(
       password_manager::sync_util::GetPasswordSyncState(sync_service));
 
+  // TODO(crbug.com/470332074): Verify whether this should check for "enabled"
+  // instead of "active".
   is_account_storage_enabled_ =
-      features_util::IsAccountStorageEnabled(sync_service);
+      features_util::IsAccountStorageActive(sync_service);
 
   is_safe_browsing_enabled_ = safe_browsing::IsSafeBrowsingEnabled(*prefs_);
 

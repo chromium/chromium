@@ -779,7 +779,7 @@ IN_PROC_BROWSER_TEST_F(
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(GetProfile());
   EXPECT_TRUE(
-      password_manager::features_util::IsAccountStorageEnabled(sync_service));
+      password_manager::features_util::IsAccountStorageActive(sync_service));
 
   CheckHistograms(histogram_tester,
                   SigninInterceptionHeuristicOutcome::kInterceptChromeSignin);
@@ -830,7 +830,7 @@ IN_PROC_BROWSER_TEST_F(
                                         SigninInterceptionResult::kDeclined);
 
   EXPECT_FALSE(IsChromeSignedIn());
-  EXPECT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
+  EXPECT_FALSE(password_manager::features_util::IsAccountStorageActive(
       SyncServiceFactory::GetForProfile(GetProfile())));
 
   CheckHistograms(histogram_tester,
@@ -1190,7 +1190,7 @@ IN_PROC_BROWSER_TEST_F(
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(GetProfile());
   EXPECT_TRUE(
-      password_manager::features_util::IsAccountStorageEnabled(sync_service));
+      password_manager::features_util::IsAccountStorageActive(sync_service));
 
   // Disable account storage.
   sync_service->GetUserSettings()->SetSelectedType(
@@ -1198,13 +1198,13 @@ IN_PROC_BROWSER_TEST_F(
 
   // Check that the password account storage is disabled.
   EXPECT_FALSE(
-      password_manager::features_util::IsAccountStorageEnabled(sync_service));
+      password_manager::features_util::IsAccountStorageActive(sync_service));
 
   Signout();
 
   // Check that the password account storage is false if there is no account.
   EXPECT_FALSE(
-      password_manager::features_util::IsAccountStorageEnabled(sync_service));
+      password_manager::features_util::IsAccountStorageActive(sync_service));
 
   // Log in again.
   // Force a Chrome Signin. The bubble will not be shown again.
@@ -1213,7 +1213,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Check that the password account storage is still disabled.
   EXPECT_FALSE(
-      password_manager::features_util::IsAccountStorageEnabled(sync_service));
+      password_manager::features_util::IsAccountStorageActive(sync_service));
 }
 
 // Test the recording of the user entering or resolving an inconsistent state
@@ -1724,7 +1724,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
       prefs::kExplicitBrowserSignin));
   // Passwords are defaulted to disabled without an explicit signin.
-  EXPECT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
+  EXPECT_FALSE(password_manager::features_util::IsAccountStorageActive(
       SyncServiceFactory::GetForProfile(GetProfile())));
 
   SetSignoutAllowed(false);
@@ -1747,7 +1747,7 @@ IN_PROC_BROWSER_TEST_F(
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(GetProfile());
   EXPECT_FALSE(
-      password_manager::features_util::IsAccountStorageEnabled(sync_service));
+      password_manager::features_util::IsAccountStorageActive(sync_service));
 
   // Sign out, and sign back in.
   SetSignoutAllowed(true);
@@ -1767,7 +1767,7 @@ IN_PROC_BROWSER_TEST_F(
   // Signing in with explicit signin enabled, should affect the passwords
   // default.
   EXPECT_TRUE(
-      password_manager::features_util::IsAccountStorageEnabled(sync_service));
+      password_manager::features_util::IsAccountStorageActive(sync_service));
 
   // Sign out should clear the explicit signin pref.
   identity_test_env()->ClearPrimaryAccount();

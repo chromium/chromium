@@ -83,7 +83,7 @@ bool IsUserEligibleForAccountStorage(const syncer::SyncService* sync_service) {
 
 }  // namespace
 
-bool IsAccountStorageEnabled(const syncer::SyncService* sync_service) {
+bool IsAccountStorageActive(const syncer::SyncService* sync_service) {
   return IsUserEligibleForAccountStorage(sync_service) &&
          sync_service->GetUserSettings()->GetSelectedTypes().Has(
              syncer::UserSelectableType::kPasswords);
@@ -108,7 +108,7 @@ PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(
     return PasswordAccountStorageUserState::kSignedOutUser;
   }
 
-  if (IsAccountStorageEnabled(sync_service)) {
+  if (IsAccountStorageActive(sync_service)) {
     return PasswordAccountStorageUserState::kSignedInAccountStoreUser;
   }
 
@@ -134,7 +134,7 @@ PasswordAccountStorageUsageLevel ComputePasswordAccountStorageUsageLevel(
 bool ShouldShowAccountStorageSettingToggle(
     const syncer::SyncService* sync_service) {
   // TODO(crbug.com/303613699): Merge IsUserEligibleForAccountStorage() and
-  // IsAccountStorageEnabled() after kReplaceSyncPromosWithSignInPromos is
+  // IsAccountStorageActive() after kReplaceSyncPromosWithSignInPromos is
   // launched and cleaned-up.
   return IsUserEligibleForAccountStorage(sync_service) &&
          !base::FeatureList::IsEnabled(

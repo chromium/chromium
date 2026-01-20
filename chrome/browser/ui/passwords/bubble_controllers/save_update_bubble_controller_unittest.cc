@@ -97,7 +97,7 @@ std::unique_ptr<KeyedService> BuildTestSyncService(
 void SetupAccountPasswordStore(syncer::TestSyncService* sync_service) {
   sync_service->SetSignedIn(signin::ConsentLevel::kSignin);
   ASSERT_TRUE(
-      password_manager::features_util::IsAccountStorageEnabled(sync_service));
+      password_manager::features_util::IsAccountStorageActive(sync_service));
 }
 
 }  // namespace

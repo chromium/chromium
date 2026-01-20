@@ -4060,7 +4060,7 @@ class ChromeBrowsingDataRemoverDelegateWithAccountPasswordsTest
         signin::ConsentLevel::kSignin
 #endif
     );
-    ASSERT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
+    ASSERT_TRUE(password_manager::features_util::IsAccountStorageActive(
         sync_service()));
   }
 };

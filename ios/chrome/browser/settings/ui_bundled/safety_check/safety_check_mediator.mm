@@ -785,7 +785,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 
 // Computes whether user is capable to run password check in Google Account.
 - (BOOL)canUseAccountPasswordCheckup {
-  return password_manager::features_util::IsAccountStorageEnabled(
+  return password_manager::features_util::IsAccountStorageActive(
              self.syncService) &&
          !self.syncService->GetUserSettings()->IsEncryptEverythingEnabled();
 }

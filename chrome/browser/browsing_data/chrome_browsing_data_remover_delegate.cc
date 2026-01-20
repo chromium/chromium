@@ -1734,7 +1734,12 @@ void ChromeBrowsingDataRemoverDelegate::DisablePasswordsAutoSignin(
             TracingDataType::kDisableAutoSigninForProfilePasswords));
   }
   if (account_store &&
-      password_manager::features_util::IsAccountStorageEnabled(sync_service)) {
+      // TODO(crbug.com/470332074): This should check for
+      // "enabled" instead of "active" because this code is just trying to
+      // delete data from all relevant places. The if() statement is just making
+      // sure the storage exists before we make a deletion call on it. This
+      // seems to match the semantics of "enabled".
+      password_manager::features_util::IsAccountStorageActive(sync_service)) {
     account_store->DisableAutoSignInForOrigins(
         url_filter,
         CreateTaskCompletionClosure(

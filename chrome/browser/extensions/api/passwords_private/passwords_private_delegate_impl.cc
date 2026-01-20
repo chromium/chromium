@@ -832,7 +832,7 @@ PasswordsPrivateDelegateImpl::GetExportProgressStatus() {
 }
 
 bool PasswordsPrivateDelegateImpl::IsAccountStorageEnabled() {
-  return password_manager::features_util::IsAccountStorageEnabled(
+  return password_manager::features_util::IsAccountStorageActive(
       SyncServiceFactory::GetForProfile(profile_));
 }
 
