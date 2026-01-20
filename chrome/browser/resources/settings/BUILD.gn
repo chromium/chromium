@@ -49,8 +49,6 @@ build_webui("build") {
     "images/signin_banner_dark.svg",
     "images/sync_banner.svg",
     "images/sync_banner_dark.svg",
-    "images/tracking_protection_banner.svg",
-    "images/tracking_protection_banner_dark.svg",
     "settings.html",
   ]
 
