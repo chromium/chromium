@@ -5906,6 +5906,29 @@ void NavigationRequest::OnRedirectChecksComplete(
   net::HttpRequestHeaders modified_headers = TakeModifiedRequestHeaders();
   std::vector<std::string> removed_headers = TakeRemovedRequestHeaders();
 
+  if (remove_extra_headers_on_cross_origin_redirect_ &&
+      !url::Origin::Create(commit_params_->redirects.back())
+           .IsSameOriginWith(common_params_->url)) {
+    CHECK(commit_params_->is_browser_initiated);
+
+    // Browser-initiated navigations should always have a NavigationEntry.
+    NavigationEntryImpl* nav_entry =
+        GetNavigationController()->GetEntryWithUniqueIDIncludingPending(
+            nav_entry_id_);
+    CHECK(nav_entry);
+
+    net::HttpRequestHeaders headers;
+    headers.AddHeadersFromString(nav_entry->extra_headers());
+    for (const auto& header : headers.GetHeaderVector()) {
+      removed_headers.push_back(header.key);
+    }
+
+    // Update the NavigationEntry so that history navigations don't include the
+    // extra headers.
+    nav_entry->set_extra_headers(std::string());
+    nav_entry->set_remove_extra_headers_on_cross_origin_redirect(false);
+  }
+
   // The topics a request is allowed to see can change within its redirect
   // chain thus we need to recalculate them. For example, different caller
   // origins (i.e. navigation URL's origin) may receive different topics, as the

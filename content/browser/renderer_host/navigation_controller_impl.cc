@@ -4290,6 +4290,8 @@ NavigationControllerImpl::CreateNavigationEntryFromLoadParams(
   // started_from_context_menu. Move started_from_context_menu to
   // NavigationUIData.
   entry->set_started_from_context_menu(params.started_from_context_menu);
+  entry->set_remove_extra_headers_on_cross_origin_redirect(
+      params.remove_extra_headers_on_cross_origin_redirect);
 
   return entry;
 }
@@ -4537,6 +4539,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
   if (params.force_no_https_upgrade) {
     navigation_request->set_force_no_https_upgrade();
   }
+  navigation_request->set_remove_extra_headers_on_cross_origin_redirect(
+      params.remove_extra_headers_on_cross_origin_redirect);
   return navigation_request;
 }
 
@@ -4648,7 +4652,7 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
     commit_params->srcdoc_value = frame_tree_node->srcdoc_value();
   }
   const bool is_browser_initiated = !initiator_frame_token;
-  return NavigationRequest::Create(
+  std::unique_ptr<NavigationRequest> request = NavigationRequest::Create(
       frame_tree_node, std::move(common_params), std::move(commit_params),
       is_browser_initiated, false /* was_opener_suppressed */,
       initiator_frame_token, initiator_process_id, entry->extra_headers(),
@@ -4657,6 +4661,10 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
       blink::mojom::NavigationInitiatorActivationAndAdStatus::
           kDidNotStartWithTransientActivation,
       false /* is_pdf */);
+
+  request->set_remove_extra_headers_on_cross_origin_redirect(
+      entry->remove_extra_headers_on_cross_origin_redirect());
+  return request;
 }
 
 void NavigationControllerImpl::NotifyNavigationEntryCommitted(

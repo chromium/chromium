@@ -895,6 +895,8 @@ NavigationEntryImpl::CloneAndReplaceInternal(
   copy->is_entry_created_by_ad_ = is_entry_created_by_ad_;
   copy->is_ad_entry_creator_ = is_ad_entry_creator_;
   copy->initial_navigation_entry_state_ = initial_navigation_entry_state_;
+  copy->remove_extra_headers_on_cross_origin_redirect_ =
+      remove_extra_headers_on_cross_origin_redirect_;
 
   if (navigation_transition_data().cache_hit_or_miss_reason() ==
       NavigationTransitionData::CacheHitOrMissReason::kCacheHit) {
@@ -933,6 +935,7 @@ NavigationEntryImpl::ConstructCommonNavigationParams(
       (dest_url.IsAboutBlank() || dest_url.IsAboutSrcdoc())
           ? frame_entry.initiator_base_url()
           : std::nullopt;
+
   return blink::mojom::CommonNavigationParams::New(
       dest_url, frame_entry.initiator_origin(), initiator_base_url,
       std::move(dest_referrer), GetTransitionType(), navigation_type,

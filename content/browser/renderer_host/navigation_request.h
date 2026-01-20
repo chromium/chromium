@@ -1721,6 +1721,14 @@ class CONTENT_EXPORT NavigationRequest
   // kInitialWebUISyncNavStartToCommit flag is disabled).
   bool IsInitialWebUINavigation();
 
+  void set_remove_extra_headers_on_cross_origin_redirect(bool value) {
+    remove_extra_headers_on_cross_origin_redirect_ = value;
+  }
+
+  bool remove_extra_headers_on_cross_origin_redirect() const {
+    return remove_extra_headers_on_cross_origin_redirect_;
+  }
+
  private:
   friend class NavigationRequestTest;
   FRIEND_TEST_ALL_PREFIXES(NavigationRequestTest, SanitizeRedirectsForCommit);
@@ -3429,6 +3437,10 @@ class CONTENT_EXPORT NavigationRequest
   // stored in the DocumentAssociatedData at commit. Only used for
   // cross-document navigations.
   std::optional<base::UnguessableToken> network_restrictions_id_;
+
+  // If true, any extra headers provided will be removed on a cross-origin
+  // redirect.
+  bool remove_extra_headers_on_cross_origin_redirect_ = false;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };
