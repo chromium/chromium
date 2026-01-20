@@ -135,11 +135,12 @@ constexpr CGFloat kTableViewHorizontalPadding = 6.0f;
 
 - (void)viewWillLayoutSubviews {
   [super viewWillLayoutSubviews];
-  [self updateTableViewHeightConstraint];
-  __weak __typeof(self) weakSelf = self;
-  [weakSelf.sheetPresentationController animateChanges:^{
-    [weakSelf.sheetPresentationController invalidateDetents];
-  }];
+  if ([self updateTableViewHeightConstraint]) {
+    __weak __typeof(self) weakSelf = self;
+    [weakSelf.sheetPresentationController animateChanges:^{
+      [weakSelf.sheetPresentationController invalidateDetents];
+    }];
+  }
 }
 
 #pragma mark - ConfirmationAlertViewController
@@ -288,12 +289,14 @@ constexpr CGFloat kTableViewHorizontalPadding = 6.0f;
 
 // Updates the tableView's height constraint based on its content size.
 // This is necessary because scrolling is disabled.
-- (void)updateTableViewHeightConstraint {
+- (BOOL)updateTableViewHeightConstraint {
   [_tableView layoutIfNeeded];
   CGFloat newHeight = _tableView.contentSize.height;
   if (_tableViewHeightConstraint.constant != newHeight) {
     _tableViewHeightConstraint.constant = newHeight;
+    return YES;
   }
+  return NO;
 }
 
 @end
