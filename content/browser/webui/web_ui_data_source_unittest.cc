@@ -487,7 +487,7 @@ class LoadWebUIFromDiskTest : public WebUIDataSourceTest {
 
 void LoadFromDiskCallback(scoped_refptr<base::RefCountedMemory> data) {
   std::string result(base::as_string_view(*data));
-  EXPECT_TRUE(std::ranges::contains(result, "hello plain!"));
+  EXPECT_TRUE(std::ranges::contains_subrange(result, "hello plain!"));
 }
 
 TEST_F(LoadWebUIFromDiskTest, FilepathInfoExists) {
