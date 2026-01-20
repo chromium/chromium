@@ -5,15 +5,15 @@
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 
 #include "base/feature_list.h"
+#include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/common/features.h"
 
 namespace supervised_user {
 
 SupervisedUserUrlFilteringService::SupervisedUserUrlFilteringService(
     const SupervisedUserService& supervised_user_service,
-    const SupervisedUserSettingsService& family_link_settings_service)
+    const FamilyLinkSettingsService& family_link_settings_service)
     : supervised_user_service_(supervised_user_service),
       family_link_settings_service_(family_link_settings_service) {}
 SupervisedUserUrlFilteringService::~SupervisedUserUrlFilteringService() =

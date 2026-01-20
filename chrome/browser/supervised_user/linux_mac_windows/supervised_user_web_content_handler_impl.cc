@@ -11,9 +11,9 @@
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/browser/supervised_user/linux_mac_windows/parent_access_dialog_result_observer.h"
 #include "chrome/browser/supervised_user/linux_mac_windows/parent_access_view.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/browser/navigation_handle.h"
@@ -102,12 +102,13 @@ void SupervisedUserWebContentHandlerImpl::
         std::optional<supervised_user::LocalWebApprovalErrorType> error_type) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  supervised_user::SupervisedUserSettingsService* settings_service =
-      SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
-  CHECK(settings_service);
+  supervised_user::FamilyLinkSettingsService* family_link_settings_service =
+      supervised_user::FamilyLinkSettingsServiceFactory::GetForKey(
+          profile->GetProfileKey());
+  CHECK(family_link_settings_service);
 
   supervised_user::WebContentHandler::OnLocalApprovalRequestCompleted(
-      *settings_service, target_url, start_time, result, error_type);
+      *family_link_settings_service, target_url, start_time, result, error_type);
   switch (result) {
     case supervised_user::LocalApprovalResult::kError:
       DisplayErrorMessageInDialog();

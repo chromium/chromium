@@ -12,12 +12,12 @@
 #include "url/gurl.h"
 
 namespace supervised_user {
-class SupervisedUserSettingsService;
+class FamilyLinkSettingsService;
 
 class PermissionRequestCreatorMock : public PermissionRequestCreator {
  public:
   explicit PermissionRequestCreatorMock(
-      SupervisedUserSettingsService& settings_service);
+      FamilyLinkSettingsService& family_link_settings_service);
 
   PermissionRequestCreatorMock(const PermissionRequestCreatorMock&) = delete;
   PermissionRequestCreatorMock& operator=(const PermissionRequestCreatorMock&) =
@@ -50,7 +50,7 @@ class PermissionRequestCreatorMock : public PermissionRequestCreator {
   bool delay_handling_ = false;
   int last_url_request_handled_index_ = 0;
 
-  const raw_ref<SupervisedUserSettingsService> settings_service_;
+  const raw_ref<FamilyLinkSettingsService> family_link_settings_service_;
   std::vector<GURL> url_requests_;
 };
 

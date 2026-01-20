@@ -23,7 +23,7 @@
 #include "components/browser_sync/sync_engine_factory_impl.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/prefs/pref_service.h"
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/model/data_type_store_service.h"
 #include "components/sync/service/trusted_vault_synthetic_field_trial.h"
@@ -70,15 +70,14 @@ ChromeSyncClient::ChromeSyncClient(
     syncer::SyncInvalidationsService* sync_invalidations_service,
     syncer::DeviceInfoSyncService* device_info_sync_service,
     syncer::DataTypeStoreService* data_type_store_service,
-    supervised_user::SupervisedUserSettingsService*
-        supervised_user_settings_service,
+    supervised_user::FamilyLinkSettingsService* family_link_settings_service,
     std::unique_ptr<ExtensionsActivityMonitor> extensions_activity_monitor)
     : profile_base_name_(profile_base_name),
       pref_service_(pref_service),
       identity_manager_(identity_manager),
       trusted_vault_service_(trusted_vault_service),
       sync_invalidations_service_(sync_invalidations_service),
-      supervised_user_settings_service_(supervised_user_settings_service),
+      family_link_settings_service_(family_link_settings_service),
       extensions_activity_monitor_(std::move(extensions_activity_monitor)),
       engine_factory_(this,
                       device_info_sync_service->GetDeviceInfoTracker(),
@@ -147,8 +146,8 @@ syncer::SyncEngineFactory* ChromeSyncClient::GetSyncEngineFactory() {
 }
 
 bool ChromeSyncClient::IsCustomPassphraseAllowed() {
-  if (supervised_user_settings_service_) {
-    return supervised_user_settings_service_->IsCustomPassphraseAllowed();
+  if (family_link_settings_service_) {
+    return family_link_settings_service_->IsCustomPassphraseAllowed();
   }
   return true;
 }

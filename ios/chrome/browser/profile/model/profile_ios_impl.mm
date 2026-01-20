@@ -28,9 +28,9 @@
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/proxy_config/ios/proxy_service_factory.h"
 #import "components/proxy_config/pref_proxy_config_tracker.h"
+#import "components/supervised_user/core/browser/family_link_settings_service.h"
 #import "components/supervised_user/core/browser/supervised_user_content_settings_provider.h"
 #import "components/supervised_user/core/browser/supervised_user_pref_store.h"
-#import "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/user_prefs/user_prefs.h"
@@ -49,7 +49,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_dependency_manager_ios.h"
-#import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/family_link_settings_service_factory.h"
 #import "ios/web/public/thread/web_thread.h"
 
 namespace {
@@ -279,7 +279,7 @@ ProfileIOSImpl::ProfileIOSImpl(
       pref_registry_.get());
 
   // Create a SupervisedUserPrefStore and initialize it with empty data.
-  // The pref store will load SupervisedUserSettingsService disk data after
+  // The pref store will load Family Link Settings Service disk data after
   // the creation of PrefService.
   scoped_refptr<SupervisedUserPrefStore> supervised_user_prefs =
       base::MakeRefCounted<SupervisedUserPrefStore>();
@@ -447,21 +447,21 @@ void ProfileIOSImpl::PrefsInitStage1(InitInfo init_info, bool success) {
   // invoked when the data has been read from disk (PrefsInitStage1).
 
   // Initialize the settings service and have the pref store subscribe to it.
-  supervised_user::SupervisedUserSettingsService* supervised_user_settings =
-      SupervisedUserSettingsServiceFactory::GetForProfile(this);
+  supervised_user::FamilyLinkSettingsService* family_link_settings_service =
+      supervised_user::FamilyLinkSettingsServiceFactory::GetForProfile(this);
 
   const base::FilePath& state_path = GetStatePath();
-  supervised_user_settings->Init(
+  family_link_settings_service->Init(
       state_path, GetIOTaskRunner(),
       init_info.creation_mode == CreationMode::kSynchronous);
 
   init_info.supervised_user_prefs->Init(
-      supervised_user_settings,
+      family_link_settings_service,
       GetApplicationContext()->GetDeviceParentalControls());
 
   auto supervised_provider =
       std::make_unique<supervised_user::SupervisedUserContentSettingsProvider>(
-          supervised_user_settings);
+          family_link_settings_service);
 
   ios::HostContentSettingsMapFactory::GetForProfile(this)->RegisterProvider(
       content_settings::ProviderType::kSupervisedProvider,
@@ -475,14 +475,14 @@ void ProfileIOSImpl::PrefsInitStage1(InitInfo init_info, bool success) {
   io_data_->Init(cookie_path, init_info.cache_path, cache_max_size, state_path);
 
   // If the initialisation is asynchronous, then we also need to wait for
-  // the SupervisedUserSettingsService to complete its initialisation, if
+  // the FamilyLinkSettingsService to complete its initialisation, if
   // is not yet complete.
   if (init_info.creation_mode == CreationMode::kAsynchronous) {
-    if (!supervised_user_settings->IsReady()) {
+    if (!family_link_settings_service->IsReady()) {
       // It is safe to use base::Unretained(...) here since `this` owns the
-      // SupervisedUserSettingsService and the callback will not be invoked
-      // after destruction of the SupervisedUserSettingsService.
-      supervised_user_settings->WaitUntilReadyToSync(
+      // FamilyLinkSettingsService and the callback will not be invoked
+      // after destruction of the FamilyLinkSettingsService.
+      family_link_settings_service->WaitUntilReadyToSync(
           base::BindOnce(&ProfileIOSImpl::PrefsInitStage2,
                          base::Unretained(this), init_info, success));
       return;

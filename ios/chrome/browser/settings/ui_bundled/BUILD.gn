@@ -409,8 +409,8 @@ source_set("eg_app_support+eg2") {
     "settings_app_interface.mm",
     "supervised_user_family_link_app_interface.h",
     "supervised_user_family_link_app_interface.mm",
-    "supervised_user_settings_app_interface.h",
-    "supervised_user_settings_app_interface.mm",
+    "family_link_settings_app_interface.h",
+    "family_link_settings_app_interface.mm",
   ]
   deps = [
     "//base",
@@ -458,8 +458,8 @@ source_set("eg_test_support+eg2") {
     "settings_app_interface_stub.mm",
     "supervised_user_family_link_app_interface.h",
     "supervised_user_family_link_app_interface_stub.mm",
-    "supervised_user_settings_app_interface.h",
-    "supervised_user_settings_app_interface_stub.mm",
+    "family_link_settings_app_interface.h",
+    "family_link_settings_app_interface_stub.mm",
   ]
   public_deps = [ "//components/content_settings/core/common" ]
   deps = [

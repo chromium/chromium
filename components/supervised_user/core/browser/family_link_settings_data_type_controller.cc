@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/supervised_user/core/browser/supervised_user_settings_data_type_controller.h"
+#include "components/supervised_user/core/browser/family_link_settings_data_type_controller.h"
 
 #include "base/functional/bind.h"
 #include "components/prefs/pref_service.h"
@@ -10,8 +10,8 @@
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync/model/data_type_store_service.h"
 
-SupervisedUserSettingsDataTypeController::
-    SupervisedUserSettingsDataTypeController(
+FamilyLinkSettingsDataTypeController::
+    FamilyLinkSettingsDataTypeController(
         const base::RepeatingClosure& dump_stack,
         syncer::OnceDataTypeStoreFactory store_factory,
         base::WeakPtr<syncer::SyncableService> syncable_service,
@@ -26,11 +26,11 @@ SupervisedUserSettingsDataTypeController::
   DCHECK(pref_service);
 }
 
-SupervisedUserSettingsDataTypeController::
-    ~SupervisedUserSettingsDataTypeController() = default;
+FamilyLinkSettingsDataTypeController::
+    ~FamilyLinkSettingsDataTypeController() = default;
 
 syncer::DataTypeController::PreconditionState
-SupervisedUserSettingsDataTypeController::GetPreconditionState() const {
+FamilyLinkSettingsDataTypeController::GetPreconditionState() const {
   DCHECK(CalledOnValidThread());
   // TODO(b/292493941): use IsSubjectToParentalControls() once it is decoupled
   // from SupervisedUserService.

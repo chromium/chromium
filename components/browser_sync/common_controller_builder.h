@@ -89,7 +89,7 @@ class SkillsService;
 }  // namespace skills
 
 namespace supervised_user {
-class SupervisedUserSettingsService;
+class FamilyLinkSettingsService;
 }  // namespace supervised_user
 
 namespace sync_bookmarks {
@@ -205,9 +205,8 @@ class CommonControllerBuilder {
   void SetSharingMessageBridge(SharingMessageBridge* sharing_message_bridge);
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  void SetSupervisedUserSettingsService(
-      supervised_user::SupervisedUserSettingsService*
-          supervised_user_settings_service);
+  void SetFamilyLinkSettingsService(
+      supervised_user::FamilyLinkSettingsService* family_link_settings_service);
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
   void SetTabGroupSyncService(
@@ -304,8 +303,8 @@ class CommonControllerBuilder {
   SafeOptional<raw_ptr<sync_bookmarks::BookmarkSyncService>>
       account_bookmark_sync_service_;
   SafeOptional<raw_ptr<bookmarks::BookmarkModel>> bookmark_model_;
-  SafeOptional<raw_ptr<supervised_user::SupervisedUserSettingsService>>
-      supervised_user_settings_service_;
+  SafeOptional<raw_ptr<supervised_user::FamilyLinkSettingsService>>
+      family_link_settings_service_;
   SafeOptional<raw_ptr<plus_addresses::PlusAddressSettingService>>
       plus_address_setting_service_;
   SafeOptional<scoped_refptr<plus_addresses::PlusAddressWebDataService>>

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/family_link_settings_service.h"
 
 #include <memory>
 #include <optional>
@@ -43,10 +43,10 @@ class MockSubscriber {
               ());
 };
 
-class SupervisedUserSettingsServiceTest : public ::testing::Test {
+class FamilyLinkSettingsServiceTest : public ::testing::Test {
  protected:
-  SupervisedUserSettingsServiceTest() = default;
-  ~SupervisedUserSettingsServiceTest() override = default;
+  FamilyLinkSettingsServiceTest() = default;
+  ~FamilyLinkSettingsServiceTest() override = default;
 
   std::unique_ptr<syncer::SyncChangeProcessor> CreateSyncProcessor() {
     sync_processor_ = std::make_unique<syncer::FakeSyncChangeProcessor>();
@@ -65,7 +65,7 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
   void UploadSplitItem(const std::string& key, const std::string& value) {
     split_items_.Set(key, value);
     settings_service_.SaveItem(
-        SupervisedUserSettingsService::MakeSplitSettingKey(kSplitItemName, key),
+        FamilyLinkSettingsService::MakeSplitSettingKey(kSplitItemName, key),
         base::Value(value));
   }
 
@@ -144,7 +144,7 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
     settings_service_.Init(pref_store);
     user_settings_subscription_ =
         settings_service_.SubscribeForSettingsChange(base::BindRepeating(
-            &SupervisedUserSettingsServiceTest::OnNewSettingsAvailable,
+            &FamilyLinkSettingsServiceTest::OnNewSettingsAvailable,
             base::Unretained(this)));
     pref_store->SetInitializationCompleted();
     ASSERT_FALSE(settings_);
@@ -157,23 +157,22 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::Value::Dict split_items_;
   std::optional<base::Value> atomic_setting_value_;
-  SupervisedUserSettingsService settings_service_;
+  FamilyLinkSettingsService settings_service_;
   std::optional<base::Value::Dict> settings_;
   base::CallbackListSubscription user_settings_subscription_;
 
   std::unique_ptr<syncer::FakeSyncChangeProcessor> sync_processor_;
 };
 
-TEST_F(SupervisedUserSettingsServiceTest, ProcessAtomicSetting) {
+TEST_F(FamilyLinkSettingsServiceTest, ProcessAtomicSetting) {
   StartSyncing(syncer::SyncDataList());
   ASSERT_TRUE(settings_);
   const base::Value* value = settings_->Find(kSettingsName);
   EXPECT_FALSE(value);
 
   settings_.reset();
-  syncer::SyncData data =
-      SupervisedUserSettingsService::CreateSyncDataForSetting(
-          kSettingsName, base::Value(kSettingsValue));
+  syncer::SyncData data = FamilyLinkSettingsService::CreateSyncDataForSetting(
+      kSettingsName, base::Value(kSettingsValue));
   syncer::SyncChangeList change_list;
   change_list.push_back(
       syncer::SyncChange(FROM_HERE, syncer::SyncChange::ACTION_ADD, data));
@@ -192,7 +191,7 @@ TEST_F(SupervisedUserSettingsServiceTest, ProcessAtomicSetting) {
   EXPECT_EQ(kSettingsValue, string_value);
 }
 
-TEST_F(SupervisedUserSettingsServiceTest, ProcessSplitSetting) {
+TEST_F(FamilyLinkSettingsServiceTest, ProcessSplitSetting) {
   StartSyncing(syncer::SyncDataList());
   ASSERT_TRUE(settings_);
   const base::Value* value = nullptr;
@@ -207,13 +206,11 @@ TEST_F(SupervisedUserSettingsServiceTest, ProcessSplitSetting) {
   settings_.reset();
   syncer::SyncChangeList change_list;
   for (const auto item : dict) {
-    syncer::SyncData data =
-        SupervisedUserSettingsService::CreateSyncDataForSetting(
-            SupervisedUserSettingsService::MakeSplitSettingKey(kSettingsName,
-                                                               item.first),
-            item.second);
-    change_list.push_back(
-        syncer::SyncChange(FROM_HERE, syncer::SyncChange::ACTION_ADD, data));
+    syncer::SyncData data = FamilyLinkSettingsService::CreateSyncDataForSetting(
+        FamilyLinkSettingsService::MakeSplitSettingKey(kSettingsName,
+                                                       item.first),
+        item.second);
+    change_list.emplace_back(FROM_HERE, syncer::SyncChange::ACTION_ADD, data);
   }
   std::optional<syncer::ModelError> error =
       settings_service_.ProcessSyncChanges(FROM_HERE, change_list);
@@ -224,8 +221,8 @@ TEST_F(SupervisedUserSettingsServiceTest, ProcessSplitSetting) {
   EXPECT_EQ(*settings_dict, dict);
 }
 
-TEST_F(SupervisedUserSettingsServiceTest, NotifyForWebsiteApprovals) {
-  base::MockCallback<SupervisedUserSettingsService::WebsiteApprovalCallback>
+TEST_F(FamilyLinkSettingsServiceTest, NotifyForWebsiteApprovals) {
+  base::MockCallback<FamilyLinkSettingsService::WebsiteApprovalCallback>
       mock_callback;
   auto subscription =
       settings_service_.SubscribeForNewWebsiteApproval(mock_callback.Get());
@@ -235,13 +232,13 @@ TEST_F(SupervisedUserSettingsServiceTest, NotifyForWebsiteApprovals) {
   settings_.reset();
 
   syncer::SyncData dataForAllowedHost =
-      SupervisedUserSettingsService::CreateSyncDataForSetting(
-          SupervisedUserSettingsService::MakeSplitSettingKey(
+      FamilyLinkSettingsService::CreateSyncDataForSetting(
+          FamilyLinkSettingsService::MakeSplitSettingKey(
               supervised_user::kContentPackManualBehaviorHosts, "allowedhost"),
           base::Value(true));
   syncer::SyncData dataForBlockedHost =
-      SupervisedUserSettingsService::CreateSyncDataForSetting(
-          SupervisedUserSettingsService::MakeSplitSettingKey(
+      FamilyLinkSettingsService::CreateSyncDataForSetting(
+          FamilyLinkSettingsService::MakeSplitSettingKey(
               supervised_user::kContentPackManualBehaviorHosts, "blockedhost"),
           base::Value(false));
 
@@ -268,7 +265,7 @@ TEST_F(SupervisedUserSettingsServiceTest, NotifyForWebsiteApprovals) {
   settings_service_.ProcessSyncChanges(FROM_HERE, change_list);
 }
 
-TEST_F(SupervisedUserSettingsServiceTest, Merge) {
+TEST_F(FamilyLinkSettingsServiceTest, Merge) {
   StartSyncing(syncer::SyncDataList());
   EXPECT_TRUE(settings_service_
                   .GetAllSyncDataForTesting(syncer::SUPERVISED_USER_SETTINGS)
@@ -282,18 +279,17 @@ TEST_F(SupervisedUserSettingsServiceTest, Merge) {
   {
     syncer::SyncDataList sync_data;
     // Adding 1 Atomic entry.
-    sync_data.push_back(SupervisedUserSettingsService::CreateSyncDataForSetting(
+    sync_data.push_back(FamilyLinkSettingsService::CreateSyncDataForSetting(
         kSettingsName, base::Value(kSettingsValue)));
     // Adding 2 SplitSettings from dictionary.
     base::Value::Dict dict;
     dict.Set("foo", "bar");
     dict.Set("eaudecologne", 4711);
     for (const auto item : dict) {
-      sync_data.push_back(
-          SupervisedUserSettingsService::CreateSyncDataForSetting(
-              SupervisedUserSettingsService::MakeSplitSettingKey(kSplitItemName,
-                                                                 item.first),
-              item.second));
+      sync_data.push_back(FamilyLinkSettingsService::CreateSyncDataForSetting(
+          FamilyLinkSettingsService::MakeSplitSettingKey(kSplitItemName,
+                                                         item.first),
+          item.second));
     }
     StartSyncing(sync_data);
     EXPECT_EQ(3u,
@@ -317,11 +313,10 @@ TEST_F(SupervisedUserSettingsServiceTest, Merge) {
     dict.Set("item", "first");
     // Adding 2 SplitSettings from dictionary.
     for (const auto item : dict) {
-      sync_data.push_back(
-          SupervisedUserSettingsService::CreateSyncDataForSetting(
-              SupervisedUserSettingsService::MakeSplitSettingKey(kSplitItemName,
-                                                                 item.first),
-              item.second));
+      sync_data.push_back(FamilyLinkSettingsService::CreateSyncDataForSetting(
+          FamilyLinkSettingsService::MakeSplitSettingKey(kSplitItemName,
+                                                         item.first),
+          item.second));
     }
     StartSyncing(sync_data);
     EXPECT_EQ(4u,
@@ -331,7 +326,7 @@ TEST_F(SupervisedUserSettingsServiceTest, Merge) {
   }
 }
 
-TEST_F(SupervisedUserSettingsServiceTest, SetLocalSetting) {
+TEST_F(FamilyLinkSettingsServiceTest, SetLocalSetting) {
   const base::Value* value = nullptr;
   value = settings_->Find(kSettingsName);
   EXPECT_FALSE(value);
@@ -349,7 +344,7 @@ TEST_F(SupervisedUserSettingsServiceTest, SetLocalSetting) {
   EXPECT_EQ(kSettingsValue, string_value);
 }
 
-TEST_F(SupervisedUserSettingsServiceTest, UploadItem) {
+TEST_F(FamilyLinkSettingsServiceTest, UploadItem) {
   UploadSplitItem("foo", "bar");
   UploadSplitItem("blurp", "baz");
   UploadAtomicItem("hurdle");
@@ -425,7 +420,7 @@ TEST_F(SupervisedUserSettingsServiceTest, UploadItem) {
   ASSERT_EQ(0u, sync_processor_->changes().size());
 }
 
-TEST_F(SupervisedUserSettingsServiceTest, RecordLocalWebsiteApproval) {
+TEST_F(FamilyLinkSettingsServiceTest, RecordLocalWebsiteApproval) {
   // Record a website approval before sync is enabled.
   settings_service_.RecordLocalWebsiteApproval("youtube.com");
 
@@ -448,8 +443,7 @@ TEST_F(SupervisedUserSettingsServiceTest, RecordLocalWebsiteApproval) {
                        "ContentPackManualBehaviorHosts:youtube.com");
 }
 
-TEST_F(SupervisedUserSettingsServiceTest,
-       DeactivationClearsConsumingPrefStore) {
+TEST_F(FamilyLinkSettingsServiceTest, DeactivationClearsConsumingPrefStore) {
   // Example pref store that consumes changes in the settings service. Has a
   // private destructor.
   DeviceParentalControlsNoOpImpl device_parental_controls;
@@ -464,7 +458,7 @@ TEST_F(SupervisedUserSettingsServiceTest,
     syncer::SyncChangeList change_list;
     change_list.emplace_back(
         FROM_HERE, syncer::SyncChange::ACTION_ADD,
-        SupervisedUserSettingsService::CreateSyncDataForSetting(
+        FamilyLinkSettingsService::CreateSyncDataForSetting(
             kSafeSitesEnabled, base::Value(setting)));
     settings_service_.ProcessSyncChanges(FROM_HERE, change_list);
 
@@ -480,8 +474,7 @@ TEST_F(SupervisedUserSettingsServiceTest,
   }
 }
 
-TEST_F(SupervisedUserSettingsServiceTest,
-       DeactivationEmitsEmptyNotificationOnce) {
+TEST_F(FamilyLinkSettingsServiceTest, DeactivationEmitsEmptyNotificationOnce) {
   base::Value::Dict empty_settings;
 
   MockSubscriber mock_subscriber;
@@ -507,7 +500,7 @@ TEST_F(SupervisedUserSettingsServiceTest,
   settings_service_.SetActive(false);
 }
 
-TEST_F(SupervisedUserSettingsServiceTest,
+TEST_F(FamilyLinkSettingsServiceTest,
        InactiveServiceEmitsOneEmptyNotificationOnSubscription) {
   settings_service_.SetActive(false);
 
@@ -533,7 +526,7 @@ TEST_F(SupervisedUserSettingsServiceTest,
   settings_service_.SetLocalSetting(kSigninAllowed, base::Value(true));
 }
 
-TEST_F(SupervisedUserSettingsServiceTest, UpdatesAreSentForEachSettingUpdate) {
+TEST_F(FamilyLinkSettingsServiceTest, UpdatesAreSentForEachSettingUpdate) {
   MockSubscriber mock_subscriber;
   base::Value::Dict empty_settings;
 

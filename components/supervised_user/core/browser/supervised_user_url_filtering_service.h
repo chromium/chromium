@@ -7,8 +7,8 @@
 
 #include "base/memory/raw_ref.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
 namespace supervised_user {
@@ -18,7 +18,7 @@ class SupervisedUserUrlFilteringService : public KeyedService {
  public:
   SupervisedUserUrlFilteringService(
       const SupervisedUserService& supervised_user_service,
-      const SupervisedUserSettingsService& supervised_user_settings_service);
+      const FamilyLinkSettingsService& family_link_settings_service);
   ~SupervisedUserUrlFilteringService() override;
   SupervisedUserUrlFilteringService(const SupervisedUserUrlFilteringService&) =
       delete;
@@ -33,7 +33,7 @@ class SupervisedUserUrlFilteringService : public KeyedService {
   raw_ref<const SupervisedUserService> supervised_user_service_;
 
   // Provides access to parental controls settings from Family Link.
-  raw_ref<const SupervisedUserSettingsService> family_link_settings_service_;
+  raw_ref<const FamilyLinkSettingsService> family_link_settings_service_;
 };
 }  // namespace supervised_user
 

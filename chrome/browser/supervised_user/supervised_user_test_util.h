@@ -14,8 +14,8 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/android/supervised_user_service_platform_delegate.h"
+#include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/keyed_service/core/keyed_service_factory.h"
 #include "components/supervised_user/core/browser/device_parental_controls.h"
@@ -96,8 +96,8 @@ std::unique_ptr<KeyedService> BuildSupervisedUserService(
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       *profile->GetPrefs(),
-      *SupervisedUserSettingsServiceFactory::GetInstance()->GetForKey(
-          profile->GetProfileKey()),
+      *supervised_user::FamilyLinkSettingsServiceFactory::GetInstance()
+           ->GetForKey(profile->GetProfileKey()),
       SyncServiceFactory::GetInstance()->GetForProfile(profile),
       std::make_unique<URLFilter>(
           *profile->GetPrefs(), std::make_unique<URLFilterDelegate>(),

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/family_link_settings_service.h"
 
 #include <stddef.h>
 
@@ -91,12 +91,12 @@ bool SyncChangeIsNewWebsiteApproval(const std::string& name,
 
 }  // namespace
 
-SupervisedUserSettingsService::SupervisedUserSettingsService()
+FamilyLinkSettingsService::FamilyLinkSettingsService()
     : active_(false), initialization_failed_(false) {}
 
-SupervisedUserSettingsService::~SupervisedUserSettingsService() = default;
+FamilyLinkSettingsService::~FamilyLinkSettingsService() = default;
 
-void SupervisedUserSettingsService::Init(
+void FamilyLinkSettingsService::Init(
     base::FilePath profile_path,
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner,
     bool load_synchronously) {
@@ -112,15 +112,14 @@ void SupervisedUserSettingsService::Init(
   }
 }
 
-void SupervisedUserSettingsService::Init(
-    scoped_refptr<PersistentPrefStore> store) {
+void FamilyLinkSettingsService::Init(scoped_refptr<PersistentPrefStore> store) {
   DCHECK(!store_.get());
   store_ = store;
   store_->AddObserver(this);
 }
 
 base::CallbackListSubscription
-SupervisedUserSettingsService::SubscribeForSettingsChange(
+FamilyLinkSettingsService::SubscribeForSettingsChange(
     const SettingsCallback& callback) {
   if (IsReady()) {
     base::Value::Dict settings = GetSettingsWithDefault();
@@ -131,12 +130,12 @@ SupervisedUserSettingsService::SubscribeForSettingsChange(
 }
 
 base::CallbackListSubscription
-SupervisedUserSettingsService::SubscribeForNewWebsiteApproval(
+FamilyLinkSettingsService::SubscribeForNewWebsiteApproval(
     const WebsiteApprovalCallback& callback) {
   return website_approval_callback_list_.Add(callback);
 }
 
-void SupervisedUserSettingsService::RecordLocalWebsiteApproval(
+void FamilyLinkSettingsService::RecordLocalWebsiteApproval(
     const std::string& host) {
   // Write the sync setting.
   std::string setting_key =
@@ -147,17 +146,16 @@ void SupervisedUserSettingsService::RecordLocalWebsiteApproval(
   website_approval_callback_list_.Notify(setting_key);
 }
 
-base::CallbackListSubscription
-SupervisedUserSettingsService::SubscribeForShutdown(
+base::CallbackListSubscription FamilyLinkSettingsService::SubscribeForShutdown(
     const ShutdownCallback& callback) {
   return shutdown_callback_list_.Add(callback);
 }
 
-bool SupervisedUserSettingsService::IsCustomPassphraseAllowed() const {
+bool FamilyLinkSettingsService::IsCustomPassphraseAllowed() const {
   return !active_;
 }
 
-void SupervisedUserSettingsService::SetActive(bool active) {
+void FamilyLinkSettingsService::SetActive(bool active) {
   active_ = active;
 
   if (active_) {
@@ -178,13 +176,13 @@ void SupervisedUserSettingsService::SetActive(bool active) {
   InformSubscribers();
 }
 
-bool SupervisedUserSettingsService::IsReady() const {
+bool FamilyLinkSettingsService::IsReady() const {
   // Initialization cannot be complete but have failed at the same time.
   DCHECK(!(store_->IsInitializationComplete() && initialization_failed_));
   return initialization_failed_ || store_->IsInitializationComplete();
 }
 
-void SupervisedUserSettingsService::Clear() {
+void FamilyLinkSettingsService::Clear() {
   store_->RemoveValue(kAtomicSettings,
                       WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   store_->RemoveValue(kSplitSettings,
@@ -192,14 +190,14 @@ void SupervisedUserSettingsService::Clear() {
 }
 
 // static
-std::string SupervisedUserSettingsService::MakeSplitSettingKey(
+std::string FamilyLinkSettingsService::MakeSplitSettingKey(
     const std::string& prefix,
     const std::string& key) {
   return prefix + kSplitSettingKeySeparator + key;
 }
 
-void SupervisedUserSettingsService::SaveItem(const std::string& key,
-                                             base::Value value) {
+void FamilyLinkSettingsService::SaveItem(const std::string& key,
+                                         base::Value value) {
   // Update the value in our local dict, and push the changes to sync.
   std::string key_suffix = key;
   base::Value::Dict* dict = nullptr;
@@ -234,25 +232,25 @@ void SupervisedUserSettingsService::SaveItem(const std::string& key,
   InformSubscribers();
 }
 
-void SupervisedUserSettingsService::SetLocalSetting(std::string_view key,
-                                                    base::Value value) {
+void FamilyLinkSettingsService::SetLocalSetting(std::string_view key,
+                                                base::Value value) {
   local_settings_.Set(key, std::move(value));
   InformSubscribers();
 }
 
-void SupervisedUserSettingsService::SetLocalSetting(std::string_view key,
-                                                    base::Value::Dict dict) {
+void FamilyLinkSettingsService::SetLocalSetting(std::string_view key,
+                                                base::Value::Dict dict) {
   local_settings_.Set(key, std::move(dict));
   InformSubscribers();
 }
 
-void SupervisedUserSettingsService::RemoveLocalSetting(std::string_view key) {
+void FamilyLinkSettingsService::RemoveLocalSetting(std::string_view key) {
   local_settings_.Remove(key);
   InformSubscribers();
 }
 
 // static
-SyncData SupervisedUserSettingsService::CreateSyncDataForSetting(
+SyncData FamilyLinkSettingsService::CreateSyncDataForSetting(
     const std::string& name,
     const base::Value& value) {
   std::string json_value = base::WriteJson(value).value_or("");
@@ -262,7 +260,7 @@ SyncData SupervisedUserSettingsService::CreateSyncDataForSetting(
   return SyncData::CreateLocalData(name, name, specifics);
 }
 
-void SupervisedUserSettingsService::Shutdown() {
+void FamilyLinkSettingsService::Shutdown() {
   // Allow calling `Shutdown()` even if `Init(...)` was never
   // invoked on the service.
   if (store_) {
@@ -271,8 +269,7 @@ void SupervisedUserSettingsService::Shutdown() {
   shutdown_callback_list_.Notify();
 }
 
-void SupervisedUserSettingsService::WaitUntilReadyToSync(
-    base::OnceClosure done) {
+void FamilyLinkSettingsService::WaitUntilReadyToSync(base::OnceClosure done) {
   DCHECK(!wait_until_ready_to_sync_cb_);
   if (IsReady()) {
     std::move(done).Run();
@@ -283,7 +280,7 @@ void SupervisedUserSettingsService::WaitUntilReadyToSync(
 }
 
 std::optional<syncer::ModelError>
-SupervisedUserSettingsService::MergeDataAndStartSyncing(
+FamilyLinkSettingsService::MergeDataAndStartSyncing(
     DataType type,
     const SyncDataList& initial_sync_data,
     std::unique_ptr<SyncChangeProcessor> sync_processor) {
@@ -364,12 +361,12 @@ SupervisedUserSettingsService::MergeDataAndStartSyncing(
   return std::nullopt;
 }
 
-void SupervisedUserSettingsService::StopSyncing(DataType type) {
+void FamilyLinkSettingsService::StopSyncing(DataType type) {
   DCHECK_EQ(syncer::SUPERVISED_USER_SETTINGS, type);
   sync_processor_.reset();
 }
 
-SyncDataList SupervisedUserSettingsService::GetAllSyncDataForTesting(
+SyncDataList FamilyLinkSettingsService::GetAllSyncDataForTesting(
     DataType type) const {
   DCHECK_EQ(syncer::SUPERVISED_USER_SETTINGS, type);
   SyncDataList data;
@@ -388,8 +385,7 @@ SyncDataList SupervisedUserSettingsService::GetAllSyncDataForTesting(
   return data;
 }
 
-std::optional<syncer::ModelError>
-SupervisedUserSettingsService::ProcessSyncChanges(
+std::optional<syncer::ModelError> FamilyLinkSettingsService::ProcessSyncChanges(
     const base::Location& from_here,
     const SyncChangeList& change_list) {
   for (const SyncChange& sync_change : change_list) {
@@ -453,23 +449,22 @@ SupervisedUserSettingsService::ProcessSyncChanges(
   return std::nullopt;
 }
 
-base::WeakPtr<syncer::SyncableService>
-SupervisedUserSettingsService::AsWeakPtr() {
+base::WeakPtr<syncer::SyncableService> FamilyLinkSettingsService::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-base::WeakPtr<const SupervisedUserSettingsService>
-SupervisedUserSettingsService::GetWeakPtr() const {
+base::WeakPtr<const FamilyLinkSettingsService>
+FamilyLinkSettingsService::GetWeakPtr() const {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-std::string SupervisedUserSettingsService::GetClientTag(
+std::string FamilyLinkSettingsService::GetClientTag(
     const syncer::EntityData& entity_data) const {
   DCHECK(entity_data.specifics.has_managed_user_setting());
   return entity_data.specifics.managed_user_setting().name();
 }
 
-void SupervisedUserSettingsService::OnInitializationCompleted(bool success) {
+void FamilyLinkSettingsService::OnInitializationCompleted(bool success) {
   if (!success) {
     // If this happens, it means the profile directory was not found. There is
     // not much we can do, but the whole profile will probably be useless
@@ -487,12 +482,12 @@ void SupervisedUserSettingsService::OnInitializationCompleted(bool success) {
   InformSubscribers();
 }
 
-const base::Value::Dict& SupervisedUserSettingsService::LocalSettingsForTest()
+const base::Value::Dict& FamilyLinkSettingsService::LocalSettingsForTest()
     const {
   return local_settings_;
 }
 
-base::Value::Dict* SupervisedUserSettingsService::GetDictionaryAndSplitKey(
+base::Value::Dict* FamilyLinkSettingsService::GetDictionaryAndSplitKey(
     std::string* key) const {
   size_t pos = key->find_first_of(kSplitSettingKeySeparator);
   if (pos == std::string::npos) {
@@ -506,7 +501,7 @@ base::Value::Dict* SupervisedUserSettingsService::GetDictionaryAndSplitKey(
   return dict;
 }
 
-base::Value::Dict* SupervisedUserSettingsService::GetOrCreateDictionary(
+base::Value::Dict* FamilyLinkSettingsService::GetOrCreateDictionary(
     std::string_view key) const {
   base::Value* value = nullptr;
   if (!store_->GetMutableValue(key, &value)) {
@@ -518,20 +513,19 @@ base::Value::Dict* SupervisedUserSettingsService::GetOrCreateDictionary(
   return &value->GetDict();
 }
 
-base::Value::Dict* SupervisedUserSettingsService::GetAtomicSettings() const {
+base::Value::Dict* FamilyLinkSettingsService::GetAtomicSettings() const {
   return GetOrCreateDictionary(kAtomicSettings);
 }
 
-base::Value::Dict* SupervisedUserSettingsService::GetSplitSettings() const {
+base::Value::Dict* FamilyLinkSettingsService::GetSplitSettings() const {
   return GetOrCreateDictionary(kSplitSettings);
 }
 
-base::Value::Dict* SupervisedUserSettingsService::GetQueuedItems() const {
+base::Value::Dict* FamilyLinkSettingsService::GetQueuedItems() const {
   return GetOrCreateDictionary(kQueuedItems);
 }
 
-base::Value::Dict SupervisedUserSettingsService::GetSettingsWithDefault()
-    const {
+base::Value::Dict FamilyLinkSettingsService::GetSettingsWithDefault() const {
   DCHECK(IsReady());
   if (!active_ || initialization_failed_) {
     return base::Value::Dict();
@@ -560,7 +554,7 @@ base::Value::Dict SupervisedUserSettingsService::GetSettingsWithDefault()
   return settings;
 }
 
-void SupervisedUserSettingsService::InformSubscribers() {
+void FamilyLinkSettingsService::InformSubscribers() {
   if (!IsReady()) {
     return;
   }
@@ -583,7 +577,7 @@ void SupervisedUserSettingsService::InformSubscribers() {
   settings_callback_list_.Notify(std::move(settings));
 }
 
-WebFilterType SupervisedUserSettingsService::GetWebFilterType() const {
+WebFilterType FamilyLinkSettingsService::GetWebFilterType() const {
   // When the service is inactive or failed to initialize, we consider the web
   // filter to be disabled to not interfere with regular browsing experience.
   // Otherwise, we try to infer the filter type from the settings: block always
@@ -604,7 +598,7 @@ WebFilterType SupervisedUserSettingsService::GetWebFilterType() const {
   // LINT.ThenChange(//components/supervised_user/core/browser/supervised_user_url_filter.cc:GetWebFilterType)
 }
 
-FilteringBehavior SupervisedUserSettingsService::GetDefaultFilteringBehavior(
+FilteringBehavior FamilyLinkSettingsService::GetDefaultFilteringBehavior(
     const base::Value::Dict& settings) const {
   // The default value for the default filtering behavior is "allow", including
   // malformed data from remote.
@@ -620,7 +614,7 @@ FilteringBehavior SupervisedUserSettingsService::GetDefaultFilteringBehavior(
   return FilteringBehavior::kAllow;
 }
 
-bool SupervisedUserSettingsService::IsSafeSitesEnabled(
+bool FamilyLinkSettingsService::IsSafeSitesEnabled(
     const base::Value::Dict& settings) const {
   // In Family Link, safe sites setting defaults to true.
   return settings.FindBool(kSafeSitesEnabled).value_or(true);

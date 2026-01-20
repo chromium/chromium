@@ -23,7 +23,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/supervised_user/core/browser/device_parental_controls.h"
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
@@ -96,20 +96,18 @@ void SetSupervisedUserPrefStoreDefaults(PrefValueMap& pref_values) {
 SupervisedUserPrefStore::SupervisedUserPrefStore() = default;
 
 SupervisedUserPrefStore::SupervisedUserPrefStore(
-    supervised_user::SupervisedUserSettingsService*
-        supervised_user_settings_service,
+    supervised_user::FamilyLinkSettingsService* family_link_settings_service,
     supervised_user::DeviceParentalControls& device_parental_controls) {
-  Init(supervised_user_settings_service, device_parental_controls);
+  Init(family_link_settings_service, device_parental_controls);
 }
 
 void SupervisedUserPrefStore::Init(
-    supervised_user::SupervisedUserSettingsService*
-        supervised_user_settings_service,
+    supervised_user::FamilyLinkSettingsService* family_link_settings_service,
     supervised_user::DeviceParentalControls& device_parental_controls) {
-  settings_service_ = supervised_user_settings_service->GetWeakPtr();
+  settings_service_ = family_link_settings_service->GetWeakPtr();
 
   user_settings_subscription_ =
-      supervised_user_settings_service->SubscribeForSettingsChange(
+      family_link_settings_service->SubscribeForSettingsChange(
           base::BindRepeating(&SupervisedUserPrefStore::OnNewSettingsAvailable,
                               base::Unretained(this)));
 
@@ -118,14 +116,12 @@ void SupervisedUserPrefStore::Init(
           &SupervisedUserPrefStore::OnDeviceParentalControlsChanged,
           weak_factory_.GetWeakPtr()));
 
-  // The SupervisedUserSettingsService must be created before the PrefStore, and
+  // The FamilyLinkSettingsService must be created before the PrefStore, and
   // it will notify the PrefStore to destroy both subscriptions when it is shut
   // down.
-  shutdown_subscription_ =
-      supervised_user_settings_service->SubscribeForShutdown(
-          base::BindRepeating(
-              &SupervisedUserPrefStore::OnSettingsServiceShutdown,
-              base::Unretained(this)));
+  shutdown_subscription_ = family_link_settings_service->SubscribeForShutdown(
+      base::BindRepeating(&SupervisedUserPrefStore::OnSettingsServiceShutdown,
+                          base::Unretained(this)));
 }
 
 bool SupervisedUserPrefStore::GetValue(std::string_view key,

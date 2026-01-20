@@ -4,5 +4,5 @@ include_rules = [
   "+ios/chrome/browser/policy/model/profile_policy_connector.h",
   "+ios/chrome/browser/prefs/model/ios_chrome_pref_service_factory.h",
   "+ios/chrome/browser/signin/model",
-  "+ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h",
+  "+ios/chrome/browser/supervised_user/model/family_link_settings_service_factory.h",
 ]

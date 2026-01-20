@@ -16,7 +16,7 @@
 class GURL;
 namespace supervised_user {
 
-class SupervisedUserSettingsService;
+class FamilyLinkSettingsService;
 
 // This base class contains all the Web Approval Interstitial functionality that
 // requires access to the current web content.
@@ -33,7 +33,7 @@ class WebContentHandler {
   // and they must throw an error when implementing this method.
   virtual void RequestLocalApproval(
       const GURL& target_url,
-      supervised_user::SupervisedUserURLFilter::Result filtering_result,
+      SupervisedUserURLFilter::Result filtering_result,
       const std::u16string& child_display_name,
       ApprovalRequestInitiatedCallback callback) = 0;
 
@@ -78,12 +78,11 @@ class WebContentHandler {
   // Should be called by platform specific completion callback.
   // TODO(b/278079069): Refactor and convert the class to an interface.
   void OnLocalApprovalRequestCompleted(
-      supervised_user::SupervisedUserSettingsService& settings_service,
+      FamilyLinkSettingsService& family_link_settings_service,
       const GURL& url,
       base::TimeTicks start_time,
       LocalApprovalResult approval_result,
-      std::optional<supervised_user::LocalWebApprovalErrorType>
-          local_approval_error_type);
+      std::optional<LocalWebApprovalErrorType> local_approval_error_type);
 };
 
 }  // namespace supervised_user

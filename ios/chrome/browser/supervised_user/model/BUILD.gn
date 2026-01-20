@@ -87,8 +87,8 @@ source_set("capabilities") {
 
 source_set("sync_settings_factory") {
   sources = [
-    "supervised_user_settings_service_factory.h",
-    "supervised_user_settings_service_factory.mm",
+    "family_link_settings_service_factory.h",
+    "family_link_settings_service_factory.mm",
   ]
   deps = [
     "//components/supervised_user/core/browser",
@@ -106,7 +106,7 @@ source_set("unit_tests") {
     "parent_access_tab_helper_unittest.mm",
     "supervised_user_metrics_service_factory_unittest.mm",
     "supervised_user_service_factory_unittest.mm",
-    "supervised_user_settings_service_factory_unittest.mm",
+    "family_link_settings_service_factory_unittest.mm",
     "supervised_user_url_filter_tab_helper_unittest.mm",
   ]
   deps = [

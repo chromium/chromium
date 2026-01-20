@@ -21,7 +21,7 @@
 #import "base/threading/thread_restrictions.h"
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #import "components/profile_metrics/browser_profile_type.h"
-#import "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#import "components/supervised_user/core/browser/family_link_settings_service.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/user_prefs/user_prefs.h"
@@ -29,7 +29,7 @@
 #import "ios/chrome/browser/profile/model/keyed_service_factories.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/profile/profile_dependency_manager_ios.h"
-#import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/family_link_settings_service_factory.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "net/url_request/url_request_test_util.h"
@@ -205,7 +205,7 @@ void TestProfileIOS::Init() {
   ProfileDependencyManagerIOS::GetInstance()->CreateProfileServicesForTest(
       this);
   // `SupervisedUserSettingsService` needs to be initialized for SyncService.
-  SupervisedUserSettingsServiceFactory::GetForProfile(this)->Init(
+  supervised_user::FamilyLinkSettingsServiceFactory::GetForProfile(this)->Init(
       GetStatePath(), GetIOTaskRunner().get(),
       /*load_synchronously=*/true);
 }

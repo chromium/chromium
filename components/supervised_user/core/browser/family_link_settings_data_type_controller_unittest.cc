@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/supervised_user/core/browser/supervised_user_settings_data_type_controller.h"
+#include "components/supervised_user/core/browser/family_link_settings_data_type_controller.h"
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
@@ -18,7 +18,7 @@
 using syncer::DataTypeController;
 using ::testing::Return;
 
-class SupervisedUserSettingsDataTypeControllerTest : public testing::Test {
+class FamilyLinkSettingsDataTypeControllerTest : public testing::Test {
  public:
   void SetUp() override {
     pref_service_.registry()->RegisterStringPref(prefs::kSupervisedUserId,
@@ -29,11 +29,11 @@ class SupervisedUserSettingsDataTypeControllerTest : public testing::Test {
   TestingPrefServiceSimple pref_service_;
 };
 
-TEST_F(SupervisedUserSettingsDataTypeControllerTest,
+TEST_F(FamilyLinkSettingsDataTypeControllerTest,
        SupervisedUserMeetsPreconditions) {
   pref_service_.SetString(prefs::kSupervisedUserId,
                           supervised_user::kChildAccountSUID);
-  SupervisedUserSettingsDataTypeController controller(
+  FamilyLinkSettingsDataTypeController controller(
       /*dump_stack=*/base::DoNothing(),
       /*store_factory=*/base::DoNothing(),
       /*syncable_service=*/nullptr, &pref_service_);
@@ -41,9 +41,9 @@ TEST_F(SupervisedUserSettingsDataTypeControllerTest,
             controller.GetPreconditionState());
 }
 
-TEST_F(SupervisedUserSettingsDataTypeControllerTest,
+TEST_F(FamilyLinkSettingsDataTypeControllerTest,
        NonSupervisedUserDoesNotMeetPreconditions) {
-  SupervisedUserSettingsDataTypeController controller(
+  FamilyLinkSettingsDataTypeController controller(
       /*dump_stack=*/base::DoNothing(),
       /*store_factory=*/base::DoNothing(),
       /*syncable_service=*/nullptr, &pref_service_);
@@ -51,9 +51,9 @@ TEST_F(SupervisedUserSettingsDataTypeControllerTest,
             controller.GetPreconditionState());
 }
 
-TEST_F(SupervisedUserSettingsDataTypeControllerTest,
+TEST_F(FamilyLinkSettingsDataTypeControllerTest,
        HasTransportModeDelegate) {
-  SupervisedUserSettingsDataTypeController controller(
+  FamilyLinkSettingsDataTypeController controller(
       /*dump_stack=*/base::DoNothing(),
       /*store_factory=*/base::DoNothing(),
       /*syncable_service=*/nullptr, &pref_service_);

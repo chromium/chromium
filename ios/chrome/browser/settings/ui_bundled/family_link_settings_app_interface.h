@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_SUPERVISED_USER_SETTINGS_APP_INTERFACE_H_
-#define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_SUPERVISED_USER_SETTINGS_APP_INTERFACE_H_
+#ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_FAMILY_LINK_SETTINGS_APP_INTERFACE_H_
+#define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_FAMILY_LINK_SETTINGS_APP_INTERFACE_H_
 
 #import <UIKit/UIKit.h>
 
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 
 // The app interface for supervised user settings tests.
-@interface SupervisedUserSettingsAppInterface : NSObject
+@interface FamilyLinkSettingsAppInterface : NSObject
 
 // Sets the parental control setting to filter websites for supervised users.
 + (void)setSupervisedUserURLFilterBehavior:
@@ -51,4 +51,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_SUPERVISED_USER_SETTINGS_APP_INTERFACE_H_
+#endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_FAMILY_LINK_SETTINGS_APP_INTERFACE_H_

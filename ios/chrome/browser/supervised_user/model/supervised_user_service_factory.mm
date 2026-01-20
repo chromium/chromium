@@ -8,16 +8,16 @@
 #import "base/no_destructor.h"
 #import "components/prefs/pref_service.h"
 #import "components/supervised_user/core/browser/device_parental_controls.h"
+#import "components/supervised_user/core/browser/family_link_settings_service.h"
 #import "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
-#import "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #import "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/supervised_user/model/family_link_settings_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_platform_delegate.h"
-#import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
 #import "url/gurl.h"
@@ -51,7 +51,7 @@ SupervisedUserServiceFactory::SupervisedUserServiceFactory()
     : ProfileKeyedServiceFactoryIOS("SupervisedUserService") {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
-  DependsOn(SupervisedUserSettingsServiceFactory::GetInstance());
+  DependsOn(supervised_user::FamilyLinkSettingsServiceFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
@@ -65,7 +65,9 @@ SupervisedUserServiceFactory::BuildServiceInstanceFor(
       profile->GetSharedURLLoaderFactory();
   return std::make_unique<supervised_user::SupervisedUserService>(
       identity_manager, url_loader_factory, CHECK_DEREF(profile->GetPrefs()),
-      CHECK_DEREF(SupervisedUserSettingsServiceFactory::GetForProfile(profile)),
+      CHECK_DEREF(
+          supervised_user::FamilyLinkSettingsServiceFactory::GetForProfile(
+              profile)),
       &CHECK_DEREF(SyncServiceFactory::GetForProfile(profile)),
       std::make_unique<supervised_user::SupervisedUserURLFilter>(
           CHECK_DEREF(profile->GetPrefs()),

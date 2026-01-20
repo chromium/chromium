@@ -12,8 +12,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/supervised_user/android/website_parent_approval.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
+#include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/browser/web_contents.h"
 
@@ -53,8 +53,9 @@ void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   CHECK(profile);
-  supervised_user::SupervisedUserSettingsService* settings_service =
-      SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
+  supervised_user::FamilyLinkSettingsService* settings_service =
+      supervised_user::FamilyLinkSettingsServiceFactory::GetForKey(
+          profile->GetProfileKey());
 
   WebsiteParentApproval::RequestLocalApproval(
       web_contents_, target_url,
@@ -70,7 +71,7 @@ void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
 }
 
 void SupervisedUserWebContentHandlerImpl::OnLocalApprovalRequestCompleted(
-    supervised_user::SupervisedUserSettingsService& settings_service,
+    supervised_user::FamilyLinkSettingsService& settings_service,
     const GURL& url,
     base::TimeTicks start_time,
     AndroidLocalWebApprovalFlowOutcome request_outcome) {

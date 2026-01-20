@@ -49,7 +49,7 @@ class SupervisedUserWebContentHandlerImpl
 
  private:
   void OnLocalApprovalRequestCompleted(
-      supervised_user::SupervisedUserSettingsService& settings_service,
+      supervised_user::FamilyLinkSettingsService& family_link_settings_service,
       const GURL& url,
       base::TimeTicks start_time,
       std::unique_ptr<ash::ParentAccessDialog::Result> result);

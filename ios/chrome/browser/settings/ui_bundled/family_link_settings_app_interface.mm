@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/supervised_user_settings_app_interface.h"
+#import "ios/chrome/browser/settings/ui_bundled/family_link_settings_app_interface.h"
 
 #import "base/memory/ptr_util.h"
 #import "base/memory/singleton.h"
 #import "base/version_info/channel.h"
 #import "components/prefs/pref_service.h"
+#import "components/supervised_user/core/browser/family_link_settings_service.h"
 #import "components/supervised_user/core/browser/permission_request_creator.h"
 #import "components/supervised_user/core/browser/permission_request_creator_mock.h"
 #import "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
-#import "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #import "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/supervised_user/core/common/pref_names.h"
@@ -22,9 +22,9 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/supervised_user/model/family_link_settings_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_error_container.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
-#import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
@@ -51,7 +51,7 @@ class StaticUrlCheckerClient : public safe_search_api::URLCheckerClient {
 void setUrlFilteringForUrl(const GURL& url, bool isAllowed) {
   supervised_user::SupervisedUserTestEnvironment::SetManualFilterForHost(
       url.GetHost(), isAllowed,
-      *SupervisedUserSettingsServiceFactory::GetForProfile(
+      *supervised_user::FamilyLinkSettingsServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalProfile()));
 }
 
@@ -81,46 +81,46 @@ bool isShowingInterstitialForState(web::WebState* web_state) {
 
 }  // namespace
 
-@implementation SupervisedUserSettingsAppInterface : NSObject
+@implementation FamilyLinkSettingsAppInterface : NSObject
 
 + (void)setSupervisedUserURLFilterBehavior:
     (supervised_user::FilteringBehavior)behavior {
-  supervised_user::SupervisedUserSettingsService* settings_service =
-      SupervisedUserSettingsServiceFactory::GetForProfile(
+  supervised_user::FamilyLinkSettingsService* family_link_settings_service =
+      supervised_user::FamilyLinkSettingsServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalProfile());
-  settings_service->SetLocalSetting(
+  family_link_settings_service->SetLocalSetting(
       supervised_user::kContentPackDefaultFilteringBehavior,
       base::Value(static_cast<int>(behavior)));
   if (behavior == supervised_user::FilteringBehavior::kAllow) {
-    settings_service->SetLocalSetting(supervised_user::kSafeSitesEnabled,
-                                      base::Value(true));
+    family_link_settings_service->SetLocalSetting(
+        supervised_user::kSafeSitesEnabled, base::Value(true));
   }
 }
 
 + (void)resetSupervisedUserURLFilterBehavior {
-  supervised_user::SupervisedUserSettingsService* settings_service =
-      SupervisedUserSettingsServiceFactory::GetForProfile(
+  supervised_user::FamilyLinkSettingsService* family_link_settings_service =
+      supervised_user::FamilyLinkSettingsServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalProfile());
-  settings_service->RemoveLocalSetting(
+  family_link_settings_service->RemoveLocalSetting(
       supervised_user::kContentPackDefaultFilteringBehavior);
 }
 
 + (void)resetManualUrlFiltering {
-  supervised_user::SupervisedUserSettingsService* settings_service =
-      SupervisedUserSettingsServiceFactory::GetForProfile(
+  supervised_user::FamilyLinkSettingsService* family_link_settings_service =
+      supervised_user::FamilyLinkSettingsServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalProfile());
-  settings_service->RemoveLocalSetting(
+  family_link_settings_service->RemoveLocalSetting(
       supervised_user::kContentPackManualBehaviorHosts);
 }
 
 + (void)setFakePermissionCreator {
-  supervised_user::SupervisedUserSettingsService* settings_service =
-      SupervisedUserSettingsServiceFactory::GetForProfile(
+  supervised_user::FamilyLinkSettingsService* family_link_settings_service =
+      supervised_user::FamilyLinkSettingsServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalProfile());
-  CHECK(settings_service);
+  CHECK(family_link_settings_service);
   std::unique_ptr<supervised_user::PermissionRequestCreator> creator =
       std::make_unique<supervised_user::PermissionRequestCreatorMock>(
-          *settings_service);
+          *family_link_settings_service);
   supervised_user::PermissionRequestCreatorMock* mocked_creator =
       static_cast<supervised_user::PermissionRequestCreatorMock*>(
           creator.get());
@@ -136,10 +136,10 @@ bool isShowingInterstitialForState(web::WebState* web_state) {
 }
 
 + (void)approveWebsiteDomain:(NSURL*)url {
-  supervised_user::SupervisedUserSettingsService* settings_service =
-      SupervisedUserSettingsServiceFactory::GetForProfile(
+  supervised_user::FamilyLinkSettingsService* family_link_settings_service =
+      supervised_user::FamilyLinkSettingsServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalProfile());
-  settings_service->RecordLocalWebsiteApproval(
+  family_link_settings_service->RecordLocalWebsiteApproval(
       net::GURLWithNSURL(url).GetHost());
 }
 

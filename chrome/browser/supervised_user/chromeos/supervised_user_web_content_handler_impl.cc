@@ -8,11 +8,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/supervised_user/chromeos/supervised_user_favicon_request_handler.h"
+#include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "components/favicon/core/large_icon_service.h"
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/browser/web_contents.h"
@@ -89,8 +89,8 @@ void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
     const std::u16string& child_display_name,
     ApprovalRequestInitiatedCallback callback) {
   CHECK(web_contents_);
-  supervised_user::SupervisedUserSettingsService* settings_service =
-      SupervisedUserSettingsServiceFactory::GetForKey(
+  supervised_user::FamilyLinkSettingsService* family_link_settings_service =
+      supervised_user::FamilyLinkSettingsServiceFactory::GetForKey(
           Profile::FromBrowserContext(web_contents_->GetBrowserContext())
               ->GetProfileKey());
 
@@ -114,14 +114,14 @@ void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
       std::move(params),
       base::BindOnce(
           &SupervisedUserWebContentHandlerImpl::OnLocalApprovalRequestCompleted,
-          weak_ptr_factory_.GetWeakPtr(), std::ref(*settings_service),
-          target_url, start_time));
+          weak_ptr_factory_.GetWeakPtr(),
+          std::ref(*family_link_settings_service), target_url, start_time));
   if (show_error == ash::ParentAccessDialogProvider::ShowError::kNone) {
     std::move(callback).Run(true);
   } else {
     std::move(callback).Run(false);
     WebContentHandler::OnLocalApprovalRequestCompleted(
-        *settings_service, target_url, start_time,
+        *family_link_settings_service, target_url, start_time,
         supervised_user::LocalApprovalResult::kError,
         /*local_approval_error_type=*/std::nullopt);
     HandleChromeOSShowError(show_error);
@@ -129,12 +129,12 @@ void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
 }
 
 void SupervisedUserWebContentHandlerImpl::OnLocalApprovalRequestCompleted(
-    supervised_user::SupervisedUserSettingsService& settings_service,
+    supervised_user::FamilyLinkSettingsService& family_link_settings_service,
     const GURL& url,
     base::TimeTicks start_time,
     std::unique_ptr<ash::ParentAccessDialog::Result> result) {
   WebContentHandler::OnLocalApprovalRequestCompleted(
-      settings_service, url, start_time,
+      family_link_settings_service, url, start_time,
       ChromeOSResultToLocalApprovalResult(std::move(result)),
       /*local_approval_error_type=*/std::nullopt);
 }

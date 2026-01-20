@@ -22,9 +22,9 @@
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/browser/list_family_members_service.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
@@ -58,7 +58,8 @@ class ChildAccountServiceTest : public ::testing::Test {
             /*test_url_loader_factory=*/nullptr, &syncable_pref_service_,
             test_signin_client_.get());
 
-    settings_service_.Init(syncable_pref_service_.user_prefs_store());
+    family_link_settings_service_.Init(
+        syncable_pref_service_.user_prefs_store());
     PrefRegistrySimple* registry = syncable_pref_service_.registry();
     supervised_user::RegisterProfilePrefs(registry);
     registry->RegisterBooleanPref(policy::policy_prefs::kForceGoogleSafeSearch,
@@ -78,7 +79,7 @@ class ChildAccountServiceTest : public ::testing::Test {
   }
 
   void TearDown() override {
-    settings_service_.Shutdown();
+    family_link_settings_service_.Shutdown();
     child_account_service_->Shutdown();
   }
 
@@ -107,7 +108,7 @@ class ChildAccountServiceTest : public ::testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   sync_preferences::TestingPrefServiceSyncable syncable_pref_service_;
   syncer::MockSyncService sync_service_;
-  SupervisedUserSettingsService settings_service_;
+  FamilyLinkSettingsService family_link_settings_service_;
 
   std::unique_ptr<TestSigninClient> test_signin_client_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;

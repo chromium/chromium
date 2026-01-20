@@ -41,7 +41,7 @@ class SyncService;
 }  // namespace syncer
 
 namespace supervised_user {
-class SupervisedUserSettingsService;
+class FamilyLinkSettingsService;
 
 // Represents custodian data - who is responsible for managing the supervised
 // user's settings.
@@ -145,7 +145,7 @@ class SupervisedUserService : public KeyedService {
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService& user_prefs,
-      SupervisedUserSettingsService& settings_service,
+      FamilyLinkSettingsService& settings_service,
       syncer::SyncService* sync_service,
       std::unique_ptr<SupervisedUserURLFilter> url_filter,
       std::unique_ptr<SupervisedUserService::PlatformDelegate>
@@ -191,7 +191,7 @@ class SupervisedUserService : public KeyedService {
 
   const raw_ref<PrefService> user_prefs_;
 
-  const raw_ref<SupervisedUserSettingsService> settings_service_;
+  const raw_ref<FamilyLinkSettingsService> settings_service_;
 
   const raw_ptr<syncer::SyncService> sync_service_;
 

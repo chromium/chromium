@@ -7,8 +7,8 @@
 #import <memory>
 
 #import "base/check_deref.h"
+#import "ios/chrome/browser/supervised_user/model/family_link_settings_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
-#import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
 
 namespace supervised_user {
 
@@ -38,7 +38,7 @@ SupervisedUserUrlFilteringServiceFactory::
   DependsOn(SupervisedUserServiceFactory::GetInstance());
 
   // Gives access to Family Link settings.
-  DependsOn(SupervisedUserSettingsServiceFactory::GetInstance());
+  DependsOn(FamilyLinkSettingsServiceFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
@@ -46,7 +46,6 @@ SupervisedUserUrlFilteringServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
   return std::make_unique<SupervisedUserUrlFilteringService>(
       CHECK_DEREF(SupervisedUserServiceFactory::GetForProfile(profile)),
-      CHECK_DEREF(
-          SupervisedUserSettingsServiceFactory::GetForProfile(profile)));
+      CHECK_DEREF(FamilyLinkSettingsServiceFactory::GetForProfile(profile)));
 }
 }  // namespace supervised_user

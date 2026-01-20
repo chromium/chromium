@@ -20,7 +20,7 @@
 class PrefValueMap;
 
 namespace supervised_user {
-class SupervisedUserSettingsService;
+class FamilyLinkSettingsService;
 
 // Writes default values to `pref_values` as used within the
 // SupervisedUserPrefStore. In this context "default" doesn't indicate the
@@ -31,25 +31,24 @@ void SetSupervisedUserPrefStoreDefaults(PrefValueMap& pref_values);
 }  // namespace supervised_user
 
 // A PrefStore that gets its values from supervised user settings via the
-// SupervisedUserSettingsService passed in at construction.
+// FamilyLinkSettingsService passed in at construction.
 class SupervisedUserPrefStore : public PrefStore {
  public:
   // Construct a pref store that needs to be manually initialized with Init().
-  // Used on iOS since the iOS SupervisedUserSettingsService depends on the
+  // Used on iOS since the iOS FamilyLinkSettingsService depends on the
   // creation of the pref service and of this pref store.
   SupervisedUserPrefStore();
 
   // Construct the pref store with the settings service and device parental
   // controls available.
   SupervisedUserPrefStore(
-      supervised_user::SupervisedUserSettingsService*
-          supervised_user_settings_service,
+      supervised_user::FamilyLinkSettingsService* family_link_settings_service,
       supervised_user::DeviceParentalControls& device_parental_controls);
 
   // Subscribe to the settings service.
-  void Init(supervised_user::SupervisedUserSettingsService*
-                supervised_user_settings_service,
-            supervised_user::DeviceParentalControls& device_parental_controls);
+  void Init(
+      supervised_user::FamilyLinkSettingsService* family_link_settings_service,
+      supervised_user::DeviceParentalControls& device_parental_controls);
 
   // PrefStore overrides:
   bool GetValue(std::string_view key, const base::Value** value) const override;
@@ -94,7 +93,7 @@ class SupervisedUserPrefStore : public PrefStore {
 
   std::unique_ptr<PrefValueMap> prefs_;
 
-  base::WeakPtr<const supervised_user::SupervisedUserSettingsService>
+  base::WeakPtr<const supervised_user::FamilyLinkSettingsService>
       settings_service_;
 
   base::ObserverList<PrefStore::Observer, true> observers_;

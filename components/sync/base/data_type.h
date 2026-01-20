@@ -91,7 +91,7 @@ enum DataType {
   // These preferences are synced before other user types and are never
   // encrypted.
   PRIORITY_PREFERENCES,
-  // Supervised user settings. Cannot be encrypted.
+  // Family Link supervised user settings. Cannot be encrypted.
   SUPERVISED_USER_SETTINGS,
   // App List items, used by the ChromeOS app launcher.
   APP_LIST,

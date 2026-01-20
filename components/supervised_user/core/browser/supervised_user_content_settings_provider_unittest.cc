@@ -18,7 +18,7 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/prefs/testing_pref_store.h"
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -34,7 +34,7 @@ class SupervisedUserProviderTest : public ::testing::Test {
   void TearDown() override;
 
  protected:
-  SupervisedUserSettingsService service_;
+  FamilyLinkSettingsService service_;
   scoped_refptr<TestingPrefStore> pref_store_;
   std::unique_ptr<SupervisedUserContentSettingsProvider> provider_;
   content_settings::MockObserver mock_observer_;

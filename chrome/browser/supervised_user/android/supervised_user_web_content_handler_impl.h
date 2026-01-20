@@ -38,7 +38,7 @@ class SupervisedUserWebContentHandlerImpl
 
  private:
   void OnLocalApprovalRequestCompleted(
-      supervised_user::SupervisedUserSettingsService& settings_service,
+      supervised_user::FamilyLinkSettingsService& settings_service,
       const GURL& url,
       base::TimeTicks start_time,
       AndroidLocalWebApprovalFlowOutcome request_outcome);

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.supervised_user;
 
+import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
@@ -11,24 +12,26 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.superviseduser.FilteringBehavior;
 
 /**
- * Class to expose supervised user settings to Java code.
+ * Class to expose Family Link Settings Service to Java code. Offers functionalities that fake
+ * loading specific settings from remote configurations.
  *
- * This should only be used in tests.
+ * <p>This should only be used in tests.
  */
-class SupervisedUserSettingsTestBridge {
+@JNINamespace("supervised_user")
+class FamilyLinkSettingsTestBridge {
     /** Set the website filtering behaviour for this user. */
     static void setFilteringBehavior(Profile profile, @FilteringBehavior int setting) {
-        SupervisedUserSettingsTestBridgeJni.get().setFilteringBehavior(profile, setting);
+        FamilyLinkSettingsTestBridgeJni.get().setFilteringBehavior(profile, setting);
     }
 
-    /** Adds the given host to the manuel allowlist or denylist*/
+    /** Adds the given host to the manuel allowlist or denylist */
     static void setManualFilterForHost(Profile profile, String host, boolean allowlist) {
-        SupervisedUserSettingsTestBridgeJni.get().setManualFilterForHost(profile, host, allowlist);
+        FamilyLinkSettingsTestBridgeJni.get().setManualFilterForHost(profile, host, allowlist);
     }
 
     /** Sets response to the kids management API */
     static void setKidsManagementResponseForTesting(Profile profile, boolean isAllowed) {
-        SupervisedUserSettingsTestBridgeJni.get()
+        FamilyLinkSettingsTestBridgeJni.get()
                 .setKidsManagementResponseForTesting(profile, isAllowed);
     }
 

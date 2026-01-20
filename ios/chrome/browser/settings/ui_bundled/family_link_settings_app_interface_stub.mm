@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/supervised_user_settings_app_interface.h"
+#import "ios/chrome/browser/settings/ui_bundled/family_link_settings_app_interface.h"
 
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(SupervisedUserSettingsAppInterface)
+GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(FamilyLinkSettingsAppInterface)

@@ -15,13 +15,13 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
+#include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "components/content_settings/core/browser/content_settings_pref_provider.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/features.h"
+#include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_content_settings_provider.h"
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/webui/webui_allowlist_provider.h"
@@ -63,7 +63,7 @@ HostContentSettingsMapFactory::HostContentSettingsMapFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
-  DependsOn(SupervisedUserSettingsServiceFactory::GetInstance());
+  DependsOn(supervised_user::FamilyLinkSettingsServiceFactory::GetInstance());
 #if BUILDFLAG(IS_ANDROID)
   DependsOn(
       safe_browsing::AdvancedProtectionStatusManagerFactory::GetInstance());
@@ -152,14 +152,15 @@ scoped_refptr<RefcountedKeyedService>
           false));
 #endif // BUILDFLAG(ENABLE_EXTENSIONS)
 
-  supervised_user::SupervisedUserSettingsService* supervised_service =
-      SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
+  supervised_user::FamilyLinkSettingsService* family_link_settings_service =
+      supervised_user::FamilyLinkSettingsServiceFactory::GetForKey(
+          profile->GetProfileKey());
   // This may be null in testing.
-  if (supervised_service) {
+  if (family_link_settings_service) {
     std::unique_ptr<supervised_user::SupervisedUserContentSettingsProvider>
         supervised_provider(
             new supervised_user::SupervisedUserContentSettingsProvider(
-                supervised_service));
+                family_link_settings_service));
     settings_map->RegisterProvider(ProviderType::kSupervisedProvider,
                                    std::move(supervised_provider));
   }

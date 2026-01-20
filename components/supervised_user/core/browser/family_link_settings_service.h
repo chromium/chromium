@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_SETTINGS_SERVICE_H_
-#define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_SETTINGS_SERVICE_H_
+#ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_FAMILY_LINK_SETTINGS_SERVICE_H_
+#define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_FAMILY_LINK_SETTINGS_SERVICE_H_
 
 #include <memory>
 #include <string>
@@ -36,7 +36,7 @@ namespace supervised_user {
 // SupervisedUserPrefStore - second most important store of the PrefService, or
 // are available directly using accessors. Note: Family Link settings are one of
 // many sources for user supervision; but this class uses generic name
-// "SupervisedUserSettingsService" for historical reasons.
+// "FamilyLinkSettingsService" for historical reasons.
 //
 // Settings are key-value pairs, where the key uniquely identifies the setting.
 // The value is a string containing a JSON serialization of an arbitrary value,
@@ -59,9 +59,9 @@ namespace supervised_user {
 //   }
 // would be encoded as two sync items, one with key "Moose:foo" and value "bar",
 // and one with key "Moose:baz" and value "blurp".
-class SupervisedUserSettingsService : public KeyedService,
-                                      public syncer::SyncableService,
-                                      public PrefStore::Observer {
+class FamilyLinkSettingsService : public KeyedService,
+                                  public syncer::SyncableService,
+                                  public PrefStore::Observer {
  public:
   // A callback whose first parameter is a dictionary containing all Family Link
   // user settings. If the dictionary is empty, it means that the service is
@@ -85,13 +85,13 @@ class SupervisedUserSettingsService : public KeyedService,
   using ShutdownCallbackList =
       base::RepeatingCallbackList<ShutdownCallbackType>;
 
-  SupervisedUserSettingsService();
+  FamilyLinkSettingsService();
 
-  SupervisedUserSettingsService(const SupervisedUserSettingsService&) = delete;
-  SupervisedUserSettingsService& operator=(
-      const SupervisedUserSettingsService&) = delete;
+  FamilyLinkSettingsService(const FamilyLinkSettingsService&) = delete;
+  FamilyLinkSettingsService& operator=(const FamilyLinkSettingsService&) =
+      delete;
 
-  ~SupervisedUserSettingsService() override;
+  ~FamilyLinkSettingsService() override;
 
   // Initializes the service by loading its settings from a file underneath the
   // |profile_path|. File I/O will be serialized via the
@@ -185,7 +185,7 @@ class SupervisedUserSettingsService : public KeyedService,
       const syncer::EntityData& entity_data) const override;
 
   // Returns a weak pointer to the service.
-  base::WeakPtr<const SupervisedUserSettingsService> GetWeakPtr() const;
+  base::WeakPtr<const FamilyLinkSettingsService> GetWeakPtr() const;
 
   // PrefStore::Observer implementation:
   void OnInitializationCompleted(bool success) override;
@@ -249,9 +249,9 @@ class SupervisedUserSettingsService : public KeyedService,
 
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;
 
-  base::WeakPtrFactory<SupervisedUserSettingsService> weak_ptr_factory_{this};
+  base::WeakPtrFactory<FamilyLinkSettingsService> weak_ptr_factory_{this};
 };
 
 }  // namespace supervised_user
 
-#endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_SETTINGS_SERVICE_H_
+#endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_FAMILY_LINK_SETTINGS_SERVICE_H_

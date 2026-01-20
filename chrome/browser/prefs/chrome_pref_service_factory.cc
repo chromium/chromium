@@ -338,7 +338,7 @@ void PrepareFactory(
     sync_preferences::PrefServiceSyncableFactory* factory,
     const base::FilePath& pref_filename,
     policy::PolicyService* policy_service,
-    supervised_user::SupervisedUserSettingsService* supervised_user_settings,
+    supervised_user::FamilyLinkSettingsService* family_link_settings_service,
     supervised_user::DeviceParentalControls& device_parental_controls,
     scoped_refptr<PersistentPrefStore> user_pref_store,
     scoped_refptr<PrefStore> extension_prefs,
@@ -349,8 +349,8 @@ void PrepareFactory(
                  policy_connector);
 
   scoped_refptr<PrefStore> supervised_user_prefs =
-      base::MakeRefCounted<SupervisedUserPrefStore>(supervised_user_settings,
-                                                    device_parental_controls);
+      base::MakeRefCounted<SupervisedUserPrefStore>(
+          family_link_settings_service, device_parental_controls);
   DCHECK(async || supervised_user_prefs->IsInitializationComplete());
   factory->set_supervised_user_prefs(supervised_user_prefs);
 }
@@ -402,7 +402,7 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefs(
     mojo::PendingRemote<prefs::mojom::TrackedPreferenceValidationDelegate>
         validation_delegate,
     policy::PolicyService* policy_service,
-    supervised_user::SupervisedUserSettingsService* supervised_user_settings,
+    supervised_user::FamilyLinkSettingsService* family_link_settings_service,
     supervised_user::DeviceParentalControls& device_parental_controls,
     scoped_refptr<PrefStore> extension_prefs,
     scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
@@ -431,9 +431,9 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefs(
       base::BindOnce(&CleanupObsoleteStandaloneBrowserPrefsFile, profile_path));
 #endif
 
-  if (supervised_user_settings) {
+  if (family_link_settings_service) {
     PrepareFactory(&factory, profile_path, policy_service,
-                   supervised_user_settings, device_parental_controls,
+                   family_link_settings_service, device_parental_controls,
                    user_pref_store, std::move(extension_prefs), async,
                    connector);
   } else {

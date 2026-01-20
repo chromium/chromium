@@ -14,7 +14,7 @@
 #include "components/safe_search_api/safe_search_util.h"
 #include "components/supervised_user/core/browser/device_parental_controls.h"
 #include "components/supervised_user/core/browser/device_parental_controls_noop_impl.h"
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync/base/pref_names.h"
@@ -34,7 +34,7 @@ using ::testing::Optional;
 class SupervisedUserPrefStoreFixture : public PrefStore::Observer {
  public:
   SupervisedUserPrefStoreFixture(
-      supervised_user::SupervisedUserSettingsService* settings_service,
+      supervised_user::FamilyLinkSettingsService* settings_service,
       supervised_user::DeviceParentalControls& device_parental_controls);
   ~SupervisedUserPrefStoreFixture() override;
 
@@ -53,7 +53,7 @@ class SupervisedUserPrefStoreFixture : public PrefStore::Observer {
 };
 
 SupervisedUserPrefStoreFixture::SupervisedUserPrefStoreFixture(
-    supervised_user::SupervisedUserSettingsService* settings_service,
+    supervised_user::FamilyLinkSettingsService* settings_service,
     supervised_user::DeviceParentalControls& device_parental_controls)
     : pref_store_(new SupervisedUserPrefStore(settings_service,
                                               device_parental_controls)),
@@ -90,8 +90,8 @@ class SupervisedUserPrefStoreTest : public ::testing::Test {
   void TearDown() override;
 
  protected:
-  supervised_user::SupervisedUserSettingsService service_;
-  // Backend of the SupervisedUserSettingsService.
+  supervised_user::FamilyLinkSettingsService service_;
+  // Backend of the FamilyLinkSettingsService.
   scoped_refptr<TestingPrefStore> service_pref_store_;
 
 #if BUILDFLAG(IS_ANDROID)

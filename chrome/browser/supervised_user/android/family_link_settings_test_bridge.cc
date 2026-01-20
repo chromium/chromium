@@ -6,35 +6,30 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
+#include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "components/safe_search_api/url_checker_client.h"
-#include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/browser/supervised_user/test_support_jni_headers/SupervisedUserSettingsTestBridge_jni.h"
+#include "chrome/browser/supervised_user/test_support_jni_headers/FamilyLinkSettingsTestBridge_jni.h"
 
+namespace supervised_user {
 using base::android::JavaRef;
 
-static void JNI_SupervisedUserSettingsTestBridge_SetFilteringBehavior(
+static void JNI_FamilyLinkSettingsTestBridge_SetFilteringBehavior(
     JNIEnv* env,
     Profile* profile,
     int32_t setting) {
-  supervised_user::SupervisedUserSettingsService*
-      supervised_user_settings_service =
-          SupervisedUserSettingsServiceFactory::GetForKey(
-              profile->GetProfileKey());
-  supervised_user_settings_service->SetLocalSetting(
-      supervised_user::kContentPackDefaultFilteringBehavior,
-      base::Value(setting));
+  FamilyLinkSettingsService* service =
+      FamilyLinkSettingsServiceFactory::GetForKey(profile->GetProfileKey());
+  service->SetLocalSetting(kContentPackDefaultFilteringBehavior,
+                           base::Value(setting));
 }
 
-static void JNI_SupervisedUserSettingsTestBridge_SetManualFilterForHost(
+static void JNI_FamilyLinkSettingsTestBridge_SetManualFilterForHost(
     JNIEnv* env,
     Profile* profile,
     const JavaRef<jstring>& host,
@@ -60,7 +55,7 @@ class StaticUrlCheckerClient : public safe_search_api::URLCheckerClient {
 }  // namespace
 
 static void
-JNI_SupervisedUserSettingsTestBridge_SetKidsManagementResponseForTesting(  // IN-TEST
+JNI_FamilyLinkSettingsTestBridge_SetKidsManagementResponseForTesting(  // IN-TEST
     JNIEnv* env,
     Profile* profile,
     bool is_allowed) {
@@ -71,5 +66,6 @@ JNI_SupervisedUserSettingsTestBridge_SetKidsManagementResponseForTesting(  // IN
           is_allowed ? safe_search_api::ClientClassification::kAllowed
                      : safe_search_api::ClientClassification::kRestricted));
 }
+}  // namespace supervised_user
 
-DEFINE_JNI(SupervisedUserSettingsTestBridge)
+DEFINE_JNI(FamilyLinkSettingsTestBridge)

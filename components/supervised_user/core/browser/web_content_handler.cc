@@ -6,7 +6,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
 namespace {
@@ -38,7 +38,8 @@ void MaybeRecordLocalWebApprovalErrorTypeMetric(
     return;
   }
   base::UmaHistogramEnumeration(
-      supervised_user::kLocalWebApprovalErrorTypeHistogramName, error_type.value());
+      supervised_user::kLocalWebApprovalErrorTypeHistogramName,
+      error_type.value());
 }
 }  // namespace
 
@@ -54,18 +55,17 @@ void WebContentHandler::RecordLocalWebApprovalResultMetric(
 }
 
 void WebContentHandler::OnLocalApprovalRequestCompleted(
-    supervised_user::SupervisedUserSettingsService& settings_service,
+    FamilyLinkSettingsService& family_link_settings_service,
     const GURL& url,
     base::TimeTicks start_time,
     LocalApprovalResult approval_result,
-    std::optional<supervised_user::LocalWebApprovalErrorType>
-        local_approval_error_type) {
+    std::optional<LocalWebApprovalErrorType> local_approval_error_type) {
   VLOG(0) << "Local URL approval final result: "
           << LocalApprovalResultToString(approval_result);
 
   switch (approval_result) {
     case LocalApprovalResult::kApproved:
-      settings_service.RecordLocalWebsiteApproval(url.GetHost());
+      family_link_settings_service.RecordLocalWebsiteApproval(url.GetHost());
       // Record duration metrics only for completed approval flows.
       RecordTimeToApprovalDurationMetric(base::TimeTicks::Now() - start_time);
       break;

@@ -14,8 +14,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -81,8 +81,7 @@ std::unique_ptr<KeyedService> BuildTestSupervisedUserService(
           ->GetURLLoaderFactoryForBrowserProcess();
   return std::make_unique<SupervisedUserService>(
       identity_manager, url_loader_factory, *profile->GetPrefs(),
-      *SupervisedUserSettingsServiceFactory::GetForKey(
-          profile->GetProfileKey()),
+      *FamilyLinkSettingsServiceFactory::GetForKey(profile->GetProfileKey()),
       SyncServiceFactory::GetForProfile(profile),
       std::make_unique<MockSupervisedUserURLFilter>(
           *profile->GetPrefs(), std::make_unique<FakeURLFilterDelegate>(),

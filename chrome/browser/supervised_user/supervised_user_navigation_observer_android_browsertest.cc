@@ -18,14 +18,14 @@
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browsertest_base.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/google/core/common/google_switches.h"
 #include "components/safe_search_api/url_checker_client.h"
 #include "components/supervised_user/core/browser/android/android_parental_controls.h"
+#include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_interstitial.h"
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/common/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -119,18 +119,18 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  SupervisedUserSettingsService* settings_service =
-      SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
+  FamilyLinkSettingsService* family_link_settings_service =
+      FamilyLinkSettingsServiceFactory::GetForKey(profile->GetProfileKey());
 
   // Settings service should be already inactive (because family link parental
   // controls were never activated).
   ASSERT_FALSE(IsSubjectToParentalControls(*profile->GetPrefs()));
-  ASSERT_FALSE(settings_service->IsActive());
+  ASSERT_FALSE(family_link_settings_service->IsActive());
   // This means that this call should be a no-op if service was previously
   // inactive. If it was not a no-op, it would clear the supervised user prefs
   // store and consequently the safe search setting from device parental
   // controls.
-  settings_service->SetActive(false);
+  family_link_settings_service->SetActive(false);
 
   GURL url = embedded_test_server()->GetURL("google.com", "/search?q=cat");
 

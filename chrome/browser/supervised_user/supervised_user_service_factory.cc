@@ -12,8 +12,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/supervised_user/core/browser/device_parental_controls.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
@@ -81,8 +81,8 @@ std::unique_ptr<KeyedService> SupervisedUserServiceFactory::BuildInstanceFor(
           ->GetURLLoaderFactoryForBrowserProcess();
   return std::make_unique<supervised_user::SupervisedUserService>(
       identity_manager, url_loader_factory, *profile->GetPrefs(),
-      *SupervisedUserSettingsServiceFactory::GetInstance()->GetForKey(
-          profile->GetProfileKey()),
+      *supervised_user::FamilyLinkSettingsServiceFactory::GetInstance()
+           ->GetForKey(profile->GetProfileKey()),
       SyncServiceFactory::GetInstance()->GetForProfile(profile),
       std::make_unique<supervised_user::SupervisedUserURLFilter>(
           *profile->GetPrefs(), std::make_unique<FilterDelegateImpl>(),
@@ -105,7 +105,7 @@ SupervisedUserServiceFactory::SupervisedUserServiceFactory()
 #endif
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
-  DependsOn(SupervisedUserSettingsServiceFactory::GetInstance());
+  DependsOn(supervised_user::FamilyLinkSettingsServiceFactory::GetInstance());
 }
 
 SupervisedUserServiceFactory::~SupervisedUserServiceFactory() = default;
