@@ -9204,6 +9204,7 @@ from previous Chrome versions.
   <int value="-1760146324" label="CellularAllowPerNetworkRoaming:disabled"/>
   <int value="-1759769801" label="PasswordEditDialogWithDetails:enabled"/>
   <int value="-1759403147" label="MinorModeSupport:disabled"/>
+  <int value="-1759023284" label="kUserMediaScreenCapturing:disabled"/>
   <int value="-1758987651" label="ModifierSplit:disabled"/>
   <int value="-1758468685" label="DownloadHomeV2:disabled"/>
   <int value="-1758074393" label="BorealisWebUIInstaller:disabled"/>
@@ -14985,6 +14986,7 @@ from previous Chrome versions.
   <int value="248485874" label="FieldClassificationModelCaching:disabled"/>
   <int value="249465446" label="UseRealColorSpaceForAndroidVideo:enabled"/>
   <int value="249727337" label="EnableTranslationAPI:enabled"/>
+  <int value="250236604" label="kUserMediaScreenCapturing:enabled"/>
   <int value="250297614" label="EnableExclusiveAccessManager:enabled"/>
   <int value="250855010" label="WebAssemblyBaseline:disabled"/>
   <int value="250890200" label="OmniboxZpsSuggestionLimit:enabled"/>
