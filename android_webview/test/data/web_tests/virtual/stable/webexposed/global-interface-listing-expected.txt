@@ -110,6 +110,12 @@ interface AnimationTimeline
     getter currentTime
     getter duration
     method constructor
+interface AnimationTrigger
+    attribute @@toStringTag
+    method addAnimation
+    method constructor
+    method getAnimations
+    method removeAnimation
 interface AsyncDisposableStack
     attribute @@toStringTag
     getter disposed
@@ -8996,6 +9002,28 @@ interface TimeRanges
     method constructor
     method end
     method start
+interface TimelineTrigger : AnimationTrigger
+    attribute @@toStringTag
+    getter ranges
+    method constructor
+interface TimelineTriggerRange
+    attribute @@toStringTag
+    getter activeRangeEnd
+    getter activeRangeStart
+    getter entryRangeEnd
+    getter entryRangeStart
+    getter timeline
+    method constructor
+interface TimelineTriggerRangeList
+    attribute @@toStringTag
+    getter length
+    method @@iterator
+    method constructor
+    method entries
+    method forEach
+    method item
+    method keys
+    method values
 interface ToggleEvent : Event
     attribute @@toStringTag
     getter newState

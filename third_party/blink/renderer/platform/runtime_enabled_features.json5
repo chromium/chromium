@@ -559,7 +559,7 @@
     {
       // https://drafts.csswg.org/web-animations-2/#triggers
       name: "AnimationTrigger",
-      status: "experimental",
+      status: "stable",
       implied_by: ["EventTrigger", "TimelineTrigger"],
     },
     {
@@ -5360,7 +5360,7 @@
     {
       // https://drafts.csswg.org/web-animations-2/#triggers
       name: "TimelineTrigger",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "TimerThrottlingForBackgroundTabs",
