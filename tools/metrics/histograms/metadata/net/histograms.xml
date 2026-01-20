@@ -4094,7 +4094,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.NeedsHWCAP2Workaround" enum="BooleanBroken"
-    expires_after="2024-06-30">
+    expires_after="2026-06-30">
   <owner>davidben@chromium.org</owner>
   <owner>src/third_party/boringssl/OWNERS</owner>
   <summary>
@@ -4102,6 +4102,9 @@ chromium-metrics-reviews@google.com.
     missing AT_HWCAP2 from the ELF auxv and /proc/cpuinfo reports support for
     ARMv8 features. Those features should also be reported in AT_HWCAP2. This is
     to measure the workaround in https://crbug.com/boringssl/46.
+
+    Warning: this histogram was expired from 2024-06-30 to 2026-01-20; data may
+    be missing.
   </summary>
 </histogram>
 
