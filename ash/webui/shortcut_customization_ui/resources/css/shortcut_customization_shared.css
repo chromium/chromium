@@ -13,7 +13,7 @@
   --shortcuts-font-weight-regular: 400;
   --shortcuts-font-weight-medium: 500;
 
-  --shortcuts-font-family-default: "Google Sans", Roboto, sans-serif;
+  --shortcuts-font-family-default: 'Google Sans', Roboto, sans-serif;
   --shortcuts-font-size-default: 13px;
 
   --shortcuts-lock-icon-color: var(--cros-text-color-disabled);

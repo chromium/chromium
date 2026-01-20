@@ -9,7 +9,7 @@ html, body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  font-family: "Roboto", sans-serif;
+  font-family: 'Roboto', sans-serif;
   display: flex;
 }
 
@@ -129,12 +129,12 @@ header {
   padding: 12px 26px;
 }
 
-.log-item[severity="1"] {
+.log-item[severity='1'] {
   background-color: #fffcef;
   color: #312200;
 }
 
-.log-item[severity="2"] {
+.log-item[severity='2'] {
   background-color: #fff1f1;
   color: #ef0000;
 }

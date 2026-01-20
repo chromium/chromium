@@ -31,7 +31,7 @@ cr-tooltip::part(tooltip) {
 
 /* Add a caret to the tooltip. */
 cr-tooltip::part(tooltip)::after {
-  content: "";
+  content: '';
   position: absolute;
   top: 100%;
   inset-inline-start: 12.5px; /* Aligns the caret to the chip thumbnail*/

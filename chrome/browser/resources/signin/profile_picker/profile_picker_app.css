@@ -16,7 +16,7 @@
   height: 100%;
 }
 
-:host([app-mode_="glic"]) {
+:host([app-mode_='glic']) {
   @media (prefers-color-scheme: dark) {
     background-color: #131314;
   }
@@ -48,7 +48,7 @@
   }
 }
 
-:host([app-mode_="regular"]) {
+:host([app-mode_='regular']) {
 
   #banner-right,
   #banner-left {

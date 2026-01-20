@@ -160,7 +160,7 @@ h2.first {
   height: 640px;
   width: 680px;
 }
-div[slot="body"] {
+div[slot='body'] {
   border-radius: 20px;
   padding: 32px;
 }

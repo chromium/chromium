@@ -21,15 +21,15 @@
 }
 
 :host {
-  --shimless-title-font-family: "Google Sans", Roboto, sans-serif;
+  --shimless-title-font-family: 'Google Sans', Roboto, sans-serif;
   --shimless-instructions-font-family: Roboto, sans-serif;
   --shimless-component-font-family: Roboto, sans-serif;
   --shimless-component-description-font-family: Roboto, sans-serif;
   --shimless-hint-font-family: Roboto, sans-serif;
   --shimless-warning-font-family: Roboto, sans-serif;
-  --shimless-button-label-font-family: "Google Sans", Roboto, sans-serif;
+  --shimless-button-label-font-family: 'Google Sans', Roboto, sans-serif;
   --shimless-input-font-family: Roboto, sans-serif;
-  --shimless-dialog-title-font-family: "Google Sans", sans-serif;
+  --shimless-dialog-title-font-family: 'Google Sans', sans-serif;
   --shimless-dialog-body-font-family: Roboto, sans-serif;
 
   --shimless-title-font-size: 28px;

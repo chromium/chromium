@@ -383,7 +383,7 @@ cr-searchbox-dropdown::part(dropdown-content) {
   --cr-icon-button-size: 36px;
 }
 
-:host([ntp-realbox-next-enabled]:not([context-menu-glif-animation-state="ineligible"])) contextual-entrypoint-and-carousel::part(context-menu-entrypoint-icon) {
+:host([ntp-realbox-next-enabled]:not([context-menu-glif-animation-state='ineligible'])) contextual-entrypoint-and-carousel::part(context-menu-entrypoint-icon) {
   /* Account for the margin of the glow container */
   --cr-icon-button-margin-start: 0px;
 }
@@ -405,7 +405,7 @@ cr-searchbox-dropdown::part(dropdown-content) {
   z-index: 100;
 }
 
-:host-context([ntp-realbox-next-enabled][context-menu-glif-animation-state="ineligible"]) contextual-entrypoint-and-carousel::part(composebox-entrypoint) {
+:host-context([ntp-realbox-next-enabled][context-menu-glif-animation-state='ineligible']) contextual-entrypoint-and-carousel::part(composebox-entrypoint) {
   padding-inline-end: 14px;
 }
 
@@ -461,7 +461,7 @@ cr-searchbox-dropdown::part(dropdown-content) {
 }
 
 :host([ntp-realbox-next-enabled][dropdown-is-visible]),
-:host([ntp-realbox-next-enabled]:not([context-files-count_="0"])) {
+:host([ntp-realbox-next-enabled]:not([context-files-count_='0'])) {
   box-shadow: none;
 }
 
@@ -582,7 +582,7 @@ cr-searchbox-dropdown::part(dropdown-content) {
   z-index: 100;
 }
 
-:host([searchbox-layout-mode="Compact"]) {
+:host([searchbox-layout-mode='Compact']) {
   /* Used in search-animated-glow-element. */
   --search-animated-glow-drag-drop-placeholder-top: 16px;
 }

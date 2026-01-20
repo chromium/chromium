@@ -63,7 +63,7 @@
 }
 
 :host([indeterminate]:not([disabled])) #primaryProgress::after {
-  content: "";
+  content: '';
   transform-origin: center center;
 
   animation: indeterminate-splitter

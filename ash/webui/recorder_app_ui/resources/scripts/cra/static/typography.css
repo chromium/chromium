@@ -12,33 +12,33 @@
 }
 
 @font-face {
-  font-family: "GSR";
-  src: local("Google Sans Regular");
+  font-family: 'GSR';
+  src: local('Google Sans Regular');
 }
 
 @font-face {
-  font-family: "GSM";
-  src: local("Google Sans Medium");
+  font-family: 'GSM';
+  src: local('Google Sans Medium');
 }
 
 @font-face {
-  font-family: "GSB";
-  src: local("Google Sans Bold");
+  font-family: 'GSB';
+  src: local('Google Sans Bold');
 }
 
 @font-face {
-  font-family: "GSTR";
-  src: local("Google Sans Text Regular");
+  font-family: 'GSTR';
+  src: local('Google Sans Text Regular');
 }
 
 @font-face {
-  font-family: "GSTM";
-  src: local("Google Sans Text Medium");
+  font-family: 'GSTM';
+  src: local('Google Sans Text Medium');
 }
 
 @font-face {
-  font-family: "GSTB";
-  src: local("Google Sans Text Bold");
+  font-family: 'GSTB';
+  src: local('Google Sans Text Bold');
 }
 
 html:not(body) {}

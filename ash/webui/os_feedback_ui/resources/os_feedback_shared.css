@@ -13,7 +13,7 @@
 
 :host {
   --feedback-footer-height: 92px;
-  --feedback-google-sans-font-family: "Google Sans", Roboto, sans-serif;
+  --feedback-google-sans-font-family: 'Google Sans', Roboto, sans-serif;
   --feedback-header-height: 92px;
   --feedback-padding-inline-end: 40px;
   --feedback-padding-inline-start: 40px;

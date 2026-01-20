@@ -23,7 +23,7 @@
     --diagnostics-card-bg-color: var(--cros-bg-color);
     --diagnostics-chip-bg-color: var(--cros-bg-color-dropped-elevation-2);
 
-    --diagnostics-google-sans-font-family: "Google Sans", sans-serif;
+    --diagnostics-google-sans-font-family: 'Google Sans', sans-serif;
     --diagnostics-roboto-font-family: Roboto, sans-serif;
 
     --diagnostics-regular-font-weight: 400;

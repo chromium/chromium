@@ -60,11 +60,11 @@ contextual-entrypoint-and-carousel {
   --color-composebox-recent-tab-chip-outline: var(--color-omnibox-keyword-separator);
 }
 
-contextual-entrypoint-and-carousel[searchbox-layout-mode="TallBottomContext"] {
+contextual-entrypoint-and-carousel[searchbox-layout-mode='TallBottomContext'] {
   --contextual-entrypoint-and-carousel-context-menu-container-margin-bottom: 9px;
 }
 
-contextual-entrypoint-and-carousel[searchbox-layout-mode="TallTopContext"] {
+contextual-entrypoint-and-carousel[searchbox-layout-mode='TallTopContext'] {
   --contextual-entrypoint-and-carousel-contextual-chip-padding-bottom: 10px;
 
   &:not([show-dropdown]) {
@@ -73,7 +73,7 @@ contextual-entrypoint-and-carousel[searchbox-layout-mode="TallTopContext"] {
   }
 }
 
-contextual-entrypoint-and-carousel[searchbox-layout-mode="Compact"] {
+contextual-entrypoint-and-carousel[searchbox-layout-mode='Compact'] {
   --contextual-entrypoint-and-carousel-context-entrypoint-padding-inline: 0px;
   --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start: 12px;
   --contextual-entrypoint-and-carousel-contextual-chip-padding-bottom: 16px;

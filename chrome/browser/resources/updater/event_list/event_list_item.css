@@ -106,11 +106,11 @@ cr-expand-button {
  --iron-icon-height: 16px;
 }
 
-.event-description-icon-column cr-icon[icon="cr:check-circle"] {
+.event-description-icon-column cr-icon[icon='cr:check-circle'] {
   --iron-icon-fill-color: var(--event-success-icon-color);
 }
 
-.event-description-icon-column cr-icon[icon="cr:warning"] {
+.event-description-icon-column cr-icon[icon='cr:warning'] {
   --iron-icon-fill-color: var(--event-error-icon-color);
 }
 

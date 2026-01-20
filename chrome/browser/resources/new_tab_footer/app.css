@@ -41,7 +41,7 @@
   width: 100%;
 }
 
-[role="link"] {
+[role='link'] {
   border:none;
   background: none;
   cursor: pointer;
@@ -52,7 +52,7 @@
  * except the last one. */
 #infoContainer > div:not(:last-child):after {
   background-color: var(--color-new-tab-footer-text);
-  content: "";
+  content: '';
   display: inline-block;
   height: 13px;
   position: absolute;
