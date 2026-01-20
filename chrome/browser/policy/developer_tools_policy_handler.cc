@@ -10,7 +10,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/policy/extension_developer_mode_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_switches.h"
@@ -27,6 +26,10 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/policy/extension_developer_mode_policy_handler.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 namespace policy {
 
@@ -252,7 +255,7 @@ bool DeveloperToolsPolicyHandler::CheckPolicySettings(
     return false;
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   const std::optional<Availability> policy = GetValueFromBothPolicies(policies);
 
   if (policy.has_value() && *policy == Availability::kDisallowed &&
@@ -263,7 +266,7 @@ bool DeveloperToolsPolicyHandler::CheckPolicySettings(
                      key::kDeveloperToolsAvailability,
                      /*error_path=*/{}, PolicyMap::MessageType::kInfo);
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   // Always continue to ApplyPolicySettings which can handle invalid policy
   // values.
@@ -277,7 +280,7 @@ void DeveloperToolsPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   if (policy.has_value()) {
     prefs->SetInteger(prefs::kDevToolsAvailability, static_cast<int>(*policy));
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     // ExtensionDeveloperModePolicySettings takes precedence over this policy.
     // Thus, we only set the value of kExtensionsUIDeveloperMode if the former
     // is not set.
@@ -285,7 +288,7 @@ void DeveloperToolsPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
         !extension_developer_mode_policy_handler_.IsValidPolicySet(policies)) {
       prefs->SetValue(prefs::kExtensionsUIDeveloperMode, base::Value(false));
     }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   }
 }
 

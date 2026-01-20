@@ -6,6 +6,9 @@
 #define CHROME_BROWSER_POLICY_EXTENSION_DEVELOPER_MODE_POLICY_HANDLER_H_
 
 #include "components/policy/core/browser/configuration_policy_handler.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace policy {
 

@@ -9939,7 +9939,6 @@ test("unit_tests") {
       "../browser/policy/cloud/fm_registration_token_uploader_unittest.cc",
       "../browser/policy/developer_tools_policy_checker_factory_unittest.cc",
       "../browser/policy/developer_tools_policy_checker_unittest.cc",
-      "../browser/policy/developer_tools_policy_handler_unittest.cc",
     ]
 
     deps += [
@@ -9947,6 +9946,11 @@ test("unit_tests") {
       "//components/webauthn/core/browser:test_support",
       "//ui/webui/resources/cr_components/history:mojo_bindings",
     ]
+  }
+
+  if (!is_android || enable_desktop_android_extensions) {
+    sources +=
+        [ "../browser/policy/developer_tools_policy_handler_unittest.cc" ]
   }
 
   if (use_gio) {
