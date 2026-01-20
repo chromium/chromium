@@ -16018,7 +16018,6 @@ from previous Chrome versions.
   <int value="619598806"
       label="GlanceablesTimeManagementClassroomStudentView:disabled"/>
   <int value="620189062" label="TabFreeze:enabled"/>
-  <int value="620776830" label="VerticalTabs:enabled"/>
   <int value="620989380" label="ImeInputLogicFst:enabled"/>
   <int value="621308804" label="LensSearchReinvocationAffordance:disabled"/>
   <int value="621484660" label="ReorderBookmarks:disabled"/>
@@ -16677,7 +16676,6 @@ from previous Chrome versions.
   <int value="828678083" label="DynamicTopChrome:disabled"/>
   <int value="830282555" label="DecodeJpeg420ImagesToYUV:enabled"/>
   <int value="830354646" label="SecondaryGoogleAccountUsage:disabled"/>
-  <int value="830435389" label="VerticalTabs:disabled"/>
   <int value="830607993" label="LaunchedTabSearchToolbarButton:enabled"/>
   <int value="831988687" label="PrivacySandboxEqualizedPromptButtons:disabled"/>
   <int value="832142463" label="WebAssemblyStreaming:enabled"/>

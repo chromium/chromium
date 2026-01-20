@@ -9572,11 +9572,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "vertical-tabs",
-    "owners": ["top-chrome-desktop-ui@google.com", "dpenning@chromium.org", "agale@chromium.org", "corising@chromium.org" ],
-    "expiry_milestone": 155
-  },
-  {
     "name": "vids-app-preinstall",
     "owners": [ "alancutter@chromium.org", "cros-ca-eng@google.com" ],
     "expiry_milestone": 150

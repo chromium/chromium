@@ -3867,10 +3867,6 @@ inline constexpr char kSidePanelRelativeAlignmentDescription[] =
     "Set the relative alignment between the toolbar height side panel and the "
     "content height side panel";
 
-inline constexpr char kVerticalTabsName[] = "Vertical Tabs";
-inline constexpr char kVerticalTabsDescription[] =
-    "Enables an option for showing tabs to the side.";
-
 inline constexpr char kTabGroupsFocusingName[] = "Tab Groups Focusing";
 inline constexpr char kTabGroupsFocusingDescription[] =
     "When a tab group is focused, the tabstrip constrains visiblity to the "
