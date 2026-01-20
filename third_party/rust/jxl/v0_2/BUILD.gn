@@ -179,6 +179,7 @@ cargo_crate("lib") {
     "//third_party/rust/num_traits/v0_2:lib",
     "//third_party/rust/thiserror/v2:lib",
   ]
+  features = [ "all-simd" ]
 
   #####################################################################
   # Tweaking which GN `config`s apply to this target.
