@@ -172,28 +172,18 @@ bool ShouldApplyFitText(const InlineNode node) {
     return false;
   }
   const ComputedStyle& style = node.Style();
-  bool apply_text_grow = style.TextGrow().Target() != FitTextTarget::kNone;
-  bool apply_text_shrink = style.TextShrink().Target() != FitTextTarget::kNone;
-  if (!apply_text_grow && !apply_text_shrink) {
+  FitTextType fit_type = style.TextFit().Type();
+  if (fit_type == FitTextType::kNone) {
     return false;
   }
   if (node.HasFloats() || node.HasInitialLetterBox() || node.HasRuby()) {
-    if (apply_text_grow) {
-      AddConsoleMessage(
-          node, ConsoleMessage::Level::kInfo,
-          "Disable `text-grow` due to `float`, `initial-letter`, or "
-          "ruby annotations.");
-      apply_text_grow = false;
-    }
-    if (apply_text_shrink) {
-      AddConsoleMessage(node, ConsoleMessage::Level::kInfo,
-                        "Disable `text-shrink` due to `float`, "
-                        "`initial-letter`, or ruby annotations.");
-      apply_text_shrink = false;
-    }
+    AddConsoleMessage(node, ConsoleMessage::Level::kInfo,
+                      "Disable `text-fit` due to `float`, `initial-letter`, or "
+                      "ruby annotations.");
+    return false;
   }
 
-  return apply_text_grow || apply_text_shrink;
+  return true;
 }
 
 ParagraphScale MeasurePerBlockScale(const InlineNode node,
@@ -233,8 +223,7 @@ ParagraphScale MeasurePerBlockScale(const InlineNode node,
     }
   }
 
-  const FitText& fit_text =
-      is_grow ? node.Style().TextGrow() : node.Style().TextShrink();
+  const FitText& fit_text = node.Style().TextFit();
   if (fit_text.Target() != FitTextTarget::kConsistent) {
     return ParagraphScale();
   }
@@ -327,16 +316,15 @@ float LineFitter::MeasureScale() {
   if (diff.Abs() < epsilon_) {
     return 1.0f;
   }
-  const FitText& text_grow = node_.Style().TextGrow();
-  const FitText& text_shrink = node_.Style().TextShrink();
-  bool apply_text_grow = text_grow.Target() == FitTextTarget::kPerLine;
-  bool apply_text_shrink = text_shrink.Target() == FitTextTarget::kPerLine;
+  const FitText& fit_text = node_.Style().TextFit();
+  bool apply_text_grow = fit_text.Type() == FitTextType::kGrow &&
+                         fit_text.Target() != FitTextTarget::kConsistent;
+  bool apply_text_shrink = fit_text.Type() == FitTextType::kShrink &&
+                           fit_text.Target() != FitTextTarget::kConsistent;
   if ((diff > LayoutUnit() && !apply_text_grow) ||
       (diff < LayoutUnit() && !apply_text_shrink)) {
     return 1.0f;
   }
-  const bool is_grow = diff > LayoutUnit();
-  const FitText& fit_text = is_grow ? text_grow : text_shrink;
 
   // Measure the static parts and the flexible parts in the items.
   LayoutUnit static_total_size;
@@ -371,8 +359,7 @@ float LineFitter::MeasureScale() {
 bool LineFitter::FitLine(float scale_factor,
                          std::optional<float> additional_paint_time_scale) {
   const bool is_grow = scale_factor > 1.0f;
-  const FitText& fit_text =
-      is_grow ? node_.Style().TextGrow() : node_.Style().TextShrink();
+  const FitText& fit_text = node_.Style().TextFit();
   auto limit = ComputeSizeLimit(fit_text, is_grow, node_);
 
   switch (fit_text.Method()) {

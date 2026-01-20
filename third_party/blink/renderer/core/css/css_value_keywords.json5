@@ -2017,13 +2017,12 @@
     "context-fill",
     "context-stroke",
 
-    // text-grow / text-shrink
+    // text-fit
+    "grow",
+    "shrink",
     "per-line",
+    "per-line-all",
     "consistent",
-    // "scale",
-    "font-size",
-    "scale-inline",
-    "letter-spacing",
 
     // media-progress()
     "media-progress",

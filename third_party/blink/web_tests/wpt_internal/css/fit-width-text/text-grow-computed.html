@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>getComputedStyle().textGrow</title>
+<title>getComputedStyle().textFit</title>
 <link rel="help" href="https://github.com/explainers-by-googlers/css-fit-text/blob/main/README.md">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -7,17 +7,19 @@
 <body>
 <div id="target" style="font-size:20px; line-height:1;"></div>
 <script>
-test_computed_value('text-grow', 'none');
-test_computed_value('text-grow', 'per-line');
-test_computed_value('text-grow', 'consistent');
+test_computed_value('text-fit', 'none');
+test_computed_value('text-fit', 'grow');
+test_computed_value('text-fit', 'shrink');
 
-test_computed_value('text-grow', 'per-line scale', 'per-line');
-test_computed_value('text-grow', 'consistent font-size');
+test_computed_value('text-fit', 'grow consistent', 'grow');
+test_computed_value('text-fit', 'grow per-line');
+test_computed_value('text-fit', 'grow per-line-all');
 
-test_computed_value('text-grow', 'per-line 32px');
-test_computed_value('text-grow', 'consistent 3em', 'consistent 60px');
+// TODO(crbug.com/417306102): The `limit` component should be a percentage value.
+test_computed_value('text-fit', 'grow per-line 32px');
+test_computed_value('text-fit', 'grow consistent 3em', 'grow 60px');
 
-test_computed_value('text-grow', 'per-line scale 4ch', 'per-line 40px');
-test_computed_value('text-grow', 'consistent scale-inline 2lh', 'consistent scale-inline 40px');
+test_computed_value('text-fit', 'shrink per-line 4ch', 'shrink per-line 40px');
+test_computed_value('text-fit', 'shrink consistent 2lh', 'shrink 40px');
 </script>
 </body>

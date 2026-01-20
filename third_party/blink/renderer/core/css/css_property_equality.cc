@@ -793,8 +793,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return (a.GetTextEmphasisFill() == b.GetTextEmphasisFill()) &&
              (a.GetTextEmphasisMark() == b.GetTextEmphasisMark()) &&
              (a.TextEmphasisCustomMark() == b.TextEmphasisCustomMark());
-    case CSSPropertyID::kTextGrow:
-      return a.TextGrow() == b.TextGrow();
+    case CSSPropertyID::kTextFit:
+      return a.TextFit() == b.TextFit();
     case CSSPropertyID::kTextIndent:
       return a.TextIndent() == b.TextIndent() &&
              a.GetTextIndentFlags() == b.GetTextIndentFlags();
@@ -807,8 +807,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
              b.GetFontDescription().TextRendering();
     case CSSPropertyID::kTextShadow:
       return base::ValuesEquivalent(a.TextShadow(), b.TextShadow());
-    case CSSPropertyID::kTextShrink:
-      return a.TextShrink() == b.TextShrink();
     case CSSPropertyID::kTextSizeAdjust:
       return a.GetTextSizeAdjust() == b.GetTextSizeAdjust();
     case CSSPropertyID::kTextSpacingTrim:

@@ -918,8 +918,8 @@ enum CSSSampleId {
     kRuleStyle = 853,
     kCaretShape = 854,
     kRowRule = 855,
-    kTextGrow = 856,
-    kTextShrink = 857,
+    // kTextGrow = 856,
+    // kTextShrink = 857,
     kRule = 858,
     // kOriginTrialTestShorthand = 859,
     kCornerTopShape = 860,
@@ -991,6 +991,7 @@ enum CSSSampleId {
     kTimelineTriggerEntryRange = 921,
     kTimelineTriggerActiveRange = 922,
     kGridLanesPack = 923,
+    kTextFit = 924,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

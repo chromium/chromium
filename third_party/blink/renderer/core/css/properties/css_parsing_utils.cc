@@ -9494,23 +9494,25 @@ CSSValue* ConsumeAnchoredFallbackQueryValue(
 CSSValue* ConsumeFitText(CSSParserTokenStream& stream,
                          const CSSParserContext& context,
                          CSSParserLocalContext& local_context) {
-  CSSValue* target = ConsumeIdent<CSSValueID::kNone, CSSValueID::kPerLine,
-                                  CSSValueID::kConsistent>(stream);
-  if (!target) {
+  // The syntax is:
+  //   [ none | grow | shrink] [ consistent | per-line | per-line-all]?
+  //   <percentage>?
+  CSSValue* type =
+      ConsumeIdent<CSSValueID::kNone, CSSValueID::kGrow, CSSValueID::kShrink>(
+          stream);
+  if (!type) {
     return nullptr;
   }
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  list->Append(*target);
+  list->Append(*type);
 
-  if (CSSValue* method =
-          ConsumeIdent<CSSValueID::kScale, CSSValueID::kFontSize,
-                       CSSValueID::kScaleInline, CSSValueID::kLetterSpacing>(
-              stream)) {
-    if (To<CSSIdentifierValue>(method)->GetValueID() != CSSValueID::kScale) {
-      list->Append(*method);
-    }
+  if (CSSIdentifierValue* target =
+          ConsumeIdent<CSSValueID::kConsistent, CSSValueID::kPerLine,
+                       CSSValueID::kPerLineAll>(stream)) {
+    list->Append(*target);
   }
 
+  // TODO(crbug.com/417306102): This should be <percentage>.
   if (CSSValue* size =
           ConsumeLength(stream, context, local_context,
                         CSSPrimitiveValue::ValueRange::kNonNegative)) {
@@ -9518,10 +9520,10 @@ CSSValue* ConsumeFitText(CSSParserTokenStream& stream,
   }
 
   // The list is either:
-  // - [target]
-  // - [target, method]
-  // - [target, size], or
-  // - [target, method, size]
+  // - [type]
+  // - [type, target]
+  // - [type, size], or
+  // - [type, target, size]
   return list;
 }
 

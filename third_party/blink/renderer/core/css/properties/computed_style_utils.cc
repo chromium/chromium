@@ -5180,36 +5180,37 @@ CSSValue* ComputedStyleUtils::ValueForPositionTryFallbacks(
 CSSValue* ComputedStyleUtils::ValueForFitText(const ComputedStyle& style,
                                               const FitText& fit_text) {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  CSSValueID target_id;
-  switch (fit_text.Target()) {
-    case FitTextTarget::kNone:
-      target_id = CSSValueID::kNone;
+  CSSValueID type_id;
+  switch (fit_text.Type()) {
+    case FitTextType::kNone:
+      type_id = CSSValueID::kNone;
       break;
-    case FitTextTarget::kPerLine:
-      target_id = CSSValueID::kPerLine;
+    case FitTextType::kGrow:
+      type_id = CSSValueID::kGrow;
       break;
-    case FitTextTarget::kConsistent:
-      target_id = CSSValueID::kConsistent;
+    case FitTextType::kShrink:
+      type_id = CSSValueID::kShrink;
       break;
   }
-  list->Append(*CSSIdentifierValue::Create(target_id));
+  list->Append(*CSSIdentifierValue::Create(type_id));
+  if (type_id == CSSValueID::kNone) {
+    return list;
+  }
 
-  switch (fit_text.Method()) {
-    case FitTextMethod::kScale:
-      // The default value.
+  switch (fit_text.Target()) {
+    case FitTextTarget::kConsistent:
+      // It's a default value.
       break;
-    case FitTextMethod::kFontSize:
-      list->Append(*CSSIdentifierValue::Create(CSSValueID::kFontSize));
+    case FitTextTarget::kPerLine:
+      list->Append(*CSSIdentifierValue::Create(CSSValueID::kPerLine));
       break;
-    case FitTextMethod::kScaleInline:
-      list->Append(*CSSIdentifierValue::Create(CSSValueID::kScaleInline));
-      break;
-    case FitTextMethod::kLetterSpacing:
-      list->Append(*CSSIdentifierValue::Create(CSSValueID::kLetterSpacing));
+    case FitTextTarget::kPerLineAll:
+      list->Append(*CSSIdentifierValue::Create(CSSValueID::kPerLineAll));
       break;
   }
 
   if (auto size = fit_text.SizeLimit()) {
+    // TODO(crbug.com/417306102): This should be <percentage>.
     list->Append(*ZoomAdjustedPixelValue(*size, style));
   }
   return list;

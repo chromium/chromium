@@ -4175,34 +4175,40 @@ PositionTryFallback StyleBuilderConverter::ConvertSinglePositionTryFallback(
 FitText StyleBuilderConverter::ConvertFitText(StyleResolverState& state,
                                               const CSSValue& value) {
   const auto& list = To<CSSValueList>(value);
-  const auto target_id = To<CSSIdentifierValue>(list.Item(0)).GetValueID();
-  FitTextTarget target = target_id == CSSValueID::kNone ? FitTextTarget::kNone
-                         : target_id == CSSValueID::kPerLine
-                             ? FitTextTarget::kPerLine
-                             : FitTextTarget::kConsistent;
-  std::optional<FitTextMethod> method;
-  wtf_size_t next_index = 1;
-  if (list.length() > next_index && list.Item(next_index).IsIdentifierValue()) {
-    const auto method_id =
-        To<CSSIdentifierValue>(list.Item(next_index)).GetValueID();
-    switch (method_id) {
-      case CSSValueID::kScale:
-        method.emplace(FitTextMethod::kScale);
-        break;
-      case CSSValueID::kFontSize:
-        method.emplace(FitTextMethod::kFontSize);
-        break;
-      case CSSValueID::kScaleInline:
-        method.emplace(FitTextMethod::kScaleInline);
-        break;
-      case CSSValueID::kLetterSpacing:
-        method.emplace(FitTextMethod::kLetterSpacing);
-        break;
-      default:
-        NOTREACHED();
-    }
-    ++next_index;
+
+  const auto type_id = To<CSSIdentifierValue>(list.Item(0)).GetValueID();
+  FitTextType type = FitTextType::kNone;
+  if (type_id == CSSValueID::kNone) {
+    // It's the default value. Do nothing.
+  } else if (type_id == CSSValueID::kGrow) {
+    type = FitTextType::kGrow;
+  } else {
+    // If this DCHECK fails, This function and ConsumeFitText() are
+    // inconsistent.
+    DCHECK_EQ(type_id, CSSValueID::kShrink);
+    type = FitTextType::kShrink;
   }
+  wtf_size_t next_index = 1;
+
+  FitTextTarget target = FitTextTarget::kConsistent;
+  if (next_index < list.length()) {
+    if (const auto* target_value =
+            DynamicTo<CSSIdentifierValue>(list.Item(next_index))) {
+      const auto target_id = target_value->GetValueID();
+      if (target_id == CSSValueID::kConsistent) {
+        // It's the default value. Do nothing.
+      } else if (target_id == CSSValueID::kPerLine) {
+        target = FitTextTarget::kPerLine;
+      } else {
+        // If this DCHECK fails, This function and ConsumeFitText() are
+        // inconsistent.
+        DCHECK_EQ(target_id, CSSValueID::kPerLineAll);
+        target = FitTextTarget::kPerLineAll;
+      }
+      ++next_index;
+    }
+  }
+
   std::optional<float> size_limit;
   if (list.length() > next_index) {
     FontDescription::Size parent_size(FontSizeFunctions::InitialKeywordSize(),
@@ -4211,7 +4217,7 @@ FitText StyleBuilderConverter::ConvertFitText(StyleResolverState& state,
         state.CssToLengthConversionData(),
         To<CSSPrimitiveValue>(list.Item(next_index)), parent_size));
   }
-  return FitText(target, method, size_limit);
+  return FitText(type, target, size_limit);
 }
 
 TextOverflowData StyleBuilderConverter::ConvertTextOverflow(
