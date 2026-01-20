@@ -21,7 +21,7 @@ const HASH_THRESHOLD: usize = 8;
 impl AttributesSet {
     pub fn new() -> Self {
         Self {
-            vec: Vec::new(),
+            vec: Vec::with_capacity(HASH_THRESHOLD),
             hasher: RandomState::new(),
             may_contain: HashSet::default(),
         }
