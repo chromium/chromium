@@ -7,6 +7,7 @@ package org.chromium.chrome.test.memory_leaks;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +39,11 @@ public class PublicTransitLeakTest {
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public CctTransitTestRule mCustomTabActivityTestRule = new CctTransitTestRule();
+
+    @After
+    public void tearDown() {
+        mChromeTabbedActivityTestRule.closeAllWindowsAndDeleteInstanceAndTabState();
+    }
 
     @Test
     @LargeTest
