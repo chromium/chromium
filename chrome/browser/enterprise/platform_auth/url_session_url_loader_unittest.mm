@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
@@ -21,6 +22,7 @@
 #include "base/test/test_future.h"
 #include "base/test/test_suite.h"
 #include "base/time/time.h"
+#include "chrome/browser/enterprise/platform_auth/url_session_test_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/prefs/testing_pref_service.h"
@@ -40,6 +42,7 @@
 
 using testing::_;
 using MockClient = testing::NiceMock<network::MockURLLoaderClient>;
+using url_session_test_util::ResponseConfig;
 
 namespace {
 
@@ -54,120 +57,11 @@ constexpr std::string_view kOktaFailureDurationHistogram =
 constexpr std::string_view kOktaFailureReasonHistogram =
     "Enterprise.ExtensibleEnterpriseSSO.Okta.Failure.Reason";
 
-struct ResponseConfig {
-  std::optional<std::string> body;
-  bool os_error = false;
-  bool hang = false;
-  base::OnceClosure on_started;
-  base::OnceClosure on_stopped;
-};
-
-std::string CreateSsoUrl(const size_t id) {
-  return base::StrCat({"https://foobar.example.com/idp/idx/authenticators/"
-                       "sso_extension/transactions/",
-                       base::NumberToString(id), "/verify"});
-}
-
-// Since there is no simple way to pass data into NSURLProtocol, this registry
-// provides a way to safely setup the expected behaviour for each request by
-// using request urls as keys.
-class ResponseRegistry {
- public:
-  static ResponseRegistry* Get() {
-    static base::NoDestructor<ResponseRegistry> instance;
-    return instance.get();
-  }
-
-  std::string Register(ResponseConfig config) {
-    base::AutoLock lock(lock_);
-    const std::string url = CreateSsoUrl(counter_++);
-    registry_[url] = std::move(config);
-    return url;
-  }
-
-  ResponseConfig& ReadConfig(const std::string& url) {
-    base::AutoLock lock(lock_);
-    auto it = registry_.find(url);
-    CHECK(it != registry_.end());
-    return it->second;
-  }
-
-  void Clear() {
-    base::AutoLock lock(lock_);
-    registry_.clear();
-  }
-
- private:
-  friend class base::NoDestructor<ResponseRegistry>;
-  ResponseRegistry() = default;
-
-  base::Lock lock_;
-  size_t counter_ = 0;
-  std::map<std::string, ResponseConfig> registry_ GUARDED_BY(lock_);
-};
+const std::string kSsoRequestURL =
+    "https://foobar.example.com/idp/idx/authenticators/sso_extension/"
+    "transactions/123/verify";
 
 }  // namespace
-
-@interface MockProtocol : NSURLProtocol
-@end
-
-@implementation MockProtocol
-
-+ (BOOL)canInitWithRequest:(NSURLRequest*)request {
-  return true;
-}
-
-+ (NSURLRequest*)canonicalRequestForRequest:(NSURLRequest*)request {
-  return request;
-}
-
-- (void)startLoading {
-  std::string gurl = net::GURLWithNSURL(self.request.URL).spec();
-  ResponseConfig& config = ResponseRegistry::Get()->ReadConfig(gurl);
-  if (config.on_started) {
-    std::move(config.on_started).Run();
-  }
-
-  if (config.hang) {
-    return;
-  }
-
-  if (config.os_error) {
-    NSError* error = [NSError errorWithDomain:NSURLErrorDomain
-                                         code:NSURLErrorNotConnectedToInternet
-                                     userInfo:nil];
-    [self.client URLProtocol:self didFailWithError:error];
-    return;
-  }
-
-  NSData* data = nil;
-  if (config.body.has_value()) {
-    data = [NSData dataWithBytes:config.body.value().c_str()
-                          length:config.body.value().size()];
-  }
-
-  NSHTTPURLResponse* response =
-      [[NSHTTPURLResponse alloc] initWithURL:self.request.URL
-                                  statusCode:200
-                                 HTTPVersion:@"HTTP/1.1"
-                                headerFields:nil];
-
-  [self.client URLProtocol:self
-        didReceiveResponse:response
-        cacheStoragePolicy:NSURLCacheStorageNotAllowed];
-  [self.client URLProtocol:self didLoadData:data];
-  [self.client URLProtocolDidFinishLoading:self];
-}
-
-- (void)stopLoading {
-  std::string gurl = net::GURLWithNSURL(self.request.URL).spec();
-  ResponseConfig& config = ResponseRegistry::Get()->ReadConfig(gurl);
-  if (config.on_stopped) {
-    std::move(config.on_stopped).Run();
-  }
-}
-
-@end
 
 namespace enterprise_auth {
 
@@ -178,13 +72,7 @@ class URLSessionURLLoaderTest : public testing::Test {
                          client_remote_.InitWithNewPipeAndPassReceiver()) {
     client_receiver_.set_disconnect_handler(
         client_disconnect_future_.GetCallback());
-
-    auto* instance = CreateURLSessionURLLoader();
-    url_loader_ = instance->weak_ptr_factory_.GetWeakPtr();
-    EXPECT_TRUE(url_loader_);
   }
-
-  ~URLSessionURLLoaderTest() override { ResponseRegistry::Get()->Clear(); }
 
   MockClient& GetMockClient() { return mock_client; }
 
@@ -192,7 +80,10 @@ class URLSessionURLLoaderTest : public testing::Test {
   // The behaviour of the network is controlled by the url used, see the
   // anonymous namespace for details.
   void StartRequest(const std::string& url,
+                    ResponseConfig&& response_config,
                     base::TimeDelta timeout = base::TimeDelta::Max()) {
+    CreateURLSessionURLLoader(std::move(response_config));
+
     network::ResourceRequest request;
     request.url = GURL(url);
     request.method = "POST";
@@ -234,17 +125,12 @@ class URLSessionURLLoaderTest : public testing::Test {
       kFailReasonOSError = URLSessionURLLoader::SSORequestFailReason::kOsError;
 
  private:
-  static NSURLSession* CreateMockURLSession() {
-    NSURLSessionConfiguration* config =
-        [NSURLSessionConfiguration ephemeralSessionConfiguration];
-    config.protocolClasses = @[ [MockProtocol class] ];
-    return [NSURLSession sessionWithConfiguration:config];
-  }
-
-  URLSessionURLLoader* CreateURLSessionURLLoader() {
+  void CreateURLSessionURLLoader(ResponseConfig&& reponse_config) {
     URLSessionURLLoader* instance = new URLSessionURLLoader();
-    instance->OverrideSessionForTesting(CreateMockURLSession());
-    return instance;
+    instance->OverrideSessionForTesting(
+        url_session_test_util::GetTestURLSessionForConfig(
+            std::move(reponse_config)));
+    url_loader_ = instance->weak_ptr_factory_.GetWeakPtr();
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -261,7 +147,6 @@ class URLSessionURLLoaderTest : public testing::Test {
 TEST_F(URLSessionURLLoaderTest, SuccessfulResponseWithBody) {
   ResponseConfig config;
   config.body = kBody;
-  const std::string url = ResponseRegistry::Get()->Register(std::move(config));
 
   MockClient& mock_client = GetMockClient();
   EXPECT_CALL(mock_client, OnReceiveResponse(_, _, _))
@@ -280,7 +165,7 @@ TEST_F(URLSessionURLLoaderTest, SuccessfulResponseWithBody) {
                   &network::URLLoaderCompletionStatus::error_code, net::OK)))
       .Times(1);
 
-  StartRequest(url);
+  StartRequest(kSsoRequestURL, std::move(config));
   WaitForLoaderToDisconnectAndDestroy();
 
   histogram_tester_.ExpectUniqueSample(kOktaResultHistogram, true, 1);
@@ -290,7 +175,6 @@ TEST_F(URLSessionURLLoaderTest, SuccessfulResponseWithBody) {
 TEST_F(URLSessionURLLoaderTest, SuccessfulResponseWithEmptyBody) {
   ResponseConfig config;
   config.body = "";
-  const std::string url = ResponseRegistry::Get()->Register(std::move(config));
 
   MockClient& mock_client = GetMockClient();
   EXPECT_CALL(mock_client, OnReceiveResponse(_, _, _))
@@ -305,7 +189,7 @@ TEST_F(URLSessionURLLoaderTest, SuccessfulResponseWithEmptyBody) {
                   &network::URLLoaderCompletionStatus::error_code, net::OK)))
       .Times(1);
 
-  StartRequest(url);
+  StartRequest(kSsoRequestURL, std::move(config));
   WaitForLoaderToDisconnectAndDestroy();
 
   histogram_tester_.ExpectUniqueSample(kOktaResultHistogram, true, 1);
@@ -316,7 +200,6 @@ TEST_F(URLSessionURLLoaderTest, SuccessfulResponseWithEmptyBody) {
 
 TEST_F(URLSessionURLLoaderTest, SuccessfulResponseWithNoBody) {
   ResponseConfig config;
-  const std::string url = ResponseRegistry::Get()->Register(std::move(config));
 
   MockClient& mock_client = GetMockClient();
   EXPECT_CALL(mock_client, OnReceiveResponse(_, _, _))
@@ -331,7 +214,7 @@ TEST_F(URLSessionURLLoaderTest, SuccessfulResponseWithNoBody) {
                   &network::URLLoaderCompletionStatus::error_code, net::OK)))
       .Times(1);
 
-  StartRequest(url);
+  StartRequest(kSsoRequestURL, std::move(config));
   WaitForLoaderToDisconnectAndDestroy();
 
   histogram_tester_.ExpectUniqueSample(kOktaResultHistogram, true, 1);
@@ -343,7 +226,6 @@ TEST_F(URLSessionURLLoaderTest, SuccessfulResponseWithNoBody) {
 TEST_F(URLSessionURLLoaderTest, RejectsTooBigBodies) {
   ResponseConfig config;
   config.body = kTooBigPayload;
-  const std::string url = ResponseRegistry::Get()->Register(std::move(config));
 
   MockClient& mock_client = GetMockClient();
   EXPECT_CALL(mock_client, OnComplete(testing::Field(
@@ -351,7 +233,7 @@ TEST_F(URLSessionURLLoaderTest, RejectsTooBigBodies) {
                                net::ERR_FILE_TOO_BIG)))
       .Times(1);
 
-  StartRequest(url);
+  StartRequest(kSsoRequestURL, std::move(config));
   WaitForLoaderToDisconnectAndDestroy();
 
   histogram_tester_.ExpectUniqueSample(kOktaResultHistogram, false, 1);
@@ -368,13 +250,12 @@ TEST_F(URLSessionURLLoaderTest, DestroysItselfOnDisconnect) {
   config.hang = true;
   config.on_started = started_future.GetSequenceBoundCallback();
   config.on_stopped = stopped_future.GetSequenceBoundCallback();
-  const std::string url = ResponseRegistry::Get()->Register(std::move(config));
 
   MockClient& mock_client = GetMockClient();
   EXPECT_CALL(mock_client, OnReceiveResponse(_, _, _)).Times(0);
   EXPECT_CALL(mock_client, OnComplete(_)).Times(0);
 
-  StartRequest(url);
+  StartRequest(kSsoRequestURL, std::move(config));
   EXPECT_TRUE(started_future.Wait());
 
   DisconnectAndWaitForLoadersDestruction();
@@ -389,7 +270,6 @@ TEST_F(URLSessionURLLoaderTest, DestroysItselfOnDisconnect) {
 TEST_F(URLSessionURLLoaderTest, HandlesErrorGently) {
   ResponseConfig config;
   config.os_error = true;
-  const std::string url = ResponseRegistry::Get()->Register(std::move(config));
 
   MockClient& mock_client = GetMockClient();
   EXPECT_CALL(mock_client, OnComplete(testing::Field(
@@ -397,7 +277,7 @@ TEST_F(URLSessionURLLoaderTest, HandlesErrorGently) {
                                net::ERR_FAILED)))
       .Times(1);
 
-  StartRequest(url);
+  StartRequest(kSsoRequestURL, std::move(config));
   WaitForLoaderToDisconnectAndDestroy();
 
   histogram_tester_.ExpectUniqueSample(kOktaResultHistogram, false, 1);
@@ -414,13 +294,12 @@ TEST_F(URLSessionURLLoaderTest, RequestCanceledOnDestruction) {
   config.hang = true;
   config.on_started = started_future.GetSequenceBoundCallback();
   config.on_stopped = cancel_future.GetSequenceBoundCallback();
-  const std::string url = ResponseRegistry::Get()->Register(std::move(config));
 
   MockClient& mock_client = GetMockClient();
   EXPECT_CALL(mock_client, OnReceiveResponse(_, _, _)).Times(0);
   EXPECT_CALL(mock_client, OnComplete(_)).Times(0);
 
-  StartRequest(url);
+  StartRequest(kSsoRequestURL, std::move(config));
   EXPECT_TRUE(started_future.Wait());
   DisconnectAndWaitForLoadersDestruction();
   EXPECT_TRUE(cancel_future.Wait());
@@ -436,7 +315,6 @@ TEST_F(URLSessionURLLoaderTest, WorksWithoutReceiver) {
 
   ResponseConfig config;
   config.body = kBody;
-  const std::string url = ResponseRegistry::Get()->Register(std::move(config));
 
   MockClient& mock_client = GetMockClient();
   EXPECT_CALL(mock_client, OnReceiveResponse(_, _, _))
@@ -455,7 +333,7 @@ TEST_F(URLSessionURLLoaderTest, WorksWithoutReceiver) {
                   &network::URLLoaderCompletionStatus::error_code, net::OK)))
       .Times(1);
 
-  StartRequest(url);
+  StartRequest(kSsoRequestURL, std::move(config));
   WaitForLoaderToDisconnectAndDestroy();
 
   histogram_tester_.ExpectUniqueSample(kOktaResultHistogram, true, 1);
@@ -467,7 +345,6 @@ TEST_F(URLSessionURLLoaderTest, WorksWithoutReceiver) {
 TEST_F(URLSessionURLLoaderTest, Timeout) {
   ResponseConfig config;
   config.hang = true;
-  const std::string url = ResponseRegistry::Get()->Register(std::move(config));
 
   MockClient& mock_client = GetMockClient();
   EXPECT_CALL(mock_client, OnReceiveResponse(_, _, _)).Times(0);
@@ -477,7 +354,7 @@ TEST_F(URLSessionURLLoaderTest, Timeout) {
                                net::ERR_TIMED_OUT)))
       .Times(1);
 
-  StartRequest(url, base::Seconds(1));
+  StartRequest(kSsoRequestURL, std::move(config), base::Seconds(1));
   WaitForLoaderToDisconnectAndDestroy();
 
   histogram_tester_.ExpectUniqueSample(kOktaResultHistogram, false, 1);

@@ -7722,6 +7722,8 @@ test("unit_tests") {
       "../browser/enterprise/platform_auth/extensible_enterprise_sso_prefs_handler_unittest.cc",
       "../browser/enterprise/platform_auth/platform_auth_proxying_url_loader_factory_unittest.cc",
       "../browser/enterprise/platform_auth/url_session_helper_unittest.mm",
+      "../browser/enterprise/platform_auth/url_session_test_util.h",
+      "../browser/enterprise/platform_auth/url_session_test_util.mm",
       "../browser/enterprise/platform_auth/url_session_url_loader_unittest.mm",
       "../browser/global_keyboard_shortcuts_mac_unittest.mm",
       "../browser/mac/auth_session_request_unittest.mm",
