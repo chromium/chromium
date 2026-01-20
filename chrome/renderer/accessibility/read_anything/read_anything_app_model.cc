@@ -563,48 +563,51 @@ void ReadAnythingAppModel::PrepareForAXTreeUpdates(
 void ReadAnythingAppModel::EnsureAXTreeExists(const ui::AXTreeID& tree_id) {
   // Create a new tree if an event is received for a tree that is not yet in
   // the tree list.
-  if (!ContainsTree(tree_id)) {
-    auto new_tree = std::make_unique<ui::AXSerializableTree>();
-    for (auto& observer : observers_) {
-      observer.OnTreeAdded(new_tree.get());
-    }
-    tree_infos_.emplace(
-        tree_id, std::make_unique<AXTreeInfo>(
-                     std::make_unique<ui::AXTreeManager>(std::move(new_tree))));
-    // If we previously received UKM source info for this tree_id, set the
-    // UKM source now that the tree information has been added to tree_infos_.
-    if (tree_id == active_tree_id_ && pending_ukm_sources_.count(tree_id) > 0) {
-      ukm::SourceId ukm_source_id = pending_ukm_sources_[tree_id];
-      pending_ukm_sources_.erase(tree_id);
-      SetUkmSourceId(ukm_source_id);
-    }
+  if (ContainsTree(tree_id)) {
+    return;
+  }
+  auto new_tree = std::make_unique<ui::AXSerializableTree>();
+
+  for (auto& observer : observers_) {
+    observer.OnTreeAdded(new_tree.get());
+  }
+  tree_infos_.emplace(
+      tree_id, std::make_unique<AXTreeInfo>(
+                   std::make_unique<ui::AXTreeManager>(std::move(new_tree))));
+  // If we previously received UKM source info for this tree_id, set the
+  // UKM source now that the tree information has been added to tree_infos_.
+  if (tree_id == active_tree_id_ && pending_ukm_sources_.count(tree_id) > 0) {
+    ukm::SourceId ukm_source_id = pending_ukm_sources_[tree_id];
+    pending_ukm_sources_.erase(tree_id);
+    SetUkmSourceId(ukm_source_id);
   }
 }
 
 void ReadAnythingAppModel::UpdateActiveTreeIfNeeded(
     const ui::AXTreeID& tree_id) {
-  if (may_use_child_for_active_tree_) {
-    // If this is the original root tree id, set it back to the active tree
-    // in case there has been a delay in receiving valid accessibility tree
-    // updates.
-    if (root_tree_id_ == tree_id) {
-      SetRootTreeId(root_tree_id_);
-    } else if (active_tree_id_ != ui::AXTreeIDUnknown() &&
-               active_tree_id_ != tree_id &&
-               child_tree_ids_.find(tree_id) != child_tree_ids_.end()) {
-      // If read aloud is searching for a child tree to distill and this tree id
-      // matches one of the possible child ids, set the active tree to this tree
-      // so that it can be distilled.
-      VLOG(1) << "Using child to set active tree id to " << tree_id;
-      SetActiveTreeId(tree_id);
+  if (!may_use_child_for_active_tree_) {
+    return;
+  }
+  // If this is the original root tree id, set it back to the active tree
+  // in case there has been a delay in receiving valid accessibility tree
+  // updates.
+  if (root_tree_id_ == tree_id) {
+    SetRootTreeId(root_tree_id_);
+  } else if (active_tree_id_ != ui::AXTreeIDUnknown() &&
+             active_tree_id_ != tree_id &&
+             child_tree_ids_.find(tree_id) != child_tree_ids_.end()) {
+    // If read aloud is searching for a child tree to distill and this tree id
+    // matches one of the possible child ids, set the active tree to this tree
+    // so that it can be distilled.
+    VLOG(1) << "Using child to set active tree id to " << tree_id;
+    SetActiveTreeId(tree_id);
 
-      // Ensure that requires_distillation_ is set to true whenever there's a
-      // match for a child id. Otherwise, depending on how accessibility events
-      // for the child tree are received, the content won't be distilled
-      // because ReadAnythingAppController doesn't receive a signal that
-      // distillation should be attempted again.
-      requires_distillation_ = true;
-    }
+    // Ensure that requires_distillation_ is set to true whenever there's a
+    // match for a child id. Otherwise, depending on how accessibility events
+    // for the child tree are received, the content won't be distilled
+    // because ReadAnythingAppController doesn't receive a signal that
+    // distillation should be attempted again.
+    requires_distillation_ = true;
   }
 }
 
