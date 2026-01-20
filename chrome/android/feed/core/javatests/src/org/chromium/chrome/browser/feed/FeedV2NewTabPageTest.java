@@ -22,8 +22,8 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
-import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
 import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.animation.Animator;
@@ -373,7 +373,7 @@ public class FeedV2NewTabPageTest {
                                 SIGNIN_PROMO_POSITION, SWIPE_LEFT));
 
         ViewGroup view = (ViewGroup) mNtp.getCoordinatorForTesting().getRecyclerView();
-        waitForView(view, withId(R.id.signin_promo_view_container), VIEW_NULL);
+        waitForNoView(withId(R.id.signin_promo_view_container));
         waitForView(view, allOf(withId(R.id.header_title), isDisplayed()));
 
         // Verify that sign-in promo is gone, but new tab page layout and header are displayed.

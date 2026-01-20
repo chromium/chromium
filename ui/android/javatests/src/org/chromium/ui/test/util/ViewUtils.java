@@ -4,6 +4,9 @@
 
 package org.chromium.ui.test.util;
 
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
+
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
@@ -129,21 +132,6 @@ public class ViewUtils {
     private ViewUtils() {}
 
     /**
-     * Waits until a view matching the given matches any of the given {@link ExpectedViewState}s.
-     * Fails if the matcher applies to multiple views. Times out after
-     * {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL} milliseconds.
-     *
-     * @param root The view group to search in.
-     * @param viewMatcher The matcher matching the view that should be waited for.
-     * @param viewState State that the matching view should be in. If multiple states are passed,
-     *                  the waiting will stop if at least one applies.
-     */
-    public static void waitForView(
-            ViewGroup root, Matcher<View> viewMatcher, @ExpectedViewState int viewState) {
-        CriteriaHelper.pollUiThread(new ExpectedViewCriteria(viewMatcher, viewState, root));
-    }
-
-    /**
      * Waits until a visible view matches the given matcher. Fails if the matcher applies to
      * multiple views. Times out after {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL} milliseconds.
      *
@@ -194,7 +182,9 @@ public class ViewUtils {
      * @param viewMatcher The matcher matching the view that should be waited for.
      */
     public static void waitForView(ViewGroup root, Matcher<View> viewMatcher) {
-        waitForView(root, viewMatcher, VIEW_VISIBLE);
+        ViewFinder.waitForView(
+                allOf(viewMatcher, isDescendantOfA(is(root))),
+                ViewElement.newOptions().allowDisabled().displayingAtLeast(1).build());
     }
 
     /**
