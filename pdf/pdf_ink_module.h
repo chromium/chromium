@@ -294,6 +294,11 @@ class PdfInkModule {
   bool OnTouchEnd(const blink::WebTouchEvent& event);
   bool OnTouchMove(const blink::WebTouchEvent& event);
 
+  // Dedicated handlers for eraser tip events from stylus devices.
+  bool OnEraserTipTouchStart(const blink::WebTouchEvent& event);
+  bool OnEraserTipTouchEnd(const blink::WebTouchEvent& event);
+  bool OnEraserTipTouchMove(const blink::WebTouchEvent& event);
+
   // Helper for event handlers above that deals with potentially missing events.
   // Can only be called when is_drawing_stroke() returns true.
   void MaybeFinishStrokeForMissingMouseUpEvent();
@@ -517,6 +522,9 @@ class PdfInkModule {
   // The state of the current tool that is in use.
   std::variant<DrawingStrokeState, EraserState, TextHighlightState>
       current_tool_state_;
+
+  // Brush type to restore after eraser tip interaction ends.
+  std::optional<PdfInkBrush::Type> saved_brush_type_for_eraser_tip_;
 
   // The state of the strokes that have been completed.
   DocumentStrokesMap strokes_;

@@ -255,6 +255,17 @@ blink::WebTouchEvent CreatePenEvent(blink::WebInputEvent::Type type,
   return pen_event;
 }
 
+blink::WebTouchEvent CreateEraserTipEvent(
+    blink::WebInputEvent::Type type,
+    base::span<const gfx::PointF> points) {
+  blink::WebTouchEvent eraser_event = CreateTouchEvent(type, points);
+  for (size_t i = 0; i < eraser_event.touches_length; ++i) {
+    eraser_event.touches[i].pointer_type =
+        blink::WebPointerProperties::PointerType::kEraser;
+  }
+  return eraser_event;
+}
+
 class FakeClient : public PdfInkModuleClient {
  public:
   FakeClient() = default;
@@ -2147,6 +2158,202 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeWithPen) {
   ExpectStrokeCounts(/*started=*/4, /*modified_finished=*/2,
                      /*unmodified_finished=*/2);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
+}
+
+TEST_P(PdfInkModuleStrokeTest, EraserTipTemporarilySwitchesToEraseMode) {
+  EnableDrawAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  ExpectStrokesAdded(/*strokes_affected=*/1);
+  const std::vector<base::span<const gfx::PointF>> move_points{
+      base::span_from_ref(kMouseMovePoint),
+  };
+  ApplyStrokeWithPenAtPoints(base::span_from_ref(kMouseDownPoint), move_points,
+                             base::span_from_ref(kMouseUpPoint));
+
+  EXPECT_THAT(
+      VisibleStrokeInputPositions(),
+      ElementsAre(Pair(0, ElementsAre(ElementsAreArray(kMousePoints)))));
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
+
+  // Use eraser tip to erase.
+  ExpectUpdateStrokesActive(/*strokes_affected=*/1, /*expected_active=*/false);
+  blink::WebTouchEvent eraser_start =
+      CreateEraserTipEvent(blink::WebInputEvent::Type::kTouchStart,
+                           base::span_from_ref(kMouseDownPoint));
+  EXPECT_TRUE(ink_module().HandleInputEvent(eraser_start));
+
+  blink::WebTouchEvent eraser_move =
+      CreateEraserTipEvent(blink::WebInputEvent::Type::kTouchMove,
+                           base::span_from_ref(kMouseMovePoint));
+  EXPECT_TRUE(ink_module().HandleInputEvent(eraser_move));
+
+  blink::WebTouchEvent eraser_end =
+      CreateEraserTipEvent(blink::WebInputEvent::Type::kTouchEnd,
+                           base::span_from_ref(kMouseUpPoint));
+  EXPECT_TRUE(ink_module().HandleInputEvent(eraser_end));
+
+  EXPECT_TRUE(VisibleStrokeInputPositions().empty());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/2,
+                     /*unmodified_finished=*/0);
+
+  // Tool should be restored to pen - verify by drawing another stroke.
+  ExpectStrokesAdded(/*strokes_affected=*/1);
+  ApplyStrokeWithPenAtPoints(base::span_from_ref(kMouseDownPoint), move_points,
+                             base::span_from_ref(kMouseUpPoint));
+
+  EXPECT_THAT(
+      VisibleStrokeInputPositions(),
+      ElementsAre(Pair(0, ElementsAre(ElementsAreArray(kMousePoints)))));
+  ExpectStrokeCounts(/*started=*/3, /*modified_finished=*/3,
+                     /*unmodified_finished=*/0);
+}
+
+TEST_P(PdfInkModuleStrokeTest, EraserTipWithHighlighterRestoresHighlighter) {
+  EnableDrawAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kRedBrushParams);
+
+  ExpectStrokesAdded(/*strokes_affected=*/1);
+  const std::vector<base::span<const gfx::PointF>> move_points{
+      base::span_from_ref(kMouseMovePoint),
+  };
+  ApplyStrokeWithPenAtPoints(base::span_from_ref(kMouseDownPoint), move_points,
+                             base::span_from_ref(kMouseUpPoint));
+
+  EXPECT_THAT(
+      VisibleStrokeInputPositions(),
+      ElementsAre(Pair(0, ElementsAre(ElementsAreArray(kMousePoints)))));
+
+  ExpectUpdateStrokesActive(/*strokes_affected=*/1, /*expected_active=*/false);
+  blink::WebTouchEvent eraser_start =
+      CreateEraserTipEvent(blink::WebInputEvent::Type::kTouchStart,
+                           base::span_from_ref(kMouseDownPoint));
+  EXPECT_TRUE(ink_module().HandleInputEvent(eraser_start));
+
+  blink::WebTouchEvent eraser_move =
+      CreateEraserTipEvent(blink::WebInputEvent::Type::kTouchMove,
+                           base::span_from_ref(kMouseMovePoint));
+  EXPECT_TRUE(ink_module().HandleInputEvent(eraser_move));
+
+  blink::WebTouchEvent eraser_end =
+      CreateEraserTipEvent(blink::WebInputEvent::Type::kTouchEnd,
+                           base::span_from_ref(kMouseUpPoint));
+  EXPECT_TRUE(ink_module().HandleInputEvent(eraser_end));
+
+  EXPECT_TRUE(VisibleStrokeInputPositions().empty());
+
+  // Verify highlighter was restored by checking opacity (0.4 for highlighter).
+  const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
+  ASSERT_TRUE(brush);
+  EXPECT_EQ(0.4f, GetOpacityMultiplierFromBrush(brush->ink_brush()));
+}
+
+TEST_P(PdfInkModuleStrokeTest, EraserTipWhenAlreadyInEraserMode) {
+  EnableDrawAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  ExpectStrokesAdded(/*strokes_affected=*/1);
+  const std::vector<base::span<const gfx::PointF>> move_points{
+      base::span_from_ref(kMouseMovePoint),
+  };
+  ApplyStrokeWithPenAtPoints(base::span_from_ref(kMouseDownPoint), move_points,
+                             base::span_from_ref(kMouseUpPoint));
+
+  EXPECT_THAT(
+      VisibleStrokeInputPositions(),
+      ElementsAre(Pair(0, ElementsAre(ElementsAreArray(kMousePoints)))));
+
+  SelectEraserTool();
+
+  ExpectUpdateStrokesActive(/*strokes_affected=*/1, /*expected_active=*/false);
+  blink::WebTouchEvent eraser_start =
+      CreateEraserTipEvent(blink::WebInputEvent::Type::kTouchStart,
+                           base::span_from_ref(kMouseDownPoint));
+  EXPECT_TRUE(ink_module().HandleInputEvent(eraser_start));
+
+  blink::WebTouchEvent eraser_move =
+      CreateEraserTipEvent(blink::WebInputEvent::Type::kTouchMove,
+                           base::span_from_ref(kMouseMovePoint));
+  EXPECT_TRUE(ink_module().HandleInputEvent(eraser_move));
+
+  blink::WebTouchEvent eraser_end =
+      CreateEraserTipEvent(blink::WebInputEvent::Type::kTouchEnd,
+                           base::span_from_ref(kMouseUpPoint));
+  EXPECT_TRUE(ink_module().HandleInputEvent(eraser_end));
+
+  EXPECT_TRUE(VisibleStrokeInputPositions().empty());
+
+  // Should still be in eraser mode.
+  EXPECT_FALSE(ink_module().GetPdfInkBrushForTesting());
+}
+
+TEST_P(PdfInkModuleStrokeTest, EraserTipInterruptsPenStroke) {
+  EnableDrawAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  // Start drawing a stroke with pen (but don't finish it).
+  blink::WebTouchEvent pen_start =
+      CreatePenEvent(blink::WebInputEvent::Type::kTouchStart,
+                     base::span_from_ref(kMouseDownPoint));
+  EXPECT_TRUE(ink_module().HandleInputEvent(pen_start));
+
+  blink::WebTouchEvent pen_move =
+      CreatePenEvent(blink::WebInputEvent::Type::kTouchMove,
+                     base::span_from_ref(kMouseMovePoint));
+  EXPECT_TRUE(ink_module().HandleInputEvent(pen_move));
+
+  // Eraser tip arrives while stroke is in progress - should finish the partial
+  // stroke and switch to eraser mode. Use a position far from the stroke so it
+  // doesn't get erased immediately (stroke is at 10,15 -> 20,25).
+  constexpr gfx::PointF kEraserPoint = gfx::PointF(45.0f, 55.0f);
+  ExpectStrokesAdded(/*strokes_affected=*/1);
+  blink::WebTouchEvent eraser_start =
+      CreateEraserTipEvent(blink::WebInputEvent::Type::kTouchStart,
+                           base::span_from_ref(kEraserPoint));
+  EXPECT_TRUE(ink_module().HandleInputEvent(eraser_start));
+
+  // The partial stroke should have been finished and saved.
+  EXPECT_THAT(VisibleStrokeInputPositions(),
+              ElementsAre(Pair(0, ElementsAre(ElementsAre(kMouseDownPoint,
+                                                          kMouseMovePoint)))));
+
+  // Complete eraser action (still far from the stroke).
+  blink::WebTouchEvent eraser_end = CreateEraserTipEvent(
+      blink::WebInputEvent::Type::kTouchEnd, base::span_from_ref(kEraserPoint));
+  EXPECT_TRUE(ink_module().HandleInputEvent(eraser_end));
+
+  // Stroke should still be visible (eraser didn't touch it).
+  EXPECT_THAT(VisibleStrokeInputPositions(),
+              ElementsAre(Pair(0, ElementsAre(ElementsAre(kMouseDownPoint,
+                                                          kMouseMovePoint)))));
+
+  // Now use eraser tip again to actually erase the stroke.
+  ExpectUpdateStrokesActive(/*strokes_affected=*/1, /*expected_active=*/false);
+  blink::WebTouchEvent eraser_start2 =
+      CreateEraserTipEvent(blink::WebInputEvent::Type::kTouchStart,
+                           base::span_from_ref(kMouseDownPoint));
+  EXPECT_TRUE(ink_module().HandleInputEvent(eraser_start2));
+
+  blink::WebTouchEvent eraser_move =
+      CreateEraserTipEvent(blink::WebInputEvent::Type::kTouchMove,
+                           base::span_from_ref(kMouseMovePoint));
+  EXPECT_TRUE(ink_module().HandleInputEvent(eraser_move));
+
+  blink::WebTouchEvent eraser_end2 =
+      CreateEraserTipEvent(blink::WebInputEvent::Type::kTouchEnd,
+                           base::span_from_ref(kMouseUpPoint));
+  EXPECT_TRUE(ink_module().HandleInputEvent(eraser_end2));
+
+  // Stroke should now be erased.
+  EXPECT_TRUE(VisibleStrokeInputPositions().empty());
+
+  // Tool should be restored to pen (pen has opacity 1.0f).
+  const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
+  ASSERT_TRUE(brush);
+  EXPECT_EQ(1.0f, GetOpacityMultiplierFromBrush(brush->ink_brush()));
 }
 
 TEST_P(PdfInkModuleStrokeTest, StrokeMissedEndEventThenMouseDown) {
@@ -4405,6 +4612,52 @@ TEST_P(PdfInkModuleTextHighlightToolChangeTest,
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/2,
                      /*unmodified_finished=*/0);
+}
+
+TEST_P(PdfInkModuleTextHighlightToolChangeTest,
+       EraserTipInterruptsTextHighlight) {
+  EnableDrawAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  StartOrangeTextHighlight();
+
+  // While text highlighting is in progress, eraser tip arrives. This should
+  // finish the text highlight and switch to erase mode. Use a position far from
+  // the stroke so it doesn't get erased immediately.
+  constexpr gfx::PointF kEraserPoint = gfx::PointF(45.0f, 55.0f);
+  EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(0),
+                                    InkStrokeBrushColorEq(kOrangeColor)));
+  blink::WebTouchEvent eraser_start =
+      CreateEraserTipEvent(blink::WebInputEvent::Type::kTouchStart,
+                           base::span_from_ref(kEraserPoint));
+  EXPECT_TRUE(ink_module().HandleInputEvent(eraser_start));
+
+  // The text highlight should have been finished and saved.
+  constexpr gfx::PointF kStartStrokeInputPoint{15.0f, 20.0f};
+  constexpr gfx::PointF kEndStrokeInputPoint{35.0f, 20.0f};
+  EXPECT_THAT(VisibleStrokeInputPositions(),
+              ElementsAre(Pair(
+                  0, ElementsAre(ElementsAreArray(
+                         {kStartStrokeInputPoint, kEndStrokeInputPoint})))));
+  // Count is 2 because text highlight started (1) and then eraser started (2).
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
+
+  // Complete the eraser action.
+  blink::WebTouchEvent eraser_end = CreateEraserTipEvent(
+      blink::WebInputEvent::Type::kTouchEnd, base::span_from_ref(kEraserPoint));
+  EXPECT_TRUE(ink_module().HandleInputEvent(eraser_end));
+
+  // Stroke should still be visible (eraser didn't touch it).
+  EXPECT_THAT(VisibleStrokeInputPositions(),
+              ElementsAre(Pair(
+                  0, ElementsAre(ElementsAreArray(
+                         {kStartStrokeInputPoint, kEndStrokeInputPoint})))));
+
+  // Highlighter should be restored after eraser tip action completes.
+  const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
+  ASSERT_TRUE(brush);
+  EXPECT_EQ(0.4f, GetOpacityMultiplierFromBrush(brush->ink_brush()));
 }
 
 class PdfInkModuleTextHighlightCaretTest
