@@ -36,14 +36,14 @@ class FormFetchBatcher {
   // `form_name_filter` filtering which will filter forms by name when
   // specified.
   void PushRequest(
-      FormFetchCompletion&& fetch_request,
+      FormFetchCompletion fetch_request,
       std::optional<std::u16string> form_name_filter = std::nullopt);
 
   // Pushes a request into the current batch, runs immediately the current
   // batch, and cancels the scheduled task if there is one. Otherwise, works the
   // same way as PushRequest().
   void PushRequestAndRun(
-      FormFetchCompletion&& fetch_request,
+      FormFetchCompletion fetch_request,
       std::optional<std::u16string> form_name_filter = std::nullopt);
 
  private:
