@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
@@ -38,7 +39,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
-import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
@@ -93,7 +93,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
     // Each access point use a different key as a same activity can host different instances of this
     // coordinator.
     private @Nullable String mRegisteredActivityKey;
-    private @ColorInt int mScrimStatusBarColor = ScrimProperties.INVALID_COLOR;
+    private @ColorInt int mScrimStatusBarColor = Color.TRANSPARENT;
 
     /**
      * This is a delegate that the sign-in activity needs to implement.
@@ -426,14 +426,14 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         if (mActivityDelegate == null) {
             return;
         }
-        // INVALID_COLOR is set at the start and end of the bottom sheet scrim fade out animation.
+        // TRANSPARENT is set at the start and end of the bottom sheet scrim fade out animation.
         // After the scrim fades out, the status bar background needs to be reset to match the
         // history sync full screen dialog if it's appearing next. In case the history sync dialog
         // is skipped, the activity will finish and the status bar color change is not shown to the
         // user.
-        if (color != ScrimProperties.INVALID_COLOR) {
+        if (color != Color.TRANSPARENT) {
             mActivityDelegate.setStatusBarColor(color);
-        } else if (mDialogModel != null && mScrimStatusBarColor != ScrimProperties.INVALID_COLOR) {
+        } else if (mDialogModel != null && mScrimStatusBarColor != Color.TRANSPARENT) {
             updateStatusBarColorForHistorySync();
         }
         mScrimStatusBarColor = color;
@@ -606,7 +606,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
 
         // Updating the status bar color for the history sync view in case animations are disabled
         // and the dialog model is created after the scrim animation finishes.
-        if (mScrimStatusBarColor == ScrimProperties.INVALID_COLOR) {
+        if (mScrimStatusBarColor == Color.TRANSPARENT) {
             updateStatusBarColorForHistorySync();
         }
     }
