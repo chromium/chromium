@@ -84,24 +84,24 @@ void EmitReloadButtonHistogramWithTraceEvent(const char* event_name,
 const char* GetStartupTemperatureSuffix() {
   switch (startup_metric_utils::GetBrowser().GetStartupTemperature()) {
     case startup_metric_utils::COLD_STARTUP_TEMPERATURE:
-      return ".ColdStartup";
+      return ".Temperature.ColdStartup";
     case startup_metric_utils::WARM_STARTUP_TEMPERATURE:
-      return ".WarmStartup";
+      return ".Temperature.WarmStartup";
     case startup_metric_utils::LUKEWARM_STARTUP_TEMPERATURE:
-      return "";
     case startup_metric_utils::UNDETERMINED_STARTUP_TEMPERATURE:
-      return "";
+      return ".Temperature.Other";
     case startup_metric_utils::STARTUP_TEMPERATURE_COUNT:
       NOTREACHED();
   }
-  return "";
+  return ".Temperature.Other";
 }
 
 // Records a startup paint metric for the given `paint_metric_base`.
 void RecordStartupPaintMetric(std::string_view paint_metric_base,
-                              bool is_session_restored,
                               base::TimeTicks paint_time) {
   if (!startup_metric_utils::GetBrowser().ShouldLogStartupHistogram()) {
+    // This excludes the cases where profile picker is shown, background mode
+    // is enabled, or OS displays other UI before browser window.
     return;
   }
 
@@ -111,11 +111,25 @@ void RecordStartupPaintMetric(std::string_view paint_metric_base,
     return;
   }
 
-  std::string histogram_name = base::StrCat(
-      {"InitialWebUI.Startup", (is_session_restored ? ".SessionRestore" : ""),
-       ".", paint_metric_base, GetStartupTemperatureSuffix()});
+  std::string scenario_suffix;
+  if (startup_metric_utils::GetBrowser().IsFirstRun()) {
+    scenario_suffix = ".FirstRun";
+  } else if (SessionRestore::IsAnySessionRestored()) {
+    scenario_suffix = ".SessionRestore";
+  }
 
-  EmitHistogramWithTraceEvent(histogram_name.c_str(), time_origin, paint_time);
+  std::string base_name = base::StrCat(
+      {"InitialWebUI.Startup", scenario_suffix, ".", paint_metric_base});
+
+  // Record aggregate metric.
+  EmitHistogramWithTraceEvent(base_name.c_str(), time_origin, paint_time);
+
+  // Record temperature-sliced metric.
+  if (const std::string_view temp_suffix = GetStartupTemperatureSuffix();
+      !temp_suffix.empty()) {
+    EmitHistogramWithTraceEvent(base::StrCat({base_name, temp_suffix}).c_str(),
+                                time_origin, paint_time);
+  }
 }
 
 }  // namespace
@@ -147,8 +161,7 @@ void WaapUIMetricsService::OnBrowserWindowFirstPresentation(
   CHECK(is_first_call);
   is_first_call = false;
 
-  RecordStartupPaintMetric("BrowserWindow.FirstPaint",
-                           SessionRestore::IsAnySessionRestored(), time);
+  RecordStartupPaintMetric("BrowserWindow.FirstPaint", time);
 }
 
 void WaapUIMetricsService::OnFirstPaint(base::TimeTicks time) {
@@ -164,8 +177,7 @@ void WaapUIMetricsService::OnFirstPaint(base::TimeTicks time) {
 
   // For early experiment, this is ReloadButton only.
   // TODO(crbug.com/448794588): Switch to general name after initial phase.
-  RecordStartupPaintMetric("ReloadButton.FirstPaint",
-                           SessionRestore::IsAnySessionRestored(), time);
+  RecordStartupPaintMetric("ReloadButton.FirstPaint", time);
 }
 
 void WaapUIMetricsService::OnFirstContentfulPaint(base::TimeTicks time) {
@@ -181,8 +193,7 @@ void WaapUIMetricsService::OnFirstContentfulPaint(base::TimeTicks time) {
 
   // For early experiment, this is ReloadButton only.
   // TODO(crbug.com/448794588): Switch to general name after initial phase.
-  RecordStartupPaintMetric("ReloadButton.FirstContentfulPaint",
-                           SessionRestore::IsAnySessionRestored(), time);
+  RecordStartupPaintMetric("ReloadButton.FirstContentfulPaint", time);
 }
 
 void WaapUIMetricsService::OnReloadButtonMousePressToNextPaint(
