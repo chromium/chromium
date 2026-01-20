@@ -452,6 +452,23 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         private static final CipherFactory sCipherInstance = new CipherFactory();
     }
 
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        ActivityRestoreState.NO_SAVED_OR_PERSISTENT_STATE,
+        ActivityRestoreState.SAVED_OR_PERSISTENT_STATE_NO_CIPHER,
+        ActivityRestoreState.SAVED_OR_PERSISTENT_STATE_WITH_CIPHER,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface ActivityRestoreState {
+        int NO_SAVED_OR_PERSISTENT_STATE = 0;
+        int SAVED_OR_PERSISTENT_STATE_NO_CIPHER = 1;
+        int SAVED_OR_PERSISTENT_STATE_WITH_CIPHER = 2;
+
+        // Be sure to also update enums.xml when updating these values
+        int NUM_ENTRIES = 3;
+    }
+
     /**
      * Identifies a histogram to use in {@link #maybeDispatchExplicitMainViewIntent(Intent, int)}.
      */
@@ -2189,6 +2206,27 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             if (!hadCipherData) {
                 hadCipherData =
                         CipherLazyHolder.sCipherInstance.restoreFromBundle(getSavedInstanceState());
+            }
+
+            boolean hasSavedOrPersistentInstanceState =
+                    getSavedInstanceState() != null || persistentState != null;
+            @ActivityRestoreState
+            int restoreState = ActivityRestoreState.NO_SAVED_OR_PERSISTENT_STATE;
+            if (hasSavedOrPersistentInstanceState) {
+                restoreState =
+                        hadCipherData
+                                ? ActivityRestoreState.SAVED_OR_PERSISTENT_STATE_WITH_CIPHER
+                                : ActivityRestoreState.SAVED_OR_PERSISTENT_STATE_NO_CIPHER;
+            }
+            RecordHistogram.recordEnumeratedHistogram(
+                    "MobileStartup.RestoreActivityState",
+                    restoreState,
+                    ActivityRestoreState.NUM_ENTRIES);
+            if (isIncognitoWindow()) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        "MobileStartup.RestoreActivityState.Incognito",
+                        restoreState,
+                        ActivityRestoreState.NUM_ENTRIES);
             }
 
             boolean noRestoreState =

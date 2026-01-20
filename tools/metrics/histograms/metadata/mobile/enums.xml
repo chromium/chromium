@@ -26,6 +26,12 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="ActivityRestoreState">
+  <int value="0" label="No Saved Or Persistent Instance State"/>
+  <int value="1" label="Has Saved Or Persistent Instance State (No Cipher)"/>
+  <int value="2" label="Has Saved Or Persistent Instance State (With Cipher)"/>
+</enum>
+
 <enum name="CanonicalURLResult">
   <int value="0" label="Canonical URL not retrieved: Visible URL not HTTPS"/>
   <int value="1"

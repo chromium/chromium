@@ -1286,6 +1286,41 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="MobileStartup.RestoreActivityState"
+    enum="ActivityRestoreState" expires_after="2026-11-06">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clhager@google.com</owner>
+  <owner>mklw@google.com</owner>
+  <owner>shuyng@google.com</owner>
+  <owner>skavuluru@google.com</owner>
+  <owner>twellington@chromium.com</owner>
+  <summary>
+    Records the saved or persistent instance state status of
+    ChromeTabbedActivity during startup. Recorded as 'No Saved Or Persistent
+    State' if both bundles are null. If a bundle exists, it is classified by
+    whether Cipher data was successfully recovered. Recorded during
+    #initializeState. Applicable to Android only.
+  </summary>
+</histogram>
+
+<histogram name="MobileStartup.RestoreActivityState.Incognito"
+    enum="ActivityRestoreState" expires_after="2026-11-06">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clhager@google.com</owner>
+  <owner>mklw@google.com</owner>
+  <owner>shuyng@google.com</owner>
+  <owner>skavuluru@google.com</owner>
+  <owner>twellington@chromium.com</owner>
+  <summary>
+    Records the saved or persistent instance state status of an Incognito-only
+    ChromeTabbedActivity during startup. This does not necessarily mean that
+    Incognito data was restored as all Incognito tabs may have been closed.
+    Recorded as 'No Saved Or Persistent State' if both bundles are null. If a
+    bundle exists, it is classified by whether Cipher data was successfully
+    recovered. Recorded during #initializeState. Applicable to Android only.
+  </summary>
+</histogram>
+
 <histogram name="MobileStartup.ToolbarInflationTime{ChromeActivityName}"
     units="ms" expires_after="2023-12-28">
   <owner>pasko@chromium.org</owner>
