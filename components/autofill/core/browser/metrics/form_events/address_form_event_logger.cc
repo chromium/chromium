@@ -122,10 +122,7 @@ void AddressFormEventLogger::OnDidFillFormFillingSuggestion(
   FieldType field_type = field.Type().GetAddressType();
   field_types_with_shown_suggestions_.erase(field_type);
   field_types_with_accepted_suggestions_.insert(field_type);
-
-  if (trigger_source != AutofillTriggerSource::kFastCheckout) {
-    ++form_interaction_counts_.autofill_fills;
-  }
+  ++form_interaction_counts_.autofill_fills;
   UpdateFlowId();
 
   profile_categories_filled_.insert(GetCategoryOfProfile(profile));

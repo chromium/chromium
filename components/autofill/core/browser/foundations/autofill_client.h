@@ -107,7 +107,6 @@ class AutofillSuggestionDelegate;
 enum class AutofillTriggerSource;
 class IdentityCredentialDelegate;
 class EntityDataManager;
-class FastCheckoutClient;
 class FieldClassificationModelHandler;
 enum class FillingProduct;
 class FormDataImporter;
@@ -460,9 +459,6 @@ class AutofillClient {
 
   // Returns the profile type of the session.
   virtual profile_metrics::BrowserProfileType GetProfileType() const;
-
-  // Gets a FastCheckoutClient instance (can be null for unsupported platforms).
-  virtual FastCheckoutClient* GetFastCheckoutClient();
 
   // Causes the Autofill settings UI to be shown.
   virtual void ShowAutofillSettings(SuggestionType suggestion_type) = 0;

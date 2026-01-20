@@ -163,7 +163,6 @@
 #include "chrome/browser/android/preferences/autofill/settings_navigation_helper.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/autofill/android/android_sms_otp_backend_factory.h"
-#include "chrome/browser/fast_checkout/fast_checkout_client_impl.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/signin/android/signin_bridge.h"
 #include "chrome/browser/ui/android/autofill/autofill_ai_save_update_entity_flow_manager.h"
@@ -750,14 +749,6 @@ profile_metrics::BrowserProfileType ChromeAutofillClient::GetProfileType()
                  : profile_metrics::BrowserProfileType::kRegular;
 }
 
-FastCheckoutClient* ChromeAutofillClient::GetFastCheckoutClient() {
-#if BUILDFLAG(IS_ANDROID)
-  return fast_checkout_client_.get();
-#else
-  return nullptr;
-#endif
-}
-
 void ChromeAutofillClient::ShowAutofillSettings(
     SuggestionType suggestion_type) {
 #if BUILDFLAG(IS_ANDROID)
@@ -1254,7 +1245,6 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
   save_update_address_profile_flow_manager_ =
       std::make_unique<SaveUpdateAddressProfileFlowManager>(
           this, GetAutofillMessageController());
-  fast_checkout_client_ = std::make_unique<FastCheckoutClientImpl>(this);
 #else
   // TODO(crbug.com/469428128) Enable on android once crrev.com/c/7298488 lands.
   if (actor::ActorKeyedService* actor_service =

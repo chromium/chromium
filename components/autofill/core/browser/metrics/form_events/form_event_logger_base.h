@@ -92,17 +92,11 @@ class FormEventLoggerBase {
 
   virtual void Log(FormEvent event, const FormStructure& form);
 
-  void SetFastCheckoutRunId(int64_t run_id) { fast_checkout_run_id_ = run_id; }
-
   FormInteractionsUkmLogger::FormEventSet GetFormEvents(
       FormGlobalId form_global_id);
 
   const FormInteractionsFlowId& form_interactions_flow_id_for_test() const {
     return flow_id_;
-  }
-
-  const std::optional<int64_t> fast_checkout_run_id_for_test() const {
-    return fast_checkout_run_id_;
   }
 
   // Used for testing purposes to help verify that the correct subclass is
@@ -244,8 +238,6 @@ class FormEventLoggerBase {
   // Unique random id that is set on the first form interaction and identical
   // during the flow.
   FormInteractionsFlowId flow_id_;
-  // Unique ID of a Fast Checkout run. Used for metrics.
-  std::optional<int64_t> fast_checkout_run_id_;
 
   // Form types of the identified forms, for logging purposes.
   DenseSet<FormTypeNameForLogging> identified_form_types_;

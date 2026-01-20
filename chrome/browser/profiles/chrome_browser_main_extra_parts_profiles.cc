@@ -297,7 +297,6 @@
 #include "chrome/browser/autofill/android/android_sms_otp_backend_factory.h"
 #include "chrome/browser/auxiliary_search/auxiliary_search_provider.h"
 #include "chrome/browser/commerce/merchant_viewer/merchant_viewer_data_manager_factory.h"
-#include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_activity_types_factory.h"
@@ -939,9 +938,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   // A ChromeOS build for a dev linux machine.
   // Makes manual testing possible.
   FakeSmartCardDeviceServiceFactory::GetInstance();
-#endif
-#if BUILDFLAG(IS_ANDROID)
-  FastCheckoutCapabilitiesFetcherFactory::GetInstance();
 #endif
   FaviconServiceFactory::GetInstance();
   feature_engagement::TrackerFactory::GetInstance();

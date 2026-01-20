@@ -396,7 +396,7 @@ void FormEventLoggerBase::RecordKeyMetrics() {
         HasLoggedDataToFillAvailable(), has_logged_suggestions_shown_,
         has_logged_edited_autofilled_field_,
         has_logged_form_filling_suggestion_filled_, form_interaction_counts_,
-        flow_id_, fast_checkout_run_id_);
+        flow_id_);
   }
   if (has_logged_edited_non_filled_field_ ||
       has_logged_form_filling_suggestion_filled_) {

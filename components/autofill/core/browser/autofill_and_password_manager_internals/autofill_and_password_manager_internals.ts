@@ -595,7 +595,6 @@ function setUpScopeCheckboxes() {
     {id: 'Metrics'},
     {id: 'AddressProfileFormImport'},
     {id: 'WebsiteModifiedFieldValue'},
-    {id: 'FastCheckout', uncheckedByDefault: true},
     {id: 'TouchToFill'},
     {id: 'AutofillAi'},
     {id: 'AutofillActor'},

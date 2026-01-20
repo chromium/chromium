@@ -164,7 +164,6 @@
 #include "chrome/browser/banners/android/chrome_app_banner_manager_android.h"
 #include "chrome/browser/content_settings/request_desktop_site_web_contents_observer_android.h"
 #include "chrome/browser/facilitated_payments/ui/chrome_facilitated_payments_client.h"
-#include "chrome/browser/fast_checkout/fast_checkout_tab_helper.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/loader/from_gws_navigation_and_keep_alive_request_tab_helper.h"
 #include "chrome/browser/net/http_auth_cache_status.h"
@@ -608,7 +607,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
                           *web_contents));
   }
   ContextMenuHelper::CreateForWebContents(web_contents);
-  FastCheckoutTabHelper::CreateForWebContents(web_contents);
 
   if (base::FeatureList::IsEnabled(
           page_load_metrics::features::kBeaconLeakageLogging)) {

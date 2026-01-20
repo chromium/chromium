@@ -39,8 +39,6 @@ class LogBuffer;
   T(CardUploadDecision)                                                \
   /* The website modified a field */                                   \
   T(WebsiteModifiedFieldValue)                                         \
-  /* Chrome Fast Checkout run. */                                      \
-  T(FastCheckout)                                                      \
   /* Touch To Fill UI. */                                              \
   T(TouchToFill)                                                       \
   /* Autofill with AI. */                                              \

@@ -232,7 +232,6 @@ source_set("impl") {
     ]
     deps += [
       "//chrome/browser/autofill/android:jni_headers",
-      "//chrome/browser/fast_checkout",
       "//chrome/browser/keyboard_accessory/android:public",
       "//components/android_autofill/browser:android",
       "//components/messages/android:feature_flags",
@@ -365,7 +364,6 @@ source_set("unit_tests") {
     ]
     deps += [
       "//chrome/browser/autofill/android:jni_test_headers",
-      "//chrome/browser/fast_checkout",
       "//chrome/browser/preferences:android",
       "//components/messages/android:test_support",
     ]

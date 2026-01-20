@@ -483,9 +483,7 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
   base::RecordAction(
       base::UserMetricsAction("Autofill_FilledCreditCardSuggestion"));
 
-  if (trigger_source_ != AutofillTriggerSource::kFastCheckout) {
-    ++form_interaction_counts_.autofill_fills;
-  }
+  ++form_interaction_counts_.autofill_fills;
   UpdateFlowId();
 }
 

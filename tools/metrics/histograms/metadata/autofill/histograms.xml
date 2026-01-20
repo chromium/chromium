@@ -3567,69 +3567,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram
-    name="Autofill.FastCheckout.CapabilitiesFetcher.CacheStateForIsTriggerFormSupported"
-    enum="FastCheckoutCacheStateForIsTriggerFormSupported"
-    expires_after="2027-02-22">
-  <owner>jkeitel@google.com</owner>
-  <owner>vizcay@google.com</owner>
-  <summary>
-    Cache state for when a given origin and form signature are checked for their
-    Fast Checkout trigger form capability.
-  </summary>
-</histogram>
-
-<histogram
-    name="Autofill.FastCheckout.CapabilitiesFetcher.HttpResponseAndNetErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2027-02-22">
-  <owner>vizcay@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    The http response code or net error code returned on a query.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.FastCheckout.CapabilitiesFetcher.ParsingResult"
-    enum="FastCheckoutCapabilitiesParsingResult" expires_after="2027-02-22">
-  <owner>jkeitel@google.com</owner>
-  <owner>vizcay@google.com</owner>
-  <summary>
-    Parsing result of the response body of a Fast Checkout capabilities fetch.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.FastCheckout.CapabilitiesFetcher.ResponseTime"
-    units="ms" expires_after="2027-02-22">
-  <owner>vizcay@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Response time for fetching FastCheckout capabilities. The time is recorded
-    for both successful and failed fetches.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.FastCheckout.RunOutcome"
-    enum="FastCheckoutRunOutcome" expires_after="2026-06-01">
-  <owner>jkeitel@google.com</owner>
-  <owner>vizcay@google.com</owner>
-  <summary>
-    The outcome of a Fast Checkout run. It is recorded when a run is completed,
-    successfully or not, or when the run got cancelled, e.g. by the user closing
-    the tab.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.FastCheckout.TriggerOutcome"
-    enum="FastCheckoutTriggerOutcome" expires_after="2027-02-22">
-  <owner>jkeitel@google.com</owner>
-  <owner>vizcay@google.com</owner>
-  <summary>
-    The outcome of an attempt to trigger a FastCheckout bottomsheet for a user
-    that has the feature enabled and a form on a site for which FastCheckout is
-    known to be available.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.FieldCount" units="form fields"
     expires_after="2026-12-12">
   <owner>battre@chromium.org</owner>

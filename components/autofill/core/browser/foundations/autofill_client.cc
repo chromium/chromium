@@ -161,10 +161,6 @@ profile_metrics::BrowserProfileType AutofillClient::GetProfileType() const {
   return profile_metrics::BrowserProfileType::kRegular;
 }
 
-FastCheckoutClient* AutofillClient::GetFastCheckoutClient() {
-  return nullptr;
-}
-
 LogManager* AutofillClient::GetCurrentLogManager() {
   return nullptr;
 }

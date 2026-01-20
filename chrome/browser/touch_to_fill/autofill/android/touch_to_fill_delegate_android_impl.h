@@ -18,7 +18,6 @@
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
-#include "components/autofill/core/browser/integrators/fast_checkout/fast_checkout_client.h"
 #include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_delegate.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -67,8 +66,7 @@ enum class TouchToFillPaymentMethodTriggerOutcome {
   // TouchToFill is not supported for this field type. This value is not logged
   // to UMA.
   kUnsupportedFieldType = 10,
-  // Fast Checkout was shown before TouchToFill could be triggered.
-  kFastCheckoutWasShown = 11,
+  // kFastCheckoutWasShown = 11, // DEPRECATED
   // Form is considered to be already filled if fields of payment method info
   // already have non-empty values.
   kFormAlreadyFilled = 12,

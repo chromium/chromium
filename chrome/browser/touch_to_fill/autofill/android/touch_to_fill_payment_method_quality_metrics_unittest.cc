@@ -36,11 +36,6 @@ class TouchToFillForPaymentMethodsTest
     SetUpHelper();
     ON_CALL(payments_autofill_client(), ShowTouchToFillCreditCard)
         .WillByDefault(testing::Return(true));
-    MockFastCheckoutClient* fast_checkout_client =
-        static_cast<MockFastCheckoutClient*>(
-            autofill_client().GetFastCheckoutClient());
-    ON_CALL(*fast_checkout_client, IsNotShownYet)
-        .WillByDefault(testing::Return(true));
     autofill_manager().set_touch_to_fill_delegate(
         std::make_unique<TouchToFillDelegateAndroidImpl>(&autofill_manager()));
   }

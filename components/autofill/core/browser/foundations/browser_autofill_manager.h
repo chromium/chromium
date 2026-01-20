@@ -35,7 +35,6 @@
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/integrators/address_on_typing/address_on_typing_manager.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
-#include "components/autofill/core/browser/integrators/fast_checkout/fast_checkout_delegate.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/metrics/otp_form_event_logger.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
@@ -311,10 +310,6 @@ class BrowserAutofillManager : public AutofillManager {
   //   2. there is no form and WebOTP is not used
   void ReportAutofillWebOTPMetrics(bool used_web_otp) override;
 
-  // Set Fast Checkout run ID on the corresponding form event logger.
-  virtual void SetFastCheckoutRunId(FieldTypeGroup field_type_group,
-                                    int64_t run_id);
-
   TouchToFillDelegate* touch_to_fill_delegate() {
     return touch_to_fill_delegate_.get();
   }
@@ -322,15 +317,6 @@ class BrowserAutofillManager : public AutofillManager {
   void set_touch_to_fill_delegate(
       std::unique_ptr<TouchToFillDelegate> touch_to_fill_delegate) {
     touch_to_fill_delegate_ = std::move(touch_to_fill_delegate);
-  }
-
-  FastCheckoutDelegate* fast_checkout_delegate() {
-    return fast_checkout_delegate_.get();
-  }
-
-  void set_fast_checkout_delegate(
-      std::unique_ptr<FastCheckoutDelegate> fast_checkout_delegate) {
-    fast_checkout_delegate_ = std::move(fast_checkout_delegate);
   }
 
   // This reference is not stable over the lifetime of BrowserAutofillManager.
@@ -510,9 +496,9 @@ class BrowserAutofillManager : public AutofillManager {
           returned_suggestions);
 
   // Generates and prioritizes different kinds of suggestions and
-  // suggestion surfaces accordingly (e.g. Fast Checkout, Autofill AI,
-  // SingleFieldFiller(s), address and credit card popups, OTP suggestions).
-  // Suggestion flows that handle their own UI flow (e.g. FastCheckout, TTF,
+  // suggestion surfaces accordingly (Autofill AI, SingleFieldFiller(s), address
+  // and credit card popups, OTP suggestions).
+  // Suggestion flows that handle their own UI flow (e.g. TTF,
   // SingleFieldFiller) are triggered from within these functions.
   //
   // This process is split into phases 1, 2, 3 to support asynchronous
@@ -662,7 +648,6 @@ class BrowserAutofillManager : public AutofillManager {
   std::unique_ptr<AutofillExternalDelegate> external_delegate_ =
       std::make_unique<AutofillExternalDelegate>(this);
   std::unique_ptr<TouchToFillDelegate> touch_to_fill_delegate_;
-  std::unique_ptr<FastCheckoutDelegate> fast_checkout_delegate_;
 
   // This is always non-nullopt except very briefly during Reset().
   std::optional<MetricsState> metrics_ = std::make_optional<MetricsState>(this);

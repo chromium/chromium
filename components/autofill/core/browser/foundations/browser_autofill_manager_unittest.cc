@@ -928,33 +928,6 @@ class MockTouchToFillDelegate : public TouchToFillDelegate {
               (override));
 };
 
-class MockFastCheckoutDelegate : public FastCheckoutDelegate {
- public:
-  static std::unique_ptr<MockFastCheckoutDelegate> Create() {
-    auto delegate = std::make_unique<NiceMock<MockFastCheckoutDelegate>>();
-    ON_CALL(*delegate, IsShowingFastCheckoutUI()).WillByDefault(Return(false));
-    return delegate;
-  }
-
-  MockFastCheckoutDelegate() = default;
-  MockFastCheckoutDelegate(const MockFastCheckoutDelegate&) = delete;
-  MockFastCheckoutDelegate& operator=(const MockFastCheckoutDelegate&) = delete;
-  ~MockFastCheckoutDelegate() override = default;
-
-  MOCK_METHOD(bool,
-              TryToShowFastCheckout,
-              (const FormData&,
-               const FormFieldData&,
-               base::WeakPtr<AutofillManager>),
-              (override));
-  MOCK_METHOD(bool,
-              IntendsToShowFastCheckout,
-              (AutofillManager&, FormGlobalId, FieldGlobalId, const FormData&),
-              (const, override));
-  MOCK_METHOD(bool, IsShowingFastCheckoutUI, (), (const, override));
-  MOCK_METHOD(void, HideFastCheckout, (bool), (override));
-};
-
 class MockAutofillDriver : public TestAutofillDriver {
  public:
   using TestAutofillDriver::TestAutofillDriver;
@@ -1012,7 +985,6 @@ class TestBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
   explicit TestBrowserAutofillManager(AutofillDriver* driver)
       : autofill::TestBrowserAutofillManager(driver) {
     set_touch_to_fill_delegate(MockTouchToFillDelegate::Create(this));
-    set_fast_checkout_delegate(MockFastCheckoutDelegate::Create());
     test_api(*this).SetExternalDelegate(
         std::make_unique<TestAutofillExternalDelegate>(this));
     test_api(*this).set_credit_card_access_manager(
@@ -1460,11 +1432,6 @@ class BrowserAutofillManagerTest
   MockTouchToFillDelegate& touch_to_fill_delegate() {
     return *static_cast<MockTouchToFillDelegate*>(
         autofill_manager().touch_to_fill_delegate());
-  }
-
-  MockFastCheckoutDelegate& fast_checkout_delegate() {
-    return *static_cast<MockFastCheckoutDelegate*>(
-        autofill_manager().fast_checkout_delegate());
   }
 
   MockCreditCardAccessManager& cc_access_manager() {
@@ -7415,19 +7382,14 @@ TEST_F(BrowserAutofillManagerTest, HideAutofillSuggestionsAndOtherPopups) {
               HideAutofillSuggestions(SuggestionHidingReason::kRendererEvent));
   EXPECT_CALL(autofill_client(), HideAutofillFieldIph);
   EXPECT_CALL(touch_to_fill_delegate(), HideTouchToFill);
-  EXPECT_CALL(fast_checkout_delegate(),
-              HideFastCheckout(/*allow_further_runs=*/false));
   autofill_manager().OnHidePopup();
 }
 
-// Tests that only Autofill popup is hidden on editing end, but not TTF or FC.
+// Tests that only Autofill popup is hidden on editing end, but not TTF.
 TEST_F(BrowserAutofillManagerTest, OnDidEndTextFieldEditing) {
   EXPECT_CALL(autofill_client(),
               HideAutofillSuggestions(SuggestionHidingReason::kEndEditing));
   EXPECT_CALL(touch_to_fill_delegate(), HideTouchToFill).Times(0);
-  EXPECT_CALL(fast_checkout_delegate(),
-              HideFastCheckout(/*allow_further_runs=*/false))
-      .Times(0);
   autofill_manager().OnDidEndTextFieldEditing();
 }
 

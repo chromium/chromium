@@ -585,7 +585,7 @@ enum AutofillSuggestionTriggerSource {
   // Suggestions triggered by either:
   // - Clicking or tapping a text input (TAB key doesn't count).
   // - Focusing a text input using a screen reader.
-  // Suggestion of this type can trigger FastCheckout or TouchToFill.
+  // A suggestion of this type can trigger TouchToFill.
   kFormControlElementClicked = 1,
   // Suggestions triggered by focusing a textarea without click or tab
   // interaction. Currently, this is only triggered on Desktop platforms and

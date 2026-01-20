@@ -27,7 +27,6 @@
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
-#include "components/autofill/core/browser/integrators/fast_checkout/fast_checkout_client.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
@@ -193,10 +192,6 @@ TouchToFillDelegateAndroidImpl::DryRunForCreditCard(const AutofillField& field,
   }
   if (IsFormPrefilled(form)) {
     return {TriggerOutcome::kFormAlreadyFilled, {}};
-  }
-  // Trigger only if Fast Checkout was not shown before.
-  if (!manager_->client().GetFastCheckoutClient()->IsNotShownYet()) {
-    return {TriggerOutcome::kFastCheckoutWasShown, {}};
   }
 
   // Fetch all complete valid credit cards on file.

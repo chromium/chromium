@@ -147,8 +147,7 @@ class FormInteractionsUkmLogger {
                      bool edited_autofilled_field,
                      bool suggestion_filled,
                      const FormInteractionCounts& form_interaction_counts,
-                     const FormInteractionsFlowId& flow_id,
-                     std::optional<int64_t> fast_checkout_run_id);
+                     const FormInteractionsFlowId& flow_id);
   void LogFormEvent(ukm::SourceId ukm_source_id,
                     FormEvent form_event,
                     const DenseSet<FormTypeNameForLogging>& form_types,
