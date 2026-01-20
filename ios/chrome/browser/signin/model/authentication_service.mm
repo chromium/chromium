@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_util.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -418,16 +419,10 @@ void AuthenticationService::SignOut(
   if (!profile_manager) {
     CHECK_IS_TEST();
   } else {
-    ProfileAttributesStorageIOS* attributes_storage =
-        profile_manager->GetProfileAttributesStorage();
-    const std::string& profile_name =
-        account_manager_service_->GetProfileName();
-    const bool is_personal_profile =
-        profile_name == attributes_storage->GetPersonalProfileName();
     // Sign-out can only be in personal profile. With managed profile, to
     // sign-out the window is switch to the personal profile, and then the
     // sign-out can be done.
-    CHECK(is_personal_profile, base::NotFatalUntil::M150);
+    CHECK(IsPersonalProfile(), base::NotFatalUntil::M150);
   }
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     if (completion) {
@@ -522,9 +517,7 @@ AuthenticationService::PerformProfileInitializationIfNecessary() {
   // When opening a managed profile for the first time, the user needs to be
   // signed in automatically.
 
-  const bool is_personal_profile =
-      profile_name == attributes_storage->GetPersonalProfileName();
-  if (is_personal_profile) {
+  if (IsPersonalProfile()) {
     // Nothing to do if the current profile is the personal profile.
     return was_already_initialized
                ? ProfileInitializationOutcome::
@@ -846,6 +839,10 @@ void AuthenticationService::ClearAccountSettingsPrefsOfRemovedAccounts() {
   syncer::KeepAccountKeyedPrefValuesOnlyForUsers(
       pref_service_, prefs::kSigninHasAcceptedManagementDialog,
       base::ToVector(available_gaia_ids, &signin::GaiaIdHash::FromGaiaId));
+}
+
+bool AuthenticationService::IsPersonalProfile() {
+  return ::IsPersonalProfile(account_manager_service_->GetProfileName());
 }
 
 NSArray<id<SystemIdentity>>* AuthenticationService::ActiveIdentities() {

@@ -263,6 +263,9 @@ class AuthenticationService : public KeyedService,
   // Clears the account settings prefs of all removed accounts from device.
   void ClearAccountSettingsPrefsOfRemovedAccounts();
 
+  // Returns whether the
+  bool IsPersonalProfile();
+
   // Returns the active identities for MDM.
   NSArray<id<SystemIdentity>>* ActiveIdentities();
 
