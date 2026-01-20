@@ -501,6 +501,8 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
   bool prev_suspended = is_suspended_;
   is_suspended_ = window_states.is_suspended;
 
+  UpdatePreviouslyMaximized(window_state);
+
   // The tiled state affects the window geometry, so apply it here.
   // TODO(crbug.com/414831391): Remove this and notify in
   // WindowTreeHostPlatform::OnStateUpdate instead like all other state changes.
@@ -844,16 +846,7 @@ void WaylandToplevelWindow::SetWindowState(PlatformWindowState window_state,
   CHECK_NE(window_state, PlatformWindowState::kMinimized);
 
   if (ShouldTriggerStateChange(window_state, target_display_id)) {
-    // TODO(crbug.com/40276379): Use `GetLatestRequestedState().window_state`
-    // instead once the window state becomes async.
-    auto previous_state = applied_state().window_state;
-
-    // We want to remember whether it was previously maximized, for cases like
-    // fullscreening to a different output while already in fullscreen, so we
-    // can still restore back to the previous non-fullscreen state.
-    if (previous_state != window_state) {
-      previously_maximized_ = previous_state == PlatformWindowState::kMaximized;
-    }
+    UpdatePreviouslyMaximized(window_state);
 
     // Remember the display id if we are going to fullscreen - otherwise reset.
     fullscreen_display_id_ = (window_state == PlatformWindowState::kFullScreen)
@@ -887,6 +880,17 @@ bool WaylandToplevelWindow::ShouldTriggerStateChange(
 
   // Otherwise do not allow the transition.
   return false;
+}
+
+void WaylandToplevelWindow::UpdatePreviouslyMaximized(
+    PlatformWindowState new_state) {
+  // TODO(crbug.com/40276379): Use `GetLatestRequestedState().window_state`
+  // instead once the window state becomes async.
+  auto current_state = applied_state().window_state;
+
+  if (current_state != new_state) {
+    previously_maximized_ = current_state == PlatformWindowState::kMaximized;
+  }
 }
 
 WaylandOutput* WaylandToplevelWindow::GetWaylandOutputForDisplayId(
