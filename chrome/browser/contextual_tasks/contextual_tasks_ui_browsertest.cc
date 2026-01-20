@@ -263,6 +263,62 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
   run_loop2.Run();
 }
 
+// Verify that the OAuth token is retried when the request fails.
+IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
+                       RequestOAuthTokenRetriesOnFailure) {
+  testing::NiceMock<MockContextualTasksPage> mock_page;
+  base::RunLoop run_loop;
+
+  // The first request is set to fail (below), so SetOAuthToken("") is called.
+  EXPECT_CALL(mock_page, SetOAuthToken("")).Times(1);
+
+  // The second request succeeds, so SetOAuthToken(kTestToken) is called.
+  EXPECT_CALL(mock_page, SetOAuthToken(kTestToken))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+
+  mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> handler_receiver;
+  controller_->CreatePageHandler(mock_page.BindAndGetRemote(),
+                                 std::move(handler_receiver));
+
+  // Initial request -> Fail it.
+  identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+
+  // Wait for retry. The first retry should be immediate (or very fast) due
+  // to the backoff policy ignoring the first error.
+  identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kTestToken, base::Time::Now() + base::Days(10));
+
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
+                       RequestOAuthTokenDoesNotRetryOnPersistentFailure) {
+  testing::NiceMock<MockContextualTasksPage> mock_page;
+  base::RunLoop run_loop;
+
+  // The first request is set to fail (below), so SetOAuthToken("") is called.
+  EXPECT_CALL(mock_page, SetOAuthToken(""))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+
+  // The retry request should NOT happen.
+  EXPECT_CALL(mock_page, SetOAuthToken(kTestToken)).Times(0);
+
+  mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> handler_receiver;
+  controller_->CreatePageHandler(mock_page.BindAndGetRemote(),
+                                 std::move(handler_receiver));
+
+  // Initial request -> Fail it with a persistent error.
+  identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+
+  // Wait for the error handling to complete (SetOAuthToken("") called).
+  run_loop.Run();
+
+  // Verify that no new request is pending.
+  EXPECT_FALSE(controller_->IsAccessTokenRequestPendingForTesting());
+}
+
 IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
                        OnSidePanelStateChanged_InTab) {
   testing::NiceMock<MockContextualTasksPage> mock_page;
