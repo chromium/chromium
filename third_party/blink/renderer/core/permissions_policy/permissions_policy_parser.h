@@ -18,6 +18,7 @@
 namespace blink {
 
 class ExecutionContext;
+struct IsolatedAppPermissionPolicyEntry;
 
 // Returns the list of features which are currently available in this context,
 // including any features which have been made available by an origin trial.
@@ -49,6 +50,29 @@ class CORE_EXPORT PermissionsPolicyParser {
         network::OriginWithPossibleWildcards::NodeType::kUnknown};
     Vector<Declaration> declarations;
   };
+
+  // Converts the permissions policy from the Isolated Web App manifest to
+  // network::ParsedPermissionsPolicy and combines it with the policies
+  // specified in the headers, providing with the final allowlists to be used
+  // for an IWA page.
+  //
+  // The combining is done in the following way:
+  // For each (`feature`, `allowlist`) entry specified within the manifest:
+  // - If `feature` is specified only within the manifest, manifest `allowlist`
+  //   is used.
+  // - If the `feature` is specified within both the manifest and the headers,
+  //   the intersection of both `allowlist`s is used.
+  //
+  // In a nutshell, what is specified within the manifest is a base policy that
+  // individual page's headers can constrain.
+  //
+  // More: https://github.com/WICG/isolated-web-apps/blob/main/Permissions.md
+  static network::ParsedPermissionsPolicy ParseIsolatedAppPermissionsPolicy(
+      const Vector<IsolatedAppPermissionPolicyEntry>& isolated_app_policy,
+      const network::ParsedPermissionsPolicy& permissions_policy_from_headers,
+      scoped_refptr<const SecurityOrigin>,
+      PolicyParserMessageBuffer& permissions_policy_logger,
+      ExecutionContext* execution_context);
 
   // Converts a header policy string into a vector of allowlists, one for each
   // feature specified. Unrecognized features are filtered out. The optional

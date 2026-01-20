@@ -10,7 +10,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -42,6 +41,36 @@ class GURL;
 namespace blink {
 
 namespace {
+using testing::AllOf;
+using testing::ContainerEq;
+using testing::ElementsAre;
+using testing::Eq;
+using testing::Field;
+using testing::IsEmpty;
+using testing::UnorderedElementsAre;
+
+auto PolicyItem(
+    network::mojom::PermissionsPolicyFeature feature,
+    const std::vector<network::OriginWithPossibleWildcards>& allowed_origins,
+    const std::optional<url::Origin>& self_if_matches,
+    bool matches_all_origins,
+    bool matches_opaque_src) {
+  return AllOf(
+      Field("feature", &network::ParsedPermissionsPolicyDeclaration::feature,
+            Eq(feature)),
+      Field("allowed_origins",
+            &network::ParsedPermissionsPolicyDeclaration::allowed_origins,
+            ContainerEq(allowed_origins)),
+      Field("self_if_matches",
+            &network::ParsedPermissionsPolicyDeclaration::self_if_matches,
+            Eq(self_if_matches)),
+      Field("matches_all_origins",
+            &network::ParsedPermissionsPolicyDeclaration::matches_all_origins,
+            Eq(matches_all_origins)),
+      Field("matches_opaque_src",
+            &network::ParsedPermissionsPolicyDeclaration::matches_opaque_src,
+            Eq(matches_opaque_src)));
+}
 
 const char* const kValidHeaderPolicies[] = {
     "",      // An empty policy.
@@ -926,8 +955,9 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(PermissionsPolicyParserParsingTest, FeaturePolicyParsedCorrectly) {
   PolicyParserMessageBuffer logger;
   const PermissionsPolicyParserTestCase& test_case = GetParam();
-  if (test_case.feature_policy_string == NOT_APPLICABLE)
+  if (test_case.feature_policy_string == NOT_APPLICABLE) {
     return;
+  }
 
   ASSERT_NE(test_case.self_origin, nullptr);
   CheckParsedPolicy(
@@ -939,8 +969,9 @@ TEST_P(PermissionsPolicyParserParsingTest, FeaturePolicyParsedCorrectly) {
 TEST_P(PermissionsPolicyParserParsingTest, PermissionsPolicyParsedCorrectly) {
   PolicyParserMessageBuffer logger;
   const PermissionsPolicyParserTestCase& test_case = GetParam();
-  if (test_case.permissions_policy_string == NOT_APPLICABLE)
+  if (test_case.permissions_policy_string == NOT_APPLICABLE) {
     return;
+  }
 
   ASSERT_NE(test_case.self_origin, nullptr);
   CheckParsedPolicy(
@@ -1301,8 +1332,9 @@ class FeaturePolicyMutationTest : public testing::Test {
       const network::ParsedPermissionsPolicy& policy) {
     const auto& result = std::ranges::find(
         policy, feature, &network::ParsedPermissionsPolicyDeclaration::feature);
-    if (result == policy.end())
+    if (result == policy.end()) {
       return false;
+    }
 
     return result->feature == feature && result->matches_all_origins &&
            result->matches_opaque_src && result->allowed_origins.empty();
@@ -1315,8 +1347,9 @@ class FeaturePolicyMutationTest : public testing::Test {
       const network::ParsedPermissionsPolicy& policy) {
     const auto& result = std::ranges::find(
         policy, feature, &network::ParsedPermissionsPolicyDeclaration::feature);
-    if (result == policy.end())
+    if (result == policy.end()) {
       return false;
+    }
 
     return result->feature == feature && !result->matches_all_origins &&
            !result->matches_opaque_src && result->allowed_origins.empty();
@@ -1539,6 +1572,239 @@ TEST_P(FeaturePolicyVisibilityTest, VerifyIsolated) {
   EXPECT_EQ(GetDefaultFeatureNameMap(is_isolated_context)
                 .Contains(kDirectSocketsFeature),
             GetIsIsolated());
+}
+
+TEST_F(PermissionsPolicyParserTest, ParseIsolatedAppPermissionsPolicy) {
+  const auto dummy = std::make_unique<DummyPageHolder>();
+  ExecutionContext* execution_context = dummy->GetFrame().DomWindow();
+  PolicyParserMessageBuffer logger;
+
+  const Vector<IsolatedAppPermissionPolicyEntry> isolated_app_policy{
+      // 1. Manifest: 'self', Header: none -> Result: 'self'
+      {"cross-origin-isolated", {"'self'"}},
+      // 2. Manifest: *, Header: none -> Result: *
+      {"fullscreen", {"*"}},
+      // 3. Manifest: 'none', Header: none -> Result: 'none'
+      {"payment", {"'none'"}},
+  };
+
+  network::ParsedPermissionsPolicy result =
+      PermissionsPolicyParser::ParseIsolatedAppPermissionsPolicy(
+          isolated_app_policy, /*permissions_policy_from_headers=*/{},
+          origin_a_.get(), logger, execution_context);
+
+  EXPECT_THAT(
+      result,
+      ElementsAre(
+          PolicyItem(
+              network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
+              /*allowed_origins=*/{},
+              /*self_if_matches=*/origin_a_->ToUrlOrigin(),
+              /*matches_all_origins=*/false,
+              /*matches_opaque_src=*/false),
+          PolicyItem(network::mojom::PermissionsPolicyFeature::kFullscreen,
+                     /*allowed_origins=*/{},
+                     /*self_if_matches=*/std::nullopt,
+                     /*matches_all_origins=*/true,
+                     /*matches_opaque_src=*/true),
+          PolicyItem(network::mojom::PermissionsPolicyFeature::kPayment,
+                     /*allowed_origins=*/{},
+                     /*self_if_matches=*/std::nullopt,
+                     /*matches_all_origins=*/false,
+                     /*matches_opaque_src=*/false)));
+}
+
+TEST_F(PermissionsPolicyParserTest,
+       ParseIsolatedAppPermissionsPolicyWithBasePolicy) {
+  const auto dummy = std::make_unique<DummyPageHolder>();
+  ExecutionContext* execution_context = dummy->GetFrame().DomWindow();
+  PolicyParserMessageBuffer logger;
+
+  const Vector<IsolatedAppPermissionPolicyEntry> isolated_app_policy{
+      // 1. Manifest: 'self', Header: 'self' -> Result: 'self'
+      {"cross-origin-isolated", {"'self'"}},
+      // 2. Manifest: *, Header: <origin_b> -> Result: <origin_b>
+      {"fullscreen", {"*"}},
+      // 3. Manifest: 'none', Header: none -> Result: 'none'
+      {"payment", {"'none'"}},
+  };
+
+  const network::ParsedPermissionsPolicy header_policy = {
+      {network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
+       /*allowed_origins=*/
+       {*network::OriginWithPossibleWildcards::FromOrigin(
+           expected_url_origin_a_)},
+       /*self_if_matches=*/expected_url_origin_a_,
+       /*matches_all_origins=*/false,
+       /*matches_opaque_src=*/false},
+      {network::mojom::PermissionsPolicyFeature::kFullscreen,
+       /*allowed_origins=*/
+       {*network::OriginWithPossibleWildcards::FromOrigin(
+           expected_url_origin_b_)},
+       /*self_if_matches=*/std::nullopt,
+       /*matches_all_origins=*/false,
+       /*matches_opaque_src=*/false}};
+
+  network::ParsedPermissionsPolicy result =
+      PermissionsPolicyParser::ParseIsolatedAppPermissionsPolicy(
+          isolated_app_policy, header_policy, origin_a_.get(), logger,
+          execution_context);
+
+  EXPECT_THAT(
+      result,
+      ElementsAre(
+          PolicyItem(
+              network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
+              /*allowed_origins=*/{},
+              /*self_if_matches=*/origin_a_->ToUrlOrigin(),
+              /*matches_all_origins=*/false,
+              /*matches_opaque_src=*/false),
+          PolicyItem(network::mojom::PermissionsPolicyFeature::kFullscreen,
+                     /*allowed_origins=*/
+                     {*network::OriginWithPossibleWildcards::FromOrigin(
+                         expected_url_origin_b_)},
+                     /*self_if_matches=*/std::nullopt,
+                     /*matches_all_origins=*/false,
+                     /*matches_opaque_src=*/false),
+          PolicyItem(network::mojom::PermissionsPolicyFeature::kPayment,
+                     /*allowed_origins=*/{},
+                     /*self_if_matches=*/std::nullopt,
+                     /*matches_all_origins=*/false,
+                     /*matches_opaque_src=*/false)));
+}
+
+TEST_F(PermissionsPolicyParserTest,
+       ParseIsolatedAppPermissionsPolicyCornerCases) {
+  const auto dummy = std::make_unique<DummyPageHolder>();
+  ExecutionContext* execution_context = dummy->GetFrame().DomWindow();
+  PolicyParserMessageBuffer logger;
+
+  const Vector<IsolatedAppPermissionPolicyEntry> isolated_app_policy{
+      // 1. Manifest: *, Header: 'self' -> Result: 'self'
+      {"geolocation", {"*"}},
+      // 2. Manifest: *, Header: <origin> -> Result: <origin>
+      {"camera", {"*"}},
+      // 3. Manifest: <origin>, Header: * -> Result: <origin>
+      {"microphone", {ORIGIN_B}},
+      // 4. Manifest: <origin>, Header: 'self' (mismatch) -> Result: none
+      {"fullscreen", {ORIGIN_B}},
+      // 5. Manifest: 'self', Header: 'self' -> Result: 'self'
+      {"payment", {"'self'"}},
+      // 6. Manifest: 'none', Header: * -> Result: 'none'
+      {"gyroscope", {"'none'"}},
+      // 7. Manifest: 'self' + origin, Header: 'self' + origin -> Result: 'self'
+      // + origin.
+      {"magnetometer", {"'self'", ORIGIN_B}},
+      // 8. Manifest: 'self' + origin, Header: origin -> Result: origin.
+      {"accelerometer", {"'self'", ORIGIN_B}},
+  };
+
+  const network::ParsedPermissionsPolicy header_policy = {
+      {network::mojom::PermissionsPolicyFeature::kGeolocation,
+       /*allowed_origins=*/{},
+       /*self_if_matches=*/expected_url_origin_a_,
+       /*matches_all_origins=*/false,
+       /*matches_opaque_src=*/false},
+      {network::mojom::PermissionsPolicyFeature::kCamera,
+       /*allowed_origins=*/
+       {*network::OriginWithPossibleWildcards::FromOrigin(
+           expected_url_origin_b_)},
+       /*self_if_matches=*/std::nullopt,
+       /*matches_all_origins=*/false,
+       /*matches_opaque_src=*/false},
+      {network::mojom::PermissionsPolicyFeature::kMicrophone,
+       /*allowed_origins=*/{},
+       /*self_if_matches=*/std::nullopt,
+       /*matches_all_origins=*/true,
+       /*matches_opaque_src=*/true},
+      {network::mojom::PermissionsPolicyFeature::kFullscreen,
+       /*allowed_origins=*/{},
+       /*self_if_matches=*/expected_url_origin_a_,
+       /*matches_all_origins=*/false,
+       /*matches_opaque_src=*/false},
+      {network::mojom::PermissionsPolicyFeature::kPayment,
+       /*allowed_origins=*/{},
+       /*self_if_matches=*/expected_url_origin_a_,
+       /*matches_all_origins=*/false,
+       /*matches_opaque_src=*/false},
+      {network::mojom::PermissionsPolicyFeature::kGyroscope,
+       /*allowed_origins=*/{},
+       /*self_if_matches=*/std::nullopt,
+       /*matches_all_origins=*/true,
+       /*matches_opaque_src=*/true},
+      {network::mojom::PermissionsPolicyFeature::kMagnetometer,
+       /*allowed_origins=*/
+       {*network::OriginWithPossibleWildcards::FromOrigin(
+            expected_url_origin_a_),
+        *network::OriginWithPossibleWildcards::FromOrigin(
+            expected_url_origin_b_)},
+       /*self_if_matches=*/expected_url_origin_a_,
+       /*matches_all_origins=*/false,
+       /*matches_opaque_src=*/false},
+      {network::mojom::PermissionsPolicyFeature::kAccelerometer,
+       /*allowed_origins=*/
+       {*network::OriginWithPossibleWildcards::FromOrigin(
+           expected_url_origin_b_)},
+       /*self_if_matches=*/std::nullopt,
+       /*matches_all_origins=*/false,
+       /*matches_opaque_src=*/false}};
+
+  network::ParsedPermissionsPolicy result =
+      PermissionsPolicyParser::ParseIsolatedAppPermissionsPolicy(
+          isolated_app_policy, header_policy, origin_a_.get(), logger,
+          execution_context);
+
+  EXPECT_THAT(
+      result,
+      ElementsAre(
+          PolicyItem(network::mojom::PermissionsPolicyFeature::kGeolocation,
+                     /*allowed_origins=*/{},
+                     /*self_if_matches=*/expected_url_origin_a_,
+                     /*matches_all_origins=*/false,
+                     /*matches_opaque_src=*/false),
+          PolicyItem(network::mojom::PermissionsPolicyFeature::kCamera,
+                     /*allowed_origins=*/
+                     {*network::OriginWithPossibleWildcards::FromOrigin(
+                         expected_url_origin_b_)},
+                     /*self_if_matches=*/std::nullopt,
+                     /*matches_all_origins=*/false,
+                     /*matches_opaque_src=*/false),
+          PolicyItem(network::mojom::PermissionsPolicyFeature::kMicrophone,
+                     /*allowed_origins=*/
+                     {*network::OriginWithPossibleWildcards::FromOrigin(
+                         expected_url_origin_b_)},
+                     /*self_if_matches=*/std::nullopt,
+                     /*matches_all_origins=*/false,
+                     /*matches_opaque_src=*/false),
+          PolicyItem(network::mojom::PermissionsPolicyFeature::kFullscreen,
+                     /*allowed_origins=*/{},
+                     /*self_if_matches=*/std::nullopt,
+                     /*matches_all_origins=*/false,
+                     /*matches_opaque_src=*/false),
+          PolicyItem(network::mojom::PermissionsPolicyFeature::kPayment,
+                     /*allowed_origins=*/{},
+                     /*self_if_matches=*/expected_url_origin_a_,
+                     /*matches_all_origins=*/false,
+                     /*matches_opaque_src=*/false),
+          PolicyItem(network::mojom::PermissionsPolicyFeature::kGyroscope,
+                     /*allowed_origins=*/{},
+                     /*self_if_matches=*/std::nullopt,
+                     /*matches_all_origins=*/false,
+                     /*matches_opaque_src=*/false),
+          PolicyItem(network::mojom::PermissionsPolicyFeature::kMagnetometer,
+                     /*allowed_origins=*/
+                     {*network::OriginWithPossibleWildcards::FromOrigin(
+                         expected_url_origin_b_)},
+                     /*self_if_matches=*/expected_url_origin_a_,
+                     /*matches_all_origins=*/false,
+                     /*matches_opaque_src=*/false),
+          PolicyItem(network::mojom::PermissionsPolicyFeature::kAccelerometer,
+                     /*allowed_origins=*/
+                     {*network::OriginWithPossibleWildcards::FromOrigin(
+                         expected_url_origin_b_)},
+                     /*self_if_matches=*/std::nullopt,
+                     /*matches_all_origins=*/false,
+                     /*matches_opaque_src=*/false)));
 }
 
 }  // namespace blink

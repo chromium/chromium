@@ -14,6 +14,7 @@
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/web/web_navigation_params.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -541,7 +542,127 @@ PermissionsPolicyParser::Node ParsingContext::ParsePermissionsPolicyToIR(
   return ir_root;
 }
 
+// This merges the permissions policies defined within the Isolated Web App
+// manifest with the ones received from headers of the particular page. The
+// general mechanism and rationale behind it is explained in more detail here:
+// https://github.com/WICG/isolated-web-apps/blob/main/Permissions.md#proposal
+//
+// In short, the mechanism is as follows:
+// If the feature:
+// - Doesn't have nonempty allowlist defined within the manifest, any potential
+//   mentions of it in headers are skipped (and its usage is not allowed).
+// - Has an allowlist within the manifest but does not appear at all in headers,
+//   unmodified allowlist from the manifest is used.
+// - Appears in both the manifest and headers, the intersection of both
+//   allowlists is used.
+//   For example, if the manifest specifies:
+//     direct-sockets: self origin1 origin2
+//   and headers specify:
+//     direct-sockets: self, origin2, origin3
+//   the merged allowlist will look:
+//     direct-sockets: self, origin2
+//
+// This means that:
+// - `base_policy` here comes from the manifest.
+// - `header_policy` here comes from the headers.
+// - Headers can only limit the allowlists extracted from the manifest, never
+//   extend them.
+network::ParsedPermissionsPolicy CombinePermissionsPolicies(
+    const network::ParsedPermissionsPolicy& base_policy,
+    const network::ParsedPermissionsPolicy& header_policy) {
+  auto result = base_policy;
+  for (const network::ParsedPermissionsPolicyDeclaration&
+           declaration_in_headers : header_policy) {
+    // If the header policy allows all origins, it doesn't restrict the base
+    // policy.
+    if (declaration_in_headers.matches_all_origins) {
+      continue;
+    }
+    auto base_declaration = std::ranges::find(
+        result, declaration_in_headers.feature,
+        &network::ParsedPermissionsPolicyDeclaration::feature);
+    if (base_declaration == result.end()) {
+      continue;
+    }
+
+    // If the base policy allows all origins, we simply replace it with the
+    // header policy (which is more restrictive).
+    if (base_declaration->matches_all_origins) {
+      base_declaration->matches_all_origins = false;
+      base_declaration->allowed_origins =
+          declaration_in_headers.allowed_origins;
+      base_declaration->self_if_matches =
+          declaration_in_headers.self_if_matches;
+      base_declaration->matches_opaque_src =
+          declaration_in_headers.matches_opaque_src;
+      continue;
+    }
+
+    auto allowed_origins_headers = declaration_in_headers.allowed_origins;
+    std::ranges::sort(allowed_origins_headers);
+
+    auto allowed_origins_manifest = base_declaration->allowed_origins;
+    std::ranges::sort(allowed_origins_manifest);
+
+    // Intersect the allowed origins from the manifest and the header.
+    std::vector<network::OriginWithPossibleWildcards> allowed_origins;
+    std::ranges::set_intersection(allowed_origins_headers,
+                                  allowed_origins_manifest,
+                                  std::back_inserter(allowed_origins));
+
+    base_declaration->allowed_origins = std::move(allowed_origins);
+
+    // If the base policy allows 'self', we must check if the header policy also
+    // allows 'self'. If not, 'self' is removed from the allowlist.
+    if (base_declaration->self_if_matches) {
+      // `self_if_matches` in both places is an optional that can be either
+      // `std::nullopt` or the origin of this IWA, nothing else.
+      base_declaration->self_if_matches =
+          declaration_in_headers.self_if_matches;
+    }
+
+    if (base_declaration->matches_opaque_src) {
+      base_declaration->matches_opaque_src =
+          declaration_in_headers.matches_opaque_src;
+    }
+
+    // Reporting endpoint cannot be specified within the manifest, the one from
+    // headers is used.
+    base_declaration->reporting_endpoint =
+        declaration_in_headers.reporting_endpoint;
+  }
+  return result;
+}
+
 }  // namespace
+
+network::ParsedPermissionsPolicy
+PermissionsPolicyParser::ParseIsolatedAppPermissionsPolicy(
+    const Vector<IsolatedAppPermissionPolicyEntry>& isolated_app_policy,
+    const network::ParsedPermissionsPolicy& permissions_policy_from_headers,
+    scoped_refptr<const SecurityOrigin> origin,
+    PolicyParserMessageBuffer& permissions_policy_logger,
+    ExecutionContext* execution_context) {
+  if (isolated_app_policy.empty()) {
+    return {};
+  }
+
+  Node node = {
+      .type = network::OriginWithPossibleWildcards::NodeType::kHeader,
+      .declarations{
+          isolated_app_policy, [](const auto& entry) -> Declaration {
+            return {
+                .feature_name = entry.feature,
+                // can't use = here because the constructor we need is explicit
+                .allowlist{entry.allowed_origins},
+            };
+          }}};
+
+  return CombinePermissionsPolicies(
+      ParsePolicyFromNode(node, origin, permissions_policy_logger,
+                          execution_context),
+      permissions_policy_from_headers);
+}
 
 network::ParsedPermissionsPolicy PermissionsPolicyParser::ParseHeader(
     const String& feature_policy_header,
