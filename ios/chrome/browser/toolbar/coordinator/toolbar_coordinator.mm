@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/guided_tour_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
+#import "ios/chrome/browser/shared/public/commands/page_action_menu_entry_point_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
@@ -64,6 +65,7 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 
 @interface ToolbarCoordinator () <GuidedTourCommands,
                                   LocationBarCoordinatorHeightDelegate,
+                                  PageActionMenuEntryPointCommands,
                                   PrimaryToolbarViewControllerDelegate,
                                   ToolbarCommands,
                                   ToolbarMediatorDelegate>
@@ -154,6 +156,12 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   [browser->GetCommandDispatcher()
       startDispatchingToTarget:self
                    forProtocol:@protocol(FakeboxFocuser)];
+
+  if (IsChromeNextIaEnabled()) {
+    [browser->GetCommandDispatcher()
+        startDispatchingToTarget:self
+                     forProtocol:@protocol(PageActionMenuEntryPointCommands)];
+  }
 
   if (IsBestOfAppGuidedTourEnabled()) {
     [self.browser->GetCommandDispatcher()
@@ -764,6 +772,14 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
     [self.toolbarHeightDelegate
         layoutToolbarHeightChangeWithAnimation:animated];
   }
+}
+
+#pragma mark - PageActionMenuEntryPointCommands
+
+- (void)toggleEntryPointHighlight:(BOOL)highlight {
+  CHECK(IsChromeNextIaEnabled());
+  // TODO(crbug.com/472279443): implement this.
+  NOTREACHED();
 }
 
 #pragma mark - ToolbarCommands
