@@ -168,8 +168,7 @@ void JavaScriptContentWorld::AddFeature(const JavaScriptFeature* feature) {
           web::switches::kEnableListedJavascriptFeatures)) {
     std::optional<std::string> message_handler_name =
         feature->GetScriptMessageHandlerName();
-    if (feature != java_script_features::GetBaseJavaScriptFeature() &&
-        feature != java_script_features::GetCommonJavaScriptFeature()) {
+    if (feature != java_script_features::GetBaseJavaScriptFeature()) {
       if (!message_handler_name) {
         return;
       }

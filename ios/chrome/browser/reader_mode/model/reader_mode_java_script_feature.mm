@@ -38,8 +38,7 @@ ReaderModeJavaScriptFeature::ReaderModeJavaScriptFeature()
               kScriptName,
               FeatureScript::InjectionTime::kDocumentEnd,
               FeatureScript::TargetFrames::kMainFrame,
-              FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)},
-          {web::java_script_features::GetCommonJavaScriptFeature()}) {}
+              FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)}) {}
 
 ReaderModeJavaScriptFeature::~ReaderModeJavaScriptFeature() = default;
 

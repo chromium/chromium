@@ -95,7 +95,7 @@ A feature may:
     communication
     *   Ex: Perform an action based on an event listener
 *   add JavaScript functions to the world
-    *   Ex: `common.js` adds the `__gCrWeb.common.*` functions
+    *   Ex: `clipboard.ts` adds the `__gCrWeb` clipboard API functions
 *   expose native C++ functions which call injected JavaScript or executes other
     JavaScript
 *   add a script message handler and handle messages received from the

@@ -28,15 +28,13 @@ FullscreenJavaScriptFeature* FullscreenJavaScriptFeature::GetInstance() {
 }
 
 FullscreenJavaScriptFeature::FullscreenJavaScriptFeature()
-    : JavaScriptFeature(
-          ContentWorld::kIsolatedWorld,
-          {FeatureScript::CreateWithFilename(
-              kScriptName,
-              FeatureScript::InjectionTime::kDocumentEnd,
-              FeatureScript::TargetFrames::kMainFrame,
-              FeatureScript::ReinjectionBehavior::
-                  kReinjectOnDocumentRecreation)},
-          {web::java_script_features::GetCommonJavaScriptFeature()}) {}
+    : JavaScriptFeature(ContentWorld::kIsolatedWorld,
+                        {FeatureScript::CreateWithFilename(
+                            kScriptName,
+                            FeatureScript::InjectionTime::kDocumentEnd,
+                            FeatureScript::TargetFrames::kMainFrame,
+                            FeatureScript::ReinjectionBehavior::
+                                kReinjectOnDocumentRecreation)}) {}
 FullscreenJavaScriptFeature::~FullscreenJavaScriptFeature() = default;
 
 std::optional<std::string>

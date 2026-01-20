@@ -180,8 +180,7 @@ PasskeyJavaScriptFeature::PasskeyJavaScriptFeature()
               // (https://w3c.github.io/webauthn/#sctn-permissions-policy).
               FeatureScript::TargetFrames::kAllFrames,
               FeatureScript::ReinjectionBehavior::kInjectOncePerWindow,
-              base::BindRepeating(&GetPlaceholderReplacements))},
-          {web::java_script_features::GetCommonJavaScriptFeature()}) {}
+              base::BindRepeating(&GetPlaceholderReplacements))}) {}
 
 PasskeyJavaScriptFeature::~PasskeyJavaScriptFeature() = default;
 

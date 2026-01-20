@@ -43,10 +43,7 @@ ProgrammaticFormSubmissionHandlerJavaScriptFeature::
               FeatureScript::InjectionTime::kDocumentStart,
               FeatureScript::TargetFrames::kAllFrames,
               FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)},
-          {
-              web::java_script_features::GetCommonJavaScriptFeature(),
-              AutofillFormFeaturesJavaScriptFeature::GetInstance(),
-          }) {}
+          {AutofillFormFeaturesJavaScriptFeature::GetInstance()}) {}
 
 ProgrammaticFormSubmissionHandlerJavaScriptFeature::
     ~ProgrammaticFormSubmissionHandlerJavaScriptFeature() = default;

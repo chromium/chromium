@@ -53,8 +53,7 @@ class BwgBrowserAgentTest : public PlatformTest {
         {kPageContextExtractorRefactored, kGeminiRefactoredFRE}, {});
     static_cast<web::FakeWebClient*>(web_client_.Get())
         ->SetJavaScriptFeatures(
-            {web::java_script_features::GetCommonJavaScriptFeature(),
-             web::FindInPageJavaScriptFeature::GetInstance(),
+            {web::FindInPageJavaScriptFeature::GetInstance(),
              PageContextExtractorJavaScriptFeature::GetInstance()});
     TestProfileIOS::Builder profile_builder;
     profile_builder.AddTestingFactory(
@@ -63,8 +62,7 @@ class BwgBrowserAgentTest : public PlatformTest {
     profile_ = std::move(profile_builder).Build();
     web::JavaScriptFeatureManager::FromBrowserState(profile_.get())
         ->ConfigureFeatures(
-            {web::java_script_features::GetCommonJavaScriptFeature(),
-             web::FindInPageJavaScriptFeature::GetInstance(),
+            {web::FindInPageJavaScriptFeature::GetInstance(),
              PageContextExtractorJavaScriptFeature::GetInstance()});
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     BwgBrowserAgent::CreateForBrowser(browser_.get());

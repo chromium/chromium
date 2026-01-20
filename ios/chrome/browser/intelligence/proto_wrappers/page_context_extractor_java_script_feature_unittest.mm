@@ -59,8 +59,7 @@ class PageContextExtractorJavaScriptFeatureTest : public PlatformTest {
     web_state_->GetView();
     web_state_->SetKeepRenderProcessAlive(true);
 
-    GetWebClient()->SetJavaScriptFeatures(
-        {feature(), web::java_script_features::GetCommonJavaScriptFeature()});
+    GetWebClient()->SetJavaScriptFeatures({feature()});
 
     test_server_.RegisterRequestHandler(base::BindRepeating(
         &net::test_server::HandlePrefixedRequest, kIframe1Path,

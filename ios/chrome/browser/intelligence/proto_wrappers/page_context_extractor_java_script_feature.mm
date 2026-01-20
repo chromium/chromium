@@ -39,8 +39,7 @@ PageContextExtractorJavaScriptFeature::PageContextExtractorJavaScriptFeature()
                   kInjectOncePerWindow,
               base::BindRepeating(
                   &PageContextExtractorJavaScriptFeature::GetReplacements,
-                  base::Unretained(this)))},
-          {web::java_script_features::GetCommonJavaScriptFeature()}) {}
+                  base::Unretained(this)))}) {}
 
 PageContextExtractorJavaScriptFeature::
     ~PageContextExtractorJavaScriptFeature() = default;

@@ -37,10 +37,6 @@ void JavascriptTest::AddGCrWebScript() {
   AddUserScript(@"gcrweb");
 }
 
-void JavascriptTest::AddCommonScript() {
-  AddUserScript(@"common");
-}
-
 void JavascriptTest::AddUserScript(NSString* script_name) {
   WKUserScript* script = [[WKUserScript alloc]
         initWithSource:web::test::GetPageScript(script_name)

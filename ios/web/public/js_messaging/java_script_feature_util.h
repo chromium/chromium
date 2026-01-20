@@ -15,10 +15,6 @@ namespace java_script_features {
 // the __gCrWeb object.
 JavaScriptFeature* GetBaseJavaScriptFeature();
 
-// Returns the shared common javascript used across many features which defines
-// __gCrWeb.common APIs.
-JavaScriptFeature* GetCommonJavaScriptFeature();
-
 }  // namespace java_script_features
 }  // namespace web
 

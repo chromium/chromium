@@ -71,7 +71,6 @@ FormHandlersJavaScriptFeature::FormHandlersJavaScriptFeature()
           ContentWorldForAutofillJavascriptFeatures(),
           GetFeatureScripts(),
           {
-              web::java_script_features::GetCommonJavaScriptFeature(),
               autofill::AutofillFormFeaturesJavaScriptFeature::GetInstance(),
               RemoteFrameRegistrationJavaScriptFeature::GetInstance(),
           }) {}
@@ -102,12 +101,8 @@ void FormHandlersJavaScriptFeature::ScriptMessageReceived(
 FormHandlersJavaScriptFeature::FormHandlersJavaScriptFeature(
     RemoteFrameRegistrationJavaScriptFeature*
         remote_frame_registration_java_script_feature)
-    : web::JavaScriptFeature(
-          ContentWorldForAutofillJavascriptFeatures(),
-          GetFeatureScripts(),
-          {
-              web::java_script_features::GetCommonJavaScriptFeature(),
-              remote_frame_registration_java_script_feature,
-          }) {}
+    : web::JavaScriptFeature(ContentWorldForAutofillJavascriptFeatures(),
+                             GetFeatureScripts(),
+                             {remote_frame_registration_java_script_feature}) {}
 
 }  // namespace autofill

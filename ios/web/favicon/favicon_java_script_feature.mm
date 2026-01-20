@@ -35,8 +35,7 @@ FaviconJavaScriptFeature::FaviconJavaScriptFeature()
                FeatureScript::InjectionTime::kDocumentEnd,
                FeatureScript::TargetFrames::kMainFrame,
                FeatureScript::ReinjectionBehavior::
-                   kReinjectOnDocumentRecreation)},
-          {web::java_script_features::GetCommonJavaScriptFeature()}) {}
+                   kReinjectOnDocumentRecreation)}) {}
 
 FaviconJavaScriptFeature::~FaviconJavaScriptFeature() {}
 

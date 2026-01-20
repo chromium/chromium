@@ -35,8 +35,7 @@ ImageFetchJavaScriptFeature::ImageFetchJavaScriptFeature(
               kScriptName,
               FeatureScript::InjectionTime::kDocumentStart,
               FeatureScript::TargetFrames::kAllFrames,
-              FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)},
-          {web::java_script_features::GetCommonJavaScriptFeature()}),
+              FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)}),
       handler_factory_(std::move(handler_factory)) {}
 
 ImageFetchJavaScriptFeature::~ImageFetchJavaScriptFeature() = default;

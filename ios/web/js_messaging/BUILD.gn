@@ -188,6 +188,7 @@ source_set("unittests") {
     ":web_view_js_utils",
     "//base",
     "//base/test:test_support",
+    "//components/autofill/ios/form_util:fill_util_test_js",
     "//components/test/ios",
     "//ios/web/common:web_view_creation_util",
     "//ios/web/public/js_messaging",

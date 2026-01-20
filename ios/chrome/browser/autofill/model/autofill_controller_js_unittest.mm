@@ -733,7 +733,6 @@ class AutofillControllerJsTest : public web::JavascriptTest {
     JavascriptTest::SetUp();
 
     AddGCrWebScript();
-    AddCommonScript();
     AddUserScript(@"autofill_form_features");
     AddUserScript(@"fill_util_test");
 

@@ -25,15 +25,13 @@ const char kSenderFrameIdKey[] = "sender_frame";
 }  // namespace
 
 JavaScriptConsoleFeature::JavaScriptConsoleFeature()
-    : JavaScriptFeature(
-          web::ContentWorld::kPageContentWorld,
-          {FeatureScript::CreateWithFilename(
-              kScriptName,
-              FeatureScript::InjectionTime::kDocumentStart,
-              FeatureScript::TargetFrames::kAllFrames,
-              FeatureScript::ReinjectionBehavior::
-                  kReinjectOnDocumentRecreation)},
-          {web::java_script_features::GetCommonJavaScriptFeature()}) {}
+    : JavaScriptFeature(web::ContentWorld::kPageContentWorld,
+                        {FeatureScript::CreateWithFilename(
+                            kScriptName,
+                            FeatureScript::InjectionTime::kDocumentStart,
+                            FeatureScript::TargetFrames::kAllFrames,
+                            FeatureScript::ReinjectionBehavior::
+                                kReinjectOnDocumentRecreation)}) {}
 
 JavaScriptConsoleFeature::~JavaScriptConsoleFeature() = default;
 

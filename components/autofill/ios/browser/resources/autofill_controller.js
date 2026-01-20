@@ -153,7 +153,7 @@ function extractUnownedFields(restrictUnownedFieldsToFormlessCheckout) {
       getUnownedIframes() :
       [];
   if (numEditableUnownedElements > 0 || iframeElements.length > 0) {
-    const unownedForm = new __gCrWeb['common'].JSONSafeObject();
+    const unownedForm = new fillUtil.AutofillFormData();
     const hasUnownedForm = unownedFormElementsAndFieldSetsToFormData(
         window, fieldsets, unownedControlElements, iframeElements,
         restrictUnownedFieldsToFormlessCheckout, unownedForm);
@@ -305,7 +305,7 @@ function fillForm(data, forceFillFieldID) {
   // time of the last fill plus `delayBetweenFieldFillingMs`.
   const reportFormFill = function(_form, _delay) {
     window.setTimeout(() => {
-      let formData = new __gCrWeb['common'].JSONSafeObject();
+      let formData = new fillUtil.AutofillFormData();
       if (_form) {
         if (!webFormElementToFormData(window, _form, null, formData)) {
           formData = null;
@@ -473,7 +473,7 @@ function extractNewForms(restrictUnownedFieldsToFormlessCheckout) {
       continue;
     }
 
-    const form = new __gCrWeb['common'].JSONSafeObject();
+    const form = new fillUtil.AutofillFormData();
     if (!webFormElementToFormData(
             window, formElement, null, form, /*field=*/ undefined,
             canExtractChildFrames())) {

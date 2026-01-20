@@ -42,7 +42,6 @@ class ClipboardJsTest : public web::JavascriptTest {
   void SetUp() override {
     web::JavascriptTest::SetUp();
     AddGCrWebScript();
-    AddCommonScript();
     AddUserScript(@"clipboard");
     AddUserScript(@"paste_handler");
 

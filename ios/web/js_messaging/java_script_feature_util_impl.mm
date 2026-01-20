@@ -35,7 +35,6 @@ namespace web {
 namespace {
 
 const char kBaseScriptName[] = "gcrweb";
-const char kCommonScriptName[] = "common";
 
 const char kMainFrameDescription[] = "Main frame";
 const char kIframeDescription[] = "Iframe";
@@ -83,7 +82,6 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
     BrowserState* browser_state) {
   std::vector<JavaScriptFeature*> features = {
       GetBaseJavaScriptFeature(),
-      GetCommonJavaScriptFeature(),
       ContextMenuJavaScriptFeature::FromBrowserState(browser_state),
       ErrorPageJavaScriptFeature::GetInstance(),
       FindInPageJavaScriptFeature::GetInstance(),
@@ -127,19 +125,5 @@ JavaScriptFeature* GetBaseJavaScriptFeature() {
               JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames)}));
   return base_feature.get();
 }
-
-JavaScriptFeature* GetCommonJavaScriptFeature() {
-  // Static storage is ok for `common_feature` as it holds no state.
-  static base::NoDestructor<JavaScriptFeature> common_feature(
-      ContentWorld::kAllContentWorlds,
-      std::vector<JavaScriptFeature::FeatureScript>(
-          {JavaScriptFeature::FeatureScript::CreateWithFilename(
-              kCommonScriptName,
-              JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
-              JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames)}),
-      std::vector<const JavaScriptFeature*>({GetBaseJavaScriptFeature()}));
-  return common_feature.get();
-}
-
 }  // namespace java_script_features
 }  // namespace web

@@ -25,7 +25,7 @@ extern const char kDisableListedScripts[] = "disable-listed-scripts";
 // Enables only the listed scripts. The value must be a comma separated string
 // of `injection_token_`s from the JavaScriptFeatures to be enabled.
 // For example, to only enable context menu JS, use:
-// `--enable-listed-scripts=gcrweb,common,message,all_frames_context_menu,
+// `--enable-listed-scripts=gcrweb,all_frames_context_menu,
 //     main_frame_context_menu`
 // Note that all dependencies, must be manually enabled when using this flag.
 extern const char kEnableListedScripts[] = "enable-listed-scripts";
@@ -41,8 +41,7 @@ extern const char kDisableListedJavascriptFeatures[] =
 // comma separated string of the value returned by
 // `JavaScriptFeature::GetScriptMessageHandlerName()`. If a feature does not
 // have a message handler, it will NOT be enabled when using this flag. However,
-// the features returned by `GetBaseJavaScriptFeature()` and
-// `GetCommonJavaScriptFeature()` are always
+// the feature returned by `GetBaseJavaScriptFeature()` is always
 // enabled (even though they do not have message handlers) because most features
 // rely on them and there would otherwise be no way to enable them.
 // For example, to only enable only ContextMenuJavaScriptFeature, use:

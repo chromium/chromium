@@ -27,17 +27,15 @@ const char kFindElementResultHandlerName[] = "FindElementResultHandler";
 namespace web {
 
 ContextMenuJavaScriptFeature::ContextMenuJavaScriptFeature()
-    : JavaScriptFeature(
-          ContentWorld::kIsolatedWorld,
-          {FeatureScript::CreateWithFilename(
-               kAllFramesContextMenuScript,
-               FeatureScript::InjectionTime::kDocumentStart,
-               FeatureScript::TargetFrames::kAllFrames),
-           FeatureScript::CreateWithFilename(
-               kMainFrameContextMenuScript,
-               FeatureScript::InjectionTime::kDocumentStart,
-               FeatureScript::TargetFrames::kMainFrame)},
-          {web::java_script_features::GetCommonJavaScriptFeature()}) {}
+    : JavaScriptFeature(ContentWorld::kIsolatedWorld,
+                        {FeatureScript::CreateWithFilename(
+                             kAllFramesContextMenuScript,
+                             FeatureScript::InjectionTime::kDocumentStart,
+                             FeatureScript::TargetFrames::kAllFrames),
+                         FeatureScript::CreateWithFilename(
+                             kMainFrameContextMenuScript,
+                             FeatureScript::InjectionTime::kDocumentStart,
+                             FeatureScript::TargetFrames::kMainFrame)}) {}
 ContextMenuJavaScriptFeature::~ContextMenuJavaScriptFeature() = default;
 
 // static

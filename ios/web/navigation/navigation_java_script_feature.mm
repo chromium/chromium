@@ -41,8 +41,7 @@ NavigationJavaScriptFeature::NavigationJavaScriptFeature()
                FeatureScript::InjectionTime::kDocumentStart,
                FeatureScript::TargetFrames::kMainFrame,
                FeatureScript::ReinjectionBehavior::
-                   kReinjectOnDocumentRecreation)},
-          {web::java_script_features::GetCommonJavaScriptFeature()}) {}
+                   kReinjectOnDocumentRecreation)}) {}
 
 NavigationJavaScriptFeature::~NavigationJavaScriptFeature() = default;
 

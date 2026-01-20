@@ -51,7 +51,6 @@ class FormJsTest : public web::JavascriptTest {
   void SetUp() override {
     web::JavascriptTest::SetUp();
     AddGCrWebScript();
-    AddCommonScript();
     AddUserScript(@"autofill_form_features");
     AddUserScript(@"form_util_tests");
   }
