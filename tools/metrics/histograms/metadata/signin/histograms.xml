@@ -3551,7 +3551,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.SSOAuth.GetIdentities.ErrorCode"
-    enum="MacSecurityFrameworkOSStatus" expires_after="2026-03-02">
+    enum="MacSecurityFrameworkOSStatus" expires_after="2027-01-01">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
