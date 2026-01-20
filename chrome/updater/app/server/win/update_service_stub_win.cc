@@ -145,24 +145,6 @@ void UpdateServiceStubWin::GetUpdaterState(
   impl_->GetUpdaterState(std::move(callback).Then(task_end_listener_));
 }
 
-void UpdateServiceStubWin::GetUpdaterPolicies(
-    base::OnceCallback<void(const base::flat_map<std::string, PolicyValue>&)>
-        callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  task_start_listener_.Run();
-  impl_->GetUpdaterPolicies(std::move(callback).Then(task_end_listener_));
-}
-
-void UpdateServiceStubWin::GetAppPolicies(
-    base::OnceCallback<
-        void(const base::flat_map<std::string,
-                                  base::flat_map<std::string, PolicyValue>>&)>
-        callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  task_start_listener_.Run();
-  impl_->GetAppPolicies(std::move(callback).Then(task_end_listener_));
-}
-
 void UpdateServiceStubWin::GetPoliciesJson(
     base::OnceCallback<void(const std::string&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

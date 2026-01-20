@@ -75,8 +75,6 @@ class UpdateServiceStub : public mojom::UpdateService {
       const std::optional<std::string>& language,
       UpdateCallback callback) override;
   void GetUpdaterState(GetUpdaterStateCallback callback) override;
-  void GetUpdaterPolicies(GetUpdaterPoliciesCallback callback) override;
-  void GetAppPolicies(GetAppPoliciesCallback callback) override;
   void GetPoliciesJson(GetPoliciesJsonCallback callback) override;
 
  private:

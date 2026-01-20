@@ -136,29 +136,6 @@ class UpdateServiceImplInactive : public UpdateService {
         FROM_HERE, base::BindOnce(std::move(callback), UpdaterState()));
   }
 
-  void GetUpdaterPolicies(
-      base::OnceCallback<void(const base::flat_map<std::string, PolicyValue>&)>
-          callback) override {
-    VLOG(1) << __func__ << " (Inactive)";
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  base::flat_map<std::string, PolicyValue>()));
-  }
-
-  void GetAppPolicies(
-      base::OnceCallback<
-          void(const base::flat_map<std::string,
-                                    base::flat_map<std::string, PolicyValue>>&)>
-          callback) override {
-    VLOG(1) << __func__ << " (Inactive)";
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            std::move(callback),
-            base::flat_map<std::string,
-                           base::flat_map<std::string, PolicyValue>>()));
-  }
-
   void GetPoliciesJson(
       base::OnceCallback<void(const std::string&)> callback) override {
     VLOG(1) << __func__ << " (Inactive)";

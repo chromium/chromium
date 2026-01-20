@@ -564,28 +564,6 @@ class UpdateServiceProxyImplImpl
                        this, std::move(callback)));
   }
 
-  void GetUpdaterPolicies(
-      base::OnceCallback<
-          void(base::expected<
-               base::flat_map<std::string, UpdateService::PolicyValue>,
-               RpcError>)> callback) {
-    PostRPCTask(base::BindOnce(
-        &UpdateServiceProxyImplImpl::GetUpdaterPoliciesOnTaskRunner, this,
-        std::move(callback)));
-  }
-
-  void GetAppPolicies(
-      base::OnceCallback<
-          void(base::expected<
-               base::flat_map<
-                   std::string,
-                   base::flat_map<std::string, UpdateService::PolicyValue>>,
-               RpcError>)> callback) {
-    PostRPCTask(
-        base::BindOnce(&UpdateServiceProxyImplImpl::GetAppPoliciesOnTaskRunner,
-                       this, std::move(callback)));
-  }
-
   void GetPoliciesJson(
       base::OnceCallback<void(base::expected<std::string, RpcError>)>
           callback) {
@@ -1091,30 +1069,6 @@ class UpdateServiceProxyImplImpl
     return;
   }
 
-  void GetUpdaterPoliciesOnTaskRunner(
-      base::OnceCallback<
-          void(base::expected<
-               base::flat_map<std::string, UpdateService::PolicyValue>,
-               RpcError>)> callback) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    VLOG(2) << __func__ << ": This method is only implemented in mojo";
-    std::move(callback).Run(base::unexpected(E_NOTIMPL));
-    return;
-  }
-
-  void GetAppPoliciesOnTaskRunner(
-      base::OnceCallback<
-          void(base::expected<
-               base::flat_map<
-                   std::string,
-                   base::flat_map<std::string, UpdateService::PolicyValue>>,
-               RpcError>)> callback) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    VLOG(2) << __func__ << ": This method is only implemented in mojo";
-    std::move(callback).Run(base::unexpected(E_NOTIMPL));
-    return;
-  }
-
   void GetPoliciesJsonOnTaskRunner(
       base::OnceCallback<void(base::expected<std::string, RpcError>)>
           callback) {
@@ -1272,29 +1226,6 @@ void UpdateServiceProxyWinImpl::GetUpdaterState(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
   impl_->GetUpdaterState(
-      base::BindPostTaskToCurrentDefault(std::move(callback)));
-}
-
-void UpdateServiceProxyWinImpl::GetUpdaterPolicies(
-    base::OnceCallback<void(
-        base::expected<base::flat_map<std::string, UpdateService::PolicyValue>,
-                       RpcError>)> callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  VLOG(1) << __func__;
-  impl_->GetUpdaterPolicies(
-      base::BindPostTaskToCurrentDefault(std::move(callback)));
-}
-
-void UpdateServiceProxyWinImpl::GetAppPolicies(
-    base::OnceCallback<
-        void(base::expected<
-             base::flat_map<
-                 std::string,
-                 base::flat_map<std::string, UpdateService::PolicyValue>>,
-             RpcError>)> callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  VLOG(1) << __func__;
-  impl_->GetAppPolicies(
       base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
 

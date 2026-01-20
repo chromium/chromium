@@ -227,52 +227,6 @@ void UpdateServiceProxy::GetUpdaterState(
       UpdaterState(), 1));
 }
 
-void UpdateServiceProxy::GetUpdaterPolicies(
-    base::OnceCallback<void(const base::flat_map<std::string, PolicyValue>&)>
-        callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto call =
-      base::BindRepeating(&UpdateServiceProxyImpl::GetUpdaterPolicies, proxy_);
-  call.Run(base::BindOnce(
-      static_cast<DoneFunc<base::flat_map<std::string, PolicyValue>>>(
-          &CallDone),
-      base::WrapRefCounted(this), call,
-      base::BindOnce(
-          [](base::OnceCallback<void(
-                 const base::flat_map<std::string, PolicyValue>&)> callback,
-             base::flat_map<std::string, PolicyValue> value) {
-            std::move(callback).Run(value);
-          },
-          std::move(callback)),
-      base::flat_map<std::string, PolicyValue>(), 1));
-}
-
-void UpdateServiceProxy::GetAppPolicies(
-    base::OnceCallback<
-        void(const base::flat_map<std::string,
-                                  base::flat_map<std::string, PolicyValue>>&)>
-        callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto call =
-      base::BindRepeating(&UpdateServiceProxyImpl::GetAppPolicies, proxy_);
-  call.Run(base::BindOnce(
-      static_cast<DoneFunc<base::flat_map<
-          std::string, base::flat_map<std::string, PolicyValue>>>>(&CallDone),
-      base::WrapRefCounted(this), call,
-      base::BindOnce(
-          [](base::OnceCallback<void(
-                 const base::flat_map<
-                     std::string, base::flat_map<std::string, PolicyValue>>&)>
-                 callback,
-             base::flat_map<std::string,
-                            base::flat_map<std::string, PolicyValue>> value) {
-            std::move(callback).Run(value);
-          },
-          std::move(callback)),
-      base::flat_map<std::string, base::flat_map<std::string, PolicyValue>>(),
-      1));
-}
-
 void UpdateServiceProxy::GetPoliciesJson(
     base::OnceCallback<void(const std::string&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

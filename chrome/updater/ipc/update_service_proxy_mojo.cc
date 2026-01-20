@@ -108,25 +108,6 @@ constexpr base::TimeDelta kConnectionTimeout = base::Minutes(3);
   return app_state;
 }
 
-[[nodiscard]] std::pair<std::string, UpdateService::PolicyValue>
-MakePolicyValues(
-    const std::pair<std::string, mojom::PolicyValuePtr>& policy_value_mojo) {
-  return std::make_pair(policy_value_mojo.first, *policy_value_mojo.second);
-}
-
-[[nodiscard]] std::pair<std::string,
-                        base::flat_map<std::string, UpdateService::PolicyValue>>
-MakeAppPolicyValues(
-    const std::pair<std::string,
-                    base::flat_map<std::string, mojom::PolicyValuePtr>>&
-        policy_value_mojo) {
-  base::flat_map<std::string, UpdateService::PolicyValue> policies;
-  std::ranges::transform(policy_value_mojo.second,
-                         std::inserter(policies, policies.end()),
-                         &MakePolicyValues);
-  return std::make_pair(policy_value_mojo.first, std::move(policies));
-}
-
 [[nodiscard]] mojom::RegistrationRequestPtr MakeRegistrationRequest(
     const RegistrationRequest& request) {
   return mojom::RegistrationRequest::New(request);
@@ -390,49 +371,6 @@ void UpdateServiceProxyMojoImpl::GetUpdaterState(
   remote_->GetUpdaterState(
       base::BindOnce([](mojom::UpdaterStatePtr updater_state_mojo) {
         return *updater_state_mojo;
-      }).Then(ToMojoCallback(std::move(callback))));
-}
-
-void UpdateServiceProxyMojoImpl::GetUpdaterPolicies(
-    base::OnceCallback<void(
-        base::expected<base::flat_map<std::string, UpdateService::PolicyValue>,
-                       RpcError>)> callback) {
-  VLOG(1) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  EnsureConnecting();
-  remote_->GetUpdaterPolicies(
-      base::BindOnce([](base::flat_map<std::string, mojom::PolicyValuePtr>
-                            policies_mojo) {
-        base::flat_map<std::string, UpdateService::PolicyValue> policies;
-        std::ranges::transform(policies_mojo,
-                               std::inserter(policies, policies.end()),
-                               &MakePolicyValues);
-        return policies;
-      }).Then(ToMojoCallback(std::move(callback))));
-}
-
-void UpdateServiceProxyMojoImpl::GetAppPolicies(
-    base::OnceCallback<
-        void(base::expected<
-             base::flat_map<
-                 std::string,
-                 base::flat_map<std::string, UpdateService::PolicyValue>>,
-             RpcError>)> callback) {
-  VLOG(1) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  EnsureConnecting();
-  remote_->GetAppPolicies(
-      base::BindOnce([](base::flat_map<
-                         std::string,
-                         base::flat_map<std::string, mojom::PolicyValuePtr>>
-                            policies_mojo) {
-        base::flat_map<std::string,
-                       base::flat_map<std::string, UpdateService::PolicyValue>>
-            policies;
-        std::ranges::transform(policies_mojo,
-                               std::inserter(policies, policies.end()),
-                               &MakeAppPolicyValues);
-        return policies;
       }).Then(ToMojoCallback(std::move(callback))));
 }
 

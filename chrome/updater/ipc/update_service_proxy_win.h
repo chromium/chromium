@@ -104,18 +104,6 @@ class UpdateServiceProxyWinImpl : public UpdateServiceProxyImpl {
   void GetUpdaterState(
       base::OnceCallback<void(
           base::expected<UpdateService::UpdaterState, RpcError>)>) override;
-  void GetUpdaterPolicies(
-      base::OnceCallback<
-          void(base::expected<
-               base::flat_map<std::string, UpdateService::PolicyValue>,
-               RpcError>)>) override;
-  void GetAppPolicies(
-      base::OnceCallback<
-          void(base::expected<
-               base::flat_map<
-                   std::string,
-                   base::flat_map<std::string, UpdateService::PolicyValue>>,
-               RpcError>)>) override;
   void GetPoliciesJson(
       base::OnceCallback<void(base::expected<std::string, RpcError>)>) override;
 

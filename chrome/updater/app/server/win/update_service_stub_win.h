@@ -73,14 +73,6 @@ class UpdateServiceStubWin : public UpdateService {
       base::RepeatingCallback<void(const UpdateState&)> state_update,
       base::OnceCallback<void(Result)> callback) override;
   void GetUpdaterState(base::OnceCallback<void(const UpdaterState&)>) override;
-  void GetUpdaterPolicies(
-      base::OnceCallback<void(const base::flat_map<std::string, PolicyValue>&)>)
-      override;
-  void GetAppPolicies(
-      base::OnceCallback<void(
-          const base::flat_map<std::string,
-                               base::flat_map<std::string, PolicyValue>>&)>)
-      override;
   void GetPoliciesJson(base::OnceCallback<void(const std::string&)>) override;
 
  private:

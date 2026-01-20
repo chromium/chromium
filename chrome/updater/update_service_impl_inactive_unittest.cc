@@ -148,29 +148,6 @@ TEST(UpdateServiceImplInactiveTest, All) {
   }
   {
     base::RunLoop run_loop;
-    update_service->GetUpdaterPolicies(base::BindLambdaForTesting(
-        [&run_loop](
-            const base::flat_map<std::string, UpdateService::PolicyValue>&
-                policies) {
-          EXPECT_TRUE(policies.empty());
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-  }
-  {
-    base::RunLoop run_loop;
-    update_service->GetAppPolicies(base::BindLambdaForTesting(
-        [&run_loop](const base::flat_map<
-                    std::string,
-                    base::flat_map<std::string, UpdateService::PolicyValue>>&
-                        policies) {
-          EXPECT_TRUE(policies.empty());
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-  }
-  {
-    base::RunLoop run_loop;
     update_service->GetPoliciesJson(base::BindLambdaForTesting(
         [&run_loop](const std::string& policies_json) {
           EXPECT_TRUE(policies_json.empty());

@@ -104,20 +104,6 @@ class FakeUpdateService : public UpdateService {
       base::OnceCallback<void(const UpdaterState&)> callback) override {
     std::move(callback).Run(UpdaterState());
   }
-  void GetUpdaterPolicies(
-      base::OnceCallback<void(const base::flat_map<std::string, PolicyValue>&)>
-          callback) override {
-    std::move(callback).Run(base::flat_map<std::string, PolicyValue>());
-  }
-  void GetAppPolicies(
-      base::OnceCallback<
-          void(const base::flat_map<std::string,
-                                    base::flat_map<std::string, PolicyValue>>&)>
-          callback) override {
-    std::move(callback).Run(
-        base::flat_map<std::string,
-                       base::flat_map<std::string, PolicyValue>>());
-  }
   void GetPoliciesJson(
       base::OnceCallback<void(const std::string&)> callback) override {
     std::move(callback).Run("");

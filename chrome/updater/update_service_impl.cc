@@ -179,24 +179,6 @@ void UpdateServiceImpl::GetUpdaterState(
   delegate_->GetUpdaterState(std::move(callback));
 }
 
-void UpdateServiceImpl::GetUpdaterPolicies(
-    base::OnceCallback<void(const base::flat_map<std::string, PolicyValue>&)>
-        callback) {
-  // Asking the updater for updater policies is always allowed.
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  delegate_->GetUpdaterPolicies(std::move(callback));
-}
-
-void UpdateServiceImpl::GetAppPolicies(
-    base::OnceCallback<
-        void(const base::flat_map<std::string,
-                                  base::flat_map<std::string, PolicyValue>>&)>
-        callback) {
-  // Asking the updater for app policies is always allowed.
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  delegate_->GetAppPolicies(std::move(callback));
-}
-
 void UpdateServiceImpl::GetPoliciesJson(
     base::OnceCallback<void(const std::string&)> callback) {
   // Asking the updater for policies is always allowed.

@@ -189,20 +189,6 @@ TEST(KSAdminTest, Register) {
                 GetUpdaterState,
                 (base::OnceCallback<void(const UpdaterState&)> callback),
                 (override));
-    MOCK_METHOD(
-        void,
-        GetUpdaterPolicies,
-        (base::OnceCallback<
-            void(const base::flat_map<std::string, PolicyValue>&)> callback),
-        (override));
-    MOCK_METHOD(
-        void,
-        GetAppPolicies,
-        (base::OnceCallback<void(
-             const base::flat_map<std::string,
-                                  base::flat_map<std::string, PolicyValue>>&)>
-             callback),
-        (override));
     MOCK_METHOD(void,
                 GetPoliciesJson,
                 (base::OnceCallback<void(const std::string&)> callback),

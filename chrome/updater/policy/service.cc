@@ -51,25 +51,6 @@
 #include "components/update_client/update_client_errors.h"
 
 namespace updater {
-namespace {
-
-std::string PolicySourceToString(
-    const UpdateService::PolicyValue::PolicySource& policy_source) {
-  switch (policy_source) {
-    case UpdateService::PolicyValue::PolicySource::kSourceCloud:
-      return kSourceDMPolicyManager;
-    case UpdateService::PolicyValue::PolicySource::kSourceDefault:
-      return kSourceDefaultValuesPolicyManager;
-    case UpdateService::PolicyValue::PolicySource::kSourceExternalConstants:
-      return kSourceDictValuesPolicyManager;
-    case UpdateService::PolicyValue::PolicySource::kSourcePlatform:
-      return kSourcePlatformPolicyManager;
-    case UpdateService::PolicyValue::PolicySource::kSourceUnknown:
-      return "unknown";
-  }
-}
-
-}  // namespace
 
 PolicyService::PolicyManagers::PolicyManagers(
     scoped_refptr<ExternalConstants> external_constants) {
@@ -426,20 +407,20 @@ std::string PolicyService::GetAllPoliciesAsString() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<std::string> policies;
-  for (const auto& [policy, value] : GetUpdaterPolicies<
-           base::flat_map<std::string, UpdateService::PolicyValue>>()) {
-    policies.push_back(base::StringPrintf(
-        "%s = %s (%s)", policy.c_str(), value.policy_value.c_str(),
-        PolicySourceToString(value.policy_source).c_str()));
+  for (const auto& [policy, value] :
+       GetUpdaterPolicies<base::flat_map<std::string, PolicyValue>>()) {
+    policies.push_back(base::StringPrintf("%s = %s (%s)", policy.c_str(),
+                                          value.policy_value.c_str(),
+                                          value.policy_source.c_str()));
   }
 
-  for (const auto& [app_id, app_policy_values] : GetAppPolicies<
-           base::flat_map<std::string, UpdateService::PolicyValue>>()) {
+  for (const auto& [app_id, app_policy_values] :
+       GetAppPolicies<base::flat_map<std::string, PolicyValue>>()) {
     std::vector<std::string> app_policies;
     for (const auto& [policy, value] : app_policy_values) {
-      app_policies.push_back(base::StringPrintf(
-          "%s = %s (%s)", policy.c_str(), value.policy_value.c_str(),
-          PolicySourceToString(value.policy_source).c_str()));
+      app_policies.push_back(base::StringPrintf("%s = %s (%s)", policy.c_str(),
+                                                value.policy_value.c_str(),
+                                                value.policy_source.c_str()));
     }
     policies.push_back(
         base::StringPrintf("\"%s\": {\n    %s\n  }", app_id.c_str(),

@@ -95,18 +95,6 @@ class UpdateServiceProxyImpl
   virtual void GetUpdaterState(
       base::OnceCallback<
           void(base::expected<UpdateService::UpdaterState, RpcError>)>) = 0;
-  virtual void GetUpdaterPolicies(
-      base::OnceCallback<
-          void(base::expected<
-               base::flat_map<std::string, UpdateService::PolicyValue>,
-               RpcError>)>) = 0;
-  virtual void GetAppPolicies(
-      base::OnceCallback<
-          void(base::expected<
-               base::flat_map<
-                   std::string,
-                   base::flat_map<std::string, UpdateService::PolicyValue>>,
-               RpcError>)>) = 0;
   virtual void GetPoliciesJson(
       base::OnceCallback<void(base::expected<std::string, RpcError>)>) = 0;
 

@@ -33,44 +33,21 @@ namespace updater {
 
 class PolicyFetcher;
 
+struct PolicyValue {
+  std::string policy_value;
+  std::string policy_source;
+};
+
 // This class contains the aggregate status of a policy value. It determines
 // whether a conflict exists when multiple policy providers set the same policy.
 // Instances are logically true if an effective policy is set.
 template <typename T>
 class PolicyStatus {
  public:
-  struct PolicyValueEntry {
-    std::string policy_value;
-    UpdateService::PolicyValue::PolicySource policy_source =
-        UpdateService::PolicyValue::PolicySource::kSourceUnknown;
-  };
-
   struct Entry {
     Entry(const std::string& s, T p) : source(s), policy(p) {}
     std::string source;
     T policy{};
-
-    PolicyValueEntry ToPolicyValueEntry() const {
-      PolicyValueEntry entry;
-      entry.policy_value = ToString();
-      if (base::EqualsCaseInsensitiveASCII(source, kSourceDMPolicyManager)) {
-        entry.policy_source =
-            UpdateService::PolicyValue::PolicySource::kSourceCloud;
-      } else if (base::EqualsCaseInsensitiveASCII(
-                     source, kSourceDefaultValuesPolicyManager)) {
-        entry.policy_source =
-            UpdateService::PolicyValue::PolicySource::kSourceDefault;
-      } else if (base::EqualsCaseInsensitiveASCII(
-                     source, kSourceDictValuesPolicyManager)) {
-        entry.policy_source =
-            UpdateService::PolicyValue::PolicySource::kSourceExternalConstants;
-      } else if (base::EqualsCaseInsensitiveASCII(
-                     source, kSourcePlatformPolicyManager)) {
-        entry.policy_source =
-            UpdateService::PolicyValue::PolicySource::kSourcePlatform;
-      }
-      return entry;
-    }
 
     std::string ToString() const { return base::ToString(policy); }
   };
@@ -94,32 +71,8 @@ class PolicyStatus {
     }
   }
 
-  UpdateService::PolicyValue ToPolicyValue() const {
-    const PolicyValueEntry effective = effective_policy()->ToPolicyValueEntry();
-    UpdateService::PolicyValue value;
-    value.policy_value = effective.policy_value;
-    value.policy_source = effective.policy_source;
-
-    for (const auto& status_entry : all_policies()) {
-      const PolicyValueEntry entry = status_entry.ToPolicyValueEntry();
-      switch (entry.policy_source) {
-        case UpdateService::PolicyValue::PolicySource::kSourceCloud:
-          value.cloud_value = entry.policy_value;
-          break;
-        case UpdateService::PolicyValue::PolicySource::kSourceDefault:
-          value.default_value = entry.policy_value;
-          break;
-        case UpdateService::PolicyValue::PolicySource::kSourceExternalConstants:
-          value.external_constants_value = entry.policy_value;
-          break;
-        case UpdateService::PolicyValue::PolicySource::kSourcePlatform:
-          value.platform_value = entry.policy_value;
-          break;
-        case UpdateService::PolicyValue::PolicySource::kSourceUnknown:
-          break;
-      }
-    }
-    return value;
+  PolicyValue ToPolicyValue() const {
+    return {effective_policy()->ToString(), effective_policy()->source};
   }
 
   // Creates a base::Value::Dict representation of an individual policy adhering
@@ -155,7 +108,7 @@ class PolicyStatus {
 
   void AddPolicyToContainer(
       const std::string& name,
-      base::flat_map<std::string, UpdateService::PolicyValue>& policies) {
+      base::flat_map<std::string, PolicyValue>& policies) {
     if (!*this) {
       return;
     }

@@ -583,7 +583,6 @@ TEST_F(PolicyServiceTest, MultiplePolicyManagers) {
               Optional(PolicyEntry("DictValuePolicy", "cacheable")));
   EXPECT_EQ(download_preference_status.conflict_policy(), std::nullopt);
 
-#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(policy_service->GetAllPoliciesAsString(),
             base::StringPrintf(
                 "{\n"
@@ -613,37 +612,6 @@ TEST_F(PolicyServiceTest, MultiplePolicyManagers) {
                 "  }\n"
                 "}\n",
                 enterprise_companion::kCompanionAppId));
-#else   // BUILDFLAG(IS_WIN)
-  EXPECT_EQ(policy_service->GetAllPoliciesAsString(),
-            base::StringPrintf(
-                "{\n"
-                "  CloudPolicyOverridesPlatformPolicy = false (unknown)\n"
-                "  DownloadPreference = cacheable (DictValuePolicy)\n"
-                "  LastCheckPeriod = 16200 s (Default)\n"
-                "  PackageCacheExpires = 60 (Device Management)\n"
-                "  PackageCacheSizeLimit = 1000 (unknown)\n"
-                "  ProxyMode = direct (DictValuePolicy)\n"
-                "  ProxyPacURL = url://proxyurl (DictValuePolicy)\n"
-                "  ProxyServer = test-server (DictValuePolicy)\n"
-                "  UpdatesSuppressed = 5, 10, 30 (unknown)\n"
-                "  \"app1\": {\n"
-                "    Install = 0 (unknown)\n"
-                "    RollbackToTargetVersionAllowed = false (Default)\n"
-                "    TargetChannel = channel_gp (unknown)\n"
-                "    TargetVersionPrefix = 103.3. (DictValuePolicy)\n"
-                "    Update = 3 (Device Management)\n"
-                "  }\n"
-                "  \"app2\": {\n"
-                "    Install = 2 (DictValuePolicy)\n"
-                "    RollbackToTargetVersionAllowed = false (Default)\n"
-                "    Update = 1 (unknown)\n"
-                "  }\n"
-                "  \"%s\": {\n"
-                "    \n"
-                "  }\n"
-                "}\n",
-                enterprise_companion::kCompanionAppId));
-#endif  // BUILDFLAG(IS_WIN)
 
   EXPECT_EQ(
       policy_service->GetAllPolicies(),
