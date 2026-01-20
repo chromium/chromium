@@ -180,12 +180,20 @@ bool VerticalTabStripTopContainer::IsPositionInWindowCaption(
 
 void VerticalTabStripTopContainer::SetToolbarHeightForLayout(
     const int toolbar_height) {
+  if (toolbar_height_ == toolbar_height) {
+    return;
+  }
   toolbar_height_ = toolbar_height;
+  InvalidateLayout();
 }
 
 void VerticalTabStripTopContainer::SetExclusionWidthForLayout(
     const int exclusion_width) {
+  if (exclusion_width_ == exclusion_width) {
+    return;
+  }
   exclusion_width_ = exclusion_width;
+  InvalidateLayout();
 }
 
 BEGIN_METADATA(VerticalTabStripTopContainer)
