@@ -2048,6 +2048,7 @@ void StoragePartitionImpl::OnAuthRequired(
         auth_challenge_responder) {
   URLLoaderNetworkContext context =
       url_loader_network_observers_.current_context();
+  URLLoaderNetworkContext original_context = context;
   std::optional<bool> is_primary_main_frame_navigation;
   std::optional<bool> is_navigation_request;
 
@@ -2112,6 +2113,19 @@ void StoragePartitionImpl::OnAuthRequired(
     return;
   }
 
+  // If the request was initiated by a service worker, we should not treat it as
+  // a navigation request for the purpose of authentication. This is because
+  // even if the request is associated with an ongoing navigation for UI
+  // purposes, the network request itself is issued by the service worker.
+  // `WebRequestAPI::MaybeProxyAuthRequest` overrides the process ID to -1
+  // for navigation requests, but the `WebRequestProxyingURLLoaderFactory`
+  // for service worker subresources is registered with the service worker's
+  // actual process ID. Treating this as a non-navigation ensures the
+  // `GlobalRequestID` matches and the proxy can be found.
+  if (original_context.type() == ContextType::kSharedOrServiceWorkerContext) {
+    is_navigation_request = false;
+  }
+
   if (!is_primary_main_frame_navigation.has_value()) {
     is_primary_main_frame_navigation = context.IsPrimaryMainFrameRequest();
   }
@@ -2119,7 +2133,14 @@ void StoragePartitionImpl::OnAuthRequired(
     is_navigation_request = context.IsNavigationRequestContext();
   }
   int process_id = network::mojom::kBrowserProcessId;
-  if (context.type() == ContextType::kRenderFrameHostContext) {
+  if (original_context.type() == ContextType::kSharedOrServiceWorkerContext) {
+    // If the request was initiated by a service worker, use the service
+    // worker's process ID. This ensures the `GlobalRequestID` used to look up
+    // the proxy (e.g. in `WebRequestAPI`) matches the one used when the factory
+    // was created, which for service worker subresources is the worker's
+    // process ID.
+    process_id = original_context.process_id();
+  } else if (context.type() == ContextType::kRenderFrameHostContext) {
     // Set `process_id` to `kInvalidProcessId` considering `render_frame_host`
     // can be null when it's destroyed already. `process_id` is updated only if
     // `render_frame_host` is not null. If `render_frame_host` is null,
@@ -2144,8 +2165,6 @@ void StoragePartitionImpl::OnAuthRequired(
         process_id = render_frame_host->GetGlobalId().child_id.GetUnsafeValue();
       }
     }
-  } else if (context.type() == ContextType::kSharedOrServiceWorkerContext) {
-    process_id = context.process_id();
   }
 
   FrameTreeNodeId frame_tree_node_id;
