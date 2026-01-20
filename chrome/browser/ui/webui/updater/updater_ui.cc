@@ -112,8 +112,13 @@ UpdaterUI::UpdaterUI(content::WebUI* web_ui)
       {"filterChipEventType", IDS_UPDATER_FILTER_CHIP_EVENT_TYPE},
       {"filterChipUpdateOutcome", IDS_UPDATER_FILTER_CHIP_UPDATE_OUTCOME},
       {"filterChipUpdaterScope", IDS_UPDATER_FILTER_CHIP_UPDATER_SCOPE},
+      {"inactiveVersions", IDS_UPDATER_INACTIVE_VERSIONS_LABEL},
+      {"installPath", IDS_UPDATER_INSTALL_PATH_LABEL},
       {"installSummary", IDS_UPDATER_INSTALL_SUMMARY},
       {"internal", IDS_UPDATER_INTERNAL},
+      {"lastChecked", IDS_UPDATER_LAST_CHECKED_LABEL},
+      {"lastStarted", IDS_UPDATER_LAST_STARTED_LABEL},
+      {"never", IDS_UPDATER_NEVER},
       {"nextVersion", IDS_UPDATER_NEXT_VERSION},
       {"noUpdate", IDS_UPDATER_NO_UPDATE},
       {"omahaRequest", IDS_UPDATER_OMAHA_REQUEST},
@@ -139,6 +144,7 @@ UpdaterUI::UpdaterUI(content::WebUI* web_ui)
       {"updateOutcomeUPDATE_ERROR", IDS_UPDATER_UPDATE_OUTCOME_UPDATE_ERROR},
       {"updatedTo", IDS_UPDATER_UPDATED_TO},
       {"updaterVersion", IDS_UPDATER_UPDATER_VERSION},
+      {"versionLabel", IDS_UPDATER_VERSION_LABEL},
       {"viewRawDetails", IDS_UPDATER_VIEW_RAW_DETAILS},
   });
 

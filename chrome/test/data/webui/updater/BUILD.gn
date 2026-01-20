@@ -18,6 +18,7 @@ build_webui_tests("build") {
     "event_list/filter_dialog/scope_dialog_test.ts",
     "event_list/filter_dialog/type_dialog_test.ts",
     "event_list/filter_settings_test.ts",
+    "updater_state/updater_state_card_test.ts",
   ]
 
   # Path mapping the WebUI host URL to the path where the WebUI's compiled

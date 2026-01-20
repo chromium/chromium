@@ -19972,11 +19972,26 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_UPDATER_FILTER_CHIP_UPDATER_SCOPE" desc="Text displayed in a filter chip showing the selected updater scopes.">
         Updater Scope: <ph name="OUTCOMES">$1<ex>Per-system updater, Per-user updater</ex></ph>
       </message>
+      <message name="IDS_UPDATER_INACTIVE_VERSIONS_LABEL" desc="A label for a list of inactive versions of the Chrome Updater. Multiple Chrome Updater versions may be present on a users machine but only one may be active at a time.">
+        Inactive Versions:
+      </message>
+      <message name="IDS_UPDATER_INSTALL_PATH_LABEL" desc="A label for a filesystem path indicating where the Chrome Updater is installed on a user's system.">
+        Install Path:
+      </message>
       <message name="IDS_UPDATER_INSTALL_SUMMARY" desc="Summary of an event in which software was installed, including the version.">
         Installed version <ph name="VERSION">$1<ex>1.2.3.4</ex></ph>
       </message>
       <message name="IDS_UPDATER_INTERNAL" desc="Label used to indicate that a logged Chrome Updater event pertains to the updater itself and not an app managed by the updater (e.g. Google Chrome).">
         Internal
+      </message>
+      <message name="IDS_UPDATER_LAST_CHECKED_LABEL" desc="A label for a timestamp indicating the last time the Chrome Updater checked for an update.">
+        Last Update Check:
+      </message>
+      <message name="IDS_UPDATER_LAST_STARTED_LABEL" desc="A label for a timestamp indicating the last time the Chrome Updater performed its periodic tasks.">
+        Last Periodic Task Run:
+      </message>
+      <message name="IDS_UPDATER_NEVER" desc="Text indicating that that an action has never happened. For instance, this is used in place of a timestamp to indicate that an instance of the Chrome Updater has never checked for any updates.">
+        Never
       </message>
       <message name="IDS_UPDATER_NEXT_VERSION" desc="Label indicating the version of a software installation that the Chrome Updater tried to update to.">
         Next version: <ph name="VERSION">$1<ex>1.2.3.4</ex></ph>
@@ -20040,6 +20055,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_UPDATER_UPDATER_VERSION" desc="Label indicating the version of the updater itself.">
         Updater version: <ph name="VERSION">$1<ex>1.2.3.4</ex></ph>
+      </message>
+      <message name="IDS_UPDATER_VERSION_LABEL" desc="A label for the version of the updater.">
+        Version:
       </message>
       <message name="IDS_UPDATER_UPDATE_ERROR" desc="Summary of an update event that failed.">
         Update operation failed
