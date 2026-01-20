@@ -150,7 +150,8 @@ bool FocusgroupController::AdvanceInGrid(Element* initial_element,
     // 3. Only set the focus on grid focusgroup items. If we're on a cell that
     // isn't a grid focusgroup item, keep going to the next/previous element
     // until we find a valid item or we exhausted all the options.
-    if (utils::IsGridFocusgroupItem(current)) {
+    if (utils::IsGridFocusgroupItem(current) &&
+        current->IsKeyboardFocusableSlow()) {
       Focus(current, direction);
       return true;
     }

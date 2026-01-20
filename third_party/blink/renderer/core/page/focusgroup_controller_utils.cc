@@ -345,7 +345,9 @@ Element* FocusgroupControllerUtils::NextFocusgroupItemInDirection(
       continue;
     }
     if (IsFocusgroupItemWithOwner(next_element, owner)) {
-      return next_element;
+      if (next_element->IsKeyboardFocusableSlow()) {
+        return next_element;
+      }
     }
     next_element =
         traversal_context.NextInDirection(next_element, focus_direction,
@@ -356,7 +358,7 @@ Element* FocusgroupControllerUtils::NextFocusgroupItemInDirection(
 
 Element* FocusgroupControllerUtils::GetFocusgroupOwnerOfItem(
     const Element* element) {
-  if (!element || !element->IsKeyboardFocusableSlow()) {
+  if (!element || !element->IsFocusable()) {
     return nullptr;
   }
 
@@ -373,7 +375,7 @@ bool FocusgroupControllerUtils::IsGridFocusgroupItem(const Element* element) {
   CHECK(element);
   CHECK(RuntimeEnabledFeatures::FocusgroupGridEnabled(
       element->GetExecutionContext()));
-  if (!element->IsKeyboardFocusableSlow()) {
+  if (!element->IsFocusable()) {
     return false;
   }
 
@@ -549,7 +551,9 @@ Element* FocusgroupControllerUtils::FirstFocusgroupItemWithin(
       }
     }
     if (IsFocusgroupItemWithOwner(el, owner)) {
-      return el;
+      if (el->IsKeyboardFocusableSlow()) {
+        return el;
+      }
     }
   }
   return nullptr;
@@ -578,7 +582,9 @@ Element* FocusgroupControllerUtils::LastFocusgroupItemWithin(
       }
     }
     if (IsFocusgroupItemWithOwner(el, owner)) {
-      last = el;
+      if (el->IsKeyboardFocusableSlow()) {
+        last = el;
+      }
     }
   }
   return last;
