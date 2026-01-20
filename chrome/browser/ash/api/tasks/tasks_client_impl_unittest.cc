@@ -308,8 +308,7 @@ class TasksClientImplTest : public testing::Test {
     ASSERT_TRUE(test_server_.Start());
 
     gaia_urls_overrider_ = std::make_unique<GaiaUrlsOverriderForTesting>(
-        base::CommandLine::ForCurrentProcess(), "tasks_api_origin_url",
-        test_server_.base_url().spec());
+        "tasks_api_origin_url", test_server_.base_url().spec());
     ASSERT_EQ(GaiaUrls::GetInstance()->tasks_api_origin_url(),
               test_server_.base_url().spec());
   }

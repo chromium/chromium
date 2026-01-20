@@ -103,8 +103,7 @@ class ClassroomApiListStudentSubmissionRequestsTest : public testing::Test {
     ASSERT_TRUE(test_server_.Start());
 
     gaia_urls_overrider_ = std::make_unique<GaiaUrlsOverriderForTesting>(
-        base::CommandLine::ForCurrentProcess(), "classroom_api_origin_url",
-        test_server_.base_url().spec());
+        "classroom_api_origin_url", test_server_.base_url().spec());
     ASSERT_EQ(GaiaUrls::GetInstance()->classroom_api_origin_url(),
               test_server_.base_url().spec());
   }

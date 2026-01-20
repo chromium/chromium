@@ -10,7 +10,7 @@
 #include <string_view>
 
 #include "base/component_export.h"
-#include "base/gtest_prod_util.h"
+#include "base/functional/callback_helpers.h"
 #include "base/values.h"
 #include "google_apis/google_api_keys.h"
 
@@ -72,15 +72,16 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaConfig {
   void SerializeContentsToCommandLineSwitch(
       base::CommandLine* command_line) const;
 
-  // Instantiates this object given |base::CommandLine|, used in tests.
-  static std::unique_ptr<GaiaConfig> CreateFromCommandLineForTesting(
-      const base::CommandLine* command_line);
+  // Instantiates `GaiaConfig` with `base::CommandLine`. Used in tests.
+  [[nodiscard]] static std::unique_ptr<GaiaConfig>
+  CreateFromCommandLineForTesting(const base::CommandLine* command_line);
+
+  // Overrides the global instance of GaiaConfig with `config` and returns a
+  // scoped object that will restore the previous value once destroyed.
+  [[nodiscard]] static base::ScopedClosureRunner SetScopedConfigForTesting(
+      std::unique_ptr<GaiaConfig> config);
 
  private:
-  friend class GaiaUrlsOverriderForTesting;
-  friend class GaiaUrlsTest;
-  FRIEND_TEST_ALL_PREFIXES(GoogleAPIKeysTest, OverrideAllKeysUsingConfig);
-
   static std::unique_ptr<GaiaConfig>* GetGlobalConfig();
 
   static std::unique_ptr<GaiaConfig> ReadConfigFromString(
@@ -89,9 +90,6 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaConfig {
       const base::FilePath& config_path);
   static std::unique_ptr<GaiaConfig> ReadConfigFromCommandLineSwitches(
       const base::CommandLine* command_line);
-
-  // Re-reads the config from disk and resets the global instance of GaiaConfig.
-  static void ResetInstanceForTesting();
 
   base::Value::Dict parsed_config_;
 };

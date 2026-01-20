@@ -52,13 +52,16 @@ class GaiaUrlsTest : public ::testing::Test {
   // Lazily constructs |gaia_urls_|.
   GaiaUrls* gaia_urls() {
     if (!gaia_urls_) {
-      GaiaConfig::ResetInstanceForTesting();
+      scoped_config_ = GaiaConfig::SetScopedConfigForTesting(
+          GaiaConfig::CreateFromCommandLineForTesting(
+              base::CommandLine::ForCurrentProcess()));
       gaia_urls_ = std::make_unique<GaiaUrls>();
     }
     return gaia_urls_.get();
   }
 
  private:
+  base::ScopedClosureRunner scoped_config_;
   std::unique_ptr<GaiaUrls> gaia_urls_;
 };
 

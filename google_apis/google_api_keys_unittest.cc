@@ -12,6 +12,7 @@
 
 #include "google_apis/google_api_keys_unittest.h"
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -575,10 +576,12 @@ namespace override_all_keys_config {
 }  // namespace override_all_keys_config
 
 TEST_F(GoogleAPIKeysTest, OverrideAllKeysUsingConfig) {
-  auto command_line = std::make_unique<base::test::ScopedCommandLine>();
-  command_line->GetProcessCommandLine()->AppendSwitchPath(
-      "gaia-config", GetTestFilePath("api_keys.json"));
-  GaiaConfig::ResetInstanceForTesting();
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchPath(
+      switches::kGaiaConfigPath, GetTestFilePath("api_keys.json"));
+  auto scoped_config_override = GaiaConfig::SetScopedConfigForTesting(
+      GaiaConfig::CreateFromCommandLineForTesting(
+          scoped_command_line.GetProcessCommandLine()));
 
   google_apis::ApiKeyCache api_key_cache(
       override_all_keys_config::GetDefaultApiKeysFromDefinedValues());
@@ -604,9 +607,4 @@ TEST_F(GoogleAPIKeysTest, OverrideAllKeysUsingConfig) {
   EXPECT_EQ(
       "config-SECRET_REMOTING_HOST",
       google_apis::GetOAuth2ClientSecret(google_apis::CLIENT_REMOTING_HOST));
-
-  // It's important to reset the global config state for other tests running in
-  // the same process.
-  command_line.reset();
-  GaiaConfig::ResetInstanceForTesting();
 }

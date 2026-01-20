@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -83,9 +84,15 @@ std::unique_ptr<GaiaConfig> GaiaConfig::CreateFromCommandLineForTesting(
 }
 
 // static
-void GaiaConfig::ResetInstanceForTesting() {
-  *GetGlobalConfig() =
-      ReadConfigFromCommandLineSwitches(base::CommandLine::ForCurrentProcess());
+base::ScopedClosureRunner GaiaConfig::SetScopedConfigForTesting(
+    std::unique_ptr<GaiaConfig> config) {
+  std::unique_ptr<GaiaConfig> previous_config =
+      std::exchange(*GetGlobalConfig(), std::move(config));
+  return base::ScopedClosureRunner(base::BindOnce(
+      [](std::unique_ptr<GaiaConfig> config_to_restore) {
+        *GetGlobalConfig() = std::move(config_to_restore);
+      },
+      std::move(previous_config)));
 }
 
 // static

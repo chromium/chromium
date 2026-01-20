@@ -8,11 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
-
-namespace base {
-class CommandLine;
-}  // namespace base
+#include "base/functional/callback_helpers.h"
 
 class GaiaUrls;
 
@@ -22,8 +18,7 @@ class GaiaUrls;
 // url.
 class GaiaUrlsOverriderForTesting {
  public:
-  GaiaUrlsOverriderForTesting(base::CommandLine* command_line,
-                              const std::string& url_key,
+  GaiaUrlsOverriderForTesting(const std::string& url_key,
                               const std::string& url_value);
   GaiaUrlsOverriderForTesting(const GaiaUrlsOverriderForTesting&) = delete;
   GaiaUrlsOverriderForTesting& operator=(const GaiaUrlsOverriderForTesting&) =
@@ -31,8 +26,8 @@ class GaiaUrlsOverriderForTesting {
   ~GaiaUrlsOverriderForTesting();
 
  private:
-  // To make sure tests and this class modify the same command line instance.
-  const raw_ptr<base::CommandLine> command_line_;
+  // Closure for restoring the original `GaiaConfig`.
+  base::ScopedClosureRunner scoped_config_override_;
 
   // Scoped version of `GaiaUrls` that used instead of the original
   // singleton.

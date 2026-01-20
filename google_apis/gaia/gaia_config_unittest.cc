@@ -17,6 +17,7 @@ namespace {
 
 using testing::Eq;
 using testing::IsNull;
+using testing::Not;
 
 const char kTestConfigContents[] = R"(
 {
@@ -92,6 +93,27 @@ TEST(GaiaConfigTest, ShouldSerializeContentsToCommandLineSwitch) {
   EXPECT_TRUE(
       deserialized_config->GetURLIfExists("test_url", &deserialized_url));
   EXPECT_THAT(deserialized_url, Eq("https://accounts.example.com/"));
+}
+
+TEST(GaiaConfigTest, ShouldRestoreGlobalInstance) {
+  GaiaConfig* original_instance = GaiaConfig::GetInstance();
+
+  {
+    auto config_dict = base::Value::Dict().SetByDottedPath(
+        "urls.test_url.url", "https://overridden.example.com/");
+    auto scoped_override = GaiaConfig::SetScopedConfigForTesting(
+        std::make_unique<GaiaConfig>(std::move(config_dict)));
+
+    GaiaConfig* current_instance = GaiaConfig::GetInstance();
+    ASSERT_THAT(current_instance, Not(IsNull()));
+    ASSERT_THAT(current_instance, Not(Eq(original_instance)));
+
+    GURL url;
+    EXPECT_TRUE(current_instance->GetURLIfExists("test_url", &url));
+    EXPECT_THAT(url, Eq("https://overridden.example.com/"));
+  }
+
+  EXPECT_THAT(GaiaConfig::GetInstance(), Eq(original_instance));
 }
 
 }  // namespace
