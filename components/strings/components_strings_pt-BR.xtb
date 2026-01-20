@@ -74,7 +74,7 @@
 <translation id="1113869188872983271">&amp;Desfazer reordenar</translation>
 <translation id="1118429183611783760">Aspiradores de pó e produtos para piso</translation>
 <translation id="1122714970786750095">Eletroeletrônicos</translation>
-<translation id="1123753900084781868">A "Legenda instantânea" não está disponível no momento</translation>
+<translation id="1123753900084781868">A legenda instantânea não está disponível no momento</translation>
 <translation id="112840717907525620">Cache da política OK</translation>
 <translation id="1131264053432022307">Imagem que você copiou</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Para sair da tela cheia, arraste de cima para baixo da tela e toque no botão de voltar</translation>
@@ -1826,7 +1826,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="398470910934384994">Pássaros</translation>
 <translation id="3985750352229496475">Gerenciar endereços…</translation>
 <translation id="3986557181852957825">Logotipo do Google Pay e da Klarna</translation>
-<translation id="3986705137476756801">Desativar "Legenda instantânea" por enquanto</translation>
+<translation id="3986705137476756801">Desativar legenda instantânea por enquanto</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Menos de 1 MB</translation>
 <translation id="3990250421422698716">Ajustar desvio</translation>
@@ -3012,7 +3012,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5950901984834744590">Lâminas e barbeadores</translation>
 <translation id="5951495562196540101">Não é possível fazer a inscrição com a conta pessoal (pacote de licença disponível).</translation>
 <translation id="5952076224478208938">Marca</translation>
-<translation id="5953516610448771166">O recurso Legenda instantânea não está disponível para esse tipo de mídia. Se quiser ver legendas, bloqueie a configuração <ph name="CONTENT_SETTINGS" /> para este site.</translation>
+<translation id="5953516610448771166">O recurso de legenda instantânea não está disponível para esse tipo de mídia. Se quiser ver legendas, bloqueie a configuração <ph name="CONTENT_SETTINGS" /> para este site.</translation>
 <translation id="5960795367348889467">Verificação</translation>
 <translation id="5963413905009737549">Seção</translation>
 <translation id="5964247741333118902">Conteúdo incorporado</translation>
