@@ -475,11 +475,10 @@ void ExternalAppResolutionCommand::OnLockUpgradedFinalizeInstall(
   finalize_options.add_to_desktop = install_params_->add_to_desktop;
   finalize_options.add_to_quick_launch_bar =
       install_params_->add_to_quick_launch_bar;
-
-  if (apps_lock_->registrar().IsInstallState(
-          app_id_, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                    proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                    proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
+  // TODO(crbug.com/379136842): This is likely too 'permissive' of a check, and
+  // different more restrictive filter should likely be used instead.
+  if (apps_lock_->registrar().AppMatches(
+          app_id_, WebAppFilter::IsAppSurfaceableToUser())) {
     // If an installation is triggered for the same app but with a
     // different install_url, then we overwrite the manifest fields.
     // If icon downloads fail, then we would not overwrite the icon

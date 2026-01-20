@@ -177,10 +177,10 @@ void AppHomePageHandler::LaunchAppInternal(
   apps::LaunchContainer launch_container;
 
   web_app::WebAppRegistrar& registrar = web_app_provider_->registrar_unsafe();
-  if (registrar.IsInstallState(
-          app_id, {web_app::proto::SUGGESTED_FROM_ANOTHER_DEVICE,
-                   web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-                   web_app::proto::INSTALLED_WITH_OS_INTEGRATION})) {
+  // TODO(crbug.com/379136842): This is likely too 'permissive' of a check, and
+  // different more restrictive filter should likely be used instead.
+  if (registrar.AppMatches(app_id,
+                           web_app::WebAppFilter::IsAppSurfaceableToUser())) {
     type = extensions::Manifest::Type::TYPE_HOSTED_APP;
     full_launch_url = registrar.GetAppStartUrl(app_id);
     launch_container = web_app::ConvertDisplayModeToAppLaunchContainer(
@@ -447,8 +447,8 @@ void AppHomePageHandler::FillWebAppInfoList(
 
   for (const webapps::AppId& web_app_id : registrar.GetAppIds()) {
     // Do not show apps that are migration targets on chrome://apps.
-    if (registrar.IsInstallState(web_app_id,
-                                 {web_app::proto::SUGGESTED_FROM_MIGRATION})) {
+    if (registrar.AppMatches(
+            web_app_id, web_app::WebAppFilter::IsAppSuggestedForMigration())) {
       continue;
     }
     result->emplace_back(CreateAppInfoPtrFromWebApp(web_app_id));
@@ -684,10 +684,10 @@ void AppHomePageHandler::UninstallApp(const std::string& app_id) {
     return;
   }
 
-  if (web_app_provider_->registrar_unsafe().IsInstallState(
-          app_id, {web_app::proto::SUGGESTED_FROM_ANOTHER_DEVICE,
-                   web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-                   web_app::proto::INSTALLED_WITH_OS_INTEGRATION})) {
+  // TODO(crbug.com/379136842): This is likely too 'permissive' of a check, and
+  // different more restrictive filter should likely be used instead.
+  if (web_app_provider_->registrar_unsafe().AppMatches(
+          app_id, web_app::WebAppFilter::IsAppSurfaceableToUser())) {
     UninstallWebApp(app_id);
     return;
   }
@@ -700,10 +700,10 @@ void AppHomePageHandler::UninstallApp(const std::string& app_id) {
 }
 
 void AppHomePageHandler::ShowAppSettings(const std::string& app_id) {
-  if (web_app_provider_->registrar_unsafe().IsInstallState(
-          app_id, {web_app::proto::SUGGESTED_FROM_ANOTHER_DEVICE,
-                   web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-                   web_app::proto::INSTALLED_WITH_OS_INTEGRATION})) {
+  // TODO(crbug.com/379136842): This is likely too 'permissive' of a check, and
+  // different more restrictive filter should likely be used instead.
+  if (web_app_provider_->registrar_unsafe().AppMatches(
+          app_id, web_app::WebAppFilter::IsAppSurfaceableToUser())) {
     ShowWebAppSettings(app_id);
     return;
   }
@@ -722,10 +722,10 @@ void AppHomePageHandler::ShowAppSettings(const std::string& app_id) {
 
 void AppHomePageHandler::CreateAppShortcut(const std::string& app_id,
                                            CreateAppShortcutCallback callback) {
-  if (web_app_provider_->registrar_unsafe().IsInstallState(
-          app_id, {web_app::proto::SUGGESTED_FROM_ANOTHER_DEVICE,
-                   web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-                   web_app::proto::INSTALLED_WITH_OS_INTEGRATION})) {
+  // TODO(crbug.com/379136842): This is likely too 'permissive' of a check, and
+  // different more restrictive filter should likely be used instead.
+  if (web_app_provider_->registrar_unsafe().AppMatches(
+          app_id, web_app::WebAppFilter::IsAppSurfaceableToUser())) {
     CreateWebAppShortcut(app_id, std::move(callback));
     return;
   }

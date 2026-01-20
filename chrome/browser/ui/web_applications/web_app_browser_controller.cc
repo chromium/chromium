@@ -663,10 +663,10 @@ void WebAppBrowserController::Uninstall(
 }
 
 bool WebAppBrowserController::IsInstalled() const {
-  return registrar().IsInstallState(
-      app_id(), {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                 proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                 proto::InstallState::INSTALLED_WITH_OS_INTEGRATION});
+  // TODO(crbug.com/379136842): This is likely too 'permissive' of a check, and
+  // different more restrictive filter should likely be used instead.
+  return registrar().AppMatches(app_id(),
+                                WebAppFilter::IsAppSurfaceableToUser());
 }
 
 void WebAppBrowserController::SetIconLoadCallbackForTesting(

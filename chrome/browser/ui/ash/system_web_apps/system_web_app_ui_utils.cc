@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -303,11 +304,10 @@ BrowserDelegate* FindSystemWebAppBrowser(Profile* profile,
   auto* provider = SystemWebAppManager::GetWebAppProvider(profile);
   CHECK(provider);
 
-  if (!provider->registrar_unsafe().IsInstallState(
-          app_id.value(),
-          {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
+  // TODO(crbug.com/379136842): This is likely too 'permissive' of a check, and
+  // different more restrictive filter should likely be used instead.
+  if (!provider->registrar_unsafe().AppMatches(
+          app_id.value(), web_app::WebAppFilter::IsAppSurfaceableToUser())) {
     return nullptr;
   }
 
