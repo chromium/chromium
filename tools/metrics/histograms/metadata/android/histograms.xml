@@ -8502,7 +8502,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.ShouldInterceptRequest.InterceptDuration"
-    units="ms" expires_after="2026-03-01">
+    units="ms" expires_after="2027-01-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
