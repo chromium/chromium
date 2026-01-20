@@ -99,7 +99,7 @@ class ReadAnythingAppModel {
   // rather than just a single vector containing all updates from multiple
   // accessibility events. This is so that Unserialize can be called in
   // batches on the group of Updates received from each call to
-  // AccessibilityEventReceived. Otherwise, intermediary updates might
+  // ApplyAccessibilityUpdates. Otherwise, intermediary updates might
   // cause tree inconsistency issues with the final update.
   using PendingUpdates = std::map<ui::AXTreeID, std::vector<Updates>>;
 
@@ -350,10 +350,25 @@ class ReadAnythingAppModel {
 
   void ClearPendingUpdates();
 
-  void AccessibilityEventReceived(const ui::AXTreeID& tree_id,
-                                  Updates& updates,
-                                  std::vector<ui::AXEvent>& events,
-                                  bool speech_playing);
+  // Applies accessibility updates to the AXTree with the given tree_id.
+  // Unserializes the updates, processes generated events, and updates the
+  // model's state.
+  void ApplyAccessibilityUpdates(const ui::AXTreeID& tree_id,
+                                 Updates& updates,
+                                 std::vector<ui::AXEvent>& events);
+
+  // Queues accessibility updates to be processed later. This is used when
+  // the controller decides to not process the updates immediately to avoid
+  // interrupting the user experience. The updates are stored in
+  // pending_updates_.
+  void QueueAccessibilityUpdates(const ui::AXTreeID& tree_id,
+                                 Updates& updates,
+                                 std::vector<ui::AXEvent>& events);
+
+  // Ensures that the AXTree with the given tree_id exists in the model's
+  // tree_infos_ map. If the tree does not exist, a new one is created.
+  // Also updates the active tree ID if necessary.
+  void PrepareForAXTreeUpdates(const ui::AXTreeID& tree_id);
 
   void OnAXTreeDestroyed(const ui::AXTreeID& tree_id);
 
@@ -422,6 +437,12 @@ class ReadAnythingAppModel {
   void ProcessGeneratedEvents(const ui::AXEventGenerator& event_generator,
                               size_t prev_tree_size,
                               size_t tree_size);
+
+  void EnsureAXTreeExists(const ui::AXTreeID& tree_id);
+
+  void UpdateActiveTreeIfNeeded(const ui::AXTreeID& tree_id);
+
+  void HandleScreen2xDataCollection(const Updates& updates);
 
   // Runs the data collection for screen2x pipeline, provided in the form of a
   // callback from the ReadAnythingAppController. This should only be called

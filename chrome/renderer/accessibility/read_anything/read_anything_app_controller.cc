@@ -573,12 +573,26 @@ void ReadAnythingAppController::AccessibilityEventReceived(
     const ui::AXTreeID& tree_id,
     const std::vector<ui::AXTreeUpdate>& updates,
     const std::vector<ui::AXEvent>& events) {
+  model_.PrepareForAXTreeUpdates(tree_id);
+
   // Remove the const-ness of the data here so that subsequent methods can move
   // the data.
-  model_.AccessibilityEventReceived(
-      tree_id, const_cast<std::vector<ui::AXTreeUpdate>&>(updates),
-      const_cast<std::vector<ui::AXEvent>&>(events),
-      read_aloud_model_.speech_playing());
+  if (tree_id == model_.active_tree_id() &&
+      (model_.distillation_in_progress() ||
+       read_aloud_model_.speech_playing())) {
+    VLOG(1)
+        << "In AccessibilityEventReceived. Calling QueueAccessibilityUpdates "
+           "because distiller should not run yet.";
+
+    model_.QueueAccessibilityUpdates(
+        tree_id, const_cast<std::vector<ui::AXTreeUpdate>&>(updates),
+        const_cast<std::vector<ui::AXEvent>&>(events));
+  } else {
+    model_.ApplyAccessibilityUpdates(
+        tree_id, const_cast<std::vector<ui::AXTreeUpdate>&>(updates),
+        const_cast<std::vector<ui::AXEvent>&>(events));
+  }
+
   // From this point onward, `updates` and `events` should not be accessed.
 
   if (tree_id != model_.active_tree_id() ||
