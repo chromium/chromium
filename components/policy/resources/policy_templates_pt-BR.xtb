@@ -1845,7 +1845,7 @@ Se a política for desativada, os usuários não terão acesso a essa funcionali
 
       Definir <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valor 2) impede que qualquer variação seja aplicada ao navegador na tela de login. Esse modo não é recomendado, porque pode impedir que os desenvolvedores do <ph name="PRODUCT_OS_NAME" /> forneçam correções críticas de segurança de maneira rápida.</translation>
 <translation id="2215746393279570703">Configurações de SSO flutuante</translation>
-<translation id="2219724363635419721">Desative a Legenda instantânea</translation>
+<translation id="2219724363635419721">Desative a legenda instantânea</translation>
 <translation id="2221779615493499989">Informar o status de rede dos usuários em dispositivos registrados.
 
       Se a política for definida como falsa, as informações não serão enviadas.
@@ -6031,15 +6031,15 @@ da versão do ChromeOS ou do dispositivo) serão sempre exibidas ou ocultas na t
 
           Se a política for deixada sem definição, nenhuma informação complementar vai ser mostrada e a criação do tíquete vai funcionar normalmente.</translation>
 <translation id="4960597185231686653">Uma sinalização booleana indicando se o teclado na tela pode oferecer entrada de texto por voz.</translation>
-<translation id="49677896192199414">Ative a Legenda instantânea.
+<translation id="49677896192199414">Ative a legenda instantânea.
 
-Se essa política for ativada, a Legenda instantânea vai ficar sempre ativada.
+Se essa política for ativada, a legenda instantânea vai ficar sempre ativada.
 
-Se ela for desativada, a Legenda instantânea também vai ficar desativada.
+Se ela for desativada, a legenda instantânea também vai ficar desativada.
 
 Se for definida como obrigatória, o usuário não poderá mudar nem substituir essa política.
 
-Se for deixada sem definição, a Legenda instantânea vai ficar desativada inicialmente, mas poderá ser ativada pelo usuário a qualquer momento.</translation>
+Se for deixada sem definição, a legenda instantânea vai ficar desativada inicialmente, mas poderá ser ativada pelo usuário a qualquer momento.</translation>
 <translation id="4970046075219007744">Permitir que apps da Web solicitem acesso a tipos de arquivos usando a API File Handling</translation>
 <translation id="4970855112942626932">Desativar login no navegador</translation>
 <translation id="4974091268178043378">Modo de cor do ChromeOS</translation>
@@ -6844,7 +6844,7 @@ A política vai ficar disponível por 3 marcos.</translation>
 <translation id="5476152378885134514">Bloquear a área de transferência nesses sites</translation>
 <translation id="5479841110985196412">Ativar o teclado virtual de acessibilidade</translation>
 <translation id="5480380613778757009">Se a política for desativada ou deixada sem definição, todas as configurações de tela que foram definidas em Sessões de visitante gerenciadas serão redefinidas assim que a sessão for encerrada. Se a política for definida como "Verdadeira", as propriedades de tela permanecerão após a Sessão de visitante gerenciada ser encerrada.</translation>
-<translation id="548137908954174608">Ative a Legenda instantânea</translation>
+<translation id="548137908954174608">Ative a legenda instantânea</translation>
 <translation id="5483012943408894695">Origens ou padrões de nome do host aos quais as restrições sobre origens não seguras não se aplicam</translation>
 <translation id="5483065054530244863">Permitir certificados SHA-1 assinados emitidos pelas âncoras de confiança locais</translation>
 <translation id="5485491014653571963">Esta configuração permite integrações dos apps do Gemini.

@@ -10404,7 +10404,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8137711267692884979">{NUM_EXTENSIONS,plural, =1{Skontrolujte 1 rozšírenie, ktoré môže byť nebezpečné}few{Skontrolujte {NUM_EXTENSIONS} rozšírenia, ktoré môžu byť nebezpečné}many{Review {NUM_EXTENSIONS} extensions that may be unsafe}other{Skontrolujte {NUM_EXTENSIONS} rozšírení, ktoré môžu byť nebezpečné}}</translation>
 <translation id="8138217203226449454">Chcete zmeniť svojho poskytovateľa vyhľadávania?</translation>
 <translation id="8138997515734480534">Stav virtuálneho počítača <ph name="VM_NAME" /></translation>
-<translation id="8139440916039659819">Zrýchlenie kurzora</translation>
+<translation id="8139440916039659819">Zrýchliť kurzor</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8140108728130537923"><ph name="BEGIN_LINK" />Prehliadač je spravovaný<ph name="END_LINK" /> doménou <ph name="BROWSER_DOMAIN" /> a váš <ph name="BEGIN_LINK" />profil<ph name="END_LINK" /> doménou <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8140869601171867148">Váš účet Google je účet, ktorý používate s Gmailom, službou YouTube, Chromom a ďalšími službami Googlu.

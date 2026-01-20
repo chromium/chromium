@@ -148,7 +148,7 @@
 <translation id="1085558727130096638">加入<ph name="OWNER_FIRST_NAME" />和另外 <ph name="NUM_OTHER_MEMBERS" /> 人的分頁群組</translation>
 <translation id="1085618740036066768">未選取<ph name="ITEM" />。第 <ph name="INDEX" /> 個，共 <ph name="COUNT" /> 個。按下搜尋鍵加空白鍵即可選取。</translation>
 <translation id="1085697365578766383">啟動虛擬機器時發生錯誤，請再試一次。</translation>
-<translation id="1086486568852410168">透過 Google 智慧鏡頭搜尋</translation>
+<translation id="1086486568852410168">用 Google 智慧鏡頭搜尋</translation>
 <translation id="1090126737595388931">沒有執行中的背景應用程式</translation>
 <translation id="1090541560108055381">配對前，請確認兩部裝置上均顯示這組代碼</translation>
 <translation id="1091767800771861448">按下 ESCAPE 鍵可略過 (僅限非官方版本)。</translation>
@@ -1342,7 +1342,7 @@
 <translation id="1896043844785689584">如要設定指紋，請讓孩子輕觸鍵盤右下角的指紋感應器。孩子的指紋資料會安全地儲存在這部「<ph name="DEVICE_TYPE" />」上，絕不會外洩。</translation>
 <translation id="1897120393475391208">使用高強度密碼</translation>
 <translation id="1897860317037652061">掃描失敗</translation>
-<translation id="1898804291554630487">詢問與本頁相關的資訊</translation>
+<translation id="1898804291554630487">詢問這個網頁的內容</translation>
 <translation id="1900305421498694955">透過 Google Play 下載的應用程式可能會要求取得檔案系統的完整存取權，以讀取和寫入外部儲存裝置上的檔案。外接式磁碟的任何使用者都能看見在此裝置上建立的檔案和資料夾。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1901213235765457754">要求管理員更新這個應用程式</translation>
 <translation id="1901303067676059328">選取全部(&amp;A)</translation>
@@ -1435,7 +1435,7 @@
 <translation id="1956167375087861299">禁止使用 ID 來播放受保護的內容</translation>
 <translation id="1956390763342388273">你即將上傳「<ph name="FOLDER_PATH" />」中的所有檔案。除非你信任該網站，否則請勿這麼做。</translation>
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{已檢查 1 個擴充功能}other{已檢查 {NUM_EXTENSIONS} 個擴充功能}}</translation>
-<translation id="1957188536718247425">向 Google 詢問與上一個分頁相關的資訊</translation>
+<translation id="1957188536718247425">問問 Google 上一個分頁的內容</translation>
 <translation id="1957426642613794386">已儲存的資訊</translation>
 <translation id="1959421829481337178">請輸入電信業者提供的啟用代碼。</translation>
 <translation id="1960211333621141174">懸崖</translation>
@@ -3567,7 +3567,7 @@
 <translation id="3435738964857648380">安全性</translation>
 <translation id="343578350365773421">紙張已用盡</translation>
 <translation id="3435896845095436175">啟用</translation>
-<translation id="3436118221454753036">「詢問 AI」模式</translation>
+<translation id="3436118221454753036">問問 AI 模式</translation>
 <translation id="3437072258256045988">管理 Gemini 系列應用程式活動記錄</translation>
 <translation id="3437397693214267762">查看 Outlook 行事曆、SharePoint 和 OneDrive 檔案</translation>
 <translation id="3438633801274389918">忍者</translation>
@@ -8803,7 +8803,7 @@
 <translation id="7055451306017383754">某個應用程式正在使用這個資料夾，因此無法取消分享。系統會在下次關閉 Parallels Desktop 時取消分享這個資料夾。</translation>
 <translation id="7056418393177503237">{0,plural, =1{無痕視窗}other{已開啟 # 個無痕視窗}}</translation>
 <translation id="7056526158851679338">檢查裝置 (&amp;I)</translation>
-<translation id="7057567173736333354">描述圖像</translation>
+<translation id="7057567173736333354">請描述想生成的圖片</translation>
 <translation id="70577934383983846">在所有裝置上使用這個密碼</translation>
 <translation id="7058024590501568315">隱藏網路</translation>
 <translation id="7059858479264779982">設為自動啟動</translation>
@@ -8840,7 +8840,7 @@
 <translation id="7082850163410901674">Mac 系統設定已關閉這個應用程式的通知</translation>
 <translation id="7083729794572207131">網站通常會要求安裝網頁應用程式，以提升使用體驗</translation>
 <translation id="7083774521940805477">你的 Chromebook 無法使用 Steam for Chromebook (Beta 版)。</translation>
-<translation id="7084095352418993433">向 Google 詢問與這個網頁相關的資訊：<ph name="PAGE_TITLE" /></translation>
+<translation id="7084095352418993433">問問 Google 這個網頁的內容：<ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(未設定)</translation>
 <translation id="7086377898680121060">調高亮度</translation>
 <translation id="7086672505018440886">封存 Chrome 記錄檔。</translation>
@@ -9564,7 +9564,7 @@
 <translation id="760197030861754408">如要連線，請前往 <ph name="LANDING_PAGE" />。</translation>
 <translation id="7602079150116086782">沒有在其他裝置上開啟的分頁</translation>
 <translation id="7602173054665172958">列印管理</translation>
-<translation id="7602868996817972616">向 Google 詢問與本頁相關的資訊</translation>
+<translation id="7602868996817972616">問問 Google 這個網頁的內容</translation>
 <translation id="7603785829538808504">下列網站採用自訂設定</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{未匯入 1 組密碼}other{未匯入 {NUM_PASSWORDS} 組密碼}}</translation>
 <translation id="7605163396341021431">授權 Android 應用程式控制這台 Chromebook 上的 USB 裝置</translation>
@@ -12064,7 +12064,7 @@
 <translation id="963000966785016697">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋圖片</translation>
 <translation id="964286338916298286">你的 IT 管理員已為你的裝置停用 Chrome 好康優惠。</translation>
 <translation id="964790508619473209">螢幕排列位置</translation>
-<translation id="964903383988132751">向 Google 詢問與上一個分頁相關的資訊：<ph name="TAB_TITLE" /></translation>
+<translation id="964903383988132751">問問 Google 上一個分頁的內容：<ph name="TAB_TITLE" /></translation>
 <translation id="96535553604365597">回報 Google Cast 的問題</translation>
 <translation id="965470117154635268">{NUM_SITES,plural, =1{查看最近傳送大量通知的網站 (1 個)}other{查看最近傳送大量通知的網站 ({NUM_SITES} 個)}}</translation>
 <translation id="966588271015727539">選取藍牙點字顯示器</translation>

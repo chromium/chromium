@@ -907,7 +907,7 @@
 <translation id="1606566847233779212">سایت‌های خاصی که اضافه کرده‌اید برداشته شوند؟</translation>
 <translation id="1607139524282324606">پاک کردن ورودی</translation>
 <translation id="1607499585984539560">کاربر به دامنه وابسته نیست</translation>
-<translation id="1607540893439314147">‏<ph name="BEGIN_PARAGRAPH1" />برای شروع نوشتن، برنامه‌ریزی، یادگیری، و کارهای دیگر با کمک هوش مصنوعی Google، با Gemini گپ بزنید.<ph name="END_PARAGRAPH1" />
+<translation id="1607540893439314147">‏<ph name="BEGIN_PARAGRAPH1" />برای شروع نوشتن، برنامه‌ریزی، یادگیری، و کارهای دیگر با کمک «هوشواره Google»، با Gemini گپ بزنید.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />پس‌از راه‌اندازی، با انتخاب برنامه Gemini در قفسه پایین صفحه‌نمایش، شروع به استفاده از Gemini کنید.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1608668830839595724">کنش‌های بیشتر برای مورد انتخابی</translation>
 <translation id="1610272688494140697">تنظیمات برنامه</translation>
@@ -1379,7 +1379,7 @@
 <translation id="1918141783557917887">&amp;کوچک تر</translation>
 <translation id="1918281588461452432">وقتی سایت‌ها را مرور می‌کنید، محتوای صفحه آن‌ها رمزگذاری می‌شود و در دستگاهتان ذخیره می‌شود</translation>
 <translation id="1918761619391445601">‫<ph name="EXTENSION_NAME" /> سنجاق شده است. دیدن گزینه‌های بیشتر.</translation>
-<translation id="1919096511823372013">‏پیوند، اموجی، و موارد دیگر درج کنید. با «هوش مصنوعی Google» می‌توانید در نوشتن و ایجاد کردن تصاویر نیز کمک بگیرید.</translation>
+<translation id="1919096511823372013">‏پیوند، اموجی، و موارد دیگر درج کنید. با «هوشواره Google» می‌توانید در نوشتن و ایجاد کردن تصاویر نیز کمک بگیرید.</translation>
 <translation id="1919872106782726755">برای راه‌اندازی اثر انگشت، از فرزندتان بخواهید حسگر اثر انگشت را در بالا گوشه راست صفحه‌کلید، کنار دکمه روشن/خاموش لمس کند. داده‌های اثر انگشت فرزندتان به‌صورت ایمن ذخیره می‌شود و هرگز از این <ph name="DEVICE_TYPE" /> خارج نمی‌شود.</translation>
 <translation id="192015196730532810">می‌توانید گروه زبانه خودتان را ایجاد کنید.</translation>
 <translation id="1920314570001095522">برگه مشابهی برای سازمان‌دهی وجود ندارد، اما ممکن است این گروه‌ها را بپسندید</translation>
@@ -8929,7 +8929,7 @@
 <translation id="713122686776214250">افزودن &amp;صفحه...</translation>
 <translation id="7131431455372521159">‏همه دستگاه‌های TrackPoint قطع ارتباط شده است</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />، درانتظار</translation>
-<translation id="7132886488919643383">‏برای کمک گرفتن در خواندن، نوشتن، و ساختن، از هوش مصنوعی Google استفاده کنید</translation>
+<translation id="7132886488919643383">‏برای کمک گرفتن در خواندن، نوشتن، و ساختن، از «هوشواره Google» استفاده کنید</translation>
 <translation id="7134098520442464001">متن را کوتاهتر کنید</translation>
 <translation id="7134951043985383439">فایل خطرناکی بارگیری شده است</translation>
 <translation id="7135729336746831607">بلوتوث روشن شود؟</translation>
@@ -9453,7 +9453,7 @@
 <translation id="7494694779888133066">‏<ph name="WIDTH" /> ‏x‏ <ph name="HEIGHT" /></translation>
 <translation id="7495149565104413027">‏برنامه Android</translation>
 <translation id="7495217365392072364">سازمان‌دهی برگه‌های مشابه</translation>
-<translation id="7497322070873193353">‏هوش مصنوعی Google</translation>
+<translation id="7497322070873193353">‏«هوشواره Google»</translation>
 <translation id="7497981768003291373">‏هیچ گزارش نوشتاری WebRTC که اخیراً ثبت شده باشد ندارید.</translation>
 <translation id="7501957181231305652">یا</translation>
 <translation id="7502220299952823578">افزودن به فهرست «این سایت‌ها همیشه فعال نگه داشته شود»</translation>
@@ -10313,7 +10313,7 @@
 <translation id="8062844841289846053">{COUNT,plural, =1{۱ برگ کاغذ}one{{COUNT} برگ کاغذ}other{{COUNT} برگ کاغذ}}</translation>
 <translation id="8063235345342641131">چهرک پیش‌فرض سبز</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
-<translation id="8065144531309810062">‏برای خلاقیت و بهره‌وری بیشتر از هوش مصنوعی Google استفاده کنید</translation>
+<translation id="8065144531309810062">‏برای خلاقیت و بهره‌وری بیشتر از «هوشواره Google» استفاده کنید</translation>
 <translation id="8066444921260601116">کادر گفتگوی اتصال</translation>
 <translation id="8068904756674285749">سابقه مرورتان را بااستفاده از زبان روزمره جستجو کنید و سایت‌هایی را که بازدید کرده‌اید پیدا کنید. همچنین می‌توانید سؤال بپرسید و براساس سابقه مرورتان پاسخ دریافت کنید. این تنظیم خاموش است.</translation>
 <translation id="8070572887926783747">اجازه مکان <ph name="APP_NAME" /></translation>

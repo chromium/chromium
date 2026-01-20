@@ -217,7 +217,7 @@
 <translation id="1703117532528082099">Janela ativa fixada à esquerda.</translation>
 <translation id="1708345662127501511">Espaço de trabalho: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Configurações de rede</translation>
-<translation id="1719094688023114093">O recurso Legenda instantânea está ativado.</translation>
+<translation id="1719094688023114093">O recurso de legenda instantânea está ativado.</translation>
 <translation id="1720011244392820496">Ativar o Sincronizar Wi-Fi</translation>
 <translation id="1720230731642245863">O ponto de acesso está desativado</translation>
 <translation id="1731815243805539470">Mudar para o usuário anterior</translation>
@@ -1709,7 +1709,7 @@ Nova instalação</translation>
 <translation id="6627638273713273709">Pesquisar+Shift+K</translation>
 <translation id="662830937908749204">Mover o foco para o próximo painel</translation>
 <translation id="6637729079642709226">Alterar horário</translation>
-<translation id="6641720045729354415">Alternar Legenda instantânea. <ph name="STATE_TEXT" /></translation>
+<translation id="6641720045729354415">Ativar ou desativar legenda instantânea. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Desfazer ordem de classificação por nome</translation>
 <translation id="664793810957802384">Itens no grupo sugerido</translation>
 <translation id="6649641931981131786">Ajuste a câmera que você fique no centro da tela.</translation>
@@ -1887,7 +1887,7 @@ Nova instalação</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7285232777292757180">Use a ferramenta de captura de tela nas Configurações Rápidas para fazer capturas de tela</translation>
 <translation id="7301826272005790482">Dispensar sugestões de janela</translation>
-<translation id="7302889331339392448">O recurso Legenda instantânea está desativado.</translation>
+<translation id="7302889331339392448">O recurso de legenda instantânea está desativado.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7311244614769792472">Nenhum resultado encontrado</translation>
 <translation id="7312210124139670355">O administrador está redefinindo o eSIM. Pode levar alguns minutos..</translation>

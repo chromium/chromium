@@ -1428,7 +1428,7 @@
 <translation id="1956167375087861299">不得使用标识符来播放受保护内容</translation>
 <translation id="1956390763342388273">此操作会上传“<ph name="FOLDER_PATH" />”下的所有文件。请仅在您信任该网站的情况下执行此操作。</translation>
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{已审核 1 个扩展程序}other{已审核 {NUM_EXTENSIONS} 个扩展程序}}</translation>
-<translation id="1957188536718247425">向 Google 询问与上一个标签页有关的问题</translation>
+<translation id="1957188536718247425">问问 Google 有关上一个标签页的问题</translation>
 <translation id="1957426642613794386">已保存的信息</translation>
 <translation id="1959421829481337178">请输入您的运营商提供的激活码。</translation>
 <translation id="1960211333621141174">悬崖</translation>
@@ -2422,7 +2422,7 @@
 <translation id="2636266464805306348">窗口标题</translation>
 <translation id="2637313651144986786">搜索标签页…</translation>
 <translation id="2637400434494156704">PIN 码不正确。您还剩 1 次尝试机会。</translation>
-<translation id="263796568413910992">询问<ph name="SEARCH_ENGINE_NAME" />或输入网址</translation>
+<translation id="263796568413910992">问问 <ph name="SEARCH_ENGINE_NAME" /> 或输入网址</translation>
 <translation id="2638662041295312666">登录账号图片</translation>
 <translation id="2640299212685523844">使用 GTK</translation>
 <translation id="264083724974021997">连接到您的手机 - 对话框</translation>
@@ -3560,7 +3560,7 @@
 <translation id="3435738964857648380">安全</translation>
 <translation id="343578350365773421">纸张已用完</translation>
 <translation id="3435896845095436175">启用</translation>
-<translation id="3436118221454753036">询问 AI 模式</translation>
+<translation id="3436118221454753036">问问 AI 模式</translation>
 <translation id="3437072258256045988">管理 Gemini 应用活动记录</translation>
 <translation id="3437397693214267762">查看您的 Outlook 日历及 SharePoint 和 OneDrive 文件</translation>
 <translation id="3438633801274389918">忍者</translation>
@@ -7461,7 +7461,7 @@
 <translation id="6130807998512240230">Phone Hub、附近分享</translation>
 <translation id="6130887916931372608">键盘按键</translation>
 <translation id="6131511889181741773">喷溅画</translation>
-<translation id="6132188132833716741">⇥ 依次按 Tab 键和 Enter 键即可询问 AI 模式</translation>
+<translation id="6132188132833716741">⇥ 依次按 Tab 键和 Enter 键即可问问 AI 模式</translation>
 <translation id="6132251717264923430">按钮已固定</translation>
 <translation id="6132714462430777655">跳过学校注册？</translation>
 <translation id="6134418895482326458">在“新标签页”页面上隐藏页脚</translation>
@@ -7469,7 +7469,7 @@
 <translation id="6135826623269483856">不得管理您的所有显示屏上的窗口</translation>
 <translation id="6136285399872347291">删除</translation>
 <translation id="6136287496450963112">您尚未设置 PIN 码来保护您的安全密钥。若要管理指纹，请先创建一个 PIN 码。</translation>
-<translation id="6136637346277431354">添加标签页等</translation>
+<translation id="6136637346277431354">添加标签页等内容</translation>
 <translation id="6138680304137685902">采用 SHA-384 算法的 X9.62 ECDSA 签名</translation>
 <translation id="6140948187512243695">显示详细信息</translation>
 <translation id="6141988275892716286">确认下载</translation>
@@ -8161,7 +8161,7 @@
 <translation id="6619990499523117484">确认您的 PIN 码</translation>
 <translation id="6620000730890558421">借助 AI 技术整理标签页</translation>
 <translation id="6620254580880484313">容器名称</translation>
-<translation id="6621282332208609777">询问 Google 或输入网址</translation>
+<translation id="6621282332208609777">问问 Google 或输入网址</translation>
 <translation id="6621391692573306628">若要将此标签页发送到另一设备，请在这两部设备上都登录 Chrome</translation>
 <translation id="6622980291894852883">继续拦截图片</translation>
 <translation id="6624036901798307345">在平板电脑模式下，只需点按工具栏中的标签页计数器按钮，即可打开会显示每个标签页的缩略图的新标签页栏。</translation>
@@ -8800,7 +8800,7 @@
 <translation id="7055451306017383754">无法停止共享，因为有一个应用正在使用此文件夹。系统将会在下次关闭 Parallels Desktop 时停止共享此文件夹。</translation>
 <translation id="7056418393177503237">{0,plural, =1{无痕模式}other{# 个已打开的无痕式窗口}}</translation>
 <translation id="7056526158851679338">检查设备(&amp;I)</translation>
-<translation id="7057567173736333354">描述您的图片</translation>
+<translation id="7057567173736333354">描述想生成的图片</translation>
 <translation id="70577934383983846">在您的所有设备上使用此密码</translation>
 <translation id="7058024590501568315">隐藏的网络</translation>
 <translation id="7059858479264779982">设为自动启动</translation>
@@ -8837,7 +8837,7 @@
 <translation id="7082850163410901674">通知在 Mac 系统设置中已关闭</translation>
 <translation id="7083729794572207131">网站通常会请求安装 Web 应用，以便提升您在该网站上的体验</translation>
 <translation id="7083774521940805477">您的 Chromebook 无法使用 Steam for Chromebook（Beta 版）。</translation>
-<translation id="7084095352418993433">向 Google 询问与此页面有关的问题：<ph name="PAGE_TITLE" /></translation>
+<translation id="7084095352418993433">问问 Google 有关此页面的问题：<ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">（未配置）</translation>
 <translation id="7086377898680121060">调高亮度</translation>
 <translation id="7086672505018440886">将 Chrome 日志文件添加到归档中。</translation>
@@ -9562,7 +9562,7 @@
 <translation id="760197030861754408">请前往 <ph name="LANDING_PAGE" /> 进行连接。</translation>
 <translation id="7602079150116086782">没有在其他设备打开的标签页</translation>
 <translation id="7602173054665172958">打印管理</translation>
-<translation id="7602868996817972616">向 Google 询问此页面</translation>
+<translation id="7602868996817972616">问问 Google 有关此页面的问题</translation>
 <translation id="7603785829538808504">下列网站采用的是自定义设置</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{有 1 个密码未导入}other{有 {NUM_PASSWORDS} 个密码未导入}}</translation>
 <translation id="7605163396341021431">允许 Android 应用在此 Chromebook 上控制 USB 设备</translation>
@@ -12062,7 +12062,7 @@
 <translation id="963000966785016697">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索图片</translation>
 <translation id="964286338916298286">您的 IT 管理员已禁止您的设备享用 Chrome 附赠的好礼。</translation>
 <translation id="964790508619473209">屏幕排列方式</translation>
-<translation id="964903383988132751">向 Google 询问与上一个标签页有关的问题：<ph name="TAB_TITLE" /></translation>
+<translation id="964903383988132751">问问 Google 有关上一个标签页的问题：<ph name="TAB_TITLE" /></translation>
 <translation id="96535553604365597">报告与 Google Cast 有关的问题</translation>
 <translation id="965470117154635268">{NUM_SITES,plural, =1{查看最近发送了大量通知的 1 个网站}other{查看最近发送了大量通知的 {NUM_SITES} 个网站}}</translation>
 <translation id="966588271015727539">选择蓝牙盲文显示屏</translation>

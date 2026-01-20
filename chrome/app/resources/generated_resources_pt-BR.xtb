@@ -1683,7 +1683,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="211803431539496924">Confirmar atualizações de segurança estendidas?</translation>
 <translation id="2118594521750010466">Corrigir agora</translation>
 <translation id="2119461801241504254">O "Navegação segura" está ativado e continua protegendo você de sites e downloads nocivos</translation>
-<translation id="2119602978828978573">Idiomas disponíveis para a Legenda instantânea</translation>
+<translation id="2119602978828978573">Idiomas disponíveis para a legenda instantânea</translation>
 <translation id="2120297377148151361">Atividade e interações</translation>
 <translation id="2120639962942052471"><ph name="PERMISSION" /> bloqueada</translation>
 <translation id="2121825465123208577">Redimensionar</translation>
@@ -3647,7 +3647,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3479357084663933762">Deuteranomalia</translation>
 <translation id="3479552764303398839">Não agora</translation>
 <translation id="3479685872808224578">Não foi possível detectar o servidor de impressão. Verifique o endereço e tente novamente.</translation>
-<translation id="3480612136143976912">Personalize o tamanho e estilo do texto do recurso Legenda instantânea. Alguns apps e sites também usarão esta configuração.</translation>
+<translation id="3480612136143976912">Personalize o tamanho e estilo do texto do recurso de legenda instantânea. Alguns apps e sites também usarão esta configuração.</translation>
 <translation id="3480827850068960424"><ph name="NUM" /> guias encontradas</translation>
 <translation id="3481268647794498892">Abrindo no <ph name="ALTERNATIVE_BROWSER_NAME" /> em <ph name="COUNTDOWN_SECONDS" /> segundos</translation>
 <translation id="348247802372410699">Escolha um estilo</translation>
@@ -5206,7 +5206,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="452750746583162491">Revisar dados sincronizados</translation>
 <translation id="4528494169189661126">Sugestão de tradução</translation>
 <translation id="4528638190900283934">Faça login para ter acesso a mais recursos</translation>
-<translation id="4529455689802245339">A Legenda instantânea do Chrome pode não funcionar</translation>
+<translation id="4529455689802245339">A legenda instantânea do Chrome pode não funcionar</translation>
 <translation id="4531451811601110068">Tente de novo ou peça ajuda ao administrador</translation>
 <translation id="4531924570968473143">Quem você quer adicionar a este <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4532183705767666195">{COUNT,plural, =1{1 chave de acesso}one{{COUNT} chave de acesso}other{{COUNT} chaves de acesso}}</translation>
@@ -6776,7 +6776,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5621272825308610394">Nenhum nome de exibição</translation>
 <translation id="5621350029086078628">Este é um recurso experimental de IA.</translation>
 <translation id="5622357006621202569">Ativar o compartilhamento permanente de dispositivos USB com convidados.</translation>
-<translation id="562250930904332809">&amp;Desativar a Legenda instantânea</translation>
+<translation id="562250930904332809">&amp;Desativar a legenda instantânea</translation>
 <translation id="5623282979409330487">Este site está acessando seus sensores de movimento.</translation>
 <translation id="5623842676595125836">Registro</translation>
 <translation id="5624120631404540903">Gerenciar senhas</translation>
@@ -8427,7 +8427,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6785739405821760313">Mostrando os espaços de trabalho salvos. Pressione Tab para navegar.</translation>
 <translation id="6785915470941880363">Rolagem reversa <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Violeta</translation>
-<translation id="6786480815699355166">Somente os idiomas disponíveis na Legenda instantânea podem ser traduzidos</translation>
+<translation id="6786480815699355166">Somente os idiomas disponíveis na legenda instantânea podem ser traduzidos</translation>
 <translation id="6786747875388722282">Extensões</translation>
 <translation id="6787531944787756058">O nome de usuário <ph name="USER_EMAIL" /> foi salvo apenas neste dispositivo. Detalhes</translation>
 <translation id="6787839852456839824">Atalhos do teclado</translation>
@@ -10455,7 +10455,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8157849462797352650">Seu dispositivo tem a segurança, a estabilidade e as atualizações de desempenho mais recentes</translation>
 <translation id="8158117992543756526">Este dispositivo parou de receber atualizações automáticas de software e segurança em <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">Receber vibrações de confirmação para ações como divisão de tela e mudança de espaço de trabalho. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
-<translation id="8160775796528709999">Ative o recurso Legenda instantânea nas configurações para exibir legendas para seus áudios e vídeos</translation>
+<translation id="8160775796528709999">Ative o recurso de legenda instantânea nas configurações para exibir legendas para seus áudios e vídeos</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">Retomar navegação</translation>
 <translation id="8161604891089629425">Contornar fonte</translation>
@@ -11467,7 +11467,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8845001906332463065">Ajuda</translation>
 <translation id="8846132060409673887">Ler as informações sobre o fabricante e modelo deste computador</translation>
 <translation id="8846163936679269230">Redefinir perfis do eSIM</translation>
-<translation id="8846239054091760429">Áudio mono, inicialização, Legenda instantânea e muito mais</translation>
+<translation id="8846239054091760429">Áudio mono, inicialização, legenda instantânea e muito mais</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8848709220963126773">Alternância com a tecla Shift</translation>
 <translation id="8849001918648564819">Oculto</translation>
@@ -11649,7 +11649,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8970887620466824814">Algo deu errado.</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Verifique com seu administrador de rede se o firewall não está bloqueando downloads dos servidores do Google.</translation>
-<translation id="8973263196882835828">&amp;Ativar a Legenda instantânea</translation>
+<translation id="8973263196882835828">&amp;Ativar a legenda instantânea</translation>
 <translation id="8973557916016709913">Remover o nível de zoom</translation>
 <translation id="8973596347849323817">Você pode personalizar este dispositivo do jeito que quiser. Esses recursos de acessibilidade podem ser alterados depois nas Configurações.</translation>
 <translation id="8973648401056792381">App da Web instalado pelo administrador do dispositivo.</translation>

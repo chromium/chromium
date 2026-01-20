@@ -2872,7 +2872,7 @@
 <translation id="5624120631404540903">管理密碼</translation>
 <translation id="5628060911499153873">儲存資訊後可在各項 Google 產品使用，效率更高！這項資訊會儲存到 <ph name="ACCOUNT" /> 的 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />。</translation>
 <translation id="5629630648637658800">無法載入政策設定</translation>
-<translation id="5630981295558454585">「向 Google 詢問與本頁相關的資訊」按鈕，啟用即可問 Google 有關本頁的資訊</translation>
+<translation id="5630981295558454585">「問問 Google 這個網頁的內容」按鈕，啟用即可問 Google 有關本頁的資訊</translation>
 <translation id="5631439013527180824">裝置管理符記無效</translation>
 <translation id="5632485077360054581">顯示操作說明</translation>
 <translation id="563324245173044180">已封鎖欺騙性內容。</translation>
@@ -3748,7 +3748,7 @@
 <translation id="7050187094878475250">您嘗試連線至 <ph name="DOMAIN" />，但伺服器提供的憑證有效期限太長，因此難以信任。</translation>
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7054717457611655239">從現在起，請將檔案儲存至「<ph name="CLOUD_PROVIDER" />」。</translation>
-<translation id="7057567173736333354">描述圖像</translation>
+<translation id="7057567173736333354">請描述想生成的圖片</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> 已驗證這個網站的憑證是由「<ph name="ISSUER" />」所核發。</translation>
 <translation id="7058774143982824355">CSV 密碼剖析器服務</translation>
 <translation id="706295145388601875">在 Chrome 設定中新增及管理地址</translation>
@@ -4101,7 +4101,7 @@
 <translation id="7598391785903975535">不到 <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> 目前無法處理這項要求。</translation>
 <translation id="7599089013883397081">下載作業逾時</translation>
-<translation id="7602868996817972616">向 Google 詢問與本頁相關的資訊</translation>
+<translation id="7602868996817972616">問問 Google 這個網頁的內容</translation>
 <translation id="7610193165460212391">值超出 <ph name="VALUE" /> 的範圍。</translation>
 <translation id="761261689936461781">粗</translation>
 <translation id="7613889955535752492">有效期限：<ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

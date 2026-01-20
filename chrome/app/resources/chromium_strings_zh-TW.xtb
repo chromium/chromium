@@ -72,7 +72,7 @@
 <translation id="1880677175115548835">選取文字</translation>
 <translation id="1881322772814446296">你已登入管理化環境下的帳戶，並將管理控制權授予你的 Chromium 設定檔。你的 Chromium 資料 (例如應用程式、書籤、記錄、密碼和其他設定) 均將永久與 <ph name="USER_NAME" /> 建立關聯。你可以透過 Google 帳戶資訊主頁刪除這些資料，但你無法將這些資料與其他帳戶建立關聯。如要另行保留現有的 Chromium 資料，你可以選擇建立新的設定檔。<ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">Chromium 會限制背景活動和視覺效果 (例如順暢捲動和視訊畫面更新率)，以節省電池電力。<ph name="BEGIN_LINK" />進一步瞭解節能模式<ph name="END_LINK" /></translation>
-<translation id="1898804291554630487">詢問與本頁相關的資訊</translation>
+<translation id="1898804291554630487">詢問這個網頁的內容</translation>
 <translation id="1900969832270057921">Chromium 更新工具服務</translation>
 <translation id="1911763535808217981">關閉這項功能後，就會單獨登入 Google 網站 (如 Gmail)，不會同時登入 Chromium</translation>
 <translation id="1929939181775079593">Chromium 沒有回應，要立即重新啟動嗎？</translation>

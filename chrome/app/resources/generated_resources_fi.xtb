@@ -1895,7 +1895,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />Asennus <ph name="BEGIN_BOLD" />tyhjentää koko kiintolevysi<ph name="END_BOLD" />. Varmista, että datasi on varmuuskopioitu.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Kun asennus on alkanut, sitä ei voi perua.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Vaihtaa tietoja minkä tahansa seuraavia verkkotunnuksia käyttävien laitteiden kanssa: <ph name="DOMAINS" />.</translation>
-<translation id="2270666014403455717">Määritä kytkin: Valinta</translation>
+<translation id="2270666014403455717">Valitse kytkin: Valinta</translation>
 <translation id="2270668657177045040">Sivusto ja sen alisivustot voivat nähdä, mitä asiaan liittyviä verkkosovelluksia laitteelle on asennettu.</translation>
 <translation id="2271452184061378400">Välilehtiryhmäsi on tallennettu tänne</translation>
 <translation id="2271986192355138465">Lue lisää verkkosovellusten asentamisesta</translation>
@@ -2357,7 +2357,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2573147659521059501"><ph name="NUM" /> välilehteä</translation>
 <translation id="2573276323521243649">Palaa takaisin avatarin valintasivulta</translation>
 <translation id="2573417407488272418">Varmuuskopioi sovellukset ja tiedostot ennen päivitystä kohtaan Tiedostot &gt; Omat tiedostot.</translation>
-<translation id="2573831315551295105">Määritä kytkin: <ph name="ACTION" /></translation>
+<translation id="2573831315551295105">Valitse kytkin: <ph name="ACTION" /></translation>
 <translation id="2574037773163798130">{NUM_TABS,plural, =1{Jaa välilehti Geminille}other{Jaa # välilehteä Geminille}}</translation>
 <translation id="2575247648642144396">Tämä kuvake näkyy, kun laajennus voi toimia nykyisellä sivulla. Ota laajennus käyttöön klikkaamalla kuvaketta tai painamalla <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="2575407791320728464">Virheellinen URL-osoite. Varmista, että se on muotoiltu oikein.</translation>
@@ -4292,7 +4292,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3887764720741098847">Tallennetut tiedot</translation>
 <translation id="3888501106166145415">Yhdistetyt Wi-Fi-verkot</translation>
 <translation id="3890064827463908288">Laita Chromen synkronointi päälle, jotta voit käyttää Wi-Fin synkronointia</translation>
-<translation id="389313931326656921">Määritä kytkin: Seuraava</translation>
+<translation id="389313931326656921">Valitse kytkin: Seuraava</translation>
 <translation id="3893268973182382220">Paneelin lataus ei juuri nyt onnistu</translation>
 <translation id="3893536212201235195">Lukea ja muokata esteettömyysasetuksiasi</translation>
 <translation id="3893630138897523026">ChromeVox (äänipalaute)</translation>
@@ -8912,7 +8912,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7121438501124788993">Kehittäjätila</translation>
 <translation id="7121728544325372695">Älykkäät väliviivat</translation>
 <translation id="7123030151043029868">Useiden tiedostojen automaattinen lataaminen sallittu</translation>
-<translation id="7124013154139278147">Määritä kytkin: Edellinen</translation>
+<translation id="7124013154139278147">Valitse kytkin: Edellinen</translation>
 <translation id="7124712201233930202">Sisältö ei noudata organisaation käytäntöjä</translation>
 <translation id="7125148293026877011">Poista Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>

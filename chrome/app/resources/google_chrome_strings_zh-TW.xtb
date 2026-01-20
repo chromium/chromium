@@ -14,7 +14,7 @@
 <translation id="1070377999570795893">電腦中的其他程式新增了一個擴充功能，可能會使 Chrome 的運作方式發生變更。
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="1086486568852410168">透過 Google 智慧鏡頭搜尋</translation>
+<translation id="1086486568852410168">用 Google 智慧鏡頭搜尋</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> 先前使用的是 Chrome</translation>
 <translation id="110877069173485804">這是你專屬的 Chrome</translation>
 <translation id="1125124144982679672">誰在使用 Chrome？</translation>
@@ -560,7 +560,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7071827361006050863">Chrome 即將刪除瀏覽資料</translation>
 <translation id="7085332316435785646">選擇是否要包含 Chrome 歷史記錄，取得更貼近個人需求的 Google 服務體驗</translation>
 <translation id="7088681679121566888">Chrome 目前是最新版本</translation>
-<translation id="7096221564931416126">選取要使用 Google 智慧鏡頭搜尋的文字或圖片</translation>
+<translation id="7096221564931416126">選取要用 Google 智慧鏡頭搜尋的文字/圖片</translation>
 <translation id="7098166902387133879">Google Chrome 正在使用你的麥克風。</translation>
 <translation id="7099479769133613710">重新啟動以更新 Chrome OS(&amp;C)</translation>
 <translation id="7106741999175697885">工作管理員 - Google Chrome</translation>
@@ -599,7 +599,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7572537927358445944">已關閉 • Chrome 無法驗證這個擴充功能的來源</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> 安裝程式</translation>
 <translation id="7596160425942761210">隨時在訊息、文件和其他應用程式中點選連結，都能使用 Chrome 開啟</translation>
-<translation id="7602868996817972616">向 Google 詢問與本頁相關的資訊</translation>
+<translation id="7602868996817972616">問問 Google 這個網頁的內容</translation>
 <translation id="760353356052806707">電腦中的其他程式新增了一個應用程式，可能會使 Chrome 的運作方式發生變更。
 
 <ph name="EXTENSION_NAME" /></translation>

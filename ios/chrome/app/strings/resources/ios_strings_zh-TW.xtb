@@ -30,7 +30,7 @@
 <translation id="1082554859195167538">為你推薦的產品評論</translation>
 <translation id="1084365883616172403">已順利發布到 Facebook。</translation>
 <translation id="1085677983426914530">無法開啟「<ph name="FILENAME" />」</translation>
-<translation id="1086486568852410168">透過 Google 智慧鏡頭搜尋</translation>
+<translation id="1086486568852410168">用 Google 智慧鏡頭搜尋</translation>
 <translation id="1096992026380844478">系統會根據上次的備份記錄還原同步處理設定。<ph name="BEGIN_LINK" />查看可以同步處理的內容<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">一律翻譯<ph name="LANGUAGE" /></translation>
 <translation id="110491332089958282">與 Gemini 分享網頁內容，即可取得更符合需求的答案。與 Gemini 分享網頁時，系統會將完整內容和網址傳送給 Google。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -1191,7 +1191,7 @@
 <translation id="5572648434713976849">你會在網址列取得更貼近需求的建議</translation>
 <translation id="5578795271662203820">透過 <ph name="SEARCH_ENGINE" /> 搜尋這張圖片</translation>
 <translation id="5579012242779565775">隱藏「閱讀清單」</translation>
-<translation id="5581786858144165447">「詢問 AI」模式</translation>
+<translation id="5581786858144165447">問問 AI 模式</translation>
 <translation id="5585019845078534178">資訊卡</translation>
 <translation id="5595485650161345191">編輯地址</translation>
 <translation id="559567008082979829">下載內容會在一個月後刪除。</translation>
@@ -1621,7 +1621,7 @@
 <translation id="7039345315346323556">近期存取</translation>
 <translation id="704692552158601232">預設瀏覽器 App</translation>
 <translation id="7055240621761583113">自動填入密碼</translation>
-<translation id="7057567173736333354">描述圖像</translation>
+<translation id="7057567173736333354">請描述想生成的圖片</translation>
 <translation id="7063811929043357292">你的帳戶是由家長管理。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">所有檔案</translation>
