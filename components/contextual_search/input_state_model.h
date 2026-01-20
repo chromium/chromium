@@ -63,6 +63,10 @@ class InputStateModel {
   // Set a new model.
   void setActiveModel(ModelMode model);
 
+  // Methods for testing.
+  void set_state_for_testing(const InputState& state) { state_ = state; }
+  const InputState& get_state_for_testing() { return state_; }
+
  private:
   // Notify all subscribers of the current `state_`.
   void notifySubscribers();
@@ -73,8 +77,21 @@ class InputStateModel {
   // Update the currently disabled tools, models, and inputs.
   void updateDisabledState();
 
+  //  Helper method to update `disabled_tools` based on `rule_set_`.
+  void UpdateDisabledTools();
+
+  // Helper method to update `disabled_models` based on `rule_set_`.
+  void UpdateDisabledModels();
+
+  // Helper method to update `disabled_input_types` based on `rule_set_`.
+  void UpdateDisabledInputTypes();
+
+  // Gets the input type limits based on the current state.
+  std::map<omnibox::InputType, int> GetInputTypeLimits();
+
   InputState state_;
-  const base::raw_ref<contextual_search::ContextualSearchSessionHandle>
+  omnibox::RuleSet rule_set_;
+  base::raw_ref<contextual_search::ContextualSearchSessionHandle>
       session_handle_;
   base::RepeatingCallbackList<void(const InputState&)> subscribers_;
 };

@@ -17,9 +17,20 @@ class MockContextualSearchSessionHandle : public ContextualSearchSessionHandle {
   MockContextualSearchSessionHandle();
   ~MockContextualSearchSessionHandle() override;
 
+  MOCK_METHOD(void,
+              AddFileContext,
+              (std::string file_mime_type,
+               mojo_base::BigBuffer file_bytes,
+               std::optional<lens::ImageEncodingOptions> image_options,
+               AddFileContextCallback callback),
+              (override));
   MOCK_METHOD(void, NotifySessionStarted, (), (override));
   MOCK_METHOD(std::optional<lens::proto::LensOverlaySuggestInputs>,
               GetSuggestInputs,
+              (),
+              (const, override));
+  MOCK_METHOD(std::vector<FileInfo>,
+              GetUploadedContextFileInfos,
               (),
               (const, override));
   MOCK_METHOD(ContextualSearchContextController*,
