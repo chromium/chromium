@@ -145,12 +145,16 @@ export class OmniboxAimAppElement extends CrLitElement {
   }
 
   private onPopupHidden_(): Promise<{input: string}> {
+    if (this.$.composebox.isVoiceInput) {
+      this.$.composebox.clearInput();
+    }
     const input = this.$.composebox.getInputText();
     if (!this.preserveContextOnClose_) {
       this.$.composebox.clearAllInputs(/* querySubmitted= */ false);
       this.$.composebox.clearAutocompleteMatches();
       this.$.composebox.resetModes();
     }
+    // Transfer input text to the location bar.
     return Promise.resolve({input});
   }
 
