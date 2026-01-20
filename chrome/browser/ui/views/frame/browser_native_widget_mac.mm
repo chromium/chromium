@@ -244,12 +244,41 @@ void BrowserNativeWidgetMac::ValidateUserInterfaceItem(
           !media_router::MediaRouterEnabled(browser->profile());
       break;
     }
+    case IDC_BACK:
     case IDC_BOOKMARK_ALL_TABS:
+    case IDC_BOOKMARK_THIS_TAB:
+    case IDC_CREATE_NEW_TAB_GROUP:
+    case IDC_DUPLICATE_TAB:
+    case IDC_DUPLICATE_TARGET_TAB:
+    case IDC_FOCUS_LOCATION:
+    case IDC_FORWARD:
+    case IDC_GROUP_TARGET_TAB:
+    case IDC_HOME:
+    case IDC_MANAGE_EXTENSIONS:
+    case IDC_MOVE_TAB_TO_NEW_WINDOW:
+    case IDC_MUTE_TARGET_SITE:
     case IDC_NAME_WINDOW:
+    case IDC_NEW_TAB_TO_RIGHT:
+    case IDC_NEW_TAB:
+    case IDC_OPEN_FILE:
+    case IDC_PIN_TARGET_TAB:
     case IDC_PRINT:
-    case IDC_SAVE_PAGE: {
-      // Disable these commands when browser window already has an attached
-      // sheet.
+    case IDC_RELOAD:
+    case IDC_SAVE_PAGE:
+    case IDC_SELECT_NEXT_TAB:
+    case IDC_SELECT_PREVIOUS_TAB:
+    case IDC_SHOW_BOOKMARK_MANAGER:
+    case IDC_SHOW_DOWNLOADS:
+    case IDC_STOP:
+    case IDC_TAB_SEARCH:
+    case IDC_WINDOW_CLOSE_OTHER_TABS:
+    case IDC_WINDOW_CLOSE_TABS_TO_RIGHT:
+    case IDC_WINDOW_GROUP_TAB:
+    case IDC_WINDOW_MUTE_SITE:
+    case IDC_WINDOW_PIN_TAB: {
+      // In the case where there is a modal dialog active (either app or
+      // window), disable commands that would either try to put up their own
+      // dialog or otherwise be confusing to invoke.
       result->enable &= ![AppController.sharedController keyWindowIsModal];
       break;
     }
