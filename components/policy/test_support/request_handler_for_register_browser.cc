@@ -105,10 +105,12 @@ RequestHandlerForRegisterBrowser::ValidateRegisterBrowserRequest(
 
 base::flat_set<std::string>
 RequestHandlerForRegisterBrowser::allowed_policy_types() {
-  return base::MakeFlatSet<std::string>(
-      std::vector({dm_protocol::kChromeMachineLevelUserCloudPolicyType,
-                   dm_protocol::kChromeMachineLevelExtensionCloudPolicyType,
-                   dm_protocol::GetChromeUserPolicyType()}));
+  return base::MakeFlatSet<std::string>(std::vector(
+      {dm_protocol::kChromeExtensionInstallUserCloudPolicyType,
+       dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType,
+       dm_protocol::kChromeMachineLevelUserCloudPolicyType,
+       dm_protocol::kChromeMachineLevelExtensionCloudPolicyType,
+       dm_protocol::GetChromeUserPolicyType()}));
 }
 
 RequestHandlerForRegisterPolicyAgent::RequestHandlerForRegisterPolicyAgent(
