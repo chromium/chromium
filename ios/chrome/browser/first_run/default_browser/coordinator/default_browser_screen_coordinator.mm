@@ -63,6 +63,13 @@
   return self;
 }
 
+- (void)dealloc {
+  CHECK(!_instructionsCoordinator, base::NotFatalUntil::M155);
+  CHECK(!_mediator, base::NotFatalUntil::M155);
+  CHECK(!_animatedViewController, base::NotFatalUntil::M155);
+  CHECK(!_staticViewController, base::NotFatalUntil::M155);
+}
+
 #pragma mark - ChromeCoordinator
 
 - (void)start {

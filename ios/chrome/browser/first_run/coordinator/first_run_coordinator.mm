@@ -93,6 +93,11 @@ class FirstRunCoordinatorMetricsHelper final {
   return self;
 }
 
+- (void)dealloc {
+  CHECK(!_navigationController, base::NotFatalUntil::M155);
+  CHECK(!_childCoordinator, base::NotFatalUntil::M155);
+}
+
 - (void)start {
   [self presentScreen:[self.screenProvider nextScreenType]];
   void (^completion)(void) = ^{

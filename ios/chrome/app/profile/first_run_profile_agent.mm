@@ -114,6 +114,15 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   std::unique_ptr<feature_engagement::DisplayLockHandle> _displayLock;
 }
 
+- (void)dealloc {
+  CHECK(!_firstRunUIBlocker, base::NotFatalUntil::M155);
+  CHECK(!_firstRunCoordinator, base::NotFatalUntil::M155);
+  CHECK(!_guidedTourPromoCoordinator, base::NotFatalUntil::M155);
+  CHECK(!_guidedTourCoordinator, base::NotFatalUntil::M155);
+  CHECK(!_scopedForceOrientation, base::NotFatalUntil::M155);
+  CHECK(!_displayLock, base::NotFatalUntil::M155);
+}
+
 #pragma mark - Public
 
 - (void)tabGridWasPresented {
@@ -131,7 +140,7 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 #pragma mark - SceneStateObserver
 
 - (void)sceneStateDidDisableUI:(SceneState*)sceneState {
-  _firstRunUIBlocker.reset();
+  [self releaseUILocks];
 
   [_firstRunCoordinator stop];
   _firstRunCoordinator = nil;
@@ -459,6 +468,7 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   _displayLock.reset();
   _scopedForceOrientation.reset();
   _firstRunUIBlocker.reset();
+  _scopedForceOrientation.reset();
 }
 
 // Returns the profile pref service for the original (i.e., not off-the-record)
