@@ -579,6 +579,10 @@ namespace autofillPrivate {
     static void authenticateUserBeforeViewingEntityData(
         AuthenticateUserBeforeViewingEntityDataCallback callback);
 
+    // Authenticates the user before updating the reauth requirement when
+    // viewing sensitive entity information.
+    static void toggleAutofillAiReauthRequirement();
+
     // Returns the local card based on the `guid` provided. The user could
     // also be challenged with a reauth if that is enabled. For a successful
     // auth, the local card is returned otherwise return a null object.

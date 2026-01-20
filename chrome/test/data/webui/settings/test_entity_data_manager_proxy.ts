@@ -40,7 +40,7 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
       'removeEntityInstancesChangedListener',
       'setOptInStatus',
       'setWalletablePassDetectionOptInStatus',
-      'authenticateUserBeforeViewingEntityData',
+      'toggleAutofillAiReauthRequirement',
     ]);
   }
 
@@ -151,5 +151,9 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
     this.methodCalled('authenticateUserBeforeViewingEntityData');
     return Promise.resolve(
         this.authenticateUserBeforeViewingEntityDataResponse_);
+  }
+
+  toggleAutofillAiReauthRequirement(): void {
+    this.methodCalled('toggleAutofillAiReauthRequirement');
   }
 }

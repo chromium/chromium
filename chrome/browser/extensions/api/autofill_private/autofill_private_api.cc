@@ -1251,4 +1251,51 @@ void AutofillPrivateAuthenticateUserBeforeViewingEntityDataFunction::
   Respond(WithArguments(auth_succeeded));
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateToggleAutofillAiReauthRequirementFunction
+
+AutofillPrivateToggleAutofillAiReauthRequirementFunction::
+    AutofillPrivateToggleAutofillAiReauthRequirementFunction() = default;
+
+AutofillPrivateToggleAutofillAiReauthRequirementFunction::
+    ~AutofillPrivateToggleAutofillAiReauthRequirementFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutofillPrivateToggleAutofillAiReauthRequirementFunction::Run() {
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAiReauthRequired)) {
+    return RespondNow(NoArguments());
+  }
+
+  autofill::ContentAutofillClient* client = autofill_client();
+  if (!client) {
+    return RespondNow(Error(kErrorDataUnavailable));
+  }
+
+  authenticator_ = client->GetDeviceAuthenticator();
+  if (!authenticator_ ||
+      !authenticator_->CanAuthenticateWithBiometricOrScreenLock()) {
+    return RespondNow(NoArguments());
+  }
+
+  authenticator_->AuthenticateWithMessage(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_UPDATE_REAUTH_REQUIREMENT),
+      base::BindOnce(&AutofillPrivateToggleAutofillAiReauthRequirementFunction::
+                         OnReauthCompleted,
+                     this));
+  return RespondLater();
+}
+
+void AutofillPrivateToggleAutofillAiReauthRequirementFunction::
+    OnReauthCompleted(bool auth_succeeded) {
+  if (auth_succeeded) {
+    const bool new_val =
+        !autofill::prefs::IsAutofillAiReauthBeforeFillingEnabled(
+            autofill_client()->GetPrefs());
+    autofill::prefs::SetAutofillAiReauthBeforeFillingEnabled(
+        autofill_client()->GetPrefs(), new_val);
+  }
+  Respond(NoArguments());
+}
+
 }  // namespace extensions

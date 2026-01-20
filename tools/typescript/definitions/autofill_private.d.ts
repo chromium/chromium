@@ -315,6 +315,7 @@ declare global {
       export function authenticateUserAndFlipMandatoryAuthToggle(): void;
       export function authenticateUserBeforeViewingEntityData():
           Promise<boolean>;
+      export function toggleAutofillAiReauthRequirement(): void;
       export function getLocalCard(guid: string): Promise<CreditCardEntry|null>;
       export function checkIfDeviceAuthAvailable(): Promise<boolean>;
       export function bulkDeleteAllCvcs(): void;

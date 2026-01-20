@@ -67,6 +67,13 @@ export interface EntityDataManagerProxy {
   authenticateUserBeforeViewingEntityData(): Promise<boolean>;
 
   /**
+   * Updates the pref that controls whether users need to authenticate
+   * to view sensitive entity information. This method itself triggers
+   * reauthentication
+   */
+  toggleAutofillAiReauthRequirement(): void;
+
+  /**
    * Gets the opt-in status for AutofillAi for the current user.
    */
   getOptInStatus(): Promise<boolean>;
@@ -126,6 +133,10 @@ export class EntityDataManagerProxyImpl implements EntityDataManagerProxy {
 
   authenticateUserBeforeViewingEntityData() {
     return chrome.autofillPrivate.authenticateUserBeforeViewingEntityData();
+  }
+
+  toggleAutofillAiReauthRequirement() {
+    return chrome.autofillPrivate.toggleAutofillAiReauthRequirement();
   }
 
   getOptInStatus() {

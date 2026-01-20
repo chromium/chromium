@@ -467,11 +467,11 @@ IN_PROC_BROWSER_TEST_F(
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_CHROMEOS)
-class AutofillPrivateApiWithReauthTest
+class AutofillPrivateApiAuthToViewSensitiveEntityTest
     : public AutofillPrivateApiUnitTest,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  AutofillPrivateApiWithReauthTest() {
+  AutofillPrivateApiAuthToViewSensitiveEntityTest() {
     if (IsFeatureEnabled()) {
       feature_list_.InitAndEnableFeature(
           autofill::features::kAutofillAiReauthRequired);
@@ -497,7 +497,7 @@ class AutofillPrivateApiWithReauthTest
 
 // Tests the AuthenticateUserBeforeViewingEntityData function under different
 // pref and feature flag combinations.
-IN_PROC_BROWSER_TEST_P(AutofillPrivateApiWithReauthTest,
+IN_PROC_BROWSER_TEST_P(AutofillPrivateApiAuthToViewSensitiveEntityTest,
                        AuthenticateUserBeforeViewingEntityData) {
   const bool should_attempt_auth = IsPrefEnabled() && IsFeatureEnabled();
 
@@ -575,7 +575,7 @@ IN_PROC_BROWSER_TEST_P(AutofillPrivateApiWithReauthTest,
 // The first boolean is for the preference, the second for the feature flag.
 INSTANTIATE_TEST_SUITE_P(
     All,
-    AutofillPrivateApiWithReauthTest,
+    AutofillPrivateApiAuthToViewSensitiveEntityTest,
     testing::Combine(testing::Bool(), testing::Bool()),
     [](const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
       return std::string(std::get<0>(info.param)
@@ -600,7 +600,66 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiObfuscationUnitTest,
       profile()->GetPrefs(), true);
   ASSERT_TRUE(RunAutofillSubtest("testExpectedObfuscatedLabelsAreGenerated"));
 }
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || || BUILDFLAG(IS_ANDROID) ||
+
+class AutofillPrivateApiUpdateAutofillAiAuthRequirementPrefTest
+    : public AutofillPrivateApiUnitTest {
+ public:
+  AutofillPrivateApiUpdateAutofillAiAuthRequirementPrefTest() {
+    feature_list_.InitAndEnableFeature(
+        autofill::features::kAutofillAiReauthRequired);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    AutofillPrivateApiUpdateAutofillAiAuthRequirementPrefTest,
+    Success) {
+  autofill::prefs::SetAutofillAiReauthBeforeFillingEnabled(
+      autofill_client()->GetPrefs(), false);
+
+  auto authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  EXPECT_CALL(*authenticator, CanAuthenticateWithBiometricOrScreenLock)
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*authenticator, AuthenticateWithMessage)
+      .WillOnce(base::test::RunOnceCallback<1>(true));
+  autofill_client()->SetDeviceAuthenticator(std::move(authenticator));
+
+  auto function = base::MakeRefCounted<
+      extensions::AutofillPrivateToggleAutofillAiReauthRequirementFunction>();
+  function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
+
+  extensions::api_test_utils::RunFunction(function.get(), "[]", profile());
+  EXPECT_TRUE(autofill::prefs::IsAutofillAiReauthBeforeFillingEnabled(
+      autofill_client()->GetPrefs()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AutofillPrivateApiUpdateAutofillAiAuthRequirementPrefTest,
+    AuthenticationFailed) {
+  autofill::prefs::SetAutofillAiReauthBeforeFillingEnabled(
+      autofill_client()->GetPrefs(), false);
+
+  auto authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  EXPECT_CALL(*authenticator, CanAuthenticateWithBiometricOrScreenLock)
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*authenticator, AuthenticateWithMessage)
+      .WillOnce(base::test::RunOnceCallback<1>(false));
+  autofill_client()->SetDeviceAuthenticator(std::move(authenticator));
+
+  auto function = base::MakeRefCounted<
+      extensions::AutofillPrivateToggleAutofillAiReauthRequirementFunction>();
+  function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
+
+  extensions::api_test_utils::RunFunction(function.get(), "[]", profile());
+  EXPECT_FALSE(autofill::prefs::IsAutofillAiReauthBeforeFillingEnabled(
+      autofill_client()->GetPrefs()));
+}
+
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) ||
         // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

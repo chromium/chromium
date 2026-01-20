@@ -664,6 +664,30 @@ class AutofillPrivateAuthenticateUserBeforeViewingEntityDataFunction
   std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator_;
 };
 
+class AutofillPrivateToggleAutofillAiReauthRequirementFunction
+    : public AutofillPrivateExtensionFunction {
+ public:
+  AutofillPrivateToggleAutofillAiReauthRequirementFunction();
+  AutofillPrivateToggleAutofillAiReauthRequirementFunction(
+      const AutofillPrivateToggleAutofillAiReauthRequirementFunction&) = delete;
+  AutofillPrivateToggleAutofillAiReauthRequirementFunction& operator=(
+      const AutofillPrivateToggleAutofillAiReauthRequirementFunction&) = delete;
+  DECLARE_EXTENSION_FUNCTION(
+      "autofillPrivate.toggleAutofillAiReauthRequirement",
+      AUTOFILLPRIVATE_TOGGLEAUTOFILLAIREAUTHREQUIREMENT)
+
+ protected:
+  ~AutofillPrivateToggleAutofillAiReauthRequirementFunction() override;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+
+ private:
+  void OnReauthCompleted(bool auth_succeeded);
+
+  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator_;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_PRIVATE_API_H_

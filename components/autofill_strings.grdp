@@ -24,6 +24,9 @@
   <message name="IDS_AUTOFILL_AI_VIEWING_REAUTH" desc="Message shown to the user when they need to authenticate to view Autofill AI data." translateable="false">
     Chrome browser is trying to open your information
   </message>
+  <message name="IDS_AUTOFILL_AI_UPDATE_REAUTH_REQUIREMENT" desc="Message shown to the user when they need to authenticate to update whether reauth is required when filling or viewing Autofill AI sensitive data." translateable="false">
+    Google Chrome wants to verify it's you before you change settings
+  </message>
   <if expr="_google_chrome">
     <message name="IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_CONFIRMATION_BODY" desc="Text in a dialog to confirm that the user wants to delete an autocomplete form history suggestion.">
       Remove form suggestion from Chrome?
