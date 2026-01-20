@@ -207,7 +207,6 @@ void Init() {
                                  std::memory_order_relaxed);
 
   sequence_manager::internal::SequenceManagerImpl::InitializeFeatures();
-  sequence_manager::internal::ThreadController::InitializeFeatures();
   base::internal::JobTaskSource::InitializeFeatures();
 
   debug::StackTrace::InitializeFeatures();
