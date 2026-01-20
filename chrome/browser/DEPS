@@ -475,6 +475,7 @@ include_rules = [
   "+third_party/content_analysis_sdk",
   "+third_party/crashpad",
   "+third_party/cros_system_api",
+  "+third_party/fuzztest",
   "+third_party/metrics_proto",
   "+third_party/omnibox_proto",
   "+third_party/search_engines_data",

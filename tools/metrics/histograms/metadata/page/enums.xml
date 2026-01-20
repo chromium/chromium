@@ -41,6 +41,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//services/network/public/mojom/load_timing_internal_info.mojom:AdvertisedAltSvcState) -->
 
+<!-- LINT.IfChange(CaptchaFrameAgentContext) -->
+
+<enum name="CaptchaFrameAgentContext">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="No known agent is active on tab"/>
+  <int value="2" label="Glic agent is active on tab"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/page_load_metrics/observers/captcha_metrics_observer.h:CaptchaFrameAgentContext) -->
+
 <!-- LINT.IfChange(ConnectionReuseStatus) -->
 
 <enum name="ConnectionReuseStatus">

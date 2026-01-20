@@ -16,6 +16,7 @@
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/component_updater/afp_blocked_domain_list_component_remover.h"
 #include "chrome/browser/component_updater/app_provisioning_component_installer.h"
+#include "chrome/browser/component_updater/captcha_provider_component_installer.h"
 #include "chrome/browser/component_updater/chrome_origin_trials_component_installer.h"
 #include "chrome/browser/component_updater/commerce_heuristics_component_installer.h"
 #include "chrome/browser/component_updater/cookie_readiness_list_component_remover.h"
@@ -254,6 +255,8 @@ void RegisterComponentsForUpdate() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   RegisterWasmTtsEngineComponent(cus, g_browser_process->local_state());
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+  RegisterCaptchaProviderComponent(cus);
 }
 
 }  // namespace component_updater

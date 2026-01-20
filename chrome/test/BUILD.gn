@@ -6581,6 +6581,8 @@ test("unit_tests") {
     "../browser/page_content_annotations/annotate_page_content_request_unittest.cc",
     "../browser/page_content_annotations/page_content_annotations_web_contents_observer_unittest.cc",
     "../browser/page_load_metrics/metrics_web_contents_observer_unittest.cc",
+    "../browser/page_load_metrics/observers/captcha_metrics_observer_unittest.cc",
+    "../browser/page_load_metrics/observers/captcha_provider_manager_unittest.cc",
     "../browser/page_load_metrics/observers/core/amp_page_load_metrics_observer_unittest.cc",
     "../browser/page_load_metrics/observers/core/ukm_page_load_metrics_observer_unittest.cc",
     "../browser/page_load_metrics/observers/document_write_page_load_metrics_observer_unittest.cc",
@@ -8149,6 +8151,7 @@ test("unit_tests") {
       "../browser/browser_commands_unittest.cc",
       "../browser/browsing_data/chrome_browsing_data_lifetime_manager_unittest.cc",
       "../browser/component_updater/actor_safety_lists_component_installer_policy_unittest.cc",
+      "../browser/component_updater/captcha_provider_component_installer_unittest.cc",
       "../browser/component_updater/soda_component_installer_unittest.cc",
       "../browser/component_updater/soda_language_pack_component_installer_unittest.cc",
       "../browser/component_updater/zxcvbn_data_component_installer_unittest.cc",
@@ -12995,4 +12998,24 @@ if (is_linux || is_mac || is_win) {
       "//chrome/browser/usb:device_realtarget_browsertests",
     ]
   }
+}
+
+test("captcha_provider_fuzztests") {
+  testonly = true
+  sources = [ "../browser/page_load_metrics/observers/captcha_provider_manager_fuzztest.cc" ]
+
+  fuzztests = [
+    "CaptchaProviderManagerFuzzTests.SetCaptchaProvidersDoesNotCrash",
+    "CaptchaProviderManagerFuzzTests.IsCaptchaUrlDoesNotCrash",
+  ]
+
+  deps = [
+    ":test_support",
+    "//base",
+    "//base/test:fuzztest_support",
+    "//chrome/browser",
+    "//testing/gtest",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+    "//url",
+  ]
 }
