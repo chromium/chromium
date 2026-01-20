@@ -11,7 +11,7 @@ function getRateButtonHtml(this: ReadAnythingToolbarElement) {
     <cr-button class="toolbar-button" id="rate"
         tabindex="${this.getRateTabIndex_()}"
         aria-label="${this.getVoiceSpeedLabel_()}"
-        title="$i18n{voiceSpeedLabel}"
+        title="${this.i18n('voiceSpeedLabel')}"
         aria-haspopup="menu"
         @click="${this.onShowRateMenuClick_}">
         ${this.getFormattedSpeechRate_()}
