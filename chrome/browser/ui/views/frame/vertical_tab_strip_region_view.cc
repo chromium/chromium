@@ -406,16 +406,33 @@ void VerticalTabStripRegionView::OnCollapsedStateChanged(
       state_controller_->IsCollapsed()
           ? LayoutConstant::kVerticalTabStripCollapsedPadding
           : LayoutConstant::kVerticalTabStripUncollapsedPadding);
-  top_button_separator_->SetProperty(
-      views::kMarginsKey, gfx::Insets::VH(kRegionVerticalPadding, padding));
-  top_button_container_->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(0, padding, kRegionVerticalPadding, padding));
+  // The TopContainer handles the padding distance to the separator so that we
+  // can control how far it is in the various states.
+  top_button_separator_->SetProperty(views::kMarginsKey,
+                                     gfx::Insets::VH(0, padding));
+  if (state_controller->IsCollapsed()) {
+    // If the VT Strip is collapsed, then we need exactly |padding| on the top,
+    // left, and right.
+    top_button_container_->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(padding, padding, kRegionVerticalPadding, padding));
+  } else {
+    // If the VT Strip is not collapsed, then we want to align the heights of
+    // the TopContainer w/ the the height of the toolbar. Both of these
+    // components start at the top of the window. We keep no vertical padding so
+    // that the separator can lay adjacent to it.
+    top_button_container_->SetProperty(views::kMarginsKey,
+                                       gfx::Insets::VH(0, padding));
+  }
+
   bottom_button_container_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(kRegionVerticalPadding, padding, 0, padding));
 
-  flex_layout_->SetInteriorMargin(gfx::Insets::VH(padding, 0));
+  flex_layout_->SetInteriorMargin(gfx::Insets::TLBR(
+      0, 0,
+      GetLayoutConstant(LayoutConstant::kVerticalTabStripUncollapsedPadding),
+      0));
 
   if (tab_strip_view_) {
     tab_strip_view_->SetCollapsedState(state_controller->IsCollapsed());
