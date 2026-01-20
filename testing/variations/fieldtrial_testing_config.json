@@ -16138,6 +16138,22 @@
             ]
         }
     ],
+    "MaintainConnections": [
+        {
+            "platforms": [
+                "android",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MaintainConnectionsOnIpv6TempAddrChange"
+                    ]
+                }
+            ]
+        }
+    ],
     "MakeAccountsAvailableInIdentityManager": [
         {
             "platforms": [
