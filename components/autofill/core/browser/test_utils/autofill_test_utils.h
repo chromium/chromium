@@ -532,6 +532,8 @@ void FillUploadField(AutofillUploadContents::Field* field,
 std::vector<FormSignature> GetEncodedSignatures(const FormStructure& form);
 std::vector<FormSignature> GetEncodedSignatures(
     const std::vector<raw_ref<FormStructure>>& forms);
+std::vector<FormSignature> GetEncodedSignatures(
+    base::span<const FormData> forms);
 
 std::vector<FormSignature> GetEncodedAlternativeSignatures(
     const FormStructure& form);

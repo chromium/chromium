@@ -160,7 +160,7 @@ class ServerPredictions {
   ServerPredictions(bool may_run_autofill_ai_model,
                     std::map<std::pair<FormSignature, FieldSignature>,
                              std::deque<FieldSuggestion>>& field_suggestion_map,
-                    const FormStructure& form);
+                    const FormData& form);
   ServerPredictions(const ServerPredictions&);
   ServerPredictions(ServerPredictions&&);
   ServerPredictions& operator=(const ServerPredictions&);
@@ -183,7 +183,7 @@ class ServerPredictions {
 // server predictions cleared.
 std::vector<ServerPredictions> ParseServerPredictionsFromQueryResponse(
     std::string_view payload,
-    const std::vector<raw_ref<FormStructure>>& forms,
+    base::span<const FormData> forms,
     const std::vector<FormSignature>& queried_form_signatures,
     LogManager* log_manager,
     bool ignore_small_forms);

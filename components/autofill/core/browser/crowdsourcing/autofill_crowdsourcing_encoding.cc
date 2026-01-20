@@ -624,8 +624,8 @@ void MergePasswordManagerPredictions(
 // Given `form` and `field`, returns the appropriate FieldSuggestion stored
 // for that field in `fields_suggestions`.
 std::optional<FieldSuggestion> GetFieldSuggestion(
-    const FormStructure& form,
-    const AutofillField& field,
+    const FormData& form,
+    const FormFieldData& field,
     std::map<std::pair<FormSignature, FieldSignature>,
              std::deque<FieldSuggestion>>& fields_suggestions) {
   // Retrieves the next prediction for `form` and `field` and pops it. Popping
@@ -686,15 +686,16 @@ std::optional<FieldSuggestion> GetFieldSuggestion(
         }
         NOTREACHED();
       };
+  FieldSignature field_signature = CalculateFieldSignatureForField(field);
   // Fetch suggestions from form signature, host form signature and alternative
   // form signature.
   std::optional<FieldSuggestion> main_frame_field_suggestion =
-      get_suggestion(form.form_signature(), field.GetFieldSignature());
+      get_suggestion(CalculateFormSignature(form), field_signature);
   std::optional<FieldSuggestion> iframe_field_suggestion =
-      get_suggestion(field.host_form_signature(), field.GetFieldSignature());
+      get_suggestion(field.host_form_signature(), field_signature);
   // NOTE: Suggestions from alternative form signatures are always overrides.
-  std::optional<FieldSuggestion> alternative_field_suggestion = get_suggestion(
-      form.alternative_form_signature(), field.GetFieldSignature());
+  std::optional<FieldSuggestion> alternative_field_suggestion =
+      get_suggestion(CalculateAlternativeFormSignature(form), field_signature);
 
   // Precedence rule for form signatures is the following:
   // `form_signature` (main frame) then `host_form_signature_` (iframe) and then
@@ -1073,12 +1074,11 @@ ServerPredictions::ServerPredictions(
     bool may_run_autofill_ai_model,
     std::map<std::pair<FormSignature, FieldSignature>,
              std::deque<FieldSuggestion>>& field_signature_map,
-    const FormStructure& form)
+    const FormData& form)
     : may_run_autofill_ai_model_(may_run_autofill_ai_model) {
-  predictions_ = base::ToVector(
-      form.fields(), [&](const std::unique_ptr<AutofillField>& field) {
-        return GetFieldSuggestion(form, *field, field_signature_map);
-      });
+  predictions_ = base::ToVector(form.fields(), [&](const FormFieldData& field) {
+    return GetFieldSuggestion(form, field, field_signature_map);
+  });
 }
 
 ServerPredictions::ServerPredictions(const ServerPredictions&) = default;
@@ -1156,7 +1156,7 @@ void ServerPredictions::ApplyTo(FormStructure& form) const {
 
 std::vector<ServerPredictions> ParseServerPredictionsFromQueryResponse(
     std::string_view payload,
-    const std::vector<raw_ref<FormStructure>>& forms,
+    base::span<const FormData> forms,
     const std::vector<FormSignature>& queried_form_signatures,
     LogManager* log_manager,
     bool ignore_small_forms) {
@@ -1195,14 +1195,14 @@ std::vector<ServerPredictions> ParseServerPredictionsFromQueryResponse(
   }
 
   return base::ToVector(
-      forms, [field_suggestion_map = GetSuggestionsMapFromResponse(
-                  response, queried_form_signatures),
-              forms_for_which_to_run_ai_model = GetFormsForWhichToRunAiModel(
-                  response, queried_form_signatures)](
-                 raw_ref<const FormStructure> form) mutable {
-        return ServerPredictions(
-            forms_for_which_to_run_ai_model.contains(form->form_signature()),
-            field_suggestion_map, *form);
+      forms,
+      [field_suggestion_map =
+           GetSuggestionsMapFromResponse(response, queried_form_signatures),
+       forms_for_which_to_run_ai_model = GetFormsForWhichToRunAiModel(
+           response, queried_form_signatures)](const FormData& form) mutable {
+        return ServerPredictions(forms_for_which_to_run_ai_model.contains(
+                                     CalculateFormSignature(form)),
+                                 field_suggestion_map, form);
       });
 }
 

@@ -952,22 +952,32 @@ void AutofillManager::OnLoadedServerPredictions(
 
   if (std::vector<ServerPredictions> form_server_predictions =
           ParseServerPredictionsFromQueryResponse(
-              std::move(response->response), queried_forms,
+              std::move(response->response), forms,
               response->queried_form_signatures, log_manager(),
               /*ignore_small_forms=*/!client().IsTabInActorMode());
       !form_server_predictions.empty()) {
-    CHECK_EQ(queried_forms.size(), form_server_predictions.size());
+    CHECK_EQ(forms.size(), form_server_predictions.size());
     // TODO(crbug.com/475586865): Use `AutofillManager::UpdateFormCache()`
     // instead of duplicating the logic.
     for (auto [form, server_predictions] :
-         base::zip(queried_forms, form_server_predictions)) {
-      server_predictions.ApplyTo(*form);
-      form->RationalizeAndAssignSections(
+         base::zip(forms, form_server_predictions)) {
+      FormStructure* form_structure =
+          FindCachedFormById(form.global_id(), /*pass_key=*/{});
+      if (!form_structure) {
+        continue;
+      }
+
+      server_predictions.ApplyTo(*form_structure);
+      form_structure->RationalizeAndAssignSections(
           client().GetVariationConfigCountryCode(), GetCurrentPageLanguage(),
           log_manager());
-      LogCurrentFieldTypes(&*form);
-      NotifyObservers(&Observer::OnFieldTypesDetermined, form->global_id(),
+      LogCurrentFieldTypes(form_structure);
+      NotifyObservers(&Observer::OnFieldTypesDetermined, form.global_id(),
                       Observer::FieldTypeSource::kAutofillServer);
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillServerQueryPredictionsEarly)) {
+        OnFormProcessed(form, *form_structure);
+      }
     }
     LogServerQueryResponseMetrics(queried_forms);
   }
@@ -975,22 +985,9 @@ void AutofillManager::OnLoadedServerPredictions(
   if (base::FeatureList::IsEnabled(features::debug::kShowDomNodeIDs)) {
     driver().ExposeDomNodeIdsInAllFrames();
   }
+  // TODO(crbug.com/470949499): Consider merging OnFormProcessed() and
+  // OnLoadedServerPredictionsImpl().
   OnLoadedServerPredictionsImpl(queried_forms);
-
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillServerQueryPredictionsEarly)) {
-    for (const FormData& form_data : forms) {
-      const FormStructure* form_structure =
-          FindCachedFormById(form_data.global_id());
-      if (!form_structure) {
-        continue;
-      }
-      // TODO(crbug.com/470949499): OnFormProcessed and OnFieldTypesDetermined()
-      // are both called in sequence after parsing and after receiving server
-      // predictions. One of these calls may be able to be removed/merged.
-      OnFormProcessed(form_data, *form_structure);
-    }
-  }
 }
 
 void AutofillManager::LogServerQueryResponseMetrics(

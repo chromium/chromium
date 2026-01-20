@@ -61,6 +61,7 @@
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/form_field_data_predictions.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -1376,6 +1377,12 @@ std::vector<FormSignature> GetEncodedSignatures(
     const std::vector<raw_ref<FormStructure>>& forms) {
   return base::ToVector(
       forms, [](const auto& form) { return form->form_signature(); });
+}
+
+std::vector<FormSignature> GetEncodedSignatures(
+    base::span<const FormData> forms) {
+  return base::ToVector(
+      forms, [](const auto& form) { return CalculateFormSignature(form); });
 }
 
 std::vector<FormSignature> GetEncodedAlternativeSignatures(
