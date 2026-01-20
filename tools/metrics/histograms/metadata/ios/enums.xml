@@ -45,6 +45,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/common/ui/confirmation_alert/confirmation_alert_constants.h:ConfirmationAlertSheetAction) -->
 
+<!-- LINT.IfChange(CredentialExportScreenAction) -->
+
+<enum name="CredentialExportScreenAction">
+  <int value="0" label="Deselect All button pressed"/>
+  <int value="1" label="Select All button pressed"/>
+  <int value="2" label="Download to CSV button pressed"/>
+  <int value="3" label="Continue button pressed"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/credential_exchange/public/metrics.h:CredentialExportScreenAction) -->
+
 <enum name="CrFullscreenState">
   <int value="0" label="Entering Fullscreen State"/>
   <int value="1" label="Exiting Fullscreen State"/>

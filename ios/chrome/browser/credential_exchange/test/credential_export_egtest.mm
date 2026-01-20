@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/credential_exchange/public/metrics.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_export_constants.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_egtest_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
@@ -89,6 +92,17 @@ void OpenExportCredentialsPage() {
   [[EarlGrey selectElementWithMatcher:ExportButtonMatcher()]
       performAction:grey_tap()];
 }
+
+// Verifies that credential export screen action histogram was recorded.
+void CheckCredentialExportScreenActionMetric(
+    CredentialExportScreenAction action) {
+  NSString* histogram =
+      base::SysUTF8ToNSString(kCredentialExportScreenActionHistogram);
+  NSError* error = [MetricsAppInterface expectCount:1
+                                          forBucket:static_cast<int>(action)
+                                       forHistogram:histogram];
+  GREYAssertNil(error, @"Failed to record credential export screen histogram.");
+}
 #endif
 
 }  // namespace
@@ -102,11 +116,20 @@ void OpenExportCredentialsPage() {
 - (void)setUp {
   [super setUp];
 
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
+
   [PasswordSettingsAppInterface setUpMockReauthenticationModule];
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+}
+
+- (void)tearDownHelper {
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
+  [super tearDownHelper];
 }
 
 #pragma mark - Tests
@@ -123,6 +146,9 @@ void OpenExportCredentialsPage() {
 
   [[EarlGrey selectElementWithMatcher:ContinueButton()]
       assertWithMatcher:grey_notVisible()];
+
+  CheckCredentialExportScreenActionMetric(
+      CredentialExportScreenAction::kContinuePressed);
 }
 
 // Verifies the default state when opening the screen.
@@ -172,6 +198,11 @@ void OpenExportCredentialsPage() {
 
   [[EarlGrey selectElementWithMatcher:ContinueButton()]
       assertWithMatcher:grey_enabled()];
+
+  CheckCredentialExportScreenActionMetric(
+      CredentialExportScreenAction::kSelectAllPressed);
+  CheckCredentialExportScreenActionMetric(
+      CredentialExportScreenAction::kDeselectAllPressed);
 }
 
 // Tests that the "Download to CSV" button is enabled by default since all
@@ -193,6 +224,12 @@ void OpenExportCredentialsPage() {
 
   [[EarlGrey selectElementWithMatcher:DownloadCsvMenuAction()]
       assertWithMatcher:grey_enabled()];
+
+  // Check that metrics are correctly logged on button tap.
+  [[EarlGrey selectElementWithMatcher:DownloadCsvMenuAction()]
+      performAction:grey_tap()];
+  CheckCredentialExportScreenActionMetric(
+      CredentialExportScreenAction::kDownloadToCSVPressed);
 }
 
 // Tests that the "Download to CSV" button becomes disabled when the

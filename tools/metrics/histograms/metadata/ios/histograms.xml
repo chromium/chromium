@@ -850,6 +850,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.CredentialExchange.CredentialExportScreenAction"
+    enum="CredentialExportScreenAction" expires_after="2026-07-01">
+  <owner>rgod@google.com</owner>
+  <owner>sinhasourav@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    This histogram is logged when the user performs a respective action in the
+    credential selection screen of the credential exchange export flow.
+  </summary>
+</histogram>
+
 <histogram name="IOS.CredentialExchange.CredentialsReceivedCount.{Type}"
     units="count" expires_after="2026-07-01">
   <owner>rgod@google.com</owner>
