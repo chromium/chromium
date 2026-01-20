@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 181 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Testing the empty string with color space 'limited-srgb' and  without alpha (value)
   Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
 [FAIL] Testing the empty string with color space 'limited-srgb' and with alpha (setAttribute("value"))
@@ -358,5 +358,9 @@ Found 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
 [FAIL] Display P3 colors can be out-of-bounds
   assert_equals: expected "color(display-p3 3 0 0.2 / 0.6)" but got "#000000"
+[FAIL] Setting colorspace by setAttribute should update the value
+  assert_equals: expected "color(display-p3 1 1 1)" but got "#000000"
+[FAIL] Setting alpha by setAttribute should update the value
+  assert_equals: expected "color(srgb 0 0 1)" but got "#000000"
 Harness: the test ran to completion.
 

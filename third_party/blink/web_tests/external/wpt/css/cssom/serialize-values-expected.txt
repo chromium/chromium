@@ -1,5 +1,15 @@
 This is a testharness.js-based test.
-Found 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] alignment-baseline: text-bottom
+  assert_equals: alignment-baseline raw inline style declaration expected "text-bottom" but got ""
+[FAIL] alignment-baseline: text-top
+  assert_equals: alignment-baseline raw inline style declaration expected "text-top" but got ""
+[FAIL] baseline-shift: top
+  assert_equals: baseline-shift raw inline style declaration expected "top" but got ""
+[FAIL] baseline-shift: center
+  assert_equals: baseline-shift raw inline style declaration expected "center" but got ""
+[FAIL] baseline-shift: bottom
+  assert_equals: baseline-shift raw inline style declaration expected "bottom" but got ""
 [FAIL] content: attr(|bar)
   assert_equals: content raw inline style declaration expected "attr(bar)" but got ""
 [FAIL] content: attr( |bar )

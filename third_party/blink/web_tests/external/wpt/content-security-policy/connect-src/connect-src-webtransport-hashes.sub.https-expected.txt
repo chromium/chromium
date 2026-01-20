@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] CSP connect-src url webtransport-hashes vs serverCertificateHashes. Expecting undefined
+  assert_equals: expected (undefined) undefined but got (string) "connect-src"
+Harness: the test ran to completion.
+
