@@ -9137,13 +9137,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsMac | kOsWin | kOsLinux | kOsAndroid,
      FEATURE_VALUE_TYPE(blink::features::kGeolocationElement)},
 
-    {"permission-promise-lifetime-modulation",
-     flag_descriptions::kPermissionPromiseLifetimeModulationName,
-     flag_descriptions::kPermissionPromiseLifetimeModulationDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         permissions::features::kPermissionPromiseLifetimeModulation)},
-
     {"left-hand-side-activity-indicators",
      flag_descriptions::kLeftHandSideActivityIndicatorsName,
      flag_descriptions::kLeftHandSideActivityIndicatorsDescription, kOsDesktop,

@@ -575,13 +575,6 @@ inline constexpr char kClearInstanceInfoWhenClosedIntentionallyDescription[] =
     "When enabled, permanently cleanup and remove the browser instance when a "
     "window is explicitly closed by the user (eg: via the Close button).";
 
-inline constexpr char kPermissionPromiseLifetimeModulationName[] =
-    "PermissionPromiseLifetimeModulation";
-inline constexpr char kPermissionPromiseLifetimeModulationDescription[] =
-    "Modulates the lifetime of a permission promise based on the prompt's UI "
-    "treatment. When the prompt is non-prominent, the promise settlement is "
-    "expedited to synchronize with the request manager state.";
-
 inline constexpr char kEnableBenchmarkingName[] = "Enable benchmarking";
 inline constexpr char kEnableBenchmarkingDescription[] =
     "Sets all features to a fixed state; that is, disables randomization for "
@@ -8039,7 +8032,6 @@ inline constexpr char kPulseaudioLoopbackForScreenShareName[] =
 inline constexpr char kPulseaudioLoopbackForScreenShareDescription[] =
     "Enable system audio sharing when screen sharing on Linux with pulseaudio.";
 
-
 inline constexpr char kWaylandPerWindowScalingName[] =
     "Wayland per-window scaling";
 inline constexpr char kWaylandPerWindowScalingDescription[] =
@@ -8216,7 +8208,6 @@ inline constexpr char kAutofillCreditCardUploadDescription[] =
 inline constexpr char kElasticOverscrollName[] = "Elastic Overscroll";
 inline constexpr char kElasticOverscrollDescription[] =
     "Enables Elastic Overscrolling on touchscreens and precision touchpads.";
-
 
 inline constexpr char kUIDebugToolsName[] = "Debugging tools for UI";
 inline constexpr char kUIDebugToolsDescription[] =

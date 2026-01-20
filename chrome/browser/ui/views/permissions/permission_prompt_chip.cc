@@ -36,7 +36,7 @@ PermissionPromptChip::PermissionPromptChip(Browser* browser,
   lbv->InvalidateLayout();
 
   if (delegate->ShouldCurrentRequestUseQuietUI()) {
-    ModulatePermissionPromiseLifetime();
+    delegate->PreIgnoreQuietPrompt();
   }
 
   chip_controller_ = lbv->GetChipController();
@@ -105,15 +105,4 @@ views::Widget* PermissionPromptChip::GetPromptBubbleWidgetForTesting() {
                  lbv->GetChipController()->IsBubbleShowing()
              ? lbv->GetChipController()->GetBubbleWidget()
              : nullptr;
-}
-
-void PermissionPromptChip::ModulatePermissionPromiseLifetime() {
-  // Lifetime modulation is allowed only for the quiet chip. The quiet chip is
-  // enabled only for `NOTIFICATIONS` and `GEOLOCATION`.
-  DCHECK(delegate()->ShouldCurrentRequestUseQuietUI());
-
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kPermissionPromiseLifetimeModulation)) {
-    delegate()->PreIgnoreQuietPrompt();
-  }
 }

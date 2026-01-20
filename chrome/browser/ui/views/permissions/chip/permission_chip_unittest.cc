@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -237,10 +236,6 @@ class PermissionChipUnitTest : public TestWithBrowserView {
   PermissionChipUnitTest& operator=(const PermissionChipUnitTest&) = delete;
 
   void SetUp() override {
-    feature_list_->InitWithFeatures(
-        /*enabledabled_features=*/{},
-        /*disabled_features=*/{
-            permissions::features::kPermissionPromiseLifetimeModulation});
     TestWithBrowserView::SetUp();
 
     AddTab(browser(), GURL("http://a.com"));
@@ -270,10 +265,6 @@ class PermissionChipUnitTest : public TestWithBrowserView {
   base::TimeDelta kNormalChipDismissDuration = base::Seconds(6);
   base::TimeDelta kQuietChipDismissDuration = base::Seconds(18);
   base::TimeDelta kLongerThanAllTimersDuration = base::Seconds(50);
-
- protected:
-  std::unique_ptr<ScopedFeatureList> feature_list_ =
-      std::make_unique<ScopedFeatureList>();
 };
 
 TEST_F(PermissionChipUnitTest, AlreadyDisplayedRequestTest) {
@@ -403,6 +394,9 @@ TEST_F(PermissionChipUnitTest, DisplayQuietChipNoAbusiveTest) {
   auto& delegate = *test::MockPermissionRequestManager::CreateForWebContents(
       GURL("https://test.origin"), {permissions::RequestType::kNotifications},
       true, QuietUiReason::kEnabledInPrefs, web_contents_);
+  EXPECT_CALL(delegate, PreIgnoreQuietPrompt()).WillOnce([&delegate]() {
+    return delegate.PermissionRequestManager::PreIgnoreQuietPrompt();
+  });
   PermissionPromptChip chip_prompt(browser(), web_contents_, &delegate);
   ChipController* chip_controller =
       chip_prompt.get_chip_controller_for_testing();
@@ -454,6 +448,9 @@ TEST_F(PermissionChipUnitTest, ClickOnQuietChipNoAbusiveTest) {
   auto& delegate = *test::MockPermissionRequestManager::CreateForWebContents(
       GURL("https://test.origin"), {permissions::RequestType::kNotifications},
       true, QuietUiReason::kEnabledInPrefs, web_contents_);
+  EXPECT_CALL(delegate, PreIgnoreQuietPrompt()).WillOnce([&delegate]() {
+    return delegate.PermissionRequestManager::PreIgnoreQuietPrompt();
+  });
   PermissionPromptChip chip_prompt(browser(), web_contents_, &delegate);
   ChipController* chip_controller =
       chip_prompt.get_chip_controller_for_testing();
@@ -491,7 +488,9 @@ TEST_F(PermissionChipUnitTest, DisplayQuietChipAbusiveTest) {
   auto& delegate = *test::MockPermissionRequestManager::CreateForWebContents(
       GURL("https://test.origin"), {permissions::RequestType::kNotifications},
       true, QuietUiReason::kTriggeredDueToAbusiveRequests, web_contents_);
-
+  EXPECT_CALL(delegate, PreIgnoreQuietPrompt()).WillOnce([&delegate]() {
+    return delegate.PermissionRequestManager::PreIgnoreQuietPrompt();
+  });
   PermissionPromptChip chip_prompt(browser(), web_contents_, &delegate);
   ChipController* chip_controller =
       chip_prompt.get_chip_controller_for_testing();
@@ -529,6 +528,9 @@ TEST_F(PermissionChipUnitTest, ClickOnQuietChipAbusiveTest) {
   auto& delegate = *test::MockPermissionRequestManager::CreateForWebContents(
       GURL("https://test.origin"), {permissions::RequestType::kNotifications},
       true, QuietUiReason::kTriggeredDueToAbusiveRequests, web_contents_);
+  EXPECT_CALL(delegate, PreIgnoreQuietPrompt()).WillOnce([&delegate]() {
+    return delegate.PermissionRequestManager::PreIgnoreQuietPrompt();
+  });
   PermissionPromptChip chip_prompt(browser(), web_contents_, &delegate);
   ChipController* chip_controller =
       chip_prompt.get_chip_controller_for_testing();
@@ -561,9 +563,6 @@ TEST_F(PermissionChipUnitTest, ClickOnQuietChipAbusiveTest) {
 class PermissionPromiseLifetimeModulationTest : public PermissionChipUnitTest {
  public:
   void SetUp() override {
-    feature_list_->InitWithFeatures(
-        {permissions::features::kPermissionPromiseLifetimeModulation},
-        /*disabled_features=*/{});
     TestWithBrowserView::SetUp();
 
     AddTab(browser(), GURL("http://a.com"));

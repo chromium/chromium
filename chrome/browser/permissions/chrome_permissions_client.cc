@@ -530,15 +530,12 @@ void ChromePermissionsClient::OnPromptResolved(
 
 #if !BUILDFLAG(IS_ANDROID)
   // Infobar exists only on Desktop platforms.
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kPermissionPromiseLifetimeModulation)) {
-    bool should_show_infobar = ShouldShowInfobarOnPromptResolved(
-        web_contents, request, quiet_ui_reason, action);
-    permissions::PermissionUmaUtil::RecordPageReloadInfoBarShown(
-        should_show_infobar);
-    if (should_show_infobar) {
-      ShowInfobar(web_contents);
-    }
+  bool should_show_infobar = ShouldShowInfobarOnPromptResolved(
+      web_contents, request, quiet_ui_reason, action);
+  permissions::PermissionUmaUtil::RecordPageReloadInfoBarShown(
+      should_show_infobar);
+  if (should_show_infobar) {
+    ShowInfobar(web_contents);
   }
 #endif
 

@@ -4,7 +4,6 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
 #include "chrome/browser/ui/browser.h"
@@ -361,19 +360,7 @@ struct QuietPromptInfoBarTestCase {
 
 class QuietPromptInteractiveParamUITest
     : public QuietPromptInteractiveUITest,
-      public testing::WithParamInterface<QuietPromptInfoBarTestCase> {
- public:
-  void SetUp() override {
-    feature_list_->InitWithFeatures(
-        {permissions::features::kPermissionPromiseLifetimeModulation},
-        /*disabled_features=*/{});
-    QuietPromptInteractiveUITest::SetUp();
-  }
-
- private:
-  std::unique_ptr<ScopedFeatureList> feature_list_ =
-      std::make_unique<ScopedFeatureList>();
-};
+      public testing::WithParamInterface<QuietPromptInfoBarTestCase> {};
 
 INSTANTIATE_TEST_SUITE_P(
     PermissionChangeListenerTests,
