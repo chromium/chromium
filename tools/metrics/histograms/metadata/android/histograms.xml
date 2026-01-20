@@ -2794,7 +2794,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.InputStream.TotalRead.SizeKB" units="KB"
-    expires_after="2026-03-01">
+    expires_after="2026-06-01">
   <owner>peconn@chromium.org</owner>
   <owner>webview-team@google.com</owner>
   <summary>
@@ -7565,7 +7565,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.LoadUrl.FailureScheme" enum="WebViewUrlScheme"
-    expires_after="2026-03-01">
+    expires_after="2026-06-01">
   <owner>peconn@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -7600,7 +7600,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.LoadUrl.Success" enum="BooleanSuccess"
-    expires_after="2026-03-01">
+    expires_after="2026-06-01">
   <owner>peconn@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -8503,7 +8503,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.ShouldInterceptRequest.DidOverride"
-    enum="WebViewShouldInterceptRequestOverridden" expires_after="2026-03-01">
+    enum="WebViewShouldInterceptRequestOverridden" expires_after="2026-06-01">
   <owner>peconn@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -8563,7 +8563,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.ShouldInterceptRequest.IsRequestSkipped"
-    enum="Boolean" expires_after="2026-03-01">
+    enum="Boolean" expires_after="2026-06-01">
   <owner>peconn@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
