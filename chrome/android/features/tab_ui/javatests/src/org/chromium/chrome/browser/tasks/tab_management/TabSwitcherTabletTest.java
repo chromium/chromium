@@ -189,7 +189,7 @@ public class TabSwitcherTabletTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/40901097")
+    @DisabledTest(message = "Flaky, crbug.com/40901097")
     public void testTabSwitcherScrim() {
         prepareTabs(1, 1);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();

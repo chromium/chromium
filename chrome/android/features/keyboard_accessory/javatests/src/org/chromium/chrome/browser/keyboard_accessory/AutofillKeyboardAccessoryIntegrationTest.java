@@ -165,6 +165,7 @@ public class AutofillKeyboardAccessoryIntegrationTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/353910783
     public void testSelectSuggestionHidesKeyboardAccessory()
             throws ExecutionException, TimeoutException {
         startAtTestPage(FakeKeyboard::new);

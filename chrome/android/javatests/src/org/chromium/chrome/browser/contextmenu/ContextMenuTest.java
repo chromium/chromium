@@ -753,6 +753,7 @@ public class ContextMenuTest {
     @Test
     @LargeTest
     @Restriction(DeviceFormFactor.DESKTOP)
+    @DisabledTest(message = "https://crbug.com/445993228")
     @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_EMPTY_SPACE})
     @DisableFeatures({UiAndroidFeatures.ANDROID_WINDOW_OCCLUSION})
     public void testSavePageRightClick() throws TimeoutException {
@@ -1423,6 +1424,7 @@ public class ContextMenuTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP)
+    @DisabledTest(message = "https://crbug.com/445993228")
     @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_EMPTY_SPACE})
     @DisableFeatures({UiAndroidFeatures.ANDROID_WINDOW_OCCLUSION})
     public void testPrintPageRightClick() throws Exception {

@@ -45,7 +45,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -300,7 +299,7 @@ public class TabsTest {
     @LargeTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature({"Android-TabSwitcher"})
-    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/353910783
+    @DisabledTest(message = "crbug.com/353910783")
     public void testHideKeyboard() throws Exception {
         // Open a new tab(The 1st tab) and click node.
         mActivityTestRule.loadUrlInNewTab(getUrl(TEST_FILE_PATH), false);
