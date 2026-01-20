@@ -25,7 +25,8 @@ log_cmd() {
 process_template_includes() {
   INCSTACK+="$1->"
   # Includes are relative to the file that does the include.
-  INCDIR=$(dirname $1)
+  local INCDIR
+  INCDIR="$(dirname "$1")"
   # Clear IFS so 'read' doesn't trim whitespace
   local OLDIFS="$IFS"
   IFS=''
@@ -62,7 +63,8 @@ process_template() {
   local TMPLOUT="${2:-$TMPLIN}"
 
   # Process includes first
-  local TMPLINCL="$(process_template_includes "$TMPLIN")"
+  local TMPLINCL
+  TMPINCL="$(process_template_includes "$TMPLIN")"
 
   # Substitute templated variables from the environment.
   # 'tac' reverses the sort order to handle the situation where one variable
