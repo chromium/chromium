@@ -11405,6 +11405,21 @@
             ]
         }
     ],
+    "GeminiRefactoredFRE": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_GeminiRefactoredFRE",
+                    "enable_features": [
+                        "GeminiRefactoredFRE"
+                    ]
+                }
+            ]
+        }
+    ],
     "Glic1PTools": [
         {
             "platforms": [
