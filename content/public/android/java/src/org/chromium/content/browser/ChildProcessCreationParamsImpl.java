@@ -4,9 +4,9 @@
 
 package org.chromium.content.browser;
 
-import android.os.Build;
 import android.os.Bundle;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.build.BuildConfig;
@@ -99,13 +99,15 @@ public class ChildProcessCreationParamsImpl {
     }
 
     public static String getSandboxedServicesName() {
-        if (BuildConfig.JAVALESS_RENDERERS_AVAILABLE
-                // Incremental install disables isolated processes, which are required for javaless
-                // renderers.
-                && !BuildConfig.IS_INCREMENTAL_INSTALL
-                && Build.VERSION.SDK_INT >= 35
-                && ContentFeatureList.sJavalessRenderers.isEnabled()) {
-            return NATIVE_SANDBOXED_SERVICES_NAME;
+        AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+        if (delegate != null && delegate.areNativeOnlyServicesEnabled()) {
+            if (BuildConfig.JAVALESS_RENDERERS_AVAILABLE
+                    // Incremental install disables isolated processes, which are required for
+                    // javaless renderers.
+                    && !BuildConfig.IS_INCREMENTAL_INSTALL
+                    && ContentFeatureList.sJavalessRenderers.isEnabled()) {
+                return NATIVE_SANDBOXED_SERVICES_NAME;
+            }
         }
         return SANDBOXED_SERVICES_NAME;
     }

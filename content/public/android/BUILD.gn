@@ -98,6 +98,7 @@ android_library("content_main_dex_java") {
     ":content_main_dex_jni_java",
     ":public_common_jni_java",
     "//base:base_java",
+    "//base:flagged_apis_java",
     "//base:process_launcher_java",
     "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
