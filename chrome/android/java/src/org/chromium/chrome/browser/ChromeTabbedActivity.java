@@ -1220,8 +1220,11 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     private Pane createBookmarkPane() {
         return new BookmarkPane(
                 adaptOnOverviewColorAlphaChange(),
+                getWindowAndroid(),
                 this,
                 getSnackbarManager(),
+                mRootUiCoordinator::getBottomSheetController,
+                getActivityResultTracker(),
                 getProfileProviderSupplier());
     }
 

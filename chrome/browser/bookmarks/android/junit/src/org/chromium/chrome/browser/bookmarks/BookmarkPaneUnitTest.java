@@ -37,9 +37,13 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.util.function.DoubleConsumer;
 
@@ -47,6 +51,7 @@ import java.util.function.DoubleConsumer;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({
     ChromeFeatureList.BOOKMARK_PANE_ANDROID,
+    SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
 })
 @DisableFeatures({
     ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP,
@@ -59,7 +64,10 @@ public class BookmarkPaneUnitTest {
             new OneshotSupplierImpl<>();
 
     @Mock private DoubleConsumer mOnToolbarAlphaChange;
+    @Mock private WindowAndroid mWindowAndroid;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private ActivityResultTracker mActivityResultTracker;
     @Mock private ProfileProvider mProfileProvider;
     @Mock private Profile mProfile;
     @Mock private BookmarkBridge.Natives mBookmarkBridgeNatives;
@@ -94,8 +102,11 @@ public class BookmarkPaneUnitTest {
         mBookmarkPane =
                 new BookmarkPane(
                         mOnToolbarAlphaChange,
+                        mWindowAndroid,
                         Robolectric.buildActivity(TestActivity.class).setup().get(),
                         mSnackbarManager,
+                        () -> mBottomSheetController,
+                        mActivityResultTracker,
                         mProfileProviderSupplier);
     }
 

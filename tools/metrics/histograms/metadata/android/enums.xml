@@ -1635,6 +1635,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="TABBED_ROOT_UI_COORDINATOR"/>
   <int value="5" label="HISTORY_ACTIVITY"/>
   <int value="6" label="SETTINGS_ACTIVITY"/>
+  <int value="7" label="BOOKMARK_ACTIVITY"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/scrim/ScrimManager.java:ScrimClient) -->

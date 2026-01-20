@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.view.ViewGroup;
 
@@ -54,13 +55,21 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({UNO_PHASE_2_FOLLOW_UP, ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES})
+@EnableFeatures({
+    UNO_PHASE_2_FOLLOW_UP,
+    ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES,
+    SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
+})
 public class BookmarkPageUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -70,7 +79,10 @@ public class BookmarkPageUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     // Arguments for BookmarkPage constructor.
+    @Mock private WindowAndroid mWindowAndroid;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private ActivityResultTracker mActivityResultTracker;
     @Mock private Profile mProfile;
     @Mock private NativePageHost mNativePageHost;
     @Mock private ComponentName mComponentName;
@@ -97,6 +109,7 @@ public class BookmarkPageUnitTest {
     private final ObservableSupplierImpl<@Nullable EdgeToEdgeController> mEdgeToEdgeSupplier =
             new ObservableSupplierImpl<>();
 
+    private Activity mActivity;
     private BookmarkPage mBookmarkPage;
 
     @Before
@@ -113,9 +126,8 @@ public class BookmarkPageUnitTest {
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
         when(mIdentityServicesProvider.getSigninManager(mProfile)).thenReturn(mSigninManager);
-        mActivityScenarios
-                .getScenario()
-                .onActivity(activity -> when(mNativePageHost.getContext()).thenReturn(activity));
+        mActivityScenarios.getScenario().onActivity(activity -> mActivity = activity);
+        when(mNativePageHost.getContext()).thenReturn(mActivity);
         when(mNativePageHost.createDefaultMarginAdapter(any())).thenReturn(mMarginAdapater);
         when(mNativePageHost.createEdgeToEdgePadAdjuster(any()))
                 .thenAnswer(
@@ -124,7 +136,11 @@ public class BookmarkPageUnitTest {
                                         invocation.getArgument(0), mEdgeToEdgeSupplier));
         mBookmarkPage =
                 new BookmarkPage(
+                        mWindowAndroid,
+                        mActivity,
                         mSnackbarManager,
+                        () -> mBottomSheetController,
+                        mActivityResultTracker,
                         mProfile,
                         mNativePageHost,
                         mComponentName,

@@ -319,7 +319,11 @@ public class NativePageFactory {
 
         protected NativePage buildBookmarksPage(Tab tab) {
             return new BookmarkPage(
+                    mWindowAndroid,
+                    mActivity,
                     mSnackbarManagerSupplier.get(),
+                    () -> mBottomSheetController,
+                    mActivityResultTracker,
                     tab.getProfile(),
                     new TabShim(
                             tab,

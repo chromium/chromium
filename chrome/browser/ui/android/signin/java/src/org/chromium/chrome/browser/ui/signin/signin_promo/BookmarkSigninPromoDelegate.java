@@ -242,6 +242,16 @@ public class BookmarkSigninPromoDelegate extends SigninPromoDelegate {
         return SigninSurveyController.SigninSurveyType.BOOKMARK_PROMO;
     }
 
+    @Override
+    boolean shouldOverridePrimaryButtonClick() {
+        return !isSeamlessSigninAllowed() || mPromoState != PromoState.SIGNIN;
+    }
+
+    @Override
+    boolean shouldOverrideSecondaryButtonClick() {
+        return !isSeamlessSigninAllowed();
+    }
+
     private @PromoState int computePromoState() {
         if (wasPromoDeclined() || !canManuallyEnableSyncTypes()) {
             return PromoState.NONE;

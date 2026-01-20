@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.widget.scrim;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient.BOOKMARK_ACTIVITY;
 import static org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient.CREATOR_COORDINATOR;
 import static org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient.HISTORY_ACTIVITY;
 import static org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient.NONE;
@@ -62,6 +63,7 @@ public class ScrimManager {
         TABBED_ROOT_UI_COORDINATOR,
         HISTORY_ACTIVITY,
         SETTINGS_ACTIVITY,
+        BOOKMARK_ACTIVITY,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ScrimClient {
@@ -72,7 +74,8 @@ public class ScrimManager {
         int TABBED_ROOT_UI_COORDINATOR = 4;
         int HISTORY_ACTIVITY = 5;
         int SETTINGS_ACTIVITY = 6;
-        int COUNT = 7;
+        int BOOKMARK_ACTIVITY = 7;
+        int COUNT = 8;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:ScrimClient)
