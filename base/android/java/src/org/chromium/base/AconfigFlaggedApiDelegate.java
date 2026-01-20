@@ -4,7 +4,6 @@
 
 package org.chromium.base;
 
-import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
 import android.app.ActivityOptions;
 import android.content.Context;
@@ -52,16 +51,6 @@ public interface AconfigFlaggedApiDelegate {
 
     static void setInstanceForTesting(AconfigFlaggedApiDelegate testInstance) {
         ServiceLoaderUtil.setInstanceForTesting(AconfigFlaggedApiDelegate.class, testInstance);
-    }
-
-    /**
-     * Calls the {@link android.app.ActivityManager#isTaskMoveAllowedOnDisplay} method if supported,
-     * otherwise returns false.
-     *
-     * @param am {@link android.app.ActivityManager} on which the method should be called.
-     */
-    default boolean isTaskMoveAllowedOnDisplay(ActivityManager am, int displayId) {
-        return false;
     }
 
     /**
