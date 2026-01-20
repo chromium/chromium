@@ -109,6 +109,11 @@ bool SendData(
   // otherwise the media player will get confused and refuse to play.
   // Content delivered via chrome:// URLs is assumed fully buffered.
   headers->content_length = output_size;
+  auto now_ticks = base::TimeTicks::Now();
+  headers->response_start = now_ticks;
+  headers->response_time = base::Time::Now();
+  headers->load_timing.receive_headers_start = now_ticks;
+  headers->load_timing.receive_headers_end = now_ticks;
 
   mojo::Remote<network::mojom::URLLoaderClient> client(
       std::move(client_remote));
@@ -118,6 +123,7 @@ bool SendData(
   status.encoded_data_length = output_size;
   status.encoded_body_length = output_size;
   status.decoded_body_length = output_size;
+  status.completion_time = base::TimeTicks::Now();
   client->OnComplete(status);
   return true;
 }

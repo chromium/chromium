@@ -116,6 +116,12 @@ void SendResponse(mojo::PendingRemote<network::mojom::URLLoaderClient> client,
   headers->SetHeader(net::HttpRequestHeaders::kContentType,
                      url_response_head->mime_type);
   url_response_head->headers = headers;
+  auto now_time = base::Time::Now();
+  auto now_ticks = base::TimeTicks::Now();
+  url_response_head->request_time = now_time;
+  url_response_head->request_start = now_ticks;
+  url_response_head->load_timing.request_start_time = now_time;
+  url_response_head->load_timing.request_start = now_ticks;
 
   scoped_refptr<base::RefCountedString> bytes =
       base::MakeRefCounted<base::RefCountedString>(std::string(content));
@@ -259,6 +265,12 @@ void LocalResourceURLLoaderFactory::GetResourceAndRespond(
   url_response_head->headers = headers;
   url_response_head->parsed_headers = network::PopulateParsedHeaders(
       url_response_head->headers.get(), request.url);
+  auto now_time = base::Time::Now();
+  auto now_ticks = base::TimeTicks::Now();
+  url_response_head->request_time = now_time;
+  url_response_head->request_start = now_ticks;
+  url_response_head->load_timing.request_start_time = now_time;
+  url_response_head->load_timing.request_start = now_ticks;
 
   // Handle Range header if request.
   std::optional<net::HttpByteRange> maybe_range = std::nullopt;

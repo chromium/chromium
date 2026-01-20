@@ -174,8 +174,12 @@ void StartURLLoader(
   resource_response->parsed_headers = network::PopulateParsedHeaders(
       resource_response->headers.get(), request.url);
   resource_response->mime_type = source->source()->GetMimeType(request.url);
-  // TODO: fill all the time related field i.e. request_time response_time
-  // request_start response_start
+  auto now_time = base::Time::Now();
+  auto now_ticks = base::TimeTicks::Now();
+  resource_response->request_time = now_time;
+  resource_response->request_start = now_ticks;
+  resource_response->load_timing.request_start_time = now_time;
+  resource_response->load_timing.request_start = now_ticks;
 
   WebContents::Getter wc_getter;
 
