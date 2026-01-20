@@ -536,12 +536,6 @@ public abstract class CronetEngine {
          */
         @ProxyOptions.Experimental
         public Builder setProxyOptions(@NonNull ProxyOptions proxyOptions) {
-            if (!mBuilderDelegate
-                    .getSupportedConfigOptions()
-                    .contains(ICronetEngineBuilder.PROXY_OPTIONS)) {
-                throw new UnsupportedOperationException(
-                        "This Cronet implementation does not support ProxyOptions");
-            }
             mBuilderDelegate.setProxyOptions(Objects.requireNonNull(proxyOptions));
             return this;
         }
