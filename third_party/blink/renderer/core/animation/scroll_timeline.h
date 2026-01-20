@@ -90,6 +90,17 @@ class CORE_EXPORT ScrollTimeline : public ScrollSnapshotTimeline {
       ScrollAxis axis,
       const LayoutBox& source_box);
 
+  // ScrollTimelines may be created with reference to an element,
+  // which, in combination with ReferenceType, defines the source [1]
+  // (for scroll timelines) or subject [2] (for view timelines).
+  //
+  // For timelines created from CSS, the reference element is always present,
+  // and it is always the element that produced the timeline.
+  //
+  // [1] https://drafts.csswg.org/scroll-animations-1/#dom-scrolltimeline-source
+  // [2] https://drafts.csswg.org/scroll-animations-1/#dom-viewtimeline-subject
+  Element* GetReferenceElement() const { return reference_element_.Get(); }
+
  protected:
 
   // Scroll offsets corresponding to 0% and 100% progress. By default, these
@@ -104,8 +115,6 @@ class CORE_EXPORT ScrollTimeline : public ScrollSnapshotTimeline {
   // This version does not force a style update and is therefore safe to call
   // during lifecycle update.
   Element* ComputeSourceNoLayout() const;
-
-  Element* GetReferenceElement() const { return reference_element_.Get(); }
 
   void AddTrigger(TimelineTrigger* trigger) override;
   void RemoveTrigger(TimelineTrigger* trigger) override;

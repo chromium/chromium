@@ -1773,6 +1773,12 @@
       status: "experimental",
     },
     {
+      // Makes timeline names global by default.
+      //
+      // https://github.com/w3c/csswg-drafts/issues/12581
+      name: "CSSTimelineScopeGlobal",
+    },
+    {
       name: "CSSTypedArithmetic",
       status: "stable",
     },
