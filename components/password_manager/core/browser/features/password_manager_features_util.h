@@ -12,8 +12,6 @@ namespace syncer {
 class SyncService;
 }
 
-class PrefService;
-
 namespace password_manager::features_util {
 
 // Represents the state of the user wrt. sign-in and account-scoped storage.
@@ -81,20 +79,6 @@ PasswordAccountStorageUsageLevel ComputePasswordAccountStorageUsageLevel(
 // Whether the user toggle for account storage is shown in settings.
 bool ShouldShowAccountStorageSettingToggle(
     const syncer::SyncService* sync_service);
-
-// Users with account storage enabled used to have the choice of saving new
-// passwords only locally, while keeping existing account passwords available
-// for autofill. That was achieved by setting a certain "default store pref" to
-// the "profile store". This logic was removed in crbug.com/369341336.
-// MigrateDefaultProfileStorePref() migrates users in the legacy state to have
-// account storage completely disabled instead, i.e. so they can't save nor
-// autofill account passwords. The migration affects both signed-in and
-// signed-out users (because account storage settings should survive sign-out).
-// kObsoleteAccountStorageDefaultStoreKey was part of the legacy pref's schema
-// and is exposed for testing.
-inline constexpr char kObsoleteAccountStorageDefaultStoreKey[] =
-    "default_store";
-void MigrateDefaultProfileStorePref(PrefService* pref_service);
 
 // Password change HaTS product-specific data fields.
 //

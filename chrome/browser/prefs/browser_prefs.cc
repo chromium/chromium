@@ -2337,12 +2337,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   MigrateDefaultBrowserLastDeclinedPref(profile_prefs);
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-  // Added 01/2025.
-  password_manager::features_util::MigrateDefaultProfileStorePref(
-      profile_prefs);
-#endif  // !BUILDFLAG(IS_ANDROID)
-
   // Added 01/2025.
   profile_prefs->ClearPref(kCompactModeEnabled);
 
