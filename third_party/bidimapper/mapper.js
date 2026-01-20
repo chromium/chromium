@@ -486,6 +486,9 @@
         parseSendCommandParams(params) {
             return params;
         }
+        parseSetClientHintsOverrideParams(params) {
+            return params;
+        }
         parseSetForcedColorsModeThemeOverrideParams(params) {
             return params;
         }
@@ -1186,7 +1189,7 @@
                 const config = this.#contextConfigStorage.getActiveConfig(context.id, context.userContext);
                 await Promise.all([
                     context.setLocaleOverride(config.locale ?? null),
-                    context.setUserAgentAndAcceptLanguage(config.userAgent, config.locale),
+                    context.setUserAgentAndAcceptLanguage(config.userAgent, config.locale, config.clientHints),
                 ]);
             }));
             return {};
@@ -1354,7 +1357,31 @@
             }
             await Promise.all(browsingContexts.map(async (context) => {
                 const config = this.#contextConfigStorage.getActiveConfig(context.id, context.userContext);
-                await context.setUserAgentAndAcceptLanguage(config.userAgent, config.locale);
+                await context.setUserAgentAndAcceptLanguage(config.userAgent, config.locale, config.clientHints);
+            }));
+            return {};
+        }
+        async setClientHintsOverride(params) {
+            const clientHints = params.clientHints ?? null;
+            const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(params.contexts, params.userContexts, true);
+            for (const browsingContextId of params.contexts ?? []) {
+                this.#contextConfigStorage.updateBrowsingContextConfig(browsingContextId, {
+                    clientHints,
+                });
+            }
+            for (const userContextId of params.userContexts ?? []) {
+                this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+                    clientHints,
+                });
+            }
+            if (params.contexts === undefined && params.userContexts === undefined) {
+                this.#contextConfigStorage.updateGlobalConfig({
+                    clientHints,
+                });
+            }
+            await Promise.all(browsingContexts.map(async (context) => {
+                const config = this.#contextConfigStorage.getActiveConfig(context.id, context.userContext);
+                await context.setUserAgentAndAcceptLanguage(config.userAgent, config.locale, config.clientHints);
             }));
             return {};
         }
@@ -3472,7 +3499,6 @@
         };
         result[`goog:session`] = cookie.session;
         result[`goog:priority`] = cookie.priority;
-        result[`goog:sameParty`] = cookie.sameParty;
         result[`goog:sourceScheme`] = cookie.sourceScheme;
         result[`goog:sourcePort`] = cookie.sourcePort;
         if (cookie.partitionKey !== undefined) {
@@ -3516,9 +3542,6 @@
         }
         if (params.cookie[`goog:priority`] !== undefined) {
             result.priority = params.cookie[`goog:priority`];
-        }
-        if (params.cookie[`goog:sameParty`] !== undefined) {
-            result.sameParty = params.cookie[`goog:sameParty`];
         }
         if (params.cookie[`goog:sourceScheme`] !== undefined) {
             result.sourceScheme = params.cookie[`goog:sourceScheme`];
@@ -5085,6 +5108,8 @@
                     return this.#cdpProcessor.resolveRealm(this.#parser.parseResolveRealmParams(command.params));
                 case 'goog:cdp.sendCommand':
                     return await this.#cdpProcessor.sendCommand(this.#parser.parseSendCommandParams(command.params));
+                case 'emulation.setClientHintsOverride':
+                    return await this.#emulationProcessor.setClientHintsOverride(this.#parser.parseSetClientHintsOverrideParams(command.params));
                 case 'emulation.setForcedColorsModeThemeOverride':
                     this.#parser.parseSetForcedColorsModeThemeOverrideParams(command.params);
                     throw new UnsupportedOperationException(`Method ${command.method} is not implemented.`);
@@ -5620,6 +5645,7 @@
      */
     class ContextConfig {
         acceptInsecureCerts;
+        clientHints;
         devicePixelRatio;
         disableNetworkDurableMessages;
         downloadBehavior;
@@ -6341,13 +6367,15 @@
             this.realmStorage.knownHandlesToRealmMap.delete(handle);
         }
         dispose() {
-            this.#registerEvent({
-                type: 'event',
-                method: Script$2.EventNames.RealmDestroyed,
-                params: {
-                    realm: this.realmId,
-                },
-            });
+            if (!this.isHidden()) {
+                this.#registerEvent({
+                    type: 'event',
+                    method: Script$2.EventNames.RealmDestroyed,
+                    params: {
+                        realm: this.realmId,
+                    },
+                });
+            }
         }
     }
 
@@ -7097,6 +7125,9 @@
             this.#cdpTarget.cdpClient.on('Runtime.executionContextCreated', (params) => {
                 const { auxData, name, uniqueId, id } = params.context;
                 if (!auxData || auxData.frameId !== this.id) {
+                    return;
+                }
+                if (auxData.type === 'isolated' && name === '') {
                     return;
                 }
                 let origin;
@@ -7923,8 +7954,8 @@
         async setScriptingEnabled(scriptingEnabled) {
             await Promise.all(this.#getAllRelatedCdpTargets().map(async (cdpTarget) => await cdpTarget.setScriptingEnabled(scriptingEnabled)));
         }
-        async setUserAgentAndAcceptLanguage(userAgent, acceptLanguage) {
-            await Promise.all(this.#getAllRelatedCdpTargets().map(async (cdpTarget) => await cdpTarget.setUserAgentAndAcceptLanguage(userAgent, acceptLanguage)));
+        async setUserAgentAndAcceptLanguage(userAgent, acceptLanguage, clientHints) {
+            await Promise.all(this.#getAllRelatedCdpTargets().map(async (cdpTarget) => await cdpTarget.setUserAgentAndAcceptLanguage(userAgent, acceptLanguage, clientHints)));
         }
         async setEmulatedNetworkConditions(networkConditions) {
             await Promise.all(this.#getAllRelatedCdpTargets().map(async (cdpTarget) => await cdpTarget.setEmulatedNetworkConditions(networkConditions)));
@@ -9657,6 +9688,7 @@
         #networkStorage;
         contextConfigStorage;
         #unblocked = new Deferred();
+        #defaultUserAgent;
         #logger;
         #windowId;
         #deviceAccessEnabled = false;
@@ -9667,14 +9699,15 @@
             response: false,
             auth: false,
         };
-        static create(targetId, cdpClient, browserCdpClient, parentCdpClient, realmStorage, eventManager, preloadScriptStorage, browsingContextStorage, networkStorage, configStorage, userContext, logger) {
-            const cdpTarget = new CdpTarget(targetId, cdpClient, browserCdpClient, parentCdpClient, eventManager, realmStorage, preloadScriptStorage, browsingContextStorage, configStorage, networkStorage, userContext, logger);
+        static create(targetId, cdpClient, browserCdpClient, parentCdpClient, realmStorage, eventManager, preloadScriptStorage, browsingContextStorage, networkStorage, configStorage, userContext, defaultUserAgent, logger) {
+            const cdpTarget = new CdpTarget(targetId, cdpClient, browserCdpClient, parentCdpClient, eventManager, realmStorage, preloadScriptStorage, browsingContextStorage, configStorage, networkStorage, userContext, defaultUserAgent, logger);
             LogManager.create(cdpTarget, realmStorage, eventManager, logger);
             cdpTarget.#setEventListeners();
             void cdpTarget.#unblock();
             return cdpTarget;
         }
-        constructor(targetId, cdpClient, browserCdpClient, parentCdpClient, eventManager, realmStorage, preloadScriptStorage, browsingContextStorage, configStorage, networkStorage, userContext, logger) {
+        constructor(targetId, cdpClient, browserCdpClient, parentCdpClient, eventManager, realmStorage, preloadScriptStorage, browsingContextStorage, configStorage, networkStorage, userContext, defaultUserAgent, logger) {
+            this.#defaultUserAgent = defaultUserAgent;
             this.userContext = userContext;
             this.#id = targetId;
             this.#cdpClient = cdpClient;
@@ -10033,8 +10066,10 @@
             if (config.extraHeaders !== undefined) {
                 promises.push(this.setExtraHeaders(config.extraHeaders));
             }
-            if (config.userAgent !== undefined || config.locale !== undefined) {
-                promises.push(this.setUserAgentAndAcceptLanguage(config.userAgent, config.locale));
+            if (config.userAgent !== undefined ||
+                config.locale !== undefined ||
+                config.clientHints !== undefined) {
+                promises.push(this.setUserAgentAndAcceptLanguage(config.userAgent, config.locale, config.clientHints));
             }
             if (config.scriptingEnabled !== undefined) {
                 promises.push(this.setScriptingEnabled(config.scriptingEnabled));
@@ -10189,10 +10224,28 @@
                 headers,
             });
         }
-        async setUserAgentAndAcceptLanguage(userAgent, acceptLanguage) {
+        async setUserAgentAndAcceptLanguage(userAgent, acceptLanguage, clientHints) {
+            const userAgentMetadata = clientHints
+                ? {
+                    brands: clientHints.brands?.map((b) => ({
+                        brand: b.brand,
+                        version: b.version,
+                    })),
+                    fullVersionList: clientHints.fullVersionList,
+                    platform: clientHints.platform ?? '',
+                    platformVersion: clientHints.platformVersion ?? '',
+                    architecture: clientHints.architecture ?? '',
+                    model: clientHints.model ?? '',
+                    mobile: clientHints.mobile ?? false,
+                    bitness: clientHints.bitness ?? undefined,
+                    wow64: clientHints.wow64 ?? undefined,
+                    formFactors: clientHints.formFactors ?? undefined,
+                }
+                : undefined;
             await this.cdpClient.sendCommand('Emulation.setUserAgentOverride', {
-                userAgent: userAgent ?? '',
+                userAgent: userAgent || (userAgentMetadata ? this.#defaultUserAgent : ''),
                 acceptLanguage: acceptLanguage ?? undefined,
+                userAgentMetadata,
             });
         }
         async setEmulatedNetworkConditions(networkConditions) {
@@ -10240,8 +10293,9 @@
         #configStorage;
         #speculationProcessor;
         #defaultUserContextId;
+        #defaultUserAgent;
         #logger;
-        constructor(cdpConnection, browserCdpClient, selfTargetId, eventManager, browsingContextStorage, realmStorage, networkStorage, configStorage, bluetoothProcessor, speculationProcessor, preloadScriptStorage, defaultUserContextId, logger) {
+        constructor(cdpConnection, browserCdpClient, selfTargetId, eventManager, browsingContextStorage, realmStorage, networkStorage, configStorage, bluetoothProcessor, speculationProcessor, preloadScriptStorage, defaultUserContextId, defaultUserAgent, logger) {
             this.#cdpConnection = cdpConnection;
             this.#browserCdpClient = browserCdpClient;
             this.#targetKeysToBeIgnoredByAutoAttach.add(selfTargetId);
@@ -10255,6 +10309,7 @@
             this.#speculationProcessor = speculationProcessor;
             this.#realmStorage = realmStorage;
             this.#defaultUserContextId = defaultUserContextId;
+            this.#defaultUserAgent = defaultUserAgent;
             this.#logger = logger;
             this.#setEventListeners(browserCdpClient);
         }
@@ -10369,7 +10424,8 @@
         #createCdpTarget(targetCdpClient, parentCdpClient, targetInfo, userContext) {
             this.#setEventListeners(targetCdpClient);
             this.#preloadScriptStorage.onCdpTargetCreated(targetInfo.targetId, userContext);
-            const target = CdpTarget.create(targetInfo.targetId, targetCdpClient, this.#browserCdpClient, parentCdpClient, this.#realmStorage, this.#eventManager, this.#preloadScriptStorage, this.#browsingContextStorage, this.#networkStorage, this.#configStorage, userContext, this.#logger);
+            const target = CdpTarget.create(targetInfo.targetId, targetCdpClient, this.#browserCdpClient, parentCdpClient, this.#realmStorage, this.#eventManager, this.#preloadScriptStorage, this.#browsingContextStorage, this.#networkStorage, this.#configStorage, userContext,
+            this.#defaultUserAgent, this.#logger);
             this.#networkStorage.onCdpTargetCreated(target);
             this.#bluetoothProcessor.onCdpTargetCreated(target);
             this.#speculationProcessor.onCdpTargetCreated(target);
@@ -11277,7 +11333,7 @@
             }
             await this.#transport.sendMessage(message);
         };
-        constructor(bidiTransport, cdpConnection, browserCdpClient, selfTargetId, defaultUserContextId, parser, logger) {
+        constructor(bidiTransport, cdpConnection, browserCdpClient, selfTargetId, defaultUserContextId, defaultUserAgent, parser, logger) {
             super();
             this.#logger = logger;
             this.#messageQueue = new ProcessingQueue(this.#processOutgoingMessage, this.#logger);
@@ -11299,7 +11355,7 @@
                     prerenderingDisabled: options?.['goog:prerenderingDisabled'] ?? false,
                     disableNetworkDurableMessages: options?.['goog:disableNetworkDurableMessages'],
                 });
-                new CdpTargetManager(cdpConnection, browserCdpClient, selfTargetId, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, networkStorage, contextConfigStorage, this.#bluetoothProcessor, this.#speculationProcessor, this.#preloadScriptStorage, defaultUserContextId, logger);
+                new CdpTargetManager(cdpConnection, browserCdpClient, selfTargetId, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, networkStorage, contextConfigStorage, this.#bluetoothProcessor, this.#speculationProcessor, this.#preloadScriptStorage, defaultUserContextId, defaultUserAgent, logger);
                 await browserCdpClient.sendCommand('Target.setDiscoverTargets', {
                     discover: true,
                 });
@@ -11325,14 +11381,15 @@
             });
         }
         static async createAndStart(bidiTransport, cdpConnection, browserCdpClient, selfTargetId, parser, logger) {
-            const [defaultUserContextId] = await Promise.all([
+            const [defaultUserContextId, version] = await Promise.all([
                 this.#getDefaultUserContextId(browserCdpClient),
+                browserCdpClient.sendCommand('Browser.getVersion'),
                 browserCdpClient.sendCommand('Browser.setDownloadBehavior', {
                     behavior: 'default',
                     eventsEnabled: true,
                 }),
             ]);
-            const server = new BidiServer(bidiTransport, cdpConnection, browserCdpClient, selfTargetId, defaultUserContextId, parser, logger);
+            const server = new BidiServer(bidiTransport, cdpConnection, browserCdpClient, selfTargetId, defaultUserContextId, version.userAgent, parser, logger);
             return server;
         }
         static async #getDefaultUserContextId(browserCdpClient) {
@@ -15973,6 +16030,58 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
+    z.lazy(() => Emulation$2.SetClientHintsOverrideCommandSchema);
+    var Emulation$2;
+    (function (Emulation) {
+        Emulation.SetClientHintsOverrideCommandSchema = z.lazy(() => z.object({
+            method: z.literal('emulation.setClientHintsOverride'),
+            params: z.object({
+                clientHints: z.union([Emulation.ClientHintsMetadataSchema, z.null()]),
+                contexts: z.array(z.string()).min(1).optional(),
+                userContexts: z.array(z.string()).min(1).optional(),
+            }),
+        }));
+    })(Emulation$2 || (Emulation$2 = {}));
+    (function (Emulation) {
+        Emulation.ClientHintsMetadataSchema = z.lazy(() => z.object({
+            brands: z.array(Emulation.BrandVersionSchema).optional(),
+            fullVersionList: z.array(Emulation.BrandVersionSchema).optional(),
+            platform: z.string().optional(),
+            platformVersion: z.string().optional(),
+            architecture: z.string().optional(),
+            model: z.string().optional(),
+            mobile: z.boolean().optional(),
+            bitness: z.string().optional(),
+            wow64: z.boolean().optional(),
+            formFactors: z.array(z.string()).optional(),
+        }));
+    })(Emulation$2 || (Emulation$2 = {}));
+    (function (Emulation) {
+        Emulation.BrandVersionSchema = z.lazy(() => z.object({
+            brand: z.string(),
+            version: z.string(),
+        }));
+    })(Emulation$2 || (Emulation$2 = {}));
+    (function (Emulation) {
+        Emulation.SetClientHintsOverrideResultSchema = z.lazy(() => z.object({}));
+    })(Emulation$2 || (Emulation$2 = {}));
+
+    /**
+     * Copyright 2024 Google LLC.
+     * Copyright (c) Microsoft Corporation.
+     *
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     *     http://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     */
     z.lazy(() => z
         .object({
         id: JsUintSchema,
@@ -19099,6 +19208,18 @@
     })(Session || (Session = {}));
     var Emulation;
     (function (Emulation) {
+        function parseSetClientHintsOverrideParams(params) {
+            const SetClientHintsOverrideParametersSchema = objectType({
+                clientHints: unionType([
+                    Emulation$2.ClientHintsMetadataSchema,
+                    nullType(),
+                ]),
+                contexts: arrayType(stringType()).min(1).optional(),
+                userContexts: arrayType(stringType()).min(1).optional(),
+            });
+            return parseObject(params, SetClientHintsOverrideParametersSchema);
+        }
+        Emulation.parseSetClientHintsOverrideParams = parseSetClientHintsOverrideParams;
         function parseSetForcedColorsModeThemeOverrideParams(params) {
             return parseObject(params, Emulation$1.SetForcedColorsModeThemeOverrideParametersSchema);
         }
@@ -19372,6 +19493,9 @@
         }
         parseSendCommandParams(params) {
             return Cdp.parseSendCommandRequest(params);
+        }
+        parseSetClientHintsOverrideParams(params) {
+            return Emulation.parseSetClientHintsOverrideParams(params);
         }
         parseSetForcedColorsModeThemeOverrideParams(params) {
             return Emulation.parseSetForcedColorsModeThemeOverrideParams(params);
