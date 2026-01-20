@@ -200,11 +200,6 @@ BASE_FEATURE_PARAM(std::string,
                    "autofill_ai_geo_ip_blocklist",
                    "");
 
-// If enabled, the existence of address or payments data is not required to show
-// the Iph bubble for AutofillAi.
-BASE_FEATURE(kAutofillAiIgnoreWhetherUserHasAddressOrPaymentsDataForIph,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, Autofill AI does not depend on Autofill for addresses being
 // enabled.
 BASE_FEATURE(kAutofillAiIgnoresWhetherAddressPrefIsEnabled,

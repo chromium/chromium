@@ -276,55 +276,10 @@ TEST_F(AutofillAiManagerTest, ShouldDisplayIph) {
       manager().ShouldDisplayIph(form_structure, form.fields()[0].global_id()));
 }
 
-// Tests that IPH should not be displayed if the user is opted out of the
-// feature, but does not have address or payments data stored.
-TEST_F(AutofillAiManagerTest,
-       ShouldNotDisplayIphWhenUserHasNoAddressOrPaymentsData) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillAiIgnoreWhetherUserHasAddressOrPaymentsDataForIph);
-  test::FormDescription form_description = {.fields = {{}}};
-  FormData form = test::GetFormData(form_description);
-  FormStructure form_structure = FormStructure(form);
-  AddPredictionsToFormStructure(form_structure, {{PASSPORT_NUMBER}});
-  SetAutofillAiOptInStatus(autofill_client(), AutofillAiOptInStatus::kOptedOut);
-
-  EXPECT_FALSE(
-      manager().ShouldDisplayIph(form_structure, form.fields()[0].global_id()));
-}
-
-// Tests that IPH is not displayed if the user has disabled, say,
-// identity-related entities, and the submitted form would import (only) an
-// identity-related entity.
-TEST_F(AutofillAiManagerTest,
-       ShouldNotDisplayIphWhenUserHasDisabledTheGroupOfEntities) {
-  test::FormDescription form_description = {.fields = {{}}};
-  FormData form = test::GetFormData(form_description);
-  FormStructure form_structure = FormStructure(form);
-  FieldGlobalId field_id = form.fields()[0].global_id();
-  AddPredictionsToFormStructure(form_structure, {{PASSPORT_NUMBER}});
-  AddAutofillProfile();
-  SetAutofillAiOptInStatus(autofill_client(), AutofillAiOptInStatus::kOptedOut);
-
-  autofill_client().GetPrefs()->SetBoolean(
-      prefs::kAutofillAiTravelEntitiesEnabled, false);
-  autofill_client().GetPrefs()->SetBoolean(
-      prefs::kAutofillAiIdentityEntitiesEnabled, false);
-  EXPECT_FALSE(manager().ShouldDisplayIph(form_structure, field_id));
-
-  // Confirm that it is only the pref for identity entities that affects IPH.
-  autofill_client().GetPrefs()->SetBoolean(
-      prefs::kAutofillAiIdentityEntitiesEnabled, true);
-  EXPECT_TRUE(manager().ShouldDisplayIph(form_structure, field_id));
-}
-
-// Tests that if kAutofillAiIgnoreWhetherUserHasAddressOrPaymentsDataForIph is
-// enabled, IPH should be displayed when the user is opted out of the feature
+// Tests that IPH should be displayed when the user is opted out of the feature
 // and does not have address or payments data stored.
 TEST_F(AutofillAiManagerTest,
-       ShouldDisplayIphWhenUserHasNoAddressOrPaymentsDataAndFeatureFlagIsOn) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillAiIgnoreWhetherUserHasAddressOrPaymentsDataForIph};
+       ShouldDisplayIphWhenUserHasNoAddressOrPaymentsData) {
   test::FormDescription form_description = {.fields = {{}}};
   FormData form = test::GetFormData(form_description);
   FormStructure form_structure = FormStructure(form);

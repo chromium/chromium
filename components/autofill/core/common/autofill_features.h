@@ -65,9 +65,6 @@ BASE_DECLARE_FEATURE_PARAM(std::string, kAutofillAiIgnoreGeoIpAllowlist);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE_PARAM(std::string, kAutofillAiIgnoreGeoIpBlocklist);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(
-    kAutofillAiIgnoreWhetherUserHasAddressOrPaymentsDataForIph);
-COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAiIgnoresWhetherAddressPrefIsEnabled);
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillAiKnownTravelerNumber);
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillAiNationalIdCard);

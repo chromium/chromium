@@ -424,20 +424,6 @@ bool AutofillAiManager::ShouldDisplayIph(const FormStructure& form,
     return false;
   }
 
-  // The user must have at least one address or payments instrument to indicate
-  // that they are an active Autofill user.
-  const AddressDataManager& adm =
-      client_->GetPersonalDataManager().address_data_manager();
-  const PaymentsDataManager& paydm =
-      client_->GetPersonalDataManager().payments_data_manager();
-  if (adm.GetProfiles().empty() && paydm.GetCreditCards().empty() &&
-      paydm.GetIbans().empty() && !paydm.HasEwalletAccounts() &&
-      !paydm.HasMaskedBankAccounts() &&
-      !base::FeatureList::IsEnabled(
-          features::
-              kAutofillAiIgnoreWhetherUserHasAddressOrPaymentsDataForIph)) {
-    return false;
-  }
   const AutofillField* const focused_field = form.GetFieldById(field_id);
   if (!focused_field) {
     return false;
