@@ -162,6 +162,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         type: Boolean,
         reflect: true,
       },
+      showCanvas: {type: Boolean},
+      showModelPicker: {type: Boolean},
     };
   }
 
@@ -176,6 +178,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   accessor contextMenuGlifAnimationState: GlifAnimationState =
       GlifAnimationState.INELIGIBLE;
   accessor inComposebox: boolean = false;
+  accessor showCanvas: boolean = false;
+  accessor showModelPicker: boolean = false;
   accessor isOmniboxInCompactMode_: boolean = false;
 
   protected accessor attachmentFileTypes_: string =
