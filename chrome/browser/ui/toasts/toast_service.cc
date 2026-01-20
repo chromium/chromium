@@ -11,6 +11,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/skills/skills_ui_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -346,5 +347,18 @@ void ToastService::RegisterToasts(
                   },
                   base::Unretained(browser_window_interface)))
           .AddCloseButton()
+          .Build());
+
+  toast_registry_->RegisterToast(
+      ToastId::kSkillSaved,
+      ToastSpecification::Builder(kCheckIcon, IDS_SKILL_SAVED_TOAST_BODY)
+          .AddCloseButton()
+          .AddActionButton(IDS_SKILL_SAVED_TOAST_BUTTON,
+                           base::BindRepeating(
+                               [](BrowserWindowInterface* window) {
+                                 skills::SkillsUiController::From(window)
+                                     ->InvokeLastSavedSkill();
+                               },
+                               base::Unretained(browser_window_interface)))
           .Build());
 }  // RegisterToasts() end.

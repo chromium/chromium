@@ -25,10 +25,20 @@ class SkillsUiController {
       BrowserWindowInterface* browser_window_interface);
 
   void ShowDialog(std::string_view prompt);
+  // Called when we want to update UI after a skill has been saved.
+  void OnSkillSaved(std::string_view skill_id);
+
+  // Shows after a skill is saved.
+  void ShowSkillSavedToast();
+  // Invokes last saved skill in sidepanel.
+  void InvokeLastSavedSkill();
+  // Invokes the skill with skill_id in sidepanel.
+  void InvokeSkill(std::string_view skill_id);
 
  private:
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
   ::ui::ScopedUnownedUserData<SkillsUiController> scoped_data_holder_;
+  std::string last_saved_skill_id_;
 };
 
 }  // namespace skills

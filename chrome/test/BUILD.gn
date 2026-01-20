@@ -2554,6 +2554,7 @@ if (!is_android) {
       "//chrome/browser/signin/e2e_tests:test_support",
       "//chrome/browser/site_protection",
       "//chrome/browser/site_protection:utils",
+      "//chrome/browser/skills:browser_tests",
       "//chrome/browser/storage_access_api",
       "//chrome/browser/supervised_user:test_support",
       "//chrome/browser/support_tool:support_tool_proto",

@@ -21,6 +21,8 @@ source_set("skills") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync:factories",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/toasts",
+    "//chrome/browser/ui/toasts/api:toasts",
     "//chrome/common:channel_info",
     "//components/keyed_service/core",
     "//components/skills:features",
@@ -28,5 +30,18 @@ source_set("skills") {
     "//components/skills/public",
     "//components/sync/model",
     "//ui/base/unowned_user_data",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "skills_ui_controller_browsertest.cc" ]
+  deps = [
+    ":skills",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/toasts",
+    "//chrome/browser/ui/toasts/api:toasts",
+    "//chrome/test:test_support",
   ]
 }

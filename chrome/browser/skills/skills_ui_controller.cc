@@ -4,7 +4,10 @@
 
 #include "chrome/browser/skills/skills_ui_controller.h"
 
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
 
 namespace skills {
 
@@ -25,6 +28,25 @@ SkillsUiController* SkillsUiController::From(
 
 void SkillsUiController::ShowDialog(std::string_view prompt) {
   // TODO(crbug.com/475589469): Implement this.
+}
+
+void SkillsUiController::OnSkillSaved(std::string_view skill_id) {
+  last_saved_skill_id_ = skill_id;
+  ShowSkillSavedToast();
+}
+
+void SkillsUiController::ShowSkillSavedToast() {
+  ToastController* const controller =
+      browser_window_interface_->GetFeatures().toast_controller();
+  controller->MaybeShowToast(ToastParams(ToastId::kSkillSaved));
+}
+
+void SkillsUiController::InvokeLastSavedSkill() {
+  InvokeSkill(last_saved_skill_id_);
+}
+
+void SkillsUiController::InvokeSkill(std::string_view skill_id) {
+  // TODO(crbug.com/475549806): Implement.
 }
 
 }  // namespace skills
