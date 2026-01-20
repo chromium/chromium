@@ -95,10 +95,6 @@ class DISPLAY_EXPORT DisplayLinkMac : public base::RefCounted<DisplayLinkMac> {
                                        base::TimeDelta& granularity) const = 0;
 
   virtual void SetPreferredInterval(base::TimeDelta interval) = 0;
-  virtual void SetPreferredIntervalRange(
-      base::TimeDelta min_interval,
-      base::TimeDelta max_interval,
-      base::TimeDelta preferred_interval) = 0;
 
   // Retrieves the current (“now”) time of a given display link. Returns
   // base::TimeTicks() if the current time is not available.

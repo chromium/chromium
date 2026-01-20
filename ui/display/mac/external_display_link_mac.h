@@ -35,9 +35,6 @@ class ExternalDisplayLinkMac : public DisplayLinkMac {
                                base::TimeDelta& granularity) const override;
 
   void SetPreferredInterval(base::TimeDelta interval) override {}
-  void SetPreferredIntervalRange(base::TimeDelta min_interval,
-                                 base::TimeDelta max_interval,
-                                 base::TimeDelta preferred_interval) override {}
 
   // Retrieves the current (“now”) time of a given display link.
   base::TimeTicks GetCurrentTime() const override;

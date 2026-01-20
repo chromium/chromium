@@ -32,14 +32,6 @@ class DISPLAY_EXPORT CADisplayLinkMac : public DisplayLinkMac {
 
   void SetPreferredInterval(base::TimeDelta interval) override {}
 
-  // Use the same minimum, maximum and preferred frame rate for the fixed frame
-  // rate rerquest. If different minimum and maximum frame rates are set, the
-  // actual callback rate will be dynamically adjusted to better align with
-  // other animation sources.
-  void SetPreferredIntervalRange(base::TimeDelta min_interval,
-                                 base::TimeDelta max_interval,
-                                 base::TimeDelta preferred_interval) override {}
-
   base::TimeTicks GetCurrentTime() const override;
 
  private:
