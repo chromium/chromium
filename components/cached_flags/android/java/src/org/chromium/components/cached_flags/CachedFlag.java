@@ -11,6 +11,7 @@ import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Flag;
 import org.chromium.base.cached_flags.ValuesReturned;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -69,11 +70,13 @@ public class CachedFlag extends Flag {
             boolean defaultValueInTests) {
         super(featureMap, featureName);
 
-        // In is_chrome_branded = true builds, fieldtrial_testing_config.json is not applied, so
-        // we do not want to use the |defaultValueInTests|, which should be kept in sync with the
-        // .json.
+        // In test builds and non-official development builds, fieldtrial_testing_config.json
+        // is applied, so we want to use |defaultValueInTests|. In is_chrome_branded = true
+        // builds, fieldtrial_testing_config.json is not applied, so we do not want to use the
+        // |defaultValueInTests|, which should be kept in sync with the .json.
         mDefaultValue =
-                (BuildConfig.IS_FOR_TEST && !BuildConfig.IS_CHROME_BRANDED)
+                ((BuildConfig.IS_FOR_TEST || !VersionInfo.isOfficialBuild())
+                                && !BuildConfig.IS_CHROME_BRANDED)
                         ? defaultValueInTests
                         : defaultValue;
     }
