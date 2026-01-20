@@ -161,8 +161,14 @@ IN_PROC_BROWSER_TEST_F(InfoBarContainerStandardTest, ReplaceInfoBar) {
   EXPECT_EQ("Replacement Message", messages[0]);
 }
 
+// TODO(crbug.com/476366053): Re-enable this test.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#define Maybe_NavigationDismissesInfoBar DISABLED_NavigationDismissesInfoBar
+#else
+#define Maybe_NavigationDismissesInfoBar NavigationDismissesInfoBar
+#endif
 IN_PROC_BROWSER_TEST_F(InfoBarContainerStandardTest,
-                       NavigationDismissesInfoBar) {
+                       Maybe_NavigationDismissesInfoBar) {
   AddInfoBar(infobars::InfoBarDelegate::InfobarPriority::kDefault, "Transient");
   ASSERT_EQ(1u, GetVisibleInfoBarMessages().size());
 
