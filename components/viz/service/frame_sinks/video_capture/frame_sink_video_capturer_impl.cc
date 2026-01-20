@@ -1135,8 +1135,8 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
                              std::move(frame), capture_begin_time);
 
   // TODO(crbug.com/346799708): The condition to check `pixel_format_` shouldn't
-  // be necessary but video capture is started with I420+GMB in tests. That
-  // still captures software I420 frames and not textures.
+  // be necessary but video capture is started with I420+mappable SI in tests.
+  // That still captures software I420 frames and not textures.
   const bool capture_texture_results =
       buffer_format_preference_ ==
           mojom::BufferFormatPreference::kPreferMappableSharedImage &&
@@ -1216,7 +1216,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
 
   if (log_to_webrtc_) {
     const std::string format = media::VideoPixelFormatToString(pixel_format_);
-    // NV12 is currently supported only via GpuMemoryBuffers, everything else is
+    // NV12 is currently supported only via MappableSI, everything else is
     // returned as a bitmap:
     const bool is_bitmap =
         buffer_format_preference_ == mojom::BufferFormatPreference::kDefault;
@@ -1226,7 +1226,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
         "scale_from: %s "
         "scale_to: %s "
         "frame pool utilization: %d",
-        format.c_str(), is_bitmap ? "bitmap" : "GPU memory buffer",
+        format.c_str(), is_bitmap ? "bitmap" : "mappable SharedImage",
         request->area().ToString().c_str(),
         request->scale_from().ToString().c_str(),
         request->scale_to().ToString().c_str(), utilization_pct));
