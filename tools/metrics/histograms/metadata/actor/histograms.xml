@@ -229,7 +229,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Actor.NavigationGating.CrossOrigin" enum="Boolean"
+<histogram name="Actor.NavigationGating.CrossOrigin2" enum="Boolean"
     expires_after="2026-05-31">
   <owner>dylancutler@google.com</owner>
   <owner>johannhof@google.com</owner>
@@ -240,7 +240,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Actor.NavigationGating.CrossSite" enum="Boolean"
+<histogram name="Actor.NavigationGating.CrossSite2" enum="Boolean"
     expires_after="2026-05-31">
   <owner>dylancutler@google.com</owner>
   <owner>johannhof@google.com</owner>

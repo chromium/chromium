@@ -250,8 +250,7 @@ bool ExecutionEngine::ShouldDeferNavigation(
     case GatingDecision::kAllowSameOrigin:
     case GatingDecision::kAllowByStaticList:
       LogNavigationGating(
-          /*initiator_origin=*/GetPrimaryMainFrame(navigation_handle)
-              ->GetLastCommittedOrigin(),
+          /*initiator_origin=*/navigation_handle.GetInitiatorOrigin(),
           navigation_handle.GetURL(), /*applied_gate=*/false);
       return false;
     case GatingDecision::kBlockByStaticList:
@@ -259,8 +258,7 @@ bool ExecutionEngine::ShouldDeferNavigation(
           FROM_HERE,
           base::BindOnce(std::move(callback), /*may_continue=*/false));
       LogNavigationGating(
-          /*initiator_origin=*/GetPrimaryMainFrame(navigation_handle)
-              ->GetLastCommittedOrigin(),
+          /*initiator_origin=*/navigation_handle.GetInitiatorOrigin(),
           navigation_handle.GetURL(), /*applied_gate=*/true);
       return true;
     case GatingDecision::kNeedsAsyncCheck: {
@@ -285,12 +283,13 @@ void ExecutionEngine::LogNavigationGating(
   UMA_HISTOGRAM_BOOLEAN("Actor.NavigationGating.AppliedGate", applied_gate);
 
   if (initiator_origin) {
-    UMA_HISTOGRAM_BOOLEAN("Actor.NavigationGating.CrossOrigin",
-                          !initiator_origin->IsSameOriginWith(
-                              url::Origin::Create(navigation_url)));
-    UMA_HISTOGRAM_BOOLEAN("Actor.NavigationGating.CrossSite",
+    url::Origin navigation_origin = url::Origin::Create(navigation_url);
+    UMA_HISTOGRAM_BOOLEAN(
+        "Actor.NavigationGating.CrossOrigin2",
+        !initiator_origin->IsSameOriginWith(navigation_origin));
+    UMA_HISTOGRAM_BOOLEAN("Actor.NavigationGating.CrossSite2",
                           !net::SchemefulSite::IsSameSite(
-                              initiator_origin->GetURL(), navigation_url));
+                              initiator_origin.value(), navigation_origin));
   }
 }
 

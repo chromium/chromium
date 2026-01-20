@@ -70,6 +70,11 @@ constexpr char kHandleNavigationConfirmationTempl[] =
   })();
 )js";
 
+constexpr std::string_view kCrossOriginHistogram =
+    "Actor.NavigationGating.CrossOrigin2";
+constexpr std::string_view kCrossSiteHistogram =
+    "Actor.NavigationGating.CrossSite2";
+
 }  // namespace
 
 class ExecutionEngineOriginGatingBrowserTestBase
@@ -292,14 +297,10 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
       "Actor.NavigationGating.AppliedGate", true, 1);
   // Should log that there was a cross-origin navigation and a cross-site
   // navigation.
-  histogram_tester_for_init_.ExpectBucketCount(
-      "Actor.NavigationGating.CrossOrigin", false, 1);
-  histogram_tester_for_init_.ExpectBucketCount(
-      "Actor.NavigationGating.CrossOrigin", true, 1);
-  histogram_tester_for_init_.ExpectBucketCount(
-      "Actor.NavigationGating.CrossSite", false, 1);
-  histogram_tester_for_init_.ExpectBucketCount(
-      "Actor.NavigationGating.CrossSite", true, 1);
+  histogram_tester_for_init_.ExpectBucketCount(kCrossOriginHistogram, false, 1);
+  histogram_tester_for_init_.ExpectBucketCount(kCrossOriginHistogram, true, 1);
+  histogram_tester_for_init_.ExpectBucketCount(kCrossSiteHistogram, false, 1);
+  histogram_tester_for_init_.ExpectBucketCount(kCrossSiteHistogram, true, 1);
   // Should log that permission was *granted* once.
   histogram_tester_for_init_.ExpectBucketCount(
       "Actor.NavigationGating.PermissionGranted", true, 1);
@@ -374,12 +375,9 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
       "Actor.NavigationGating.AppliedGate", true, 1);
   // Should log that there was a cross-origin navigation and a cross-site
   // navigation.
-  histogram_tester_for_init_.ExpectBucketCount(
-      "Actor.NavigationGating.CrossOrigin", false, 1);
-  histogram_tester_for_init_.ExpectBucketCount(
-      "Actor.NavigationGating.CrossOrigin", true, 1);
-  histogram_tester_for_init_.ExpectBucketCount(
-      "Actor.NavigationGating.CrossSite", false, 2);
+  histogram_tester_for_init_.ExpectBucketCount(kCrossOriginHistogram, false, 1);
+  histogram_tester_for_init_.ExpectBucketCount(kCrossOriginHistogram, true, 1);
+  histogram_tester_for_init_.ExpectBucketCount(kCrossSiteHistogram, false, 2);
   // Should log that permission was *granted* once.
   histogram_tester_for_init_.ExpectBucketCount(
       "Actor.NavigationGating.PermissionGranted", true, 1);
@@ -663,8 +661,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
       "Actor.NavigationGating.AppliedGate", false, 1);
   // Should log that there was one same-site navigation and one cross-site
   // navigation.
-  histogram_tester_for_init_.ExpectUniqueSample(
-      "Actor.NavigationGating.CrossSite", true, 1);
+  histogram_tester_for_init_.ExpectUniqueSample(kCrossSiteHistogram, true, 1);
   // Should not log permission granted since the static list was used.
   histogram_tester_for_init_.ExpectTotalCount(
       "Actor.NavigationGating.PermissionGranted", 0);
@@ -869,8 +866,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
       ExecutionEngine::GatingDecision::kAllowByStaticList, 1);
   histogram_tester_for_init_.ExpectBucketCount(
       "Actor.NavigationGating.AppliedGate", false, 1);
-  histogram_tester_for_init_.ExpectBucketCount(
-      "Actor.NavigationGating.CrossSite", true, 1);
+  histogram_tester_for_init_.ExpectBucketCount(kCrossSiteHistogram, true, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
