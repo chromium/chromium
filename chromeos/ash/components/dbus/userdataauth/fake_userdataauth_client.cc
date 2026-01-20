@@ -577,6 +577,12 @@ void FakeUserDataAuthClient::TestApi::AddAuthFactor(
   CHECK(was_inserted) << "Factor already exists";
 }
 
+void FakeUserDataAuthClient::TestApi::ClearAuthFactors(
+    const cryptohome::AccountIdentifier& account_id) {
+  UserCryptohomeState& user_state = GetUserState(account_id);
+  user_state.auth_factors.clear();
+}
+
 void FakeUserDataAuthClient::TestApi::AddRecoveryFactor(
     const cryptohome::AccountIdentifier& account_id) {
   UserCryptohomeState& user_state = GetUserState(account_id);

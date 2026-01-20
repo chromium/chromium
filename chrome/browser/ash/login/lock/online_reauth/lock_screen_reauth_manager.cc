@@ -4,13 +4,18 @@
 
 #include "chrome/browser/ash/login/lock/online_reauth/lock_screen_reauth_manager.h"
 
+#include <optional>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/public/cpp/reauth_reason.h"
 #include "ash/shell.h"
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/syslog_logging.h"
 #include "base/time/default_clock.h"
@@ -29,8 +34,11 @@
 #include "chromeos/ash/components/login/auth/password_update_flow.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/osauth/public/auth_policy_connector.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
+#include "chromeos/ash/services/auth_factor_config/auth_factor_config_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
@@ -45,6 +53,14 @@ constexpr char kLockScreenReauthHistogram[] =
 bool IsScreenLocked() {
   return session_manager::SessionManager::Get()->IsScreenLocked();
 }
+
+void RunAuthConfigExitIfNotNull(
+    OnGetAuthFactorsConfigurationExitCallback callback) {
+  if (callback) {
+    callback.Run();
+  }
+}
+
 }  // namespace
 
 LockScreenReauthManager::LockScreenReauthManager(Profile* primary_profile)
@@ -79,6 +95,26 @@ bool LockScreenReauthManager::ShouldPasswordSyncTriggerReauth() {
 
 void LockScreenReauthManager::MaybeForceReauthOnLockScreen(
     ReauthReason reauth_reason) {
+  if (features::IsManagedLocalPinAndPasswordEnabled()) {
+    if (!auth_factor_editor_) {
+      auth_factor_editor_ =
+          std::make_unique<AuthFactorEditor>(UserDataAuthClient::Get());
+    }
+    // We need to determine whether the user has a local factor setup or not to
+    // decide whether to show online reauth on lockscreen.
+    auto user_context = std::make_unique<UserContext>();
+    user_context->SetAccountId(primary_user_->GetAccountId());
+    auth_factor_editor_->GetAuthFactorsConfiguration(
+        std::move(user_context),
+        base::BindOnce(&LockScreenReauthManager::OnGetAuthFactorsConfiguration,
+                       weak_factory_.GetWeakPtr(), reauth_reason));
+  } else {
+    MaybeForceReauthOnLockScreenInternal(reauth_reason);
+  }
+}
+
+void LockScreenReauthManager::MaybeForceReauthOnLockScreenInternal(
+    ReauthReason reauth_reason) {
   if (reauth_reason == ReauthReason::kSamlPasswordSyncTokenValidationFailed &&
       !ShouldPasswordSyncTriggerReauth()) {
     // Reauth on lock for token dismatch is disabled by a policy.
@@ -101,6 +137,48 @@ void LockScreenReauthManager::MaybeForceReauthOnLockScreen(
     // On the lock screen: need to update the UI.
     ForceOnlineReauth();
   }
+}
+
+void LockScreenReauthManager::OnGetAuthFactorsConfiguration(
+    ReauthReason reauth_reason,
+    std::unique_ptr<UserContext> user_context,
+    std::optional<AuthenticationError> error) {
+  CHECK(user_context);
+  if (error.has_value()) {
+    LOG(WARNING) << "Failed to get auth factors configuration, code "
+                 << error->get_cryptohome_error() << ", skip reauth request";
+    RunAuthConfigExitIfNotNull(
+        auth_factors_configuration_exit_callback_for_testing_);
+    return;
+  }
+  const auto& config = user_context->GetAuthFactorsConfiguration();
+  auto* password_factor =
+      config.FindFactorByType(cryptohome::AuthFactorType::kPassword);
+  bool has_online_password =
+      password_factor && auth::IsGaiaPassword(*password_factor);
+
+  // Skip the lock screen reauth attempt if the user does not have an online
+  // password configured.
+  //
+  // This includes cases like:
+  //     a. Only a PIN is set up.
+  //     b. Only a local password is set up.
+  //     c. NO factors are set up at all (e.g., during initial user creation
+  //     before the first factor is added). Skipping is fine here, as this will
+  //     be re-evaluated on the next time user locks the screen.
+  //
+  if (!has_online_password) {
+    LOG(WARNING)
+        << "Skipping lock screen reauth based on the fact that the user "
+           "does not have an online password configured";
+    RunAuthConfigExitIfNotNull(
+        auth_factors_configuration_exit_callback_for_testing_);
+    return;
+  }
+
+  MaybeForceReauthOnLockScreenInternal(reauth_reason);
+  RunAuthConfigExitIfNotNull(
+      auth_factors_configuration_exit_callback_for_testing_);
 }
 
 void LockScreenReauthManager::SetClockForTesting(const base::Clock* clock) {
@@ -288,6 +366,12 @@ void LockScreenReauthManager::OnPasswordUpdateFailure(
 
 void LockScreenReauthManager::ResetReauthRequiredBySamlTokenDismatch() {
   is_reauth_required_by_saml_token_mismatch_ = false;
+}
+
+void LockScreenReauthManager::SetGetAuthfactorsConfigurationCallbackForTesting(
+    OnGetAuthFactorsConfigurationExitCallback callback) {
+  CHECK_IS_TEST();
+  auth_factors_configuration_exit_callback_for_testing_ = std::move(callback);
 }
 
 }  // namespace ash
