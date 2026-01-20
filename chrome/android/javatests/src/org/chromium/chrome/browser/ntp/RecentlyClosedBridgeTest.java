@@ -299,13 +299,17 @@ public class RecentlyClosedBridgeTest {
     public void testOpenRecentlyClosedTab_FromBulkClosure_InNewTab() {
         // Tab order is inverted in RecentlyClosedEntry as most recent comes first so log data in
         // reverse.
-        final String[] urls = new String[] {getUrl(TEST_PAGE_B), getUrl(TEST_PAGE_A)};
+        Tab tab0 = mActivityTestRule.getActivityTab();
+        String url0 = ThreadUtils.runOnUiThreadBlocking(() -> tab0.getUrl().getSpec());
+        final String[] urls = new String[] {getUrl(TEST_PAGE_B), getUrl(TEST_PAGE_A), url0};
         final Tab tabA = mActivityTestRule.loadUrlInNewTab(urls[1], /* incognito= */ false);
         final Tab tabB = mActivityTestRule.loadUrlInNewTab(urls[0], /* incognito= */ false);
 
-        final String[] titles = new String[2];
+        final String[] titles = new String[3];
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    // about:blank is saved as empty string.
+                    titles[2] = "";
                     titles[1] = tabA.getTitle();
                     titles[0] = tabB.getTitle();
                     closeTabs(TabClosureParams.closeAllTabs().build());
@@ -1544,13 +1548,17 @@ public class RecentlyClosedBridgeTest {
     public void testCloseAllTabsSaveAsWindowSessionRestoreEntry() {
         // Tab order is inverted in RecentlyClosedEntry as most recent comes first so log data in
         // reverse.
-        final String[] urls = new String[] {getUrl(TEST_PAGE_B), getUrl(TEST_PAGE_A)};
+        Tab tab0 = mActivityTestRule.getActivityTab();
+        String url0 = ThreadUtils.runOnUiThreadBlocking(() -> tab0.getUrl().getSpec());
+        final String[] urls = new String[] {getUrl(TEST_PAGE_B), getUrl(TEST_PAGE_A), url0};
         final Tab tabA = mActivityTestRule.loadUrlInNewTab(urls[1], /* incognito= */ false);
         final Tab tabB = mActivityTestRule.loadUrlInNewTab(urls[0], /* incognito= */ false);
 
-        final String[] titles = new String[2];
+        final String[] titles = new String[3];
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    // about:blank is saved as empty string.
+                    titles[2] = "";
                     titles[1] = tabA.getTitle();
                     titles[0] = tabB.getTitle();
                     closeTabs(TabClosureParams.closeAllTabs().build());
@@ -1570,7 +1578,7 @@ public class RecentlyClosedBridgeTest {
         Assert.assertTrue(RecentlyClosedBulkEvent.class.isInstance(recentEntry));
         final RecentlyClosedBulkEvent event = (RecentlyClosedBulkEvent) recentEntry;
         final List<RecentlyClosedTab> recentTabs = event.getTabs();
-        Assert.assertEquals(2, recentTabs.size());
+        Assert.assertEquals(3, recentTabs.size());
         assertTabsAre(recentTabs, titles, urls);
     }
 

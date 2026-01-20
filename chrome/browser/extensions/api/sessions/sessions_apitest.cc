@@ -399,17 +399,20 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedMaxResults) {
   // Open 3 more tabs, closing each one after it is opened.
   const size_t kTabCount = 3;
   for (size_t i = 0; i < kTabCount; ++i) {
-    // Open a new tab. This method automatically waits for load stop. Use URL
-    // about:blank because data URLs on Android result in multiple historical
-    // tabs for unclear reasons.
+    // Open a new tab. This method automatically waits for load stop.
     NavigateToURLInNewTab(GURL("about:blank"));
     // Close the tab we just opened (at index 1).
     int tab_index = 1;
     content::WebContents* tab = GetWebContentsAt(tab_index);
+    // On Android, historical tabs are automatically created when a tab is
+    // closed via the HistoricalTabSaver; there is no need to manually create
+    // them like on desktop.
+#if !BUILDFLAG(IS_ANDROID)
     // Our cross-platform utility function to close a tab doesn't allow
     // requesting the creation of a historical tab, so do it manually.
     service->CreateHistoricalTab(
         sessions::ContentLiveTab::GetOrCreateForWebContents(tab), tab_index);
+#endif  // !BUILDFLAG(IS_ANDROID)
     // Close the tab (and wait for its destruction internally).
     CloseTabForWebContents(tab);
   }

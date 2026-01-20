@@ -17,15 +17,12 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
@@ -34,16 +31,8 @@ import java.util.function.Supplier;
 @NullMarked
 @JNINamespace("historical_tab_saver")
 public class HistoricalTabSaverImpl implements HistoricalTabSaver {
-    private static final List<String> UNSUPPORTED_SCHEMES =
-            Arrays.asList(
-                    UrlConstants.CHROME_SCHEME,
-                    UrlConstants.CHROME_NATIVE_SCHEME,
-                    ContentUrlConstants.ABOUT_SCHEME);
-
     private final List<Supplier<TabModel>> mSecondaryTabModelSuppliers = new ArrayList<>();
     private final TabModel mTabModel;
-
-    private boolean mIgnoreUrlSchemesForTesting;
 
     // These values are persisted to logs. Entries should not be renumbered and numeric values
     // should never be reused.
@@ -66,7 +55,6 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
      */
     public HistoricalTabSaverImpl(TabModel tabModel) {
         mTabModel = tabModel;
-        mIgnoreUrlSchemesForTesting = false;
     }
 
     // HistoricalTabSaver implementation.
@@ -216,9 +204,6 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
         // Check the secondary tab model to see if the tab was moved instead of deleted.
         if (tabIdExistsInSecondaryModel(tab.getId())) return false;
 
-        // {@link GURL#getScheme()} is not available in unit tests.
-        if (mIgnoreUrlSchemesForTesting) return true;
-
         GURL committedUrlOrFrozenUrl;
         if (tab.getWebContents() != null) {
             committedUrlOrFrozenUrl = tab.getWebContents().getLastCommittedUrl();
@@ -230,8 +215,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
 
         return committedUrlOrFrozenUrl != null
                 && committedUrlOrFrozenUrl.isValid()
-                && !committedUrlOrFrozenUrl.isEmpty()
-                && !UNSUPPORTED_SCHEMES.contains(committedUrlOrFrozenUrl.getScheme());
+                && !committedUrlOrFrozenUrl.isEmpty();
     }
 
     private boolean tabIdExistsInSecondaryModel(int tabId) {
@@ -292,10 +276,6 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
 
         WebContentsState state = tab.getWebContentsState();
         return (state == null) ? tempState : state;
-    }
-
-    void ignoreUrlSchemesForTesting(boolean ignore) {
-        mIgnoreUrlSchemesForTesting = ignore;
     }
 
     @NativeMethods
