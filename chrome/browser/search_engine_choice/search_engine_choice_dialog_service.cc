@@ -57,9 +57,6 @@ bool IsBrowserTypeSupported(const Browser& browser) {
     case Browser::TYPE_PICTURE_IN_PICTURE:
     case Browser::TYPE_APP:
     case Browser::TYPE_DEVTOOLS:
-#if BUILDFLAG(IS_CHROMEOS)
-    case Browser::TYPE_CUSTOM_TAB:
-#endif
       return false;
   }
 }

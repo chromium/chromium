@@ -22,12 +22,6 @@ class OpenUrlDelegate {
   // opening as a tab if no installed web app is found.
   virtual void OpenWebAppFromArc(const GURL& url) = 0;
 
-  // Opens the given URL in a custom tab.
-  virtual void OpenArcCustomTab(
-      const GURL& url,
-      int32_t task_id,
-      mojom::IntentHelperHost::OnOpenCustomTabCallback callback) = 0;
-
   // Opens the requested |chrome_page|. If |chrome_page| is a settings page,
   // this will open the settings window.
   virtual void OpenChromePageFromArc(mojom::ChromePage chrome_page) = 0;

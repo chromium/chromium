@@ -598,7 +598,6 @@ TEST_F(KioskBrowserSessionTest,
       Browser::Type::TYPE_POPUP,
       Browser::Type::TYPE_APP,
       Browser::Type::TYPE_DEVTOOLS,
-      Browser::Type::TYPE_CUSTOM_TAB,
       Browser::Type::TYPE_PICTURE_IN_PICTURE,
   };
 
@@ -861,7 +860,6 @@ TEST_P(KioskBrowserSessionTroubleshootingTest,
   const std::vector<Browser::Type> should_be_closed_browser_types = {
       Browser::Type::TYPE_POPUP,        Browser::Type::TYPE_APP,
       Browser::Type::TYPE_APP_POPUP,
-      Browser::Type::TYPE_CUSTOM_TAB,
       Browser::TYPE_PICTURE_IN_PICTURE,
   };
   SetUpKioskSession();

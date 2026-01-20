@@ -560,10 +560,6 @@ std::string BrowserTypeToString(BrowserWindowInterface::Type type) {
       return "TYPE_DEVTOOLS";
     case BrowserWindowInterface::Type::TYPE_APP_POPUP:
       return "TYPE_APP_POPUP";
-#if BUILDFLAG(IS_CHROMEOS)
-    case BrowserWindowInterface::Type::TYPE_CUSTOM_TAB:
-      return "TYPE_CUSTOM_TAB";
-#endif
     case BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE:
       return "TYPE_PICTURE_IN_PICTURE";
   }
@@ -1869,11 +1865,6 @@ class NavCaptureParameterizedBrowserTest
     if (type == "TYPE_APP_POPUP") {
       return Browser::Type::TYPE_APP_POPUP;
     }
-#if BUILDFLAG(IS_CHROMEOS)
-    if (type == "TYPE_CUSTOM_TAB") {
-      return Browser::Type::TYPE_CUSTOM_TAB;
-    }
-#endif
     if (type == "TYPE_PICTURE_IN_PICTURE") {
       return Browser::Type::TYPE_PICTURE_IN_PICTURE;
     }

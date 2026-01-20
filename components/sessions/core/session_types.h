@@ -179,9 +179,6 @@ struct SESSIONS_EXPORT SessionWindow {
     TYPE_APP = 2,
     TYPE_DEVTOOLS = 3,
     TYPE_APP_POPUP = 4,
-#if BUILDFLAG(IS_CHROMEOS)
-    TYPE_CUSTOM_TAB = 5,
-#endif
   };
 
   // Identifier of the window.

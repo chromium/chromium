@@ -90,9 +90,6 @@ api::tabs::WindowType GetTabsWindowType(const BrowserWindowInterface* browser) {
 #if !BUILDFLAG(IS_ANDROID)
     case BrowserWindowInterface::TYPE_PICTURE_IN_PICTURE:
 #endif
-#if BUILDFLAG(IS_CHROMEOS)
-    case BrowserWindowInterface::TYPE_CUSTOM_TAB:
-#endif
       return api::tabs::WindowType::kNormal;
   }
 }

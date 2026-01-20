@@ -136,9 +136,6 @@ std::unique_ptr<BrowserViewLayout> BrowserViewLayout::CreateLayout(
             std::move(delegate), browser, std::move(views));
       case Browser::TYPE_APP:
       case Browser::TYPE_APP_POPUP:
-#if BUILDFLAG(IS_CHROMEOS)
-      case Browser::TYPE_CUSTOM_TAB:
-#endif
         return std::make_unique<BrowserViewAppLayoutImpl>(
             std::move(delegate), browser, std::move(views));
       case Browser::TYPE_POPUP:

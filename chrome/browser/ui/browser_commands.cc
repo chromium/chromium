@@ -2496,11 +2496,7 @@ bool CanCopyUrl(BrowserWindowInterface* bwi) {
 }
 
 bool IsWebAppOrCustomTab(const BrowserWindowInterface* bwi) {
-  return
-#if BUILDFLAG(IS_CHROMEOS)
-      bwi->GetType() == BrowserWindowInterface::TYPE_CUSTOM_TAB ||
-#endif
-      web_app::AppBrowserController::IsWebApp(bwi);
+  return web_app::AppBrowserController::IsWebApp(bwi);
 }
 
 Browser* OpenInChrome(Browser* hosted_app_browser) {

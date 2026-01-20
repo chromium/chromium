@@ -3755,23 +3755,6 @@ bool Browser::AppBrowserSupportsWindowFeature(WindowFeature feature,
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-// TODO(b/64863368): Consider Fullscreen mode.
-bool Browser::CustomTabBrowserSupportsWindowFeature(
-    WindowFeature feature) const {
-  switch (feature) {
-    case WindowFeature::kFeatureToolbar:
-      return true;
-    case WindowFeature::kFeatureTitleBar:
-    case WindowFeature::kFeatureLocationBar:
-    case WindowFeature::kFeatureTabStrip:
-    case WindowFeature::kFeatureBookmarkBar:
-    case WindowFeature::kFeatureNone:
-      return false;
-  }
-}
-#endif
-
 bool Browser::PictureInPictureBrowserSupportsWindowFeature(
     WindowFeature feature,
     bool check_can_support) const {
@@ -3803,10 +3786,6 @@ bool Browser::SupportsWindowFeatureImpl(WindowFeature feature,
     case TYPE_DEVTOOLS:
     case TYPE_APP_POPUP:
       return AppPopupBrowserSupportsWindowFeature(feature, check_can_support);
-#if BUILDFLAG(IS_CHROMEOS)
-    case TYPE_CUSTOM_TAB:
-      return CustomTabBrowserSupportsWindowFeature(feature);
-#endif
     case TYPE_PICTURE_IN_PICTURE:
       return PictureInPictureBrowserSupportsWindowFeature(feature,
                                                           check_can_support);

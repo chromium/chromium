@@ -24,10 +24,6 @@ class ArcOpenUrlDelegateImpl : public arc::OpenUrlDelegate {
   // arc::OpenUrlDelegate:
   void OpenUrlFromArc(const GURL& url) override;
   void OpenWebAppFromArc(const GURL& url) override;
-  void OpenArcCustomTab(
-      const GURL& url,
-      int32_t task_id,
-      arc::mojom::IntentHelperHost::OnOpenCustomTabCallback callback) override;
   void OpenChromePageFromArc(arc::mojom::ChromePage page) override;
   void OpenAppWithIntent(const GURL& start_url,
                          arc::mojom::LaunchIntentPtr intent) override;

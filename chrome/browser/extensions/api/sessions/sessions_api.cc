@@ -394,9 +394,6 @@ SessionsGetDevicesFunction::CreateWindowModel(
       type = api::windows::WindowType::kDevtools;
       break;
     case sessions::SessionWindow::TYPE_APP_POPUP:
-#if BUILDFLAG(IS_CHROMEOS)
-    case sessions::SessionWindow::TYPE_CUSTOM_TAB:
-#endif
       NOTREACHED();
   }
 

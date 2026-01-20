@@ -46,9 +46,6 @@ bool ParseCommaSeparatedIntegers(const std::string& str,
 std::string GetWindowName(const Browser* browser) {
   switch (browser->type()) {
     case Browser::TYPE_NORMAL:
-#if BUILDFLAG(IS_CHROMEOS)
-    case Browser::TYPE_CUSTOM_TAB:
-#endif
       return prefs::kBrowserWindowPlacement;
     case Browser::TYPE_POPUP:
     case Browser::TYPE_PICTURE_IN_PICTURE:

@@ -146,12 +146,6 @@ namespace {
 
 // Gets the display mode for a given browser.
 ToolbarView::DisplayMode GetDisplayMode(Browser* browser) {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (browser->is_type_custom_tab()) {
-    return ToolbarView::DisplayMode::kCustomTab;
-  }
-#endif
-
   // Checked in this order because even tabbed PWAs use the CUSTOM_TAB
   // display mode.
   if (web_app::AppBrowserController::IsWebApp(browser)) {
@@ -1014,11 +1008,7 @@ IconLabelBubbleView* ToolbarView::GetPageActionView(
 }
 
 AppMenuButton* ToolbarView::GetAppMenuButton() {
-  if (app_menu_button_) {
-    return app_menu_button_;
-  }
-
-  return custom_tab_bar_ ? custom_tab_bar_->custom_tab_menu_button() : nullptr;
+  return app_menu_button_;
 }
 
 gfx::Rect ToolbarView::GetFindBarBoundingBox(int contents_bottom) {

@@ -120,13 +120,6 @@ content::RenderWidgetHost* GetRenderWidgetHost(views::WebView* web_view) {
   return nullptr;
 }
 
-// Returns whether `browser` should draw its frame header.
-// The default is true.
-bool ShouldDrawFrameHeader(BrowserWindowInterface* browser) {
-  // Currently, frame headers are only disabled for custom tab browsers.
-  return browser->GetType() != BrowserWindowInterface::Type::TYPE_CUSTOM_TAB;
-}
-
 DEFINE_UI_CLASS_PROPERTY_KEY(BrowserFrameViewChromeOS*,
                              kBrowserFrameViewChromeOSKey,
                              nullptr)
@@ -258,9 +251,7 @@ void BrowserFrameViewChromeOS::Init() {
   }
 
   display_observer_.emplace(this);
-  if (ShouldDrawFrameHeader(browser)) {
-    frame_header_ = CreateFrameHeader();
-  }
+  frame_header_ = CreateFrameHeader();
 
   if (AppIsPwaWithBorderlessDisplayMode()) {
     UpdateBorderlessModeEnabled();
@@ -625,7 +616,7 @@ bool BrowserFrameViewChromeOS::DoesIntersectRect(const views::View* target,
 }
 
 views::View::Views BrowserFrameViewChromeOS::GetChildrenInZOrder() {
-  if (ShouldDrawFrameHeader(GetBrowserView()->browser()) && frame_header_) {
+  if (frame_header_) {
     return frame_header_->GetAdjustedChildrenInZOrder(this);
   }
 
