@@ -13,6 +13,7 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/run_loop.h"
@@ -864,18 +865,17 @@ static void ExpectOneSampleAppKillDailyCounts(
 }
 
 TEST_P(ArcVmArcMetricsServiceTest, AppLowMemoryDailyKills) {
-  printf("GetParam() VMs:");
+  LOG(INFO) << "GetParam() VMs:";
   if (GetParam()) {
     for (int i = 0; i < GetParam()->vms_size(); i++) {
       const auto& vm = GetParam()->vms(i);
       if (!vm.has_vm_info()) {
         continue;
       }
-      UNSAFE_TODO(printf(" %s", VmKillCounterPrefix(vm.vm_info().vm_type())));
+      LOG(INFO) << " " << VmKillCounterPrefix(vm.vm_info().vm_type());
     }
   }
-
-  printf("\n");
+  LOG(INFO) << '\n';
 
   // The test code sets the initial counts to 0.
   auto c0 = mojom::LowMemoryKillCounts::New(0, 0, 0, 0, 0, 0, 0);
