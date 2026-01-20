@@ -692,6 +692,24 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ios/chrome/browser/file_upload_panel/ui/constants.h:FileUploadPanelSecurityScopedResourceAccessState) -->
 
+<!-- LINT.IfChange(IOSGeminiAspectRatioBucket) -->
+
+<enum name="IOSGeminiAspectRatioBucket">
+  <summary>
+    Enum describing the aspect ratio of the image used to trigger Image Remix.
+  </summary>
+  <int value="0" label="Unknown (-∞, 0]"/>
+  <int value="1" label="Very Tall (0, 0.3)"/>
+  <int value="2" label="Tall [0.3, 0.8)"/>
+  <int value="3" label="Slightly Tall [0.8, 1.0)"/>
+  <int value="4" label="Perfect Square [1.0, 1.0]"/>
+  <int value="5" label="Slightly Wide (1.0, 1.2]"/>
+  <int value="6" label="Wide (1.2, 1.7]"/>
+  <int value="7" label="Very Wide (1.7, ∞)"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiAspectRatioBucket) -->
+
 <!-- LINT.IfChange(IOSGeminiEntryPoint) -->
 
 <enum name="IOSGeminiEntryPoint">

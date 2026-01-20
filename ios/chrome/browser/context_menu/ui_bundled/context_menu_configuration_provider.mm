@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_commands.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
@@ -536,6 +537,8 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   BOOL canShowGeminiElement = IsGeminiImageRemixToolEnabled() && BWGService &&
                               BWGService->IsBwgAvailableForWebState(webState);
   if (canShowGeminiElement) {
+    RecordImageRemixContextMenuEntryPointShown();
+
     ProceduralBlock geminiElementCallback = ^{
       [weakSelf openGeminiWithImageURL:imageURL referrer:referrer];
     };
@@ -1105,6 +1108,12 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
 // Opens the Gemini overlay with an image attached. The sanitized `image` is
 // passed to Gemini.
 - (void)openGeminiWithImage:(UIImage*)image {
+  double aspectRatio = 0.0;
+  if (image.size.width > 0 && image.size.height > 0) {
+    aspectRatio = image.size.width / image.size.height;
+  }
+  RecordImageRemixContextMenuEntryPointTapped(aspectRatio);
+
   id<BWGCommands> handler =
       HandlerForProtocol(_browser->GetCommandDispatcher(), BWGCommands);
   [handler

@@ -21,6 +21,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_commands",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_scene_agent",
+    "//ios/chrome/browser/intelligence/bwg/metrics",
     "//ios/chrome/browser/intelligence/bwg/model:bwg_service",
     "//ios/chrome/browser/intelligence/bwg/model:bwg_service_factory",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
