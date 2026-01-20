@@ -3720,6 +3720,45 @@ void EnclaveManager::StorePendingKeys(const GaiaId& gaia_id,
   }
 }
 
+void EnclaveManager::TemporarilyCachePendingOpportunisticKeys(
+    const GaiaId& gaia_id,
+    std::vector<std::vector<uint8_t>> keys,
+    int last_key_version) {
+  auto store_keys_args = std::make_unique<StoreKeysArgs>();
+  store_keys_args->gaia_id = gaia_id;
+  store_keys_args->keys = std::move(keys);
+  store_keys_args->last_key_version = last_key_version;
+  if (opportunistic_pending_keys_) {
+    // Some opportunistically retrieved key has already been cached. It will be
+    // overwritten by the current key.
+    webauthn::metrics::RecordGPMCachedOpportunisticallyRetrievedKeyEvent(
+        webauthn::metrics::
+            WebAuthenticationGPMCachedOpportunisticallyRetrievedKeyEvent::
+                kStoreKeysFromOpportunisticFlowCachedKeysHaveBeenOverwritten);
+  }
+  opportunistic_pending_keys_ = std::move(store_keys_args);
+  // Ensure that the cached keys could be discarded after the timeout.
+  int ttl_seconds =
+      device::kWebAuthnOpportunisticRetrievalTimeToKeepCachedKeySeconds.Get();
+  // Configuring the task for invalidating the cached key (if we overwrote the
+  // cached key - the previous key invalidation task will be cancelled at this
+  // point).
+  opportunistic_pending_keys_invalidation_task_.Reset(base::BindOnce(
+      [](base::WeakPtr<EnclaveManager> manager) {
+        if (manager && manager->opportunistic_pending_keys_) {
+          manager->opportunistic_pending_keys_.reset();
+          webauthn::metrics::RecordGPMCachedOpportunisticallyRetrievedKeyEvent(
+              webauthn::metrics::
+                  WebAuthenticationGPMCachedOpportunisticallyRetrievedKeyEvent::
+                      kStoreKeysFromOpportunisticFlowCachedKeysRemovedAfterTimeout);
+        }
+      },
+      weak_ptr_factory_.GetWeakPtr()));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, opportunistic_pending_keys_invalidation_task_.callback(),
+      base::Seconds(ttl_seconds));
+}
+
 void EnclaveManager::StoreKeys(const GaiaId& gaia_id,
                                std::vector<std::vector<uint8_t>> keys,
                                int last_key_version) {
@@ -3731,6 +3770,23 @@ void EnclaveManager::StoreKeys(const GaiaId& gaia_id,
               kStoreKeysFromExplicitFlowStarted);
       StorePendingKeys(gaia_id, std::move(keys), last_key_version);
     } else {
+      CoreAccountInfo primary_account_info =
+          identity_manager_->GetPrimaryAccountInfo(
+              signin::ConsentLevel::kSignin);
+      if (primary_account_info.IsEmpty() ||
+          primary_account_info.gaia != gaia_id) {
+        // We can't store keys if the primary account is empty or has a
+        // different Gaia Id (because for storing keys we need to fetch a
+        // trusted vault access token, which can't be done if the account is
+        // empty or has a different Gaia Id). Upon identity change we will
+        // re-attempt to store these keys.
+        TemporarilyCachePendingOpportunisticKeys(gaia_id, std::move(keys),
+                                                 last_key_version);
+        webauthn::metrics::RecordGPMRecoveryEvent(
+            webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
+                kStoreKeysFromOpportunisticFlowCachedKeysBecauseAccountDoesNotMatch);
+        return;
+      }
       webauthn::metrics::RecordGPMRecoveryEvent(
           webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
               kStoreKeysFromOpportunisticFlowStarted);
@@ -4024,6 +4080,12 @@ void EnclaveManager::HandleIdentityChange(bool is_post_load) {
   // This function is called when local state finishes loading. Prior to that
   // identity changes are ignored.
   if (!local_state_) {
+    if (opportunistic_pending_keys_ && !loading_) {
+      // Identity has changed, and we have pending opportunistic keys, but
+      // enclave manager is not loading - so let's load it. After loading the
+      // pending opportunistic keys will be stored.
+      Load(base::DoNothing());
+    }
     return;
   }
 
@@ -4034,6 +4096,21 @@ void EnclaveManager::HandleIdentityChange(bool is_post_load) {
   CoreAccountInfo primary_account_info =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   if (!primary_account_info.IsEmpty()) {
+    if (opportunistic_pending_keys_ &&
+        opportunistic_pending_keys_->gaia_id == primary_account_info.gaia) {
+      std::unique_ptr<StoreKeysArgs> store_keys_arg =
+          std::move(opportunistic_pending_keys_);
+      // Storing pending opportunistically retrieved keys. These keys were in a
+      // pending state because at the moment in time when they were retrieved
+      // the primary account was either empty or had a different Gaia Id. Now
+      // the primary account is available so we can store them.
+      StoreKeys(store_keys_arg->gaia_id, std::move(store_keys_arg->keys),
+                store_keys_arg->last_key_version);
+      webauthn::metrics::RecordGPMCachedOpportunisticallyRetrievedKeyEvent(
+          webauthn::metrics::
+              WebAuthenticationGPMCachedOpportunisticallyRetrievedKeyEvent::
+                  kStoreKeysFromOpportunisticFlowCachedKeysStoringAfterSignIn);
+    }
     if (primary_account_info_ &&
         primary_account_info_->account_id != primary_account_info.account_id) {
       // If the signed-in user has changed, the state machine must be halted

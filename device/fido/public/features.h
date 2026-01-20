@@ -173,6 +173,14 @@ BASE_DECLARE_FEATURE(kWebAuthenticationHashClientDataJsonForEnclave);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnOpportunisticRetrieval);
 
+// Parameter controlling the time window (in seconds) for keeping the cached
+// opportunistically retrieved key in case its Gaia Id doesn't match to primary
+// signed-in account.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kWebAuthnOpportunisticRetrievalTimeToKeepCachedKeySeconds);
+
 // Enable support for WebAuthn hints through the Windows WebAuthn API.
 // https://w3c.github.io/webauthn/#enum-hints.
 COMPONENT_EXPORT(FIDO_PUBLIC)
