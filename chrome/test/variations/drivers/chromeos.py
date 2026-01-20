@@ -8,6 +8,7 @@ import socket
 import subprocess
 import sys
 import threading
+import logging
 import time
 
 from contextlib import closing
@@ -36,11 +37,15 @@ from telemetry.internal.platform.cros_platform_backend import CrosPlatformBacken
 from telemetry.internal.backends.chrome import cros_browser_finder
 
 CACHE_DIR = os.path.join(SRC_DIR, "build", "cros_cache")
+# We want to make sure that the browser window has fully started on the VM. On
+# LUCI workers it takes more time than in the local environment, which can cause
+# tests flakiness.
 INITIAL_WAIT_TIME_SECONDS = 10
-
 # Wait time after loading a page to allow the scrollbar to disappear before
 # taking a screenshot.
 SCREENSHOT_WAIT_TIME_SECONDS = 5
+# The maximum attempts to relaunch the browser if it fails to start.
+MAX_BROWSER_LAUNCH_ATTEMPTS = 3
 
 
 class _PossibleCrOSBrowser(cros_browser_finder.PossibleCrOSBrowser):
@@ -187,19 +192,15 @@ class CrOSDriverFactory(DriverFactory):
   def wait_for_screenshot(self):
     time.sleep(SCREENSHOT_WAIT_TIME_SECONDS)
 
-  #override
   @contextmanager
-  def create_driver(
+  def _driver_context(
     self,
     seed_file: Optional[str] = None,
-    options: Optional[webdriver.ChromeOptions] = None
-    ):
-    # This has a side-effect to boot up the VM if not yet already.
-    assert self.device, "VM fails to boot."
-
+    options: Optional[webdriver.ChromeOptions] = None):
+    """A context manager for a single attempt to create a driver."""
     browser_args = [
-      # We need debugging connection via WebSocket with the browser. By default
-      # such connection is blocked so we add this flag to allow it.
+      # We need debugging connection via WebSocket with the browser. By
+      # default such connection is blocked so we add this flag to allow it.
       '--remote-allow-origins=*',
     ]
     if seed_file:
@@ -220,20 +221,44 @@ class CrOSDriverFactory(DriverFactory):
     options = options or self.default_options
     options.debugger_address=f'localhost:{debugging_port}'
 
-
-    with self.tunnel_context(debugging_port, self.server_port):
-      # We want to make sure that the browser window has fully started
-      # on the VM. On LUCI workers it takes more time than in the local
-      # environment, which can cause tests flakiness.
-      time.sleep(INITIAL_WAIT_TIME_SECONDS)
-      driver = self.get_driver(options)
-      # VM may not be fully ready before it returns, wait for window handle
-      # to double confirm.
-      self.wait_for_window(driver)
-      try:
+    driver = None
+    try:
+      with self.tunnel_context(debugging_port, self.server_port):
+        time.sleep(INITIAL_WAIT_TIME_SECONDS)
+        driver = self.get_driver(options)
+        self.wait_for_window(driver)
         yield driver
-      finally:
+    finally:
+      if driver:
         driver.quit()
+
+  #override
+  @contextmanager
+  def create_driver(
+    self,
+    seed_file: Optional[str] = None,
+    options: Optional[webdriver.ChromeOptions] = None
+    ):
+    # This has a side-effect to boot up the VM if not yet already.
+    assert self.device, "VM fails to boot."
+
+    for attempt in range(MAX_BROWSER_LAUNCH_ATTEMPTS):
+      try:
+        with self._driver_context(seed_file, options) as driver:
+          yield driver
+          # If we are here, the test was successful, no need to retry.
+          return
+      except RuntimeError as e:
+        if ('Failed to get window handles.' not in str(e)
+            or attempt == MAX_BROWSER_LAUNCH_ATTEMPTS - 1):
+          raise
+        logging.warning(
+            'Failed to get window handle on attempt %d/%d, restarting VM...',
+            attempt + 1, MAX_BROWSER_LAUNCH_ATTEMPTS)
+        if self.device.IsRunning():
+          self.device.Stop()
+        # Invalidate the cached property to relaunch the VM.
+        del self.device
 
   def close(self):
     if self.vm_started and self.device.IsRunning():
