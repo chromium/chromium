@@ -633,11 +633,11 @@ int BrowserFrameViewWin::TitlebarMaximizedVisualHeight() const {
   // Adding 2 dip of vertical padding puts at least 1 dip of space on the top
   // and bottom of the element.
   constexpr int kVerticalPadding = 2;
-  if (!GetBrowserView()->GetWebAppFrameToolbarPreferredSize().IsEmpty()) {
-    maximized_height = std::max(
-        maximized_height,
-        GetBrowserView()->GetWebAppFrameToolbarPreferredSize().height() +
-            kVerticalPadding);
+  const auto toolbar_height =
+      GetClientFrameElementInfo().toolbar_minimum_height;
+  if (toolbar_height > 0) {
+    maximized_height =
+        std::max(maximized_height, toolbar_height + kVerticalPadding);
   }
   return maximized_height;
 }
