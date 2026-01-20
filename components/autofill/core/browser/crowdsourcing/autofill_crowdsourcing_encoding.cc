@@ -98,9 +98,9 @@ FieldPrediction::Source ToSafeFieldPredictionSource(
 // * If the manual override has at least one field prediction, use the manual
 //   override instead of the server override. Pop the server override, but only
 //   if there are at least two server overrides left. This is because the last
-//   server override may be used for multiple fields (`GetPrediction` inside
-//   `ProcessServerPredictionsQueryResponse` will keep returning the last value)
-//   and we only wish to override the prediction for the current field.
+//   server override may be used for multiple fields (`get_suggestions` inside
+//   `GetFieldSuggestion()` will keep returning the last value) and we only wish
+//   to override the prediction for the current field.
 // * If the manual override has no specified field prediction (i.e. is a "pass
 //   through"), then it was not intended to override this specific prediction.
 //   In that case, use the server prediction instead. In the special case that
@@ -1154,7 +1154,7 @@ void ServerPredictions::ApplyTo(FormStructure& form) const {
   }
 }
 
-void ParseServerPredictionsQueryResponse(
+std::vector<ServerPredictions> ParseServerPredictionsFromQueryResponse(
     std::string_view payload,
     const std::vector<raw_ref<FormStructure>>& forms,
     const std::vector<FormSignature>& queried_form_signatures,
@@ -1166,29 +1166,18 @@ void ParseServerPredictionsQueryResponse(
   std::string decoded_payload;
   if (!base::Base64Decode(payload, &decoded_payload)) {
     DVLOG(1) << "Could not decode payload from base64 to bytes";
-    return;
+    return {};
   }
 
   // Parse the response.
   AutofillQueryResponse response;
   if (!response.ParseFromString(decoded_payload)) {
-    return;
+    return {};
   }
 
   DVLOG(1) << "Autofill query response from API was successfully parsed: "
            << response;
 
-  ProcessServerPredictionsQueryResponse(std::move(response), forms,
-                                        queried_form_signatures, log_manager,
-                                        ignore_small_forms);
-}
-
-void ProcessServerPredictionsQueryResponse(
-    AutofillQueryResponse response,
-    const std::vector<raw_ref<FormStructure>>& forms,
-    const std::vector<FormSignature>& queried_form_signatures,
-    LogManager* log_manager,
-    bool ignore_small_forms) {
   AutofillMetrics::LogServerQueryMetric(AutofillMetrics::QUERY_RESPONSE_PARSED);
   LOG_AF(log_manager) << LoggingScope::kParsing
                       << LogMessage::kProcessingServerData;
@@ -1205,21 +1194,16 @@ void ProcessServerPredictionsQueryResponse(
     }
   }
 
-  std::vector<ServerPredictions> form_server_predictions = base::ToVector(
+  return base::ToVector(
       forms, [field_suggestion_map = GetSuggestionsMapFromResponse(
                   response, queried_form_signatures),
               forms_for_which_to_run_ai_model = GetFormsForWhichToRunAiModel(
                   response, queried_form_signatures)](
-                 raw_ref<FormStructure> form) mutable {
+                 raw_ref<const FormStructure> form) mutable {
         return ServerPredictions(
             forms_for_which_to_run_ai_model.contains(form->form_signature()),
             field_suggestion_map, *form);
       });
-
-  for (auto [form, server_predictions] :
-       base::zip(forms, form_server_predictions)) {
-    server_predictions.ApplyTo(*form);
-  }
 }
 
 }  // namespace autofill

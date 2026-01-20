@@ -950,21 +950,28 @@ void AutofillManager::OnLoadedServerPredictions(
     return;
   }
 
-  // Parse and store the server predictions.
-  ParseServerPredictionsQueryResponse(
-      std::move(response->response), queried_forms,
-      response->queried_form_signatures, log_manager(),
-      /*ignore_small_forms=*/!client().IsTabInActorMode());
-
-  for (const raw_ref<FormStructure>& form : queried_forms) {
-    form->RationalizeAndAssignSections(client().GetVariationConfigCountryCode(),
-                                       GetCurrentPageLanguage(), log_manager());
-    LogCurrentFieldTypes(&*form);
-    NotifyObservers(&Observer::OnFieldTypesDetermined, form->global_id(),
-                    Observer::FieldTypeSource::kAutofillServer);
+  if (std::vector<ServerPredictions> form_server_predictions =
+          ParseServerPredictionsFromQueryResponse(
+              std::move(response->response), queried_forms,
+              response->queried_form_signatures, log_manager(),
+              /*ignore_small_forms=*/!client().IsTabInActorMode());
+      !form_server_predictions.empty()) {
+    CHECK_EQ(queried_forms.size(), form_server_predictions.size());
+    // TODO(crbug.com/475586865): Use `AutofillManager::UpdateFormCache()`
+    // instead of duplicating the logic.
+    for (auto [form, server_predictions] :
+         base::zip(queried_forms, form_server_predictions)) {
+      server_predictions.ApplyTo(*form);
+      form->RationalizeAndAssignSections(
+          client().GetVariationConfigCountryCode(), GetCurrentPageLanguage(),
+          log_manager());
+      LogCurrentFieldTypes(&*form);
+      NotifyObservers(&Observer::OnFieldTypesDetermined, form->global_id(),
+                      Observer::FieldTypeSource::kAutofillServer);
+    }
+    LogServerQueryResponseMetrics(queried_forms);
   }
 
-  LogServerQueryResponseMetrics(queried_forms);
   if (base::FeatureList::IsEnabled(features::debug::kShowDomNodeIDs)) {
     driver().ExposeDomNodeIdsInAllFrames();
   }

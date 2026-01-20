@@ -4218,7 +4218,7 @@ INSTANTIATE_TEST_SUITE_P(
     ClearSmallAddressFormPredictionsTest::ParamInfoToString);
 
 TEST_P(ClearSmallAddressFormPredictionsTest,
-       ProcessServerPredictionsQueryResponse) {
+       ParseServerPredictionsFromQueryResponse) {
   base::test::ScopedFeatureList features{
       features::kAutofillMoveSmallFormLogicToClient};
   const auto& test_case = GetParam();
