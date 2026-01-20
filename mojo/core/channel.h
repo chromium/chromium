@@ -417,8 +417,6 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
   Channel(const Channel&) = delete;
   Channel& operator=(const Channel&) = delete;
 
-  static void set_use_trivial_messages(bool use_trivial_messages);
-
   bool is_for_ipcz() const { return is_for_ipcz_; }
 
   // SupportsChannelUpgrade will return true if this channel is capable of being

@@ -16,8 +16,6 @@ const base::FeatureParam<int> kMojoUseEventFdPages{&kMojoUseEventFd,
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
 
-BASE_FEATURE(kMojoInlineMessagePayloads, base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kMojoIpcz, base::FEATURE_DISABLED_BY_DEFAULT);
