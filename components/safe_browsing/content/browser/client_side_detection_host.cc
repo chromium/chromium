@@ -1209,6 +1209,10 @@ void ClientSideDetectionHost::OnPhishingPreClassificationDone(
     base::UmaHistogramBoolean(
         "SBClientPhishing.IntelligentScanOngoingOnNewPreclassification",
         intelligent_scan_ongoing);
+    base::UmaHistogramBoolean(
+        "SBClientPhishing.IntelligentScanOngoingOnNewPreclassification." +
+            GetRequestTypeName(request_type),
+        intelligent_scan_ongoing);
     if (intelligent_scan_ongoing) {
       intelligent_scan_delegate_->CancelIntelligentScan(*intelligent_scan_id_);
     }

@@ -807,16 +807,19 @@ useful for Chirp alerts (go/crca-alerts). -->
       variants="ClientSideDetectionIntelligentScanRequestType"/>
 </histogram>
 
-<histogram name="SBClientPhishing.IntelligentScanOngoingOnNewPreclassification"
-    enum="BooleanExists" expires_after="2026-04-14">
+<histogram
+    name="SBClientPhishing.IntelligentScanOngoingOnNewPreclassification{RequestType}"
+    enum="BooleanExists" expires_after="2027-01-20">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records whether or not the intelligent scan is ongoing when a new
     preclassification happens. This is logged when a new request happens through
     a new preclassification check and the current existing scan will be
-    destroyed.
+    destroyed. The {RequestType} will be the triggering preclassification check
+    to destroy the existing scan.
   </summary>
+  <token key="RequestType" variants="ClientSideDetectionRequestType"/>
 </histogram>
 
 <histogram name="SBClientPhishing.IntelligentScanVerdict"
