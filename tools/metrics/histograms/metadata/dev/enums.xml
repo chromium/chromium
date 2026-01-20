@@ -850,6 +850,13 @@ Called by update_protocol_commands_enum.py.-->
   <int value="192" label="Teaser for Console Insight - Generation completed"/>
   <int value="193" label="Teaser for Console Insight - Generation aborted"/>
   <int value="194" label="Teaser for Console Insight - Generation errored"/>
+  <int value="195" label="AI Code Generation - Suggestion displayed"/>
+  <int value="196" label="AI Code Generation - Suggestion accepted"/>
+  <int value="197" label="Teaser for Console Insight - Model download started"/>
+  <int value="198"
+      label="Teaser for Console Insight - Model download completed"/>
+  <int value="199" label="AI Code Generation - Error"/>
+  <int value="200" label="AI Code Generation - Request triggered"/>
 </enum>
 
 <enum name="DevToolsBuiltInAiAvailability">
