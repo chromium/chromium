@@ -44,6 +44,7 @@ ContextualTasksUiServiceFactory::ContextualTasksUiServiceFactory()
               .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(ContextualTasksServiceFactory::GetInstance());
+  DependsOn(IdentityManagerFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
