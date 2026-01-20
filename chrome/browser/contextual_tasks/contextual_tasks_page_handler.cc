@@ -44,13 +44,12 @@ void OpenUrlInNewTab(content::WebUI* web_ui, const GURL& url) {
 }
 
 std::vector<contextual_tasks::mojom::TabPtr> TabsFromContext(
-    std::unique_ptr<contextual_tasks::ContextualTaskContext> context) {
+    contextual_tasks::ContextualTaskContext* context) {
+  std::vector<contextual_tasks::mojom::TabPtr> tabs;
+
   if (!context) {
     return {};
   }
-
-  std::vector<contextual_tasks::mojom::TabPtr> tabs;
-
   for (const auto& attachment : context->GetUrlAttachments()) {
     if (attachment.GetResourceType() !=
         contextual_tasks::ResourceType::kWebpage) {
@@ -62,8 +61,14 @@ std::vector<contextual_tasks::mojom::TabPtr> TabsFromContext(
     tab->url = attachment.GetURL();
     tabs.push_back(std::move(tab));
   }
-
   return tabs;
+}
+
+std::vector<contextual_tasks::mojom::UploadedFilePtr> FilesFromContext(
+    contextual_tasks::ContextualTaskContext* context) {
+  std::vector<contextual_tasks::mojom::UploadedFilePtr> files;
+  // TODO(crbug.com/475032728): Implement to handle load file data from context.
+  return files;
 }
 
 }  // namespace
@@ -172,6 +177,10 @@ void ContextualTasksPageHandler::OnTabClickedFromSourcesMenu(int32_t tab_id,
         webui::GetBrowserWindowInterface(
             web_ui_controller_->web_ui()->GetWebContents()));
   }
+}
+
+void ContextualTasksPageHandler::OnFileClickedFromSourcesMenu(const GURL& url) {
+  // TODO(crbug.com/475032728): Implement logic to handle file click.
 }
 
 void ContextualTasksPageHandler::OnWebviewMessage(
@@ -287,7 +296,7 @@ void ContextualTasksPageHandler::UpdateContextForTask(
     const base::Uuid& task_id) {
   if (!base::FeatureList::IsEnabled(
           contextual_tasks::kContextualTasksContextLibrary)) {
-    web_ui_controller_->page()->OnContextUpdated({});
+    web_ui_controller_->page()->OnContextUpdated({}, {});
     return;
   }
   contextual_tasks_service_->GetContextForTask(
@@ -297,8 +306,12 @@ void ContextualTasksPageHandler::UpdateContextForTask(
           [](base::WeakPtr<ContextualTasksPageHandler> self,
              std::unique_ptr<contextual_tasks::ContextualTaskContext> context) {
             if (self && self->web_ui_controller_->page()) {
+              std::vector<contextual_tasks::mojom::TabPtr> tabs =
+                  TabsFromContext(context.get());
+              std::vector<contextual_tasks::mojom::UploadedFilePtr> files =
+                  FilesFromContext(context.get());
               self->web_ui_controller_->page()->OnContextUpdated(
-                  TabsFromContext(std::move(context)));
+                  std::move(tabs), std::move(files));
             }
           },
           weak_ptr_factory_.GetWeakPtr()));

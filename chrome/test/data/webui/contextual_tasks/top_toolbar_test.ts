@@ -124,7 +124,7 @@ suite('TopToolbarTest', () => {
     // "Tabs". We expect only 1 header since we only have one type of item
     // (tabs) and the "Tabs" header should be hidden.
     const headers = sourcesMenuElement.shadowRoot.querySelectorAll('.header');
-    assertEquals(1, headers.length);
+    assertEquals(2, headers.length);
 
     // Click the first tab item.
     const tabButton = sourcesMenuElement.shadowRoot.querySelector<HTMLElement>(
@@ -136,6 +136,41 @@ suite('TopToolbarTest', () => {
         await proxy.handler.whenCalled('onTabClickedFromSourcesMenu');
     assertEquals(tabId, 1);
     assertDeepEquals(url, tab.url);
+  });
+
+  test('handles file sources menu interactions', async () => {
+    const file = {
+      name: 'Sample Document',
+      url: {url: 'https://example/sample.pdf'},
+    };
+    topToolbar.attachedFiles = [file];
+    await microtasksFinished();
+
+    const sourcesButton =
+        topToolbar.shadowRoot.querySelector<HTMLElement>('#sources');
+    assertTrue(!!sourcesButton);
+    sourcesButton.click();
+    await microtasksFinished();
+
+    const sourcesMenuElement = topToolbar.$.sourcesMenu.get();
+
+    const crActionMenu =
+        sourcesMenuElement.shadowRoot.querySelector('cr-action-menu');
+    assertTrue(!!crActionMenu);
+    assertTrue(crActionMenu.open);
+
+    // Expected headers: title, tab and files header
+    const headers = sourcesMenuElement.shadowRoot.querySelectorAll('.header');
+    assertEquals(2, headers.length);
+
+    // Click the first file item.
+    const fileButton = sourcesMenuElement.shadowRoot.querySelector<HTMLElement>(
+        'button.dropdown-item');
+    assertTrue(!!fileButton);
+    fileButton.click();
+
+    const url = await proxy.handler.whenCalled('onFileClickedFromSourcesMenu');
+    assertEquals(url, file.url);
   });
 
   test('handles more menu interactions', async () => {
