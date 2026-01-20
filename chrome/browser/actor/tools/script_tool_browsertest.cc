@@ -188,5 +188,26 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DeclarativeTool) {
             "The form was filled. The user now needs to submit it.");
 }
 
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, NavigateAfterResponse) {
+  const GURL url = embedded_test_server()->GetURL(
+      "/actor/script_tool_navigate_after_response.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const std::string input_arguments =
+      R"JSON(
+      { "text": "This is an example sentence." }
+    )JSON";
+  auto action = MakeScriptToolRequest(*main_frame(), "echo", input_arguments);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+
+  ExpectOkResult(result);
+
+  const auto& action_results = result.Get<2>();
+  ASSERT_EQ(action_results.size(), 1u);
+  ASSERT_TRUE(action_results.at(0).result->script_tool_response);
+  EXPECT_EQ(action_results.at(0).result->script_tool_response->result,
+            "This is an example sentence.");
+}
 }  // namespace
 }  // namespace actor
