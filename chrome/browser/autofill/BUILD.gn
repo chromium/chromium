@@ -103,6 +103,8 @@ static_library("autofill") {
       "android/entity_attribute_update_details_android.h",
       "android/entity_data_manager_android.cc",
       "android/entity_data_manager_android.h",
+      "android/entity_metadata_android.cc",
+      "android/entity_metadata_android.h",
       "android/entity_type_android.cc",
       "android/entity_type_android.h",
       "android/personal_data_manager_android.cc",
