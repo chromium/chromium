@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -278,6 +279,7 @@ class NetworkRequestMetricsBrowserTest
         histograms_->GetAllSamples("Net.ErrorCodesForSubresources3");
     bool found_expected_load = false;
     int found_favicon_loads = 0;
+    bool found_resource_load = false;
     for (auto& bucket : buckets) {
       if (!found_expected_load && bucket.min == -net::ERR_ABORTED) {
         found_expected_load = true;
@@ -288,6 +290,15 @@ class NetworkRequestMetricsBrowserTest
       if (found_favicon_loads < 2 && bucket.count > 0 &&
           (bucket.min == -net::OK || bucket.min == -net::ERR_ABORTED)) {
         found_favicon_loads++;
+        bucket.count--;
+      }
+
+      // TODO(crbug.com/444358999): we need to exclude the resource load metric
+      // for the initial web UI. This might be removed after the initial web UI
+      // metrics are separated from the rest.
+      if (features::IsWebUIReloadButtonEnabled() && !found_resource_load &&
+          bucket.count > 0 && bucket.min == -net::OK) {
+        found_resource_load = true;
         bucket.count--;
       }
       EXPECT_EQ(0, bucket.count)
@@ -512,10 +523,19 @@ IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest, Download) {
   std::vector<base::Bucket> buckets =
       histograms()->GetAllSamples("Net.ErrorCodesForSubresources3");
   bool found_favicon_load = false;
+  bool found_resource_load = false;
   for (auto& bucket : buckets) {
     if (!found_favicon_load && bucket.count > 0 &&
         (bucket.min == -net::OK || bucket.min == -net::ERR_ABORTED)) {
       found_favicon_load = true;
+      bucket.count--;
+    }
+    // TODO(crbug.com/444358999): we need to exclude the resource load metric
+    // for the initial web UI. This might be removed after the initial web UI
+    // metrics are separated from the rest.
+    if (features::IsWebUIReloadButtonEnabled() && !found_resource_load &&
+        bucket.count > 0 && bucket.min == -net::OK) {
+      found_resource_load = true;
       bucket.count--;
     }
     EXPECT_EQ(0, bucket.count)
