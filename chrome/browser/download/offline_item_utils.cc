@@ -261,8 +261,10 @@ std::u16string OfflineItemUtils::GetFailStateMessage(FailState fail_state) {
     case FailState::FILE_TRANSIENT_ERROR:
       string_id = IDS_DOWNLOAD_INTERRUPTED_STATUS_TEMPORARY_PROBLEM;
       break;
-    // TODO(alshawwa): add custom local download blocked string
     case FailState::LOCAL_DOWNLOAD_BLOCKED:
+      string_id =
+          IDS_DOWNLOAD_INTERRUPTED_STATUS_LOCAL_DOWNLOAD_BLOCKED_DOWNLOAD_UI;
+      break;
     case FailState::FILE_BLOCKED:
       string_id = IDS_DOWNLOAD_INTERRUPTED_STATUS_BLOCKED;
       break;

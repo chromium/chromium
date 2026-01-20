@@ -1995,6 +1995,10 @@ are declared in tools/grit/grit_args.gni.
                desc="The local download was blocked and redirected to cloud storage">
         Your organization blocked the local download of this file.
       </message>
+      <message name="IDS_DOWNLOAD_INTERRUPTED_STATUS_LOCAL_DOWNLOAD_BLOCKED_DOWNLOAD_UI"
+               desc="The local download was blocked and redirected to cloud storage due to security policy.">
+        Local download blocked
+      </message>
       <message name="IDS_DOWNLOAD_INTERRUPTED_DESCRIPTION_BLOCKED"
                desc="Download page message: The download was blocked due to security policy on this machine.">
         Security settings on your computer blocked this file.

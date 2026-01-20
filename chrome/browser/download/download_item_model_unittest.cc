@@ -292,9 +292,8 @@ TEST_F(DownloadItemModelTest, InterruptedStatus) {
        u"Failed - File too large", u"File is too big for this device"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_VIRUS_INFECTED,
        u"Failed - Virus detected", u"Virus detected"},
-      // TODO(alshawwa): Handle LOCAL_DOWNLOAD_BLOCKED separately
       {download::DOWNLOAD_INTERRUPT_REASON_LOCAL_DOWNLOAD_BLOCKED,
-       u"Failed - Blocked",
+       u"Failed - Local download blocked",
        u"Your organization blocked the local download of this file."},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED, u"Failed - Blocked",
        u"Blocked by your organization"},
@@ -386,9 +385,8 @@ TEST_F(DownloadItemModelTest, InterruptTooltip) {
        "foo.bar\nFile too large"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_VIRUS_INFECTED,
        "foo.bar\nVirus detected"},
-      // TODO(alshawwa): Handle LOCAL_DOWNLOAD_BLOCKED separately
       {download::DOWNLOAD_INTERRUPT_REASON_LOCAL_DOWNLOAD_BLOCKED,
-       "foo.bar\nBlocked"},
+       "foo.bar\nLocal download blocked"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED, "foo.bar\nBlocked"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_SECURITY_CHECK_FAILED,
        "foo.bar\nVirus scan failed"},
