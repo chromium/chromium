@@ -13,6 +13,10 @@
 // the 'Confirm', 'Cancel' buttons or by dragging the view down.
 - (void)dismissBrowsingDataPage;
 
+// Method invoked when the user taps on the "Manage other data" cell to open a
+// navigational page to direct the user to other data.
+- (void)showOtherDataPage;
+
 // Method invoked when the user taps the footer 'sign out of Chrome' link.
 - (void)signOutAndShowActionSheet;
 

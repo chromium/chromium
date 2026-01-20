@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_browsing_data/coordinator/quick_delete_browsing_data_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_browsing_data/ui/quick_delete_browsing_data_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_browsing_data/ui/quick_delete_browsing_data_view_controller_delegate.h"
+#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_other_data/coordinator/quick_delete_other_data_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -32,6 +33,8 @@
   QuickDeleteBrowsingDataViewController* _viewController;
   UINavigationController* _navigationController;
   QuickDeleteMediator* _mediator;
+  // The coordinator for the "Other data" page.
+  QuickDeleteOtherDataCoordinator* _otherDataCoordinator;
   SignoutActionSheetCoordinator* _signoutCoordinator;
   browsing_data::TimePeriod _initialTimeRange;
 }
@@ -105,12 +108,21 @@
   _navigationController = nil;
   _mediator.consumer = nil;
   _mediator = nil;
+  [_otherDataCoordinator stop];
+  _otherDataCoordinator = nil;
 }
 
 #pragma mark - QuickDeleteBrowsingDataViewControllerDelegate
 
 - (void)dismissBrowsingDataPage {
   [self.delegate stopBrowsingDataPage];
+}
+
+- (void)showOtherDataPage {
+  _otherDataCoordinator = [[QuickDeleteOtherDataCoordinator alloc]
+      initWithBaseViewController:_viewController
+                         browser:self.browser];
+  [_otherDataCoordinator start];
 }
 
 - (void)signOutAndShowActionSheet {
