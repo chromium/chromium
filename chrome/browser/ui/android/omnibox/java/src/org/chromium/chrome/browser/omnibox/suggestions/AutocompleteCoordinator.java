@@ -26,7 +26,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.DeferredIMEWindowInsetApplicationCallback;
-import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
@@ -40,6 +39,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
@@ -252,8 +252,18 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         };
     }
 
-    public void setSessionState(@Nullable FuseboxSessionState state) {
-        mMediator.setSessionState(state);
+    /**
+     * Starts a new omnibox session.
+     *
+     * @param input The initial state of the omnibox.
+     */
+    public void beginInput(AutocompleteInput input) {
+        mMediator.beginInput(input);
+    }
+
+    /** Ends the current omnibox session. */
+    public void endInput() {
+        mMediator.endInput();
     }
 
     public void onUrlAnimationFinished(boolean hasFocus) {

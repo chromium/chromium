@@ -15,7 +15,15 @@ import org.chromium.url.GURL;
 
 import java.util.Locale;
 
-/** AutocompleteInput encompasses the input to autocomplete. */
+/**
+ * Represents the state of an Omnibox session.
+ *
+ * <p>This includes the user's typed text, the current page context (URL, title, etc), and the state
+ * of any active tools or modes (e.g. Fusebox).
+ *
+ * <p>This class must have no dependencies on external services or logic and should be fully
+ * serializable to allow for session persistence.
+ */
 @NullMarked
 public class AutocompleteInput {
     private GURL mPageUrl;

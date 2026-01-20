@@ -95,6 +95,7 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -1012,8 +1013,12 @@ class LocationBarMediator
         //
         // This call is permitted to happen before anyone else is activated, and
         // must be called before everyone else cleans up.
-        var fuseboxSession = mUrlHasFocus ? new FuseboxSessionState() : null;
-        mAutocompleteCoordinator.setSessionState(fuseboxSession);
+        if (hasFocus) {
+            var input = createAutocompleteInput();
+            mAutocompleteCoordinator.beginInput(input);
+        } else {
+            mAutocompleteCoordinator.endInput();
+        }
 
         for (UrlFocusChangeListener listener : mUrlFocusChangeListeners) {
             listener.onUrlFocusChange(hasFocus);
@@ -1055,6 +1060,21 @@ class LocationBarMediator
                     });
             mUrlFocusChangeAnimator.start();
         }
+    }
+
+    /**
+     * Creates and initializes a new {@link AutocompleteInput} instance with the current page's
+     * context.
+     *
+     * @return A new {@link AutocompleteInput} instance.
+     */
+    private AutocompleteInput createAutocompleteInput() {
+        var input = new AutocompleteInput();
+        input.setPageClassification(mLocationBarDataProvider.getPageClassification(false));
+        input.setRequestType(mAutocompleteRequestTypeSupplier.get());
+        input.setPageUrl(mLocationBarDataProvider.getCurrentGurl());
+        input.setPageTitle(mLocationBarDataProvider.getTitle());
+        return input;
     }
 
     /* package */ void setShouldShowMicButtonWhenUnfocusedForPhone(boolean shouldShow) {
