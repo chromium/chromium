@@ -3017,6 +3017,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/signin:profile",
       "//chrome/browser/ui/webui/signin:profile_impl",
       "//chrome/browser/ui/webui/updater:mojo_bindings",
+      "//chrome/browser/updater",
       "//chrome/updater:browser_sources",
       "//components/capture_mode",
       "//components/country_codes",

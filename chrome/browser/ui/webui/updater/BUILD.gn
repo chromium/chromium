@@ -8,6 +8,9 @@ assert(is_mac || is_win || is_linux)
 
 mojom("mojo_bindings") {
   sources = [ "updater_ui.mojom" ]
-  public_deps = [ "//mojo/public/mojom/base" ]
+  public_deps = [
+    "//chrome/updater/mojom",
+    "//mojo/public/mojom/base",
+  ]
   webui_module_path = "/"
 }

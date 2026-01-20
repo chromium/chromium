@@ -8566,9 +8566,13 @@ test("unit_tests") {
         "../browser/supervised_user/linux_mac_windows/supervised_user_extensions_metrics_delegate_impl_unittest.cc",
         "../browser/support_tool/updater_data_collector_unittest.cc",
         "../browser/ui/webui/settings/accessibility_main_handler_unittest.cc",
+        "../browser/ui/webui/updater/updater_page_handler_unittest.cc",
       ]
 
-      deps += [ "//chrome/updater:browser_sources" ]
+      deps += [
+        "//chrome/browser/ui/webui/updater:mojo_bindings",
+        "//chrome/updater:browser_sources",
+      ]
     }
 
     sources += [
