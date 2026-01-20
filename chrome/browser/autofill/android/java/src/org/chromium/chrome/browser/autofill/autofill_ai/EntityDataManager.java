@@ -15,6 +15,9 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
+import org.chromium.components.autofill.autofill_ai.EntityInstanceWithLabels;
+
+import java.util.List;
 
 /**
  * Android wrapper of the EntityDataManager which provides access from the Java layer.
@@ -57,6 +60,17 @@ public class EntityDataManager implements Destroyable {
                 .addOrUpdateEntityInstance(mNativeEntityDataManagerAndroid, entity);
     }
 
+    /**
+     * Returns a list of `EntityInstanceWithLabels`. Entities of the same type are grouped together
+     * in the list. This list is used by the management page to show users all entities they have
+     * stored, offering an entry point for edition and deletion.
+     */
+    public List<EntityInstanceWithLabels> getEntitiesWithLabels() {
+        ThreadUtils.assertOnUiThread();
+        return java.util.Arrays.asList(
+                EntityDataManagerJni.get().getEntitiesWithLabels(mNativeEntityDataManagerAndroid));
+    }
+
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
@@ -68,5 +82,7 @@ public class EntityDataManager implements Destroyable {
                 long nativeEntityDataManagerAndroid, @JniType("std::string") String guid);
 
         void addOrUpdateEntityInstance(long nativeEntityDataManagerAndroid, EntityInstance entity);
+
+        EntityInstanceWithLabels[] getEntitiesWithLabels(long nativeEntityDataManagerAndroid);
     }
 }

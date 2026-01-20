@@ -39,6 +39,12 @@ class EntityDataManagerAndroid {
   void AddOrUpdateEntityInstance(JNIEnv* env,
                                  const jni_zero::JavaRef<jobject>& jEntity);
 
+  // Gets information about all entities to be displayed in the management
+  // service. For each entity, returns an instance of
+  // `EntityInstanceWithLabels.java`;
+  base::android::ScopedJavaLocalRef<jobjectArray> GetEntitiesWithLabels(
+      JNIEnv* env);
+
  private:
   ~EntityDataManagerAndroid();
 
