@@ -56,7 +56,7 @@ public class HomeTipsModulesProviderUnitTest {
 
         verify(mModuleRegistry)
                 .registerModule(
-                        eq(ModuleType.SETUP_LIST_TWO_CELL_CONTAINER),
+                        eq(SetupListModuleUtils.getTwoCellContainerModuleTypes().get(0)),
                         any(EducationalTipModuleTwoCellBuilder.class));
     }
 
@@ -114,7 +114,8 @@ public class HomeTipsModulesProviderUnitTest {
     @SmallTest
     public void
             testGetModulesToRegister_returnsTwoCellContainerWhenSetupListActiveAndTwoCellEnabled() {
-        Collection<Integer> expectedModules = List.of(ModuleType.SETUP_LIST_TWO_CELL_CONTAINER);
+        Collection<Integer> expectedModules =
+                List.of(SetupListModuleUtils.getTwoCellContainerModuleTypes().get(0));
         Collection<Integer> actualModules =
                 HomeTipsModulesProvider.getModuleTypesToRegister(
                         /* isSetupListActive= */ true, /* showTwoCell= */ true);

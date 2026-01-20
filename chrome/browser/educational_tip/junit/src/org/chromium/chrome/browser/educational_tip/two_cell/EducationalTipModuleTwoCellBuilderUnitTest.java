@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.educational_tip.R;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.setup_list.SetupListManager;
+import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
@@ -45,6 +46,9 @@ import org.chromium.ui.shadows.ShadowAppCompatResources;
         shadows = {ShadowAppCompatResources.class})
 public class EducationalTipModuleTwoCellBuilderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    private static final @ModuleDelegate.ModuleType int MODULE_TYPE =
+            SetupListModuleUtils.getTwoCellContainerModuleTypes().get(0);
 
     @Mock private ModuleDelegate mModuleDelegate;
     @Mock private Callback<ModuleProvider> mBuildCallback;
@@ -67,7 +71,7 @@ public class EducationalTipModuleTwoCellBuilderUnitTest {
     @Test
     @SmallTest
     public void testBuild() {
-        mModuleBuilder = new EducationalTipModuleTwoCellBuilder(mActionDelegate);
+        mModuleBuilder = new EducationalTipModuleTwoCellBuilder(MODULE_TYPE, mActionDelegate);
         assertTrue(mModuleBuilder.build(mModuleDelegate, mBuildCallback));
         verify(mBuildCallback).onResult(any(EducationalTipModuleTwoCellCoordinator.class));
     }
@@ -75,7 +79,7 @@ public class EducationalTipModuleTwoCellBuilderUnitTest {
     @Test
     @SmallTest
     public void testCreateView() {
-        mModuleBuilder = new EducationalTipModuleTwoCellBuilder(mActionDelegate);
+        mModuleBuilder = new EducationalTipModuleTwoCellBuilder(MODULE_TYPE, mActionDelegate);
         ViewGroup parentView = new FrameLayout(mContext);
         ViewGroup moduleView = mModuleBuilder.createView(parentView);
         assertNotNull(moduleView);
@@ -87,7 +91,7 @@ public class EducationalTipModuleTwoCellBuilderUnitTest {
     public void testGetManualRank_SetupListActive() {
         when(mSetupListManager.isSetupListActive()).thenReturn(true);
         when(mSetupListManager.shouldShowTwoCellLayout()).thenReturn(true);
-        mModuleBuilder = new EducationalTipModuleTwoCellBuilder(mActionDelegate);
+        mModuleBuilder = new EducationalTipModuleTwoCellBuilder(MODULE_TYPE, mActionDelegate);
         Integer manualOrder = mModuleBuilder.getManualRank();
         assertNotNull("Manual order should be present when setup list is active", manualOrder);
         assertEquals(0, manualOrder.intValue());
@@ -98,7 +102,7 @@ public class EducationalTipModuleTwoCellBuilderUnitTest {
     public void testGetManualRank_SetupListInActive() {
         when(mSetupListManager.isSetupListActive()).thenReturn(false);
         when(mSetupListManager.shouldShowTwoCellLayout()).thenReturn(true);
-        mModuleBuilder = new EducationalTipModuleTwoCellBuilder(mActionDelegate);
+        mModuleBuilder = new EducationalTipModuleTwoCellBuilder(MODULE_TYPE, mActionDelegate);
         Integer manualOrder = mModuleBuilder.getManualRank();
         assertNull("Manual order should be null when setup list is inactive", manualOrder);
     }
@@ -106,7 +110,7 @@ public class EducationalTipModuleTwoCellBuilderUnitTest {
     @Test
     @SmallTest
     public void testCreateInputContext() {
-        mModuleBuilder = new EducationalTipModuleTwoCellBuilder(mActionDelegate);
+        mModuleBuilder = new EducationalTipModuleTwoCellBuilder(MODULE_TYPE, mActionDelegate);
         InputContext inputContext = mModuleBuilder.createInputContext();
         assertNull(inputContext);
     }

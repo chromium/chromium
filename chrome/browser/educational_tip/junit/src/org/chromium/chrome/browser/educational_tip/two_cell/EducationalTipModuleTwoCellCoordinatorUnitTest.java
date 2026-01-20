@@ -48,6 +48,9 @@ import java.util.List;
 public class EducationalTipModuleTwoCellCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    private static final @ModuleDelegate.ModuleType int MODULE_TYPE =
+            SetupListModuleUtils.getTwoCellContainerModuleTypes().get(0);
+
     @Mock private ModuleDelegate mModuleDelegate;
     @Mock private EducationTipModuleActionDelegate mActionDelegate;
     @Mock private Profile mProfile;
@@ -65,8 +68,6 @@ public class EducationalTipModuleTwoCellCoordinatorUnitTest {
         mProfileSupplier = new ObservableSupplierImpl<>();
         mProfileSupplier.set(mProfile);
         when(mActionDelegate.getProfileSupplier()).thenReturn(mProfileSupplier);
-
-        mCoordinator = new EducationalTipModuleTwoCellCoordinator(mModuleDelegate, mActionDelegate);
     }
 
     @Test
@@ -77,6 +78,9 @@ public class EducationalTipModuleTwoCellCoordinatorUnitTest {
                         ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
                         ModuleType.ADDRESS_BAR_PLACEMENT_PROMO);
         SetupListModuleUtils.setRankedModuleTypesForTesting(rankedModules);
+        mCoordinator =
+                new EducationalTipModuleTwoCellCoordinator(
+                        MODULE_TYPE, mModuleDelegate, mActionDelegate);
 
         mCoordinator.showModule();
 
@@ -119,6 +123,9 @@ public class EducationalTipModuleTwoCellCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testGetModuleType() {
+        mCoordinator =
+                new EducationalTipModuleTwoCellCoordinator(
+                        MODULE_TYPE, mModuleDelegate, mActionDelegate);
         assertEquals(ModuleType.SETUP_LIST_TWO_CELL_CONTAINER, mCoordinator.getModuleType());
     }
 }

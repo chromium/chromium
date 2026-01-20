@@ -39,6 +39,9 @@ public class SetupListModuleUtils {
         }
     }
 
+    private static final @ModuleType int TWO_CELL_CONTAINER_MODULE_TYPE =
+            ModuleType.SETUP_LIST_TWO_CELL_CONTAINER;
+
     /**
      * Returns a ranked list of module types supported by the setup list. The order of modules in
      * this list defines their ranking, with lower indices indicating higher priority (e.g., index 0
@@ -49,6 +52,11 @@ public class SetupListModuleUtils {
             return sRankedModuleTypesForTesting;
         }
         return new ArrayList<>(BASE_SETUP_LIST_ORDER);
+    }
+
+    /** Returns the module type list for the two-cell container. */
+    public static List<Integer> getTwoCellContainerModuleTypes() {
+        return List.of(TWO_CELL_CONTAINER_MODULE_TYPE);
     }
 
     /** Returns whether the setup list is active based on the 14-day window. */
@@ -72,7 +80,7 @@ public class SetupListModuleUtils {
         }
 
         if (shouldShowTwoCellLayout()) {
-            return (moduleType == ModuleType.SETUP_LIST_TWO_CELL_CONTAINER) ? 0 : null;
+            return (moduleType == TWO_CELL_CONTAINER_MODULE_TYPE) ? 0 : null;
         }
         return sModuleRankMap.get(moduleType);
     }
@@ -81,7 +89,7 @@ public class SetupListModuleUtils {
     public static boolean isSetupListModule(@ModuleType int moduleType) {
         if (!isSetupListActive()) return false;
         if (shouldShowTwoCellLayout()) {
-            return moduleType == ModuleType.SETUP_LIST_TWO_CELL_CONTAINER;
+            return moduleType == TWO_CELL_CONTAINER_MODULE_TYPE;
         } else {
             return sModuleRankMap.containsKey(moduleType);
         }

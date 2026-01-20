@@ -13,7 +13,6 @@ import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Manages the registration of high-level module collections on the home surface, like the Setup
@@ -22,15 +21,13 @@ import java.util.List;
 @NullMarked
 public class HomeTipsModulesProvider {
     /**
-     * Registers the appropriate module builders with the ModuleRegistry based on feature flags and
-     * the Setup List state.
+     * Registers module builders with the ModuleRegistry based on the Setup List state.
      *
-     * <p>If the Setup List is active and the two-cell layout should be shown, it registers the
-     * {@link EducationalTipModuleTwoCellBuilder} for {@link
-     * ModuleType#SETUP_LIST_TWO_CELL_CONTAINER}. If the Setup List is active but the single-cell
-     * layout should be shown, it registers {@link EducationalTipModuleBuilder} for each individual
-     * setup list item. Otherwise, it registers the standard Educational Tip modules using {@link
-     * EducationalTipModuleBuilder}.
+     * <p>If the Setup List is active ({@link SetupListModuleUtils#isSetupListActive()}), this
+     * method registers either {@link EducationalTipModuleTwoCellBuilder} or {@link
+     * EducationalTipModuleBuilder} instances, depending on {@link
+     * SetupListModuleUtils#shouldShowTwoCellLayout()}. Otherwise, it registers builders for the
+     * default educational tips.
      *
      * @param actionDelegate The instance of {@link EducationTipModuleActionDelegate}.
      * @param moduleRegistry The instance of {@link ModuleRegistry}.
@@ -45,7 +42,8 @@ public class HomeTipsModulesProvider {
         for (@ModuleType int moduleType : modulesToRegister) {
             if (showTwoCell) {
                 moduleRegistry.registerModule(
-                        moduleType, new EducationalTipModuleTwoCellBuilder(actionDelegate));
+                        moduleType,
+                        new EducationalTipModuleTwoCellBuilder(moduleType, actionDelegate));
             } else {
                 moduleRegistry.registerModule(
                         moduleType, new EducationalTipModuleBuilder(moduleType, actionDelegate));
@@ -67,7 +65,7 @@ public class HomeTipsModulesProvider {
         if (isSetupListActive) {
             // If the "Set Up List" feature is active, return its ranked modules.
             if (showTwoCell) {
-                return List.of(ModuleType.SETUP_LIST_TWO_CELL_CONTAINER);
+                return SetupListModuleUtils.getTwoCellContainerModuleTypes();
             }
             return SetupListModuleUtils.getRankedModuleTypes();
         } else {

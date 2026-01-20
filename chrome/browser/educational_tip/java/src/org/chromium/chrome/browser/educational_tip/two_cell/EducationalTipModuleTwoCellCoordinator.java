@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProviderFactory;
 import org.chromium.chrome.browser.educational_tip.R;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -36,6 +37,7 @@ import java.util.List;
  */
 @NullMarked
 public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
+    private final @ModuleType int mModuleType;
     private final ModuleDelegate mModuleDelegate;
     private final PropertyModel mModel;
     private final CallbackController mCallbackController = new CallbackController();
@@ -43,11 +45,15 @@ public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
     private final @Nullable EducationalTipCardProvider mItem2Provider;
 
     /**
+     * @param moduleType The type of the module to build.
      * @param moduleDelegate The instance of {@link ModuleDelegate}.
      * @param actionDelegate The instance of {@link EducationTipModuleActionDelegate}.
      */
     public EducationalTipModuleTwoCellCoordinator(
-            ModuleDelegate moduleDelegate, EducationTipModuleActionDelegate actionDelegate) {
+            @ModuleType int moduleType,
+            ModuleDelegate moduleDelegate,
+            EducationTipModuleActionDelegate actionDelegate) {
+        mModuleType = moduleType;
         mModuleDelegate = moduleDelegate;
 
         mModel = new PropertyModel.Builder(EducationalTipModuleTwoCellProperties.ALL_KEYS).build();
@@ -92,8 +98,7 @@ public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
     // ModuleProvider implementation.
     @Override
     public void showModule() {
-        mModuleDelegate.onDataReady(
-                ModuleDelegate.ModuleType.SETUP_LIST_TWO_CELL_CONTAINER, mModel);
+        mModuleDelegate.onDataReady(mModuleType, mModel);
     }
 
     @Override
@@ -117,6 +122,6 @@ public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
 
     @Override
     public int getModuleType() {
-        return ModuleDelegate.ModuleType.SETUP_LIST_TWO_CELL_CONTAINER;
+        return mModuleType;
     }
 }
