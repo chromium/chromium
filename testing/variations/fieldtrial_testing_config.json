@@ -11017,6 +11017,26 @@
             ]
         }
     ],
+    "FieldClassificationModelCaching": [
+        {
+            "platforms": [
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FieldClassificationModelCaching"
+                    ]
+                }
+            ]
+        }
+    ],
     "FieldRankServerClassification": [
         {
             "platforms": [
