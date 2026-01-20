@@ -2374,17 +2374,21 @@ class BrowserAutofillManagerTestValuables : public BrowserAutofillManagerTest {
             web_data_service_helper_->autofill_webdata_service(),
             autofill_client().GetPrefs(),
             /*image_fetcher=*/nullptr));
-    web_data_service_helper_->WaitUntilIdle();
+    WaitUntilWebDataServiceHelperIdle();
   }
 
   void SetLoyaltyCards(const std::vector<LoyaltyCard>& loyalty_cards) {
     valuables_table_.get()->SetLoyaltyCards(loyalty_cards);
     test_api(valuables_data()).LoadLoyaltyCards();
-    web_data_service_helper_->WaitUntilIdle();
+    WaitUntilWebDataServiceHelperIdle();
   }
 
   ValuablesDataManager& valuables_data() {
     return *autofill_client().GetValuablesDataManager();
+  }
+
+  void WaitUntilWebDataServiceHelperIdle() const {
+    web_data_service_helper_->WaitUntilIdle();
   }
 
  private:
@@ -2642,6 +2646,25 @@ TEST_F(
       autofill_metrics::AutofillEmailOrLoyaltyCardAcceptanceMetricValue::
           kLoyaltyCardSelected,
       1);
+}
+
+// Test that we correctly update the used loyalty card.
+TEST_F(BrowserAutofillManagerTestValuables,
+       LogAndRecordLoyaltyCardFill_UpdateLoyaltyCard) {
+  FormData form =
+      test::GetFormData({.fields = {{.role = LOYALTY_MEMBERSHIP_ID}}});
+  FormsSeen({form});
+  LoyaltyCard loyalty_card = test::CreateLoyaltyCard();
+  SetLoyaltyCards({loyalty_card});
+
+  autofill_manager().LogAndRecordLoyaltyCardFill(loyalty_card, form.global_id(),
+                                                 form.fields()[0].global_id());
+  WaitUntilWebDataServiceHelperIdle();
+  test_api(valuables_data()).LoadLoyaltyCards();
+  WaitUntilWebDataServiceHelperIdle();
+
+  EXPECT_EQ(ValuableMetadata(loyalty_card.id(), base::Time::Now(), 1),
+            valuables_data().GetLoyaltyCards()[0].metadata());
 }
 
 class BrowserAutofillManagerTestForMetadataCardSuggestions

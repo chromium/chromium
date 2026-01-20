@@ -2883,6 +2883,8 @@ void BrowserAutofillManager::LogAndRecordLoyaltyCardFill(
                              &autofill_field)) {
     return;
   }
+  client().GetValuablesDataManager()->RecordLoyaltyCardUsed(loyalty_card.id(),
+                                                            base::Time::Now());
   // TODO(crbug.com/422366498): Move the Onfill event to `FillOrPreviewField`.
   metrics_->loyalty_card_form_event_logger.OnDidFillSuggestion(
       *form_structure, *autofill_field, loyalty_card,

@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/test_autofill_external_delegate.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -337,6 +338,8 @@ class AutofillMetricsBaseTest : public WithTestAutofillClientDriverManager<
   base::test::ScopedFeatureList scoped_features_;
 
  private:
+  std::optional<AutofillWebDataServiceTestHelper> web_data_service_helper_;
+
   void CreateTestAutofillProfiles();
 };
 

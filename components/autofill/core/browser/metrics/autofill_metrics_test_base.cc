@@ -9,6 +9,7 @@
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager_test_api.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
@@ -22,6 +23,7 @@
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
+#include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
@@ -114,6 +116,12 @@ void AutofillMetricsBaseTest::InitAutofillClient() {
   autofill_client().set_payments_autofill_client(
       std::make_unique<NiceMock<MockPaymentsAutofillClient>>(
           &autofill_client()));
+  autofill_client().set_valuables_data_manager(
+      std::make_unique<ValuablesDataManager>(
+          web_data_service_helper_->autofill_webdata_service(),
+          autofill_client().GetPrefs(),
+          /*image_fetcher=*/nullptr));
+  web_data_service_helper_->WaitUntilIdle();
 }
 
 void AutofillMetricsBaseTest::SetUpHelper() {
@@ -121,6 +129,10 @@ void AutofillMetricsBaseTest::SetUpHelper() {
   base::Time year2020;
   ASSERT_TRUE(base::Time::FromString("01/01/20", &year2020));
   task_environment_.FastForwardBy(year2020 - base::Time::Now());
+
+  std::unique_ptr<ValuablesTable> valuables_table =
+      std::make_unique<ValuablesTable>();
+  web_data_service_helper_.emplace(std::move(valuables_table));
 
   InitAutofillClient();
 
@@ -169,6 +181,7 @@ void AutofillMetricsBaseTest::SetUpHelper() {
 void AutofillMetricsBaseTest::TearDownHelper() {
   test_ukm_recorder().Purge();
   DestroyAutofillClient();
+  web_data_service_helper_.reset();
 }
 
 void AutofillMetricsBaseTest::PurgeUKM() {
