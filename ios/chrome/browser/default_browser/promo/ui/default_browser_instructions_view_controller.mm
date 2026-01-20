@@ -8,6 +8,7 @@
 #import "base/i18n/rtl.h"
 #import "ios/chrome/browser/default_browser/promo/public/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/animated_promo/animated_promo_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -51,6 +52,8 @@ NSString* const kDefaultBrowserAnimationRtlDarkmodeIpad =
 NSString* const kBrowserAppKeypath = @"IDS_BROWSER_APP";
 NSString* const kDefaultBrowserAppKeypath = @"IDS_DEFAULT_BROWSER_APP";
 NSString* const kChromeKeypath = @"IDS_CHROME";
+NSString* const kChromeSecondaryKeypath = @"IDS_CHROME_SECONDARY";
+NSString* const kSettingsKeypath = @"IDS_IOS_SETTINGS";
 
 // Spacing used in the bottom alert view.
 constexpr CGFloat kSpacing = 24;
@@ -121,10 +124,15 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
   self.animationViewWrapper = [self createAnimation:[self animationAssetName]];
   self.animationViewWrapper.animationView.accessibilityIdentifier =
       kDefaultBrowserInstructionsViewAnimationViewId;
-  self.animationViewWrapperDarkMode =
-      [self createAnimation:[self animationAssetNameDarkmode]];
-  self.animationViewWrapperDarkMode.animationView.accessibilityIdentifier =
-      kDefaultBrowserInstructionsViewDarkAnimationViewId;
+
+  if ([self areColorsDynamic]) {
+    self.animationViewWrapperDarkMode = nil;
+  } else {
+    self.animationViewWrapperDarkMode =
+        [self createAnimation:[self animationAssetNameDarkmode]];
+    self.animationViewWrapperDarkMode.animationView.accessibilityIdentifier =
+        kDefaultBrowserInstructionsViewDarkAnimationViewId;
+  }
 
   // Set the text localization.
   NSDictionary* textProvider = @{
@@ -132,23 +140,32 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
         l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_BROWSER_APP),
     kDefaultBrowserAppKeypath : l10n_util::GetNSString(
         IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_DEFAULT_BROWSER_APP),
-    kChromeKeypath : l10n_util::GetNSString(IDS_IOS_SHORT_PRODUCT_NAME)
+    kChromeKeypath : l10n_util::GetNSString(IDS_IOS_SHORT_PRODUCT_NAME),
+    kChromeSecondaryKeypath :
+        l10n_util::GetNSString(IDS_IOS_SHORT_PRODUCT_NAME),
+    kSettingsKeypath : l10n_util::GetNSString(IDS_IOS_SETTINGS_TITLE)
   };
   [self.animationViewWrapper setDictionaryTextProvider:textProvider];
-  [self.animationViewWrapperDarkMode setDictionaryTextProvider:textProvider];
+  if (self.animationViewWrapperDarkMode) {
+    [self.animationViewWrapperDarkMode setDictionaryTextProvider:textProvider];
+  }
 
   [self.view addSubview:self.animationViewWrapper.animationView];
-  [self.view addSubview:self.animationViewWrapperDarkMode.animationView];
+  if (self.animationViewWrapperDarkMode) {
+    [self.view addSubview:self.animationViewWrapperDarkMode.animationView];
+  }
 
   // Layout the animation view to take up the top half of the view.
   self.animationViewWrapper.animationView
       .translatesAutoresizingMaskIntoConstraints = NO;
   self.animationViewWrapper.animationView.contentMode =
       UIViewContentModeScaleAspectFit;
-  self.animationViewWrapperDarkMode.animationView
-      .translatesAutoresizingMaskIntoConstraints = NO;
-  self.animationViewWrapperDarkMode.animationView.contentMode =
-      UIViewContentModeScaleAspectFit;
+  if (self.animationViewWrapperDarkMode) {
+    self.animationViewWrapperDarkMode.animationView
+        .translatesAutoresizingMaskIntoConstraints = NO;
+    self.animationViewWrapperDarkMode.animationView.contentMode =
+        UIViewContentModeScaleAspectFit;
+  }
 
   [NSLayoutConstraint activateConstraints:@[
     [self.animationViewWrapper.animationView.leadingAnchor
@@ -162,8 +179,10 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
                        constant:[self centerOffset]],
   ]];
 
-  AddSameConstraints(self.animationViewWrapperDarkMode.animationView,
-                     self.animationViewWrapper.animationView);
+  if (self.animationViewWrapperDarkMode) {
+    AddSameConstraints(self.animationViewWrapperDarkMode.animationView,
+                       self.animationViewWrapper.animationView);
+  }
 
   [self selectAnimationForCurrentStyle];
 }
@@ -179,6 +198,15 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
 
 // Selects regular or dark mode animation based on the given style.
 - (void)selectAnimationForStyle:(UIUserInterfaceStyle)style {
+  if ([self areColorsDynamic]) {
+    // Apply dynamic colors
+    [self configureAnimationColors];
+
+    self.animationViewWrapper.animationView.hidden = NO;
+    [self.animationViewWrapper play];
+    return;
+  }
+
   if (style == UIUserInterfaceStyleDark) {
     self.animationViewWrapper.animationView.hidden = YES;
     [self.animationViewWrapper stop];
@@ -327,8 +355,8 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
   if (IsDefaultBrowserPromoIpadInstructions() &&
       [[UIDevice currentDevice] userInterfaceIdiom] ==
           UIUserInterfaceIdiomPad) {
-    return base::i18n::IsRTL() ? kDefaultBrowserAnimationRtlDarkmodeIpad
-                               : kDefaultBrowserAnimationDarkmodeIpad;
+    // No separate dark mode asset for iPad when using dynamic colors.
+    return nil;
   }
 
   if (_useDefaultAppsDestination) {
@@ -338,6 +366,36 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
 
   return base::i18n::IsRTL() ? kDefaultBrowserAnimationRtlDarkmode
                              : kDefaultBrowserAnimationDarkmode;
+}
+
+// Configures the animation with semantic and custom colors.
+- (void)configureAnimationColors {
+  ConfigureAnimationSemanticColors(self.animationViewWrapper);
+
+  // Custom dynamic colors for kDefaultBrowserAnimationIpad.
+  if ([[self animationAssetName]
+          isEqualToString:kDefaultBrowserAnimationIpad]) {
+    ConfigureAnimationSemanticColor(self.animationViewWrapper, kChromeKeypath,
+                                    kTextPrimaryColor);
+    ConfigureAnimationSemanticColor(self.animationViewWrapper,
+                                    kChromeSecondaryKeypath,
+                                    kTextSecondaryColor);
+    ConfigureAnimationSemanticColor(self.animationViewWrapper,
+                                    kDefaultBrowserAppKeypath,
+                                    kTextPrimaryColor);
+    ConfigureAnimationSemanticColor(self.animationViewWrapper, kSettingsKeypath,
+                                    kTextPrimaryColor);
+    ConfigureAnimationCustomColor(
+        self.animationViewWrapper, @"ipad-dbp-background",
+        UIColorFromRGB(0xF2F2F7), UIColorFromRGB(0x1C1C1E));
+  }
+}
+
+// Returns whether the animation supports dynamic colors.
+- (BOOL)areColorsDynamic {
+  return IsDefaultBrowserPromoIpadInstructions() &&
+         [[UIDevice currentDevice] userInterfaceIdiom] ==
+             UIUserInterfaceIdiomPad;
 }
 
 @end

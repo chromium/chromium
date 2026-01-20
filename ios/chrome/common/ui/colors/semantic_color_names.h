@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+// LINT.IfChange(SemanticColorNames)
+
 // **************
 // Element Colors
 // **************
@@ -197,5 +199,7 @@ extern NSString* const kStaticGrey900Color;
 
 // Grey palette
 extern NSString* const kLightOnlyGrey200Color;
+
+// LINT.ThenChange(//ios/chrome/browser/shared/ui/animated_promo/animated_promo_utils.mm:AnimationSemanticColorNames)
 
 #endif  // IOS_CHROME_COMMON_UI_COLORS_SEMANTIC_COLOR_NAMES_H_
