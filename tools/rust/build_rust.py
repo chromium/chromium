@@ -972,9 +972,8 @@ def main():
                 sys.executable,
                 os.path.join(THIS_DIR, 'build_crubit.py')
             ]
-            # TODO: crbug.com/40226863 - Remove `fail_hard=False` once we can
-            # depend on the OSS Crubit build staying green with latest Rust and
-            # Clang.
+            # TODO(crbug.com/470405754): - Remove `fail_hard=False` once we can
+            # depend on the OSS Crubit build staying green with latest Rust.
             TeeCmd(build_cmd, log, fail_hard=False)
 
         if args.gnrt_stdlib:

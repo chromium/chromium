@@ -29,8 +29,7 @@ _CARGO_EXE = 'cargo.exe' if _IS_WIN else 'cargo'
 # On windows, we need to point cargo and rustc to our hermetic windows
 # toolchain, rather than assuming the windows tools are installed elsewhere
 # on the system.
-# This returns a string of flags separated by the 0x1f character, for use in
-# the CARGO_ENCODED_RUSTFLAGS environment variable
+# This returns a list of `rustc` flags.
 def _GetWindowsToolchainFlags():
     # Get VS toolchain helpers from //build/vs_toolchain.py
     sys.path.append(
@@ -42,7 +41,7 @@ def _GetWindowsToolchainFlags():
     # If DEPOT_TOOLS_WIN_TOOLCHAINset to 0, the user has explicitly requested
     # that we use their toolchain installation instead of the hermetic one
     if (not _IS_WIN or os.environ.get('DEPOT_TOOLS_WIN_TOOLCHAIN', '1') == '0'):
-        return ""
+        return []
 
     # The vs_toolchain function calls mess with the environment, so save a
     # backup to be restored after we're done.
@@ -75,7 +74,7 @@ def _GetWindowsToolchainFlags():
 
     os.environ.clear()
     os.environ.update(environ_backup)
-    return chr(0x1f).join(flags)
+    return flags
 
 
 def _PrependOrInsert(dict, key, sep, value):
@@ -87,7 +86,8 @@ def _PrependOrInsert(dict, key, sep, value):
     else:
         dict[key] = value
 
-def RunCargo(rust_sysroot, home_dir, cargo_args):
+
+def RunCargo(rust_sysroot, home_dir, cargo_args, extra_rustflags=None):
     rust_sysroot = pathlib.Path(rust_sysroot)
     if not rust_sysroot.exists():
         print(f'WARNING: Rust sysroot missing at "{rust_sysroot}"')
@@ -100,8 +100,12 @@ def RunCargo(rust_sysroot, home_dir, cargo_args):
         cargo_env['CARGO_HOME'] = home_dir
 
     _PrependOrInsert(cargo_env, 'PATH', os.pathsep, str(bin_dir))
+
+    if not extra_rustflags:
+        extra_rustflags = []
+    extra_rustflags += _GetWindowsToolchainFlags()
     _PrependOrInsert(cargo_env, 'CARGO_ENCODED_RUSTFLAGS', chr(0x1f),
-                     _GetWindowsToolchainFlags())
+                     chr(0x1f).join(extra_rustflags))
 
     # https://docs.python.org/3/library/subprocess.html#subprocess.Popen:
     #     **Warning**: For maximum reliability, use a fully qualified path for
