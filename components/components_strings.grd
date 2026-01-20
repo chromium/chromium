@@ -574,6 +574,46 @@
       <message name="IDS_INTERNAL_DEBUG_PAGES_DISABLED_HEADING" desc="This is the heading for the page that appears when a user attempts to load an internal developer debugging page when such pages are disabled by a pref.">
         Internal debugging pages are currently disabled.
       </message>
+      <!-- Clear browsing data strings. -->
+      <message name="IDS_SETTINGS_MANAGE_IN_GOOGLE_PASSWORD_MANAGER" desc="Description for the 'Passwords and Passkeys' linkout in the 'Other Google Data' subpage inside the 'Delete browsing data' dialog. This lets users know that passwords and passkeys can be managed and deleted in Google password manager.">
+        Manage in Google Password Manager
+      </message>
+      <message name="IDS_SETTINGS_MANAGE_IN_YOUR_GOOGLE_ACCOUNT" desc="Description for the MyActivity and Search History linkouts in the 'Other Google Data' subpage inside the 'Delete browsing data' dialog. This lets users know that this data can be managed and deleted in their Google account.">
+        Manage in your Google Account
+      </message>
+      <message name="IDS_SETTINGS_MANAGE_OTHER_DATA_LABEL" desc="Label for the 'Manage other data' subpage entry-point in the 'Delete Browsing Data' dialog where the user can find link-outs to manage their data outside of Chrome. This is the label shown when the user does not have Google as their default search engine.">
+        Manage other data
+      </message>
+      <message name="IDS_SETTINGS_MANAGE_OTHER_GOOGLE_DATA_LABEL" desc="Label for the 'Manage other Google data' subpage entry-point in the 'Delete Browsing Data' dialog where the user can find link-outs to manage their data outside of Chrome. This is the label shown when the user has Google as their default search engine.">
+        Manage other Google data
+      </message>
+      <message name="IDS_SETTINGS_MY_ACTIVITY" desc="Label for the 'My Activity' linkout in the 'Other Google Data' subpage inside the 'Delete browsing data' dialog, where the user can see and manage data that is stored outside of Chrome. This linkout is specifically for activity data stored in the user's Google account.">
+        My Activity
+      </message>
+       <message name="IDS_SETTINGS_OTHER_DATA_TITLE" desc="Title for the 'Other Data' subpage inside the 'Delete browsing data' dialog, where the user can see and manage data that is stored outside of Chrome. This is the title shown when the user did not set Google as their default search engine, indicating that they may have data stored outside of Google.">
+         Other data
+       </message>
+       <message name="IDS_SETTINGS_OTHER_GOOGLE_DATA_TITLE" desc="Title for the 'Other Google Data' subpage inside the 'Delete browsing data' dialog, where the user can see and manage data that is stored outside of Chrome. This is the title shown when the user set Google as their default search engine, indicating that all data linked in this subpage is stored within Google.">
+         Other Google data
+       </message>
+       <message name="IDS_SETTINGS_PASSWORDS_AND_PASSKEYS" desc="Label for the 'Passwords and Passkeys' linkout in the 'Other Google Data' subpage inside the 'Delete browsing data' dialog, where the user can see and manage data that is stored outside of Chrome. This linkout is specifically for passwords and passkeys stored in Google password manager.">
+         Passwords and passkeys
+       </message>
+       <message name="IDS_SETTINGS_MANAGE_PASSWORDS_SUB_LABEL" desc="Sub-label for the 'Manage other Data' subpage entrypoint in the 'Delete Browsing Data' dialog, explaining to the user that passwords can only be deleted in their management settings.">
+        Passwords can be deleted in their management settings
+      </message>
+       <message name="IDS_SETTINGS_SEARCH_HISTORY" desc="Label for the 'Search history' linkout in the 'Other Google Data' subpage inside the 'Delete browsing data' dialog, where the user can see and manage data that is stored outside of Chrome. This linkout is specifically for search history stored in the user's default search engine account.">
+         Search history
+       </message>
+       <message name="IDS_SETTINGS_MANAGE_OTHER_DATA_SUB_LABEL" desc="Sub-label for the 'Manage other Google Data' option in the 'Delete Browsing Data' dialog, explaining to the user that search history and passwords can be deleted outside of Chrome in their respective management settings.">
+         Search history and passwords can be deleted in their management settings
+       </message>
+       <message name="IDS_SETTINGS_OTHER_DATA_DESCRIPTION" desc="Description text at the top of the 'Other Google data' subpage in the 'Delete browsing data' settings dialog. It informs users that data linked in this page are not managed or deleted in Chrome.">
+         To delete this data, go to its management settings
+       </message>
+       <message name="IDS_SETTINGS_CLEAR_NON_GOOGLE_SEARCH_HISTORY_PREPOPULATED_DSE" desc="A description informing the user about the way to clear their search history when their Default Search Engine is not Google.">
+         Your search engine is <ph name="DSE">$1<ex>Bing</ex></ph>. See their instructions for deleting your search history, if applicable.
+       </message>
     </messages>
   </release>
 </grit>

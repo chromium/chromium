@@ -48,6 +48,7 @@
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
