@@ -117,8 +117,6 @@ static_library("performance_manager") {
     "graph/page_node_impl.h",
     "graph/page_node_impl_describer.cc",
     "graph/page_node_impl_describer.h",
-    "graph/policies/bfcache_policy.cc",
-    "graph/policies/bfcache_policy.h",
     "graph/process_node.cc",
     "graph/process_node_impl.cc",
     "graph/process_node_impl.h",
@@ -486,9 +484,6 @@ source_set("unit_tests") {
       "persistence/site_data/site_data_impl_unittest.cc",
       "persistence/site_data/site_data_reader_unittest.cc",
       "persistence/site_data/site_data_writer_unittest.cc",
-
-      # TODO(crbug.com/40188246): Consider using this policy on Android.
-      "graph/policies/bfcache_policy_unittest.cc",
     ]
   }
 

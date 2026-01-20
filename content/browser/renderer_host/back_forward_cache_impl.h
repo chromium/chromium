@@ -7,10 +7,12 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <set>
 
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -141,7 +143,8 @@ struct CONTENT_EXPORT BackForwardCacheCanStoreDocumentResultWithTree {
 class CONTENT_EXPORT BackForwardCacheImpl
     : public BackForwardCache,
       public RenderProcessHostInternalObserver,
-      public StoredPage::Delegate {
+      public StoredPage::Delegate,
+      public base::MemoryPressureListener {
   friend class BackForwardCacheCanStoreTreeResult;
   friend class BackForwardCacheMetrics;
 
@@ -434,6 +437,10 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // StoredPage::Delegate overrides:
   void RenderViewHostNoLongerStored(RenderViewHostImpl* rvh) override;
 
+  // base::MemoryPressureListener:
+  void OnMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) override;
+
   // Construct a tree of NotRestoredReasons for |rfh| without checking the
   // eligibility of all the documents in the frame tree. This should be only
   // used for evicting the back/forward cache entry where we know why the entry
@@ -681,6 +688,9 @@ class CONTENT_EXPORT BackForwardCacheImpl
 
   std::optional<size_t> embedder_supplied_cache_size_;
   std::optional<base::TimeDelta> embedder_supplied_time_to_live_;
+
+  std::optional<base::MemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
 
   base::WeakPtrFactory<BackForwardCacheImpl> weak_factory_;
 

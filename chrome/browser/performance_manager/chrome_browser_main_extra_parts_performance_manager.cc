@@ -42,7 +42,6 @@
 #include "components/performance_manager/embedder/performance_manager_lifetime.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/performance_manager/embedder/scoped_global_scenario_memory.h"
-#include "components/performance_manager/graph/policies/bfcache_policy.h"
 #include "components/performance_manager/graph/policies/process_priority_policy.h"
 #include "components/performance_manager/performance_manager_feature_observer_client.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
@@ -274,12 +273,6 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
           performance_manager::features::kThrottleUnimportantFrameRate)) {
     graph->PassToGraph(std::make_unique<
                        performance_manager::policies::FrameThrottlingPolicy>());
-  }
-
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::kBFCachePerformanceManagerPolicy)) {
-    graph->PassToGraph(
-        std::make_unique<performance_manager::policies::BFCachePolicy>());
   }
 
 #if !BUILDFLAG(IS_ANDROID)

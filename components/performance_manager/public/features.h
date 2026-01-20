@@ -117,10 +117,6 @@ extern const base::FeatureParam<bool> kNonSpareRendererHighInitialPriority;
 
 BASE_DECLARE_FEATURE(kPMLoadingPageVoter);
 
-// Policy that evicts the BFCache of pages that become non visible or the
-// BFCache of all pages when the system is under memory pressure.
-BASE_DECLARE_FEATURE(kBFCachePerformanceManagerPolicy);
-
 // Whether tabs are discarded under high memory pressure.
 BASE_DECLARE_FEATURE(kUrgentPageDiscarding);
 
