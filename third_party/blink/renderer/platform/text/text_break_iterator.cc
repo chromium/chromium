@@ -248,8 +248,9 @@ template <typename CharacterType,
           BreakSpaceType break_space>
 inline unsigned LazyLineBreakIterator::NextBreakablePosition(
     unsigned pos,
-    const CharacterType* str,
-    unsigned len) const {
+    base::span<const CharacterType> span) const {
+  const CharacterType* str = span.data();
+  unsigned len = span.size();
   Context<CharacterType> context(str, len, start_offset_, pos);
   unsigned next_break = 0;
   ULineBreak last_line_break;
@@ -350,17 +351,14 @@ inline unsigned LazyLineBreakIterator::NextBreakablePosition(
 template <typename CharacterType, LineBreakType lineBreakType>
 inline unsigned LazyLineBreakIterator::NextBreakablePosition(
     unsigned pos,
-    const CharacterType* str,
-    unsigned len) const {
+    base::span<const CharacterType> span) const {
   switch (break_space_) {
     case BreakSpaceType::kAfterSpaceRun:
       return NextBreakablePosition<CharacterType, lineBreakType,
-                                   BreakSpaceType::kAfterSpaceRun>(pos, str,
-                                                                   len);
+                                   BreakSpaceType::kAfterSpaceRun>(pos, span);
     case BreakSpaceType::kAfterEverySpace:
       return NextBreakablePosition<CharacterType, lineBreakType,
-                                   BreakSpaceType::kAfterEverySpace>(pos, str,
-                                                                     len);
+                                   BreakSpaceType::kAfterEverySpace>(pos, span);
   }
   NOTREACHED();
 }
@@ -374,10 +372,10 @@ inline unsigned LazyLineBreakIterator::NextBreakablePosition(
   }
   if (string_.Is8Bit()) {
     return NextBreakablePosition<LChar, lineBreakType>(
-        pos, UNSAFE_TODO(string_.Characters8()), len);
+        pos, string_.Span8().first(len));
   }
   return NextBreakablePosition<UChar, lineBreakType>(
-      pos, UNSAFE_TODO(string_.Characters16()), len);
+      pos, string_.Span16().first(len));
 }
 
 unsigned LazyLineBreakIterator::NextBreakablePositionBreakCharacter(
