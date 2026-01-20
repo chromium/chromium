@@ -357,6 +357,8 @@ class AwContents : public FindHelper::Listener,
 
   void SetDipScaleInternal(float dip_scale);
 
+  void UpdateAwRenderProcessAssociation();
+
   JavaObjectWeakGlobalRef java_ref_;
   BrowserViewRenderer browser_view_renderer_;  // Must outlive |web_contents_|.
   std::unique_ptr<content::WebContents> web_contents_;
@@ -387,6 +389,8 @@ class AwContents : public FindHelper::Listener,
   std::list<OriginCallback> pending_geolocation_prompts_;
 
   base::TimeDelta preferred_frame_interval_;
+
+  content::ChildProcessId associated_rph_id_;
 
   base::WeakPtrFactory<AwContents> weak_ptr_factory_{this};
 };

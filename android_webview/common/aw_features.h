@@ -66,6 +66,9 @@ BASE_DECLARE_FEATURE(kWebViewMoveWorkToProviderInit);
 BASE_DECLARE_FEATURE(kWebViewBypassProvisionalCookieManager);
 BASE_DECLARE_FEATURE(kWebViewPersistentMetricsInNoBackupDir);
 BASE_DECLARE_FEATURE(kPrerender2WarmUpCompositorForWebView);
+BASE_DECLARE_FEATURE(kWebViewRendererKeepAlive);
+extern const base::FeatureParam<base::TimeDelta>
+    kWebViewRendererKeepAliveDuration;
 BASE_DECLARE_FEATURE(kWebViewFetchOriginTrialsComponent);
 BASE_DECLARE_FEATURE(kWebViewEnableApiCallUserActions);
 }  // namespace android_webview::features
