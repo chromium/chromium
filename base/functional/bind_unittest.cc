@@ -331,6 +331,11 @@ class ConstNoexceptFunctor {
   int operator()() noexcept { return 42; }
 };
 
+class StaticNoexceptFunctor {
+ public:
+  static int operator()() noexcept { return 42; }
+};
+
 class BindTest : public ::testing::Test {
  public:
   BindTest() {
@@ -1487,6 +1492,7 @@ TEST_F(BindTest, RepeatingWithoutPassed) {
 TEST_F(BindTest, CapturelessLambda) {
   EXPECT_EQ(42, BindRepeating([] { return 42; }).Run());
   EXPECT_EQ(42, BindRepeating([](int i) { return i * 7; }, 6).Run());
+  EXPECT_EQ(42, BindRepeating([](int i) static { return i * 7; }, 6).Run());
 
   int x = 1;
   RepeatingCallback<void(int)> cb =
@@ -1511,10 +1517,15 @@ TEST_F(BindTest, EmptyFunctor) {
     int operator()() const { return 42; }
   };
 
+  struct EmptyFunctorStatic {
+    static int operator()() { return 42; }
+  };
+
   EXPECT_EQ(42, BindLambdaForTesting(NonEmptyFunctor()).Run());
   EXPECT_EQ(42, BindOnce(EmptyFunctor()).Run());
   EXPECT_EQ(42, BindOnce(EmptyFunctorConst()).Run());
   EXPECT_EQ(42, BindRepeating(EmptyFunctorConst()).Run());
+  EXPECT_EQ(42, BindRepeating(EmptyFunctorStatic()).Run());
 }
 
 TEST_F(BindTest, CapturingLambdaForTesting) {
@@ -1737,6 +1748,7 @@ TEST_F(BindTest, BindNoexcept) {
             BindOnce(&BindTest::ConstNoexceptMethod, Unretained(this)).Run());
   EXPECT_EQ(42, BindOnce(NoexceptFunctor()).Run());
   EXPECT_EQ(42, BindOnce(ConstNoexceptFunctor()).Run());
+  EXPECT_EQ(42, BindOnce(StaticNoexceptFunctor()).Run());
 }
 
 int PingPong(int* i_ptr) {
