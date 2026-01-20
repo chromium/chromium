@@ -36,6 +36,8 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
@@ -53,7 +55,6 @@ import org.chromium.chrome.browser.keyboard_accessory.AccessorySuggestionType;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
-import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AddressAccessorySheetCoordinator;
@@ -599,9 +600,10 @@ public class AccessorySheetRenderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSheetModel.get(TABS).add(sheetComponent.getTab());
-                    Provider<KeyboardAccessoryData.AccessorySheetData> provider = new Provider<>();
-                    sheetComponent.registerDataProvider(provider);
-                    provider.notifyObservers(sheetData);
+                    SettableMonotonicObservableSupplier<KeyboardAccessoryData.AccessorySheetData>
+                            supplier = ObservableSuppliers.createMonotonic();
+                    sheetComponent.registerDataProvider(supplier);
+                    supplier.set(sheetData);
                     mSheetModel.set(ACTIVE_TAB_INDEX, 0);
                     mSheetModel.set(VISIBLE, true);
                 });

@@ -33,6 +33,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
@@ -43,7 +45,6 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PromoCodeInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
-import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -113,13 +114,13 @@ public class CreditCardAccessorySheetControllerTest {
 
     @Test
     public void testModelNotifiesAboutTabDataChangedByProvider() {
-        final Provider<AccessorySheetData> testProvider = new Provider<>();
-
+        final SettableNullableObservableSupplier<AccessorySheetData> testProvider =
+                ObservableSuppliers.createNullable();
         mSheetDataPieces.addObserver(mMockItemListObserver);
         mCoordinator.registerDataProvider(testProvider);
 
         // If the coordinator receives a set of initial items, the model should report an insertion.
-        testProvider.notifyObservers(
+        testProvider.set(
                 new AccessorySheetData(
                         AccessoryTabType.CREDIT_CARDS,
                         /* userInfoTitle= */ "Payments",
@@ -129,7 +130,7 @@ public class CreditCardAccessorySheetControllerTest {
         assertThat(mSheetDataPieces.size(), is(1));
 
         // If the coordinator receives a new set of items, the model should report a change.
-        testProvider.notifyObservers(
+        testProvider.set(
                 new AccessorySheetData(
                         AccessoryTabType.CREDIT_CARDS,
                         /* userInfoTitle= */ "Other Payments",
@@ -139,18 +140,19 @@ public class CreditCardAccessorySheetControllerTest {
         assertThat(mSheetDataPieces.size(), is(1));
 
         // If the coordinator receives an empty set of items, the model should report a deletion.
-        testProvider.notifyObservers(null);
+        testProvider.set(null);
         verify(mMockItemListObserver).onItemRangeRemoved(mSheetDataPieces, 0, 1);
         assertThat(mSheetDataPieces.size(), is(0));
 
         // There should be no notification if no item are reported repeatedly.
-        testProvider.notifyObservers(null);
+        testProvider.set(null);
         verifyNoMoreInteractions(mMockItemListObserver);
     }
 
     @Test
     public void testSplitsTabDataToList() {
-        final Provider<AccessorySheetData> testProvider = new Provider<>();
+        final SettableNullableObservableSupplier<AccessorySheetData> testProvider =
+                ObservableSuppliers.createNullable();
         final AccessorySheetData testData =
                 new AccessorySheetData(
                         AccessoryTabType.CREDIT_CARDS,
@@ -190,7 +192,7 @@ public class CreditCardAccessorySheetControllerTest {
                         /* detailsText= */ "Get $50 off when you use this code at checkout.");
 
         mCoordinator.registerDataProvider(testProvider);
-        testProvider.notifyObservers(testData);
+        testProvider.set(testData);
 
         // Tests that promo code offers are ordered before credit cards.
         assertThat(mSheetDataPieces.size(), is(2));
@@ -203,7 +205,8 @@ public class CreditCardAccessorySheetControllerTest {
 
     @Test
     public void testUsesTitleElementForEmptyState() {
-        final Provider<AccessorySheetData> testProvider = new Provider<>();
+        final SettableNullableObservableSupplier<AccessorySheetData> testProvider =
+                ObservableSuppliers.createNullable();
         final AccessorySheetData testData =
                 new AccessorySheetData(
                         AccessoryTabType.CREDIT_CARDS,
@@ -212,7 +215,7 @@ public class CreditCardAccessorySheetControllerTest {
                         /* warning= */ "");
         mCoordinator.registerDataProvider(testProvider);
 
-        testProvider.notifyObservers(testData);
+        testProvider.set(testData);
 
         assertThat(mSheetDataPieces.size(), is(1));
         assertThat(getType(mSheetDataPieces.get(0)), is(TITLE));
@@ -221,7 +224,8 @@ public class CreditCardAccessorySheetControllerTest {
 
     @Test
     public void testShowsNoCreditCardsMessageBelowPromoCodes() {
-        final Provider<AccessorySheetData> testProvider = new Provider<>();
+        final SettableNullableObservableSupplier<AccessorySheetData> testProvider =
+                ObservableSuppliers.createNullable();
         final AccessorySheetData testData =
                 new AccessorySheetData(
                         AccessoryTabType.CREDIT_CARDS,
@@ -242,7 +246,7 @@ public class CreditCardAccessorySheetControllerTest {
                         /* detailsText= */ "Get $50 off when you use this code at checkout.");
 
         mCoordinator.registerDataProvider(testProvider);
-        testProvider.notifyObservers(testData);
+        testProvider.set(testData);
 
         // Tests |mTitle| is shown below promo codes.
         assertThat(mSheetDataPieces.size(), is(2));

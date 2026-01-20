@@ -206,10 +206,9 @@ public class ManualFillingControllerTest {
          * Can be used to capture data from an observer. Retrieve the last captured data with {@link
          * #getRecordedSheetData()} and {@link #getFirstRecordedPassword()}.
          *
-         * @param unusedTypeId Unused but necessary to enable use as method reference.
-         * @param data The {@link AccessorySheetData} provided by a {@link Provider}.
+         * @param data The {@link AccessorySheetData} provided by a {@link ObservableSupplier}.
          */
-        void record(int unusedTypeId, AccessorySheetData data) {
+        void record(AccessorySheetData data) {
             mRecordedSheetData.set(data);
         }
 

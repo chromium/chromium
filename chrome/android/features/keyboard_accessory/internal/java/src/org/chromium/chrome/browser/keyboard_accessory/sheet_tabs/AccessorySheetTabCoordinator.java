@@ -19,6 +19,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -121,10 +122,15 @@ public abstract class AccessorySheetTabCoordinator implements KeyboardAccessoryD
     /**
      * Registers the provider pushing a complete new instance of {@link AccessorySheetData} that
      * should be displayed as sheet for this tab.
-     * @param sheetDataProvider A {@link Provider <AccessorySheetData>}.
+     *
+     * @param sheetDataProvider A {@link Supplier <AccessorySheetData>}.
      */
-    public void registerDataProvider(Provider<AccessorySheetData> sheetDataProvider) {
-        sheetDataProvider.addObserver(getMediator());
+    public void registerDataProvider(
+            NullableObservableSupplier<AccessorySheetData> sheetDataProvider) {
+        sheetDataProvider.addObserver(
+                (accessorySheetData) ->
+                        getMediator()
+                                .onItemAvailable(getTab().getRecordingType(), accessorySheetData));
     }
 
     AccessorySheetTabItemsModel getSheetDataPiecesForTesting() {

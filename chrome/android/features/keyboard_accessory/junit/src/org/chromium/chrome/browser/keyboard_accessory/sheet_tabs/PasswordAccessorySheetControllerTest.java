@@ -42,6 +42,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
@@ -122,13 +124,14 @@ public class PasswordAccessorySheetControllerTest {
 
     @Test
     public void testModelNotifiesAboutTabDataChangedByProvider() {
-        final Provider<AccessorySheetData> testProvider = new Provider<>();
+        final SettableNullableObservableSupplier<AccessorySheetData> testProvider =
+                ObservableSuppliers.createNullable();
 
         mSheetDataPieces.addObserver(mMockItemListObserver);
         mCoordinator.registerDataProvider(testProvider);
 
         // If the coordinator receives a set of initial items, the model should report an insertion.
-        testProvider.notifyObservers(
+        testProvider.set(
                 new AccessorySheetData(
                         AccessoryTabType.PASSWORDS,
                         /* userInfoTitle= */ "Passwords",
@@ -138,7 +141,7 @@ public class PasswordAccessorySheetControllerTest {
         assertThat(mSheetDataPieces.size(), is(1));
 
         // If the coordinator receives a new set of items, the model should report a change.
-        testProvider.notifyObservers(
+        testProvider.set(
                 new AccessorySheetData(
                         AccessoryTabType.PASSWORDS,
                         /* userInfoTitle= */ "Other Passwords",
@@ -148,18 +151,19 @@ public class PasswordAccessorySheetControllerTest {
         assertThat(mSheetDataPieces.size(), is(1));
 
         // If the coordinator receives an empty set of items, the model should report a deletion.
-        testProvider.notifyObservers(null);
+        testProvider.set(null);
         verify(mMockItemListObserver).onItemRangeRemoved(mSheetDataPieces, 0, 1);
         assertThat(mSheetDataPieces.size(), is(0));
 
         // There should be no notification if no item are reported repeatedly.
-        testProvider.notifyObservers(null);
+        testProvider.set(null);
         verifyNoMoreInteractions(mMockItemListObserver);
     }
 
     @Test
     public void testNoDividerWithUserInfo() {
-        final Provider<AccessorySheetData> testProvider = new Provider<>();
+        final SettableNullableObservableSupplier<AccessorySheetData> testProvider =
+                ObservableSuppliers.createNullable();
         final AccessorySheetData testData =
                 new AccessorySheetData(
                         AccessoryTabType.PASSWORDS,
@@ -171,7 +175,7 @@ public class PasswordAccessorySheetControllerTest {
         // Providing a User Info doesn't add a separator, even with footers present:
         testData.getUserInfoList().add(new UserInfo("example.com", true));
         testData.getFooterCommands().add(new FooterCommand("Manage passwords", result -> {}));
-        testProvider.notifyObservers(testData);
+        testProvider.set(testData);
 
         assertThat(mSheetDataPieces.size(), is(2));
         assertThat(getType(mSheetDataPieces.get(0)), is(PASSWORD_INFO));
@@ -180,7 +184,8 @@ public class PasswordAccessorySheetControllerTest {
 
     @Test
     public void testUsesTabTitleOnlyForEmptyLists() {
-        final Provider<AccessorySheetData> testProvider = new Provider<>();
+        final SettableNullableObservableSupplier<AccessorySheetData> testProvider =
+                ObservableSuppliers.createNullable();
         final AccessorySheetData testData =
                 new AccessorySheetData(
                         AccessoryTabType.PASSWORDS,
@@ -191,7 +196,7 @@ public class PasswordAccessorySheetControllerTest {
 
         // Providing only FooterCommands and no User Info shows the title as empty state:
         testData.getFooterCommands().add(new FooterCommand("Manage passwords", result -> {}));
-        testProvider.notifyObservers(testData);
+        testProvider.set(testData);
 
         assertThat(mSheetDataPieces.size(), is(4));
         assertThat(getType(mSheetDataPieces.get(0)), is(TITLE));
@@ -208,7 +213,8 @@ public class PasswordAccessorySheetControllerTest {
 
     @Test
     public void testOptionToggleCompoundCallback() {
-        final Provider<AccessorySheetData> testProvider = new Provider<>();
+        final SettableNullableObservableSupplier<AccessorySheetData> testProvider =
+                ObservableSuppliers.createNullable();
         final AccessorySheetData testData =
                 new AccessorySheetData(
                         AccessoryTabType.PASSWORDS,
@@ -224,7 +230,7 @@ public class PasswordAccessorySheetControllerTest {
                         toggleEnabled::set));
         mCoordinator.registerDataProvider(testProvider);
 
-        testProvider.notifyObservers(testData);
+        testProvider.set(testData);
 
         // Invoke the callback on the option toggle that was stored in the model. This is not the
         // same as the OptionToggle passed above, because the mediator repackages it to include an
@@ -338,7 +344,8 @@ public class PasswordAccessorySheetControllerTest {
     }
 
     private void addToggleToSheet(boolean toggleEnabled) {
-        final Provider<AccessorySheetData> testProvider = new Provider<>();
+        final SettableNullableObservableSupplier<AccessorySheetData> testProvider =
+                ObservableSuppliers.createNullable();
         final AccessorySheetData testData =
                 new AccessorySheetData(
                         AccessoryTabType.PASSWORDS,
@@ -352,7 +359,7 @@ public class PasswordAccessorySheetControllerTest {
                         AccessoryAction.TOGGLE_SAVE_PASSWORDS,
                         (Boolean enabled) -> {}));
         mCoordinator.registerDataProvider(testProvider);
-        testProvider.notifyObservers(testData);
+        testProvider.set(testData);
     }
 
     private int getActionImpressions(@AccessoryAction int bucket) {
