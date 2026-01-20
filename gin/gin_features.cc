@@ -161,10 +161,6 @@ BASE_FEATURE(kV8SlowHistogramsSparkplugAndroid,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kV8SlowHistogramsNoTurbofan, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kV8DelayMemoryReducer, base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<base::TimeDelta> kV8MemoryReducerStartDelay{
-    &kV8DelayMemoryReducer, "delay", base::Seconds(30)};
-
 BASE_FEATURE(kV8ConcurrentMarkingHighPriorityThreads,
              kFeatureDefaultStateControlledByV8);
 
