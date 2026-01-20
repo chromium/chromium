@@ -298,6 +298,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/test:test_support",
     "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
+    "//ios/testing:block_swizzler",
     "//ios/web/public/test",
     "//services/network:test_support",
     "//testing/gtest",

@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_data.h"
+#import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #import "services/network/test/test_url_loader_factory.h"
@@ -184,6 +185,15 @@ class SceneControllerTest : public PlatformTest {
     signin::SetAutomaticIssueOfAccessTokens(GetIdentityManager(), grant);
   }
 
+  // Returns a `ScopedBlockSwizzler` that swizzles `applicationState` with the
+  // given `state`.
+  std::unique_ptr<ScopedBlockSwizzler> SwizzleApplicationState(
+      UIApplicationState state) {
+    return std::make_unique<ScopedBlockSwizzler>([UIApplication class],
+                                                 @selector(applicationState), ^{
+                                                   return state;
+                                                 });
+  }
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::MainThreadType::IO,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -198,7 +208,6 @@ class SceneControllerTest : public PlatformTest {
   ProfileState* profile_state_;
   id fake_scene_;
   id<ConnectionInformation> connection_information_;
-
   UIViewController* base_view_controller_;
   network::TestURLLoaderFactory test_loader_factory_;
 };
@@ -221,8 +230,8 @@ TEST_F(SceneControllerTest, UpdatesIncognitoContentVisibility) {
 
 // Tests that scene controller correctly handles an external intent to
 // OpenIncognitoSearch.
-// TODO(crbug.com/40947630): re-enabled the test.
-TEST_F(SceneControllerTest, DISABLED_TestOpenIncognitoSearchForShortcutItem) {
+TEST_F(SceneControllerTest, TestOpenIncognitoSearchForShortcutItem) {
+  auto app_state_swizzler = SwizzleApplicationState(UIApplicationStateActive);
   UIApplicationShortcutItem* shortcut = [[UIApplicationShortcutItem alloc]
         initWithType:kShortcutNewIncognitoSearch
       localizedTitle:kShortcutNewIncognitoSearch];
@@ -237,6 +246,7 @@ TEST_F(SceneControllerTest, DISABLED_TestOpenIncognitoSearchForShortcutItem) {
 // Tests that scene controller correctly handles an external intent to
 // OpenNewSearch.
 TEST_F(SceneControllerTest, TestOpenNewSearchForShortcutItem) {
+  auto app_state_swizzler = SwizzleApplicationState(UIApplicationStateActive);
   UIApplicationShortcutItem* shortcut =
       [[UIApplicationShortcutItem alloc] initWithType:kShortcutNewSearch
                                        localizedTitle:kShortcutNewSearch];
@@ -251,6 +261,7 @@ TEST_F(SceneControllerTest, TestOpenNewSearchForShortcutItem) {
 // Tests that scene controller correctly handles an external intent to
 // OpenVoiceSearch.
 TEST_F(SceneControllerTest, TestOpenVoiceSearchForShortcutItem) {
+  auto app_state_swizzler = SwizzleApplicationState(UIApplicationStateActive);
   UIApplicationShortcutItem* shortcut =
       [[UIApplicationShortcutItem alloc] initWithType:kShortcutVoiceSearch
                                        localizedTitle:kShortcutVoiceSearch];
@@ -265,6 +276,7 @@ TEST_F(SceneControllerTest, TestOpenVoiceSearchForShortcutItem) {
 // Tests that scene controller correctly handles an external intent to
 // OpenQRScanner.
 TEST_F(SceneControllerTest, TestOpenQRScannerForShortcutItem) {
+  auto app_state_swizzler = SwizzleApplicationState(UIApplicationStateActive);
   UIApplicationShortcutItem* shortcut =
       [[UIApplicationShortcutItem alloc] initWithType:kShortcutQRScanner
                                        localizedTitle:kShortcutQRScanner];
