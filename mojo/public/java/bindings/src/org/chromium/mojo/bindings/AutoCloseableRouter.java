@@ -41,7 +41,7 @@ class AutoCloseableRouter implements Router {
     }
 
     @Override
-    public void setPrimaryStub(Stub stub) {
+    public void setPrimaryStub(Stub stub) throws BadMessageException {
         mRouter.setPrimaryStub(stub);
     }
 
@@ -57,7 +57,7 @@ class AutoCloseableRouter implements Router {
      * @see MessageReceiver#accept(Message)
      */
     @Override
-    public boolean accept(Message message) {
+    public boolean accept(Message message) throws BadMessageException {
         return mRouter.accept(message);
     }
 
@@ -65,7 +65,8 @@ class AutoCloseableRouter implements Router {
      * @see MessageReceiverWithResponder#acceptWithResponder(Message, MessageReceiver)
      */
     @Override
-    public boolean acceptWithResponder(Message message, MessageReceiver responder) {
+    public boolean acceptWithResponder(Message message, MessageReceiver responder)
+            throws BadMessageException {
         return mRouter.acceptWithResponder(message, responder);
     }
 

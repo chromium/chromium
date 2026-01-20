@@ -4,6 +4,7 @@
 
 package org.chromium.mojo.bindings;
 
+import org.chromium.base.JavaUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.mojo.bindings.Interface.AbstractProxy.HandlerImpl;
@@ -288,10 +289,21 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
          * @see org.chromium.mojo.bindings.MessageReceiver#accept()
          */
         @Override
-        public boolean accept(Message message) {
+        public boolean accept(Message message) throws BadMessageException {
+            // TODO(crbug.com/469861566?): this is not correct, because it swallows any
+            // potential channel issues when forwarding to another thread. Instead, we
+            // should have some sort of pre-validation (which can throw BadMessageException),
+            // then forward some sort of blessed message type. If *those* messages fail, then
+            // we would throw some sort of RuntimeException that would cause a hard crash.
             mExecutor.execute(
                     () -> {
-                        mMessageReceiver.accept(message);
+                        try {
+                            mMessageReceiver.accept(message);
+                        } catch (BadMessageException e) {
+                            // Needed to match existing behaviour before |BadMessageException|
+                            // was introduced.
+                            throw JavaUtils.throwUnchecked(e);
+                        }
                     });
             return true;
         }
@@ -300,10 +312,17 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
          * @see org.chromium.mojo.bindings.MessageReceiverWithResponder#acceptWithResponder()
          */
         @Override
-        public boolean acceptWithResponder(Message message, MessageReceiver responder) {
+        public boolean acceptWithResponder(Message message, MessageReceiver responder)
+                throws BadMessageException {
             mExecutor.execute(
                     () -> {
-                        mMessageReceiver.acceptWithResponder(message, responder);
+                        try {
+                            mMessageReceiver.acceptWithResponder(message, responder);
+                        } catch (BadMessageException e) {
+                            // Needed to match existing behaviour before |BadMessageException|
+                            // was introduced.
+                            throw JavaUtils.throwUnchecked(e);
+                        }
                     });
             return true;
         }
@@ -407,7 +426,14 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
         final void bind(@Nullable Core core, I impl, Router router) {
             var stub = buildStub(core, impl, Router.PRIMARY_INTERFACE_ID);
             router.setErrorHandler(impl);
-            router.setPrimaryStub(stub);
+            try {
+                router.setPrimaryStub(stub);
+            } catch (BadMessageException e) {
+                throw new IllegalStateException(
+                        "Bad message received while setting up primary stub. This should not be"
+                                + " possible as the router has not been started yet",
+                        e);
+            }
         }
 
         /** Returns a Proxy that will send messages to the given |router|. */

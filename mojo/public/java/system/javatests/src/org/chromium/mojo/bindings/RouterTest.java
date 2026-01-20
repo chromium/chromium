@@ -44,7 +44,7 @@ public class RouterTest {
      * @see MojoTestCase#setUp()
      */
     @Before
-    public void setUp() {
+    public void setUp() throws BadMessageException {
         Core core = CoreImpl.getInstance();
         mStub = new RecordingStub();
         Pair<MessagePipeHandle, MessagePipeHandle> handles = core.createMessagePipe(null);
@@ -60,7 +60,7 @@ public class RouterTest {
     /** TODO(crbug.com/469861566): add tests which exercises iface routing. */
     @Test
     @SmallTest
-    public void testSendingToRouterWithResponse() {
+    public void testSendingToRouterWithResponse() throws BadMessageException {
         final int requestMethodId = 0xdead;
         final int responseMethodId = 0xbeaf;
 
@@ -136,7 +136,8 @@ public class RouterTest {
      * @param requestMethodId The message type to use in the header of the sent message.
      * @param requestId The requestId to use in the header of the sent message.
      */
-    private void sendMessageToRouter(int messageIndex, int requestMethodId, int requestId) {
+    private void sendMessageToRouter(int messageIndex, int requestMethodId, int requestId)
+            throws BadMessageException {
         MessageHeader header =
                 new MessageHeader(
                         MessageHeader.TEMPORARY_DEFAULT_INTERFACE_ID,
@@ -165,7 +166,8 @@ public class RouterTest {
      *     the message that this message is a response to.
      * @param responseMethodId The message type to use in the header of the response message.
      */
-    private void sendResponseFromRouter(int messageIndex, int responseMethodId) {
+    private void sendResponseFromRouter(int messageIndex, int responseMethodId)
+            throws BadMessageException {
         Pair<Message, MessageReceiver> receivedMessage =
                 mStub.messagesWithReceivers.get(messageIndex);
 
@@ -225,7 +227,7 @@ public class RouterTest {
     /** Testing receiving a message via the router that expected a response. */
     @Test
     @SmallTest
-    public void testReceivingViaRouterWithResponse() {
+    public void testReceivingViaRouterWithResponse() throws BadMessageException {
         final int requestMethodId = 0xdead;
         final int responseMethodId = 0xbeef;
         final int requestId = 0xdeadbeaf;
@@ -238,12 +240,12 @@ public class RouterTest {
     }
 
     /**
-     * Tests that if a callback is dropped (i.e. becomes unreachable and is finalized
-     * without being used), then the message pipe will be closed.
+     * Tests that if a callback is dropped (i.e. becomes unreachable and is finalized without being
+     * used), then the message pipe will be closed.
      */
     @Test
     @SmallTest
-    public void testDroppingReceiverWithoutUsingIt() {
+    public void testDroppingReceiverWithoutUsingIt() throws BadMessageException {
         // Send 10 messages to the router without sending a response.
         for (int i = 0; i < 10; i++) {
             sendMessageToRouter(i, i, i);
@@ -271,5 +273,61 @@ public class RouterTest {
         // Confirm that the pipe was closed on the Router side.
         HandleSignals closedFlag = HandleSignals.none().setPeerClosed(true);
         Assert.assertEquals(closedFlag, mHandle.querySignalsState().getSatisfiedSignals());
+    }
+
+    @Test
+    @SmallTest
+    public void testMessageEnqueuedIfNoStub() throws BadMessageException {
+        // Set up the channel and router.
+        Core core = CoreImpl.getInstance();
+        var stub = new RecordingStub();
+        Pair<MessagePipeHandle, MessagePipeHandle> handles = core.createMessagePipe(null);
+        var handle = handles.first;
+        var router = new RouterImpl(handles.second);
+        router.start();
+
+        // Send a message with no registered stub, this should cause the router to enqueue the
+        // message.
+        {
+            MessageHeader header =
+                    new MessageHeader(
+                            MessageHeader.TEMPORARY_DEFAULT_INTERFACE_ID,
+                            /** method id */
+                            0);
+            Encoder encoder = new Encoder(CoreImpl.getInstance(), header.getSize());
+            header.encode(encoder);
+            Message headerMessage = encoder.getMessage();
+            handle.writeMessage(
+                    headerMessage.getData(),
+                    new ArrayList<Handle>(),
+                    MessagePipeHandle.WriteFlags.NONE);
+            mTestRule.runLoopUntilIdle();
+        }
+
+        Assert.assertEquals(0, stub.messages.size());
+
+        // This should cause immediate dispatch.
+        router.setPrimaryStub(stub);
+
+        Assert.assertEquals(1, stub.messages.size());
+
+        // Send another message, this should cause immediate dispatch.
+        {
+            MessageHeader header =
+                    new MessageHeader(
+                            MessageHeader.TEMPORARY_DEFAULT_INTERFACE_ID,
+                            /** method id */
+                            0);
+            Encoder encoder = new Encoder(CoreImpl.getInstance(), header.getSize());
+            header.encode(encoder);
+            Message headerMessage = encoder.getMessage();
+            handle.writeMessage(
+                    headerMessage.getData(),
+                    new ArrayList<Handle>(),
+                    MessagePipeHandle.WriteFlags.NONE);
+            mTestRule.runLoopUntilIdle();
+        }
+
+        Assert.assertEquals(2, stub.messages.size());
     }
 }

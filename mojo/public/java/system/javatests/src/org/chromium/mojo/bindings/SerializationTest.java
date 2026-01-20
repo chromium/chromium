@@ -139,7 +139,7 @@ public class SerializationTest {
     /** Verifies that a struct can be serialized to and deserialized from a ByteBuffer. */
     @Test
     @SmallTest
-    public void testByteBufferSerialization() {
+    public void testByteBufferSerialization() throws BadMessageException {
         Struct1 input = new Struct1();
         input.i = 0x7F;
 

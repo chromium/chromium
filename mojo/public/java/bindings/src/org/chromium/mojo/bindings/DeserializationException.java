@@ -14,9 +14,4 @@ public class DeserializationException extends RuntimeException {
     public DeserializationException(String message) {
         super(message);
     }
-
-    /** Constructs a new deserialization exception with the specified cause. */
-    public DeserializationException(Exception cause) {
-        super(cause);
-    }
 }

@@ -178,7 +178,7 @@ public class BindingsTest {
     /** Testing serialization of the Foo class. */
     @Test
     @SmallTest
-    public void testFooSerialization() {
+    public void testFooSerialization() throws BadMessageException {
         // Checking serialization and deserialization of a Foo object.
         Foo typicalFoo = createFoo();
         Message serializedFoo = typicalFoo.serialize(null);
@@ -189,7 +189,7 @@ public class BindingsTest {
     /** Testing serialization of the EmptyStruct class. */
     @Test
     @SmallTest
-    public void testEmptyStructSerialization() {
+    public void testEmptyStructSerialization() throws BadMessageException {
         // Checking serialization and deserialization of a EmptyStruct object.
         Message serializedStruct = new EmptyStruct().serialize(null);
         EmptyStruct emptyStruct = EmptyStruct.deserialize(serializedStruct);

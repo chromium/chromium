@@ -28,6 +28,7 @@ android_library("bindings_java") {
     "bindings/src/org/chromium/mojo/bindings/AssociatedInterfaceNotSupported.java",
     "bindings/src/org/chromium/mojo/bindings/AssociatedInterfaceRequestNotSupported.java",
     "bindings/src/org/chromium/mojo/bindings/AutoCloseableRouter.java",
+    "bindings/src/org/chromium/mojo/bindings/BadMessageException.java",
     "bindings/src/org/chromium/mojo/bindings/BindingsHelper.java",
     "bindings/src/org/chromium/mojo/bindings/ConnectionErrorHandler.java",
     "bindings/src/org/chromium/mojo/bindings/Connector.java",
@@ -42,6 +43,7 @@ android_library("bindings_java") {
     "bindings/src/org/chromium/mojo/bindings/Interface.java",
     "bindings/src/org/chromium/mojo/bindings/InterfaceControlMessagesHelper.java",
     "bindings/src/org/chromium/mojo/bindings/InterfaceRequest.java",
+    "bindings/src/org/chromium/mojo/bindings/InvalidHeaderException.java",
     "bindings/src/org/chromium/mojo/bindings/Message.java",
     "bindings/src/org/chromium/mojo/bindings/MessageHeader.java",
     "bindings/src/org/chromium/mojo/bindings/MessageReceiver.java",
@@ -54,10 +56,14 @@ android_library("bindings_java") {
     "bindings/src/org/chromium/mojo/bindings/Struct.java",
     "bindings/src/org/chromium/mojo/bindings/Stub.java",
     "bindings/src/org/chromium/mojo/bindings/Union.java",
+    "bindings/src/org/chromium/mojo/bindings/UnknownMethodException.java",
+    "bindings/src/org/chromium/mojo/bindings/UnmarshalException.java",
   ]
 
   deps = [
     ":system_java",
+    "//base:base_java",
+    "//base:log_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 

@@ -21,7 +21,7 @@ public class MessageHeaderTest {
     /** Testing that headers are identical after being serialized/deserialized. */
     @Test
     @SmallTest
-    public void testSimpleMessageHeader() {
+    public void testSimpleMessageHeader() throws BadMessageException {
         final int xValue = 1;
         final int yValue = 2;
         final int methodId = 6;
@@ -47,7 +47,7 @@ public class MessageHeaderTest {
     /** Testing that headers are identical after being serialized/deserialized. */
     @Test
     @SmallTest
-    public void testMessageWithRequestIdHeader() {
+    public void testMessageWithRequestIdHeader() throws BadMessageException {
         final int xValue = 1;
         final int yValue = 2;
         final int methodId = 6;
@@ -79,7 +79,7 @@ public class MessageHeaderTest {
 
     @Test
     @SmallTest
-    public void testMessageHeader_hasExactFlags() {
+    public void testMessageHeader_hasExactFlags() throws BadMessageException {
         var expectedFlags =
                 MessageHeader.MESSAGE_IS_RESPONSE_FLAG | MessageHeader.MESSAGE_IS_SYNC_FLAG;
         var header =

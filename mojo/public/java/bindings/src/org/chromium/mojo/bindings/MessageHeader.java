@@ -77,7 +77,7 @@ public class MessageHeader {
      * Constructor, parsing the header from a message. Should only be used by {@link Message}
      * itself.
      */
-    MessageHeader(Message message) {
+    MessageHeader(Message message) throws DeserializationException {
         Decoder decoder = new Decoder(message);
         mDataHeader = decoder.readDataHeader();
         validateDataHeader(mDataHeader);
@@ -202,7 +202,7 @@ public class MessageHeader {
     }
 
     /** Validate that the given {@link DataHeader} can be the data header of a message header. */
-    private static void validateDataHeader(DataHeader dataHeader) {
+    private static void validateDataHeader(DataHeader dataHeader) throws DeserializationException {
         if (dataHeader.elementsOrVersion < SIMPLE_MESSAGE_VERSION) {
             throw new DeserializationException(
                     "Incorrect number of fields, expecting at least "

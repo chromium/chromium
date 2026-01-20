@@ -6,12 +6,16 @@ package org.chromium.mojo.bindings;
 
 import android.annotation.SuppressLint;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.mojo.system.Core;
 import org.chromium.mojo.system.MessagePipeHandle;
 import org.chromium.mojo.system.Watcher;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +34,7 @@ public class RouterImpl implements Router {
          * @see MessageReceiver#accept(Message)
          */
         @Override
-        public boolean accept(Message message) {
+        public boolean accept(Message message) throws BadMessageException {
             return handleIncomingMessage(message);
         }
 
@@ -51,11 +55,10 @@ public class RouterImpl implements Router {
         private boolean mAcceptWasInvoked;
 
         /**
-         * @see
-         * MessageReceiver#accept(Message)
+         * @see MessageReceiver#accept(Message)
          */
         @Override
-        public boolean accept(Message message) {
+        public boolean accept(Message message) throws BadMessageException {
             mAcceptWasInvoked = true;
             return RouterImpl.this.accept(message);
         }
@@ -138,22 +141,24 @@ public class RouterImpl implements Router {
     }
 
     @Override
-    public void setPrimaryStub(Stub primaryStub) {
+    public void setPrimaryStub(Stub primaryStub) throws BadMessageException {
         if (primaryStub.getInterfaceId() != PRIMARY_INTERFACE_ID) {
             throw new IllegalArgumentException("primary stub must have an interface id of 0");
         }
         addStub(primaryStub);
     }
 
-    private void addStub(Stub stub) {
+    private void addStub(Stub stub) throws BadMessageException {
         this.mStubs.put(stub.getInterfaceId(), stub);
+        // Adding a new stub could allow some enqueued messages to be dispatched.
+        this.dispatchMessages();
     }
 
     /**
      * @see MessageReceiver#accept(Message)
      */
     @Override
-    public boolean accept(Message message) {
+    public boolean accept(Message message) throws BadMessageException {
         // A message without responder is directly forwarded to the connector.
         return mConnector.accept(message);
     }
@@ -162,7 +167,8 @@ public class RouterImpl implements Router {
      * @see MessageReceiverWithResponder#acceptWithResponder(Message, MessageReceiver)
      */
     @Override
-    public boolean acceptWithResponder(Message message, MessageReceiver responder) {
+    public boolean acceptWithResponder(Message message, MessageReceiver responder)
+            throws BadMessageException {
         // The message must have a header.
         ServiceMessage messageWithHeader = message.asServiceMessage();
         // Checking the message expects a response.
@@ -211,64 +217,85 @@ public class RouterImpl implements Router {
     }
 
     /** Receive a message from the connector. Returns |true| if the message has been handled. */
-    private boolean handleIncomingMessage(Message message) {
+    private boolean handleIncomingMessage(Message message) throws BadMessageException {
         mEnqueuedMessages.add(message);
         return dispatchMessages();
     }
 
-    // TODO(crbug.com/469861566): the boolean here is quite overloaded. A falsey value can
-    // mean:
-    //   1. malformed message (we should close the pipe)
-    //   2. unknown method (we should close the pipe)
-    //   3. unregistered iface.
-    //   (1 & 2) are irrecoverable errors that indicate channel corruption and should
-    //   probably be handled through exceptions (i.e.: any channel closing error should be
-    //   an exception to be handled at an upper layer).
-    //   True/False should indicate the state of the dispatch state of the messages. A
-    //   true value indicates that the messages have all been successfully dispatched and
-    //   the dispatcher is ready for more messages. A false value means that some messages
-    //   may have been blocked and we should not be sending more messages.
-    //
-    //   The current "drop message for unregistered stubs" is also not consistent with other
-    //   language bindings.
-    private boolean dispatchMessages() {
-        if (mEnqueuedMessages.size() != 1) {
-            throw new UnsupportedOperationException(
-                    "Multiple messages in queue not yet supported. Queue must have one and only one"
-                        + " message in it at dispatch.");
+    // TODO(crbug.com/469861566): Clean up the logic here. This is quite complicated, because the
+    // original documentation for unhandled messages does not match the actual behaviour. In the
+    // original impl, unhandled messages are dropped (but the pipe remains open). In actuality,
+    // a false return in message receiver will cause the pipe to close, because the connector
+    // will close the pipe for any MojoResult that isn't a SHOULD_WAIT.
+    // This is not ideal because things like Proxy will always return true, which means a bad
+    // might never closer a pipe in that case. Instead, pipe closure should be handled at a
+    // higher level that the pipe read method (ie: it shouldn't assume that a read result that
+    // isn't a SHOULD_WAIT must mean that the pipe needs to be closed).
+    private boolean dispatchMessages() throws BadMessageException {
+        while (!mEnqueuedMessages.isEmpty()) {
+            var message = mEnqueuedMessages.element();
+            var result = dispatchMessage(message);
+            if (result == DispatchResult.NOT_YET_ABLE_TO_DISPATCH) {
+                break;
+            }
+
+            mEnqueuedMessages.remove();
+            if (result == DispatchResult.DISPATCHED_AND_FAILED_TO_HANDLE) {
+                return false;
+            }
+            assert result == DispatchResult.DISPATCHED_AND_SUCCESSFULLY_HANDLED;
         }
-        Message message = mEnqueuedMessages.element();
-        mEnqueuedMessages.remove();
-        return dispatchMessage(message);
+        return true;
     }
 
-    private boolean dispatchMessage(Message message) {
+    @IntDef({
+        DispatchResult.DISPATCHED_AND_SUCCESSFULLY_HANDLED,
+        DispatchResult.DISPATCHED_AND_FAILED_TO_HANDLE,
+        DispatchResult.NOT_YET_ABLE_TO_DISPATCH,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface DispatchResult {
+        int DISPATCHED_AND_SUCCESSFULLY_HANDLED = 0;
+        int DISPATCHED_AND_FAILED_TO_HANDLE = 1;
+        int NOT_YET_ABLE_TO_DISPATCH = 2;
+    }
+
+    private int dispatchMessage(Message message) throws BadMessageException {
         MessageHeader header = message.asServiceMessage().getHeader();
 
         var stub = mStubs.get(header.getInterfaceId());
         if (header.hasFlag(MessageHeader.MESSAGE_EXPECTS_RESPONSE_FLAG)) {
             if (stub != null) {
-                return stub.acceptWithResponder(message, new ResponderThunk());
+                var status = stub.acceptWithResponder(message, new ResponderThunk());
+                return statusToResult(status);
             }
-            // If we receive a request expecting a response when the client is not
-            // listening, then we have no choice but to tear down the pipe.
-            close();
-            return false;
+            // Not yet ready to handle the message.
+            return DispatchResult.NOT_YET_ABLE_TO_DISPATCH;
         } else if (header.hasFlag(MessageHeader.MESSAGE_IS_RESPONSE_FLAG)) {
             long requestId = header.getRequestId();
             MessageReceiver responder = mResponders.get(requestId);
             if (responder == null) {
-                return false;
+                throw new BadMessageException(
+                        "no responder for the given request id: " + requestId);
             }
             mResponders.remove(requestId);
-            return responder.accept(message);
+
+            var status = responder.accept(message);
+            return statusToResult(status);
         } else {
             if (stub != null) {
-                return stub.accept(message);
+                var status = stub.accept(message);
+                return statusToResult(status);
             }
-            // OK to drop the message.
+            // Not yet ready to handle the message.
+            return DispatchResult.NOT_YET_ABLE_TO_DISPATCH;
         }
-        return false;
+    }
+
+    private static int statusToResult(boolean success) {
+        return success
+                ? DispatchResult.DISPATCHED_AND_SUCCESSFULLY_HANDLED
+                : DispatchResult.DISPATCHED_AND_FAILED_TO_HANDLE;
     }
 
     private void handleConnectorClose() {

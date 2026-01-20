@@ -41,9 +41,16 @@ public {{ 'static ' if not top_level }}final class {{enum|name}} {
     }
 {%- endif %}
 
+    // Do not use this API outside of mojo internals. Instead, use isValid to confirm whether
+    // a value is valid or not.
     public static void validate(int value) {
-        if (IS_EXTENSIBLE || isKnownValue(value)) return;
-        throw new org.chromium.mojo.bindings.DeserializationException("Invalid enum value.");
+        if (!isValid(value)) {
+            throw new org.chromium.mojo.bindings.DeserializationException("Invalid enum value.");
+        }
+    }
+
+    public static boolean isValid(int value) {
+        return IS_EXTENSIBLE || isKnownValue(value);
     }
 
     public static int toKnownValue(int value) {

@@ -24,7 +24,7 @@ public interface Router extends MessageReceiverWithResponder, HandleOwner<Messag
      * message received from the pipe. Primary pipes own the state of the pipe, as opposed to
      * associated pipes.
      */
-    void setPrimaryStub(Stub primaryMessageReceiver);
+    void setPrimaryStub(Stub primaryMessageReceiver) throws BadMessageException;
 
     /** Set the handle that will be notified of errors on the message pipe. */
     void setErrorHandler(ConnectionErrorHandler errorHandler);
