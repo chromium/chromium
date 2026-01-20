@@ -134,6 +134,18 @@ id Iterator::GetNext() {
   return YES;
 }
 
+- (void)executeOnObservers:(ExecutionWithObserverBlock)callback {
+  DCHECK(callback);
+  if (_observers.empty()) {
+    return;
+  }
+  Iterator it(self);
+  id observer;
+  while ((observer = it.GetNext()) != nil) {
+    callback(observer);
+  }
+}
+
 #pragma mark - NSObject
 
 - (NSMethodSignature*)methodSignatureForSelector:(SEL)selector {
@@ -176,18 +188,6 @@ id Iterator::GetNext() {
     if ([observer respondsToSelector:selector]) {
       [invocation invokeWithTarget:observer];
     }
-  }
-}
-
-- (void)executeOnObservers:(ExecutionWithObserverBlock)callback {
-  DCHECK(callback);
-  if (_observers.empty()) {
-    return;
-  }
-  Iterator it(self);
-  id observer;
-  while ((observer = it.GetNext()) != nil) {
-    callback(observer);
   }
 }
 
