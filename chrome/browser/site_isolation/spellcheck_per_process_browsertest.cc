@@ -27,6 +27,7 @@
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/spellcheck/common/spellcheck.mojom.h"
 #include "components/spellcheck/common/spellcheck_features.h"
+#include "components/spellcheck/common/spelling_marker.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
@@ -120,9 +121,10 @@ class MockSpellCheckHost : spellcheck::mojom::SpellCheckHost {
 #endif
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-  void RequestTextCheck(const std::u16string& text,
-                        const std::vector<gfx::Range>& spelling_markers,
-                        RequestTextCheckCallback callback) override {
+  void RequestTextCheck(
+      const std::u16string& text,
+      const std::vector<spellcheck::SpellingMarker>& spelling_markers,
+      RequestTextCheckCallback callback) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     std::move(callback).Run(std::vector<SpellCheckResult>());
     TextReceived(text);

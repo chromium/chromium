@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/spellcheck/common/spelling_marker.h"
 #include "components/spellcheck/renderer/empty_local_interface_provider.h"
 #include "components/spellcheck/renderer/spellcheck.h"
 #include "components/spellcheck/renderer/spellcheck_provider.h"
@@ -21,7 +22,6 @@
 #include "third_party/blink/public/web/web_text_check_client.h"
 #include "third_party/blink/public/web/web_text_checking_completion.h"
 #include "third_party/blink/public/web/web_text_checking_result.h"
-#include "ui/gfx/range/range.h"
 
 struct FakeTextCheckingResult {
   size_t completion_count_ = 0;
@@ -86,7 +86,7 @@ class TestingSpellCheckProvider : public SpellCheckProvider,
 
   void RequestTextChecking(
       const std::u16string& text,
-      const std::vector<gfx::Range>& spelling_markers,
+      const std::vector<spellcheck::SpellingMarker>& spelling_markers,
       blink::WebTextCheckClient::ShouldForceRefreshTextCheckService
           should_force_refresh,
       std::unique_ptr<blink::WebTextCheckingCompletion> completion);
@@ -115,8 +115,10 @@ class TestingSpellCheckProvider : public SpellCheckProvider,
 #endif  // BUILDFLAG(USE_RENDERER_SPELLCHECKER)
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-  using RequestTextCheckParams = std::
-      tuple<std::u16string, std::vector<gfx::Range>, RequestTextCheckCallback>;
+  using RequestTextCheckParams =
+      std::tuple<std::u16string,
+                 std::vector<spellcheck::SpellingMarker>,
+                 RequestTextCheckCallback>;
 
   // Variables logging RequestTextCheck() mojo calls.
   std::vector<RequestTextCheckParams> text_check_requests_;
@@ -140,9 +142,10 @@ class TestingSpellCheckProvider : public SpellCheckProvider,
 #endif
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-  void RequestTextCheck(const std::u16string&,
-                        const std::vector<gfx::Range>& spelling_markers,
-                        RequestTextCheckCallback) override;
+  void RequestTextCheck(
+      const std::u16string&,
+      const std::vector<spellcheck::SpellingMarker>& spelling_markers,
+      RequestTextCheckCallback) override;
 #if BUILDFLAG(ENABLE_SPELLING_SERVICE)
   using SpellCheckProvider::CheckSpelling;
   void CheckSpelling(const std::u16string&,

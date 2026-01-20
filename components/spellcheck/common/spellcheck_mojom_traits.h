@@ -8,6 +8,7 @@
 #include "components/spellcheck/common/spellcheck.mojom-shared.h"
 #include "components/spellcheck/common/spellcheck_decoration.h"
 #include "components/spellcheck/common/spellcheck_result.h"
+#include "components/spellcheck/common/spelling_marker.h"
 
 namespace mojo {
 
@@ -43,6 +44,25 @@ struct StructTraits<spellcheck::mojom::SpellCheckResultDataView,
 
   static bool Read(spellcheck::mojom::SpellCheckResultDataView,
                    SpellCheckResult*);
+};
+
+template <>
+struct StructTraits<spellcheck::mojom::SpellingMarkerDataView,
+                    spellcheck::SpellingMarker> {
+  static spellcheck::Decoration marker_type(
+      const spellcheck::SpellingMarker& marker) {
+    return marker.marker_type;
+  }
+  static uint32_t start(const spellcheck::SpellingMarker& marker) {
+    return marker.start;
+  }
+
+  static uint32_t end(const spellcheck::SpellingMarker& marker) {
+    return marker.end;
+  }
+
+  static bool Read(spellcheck::mojom::SpellingMarkerDataView,
+                   spellcheck::SpellingMarker*);
 };
 
 }  // namespace mojo

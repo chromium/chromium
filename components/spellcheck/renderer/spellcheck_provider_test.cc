@@ -12,6 +12,7 @@
 #include "components/spellcheck/common/spellcheck.mojom.h"
 #include "components/spellcheck/common/spellcheck_features.h"
 #include "components/spellcheck/common/spellcheck_result.h"
+#include "components/spellcheck/common/spelling_marker.h"
 #include "components/spellcheck/renderer/hunspell_engine.h"
 #include "components/spellcheck/renderer/spellcheck.h"
 #include "components/spellcheck/renderer/spellcheck_language.h"
@@ -125,7 +126,7 @@ TestingSpellCheckProvider::~TestingSpellCheckProvider() {
 
 void TestingSpellCheckProvider::RequestTextChecking(
     const std::u16string& text,
-    const std::vector<gfx::Range>& spelling_markers,
+    const std::vector<spellcheck::SpellingMarker>& spelling_markers,
     blink::WebTextCheckClient::ShouldForceRefreshTextCheckService
         should_force_refresh,
     std::unique_ptr<blink::WebTextCheckingCompletion> completion) {
@@ -173,7 +174,7 @@ void TestingSpellCheckProvider::ResetResult() {
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 void TestingSpellCheckProvider::RequestTextCheck(
     const std::u16string& text,
-    const std::vector<gfx::Range>& spelling_markers,
+    const std::vector<spellcheck::SpellingMarker>& spelling_markers,
     RequestTextCheckCallback callback) {
   text_check_requests_.emplace_back(text, spelling_markers,
                                     std::move(callback));

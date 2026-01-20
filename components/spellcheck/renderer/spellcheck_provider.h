@@ -12,12 +12,12 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/spellcheck/common/spellcheck.mojom.h"
+#include "components/spellcheck/common/spelling_marker.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/web/web_text_check_client.h"
-#include "ui/gfx/range/range.h"
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 #include <unordered_map>
@@ -70,7 +70,7 @@ class SpellCheckProvider : public content::RenderFrameObserver,
   // when typing in the middle of a word.
   void RequestTextChecking(
       const std::u16string& text,
-      const std::vector<gfx::Range>& spelling_markers,
+      const std::vector<spellcheck::SpellingMarker>& spelling_markers,
       blink::WebTextCheckClient::ShouldForceRefreshTextCheckService
           should_force_refresh,
       std::unique_ptr<blink::WebTextCheckingCompletion> completion);
@@ -120,7 +120,8 @@ class SpellCheckProvider : public content::RenderFrameObserver,
       std::vector<blink::WebString>* optional_suggestions) override;
   void RequestCheckingOfText(
       const blink::WebString& text,
-      const std::vector<gfx::Range>& spelling_markers,
+      const std::vector<blink::WebTextCheckClient::WebSpellingMarker>&
+          spelling_markers,
       blink::WebTextCheckClient::ShouldForceRefreshTextCheckService
           should_force_refresh,
       std::unique_ptr<blink::WebTextCheckingCompletion> completion) override;
@@ -144,7 +145,7 @@ class SpellCheckProvider : public content::RenderFrameObserver,
   // Makes mojo calls to the browser process to perform platform spellchecking.
   void RequestTextCheckingFromBrowser(
       const std::u16string& text,
-      const std::vector<gfx::Range>& spelling_markers);
+      const std::vector<spellcheck::SpellingMarker>& spelling_markers);
 
 #if BUILDFLAG(IS_WIN)
   // Callback for when spellcheck service has been initialized on demand.

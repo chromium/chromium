@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
+#include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -51,6 +52,23 @@ static Vector<TextCheckingResult> ToCoreResults(
   for (size_t i = 0; i < results.size(); ++i)
     core_results.push_back(results[i]);
   return core_results;
+}
+
+std::vector<WebTextCheckClient::WebSpellingMarker> MapToWebSpellingMarkers(
+    const blink::DocumentMarkerVector& spelling_markers) {
+  std::vector<WebTextCheckClient::WebSpellingMarker> web_spelling_markers;
+  for (const auto& marker : spelling_markers) {
+    if (marker->GetType() != DocumentMarker::kSpelling &&
+        marker->GetType() != DocumentMarker::kGrammar) {
+      continue;
+    }
+    web_spelling_markers.emplace_back(
+        marker->StartOffset(), marker->EndOffset(),
+        marker->GetType() == DocumentMarker::kGrammar
+            ? WebTextCheckClient::SpellingMarkerType::kGrammar
+            : WebTextCheckClient::SpellingMarkerType::kSpelling);
+  }
+  return web_spelling_markers;
 }
 
 class WebTextCheckingCompletionImpl : public WebTextCheckingCompletion {
@@ -84,7 +102,7 @@ class WebTextCheckingCompletionImpl : public WebTextCheckingCompletion {
 SpellCheckRequest::SpellCheckRequest(
     Range* checking_range,
     const String& text,
-    const blink::Vector<gfx::Range>& spelling_markers,
+    const blink::DocumentMarkerVector& spelling_markers,
     int request_number,
     bool should_force_refresh)
     : requester_(nullptr),
@@ -105,6 +123,7 @@ void SpellCheckRequest::Trace(Visitor* visitor) const {
   visitor->Trace(requester_);
   visitor->Trace(checking_range_);
   visitor->Trace(root_editable_element_);
+  visitor->Trace(spelling_markers_);
 }
 
 void SpellCheckRequest::Dispose() {
@@ -115,7 +134,7 @@ void SpellCheckRequest::Dispose() {
 // static
 SpellCheckRequest* SpellCheckRequest::Create(
     const EphemeralRange& checking_range,
-    const std::vector<gfx::Range>& spelling_markers,
+    const blink::DocumentMarkerVector& spelling_markers,
     int request_number,
     bool should_force_refresh) {
   if (checking_range.IsNull())
@@ -133,14 +152,8 @@ SpellCheckRequest* SpellCheckRequest::Create(
 
   Range* checking_range_object = CreateRange(checking_range);
 
-  blink::Vector<gfx::Range> blink_ranges;
-
-  for (const auto& range : spelling_markers) {
-    blink_ranges.push_back(range);
-  }
-
   SpellCheckRequest* request = MakeGarbageCollected<SpellCheckRequest>(
-      checking_range_object, text, blink_ranges, request_number,
+      checking_range_object, text, spelling_markers, request_number,
       should_force_refresh);
   if (request->RootEditableElement())
     return request;
@@ -180,14 +193,6 @@ void SpellCheckRequest::SetCheckerAndSequence(SpellCheckRequester* requester,
   sequence_ = sequence;
 }
 
-std::vector<gfx::Range> SpellCheckRequest::GetSpellingMarkers() {
-  std::vector<gfx::Range> ranges;
-  for (const auto& range : spelling_markers_) {
-    ranges.push_back(range);
-  }
-  return ranges;
-}
-
 SpellCheckRequester::SpellCheckRequester(LocalDOMWindow& window)
     : window_(&window) {}
 
@@ -212,7 +217,7 @@ bool SpellCheckRequester::RequestCheckingFor(const EphemeralRange& range) {
 
 bool SpellCheckRequester::RequestCheckingFor(
     const EphemeralRange& range,
-    const std::vector<gfx::Range>& spelling_markers,
+    const blink::DocumentMarkerVector& spelling_markers,
     int request_num,
     bool should_force_refresh) {
   SpellCheckRequest* request = SpellCheckRequest::Create(
@@ -259,7 +264,7 @@ void SpellCheckRequester::InvokeRequest(SpellCheckRequest* request) {
   if (WebTextCheckClient* text_checker_client = GetTextCheckerClient()) {
     text_checker_client->RequestCheckingOfText(
         processing_request_->GetText(),
-        processing_request_->GetSpellingMarkers(),
+        MapToWebSpellingMarkers(processing_request_->GetSpellingMarkers()),
         processing_request_->ShouldForceRefresh()
             ? WebTextCheckClient::ShouldForceRefreshTextCheckService::kYes
             : WebTextCheckClient::ShouldForceRefreshTextCheckService::kNo,

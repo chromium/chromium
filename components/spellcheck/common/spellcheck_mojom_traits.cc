@@ -4,6 +4,8 @@
 
 #include "components/spellcheck/common/spellcheck_mojom_traits.h"
 
+#include <algorithm>
+
 #include "components/spellcheck/common/spellcheck_decoration.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
 
@@ -46,6 +48,24 @@ bool StructTraits<
   output->should_hide_suggestion_menu = input.should_hide_suggestion_menu();
   if (!input.ReadReplacements(&output->replacements))
     return false;
+  return true;
+}
+
+bool StructTraits<spellcheck::mojom::SpellingMarkerDataView,
+                  spellcheck::SpellingMarker>::
+    Read(spellcheck::mojom::SpellingMarkerDataView input,
+         spellcheck::SpellingMarker* output) {
+  if (!input.ReadMarkerType(&output->marker_type)) {
+    return false;
+  }
+
+  if (input.start() > input.end()) {
+    return false;
+  }
+
+  output->start = input.start();
+  output->end = input.end();
+
   return true;
 }
 

@@ -17,6 +17,7 @@ source_set("common") {
     ":interfaces",
     ":spellcheck_decoration",
     ":spellcheck_result",
+    ":spelling_marker",
     "//components/spellcheck:buildflags",
   ]
 
@@ -29,6 +30,17 @@ source_set("common") {
 
 source_set("spellcheck_decoration") {
   sources = [ "spellcheck_decoration.h" ]
+
+  deps = [ "//base" ]
+}
+
+source_set("spelling_marker") {
+  sources = [
+    "spelling_marker.cc",
+    "spelling_marker.h",
+  ]
+
+  public_deps = [ ":spellcheck_decoration" ]
 
   deps = [ "//base" ]
 }
@@ -53,10 +65,7 @@ mojom("interfaces") {
     sources += [ "spellcheck_panel.mojom" ]
   }
 
-  public_deps = [
-    "//mojo/public/mojom/base",
-    "//ui/gfx/range/mojom",
-  ]
+  public_deps = [ "//mojo/public/mojom/base" ]
 
   enabled_features = []
   if (use_browser_spellchecker) {
@@ -81,11 +90,16 @@ mojom("interfaces") {
           mojom = "spellcheck.mojom.SpellCheckResult"
           cpp = "::SpellCheckResult"
         },
+        {
+          mojom = "spellcheck.mojom.SpellingMarker"
+          cpp = "::spellcheck::SpellingMarker"
+        },
       ]
       traits_headers = [ "spellcheck_mojom_traits.h" ]
       traits_sources = [ "spellcheck_mojom_traits.cc" ]
       traits_public_deps = [
         ":spellcheck_decoration",
+        ":spelling_marker",
         "//components/spellcheck:buildflags",
       ]
     },

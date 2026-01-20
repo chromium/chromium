@@ -17,7 +17,7 @@ enum Decoration {
   GRAMMAR,
   LAST = GRAMMAR,
 };
-// LINT.ThenChange(/components/spellcheck/browser/android/java/src/org/chromium/components/spellcheck/SpellCheckerSessionBridge.java:SpellCheckDecoration)
+// LINT.ThenChange(/components/spellcheck/browser/android/java/src/org/chromium/components/spellcheck/SpellingMarker.java:SpellCheckDecoration)
 
 }  // namespace spellcheck
 

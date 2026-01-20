@@ -6,7 +6,6 @@ module spellcheck.mojom;
 
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/string16.mojom";
-import "ui/gfx/range/mojom/range.mojom";
 
 // Render process interface exposed to the browser for receiving process-
 // wide spellcheck control and updates from the browser process.
@@ -60,7 +59,7 @@ interface SpellCheckHost {
   // also informed about the existing spelling markers.
   [EnableIf=USE_BROWSER_SPELLCHECKER]
   RequestTextCheck(mojo_base.mojom.String16 text,
-    array<gfx.mojom.Range> spelling_markers)
+    array<SpellingMarker> spelling_markers)
       => (array<SpellCheckResult> results);
 
   // Disconnects the Android spell checker session bridge.
@@ -84,9 +83,19 @@ interface SpellCheckHost {
                                bool enable);
 };
 
+// Decoration specifies the type of the markers provided by the spell check
+// service.
 enum Decoration {
   kSpelling,
   kGrammar,
+};
+
+// SpellingMarkers hold the marker info for spelling and grammar. the |start| of
+// the marker must not exceed the |end|.
+struct SpellingMarker {
+  uint32 start;
+  uint32 end;
+  Decoration marker_type;
 };
 
 struct SpellCheckResult {
@@ -96,3 +105,4 @@ struct SpellCheckResult {
   array<mojo_base.mojom.String16> replacements;
   bool should_hide_suggestion_menu;
 };
+

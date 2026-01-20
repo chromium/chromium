@@ -5,17 +5,18 @@
 #include "components/spellcheck/browser/spell_check_host_impl.h"
 
 #include "build/build_config.h"
+#include "components/spellcheck/common/spelling_marker.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "content/public/browser/browser_thread.h"
-#include "ui/gfx/range/range.h"
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER) && !BUILDFLAG(ENABLE_SPELLING_SERVICE)
 namespace {
 
-bool AreSpellingMarkersValid(const std::vector<gfx::Range>& spelling_markers,
-                             size_t text_length) {
-  for (const gfx::Range& marker : spelling_markers) {
-    if (marker.start() >= text_length || marker.end() >= text_length) {
+bool AreSpellingMarkersValid(
+    const std::vector<spellcheck::SpellingMarker>& spelling_markers,
+    size_t text_length) {
+  for (const spellcheck::SpellingMarker& marker : spelling_markers) {
+    if (marker.start >= text_length || marker.end > text_length) {
       return false;
     }
   }
@@ -56,7 +57,7 @@ void SpellCheckHostImpl::CallSpellingService(
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER) && !BUILDFLAG(ENABLE_SPELLING_SERVICE)
 void SpellCheckHostImpl::RequestTextCheck(
     const std::u16string& text,
-    const std::vector<gfx::Range>& spelling_markers,
+    const std::vector<spellcheck::SpellingMarker>& spelling_markers,
     RequestTextCheckCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 

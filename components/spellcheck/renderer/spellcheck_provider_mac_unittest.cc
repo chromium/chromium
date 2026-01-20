@@ -21,7 +21,11 @@ TEST_F(SpellCheckProviderMacTest, SingleRoundtripSuccess) {
 
   provider_.RequestTextChecking(
       u"helo worldd",
-      /*spelling_markers=*/{gfx::Range(0, 4), gfx::Range(5, 11)},
+      /*spelling_markers=*/
+      {spellcheck::SpellingMarker(/*start=*/0, /*end=*/4,
+                                  spellcheck::Decoration::SPELLING),
+       spellcheck::SpellingMarker(/*start=*/5, /*end=*/11,
+                                  spellcheck::Decoration::GRAMMAR)},
       blink::WebTextCheckClient::ShouldForceRefreshTextCheckService::kNo,
       std::make_unique<FakeTextCheckingCompletion>(&completion));
   EXPECT_EQ(completion.completion_count_, 0U);
@@ -34,8 +38,12 @@ TEST_F(SpellCheckProviderMacTest, SingleRoundtripSuccess) {
   auto& callback = std::get<2>(provider_.text_check_requests_.back());
   EXPECT_EQ(text, u"helo worldd");
   EXPECT_EQ(spelling_markers.size(), 2U);
-  EXPECT_EQ(spelling_markers[0], gfx::Range(0, 4));
-  EXPECT_EQ(spelling_markers[1], gfx::Range(5, 11));
+  EXPECT_EQ(spelling_markers[0],
+            spellcheck::SpellingMarker(/*start=*/0, /*end=*/4,
+                                       spellcheck::Decoration::SPELLING));
+  EXPECT_EQ(spelling_markers[1],
+            spellcheck::SpellingMarker(/*start=*/5, /*end=*/11,
+                                       spellcheck::Decoration::GRAMMAR));
   EXPECT_TRUE(callback);
 
   std::vector<SpellCheckResult> fake_results;
@@ -56,7 +64,9 @@ TEST_F(SpellCheckProviderMacTest, TwoRoundtripSuccess) {
       std::make_unique<FakeTextCheckingCompletion>(&completion1));
   FakeTextCheckingResult completion2;
   provider_.RequestTextChecking(
-      u"byee ", /*spelling_markers=*/{gfx::Range(0, 4)},
+      u"byee ", /*spelling_markers=*/
+      {spellcheck::SpellingMarker(/*start=*/0, /*end=*/4,
+                                  spellcheck::Decoration::SPELLING)},
       blink::WebTextCheckClient::ShouldForceRefreshTextCheckService::kNo,
       std::make_unique<FakeTextCheckingCompletion>(&completion2));
 
@@ -79,7 +89,9 @@ TEST_F(SpellCheckProviderMacTest, TwoRoundtripSuccess) {
   auto& callback2 = std::get<2>(provider_.text_check_requests_[1]);
   EXPECT_EQ(text2, u"byee ");
   EXPECT_EQ(spelling_markers2.size(), 1U);
-  EXPECT_EQ(spelling_markers2[0], gfx::Range(0, 4));
+  EXPECT_EQ(spelling_markers2[0],
+            spellcheck::SpellingMarker(/*start=*/0, /*end=*/4,
+                                       spellcheck::Decoration::SPELLING));
   EXPECT_TRUE(callback2);
 
   std::vector<SpellCheckResult> fake_results;

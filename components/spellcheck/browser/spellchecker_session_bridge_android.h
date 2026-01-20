@@ -13,7 +13,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "components/spellcheck/common/spellcheck.mojom.h"
-#include "ui/gfx/range/range.h"
+#include "components/spellcheck/common/spelling_marker.h"
 
 // A class used to interface between the Java class of the same name and the
 // android SpellCheckHost.  This class receives text to be spellchecked, sends
@@ -34,9 +34,10 @@ class SpellCheckerSessionBridge {
 
   // Receives text to be checked and sends it to Java to be
   // spellchecked.
-  void RequestTextCheck(const std::u16string& text,
-                        const std::vector<gfx::Range>& spelling_markers,
-                        RequestTextCheckCallback callback);
+  void RequestTextCheck(
+      const std::u16string& text,
+      const std::vector<spellcheck::SpellingMarker>& spelling_markers,
+      RequestTextCheckCallback callback);
 
   // Receives information from Java side about the typos in a given string
   // of text, processes these and sends them to the renderer.
@@ -56,9 +57,10 @@ class SpellCheckerSessionBridge {
  private:
   class SpellingRequest {
    public:
-    SpellingRequest(const std::u16string& text,
-                    const std::vector<gfx::Range>& spelling_markers,
-                    RequestTextCheckCallback callback);
+    SpellingRequest(
+        const std::u16string& text,
+        const std::vector<spellcheck::SpellingMarker>& spelling_markers,
+        RequestTextCheckCallback callback);
 
     SpellingRequest(const SpellingRequest&) = delete;
     SpellingRequest& operator=(const SpellingRequest&) = delete;
@@ -66,7 +68,7 @@ class SpellCheckerSessionBridge {
     ~SpellingRequest();
 
     std::u16string text_;
-    std::vector<gfx::Range> spelling_markers_;
+    std::vector<spellcheck::SpellingMarker> spelling_markers_;
     RequestTextCheckCallback callback_;
   };
 

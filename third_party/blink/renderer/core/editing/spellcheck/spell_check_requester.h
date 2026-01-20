@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
+#include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/text_checking.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
@@ -51,13 +52,13 @@ class CORE_EXPORT SpellCheckRequest final
 
   static SpellCheckRequest* Create(
       const EphemeralRange& checking_range,
-      const std::vector<gfx::Range>& spelling_markers,
+      const blink::DocumentMarkerVector& spelling_markers,
       int request_number,
       bool should_force_refresh);
 
   SpellCheckRequest(Range* checking_range,
                     const String&,
-                    const Vector<gfx::Range>& spelling_markers,
+                    const blink::DocumentMarkerVector& spelling_markers,
                     int request_number,
                     bool should_force_refresh);
   ~SpellCheckRequest();
@@ -69,7 +70,7 @@ class CORE_EXPORT SpellCheckRequest final
   void SetCheckerAndSequence(SpellCheckRequester*, int sequence);
   int Sequence() const { return sequence_; }
   String GetText() const { return text_; }
-  std::vector<gfx::Range> GetSpellingMarkers();
+  blink::DocumentMarkerVector GetSpellingMarkers() { return spelling_markers_; }
   bool ShouldForceRefresh() const { return should_force_refresh_; }
 
   bool IsValid() const;
@@ -86,7 +87,7 @@ class CORE_EXPORT SpellCheckRequest final
   Member<Element> root_editable_element_;
   int sequence_ = kUnrequestedTextCheckingSequence;
   String text_;
-  Vector<gfx::Range> spelling_markers_;
+  blink::DocumentMarkerVector spelling_markers_;
   int request_number_;
   bool should_force_refresh_;
 };
@@ -103,7 +104,7 @@ class CORE_EXPORT SpellCheckRequester final
   // Returns true if a request is initiated. Returns false otherwise.
   bool RequestCheckingFor(const EphemeralRange&);
   bool RequestCheckingFor(const EphemeralRange&,
-                          const std::vector<gfx::Range>& spelling_markers,
+                          const blink::DocumentMarkerVector& spelling_markers,
                           int request_num,
                           bool should_force_refresh);
   void CancelCheck();
