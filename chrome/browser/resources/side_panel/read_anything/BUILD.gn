@@ -76,6 +76,7 @@ build_webui("build") {
     "read_aloud/word_boundaries.ts",
     "read_anything.ts",
     "shared/common.ts",
+    "shared/dom_queries.ts",
     "shared/keyboard_util.ts",
     "shared/metrics_browser_proxy.ts",
     "shared/read_anything_logger.ts",

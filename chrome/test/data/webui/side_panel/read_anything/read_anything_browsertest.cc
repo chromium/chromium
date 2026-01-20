@@ -289,6 +289,11 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest,
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, DomQueries) {
+  RunSidePanelTest("side_panel/read_anything/dom_queries_test.js",
+                   "mocha.run()");
+}
+
 INSTANTIATE_TEST_SUITE_P(
     ReadAnythingMochaParameterized,
     ReadAnythingMochaParameterizedTest,

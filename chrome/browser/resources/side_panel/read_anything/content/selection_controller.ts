@@ -1,6 +1,8 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import {getTextNodeOffsets} from '../shared/dom_queries.js';
+
 import {NodeStore} from './node_store.js';
 
 interface SelectionWithIds {
@@ -271,35 +273,12 @@ export class SelectionController {
     // before. However, the information we receive from chrome.readingMode is
     // always the id of a text node and character offset for that text, so
     // find the corresponding text child here and adjust the offset
-    if (anchorNode.nodeType !== Node.TEXT_NODE) {
-      const startTreeWalker =
-          document.createTreeWalker(anchorNode, NodeFilter.SHOW_TEXT);
-      while (startTreeWalker.nextNode()) {
-        const textNodeLength = startTreeWalker.currentNode.textContent!.length;
-        // Once we find the child text node inside which the starting index
-        // fits, update the start node to be that child node and the adjusted
-        // offset will be relative to this child node
-        if (anchorOffset < textNodeLength) {
-          anchorNode = startTreeWalker.currentNode;
-          break;
-        }
-
-        anchorOffset -= textNodeLength;
-      }
-    }
-    if (focusNode.nodeType !== Node.TEXT_NODE) {
-      const endTreeWalker =
-          document.createTreeWalker(focusNode, NodeFilter.SHOW_TEXT);
-      while (endTreeWalker.nextNode()) {
-        const textNodeLength = endTreeWalker.currentNode.textContent!.length;
-        if (focusOffset <= textNodeLength) {
-          focusNode = endTreeWalker.currentNode;
-          break;
-        }
-
-        focusOffset -= textNodeLength;
-      }
-    }
+    const adjustedAnchor = getTextNodeOffsets(anchorNode, anchorOffset);
+    const adjustedFocus = getTextNodeOffsets(focusNode, focusOffset);
+    anchorNode = adjustedAnchor.node;
+    anchorOffset -= adjustedAnchor.offset;
+    focusNode = adjustedFocus.node;
+    focusOffset -= adjustedFocus.offset;
 
     return {anchorNode, anchorOffset, focusNode, focusOffset};
   }
