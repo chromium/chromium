@@ -8,9 +8,12 @@ source_set("internal") {
   sources = [
     "browser_collection.cc",
     "create_browser_window.cc",
+    "global_browser_collection.cc",
   ]
   deps = [
     "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/browser_window:create_browser_window",
@@ -26,7 +29,7 @@ source_set("internal") {
       "android/android_browser_window_enumerator.h",
       "android/browser_window_interface_iterator_android.cc",
       "android/create_browser_window_android.cc",
-      "android/global_browser_collection_android.cc",
+      "android/global_browser_collection_platform_delegate_android.cc",
       "android/profile_browser_collection_android.cc",
     ]
     deps += [
@@ -43,7 +46,7 @@ source_set("internal") {
       "create_browser_window_non_android.cc",
       "desktop_browser_window_capabilities.cc",
       "embedder_browser_window_features.cc",
-      "global_browser_collection_non_android.cc",
+      "global_browser_collection_platform_delegate_non_android.cc",
       "profile_browser_collection_non_android.cc",
     ]
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]

@@ -14,6 +14,7 @@ source_set("browser_window") {
     "public/browser_window_interface.h",
     "public/browser_window_interface_iterator.h",
     "public/global_browser_collection.h",
+    "public/global_browser_collection_platform_delegate.h",
     "public/profile_browser_collection.h",
   ]
   public_deps = [ "//content/public/browser" ]
@@ -49,7 +50,7 @@ if (!is_android) {
     testonly = true
     sources = [
       "internal/create_browser_window_browsertest.cc",
-      "internal/global_browser_collection_non_android_browsertest.cc",
+      "internal/global_browser_collection_browsertest.cc",
       "internal/profile_browser_collection_non_android_browsertest.cc",
       "public/browser_window_interface_iterator_browsertest.cc",
     ]

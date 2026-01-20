@@ -13,7 +13,7 @@
 
 BrowserManagerService::BrowserManagerService(Profile* profile)
     : ProfileBrowserCollection(profile), profile_(profile) {
-  AddObserver(GlobalBrowserCollection::GetInstance());
+  AddObserver(GlobalBrowserCollection::GetInstance()->GetPlatformDelegate());
 }
 
 BrowserManagerService::~BrowserManagerService() = default;

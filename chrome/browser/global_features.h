@@ -14,6 +14,8 @@
 #include "net/net_buildflags.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 
+class GlobalBrowserCollection;
+
 namespace system_permission_settings {
 class PlatformHandle;
 }  // namespace system_permission_settings
@@ -53,7 +55,6 @@ class ApplicationAdvancedProtectionStatusDetector;
 }  // namespace safe_browsing
 
 #if !BUILDFLAG(IS_ANDROID)
-class GlobalBrowserCollection;
 class StartupLaunchManager;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -170,11 +171,9 @@ class GlobalFeatures {
     return application_advanced_protection_status_detector_.get();
   }
 
-#if !BUILDFLAG(IS_ANDROID)
   GlobalBrowserCollection* global_browser_collection() {
     return global_browser_collection_.get();
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   static ui::UserDataFactoryWithOwner<BrowserProcess>&
   GetUserDataFactoryForTesting();
@@ -238,8 +237,9 @@ class GlobalFeatures {
   std::unique_ptr<safe_browsing::ApplicationAdvancedProtectionStatusDetector>
       application_advanced_protection_status_detector_;
 
-#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<GlobalBrowserCollection> global_browser_collection_;
+
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<StartupLaunchManager> startup_launch_manager_;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
