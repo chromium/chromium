@@ -312,7 +312,7 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<ActorTask> task_;
   raw_ptr<ui::MockUiEventDispatcher> mock_ui_event_dispatcher_;
   raw_ptr<ui::MockUiEventDispatcher> task_mock_ui_event_dispatcher_;
-  MockActorTaskDelegate mock_actor_task_delegate_;
+  testing::NiceMock<MockActorTaskDelegate> mock_actor_task_delegate_;
 
  private:
   struct TabState {

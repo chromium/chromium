@@ -10,7 +10,7 @@ MockUiEventDispatcher::MockUiEventDispatcher() = default;
 MockUiEventDispatcher::~MockUiEventDispatcher() = default;
 
 std::unique_ptr<UiEventDispatcher> NewMockUiEventDispatcher() {
-  return std::make_unique<MockUiEventDispatcher>();
+  return std::make_unique<testing::NiceMock<MockUiEventDispatcher>>();
 }
 
 }  // namespace actor::ui
