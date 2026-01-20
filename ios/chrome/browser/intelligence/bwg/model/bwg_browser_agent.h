@@ -112,6 +112,9 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
   // Collapses floaty if invoked.
   void CollapseFloatyIfInvoked();
 
+  // Setter for `last_shown_view_state_`.
+  void SetLastShownViewState(ios::provider::GeminiViewState view_state);
+
  private:
   explicit BwgBrowserAgent(Browser* browser);
   friend class BrowserUserData<BwgBrowserAgent>;
@@ -209,9 +212,9 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
   // updates related to the Gemini overlay.
   raw_ptr<FullscreenController> fullscreen_controller_ = nullptr;
 
-  // Used to track the last view state of an invoked floaty. Used to show a
-  // hidden floaty with the previous view state.
-  ios::provider::GeminiViewState last_view_state_ =
+  // Used to track the last shown view state of an invoked floaty. Used to show
+  // a hidden floaty with the previous view state.
+  ios::provider::GeminiViewState last_shown_view_state_ =
       ios::provider::GeminiViewState::kUnknown;
 
   // Whether the floaty is currently invoked.

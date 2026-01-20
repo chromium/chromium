@@ -338,6 +338,14 @@ void BwgBrowserAgent::CollapseFloatyIfInvoked() {
       ios::provider::GeminiViewState::kCollapsed);
 }
 
+void BwgBrowserAgent::SetLastShownViewState(
+    ios::provider::GeminiViewState view_state) {
+  if (view_state == ios::provider::GeminiViewState::kHidden) {
+    return;
+  }
+  last_shown_view_state_ = view_state;
+}
+
 void BwgBrowserAgent::DismissFloaty() {
   web::WebState* active_web_state =
       browser_->GetWebStateList()->GetActiveWebState();
@@ -367,10 +375,7 @@ void BwgBrowserAgent::HideFloatyIfInvoked() {
   floaty_hidden_timestamp_ = base::TimeTicks::Now();
   ios::provider::GeminiViewState current_view_state =
       ios::provider::GetCurrentGeminiViewState();
-
-  if (current_view_state != ios::provider::GeminiViewState::kHidden) {
-    last_view_state_ = current_view_state;
-  }
+  SetLastShownViewState(current_view_state);
 
   ios::provider::UpdateGeminiViewState(ios::provider::GeminiViewState::kHidden);
 }
@@ -390,7 +395,7 @@ void BwgBrowserAgent::ShowFloatyIfInvoked() {
   }
 
   is_floaty_temporarily_hidden_ = false;
-  ios::provider::UpdateGeminiViewState(last_view_state_);
+  ios::provider::UpdateGeminiViewState(last_shown_view_state_);
 }
 
 #pragma mark - TabsDependencyInstaller
@@ -554,7 +559,7 @@ void BwgBrowserAgent::PresentFloatyWithState(
   // Start the overlay and update the tab helper to reflect this.
   ios::provider::StartBwgOverlay(config);
   gemini_tab_helper->SetBwgUiShowing(true);
-  last_view_state_ = ios::provider::GetCurrentGeminiViewState();
+  last_shown_view_state_ = ios::provider::GetCurrentGeminiViewState();
   is_floaty_invoked_ = true;
 }
 

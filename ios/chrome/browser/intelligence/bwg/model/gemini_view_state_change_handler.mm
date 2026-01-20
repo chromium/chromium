@@ -23,6 +23,7 @@
   if (_agent && viewState == ios::provider::GeminiViewState::kExpanded) {
     _agent->OnGeminiViewStateExpanded();
   }
+  _agent->SetLastShownViewState(viewState);
 }
 
 - (void)switchToViewState:(ios::provider::GeminiViewState)viewState {
