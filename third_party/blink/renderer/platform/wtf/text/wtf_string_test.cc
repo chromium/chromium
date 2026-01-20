@@ -226,6 +226,34 @@ TEST(WTF, LengthWithStrippedWhiteSpace) {
   EXPECT_EQ(only_spaces.LengthWithStrippedWhiteSpace(), 0u);
 }
 
+TEST(StringTest, Substring) {
+  String str8("abc");
+  EXPECT_EQ(u"abc", str8.Substring(0));
+  EXPECT_EQ("abc", str8.Substring(0));
+  EXPECT_EQ("bc", str8.Substring(1));
+  EXPECT_EQ("c", str8.Substring(2));
+  EXPECT_EQ("", str8.Substring(3));
+  EXPECT_EQ("", str8.Substring(4));
+  EXPECT_EQ("", str8.Substring(3, 1));
+  EXPECT_EQ("ab", str8.Substring(0, 2));
+  EXPECT_EQ("abc", str8.Substring(0, 3));
+  EXPECT_EQ("abc", str8.Substring(0, 4));
+  EXPECT_EQ("b", str8.Substring(1, 1));
+
+  String str16(u"abc");
+  EXPECT_EQ("abc", str16.Substring(0));
+  EXPECT_EQ(u"abc", str16.Substring(0));
+  EXPECT_EQ(u"bc", str16.Substring(1));
+  EXPECT_EQ(u"c", str16.Substring(2));
+  EXPECT_EQ(u"", str16.Substring(3));
+  EXPECT_EQ(u"", str16.Substring(4));
+  EXPECT_EQ(u"", str16.Substring(3, 1));
+  EXPECT_EQ(u"ab", str16.Substring(0, 2));
+  EXPECT_EQ(u"abc", str8.Substring(0, 3));
+  EXPECT_EQ(u"abc", str8.Substring(0, 4));
+  EXPECT_EQ(u"b", str16.Substring(1, 1));
+}
+
 TEST(WTF, SimplifyWhiteSpace) {
   String extra_spaces("  Hello  world  ");
   EXPECT_EQ(String("Hello world"), extra_spaces.SimplifyWhiteSpace());

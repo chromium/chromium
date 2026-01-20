@@ -707,6 +707,45 @@ TEST(StringViewTest, Contains) {
   EXPECT_TRUE(StringView(u"ascii\u25A0").contains(uchar::kBlackSquare));
 }
 
+TEST(StringViewTest, StartsWith) {
+  EXPECT_TRUE(StringView().starts_with(""));
+  EXPECT_TRUE(StringView().starts_with(StringView()));
+  EXPECT_TRUE(StringView("").starts_with(""));
+  EXPECT_TRUE(StringView("").starts_with(StringView()));
+  EXPECT_TRUE(StringView("foo").starts_with("foo"));
+  EXPECT_FALSE(StringView("foo").starts_with("foobar"));
+  EXPECT_TRUE(StringView("foobar").starts_with("foo"));
+  EXPECT_TRUE(StringView(u"foo").starts_with("foo"));
+  EXPECT_TRUE(StringView("foobar").starts_with(u"foo"));
+  EXPECT_FALSE(StringView("foobar").starts_with(u"bar"));
+}
+
+TEST(StringViewTest, Substr) {
+  StringView view8("abc");
+  EXPECT_EQ(u"abc", view8.substr(0));
+  EXPECT_EQ("abc", view8.substr(0));
+  EXPECT_EQ("bc", view8.substr(1));
+  EXPECT_EQ("c", view8.substr(2));
+  EXPECT_EQ("", view8.substr(3));
+  EXPECT_EQ("", view8.substr(3, 1));
+  EXPECT_EQ("ab", view8.substr(0, 2));
+  EXPECT_EQ("abc", view8.substr(0, 3));
+  EXPECT_EQ("abc", view8.substr(0, 4));
+  EXPECT_EQ("b", view8.substr(1, 1));
+
+  StringView view16(u"abc");
+  EXPECT_EQ("abc", view16.substr(0));
+  EXPECT_EQ(u"abc", view16.substr(0));
+  EXPECT_EQ(u"bc", view16.substr(1));
+  EXPECT_EQ(u"c", view16.substr(2));
+  EXPECT_EQ(u"", view16.substr(3));
+  EXPECT_EQ(u"", view16.substr(3, 1));
+  EXPECT_EQ(u"ab", view16.substr(0, 2));
+  EXPECT_EQ(u"abc", view8.substr(0, 3));
+  EXPECT_EQ(u"abc", view8.substr(0, 4));
+  EXPECT_EQ(u"b", view16.substr(1, 1));
+}
+
 TEST(StringViewTest, StripWhiteSpace) {
   StringView expected("Hello  world");
   EXPECT_EQ(expected, StringView("Hello  world").StripWhiteSpace());

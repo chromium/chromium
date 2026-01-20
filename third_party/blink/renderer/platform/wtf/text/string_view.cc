@@ -229,6 +229,13 @@ bool StringView::contains(UChar ch) const {
   return find(ch) != kNotFound;
 }
 
+bool StringView::starts_with(const StringView& other) const {
+  if (other.empty()) {
+    return true;
+  }
+  return other.length() <= length() && substr(0, other.length()) == other;
+}
+
 String StringView::ToString() const {
   if (IsNull())
     return String();
@@ -381,6 +388,11 @@ CodePointIterator StringView::begin() const {
 
 CodePointIterator StringView::end() const {
   return CodePointIterator::End(*this);
+}
+
+StringView StringView::substr(wtf_size_t offset, wtf_size_t len) const {
+  CHECK_LE(offset, length());
+  return StringView(*this, offset, std::min(len, length() - offset));
 }
 
 StringView StringView::StripWhiteSpace() const {

@@ -17,36 +17,36 @@ bool ParseCssSelectorDirective(const String& directive_string, String& value) {
       !directive_string.EndsWith(shared_highlighting::kSelectorDirectiveSuffix))
     return false;
 
-  Vector<String> parts;
-  // get rid of "selector(" and ")" and split the rest by ","
-  directive_string
-      .Substring(
+  // Get rid of "selector(" and ")" and split the rest by ",".
+  Vector<StringView> parts =
+      StringView(
+          directive_string,
           shared_highlighting::kSelectorDirectiveParameterNameLength,
+
           directive_string.length() -
               shared_highlighting::kSelectorDirectiveParameterNameLength -
               shared_highlighting::kSelectorDirectiveSuffixLength)
-      .Split(",", /*allow_empty_entries=*/false, parts);
+          .Split(',');
 
   bool parsed_value = false;
   bool parsed_type = false;
-  String type;
-  for (auto& part : parts) {
-    if (part.StartsWith(shared_highlighting::kSelectorDirectiveValuePrefix)) {
+  StringView type;
+  for (const auto& part : parts) {
+    if (part.starts_with(shared_highlighting::kSelectorDirectiveValuePrefix)) {
       // ambiguous case, can't have two value= parts
       if (parsed_value)
         return false;
       value = DecodeURLEscapeSequences(
-          part.Substring(
-              shared_highlighting::kSelectorDirectiveValuePrefixLength),
+          part.substr(shared_highlighting::kSelectorDirectiveValuePrefixLength),
           DecodeURLMode::kUTF8);
       parsed_value = true;
-    } else if (part.StartsWith(
+    } else if (part.starts_with(
                    shared_highlighting::kSelectorDirectiveTypePrefix)) {
       // ambiguous case, can't have two type= parts
       if (parsed_type)
         return false;
-      type = part.Substring(
-          shared_highlighting::kSelectorDirectiveTypePrefixLength);
+      type =
+          part.substr(shared_highlighting::kSelectorDirectiveTypePrefixLength);
       parsed_type = true;
     }
   }

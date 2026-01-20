@@ -281,6 +281,9 @@ class WTF_EXPORT StringView {
   // Returns `true` if this StringView contains the specified character.
   bool contains(UChar ch) const;
 
+  // Returns `true` if `this` string starts with `other`.
+  bool starts_with(const StringView& other) const;
+
   template <bool isSpecialCharacter(UChar)>
   bool IsAllSpecialCharacters() const;
 
@@ -298,6 +301,19 @@ class WTF_EXPORT StringView {
   //      ...
   CodePointIterator begin() const;
   CodePointIterator end() const;
+
+  // Returns the substring of `this` string, starting at `offset` and consisting
+  // of at most `len` characters.
+  //
+  // If `offset` > `length()`, this function crashes. It's similar to
+  // std::string_view::substr(), but not compatible with
+  // blink::String::Substring().
+  //
+  // If `offset + len` >= `length()`,  the resultant string is truncated at
+  // `length()`. It's compatible with both std::string_view::substr() and
+  // blink::String::Substring(). This behavior does not match to
+  // `StringView(*this, offset, len)`.
+  StringView substr(wtf_size_t offset, wtf_size_t len = kNotFound) const;
 
   // Returns a substring removing leading and trailing white spaces.
   // This function removes spaces, \n, \t, \r, \f, \v, and unicode spaces such
