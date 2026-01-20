@@ -121,7 +121,7 @@ use_chromium_rust_toolchain = rust_sysroot_absolute == ""
 # `rustc_nightly_capability = false` will make the build avoid the use of
 # Rust nightly features. There are no bots that test this and there is no
 # guarantee it will work, but we accept patches for this configuration.
-rustc_nightly_capability = use_chromium_rust_toolchain
+rustc_nightly_capability = use_chromium_rust_toolchain || build_with_chromium
 
 # Platform support for the Rust toolchain.
 chromium_toolchain_supports_platform = !is_wasm
