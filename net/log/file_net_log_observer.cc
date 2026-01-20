@@ -493,7 +493,7 @@ std::unique_ptr<FileNetLogObserver> FileNetLogObserver::CreateInternal(
       max_event_file_size, total_num_event_files, file_task_runner);
 
   uint64_t write_queue_memory_max =
-      base::MakeClampedNum<uint64_t>(max_total_size) * 2;
+      base::ClampedNumeric<uint64_t>(max_total_size) * 2;
 
   return base::WrapUnique(new FileNetLogObserver(
       file_task_runner, std::move(file_writer),

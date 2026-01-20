@@ -307,7 +307,7 @@ _CONFIG = [
             'base::ClampMax',
             'base::ClampMin',
             'base::ClampSub',
-            'base::MakeClampedNum',
+            'base::ClampedNumeric',
 
             # //base/strings/strcat.h.
             'base::StrAppend',

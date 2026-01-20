@@ -121,7 +121,7 @@ void MultiBuffer::GlobalLRU::SchedulePrune() {
         *task_runner_, FROM_HERE,
         CrossThreadBindOnce(&MultiBuffer::GlobalLRU::PruneTask,
                             blink::RetainedRef(this)),
-        base::Seconds(kBlockPruneInterval));
+        base::Seconds(std::to_underlying(kBlockPruneInterval)));
     background_pruning_pending_ = true;
   }
 }

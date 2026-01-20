@@ -4,10 +4,12 @@
 
 #include "net/nqe/network_quality.h"
 
+#include <utility>
+
 namespace net::nqe::internal {
 
 base::TimeDelta InvalidRTT() {
-  return base::Milliseconds(INVALID_RTT_THROUGHPUT);
+  return base::Milliseconds(std::to_underlying(INVALID_RTT_THROUGHPUT));
 }
 
 NetworkQuality::NetworkQuality()

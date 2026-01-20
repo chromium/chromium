@@ -675,42 +675,42 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) Time
 
 template <typename T>
 constexpr TimeDelta Days(T n) {
-  return TimeDelta::FromInternalValue(MakeClampedNum(n) *
+  return TimeDelta::FromInternalValue(ClampedNumeric(n) *
                                       Time::kMicrosecondsPerDay);
 }
 template <typename T>
 constexpr TimeDelta Hours(T n) {
-  return TimeDelta::FromInternalValue(MakeClampedNum(n) *
+  return TimeDelta::FromInternalValue(ClampedNumeric(n) *
                                       Time::kMicrosecondsPerHour);
 }
 template <typename T>
 constexpr TimeDelta Minutes(T n) {
-  return TimeDelta::FromInternalValue(MakeClampedNum(n) *
+  return TimeDelta::FromInternalValue(ClampedNumeric(n) *
                                       Time::kMicrosecondsPerMinute);
 }
 template <typename T>
 constexpr TimeDelta Seconds(T n) {
-  return TimeDelta::FromInternalValue(MakeClampedNum(n) *
+  return TimeDelta::FromInternalValue(ClampedNumeric(n) *
                                       Time::kMicrosecondsPerSecond);
 }
 template <typename T>
 constexpr TimeDelta Milliseconds(T n) {
-  return TimeDelta::FromInternalValue(MakeClampedNum(n) *
+  return TimeDelta::FromInternalValue(ClampedNumeric(n) *
                                       Time::kMicrosecondsPerMillisecond);
 }
 template <typename T>
 constexpr TimeDelta Microseconds(T n) {
-  return TimeDelta::FromInternalValue(MakeClampedNum(n));
+  return TimeDelta::FromInternalValue(ClampedNumeric(n));
 }
 template <typename T>
 constexpr TimeDelta Nanoseconds(T n) {
-  return TimeDelta::FromInternalValue(MakeClampedNum(n) /
+  return TimeDelta::FromInternalValue(ClampedNumeric(n) /
                                       Time::kNanosecondsPerMicrosecond);
 }
 template <typename T>
 constexpr TimeDelta Hertz(T n) {
   return n ? TimeDelta::FromInternalValue(Time::kMicrosecondsPerSecond /
-                                          MakeClampedNum(n))
+                                          ClampedNumeric(n))
            : TimeDelta::Max();
 }
 

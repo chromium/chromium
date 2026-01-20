@@ -35,10 +35,10 @@ enum class CallMethodErrorStatus {
   kInvalidResponseFormat = 3,
 };
 
-constexpr base::TimeDelta kTimeoutDefault =
-    base::Milliseconds(dbus::ObjectProxy::TIMEOUT_USE_DEFAULT);
+constexpr base::TimeDelta kTimeoutDefault = base::Milliseconds(
+    std::to_underlying(dbus::ObjectProxy::TIMEOUT_USE_DEFAULT));
 constexpr base::TimeDelta kTimeoutMax =
-    base::Milliseconds(dbus::ObjectProxy::TIMEOUT_MAX);
+    base::Milliseconds(std::to_underlying(dbus::ObjectProxy::TIMEOUT_MAX));
 
 class COMPONENT_EXPORT(COMPONENTS_DBUS) CallMethodError {
  public:

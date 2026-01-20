@@ -210,7 +210,7 @@ bool CheckPrivateAggregationConfig(
         return false;
       }
       const uint16_t max_contributions_clamped =
-          base::MakeClampedNum(requested_max_contributions);
+          base::ClampedNumeric(requested_max_contributions);
       out_private_aggregation_config->max_contributions =
           max_contributions_clamped;
     }

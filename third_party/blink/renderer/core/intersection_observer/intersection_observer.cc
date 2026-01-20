@@ -141,11 +141,11 @@ void ParseThresholds(const V8UnionDoubleOrDoubleSequence* threshold_parameter,
   switch (threshold_parameter->GetContentType()) {
     case V8UnionDoubleOrDoubleSequence::ContentType::kDouble:
       thresholds.push_back(
-          base::MakeClampedNum<float>(threshold_parameter->GetAsDouble()));
+          base::ClampedNumeric<float>(threshold_parameter->GetAsDouble()));
       break;
     case V8UnionDoubleOrDoubleSequence::ContentType::kDoubleSequence:
       for (auto threshold_value : threshold_parameter->GetAsDoubleSequence())
-        thresholds.push_back(base::MakeClampedNum<float>(threshold_value));
+        thresholds.push_back(base::ClampedNumeric<float>(threshold_value));
       break;
   }
 

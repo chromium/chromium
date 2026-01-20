@@ -743,10 +743,12 @@ base::TimeDelta WebMClusterParser::Track::GetDurationEstimate() {
   if (max_frame_duration_ == kNoTimestamp) {
     DVLOG(3) << __func__ << " : using hardcoded default duration";
     if (track_type_ == TrackType::AUDIO) {
-      duration = base::Milliseconds(kDefaultAudioBufferDurationInMs);
+      duration = base::Milliseconds(
+          std::to_underlying(kDefaultAudioBufferDurationInMs));
     } else {
       // Video tracks use the larger video default duration.
-      duration = base::Milliseconds(kDefaultVideoBufferDurationInMs);
+      duration = base::Milliseconds(
+          std::to_underlying(kDefaultVideoBufferDurationInMs));
     }
   } else {
     // Use max duration to minimize the risk of introducing gaps in the buffered

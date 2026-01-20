@@ -134,10 +134,10 @@ class InsetsOutsetsBase {
 
   T operator-() const {
     return T()
-        .set_left_right(-base::MakeClampedNum(left_),
-                        -base::MakeClampedNum(right_))
-        .set_top_bottom(-base::MakeClampedNum(top_),
-                        -base::MakeClampedNum(bottom_));
+        .set_left_right(-base::ClampedNumeric(left_),
+                        -base::ClampedNumeric(right_))
+        .set_top_bottom(-base::ClampedNumeric(top_),
+                        -base::ClampedNumeric(bottom_));
   }
 
   // Returns a string representation of the insets/outsets.

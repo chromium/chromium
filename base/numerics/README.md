@@ -470,9 +470,3 @@ or `ClampedNumeric` types, perform arithmetic operations, and return a
 *   `ClampXor()` - Bitwise XOR (integer only with unsigned result).
 *   `ClampMax()` - Maximum of supplied arguments.
 *   `ClampMin()` - Minimum of supplied arguments.
-
-The following is a general utility method that is useful for converting
-to a `ClampedNumeric` type:
-
-*   `MakeClampedNum()` - Creates a new `ClampedNumeric` from the underlying type
-    of the supplied arithmetic or directly convertible type.
