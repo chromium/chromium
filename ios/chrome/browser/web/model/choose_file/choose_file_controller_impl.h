@@ -28,8 +28,6 @@ class ChooseFileControllerImpl : public ChooseFileController {
  private:
   // Whether a file picker is being presented for this file selection instance.
   bool is_presenting_file_picker_ = false;
-  // Whether a file picker has been presented.
-  bool file_picker_was_presented_ = false;
   // Completion called with the URLs of files selected by the user.
   base::OnceCallback<void(NSArray<NSURL*>*)> completion_;
 };

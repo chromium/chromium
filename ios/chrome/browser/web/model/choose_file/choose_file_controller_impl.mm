@@ -16,7 +16,7 @@ ChooseFileControllerImpl::ChooseFileControllerImpl(
 }
 
 ChooseFileControllerImpl::~ChooseFileControllerImpl() {
-  if (file_picker_was_presented_ && !HasSubmittedSelection()) {
+  if (!HasSubmittedSelection()) {
     SubmitSelection(nil, nil, nil);
   }
 }
@@ -26,9 +26,6 @@ bool ChooseFileControllerImpl::IsPresentingFilePicker() const {
 }
 
 void ChooseFileControllerImpl::SetIsPresentingFilePicker(bool is_presenting) {
-  if (is_presenting) {
-    file_picker_was_presented_ = true;
-  }
   is_presenting_file_picker_ = is_presenting;
 }
 

@@ -204,8 +204,7 @@ void ChooseFileTabHelper::DidSubmitSelection(ChooseFileController* controller,
                                              NSArray<NSURL*>* file_urls,
                                              NSString* display_string,
                                              UIImage* icon_image) {
-  if (controller_) {
-    CHECK_EQ(controller, controller_.get());
+  if (controller_ && controller_.get() == controller) {
     controller_.reset();
   }
 }
