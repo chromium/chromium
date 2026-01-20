@@ -610,9 +610,9 @@ class DesktopMediaPickerViewsPerTypeAndAudioTest
 
   void SetUp() override {
 #if BUILDFLAG(IS_WIN)
-    feature_list_.InitAndEnableFeature(features::kApplicationAudioCaptureWin);
+    feature_list_.InitAndEnableFeature(media::kApplicationAudioCaptureWin);
 #elif BUILDFLAG(IS_MAC)
-    feature_list_.InitAndEnableFeature(features::kApplicationAudioCaptureMac);
+    feature_list_.InitAndEnableFeature(media::kApplicationAudioCaptureMac);
 #endif  // BUILDFLAG(IS_WIN)
     DesktopMediaPickerViewsTestBase::SetUp();
   }
@@ -813,17 +813,15 @@ class DesktopMediaPickerViewsApplicationAudioTest
   void SetUp() override {
     if (ShouldEnableApplicationAudioCapture()) {
 #if BUILDFLAG(IS_WIN)
-      feature_list_.InitAndEnableFeature(features::kApplicationAudioCaptureWin);
+      feature_list_.InitAndEnableFeature(media::kApplicationAudioCaptureWin);
 #elif BUILDFLAG(IS_MAC)
-      feature_list_.InitAndEnableFeature(features::kApplicationAudioCaptureMac);
+      feature_list_.InitAndEnableFeature(media::kApplicationAudioCaptureMac);
 #endif
     } else {
 #if BUILDFLAG(IS_WIN)
-      feature_list_.InitAndDisableFeature(
-          features::kApplicationAudioCaptureWin);
+      feature_list_.InitAndDisableFeature(media::kApplicationAudioCaptureWin);
 #elif BUILDFLAG(IS_MAC)
-      feature_list_.InitAndDisableFeature(
-          features::kApplicationAudioCaptureMac);
+      feature_list_.InitAndDisableFeature(media::kApplicationAudioCaptureMac);
 #endif
     }
     DesktopMediaPickerViewsTestBase::SetUp();
@@ -869,7 +867,7 @@ class DesktopMediaPickerViewsApplicationAudioTest
     return RequestAudio() &&
            WindowAudioPreference() !=
                blink::mojom::WindowAudioPreference::kExclude &&
-           (((media::IsApplicationAudioCaptureSupported() &&
+           (((media::IsApplicationLoopbackCaptureSupported() &&
               WindowAudioPreference() ==
                   blink::mojom::WindowAudioPreference::kWindow)) ||
             (WindowAudioPreference() ==
@@ -907,7 +905,7 @@ class DesktopMediaPickerViewsApplicationAudioTest
     if (ShouldOfferWindowAudio()) {
       if (WindowAudioPreference() ==
               blink::mojom::WindowAudioPreference::kWindow &&
-          media::IsApplicationAudioCaptureSupported()) {
+          media::IsApplicationLoopbackCaptureSupported()) {
         return l10n_util::GetStringUTF16(
             IDS_DESKTOP_MEDIA_PICKER_ALSO_SHARE_APPLICATION_AUDIO);
       }

@@ -395,6 +395,12 @@ BASE_FEATURE(kResumeBackgroundVideo,
 #endif
 );
 
+#if BUILDFLAG(IS_WIN)
+// Enables application audio capture for getDisplayMedia (gDM) window capture in
+// Windows.
+BASE_FEATURE(kApplicationAudioCaptureWin, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(IS_MAC)
 // Enables system audio loopback capture using the macOS CoreAudio tap API for
 // Cast.
@@ -409,6 +415,11 @@ BASE_FEATURE(kMacCatapLoopbackAudioForScreenShare,
 // flag will only use the built-in picker on MacOS 15 Sequoia and later where it
 // is required to avoid recurring permission dialogs.
 BASE_FEATURE(kUseSCContentSharingPicker, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables application audio capture for getDisplayMedia (gDM) window capture in
+// macOS.
+BASE_FEATURE(kApplicationAudioCaptureMac, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_LINUX)
@@ -1611,6 +1622,20 @@ bool IsSystemLoopbackCaptureSupported() {
 #else
   return false;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(USE_CRAS)
+}
+
+bool IsApplicationLoopbackCaptureSupported() {
+#if BUILDFLAG(IS_WIN)
+  return base::FeatureList::IsEnabled(kApplicationAudioCaptureWin) &&
+         IsWindowsProcessLoopbackCaptureSupported();
+#elif BUILDFLAG(IS_MAC)
+  return base::FeatureList::IsEnabled(kApplicationAudioCaptureMac) &&
+         base::FeatureList::IsEnabled(
+             media::kMacCatapLoopbackAudioForScreenShare) &&
+         media::IsMacCatapSystemLoopbackCaptureSupported();
+#else
+  return false;
+#endif
 }
 
 bool IsSystemLoopbackAsAecReferenceEnabled() {

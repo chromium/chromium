@@ -51,6 +51,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "media/audio/audio_features.h"
+#include "media/base/media_switches.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -364,7 +365,7 @@ DesktopMediaID::AudioType GetWindowCaptureAudioType(
 
   if (params.window_audio_preference ==
           blink::mojom::WindowAudioPreference::kWindow &&
-      media::IsApplicationAudioCaptureSupported()) {
+      media::IsApplicationLoopbackCaptureSupported()) {
     return DesktopMediaID::AudioType::kApplication;
   }
 
@@ -389,7 +390,7 @@ bool DesktopMediaPickerDialogView::AudioSupported(
     case DesktopMediaList::Type::kWindow:
       return DesktopMediaPickerController::IsSystemAudioCaptureSupported(
                  request_source_) ||
-             media::IsApplicationAudioCaptureSupported();
+             media::IsApplicationLoopbackCaptureSupported();
     case DesktopMediaList::Type::kWebContents:
       return true;
     case DesktopMediaList::Type::kNone:

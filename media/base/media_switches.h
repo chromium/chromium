@@ -252,10 +252,14 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kLiveCaptionUseWaitK);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kLiveCaptionWebAudio);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kLiveTranslate);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kLogSodaLoadFailures);
+#if BUILDFLAG(IS_WIN)
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kApplicationAudioCaptureWin);
+#endif
 #if BUILDFLAG(IS_MAC)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMacCatapLoopbackAudioForCast);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMacCatapLoopbackAudioForScreenShare);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseSCContentSharingPicker);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kApplicationAudioCaptureMac);
 #endif  // BUILDFLAG(IS_MAC)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaCapabilitiesQueryGpuFactories);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaCapabilitiesWithParameters);
@@ -521,6 +525,10 @@ MEDIA_EXPORT bool IsMacSckSystemLoopbackCaptureSupported();
 // Returns true if system audio loopback capture is implemented for the current
 // OS.
 MEDIA_EXPORT bool IsSystemLoopbackCaptureSupported();
+
+// Returns true if application audio loopback capture is implemented for the
+// current OS.
+MEDIA_EXPORT bool IsApplicationLoopbackCaptureSupported();
 
 // Returns true if loopback-based AEC can be used for audio input streams that
 // are configured to do so.
