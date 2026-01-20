@@ -6,6 +6,8 @@
 
 #include <windows.h>
 
+#include "base/i18n/encoding_detection.h"
+#include "base/i18n/icu_string_conversions.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -190,6 +192,31 @@ TEST_F(ClipboardWinTest, InvalidBitmapDoesNotCrash) {
   ASSERT_GE(png.size(), 0u);
 
   // Clear invalid data in clipboard.
+  Clipboard::GetForCurrentThread()->Clear(ClipboardBuffer::kCopyPaste);
+}
+
+TEST_F(ClipboardWinTest, NormalizeRtfStringToUTF8) {
+  std::u16string expectedString(u"€");
+  std::string encodedString;
+  base::UTF16ToCodepage(expectedString, "windows-1252",
+                        base::OnStringConversionError::FAIL, &encodedString);
+
+  {
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    writer.WriteRTF(encodedString);
+  }
+
+  std::string readString;
+  Clipboard::GetForCurrentThread()->ReadRTF(ClipboardBuffer::kCopyPaste,
+                                            nullptr, &readString);
+
+  std::u16string resultString;
+  base::CodepageToUTF16(readString, "UTF-8",
+                        base::OnStringConversionError::FAIL, &resultString);
+
+  ASSERT_EQ(resultString, expectedString);
+
+  // Clear data in clipboard.
   Clipboard::GetForCurrentThread()->Clear(ClipboardBuffer::kCopyPaste);
 }
 

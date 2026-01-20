@@ -25,6 +25,8 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/i18n/encoding_detection.h"
+#include "base/i18n/icu_string_conversions.h"
 #include "base/lazy_instance.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -556,6 +558,15 @@ void ClipboardWin::ReadRTF(ClipboardBuffer buffer,
   RecordRead(ClipboardFormatMetric::kRtf);
 
   ReadData(ClipboardFormatType::RtfType(), data_dst, result);
+
+  std::string encoding;
+  if (base::DetectEncoding(*result, &encoding)) {
+    std::string normalized;
+    if (base::ConvertToUtf8AndNormalize(*result, encoding, &normalized)) {
+      *result = normalized;
+    }
+  }
+
   TrimAfterNull(result);
 }
 
