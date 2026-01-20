@@ -38,7 +38,6 @@ DEFINE_USER_DATA(TabUIHelper);
 
 TabUIHelper::TabUIHelper(tabs::TabInterface& tab_interface)
     : ContentsObservingTabFeature(tab_interface),
-      crashed_status_(tab_interface.GetContents()->GetCrashedStatus()),
       scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {
 }
 
@@ -108,24 +107,21 @@ void TabUIHelper::SetWasActiveAtLeastOnce() {
 }
 
 bool TabUIHelper::IsCrashed() {
-  return (crashed_status_ == base::TERMINATION_STATUS_PROCESS_WAS_KILLED ||
+  const base::TerminationStatus crashed_status =
+      web_contents()->GetCrashedStatus();
+  return (crashed_status == base::TERMINATION_STATUS_PROCESS_WAS_KILLED ||
 #if BUILDFLAG(IS_CHROMEOS)
-          crashed_status_ ==
+          crashed_status ==
               base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM ||
 #endif
-          crashed_status_ == base::TERMINATION_STATUS_PROCESS_CRASHED ||
-          crashed_status_ == base::TERMINATION_STATUS_ABNORMAL_TERMINATION ||
-          crashed_status_ == base::TERMINATION_STATUS_LAUNCH_FAILED);
+          crashed_status == base::TERMINATION_STATUS_PROCESS_CRASHED ||
+          crashed_status == base::TERMINATION_STATUS_ABNORMAL_TERMINATION ||
+          crashed_status == base::TERMINATION_STATUS_LAUNCH_FAILED);
 }
 
 base::CallbackListSubscription TabUIHelper::AddTitleUpdatedCallback(
     TitleUpdatedCallbackList::CallbackType callback) {
   return title_change_callbacks_.Add(std::move(callback));
-}
-
-base::CallbackListSubscription TabUIHelper::AddCrashedStatusChangedCallback(
-    CrashedStatusChangedCallbackList::CallbackType callback) {
-  return crash_status_changed_callbacks_.Add(std::move(callback));
 }
 
 void TabUIHelper::TitleWasSet(content::NavigationEntry* entry) {
@@ -143,16 +139,6 @@ void TabUIHelper::OnVisibilityChanged(content::Visibility visiblity) {
   if (base::FeatureList::IsEnabled(kSessionRestoreShowThrobberOnVisible) &&
       visiblity == content::Visibility::VISIBLE) {
     was_active_at_least_once_ = true;
-  }
-}
-
-void TabUIHelper::PrimaryMainFrameRenderProcessGone(
-    base::TerminationStatus status) {
-  const bool was_crashed = IsCrashed();
-  crashed_status_ = status;
-  const bool is_crashed = IsCrashed();
-  if (was_crashed != is_crashed) {
-    crash_status_changed_callbacks_.Notify(is_crashed);
   }
 }
 
