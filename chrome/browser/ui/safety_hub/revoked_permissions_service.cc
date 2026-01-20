@@ -442,7 +442,6 @@ RevokedPermissionsService::GetRevokedPermissions() {
                    IsUrlRevokedDisruptiveNotification(hcsm(), url)) {
       // If the origin has a revoked disruptive notification, add
       // `NOTIFICATIONS` to the list of revoked permissions.
-      CHECK(disruptive_notification_manager_);
       permissions_data.permission_types.insert(
           static_cast<ContentSettingsType>(ContentSettingsType::NOTIFICATIONS));
       // Update `constraints` to one with the latest expiration.
