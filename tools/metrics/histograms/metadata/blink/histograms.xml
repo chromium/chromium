@@ -5932,6 +5932,25 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Blink.XMLParsing.NonXsltXmlParsingTime.{Backend}" units="ms"
+    expires_after="2026-08-01">
+  <owner>drott@chromium.org</owner>
+  <owner>dom-dev@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Measures the time to parse an XML Document using the {Backend}-backend in
+    non-Frame situations, i.e. in situations where XSLT is not allowed, such as
+    using the DOMParser API or accessing the XML response document of
+    XMLHttpRequests. Recorded once per created and parsed XML document. The
+    counter starts when the XML parser is created, and stops when parsing
+    finishes.
+  </summary>
+  <token key="Backend">
+    <variant name="Libxm2"/>
+    <variant name="Rust"/>
+  </token>
+</histogram>
+
 <histogram name="Blink.{CookieOperation}Time" units="ms"
     expires_after="2026-07-05">
   <owner>cduvall@chromium.org</owner>
