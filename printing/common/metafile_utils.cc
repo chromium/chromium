@@ -401,20 +401,13 @@ SkSerialReturnType SerializeOopTypeface(SkTypeface* typeface, void* ctx) {
   return stream.detachAsData();
 }
 
-sk_sp<SkTypeface> DeserializeOopTypeface(const void* data,
-                                         size_t length,
-                                         void* ctx) {
-  SkStream* stream = *(reinterpret_cast<SkStream**>(const_cast<void*>(data)));
-  if (length < sizeof(stream)) {
-    NOTREACHED();  // Should not happen if the content is as written.
-  }
-
+sk_sp<SkTypeface> DeserializeOopTypeface(SkStream& stream, void* ctx) {
   SkTypefaceID id;
-  if (!stream->readU32(&id)) {
+  if (!stream.readU32(&id)) {
     return nullptr;
   }
   bool data_included;
-  if (!stream->readBool(&data_included)) {
+  if (!stream.readBool(&data_included)) {
     return nullptr;
   }
 
@@ -428,7 +421,7 @@ sk_sp<SkTypeface> DeserializeOopTypeface(const void* data,
   // Typeface not encountered before, expect it to be present in the stream.
   DCHECK(data_included);
   sk_sp<SkTypeface> typeface =
-      SkTypeface::MakeDeserialize(stream, skia::DefaultFontMgr());
+      SkTypeface::MakeDeserialize(&stream, skia::DefaultFontMgr());
   context->emplace(id, typeface);
   return typeface;
 }
@@ -527,7 +520,7 @@ SkDeserialProcs DeserializationProcs(
   procs.fImageCtx = image_ctx;
   procs.fPictureProc = DeserializeOopPicture;
   procs.fPictureCtx = picture_ctx;
-  procs.fTypefaceProc = DeserializeOopTypeface;
+  procs.fTypefaceStreamProc = DeserializeOopTypeface;
   procs.fTypefaceCtx = typeface_ctx;
   return procs;
 }
