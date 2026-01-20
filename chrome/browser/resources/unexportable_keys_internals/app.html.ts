@@ -30,5 +30,8 @@ export function getHtml(this: UnexportableKeysInternalsAppElement) {
       </td>
     </tr>
   `)}
-</table>`;
+</table>
+<cr-toast id="deleteErrorToast" duration="5000">
+  <div>Error when deleting a key, please try again</div>
+</cr-toast>`;
 }

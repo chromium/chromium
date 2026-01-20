@@ -4,17 +4,19 @@
 
 import 'chrome://unexportable-keys-internals/app.js';
 
+import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import type {UnexportableKeysInternalsAppElement} from 'chrome://unexportable-keys-internals/app.js';
 import {UnexportableKeysInternalsBrowserProxyImpl} from 'chrome://unexportable-keys-internals/browser_proxy.js';
 import type {UnexportableKeysInternalsBrowserProxy} from 'chrome://unexportable-keys-internals/browser_proxy.js';
 import type {PageHandlerInterface, UnexportableKeyId, UnexportableKeyInfo} from 'chrome://unexportable-keys-internals/unexportable_keys_internals.mojom-webui.js';
 import {PageCallbackRouter} from 'chrome://unexportable-keys-internals/unexportable_keys_internals.mojom-webui.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 class TestPageHandler extends TestBrowserProxy implements PageHandlerInterface {
   private keys_: UnexportableKeyInfo[] = [];
+  private deleteKeySuccess_ = true;
 
   constructor() {
     super([
@@ -32,9 +34,13 @@ class TestPageHandler extends TestBrowserProxy implements PageHandlerInterface {
     return Promise.resolve({keys: this.keys_});
   }
 
+  setDeleteKeySuccess(success: boolean) {
+    this.deleteKeySuccess_ = success;
+  }
+
   deleteKey(keyId: UnexportableKeyId) {
     this.methodCalled('deleteKey', keyId);
-    return Promise.resolve({success: true});
+    return Promise.resolve({success: this.deleteKeySuccess_});
   }
 }
 
@@ -124,7 +130,7 @@ suite('UnexportableKeysInternals', function() {
         cells2[3]!.textContent.trim());
   });
 
-  test('DeleteKey', async function() {
+  test('DeleteKeySuccess', async function() {
     await handler.whenCalled('getUnexportableKeysInfo');
     await microtasksFinished();
     handler.resetResolver('getUnexportableKeysInfo');
@@ -137,9 +143,7 @@ suite('UnexportableKeysInternals', function() {
     handler.setGetUnexportableKeysInfoResponse([sampleKey2]);
 
     // Delete the first key.
-    const deleteButton0 = deleteButtons[0];
-    assertTrue(!!deleteButton0);
-    deleteButton0.click();
+    deleteButtons[0]!.click();
 
     const keyId = await handler.whenCalled('deleteKey');
     assertEquals(sampleKey1.keyId, keyId);
@@ -155,5 +159,70 @@ suite('UnexportableKeysInternals', function() {
     assertTrue(!!row1);
     const cells1 = row1.querySelectorAll('td');
     assertEquals(sampleKey2.wrappedKey, cells1[0]!.textContent.trim());
+
+    // The delete error toast should not be shown after the key has been deleted
+    // successfully.
+    const deleteErrorToast =
+        element.shadowRoot.querySelector<CrToastElement>('#deleteErrorToast');
+    assertTrue(!!deleteErrorToast);
+    assertFalse(deleteErrorToast.open);
+  });
+
+  test('DeleteKeyShowsErrorToastOnFailure', async function() {
+    await handler.whenCalled('getUnexportableKeysInfo');
+    await microtasksFinished();
+    handler.resetResolver('getUnexportableKeysInfo');
+
+    const deleteButtons = element.shadowRoot.querySelectorAll('cr-icon-button');
+    assertEquals(2, deleteButtons.length);
+
+    handler.setDeleteKeySuccess(false);
+
+    // Delete the first key.
+    deleteButtons[0]!.click();
+
+    const keyId = await handler.whenCalled('deleteKey');
+    assertEquals(sampleKey1.keyId, keyId);
+
+    // Should trigger a re-fetch once the delete is resolved.
+    await handler.whenCalled('getUnexportableKeysInfo');
+    await microtasksFinished();
+
+    const deleteErrorToast =
+        element.shadowRoot.querySelector<CrToastElement>('#deleteErrorToast');
+    assertTrue(!!deleteErrorToast);
+    assertTrue(deleteErrorToast.open);
+  });
+
+  test('DeleteKeyHidesErrorToastOnSuccess', async function() {
+    await handler.whenCalled('getUnexportableKeysInfo');
+    await microtasksFinished();
+    handler.resetResolver('getUnexportableKeysInfo');
+
+    const deleteErrorToast =
+        element.shadowRoot.querySelector<CrToastElement>('#deleteErrorToast');
+    assertTrue(!!deleteErrorToast);
+    assertFalse(deleteErrorToast.open);
+
+    // Show the toast.
+    deleteErrorToast.show();
+    assertTrue(deleteErrorToast.open);
+
+    const deleteButtons = element.shadowRoot.querySelectorAll('cr-icon-button');
+    assertEquals(2, deleteButtons.length);
+
+    // Delete the first key.
+    deleteButtons[0]!.click();
+
+    const keyId = await handler.whenCalled('deleteKey');
+    assertEquals(sampleKey1.keyId, keyId);
+
+    // Should trigger a re-fetch once the delete is resolved.
+    await handler.whenCalled('getUnexportableKeysInfo');
+    await microtasksFinished();
+
+    // The toast (if shown before) should be immediately hidden after the key
+    // has been deleted successfully.
+    assertFalse(deleteErrorToast.open);
   });
 });
