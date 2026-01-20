@@ -219,14 +219,6 @@ mojom("gpu_channel_mojom") {
     {
       types = [
         {
-          mojom = "gpu.mojom.Error"
-          cpp = "::gpu::error::Error"
-        },
-        {
-          mojom = "gpu.mojom.ContextLostReason"
-          cpp = "::gpu::error::ContextLostReason"
-        },
-        {
           mojom = "gpu.mojom.CommandBufferState"
           cpp = "::gpu::CommandBuffer::State"
         },
@@ -300,6 +292,7 @@ mojom("interfaces") {
   generate_java = true
   sources = [
     "capabilities.mojom",
+    "constants.mojom",
     "context_result.mojom",
     "device_perf_info.mojom",
     "exported_shared_image.mojom",
@@ -355,8 +348,22 @@ mojom("interfaces") {
           cpp = "::gpu::GLCapabilities"
         },
       ]
-      traits_headers = [ "gpu_command_buffer_traits.h" ]
-      traits_public_deps = [ ":command_buffer_traits_sources" ]
+      traits_headers = [ "capabilities_mojom_traits.h" ]
+      traits_public_deps = [ ":mojom_traits" ]
+    },
+    {
+      types = [
+        {
+          mojom = "gpu.mojom.Error"
+          cpp = "::gpu::error::Error"
+        },
+        {
+          mojom = "gpu.mojom.ContextLostReason"
+          cpp = "::gpu::error::ContextLostReason"
+        },
+      ]
+      traits_headers = [ "constants_mojom_traits.h" ]
+      traits_public_deps = [ ":mojom_traits" ]
     },
     {
       types = [
@@ -786,6 +793,8 @@ source_set("mojom_traits") {
   sources = [
     "capabilities_mojom_traits.cc",
     "capabilities_mojom_traits.h",
+    "constants_mojom_traits.cc",
+    "constants_mojom_traits.h",
     "context_result_mojom_traits.h",
     "gpu_peak_memory_mojom_traits.h",
     "mailbox_mojom_traits.cc",

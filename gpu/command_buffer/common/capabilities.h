@@ -27,6 +27,8 @@
 
 namespace gpu {
 
+// NOTE: When adding members to this struct, also add corresponding
+// entries in gpu/ipc/common/capabilities.mojom.
 struct GPU_COMMAND_BUFFER_COMMON_EXPORT Capabilities {
   Capabilities();
   Capabilities(const Capabilities& other);
@@ -76,7 +78,7 @@ struct GPU_COMMAND_BUFFER_COMMON_EXPORT Capabilities {
 };
 
 // NOTE: When adding members to this struct, also add corresponding
-// entries in gpu/ipc/common/gpu_command_buffer_traits_multi.h.
+// entries in gpu/ipc/common/capabilities.mojom.
 struct GPU_COMMAND_BUFFER_COMMON_EXPORT GLCapabilities {
   GLCapabilities();
   GLCapabilities(const GLCapabilities& other);

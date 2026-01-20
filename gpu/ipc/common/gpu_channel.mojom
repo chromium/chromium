@@ -5,6 +5,7 @@
 module gpu.mojom;
 
 import "gpu/ipc/common/capabilities.mojom";
+import "gpu/ipc/common/constants.mojom";
 import "gpu/ipc/common/context_result.mojom";
 import "gpu/ipc/common/mailbox.mojom";
 import "gpu/ipc/common/shared_image_metadata.mojom";
@@ -79,14 +80,6 @@ struct CreateCommandBufferParams {
   url.mojom.Url active_url;
   string label;
 };
-
-// Corresponds to the definition in gpu/command_buffer/common/constants.h.
-[Native]
-enum Error;
-
-// Corresponds to the definition in gpu/command_buffer/common/constants.h.
-[Native]
-enum ContextLostReason;
 
 // Information used by the GPU service to convey the current state of a specific
 // CommandBuffer instance. Corresponds to gpu::CommandBuffer::State. See
