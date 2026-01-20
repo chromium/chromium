@@ -13,10 +13,6 @@
 class Profile;
 
 namespace signin {
-// Returns true if the HaTS survey associated with the given `trigger` is
-// enabled via its corresponding feature flag.
-bool IsFeatureEnabledForSigninHatsTrigger(const std::string& trigger);
-
 // Launches a HaTS survey for `profile`.
 // On Win/Mac/Linux, if no browser is active for the profile and
 // `defer_if_no_browser` is true, the survey is deferred until a browser becomes
