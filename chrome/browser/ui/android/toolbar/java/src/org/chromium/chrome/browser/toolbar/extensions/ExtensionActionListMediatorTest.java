@@ -100,7 +100,6 @@ public class ExtensionActionListMediatorTest {
 
         // Mock AndroidChromeTask.
         when(mTask.getOrCreateNativeBrowserWindowPtr()).thenReturn(BROWSER_WINDOW_POINTER);
-        when(mTask.getProfile()).thenReturn(mProfile);
 
         // Mock {@link ExtensionActionsBridge}.
         ExtensionActionContextMenuBridgeJni.setInstanceForTesting(mActionContextMenuBridgeJniMock);

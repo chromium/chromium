@@ -27,12 +27,10 @@ using base::android::JavaRef;
 }  // namespace
 
 // Implements Java |AndroidBrowserWindow.Natives#create|.
-static int64_t JNI_AndroidBrowserWindow_Create(
-    JNIEnv* env,
-    const JavaRef<jobject>& caller,
-    int32_t browser_window_type,
-    const JavaRef<jobject>& j_profile) {
-  Profile* profile = Profile::FromJavaObject(j_profile);
+static int64_t JNI_AndroidBrowserWindow_Create(JNIEnv* env,
+                                               const JavaRef<jobject>& caller,
+                                               int32_t browser_window_type,
+                                               Profile* profile) {
   return reinterpret_cast<intptr_t>(new AndroidBrowserWindow(
       env, caller,
       static_cast<BrowserWindowInterface::Type>(browser_window_type), profile));

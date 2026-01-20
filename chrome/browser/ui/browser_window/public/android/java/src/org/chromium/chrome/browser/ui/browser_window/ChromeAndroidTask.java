@@ -11,7 +11,6 @@ import org.chromium.base.JniOnceCallback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -271,9 +270,6 @@ public interface ChromeAndroidTask {
      * <p>The timestamp is in milliseconds since boot.
      */
     long getLastActivatedTimeMillis();
-
-    /** Returns the {@link Profile} associated with this task. */
-    Profile getProfile();
 
     /** Returns current bounds of the window. */
     Rect getBoundsInDp();

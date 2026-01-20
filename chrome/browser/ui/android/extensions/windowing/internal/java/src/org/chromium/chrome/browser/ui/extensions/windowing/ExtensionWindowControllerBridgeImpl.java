@@ -75,11 +75,13 @@ final class ExtensionWindowControllerBridgeImpl
     }
 
     private final ChromeAndroidTask mChromeAndroidTask;
+    private final Profile mProfile;
 
     private long mNativeExtensionWindowControllerBridge;
 
-    ExtensionWindowControllerBridgeImpl(ChromeAndroidTask chromeAndroidTask) {
+    ExtensionWindowControllerBridgeImpl(ChromeAndroidTask chromeAndroidTask, Profile profile) {
         mChromeAndroidTask = chromeAndroidTask;
+        mProfile = profile;
     }
 
     @Override
@@ -138,7 +140,7 @@ final class ExtensionWindowControllerBridgeImpl
         // To avoid this issue, we destroy the native objects for extensions as soon as the native
         // Profile is about to be destroyed. The long-term fix should be to correct the object
         // destruction order for the case described in http://crbug.com/450234852.
-        if (profile == mChromeAndroidTask.getProfile()) {
+        if (profile == mProfile) {
             destroyNativeExtensionWindowControllerBridge();
         }
     }

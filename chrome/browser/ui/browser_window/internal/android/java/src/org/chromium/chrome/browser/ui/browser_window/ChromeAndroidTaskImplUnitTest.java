@@ -301,24 +301,9 @@ public class ChromeAndroidTaskImplUnitTest {
         assertNotNull(actualPendingTaskInfo);
         assertEquals(pendingTaskInfo.mPendingTaskId, actualPendingTaskInfo.mPendingTaskId);
         assertEquals(pendingTaskInfo.mCreateParams.getWindowType(), task.getBrowserWindowType());
-        assertEquals(pendingTaskInfo.mCreateParams.getProfile(), task.getProfile());
         assertEquals(State.PENDING_CREATE, task.getState());
         assertNull(task.getId());
         assertTrue(task.getActivityScopedObjectsListForTesting().isEmpty());
-    }
-
-    @Test
-    public void getProfile_returnsInitialProfile() {
-        // Arrange.
-        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
-        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
-        var initialProfile = chromeAndroidTaskWithMockDeps.mMockProfile;
-
-        // Act & Assert.
-        assertEquals(
-                "The returned Profile should be the same as the one from the constructor.",
-                initialProfile,
-                chromeAndroidTask.getProfile());
     }
 
     @Test

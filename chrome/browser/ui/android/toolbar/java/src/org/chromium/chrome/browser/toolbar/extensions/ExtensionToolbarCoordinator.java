@@ -14,6 +14,7 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -42,11 +43,12 @@ public interface ExtensionToolbarCoordinator extends Destroyable {
             ViewStub extensionToolbarStub,
             WindowAndroid windowAndroid,
             ChromeAndroidTask task,
+            Profile profile,
             NullableObservableSupplier<Tab> currentTabSupplier,
             TabCreator tabCreator,
             ThemeColorProvider themeColorProvider) {
         // Check if the extension UI is enabled first.
-        if (!ExtensionUi.isEnabled(task.getProfile())) {
+        if (!ExtensionUi.isEnabled(profile)) {
             return null;
         }
 

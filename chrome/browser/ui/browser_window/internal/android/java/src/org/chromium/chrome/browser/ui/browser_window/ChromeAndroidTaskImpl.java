@@ -185,9 +185,9 @@ final class ChromeAndroidTaskImpl
 
     private final @BrowserWindowType int mBrowserWindowType;
 
-    private final AndroidBrowserWindow mAndroidBrowserWindow;
     // TODO(crbug.com/475200706): Support regular + OTR for mobile.
     private final Profile mInitialProfile;
+    private final AndroidBrowserWindow mAndroidBrowserWindow;
 
     /**
      * Contains all {@link ChromeAndroidTaskFeature}s associated with this {@link
@@ -338,13 +338,16 @@ final class ChromeAndroidTaskImpl
             @BrowserWindowType int browserWindowType, ActivityScopedObjects activityScopedObjects) {
         mBrowserWindowType = browserWindowType;
         mId = getActivity(activityScopedObjects.mActivityWindowAndroid).getTaskId();
-        mAndroidBrowserWindow = new AndroidBrowserWindow(/* chromeAndroidTask= */ this);
 
         Profile initialProfile =
                 activityScopedObjects.mTabModelSelector.getCurrentModel().getProfile();
         assert initialProfile != null
                 : "ChromeAndroidTask must be initialized with a non-null profile";
         mInitialProfile = initialProfile;
+
+        // TODO(crbug.com/475200706): Support regular + OTR for mobile.
+        mAndroidBrowserWindow =
+                new AndroidBrowserWindow(/* chromeAndroidTask= */ this, initialProfile);
 
         mState = State.IDLE;
         addActivityScopedObjectsInternal(activityScopedObjects);
@@ -354,8 +357,9 @@ final class ChromeAndroidTaskImpl
         mPendingTaskInfo = pendingTaskInfo;
 
         mBrowserWindowType = pendingTaskInfo.mCreateParams.getWindowType();
-        mAndroidBrowserWindow = new AndroidBrowserWindow(/* chromeAndroidTask= */ this);
         mInitialProfile = pendingTaskInfo.mCreateParams.getProfile();
+        mAndroidBrowserWindow =
+                new AndroidBrowserWindow(/* chromeAndroidTask= */ this, mInitialProfile);
         mState = State.PENDING_CREATE;
         mPendingActionManager.updateFutureStates(mPendingTaskInfo);
     }
@@ -610,12 +614,6 @@ final class ChromeAndroidTaskImpl
     public long getLastActivatedTimeMillis() {
         ThreadUtils.assertOnUiThread();
         return assertNonNull(mLastActivatedTimeMillis);
-    }
-
-    @Override
-    public Profile getProfile() {
-        ThreadUtils.assertOnUiThread();
-        return mInitialProfile;
     }
 
     @Override

@@ -116,7 +116,6 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
                 // one pointer is the existing Task and the other is the pending Task.
                 2, mChromeAndroidTaskTracker.getAllNativeBrowserWindowPtrs().length);
         assertNull(task.getId());
-        assertEquals(mockParams.getProfile(), task.getProfile());
         assertEquals(mockParams.getWindowType(), task.getBrowserWindowType());
     }
 
@@ -140,7 +139,6 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
                 // one pointer is the existing Task and the other is the pending Task.
                 2, mChromeAndroidTaskTracker.getAllNativeBrowserWindowPtrs().length);
         assertNull(task.getId());
-        assertEquals(mockParams.getProfile(), task.getProfile());
         assertEquals(mockParams.getWindowType(), task.getBrowserWindowType());
 
         var intentCaptor = ArgumentCaptor.forClass(Intent.class);

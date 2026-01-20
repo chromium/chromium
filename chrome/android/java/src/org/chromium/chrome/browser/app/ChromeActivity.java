@@ -1085,9 +1085,13 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                             pendingId);
 
             // 4. Add windowing features.
+            Profile profile = tabModelSelector.getCurrentModel().getProfile();
+            assert profile != null;
             chromeAndroidTask.addFeature(
                     ExtensionWindowControllerBridge.class,
-                    () -> ExtensionWindowControllerBridgeFactory.create(chromeAndroidTask));
+                    () ->
+                            ExtensionWindowControllerBridgeFactory.create(
+                                    chromeAndroidTask, profile));
 
             // 5. Make the ChromeAndroidTask available via OneshotSupplier.
             mChromeAndroidTaskSupplier.set(chromeAndroidTask);
