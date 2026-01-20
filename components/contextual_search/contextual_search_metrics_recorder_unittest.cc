@@ -70,6 +70,10 @@ const char kContextualSearchDeepSearchToolState[] =
     "ContextualSearch.Tools.DeepSearch.Unknown";
 const char kContextualSearchTabContextAdded[] =
     "ContextualSearch.TabContextAdded.V2.Unknown";
+const char kContextualSearchTabContextAddedFromSuggestionChip[] =
+    "ContextualSearch.TabContextAddedFromTabSuggestionChip.Unknown";
+const char kContextualSearchTabContextAddedFromPlusButton[] =
+    "ContextualSearch.TabContextAddedFromPlusButton.Unknown";
 const char kContextualSearchTabWithDuplicateTitleClicked[] =
     "ContextualSearch.TabWithDuplicateTitleClicked.V2.Unknown";
 
@@ -98,7 +102,9 @@ class ContextualSearchMetricsRecorderTest : public testing::Test {
   ContextualSearchMetricsRecorderTest() = default;
   ~ContextualSearchMetricsRecorderTest() override = default;
 
-  void SetUp() override {
+  void SetUp() override { CreateMetricsRecorder(); }
+
+  void CreateMetricsRecorder() {
     metrics_recorder_ = std::make_unique<ContextualSearchMetricsRecorder>(
         ContextualSearchSource::kUnknown);
   }
@@ -256,13 +262,30 @@ TEST_F(ContextualSearchMetricsRecorderTest, ToolState) {
 
 TEST_F(ContextualSearchMetricsRecorderTest, TabContextAdded) {
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
-  metrics().RecordTabClickedMetrics(false, std::nullopt);
-  metrics().RecordTabClickedMetrics(true, std::nullopt);
+  metrics().RecordTabAddedMetrics(/*has_duplicate_title=*/false, std::nullopt,
+                                  /*is_tab_suggestion_chip=*/false);
+  metrics().RecordTabAddedMetrics(/*has_duplicate_title=*/true, std::nullopt,
+                                  /*is_tab_suggestion_chip=*/false);
   DestructMetricsRecorder();
 
   histogram_tester().ExpectUniqueSample(kContextualSearchTabContextAdded, 2, 1);
   histogram_tester().ExpectUniqueSample(
+      kContextualSearchTabContextAddedFromSuggestionChip, 0, 1);
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchTabContextAddedFromPlusButton, 2, 1);
+  histogram_tester().ExpectUniqueSample(
       kContextualSearchTabWithDuplicateTitleClicked, 1, 1);
+
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchTabWithDuplicateTitleClicked, 1, 1);
+
+  CreateMetricsRecorder();
+  metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
+  metrics().RecordTabAddedMetrics(/*has_duplicate_title=*/false, std::nullopt,
+                                  /*is_tab_suggestion_chip=*/true);
+  DestructMetricsRecorder();
+  histogram_tester().ExpectBucketCount(
+      kContextualSearchTabContextAddedFromSuggestionChip, 1, 1);
 }
 
 TEST_F(ContextualSearchMetricsRecorderTest, FileUploadSuccess) {
