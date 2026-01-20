@@ -439,6 +439,8 @@ void DamageTracker::AccumulateDamageFromLayer(
     // only affected by the layer's damaged area, which could be empty.
     gfx::Rect damage_rect =
         gfx::UnionRects(layer->update_rect(), layer->GetDamageRect());
+    // Clip the damage to the visible layer.
+    damage_rect.Intersect(layer->visible_layer_rect());
     // if this is a view transition layer, the damage from the corresponding
     // live content surface should propagate to the layer's parent surface.
     // |view_transition_content_surface_damage_rect| is in the layer's space.

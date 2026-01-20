@@ -2155,9 +2155,10 @@ TEST_F(DamageTrackerTest, DamageRectTooBigInRenderSurface) {
   EXPECT_TRUE(GetRenderSurface(root)
                   ->damage_tracker()
                   ->has_damage_from_contributing_content());
-  EXPECT_TRUE(GetRenderSurface(child1_)
-                  ->damage_tracker()
-                  ->has_damage_from_contributing_content());
+  // child1_'s damage is outside the visible layer.
+  EXPECT_FALSE(GetRenderSurface(child1_)
+                   ->damage_tracker()
+                   ->has_damage_from_contributing_content());
 }
 
 TEST_F(DamageTrackerTest, DamageRectTooBigInRenderSurfaceWithFilter) {
@@ -2245,9 +2246,10 @@ TEST_F(DamageTrackerTest, DamageRectTooBigInRenderSurfaceWithFilter) {
   EXPECT_TRUE(GetRenderSurface(root)
                   ->damage_tracker()
                   ->has_damage_from_contributing_content());
-  EXPECT_TRUE(GetRenderSurface(child1_)
-                  ->damage_tracker()
-                  ->has_damage_from_contributing_content());
+  // child1_'s damage is outside the visible layer.
+  EXPECT_FALSE(GetRenderSurface(child1_)
+                   ->damage_tracker()
+                   ->has_damage_from_contributing_content());
 }
 
 TEST_F(DamageTrackerTest, CanUseCachedBackdropFilterResultTest) {
