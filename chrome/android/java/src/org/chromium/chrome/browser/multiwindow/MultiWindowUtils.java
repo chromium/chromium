@@ -174,7 +174,8 @@ public class MultiWindowUtils implements ActivityStateListener {
         String className = ChromeTabbedActivity.class.getCanonicalName();
         ComponentName comp = new ComponentName(packageName, className);
         try {
-            int launchMode = context.getPackageManager().getActivityInfo(comp, 0).launchMode;
+            ActivityInfo info = context.getPackageManager().getActivityInfo(comp, 0);
+            int launchMode = info == null ? ActivityInfo.LAUNCH_MULTIPLE : info.launchMode;
             boolean isSingleInstancePerTaskConfigured =
                     launchMode == ActivityInfo.LAUNCH_SINGLE_INSTANCE_PER_TASK;
             sIsMultiInstanceApi31Enabled = isSingleInstancePerTaskConfigured;
