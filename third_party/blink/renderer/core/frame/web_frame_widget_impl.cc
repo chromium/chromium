@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/core/accessibility/histogram_macros.h"
 #include "third_party/blink/renderer/core/content_capture/content_capture_manager.h"
 #include "third_party/blink/renderer/core/core_initializer.h"
+#include "third_party/blink/renderer/core/css/media_value_change.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
@@ -144,6 +145,7 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/graphics/animation_worklet_mutator_dispatcher_impl.h"
+#include "third_party/blink/renderer/platform/graphics/color_space_gamut.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_mutator_client.h"
 #include "third_party/blink/renderer/platform/graphics/paint_worklet_paint_dispatcher.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
@@ -4962,6 +4964,12 @@ void WebFrameWidgetImpl::DidUpdateSurfaceAndScreen(
           previous_original_screen_infos.current(),
           original_screen_infos.current());
 
+  const bool color_gamut_changed =
+      color_space_utilities::GetColorSpaceGamut(
+          previous_original_screen_infos.current()) !=
+      color_space_utilities::GetColorSpaceGamut(
+          original_screen_infos.current());
+
   // Update Screens interface data before firing any events. The API is designed
   // to offer synchronous access to the most up-to-date cached screen
   // information when a change event is fired.  It is not required but it
@@ -4969,14 +4977,19 @@ void WebFrameWidgetImpl::DidUpdateSurfaceAndScreen(
   // window.screen events are fired as well.
   ForEachLocalFrameControlledByWidget(
       LocalRootImpl()->GetFrame(),
-      [&original_screen_infos,
-       window_screen_has_changed](WebLocalFrameImpl* local_frame) {
+      [&original_screen_infos, window_screen_has_changed,
+       color_gamut_changed](WebLocalFrameImpl* local_frame) {
         auto* screen = local_frame->GetFrame()->DomWindow()->screen();
         screen->UpdateDisplayId(original_screen_infos.current().display_id);
         CoreInitializer::GetInstance().DidUpdateScreens(
             *local_frame->GetFrame(), original_screen_infos);
         if (window_screen_has_changed)
           screen->DispatchEvent(*Event::Create(event_type_names::kChange));
+        if (color_gamut_changed) {
+          local_frame->GetFrame()
+              ->GetDocument()
+              ->MediaQueryAffectingValueChanged(MediaValueChange::kOther);
+        }
       });
 
   if (previous_original_screen_infos != original_screen_infos) {
