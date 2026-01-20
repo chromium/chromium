@@ -124,9 +124,7 @@ void TabContextualizationController::OnAnnotatedPageContentReceived(
   }
 
   std::move(callback).Run(
-      optimization_guide::IsPageContextEligible(
-          tab_url.GetHost(), tab_url.GetPath(),
-          std::move(frame_metadata_structs), page_context_eligibility_),
+      IsPageContextEligible(tab_url, std::move(frame_metadata_structs)),
       std::move(result));
 }
 
@@ -258,6 +256,15 @@ void TabContextualizationController::OnPdfBytesReceived(
     return;
   }
 
+  // Check if the PDF is context eligible. This is required since all files
+  // are marked context ineligible until their data is received. This is usually
+  // done after the annotated page content is received, but since PDFs don't go
+  // through that codepath, eligibility must be checked here. This matches the
+  // behavior of the launched Lens flow.
+  const auto& tab_url = web_contents->GetLastCommittedURL();
+  data->is_page_context_eligible =
+      IsPageContextEligible(tab_url, /*frame_metadata=*/{});
+
   base::span<const uint8_t> file_data_span = base::span(bytes);
   std::vector<uint8_t> file_data_vector(file_data_span.begin(),
                                         file_data_span.end());
@@ -373,6 +380,14 @@ void TabContextualizationController::AddScreenshotToContextDataAndContinue(
   }
 
   std::move(callback).Run(std::move(data));
+}
+
+bool TabContextualizationController::IsPageContextEligible(
+    const GURL& url,
+    const std::vector<optimization_guide::FrameMetadata>& frame_metadata) {
+  return optimization_guide::IsPageContextEligible(url.GetHost(), url.GetPath(),
+                                                   frame_metadata,
+                                                   page_context_eligibility_);
 }
 
 }  // namespace lens
