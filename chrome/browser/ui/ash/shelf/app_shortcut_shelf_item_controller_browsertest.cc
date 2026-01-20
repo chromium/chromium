@@ -17,18 +17,19 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/event_constants.h"
 
 namespace {
-class Waiter : public BrowserListObserver {
+class Waiter : public BrowserCollectionObserver {
  public:
-  static Browser* WaitForNewBrowser() {
+  static BrowserWindowInterface* WaitForNewBrowser() {
     base::RunLoop loop;
     Waiter waiter(loop.QuitClosure());
     loop.Run();
@@ -37,18 +38,22 @@ class Waiter : public BrowserListObserver {
 
  private:
   explicit Waiter(base::OnceClosure callback) : callback_{std::move(callback)} {
-    BrowserList::AddObserver(this);
+    browser_collection_observation_.Observe(
+        GlobalBrowserCollection::GetInstance());
   }
 
-  ~Waiter() override { BrowserList::RemoveObserver(this); }
+  ~Waiter() override = default;
 
-  void OnBrowserAdded(Browser* browser) override {
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override {
     browser_ = browser;
     std::move(callback_).Run();
   }
 
   base::OnceClosure callback_;
-  raw_ptr<Browser> browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface> browser_ = nullptr;
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 }  // namespace
 
@@ -75,7 +80,7 @@ class AppShortcutShelfItemControllerBrowserTest : public InProcessBrowserTest {
     PinAppWithIDToShelf(app_id_);
   }
 
-  Browser* LaunchApp() {
+  BrowserWindowInterface* LaunchApp() {
     guest_os::LaunchTerminal(browser()->profile(), display::kInvalidDisplayId,
                              crostini::DefaultContainerId());
     return Waiter::WaitForNewBrowser();
@@ -105,25 +110,25 @@ IN_PROC_BROWSER_TEST_F(AppShortcutShelfItemControllerBrowserTest,
   EXPECT_EQ(0u, GetAppMenuItems(0).size());
 
   // Launch an app window.
-  Browser* app_browser0 = LaunchApp();
+  BrowserWindowInterface* app_browser0 = LaunchApp();
   EXPECT_EQ(1u, GetAppMenuItems(0).size());
 
   // Launch two new app windows.
-  Browser* app_browser1 = LaunchApp();
+  BrowserWindowInterface* app_browser1 = LaunchApp();
   LaunchApp();
   EXPECT_EQ(3u, GetAppMenuItems(0).size());
 
   // Open a new tab in an existing app browser. There are still 3 window items.
-  AddBlankTabAndShow(app_browser1);
+  AddBlankTabAndShow(app_browser1->GetBrowserForMigrationOnly());
   EXPECT_EQ(3u, GetAppMenuItems(0).size());
 
   // Clicking the first item in the menu should activate the first app window.
-  EXPECT_FALSE(app_browser0->window()->IsActive());
+  EXPECT_FALSE(app_browser0->GetWindow()->IsActive());
   GetAppMenuItems(0);
   GetShelfItemDelegate()->ExecuteCommand(/*from_context_menu=*/false,
                                          /*command_id=*/0, ui::EF_NONE,
                                          display::kInvalidDisplayId);
-  EXPECT_TRUE(app_browser0->window()->IsActive());
+  EXPECT_TRUE(app_browser0->GetWindow()->IsActive());
 
   // Clicking on a closed item should not crash.
   GetAppMenuItems(0);
@@ -149,27 +154,27 @@ IN_PROC_BROWSER_TEST_F(AppShortcutShelfItemControllerBrowserTest,
   EXPECT_EQ(0u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
 
   // Launch an app window. Terminal includes pinned home tab, and Linux tab.
-  Browser* app_browser0 = LaunchApp();
+  BrowserWindowInterface* app_browser0 = LaunchApp();
   EXPECT_EQ(2u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
 
   // Launch a new app window.
-  Browser* app_browser1 = LaunchApp();
+  BrowserWindowInterface* app_browser1 = LaunchApp();
   EXPECT_EQ(4u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
 
   // Open a new app tab in an existing app browser.
-  chrome::NewTab(app_browser1);
+  chrome::NewTab(app_browser1->GetBrowserForMigrationOnly());
   EXPECT_EQ(5u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
 
   // Clicking the third item in the menu should activate the first tab in the
   // second window.
-  app_browser1->tab_strip_model()->ActivateTabAt(1);
-  app_browser1->window()->Minimize();
+  app_browser1->GetTabStripModel()->ActivateTabAt(1);
+  app_browser1->GetWindow()->Minimize();
   GetAppMenuItems(ui::EF_SHIFT_DOWN);
   GetShelfItemDelegate()->ExecuteCommand(/*from_context_menu=*/false,
                                          /*command_id=*/2, ui::EF_NONE,
                                          display::kInvalidDisplayId);
-  EXPECT_TRUE(app_browser1->window()->IsActive());
-  EXPECT_TRUE(app_browser1->tab_strip_model()->active_index() == 0);
+  EXPECT_TRUE(app_browser1->GetWindow()->IsActive());
+  EXPECT_TRUE(app_browser1->GetTabStripModel()->active_index() == 0);
 
   // Clicking on a closed item should not crash.
   GetAppMenuItems(ui::EF_SHIFT_DOWN);
