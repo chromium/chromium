@@ -149,30 +149,7 @@ public class ProxyTest {
     @Test
     @SmallTest
     public void testProxyOptions_nullProxyList_throws() {
-        assertThrows(NullPointerException.class, () -> ProxyOptions.fromProxyList(null));
-    }
-
-    @Test
-    @SmallTest
-    public void testProxyOptions_nullProxyIsNotLastElement_throws() {
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> ProxyOptions.fromProxyList(Arrays.asList(null, null)));
-        Proxy.HttpConnectCallback proxyCallback =
-                Mockito.mock(Proxy.HttpConnectCallback.class, Mockito.CALLS_REAL_METHODS);
-        Proxy proxy =
-                Proxy.createHttpProxy(
-                        /* scheme= */ Proxy.SCHEME_HTTPS,
-                        /* host= */ "this-hostname-does-not-exist.com",
-                        /* port= */ 8080,
-                        Executors.newSingleThreadExecutor(),
-                        /* callback= */ proxyCallback);
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> ProxyOptions.fromProxyList(Arrays.asList(null, proxy)));
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> ProxyOptions.fromProxyList(Arrays.asList(proxy, null, proxy)));
+        assertThrows(NullPointerException.class, () -> ProxyOptions.fromProxyList(null, ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_ALLOW_DIRECT));
     }
 
     @Test
@@ -180,46 +157,18 @@ public class ProxyTest {
     public void testProxyOptions_emptyProxyList_throws() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> ProxyOptions.fromProxyList(Collections.emptyList()));
+                () -> ProxyOptions.fromProxyList(Collections.emptyList(), ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_DISALLOW_DIRECT));
     }
 
     @Test
     @SmallTest
-    @IgnoreFor(
-            implementations = {CronetImplementation.AOSP_PLATFORM, CronetImplementation.FALLBACK},
-            reason =
-                    "This feature flag has not reached platform Cronet yet. Fallback provides no"
-                            + " ProxyOptions support.",
-            requiredSdkExtensionForPlatform = HTTPENGINE_PROXY_API_SDK_EXTENSION)
-    public void testDirectProxy_requestSucceeds() {
-        mNativeTestServer.start();
-        mTestRule
-                .getTestFramework()
-                .applyEngineBuilderPatch(
-                        (builder) ->
-                                builder.setProxyOptions(
-                                        ProxyOptions.fromProxyList(Arrays.asList((Proxy) null))));
-        ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
-        TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder urlRequestBuilder =
-                cronetEngine.newUrlRequestBuilder(
-                        mNativeTestServer.getSuccessURL(), callback, callback.getExecutor());
-        urlRequestBuilder.build().start();
-        callback.blockForDone();
-        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
-        // This cannot be tested when HttpEngine is used under the hood:
-        // android.net.http.UrlResponseInfo does not expose the proxy used for a request.
-        if (mTestRule.implementationUnderTest() != CronetImplementation.AOSP_PLATFORM) {
-            assertThat(callback.getResponseInfoWithChecks()).hasProxyServerThat().isEqualTo(":0");
-        }
-
-        // CronetTrafficInfo is logged starting from Oreo. AOSP_PLATFORM does not support test
-        // logger injection.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && mTestRule.implementationUnderTest() != CronetImplementation.AOSP_PLATFORM) {
-            mLoggerTestRule.mTestLogger.waitForLogCronetTrafficInfo();
-            assertThat(mLoggerTestRule.mTestLogger.getLastCronetTrafficInfo().isProxied())
-                    .isFalse();
-        }
+    public void testProxyOptions_nullElementInProxyList_throws() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> ProxyOptions.fromProxyList(Arrays.asList((Proxy) null), ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_DISALLOW_DIRECT));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> ProxyOptions.fromProxyList(Arrays.asList((Proxy) null), ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_ALLOW_DIRECT));
     }
 
     @Test
@@ -249,8 +198,8 @@ public class ProxyTest {
                                                                 /* host= */ "this-hostname-does-not-exist.com",
                                                                 /* port= */ 8080,
                                                                 Executors.newSingleThreadExecutor(),
-                                                                /* callback= */ proxyCallback),
-                                                        null))));
+                                                                /* callback= */ proxyCallback)),
+                                                                ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_ALLOW_DIRECT)));
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder urlRequestBuilder =
@@ -303,7 +252,8 @@ public class ProxyTest {
                                                                 /* host= */ "this-hostname-does-not-exist.com",
                                                                 /* port= */ 8080,
                                                                 Executors.newSingleThreadExecutor(),
-                                                                /* callback= */ proxyCallback)))));
+                                                                /* callback= */ proxyCallback)),
+                                                                ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_DISALLOW_DIRECT)));
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder urlRequestBuilder =
@@ -405,7 +355,8 @@ public class ProxyTest {
                                                                             .getPort(),
                                                                     Executors
                                                                             .newSingleThreadExecutor(),
-                                                                    /* callback= */ workingProxyCallback)))));
+                                                                    /* callback= */ workingProxyCallback)),
+                                                                    ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_DISALLOW_DIRECT)));
 
             ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
             TestUrlRequestCallback callback = new TestUrlRequestCallback();
@@ -495,7 +446,8 @@ public class ProxyTest {
                                                                 /* port= */ mNativeTestServer
                                                                         .getPort(),
                                                                 Executors.newSingleThreadExecutor(),
-                                                                /* callback= */ proxyCallback)))));
+                                                                /* callback= */ proxyCallback)),
+                                                                ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_DISALLOW_DIRECT)));
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder urlRequestBuilder =
@@ -566,7 +518,8 @@ public class ProxyTest {
                                                                 /* port= */ mNativeTestServer
                                                                         .getPort(),
                                                                 Executors.newSingleThreadExecutor(),
-                                                                /* callback= */ proxyCallback)))));
+                                                                /* callback= */ proxyCallback)),
+                                                                ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_DISALLOW_DIRECT)));
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder urlRequestBuilder =
@@ -636,7 +589,8 @@ public class ProxyTest {
                                                                 /* port= */ mNativeTestServer
                                                                         .getPort(),
                                                                 Executors.newSingleThreadExecutor(),
-                                                                /* callback= */ proxyCallback)))));
+                                                                /* callback= */ proxyCallback)),
+                                                                ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_DISALLOW_DIRECT)));
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder urlRequestBuilder =
@@ -707,7 +661,8 @@ public class ProxyTest {
                                                             /* host= */ "localhost",
                                                             /* port= */ mNativeTestServer.getPort(),
                                                             Executors.newSingleThreadExecutor(),
-                                                            /* callback= */ proxyCallback))));
+                                                            /* callback= */ proxyCallback)),
+                                                            ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_DISALLOW_DIRECT));
                         });
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
@@ -781,7 +736,8 @@ public class ProxyTest {
                                                                 /* port= */ mNativeTestServer
                                                                         .getPort(),
                                                                 Executors.newSingleThreadExecutor(),
-                                                                /* callback= */ proxyCallback)))));
+                                                                /* callback= */ proxyCallback)),
+                                                                ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_DISALLOW_DIRECT)));
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder urlRequestBuilder =
@@ -845,7 +801,8 @@ public class ProxyTest {
                                                                             .getPort(),
                                                                     Executors
                                                                             .newSingleThreadExecutor(),
-                                                                    /* callback= */ proxyCallback)))));
+                                                                    /* callback= */ proxyCallback)),
+                                                                    ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_DISALLOW_DIRECT)));
             ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
             TestUrlRequestCallback callback = new TestUrlRequestCallback();
             UrlRequest.Builder urlRequestBuilder =
@@ -948,7 +905,8 @@ public class ProxyTest {
                                                                             .getPort(),
                                                                     Executors
                                                                             .newSingleThreadExecutor(),
-                                                                    /* callback= */ proxyCallback)))));
+                                                                    /* callback= */ proxyCallback)),
+                                                                    ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_DISALLOW_DIRECT)));
             ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
             TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
             BidirectionalStream stream =
@@ -1052,7 +1010,8 @@ public class ProxyTest {
                                                                             .getPort(),
                                                                     Executors
                                                                             .newSingleThreadExecutor(),
-                                                                    /* callback= */ proxyCallback)))));
+                                                                    /* callback= */ proxyCallback)),
+                                                                    ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_DISALLOW_DIRECT)));
             ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
             TestUrlRequestCallback callback = new TestUrlRequestCallback();
             UrlRequest.Builder urlRequestBuilder =
@@ -1136,7 +1095,8 @@ public class ProxyTest {
                     .applyEngineBuilderPatch(
                             (builder) ->
                                     builder.setProxyOptions(
-                                            ProxyOptions.fromProxyList(Arrays.asList(proxy))));
+                                            ProxyOptions.fromProxyList(Arrays.asList(proxy),
+                                                    ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_DISALLOW_DIRECT)));
             ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
             TestUrlRequestCallback callback = new TestUrlRequestCallback();
             UrlRequest.Builder urlRequestBuilder =
@@ -1206,7 +1166,8 @@ public class ProxyTest {
                                                                             .getPort(),
                                                                     Executors
                                                                             .newSingleThreadExecutor(),
-                                                                    /* callback= */ proxyCallback)))));
+                                                                    /* callback= */ proxyCallback)),
+                                                                    ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_DISALLOW_DIRECT)));
             ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
             TestUrlRequestCallback callback = new TestUrlRequestCallback();
             UrlRequest.Builder urlRequestBuilder =
@@ -1278,7 +1239,8 @@ public class ProxyTest {
                                                                             .getPort(),
                                                                     Executors
                                                                             .newSingleThreadExecutor(),
-                                                                    /* callback= */ proxyCallback)))));
+                                                                    /* callback= */ proxyCallback)),
+                                                                    ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_DISALLOW_DIRECT)));
             ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
 
             TestUrlRequestCallback callback = new TestUrlRequestCallback();
@@ -1352,7 +1314,8 @@ public class ProxyTest {
                                                                             .getPort(),
                                                                     Executors
                                                                             .newSingleThreadExecutor(),
-                                                                    /* callback= */ proxyCallback)))));
+                                                                    /* callback= */ proxyCallback)),
+                                                                    ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_DISALLOW_DIRECT)));
             ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
             TestUrlRequestCallback callback = new TestUrlRequestCallback();
             UrlRequest.Builder urlRequestBuilder =
@@ -1421,7 +1384,8 @@ public class ProxyTest {
                                                                             .getPort(),
                                                                     Executors
                                                                             .newSingleThreadExecutor(),
-                                                                    /* callback= */ proxyCallback)))));
+                                                                    /* callback= */ proxyCallback)),
+                                                                    ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_DISALLOW_DIRECT)));
             ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
             TestUrlRequestCallback callback = new TestUrlRequestCallback();
             UrlRequest.Builder urlRequestBuilder =
@@ -1502,7 +1466,8 @@ public class ProxyTest {
                                                                             .getPort(),
                                                                     Executors
                                                                             .newSingleThreadExecutor(),
-                                                                    /* callback= */ proxyCallback)))));
+                                                                    /* callback= */ proxyCallback)),
+                                                                    ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_DISALLOW_DIRECT)));
             ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
             TestUrlRequestCallback callback = new TestUrlRequestCallback();
             UrlRequest.Builder urlRequestBuilder =
@@ -1584,7 +1549,8 @@ public class ProxyTest {
                                                                             .getPort(),
                                                                     Executors
                                                                             .newSingleThreadExecutor(),
-                                                                    /* callback= */ proxyCallback)))));
+                                                                    /* callback= */ proxyCallback)),
+                                                                    ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_DISALLOW_DIRECT)));
             ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
             TestUrlRequestCallback callback = new TestUrlRequestCallback();
             UrlRequest.Builder urlRequestBuilder =
@@ -1659,7 +1625,8 @@ public class ProxyTest {
                                                                             .getPort(),
                                                                     Executors
                                                                             .newSingleThreadExecutor(),
-                                                                    /* callback= */ proxyCallback)))));
+                                                                    /* callback= */ proxyCallback)),
+                                                                    ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_DISALLOW_DIRECT)));
             ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
             TestUrlRequestCallback callback = new TestUrlRequestCallback();
             UrlRequest.Builder urlRequestBuilder =
@@ -1741,7 +1708,8 @@ public class ProxyTest {
                                                                             .getPort(),
                                                                     Executors
                                                                             .newSingleThreadExecutor(),
-                                                                    /* callback= */ proxyCallback)))));
+                                                                    /* callback= */ proxyCallback)),
+                                                    ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_DISALLOW_DIRECT)));
             ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
             TestUrlRequestCallback callback = new TestUrlRequestCallback();
             UrlRequest.Builder urlRequestBuilder =
@@ -1832,7 +1800,8 @@ public class ProxyTest {
                                                                             .getPort(),
                                                                     Executors
                                                                             .newSingleThreadExecutor(),
-                                                                    /* callback= */ proceedProxyCallback)))));
+                                                                    /* callback= */ proceedProxyCallback)),
+                                                                    ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_DISALLOW_DIRECT)));
 
             ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
             TestUrlRequestCallback callback = new TestUrlRequestCallback();
@@ -1942,7 +1911,8 @@ public class ProxyTest {
                                                                             .getPort(),
                                                                     Executors
                                                                             .newSingleThreadExecutor(),
-                                                                    /* callback= */ proceedProxyCallback)))));
+                                                                    /* callback= */ proceedProxyCallback)),
+                                                                    ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_DISALLOW_DIRECT)));
 
             ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
             TestUrlRequestCallback callback = new TestUrlRequestCallback();
@@ -2048,7 +2018,8 @@ public class ProxyTest {
                                                                 /* port= */ mNativeTestServer
                                                                         .getPort(),
                                                                 Executors.newSingleThreadExecutor(),
-                                                                /* callback= */ proxyCallback)))));
+                                                                /* callback= */ proxyCallback)),
+                                                                ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_DISALLOW_DIRECT)));
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder urlRequestBuilder =
@@ -2145,7 +2116,8 @@ public class ProxyTest {
                                                                 /* port= */ mNativeTestServer
                                                                         .getPort(),
                                                                 Executors.newSingleThreadExecutor(),
-                                                                /* callback= */ closeDuringResponseProxyCallback)))));
+                                                                /* callback= */ closeDuringResponseProxyCallback)),
+                                                                ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_DISALLOW_DIRECT)));
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder urlRequestBuilder =
@@ -2219,7 +2191,8 @@ public class ProxyTest {
                                                                 /* port= */ mNativeTestServer
                                                                         .getPort(),
                                                                 Executors.newSingleThreadExecutor(),
-                                                                /* callback= */ proxyCallback)))));
+                                                                /* callback= */ proxyCallback)),
+                                                                ProxyOptions.ALL_PROXIES_FAILED_BEHAVIOR_DISALLOW_DIRECT)));
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder urlRequestBuilder =

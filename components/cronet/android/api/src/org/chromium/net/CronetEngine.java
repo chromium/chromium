@@ -517,8 +517,8 @@ public abstract class CronetEngine {
          * user; or some enterprise profile configuration, or (most likely) some network
          * autoconfiguration (e.g., Web Proxy Auto-Discovery Protocol). This is usually referred to
          * as "system" proxy configuration. If present, respecting the system proxy configuration is
-         * often a requirement to obtain local and/or internet connectivity. Cronet already handles
-         * the system proxy configuration internally.
+         * often a requirement to obtain local and/or internet connectivity. CronetEngine already
+         * handles the system proxy configuration internally.
          *
          * <p>A proxy configuration defined via this API are refererred to as "app" proxy
          * configuration. App and system proxy configuration are separate and, most importantly,

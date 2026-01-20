@@ -390,11 +390,16 @@ public final class org.chromium.net.Proxy {
   public static final int SCHEME_HTTPS;
   public static org.chromium.net.Proxy createHttpProxy(int, java.lang.String, int, java.util.concurrent.Executor, org.chromium.net.Proxy$HttpConnectCallback);
 }
+public interface org.chromium.net.ProxyOptions$AllProxiesFailedBehavior extends java.lang.annotation.Annotation {
+}
 public interface org.chromium.net.ProxyOptions$Experimental extends java.lang.annotation.Annotation {
 }
 public final class org.chromium.net.ProxyOptions {
   public java.util.List<org.chromium.net.Proxy> getProxyList();
+  public static final int ALL_PROXIES_FAILED_BEHAVIOR_ALLOW_DIRECT;
+  public static final int ALL_PROXIES_FAILED_BEHAVIOR_DISALLOW_DIRECT;
   public static org.chromium.net.ProxyOptions fromProxyList(java.util.List<org.chromium.net.Proxy>);
+  public static org.chromium.net.ProxyOptions fromProxyList(java.util.List<org.chromium.net.Proxy>, int);
 }
 public abstract class org.chromium.net.QuicException extends org.chromium.net.NetworkException {
   protected org.chromium.net.QuicException(java.lang.String, java.lang.Throwable);
@@ -670,4 +675,4 @@ public class org.chromium.net.apihelpers.UrlRequestCallbacks {
   public static org.chromium.net.apihelpers.UrlRequestCallbacks$CallbackAndResponseFuturePair<java.lang.String, org.chromium.net.apihelpers.StringCronetCallback> forStringBody(org.chromium.net.apihelpers.RedirectHandler);
   public static org.chromium.net.apihelpers.UrlRequestCallbacks$CallbackAndResponseFuturePair<org.json.JSONObject, org.chromium.net.apihelpers.JsonCronetCallback> forJsonBody(org.chromium.net.apihelpers.RedirectHandler);
 }
-Stamp: 0c601ceaaaa307ad009b8e5ad193c06e
+Stamp: 0acca2b5f59e243328728c5be0e308e0
