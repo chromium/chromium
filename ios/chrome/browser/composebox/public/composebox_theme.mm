@@ -29,7 +29,8 @@
 }
 
 - (BOOL)isTopInputPlate {
-  return _inputPlatePosition == ComposeboxInputPlatePosition::kTop;
+  return _inputPlatePosition == ComposeboxInputPlatePosition::kTop ||
+         _inputPlatePosition == ComposeboxInputPlatePosition::kiPad;
 }
 
 - (UIColor*)composeboxBackgroundColor {
