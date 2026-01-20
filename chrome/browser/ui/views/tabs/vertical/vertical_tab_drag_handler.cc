@@ -23,6 +23,7 @@
 #include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/view_utils.h"
 
 namespace {
@@ -339,6 +340,8 @@ void VerticalTabDragHandlerImpl::StartedDragging(
     auto* shim_view = views::AsViewClass<TabSlotShimView>(view);
     CHECK(shim_view);
     dragged_tabs_.insert(&shim_view->node());
+    shim_view->parent()->SetPaintToLayer();
+    shim_view->parent()->layer()->SetFillsBoundsOpaquely(false);
   }
 }
 
@@ -347,6 +350,9 @@ void VerticalTabDragHandlerImpl::DraggedTabsDetached() {
 }
 
 void VerticalTabDragHandlerImpl::StoppedDragging() {
+  for (auto& [_, shim_view] : shim_views_) {
+    shim_view->parent()->DestroyLayer();
+  }
   dragged_tabs_.clear();
 }
 

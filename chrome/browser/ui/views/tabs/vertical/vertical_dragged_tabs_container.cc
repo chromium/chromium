@@ -144,7 +144,6 @@ void VerticalDraggedTabsContainer::InitializeDragState(
 void VerticalDraggedTabsContainer::ResetDragState() {
   for (auto view : dragging_views_) {
     view->SetTransform(gfx::Transform());
-    view->SetClipPath(view->clip_path());
   }
   UpdateLayoutForDrag();
   dragging_views_.clear();
@@ -160,9 +159,6 @@ void VerticalDraggedTabsContainer::UpdateDraggingViewTransforms(
     transform.Translate(
         0, GetYForDraggedTab(*tab_view, point_in_container, drag_clamp_min_y));
     tab_view->SetTransform(transform);
-    // Applying a transformation for the first time destroys the clip mask
-    // layer. Reapply the clip path in case.
-    tab_view->SetClipPath(tab_view->clip_path());
   }
 }
 
