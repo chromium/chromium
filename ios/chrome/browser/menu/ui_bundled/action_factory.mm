@@ -349,7 +349,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
       DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolActionPointSize);
   int titleID;
   if (base::FeatureList::IsEnabled(kTabSwitcherOverflowMenu)) {
-    titleID = IDS_IOS_INACTIVE_TABS_CLOSE_ALL_CONFIRMATION_OPTION;
+    titleID = IDS_IOS_TAB_SWITCHER_CLOSE_ALL_ACTION_BUTTON;
   } else {
     titleID = IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABSANDGROUPS;
   }
