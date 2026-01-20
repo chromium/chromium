@@ -1117,7 +1117,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendPreserveNewline(
     const TransformedString& transformed,
     const ComputedStyle* style,
     LayoutText* layout_object) {
-  String string = transformed.View().ToString();
+  StringView string = transformed.View();
   for (unsigned start = 0; start < string.length();) {
     if (string[start] == uchar::kLineFeed) {
       AppendForcedBreakCollapseWhitespace(layout_object);
