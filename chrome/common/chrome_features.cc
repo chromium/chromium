@@ -455,7 +455,7 @@ BASE_FEATURE(kGlicActorIterativeInteractionPointDiscovery,
 const base::FeatureParam<size_t>
     kGlicActorInterationPointDiscoveryMaxIterations{
         &kGlicActorIterativeInteractionPointDiscovery,
-        "interaction-discovery-max-iterations", 0};
+        "interaction-discovery-max-iterations", 1000};
 
 // Whether to trigger mouse move events with each click.
 BASE_FEATURE(kGlicActorMoveBeforeClick, base::FEATURE_ENABLED_BY_DEFAULT);
