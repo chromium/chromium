@@ -324,15 +324,11 @@ void TouchDispositionGestureFilter::FilterAndSendPacket(
       needs_scroll_ending_event_ &&
       packet.gesture_source() == GestureEventDataPacket::TOUCH_MOVE &&
       packet.gesture_count() == 0) {
-    auto gesture = CreateGesture(EventType::kGestureScrollUpdate,
-                                 packet.unique_touch_event_id(),
-                                 packet.tool_type(), packet);
-    if (!state_.Filter(gesture.details.type())) {
-      TRACE_EVENT("input", "EmptyGestureScrollUpdate");
-      SendGesture(std::move(gesture), packet);
-    } else {
-      CancelTapIfNecessary(packet);
-    }
+    TRACE_EVENT("input", "EmptyGestureScrollUpdate");
+    SendGesture(CreateGesture(EventType::kGestureScrollUpdate,
+                              packet.unique_touch_event_id(),
+                              packet.tool_type(), packet),
+                packet);
   }
 
   for (size_t i = 0; i < packet.gesture_count(); ++i) {
