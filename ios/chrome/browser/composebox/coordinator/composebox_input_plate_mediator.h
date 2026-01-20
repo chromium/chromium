@@ -75,10 +75,6 @@ class ContextualSearchSessionHandle;
 
 - (void)disconnect;
 
-// Processes the given `itemProvider` for an image.
-- (void)processImageItemProvider:(NSItemProvider*)itemProvider
-                         assetID:(NSString*)assetID;
-
 // Returns whether more attachments can be added.
 - (BOOL)canAddMoreAttachments;
 

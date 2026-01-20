@@ -64,7 +64,7 @@ enum class ComposeboxMode;
 
 /// Informs the delegate that a file attachment did fail due to exceeding the
 /// attachment limit.
-- (void)didFailToAttachDueToAttachmentLimit:
+- (void)didFailToAttachDueToIneligibleAttachments:
     (ComposeboxInputPlateViewController*)composeboxViewController;
 
 @end
