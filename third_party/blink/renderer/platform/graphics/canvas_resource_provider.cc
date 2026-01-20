@@ -1090,8 +1090,8 @@ Canvas2DResourceProviderBitmap::Create(gfx::Size size,
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)
-      provider->Clear();
-    // The Clear() call cannot turn a CRPBitmap invalid.
+      provider->ClearAtCreation();
+    // The ClearAtCreation() call cannot turn a CRPBitmap invalid.
     CHECK(provider->IsValid());
     return provider;
   }
@@ -1122,8 +1122,8 @@ CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)
-      provider->Clear();
-    // The Clear() call cannot turn a SW CRPSI invalid.
+      provider->ClearAtCreation();
+    // The ClearAtCreation() call cannot turn a SW CRPSI invalid.
     CHECK(provider->IsValid());
     return provider;
   }
@@ -1247,7 +1247,7 @@ CanvasResourceProvider::CreateSharedImageProvider(
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)
-      provider->Clear();
+      provider->ClearAtCreation();
 
     // Check whether an error occurred while flushing the recording.
     if (!provider->IsValid()) {
@@ -1701,7 +1701,7 @@ bool CanvasResourceProvider::UnacceleratedWritePixels(
   return wrote_pixels;
 }
 
-void CanvasResourceProvider::Clear() {
+void CanvasResourceProvider::ClearAtCreation() {
   // Clear the background transparent or opaque, as required. This should only
   // be called when a new resource provider is created to ensure that we're
   // not leaking data or displaying bad pixels (in the case of kOpaque

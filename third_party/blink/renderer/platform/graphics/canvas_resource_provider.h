@@ -287,8 +287,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   void EnsureSkiaCanvas();
 
-  void Clear();
-
  private:
   friend class FlushForImageListener;
 
@@ -305,6 +303,11 @@ class PLATFORM_EXPORT CanvasResourceProvider
   virtual void DisableLineDrawingAsPathsIfNecessary() {}
 
  protected:
+  // Should only be called from static Create*() methods.
+  // TODO(crbug.com/352263194): Eliminate this method by inlining its body at
+  // callsites.
+  void ClearAtCreation();
+
   // Note that `info_` should be const, but the relevant SkImageInfo
   // constructors do not exist.
   SkImageInfo info_;
