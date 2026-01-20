@@ -395,11 +395,9 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
 // Checks whether miscellaneous "other" requirements (OTR, app-locale, Geo-IP)
 // are satisfied.
 [[nodiscard]] bool SatisfiesMiscellaneousRequirements(
-    FeatureCheck is_enabled,
     bool is_off_the_record,
     bool has_entity_data_saved,
     const GeoIpCountryCode& country_code,
-    std::string_view app_locale,
     AutofillAiAction action,
     std::string* debug_message) {
   // Off-the-record.
@@ -512,9 +510,8 @@ bool MayPerformAutofillAiAction(const AutofillClient& client,
   }
 
   return SatisfiesMiscellaneousRequirements(
-      feature_check, client.IsOffTheRecord(), has_entity_data_saved,
-      client.GetVariationConfigCountryCode(), client.GetAppLocale(), action,
-      debug_message);
+      client.IsOffTheRecord(), has_entity_data_saved,
+      client.GetVariationConfigCountryCode(), action, debug_message);
 }
 
 bool GetAutofillAiOptInStatus(const AutofillClient& client) {
