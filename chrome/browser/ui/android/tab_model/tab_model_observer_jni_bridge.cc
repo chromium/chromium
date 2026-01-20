@@ -208,6 +208,15 @@ void TabModelObserverJniBridge::OnTabGroupMoved(JNIEnv* env,
   }
 }
 
+void TabModelObserverJniBridge::OnTabGroupVisualsChanged(JNIEnv* env,
+                                                         base::Token group_id) {
+  auto tab_group_id = tab_groups::TabGroupId::FromRawToken(group_id);
+  CHECK(!tab_group_id.is_empty());
+  for (auto& observer : model_observers_) {
+    observer.OnTabGroupVisualsChanged(tab_group_id);
+  }
+}
+
 void TabModelObserverJniBridge::AddObserver(TabModelObserver* observer) {
   model_observers_.AddObserver(observer);
 }

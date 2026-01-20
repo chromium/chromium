@@ -350,11 +350,8 @@ void TabListBridge::SetTabGroupVisualData(
   if (!tab_strip_->group_model()) {
     return;
   }
-  TabGroup* tab_group = tab_strip_->group_model()->GetTabGroup(group_id);
-  if (!tab_group) {
-    return;
-  }
-  tab_group->SetVisualData(visual_data);
+  // Use ChangeTabGroupsVisuals() to ensure observers are notified.
+  tab_strip_->ChangeTabGroupVisuals(group_id, visual_data);
 }
 
 std::optional<tab_groups::TabGroupId> TabListBridge::AddTabsToGroup(

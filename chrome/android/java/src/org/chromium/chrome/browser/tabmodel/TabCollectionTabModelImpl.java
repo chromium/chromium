@@ -927,6 +927,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             observer.didChangeTabGroupColor(tabGroupId, colorId);
             observer.didChangeTabGroupCollapsed(tabGroupId, isCollapsed, animate);
         }
+        for (TabModelObserver observer : mTabModelObservers) {
+            observer.onTabGroupVisualsChanged(tabGroupId);
+        }
     }
 
     // TabGroupModelFilter overrides.
@@ -1276,6 +1279,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
             observer.didChangeTabGroupTitle(tabGroupId, title);
         }
+        for (TabModelObserver observer : mTabModelObservers) {
+            observer.onTabGroupVisualsChanged(tabGroupId);
+        }
     }
 
     @Override
@@ -1321,6 +1327,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
             observer.didChangeTabGroupColor(tabGroupId, color);
         }
+        for (TabModelObserver observer : mTabModelObservers) {
+            observer.onTabGroupVisualsChanged(tabGroupId);
+        }
     }
 
     @Override
@@ -1352,6 +1361,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                         isCollapsed);
         for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
             observer.didChangeTabGroupCollapsed(tabGroupId, isCollapsed, animate);
+        }
+        for (TabModelObserver observer : mTabModelObservers) {
+            observer.onTabGroupVisualsChanged(tabGroupId);
         }
     }
 

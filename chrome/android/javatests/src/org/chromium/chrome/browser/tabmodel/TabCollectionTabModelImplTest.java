@@ -3998,35 +3998,60 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
-    public void testOnTabGroupMovedNotification() throws Exception {
+    public void testOnTabGroupVisualsChangedNotification() throws Exception {
+        Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
-        Tab tab2 = createTab();
-        // Use tabs 1 and 2 for the tab group. Don't include tab 0 because we're going to move the
-        // group to the left of tab 0, so tab 0 can't be part of the group.
-        List<Tab> tabs = List.of(tab1, tab2);
+        List<Tab> tabs = List.of(tab0, tab1);
 
         AtomicReference<Token> tabGroupId = new AtomicReference<>();
-        CallbackHelper onTabGroupMoved = new CallbackHelper();
+        CallbackHelper onTabGroupVisualsChanged = new CallbackHelper();
         TabModelObserver observer =
                 new TabModelObserver() {
                     @Override
-                    public void onTabGroupMoved(Token movedGroupId, int oldIndex) {
-                        assertFalse(movedGroupId.isZero());
-                        assertEquals(movedGroupId, tabGroupId.get());
-                        assertEquals(1, oldIndex);
-                        onTabGroupMoved.notifyCalled();
+                    public void onTabGroupVisualsChanged(Token groupId) {
+                        assertFalse(groupId.isZero());
+                        assertEquals(groupId, tabGroupId.get());
+                        onTabGroupVisualsChanged.notifyCalled();
                     }
                 };
 
+        // Create a tab group, then change its title.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCollectionModel.addObserver(observer);
                     tabGroupId.set(mCollectionModel.createTabGroup(tabs));
-                    // Move tab group to the left of the 0th tab.
-                    mCollectionModel.moveGroupToIndex(tabGroupId.get(), 0);
+                    mCollectionModel.setTabGroupTitle(tabGroupId.get(), "New Title");
                 });
 
-        onTabGroupMoved.waitForOnly();
+        // The callback is called.
+        onTabGroupVisualsChanged.waitForNext();
+
+        // Set the tab group color.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mCollectionModel.setTabGroupColor(tabGroupId.get(), TabGroupColorId.BLUE));
+
+        // The callback is called.
+        onTabGroupVisualsChanged.waitForNext();
+
+        // Set the tab group collapsed state.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mCollectionModel.setTabGroupCollapsed(tabGroupId.get(), true));
+
+        // The callback is called.
+        onTabGroupVisualsChanged.waitForNext();
+
+        // Set all the visual data at once.
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mCollectionModel.setTabGroupVisualData(
+                                tabGroupId.get(),
+                                "Other Title",
+                                TabGroupColorId.RED,
+                                /* isCollapsed= */ false,
+                                /* animate= */ false));
+
+        // The callback is called.
+        onTabGroupVisualsChanged.waitForNext();
 
         ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeObserver(observer));
     }
