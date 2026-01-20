@@ -48,8 +48,6 @@ OptionalPaintTimingCallback TextPaintTimingDetector::TakePaintTimingCallback() {
 
 void TextPaintTimingDetector::LayoutObjectWillBeDestroyed(
     const LayoutObject& object) {
-  recorded_set_.erase(&object);
-  rewalkable_set_.erase(&object);
   auto it = texts_queued_for_paint_time_.find(&object);
   if (it != texts_queued_for_paint_time_.end()) {
     if (RuntimeEnabledFeatures::
