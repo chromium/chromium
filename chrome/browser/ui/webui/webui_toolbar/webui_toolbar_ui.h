@@ -16,6 +16,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+#include "ui/webui/resources/js/tracked_element/tracked_element.mojom.h"
+#include "ui/webui/tracked_element/tracked_element_handler.h"
 
 class WebUIToolbarUI : public TopChromeWebUIController,
                        public webui_toolbar::mojom::PageHandlerFactory {
@@ -29,6 +31,10 @@ class WebUIToolbarUI : public TopChromeWebUIController,
 
   void BindInterface(
       mojo::PendingReceiver<webui_toolbar::mojom::PageHandlerFactory> receiver);
+
+  void BindInterface(
+      mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
+          receiver);
 
   void SetReloadButtonState(bool is_loading, bool is_menu_enabled);
 
@@ -60,9 +66,15 @@ class WebUIToolbarUI : public TopChromeWebUIController,
 
   CommandUpdater* GetCommandUpdater() const;
 
+  // Returns the list of known element identifiers. These elements are HTML
+  // elements tracked by ui/webui/tracked_element. Used for anchoring secondary
+  // UIs.
+  const std::vector<ui::ElementIdentifier> GetKnownElementIdentifiers() const;
+
   std::unique_ptr<WebUIToolbarPageHandler> webui_toolbar_page_handler_;
   mojo::Receiver<webui_toolbar::mojom::PageHandlerFactory>
       page_factory_receiver_{this};
+  std::unique_ptr<ui::TrackedElementHandler> tracked_element_handler_;
 
   raw_ptr<WebUIToolbarPageHandler::WebUIToolbarDelegate> delegate_ = nullptr;
 

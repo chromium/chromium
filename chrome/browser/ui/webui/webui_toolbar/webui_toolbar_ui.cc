@@ -9,8 +9,10 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
@@ -29,6 +31,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/views/widget/widget.h"
+#include "ui/webui/tracked_element/tracked_element_handler.h"
 #include "ui/webui/webui_util.h"
 
 WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
@@ -74,6 +77,20 @@ void WebUIToolbarUI::BindInterface(
     mojo::PendingReceiver<webui_toolbar::mojom::PageHandlerFactory> receiver) {
   page_factory_receiver_.reset();
   page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void WebUIToolbarUI::BindInterface(
+    mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
+        receiver) {
+  BrowserWindowInterface* browser_interface =
+      webui::GetBrowserWindowInterface(web_ui()->GetWebContents());
+  CHECK(browser_interface);
+  ui::ElementContext element_context =
+      BrowserElements::From(browser_interface)->GetContext();
+
+  tracked_element_handler_ = std::make_unique<ui::TrackedElementHandler>(
+      web_ui()->GetWebContents(), std::move(receiver), element_context,
+      GetKnownElementIdentifiers());
 }
 
 void WebUIToolbarUI::SetReloadButtonState(bool is_loading,
@@ -135,4 +152,9 @@ void WebUIToolbarUI::PopulateLocalResourceLoaderConfig(
   CHECK(theme_colors_manager);
   theme_colors_manager->PopulateLocalResourceLoaderConfig(
       config, requesting_origin, web_ui()->GetWebContents());
+}
+
+const std::vector<ui::ElementIdentifier>
+WebUIToolbarUI::GetKnownElementIdentifiers() const {
+  return {kReloadButtonElementId};
 }

@@ -29,6 +29,8 @@ source_set("webui_toolbar") {
     "//chrome/browser/ui/webui/top_chrome",
     "//chrome/common:constants",
     "//content/public/browser",
+    "//ui/webui/resources/js/tracked_element:mojo_bindings",
+    "//ui/webui/tracked_element",
   ]
   deps = [ "//chrome/browser:primitives" ]
 }
@@ -46,8 +48,10 @@ source_set("impl") {
     "//chrome/browser:primitives",
     "//chrome/browser/resources/webui_toolbar:resources_grit",
     "//chrome/browser/themes",
+    "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/interaction",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/common",
     "//content/public/browser",

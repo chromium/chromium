@@ -641,7 +641,8 @@ void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(
 
   if (features::IsWebUIReloadButtonEnabled()) {
     registry.ForWebUI<WebUIToolbarUI>()
-        .Add<webui_toolbar::mojom::PageHandlerFactory>();
+        .Add<webui_toolbar::mojom::PageHandlerFactory>()
+        .Add<tracked_element::mojom::TrackedElementHandler>();
   }
 
   // TODO(crbug.com/452983498): Migrate all remaining

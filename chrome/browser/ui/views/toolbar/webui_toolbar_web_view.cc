@@ -99,7 +99,7 @@ WebUIToolbarWebView::WebUIToolbarWebView(
   Observe(web_contents);
 
   // The accessibility and tooltip attributes are handled by the WebUI.
-  SetProperty(views::kElementIdentifierKey, kReloadButtonElementId);
+  SetProperty(views::kElementIdentifierKey, kWebUIToolbarElementIdentifier);
 }
 
 WebUIToolbarWebView::~WebUIToolbarWebView() = default;

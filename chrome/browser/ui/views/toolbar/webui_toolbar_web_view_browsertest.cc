@@ -57,8 +57,8 @@ class WebUIToolbarWebViewPixelBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Basic) {
   ui::TrackedElement* element = nullptr;
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    element =
-        BrowserElements::From(browser())->GetElement(kReloadButtonElementId);
+    element = BrowserElements::From(browser())->GetElement(
+        kWebUIToolbarElementIdentifier);
     return element != nullptr;
   }));
   ASSERT_TRUE(element);
@@ -97,8 +97,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Accessibility) {
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   ui::TrackedElement* element = nullptr;
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    element =
-        BrowserElements::From(browser())->GetElement(kReloadButtonElementId);
+    element = BrowserElements::From(browser())->GetElement(
+        kWebUIToolbarElementIdentifier);
     return element != nullptr;
   }));
   ASSERT_TRUE(element);
@@ -172,7 +172,7 @@ class WebUIToolbarWebViewCrashTest : public InProcessBrowserTest {
     ui::TrackedElement* element = nullptr;
     if (!base::test::RunUntil([&]() {
           element = BrowserElements::From(browser())->GetElement(
-              kReloadButtonElementId);
+              kWebUIToolbarElementIdentifier);
           return element != nullptr;
         })) {
       return nullptr;

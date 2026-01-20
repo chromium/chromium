@@ -8,6 +8,6 @@ import type {ToolbarAppElement} from './app.js';
 
 export function getHtml(this: ToolbarAppElement) {
   return html`<!--_html_template_start_-->
-  <reload-button-app></reload-button-app>
+  <reload-button-app id="reload"></reload-button-app>
 <!--_html_template_end_-->`;
 }

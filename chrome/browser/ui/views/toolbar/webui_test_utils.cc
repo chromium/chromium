@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "content/public/test/browser_test_utils.h"
@@ -28,17 +29,17 @@ void WaitUntilInitialWebUIPaintAndFlushMetricsForTesting(
     return;
   }
   ui::TrackedElement* element =
-      browser_elements->GetElement(kReloadButtonElementId);
+      browser_elements->GetElement(kWebUIToolbarElementIdentifier);
   if (!element) {
     return;
   }
-  WebUIToolbarWebView* reload_button = views::AsViewClass<WebUIToolbarWebView>(
+  WebUIToolbarWebView* webui_toolbar = views::AsViewClass<WebUIToolbarWebView>(
       element->AsA<views::TrackedElementViews>()->view());
-  if (!reload_button) {
+  if (!webui_toolbar) {
     return;
   }
 
-  reload_button->SetDidFirstNonEmptyPaintCallbackForTesting(
+  webui_toolbar->SetDidFirstNonEmptyPaintCallbackForTesting(
       run_loop.QuitClosure());
   run_loop.Run();
 
