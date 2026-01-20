@@ -4,8 +4,6 @@
 
 #include "sd_jwt.h"
 
-#include <map>
-
 #include "base/base64.h"
 #include "base/base64url.h"
 #include "base/containers/span.h"
@@ -15,6 +13,7 @@
 #include "base/strings/string_split.h"
 #include "base/values.h"
 #include "crypto/random.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -631,15 +630,15 @@ std::optional<std::vector<JSONString>> SdJwt::Disclose(
   // Implements the selective disclosure:
   // https://www.ietf.org/archive/id/draft-ietf-oauth-selective-disclosure-jwt-13.html#name-disclosing-to-a-verifier
 
-  std::map<std::string, JSONString> disclosures_by_name;
-  for (const std::pair<std::string, JSONString>& disclosure : disclosures) {
-    disclosures_by_name[disclosure.first] = disclosure.second;
-  }
+  const absl::flat_hash_map<std::string, JSONString> disclosures_by_name = {
+      disclosures.begin(), disclosures.end()};
 
   std::vector<JSONString> result;
+  result.reserve(selector.size());
   for (const std::string& name : selector) {
-    if (disclosures_by_name.count(name)) {
-      result.push_back(disclosures_by_name[name]);
+    if (auto it = disclosures_by_name.find(name);
+        it != disclosures_by_name.end()) {
+      result.push_back(it->second);
     } else {
       return std::nullopt;
     }
