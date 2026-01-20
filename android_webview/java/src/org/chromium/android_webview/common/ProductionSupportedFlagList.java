@@ -1231,5 +1231,9 @@ public final class ProductionSupportedFlagList {
                 "UseLockFreeX509Verification",
                 "Enables lock-free certificate verification codepath."),
         Flag.baseFeature(CcFeatures.REPORT_UKM, "Validate performance of UKM reporting."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_WEB_PERFORMANCE_METRICS_REPORTING,
+                "Enables Web Performance Metrics to be reported using"
+                        + " AwWebPerformanceMetricsObserver"),
     };
 }

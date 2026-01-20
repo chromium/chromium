@@ -26,6 +26,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwPage;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.HistoryUtils;
@@ -37,6 +38,7 @@ import java.util.List;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @DoNotBatch(reason = "Tests that need browser start are incompatible with @Batch")
+@CommandLineFlags.Add("enable-features=WebViewWebPerformanceMetricsReporting")
 public class AwNavigationClientTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
 
