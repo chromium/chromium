@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/proto/features/contextual_tasks_context.pb.h"
@@ -467,13 +468,11 @@ ContextualTasksContextService::SelectTabsByEmbeddingsMatch(
 std::optional<base::TimeDelta>
 ContextualTasksContextService::GetDurationSinceLastActive(
     content::WebContents* web_contents) {
-  base::TimeDelta time_elapsed =
-      tick_clock_->NowTicks() -
-      std::max(web_contents->GetLastActiveTimeTicks(),
-               web_contents->GetLastInteractionTimeTicks());
-
-  if (time_elapsed.is_positive()) {
-    return time_elapsed;
+  if (auto* tab = tabs::TabInterface::GetFromContents(web_contents)) {
+    if (auto* tracker =
+            tab->GetTabFeatures()->contextual_tasks_tab_visit_tracker()) {
+      return tracker->GetDurationSinceLastActive();
+    }
   }
   return std::nullopt;
 }

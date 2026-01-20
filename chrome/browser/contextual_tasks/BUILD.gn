@@ -219,6 +219,7 @@ if (!is_android) {
 
     deps = [
       ":contextual_tasks",
+      ":impl",
       ":ui",
       "//base",
       "//base/test:test_support",
