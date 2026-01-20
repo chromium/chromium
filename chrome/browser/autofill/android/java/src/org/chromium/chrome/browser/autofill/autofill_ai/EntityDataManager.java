@@ -14,6 +14,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.autofill.autofill_ai.EntityInstance;
 
 /**
  * Android wrapper of the EntityDataManager which provides access from the Java layer.
@@ -49,6 +50,13 @@ public class EntityDataManager implements Destroyable {
         EntityDataManagerJni.get().removeEntityInstance(mNativeEntityDataManagerAndroid, guid);
     }
 
+    /** Saves or update an entity. */
+    public void addOrUpdateEntityInstance(EntityInstance entity) {
+        ThreadUtils.assertOnUiThread();
+        EntityDataManagerJni.get()
+                .addOrUpdateEntityInstance(mNativeEntityDataManagerAndroid, entity);
+    }
+
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
@@ -58,5 +66,7 @@ public class EntityDataManager implements Destroyable {
 
         void removeEntityInstance(
                 long nativeEntityDataManagerAndroid, @JniType("std::string") String guid);
+
+        void addOrUpdateEntityInstance(long nativeEntityDataManagerAndroid, EntityInstance entity);
     }
 }

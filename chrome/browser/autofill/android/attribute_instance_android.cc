@@ -105,6 +105,8 @@ AttributeInstance AttributeInstanceAndroid::ToAttributeInstance() const {
                         std::get<std::u16string>(value),
                         VerificationStatus::kUserVerified);
   }
+
+  instance.FinalizeInfo();
   return instance;
 }
 
