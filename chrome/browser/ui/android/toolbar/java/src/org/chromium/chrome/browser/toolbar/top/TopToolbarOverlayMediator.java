@@ -244,7 +244,9 @@ public class TopToolbarOverlayMediator {
 
                         // TODO(peilinwang) Clean up this flag and remove the updateVisibility call
                         // when stable experiment is finished.
-                        if (!ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
+                        if (!ChromeFeatureList.sBrowserControlsInViz.isEnabled()
+                                || !ChromeFeatureList.sAlwaysDrawCompositedToolbarHairline
+                                        .isEnabled()) {
                             updateShadowState();
                             updateVisibility();
                         }
@@ -377,7 +379,8 @@ public class TopToolbarOverlayMediator {
      * android view is not shown.
      */
     private void updateShadowState() {
-        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
+        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()
+                && ChromeFeatureList.sAlwaysDrawCompositedToolbarHairline.isEnabled()) {
             // With BCIV enabled, we show the hairline on the composited toolbar by default,
             // and we don't want to update its visibility from the browser, because that incurs a
             // compositor frame.

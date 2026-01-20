@@ -172,6 +172,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "always-draw-composited-toolbar-hairline",
+    "owners": ["peilinwang@google.com"],
+    "expiry_milestone": 155
+  },
+  {
     "name": "always-enable-hdcp",
     "owners": [ "chromeos-gfx-video@google.com" ],
     // This flag is used for HDCP compliance testing on ChromeOS so should not
