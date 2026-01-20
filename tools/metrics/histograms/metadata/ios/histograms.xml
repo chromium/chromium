@@ -2724,7 +2724,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IOS.HomeCustomization.Background.Gallery.MaxVisibleSectionIndex"
-    units="index" expires_after="2026-03-22">
+    units="index" expires_after="2027-01-19">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -2734,7 +2734,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.HomeCustomization.Background.Gallery.Outcome"
-    enum="IOSBackgroundSelectionOutcome" expires_after="2026-03-01">
+    enum="IOSBackgroundSelectionOutcome" expires_after="2027-01-19">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -2747,7 +2747,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IOS.HomeCustomization.Background.Gallery.SelectedCollectionIndex"
-    units="index" expires_after="2026-03-01">
+    units="index" expires_after="2027-01-19">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -2757,7 +2757,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.HomeCustomization.Background.Ntp.ImageDownloadErrorCode"
-    enum="HttpResponseCode" expires_after="2026-03-01">
+    enum="HttpResponseCode" expires_after="2027-01-19">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -2768,7 +2768,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IOS.HomeCustomization.Background.Ntp.ImageUserUploadedFetchError"
-    enum="IOSUserUploadedImageError" expires_after="2026-03-01">
+    enum="IOSUserUploadedImageError" expires_after="2027-01-19">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -2801,7 +2801,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IOS.HomeCustomization.Background.RecentlyUsed.ImageUserUploadedFetchError"
-    enum="IOSUserUploadedImageError" expires_after="2026-03-01">
+    enum="IOSUserUploadedImageError" expires_after="2027-01-19">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -2846,7 +2846,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.HomeCustomization.MagicStack.SafetyCheck.Enabled"
-    enum="Boolean" expires_after="2026-03-01">
+    enum="Boolean" expires_after="2027-01-19">
   <owner>adamta@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
@@ -2856,7 +2856,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.HomeCustomization.MagicStack.SetUpList.Enabled"
-    enum="Boolean" expires_after="2026-03-01">
+    enum="Boolean" expires_after="2027-01-19">
   <owner>adamta@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
@@ -2866,7 +2866,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.HomeCustomization.MagicStack.TabResumption.Enabled"
-    enum="Boolean" expires_after="2026-03-01">
+    enum="Boolean" expires_after="2027-01-19">
   <owner>adamta@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
@@ -2876,7 +2876,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.HomeCustomization.MagicStack.Tips.Enabled" enum="Boolean"
-    expires_after="2026-03-01">
+    expires_after="2027-01-19">
   <owner>bwwilliams@google.com</owner>
   <owner>adamta@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
@@ -2887,7 +2887,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.HomeCustomization.Opened"
-    enum="IOSHomeCustomizationEntrypoint" expires_after="2026-07-05">
+    enum="IOSHomeCustomizationEntrypoint" expires_after="2027-01-19">
   <owner>adamta@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
