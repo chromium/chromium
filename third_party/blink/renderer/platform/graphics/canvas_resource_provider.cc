@@ -1716,9 +1716,6 @@ void CanvasResourceProvider::Clear() {
 
   clear_frame_ = true;
   RasterRecord(recorder_->ReleaseMainRecording());
-  // Images are locked for the duration of the rasterization, in case they get
-  // used multiple times. We can unlock them once the rasterization is complete.
-  ReleaseLockedImages();
   last_recording_ = std::nullopt;
 }
 
