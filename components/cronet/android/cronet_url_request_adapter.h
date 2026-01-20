@@ -58,7 +58,7 @@ class CronetURLRequestAdapter : public CronetURLRequest::Callback {
       int32_t jtraffic_stats_uid,
       net::Idempotency idempotency,
       scoped_refptr<net::SharedDictionary> shared_dictionary,
-      jlong network);
+      int64_t network);
 
   CronetURLRequestAdapter(const CronetURLRequestAdapter&) = delete;
   CronetURLRequestAdapter& operator=(const CronetURLRequestAdapter&) = delete;

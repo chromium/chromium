@@ -65,7 +65,7 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
   void GetInterfaceToRendererFrame(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& interface_name,
-      jlong message_pipe_handle) const;
+      int64_t message_pipe_handle) const;
 
   void TerminateRendererDueToBadMessage(JNIEnv* env, int32_t reason) const;
 

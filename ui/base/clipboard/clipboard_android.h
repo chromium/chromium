@@ -39,7 +39,7 @@ class ClipboardAndroid : public Clipboard {
   // Android if Chrome is in background,Clipboard handler needs to check the
   // content of clipboard didn't change, when Chrome is back in foreground.
   void OnPrimaryClipTimestampInvalidated(JNIEnv* env,
-                                         const jlong j_timestamp_ms);
+                                         const int64_t j_timestamp_ms);
 
   // Called by Java side.
   int64_t GetLastModifiedTimeToJavaTime(JNIEnv* env);

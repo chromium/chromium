@@ -127,7 +127,7 @@ static bool JNI_CookieControlsBridge_IsCookieControlsEnabled(
       ->ShouldBlockThirdPartyCookies();
 }
 
-static jlong JNI_CookieControlsBridge_Init(
+static int64_t JNI_CookieControlsBridge_Init(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     const JavaRef<jobject>& jweb_contents_android,

@@ -63,7 +63,7 @@ class JniPaymentApp : public PaymentApp::Delegate {
   base::android::ScopedJavaLocalRef<jobjectArray>
   GetApplicationIdentifiersThatHideThisApp(JNIEnv* env);
 
-  jlong GetUkmSourceId(JNIEnv* env);
+  int64_t GetUkmSourceId(JNIEnv* env);
 
   void SetPaymentHandlerHost(
       JNIEnv* env,

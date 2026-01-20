@@ -89,7 +89,7 @@ class SyncServiceAndroidBridge : public SyncServiceObserver {
       JNIEnv* env,
       const base::android::JavaRef<jstring>& passphrase);
   // Returns 0 if there's no passphrase time.
-  jlong GetExplicitPassphraseTime(JNIEnv* env);
+  int64_t GetExplicitPassphraseTime(JNIEnv* env);
   void GetAllNodes(JNIEnv* env,
                    const base::android::JavaRef<jobject>& callback);
   GoogleServiceAuthError GetAuthError(JNIEnv* env);
@@ -102,7 +102,7 @@ class SyncServiceAndroidBridge : public SyncServiceObserver {
   void TriggerRefresh(JNIEnv* env);
   // Returns a timestamp for when a sync was last executed. The return value is
   // the internal value of base::Time.
-  jlong GetLastSyncedTimeForDebugging(JNIEnv* env);
+  int64_t GetLastSyncedTimeForDebugging(JNIEnv* env);
   void KeepAccountSettingsPrefsOnlyForUsers(
       JNIEnv* env,
       const base::android::JavaRef<jobjectArray>& gaia_ids);

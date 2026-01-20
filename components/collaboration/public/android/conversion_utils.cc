@@ -15,69 +15,69 @@ using ResultWithGroupTokenCallback = collaboration::
 
 }  // namespace
 
-jlong GetJavaResultCallbackPtr(
+int64_t GetJavaResultCallbackPtr(
     CollaborationControllerDelegate::ResultCallback result) {
   std::unique_ptr<CollaborationControllerDelegate::ResultCallback>
       wrapped_callback =
           std::make_unique<CollaborationControllerDelegate::ResultCallback>(
               std::move(result));
   CHECK(wrapped_callback.get());
-  jlong j_native_ptr = reinterpret_cast<jlong>(wrapped_callback.get());
+  int64_t j_native_ptr = reinterpret_cast<int64_t>(wrapped_callback.get());
   wrapped_callback.release();
 
   return j_native_ptr;
 }
 
 std::unique_ptr<CollaborationControllerDelegate::ResultCallback>
-GetNativeResultCallbackFromJava(jlong callback) {
+GetNativeResultCallbackFromJava(int64_t callback) {
   return base::WrapUnique(
       reinterpret_cast<CollaborationControllerDelegate::ResultCallback*>(
           callback));
 }
 
-jlong GetJavaExitCallbackPtr(base::OnceClosure callback) {
+int64_t GetJavaExitCallbackPtr(base::OnceClosure callback) {
   std::unique_ptr<base::OnceClosure> wrapped_callback =
       std::make_unique<base::OnceClosure>(std::move(callback));
   CHECK(wrapped_callback.get());
-  jlong j_native_ptr = reinterpret_cast<jlong>(wrapped_callback.get());
+  int64_t j_native_ptr = reinterpret_cast<int64_t>(wrapped_callback.get());
   wrapped_callback.release();
 
   return j_native_ptr;
 }
 
-jlong GetJavaResultWithGroupTokenCallbackPtr(
+int64_t GetJavaResultWithGroupTokenCallbackPtr(
     ResultWithGroupTokenCallback result) {
   std::unique_ptr<ResultWithGroupTokenCallback> wrapped_callback =
       std::make_unique<ResultWithGroupTokenCallback>(std::move(result));
   CHECK(wrapped_callback.get());
-  jlong j_native_ptr = reinterpret_cast<jlong>(wrapped_callback.get());
+  int64_t j_native_ptr = reinterpret_cast<int64_t>(wrapped_callback.get());
   wrapped_callback.release();
 
   return j_native_ptr;
 }
 
 std::unique_ptr<base::OnceClosure> GetNativeExitCallbackFromJava(
-    jlong callback) {
+    int64_t callback) {
   return base::WrapUnique(reinterpret_cast<base::OnceClosure*>(callback));
 }
 
 std::unique_ptr<ResultWithGroupTokenCallback>
-GetNativeResultWithGroupTokenCallbackFromJava(jlong callback) {
+GetNativeResultWithGroupTokenCallbackFromJava(int64_t callback) {
   return base::WrapUnique(
       reinterpret_cast<ResultWithGroupTokenCallback*>(callback));
 }
 
-jlong GetJavaDelegateUniquePtr(
+int64_t GetJavaDelegateUniquePtr(
     std::unique_ptr<CollaborationControllerDelegate> delegate) {
   CollaborationControllerDelegate* delegate_ptr = delegate.get();
-  long java_ptr = reinterpret_cast<jlong>(delegate_ptr);
+  long java_ptr = reinterpret_cast<int64_t>(delegate_ptr);
   delegate.release();
 
   return java_ptr;
 }
 
 std::unique_ptr<CollaborationControllerDelegate> GetDelegateUniquePtrFromJava(
-    jlong java_ptr) {
+    int64_t java_ptr) {
   return base::WrapUnique(
       reinterpret_cast<CollaborationControllerDelegate*>(java_ptr));
 }

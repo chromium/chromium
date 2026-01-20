@@ -57,7 +57,7 @@ input::NativeWebKeyboardEvent NativeWebKeyboardEventFromKeyEvent(
     const base::android::JavaRef<jobject>& java_key_event,
     int type,
     int modifiers,
-    jlong time_ms,
+    int64_t time_ms,
     int key_code,
     int scan_code,
     bool is_system_key,
@@ -70,9 +70,9 @@ input::NativeWebKeyboardEvent NativeWebKeyboardEventFromKeyEvent(
 
 }  // anonymous namespace
 
-static jlong JNI_ImeAdapterImpl_Init(JNIEnv* env,
-                                     const JavaRef<jobject>& obj,
-                                     const JavaRef<jobject>& jweb_contents) {
+static int64_t JNI_ImeAdapterImpl_Init(JNIEnv* env,
+                                       const JavaRef<jobject>& obj,
+                                       const JavaRef<jobject>& jweb_contents) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);
   auto* ime_adapter = new ImeAdapterAndroid(env, obj, web_contents);
@@ -84,7 +84,7 @@ static jlong JNI_ImeAdapterImpl_Init(JNIEnv* env,
 // ui::ImeTextSpan instance, and append it to |ime_text_spans_ptr|.
 static void JNI_ImeAdapterImpl_AppendBackgroundColorSpan(
     JNIEnv*,
-    jlong ime_text_spans_ptr,
+    int64_t ime_text_spans_ptr,
     int32_t start,
     int32_t end,
     int32_t background_color) {
@@ -105,7 +105,7 @@ static void JNI_ImeAdapterImpl_AppendBackgroundColorSpan(
 // ui::ImeTextSpan instance, and append it to |ime_text_spans_ptr|.
 static void JNI_ImeAdapterImpl_AppendForegroundColorSpan(
     JNIEnv*,
-    jlong ime_text_spans_ptr,
+    int64_t ime_text_spans_ptr,
     int32_t start,
     int32_t end,
     int32_t foreground_color) {
@@ -126,7 +126,7 @@ static void JNI_ImeAdapterImpl_AppendForegroundColorSpan(
 // ui::ImeTextSpan instance, and append it to |ime_text_spans_ptr|.
 static void JNI_ImeAdapterImpl_AppendSuggestionSpan(
     JNIEnv* env,
-    jlong ime_text_spans_ptr,
+    int64_t ime_text_spans_ptr,
     int32_t start,
     int32_t end,
     bool is_misspelling,
@@ -160,7 +160,7 @@ static void JNI_ImeAdapterImpl_AppendSuggestionSpan(
 // Callback from Java to convert UnderlineSpan data to a
 // ui::ImeTextSpan instance, and append it to |ime_text_spans_ptr|.
 static void JNI_ImeAdapterImpl_AppendUnderlineSpan(JNIEnv*,
-                                                   jlong ime_text_spans_ptr,
+                                                   int64_t ime_text_spans_ptr,
                                                    int32_t start,
                                                    int32_t end) {
   DCHECK_GE(start, 0);
@@ -292,7 +292,7 @@ bool ImeAdapterAndroid::SendKeyEvent(JNIEnv* env,
                                      const JavaRef<jobject>& original_key_event,
                                      int type,
                                      int modifiers,
-                                     jlong time_ms,
+                                     int64_t time_ms,
                                      int key_code,
                                      int scan_code,
                                      bool is_system_key,
@@ -636,7 +636,7 @@ std::vector<ui::ImeTextSpan> ImeAdapterAndroid::GetImeTextSpansFromJava(
   // BackgroundColorSpan) to a matching callback (e.g.,
   // AppendBackgroundColorSpan()), and populate |ime_text_spans|.
   Java_ImeAdapterImpl_populateImeTextSpansFromJava(
-      env, obj, text, reinterpret_cast<jlong>(&ime_text_spans));
+      env, obj, text, reinterpret_cast<int64_t>(&ime_text_spans));
 
   std::sort(ime_text_spans.begin(), ime_text_spans.end(),
             [](const ui::ImeTextSpan& span1, const ui::ImeTextSpan& span2) {

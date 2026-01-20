@@ -323,13 +323,13 @@ class COMPONENT_EXPORT(URL) Origin {
   jni_zero::ScopedJavaLocalRef<jobject> ToJavaObject(JNIEnv* env) const;
   static Origin FromJavaObject(JNIEnv* env,
                                const jni_zero::JavaRef<jobject>& java_origin);
-  static jlong CreateNative(JNIEnv* env,
-                            const jni_zero::JavaRef<jstring>& java_scheme,
-                            const jni_zero::JavaRef<jstring>& java_host,
-                            uint16_t port,
-                            bool is_opaque,
-                            uint64_t tokenHighBits,
-                            uint64_t tokenLowBits);
+  static int64_t CreateNative(JNIEnv* env,
+                              const jni_zero::JavaRef<jstring>& java_scheme,
+                              const jni_zero::JavaRef<jstring>& java_host,
+                              uint16_t port,
+                              bool is_opaque,
+                              uint64_t tokenHighBits,
+                              uint64_t tokenLowBits);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   void WriteIntoTrace(perfetto::TracedValue context) const;

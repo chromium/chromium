@@ -12,11 +12,11 @@ using jni_zero::JavaRef;
 
 namespace ui {
 
-static jlong JNI_ResourceFactory_CreateBitmapResource(JNIEnv* env) {
+static int64_t JNI_ResourceFactory_CreateBitmapResource(JNIEnv* env) {
   return reinterpret_cast<intptr_t>(new Resource());
 }
 
-static jlong JNI_ResourceFactory_CreateNinePatchBitmapResource(
+static int64_t JNI_ResourceFactory_CreateNinePatchBitmapResource(
     JNIEnv* env,
     int32_t padding_left,
     int32_t padding_top,

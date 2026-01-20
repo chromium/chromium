@@ -24,7 +24,7 @@ class PaintPreviewTestService : public PaintPreviewBaseService {
   PaintPreviewTestService(const PaintPreviewTestService&) = delete;
   PaintPreviewTestService& operator=(const PaintPreviewTestService&) = delete;
 
-  jlong GetBaseService(JNIEnv* env);
+  int64_t GetBaseService(JNIEnv* env);
 
   base::android::ScopedJavaLocalRef<jintArray> CreateSingleSkp(
       JNIEnv* env,

@@ -52,7 +52,7 @@ constexpr uint8_t kDarkestAlpha = 64;
 constexpr uint8_t kLightestAlpha = 0;
 }  // namespace
 
-static jlong JNI_MagnifierSurfaceControl_Create(
+static int64_t JNI_MagnifierSurfaceControl_Create(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_web_contents,
     const base::android::JavaRef<jobject>& j_surface_control,
@@ -74,7 +74,7 @@ static jlong JNI_MagnifierSurfaceControl_Create(
   gpu::SurfaceHandle surface_handle = tracker->AddSurfaceForNativeWidget(
       gpu::SurfaceRecord(std::move(scoped_java_surface_control)));
 
-  return reinterpret_cast<jlong>(new MagnifierSurfaceControl(
+  return reinterpret_cast<int64_t>(new MagnifierSurfaceControl(
       web_contents, surface_handle, device_scale, width, height, corner_radius,
       zoom, top_shadow_height, bottom_shadow_height,
       bottom_shadow_width_reduction));
@@ -82,7 +82,7 @@ static jlong JNI_MagnifierSurfaceControl_Create(
 
 static void JNI_MagnifierSurfaceControl_Destroy(
     JNIEnv* env,
-    jlong magnifier_surface_control) {
+    int64_t magnifier_surface_control) {
   delete reinterpret_cast<MagnifierSurfaceControl*>(magnifier_surface_control);
 }
 

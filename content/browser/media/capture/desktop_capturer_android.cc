@@ -20,8 +20,9 @@ namespace {
 class DesktopCapturerAndroidJni : public DesktopCapturerAndroidJniInterface {
  public:
   ~DesktopCapturerAndroidJni() override = default;
-  base::android::ScopedJavaLocalRef<jobject> Create(JNIEnv* env,
-                                                    jlong native_ptr) override {
+  base::android::ScopedJavaLocalRef<jobject> Create(
+      JNIEnv* env,
+      int64_t native_ptr) override {
     return Java_ScreenCapture_create(env, native_ptr);
   }
   bool StartCapture(JNIEnv* env,
@@ -103,7 +104,7 @@ bool DesktopCapturerAndroid::SelectSource(SourceId id) {
 void DesktopCapturerAndroid::OnRgbaFrameAvailable(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& release_cb,
-    jlong timestamp_ns,
+    int64_t timestamp_ns,
     const base::android::JavaRef<jobject>& buf,
     int32_t unchecked_pixel_stride,
     int32_t unchecked_row_stride,
@@ -129,7 +130,7 @@ void DesktopCapturerAndroid::OnRgbaFrameAvailable(
 void DesktopCapturerAndroid::OnI420FrameAvailable(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& release_cb,
-    jlong timestamp_ns,
+    int64_t timestamp_ns,
     const base::android::JavaRef<jobject>& y_buf,
     int32_t y_unchecked_pixel_stride,
     int32_t y_unchecked_row_stride,

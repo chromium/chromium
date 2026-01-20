@@ -23,7 +23,7 @@ class PlayerCompositorDelegateAndroid : public PlayerCompositorDelegate {
       JNIEnv* env,
       const base::android::JavaRef<jobject>& j_object,
       PaintPreviewBaseService* paint_preview_service,
-      jlong j_capture_result_ptr,
+      int64_t j_capture_result_ptr,
       const base::android::JavaRef<jstring>& j_url_spec,
       const base::android::JavaRef<jstring>& j_directory_key,
       bool j_main_frame_mode,

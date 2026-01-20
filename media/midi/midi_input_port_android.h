@@ -39,7 +39,7 @@ class MidiInputPortAndroid final {
               const base::android::JavaRef<jbyteArray>& data,
               int32_t offset,
               int32_t size,
-              jlong timestamp);
+              int64_t timestamp);
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> raw_port_;

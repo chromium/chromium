@@ -51,7 +51,7 @@ static bool CalculatePublicKeySha256(const net::X509Certificate& cert,
 
 }  // namespace
 
-static jlong JNI_MockCertVerifier_CreateMockCertVerifier(
+static int64_t JNI_MockCertVerifier_CreateMockCertVerifier(
     JNIEnv* env,
     const JavaRef<jobjectArray>& jcerts,
     const bool jknown_root,
@@ -81,14 +81,14 @@ static jlong JNI_MockCertVerifier_CreateMockCertVerifier(
                                          verify_result, net::OK);
   }
 
-  return reinterpret_cast<jlong>(mock_cert_verifier);
+  return reinterpret_cast<int64_t>(mock_cert_verifier);
 }
 
-static jlong JNI_MockCertVerifier_CreateFreeForAllMockCertVerifier(
+static int64_t JNI_MockCertVerifier_CreateFreeForAllMockCertVerifier(
     JNIEnv* env) {
   net::MockCertVerifier* mock_cert_verifier = new net::MockCertVerifier();
   mock_cert_verifier->set_default_result(net::OK);
-  return reinterpret_cast<jlong>(mock_cert_verifier);
+  return reinterpret_cast<int64_t>(mock_cert_verifier);
 }
 
 }  // namespace cronet

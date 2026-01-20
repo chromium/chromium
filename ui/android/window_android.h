@@ -122,7 +122,7 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
       const std::vector<jfloat> frame_per_second,
       const std::vector<jfloat> dp_per_second);
   void OnOverlayTransformUpdated(JNIEnv* env);
-  void SendUnfoldLatencyBeginTimestamp(JNIEnv* env, jlong begin_time);
+  void SendUnfoldLatencyBeginTimestamp(JNIEnv* env, int64_t begin_time);
 
   void OnWindowPointerLockRelease(JNIEnv* env);
 

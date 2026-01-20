@@ -79,7 +79,7 @@ void ReportSafeBrowsingJavaResponse(
     SafeBrowsingJavaThreatType threat_type,
     const std::vector<int>& threat_attributes,
     SafeBrowsingJavaResponseStatus response_status,
-    jlong check_delta_microseconds) {
+    int64_t check_delta_microseconds) {
   std::string suffix = GetSafeBrowsingJavaProtocolUmaSuffix(protocol);
 
   base::UmaHistogramMicrosecondsTimes(
@@ -380,7 +380,7 @@ struct SafeBrowsingResponseCallback {
 // SafeBrowsing request sent to Java, and the corresponding callback to call on
 // receiving the response.
 using PendingSafeBrowsingCallbacksMap =
-    std::unordered_map<jlong, SafeBrowsingResponseCallback>;
+    std::unordered_map<int64_t, SafeBrowsingResponseCallback>;
 
 PendingSafeBrowsingCallbacksMap& GetPendingSafeBrowsingCallbacksMap() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -394,7 +394,7 @@ PendingSafeBrowsingCallbacksMap& GetPendingSafeBrowsingCallbacksMap() {
 }
 
 using PendingVerifyAppsCallbacksMap = std::unordered_map<
-    jlong,
+    int64_t,
     SafeBrowsingApiHandlerBridge::VerifyAppsResponseCallback>;
 PendingVerifyAppsCallbacksMap& GetPendingVerifyAppsCallbacks() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -407,7 +407,7 @@ PendingVerifyAppsCallbacksMap& GetPendingVerifyAppsCallbacks() {
 }
 
 using PendingHarmfulAppsCallbacksMap = std::unordered_map<
-    jlong,
+    int64_t,
     SafeBrowsingApiHandlerBridge::HasHarmfulAppsResponseCallback>;
 PendingHarmfulAppsCallbacksMap& GetPendingHarmfulAppsCallbacks() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -457,12 +457,12 @@ SafeBrowsingApiHandlerBridge& SafeBrowsingApiHandlerBridge::GetInstance() {
 // stored in |pending_safe_browsing_callbacks|. Must be called on the original
 // thread that starts the lookup.
 void OnUrlCheckDoneBySafeBrowsingApi(
-    jlong callback_id,
+    int64_t callback_id,
     SafeBrowsingApiLookupResult lookup_result,
     SafeBrowsingJavaThreatType threat_type,
     std::vector<int> threat_attributes,
     SafeBrowsingJavaResponseStatus response_status,
-    jlong check_delta_microseconds) {
+    int64_t check_delta_microseconds) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   PendingSafeBrowsingCallbacksMap& pending_callbacks =
@@ -519,12 +519,12 @@ void OnUrlCheckDoneBySafeBrowsingApi(
 // nothing thread unsafe happening here.
 static void JNI_SafeBrowsingApiBridge_OnUrlCheckDoneBySafeBrowsingApi(
     JNIEnv* env,
-    jlong callback_id,
+    int64_t callback_id,
     int32_t j_lookup_result,
     int32_t j_threat_type,
     const JavaRef<jintArray>& j_threat_attributes,
     int32_t j_response_status,
-    jlong check_delta_microseconds) {
+    int64_t check_delta_microseconds) {
   SafeBrowsingApiLookupResult lookup_result =
       static_cast<SafeBrowsingApiLookupResult>(j_lookup_result);
   SafeBrowsingJavaThreatType threat_type =
@@ -540,7 +540,7 @@ static void JNI_SafeBrowsingApiBridge_OnUrlCheckDoneBySafeBrowsingApi(
                      response_status, check_delta_microseconds));
 }
 
-void OnVerifyAppsEnabledDone(jlong callback_id, int32_t j_result) {
+void OnVerifyAppsEnabledDone(int64_t callback_id, int32_t j_result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   PendingVerifyAppsCallbacksMap& pending_callbacks =
       GetPendingVerifyAppsCallbacks();
@@ -558,14 +558,14 @@ void OnVerifyAppsEnabledDone(jlong callback_id, int32_t j_result) {
 
 static void JNI_SafeBrowsingApiBridge_OnVerifyAppsEnabledDone(
     JNIEnv* env,
-    jlong callback_id,
+    int64_t callback_id,
     int32_t j_result) {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&OnVerifyAppsEnabledDone, callback_id, j_result));
 }
 
-void OnHasHarmfulAppsDone(jlong callback_id,
+void OnHasHarmfulAppsDone(int64_t callback_id,
                           int32_t j_result,
                           int32_t j_num_of_apps,
                           int32_t j_status_code) {
@@ -588,7 +588,7 @@ void OnHasHarmfulAppsDone(jlong callback_id,
 
 static void JNI_SafeBrowsingApiBridge_OnHasHarmfulAppsDone(
     JNIEnv* env,
-    jlong callback_id,
+    int64_t callback_id,
     int32_t j_result,
     int32_t j_num_of_apps,
     int32_t j_status_code) {
@@ -689,7 +689,7 @@ void SafeBrowsingApiHandlerBridge::StartUrlCheckBySafeBrowsing(
   }
 
   JNIEnv* env = AttachCurrentThread();
-  jlong callback_id = next_safe_browsing_callback_id_++;
+  int64_t callback_id = next_safe_browsing_callback_id_++;
   auto safe_browsing_callback =
       SafeBrowsingResponseCallback(protocol, std::move(callback));
   GetPendingSafeBrowsingCallbacksMap().insert(
@@ -733,7 +733,7 @@ void SafeBrowsingApiHandlerBridge::StartIsVerifyAppsEnabled(
     return;
   }
 
-  jlong callback_id = next_verify_apps_callback_id_++;
+  int64_t callback_id = next_verify_apps_callback_id_++;
   GetPendingVerifyAppsCallbacks().insert({callback_id, std::move(callback)});
   Java_SafeBrowsingApiBridge_isVerifyAppsEnabled(env, callback_id);
 }
@@ -747,7 +747,7 @@ void SafeBrowsingApiHandlerBridge::StartEnableVerifyApps(
     return;
   }
 
-  jlong callback_id = next_verify_apps_callback_id_++;
+  int64_t callback_id = next_verify_apps_callback_id_++;
   GetPendingVerifyAppsCallbacks().insert({callback_id, std::move(callback)});
   Java_SafeBrowsingApiBridge_enableVerifyApps(env, callback_id);
 }
@@ -770,7 +770,7 @@ void SafeBrowsingApiHandlerBridge::StartHasPotentiallyHarmfulApps(
     return;
   }
 
-  jlong callback_id = next_harmful_apps_callback_id_++;
+  int64_t callback_id = next_harmful_apps_callback_id_++;
   GetPendingHarmfulAppsCallbacks().insert({callback_id, std::move(callback)});
   Java_SafeBrowsingApiBridge_hasPotentiallyHarmfulApps(env, callback_id);
 }

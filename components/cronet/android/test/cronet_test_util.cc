@@ -43,21 +43,21 @@ SequenceManager* g_sequence_manager = nullptr;
 
 static int32_t JNI_CronetTestUtil_GetLoadFlags(
     JNIEnv* env,
-    const jlong jurl_request_adapter) {
+    const int64_t jurl_request_adapter) {
   return TestUtil::GetURLRequest(jurl_request_adapter)->load_flags();
 }
 
 static bool JNI_CronetTestUtil_URLRequestContextExistsForTesting(
     JNIEnv* env,
-    jlong jcontext_adapter,
-    jlong jnetwork_handle) {
+    int64_t jcontext_adapter,
+    int64_t jnetwork_handle) {
   return TestUtil::GetURLRequestContexts(jcontext_adapter)
       ->contains(jnetwork_handle);
 }
 
 static jni_zero::ScopedJavaLocalRef<jobjectArray>
 JNI_CronetTestUtil_GetClientConnectionOptions(JNIEnv* env,
-                                              jlong jcontext_adapter) {
+                                              int64_t jcontext_adapter) {
   std::vector<std::string> quic_tags;
   for (auto tag : TestUtil::GetDefaultURLRequestQuicParams(jcontext_adapter)
                       .client_connection_options) {
@@ -67,7 +67,7 @@ JNI_CronetTestUtil_GetClientConnectionOptions(JNIEnv* env,
 }
 
 static jni_zero::ScopedJavaLocalRef<jobjectArray>
-JNI_CronetTestUtil_GetConnectionOptions(JNIEnv* env, jlong jcontext_adapter) {
+JNI_CronetTestUtil_GetConnectionOptions(JNIEnv* env, int64_t jcontext_adapter) {
   std::vector<std::string> quic_tags;
   for (auto tag : TestUtil::GetDefaultURLRequestQuicParams(jcontext_adapter)
                       .connection_options) {
@@ -79,7 +79,7 @@ JNI_CronetTestUtil_GetConnectionOptions(JNIEnv* env, jlong jcontext_adapter) {
 // static
 base::flat_map<net::handles::NetworkHandle,
                std::unique_ptr<net::URLRequestContext>>*
-TestUtil::GetURLRequestContexts(jlong jcontext_adapter) {
+TestUtil::GetURLRequestContexts(int64_t jcontext_adapter) {
   CronetContextAdapter* context_adapter =
       reinterpret_cast<CronetContextAdapter*>(jcontext_adapter);
   return &context_adapter->context_->network_tasks_->contexts_;
@@ -87,21 +87,22 @@ TestUtil::GetURLRequestContexts(jlong jcontext_adapter) {
 
 // static
 scoped_refptr<base::SingleThreadTaskRunner> TestUtil::GetTaskRunner(
-    jlong jcontext_adapter) {
+    int64_t jcontext_adapter) {
   CronetContextAdapter* context_adapter =
       reinterpret_cast<CronetContextAdapter*>(jcontext_adapter);
   return context_adapter->context_->network_task_runner_;
 }
 
 // static
-net::URLRequestContext* TestUtil::GetURLRequestContext(jlong jcontext_adapter) {
+net::URLRequestContext* TestUtil::GetURLRequestContext(
+    int64_t jcontext_adapter) {
   CronetContextAdapter* context_adapter =
       reinterpret_cast<CronetContextAdapter*>(jcontext_adapter);
   return context_adapter->context_->network_tasks_->default_context_;
 }
 
 net::QuicParams& TestUtil::GetDefaultURLRequestQuicParams(
-    jlong jcontext_adapter) {
+    int64_t jcontext_adapter) {
   net::URLRequestContext* context;
   base::WaitableEvent callback_executed;
   CronetContextAdapter& context_adapter =
@@ -118,7 +119,7 @@ net::QuicParams& TestUtil::GetDefaultURLRequestQuicParams(
 }
 
 // static
-void TestUtil::RunAfterContextInitOnNetworkThread(jlong jcontext_adapter,
+void TestUtil::RunAfterContextInitOnNetworkThread(int64_t jcontext_adapter,
                                                   base::OnceClosure task) {
   CronetContextAdapter* context_adapter =
       reinterpret_cast<CronetContextAdapter*>(jcontext_adapter);
@@ -132,7 +133,7 @@ void TestUtil::RunAfterContextInitOnNetworkThread(jlong jcontext_adapter,
 }
 
 // static
-void TestUtil::RunAfterContextInit(jlong jcontext_adapter,
+void TestUtil::RunAfterContextInit(int64_t jcontext_adapter,
                                    base::OnceClosure task) {
   GetTaskRunner(jcontext_adapter)
       ->PostTask(FROM_HERE,
@@ -141,13 +142,13 @@ void TestUtil::RunAfterContextInit(jlong jcontext_adapter,
 }
 
 // static
-net::URLRequest* TestUtil::GetURLRequest(jlong jrequest_adapter) {
+net::URLRequest* TestUtil::GetURLRequest(int64_t jrequest_adapter) {
   CronetURLRequestAdapter* request_adapter =
       reinterpret_cast<CronetURLRequestAdapter*>(jrequest_adapter);
   return request_adapter->request_->network_tasks_.url_request_.get();
 }
 
-static void PrepareNetworkThreadOnNetworkThread(jlong jcontext_adapter) {
+static void PrepareNetworkThreadOnNetworkThread(int64_t jcontext_adapter) {
   g_sequence_manager =
       base::sequence_manager::CreateSequenceManagerOnCurrentThreadWithPump(
           MessagePump::Create(MessagePumpType::IO),
@@ -167,7 +168,7 @@ static void PrepareNetworkThreadOnNetworkThread(jlong jcontext_adapter) {
 // initializing a MessageLoop and SingleThreadTaskRunner in libcronet_test.so
 // for these threads.  Called from Java CronetTestUtil class.
 static void JNI_CronetTestUtil_PrepareNetworkThread(JNIEnv* env,
-                                                    jlong jcontext_adapter) {
+                                                    int64_t jcontext_adapter) {
   TestUtil::GetTaskRunner(jcontext_adapter)
       ->PostTask(FROM_HERE, base::BindOnce(&PrepareNetworkThreadOnNetworkThread,
                                            jcontext_adapter));
@@ -181,7 +182,7 @@ static void CleanupNetworkThreadOnNetworkThread() {
 
 // Called from Java CronetTestUtil class.
 static void JNI_CronetTestUtil_CleanupNetworkThread(JNIEnv* env,
-                                                    jlong jcontext_adapter) {
+                                                    int64_t jcontext_adapter) {
   TestUtil::RunAfterContextInit(
       jcontext_adapter, base::BindOnce(&CleanupNetworkThreadOnNetworkThread));
 }
@@ -190,8 +191,8 @@ static bool JNI_CronetTestUtil_CanGetTaggedBytes(JNIEnv* env) {
   return net::CanGetTaggedBytes();
 }
 
-static jlong JNI_CronetTestUtil_GetTaggedBytes(JNIEnv* env,
-                                               int32_t jexpected_tag) {
+static int64_t JNI_CronetTestUtil_GetTaggedBytes(JNIEnv* env,
+                                                 int32_t jexpected_tag) {
   return net::GetTaggedBytes(jexpected_tag);
 }
 

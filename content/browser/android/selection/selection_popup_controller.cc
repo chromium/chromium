@@ -73,7 +73,7 @@ JNI_SelectionPopupControllerImpl_IsMagnifierWithSurfaceControlSupported(
   return enabled;
 }
 
-static jlong JNI_SelectionPopupControllerImpl_Init(
+static int64_t JNI_SelectionPopupControllerImpl_Init(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     const JavaRef<jobject>& jweb_contents) {
@@ -99,7 +99,7 @@ SelectionPopupController* SelectionPopupController::FromWebContents(
   // Then get the native pointer from the newly-created
   // SelectionPopupController. The Java SelectionPopupController owns the C++
   // SelectionPopupController.
-  jlong selection_popup_controller =
+  int64_t selection_popup_controller =
       Java_SelectionPopupControllerImpl_getNativePtr(
           env, jselection_popup_controller);
   return reinterpret_cast<SelectionPopupController*>(

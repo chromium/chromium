@@ -58,7 +58,7 @@ class AndroidIdleMonitor {
 
   int CalculateIdleTime() {
     JNIEnv* env = AttachCurrentThread();
-    jlong result = Java_IdleDetector_getIdleTime(env, j_idle_manager_);
+    int64_t result = Java_IdleDetector_getIdleTime(env, j_idle_manager_);
     return result;
   }
 

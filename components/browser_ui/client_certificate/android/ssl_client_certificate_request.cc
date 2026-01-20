@@ -190,7 +190,7 @@ static void StartClientCertificateRequest(
           env, request->cert_request_info()->host_and_port.host());
 
   // Pass the address of the delegate through to Java.
-  jlong request_id = reinterpret_cast<intptr_t>(request.get());
+  int64_t request_id = reinterpret_cast<intptr_t>(request.get());
 
   if (!Java_SSLClientCertificateRequest_selectClientCertificate(
           env, request_id, window->GetJavaObject(), key_types_ref,
@@ -318,7 +318,7 @@ void ClientCertRequest::OnCancel() {
 // the user didn't select a certificate.
 static void JNI_SSLClientCertificateRequest_OnSystemRequestCompletion(
     JNIEnv* env,
-    jlong request_id,
+    int64_t request_id,
     const JavaRef<jobjectArray>& encoded_chain_ref,
     const JavaRef<jobject>& private_key_ref) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

@@ -36,7 +36,7 @@ class WatcherImpl {
 
   int32_t Start(JNIEnv* env,
                 const JavaRef<jobject>& obj,
-                jlong mojo_handle,
+                int64_t mojo_handle,
                 int32_t signals) {
     java_watcher_.Reset(env, obj);
 
@@ -79,24 +79,24 @@ class WatcherImpl {
 
 }  // namespace
 
-static jlong JNI_WatcherImpl_CreateWatcher(JNIEnv* env) {
-  return reinterpret_cast<jlong>(new WatcherImpl);
+static int64_t JNI_WatcherImpl_CreateWatcher(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(new WatcherImpl);
 }
 
 static int32_t JNI_WatcherImpl_Start(JNIEnv* env,
                                      const JavaRef<jobject>& obj,
-                                     jlong watcher_ptr,
-                                     jlong mojo_handle,
+                                     int64_t watcher_ptr,
+                                     int64_t mojo_handle,
                                      int32_t signals) {
   auto* watcher = reinterpret_cast<WatcherImpl*>(watcher_ptr);
   return watcher->Start(env, obj, mojo_handle, signals);
 }
 
-static void JNI_WatcherImpl_Cancel(JNIEnv* env, jlong watcher_ptr) {
+static void JNI_WatcherImpl_Cancel(JNIEnv* env, int64_t watcher_ptr) {
   reinterpret_cast<WatcherImpl*>(watcher_ptr)->Cancel();
 }
 
-static void JNI_WatcherImpl_Delete(JNIEnv* env, jlong watcher_ptr) {
+static void JNI_WatcherImpl_Delete(JNIEnv* env, int64_t watcher_ptr) {
   delete reinterpret_cast<WatcherImpl*>(watcher_ptr);
 }
 

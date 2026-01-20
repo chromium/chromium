@@ -40,8 +40,8 @@ double RoundDoubleTowardsZero(const double& x) {
   return x > 0.0 ? std::floor(x) : std::ceil(x);
 }
 
-// Rounds to jlong using Java's type conversion rules.
-jlong RoundDoubleToLong(const double& x) {
+// Rounds to int64_t using Java's type conversion rules.
+int64_t RoundDoubleToLong(const double& x) {
   double intermediate = RoundDoubleTowardsZero(x);
   // The int64_t limits can not be converted exactly to double values, so we
   // compare to custom constants. kint64max is 2^63 - 1, but the spacing
@@ -57,7 +57,7 @@ jlong RoundDoubleToLong(const double& x) {
   if (intermediate < kSmallestDoubleGreaterThanInt64Min) {
     return std::numeric_limits<int64_t>::min();
   }
-  return static_cast<jlong>(intermediate);
+  return static_cast<int64_t>(intermediate);
 }
 
 // Rounds to int32_t using Java's type conversion rules.

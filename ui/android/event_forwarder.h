@@ -45,8 +45,8 @@ class UI_ANDROID_EXPORT EventForwarder {
   // MotionEvent.getEventTimeNanos().
   bool OnTouchEvent(JNIEnv* env,
                     const base::android::JavaRef<jobject>& motion_event,
-                    jlong oldest_event_time_ns,
-                    jlong latest_event_time_ns,
+                    int64_t oldest_event_time_ns,
+                    int64_t latest_event_time_ns,
                     int32_t android_action,
                     jfloat touch_major_0,
                     jfloat touch_major_1,
@@ -58,7 +58,7 @@ class UI_ANDROID_EXPORT EventForwarder {
 
   void OnMouseEvent(JNIEnv* env,
                     const base::android::JavaRef<jobject>& motion_event,
-                    jlong time_ns,
+                    int64_t time_ns,
                     int32_t android_action,
                     int32_t android_changed_button,
                     int32_t tool_type);
@@ -76,16 +76,16 @@ class UI_ANDROID_EXPORT EventForwarder {
                    const base::android::JavaRef<jstring>& j_html,
                    const base::android::JavaRef<jstring>& j_url);
 
-  bool OnGestureEvent(JNIEnv* env, int32_t type, jlong time_ms, jfloat scale);
+  bool OnGestureEvent(JNIEnv* env, int32_t type, int64_t time_ms, jfloat scale);
 
   bool OnGenericMotionEvent(JNIEnv* env,
                             const base::android::JavaRef<jobject>& motion_event,
-                            jlong event_time_ns,
-                            jlong down_time_ms);
+                            int64_t event_time_ns,
+                            int64_t down_time_ms);
 
   void OnMouseWheelEvent(JNIEnv* env,
                          const base::android::JavaRef<jobject>& motion_event,
-                         jlong time_ns,
+                         int64_t time_ns,
                          jfloat x,
                          jfloat y,
                          jfloat raw_x,
@@ -105,10 +105,10 @@ class UI_ANDROID_EXPORT EventForwarder {
                 jfloat x,
                 jfloat y);
 
-  void DoubleTap(JNIEnv* env, jlong time_ms, int32_t x, int32_t y);
+  void DoubleTap(JNIEnv* env, int64_t time_ms, int32_t x, int32_t y);
 
   void StartFling(JNIEnv* env,
-                  jlong time_ms,
+                  int64_t time_ms,
                   jfloat velocity_x,
                   jfloat velocity_y,
                   bool synthetic_scroll,
@@ -116,7 +116,7 @@ class UI_ANDROID_EXPORT EventForwarder {
                   bool is_touchpad_event);
 
   void CancelFling(JNIEnv* env,
-                   jlong time_ms,
+                   int64_t time_ms,
                    bool prevent_boosting,
                    bool is_touchpad_event);
 

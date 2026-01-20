@@ -73,7 +73,7 @@ void ReadJsonTraceData(
 
 }  // namespace
 
-static jlong JNI_TracingControllerAndroidImpl_Init(
+static int64_t JNI_TracingControllerAndroidImpl_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj) {
   TracingControllerAndroid* profiler = new TracingControllerAndroid(env, obj);

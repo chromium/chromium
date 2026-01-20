@@ -971,7 +971,7 @@ void MediaDrmBridge::OnSessionKeysChange(
 void MediaDrmBridge::OnSessionExpirationUpdate(
     JNIEnv* env,
     const JavaRef<jbyteArray>& j_session_id,
-    jlong expiry_time_ms) {
+    int64_t expiry_time_ms) {
   DVLOG(2) << __func__ << ": " << expiry_time_ms << " ms";
   std::string session_id;
   JavaByteArrayToString(env, j_session_id, &session_id);

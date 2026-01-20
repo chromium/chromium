@@ -62,7 +62,7 @@ class EmbeddedTestServerAndroid {
 
   void SetSSLConfig(JNIEnv* jenv, int32_t jserver_certificate);
 
-  void RegisterRequestHandler(JNIEnv* jenv, jlong handler);
+  void RegisterRequestHandler(JNIEnv* jenv, int64_t handler);
 
   void ServeFilesFromDirectory(
       JNIEnv* env,

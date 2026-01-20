@@ -19,7 +19,7 @@ class PredictionOptionsAndroid {
       const base::android::JavaRef<jobject>& j_prediction_options);
 
   static void FromJavaParams(JNIEnv* env,
-                             const jlong target,
+                             const int64_t target,
                              const bool on_demand_execution,
                              const bool can_update_cache_for_future_requests,
                              const bool fallback_allowed);

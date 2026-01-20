@@ -240,7 +240,7 @@ void ResourceManagerImpl::OnResourceReady(JNIEnv* env,
                                           const JavaRef<jobject>& bitmap,
                                           int32_t width,
                                           int32_t height,
-                                          jlong native_resource) {
+                                          int64_t native_resource) {
   DCHECK_GE(res_type, ANDROID_RESOURCE_TYPE_FIRST);
   DCHECK_LE(res_type, ANDROID_RESOURCE_TYPE_LAST);
   TRACE_EVENT2("ui", "ResourceManagerImpl::OnResourceReady",

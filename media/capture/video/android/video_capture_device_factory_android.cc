@@ -25,7 +25,7 @@ namespace media {
 ScopedJavaLocalRef<jobject>
 VideoCaptureDeviceFactoryAndroid::createVideoCaptureAndroid(
     int id,
-    jlong nativeVideoCaptureDeviceAndroid) {
+    int64_t nativeVideoCaptureDeviceAndroid) {
   return (Java_VideoCaptureFactory_createVideoCapture(
       AttachCurrentThread(), id, nativeVideoCaptureDeviceAndroid));
 }

@@ -29,7 +29,7 @@ using base::android::JavaRef;
 namespace cronet {
 
 namespace {
-void WriteToHostCacheOnNetworkThread(jlong jcontext_adapter,
+void WriteToHostCacheOnNetworkThread(int64_t jcontext_adapter,
                                      const std::string& address_string) {
   net::URLRequestContext* context =
       TestUtil::GetURLRequestContext(jcontext_adapter);
@@ -57,7 +57,7 @@ void WriteToHostCacheOnNetworkThread(jlong jcontext_adapter,
 
 static void JNI_ExperimentalOptionsTest_WriteToHostCache(
     JNIEnv* env,
-    jlong jcontext_adapter,
+    int64_t jcontext_adapter,
     const JavaRef<jstring>& jaddress) {
   TestUtil::RunAfterContextInit(
       jcontext_adapter,

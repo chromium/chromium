@@ -32,7 +32,7 @@ class BluetoothChooserAndroid : public content::BluetoothChooser {
           const base::android::JavaRef<jstring>&,
           JniIntWrapper,
           const base::android::JavaRef<jobject>&,
-          jlong)>;
+          int64_t)>;
 
   // Both frame and event_handler must outlive the BluetoothChooserAndroid.
   BluetoothChooserAndroid(

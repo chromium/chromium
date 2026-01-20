@@ -27,7 +27,7 @@ MediaRouterAndroidBridge::MediaRouterAndroidBridge(MediaRouterAndroid* router)
     : native_media_router_(router) {
   JNIEnv* env = AttachCurrentThread();
   java_media_router_.Reset(
-      Java_BrowserMediaRouter_create(env, reinterpret_cast<jlong>(this)));
+      Java_BrowserMediaRouter_create(env, reinterpret_cast<int64_t>(this)));
 }
 
 MediaRouterAndroidBridge::~MediaRouterAndroidBridge() {

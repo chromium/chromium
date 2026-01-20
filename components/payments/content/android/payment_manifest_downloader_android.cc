@@ -113,10 +113,10 @@ void PaymentManifestDownloaderAndroid::Destroy(JNIEnv* env) {
 
 // Static free function declared and called directly from java.
 // Caller owns the result. Returns 0 on error.
-static jlong JNI_PaymentManifestDownloader_Init(
+static int64_t JNI_PaymentManifestDownloader_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jweb_contents,
-    jlong native_csp_checker_android) {
+    int64_t native_csp_checker_android) {
   if (!jweb_contents || !native_csp_checker_android)
     return 0;
 
@@ -125,7 +125,7 @@ static jlong JNI_PaymentManifestDownloader_Init(
   if (!web_contents)
     return 0;
 
-  return reinterpret_cast<jlong>(new PaymentManifestDownloaderAndroid(
+  return reinterpret_cast<int64_t>(new PaymentManifestDownloaderAndroid(
       std::make_unique<DeveloperConsoleLogger>(web_contents),
       payments::CSPCheckerAndroid::GetWeakPtr(native_csp_checker_android),
       web_contents->GetBrowserContext()

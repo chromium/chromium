@@ -122,13 +122,13 @@ void JourneyLoggerAndroid::SetPaymentAppUkmSourceId(JNIEnv* env,
   journey_logger_.SetPaymentAppUkmSourceId(source_id);
 }
 
-static jlong JNI_JourneyLogger_InitJourneyLoggerAndroid(
+static int64_t JNI_JourneyLogger_InitJourneyLoggerAndroid(
     JNIEnv* env,
     const JavaRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);  // Verified in Java before invoking this function.
-  return reinterpret_cast<jlong>(new JourneyLoggerAndroid(
+  return reinterpret_cast<int64_t>(new JourneyLoggerAndroid(
       web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()));
 }
 

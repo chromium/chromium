@@ -178,7 +178,7 @@ void MessagingBackendServiceBridge::ClearPersistentMessage(
 
 void MessagingBackendServiceBridge::RunInstantaneousMessageSuccessCallback(
     JNIEnv* env,
-    jlong j_callback,
+    int64_t j_callback,
     bool j_result) {
   CHECK(j_callback);
   std::unique_ptr<
@@ -234,7 +234,7 @@ void MessagingBackendServiceBridge::DisplayInstantaneousMessage(
   // Copy |callback| on the heap to pass the pointer through JNI. This callback
   // will be deleted when it's run.
   CHECK(!success_callback.is_null());
-  jlong j_native_ptr = reinterpret_cast<jlong>(
+  int64_t j_native_ptr = reinterpret_cast<int64_t>(
       new MessagingBackendService::InstantMessageDelegate::SuccessCallback(
           std::move(success_callback)));
 

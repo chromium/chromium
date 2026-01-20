@@ -40,7 +40,7 @@ Origin Origin::FromJavaObject(
     const base::android::JavaRef<jobject>& java_origin) {
   Origin ret;
   Java_Origin_assignNativeOrigin(env, java_origin,
-                                 reinterpret_cast<jlong>(&ret));
+                                 reinterpret_cast<int64_t>(&ret));
   return ret;
 }
 
@@ -61,9 +61,9 @@ static void JNI_Origin_AssignNativeOrigin(JNIEnv* env,
                                           std::string& host,
                                           jshort port,
                                           bool is_opaque,
-                                          jlong token_high_bits,
-                                          jlong token_low_bits,
-                                          jlong native_origin) {
+                                          int64_t token_high_bits,
+                                          int64_t token_low_bits,
+                                          int64_t native_origin) {
   Origin* origin = reinterpret_cast<Origin*>(native_origin);
   if (is_opaque) {
     std::optional<base::UnguessableToken> nonce_token =

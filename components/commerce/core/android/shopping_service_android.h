@@ -70,7 +70,7 @@ class ShoppingServiceAndroid : public base::SupportsUserData::Data,
                  int32_t j_management_type,
                  const JavaRef<jstring>& j_id,
                  const JavaRef<jstring>& j_seen_offer_id,
-                 jlong j_seen_price,
+                 int64_t j_seen_price,
                  const JavaRef<jstring>& j_seen_country,
                  const JavaRef<jstring>& j_seen_locale,
                  const JavaRef<jobject>& j_callback);

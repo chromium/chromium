@@ -13,39 +13,39 @@ namespace collaboration::conversion {
 
 // Converts a CollaborationControllerDelegate::ResultCallback to a Java readable
 // long.
-jlong GetJavaResultCallbackPtr(
+int64_t GetJavaResultCallbackPtr(
     CollaborationControllerDelegate::ResultCallback result);
 
 // Converts a Java long obtained from GetJavaResultCallbackPtr() back into a
 // ResultCallback.
 std::unique_ptr<CollaborationControllerDelegate::ResultCallback>
-GetNativeResultCallbackFromJava(jlong callback);
+GetNativeResultCallbackFromJava(int64_t callback);
 
 // Converts a exit base::OnceClosure to a Java readable long.
-jlong GetJavaExitCallbackPtr(base::OnceClosure callback);
+int64_t GetJavaExitCallbackPtr(base::OnceClosure callback);
 
 // Converts a Java long obtained from GetJavaExitCallbackPtr() back into a
 // native callback.
 std::unique_ptr<base::OnceClosure> GetNativeExitCallbackFromJava(
-    jlong callback);
+    int64_t callback);
 
 // Converts a result with group token callback to a Java readable long.
-jlong GetJavaResultWithGroupTokenCallbackPtr(
+int64_t GetJavaResultWithGroupTokenCallbackPtr(
     CollaborationControllerDelegate::ResultWithGroupTokenCallback result);
 
 // Converts a Java long obtained from GetJavaResultWithGroupTokenCallbackPtr()
 // back into a result with group token callback.
 std::unique_ptr<CollaborationControllerDelegate::ResultWithGroupTokenCallback>
-GetNativeResultWithGroupTokenCallbackFromJava(jlong callback);
+GetNativeResultWithGroupTokenCallbackFromJava(int64_t callback);
 
 // Converts a unique CollaborationControllerDelegate to a Java readable long.
-jlong GetJavaDelegateUniquePtr(
+int64_t GetJavaDelegateUniquePtr(
     std::unique_ptr<CollaborationControllerDelegate> delegate);
 
 // Converts a Java long obtained from GetJavaDelegateUniquePtr() back into a
 // unique CollaborationControllerDelegate.
 std::unique_ptr<CollaborationControllerDelegate> GetDelegateUniquePtrFromJava(
-    jlong java_ptr);
+    int64_t java_ptr);
 
 }  // namespace collaboration::conversion
 

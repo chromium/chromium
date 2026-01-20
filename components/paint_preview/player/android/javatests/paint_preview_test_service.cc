@@ -103,7 +103,7 @@ bool WriteSkp(sk_sp<SkPicture> skp,
 
 }  // namespace
 
-static jlong JNI_PaintPreviewTestService_GetInstance(
+static int64_t JNI_PaintPreviewTestService_GetInstance(
     JNIEnv* env,
     const JavaRef<jstring>& j_path) {
   base::FilePath file_path(base::android::ConvertJavaStringToUTF8(env, j_path));
@@ -121,7 +121,7 @@ PaintPreviewTestService::PaintPreviewTestService(const base::FilePath& path)
 
 PaintPreviewTestService::~PaintPreviewTestService() = default;
 
-jlong PaintPreviewTestService::GetBaseService(JNIEnv* env) {
+int64_t PaintPreviewTestService::GetBaseService(JNIEnv* env) {
   return reinterpret_cast<intptr_t>(
       static_cast<PaintPreviewBaseService*>(this));
 }

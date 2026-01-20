@@ -37,7 +37,7 @@ class TabGroupSyncConversionsBridge {
   // from its Java counterpart.
   static void FillNativeSavedTabGroup(
       JNIEnv* env,
-      const jlong native_saved_tab_group_ptr,
+      const int64_t native_saved_tab_group_ptr,
       const JavaRef<jobject>& j_saved_tab_group);
 
  private:

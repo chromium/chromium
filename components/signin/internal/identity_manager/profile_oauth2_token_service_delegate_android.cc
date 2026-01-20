@@ -415,9 +415,9 @@ namespace signin {
 static void JNI_ProfileOAuth2TokenServiceDelegate_OnOAuth2TokenFetched(
     JNIEnv* env,
     const JavaRef<jstring>& authToken,
-    const jlong expiration_time_secs,
+    const int64_t expiration_time_secs,
     GoogleServiceAuthError& authError,
-    jlong nativeCallback) {
+    int64_t nativeCallback) {
   std::string token;
   if (authToken) {
     token = ConvertJavaStringToUTF8(env, authToken);

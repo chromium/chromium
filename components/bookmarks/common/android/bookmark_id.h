@@ -22,7 +22,7 @@ int JavaBookmarkIdGetType(JNIEnv* env,
 
 // See BookmarkId#createBookmarkId
 base::android::ScopedJavaLocalRef<jobject>
-JavaBookmarkIdCreateBookmarkId(JNIEnv* env, jlong id, int32_t type);
+JavaBookmarkIdCreateBookmarkId(JNIEnv* env, int64_t id, int32_t type);
 
 }  // namespace android
 }  // namespace bookmarks

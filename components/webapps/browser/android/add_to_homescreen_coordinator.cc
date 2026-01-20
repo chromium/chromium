@@ -161,7 +161,7 @@ void AddToHomescreenCoordinator::RecordEventForAppMenu(
 }
 
 // static
-jlong JNI_AddToHomescreenCoordinator_StartForAppMenu(
+int64_t JNI_AddToHomescreenCoordinator_StartForAppMenu(
     JNIEnv* env,
     const JavaRef<jobject>& java_coordinator,
     const base::android::JavaRef<jobject>& java_web_contents,

@@ -25,7 +25,7 @@ namespace cronet {
 // made it from the CronetEngine.Builder to the URLRequestContextConfig.
 static void JNI_CronetUrlRequestContextTest_VerifyUrlRequestContextConfig(
     JNIEnv* env,
-    jlong jurl_request_context_config,
+    int64_t jurl_request_context_config,
     const JavaRef<jstring>& jstorage_path) {
   URLRequestContextConfig* config =
       reinterpret_cast<URLRequestContextConfig*>(jurl_request_context_config);
@@ -51,7 +51,7 @@ static void JNI_CronetUrlRequestContextTest_VerifyUrlRequestContextConfig(
 static void
 JNI_CronetUrlRequestContextTest_VerifyUrlRequestContextQuicOffConfig(
     JNIEnv* env,
-    jlong jurl_request_context_config,
+    int64_t jurl_request_context_config,
     const JavaRef<jstring>& jstorage_path) {
   URLRequestContextConfig* config =
       reinterpret_cast<URLRequestContextConfig*>(jurl_request_context_config);

@@ -41,17 +41,17 @@ class ContentUiEventHandler {
 
   void SendMouseWheelEvent(JNIEnv* env,
                            const base::android::JavaRef<jobject>& event,
-                           jlong time_ns);
+                           int64_t time_ns);
   void SendMouseEvent(JNIEnv* env,
                       const base::android::JavaRef<jobject>& event,
-                      jlong time_ns,
+                      int64_t time_ns,
                       int32_t android_action_button,
                       int32_t android_tool_type);
   void SendScrollEvent(JNIEnv* env,
-                       jlong time_ms,
+                       int64_t time_ms,
                        jfloat delta_x,
                        jfloat delta_y);
-  void CancelFling(JNIEnv* env, jlong time_ms);
+  void CancelFling(JNIEnv* env, int64_t time_ms);
 
  private:
   RenderWidgetHostViewAndroid* GetRenderWidgetHostView();

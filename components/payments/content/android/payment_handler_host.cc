@@ -18,7 +18,7 @@ namespace payments {
 namespace android {
 
 // static
-static jlong JNI_PaymentHandlerHost_Init(
+static int64_t JNI_PaymentHandlerHost_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& web_contents,
     const base::android::JavaRef<jobject>& listener) {

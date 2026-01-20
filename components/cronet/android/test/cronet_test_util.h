@@ -36,28 +36,28 @@ class TestUtil {
   // Returns SingleThreadTaskRunner for the network thread of the context
   // adapter.
   static scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
-      jlong jcontext_adapter);
+      int64_t jcontext_adapter);
   // Returns underlying default URLRequestContext.
-  static net::URLRequestContext* GetURLRequestContext(jlong jcontext_adapter);
+  static net::URLRequestContext* GetURLRequestContext(int64_t jcontext_adapter);
   // Run |task| after URLRequestContext is initialized.
-  static void RunAfterContextInit(jlong jcontext_adapter,
+  static void RunAfterContextInit(int64_t jcontext_adapter,
                                   base::OnceClosure task);
 
   // CronetURLRequestAdapter manipulation:
 
   // Returns underlying URLRequest.
-  static net::URLRequest* GetURLRequest(jlong jrequest_adapter);
+  static net::URLRequest* GetURLRequest(int64_t jrequest_adapter);
 
   // Returns underlying network to URLRequestContext map.
   static base::flat_map<net::handles::NetworkHandle,
                         std::unique_ptr<net::URLRequestContext>>*
-  GetURLRequestContexts(jlong jcontext_adapter);
+  GetURLRequestContexts(int64_t jcontext_adapter);
 
   static net::QuicParams& GetDefaultURLRequestQuicParams(
-      jlong jcontext_adapter);
+      int64_t jcontext_adapter);
 
  private:
-  static void RunAfterContextInitOnNetworkThread(jlong jcontext_adapter,
+  static void RunAfterContextInitOnNetworkThread(int64_t jcontext_adapter,
                                                  base::OnceClosure task);
 };
 

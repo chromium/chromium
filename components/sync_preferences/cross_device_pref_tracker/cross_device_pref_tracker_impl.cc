@@ -1126,7 +1126,7 @@ namespace {
 CrossDevicePrefTracker::DeviceFilter ToDeviceFilter(
     std::optional<int> os_type,
     std::optional<int> form_factor,
-    std::optional<jlong> max_sync_recency_microseconds) {
+    std::optional<int64_t> max_sync_recency_microseconds) {
   CrossDevicePrefTracker::DeviceFilter filter;
   if (os_type.has_value()) {
     filter.os_type = static_cast<syncer::DeviceInfo::OsType>(os_type.value());
@@ -1155,7 +1155,7 @@ ScopedJavaLocalRef<jobjectArray> CrossDevicePrefTrackerImpl::GetValues(
     const base::android::JavaRef<jstring>& pref_name,
     std::optional<int> os_type,
     std::optional<int> form_factor,
-    std::optional<jlong> max_sync_recency_microseconds) const {
+    std::optional<int64_t> max_sync_recency_microseconds) const {
   std::vector<ScopedJavaLocalRef<jobject>> result;
   std::vector<TimestampedPrefValue> timestamped_pref_values = GetValues(
       base::android::ConvertJavaStringToUTF8(env, pref_name),
@@ -1172,7 +1172,7 @@ ScopedJavaLocalRef<jobject> CrossDevicePrefTrackerImpl::GetMostRecentValue(
     const base::android::JavaRef<jstring>& pref_name,
     std::optional<int> os_type,
     std::optional<int> form_factor,
-    std::optional<jlong> max_sync_recency_microseconds) const {
+    std::optional<int64_t> max_sync_recency_microseconds) const {
   std::optional<TimestampedPrefValue> timestamped_pref_value =
       GetMostRecentValue(
           base::android::ConvertJavaStringToUTF8(env, pref_name),

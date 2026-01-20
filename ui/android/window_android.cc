@@ -250,7 +250,7 @@ void WindowAndroid::OnOverlayTransformUpdated(JNIEnv* env) {
 }
 
 void WindowAndroid::SendUnfoldLatencyBeginTimestamp(JNIEnv* env,
-                                                    jlong begin_time) {
+                                                    int64_t begin_time) {
   base::TimeTicks begin_timestamp =
       base::TimeTicks::FromUptimeMillis(begin_time);
   observer_list_.Notify(&WindowAndroidObserver::OnUnfoldStarted,
@@ -422,11 +422,11 @@ void WindowAndroid::SetTestHooks(TestHooks* hooks) {
 // Native JNI methods
 // ----------------------------------------------------------------------------
 
-static jlong JNI_WindowAndroid_Init(JNIEnv* env,
-                                    const JavaRef<jobject>& obj,
-                                    int32_t sdk_display_id,
-                                    jfloat scroll_factor,
-                                    bool window_is_wide_color_gamut) {
+static int64_t JNI_WindowAndroid_Init(JNIEnv* env,
+                                      const JavaRef<jobject>& obj,
+                                      int32_t sdk_display_id,
+                                      jfloat scroll_factor,
+                                      bool window_is_wide_color_gamut) {
   WindowAndroid* window = new WindowAndroid(
       env, obj, sdk_display_id, scroll_factor, window_is_wide_color_gamut);
   return reinterpret_cast<intptr_t>(window);

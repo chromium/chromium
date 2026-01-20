@@ -105,15 +105,15 @@ void PrefServiceAndroid::SetDouble(JNIEnv* env,
       base::android::ConvertJavaStringToUTF8(env, j_preference), j_value);
 }
 
-jlong PrefServiceAndroid::GetLong(JNIEnv* env,
-                                  const JavaRef<jstring>& j_preference) {
+int64_t PrefServiceAndroid::GetLong(JNIEnv* env,
+                                    const JavaRef<jstring>& j_preference) {
   return pref_service_->GetInt64(
       base::android::ConvertJavaStringToUTF8(env, j_preference));
 }
 
 void PrefServiceAndroid::SetLong(JNIEnv* env,
                                  const JavaRef<jstring>& j_preference,
-                                 const jlong j_value) {
+                                 const int64_t j_value) {
   pref_service_->SetInt64(
       base::android::ConvertJavaStringToUTF8(env, j_preference), j_value);
 }

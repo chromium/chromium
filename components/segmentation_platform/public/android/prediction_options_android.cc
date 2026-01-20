@@ -28,7 +28,7 @@ PredictionOptions PredictionOptionsAndroid::ToNativePredictionOptions(
 
 void PredictionOptionsAndroid::FromJavaParams(
     JNIEnv* env,
-    const jlong target,
+    const int64_t target,
     const bool on_demand_execution,
     const bool can_update_cache_for_future_requests,
     const bool fallback_allowed) {
@@ -43,7 +43,7 @@ void PredictionOptionsAndroid::FromJavaParams(
 
 static void JNI_PredictionOptions_FillNative(
     JNIEnv* env,
-    const jlong prediction_options_ptr,
+    const int64_t prediction_options_ptr,
     const bool on_demand_execution,
     const bool can_update_cache_for_future_requests,
     const bool fallback_allowed) {

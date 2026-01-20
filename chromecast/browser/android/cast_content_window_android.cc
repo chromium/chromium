@@ -21,7 +21,7 @@ using base::android::ConvertUTF8ToJavaString;
 namespace {
 
 base::android::ScopedJavaLocalRef<jobject> CreateJavaWindow(
-    jlong native_window,
+    int64_t native_window,
     bool enable_touch_input,
     bool turn_on_screen,
     bool keep_screen_on,
@@ -49,7 +49,7 @@ CastContentWindowAndroid::CastContentWindowAndroid(
     mojom::CastWebViewParamsPtr params)
     : CastContentWindow(std::move(params)),
       web_contents_attached_(false),
-      java_window_(CreateJavaWindow(reinterpret_cast<jlong>(this),
+      java_window_(CreateJavaWindow(reinterpret_cast<int64_t>(this),
                                     params_->enable_touch_input,
                                     params_->turn_on_screen,
                                     params_->keep_screen_on,

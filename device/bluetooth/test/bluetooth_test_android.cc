@@ -89,7 +89,7 @@ void BluetoothTestAndroid::PostTaskFromJava(JNIEnv* env,
 void BluetoothTestAndroid::PostDelayedTaskFromJava(
     JNIEnv* env,
     const JavaRef<jobject>& runnable,
-    jlong delayMillis) {
+    int64_t delayMillis) {
   base::android::ScopedJavaGlobalRef<jobject> runnable_ref;
   // ScopedJavaGlobalRef does not hold onto the env reference, so it is safe to
   // use it across threads. |RunJavaRunnable| will acquire a new JNIEnv before

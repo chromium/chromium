@@ -66,7 +66,7 @@ class MessagingBackendServiceBridge
       int32_t j_type);
 
   void RunInstantaneousMessageSuccessCallback(JNIEnv* env,
-                                              jlong j_callback,
+                                              int64_t j_callback,
                                               bool j_result);
 
  private:

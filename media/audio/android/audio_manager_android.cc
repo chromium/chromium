@@ -98,7 +98,7 @@ class JniDelegateImpl : public AudioManagerAndroid::JniDelegate {
   explicit JniDelegateImpl(AudioManagerAndroid* audio_manager)
       : j_audio_manager_(Java_AudioManagerAndroid_createAudioManagerAndroid(
             AttachCurrentThread(),
-            reinterpret_cast<jlong>(audio_manager))) {
+            reinterpret_cast<int64_t>(audio_manager))) {
     Java_AudioManagerAndroid_init(AttachCurrentThread(), j_audio_manager_);
   }
 

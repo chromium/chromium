@@ -50,7 +50,7 @@ ScopedJavaLocalRef<jobject> ParsedAndroid::InitFromParsed(
   return CreateJavaParsed(env, parsed, inner);
 }
 
-static void JNI_Parsed_InitNative(jlong native_ptr,
+static void JNI_Parsed_InitNative(int64_t native_ptr,
                                   bool is_inner,
                                   int32_t scheme_begin,
                                   int32_t scheme_length,

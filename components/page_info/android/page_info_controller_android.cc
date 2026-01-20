@@ -50,7 +50,7 @@ using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaRef;
 
 // static
-static jlong JNI_PageInfoController_Init(
+static int64_t JNI_PageInfoController_Init(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     const JavaRef<jobject>& java_web_contents) {

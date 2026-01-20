@@ -223,7 +223,7 @@ void WebPaymentsWebDataServiceAndroid::OnPaymentMethodManifestRequestDone(
   web_data_service_requests_.erase(h);
 }
 
-static jlong JNI_WebPaymentsWebDataService_Init(
+static int64_t JNI_WebPaymentsWebDataService_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj,
     const base::android::JavaRef<jobject>& jweb_contents) {

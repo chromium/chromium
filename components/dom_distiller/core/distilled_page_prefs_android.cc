@@ -60,9 +60,9 @@ jfloat DistilledPagePrefsAndroid::GetFontScaling(JNIEnv* env) {
   return distilled_page_prefs_->GetFontScaling();
 }
 
-static jlong JNI_DistilledPagePrefs_Init(JNIEnv* env,
-                                         const JavaRef<jobject>& obj,
-                                         jlong distilled_page_prefs_ptr) {
+static int64_t JNI_DistilledPagePrefs_Init(JNIEnv* env,
+                                           const JavaRef<jobject>& obj,
+                                           int64_t distilled_page_prefs_ptr) {
   DistilledPagePrefs* distilled_page_prefs =
       reinterpret_cast<DistilledPagePrefs*>(distilled_page_prefs_ptr);
   DistilledPagePrefsAndroid* distilled_page_prefs_android =
@@ -70,15 +70,14 @@ static jlong JNI_DistilledPagePrefs_Init(JNIEnv* env,
   return reinterpret_cast<intptr_t>(distilled_page_prefs_android);
 }
 
-void DistilledPagePrefsAndroid::AddObserver(JNIEnv* env,
-                                            jlong observer_ptr) {
+void DistilledPagePrefsAndroid::AddObserver(JNIEnv* env, int64_t observer_ptr) {
   DistilledPagePrefsObserverAndroid* distilled_page_prefs_observer_wrapper =
       reinterpret_cast<DistilledPagePrefsObserverAndroid*>(observer_ptr);
   distilled_page_prefs_->AddObserver(distilled_page_prefs_observer_wrapper);
 }
 
 void DistilledPagePrefsAndroid::RemoveObserver(JNIEnv* env,
-                                               jlong observer_ptr) {
+                                               int64_t observer_ptr) {
   DistilledPagePrefsObserverAndroid* distilled_page_prefs_observer_wrapper =
       reinterpret_cast<DistilledPagePrefsObserverAndroid*>(observer_ptr);
   distilled_page_prefs_->RemoveObserver(distilled_page_prefs_observer_wrapper);
@@ -118,7 +117,7 @@ void DistilledPagePrefsObserverAndroid::OnChangeFontScaling(float scaling) {
                                                              scaling);
 }
 
-static jlong JNI_DistilledPagePrefs_InitObserverAndroid(
+static int64_t JNI_DistilledPagePrefs_InitObserverAndroid(
     JNIEnv* env,
     const JavaRef<jobject>& obj) {
   DistilledPagePrefsObserverAndroid* observer_android =

@@ -66,7 +66,7 @@ class UI_ANDROID_EXPORT ResourceManagerImpl
                        const base::android::JavaRef<jobject>& bitmap,
                        int32_t width,
                        int32_t height,
-                       jlong native_resource);
+                       int64_t native_resource);
   void RemoveResource(JNIEnv* env, int32_t res_type, int32_t res_id);
   void ClearTintedResourceCache(JNIEnv* env);
   void AssertResourceExists(JNIEnv* env, int32_t res_type, int32_t res_id);

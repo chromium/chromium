@@ -55,8 +55,8 @@ ScopedJavaLocalRef<jobject> EventForwarder::GetJavaObject() {
 
 bool EventForwarder::OnTouchEvent(JNIEnv* env,
                                   const JavaRef<jobject>& motion_event,
-                                  jlong oldest_event_time_ns,
-                                  jlong latest_event_time_ns,
+                                  int64_t oldest_event_time_ns,
+                                  int64_t latest_event_time_ns,
                                   int32_t android_action,
                                   jfloat touch_major_0,
                                   jfloat touch_major_1,
@@ -97,7 +97,7 @@ bool EventForwarder::OnTouchEvent(JNIEnv* env,
           forwarder->set_has_y_movement(
               !base::IsApproximatelyEqual(pos_y_0, last_y_pos_, kEpsilon));
         }
-        jlong down_time_ms =
+        int64_t down_time_ms =
             JNI_MotionEvent::Java_MotionEvent_getDownTime(env, motion_event);
         forwarder->set_down_time_ns(down_time_ms *
                                     base::Time::kNanosecondsPerMillisecond);
@@ -171,7 +171,7 @@ bool EventForwarder::OnTouchEvent(JNIEnv* env,
 void EventForwarder::OnMouseEvent(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& motion_event,
-    jlong time_ns,
+    int64_t time_ns,
     int32_t android_action,
     int32_t android_action_button,
     int32_t android_tool_type) {
@@ -238,7 +238,7 @@ void EventForwarder::OnDragEvent(JNIEnv* env,
 
 bool EventForwarder::OnGestureEvent(JNIEnv* env,
                                     int32_t type,
-                                    jlong time_ms,
+                                    int64_t time_ms,
                                     jfloat scale) {
   float dip_scale = view_->GetDipScale();
   auto size = view_->GetSizeDIPs();
@@ -255,8 +255,8 @@ bool EventForwarder::OnGestureEvent(JNIEnv* env,
 
 bool EventForwarder::OnGenericMotionEvent(JNIEnv* env,
                                           const JavaRef<jobject>& motion_event,
-                                          jlong event_time_ns,
-                                          jlong down_time_ms) {
+                                          int64_t event_time_ns,
+                                          int64_t down_time_ms) {
   auto size = view_->GetSizeDIPs();
   float x = size.width() / 2;
   float y = size.height() / 2;
@@ -298,7 +298,7 @@ bool EventForwarder::OnGenericMotionEvent(JNIEnv* env,
 
 void EventForwarder::OnMouseWheelEvent(JNIEnv* env,
                                        const JavaRef<jobject>& motion_event,
-                                       jlong time_ns,
+                                       int64_t time_ns,
                                        jfloat x,
                                        jfloat y,
                                        jfloat raw_x,
@@ -354,7 +354,7 @@ void EventForwarder::ScrollTo(JNIEnv* env,
 }
 
 void EventForwarder::DoubleTap(JNIEnv* env,
-                               jlong time_ms,
+                               int64_t time_ms,
                                int32_t x,
                                int32_t y) {
   float dip_scale = view_->GetDipScale();
@@ -366,7 +366,7 @@ void EventForwarder::DoubleTap(JNIEnv* env,
 }
 
 void EventForwarder::StartFling(JNIEnv* env,
-                                jlong time_ms,
+                                int64_t time_ms,
                                 jfloat velocity_x,
                                 jfloat velocity_y,
                                 bool synthetic_scroll,
@@ -400,7 +400,7 @@ void EventForwarder::StartFling(JNIEnv* env,
 }
 
 void EventForwarder::CancelFling(JNIEnv* env,
-                                 jlong time_ms,
+                                 int64_t time_ms,
                                  bool prevent_boosting,
                                  bool is_touchpad_event) {
   ui::GestureDeviceType source =

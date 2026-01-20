@@ -69,7 +69,7 @@ JNI_NavigationControllerImpl_CreateJavaNavigationEntry(
     j_bitmap = gfx::ConvertToJavaBitmap(*status.image.ToSkBitmap(),
                                         gfx::OomBehavior::kReturnNullOnOom);
   }
-  jlong j_timestamp = entry->GetTimestamp().InMillisecondsSinceUnixEpoch();
+  int64_t j_timestamp = entry->GetTimestamp().InMillisecondsSinceUnixEpoch();
 
   return content::Java_NavigationControllerImpl_createNavigationEntry(
       env, index, j_url, j_virtual_url, j_original_url, j_title, j_bitmap,
@@ -226,8 +226,8 @@ base::android::ScopedJavaLocalRef<jobject> NavigationControllerAndroid::LoadUrl(
     bool has_user_gesture,
     bool should_clear_history_list,
     const base::android::JavaRef<jobject>& j_additional_navigation_params,
-    jlong input_start,
-    jlong navigation_ui_data_ptr,
+    int64_t input_start,
+    int64_t navigation_ui_data_ptr,
     bool is_pdf) {
   DCHECK(url);
   NavigationController::LoadURLParams params(
@@ -524,7 +524,7 @@ void NavigationControllerAndroid::SetEntryExtraData(
 
 void NavigationControllerAndroid::CopyStateFrom(
     JNIEnv* env,
-    jlong source_navigation_controller_ptr,
+    int64_t source_navigation_controller_ptr,
     bool needs_reload) {
   navigation_controller_->CopyStateFrom(
       reinterpret_cast<NavigationControllerAndroid*>(

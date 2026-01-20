@@ -100,7 +100,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid : public VideoCaptureDevice {
   void OnHardwareBufferAvailableOnMainThread(
       base::android::ScopedHardwareBufferHandle ahb_handle,
       int32_t rotation,
-      jlong timestamp);
+      int64_t timestamp);
 
   // Implement org.chromium.media.VideoCapture.Natives.OnFrameAvailable.
   void OnFrameAvailable(JNIEnv* env,
@@ -119,7 +119,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid : public VideoCaptureDevice {
                             int32_t width,
                             int32_t height,
                             int32_t rotation,
-                            jlong timestamp);
+                            int64_t timestamp);
 
   // Implement
   // org.chromium.media.VideoCapture.Natives.onHardwareBufferAvailable.
@@ -127,7 +127,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid : public VideoCaptureDevice {
       JNIEnv* env,
       const base::android::JavaRef<jobject>& hardwareBuffer,
       int32_t rotation,
-      jlong timestamp);
+      int64_t timestamp);
 
   // Implement org.chromium.media.VideoCapture.Natives.OnError.
   void OnError(JNIEnv* env,
@@ -140,12 +140,12 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid : public VideoCaptureDevice {
 
   void OnGetPhotoCapabilitiesReply(
       JNIEnv* env,
-      jlong callback_id,
+      int64_t callback_id,
       const base::android::JavaRef<jobject>& photo_capabilities);
 
   // Implement org.chromium.media.VideoCapture.nativeOnPhotoTaken.
   void OnPhotoTaken(JNIEnv* env,
-                    jlong callback_id,
+                    int64_t callback_id,
                     const base::android::JavaRef<jbyteArray>& data);
 
   // Implement org.chromium.media.VideoCapture.nativeOnStarted.

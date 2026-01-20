@@ -55,7 +55,7 @@ void SetScreenAndroid(bool use_display_wide_color_gamut) {
   display::Screen::SetScreenInstance(manager);
 
   JNIEnv* env = AttachCurrentThread();
-  Java_DisplayAndroidManager_onNativeSideCreated(env, (jlong)manager);
+  Java_DisplayAndroidManager_onNativeSideCreated(env, (int64_t)manager);
 }
 
 bool DisplayAndroidManager::IsDisplayTopologyAvailable() {

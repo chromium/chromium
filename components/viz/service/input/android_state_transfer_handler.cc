@@ -203,7 +203,7 @@ bool AndroidStateTransferHandler::CanStartProcessingVizEvents(
     const base::android::ScopedInputEvent& event) {
   CHECK(!state_for_curr_sequence_.has_value());
 
-  const jlong j_event_down_time =
+  const int64_t j_event_down_time =
       base::TimeTicks::FromJavaNanoTime(
           AMotionEvent_getDownTime(event.a_input_event()))
           .ToUptimeMillis();

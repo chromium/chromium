@@ -81,7 +81,7 @@ class TestCrossDevicePrefTracker
       const base::android::JavaRef<jstring>& pref_name,
       std::optional<int> os_type,
       std::optional<int> form_factor,
-      std::optional<jlong> max_sync_recency_microseconds) const override {
+      std::optional<int64_t> max_sync_recency_microseconds) const override {
     return base::android::ScopedJavaLocalRef<jobjectArray>();
   }
 
@@ -90,7 +90,7 @@ class TestCrossDevicePrefTracker
       const base::android::JavaRef<jstring>& pref_name,
       std::optional<int> os_type,
       std::optional<int> form_factor,
-      std::optional<jlong> max_sync_recency_microseconds) const override {
+      std::optional<int64_t> max_sync_recency_microseconds) const override {
     return base::android::ScopedJavaLocalRef<jobject>();
   }
 #endif  // BUILDFLAG(IS_ANDROID)

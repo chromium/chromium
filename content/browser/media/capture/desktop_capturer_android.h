@@ -24,7 +24,7 @@ class CONTENT_EXPORT DesktopCapturerAndroidJniInterface {
   virtual ~DesktopCapturerAndroidJniInterface() = default;
   virtual base::android::ScopedJavaLocalRef<jobject> Create(
       JNIEnv* env,
-      jlong native_ptr) = 0;
+      int64_t native_ptr) = 0;
   virtual bool StartCapture(JNIEnv* env,
                             const base::android::JavaRef<jobject>& obj) = 0;
   virtual void Destroy(JNIEnv* env,
@@ -66,7 +66,7 @@ class CONTENT_EXPORT DesktopCapturerAndroid final
   // JNI:
   void OnRgbaFrameAvailable(JNIEnv* env,
                             const base::android::JavaRef<jobject>& release_cb,
-                            jlong timestamp_ns,
+                            int64_t timestamp_ns,
                             const base::android::JavaRef<jobject>& buf,
                             int32_t unchecked_pixel_stride,
                             int32_t unchecked_row_stride,
@@ -77,7 +77,7 @@ class CONTENT_EXPORT DesktopCapturerAndroid final
 
   void OnI420FrameAvailable(JNIEnv* env,
                             const base::android::JavaRef<jobject>& release_cb,
-                            jlong timestamp_ns,
+                            int64_t timestamp_ns,
                             const base::android::JavaRef<jobject>& y_buf,
                             int32_t y_unchecked_pixel_stride,
                             int32_t y_unchecked_row_stride,

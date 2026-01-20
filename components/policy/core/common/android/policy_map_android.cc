@@ -66,7 +66,7 @@ base::android::ScopedJavaLocalRef<jstring> PolicyMapAndroid::GetDictValue(
   return GetListOrDictValue(env, policy, /* is_dict */ true);
 }
 
-bool PolicyMapAndroid::Equals(JNIEnv* env, jlong other) const {
+bool PolicyMapAndroid::Equals(JNIEnv* env, int64_t other) const {
   return policy_map_->Equals(
       *reinterpret_cast<PolicyMapAndroid*>(other)->policy_map_);
 }

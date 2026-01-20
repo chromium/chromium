@@ -28,8 +28,10 @@ BASE_FEATURE(kAndroidMediaPickerAdoption,
              "MediaPickerAdoption",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-static jlong JNI_PhotoPickerFeatures_GetFeature(JNIEnv* env, int32_t ordinal) {
-  return reinterpret_cast<jlong>(UNSAFE_TODO(kFeaturesExposedToJava[ordinal]));
+static int64_t JNI_PhotoPickerFeatures_GetFeature(JNIEnv* env,
+                                                  int32_t ordinal) {
+  return reinterpret_cast<int64_t>(
+      UNSAFE_TODO(kFeaturesExposedToJava[ordinal]));
 }
 
 }  // namespace features

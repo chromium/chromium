@@ -23,7 +23,7 @@ JniHdrMetadata::JniHdrMetadata(const VideoColorSpace& color_space,
                                const gfx::HDRMetadata& hdr_metadata)
     : color_space_(color_space), hdr_metadata_(hdr_metadata) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  jobject_ = Java_HdrMetadata_create(env, reinterpret_cast<jlong>(this));
+  jobject_ = Java_HdrMetadata_create(env, reinterpret_cast<int64_t>(this));
   base::android::CheckException(env);
 }
 

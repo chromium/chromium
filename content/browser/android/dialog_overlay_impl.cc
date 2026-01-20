@@ -29,11 +29,11 @@ using base::android::ScopedJavaLocalRef;
 
 namespace content {
 
-static jlong JNI_DialogOverlayImpl_Init(JNIEnv* env,
-                                        const JavaRef<jobject>& obj,
-                                        jlong high,
-                                        jlong low,
-                                        bool power_efficient) {
+static int64_t JNI_DialogOverlayImpl_Init(JNIEnv* env,
+                                          const JavaRef<jobject>& obj,
+                                          int64_t high,
+                                          int64_t low,
+                                          bool power_efficient) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   std::optional<base::UnguessableToken> token =
@@ -79,7 +79,7 @@ static jlong JNI_DialogOverlayImpl_Init(JNIEnv* env,
           ->browser()
           ->ShouldObserveContainerViewLocationForDialogOverlays();
 
-  return reinterpret_cast<jlong>(new DialogOverlayImpl(
+  return reinterpret_cast<int64_t>(new DialogOverlayImpl(
       obj, rfhi, web_contents_impl, power_efficient, observe_container_view));
 }
 
@@ -307,7 +307,7 @@ class AndroidOverlaySyncHelper {
 
 static void JNI_DialogOverlayImpl_NotifyDestroyedSynchronously(
     JNIEnv* env,
-    jlong message_pipe_handle) {
+    int64_t message_pipe_handle) {
   mojo::MessagePipeHandle handle(message_pipe_handle);
   mojo::ScopedMessagePipeHandle scoped_handle(handle);
   mojo::Remote<media::mojom::AndroidOverlayClient> remote(

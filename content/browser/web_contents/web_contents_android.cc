@@ -207,7 +207,7 @@ WebContents* WebContents::FromJavaWebContents(
 // static
 static void JNI_WebContentsImpl_DestroyWebContents(
     JNIEnv* env,
-    jlong jweb_contents_android_ptr) {
+    int64_t jweb_contents_android_ptr) {
   WebContentsAndroid* web_contents_android =
       reinterpret_cast<WebContentsAndroid*>(jweb_contents_android_ptr);
   if (!web_contents_android)
@@ -223,7 +223,7 @@ static void JNI_WebContentsImpl_DestroyWebContents(
 // static
 static ScopedJavaLocalRef<jobject> JNI_WebContentsImpl_FromNativePtr(
     JNIEnv* env,
-    jlong web_contents_ptr) {
+    int64_t web_contents_ptr) {
   WebContentsAndroid* web_contents_android =
       reinterpret_cast<WebContentsAndroid*>(web_contents_ptr);
 

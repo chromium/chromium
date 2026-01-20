@@ -22,7 +22,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryAndroid
  public:
   static base::android::ScopedJavaLocalRef<jobject> createVideoCaptureAndroid(
       int id,
-      jlong nativeVideoCaptureDeviceAndroid);
+      int64_t nativeVideoCaptureDeviceAndroid);
 
   VideoCaptureDeviceFactoryAndroid();
 

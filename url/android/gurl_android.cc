@@ -56,8 +56,8 @@ GURL GURLAndroid::ToNativeGURL(JNIEnv* env,
                                const base::android::JavaRef<jobject>& j_gurl) {
   GURL ret;
   Parsed parsed;
-  Java_GURL_toNativeGURL(env, j_gurl, reinterpret_cast<jlong>(&ret),
-                         reinterpret_cast<jlong>(&parsed));
+  Java_GURL_toNativeGURL(env, j_gurl, reinterpret_cast<int64_t>(&ret),
+                         reinterpret_cast<int64_t>(&parsed));
   return ret;
 }
 
@@ -98,8 +98,8 @@ static void JNI_GURL_Init(JNIEnv* env,
 static void JNI_GURL_InitNative(JNIEnv* env,
                                 std::string& spec,
                                 bool is_valid,
-                                jlong native_gurl,
-                                jlong native_parsed) {
+                                int64_t native_gurl,
+                                int64_t native_parsed) {
   GURL* gurl = reinterpret_cast<GURL*>(native_gurl);
   Parsed* parsed = reinterpret_cast<Parsed*>(native_parsed);
   *gurl = GURL(spec, *parsed, is_valid);

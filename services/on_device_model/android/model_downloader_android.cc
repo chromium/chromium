@@ -111,7 +111,7 @@ void ModelDownloaderAndroid::OnUnavailableOnSequence(
 
 static void JNI_AiCoreModelDownloaderWrapper_OnAvailable(
     JNIEnv* env,
-    jlong model_downloader_android,
+    int64_t model_downloader_android,
     const jni_zero::JavaRef<jstring>& j_name,
     const jni_zero::JavaRef<jstring>& j_version) {
   reinterpret_cast<ModelDownloaderAndroid*>(model_downloader_android)
@@ -121,7 +121,7 @@ static void JNI_AiCoreModelDownloaderWrapper_OnAvailable(
 
 static void JNI_AiCoreModelDownloaderWrapper_OnUnavailable(
     JNIEnv* env,
-    jlong model_downloader_android,
+    int64_t model_downloader_android,
     int32_t j_reason) {
   reinterpret_cast<ModelDownloaderAndroid*>(model_downloader_android)
       ->OnUnavailable(

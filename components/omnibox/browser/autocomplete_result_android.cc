@@ -153,7 +153,7 @@ bool AutocompleteResult::VerifyCoherency(
     int32_t verification_point) {
   DCHECK(j_matches_array);
 
-  std::vector<jlong> j_matches;
+  std::vector<int64_t> j_matches;
   base::android::JavaLongArrayToLongVector(env, j_matches_array, &j_matches);
 
   if (j_matches.size() != size()) {

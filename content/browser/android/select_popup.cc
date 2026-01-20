@@ -126,7 +126,7 @@ void SelectPopup::ShowMenu(
   bounds_dip.Scale(1 / web_contents_->GetNativeView()->GetDipScale());
   view->SetAnchorRect(popup_view, bounds_dip);
   Java_SelectPopup_show(
-      env, j_obj, popup_view, reinterpret_cast<jlong>(popup_client_.get()),
+      env, j_obj, popup_view, reinterpret_cast<int64_t>(popup_client_.get()),
       items_array, enabled_array, multiple, selected_array, right_aligned);
 }
 
@@ -140,7 +140,7 @@ void SelectPopup::HideMenu() {
 }
 
 void SelectPopup::SelectMenuItems(JNIEnv* env,
-                                  jlong selectPopupDelegate,
+                                  int64_t selectPopupDelegate,
                                   const JavaRef<jintArray>& indices) {
   blink::mojom::PopupMenuClient* popup_client_raw_ptr =
       reinterpret_cast<blink::mojom::PopupMenuClient*>(selectPopupDelegate);

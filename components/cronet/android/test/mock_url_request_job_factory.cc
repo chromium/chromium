@@ -29,7 +29,7 @@ namespace cronet {
 class UrlInterceptorJobFactoryHandle {
  public:
   // |jcontext_adapter| points to a URLRequestContextAdapater.
-  UrlInterceptorJobFactoryHandle(jlong jcontext_adapter)
+  UrlInterceptorJobFactoryHandle(int64_t jcontext_adapter)
       : jcontext_adapter_(jcontext_adapter) {
     TestUtil::RunAfterContextInit(
         jcontext_adapter,
@@ -67,7 +67,7 @@ class UrlInterceptorJobFactoryHandle {
   void ShutdownOnNetworkThread() { delete this; }
 
   // The URLRequestContextAdapater this object intercepts from.
-  const jlong jcontext_adapter_;
+  const int64_t jcontext_adapter_;
   // URLRequestJobFactory previously used in URLRequestContext.
   raw_ptr<const net::URLRequestJobFactory> old_job_factory_;
   // URLRequestJobFactory inserted during tests to intercept URLRequests with
@@ -80,21 +80,21 @@ class UrlInterceptorJobFactoryHandle {
 // URLRequestFilter in libcronet_tests.so with the URLRequestContext in
 // libcronet.so by installing a URLRequestInterceptingJobFactory
 // that calls into libcronet_tests.so's URLRequestFilter.
-static jlong JNI_MockUrlRequestJobFactory_AddUrlInterceptors(
+static int64_t JNI_MockUrlRequestJobFactory_AddUrlInterceptors(
     JNIEnv* env,
-    jlong jcontext_adapter) {
+    int64_t jcontext_adapter) {
   net::URLRequestMockDataJob::AddUrlHandler();
   net::URLRequestFailedJob::AddUrlHandler();
   net::URLRequestHangingReadJob::AddUrlHandler();
   net::SSLCertificateErrorJob::AddUrlHandler();
-  return reinterpret_cast<jlong>(
+  return reinterpret_cast<int64_t>(
       new UrlInterceptorJobFactoryHandle(jcontext_adapter));
 }
 
 // Put back the old URLRequestJobFactory into the URLRequestContext.
 static void JNI_MockUrlRequestJobFactory_RemoveUrlInterceptorJobFactory(
     JNIEnv* env,
-    jlong jinterceptor_handle) {
+    int64_t jinterceptor_handle) {
   reinterpret_cast<UrlInterceptorJobFactoryHandle*>(jinterceptor_handle)
       ->ShutDown();
 }

@@ -46,7 +46,7 @@ void SignalsReportingSchedulerBridge::ScheduleReport(
   report_callback_ = std::move(report_callback);
   Java_SignalsReportingSchedulerBridge_scheduleReportBackgroundTask(
       AttachCurrentThread(),
-      static_cast<jlong>(scheduled_time_delta.InMilliseconds()));
+      static_cast<int64_t>(scheduled_time_delta.InMilliseconds()));
 }
 
 void SignalsReportingSchedulerBridge::CancelScheduledReport() {

@@ -83,7 +83,7 @@ ScopedJavaLocalRef<jobjectArray> ConvertToJavaDiscountInfos(
 ShoppingServiceAndroid::ShoppingServiceAndroid(ShoppingService* service)
     : shopping_service_(service), weak_ptr_factory_(this) {
   java_ref_.Reset(Java_ShoppingService_create(
-      base::android::AttachCurrentThread(), reinterpret_cast<jlong>(this)));
+      base::android::AttachCurrentThread(), reinterpret_cast<int64_t>(this)));
   scoped_subscriptions_observer_.Observe(shopping_service_);
 }
 
@@ -302,7 +302,7 @@ void ShoppingServiceAndroid::Subscribe(JNIEnv* env,
                                        int32_t j_management_type,
                                        const JavaRef<jstring>& j_id,
                                        const JavaRef<jstring>& j_seen_offer_id,
-                                       jlong j_seen_price,
+                                       int64_t j_seen_price,
                                        const JavaRef<jstring>& j_seen_country,
                                        const JavaRef<jstring>& j_seen_locale,
                                        const JavaRef<jobject>& j_callback) {

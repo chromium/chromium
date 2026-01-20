@@ -233,7 +233,7 @@ ChildProcessTerminationInfo ChildProcessLauncherHelper::GetTerminationInfo(
 
 static void JNI_ChildProcessLauncherHelperImpl_SetTerminationInfo(
     JNIEnv* env,
-    jlong termination_info_ptr,
+    int64_t termination_info_ptr,
     int32_t binding_state,
     bool killed_by_us,
     bool clean_exit,

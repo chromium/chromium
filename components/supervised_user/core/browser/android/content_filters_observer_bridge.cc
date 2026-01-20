@@ -84,7 +84,7 @@ void ContentFiltersObserverBridge::Init() {
 
   JNIEnv* env = base::android::AttachCurrentThread();
   bridge_ = Java_ContentFiltersObserverBridge_Constructor(
-      env, reinterpret_cast<jlong>(this),
+      env, reinterpret_cast<int64_t>(this),
       base::android::ConvertUTF8ToJavaString(env, setting_name_));
 }
 

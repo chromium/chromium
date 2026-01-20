@@ -90,16 +90,16 @@ PendingWriteData::~PendingWriteData() {
   jwrite_buffer_limit_list.Reset();
 }
 
-static jlong JNI_CronetBidirectionalStream_CreateBidirectionalStream(
+static int64_t JNI_CronetBidirectionalStream_CreateBidirectionalStream(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jbidi_stream,
-    jlong jurl_request_context_adapter,
+    int64_t jurl_request_context_adapter,
     bool jsend_request_headers_automatically,
     bool jtraffic_stats_tag_set,
     int32_t jtraffic_stats_tag,
     bool jtraffic_stats_uid_set,
     int32_t jtraffic_stats_uid,
-    jlong jnetwork_handle) {
+    int64_t jnetwork_handle) {
   CronetContextAdapter* context_adapter =
       reinterpret_cast<CronetContextAdapter*>(jurl_request_context_adapter);
   DCHECK(context_adapter);
@@ -111,7 +111,7 @@ static jlong JNI_CronetBidirectionalStream_CreateBidirectionalStream(
           jtraffic_stats_tag, jtraffic_stats_uid_set, jtraffic_stats_uid,
           jnetwork_handle);
 
-  return reinterpret_cast<jlong>(adapter);
+  return reinterpret_cast<int64_t>(adapter);
 }
 
 CronetBidirectionalStreamAdapter::CronetBidirectionalStreamAdapter(

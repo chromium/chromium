@@ -158,7 +158,7 @@ void ShellPlatformDelegate::LoadProgressChanged(Shell* shell, double progress) {
 }
 
 // static
-static void JNI_Shell_CloseShell(JNIEnv* env, jlong shellPtr) {
+static void JNI_Shell_CloseShell(JNIEnv* env, int64_t shellPtr) {
   Shell* shell = reinterpret_cast<Shell*>(shellPtr);
   shell->Close();
 }

@@ -39,7 +39,7 @@ class UserData : public base::SupportsUserData::Data {
 };
 }
 
-static jlong JNI_SmartSelectionClient_Init(
+static int64_t JNI_SmartSelectionClient_Init(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     const JavaRef<jobject>& jweb_contents) {

@@ -101,11 +101,11 @@ void CronetUploadDataStreamAdapter::Destroy(JNIEnv* env) {
   delete this;
 }
 
-static jlong JNI_CronetUploadDataStream_AttachUploadDataToRequest(
+static int64_t JNI_CronetUploadDataStream_AttachUploadDataToRequest(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jupload_data_stream,
-    jlong jcronet_url_request_adapter,
-    jlong jlength) {
+    int64_t jcronet_url_request_adapter,
+    int64_t jlength) {
   CronetURLRequestAdapter* request_adapter =
       reinterpret_cast<CronetURLRequestAdapter*>(jcronet_url_request_adapter);
   DCHECK(request_adapter != nullptr);
@@ -118,27 +118,27 @@ static jlong JNI_CronetUploadDataStream_AttachUploadDataToRequest(
 
   request_adapter->SetUpload(std::move(upload_data_stream));
 
-  return reinterpret_cast<jlong>(adapter);
+  return reinterpret_cast<int64_t>(adapter);
 }
 
-static jlong JNI_CronetUploadDataStream_CreateAdapterForTesting(
+static int64_t JNI_CronetUploadDataStream_CreateAdapterForTesting(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jupload_data_stream) {
   CronetUploadDataStreamAdapter* adapter =
       new CronetUploadDataStreamAdapter(env, jupload_data_stream);
-  return reinterpret_cast<jlong>(adapter);
+  return reinterpret_cast<int64_t>(adapter);
 }
 
-static jlong JNI_CronetUploadDataStream_CreateUploadDataStreamForTesting(
+static int64_t JNI_CronetUploadDataStream_CreateUploadDataStreamForTesting(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jupload_data_stream,
-    jlong jlength,
-    jlong jadapter) {
+    int64_t jlength,
+    int64_t jadapter) {
   CronetUploadDataStreamAdapter* adapter =
       reinterpret_cast<CronetUploadDataStreamAdapter*>(jadapter);
   CronetUploadDataStream* upload_data_stream =
       new CronetUploadDataStream(adapter, jlength);
-  return reinterpret_cast<jlong>(upload_data_stream);
+  return reinterpret_cast<int64_t>(upload_data_stream);
 }
 
 }  // namespace cronet

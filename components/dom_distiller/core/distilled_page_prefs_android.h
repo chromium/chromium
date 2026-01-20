@@ -34,10 +34,8 @@ class DistilledPagePrefsAndroid {
   void SetDefaultFontScaling(JNIEnv* env, jfloat scaling);
   jfloat GetFontScaling(JNIEnv* env);
 
-  void AddObserver(JNIEnv* env,
-                   jlong obs);
-  void RemoveObserver(JNIEnv* env,
-                      jlong obs);
+  void AddObserver(JNIEnv* env, int64_t obs);
+  void RemoveObserver(JNIEnv* env, int64_t obs);
 
  private:
   raw_ptr<DistilledPagePrefs> distilled_page_prefs_;

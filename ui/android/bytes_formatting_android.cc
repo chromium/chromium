@@ -15,7 +15,7 @@ namespace ui {
 
 static jni_zero::ScopedJavaLocalRef<jstring> JNI_BytesFormatting_FormatSpeed(
     JNIEnv* env,
-    jlong speed) {
+    int64_t speed) {
   return base::android::ConvertUTF16ToJavaString(
       env, FormatSpeed(base::ByteSize(base::checked_cast<uint64_t>(speed))));
 }

@@ -68,7 +68,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   WebContentsAccessibilityAndroid(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& obj,
-      jlong ax_tree_update_ptr,
+      int64_t ax_tree_update_ptr,
       const base::android::JavaRef<jobject>& jaccessibility_node_info_builder);
   WebContentsAccessibilityAndroid(
       JNIEnv* env,

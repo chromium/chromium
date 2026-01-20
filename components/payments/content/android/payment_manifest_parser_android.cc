@@ -159,7 +159,7 @@ void PaymentManifestParserAndroid::DestroyPaymentManifestParserAndroid(
 }
 
 // Caller owns the result.
-static jlong JNI_PaymentManifestParser_CreatePaymentManifestParserAndroid(
+static int64_t JNI_PaymentManifestParser_CreatePaymentManifestParserAndroid(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =
@@ -167,7 +167,7 @@ static jlong JNI_PaymentManifestParser_CreatePaymentManifestParserAndroid(
   auto log = web_contents
                  ? std::make_unique<DeveloperConsoleLogger>(web_contents)
                  : std::make_unique<ErrorLogger>();
-  return reinterpret_cast<jlong>(
+  return reinterpret_cast<int64_t>(
       new PaymentManifestParserAndroid(std::move(log)));
 }
 

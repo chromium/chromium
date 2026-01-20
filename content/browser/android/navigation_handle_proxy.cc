@@ -30,7 +30,7 @@ NavigationHandleProxy::NavigationHandleProxy(
   JNIEnv* env = AttachCurrentThread();
 
   java_navigation_handle_ = Java_NavigationHandle_Constructor(
-      env, reinterpret_cast<jlong>(cpp_navigation_handle),
+      env, reinterpret_cast<int64_t>(cpp_navigation_handle),
       url::GURLAndroid::FromNativeGURL(env, cpp_navigation_handle_->GetURL()),
       cpp_navigation_handle_->IsRendererInitiated(),
       cpp_navigation_handle_->GetReloadType() != content::ReloadType::NONE,

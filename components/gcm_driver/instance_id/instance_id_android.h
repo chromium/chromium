@@ -70,7 +70,7 @@ class InstanceIDAndroid : public InstanceID {
                 const base::android::JavaRef<jstring>& jid);
   void DidGetCreationTime(JNIEnv* env,
                           int32_t request_id,
-                          jlong creation_time_unix_ms);
+                          int64_t creation_time_unix_ms);
   void DidGetToken(JNIEnv* env,
                    int32_t request_id,
                    const base::android::JavaRef<jstring>& jtoken);

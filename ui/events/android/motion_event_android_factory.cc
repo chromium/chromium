@@ -105,7 +105,7 @@ std::unique_ptr<MotionEventAndroid> MotionEventAndroidFactory::CreateFromNative(
                   AMotionEvent_getHistoricalEventTime(event,
                                                       /*history_index=*/0));
   }
-  const jlong down_time_ms =
+  const int64_t down_time_ms =
       base::TimeTicks::FromJavaNanoTime(AMotionEvent_getDownTime(event))
           .ToUptimeMillis();
   // Native side doesn't have MotionEvent.getActionMasked() or

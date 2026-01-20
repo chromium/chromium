@@ -53,9 +53,9 @@ void PrefChangeRegistrarAndroid::OnPreferenceChange(std::string preference) {
       base::android::ConvertUTF8ToJavaString(env, preference));
 }
 
-static jlong JNI_PrefChangeRegistrar_Init(JNIEnv* env,
-                                          const JavaRef<jobject>& obj,
-                                          PrefService* prefs) {
+static int64_t JNI_PrefChangeRegistrar_Init(JNIEnv* env,
+                                            const JavaRef<jobject>& obj,
+                                            PrefService* prefs) {
   return reinterpret_cast<intptr_t>(
       new PrefChangeRegistrarAndroid(env, obj, prefs));
 }

@@ -31,7 +31,7 @@ using base::android::ScopedJavaLocalRef;
 using content::WebContents;
 
 // static
-static jlong JNI_ConnectionInfoView_Init(
+static int64_t JNI_ConnectionInfoView_Init(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     const JavaRef<jobject>& java_web_contents) {

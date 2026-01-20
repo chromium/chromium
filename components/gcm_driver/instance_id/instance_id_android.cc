@@ -163,7 +163,7 @@ void InstanceIDAndroid::DidGetID(JNIEnv* env,
 
 void InstanceIDAndroid::DidGetCreationTime(JNIEnv* env,
                                            int32_t request_id,
-                                           jlong creation_time_unix_ms) {
+                                           int64_t creation_time_unix_ms) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   base::Time creation_time;

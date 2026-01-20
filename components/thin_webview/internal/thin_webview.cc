@@ -22,10 +22,11 @@ using web_contents_delegate_android::WebContentsDelegateAndroid;
 namespace thin_webview {
 namespace android {
 
-static jlong JNI_ThinWebViewImpl_Init(JNIEnv* env,
-                                      const JavaRef<jobject>& obj,
-                                      const JavaRef<jobject>& jcompositor_view,
-                                      const JavaRef<jobject>& jwindow_android) {
+static int64_t JNI_ThinWebViewImpl_Init(
+    JNIEnv* env,
+    const JavaRef<jobject>& obj,
+    const JavaRef<jobject>& jcompositor_view,
+    const JavaRef<jobject>& jwindow_android) {
   CompositorView* compositor_view =
       CompositorViewImpl::FromJavaObject(jcompositor_view);
   ui::WindowAndroid* window_android =

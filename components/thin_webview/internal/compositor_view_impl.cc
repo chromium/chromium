@@ -25,7 +25,7 @@ namespace {
 const int kPixelFormatUnknown = 0;
 }  // namespace
 
-static jlong JNI_CompositorViewImpl_Init(
+static int64_t JNI_CompositorViewImpl_Init(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     const JavaRef<jobject>& jwindow_android,

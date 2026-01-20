@@ -80,7 +80,7 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
   // subscribed through RegisterObserver().
   void NotifyConnectionTypeChanged(JNIEnv* env,
                                    int32_t new_connection_type,
-                                   jlong default_netid);
+                                   int64_t default_netid);
   int32_t GetConnectionType(JNIEnv* env, jobject obj) const;
 
   // Called from NetworkChangeNotifier.java on the JNI thread whenever
@@ -107,10 +107,10 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
   // For descriptions of what individual calls mean, see
   // NetworkChangeNotifierAutoDetect.Observer functions of the same names.
   void NotifyOfNetworkConnect(JNIEnv* env,
-                              jlong net_id,
+                              int64_t net_id,
                               int32_t connection_type);
-  void NotifyOfNetworkSoonToDisconnect(JNIEnv* env, jlong net_id);
-  void NotifyOfNetworkDisconnect(JNIEnv* env, jlong net_id);
+  void NotifyOfNetworkSoonToDisconnect(JNIEnv* env, int64_t net_id);
+  void NotifyOfNetworkDisconnect(JNIEnv* env, int64_t net_id);
   void NotifyPurgeActiveNetworkList(
       JNIEnv* env,
       const base::android::JavaRef<jlongArray>& active_networks);

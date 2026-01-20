@@ -397,7 +397,7 @@ bool SyncServiceAndroidBridge::SetDecryptionPassphrase(
       ConvertJavaStringToUTF8(env, passphrase));
 }
 
-jlong SyncServiceAndroidBridge::GetExplicitPassphraseTime(JNIEnv* env) {
+int64_t SyncServiceAndroidBridge::GetExplicitPassphraseTime(JNIEnv* env) {
   return native_sync_service_->GetUserSettings()
       ->GetExplicitPassphraseTime()
       .InMillisecondsSinceUnixEpoch();
@@ -453,10 +453,10 @@ void SyncServiceAndroidBridge::TriggerRefresh(JNIEnv* env) {
       DataTypeSet::All());
 }
 
-jlong SyncServiceAndroidBridge::GetLastSyncedTimeForDebugging(JNIEnv* env) {
+int64_t SyncServiceAndroidBridge::GetLastSyncedTimeForDebugging(JNIEnv* env) {
   base::Time last_sync_time =
       native_sync_service_->GetLastSyncedTimeForDebugging();
-  return static_cast<jlong>(
+  return static_cast<int64_t>(
       (last_sync_time - base::Time::UnixEpoch()).InMicroseconds());
 }
 

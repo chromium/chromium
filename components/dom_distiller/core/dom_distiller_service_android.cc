@@ -32,7 +32,7 @@ DomDistillerServiceAndroid::DomDistillerServiceAndroid(
 
 DomDistillerServiceAndroid::~DomDistillerServiceAndroid() = default;
 
-jlong DomDistillerServiceAndroid::GetDistilledPagePrefsPtr(JNIEnv* env) {
+int64_t DomDistillerServiceAndroid::GetDistilledPagePrefsPtr(JNIEnv* env) {
   return reinterpret_cast<intptr_t>(service_->GetDistilledPagePrefs());
 }
 

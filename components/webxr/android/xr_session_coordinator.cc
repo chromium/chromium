@@ -35,7 +35,7 @@ XrSessionCoordinator::XrSessionCoordinator() {
     return;
   }
   ScopedJavaLocalRef<jobject> j_xr_session_coordinator =
-      Java_XrSessionCoordinator_create(env, (jlong)this);
+      Java_XrSessionCoordinator_create(env, (int64_t)this);
   if (j_xr_session_coordinator.is_null()) {
     return;
   }

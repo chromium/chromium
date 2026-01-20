@@ -384,7 +384,7 @@ void GestureListenerManager::UnobserveRenderFrames() {
   observed_render_frames_.clear();
 }
 
-static jlong JNI_GestureListenerManagerImpl_Init(
+static int64_t JNI_GestureListenerManagerImpl_Init(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     const JavaRef<jobject>& jweb_contents) {

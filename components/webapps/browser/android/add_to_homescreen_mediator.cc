@@ -28,7 +28,7 @@ using base::android::ScopedJavaLocalRef;
 namespace webapps {
 
 // static
-static jlong JNI_AddToHomescreenMediator_Initialize(
+static int64_t JNI_AddToHomescreenMediator_Initialize(
     JNIEnv* env,
     const JavaRef<jobject>& java_ref,
     const JavaRef<jobject>& java_web_contents) {

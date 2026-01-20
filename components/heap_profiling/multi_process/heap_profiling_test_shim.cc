@@ -14,8 +14,8 @@
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
-static jlong JNI_HeapProfilingTestShim_Init(JNIEnv* env,
-                                            const JavaRef<jobject>& obj) {
+static int64_t JNI_HeapProfilingTestShim_Init(JNIEnv* env,
+                                              const JavaRef<jobject>& obj) {
   HeapProfilingTestShim* profiler = new HeapProfilingTestShim(env, obj);
   return reinterpret_cast<intptr_t>(profiler);
 }

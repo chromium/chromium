@@ -154,7 +154,7 @@ void AudioTrackOutputStream::GetVolume(double* volume) {
 ScopedJavaLocalRef<jobject> AudioTrackOutputStream::OnMoreData(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& audio_data,
-    jlong delay_in_frame) {
+    int64_t delay_in_frame) {
   DCHECK(callback_);
 
   base::TimeDelta delay =
@@ -200,10 +200,10 @@ void AudioTrackOutputStream::OnError(JNIEnv* env) {
   callback_->OnError(AudioSourceCallback::ErrorType::kUnknown);
 }
 
-jlong AudioTrackOutputStream::GetAddress(
+int64_t AudioTrackOutputStream::GetAddress(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& byte_buffer) {
-  return reinterpret_cast<jlong>(
+  return reinterpret_cast<int64_t>(
       env->GetDirectBufferAddress(byte_buffer.obj()));
 }
 

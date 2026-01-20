@@ -38,7 +38,7 @@ ContentViewRenderView::ContentViewRenderView(JNIEnv* env,
 ContentViewRenderView::~ContentViewRenderView() = default;
 
 // static
-static jlong JNI_ContentViewRenderView_Init(
+static int64_t JNI_ContentViewRenderView_Init(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     const JavaRef<jobject>& jroot_window_android) {

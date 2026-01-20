@@ -55,7 +55,7 @@ class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
                     const base::android::JavaRef<jobject>& original_key_event,
                     int type,
                     int modifiers,
-                    jlong time_ms,
+                    int64_t time_ms,
                     int key_code,
                     int scan_code,
                     bool is_system_key,

@@ -107,7 +107,7 @@ int MotionEventAndroidSourceJava::GetButtonState() const {
 
 base::TimeTicks MotionEventAndroidSourceJava::GetHistoricalEventTime(
     size_t historical_index) const {
-  jlong time_ms = JNI_MotionEvent::Java_MotionEvent_getHistoricalEventTime(
+  int64_t time_ms = JNI_MotionEvent::Java_MotionEvent_getHistoricalEventTime(
       AttachCurrentThread(), event_, historical_index);
   return base::TimeTicks::FromUptimeMillis(time_ms);
 }

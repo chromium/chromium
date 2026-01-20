@@ -65,7 +65,7 @@ std::vector<blink::MessagePortDescriptor> AppWebMessagePort::Release(
   std::vector<blink::MessagePortDescriptor> ports;
   if (!jports.is_null()) {
     for (auto jport : jports.ReadElements<jobject>()) {
-      jlong port_ptr = Java_AppWebMessagePort_getNativeObj(env, jport);
+      int64_t port_ptr = Java_AppWebMessagePort_getNativeObj(env, jport);
       // Ports are heap allocated native objects. Since we are taking ownership
       // of the object from the Java code we are responsible for cleaning it up.
       std::unique_ptr<AppWebMessagePort> port =

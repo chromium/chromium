@@ -208,7 +208,7 @@ void NetworkChangeNotifierDelegateAndroid::NotifyConnectionCostChanged(
 void NetworkChangeNotifierDelegateAndroid::NotifyConnectionTypeChanged(
     JNIEnv* env,
     int32_t new_connection_type,
-    jlong default_netid) {
+    int64_t default_netid) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   const ConnectionType actual_connection_type = ConvertConnectionType(
       new_connection_type);
@@ -271,7 +271,7 @@ void NetworkChangeNotifierDelegateAndroid::NotifyConnectionSubtypeChanged(
 
 void NetworkChangeNotifierDelegateAndroid::NotifyOfNetworkConnect(
     JNIEnv* env,
-    jlong net_id,
+    int64_t net_id,
     int32_t connection_type) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   handles::NetworkHandle network = net_id;
@@ -298,7 +298,7 @@ void NetworkChangeNotifierDelegateAndroid::NotifyOfNetworkConnect(
 
 void NetworkChangeNotifierDelegateAndroid::NotifyOfNetworkSoonToDisconnect(
     JNIEnv* env,
-    jlong net_id) {
+    int64_t net_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   handles::NetworkHandle network = net_id;
   {
@@ -313,7 +313,7 @@ void NetworkChangeNotifierDelegateAndroid::NotifyOfNetworkSoonToDisconnect(
 
 void NetworkChangeNotifierDelegateAndroid::NotifyOfNetworkDisconnect(
     JNIEnv* env,
-    jlong net_id) {
+    int64_t net_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   handles::NetworkHandle network = net_id;
   {

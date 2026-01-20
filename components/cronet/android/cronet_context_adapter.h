@@ -105,7 +105,7 @@ class CronetContextAdapter : public CronetContext::Callback {
                                                   bool use_smaller_responses,
                                                   bool disable_offline_check);
 
-  bool URLRequestContextExistsForTesting(jlong network);
+  bool URLRequestContextExistsForTesting(int64_t network);
 
   // Request that RTT and/or throughput observations should or should not be
   // provided by the network quality estimator.

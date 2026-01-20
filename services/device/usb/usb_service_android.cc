@@ -25,7 +25,7 @@ namespace device {
 UsbServiceAndroid::UsbServiceAndroid() : UsbService() {
   JNIEnv* env = AttachCurrentThread();
   j_object_.Reset(
-      Java_ChromeUsbService_create(env, reinterpret_cast<jlong>(this)));
+      Java_ChromeUsbService_create(env, reinterpret_cast<int64_t>(this)));
   ScopedJavaLocalRef<jobjectArray> devices =
       Java_ChromeUsbService_getDevices(env, j_object_);
   for (auto usb_device : devices.ReadElements<jobject>()) {

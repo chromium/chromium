@@ -32,7 +32,7 @@ class CSPCheckerAndroid : public CSPChecker {
 
   // Convert a Java-owned CSPCheckerAndroid* pointer into a weak pointer.
   static base::WeakPtr<CSPCheckerAndroid> GetWeakPtr(
-      jlong native_csp_checker_android);
+      int64_t native_csp_checker_android);
 
  private:
   // CSPChecker implementation.

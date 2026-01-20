@@ -47,8 +47,8 @@ class SegmentationPlatformServiceAndroid : public base::SupportsUserData::Data {
 
   void CollectTrainingData(JNIEnv* env,
                            int32_t j_segment_id,
-                           jlong j_request_id,
-                           jlong j_ukm_source_id,
+                           int64_t j_request_id,
+                           int64_t j_ukm_source_id,
                            const JavaRef<jobject>& j_param,
                            const JavaRef<jobject>& j_callback);
 

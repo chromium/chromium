@@ -91,7 +91,7 @@ ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfContentCaptureFrame(
 
 }  // namespace
 
-static jlong JNI_OnscreenContentProvider_Init(
+static int64_t JNI_OnscreenContentProvider_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj,
     const base::android::JavaRef<jobject>& jweb_contents) {

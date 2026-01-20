@@ -30,7 +30,7 @@ OriginMatcher ToNativeOriginMatcher(JNIEnv* env,
 }
 
 static bool JNI_OriginMatcher_Matches(JNIEnv* env,
-                                      jlong ptr,
+                                      int64_t ptr,
                                       url::Origin& origin) {
   auto* matcher = FromPtr(ptr);
   return matcher->Matches(origin);
@@ -38,7 +38,7 @@ static bool JNI_OriginMatcher_Matches(JNIEnv* env,
 
 static std::vector<std::string> JNI_OriginMatcher_SetRuleList(
     JNIEnv* env,
-    jlong ptr,
+    int64_t ptr,
     std::vector<std::string>& rules) {
   auto* matcher = FromPtr(ptr);
 
@@ -59,16 +59,16 @@ static std::vector<std::string> JNI_OriginMatcher_SetRuleList(
 }
 
 static std::vector<std::string> JNI_OriginMatcher_Serialize(JNIEnv* env,
-                                                            jlong ptr) {
+                                                            int64_t ptr) {
   auto* matcher = FromPtr(ptr);
   return matcher->Serialize();
 }
 
-static void JNI_OriginMatcher_Destroy(JNIEnv* env, jlong ptr) {
+static void JNI_OriginMatcher_Destroy(JNIEnv* env, int64_t ptr) {
   delete FromPtr(ptr);
 }
 
-static jlong JNI_OriginMatcher_Create(JNIEnv* env) {
+static int64_t JNI_OriginMatcher_Create(JNIEnv* env) {
   OriginMatcher* matcher = new OriginMatcher();
   return reinterpret_cast<intptr_t>(matcher);
 }

@@ -477,7 +477,7 @@ void ClipboardAndroid::OnPrimaryClipChanged(JNIEnv* env) {
 
 void ClipboardAndroid::OnPrimaryClipTimestampInvalidated(
     JNIEnv* env,
-    const jlong j_timestamp_ms) {
+    const int64_t j_timestamp_ms) {
   base::Time timestamp =
       base::Time::FromMillisecondsSinceUnixEpoch(j_timestamp_ms);
   if (GetLastModifiedTime() < timestamp) {

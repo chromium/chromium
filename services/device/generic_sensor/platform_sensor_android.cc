@@ -38,7 +38,7 @@ scoped_refptr<PlatformSensorAndroid> PlatformSensorAndroid::Create(
   JNIEnv* env = AttachCurrentThread();
   sensor->j_object_.Reset(
       Java_PlatformSensor_create(env, java_provider, static_cast<int32_t>(type),
-                                 reinterpret_cast<jlong>(sensor.get())));
+                                 reinterpret_cast<int64_t>(sensor.get())));
   if (!sensor->j_object_) {
     return nullptr;
   }

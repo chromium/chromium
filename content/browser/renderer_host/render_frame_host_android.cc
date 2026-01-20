@@ -195,7 +195,7 @@ bool RenderFrameHostAndroid::IsRenderFrameLive(JNIEnv* env) const {
 void RenderFrameHostAndroid::GetInterfaceToRendererFrame(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& interface_name,
-    jlong message_pipe_raw_handle) const {
+    int64_t message_pipe_raw_handle) const {
   DCHECK(render_frame_host_->IsRenderFrameLive());
   render_frame_host_->GetRemoteInterfaces()->GetInterfaceByName(
       ConvertJavaStringToUTF8(env, interface_name),

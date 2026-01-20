@@ -185,7 +185,7 @@ void ImageFetcherBridge::ReportEvent(
 void ImageFetcherBridge::ReportCacheHitTime(
     JNIEnv* j_env,
     const base::android::JavaRef<jstring>& j_client_name,
-    const jlong start_time_millis) {
+    const int64_t start_time_millis) {
   std::string client_name =
       base::android::ConvertJavaStringToUTF8(j_client_name);
   base::Time start_time =
@@ -198,7 +198,7 @@ void ImageFetcherBridge::ReportCacheHitTime(
 void ImageFetcherBridge::ReportTotalFetchTimeFromNative(
     JNIEnv* j_env,
     const base::android::JavaRef<jstring>& j_client_name,
-    const jlong start_time_millis) {
+    const int64_t start_time_millis) {
   std::string client_name =
       base::android::ConvertJavaStringToUTF8(j_client_name);
   base::Time start_time =
@@ -258,7 +258,7 @@ static void JNI_ImageFetcherBridge_ReportEvent(
 static void JNI_ImageFetcherBridge_ReportCacheHitTime(
     JNIEnv* j_env,
     const base::android::JavaRef<jstring>& j_client_name,
-    const jlong start_time_millis) {
+    const int64_t start_time_millis) {
   ImageFetcherBridge::ReportCacheHitTime(j_env, j_client_name,
                                          start_time_millis);
 }
@@ -267,7 +267,7 @@ static void JNI_ImageFetcherBridge_ReportCacheHitTime(
 static void JNI_ImageFetcherBridge_ReportTotalFetchTimeFromNative(
     JNIEnv* j_env,
     const base::android::JavaRef<jstring>& j_client_name,
-    const jlong start_time_millis) {
+    const int64_t start_time_millis) {
   ImageFetcherBridge::ReportTotalFetchTimeFromNative(j_env, j_client_name,
                                                      start_time_millis);
 }

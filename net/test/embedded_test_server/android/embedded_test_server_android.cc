@@ -144,7 +144,7 @@ typedef std::unique_ptr<HttpResponse> (*HandleRequestPtr)(
     const HttpRequest& request);
 
 void EmbeddedTestServerAndroid::RegisterRequestHandler(JNIEnv* env,
-                                                       jlong handler) {
+                                                       int64_t handler) {
   HandleRequestPtr handler_ptr = reinterpret_cast<HandleRequestPtr>(handler);
   test_server_.RegisterRequestHandler(base::BindRepeating(handler_ptr));
 }

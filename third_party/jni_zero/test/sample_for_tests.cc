@@ -83,14 +83,14 @@ ScopedJavaLocalRef<jstring> CPPClass::ReturnAString(
 }
 
 // Static free functions declared and called directly from java.
-static jlong JNI_SampleForTests_Init(
+static int64_t JNI_SampleForTests_Init(
     JNIEnv* env,
     const JavaRef<jobject>& caller,
     const JavaRef<jstring>& param,
     jni_zero::ByteArrayView& bytes,
     CPPClass* converted_type,
     std::vector<jni_zero::ScopedJavaLocalRef<jobject>>& non_converted_array) {
-  return static_cast<jlong>(bytes.size());
+  return static_cast<int64_t>(bytes.size());
 }
 
 static void JNI_SampleForTests_ClassUnderSamePackageTest(
@@ -207,7 +207,7 @@ static std::vector<int> JNI_SampleForAnnotationProcessor_TestAllPrimitives(
     JNIEnv* env,
     int zint,
     std::vector<int>& ints,
-    jlong zlong,
+    int64_t zlong,
     const JavaRef<jlongArray>& longs,
     jshort zshort,
     const JavaRef<jshortArray>& shorts,

@@ -257,7 +257,7 @@ ExternalBeginFrameSourceAndroid::ExternalBeginFrameSourceAndroid(
   }
   if (!achoreographer_) {
     j_object_ = Java_ExternalBeginFrameSourceAndroid_Constructor(
-        base::android::AttachCurrentThread(), reinterpret_cast<jlong>(this),
+        base::android::AttachCurrentThread(), reinterpret_cast<int64_t>(this),
         refresh_rate);
   }
 }
@@ -267,8 +267,8 @@ ExternalBeginFrameSourceAndroid::~ExternalBeginFrameSourceAndroid() {
 }
 
 void ExternalBeginFrameSourceAndroid::OnVSync(JNIEnv* env,
-                                              jlong time_micros,
-                                              jlong period_micros) {
+                                              int64_t time_micros,
+                                              int64_t period_micros) {
   OnVSyncImpl(time_micros * 1000, base::Microseconds(period_micros),
               /*possible_deadlines=*/std::nullopt);
 }

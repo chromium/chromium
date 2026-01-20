@@ -53,7 +53,7 @@ ScopedJavaLocalRef<jobject> JniPaymentApp::Create(
       ConvertUTF16ToJavaString(env, app->payment_app_->GetSublabel()),
       app->payment_app_->icon_bitmap(),
       static_cast<int32_t>(app->payment_app_->type()),
-      reinterpret_cast<jlong>(app),
+      reinterpret_cast<int64_t>(app),
       app->payment_app_->GetPaymentEntitiesLogos());
 }
 
@@ -157,7 +157,7 @@ JniPaymentApp::GetApplicationIdentifiersThatHideThisApp(JNIEnv* env) {
                               std::vector<std::string>(ids.begin(), ids.end()));
 }
 
-jlong JniPaymentApp::GetUkmSourceId(JNIEnv* env) {
+int64_t JniPaymentApp::GetUkmSourceId(JNIEnv* env) {
   return payment_app_->UkmSourceId();
 }
 

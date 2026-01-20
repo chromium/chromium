@@ -62,10 +62,10 @@ base::android::ScopedJavaLocalRef<jobjectArray> ConvertResponseHeadersToJava(
 
 }  // namespace
 
-static jlong JNI_CronetUrlRequest_CreateRequestAdapter(
+static int64_t JNI_CronetUrlRequest_CreateRequestAdapter(
     JNIEnv* env,
     const JavaRef<jobject>& jurl_request,
-    jlong jurl_request_context_adapter,
+    int64_t jurl_request_context_adapter,
     const JavaRef<jstring>& jurl_string,
     int32_t jpriority,
     bool jdisable_cache,
@@ -80,7 +80,7 @@ static jlong JNI_CronetUrlRequest_CreateRequestAdapter(
     int32_t jdictionary_position,
     int32_t jdictionary_limit,
     const base::android::JavaRef<jstring>& jdictionary_id,
-    jlong jnetwork_handle) {
+    int64_t jnetwork_handle) {
   CHECK(jdictionary_id);
   CronetContextAdapter* context_adapter =
       reinterpret_cast<CronetContextAdapter*>(jurl_request_context_adapter);
@@ -106,7 +106,7 @@ static jlong JNI_CronetUrlRequest_CreateRequestAdapter(
           /*dictionary_id=*/jdictionary_id),
       jnetwork_handle);
 
-  return reinterpret_cast<jlong>(adapter);
+  return reinterpret_cast<int64_t>(adapter);
 }
 
 CronetURLRequestAdapter::CronetURLRequestAdapter(
@@ -123,7 +123,7 @@ CronetURLRequestAdapter::CronetURLRequestAdapter(
     int32_t jtraffic_stats_uid,
     net::Idempotency idempotency,
     scoped_refptr<net::SharedDictionary> shared_dictionary,
-    jlong network)
+    int64_t network)
     : request_(new CronetURLRequest(context->cronet_url_request_context(),
                                     base::WrapUnique<>(this),
                                     url,

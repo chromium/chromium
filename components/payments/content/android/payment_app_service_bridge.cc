@@ -109,7 +109,7 @@ static void JNI_PaymentAppServiceBridge_Create(
     // as it is no longer used.
     bool jmay_crawl_for_installable_payment_apps,
     bool jis_off_the_record,
-    jlong native_csp_checker_android,
+    int64_t native_csp_checker_android,
     const JavaRef<jobject>& jcallback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 

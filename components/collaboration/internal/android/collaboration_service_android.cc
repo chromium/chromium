@@ -74,7 +74,7 @@ bool CollaborationServiceAndroid::IsEmptyService(JNIEnv* env) {
 }
 
 void CollaborationServiceAndroid::StartJoinFlow(JNIEnv* env,
-                                                jlong delegateNativePtr,
+                                                int64_t delegateNativePtr,
                                                 const JavaRef<jobject>& j_url) {
   collaboration_service_->StartJoinFlow(
       conversion::GetDelegateUniquePtrFromJava(delegateNativePtr),
@@ -83,7 +83,7 @@ void CollaborationServiceAndroid::StartJoinFlow(JNIEnv* env,
 
 void CollaborationServiceAndroid::StartShareOrManageFlow(
     JNIEnv* env,
-    jlong delegateNativePtr,
+    int64_t delegateNativePtr,
     const JavaRef<jstring>& j_sync_group_id,
     const JavaRef<jobject>& j_local_group_id,
     int32_t entry) {
@@ -98,7 +98,7 @@ void CollaborationServiceAndroid::StartShareOrManageFlow(
 
 void CollaborationServiceAndroid::StartLeaveOrDeleteFlow(
     JNIEnv* env,
-    jlong delegateNativePtr,
+    int64_t delegateNativePtr,
     const JavaRef<jstring>& j_sync_group_id,
     const JavaRef<jobject>& j_local_group_id,
     int32_t entry) {

@@ -310,7 +310,7 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   void OnSessionExpirationUpdate(
       JNIEnv* env,
       const base::android::JavaRef<jbyteArray>& j_session_id,
-      jlong expiry_time_ms);
+      int64_t expiry_time_ms);
 
   // Called when an error happens during creation of the MediaDrmBridge Java
   // object.

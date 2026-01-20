@@ -24,8 +24,9 @@ const base::Feature* const kFeaturesExposedToJava[] = {
 
 }  // namespace
 
-static jlong JNI_PageInfoFeatures_GetFeature(JNIEnv* env, int32_t ordinal) {
-  return reinterpret_cast<jlong>(UNSAFE_TODO(kFeaturesExposedToJava[ordinal]));
+static int64_t JNI_PageInfoFeatures_GetFeature(JNIEnv* env, int32_t ordinal) {
+  return reinterpret_cast<int64_t>(
+      UNSAFE_TODO(kFeaturesExposedToJava[ordinal]));
 }
 
 }  // namespace page_info

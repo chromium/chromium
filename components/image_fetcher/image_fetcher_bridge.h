@@ -57,12 +57,12 @@ class ImageFetcherBridge {
 
   static void ReportCacheHitTime(JNIEnv* j_env,
                                  const JavaRef<jstring>& j_client_name,
-                                 const jlong start_time_millis);
+                                 const int64_t start_time_millis);
 
   static void ReportTotalFetchTimeFromNative(
       JNIEnv* j_env,
       const JavaRef<jstring>& j_client_name,
-      const jlong start_time_millis);
+      const int64_t start_time_millis);
 
  private:
   ImageFetcherBridge();

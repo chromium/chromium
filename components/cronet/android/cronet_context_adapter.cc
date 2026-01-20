@@ -246,7 +246,7 @@ int CronetContextAdapter::default_load_flags() const {
 }
 
 // Create a URLRequestContextConfig from the given parameters.
-static jlong JNI_CronetUrlRequestContext_CreateRequestContextConfig(
+static int64_t JNI_CronetUrlRequestContext_CreateRequestContextConfig(
     JNIEnv* env,
     const JavaRef<jbyteArray>& javaSerializedProto) {
   const int serializedProtoLength =
@@ -284,13 +284,13 @@ static jlong JNI_CronetUrlRequestContext_CreateRequestContextConfig(
           configOptions.has_proxy_options()
               ? configOptions.proxy_options()
               : std::optional<cronet::proto::ProxyOptions>());
-  return reinterpret_cast<jlong>(url_request_context_config.release());
+  return reinterpret_cast<int64_t>(url_request_context_config.release());
 }
 
 // Add a QUIC hint to a URLRequestContextConfig.
 static void JNI_CronetUrlRequestContext_AddQuicHint(
     JNIEnv* env,
-    jlong jurl_request_context_config,
+    int64_t jurl_request_context_config,
     const JavaRef<jstring>& jhost,
     int32_t jport,
     int32_t jalternate_port) {
@@ -310,11 +310,11 @@ static void JNI_CronetUrlRequestContext_AddQuicHint(
 // Jan. 1, 1970, midnight GMT.
 static void JNI_CronetUrlRequestContext_AddPkp(
     JNIEnv* env,
-    jlong jurl_request_context_config,
+    int64_t jurl_request_context_config,
     const JavaRef<jstring>& jhost,
     const JavaRef<jobjectArray>& jhashes,
     bool jinclude_subdomains,
-    jlong jexpiration_time) {
+    int64_t jexpiration_time) {
   URLRequestContextConfig* config =
       reinterpret_cast<URLRequestContextConfig*>(jurl_request_context_config);
   std::unique_ptr<URLRequestContextConfig::Pkp> pkp(
@@ -342,15 +342,15 @@ static void JNI_CronetUrlRequestContext_AddPkp(
 
 // Creates RequestContextAdater if config is valid URLRequestContextConfig,
 // returns 0 otherwise.
-static jlong JNI_CronetUrlRequestContext_CreateRequestContextAdapter(
+static int64_t JNI_CronetUrlRequestContext_CreateRequestContextAdapter(
     JNIEnv* env,
-    jlong jconfig) {
+    int64_t jconfig) {
   std::unique_ptr<URLRequestContextConfig> context_config(
       reinterpret_cast<URLRequestContextConfig*>(jconfig));
 
   CronetContextAdapter* context_adapter =
       new CronetContextAdapter(std::move(context_config));
-  return reinterpret_cast<jlong>(context_adapter);
+  return reinterpret_cast<int64_t>(context_adapter);
 }
 
 }  // namespace cronet
