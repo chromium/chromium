@@ -187,13 +187,17 @@ WebMouseWheelEvent WebMouseWheelEventBuilder::Build(
   // (content moves opposite to scroll direction). To align with Android's
   // "natural" scrolling expectation for horizontal input, we negate the x-axis
   // values.
-  // However, this negation should ONLY apply to Mouse inputs. Other sources
-  // like Touchpads and Joysticks already provide "natural" direction values
-  // (or standard Cartesian direction) and should not be negated.
+  // However, this negation should ONLY apply to Physical Mouse inputs.
+  // Other sources like Trackpads (Source Mouse + Tool Finger), Touchpads,
+  // and Joysticks already provide "natural" direction values (or standard
+  // Cartesian direction) and should not be negated.
   // Note: AINPUT_SOURCE_TRACKBALL and AINPUT_SOURCE_MOUSE_RELATIVE are
   // AINPUT_SOURCE_CLASS_NAVIGATION (similar to Joysticks), so they are also
   // excluded from this negation.
-  if ((motion_event.GetSource() & AINPUT_SOURCE_MOUSE) == AINPUT_SOURCE_MOUSE) {
+  bool is_physical_mouse_scroll =
+      (motion_event.GetSource() & AINPUT_SOURCE_MOUSE) == AINPUT_SOURCE_MOUSE &&
+      motion_event.GetToolType(0) == ui::MotionEvent::ToolType::MOUSE;
+  if (is_physical_mouse_scroll) {
     result.delta_x = -motion_event.ticks_x() * motion_event.GetTickMultiplier();
     result.wheel_ticks_x = -motion_event.ticks_x();
   } else {

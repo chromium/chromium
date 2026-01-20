@@ -262,10 +262,14 @@ TEST(WebInputEventBuilderAndroidTest, WebMouseWheelEventScrollDirection) {
 
   const float kPixToDip = 0.5f;
   // Android MotionEvents with positive ticks request a scroll RIGHT (X) and
-  // DOWN (Y). While vertical scrolling is already "natural" (content moves
-  // in the direction of the scroll), horizontal scrolling matches traditional
-  // desktop behavior. To align with Android's "natural" expectations, we negate
-  // the X axis, resulting in a scroll LEFT and DOWN in the WebMouseWheelEvent.
+  // DOWN (Y).
+  // For Physical Mouse (Source Mouse + Tool Mouse), we expect "Traditional"
+  // behavior:
+  // - Vertical: Natural (Content moves with scroll).
+  // - Horizontal: Desktop/Inverse (Content moves opposite to scroll).
+  // Since Blink expects Desktop behavior by default for Mouse, but Android
+  // inputs for "Scroll Right" are negative (historically), we must NEGATE
+  // the input to get Positive Delta (Scroll Right).
   const float kTicksX = 10.0f;
   const float kTicksY = 5.0f;
   const float kTickMultiplier = 2.0f;
@@ -298,10 +302,64 @@ TEST(WebInputEventBuilderAndroidTest, WebMouseWheelEventScrollDirection) {
   WebMouseWheelEvent web_event =
       input::WebMouseWheelEventBuilder::Build(*motion_event);
 
-  // For Mouse, horizontal scrolling IS negated to align with Android's
-  // "natural" expectations.
+  // For Physical Mouse, horizontal scrolling IS negated.
   EXPECT_EQ(web_event.delta_x, -kTicksX * kTickMultiplier * kPixToDip);
   EXPECT_EQ(web_event.wheel_ticks_x, -kTicksX);
+  EXPECT_EQ(web_event.delta_y, kTicksY * kTickMultiplier * kPixToDip);
+  EXPECT_EQ(web_event.wheel_ticks_y, kTicksY);
+  EXPECT_EQ(web_event.TimeStamp(), event_time);
+}
+
+TEST(WebInputEventBuilderAndroidTest,
+     WebMouseWheelEventTrackpadScrollDirection) {
+  constexpr int kEventTimeNs = 5'000'000;
+  const base::TimeTicks event_time =
+      base::TimeTicks() + base::Nanoseconds(kEventTimeNs);
+
+  ui::test::ScopedEventTestTickClock clock;
+  clock.SetNowTicks(event_time);
+
+  const float kPixToDip = 0.5f;
+  // For Trackpad-as-Mouse (Source Mouse + Tool Finger), we expect "Natural"
+  // behavior, where the content moves with the scroll direction. This matches
+  // Android's default behavior for these inputs. Therefore, we pass the values
+  // as-is without negation.
+  const float kTicksX = 10.0f;
+  const float kTicksY = 5.0f;
+  const float kTickMultiplier = 2.0f;
+
+  ui::MotionEventAndroid::Pointer p0(0, 10.f, 20.f, 0.f, 0.f, 0.f, 0.f, 0.f,
+                                     ui::MotionEventAndroid::GetAndroidToolType(
+                                         ui::MotionEvent::ToolType::FINGER));
+
+  JNIEnv* env = AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> obj =
+      JNI_MotionEvent::Java_MotionEvent_obtain(
+          env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/10.f,
+          /*y=*/20.f,
+          /*metaState=*/0);
+  JNI_MotionEvent::Java_MotionEvent_setSource(env, obj, AINPUT_SOURCE_MOUSE);
+  auto motion_event = ui::MotionEventAndroidFactory::CreateFromJava(
+      env, obj, kPixToDip, kTicksX, kTicksY, kTickMultiplier, event_time,
+      AMOTION_EVENT_ACTION_HOVER_MOVE,
+      /*pointer_count=*/1,
+      /*history_size=*/0,
+      /*action_index=*/-1,
+      /*android_action_button=*/0,
+      /*android_gesture_classification=*/0,
+      /*android_button_state=*/0,
+      /*raw_offset_x_pixels=*/0.f,
+      /*raw_offset_y_pixels=*/0.f,
+      /*for_touch_handle=*/false, &p0,
+      /*pointer1=*/nullptr);
+
+  WebMouseWheelEvent web_event =
+      input::WebMouseWheelEventBuilder::Build(*motion_event);
+
+  // For Trackpad (Mouse Source + Finger Tool), horizontal scrolling is NOT
+  // negated.
+  EXPECT_EQ(web_event.delta_x, kTicksX * kTickMultiplier * kPixToDip);
+  EXPECT_EQ(web_event.wheel_ticks_x, kTicksX);
   EXPECT_EQ(web_event.delta_y, kTicksY * kTickMultiplier * kPixToDip);
   EXPECT_EQ(web_event.wheel_ticks_y, kTicksY);
   EXPECT_EQ(web_event.TimeStamp(), event_time);
