@@ -316,7 +316,7 @@ void UpdateCrashKeysWithSyntheticTrials(
   g_variations_crash_keys->OnSyntheticTrialsChanged(synthetic_trials);
 }
 
-void SetVariationsSeedVersionCrashKey(std::string_view seed_version) {
+void SetVariationsSeedVersionCrashKey(const std::string& seed_version) {
   g_variations_seed_version_crash_key.Set(seed_version);
 }
 
