@@ -109,6 +109,9 @@ TabStripControlButton::TabStripControlButton(
   background_frame_inactive_color_id_ =
       kColorNewTabButtonBackgroundFrameInactive;
 
+  inkdrop_hover_color_id_ = kColorTabStripControlButtonInkDrop;
+  inkdrop_ripple_color_id_ = kColorTabStripControlButtonInkDropRipple;
+
   UpdateIcon();
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
 
@@ -147,6 +150,24 @@ void TabStripControlButton::SetBackgroundFrameInactiveColorId(
     ui::ColorId new_color_id) {
   background_frame_inactive_color_id_ = new_color_id;
   UpdateColors();
+}
+
+void TabStripControlButton::SetInkdropHoverColorId(
+    const ChromeColorIds new_color_id) {
+  if (inkdrop_hover_color_id_ == new_color_id) {
+    return;
+  }
+  inkdrop_hover_color_id_ = new_color_id;
+  UpdateInkDrop();
+}
+
+void TabStripControlButton::SetInkdropRippleColorId(
+    const ChromeColorIds new_color_id) {
+  if (inkdrop_ripple_color_id_ == new_color_id) {
+    return;
+  }
+  inkdrop_ripple_color_id_ = new_color_id;
+  UpdateInkDrop();
 }
 
 void TabStripControlButton::SetVectorIcon(const gfx::VectorIcon& icon) {
@@ -195,8 +216,8 @@ void TabStripControlButton::UpdateInkDrop() {
     return;
   }
 
-  CreateToolbarInkdropCallbacks(this, kColorTabStripControlButtonInkDrop,
-                                kColorTabStripControlButtonInkDropRipple);
+  CreateToolbarInkdropCallbacks(this, inkdrop_hover_color_id_,
+                                inkdrop_ripple_color_id_);
 }
 
 void TabStripControlButton::UpdateColors() {

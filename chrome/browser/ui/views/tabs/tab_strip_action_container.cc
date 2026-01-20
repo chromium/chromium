@@ -427,7 +427,7 @@ TabStripActionContainer::CreateGlicActorTaskIcon(
     TabStripController* tab_strip_controller) {
   std::unique_ptr<glic::GlicActorTaskIcon> glic_actor_task_icon =
       std::make_unique<glic::GlicActorTaskIcon>(
-          tab_strip_controller,
+          tab_strip_controller, browser_window_interface_,
           base::BindRepeating(
               &TabStripActionContainer::OnGlicActorTaskIconClicked,
               base::Unretained(this)));

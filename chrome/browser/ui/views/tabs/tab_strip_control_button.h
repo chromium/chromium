@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/size.h"
@@ -61,6 +62,10 @@ class TabStripControlButton : public views::LabelButton,
   void SetForegroundFrameInactiveColorId(ui::ColorId new_color_id);
   void SetBackgroundFrameActiveColorId(ui::ColorId new_color_id);
   void SetBackgroundFrameInactiveColorId(ui::ColorId new_color_id);
+
+  // Set custom ColorIds for the InkDrop hover and ripple effects.
+  void SetInkdropHoverColorId(const ChromeColorIds new_color_id);
+  void SetInkdropRippleColorId(const ChromeColorIds new_color_id);
 
   // Updates the icon model.
   void SetVectorIcon(const gfx::VectorIcon& icon);
@@ -157,6 +162,10 @@ class TabStripControlButton : public views::LabelButton,
   ui::ColorId foreground_frame_inactive_color_id_;
   ui::ColorId background_frame_active_color_id_;
   ui::ColorId background_frame_inactive_color_id_;
+
+  // ColorIds used for the InkDrop hover and ripple effects.
+  ChromeColorIds inkdrop_hover_color_id_;
+  ChromeColorIds inkdrop_ripple_color_id_;
 
   // Optional radii for setting different edges on each side of the button.
   std::optional<int> left_corner_radius_;
