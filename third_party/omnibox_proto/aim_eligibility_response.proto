@@ -10,10 +10,11 @@ option java_outer_classname = 'AimEligibilityResponseProto';
 
 package omnibox;
 
+import "aim_models.proto";
 import "searchbox_config.proto";
 
 // AIM Eligibility Response.
-// Next ID: 8
+// Next ID: 9
 message AimEligibilityResponse {
   optional bool is_eligible = 1;
   optional bool is_pdf_upload_eligible = 2;
@@ -23,4 +24,23 @@ message AimEligibilityResponse {
   // The session index of the user.
   optional int32 session_index = 5;
   optional SearchboxConfig searchbox_config = 7;
+
+  message QueryParam {
+    optional string key = 1;
+    optional string value = 2;
+  }
+
+  message AimDetectionUrlRule {
+    // A set of key-value pairs that must all be present in a URL's
+    // query parameters for it to be considered a valid AIM URL.
+    repeated QueryParam required_params = 1;
+
+    // The type of AIM experience the user is being led to.
+    optional ModelMode type = 2;
+  }
+
+  // A list of criteria sets. To be considered an AIM URL, a URL must
+  // contain all key-value pairs defined within at least one of
+  // these criteria sets.
+  repeated AimDetectionUrlRule aim_detection_url_rule = 8;
 }
