@@ -172,10 +172,6 @@
 #pragma mark - Private
 
 - (void)attachContextualPanelEntrypoint {
-  if (!IsContextualPanelEnabled()) {
-    return;
-  }
-
   [_dispatcher
       startDispatchingToTarget:self
                    forProtocol:@protocol(ContextualPanelEntrypointCommands)];
@@ -189,9 +185,6 @@
 // integrated with LocationBarBadgeMediator.
 // Creates a Contextual Panel entry point mediator.
 - (void)createContextualPanelEntryPointMediator {
-  if (!IsContextualPanelEnabled()) {
-    return;
-  }
   WebStateList* webStateList = self.browser->GetWebStateList();
 
   [_dispatcher

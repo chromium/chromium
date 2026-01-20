@@ -387,10 +387,6 @@ const char kContentPushNotificationsName[] = "Content Push Notifications";
 const char kContentPushNotificationsDescription[] =
     "Enables the content push notifications.";
 
-const char kContextualPanelName[] = "Contextual Panel";
-const char kContextualPanelDescription[] =
-    "Enables the contextual panel feature.";
-
 const char kCredentialProviderExtensionPromoName[] =
     "Enable the Credential Provider Extension promo.";
 const char kCredentialProviderExtensionPromoDescription[] =

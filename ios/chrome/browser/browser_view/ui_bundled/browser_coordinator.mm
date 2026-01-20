@@ -93,6 +93,7 @@
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/contextual_panel/coordinator/contextual_sheet_coordinator.h"
+#import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_constants.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h"
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_coordinator.h"
@@ -2833,16 +2834,12 @@ const char kChromeAppStoreUrl[] =
 
   _contextualPanelEntrypointHelpPresenter =
       [[BubbleViewControllerPresenter alloc]
-               initWithText:ShouldShowRichContextualPanelEntrypointIPH()
-                                ? base::SysUTF8ToNSString(config_ref.iph_text)
-                                : base::SysUTF8ToNSString(config_ref.iph_title)
+               initWithText:base::SysUTF8ToNSString(config_ref.iph_text)
                       title:base::SysUTF8ToNSString(config_ref.iph_title)
              arrowDirection:isBottomOmnibox ? BubbleArrowDirectionDown
                                             : BubbleArrowDirectionUp
                   alignment:BubbleAlignmentTopOrLeading
-                 bubbleType:ShouldShowRichContextualPanelEntrypointIPH()
-                                ? BubbleViewTypeRich
-                                : BubbleViewTypeDefault
+                 bubbleType:BubbleViewTypeRich
             pageControlPage:BubblePageControlPageNone
           dismissalCallback:dismissalCallback];
 
@@ -2851,7 +2848,7 @@ const char kChromeAppStoreUrl[] =
   _contextualPanelEntrypointHelpPresenter.ignoreWebContentAreaInteractions =
       YES;
   _contextualPanelEntrypointHelpPresenter.customBubbleVisibilityDuration =
-      LargeContextualPanelEntrypointDisplayedInSeconds();
+      kLargeContextualPanelEntrypointDisplayDuration.InSecondsF();
 
   // Early return if the bubble wouldn't fit in its parent view.
   if (![_contextualPanelEntrypointHelpPresenter

@@ -104,6 +104,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/content_suggestions/public:ntp_home_constants",
     "//ios/chrome/browser/context_menu/ui_bundled:coordinator",
     "//ios/chrome/browser/contextual_panel/coordinator",
+    "//ios/chrome/browser/contextual_panel/entrypoint/coordinator:constants",
     "//ios/chrome/browser/contextual_panel/model:public",
     "//ios/chrome/browser/contextual_panel/utils",
     "//ios/chrome/browser/crash_report/model",

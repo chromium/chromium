@@ -168,45 +168,6 @@ bool IsContextualPanelForceShowEntrypointEnabled() {
   return base::FeatureList::IsEnabled(kContextualPanelForceShowEntrypoint);
 }
 
-BASE_FEATURE(kContextualPanel, base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsContextualPanelEnabled() {
-  return base::FeatureList::IsEnabled(kContextualPanel);
-}
-
-constexpr base::FeatureParam<int> kLargeContextualPanelEntrypointDelayInSeconds{
-    &kContextualPanel,
-    /*name=*/"large-entrypoint-delay-seconds", /*default_value=*/2};
-
-int LargeContextualPanelEntrypointDelayInSeconds() {
-  return kLargeContextualPanelEntrypointDelayInSeconds.Get();
-}
-
-constexpr base::FeatureParam<int>
-    kLargeContextualPanelEntrypointDisplayedInSeconds{
-        &kContextualPanel,
-        /*name=*/"large-entrypoint-displayed-seconds", /*default_value=*/4};
-
-int LargeContextualPanelEntrypointDisplayedInSeconds() {
-  return kLargeContextualPanelEntrypointDisplayedInSeconds.Get();
-}
-
-constexpr base::FeatureParam<bool> kContextualPanelEntrypointHighlightDuringIPH{
-    &kContextualPanel,
-    /*name=*/"entrypoint-highlight-iph", /*default_value=*/true};
-
-bool ShouldHighlightContextualPanelEntrypointDuringIPH() {
-  return kContextualPanelEntrypointHighlightDuringIPH.Get();
-}
-
-constexpr base::FeatureParam<bool> kContextualPanelEntrypointRichIPH{
-    &kContextualPanel,
-    /*name=*/"entrypoint-rich-iph", /*default_value=*/true};
-
-bool ShouldShowRichContextualPanelEntrypointIPH() {
-  return kContextualPanelEntrypointRichIPH.Get();
-}
-
 BASE_FEATURE(kNonModalDefaultBrowserPromoImpressionLimit,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

@@ -307,27 +307,23 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
           constraintGreaterThanOrEqualToAnchor:self.leadingAnchor
                                       constant:kLocationBarLeadingPadding];
 
-  if (IsContextualPanelEnabled()) {
-    // Setup the layout guide centered between the contents of the location
-    // bar.
-    _centeredBetweenLocationBarContentsLayoutGuide =
-        [[UILayoutGuide alloc] init];
-    [_locationButton
-        addLayoutGuide:_centeredBetweenLocationBarContentsLayoutGuide];
-    [NSLayoutConstraint activateConstraints:@[
-      [_centeredBetweenLocationBarContentsLayoutGuide.leadingAnchor
-          constraintEqualToAnchor:_badgesContainerView.trailingAnchor],
-      [_centeredBetweenLocationBarContentsLayoutGuide.trailingAnchor
-          constraintEqualToAnchor:_trailingButton.leadingAnchor],
-    ]];
+  // Setup the layout guide centered between the contents of the location
+  // bar.
+  _centeredBetweenLocationBarContentsLayoutGuide = [[UILayoutGuide alloc] init];
+  [_locationButton
+      addLayoutGuide:_centeredBetweenLocationBarContentsLayoutGuide];
+  [NSLayoutConstraint activateConstraints:@[
+    [_centeredBetweenLocationBarContentsLayoutGuide.leadingAnchor
+        constraintEqualToAnchor:_badgesContainerView.trailingAnchor],
+    [_centeredBetweenLocationBarContentsLayoutGuide.trailingAnchor
+        constraintEqualToAnchor:_trailingButton.leadingAnchor],
+  ]];
 
-    _xRelativeToContentCenteredConstraint = [_locationContainerView
-                                                 .centerXAnchor
-        constraintEqualToAnchor:_centeredBetweenLocationBarContentsLayoutGuide
-                                    .centerXAnchor];
-    _xRelativeToContentCenteredConstraint.priority =
-        UILayoutPriorityDefaultHigh - 1;
-  }
+  _xRelativeToContentCenteredConstraint = [_locationContainerView.centerXAnchor
+      constraintEqualToAnchor:_centeredBetweenLocationBarContentsLayoutGuide
+                                  .centerXAnchor];
+  _xRelativeToContentCenteredConstraint.priority =
+      UILayoutPriorityDefaultHigh - 1;
 
   _trailingButtonTrailingAnchorConstraint = [self.trailingButton.trailingAnchor
       constraintEqualToAnchor:self.trailingAnchor

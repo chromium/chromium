@@ -641,10 +641,6 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 }
 
 - (void)setEntrypointColored:(BOOL)colored {
-  if (!ShouldHighlightContextualPanelEntrypointDuringIPH()) {
-    return;
-  }
-
   __weak ContextualPanelEntrypointViewController* weakSelf = self;
 
   [UIView animateWithDuration:kEntrypointDisplayingAnimationTime

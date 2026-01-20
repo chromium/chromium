@@ -603,32 +603,6 @@ const FeatureEntry::FeatureVariation kUrlScoringModelVariations[] = {
     {"Full model", nullptr, 0, "3380197"},
 };
 
-// Contextual Panel flag variations.
-const FeatureEntry::FeatureParam kContextualPanelRichIPHArms[] = {
-    {"entrypoint-highlight-iph", "true"},
-    {"entrypoint-rich-iph", "true"},
-};
-const FeatureEntry::FeatureParam kContextualPanelSmallIPHArm[] = {
-    {"entrypoint-highlight-iph", "false"},
-    {"entrypoint-rich-iph", "false"},
-};
-const FeatureEntry::FeatureParam
-    kContextualPanelSmallIPHWithBlueHighlightArm[] = {
-        {"entrypoint-highlight-iph", "true"},
-        {"entrypoint-rich-iph", "false"},
-};
-
-const FeatureEntry::FeatureVariation kContextualPanelEntrypointArmVariations[] =
-    {
-        {"- Rich IPH", kContextualPanelRichIPHArms,
-         std::size(kContextualPanelRichIPHArms), nullptr},
-        {"- Small IPH, no blue highlight", kContextualPanelSmallIPHArm,
-         std::size(kContextualPanelSmallIPHArm), nullptr},
-        {"- Small IPH with blue highlight",
-         kContextualPanelSmallIPHWithBlueHighlightArm,
-         std::size(kContextualPanelSmallIPHWithBlueHighlightArm), nullptr},
-};
-
 const FeatureEntry::FeatureParam kPriceTrackingPromoForceShowArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
      segmentation_platform::kPriceTrackingNotificationPromo},
@@ -1841,11 +1815,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"https-upgrades-ios", flag_descriptions::kHttpsUpgradesName,
      flag_descriptions::kHttpsUpgradesDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(security_interstitials::features::kHttpsUpgrades)},
-    {"contextual-panel", flag_descriptions::kContextualPanelName,
-     flag_descriptions::kContextualPanelDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kContextualPanel,
-                                    kContextualPanelEntrypointArmVariations,
-                                    "ContextualPanel")},
     {"reader-mode-omnibox-entrypoint-in-us",
      flag_descriptions::kReaderModeOmniboxEntrypointInUSName,
      flag_descriptions::kReaderModeOmniboxEntrypointInUSDescription,

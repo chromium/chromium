@@ -437,7 +437,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
 
   attacher
       .CreateDeferredWhen<ContextualPanelTabHelper>(
-          attacher.IsForStandardNavigation() && IsContextualPanelEnabled())
+          attacher.IsForStandardNavigation())
       .With([&]() {
         ContextualPanelModelService* model_service =
             ContextualPanelModelServiceFactory::GetForProfile(profile);

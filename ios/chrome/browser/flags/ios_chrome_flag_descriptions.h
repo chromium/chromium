@@ -237,9 +237,6 @@ extern const char kContentNotificationProvisionalIgnoreConditionsDescription[];
 extern const char kContentPushNotificationsName[];
 extern const char kContentPushNotificationsDescription[];
 
-extern const char kContextualPanelName[];
-extern const char kContextualPanelDescription[];
-
 extern const char kCredentialProviderExtensionPromoName[];
 extern const char kCredentialProviderExtensionPromoDescription[];
 

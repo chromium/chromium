@@ -47,24 +47,19 @@
     DCHECK(webStateList);
     _webStateList = webStateList->AsWeakPtr();
 
-    // Web state list observation is only necessary for Contextual Panel
-    // feature.
-    if (IsContextualPanelEnabled()) {
-      // Set up web state list observation.
-      _webStateListObserver =
-          std::make_unique<WebStateListObserverBridge>(self);
-      _webStateListObservation = std::make_unique<
-          base::ScopedObservation<WebStateList, WebStateListObserverBridge>>(
-          _webStateListObserver.get());
-      _webStateListObservation->Observe(_webStateList.get());
+    // Set up web state list observation.
+    _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
+    _webStateListObservation = std::make_unique<
+        base::ScopedObservation<WebStateList, WebStateListObserverBridge>>(
+        _webStateListObserver.get());
+    _webStateListObservation->Observe(_webStateList.get());
 
-      // Set up active ContextualPanelTabHelper observation.
-      _contextualPanelObserverBridge =
-          std::make_unique<ContextualPanelTabHelperObserverBridge>(self);
-      _activeContextualPanelObservationForwarder =
-          std::make_unique<ActiveContextualPanelTabHelperObservationForwarder>(
-              webStateList, _contextualPanelObserverBridge.get());
-    }
+    // Set up active ContextualPanelTabHelper observation.
+    _contextualPanelObserverBridge =
+        std::make_unique<ContextualPanelTabHelperObserverBridge>(self);
+    _activeContextualPanelObservationForwarder =
+        std::make_unique<ActiveContextualPanelTabHelperObservationForwarder>(
+            webStateList, _contextualPanelObserverBridge.get());
   }
   return self;
 }

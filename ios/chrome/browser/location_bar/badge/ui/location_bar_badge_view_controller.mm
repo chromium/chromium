@@ -777,10 +777,6 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
 #pragma mark - LocationBarBadgeConsumer
 
 - (void)highlightBadge:(BOOL)highlight {
-  if (!ShouldHighlightContextualPanelEntrypointDuringIPH()) {
-    return;
-  }
-
   __weak LocationBarBadgeViewController* weakSelf = self;
 
   [UIView animateWithDuration:kBadgeDisplayingAnimationTime

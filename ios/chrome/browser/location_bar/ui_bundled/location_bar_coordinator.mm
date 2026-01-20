@@ -289,7 +289,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
                                              .viewController.view];
     [self.locationBarBadgeCoordinator.viewController
         didMoveToParentViewController:self.viewController];
-  } else if (IsContextualPanelEnabled()) {
+  } else {
     self.contextualPanelEntrypointCoordinator =
         [[ContextualPanelEntrypointCoordinator alloc]
             initWithBaseViewController:self.viewController

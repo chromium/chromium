@@ -12,6 +12,7 @@ source_set("coordinator") {
     "contextual_panel_entrypoint_mediator_delegate.h",
   ]
   deps = [
+    ":constants",
     "//base",
     "//components/feature_engagement/public",
     "//ios/chrome/browser/contextual_panel/entrypoint/ui",
@@ -37,11 +38,17 @@ source_set("coordinator") {
   ]
 }
 
+source_set("constants") {
+  sources = [ "contextual_panel_entrypoint_constants.h" ]
+  deps = [ "//base" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "contextual_panel_entrypoint_mediator_unittest.mm" ]
   frameworks = [ "Foundation.framework" ]
   deps = [
+    ":constants",
     ":coordinator",
     "//base",
     "//base/test:test_support",
