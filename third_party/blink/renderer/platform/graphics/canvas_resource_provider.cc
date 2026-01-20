@@ -1709,12 +1709,13 @@ void CanvasResourceProvider::ClearAtCreation() {
   // send them directly through to Skia so that they're not replayed for
   // printing operations. See crbug.com/1003114
   DCHECK(IsValid());
+  MemoryManagedPaintRecorder recorder(Size(), this);
   if (info_.alphaType() == kOpaque_SkAlphaType)
-    Canvas().clear(SkColors::kBlack);
+    recorder.getRecordingCanvas().clear(SkColors::kBlack);
   else
-    Canvas().clear(SkColors::kTransparent);
+    recorder.getRecordingCanvas().clear(SkColors::kTransparent);
 
-  RasterRecord(recorder_->ReleaseMainRecording());
+  RasterRecord(recorder.ReleaseMainRecording());
 }
 
 uint32_t CanvasResourceProvider::ContentUniqueID() const {
