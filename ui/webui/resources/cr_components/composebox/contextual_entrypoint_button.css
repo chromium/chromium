@@ -1,0 +1,277 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #scheme=relative
+ * #include=cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --button-height: 36px;
+  --cr-focus-outline-color: var(--color-searchbox-results-icon-focused-outline);
+  --duration: 1800ms;
+  --fulfillment-background: #fff;
+  --glif-gradient: conic-gradient(
+    #3186ff00 0deg,
+    #34a853ff 43deg,
+    #ffd314ff 65deg,
+    #ff4641ff 105deg,
+    #3186ffff 144deg,
+    #3186ffff 150deg,
+    #3186ff00 250deg
+  );
+  --gradient-width: 2px;
+  --input-background: #fff;
+  --input-foreground: #0a0a0a;
+  --standard-curve: cubic-bezier(0.4, 0, 0.2, 1);
+  --text-animation-curve: cubic-bezier(0.38, 0.72, 0, 1);
+}
+
+.glow-container {
+  display: inline-block;
+  height: var(--button-height);
+  margin-left: 2px;
+  position: relative;
+  width: var(--button-height);
+}
+
+cr-button#entrypoint.ai-mode-button {
+  width: max-content;
+}
+
+@keyframes slide-in {
+  to {
+    transform: translateX(0px);
+  }
+}
+
+@keyframes fade-in {
+  to {
+    opacity: 1;
+  }
+}
+
+:host([glif-animation-state="spinner-only"]) #description {
+  opacity: 0;
+}
+
+:host([glif-animation-state="started"]) #description {
+  animation: slide-in 1000ms 820ms var(--text-animation-curve) forwards,
+    fade-in 850ms 970ms var(--text-animation-curve) forwards;
+  opacity: 0;
+  transform: translateX(-12px);
+}
+
+#entrypoint.ai-mode-button {
+  position: relative;
+  z-index: 5;
+}
+
+/*
+  The current animation consists of three states:
+
+  1. ineligible state: The state where the animation is not enabled.
+  2. spinner-only state: The state where the spinner endlessly rotates.
+  3. started state: The state where the transition to the fourth state starts.
+  4. finished state: This is the end state, and no further animation is played.
+ */
+.aim-c {
+  border-radius: 100%;
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.aim-gradient-outer-blur,
+.aim-gradient-solid {
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+}
+
+.aim-gradient-outer-blur:before,
+.aim-gradient-solid:before {
+  background: var(--glif-gradient);
+  bottom: 0;
+  content: "";
+  height: 200%;
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  scale: 2 2;
+  top: -50%;
+}
+
+.aim-gradient-outer-blur {
+  filter: blur(2px);
+  opacity: 0.35;
+  transform: translate3d(0px, 0px, 0px);
+}
+
+.dark .aim-gradient-outer-blur {
+  filter: blur(3px);
+  opacity: 0.7;
+}
+
+@keyframes rotate-gradient {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.aim-gradient-outer-blur,
+.aim-gradient-solid {
+  animation: rotate-gradient calc(var(--duration) / 1.5) var(--standard-curve)
+    infinite;
+}
+
+:host([glif-animation-state="finished"]) .aim-gradient-outer-blur,
+:host([glif-animation-state="ineligible"]) .aim-gradient-outer-blur,
+:host([glif-animation-state="finished"]) .aim-gradient-solid,
+:host([glif-animation-state="ineligible"]) .aim-gradient-solid {
+  animation-play-state: paused;
+  opacity: 0;
+}
+
+@keyframes fade-out-only {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+:host([glif-animation-state="started"]) .aim-gradient-outer-blur:before,
+:host([glif-animation-state="started"]) .aim-gradient-solid:before {
+  /* Start fully opaque before fading. */
+  opacity: 1;
+  animation: fade-out-only var(--duration) linear forwards;
+}
+
+@keyframes opacity-fade-in-and-stay {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+:host([glif-animation-state="spinner-only"]) .aim-gradient-outer-blur:before,
+:host([glif-animation-state="spinner-only"]) .aim-gradient-solid:before {
+  animation: opacity-fade-in-and-stay 300ms linear forwards;
+}
+
+:host([glif-animation-state="finished"]) .aim-gradient-outer-blur:before,
+:host([glif-animation-state="finished"]) .aim-gradient-solid:before {
+  opacity: 0;
+}
+
+:host([glif-animation-state="spinner-only"]) .aim-background {
+  animation: opacity-fade-in-and-stay 300ms linear forwards;
+  background-color: var(--fulfillment-background);
+}
+
+.aim-background {
+  background-color: var(--input-background);
+  clip-path: inset(0 0 0 0 round calc(var(--button-height) * 2));
+  filter: blur(4px);
+  inset: var(--gradient-width);
+  position: absolute;
+}
+
+:host([glif-animation-state="started"]) .aim-background {
+  animation: background-fade var(--duration) linear forwards;
+}
+
+:host([glif-animation-state="finished"]) .aim-background {
+  opacity: 0;
+}
+
+@keyframes background-fade {
+  0% {
+    background: var(--fulfillment-background);
+  }
+
+  50% {
+    background: var(--fulfillment-background);
+  }
+
+  100% {
+    background: var(--input-background);
+  }
+}
+
+@keyframes hover-background-delay {
+  to {
+    --cr-hover-background-color: var(
+      --color-composebox-context-entrypoint-hover-background
+    );
+  }
+}
+
+#entrypoint {
+  --cr-button-disabled-text-color: var(
+    --color-composebox-context-entrypoint-text-disabled
+  );
+  --cr-button-text-color: var(--color-composebox-file-chip-text);
+  --cr-hover-background-color:
+      var(--cr-icon-button-hover-background-color);
+  --cr-icon-button-margin-start: 6px;
+  --icon-block-padding-small: 10px;
+  border: initial;
+  gap: 4px;
+}
+
+:host(:not([glif-animation-state="ineligible"])) #entrypoint {
+  --cr-hover-background-color: transparent;
+  animation: hover-background-delay 0ms 1850ms linear forwards;
+  --icon-block-padding-small: 8px;
+}
+
+#entrypoint:not([disabled]) {
+  --cr-icon-button-fill-color: var(--composebox-context-menu-entrypoint-button-color, var(--cr-button-text-color));
+}
+
+#entrypoint.menu-open {
+  --cr-hover-background-color: var(--cr-icon-button-hover-background-color);
+  background-color: var(--cr-icon-button-hover-background-color);
+}
+
+#entrypointPlaceholder {
+  display: inline-block;
+  width: 36px;
+}
+
+#description {
+  display: block;
+  font-size: 13px;
+}
+
+@media (forced-colors: active) {
+  #entrypoint:not([disabled]) {
+    --cr-button-text-color: ButtonText;
+    --cr-icon-button-fill-color: ButtonText;
+  }
+  #entrypoint {
+    background-color: ButtonFace;
+    border: 1px solid ButtonText;
+    box-sizing: border-box;
+  }
+}

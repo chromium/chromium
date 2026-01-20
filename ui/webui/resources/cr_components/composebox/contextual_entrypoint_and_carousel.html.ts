@@ -57,6 +57,28 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
       <div class="context-menu-container" part="context-menu-and-tools"
           @mousedown="${this.preventFocus_}"
           @click="${this.onContextMenuContainerClick_}">
+        ${this.showModelPicker ? html`
+        <cr-composebox-contextual-entrypoint-button id="contextEntrypoint"
+            part="composebox-entrypoint"
+            exportparts="context-menu-entrypoint-icon"
+            class="upload-button no-overlap"
+            .tabSuggestions="${this.tabSuggestions}"
+            .entrypointName="${this.entrypointName}"
+            @open-image-upload="${this.openImageUpload_}"
+            @open-file-upload="${this.openFileUpload_}"
+            @add-tab-context="${this.addTabContext_}"
+            @delete-tab-context="${this.onDeleteFile_}"
+            .hasImageFiles="${this.hasImageFiles()}"
+            .hideEntrypointButton="${this.shouldHideEntrypointButton_}"
+            .disabledTabIds="${this.addedTabsIds_}"
+            .fileNum="${this.files_.size}"
+            .searchboxLayoutMode="${this.searchboxLayoutMode}"
+            ?inputs-disabled="${this.inputsDisabled_}"
+            ?show-context-menu-description="${showDescription}"
+            glif-animation-state="${this.contextMenuGlifAnimationState}">
+        </cr-composebox-contextual-entrypoint-button>
+        ` :
+                                                html`
         <cr-composebox-context-menu-entrypoint id="contextEntrypoint"
             part="composebox-entrypoint"
             exportparts="context-menu-entrypoint-icon"
@@ -78,7 +100,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
             ?inputs-disabled="${this.inputsDisabled_}"
             ?show-context-menu-description="${showDescription}"
             glif-animation-state="${this.contextMenuGlifAnimationState}">
-        </cr-composebox-context-menu-entrypoint>
+        </cr-composebox-context-menu-entrypoint>`}
         ${
       this.searchboxLayoutMode === 'Compact' && this.showVoiceSearch ?
           voiceSearchButton :
