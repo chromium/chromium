@@ -32,4 +32,7 @@ const char kUserAgent[] = "user-agent";
 
 const char kForceFeedSigninPromo[] = "force-feed-signin-promo";
 
+const char kForceReaderModeDistillationTimeout[] =
+    "force-reader-mode-distillation-timeout";
+
 }  // namespace switches

@@ -13,6 +13,7 @@
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_constants.h"
+#import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_constants.h"
 #import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_constants.h"
@@ -172,6 +173,11 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
   } else {
     config.features_enabled_and_params.push_back(
         {kEnableReaderModeOmniboxEntryPointInUS, {}});
+  }
+
+  if ([self isRunningTest:@selector(testReaderModeDistillationTimeout)]) {
+    config.additional_args.push_back(
+        "--" + std::string(switches::kForceReaderModeDistillationTimeout));
   }
   if ([self isRunningTest:@selector
             (testSampleContextualChipVisibleInReaderMode)] ||
@@ -787,9 +793,7 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 
 // Tests that the contextual panel entrypoint disappears and a failure snackbar
 // is presented when distillation times out.
-// TODO(crbug.com/475807792): Re-enable test once distillation failure can be
-// triggered independently.
-- (void)DISABLED_testReaderModeDistillationTimeout {
+- (void)testReaderModeDistillationTimeout {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
 
   // Wait for the contextual panel entrypoint to appear.

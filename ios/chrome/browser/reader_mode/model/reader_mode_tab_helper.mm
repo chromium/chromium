@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 
+#import "base/command_line.h"
 #import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
 #import "base/time/time.h"
@@ -16,6 +17,7 @@
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/translate/core/browser/translate_prefs.h"
 #import "ios/chrome/browser/dom_distiller/model/offline_page_distiller_viewer.h"
+#import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_inserter.h"
@@ -42,6 +44,13 @@
 #import "net/base/apple/url_conversions.h"
 
 namespace {
+
+base::TimeDelta ReaderModeDistillationTimeout() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kForceReaderModeDistillationTimeout)
+             ? base::Seconds(0)
+             : kReaderModeDistillationTimeout;
+}
 
 bool IsTranslateEnabled(ChromeIOSTranslateClient* translate_client) {
   return translate_client && translate_client->GetTranslateManager()
@@ -576,7 +585,7 @@ void ReaderModeTabHelper::CompleteDistillation(
                      weak_ptr_factory_.GetWeakPtr(), access_point));
 
   reader_mode_distillation_timer_.Start(
-      FROM_HERE, kReaderModeDistillationTimeout,
+      FROM_HERE, ReaderModeDistillationTimeout(),
       base::BindOnce(&ReaderModeTabHelper::CancelDistillation,
                      weak_ptr_factory_.GetWeakPtr()));
 }
