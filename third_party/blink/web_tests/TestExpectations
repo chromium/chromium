@@ -856,6 +856,8 @@ crbug.com/464896028 [ Win ] external/wpt/secure-payment-confirmation/authenticat
 # crbug.com/465137981 [ Linux ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Timeout ]
 # crbug.com/465137981 [ Linux ] external/wpt/secure-payment-confirmation/enrollment-bbk.https.html [ Failure ]
 
+crbug.com/477314267 [ Win ] external/wpt/secure-payment-confirmation/authentication-accepted.https.html [ Failure Pass ]
+
 # Feature Policy changes same-origin allowpaymentrequest behaviour, tests need updating
 crbug.com/718155 payments/payment-request-in-iframe.html [ Failure ]
 crbug.com/718155 payments/payment-request-in-iframe-nested-not-allowed.html [ Failure ]
