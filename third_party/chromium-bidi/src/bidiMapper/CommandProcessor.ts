@@ -324,9 +324,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       // Emulation module
       // keep-sorted start block=yes
       case 'emulation.setClientHintsOverride':
-        this.#parser.parseSetClientHintsOverrideParams(command.params);
-        throw new UnsupportedOperationException(
-          `Method ${command.method} is not implemented.`,
+        return await this.#emulationProcessor.setClientHintsOverride(
+          this.#parser.parseSetClientHintsOverrideParams(command.params),
         );
       case 'emulation.setForcedColorsModeThemeOverride':
         this.#parser.parseSetForcedColorsModeThemeOverrideParams(

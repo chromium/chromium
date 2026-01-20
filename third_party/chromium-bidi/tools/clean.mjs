@@ -27,6 +27,7 @@ exec(
         file !== 'node_modules' &&
         // Required for in IntelliJ.
         file !== '.idea' &&
+        file !== '.vscode' &&
         !file.endsWith('.iml')
       );
     })

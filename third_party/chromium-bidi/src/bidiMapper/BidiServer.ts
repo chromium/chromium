@@ -82,6 +82,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     browserCdpClient: CdpClient,
     selfTargetId: string,
     defaultUserContextId: Browser.UserContext,
+    defaultUserAgent: string,
     parser?: BidiCommandParameterParser,
     logger?: LoggerFn,
   ) {
@@ -153,6 +154,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
           this.#speculationProcessor,
           this.#preloadScriptStorage,
           defaultUserContextId,
+          defaultUserAgent,
           logger,
         );
 
@@ -203,8 +205,11 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     parser?: BidiCommandParameterParser,
     logger?: LoggerFn,
   ): Promise<BidiServer> {
-    const [defaultUserContextId] = await Promise.all([
+    const [defaultUserContextId, version] = await Promise.all([
       this.#getDefaultUserContextId(browserCdpClient),
+      // Fetch the default User Agent to be used in `CdpTarget`. This allows to avoid
+      // round trips to the browser for every target override.
+      browserCdpClient.sendCommand('Browser.getVersion'),
       // Required for `Browser.downloadWillBegin` events.
       browserCdpClient.sendCommand('Browser.setDownloadBehavior', {
         behavior: 'default',
@@ -218,6 +223,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       browserCdpClient,
       selfTargetId,
       defaultUserContextId,
+      version.userAgent,
       parser,
       logger,
     );

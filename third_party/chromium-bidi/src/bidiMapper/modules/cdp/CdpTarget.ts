@@ -25,6 +25,7 @@ import {
   type ChromiumBidi,
   Emulation,
   Session,
+  type UAClientHints,
   UnknownErrorException,
   UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
@@ -66,6 +67,9 @@ export class CdpTarget {
   readonly contextConfigStorage: ContextConfigStorage;
 
   readonly #unblocked = new Deferred<Result<void>>();
+  // Default user agent for the target. Required, as emulating client hints without user
+  // agent is not possible. Cache it to avoid round trips to the browser for every target override.
+  readonly #defaultUserAgent: string;
   readonly #logger: LoggerFn | undefined;
 
   /**
@@ -96,6 +100,7 @@ export class CdpTarget {
     networkStorage: NetworkStorage,
     configStorage: ContextConfigStorage,
     userContext: Browser.UserContext,
+    defaultUserAgent: string,
     logger?: LoggerFn,
   ): CdpTarget {
     const cdpTarget = new CdpTarget(
@@ -110,6 +115,7 @@ export class CdpTarget {
       configStorage,
       networkStorage,
       userContext,
+      defaultUserAgent,
       logger,
     );
 
@@ -136,8 +142,10 @@ export class CdpTarget {
     configStorage: ContextConfigStorage,
     networkStorage: NetworkStorage,
     userContext: Browser.UserContext,
+    defaultUserAgent: string,
     logger: LoggerFn | undefined,
   ) {
+    this.#defaultUserAgent = defaultUserAgent;
     this.userContext = userContext;
     this.#id = targetId;
     this.#cdpClient = cdpClient;
@@ -674,9 +682,17 @@ export class CdpTarget {
       promises.push(this.setExtraHeaders(config.extraHeaders));
     }
 
-    if (config.userAgent !== undefined || config.locale !== undefined) {
+    if (
+      config.userAgent !== undefined ||
+      config.locale !== undefined ||
+      config.clientHints !== undefined
+    ) {
       promises.push(
-        this.setUserAgentAndAcceptLanguage(config.userAgent, config.locale),
+        this.setUserAgentAndAcceptLanguage(
+          config.userAgent,
+          config.locale,
+          config.clientHints,
+        ),
       );
     }
 
@@ -891,10 +907,31 @@ export class CdpTarget {
   async setUserAgentAndAcceptLanguage(
     userAgent: string | null | undefined,
     acceptLanguage: string | null | undefined,
+    clientHints?: UAClientHints.Emulation.ClientHintsMetadata | null,
   ): Promise<void> {
+    const userAgentMetadata = clientHints
+      ? {
+          brands: clientHints.brands?.map((b) => ({
+            brand: b.brand,
+            version: b.version,
+          })),
+          fullVersionList: clientHints.fullVersionList,
+          platform: clientHints.platform ?? '',
+          platformVersion: clientHints.platformVersion ?? '',
+          architecture: clientHints.architecture ?? '',
+          model: clientHints.model ?? '',
+          mobile: clientHints.mobile ?? false,
+          bitness: clientHints.bitness ?? undefined,
+          wow64: clientHints.wow64 ?? undefined,
+          formFactors: clientHints.formFactors ?? undefined,
+        }
+      : undefined;
+
     await this.cdpClient.sendCommand('Emulation.setUserAgentOverride', {
-      userAgent: userAgent ?? '',
+      // `userAgent` is required if `userAgentMetadata` is provided.
+      userAgent: userAgent || (userAgentMetadata ? this.#defaultUserAgent : ''),
       acceptLanguage: acceptLanguage ?? undefined,
+      userAgentMetadata,
     });
   }
 

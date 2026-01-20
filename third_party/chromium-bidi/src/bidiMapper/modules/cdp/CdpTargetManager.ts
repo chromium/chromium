@@ -59,6 +59,7 @@ export class CdpTargetManager {
   readonly #speculationProcessor: SpeculationProcessor;
 
   readonly #defaultUserContextId: Browser.UserContext;
+  readonly #defaultUserAgent: string;
   readonly #logger?: LoggerFn;
 
   constructor(
@@ -74,6 +75,7 @@ export class CdpTargetManager {
     speculationProcessor: SpeculationProcessor,
     preloadScriptStorage: PreloadScriptStorage,
     defaultUserContextId: Browser.UserContext,
+    defaultUserAgent: string,
     logger?: LoggerFn,
   ) {
     this.#cdpConnection = cdpConnection;
@@ -89,6 +91,7 @@ export class CdpTargetManager {
     this.#speculationProcessor = speculationProcessor;
     this.#realmStorage = realmStorage;
     this.#defaultUserContextId = defaultUserContextId;
+    this.#defaultUserAgent = defaultUserAgent;
     this.#logger = logger;
 
     this.#setEventListeners(browserCdpClient);
@@ -357,6 +360,8 @@ export class CdpTargetManager {
       this.#networkStorage,
       this.#configStorage,
       userContext,
+      // Pass the cached default User Agent to the new target.
+      this.#defaultUserAgent,
       this.#logger,
     );
 

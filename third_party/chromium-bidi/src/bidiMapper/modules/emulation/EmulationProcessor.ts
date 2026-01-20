@@ -18,11 +18,12 @@
 import {
   InvalidArgumentException,
   UnsupportedOperationException,
-} from '../../../protocol/ErrorResponse.js';
+} from '../../../protocol/protocol.js';
 import type {
   EmptyResult,
   Emulation,
-} from '../../../protocol/generated/webdriver-bidi.js';
+  UAClientHints,
+} from '../../../protocol/protocol.js';
 import type {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
 import type {UserContextStorage} from '../browser/UserContextStorage.js';
 import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
@@ -159,6 +160,7 @@ export class EmulationProcessor {
           context.setUserAgentAndAcceptLanguage(
             config.userAgent,
             config.locale,
+            config.clientHints,
           ),
         ]);
       }),
@@ -490,6 +492,60 @@ export class EmulationProcessor {
         await context.setUserAgentAndAcceptLanguage(
           config.userAgent,
           config.locale,
+          config.clientHints,
+        );
+      }),
+    );
+    return {};
+  }
+
+  async setClientHintsOverride(
+    params: UAClientHints.Emulation.SetClientHintsOverrideParameters,
+  ): Promise<EmptyResult> {
+    const clientHints = params.clientHints ?? null;
+
+    // Get all relevant contexts to update:
+    // 1. Specific browsing contexts (if provided).
+    // 2. All contexts for specific user contexts (if provided).
+    // 3. All top-level contexts (if global).
+    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
+      params.contexts,
+      params.userContexts,
+      true,
+    );
+
+    for (const browsingContextId of params.contexts ?? []) {
+      this.#contextConfigStorage.updateBrowsingContextConfig(
+        browsingContextId,
+        {
+          clientHints,
+        },
+      );
+    }
+    for (const userContextId of params.userContexts ?? []) {
+      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+        clientHints,
+      });
+    }
+
+    if (params.contexts === undefined && params.userContexts === undefined) {
+      this.#contextConfigStorage.updateGlobalConfig({
+        clientHints,
+      });
+    }
+
+    await Promise.all(
+      browsingContexts.map(async (context) => {
+        // Actual value can be different from the one in params, e.g. in case of already
+        // existing more granular setting.
+        const config = this.#contextConfigStorage.getActiveConfig(
+          context.id,
+          context.userContext,
+        );
+        await context.setUserAgentAndAcceptLanguage(
+          config.userAgent,
+          config.locale,
+          config.clientHints,
         );
       }),
     );

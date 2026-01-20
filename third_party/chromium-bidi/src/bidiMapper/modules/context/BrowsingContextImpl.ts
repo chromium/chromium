@@ -28,6 +28,7 @@ import {
   NoSuchHistoryEntryException,
   Script,
   Session,
+  type UAClientHints,
   UnableToCaptureScreenException,
   UnknownErrorException,
   UnsupportedOperationException,
@@ -1957,6 +1958,7 @@ export class BrowsingContextImpl {
   async setUserAgentAndAcceptLanguage(
     userAgent: string | null | undefined,
     acceptLanguage: string | null | undefined,
+    clientHints: UAClientHints.Emulation.ClientHintsMetadata | null | undefined,
   ) {
     await Promise.all(
       this.#getAllRelatedCdpTargets().map(
@@ -1964,6 +1966,7 @@ export class BrowsingContextImpl {
           await cdpTarget.setUserAgentAndAcceptLanguage(
             userAgent,
             acceptLanguage,
+            clientHints,
           ),
       ),
     );
