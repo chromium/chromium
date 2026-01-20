@@ -79,7 +79,7 @@ class BASE_EXPORT Token {
 
 // For use in std::unordered_map.
 struct BASE_EXPORT TokenHash {
-  size_t operator()(const Token& token) const;
+  static size_t operator()(const Token& token);
 };
 
 class Pickle;

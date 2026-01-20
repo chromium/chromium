@@ -1779,6 +1779,27 @@ meaningful.
 **Notes:**
 *** promo
 [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/1e90vNHYVFc)
+
+### Static operators () and [] <sup>[allowed]</sup>
+
+```
+struct FooHash {
+  // Does not take an implicit pointer to `this`, which would have been useless.
+  static size_t operator()(const Foo& foo) {
+    return ...;
+  }
+};
+```
+
+**Description:** Static operators () and []
+
+**Documentation:**
+[Operator overloading](https://en.cppreference.com/w/cpp/language/operators.html)
+
+**Notes:**
+*** promo
+Avoids unnecessary `this` argument for functors, improving performance.
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/_-d7yyX8EeU).
 ***
 
 ## C++23 Allowed Library Features {#library-allowlist-23}
@@ -1866,27 +1887,6 @@ Migration from `base::to_underlying` is tracked in https://crbug.com/470039537.
 The following C++23 language features are not allowed in the Chromium codebase.
 See the top of this page on how to propose moving a feature from this list into
 the allowed or banned sections.
-
-### Static operators () and [] <sup>[tbd]</sup>
-
-```
-struct FooHash {
-  // Does not take an implicit pointer to `this`, which would have been useless.
-  static size_t operator()(const Foo& foo) {
-    return ...;
-  }
-};
-```
-
-**Description:** Static operators () and []
-
-**Documentation:**
-[Operator overloading](https://en.cppreference.com/w/cpp/language/operators.html)
-
-**Notes:**
-*** promo
-Avoids unnecessary `this` argument for functors, improving performance.
-***
 
 ### Explicit object parameter <sup>[tbd]</sup>
 

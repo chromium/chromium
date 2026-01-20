@@ -79,7 +79,8 @@ std::optional<Token> ReadTokenFromPickle(PickleIterator* pickle_iterator) {
   return Token(high, low);
 }
 
-size_t TokenHash::operator()(const Token& token) const {
+// static
+size_t TokenHash::operator()(const Token& token) {
   return HashInts64(token.high(), token.low());
 }
 
