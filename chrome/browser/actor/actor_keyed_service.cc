@@ -172,6 +172,8 @@ void ActorKeyedService::CreateActorTab(TaskId task_id,
   if (!task) {
     GetJournal().Log(GURL(), task_id, "CreateActorTab",
                      JournalDetailsBuilder().AddError("Invalid Task").Build());
+    std::move(callback).Run(nullptr);
+    return;
   }
 
   BrowserWindowInterface* window_for_new_tab = nullptr;
