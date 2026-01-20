@@ -18,6 +18,7 @@ import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_in
 import type {CrUrlListItemElement} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
+import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -589,6 +590,57 @@ suite('General', () => {
   });
 
   suite('Part2', function() {
+    // Helper: Add multiple test bookmarks and return their IDs.
+    async function addTestBookmarks(
+        count: number, prefix: string): Promise<string[]> {
+      const ids: string[] = [];
+      for (let i = 0; i < count; i++) {
+        const id = `${prefix}-${i}`;
+        ids.push(id);
+        bookmarksApi.callbackRouterRemote.onBookmarkNodeAdded({
+          id,
+          title: `Bookmark ${i}`,
+          index: i,
+          parentId: FOLDERS[1]!.id,
+          url: `http://test.com/${i}`,
+          children: null,
+          dateAdded: null,
+          dateLastUsed: null,
+          unmodifiable: false,
+        });
+      }
+      await flushTasks();
+      await waitAfterNextRender(powerBookmarksList);
+      return ids;
+    }
+
+    // Helper: Setup scroll position and return elements for verification.
+    async function setupScrollPosition(scrollToIndex: number): Promise<{
+      bookmarksContainer: HTMLElement,
+      ironList: IronListElement,
+      scrollTopBefore: number,
+    }> {
+      const bookmarksContainer =
+          powerBookmarksList.shadowRoot!.querySelector<HTMLElement>(
+              '#bookmarks')!;
+      const ironList =
+          powerBookmarksList.shadowRoot!.querySelector<IronListElement>(
+              'iron-list[id^="shownBookmarks"]')!;
+
+      ironList.notifyResize();
+      await flushTasks();
+      await waitAfterNextRender(powerBookmarksList);
+
+      ironList.scrollToIndex(scrollToIndex);
+      bookmarksContainer.dispatchEvent(new CustomEvent('scroll'));
+      flush();
+      await flushTasks();
+      await waitAfterNextRender(powerBookmarksList);
+
+      const scrollTopBefore = bookmarksContainer.scrollTop;
+      return {bookmarksContainer, ironList, scrollTopBefore};
+    }
+
     test('MovesBookmarks', async () => {
       const movedBookmark = FOLDERS[1]!.children![2]!.children![0]!;
       assertTrue(!!movedBookmark);
@@ -691,6 +743,61 @@ suite('General', () => {
       assertEquals(
           originalShownBookmarkCount - 1,
           getBookmarks(powerBookmarksList).length);
+    });
+
+    // Regression test for crbug.com/471208323: scroll position preserved on
+    // bookmark removal.
+    test('PreservesScrollPositionOnBookmarkRemoval', async () => {
+      // Add bookmarks to make the list scrollable.
+      const bookmarkIds = await addTestBookmarks(20, 'remove-test');
+
+      // Setup scroll position.
+      const {bookmarksContainer, scrollTopBefore} =
+          await setupScrollPosition(bookmarkIds.length - 1);
+
+      const countBefore = getBookmarks(powerBookmarksList).length;
+      const bookmarkToRemove = bookmarkIds[bookmarkIds.length - 2]!;
+
+      // Remove a bookmark.
+      bookmarksApi.callbackRouterRemote.onBookmarkNodesRemoved(
+          [bookmarkToRemove]);
+      await flushTasks();
+
+      // Verify removal and scroll preservation.
+      assertEquals(countBefore - 1, getBookmarks(powerBookmarksList).length);
+      assertFalse(!!getBookmarkWithId(powerBookmarksList, bookmarkToRemove));
+      assertTrue(
+          bookmarksContainer.scrollTop > 0,
+          `Scroll should not jump to top (was: ${scrollTopBefore})`);
+    });
+
+    // Regression test for crbug.com/471208323: scroll position preserved on
+    // bookmark edit.
+    test('PreservesScrollPositionOnBookmarkEdit', async () => {
+      // Add bookmarks to make the list scrollable.
+      const bookmarkIds = await addTestBookmarks(20, 'edit-test');
+
+      // Setup scroll position.
+      const {bookmarksContainer, scrollTopBefore} =
+          await setupScrollPosition(bookmarkIds.length - 1);
+
+      const bookmarkToEdit = bookmarkIds[bookmarkIds.length - 2]!;
+      const newTitle = 'Edited Title';
+
+      // Edit a bookmark.
+      bookmarksApi.callbackRouterRemote.onBookmarkNodeChanged(
+          bookmarkToEdit, newTitle, `http://test.com/edited`);
+      await flushTasks();
+      await waitAfterNextRender(powerBookmarksList);
+
+      // Verify edit and scroll preservation.
+      const bookmarkAfter =
+          getBookmarkWithId(powerBookmarksList, bookmarkToEdit);
+      assertTrue(!!bookmarkAfter);
+      assertEquals(newTitle, bookmarkAfter.title);
+      assertTrue(
+          bookmarksContainer.scrollTop > 0,
+          `Scroll should not jump to top (was: ${scrollTopBefore})`);
     });
 
     test('SetsCompactDescription', () => {

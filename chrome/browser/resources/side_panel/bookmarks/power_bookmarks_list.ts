@@ -45,7 +45,7 @@ import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import {listenOnce} from '//resources/js/util.js';
 import type {IronListElement} from '//resources/polymer/v3_0/iron-list/iron-list.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {afterNextRender, Debouncer, PolymerElement, timeOut} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, Debouncer, flush, PolymerElement, timeOut} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ActionSource, SortOrder, ViewType} from './bookmarks.mojom-webui.js';
 import type {BookmarksTreeNode} from './bookmarks.mojom-webui.js';
@@ -443,13 +443,27 @@ export class PowerBookmarksListElement extends PolymerElement implements
 
   onBookmarkChanged(id: string) {
     const bookmark = this.bookmarksService_.findBookmarkWithId(id)!;
-     this.updatedElementIds_ = [bookmark.id];
-    if (this.bookmarkShouldShow_(bookmark) ||
-        this.bookmarkIsShowing_(bookmark)) {
+    this.updatedElementIds_ = [bookmark.id];
+    const isShowing = this.bookmarkIsShowing_(bookmark);
+    const shouldShow = this.bookmarkShouldShow_(bookmark);
+
+    // If visibility status changed, we need to rebuild the display lists.
+    // Otherwise, update the bookmark reference in-place to preserve scroll
+    // position and avoid resetting UI state (e.g., renaming state).
+    if (shouldShow !== isShowing) {
+      const scrollTop = this.$.bookmarks.scrollTop;
       this.updateDisplayLists_();
+      afterNextRender(this, () => {
+        this.$.bookmarks.scrollTop = scrollTop;
+      });
+    } else if (isShowing) {
+      // Update the bookmark reference in displayLists_ to match the new
+      // deep-copied object from the service, ensuring data consistency.
+      const path = this.findBookmarkPathInDisplayLists_(id);
+      if (path) {
+        this.set(`displayLists_.${path.listIndex}.${path.itemIndex}`, bookmark);
+      }
     }
-    this.notifyPathIfVisible_(id, 'title');
-    this.notifyPathIfVisible_(id, 'url');
     this.updateShoppingData_();
   }
 
@@ -518,19 +532,21 @@ export class PowerBookmarksListElement extends PolymerElement implements
     }
   }
 
+  /**
+   * Handles bookmark removal with scroll position preservation.
+   */
   onBookmarkRemoved(bookmark: BookmarksTreeNode) {
+    const wasShowing = this.bookmarkIsShowing_(bookmark);
     const scrollTop = this.$.bookmarks.scrollTop;
-    this.updateDisplayLists_();
-    const isShown = this.bookmarkIsShowing_(bookmark);
-    if (isShown) {
+
+    if (wasShowing) {
+      // Remove from display list.
       this.removeNodeFromDisplayLists_(bookmark.id);
       getAnnouncerInstance().announce(loadTimeData.getStringF(
           'bookmarkDeleted', getBookmarkName(bookmark)));
-      afterNextRender(this, () => {
-        this.$.bookmarks.scrollTop = scrollTop;
-      });
     }
 
+    // Update related state.
     if (this.shoppingCollectionFolderId_ === bookmark.id) {
       this.shoppingCollectionFolderId_ = '';
     }
@@ -541,8 +557,22 @@ export class PowerBookmarksListElement extends PolymerElement implements
     // If the parent folder is visible, notify to ensure its displayed
     // child count is updated.
     this.notifyPathIfVisible_(bookmark.parentId, 'children');
+
+    if (wasShowing) {
+      // Synchronously flush pending Polymer property effects and DOM updates
+      // triggered by `removeNodeFromDisplayLists`, then restore scroll
+      // position. This prevents flicker after deletion on macOS.
+      flush();
+      this.$.bookmarks.scrollTop = scrollTop;
+    }
+
     afterNextRender(this, () => {
       this.keyArrowNavigationService_.rebuildNavigationElements();
+      // Restore scroll position again after DOM queries triggered by
+      // `rebuildNavigationElements`, which can reset scrollTop on Linux.
+      if (wasShowing) {
+        this.$.bookmarks.scrollTop = scrollTop;
+      }
     });
   }
 
@@ -634,13 +664,26 @@ export class PowerBookmarksListElement extends PolymerElement implements
   }
 
   private notifyPathIfVisible_(id: string, key: string) {
+    const path = this.findBookmarkPathInDisplayLists_(id);
+    if (path) {
+      this.notifyPath(
+          `displayLists_.${path.listIndex}.${path.itemIndex}.${key}`);
+    }
+  }
+
+  /**
+   * Finds the path to a bookmark in displayLists_.
+   * Returns null if the bookmark is not currently displayed.
+   */
+  private findBookmarkPathInDisplayLists_(id: string):
+      {listIndex: number, itemIndex: number}|null {
     for (let i = 0; i < this.displayLists_.length; i++) {
-      const listIndex = this.displayLists_[i].findIndex(b => b.id === id);
-      if (listIndex > -1) {
-        this.notifyPath(`displayLists_.${i}.${listIndex}.${key}`);
-        return;
+      const itemIndex = this.displayLists_[i].findIndex(b => b.id === id);
+      if (itemIndex > -1) {
+        return {listIndex: i, itemIndex};
       }
     }
+    return null;
   }
 
   private computeHasFolders_(): boolean {
@@ -678,13 +721,9 @@ export class PowerBookmarksListElement extends PolymerElement implements
   }
 
   private removeNodeFromDisplayLists_(nodeId: string) {
-    for (let listIndex = 0; listIndex < this.displayLists_.length;
-         listIndex++) {
-      const itemIndex =
-          this.displayLists_[listIndex].findIndex(b => b.id === nodeId);
-      if (itemIndex > -1) {
-        this.splice(`displayLists_.${listIndex}`, itemIndex, 1);
-      }
+    const path = this.findBookmarkPathInDisplayLists_(nodeId);
+    if (path) {
+      this.splice(`displayLists_.${path.listIndex}`, path.itemIndex, 1);
     }
   }
 

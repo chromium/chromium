@@ -391,7 +391,7 @@
         hidden="[[hideAddTabButton_(editing_)]]"
         on-click="onAddTabClicked_"
         disabled="[[!canAddCurrentUrl_(
-                    activeFolderPath_.*, currentUrl_, displayLists_)]]">
+                    activeFolderPath_.*, currentUrl_, displayLists_.*)]]">
       <cr-icon slot="prefix-icon" icon="bookmarks:add-tab"></cr-icon>
       $i18n{addCurrentTab}
     </cr-button>
