@@ -4733,10 +4733,6 @@ static_library("browser") {
         "screen_ai/screen_ai_downloader_non_chromeos.h",
         "signin/force_signin_verifier.cc",
         "signin/force_signin_verifier.h",
-        "signin/signin_manager.cc",
-        "signin/signin_manager.h",
-        "signin/signin_manager_factory.cc",
-        "signin/signin_manager_factory.h",
       ]
 
       deps += [
