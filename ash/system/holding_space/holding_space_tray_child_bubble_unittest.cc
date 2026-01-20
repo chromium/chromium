@@ -59,6 +59,7 @@ class HoldingSpaceTrayChildBubbleTestBase : public HoldingSpaceAshTestBase {
   }
 
   void TearDown() override {
+    child_bubble_ = nullptr;
     widget_.reset();
     view_delegate_.reset();
 
@@ -74,8 +75,7 @@ class HoldingSpaceTrayChildBubbleTestBase : public HoldingSpaceAshTestBase {
 
   views::UniqueWidgetPtr widget_;
   std::unique_ptr<HoldingSpaceViewDelegate> view_delegate_;
-  raw_ptr<HoldingSpaceTrayChildBubble, DanglingUntriaged> child_bubble_ =
-      nullptr;
+  raw_ptr<HoldingSpaceTrayChildBubble> child_bubble_ = nullptr;
 };
 
 // Tests -----------------------------------------------------------------------
