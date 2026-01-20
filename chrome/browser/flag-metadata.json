@@ -1576,16 +1576,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "clear-instance-info-when-closed-intentionally",
-    "owners": [
-      "desiatyrikov@google.com",
-      "skavuluru@google.com",
-      "aishwaryarj@google.com",
-      "clank-large-form-factors@google.com"
-    ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "click-to-call",
     "owners": [ "ellyjones@chromium.org" ],
     "expiry_milestone": 115
