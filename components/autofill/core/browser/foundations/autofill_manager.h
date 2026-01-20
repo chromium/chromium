@@ -461,12 +461,6 @@ class AutofillManager
 
   struct AsyncContext;
 
-  // Returns the number of FormStructures with the given |form_signature| and
-  // appends them to |form_structures|. Runs in linear time.
-  size_t FindCachedFormsBySignature(
-      FormSignature form_signature,
-      std::vector<raw_ref<FormStructure>>* form_structures) const;
-
   // Parses multiple forms in one go. The function proceeds in four stages:
   //
   // 1. Turn (almost) every FormData into a FormStructure.

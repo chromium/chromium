@@ -525,20 +525,6 @@ AutofillManager::FindCachedFormsBySignature(
   return form_structures;
 }
 
-size_t AutofillManager::FindCachedFormsBySignature(
-    FormSignature form_signature,
-    std::vector<raw_ref<FormStructure>>* form_structures) const {
-  DCHECK(form_structures);
-  size_t hits_num = 0;
-  for (const auto& [form_id, form_structure] : form_structures_) {
-    if (form_structure->form_signature() == form_signature) {
-      ++hits_num;
-      form_structures->emplace_back(*form_structure);
-    }
-  }
-  return hits_num;
-}
-
 const FormStructure* AutofillManager::FindCachedFormById(
     const FormGlobalId& form_id) const {
   auto it = form_structures_.find(form_id);
@@ -925,30 +911,8 @@ void AutofillManager::OnLoadedServerPredictions(
     PopulateCacheForQueryResponse(forms, *response);
   }
 
-  // Get the current valid FormStructures represented by
-  // `response->queried_form_signatures`.
   std::vector<raw_ref<FormStructure>> queried_forms;
-  queried_forms.reserve(response->queried_form_signatures.size());
-  for (const auto& form_signature : response->queried_form_signatures) {
-    FindCachedFormsBySignature(form_signature, &queried_forms);
-  }
-
-  // Each form signature in |queried_form_signatures| is supposed to be unique,
-  // and therefore appear only once. This ensures that
-  // FindCachedFormsBySignature() produces an output without duplicates in the
-  // forms.
-  // TODO(crbug.com/40123827): |queried_forms| could be a set data structure;
-  // their order should be irrelevant.
-  DCHECK_EQ(queried_forms.size(),
-            std::set<raw_ref<FormStructure>>(queried_forms.begin(),
-                                             queried_forms.end())
-                .size());
-
-  // If there are no current forms corresponding to the queried signatures, drop
-  // the query response.
-  if (queried_forms.empty()) {
-    return;
-  }
+  queried_forms.reserve(forms.size());
 
   if (std::vector<ServerPredictions> form_server_predictions =
           ParseServerPredictionsFromQueryResponse(
@@ -967,6 +931,7 @@ void AutofillManager::OnLoadedServerPredictions(
         continue;
       }
 
+      queried_forms.emplace_back(*form_structure);
       server_predictions.ApplyTo(*form_structure);
       form_structure->RationalizeAndAssignSections(
           client().GetVariationConfigCountryCode(), GetCurrentPageLanguage(),

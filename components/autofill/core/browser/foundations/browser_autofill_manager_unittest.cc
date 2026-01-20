@@ -5403,50 +5403,6 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictionsFromApi) {
               ElementsAre(ADDRESS_HOME_ZIP));
 }
 
-// Test that OnLoadedServerPredictions does not call ParseQueryResponse if the
-// BrowserAutofillManager has been reset between the time the query was sent and
-// the response received.
-TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictions_ResetManager) {
-  // Set up our form data.
-  FormData form = CreateTestAddressFormData();
-
-  // Simulate having seen this form on page load.
-  // |form_structure| will be owned by |autofill_manager()|.
-  auto form_structure = std::make_unique<FormStructure>(form);
-  const RegexPredictions regex_predictions = DetermineRegexTypes(
-      GeoIpCountryCode(""), LanguageCode(""), form_structure->ToFormData(),
-      nullptr, /*ignore_small_forms=*/true);
-  regex_predictions.ApplyTo(form_structure->fields());
-  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
-                                               LanguageCode(""), nullptr);
-  std::vector<FormSignature> signatures =
-      test::GetEncodedSignatures(*form_structure);
-  test_api(autofill_manager()).AddSeenFormStructure(std::move(form_structure));
-
-  AutofillQueryResponse response;
-  auto* form_suggestion = response.add_form_suggestions();
-  form_suggestion->add_field_suggestions()->add_predictions()->set_type(3);
-  for (int i = 0; i < 7; ++i) {
-    form_suggestion->add_field_suggestions()->add_predictions()->set_type(0);
-  }
-  form_suggestion->add_field_suggestions()->add_predictions()->set_type(3);
-  form_suggestion->add_field_suggestions()->add_predictions()->set_type(2);
-  form_suggestion->add_field_suggestions()->add_predictions()->set_type(61);
-
-  std::string response_string;
-  ASSERT_TRUE(response.SerializeToString(&response_string));
-  // Reset the manager (such as during a navigation).
-  autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
-
-  base::HistogramTester histogram_tester;
-  test_api(autofill_manager())
-      .OnLoadedServerPredictions(base::Base64Encode(response_string),
-                                 signatures, {form});
-
-  // Verify that FormStructure::ParseQueryResponse was NOT called.
-  histogram_tester.ExpectTotalCount("Autofill.ServerQueryResponse", 0);
-}
-
 // Test that when server predictions disagree with the heuristic ones, the
 // overall types and sections would be set based on the server one.
 TEST_F(BrowserAutofillManagerTest, DetermineHeuristicsWithOverallPrediction) {

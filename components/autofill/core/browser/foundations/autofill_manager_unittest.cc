@@ -668,31 +668,6 @@ TEST_F(AutofillManagerTestForModelPredictions,
 
 TEST_F(
     AutofillManagerTest_OnLoadedServerPredictionsObserver,
-    OnFormsSeen_SuccessfulQueryRequest_NotifiesBeforeLoadedServerPredictionsObserver) {
-  std::vector<FormData> forms = CreateTestForms(1);
-  base::RunLoop run_loop;
-  EXPECT_CALL(observer_,
-              OnBeforeLoadedServerPredictions(Ref(autofill_manager())));
-  EXPECT_CALL(observer_, OnFieldTypesDetermined).Times(0);
-  EXPECT_CALL(observer_, OnFieldTypesDetermined(
-                             Ref(autofill_manager()), forms[0].global_id(),
-                             FieldTypeSource::kHeuristicsOrAutocomplete));
-  EXPECT_CALL(crowdsourcing_manager(), StartQueryRequest)
-      .WillOnce(
-          [](const auto&, const auto&,
-             base::OnceCallback<void(std::optional<QueryResponse>)> callback) {
-            std::move(callback).Run(QueryResponse("", {}));
-            return true;
-          });
-  EXPECT_CALL(observer_,
-              OnAfterLoadedServerPredictions(Ref(autofill_manager())))
-      .WillOnce(RunClosure(run_loop.QuitClosure()));
-  OnFormsSeenWithExpectations(autofill_manager(), forms, {}, forms);
-  std::move(run_loop).Run();
-}
-
-TEST_F(
-    AutofillManagerTest_OnLoadedServerPredictionsObserver,
     OnFormsSeen_FailedQueryRequest_NotifiesBothLoadedServerPredictionsObservers) {
   std::vector<FormData> forms = CreateTestForms(1);
   base::RunLoop run_loop;
@@ -718,32 +693,7 @@ TEST_F(
 
 TEST_F(
     AutofillManagerTest_OnLoadedServerPredictionsObserver,
-    OnLoadedServerPredictions_EmptyQueriedFormSignatures_NotifiesAfterLoadedServerPredictionsObserver) {
-  std::vector<FormData> forms = CreateTestForms(1);
-  base::RunLoop run_loop;
-  EXPECT_CALL(observer_,
-              OnBeforeLoadedServerPredictions(Ref(autofill_manager())));
-  EXPECT_CALL(observer_, OnFieldTypesDetermined).Times(0);
-  EXPECT_CALL(observer_, OnFieldTypesDetermined(
-                             Ref(autofill_manager()), forms[0].global_id(),
-                             FieldTypeSource::kHeuristicsOrAutocomplete));
-  EXPECT_CALL(crowdsourcing_manager(), StartQueryRequest)
-      .WillOnce(
-          [&](const auto&, const auto&,
-              base::OnceCallback<void(std::optional<QueryResponse>)> callback) {
-            std::move(callback).Run(QueryResponse("", {}));
-            return true;
-          });
-  EXPECT_CALL(observer_,
-              OnAfterLoadedServerPredictions(Ref(autofill_manager())))
-      .WillOnce(RunClosure(run_loop.QuitClosure()));
-  OnFormsSeenWithExpectations(autofill_manager(), forms, {}, forms);
-  std::move(run_loop).Run();
-}
-
-TEST_F(
-    AutofillManagerTest_OnLoadedServerPredictionsObserver,
-    OnLoadedServerPredictions_NonEmptyQueriedFormSignatures_NotifiesAfterLoadedServerPredictionsObserver) {
+    OnFormsSeen_NonEmptyQueriedFormSignatures_NotifiesAfterLoadedServerPredictionsObserver) {
   std::vector<FormData> forms = CreateTestForms(1);
   base::RunLoop run_loop;
   EXPECT_CALL(observer_,
@@ -760,6 +710,7 @@ TEST_F(
           [&](const auto&, const auto&,
               base::OnceCallback<void(std::optional<QueryResponse>)> callback) {
             std::move(callback).Run(
+                // Server responses always have non-empty form signatures.
                 QueryResponse("", {autofill_manager()
                                        .FindCachedFormById(forms[0].global_id())
                                        ->form_signature()}));
