@@ -76,10 +76,11 @@ bool IsCorrectExceptionalHWID(std::string_view hwid) {
   std::string hwid_without_dashes;
   base::RemoveChars(hwid, "-", &hwid_without_dashes);
   LOG_ASSERT(hwid_without_dashes.length() >= 2);
-  std::string not_checksum =
-      hwid_without_dashes.substr(0, hwid_without_dashes.length() - 2);
-  std::string checksum =
-      hwid_without_dashes.substr(hwid_without_dashes.length() - 2);
+  std::string_view not_checksum =
+      std::string_view(hwid_without_dashes)
+          .substr(0, hwid_without_dashes.length() - 2);
+  std::string_view checksum = std::string_view(hwid_without_dashes)
+                                  .substr(hwid_without_dashes.length() - 2);
   return CalculateExceptionalHWIDChecksum(not_checksum) == checksum;
 }
 
