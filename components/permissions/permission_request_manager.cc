@@ -913,7 +913,11 @@ PermissionRequestManager::PermissionRequestManager(
               web_contents->GetBrowserContext())) {
   if (tab_interface) {
     tab_is_active_ = tab_interface->IsActivated();
-    RegisterTabSubscriptions(tab_interface);
+    // Tab helpers are attached before a tab is attached to the tab strip.
+    // Register tab listeners once the tab is attached.
+    tab_insert_subscription_ = tab_interface->RegisterDidInsert(
+        base::BindRepeating(&PermissionRequestManager::OnTabAttached,
+                            weak_factory_.GetWeakPtr()));
   } else {
     tab_is_active_ =
         web_contents->GetVisibility() != content::Visibility::HIDDEN;
@@ -1811,11 +1815,6 @@ void PermissionRequestManager::RegisterTabSubscriptions(
   tab_subscriptions_.push_back(tab_interface->RegisterWillDetach(
       base::BindRepeating(&PermissionRequestManager::OnTabDetached,
                           weak_factory_.GetWeakPtr())));
-  // Store this separately because this must not be cleared when a tab is
-  // detached.
-  tab_insert_subscription_ = tab_interface->RegisterDidInsert(
-      base::BindRepeating(&PermissionRequestManager::OnTabAttached,
-                          weak_factory_.GetWeakPtr()));
 }
 
 void PermissionRequestManager::OnTabActiveStatusChanged(
