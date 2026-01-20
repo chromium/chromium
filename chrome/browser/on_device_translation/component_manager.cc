@@ -5,6 +5,7 @@
 #include "chrome/browser/on_device_translation/component_manager.h"
 
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/component_updater/translate_kit_component_installer.h"
 #include "chrome/browser/component_updater/translate_kit_language_pack_component_installer.h"
 #include "components/component_updater/component_updater_paths.h"
+#include "components/component_updater/component_updater_service.h"
 #include "components/on_device_translation/features.h"
 #include "components/on_device_translation/public/language_pack.h"
 #include "components/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
@@ -70,7 +72,9 @@ class ComponentManagerImpl : public ComponentManager {
         base::BindOnce(&component_updater::
                            TranslateKitLanguagePackComponentInstallerPolicy::
                                UpdateComponentOnDemand,
-                       language_pack));
+                       base::Unretained(g_browser_process->component_updater()),
+                       language_pack),
+        base::RepeatingClosure());
   }
 
   void UninstallTranslateKitLanguagePackComponent(

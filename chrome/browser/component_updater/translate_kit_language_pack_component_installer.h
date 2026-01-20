@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/values.h"
@@ -27,7 +28,8 @@ class TranslateKitLanguagePackComponentInstallerPolicy
  public:
   TranslateKitLanguagePackComponentInstallerPolicy(
       PrefService* pref_service,
-      on_device_translation::LanguagePackKey language_pack_key);
+      on_device_translation::LanguagePackKey language_pack_key,
+      base::RepeatingClosure on_ready_callback);
   ~TranslateKitLanguagePackComponentInstallerPolicy() override;
 
   // Not Copyable.
@@ -55,6 +57,7 @@ class TranslateKitLanguagePackComponentInstallerPolicy
 
   // Requests to update a given language pack component.
   static void UpdateComponentOnDemand(
+      component_updater::ComponentUpdateService* cus,
       on_device_translation::LanguagePackKey language_pack_key);
 
  private:
@@ -62,13 +65,15 @@ class TranslateKitLanguagePackComponentInstallerPolicy
 
   const on_device_translation::LanguagePackKey language_pack_key_;
   raw_ptr<PrefService> pref_service_;
+  base::RepeatingClosure on_ready_callback_;
 };
 
 void RegisterTranslateKitLanguagePackComponent(
     ComponentUpdateService* cus,
     PrefService* pref_service,
     on_device_translation::LanguagePackKey language_pack_key,
-    base::OnceClosure registered_callback);
+    base::OnceClosure registered_callback,
+    base::RepeatingClosure on_ready_callback);
 
 void RegisterTranslateKitLanguagePackComponentsForUpdate(
     ComponentUpdateService* cus,

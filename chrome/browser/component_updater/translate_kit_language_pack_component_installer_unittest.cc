@@ -10,16 +10,22 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/crx_file/id_util.h"
 #include "components/on_device_translation/features.h"
 #include "components/on_device_translation/public/language_pack.h"
+#include "components/on_device_translation/public/paths.h"
 #include "components/on_device_translation/public/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -31,6 +37,7 @@ namespace component_updater {
 namespace {
 
 using ::testing::_;
+using ::testing::Return;
 
 constexpr char kFakeTranslateKitVersion[] = "0.0.1";
 
@@ -44,6 +51,9 @@ class TranslateKitLanguagePackComponentTest : public ::testing::Test {
     ASSERT_TRUE(fake_install_dir_.CreateUniqueTempDir());
     SetVersion(kFakeTranslateKitVersion);
     on_device_translation::RegisterLocalStatePrefs(pref_service_.registry());
+    scoped_path_override_ = std::make_unique<base::ScopedPathOverride>(
+        component_updater::DIR_COMPONENT_PREINSTALLED,
+        fake_install_dir_.GetPath());
   }
 
   // Not Copyable.
@@ -66,23 +76,52 @@ class TranslateKitLanguagePackComponentTest : public ::testing::Test {
     fake_manifest_.Set("version", version_str);
   }
 
- private:
   content::BrowserTaskEnvironment env_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   base::ScopedTempDir fake_install_dir_;
   base::Version fake_version_;
   base::Value::Dict fake_manifest_;
+  std::unique_ptr<base::ScopedPathOverride> scoped_path_override_;
 };
+
+void CreateFakeInstallation(const base::FilePath& base_dir,
+                            on_device_translation::LanguagePackKey lang_pack) {
+  base::FilePath component_dir = base_dir.Append(
+      on_device_translation::GetLanguagePackRelativeInstallDir().AppendASCII(
+          on_device_translation::GetPackageInstallDirName(lang_pack)));
+
+  CHECK(base::CreateDirectory(component_dir));
+
+  static constexpr std::string_view kManifestData = R"({
+    "name": "%s",
+    "version": "%s",
+    "min_env_version": "%s"
+  })";
+  for (const std::string& sub_dir :
+       GetPackageInstallSubDirNamesForVerification(lang_pack)) {
+    CHECK(base::CreateDirectory(component_dir.AppendASCII(sub_dir)));
+  }
+  CHECK(base::WriteFile(
+      component_dir.AppendASCII("manifest.json"),
+      base::StringPrintf(kManifestData.data(), "FakeInstallation", "0.0.1",
+                         "0.0.1")));
+}
 
 TEST_F(TranslateKitLanguagePackComponentTest, ComponentRegistration) {
   auto service = std::make_unique<MockComponentUpdateService>();
   base::RunLoop run_loop;
-  EXPECT_CALL(*service, RegisterComponent(_));
+  base::RunLoop on_ready_loop;
+  EXPECT_CALL(*service, RegisterComponent(_)).WillOnce(Return(true));
   EXPECT_CALL(*service, GetComponentIDs());
+  // This is needed for triggering the on_ready callback.
+  CreateFakeInstallation(fake_install_dir_.GetPath(),
+                         on_device_translation::LanguagePackKey::kEn_Es);
   RegisterTranslateKitLanguagePackComponent(
       service.get(), pref_service(),
-      on_device_translation::LanguagePackKey::kEn_Es, run_loop.QuitClosure());
+      on_device_translation::LanguagePackKey::kEn_Es, run_loop.QuitClosure(),
+      on_ready_loop.QuitClosure());
   run_loop.Run();
+  on_ready_loop.Run();
 }
 
 TEST_F(TranslateKitLanguagePackComponentTest,
@@ -98,13 +137,15 @@ TEST_F(TranslateKitLanguagePackComponentTest,
   RegisterTranslateKitLanguagePackComponent(
       service.get(), pref_service(),
       on_device_translation::LanguagePackKey::kEn_Es,
-      /*registered_callback=*/base::BindOnce([]() { NOTREACHED(); }));
+      /*registered_callback=*/base::BindOnce([]() { NOTREACHED(); }),
+      base::BindRepeating([]() { NOTREACHED(); }));
   env().RunUntilIdle();
 }
 
 TEST_F(TranslateKitLanguagePackComponentTest, VerifyInstallation) {
   TranslateKitLanguagePackComponentInstallerPolicy policy(
-      pref_service(), on_device_translation::LanguagePackKey::kEn_Es);
+      pref_service(), on_device_translation::LanguagePackKey::kEn_Es,
+      base::RepeatingClosure());
 
   // Verify that the installation is not valid if the sub-directories are
   // missing.
