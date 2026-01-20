@@ -2663,8 +2663,6 @@ BrowserAccessibilityAndroid::ComputeAndroidNameTo() const {
       }
       break;
     case ax::mojom::NameFrom::kRelatedElement:
-      // TODO(crbug.com/447426033): Map all kRelatedElement accessible names for
-      // android.
       if (::features::IsAccessibilityLabeledByEnabled() &&
           GetData().HasIntListAttribute(
               ax::mojom::IntListAttribute::kLabelledbyIds)) {
