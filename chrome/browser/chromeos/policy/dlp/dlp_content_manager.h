@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
@@ -22,13 +23,16 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_stream_request.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
+
+class BrowserWindowInterface;
 
 namespace content {
 struct DesktopMediaID;
@@ -48,7 +52,7 @@ class DlpWarnNotifier;
 // If any confidential WebContents is visible, the corresponding restrictions
 // will be enforced according to the current enterprise policy.
 class DlpContentManager : public DlpContentObserver,
-                          public BrowserListObserver,
+                          public BrowserCollectionObserver,
                           public TabStripModelObserver {
  public:
   // Holds DLP restrictions information for `web_contents` object.
@@ -327,9 +331,8 @@ class DlpContentManager : public DlpContentObserver,
       const DlpContentRestrictionSet& restriction_set) override;
   void OnWebContentsDestroyed(content::WebContents* web_contents) override;
 
-  // BrowserListObserver overrides:
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
+  // BrowserCollectionObserver overrides:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
 
   // TabStripModelObserver overrides:
   void OnTabStripModelChanged(
@@ -472,6 +475,9 @@ class DlpContentManager : public DlpContentObserver,
     std::string label_;
     DlpConfidentialContents confidential_contents_;
   } last_reported_screen_share_;
+
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
 }  // namespace policy

@@ -25,9 +25,9 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
 #include "content/public/browser/browser_thread.h"
@@ -524,12 +524,11 @@ DlpContentManager::DlpContentManager() {
         browser_window_interface->GetTabStripModel()->AddObserver(this);
         return true;
       });
-  BrowserList::GetInstance()->AddObserver(this);
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
 }
 
-DlpContentManager::~DlpContentManager() {
-  BrowserList::GetInstance()->RemoveObserver(this);
-}
+DlpContentManager::~DlpContentManager() = default;
 
 // static
 void DlpContentManager::ReportWarningProceededEvent(
@@ -601,12 +600,9 @@ void DlpContentManager::OnWebContentsDestroyed(
   RemoveFromConfidential(web_contents);
 }
 
-void DlpContentManager::OnBrowserAdded(Browser* browser) {
-  browser->tab_strip_model()->AddObserver(this);
-}
-
-void DlpContentManager::OnBrowserRemoved(Browser* browser) {
-  browser->tab_strip_model()->RemoveObserver(this);
+void DlpContentManager::OnBrowserCreated(BrowserWindowInterface* browser) {
+  // TODO(crbug.com/452120900): TabStripModel auto-unregistered by dtor
+  browser->GetTabStripModel()->AddObserver(this);
 }
 
 void DlpContentManager::OnTabStripModelChanged(
