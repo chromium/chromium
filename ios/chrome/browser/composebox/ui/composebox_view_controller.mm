@@ -456,10 +456,6 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
         [_inputViewController.view.topAnchor
             constraintEqualToAnchor:safeAreaGuide.topAnchor
                            constant:kInputPlateTopPadding],
-        [_inputViewController.view.bottomAnchor
-            constraintLessThanOrEqualToAnchor:self.view.keyboardLayoutGuide
-                                                  .topAnchor
-                                     constant:-kInputPlatePadding],
       ]];
       if (IsRegularXRegularSizeClass(self.traitCollection)) {
         // Constraints for when the close button is hidden.
