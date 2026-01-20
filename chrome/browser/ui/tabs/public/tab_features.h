@@ -71,6 +71,10 @@ namespace contextual_cueing {
 class ContextualCueingHelper;
 }  // namespace contextual_cueing
 
+namespace contextual_tasks {
+class ContextualTasksTabVisitTracker;
+}  // namespace contextual_tasks
+
 namespace customize_chrome {
 class SidePanelController;
 }  // namespace customize_chrome
@@ -191,6 +195,11 @@ class TabFeatures {
 
   commerce::CommerceUiTabHelper* commerce_ui_tab_helper() {
     return commerce_ui_tab_helper_.get();
+  }
+
+  contextual_tasks::ContextualTasksTabVisitTracker*
+  contextual_tasks_tab_visit_tracker() {
+    return contextual_tasks_tab_visit_tracker_.get();
   }
 
   privacy_sandbox::PrivacySandboxTabObserver* privacy_sandbox_tab_observer() {
@@ -500,6 +509,10 @@ class TabFeatures {
     BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<wallet::ChromeWalletablePassClient> walletable_pass_client_;
 #endif
+
+  std::unique_ptr<contextual_tasks::ContextualTasksTabVisitTracker>
+      contextual_tasks_tab_visit_tracker_;
+
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};
 };

@@ -89,6 +89,7 @@
 #include "components/contextual_tasks/public/features.h"
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
 #include "chrome/browser/wallet/chrome_walletable_pass_client.h"
 #endif
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
@@ -448,6 +449,12 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   if (base::FeatureList::IsEnabled(wallet::kWalletablePassDetection)) {
     walletable_pass_client_ =
         std::make_unique<wallet::ChromeWalletablePassClient>(&tab);
+  }
+
+  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasksContext)) {
+    contextual_tasks_tab_visit_tracker_ =
+        std::make_unique<contextual_tasks::ContextualTasksTabVisitTracker>(
+            tab.GetContents());
   }
 #endif
 

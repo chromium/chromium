@@ -14,6 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_signal_utils.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_web_contents_observer.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
@@ -44,9 +46,12 @@ namespace {
 
 struct TabSignals {
   raw_ptr<content::WebContents> web_contents = nullptr;
+  // Static signals.
   std::optional<float> embedding_score;
-  std::optional<base::TimeDelta> duration_since_last_active;
   std::optional<int> num_query_title_matching_words;
+  // Dynamic (behavioral) signals.
+  std::optional<base::TimeDelta> duration_since_last_active;
+  std::optional<base::TimeDelta> duration_of_last_visit;
 };
 
 struct TabSimilarityScores {
@@ -383,6 +388,8 @@ ContextualTasksContextService::SelectTabsByMultiSignalScore(
         GetDurationSinceLastActive(web_contents);
     tab_signals.num_query_title_matching_words = GetMatchingWordsCount(
         query, base::UTF16ToUTF8(web_contents->GetTitle()));
+    tab_signals.duration_of_last_visit =
+        GetDurationOfCurrentOrLastVisit(web_contents);
 
     // Collect metrics.
     if (similarity_scores) {
@@ -415,6 +422,10 @@ ContextualTasksContextService::SelectTabsByMultiSignalScore(
       tab_context->set_number_of_common_words(
           *tab_signals.num_query_title_matching_words);
     }
+    if (tab_signals.duration_of_last_visit.has_value()) {
+      tab_context->set_seconds_of_last_visit(
+          tab_signals.duration_of_last_visit->InSeconds());
+    }
 
     // Score and select qualifying tabs.
     double score = GetTabScore(tab_signals);
@@ -431,14 +442,20 @@ ContextualTasksContextService::SelectTabsByMultiSignalScore(
 
     // Log for debugging.
     AUTO_CONTEXT_LOG(base::StringPrintf(
-        "Query: %s | TabTitle: %s | EmbeddingsScore: %f | "
-        "SecondsSinceLastActive: %d | MatchingWordsCount: %d | Score: %f",
-        query, base::UTF16ToUTF8(web_contents->GetTitle()),
+        "Query: %s | TabTitle: %s | Score: %f \n"
+        "  EmbeddingsScore: %f \n"
+        "  SecondsSinceLastActive: %d \n"
+        "  MatchingWordsCount: %d \n"
+        "  DurationOfLastVisitInSeconds: %d \n",
+        query, base::UTF16ToUTF8(web_contents->GetTitle()), score,
         tab_signals.embedding_score.value_or(0.0f),
         tab_signals.duration_since_last_active.has_value()
             ? tab_signals.duration_since_last_active->InSeconds()
             : -1,
-        tab_signals.num_query_title_matching_words.value_or(0), score));
+        tab_signals.num_query_title_matching_words.value_or(0),
+        tab_signals.duration_of_last_visit.has_value()
+            ? tab_signals.duration_of_last_visit->InSeconds()
+            : -1));
   }
   return relevant_tabs;
 }
@@ -492,6 +509,18 @@ ContextualTasksContextService::GetDurationSinceLastActive(
 
   if (time_elapsed.is_positive()) {
     return time_elapsed;
+  }
+  return std::nullopt;
+}
+
+std::optional<base::TimeDelta>
+ContextualTasksContextService::GetDurationOfCurrentOrLastVisit(
+    content::WebContents* web_contents) {
+  if (auto* tab = tabs::TabInterface::GetFromContents(web_contents)) {
+    if (auto* tracker =
+            tab->GetTabFeatures()->contextual_tasks_tab_visit_tracker()) {
+      return tracker->GetDurationOfCurrentOrLastVisit();
+    }
   }
   return std::nullopt;
 }
