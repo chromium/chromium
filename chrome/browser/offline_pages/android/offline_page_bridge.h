@@ -71,7 +71,7 @@ class OfflinePageBridge : public OfflinePageModel::Observer,
 
   void GetPageByOfflineId(
       JNIEnv* env,
-      jlong offline_id,
+      int64_t offline_id,
       const base::android::JavaRef<jobject>& j_callback_obj);
 
   void DeletePagesByClientId(
@@ -126,7 +126,7 @@ class OfflinePageBridge : public OfflinePageModel::Observer,
 
   void PublishInternalPageByOfflineId(
       JNIEnv* env,
-      const jlong j_offline_id,
+      const int64_t j_offline_id,
       const base::android::JavaRef<jobject>& j_published_callback);
 
   void PublishInternalPageByGuid(
@@ -170,7 +170,7 @@ class OfflinePageBridge : public OfflinePageModel::Observer,
 
   void GetLoadUrlParamsByOfflineId(
       JNIEnv* env,
-      jlong j_offline_id,
+      int64_t j_offline_id,
       int32_t launch_location,
       const base::android::JavaRef<jobject>& j_callback_obj);
 

@@ -109,7 +109,7 @@ void QuickDeleteBridge::OnHistoryCounterResult(
       quickDeleteResult.domain_count);
 }
 
-static jlong JNI_QuickDeleteBridge_Init(
+static int64_t JNI_QuickDeleteBridge_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj,
     Profile* profile) {

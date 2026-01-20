@@ -32,7 +32,7 @@ class UsbChooserDialogAndroid : public permissions::ChooserController::View {
           const std::u16string&,
           JniIntWrapper,
           const base::android::JavaRef<jobject>&,
-          jlong)>;
+          int64_t)>;
 
   // Creates and shows the dialog. Will return nullptr if the dialog was not
   // displayed. Otherwise |on_close| will be called when the user closes the

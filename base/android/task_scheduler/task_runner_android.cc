@@ -84,9 +84,9 @@ void RunJavaTask(int32_t task_index) {
 
 }  // namespace
 
-static jlong JNI_TaskRunnerImpl_Init(JNIEnv* env,
-                                     int32_t task_runner_type,
-                                     int32_t task_traits) {
+static int64_t JNI_TaskRunnerImpl_Init(JNIEnv* env,
+                                       int32_t task_runner_type,
+                                       int32_t task_traits) {
   TaskRunnerAndroid* task_runner =
       TaskRunnerAndroid::Create(task_runner_type, task_traits).release();
   return reinterpret_cast<intptr_t>(task_runner);
@@ -104,7 +104,7 @@ void TaskRunnerAndroid::Destroy(JNIEnv* env) {
 }
 
 void TaskRunnerAndroid::PostDelayedTask(JNIEnv* env,
-                                        jlong delay,
+                                        int64_t delay,
                                         int32_t task_index) {
   // This could be run on any java thread, so we can't cache |env| in the
   // BindOnce because JNIEnv is thread specific.
@@ -114,7 +114,7 @@ void TaskRunnerAndroid::PostDelayedTask(JNIEnv* env,
 
 void TaskRunnerAndroid::PostDelayedTaskWithLocation(
     JNIEnv* env,
-    jlong delay,
+    int64_t delay,
     int32_t task_index,
     const android::JavaRef<jstring>& file_name,
     const android::JavaRef<jstring>& function_name,

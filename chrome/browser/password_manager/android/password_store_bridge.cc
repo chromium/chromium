@@ -55,7 +55,7 @@ PasswordForm Blocklist(JNIEnv* env, std::string url) {
 }  // namespace
 
 // static
-static jlong JNI_PasswordStoreBridge_Init(
+static int64_t JNI_PasswordStoreBridge_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& java_bridge,
     Profile* profile) {

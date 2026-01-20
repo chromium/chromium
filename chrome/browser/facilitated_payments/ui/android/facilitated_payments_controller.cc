@@ -107,15 +107,16 @@ void FacilitatedPaymentsController::OnUiEvent(JNIEnv* env, int32_t event) {
   }
 }
 
-void FacilitatedPaymentsController::OnBankAccountSelected(JNIEnv* env,
-                                                          jlong instrument_id) {
+void FacilitatedPaymentsController::OnBankAccountSelected(
+    JNIEnv* env,
+    int64_t instrument_id) {
   if (on_payment_account_selected_) {
     std::move(on_payment_account_selected_).Run(instrument_id);
   }
 }
 
 void FacilitatedPaymentsController::OnEwalletSelected(JNIEnv* env,
-                                                      jlong instrument_id) {
+                                                      int64_t instrument_id) {
   if (on_fop_selected_) {
     std::move(on_fop_selected_)
         .Run(payments::facilitated::SelectedFopData(instrument_id));

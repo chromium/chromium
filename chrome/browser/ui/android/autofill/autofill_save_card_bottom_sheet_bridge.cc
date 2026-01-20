@@ -60,7 +60,7 @@ AutofillSaveCardBottomSheetBridge::AutofillSaveCardBottomSheetBridge(
   CHECK(tab_model);
   java_autofill_save_card_bottom_sheet_bridge_ =
       Java_AutofillSaveCardBottomSheetBridge_Constructor(
-          base::android::AttachCurrentThread(), reinterpret_cast<jlong>(this),
+          base::android::AttachCurrentThread(), reinterpret_cast<int64_t>(this),
           window_android->GetJavaObject(), tab_model->GetJavaObject());
 }
 

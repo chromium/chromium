@@ -80,7 +80,7 @@ void BrowsingDataCounterBridge::onCounterFinished(
                                                                   profile_));
 }
 
-static jlong JNI_BrowsingDataCounterBridge_InitWithoutPeriodPref(
+static int64_t JNI_BrowsingDataCounterBridge_InitWithoutPeriodPref(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj,
     Profile* profile,

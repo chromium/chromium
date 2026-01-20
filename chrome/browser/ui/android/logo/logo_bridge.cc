@@ -115,8 +115,7 @@ class LogoObserverAndroid : public search_provider_logos::LogoObserver {
 
 }  // namespace
 
-static jlong JNI_LogoBridge_Init(JNIEnv* env,
-                                 Profile* profile) {
+static int64_t JNI_LogoBridge_Init(JNIEnv* env, Profile* profile) {
   LogoBridge* logo_bridge = new LogoBridge(profile);
   return reinterpret_cast<intptr_t>(logo_bridge);
 }

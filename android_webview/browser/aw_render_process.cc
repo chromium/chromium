@@ -154,7 +154,7 @@ void AwRenderProcess::Ready() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   Java_AwRenderProcess_setNative(AttachCurrentThread(), java_obj_,
-                                 reinterpret_cast<jlong>(this));
+                                 reinterpret_cast<int64_t>(this));
 }
 
 void AwRenderProcess::Cleanup() {

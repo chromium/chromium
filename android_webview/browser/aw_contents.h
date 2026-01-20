@@ -111,7 +111,8 @@ class AwContents : public FindHelper::Listener,
   void InitSensitiveContentClient(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetWebContents(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetBrowserContext(JNIEnv* env);
-  void SetCompositorFrameConsumer(JNIEnv* env, jlong compositor_frame_consumer);
+  void SetCompositorFrameConsumer(JNIEnv* env,
+                                  int64_t compositor_frame_consumer);
   base::android::ScopedJavaLocalRef<jobject> GetRenderProcess(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
   void Destroy(JNIEnv* env);
@@ -142,7 +143,7 @@ class AwContents : public FindHelper::Listener,
   void FocusFirstNode(JNIEnv* env);
   void SetBackgroundColor(JNIEnv* env, int32_t color);
   void ZoomBy(JNIEnv* env, jfloat delta);
-  void OnComputeScroll(JNIEnv* env, jlong animation_time_millis);
+  void OnComputeScroll(JNIEnv* env, int64_t animation_time_millis);
   bool OnDraw(JNIEnv* env,
               const base::android::JavaRef<jobject>& canvas,
               bool is_hardware_accelerated,
@@ -155,11 +156,11 @@ class AwContents : public FindHelper::Listener,
               bool force_auxiliary_bitmap_rendering);
   jfloat GetVelocityInPixelsPerSecond(JNIEnv* env);
   bool NeedToDrawBackgroundColor(JNIEnv* env);
-  jlong CapturePicture(JNIEnv* env, int width, int height);
+  int64_t CapturePicture(JNIEnv* env, int width, int height);
   void EnableOnNewPicture(JNIEnv* env, bool enabled);
   void InsertVisualStateCallback(
       JNIEnv* env,
-      jlong request_id,
+      int64_t request_id,
       const base::android::JavaRef<jobject>& callback);
   void ClearView(JNIEnv* env);
   void SetExtraHeadersForUrl(
@@ -235,7 +236,7 @@ class AwContents : public FindHelper::Listener,
 
   void PreauthorizePermission(JNIEnv* env,
                               const base::android::JavaRef<jstring>& origin,
-                              jlong resources);
+                              int64_t resources);
 
   // AwBrowserPermissionRequestDelegate implementation.
   void RequestProtectedMediaIdentifierPermission(
@@ -304,14 +305,14 @@ class AwContents : public FindHelper::Listener,
   // details.
   void SetPendingWebContentsForPopup(
       std::unique_ptr<content::WebContents> pending);
-  jlong ReleasePopupAwContents(JNIEnv* env);
+  int64_t ReleasePopupAwContents(JNIEnv* env);
 
   void ScrollTo(JNIEnv* env, int32_t x, int32_t y);
   void RestoreScrollAfterTransition(JNIEnv* env, int32_t x, int32_t y);
   void SmoothScroll(JNIEnv* env,
                     int32_t target_x,
                     int32_t target_y,
-                    jlong duration_ms);
+                    int64_t duration_ms);
   void SetDipScale(JNIEnv* env, jfloat dip_scale);
   base::android::ScopedJavaLocalRef<jstring> GetScheme(JNIEnv* env);
   void OnInputEvent(JNIEnv* env);

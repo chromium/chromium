@@ -22,7 +22,7 @@ static void JNI_TabGroupSyncUtils_OnDidFinishNavigation(
     Profile* profile,
     const jni_zero::JavaRef<jobject>& j_group_id,
     int32_t j_tab_id,
-    jlong navigation_handle_ptr) {
+    int64_t navigation_handle_ptr) {
   CHECK(profile);
   tab_groups::TabGroupSyncService* service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
@@ -51,7 +51,7 @@ static void JNI_TabGroupSyncUtils_UpdateTabRedirectChain(
     Profile* profile,
     const jni_zero::JavaRef<jobject>& j_group_id,
     int32_t j_tab_id,
-    jlong navigation_handle_ptr) {
+    int64_t navigation_handle_ptr) {
   CHECK(profile);
   tab_groups::TabGroupSyncService* service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
@@ -102,7 +102,7 @@ static bool JNI_TabGroupSyncUtils_IsUrlInTabRedirectChain(
 static bool JNI_TabGroupSyncUtils_IsSaveableNavigation(
     JNIEnv* env,
     bool is_extension_navigation_allowed,
-    jlong navigation_handle_ptr) {
+    int64_t navigation_handle_ptr) {
   auto* navigation_handle =
       reinterpret_cast<content::NavigationHandle*>(navigation_handle_ptr);
 

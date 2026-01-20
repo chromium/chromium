@@ -165,7 +165,7 @@ bool DevToolsServer::IsStarted() const {
   return is_started_;
 }
 
-static jlong JNI_DevToolsServer_InitRemoteDebugging(
+static int64_t JNI_DevToolsServer_InitRemoteDebugging(
     JNIEnv* env,
     std::string& socket_name_prefix) {
   DevToolsServer* server = new DevToolsServer(socket_name_prefix);
@@ -173,18 +173,18 @@ static jlong JNI_DevToolsServer_InitRemoteDebugging(
 }
 
 static void JNI_DevToolsServer_DestroyRemoteDebugging(JNIEnv* env,
-                                                      jlong server) {
+                                                      int64_t server) {
   delete reinterpret_cast<DevToolsServer*>(server);
 }
 
 static bool JNI_DevToolsServer_IsRemoteDebuggingEnabled(JNIEnv* env,
-                                                        jlong server) {
+                                                        int64_t server) {
   return reinterpret_cast<DevToolsServer*>(server)->IsStarted();
 }
 
 static void JNI_DevToolsServer_SetRemoteDebuggingEnabled(
     JNIEnv* env,
-    jlong server,
+    int64_t server,
     bool enabled,
     bool allow_debug_permission) {
   DevToolsServer* devtools_server = reinterpret_cast<DevToolsServer*>(server);

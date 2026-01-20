@@ -587,7 +587,7 @@ TabCollectionTabModelImpl::GetTabGroupVisualDataChecked(
   return visual_data;
 }
 
-static jlong JNI_TabCollectionTabModelImpl_Init(
+static int64_t JNI_TabCollectionTabModelImpl_Init(
     JNIEnv* env,
     const JavaRef<jobject>& j_java_object,
     Profile* profile) {

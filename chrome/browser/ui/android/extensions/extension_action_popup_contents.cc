@@ -40,7 +40,7 @@ ExtensionActionPopupContents::ExtensionActionPopupContents(
     std::unique_ptr<ExtensionViewHost> host)
     : host_(std::move(host)) {
   java_object_ = Java_ExtensionActionPopupContents_Constructor(
-      AttachCurrentThread(), reinterpret_cast<jlong>(this),
+      AttachCurrentThread(), reinterpret_cast<int64_t>(this),
       host_->host_contents());
   host_->set_view(this);
   // Handle the containing view calling window.close();
@@ -136,7 +136,7 @@ void ExtensionActionPopupContents::HandleCloseExtensionHost(
 // popup.
 static ScopedJavaLocalRef<jobject> JNI_ExtensionActionPopupContents_Create(
     JNIEnv* env,
-    jlong browser_window_interface_ptr,
+    int64_t browser_window_interface_ptr,
     std::string& action_id,
     int tab_id) {
   BrowserWindowInterface* browser =

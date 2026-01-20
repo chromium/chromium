@@ -35,7 +35,7 @@ void HandleImageUrlResponse(
 
 }  // namespace
 
-static jlong JNI_ImageServiceBridge_Init(JNIEnv* env, Profile* profile) {
+static int64_t JNI_ImageServiceBridge_Init(JNIEnv* env, Profile* profile) {
   DCHECK(!profile->IsOffTheRecord());
   ImageServiceBridge* image_service_bridge = new ImageServiceBridge(
       page_image_service::ImageServiceFactory::GetForBrowserContext(profile),

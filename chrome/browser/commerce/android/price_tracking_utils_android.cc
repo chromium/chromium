@@ -27,7 +27,7 @@ namespace commerce {
 static void JNI_PriceTrackingUtils_SetPriceTrackingStateForBookmark(
     JNIEnv* env,
     Profile* profile,
-    jlong bookmark_id,
+    int64_t bookmark_id,
     bool enabled,
     const JavaRef<jobject>& j_callback,
     bool bookmark_created_by_price_tracking) {
@@ -57,7 +57,7 @@ static void JNI_PriceTrackingUtils_SetPriceTrackingStateForBookmark(
 static void JNI_PriceTrackingUtils_IsBookmarkPriceTracked(
     JNIEnv* env,
     Profile* profile,
-    jlong bookmark_id,
+    int64_t bookmark_id,
     const JavaRef<jobject>& j_callback) {
   CHECK(profile);
 

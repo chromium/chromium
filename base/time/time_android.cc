@@ -49,13 +49,13 @@ TimeTicks TimeTicks::FromJavaNanoTime(int64_t nano_time_value) {
   return TimeTicks(nano_time_value / Time::kNanosecondsPerMicrosecond);
 }
 
-jlong TimeTicks::ToUptimeMillis() const {
+int64_t TimeTicks::ToUptimeMillis() const {
   // See FromUptimeMillis. UptimeMillis and TimeTicks use the same clock source,
   // and only differ in resolution.
   return us_ / Time::kMicrosecondsPerMillisecond;
 }
 
-jlong TimeTicks::ToUptimeMicros() const {
+int64_t TimeTicks::ToUptimeMicros() const {
   // Same as ToUptimeMillis but maintains sub-millisecond precision.
   return us_;
 }

@@ -47,12 +47,12 @@ SurfaceId FromJavaSurfaceId(int32_t surface_id) {
 
 }  // namespace
 
-static jlong JNI_FeedSurfaceRendererBridge_Init(
+static int64_t JNI_FeedSurfaceRendererBridge_Init(
     JNIEnv* env,
     const JavaRef<jobject>& j_this,
     Profile* profile,
     int32_t stream_kind,
-    jlong native_feed_reliability_logging_bridge) {
+    int64_t native_feed_reliability_logging_bridge) {
   return reinterpret_cast<intptr_t>(new FeedSurfaceRendererBridge(
       j_this, profile, stream_kind, std::string(),
       reinterpret_cast<FeedReliabilityLoggingBridge*>(
@@ -60,12 +60,12 @@ static jlong JNI_FeedSurfaceRendererBridge_Init(
       (int)SingleWebFeedEntryPoint::kOther));
 }
 
-static jlong JNI_FeedSurfaceRendererBridge_InitWebFeed(
+static int64_t JNI_FeedSurfaceRendererBridge_InitWebFeed(
     JNIEnv* env,
     const JavaRef<jobject>& j_this,
     Profile* profile,
     const JavaRef<jbyteArray>& j_web_feed_id,
-    jlong native_feed_reliability_logging_bridge,
+    int64_t native_feed_reliability_logging_bridge,
     int32_t j_entry_point) {
   std::string web_feed_id;
   base::android::JavaByteArrayToString(env, j_web_feed_id, &web_feed_id);
@@ -258,7 +258,7 @@ static void JNI_FeedSurfaceRendererBridge_ReportOpenVisitComplete(
     JNIEnv* env,
     Profile* profile,
     int32_t surface_id,
-    jlong visitTimeMs) {
+    int64_t visitTimeMs) {
   FeedApi* api = GetFeedApi(profile);
   if (!api) {
     return;
@@ -356,7 +356,7 @@ int FeedSurfaceRendererBridge::GetSurfaceId(JNIEnv* env) {
   return surface_id_.GetUnsafeValue();
 }
 
-static jlong JNI_FeedSurfaceRendererBridge_GetLastFetchTimeMs(
+static int64_t JNI_FeedSurfaceRendererBridge_GetLastFetchTimeMs(
     JNIEnv* env,
     Profile* profile,
     int32_t surface_id) {
@@ -458,7 +458,7 @@ static void JNI_FeedSurfaceRendererBridge_InvalidateContentCacheFor(
 static void JNI_FeedSurfaceRendererBridge_ContentViewed(JNIEnv* env,
                                                         Profile* profile,
                                                         int32_t surface_id,
-                                                        jlong docid) {
+                                                        int64_t docid) {
   FeedApi* feed_api = GetFeedApi(profile);
   if (!feed_api) {
     return;
@@ -471,7 +471,7 @@ JNI_FeedSurfaceRendererBridge_ReportContentSliceVisibleTimeForGoodVisits(
     JNIEnv* env,
     Profile* profile,
     int32_t surface_id,
-    jlong elapsed_ms) {
+    int64_t elapsed_ms) {
   FeedApi* feed_api = GetFeedApi(profile);
   if (!feed_api) {
     return;

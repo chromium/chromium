@@ -59,8 +59,8 @@ class JsSandboxIsolate {
   bool EvaluateJavascriptWithFd(
       JNIEnv* env,
       const int32_t fd,
-      const jlong length,
-      const jlong offset,
+      const int64_t length,
+      const int64_t offset,
       const base::android::JavaRef<jobject>& j_callback,
       const base::android::JavaRef<jobject>& pfd);
   void DestroyNative(JNIEnv* env);

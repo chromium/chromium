@@ -85,7 +85,7 @@ bool ContentUriGetFileInfo(const FilePath& content_uri,
   JNIEnv* env = android::AttachCurrentThread();
   std::vector<FileEnumerator::FileInfo> list;
   Java_ContentUriUtils_getFileInfo(env, content_uri.value(),
-                                   reinterpret_cast<jlong>(&list));
+                                   reinterpret_cast<int64_t>(&list));
   // Java will call back sync to AddFileInfoToVector(&list).
   if (list.empty()) {
     return false;
@@ -106,7 +106,7 @@ std::vector<FileEnumerator::FileInfo> ListContentUriDirectory(
   JNIEnv* env = android::AttachCurrentThread();
   std::vector<FileEnumerator::FileInfo> result;
   Java_ContentUriUtils_listDirectory(env, content_uri.value(), file_type,
-                                     reinterpret_cast<jlong>(&result));
+                                     reinterpret_cast<int64_t>(&result));
   // Java will call back sync to AddFileInfoToVector(&result).
   return result;
 }
@@ -126,12 +126,12 @@ bool IsDocumentUri(const FilePath& content_uri) {
 }  // namespace internal
 
 static void JNI_ContentUriUtils_AddFileInfoToVector(JNIEnv* env,
-                                                    jlong vector_pointer,
+                                                    int64_t vector_pointer,
                                                     std::string& uri,
                                                     std::string& display_name,
                                                     bool is_directory,
-                                                    jlong size,
-                                                    jlong last_modified) {
+                                                    int64_t size,
+                                                    int64_t last_modified) {
   auto* result =
       reinterpret_cast<std::vector<FileEnumerator::FileInfo>*>(vector_pointer);
   result->emplace_back(FilePath(uri), FilePath(display_name), is_directory,

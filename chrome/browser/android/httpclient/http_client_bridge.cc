@@ -25,7 +25,7 @@ using jni_zero::ScopedJavaLocalRef;
 namespace httpclient {
 
 // static
-static jlong JNI_SimpleHttpClient_Init(JNIEnv* env, Profile* profile) {
+static int64_t JNI_SimpleHttpClient_Init(JNIEnv* env, Profile* profile) {
   return reinterpret_cast<intptr_t>(new HttpClientBridge(profile));
 }
 

@@ -29,7 +29,7 @@ int ChromeOriginVerifier::GetClearBrowsingDataCallCountForTesting() {
   return ChromeOriginVerifier::clear_browsing_data_call_count_for_tests_;
 }
 
-static jlong JNI_ChromeOriginVerifier_Init(
+static int64_t JNI_ChromeOriginVerifier_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj,
     const base::android::JavaRef<jobject>& jbrowser_context_handle) {

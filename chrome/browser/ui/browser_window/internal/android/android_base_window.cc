@@ -23,8 +23,8 @@ using base::android::ScopedJavaLocalRef;
 }  // namespace
 
 // Implements Java |AndroidBaseWindow.Natives#create|.
-static jlong JNI_AndroidBaseWindow_Create(JNIEnv* env,
-                                          const JavaRef<jobject>& caller) {
+static int64_t JNI_AndroidBaseWindow_Create(JNIEnv* env,
+                                            const JavaRef<jobject>& caller) {
   return reinterpret_cast<intptr_t>(new AndroidBaseWindow(env, caller));
 }
 

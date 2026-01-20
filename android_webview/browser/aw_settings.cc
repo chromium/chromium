@@ -572,12 +572,12 @@ void AwSettings::PopulateWebPreferences(WebPreferences* web_prefs) {
     return;
   // Grab the lock and call PopulateWebPreferencesLocked.
   Java_AwSettings_populateWebPreferences(env, scoped_obj,
-                                         reinterpret_cast<jlong>(web_prefs));
+                                         reinterpret_cast<int64_t>(web_prefs));
 }
 
 void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
                                               const JavaRef<jobject>& obj,
-                                              jlong web_prefs_ptr) {
+                                              int64_t web_prefs_ptr) {
   AwRenderViewHostExt* render_view_host_ext = GetAwRenderViewHostExt();
   if (!render_view_host_ext)
     return;
@@ -826,9 +826,9 @@ bool AwSettings::GetAllowFileAccessFromFileURLs() {
   return allow_file_access_from_file_urls_;
 }
 
-static jlong JNI_AwSettings_Init(JNIEnv* env,
-                                 const JavaRef<jobject>& obj,
-                                 const JavaRef<jobject>& web_contents) {
+static int64_t JNI_AwSettings_Init(JNIEnv* env,
+                                   const JavaRef<jobject>& obj,
+                                   const JavaRef<jobject>& web_contents) {
   content::WebContents* contents =
       content::WebContents::FromJavaWebContents(web_contents);
   AwSettings* settings = new AwSettings(env, obj, contents);

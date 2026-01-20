@@ -70,7 +70,7 @@ namespace {
 // TODO(crbug.com/40215244): This is what shows up as filename in errors.
 // Revisit this once error handling is in place.
 constexpr std::string_view resource_name = "<expression>";
-constexpr jlong kUnknownAssetFileDescriptorLength = -1;
+constexpr int64_t kUnknownAssetFileDescriptorLength = -1;
 constexpr int64_t kDefaultChunkSize = 1 << 16;
 
 size_t GetAllocatePageSize() {
@@ -380,8 +380,8 @@ bool JsSandboxIsolate::EvaluateJavascript(
 bool JsSandboxIsolate::EvaluateJavascriptWithFd(
     JNIEnv* env,
     const int32_t fd,
-    const jlong length,
-    const jlong offset,
+    const int64_t length,
+    const int64_t offset,
     const base::android::JavaRef<jobject>& j_callback,
     const base::android::JavaRef<jobject>& j_pfd) {
   scoped_refptr<JsSandboxIsolateCallback> callback =
@@ -1218,10 +1218,10 @@ static void JNI_JsSandboxIsolate_InitializeEnvironment(JNIEnv* env) {
                                  gin::ArrayBufferAllocator::SharedInstance());
 }
 
-static jlong JNI_JsSandboxIsolate_CreateNativeJsSandboxIsolateWrapper(
+static int64_t JNI_JsSandboxIsolate_CreateNativeJsSandboxIsolateWrapper(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_sandbox_isolate,
-    jlong max_heap_size_bytes) {
+    int64_t max_heap_size_bytes) {
   CHECK_GE(max_heap_size_bytes, 0);
   JsSandboxIsolate* processor = new JsSandboxIsolate(
       j_sandbox_isolate, base::saturated_cast<size_t>(max_heap_size_bytes));

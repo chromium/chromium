@@ -34,9 +34,9 @@ EntityDataManagerAndroid::EntityDataManagerAndroid(
 
 EntityDataManagerAndroid::~EntityDataManagerAndroid() = default;
 
-static jlong JNI_EntityDataManager_Init(JNIEnv* env,
-                                        const jni_zero::JavaRef<jobject>& obj,
-                                        Profile* profile) {
+static int64_t JNI_EntityDataManager_Init(JNIEnv* env,
+                                          const jni_zero::JavaRef<jobject>& obj,
+                                          Profile* profile) {
   CHECK(profile);
   EntityDataManagerAndroid* entity_data_manager_android =
       new EntityDataManagerAndroid(

@@ -22,7 +22,7 @@ static ScopedJavaLocalRef<jobject> JNI_WebContentsFactory_CreateWebContents(
     bool initially_hidden,
     bool initialize_renderer,
     bool uses_platform_autofill,
-    jlong j_target_network,
+    int64_t j_target_network,
     const JavaRef<jthrowable>& j_creator_location) {
   content::WebContents::CreateParams params(profile);
   params.initially_hidden = initially_hidden;

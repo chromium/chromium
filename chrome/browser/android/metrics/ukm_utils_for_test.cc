@@ -53,17 +53,17 @@ static bool JNI_UkmUtilsForTest_IsEnabled(JNIEnv*) {
   return ukm::UkmUtilsForTest::IsEnabled();
 }
 
-static bool JNI_UkmUtilsForTest_HasSourceWithId(JNIEnv*, jlong source_id) {
+static bool JNI_UkmUtilsForTest_HasSourceWithId(JNIEnv*, int64_t source_id) {
   ukm::SourceId source = static_cast<ukm::SourceId>(source_id);
   return ukm::UkmUtilsForTest::HasSourceWithId(source);
 }
 
-static void JNI_UkmUtilsForTest_RecordSourceWithId(JNIEnv*, jlong source_id) {
+static void JNI_UkmUtilsForTest_RecordSourceWithId(JNIEnv*, int64_t source_id) {
   ukm::SourceId source = static_cast<ukm::SourceId>(source_id);
   ukm::UkmUtilsForTest::RecordSourceWithId(source);
 }
 
-static jlong JNI_UkmUtilsForTest_GetClientId(JNIEnv*) {
+static int64_t JNI_UkmUtilsForTest_GetClientId(JNIEnv*) {
   return ukm::UkmUtilsForTest::GetClientId();
 }
 

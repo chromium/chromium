@@ -138,8 +138,8 @@ void ThumbnailGenerator::RetrieveThumbnail(JNIEnv* env,
 }
 
 // static
-static jlong JNI_ThumbnailGenerator_Init(JNIEnv* env,
-                                         const JavaRef<jobject>& jobj) {
+static int64_t JNI_ThumbnailGenerator_Init(JNIEnv* env,
+                                           const JavaRef<jobject>& jobj) {
   return reinterpret_cast<intptr_t>(new ThumbnailGenerator(jobj));
 }
 

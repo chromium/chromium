@@ -83,8 +83,9 @@ bool StatusIndicatorSceneLayer::ShouldShowBackground() {
   return should_show_background_;
 }
 
-static jlong JNI_StatusIndicatorSceneLayer_Init(JNIEnv* env,
-                                                const JavaRef<jobject>& jobj) {
+static int64_t JNI_StatusIndicatorSceneLayer_Init(
+    JNIEnv* env,
+    const JavaRef<jobject>& jobj) {
   // This will automatically bind to the Java object and pass ownership there.
   StatusIndicatorSceneLayer* scene_layer =
       new StatusIndicatorSceneLayer(env, jobj);

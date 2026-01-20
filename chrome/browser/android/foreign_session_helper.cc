@@ -146,7 +146,7 @@ static void JNI_ForeignSessionHelper_CopySessionToJava(
 
 }  // namespace
 
-static jlong JNI_ForeignSessionHelper_Init(JNIEnv* env, Profile* profile) {
+static int64_t JNI_ForeignSessionHelper_Init(JNIEnv* env, Profile* profile) {
   ForeignSessionHelper* foreign_session_helper =
       new ForeignSessionHelper(profile);
   return reinterpret_cast<intptr_t>(foreign_session_helper);

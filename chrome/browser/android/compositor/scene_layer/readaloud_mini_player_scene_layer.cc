@@ -73,7 +73,7 @@ bool ReadAloudMiniPlayerSceneLayer::ShouldShowBackground() {
   return should_show_background_;
 }
 
-static jlong JNI_ReadAloudMiniPlayerSceneLayer_Init(
+static int64_t JNI_ReadAloudMiniPlayerSceneLayer_Init(
     JNIEnv* env,
     const JavaRef<jobject>& jobj) {
   // This will automatically bind to the Java object and pass ownership there.

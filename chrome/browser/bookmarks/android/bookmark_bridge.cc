@@ -390,7 +390,7 @@ void BookmarkBridge::LoadFakePartnerBookmarkShimForTesting(JNIEnv* env) {
 }
 
 ScopedJavaLocalRef<jobject> BookmarkBridge::GetBookmarkById(JNIEnv* env,
-                                                            jlong id,
+                                                            int64_t id,
                                                             int32_t type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
@@ -740,7 +740,7 @@ BookmarkBridge::GetDefaultBookmarkFolder(JNIEnv* env) {
 }
 
 std::string BookmarkBridge::GetBookmarkGuidByIdForTesting(JNIEnv* env,
-                                                          jlong id,
+                                                          int64_t id,
                                                           int32_t type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const BookmarkNode* node = GetNodeByID(id, type);
@@ -748,7 +748,7 @@ std::string BookmarkBridge::GetBookmarkGuidByIdForTesting(JNIEnv* env,
   return node->uuid().AsLowercaseString();
 }
 
-int32_t BookmarkBridge::GetChildCount(JNIEnv* env, jlong id, int32_t type) {
+int32_t BookmarkBridge::GetChildCount(JNIEnv* env, int64_t id, int32_t type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
   const BookmarkNode* node = GetNodeByID(id, type);
@@ -756,7 +756,7 @@ int32_t BookmarkBridge::GetChildCount(JNIEnv* env, jlong id, int32_t type) {
 }
 
 void BookmarkBridge::GetChildIds(JNIEnv* env,
-                                 jlong id,
+                                 int64_t id,
                                  int32_t type,
                                  const JavaRef<jobject>& j_result_obj) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -788,7 +788,7 @@ std::vector<const bookmarks::BookmarkNode*> BookmarkBridge::GetChildIdsImpl(
 }
 
 ScopedJavaLocalRef<jobject> BookmarkBridge::GetChildAt(JNIEnv* env,
-                                                       jlong id,
+                                                       int64_t id,
                                                        int32_t type,
                                                        int32_t index) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -803,7 +803,7 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::GetChildAt(JNIEnv* env,
 }
 
 int32_t BookmarkBridge::GetTotalBookmarkCount(JNIEnv* env,
-                                              jlong id,
+                                              int64_t id,
                                               int32_t type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
@@ -842,7 +842,7 @@ int32_t BookmarkBridge::GetTotalBookmarkCount(JNIEnv* env,
 }
 
 void BookmarkBridge::SetBookmarkTitle(JNIEnv* env,
-                                      jlong id,
+                                      int64_t id,
                                       int32_t type,
                                       const std::u16string& title) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -865,7 +865,7 @@ void BookmarkBridge::SetBookmarkTitle(JNIEnv* env,
 }
 
 void BookmarkBridge::SetBookmarkUrl(JNIEnv* env,
-                                    jlong id,
+                                    int64_t id,
                                     int32_t type,
                                     const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -875,7 +875,7 @@ void BookmarkBridge::SetBookmarkUrl(JNIEnv* env,
 }
 
 void BookmarkBridge::SetPowerBookmarkMeta(JNIEnv* env,
-                                          jlong id,
+                                          int64_t id,
                                           int32_t type,
                                           const JavaRef<jbyteArray>& bytes) {
   const BookmarkNode* node = GetNodeByID(id, type);
@@ -895,7 +895,7 @@ void BookmarkBridge::SetPowerBookmarkMeta(JNIEnv* env,
 }
 
 ScopedJavaLocalRef<jbyteArray>
-BookmarkBridge::GetPowerBookmarkMeta(JNIEnv* env, jlong id, int32_t type) {
+BookmarkBridge::GetPowerBookmarkMeta(JNIEnv* env, int64_t id, int32_t type) {
   const BookmarkNode* node = GetNodeByID(id, type);
   std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
       power_bookmarks::GetNodePowerBookmarkMeta(bookmark_model_, node);
@@ -913,7 +913,7 @@ BookmarkBridge::GetPowerBookmarkMeta(JNIEnv* env, jlong id, int32_t type) {
 }
 
 void BookmarkBridge::DeletePowerBookmarkMeta(JNIEnv* env,
-                                             jlong id,
+                                             int64_t id,
                                              int32_t type) {
   const BookmarkNode* node = GetNodeByID(id, type);
 
@@ -923,7 +923,7 @@ void BookmarkBridge::DeletePowerBookmarkMeta(JNIEnv* env,
   power_bookmarks::DeleteNodePowerBookmarkMeta(bookmark_model_, node);
 }
 
-bool BookmarkBridge::DoesBookmarkExist(JNIEnv* env, jlong id, int32_t type) {
+bool BookmarkBridge::DoesBookmarkExist(JNIEnv* env, int64_t id, int32_t type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
 
@@ -941,12 +941,12 @@ bool BookmarkBridge::DoesBookmarkExist(JNIEnv* env, jlong id, int32_t type) {
   }
 }
 
-bool BookmarkBridge::IsFolderVisible(JNIEnv* env, jlong id, int32_t type) {
+bool BookmarkBridge::IsFolderVisible(JNIEnv* env, int64_t id, int32_t type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (type == BookmarkType::BOOKMARK_TYPE_NORMAL ||
       type == BookmarkType::BOOKMARK_TYPE_READING_LIST) {
-    const BookmarkNode* node = bookmarks::GetBookmarkNodeByID(
-        bookmark_model_, static_cast<int64_t>(id));
+    const BookmarkNode* node =
+        bookmarks::GetBookmarkNodeByID(bookmark_model_, id);
     return node->IsVisible();
   }
   DCHECK_EQ(BookmarkType::BOOKMARK_TYPE_PARTNER, type);
@@ -1718,7 +1718,7 @@ void BookmarkBridge::ReorderChildren(
   // populate a vector
   std::vector<const BookmarkNode*> ordered_nodes;
   jsize arraySize = env->GetArrayLength(arr.obj());
-  jlong* elements = env->GetLongArrayElements(arr.obj(), 0);
+  int64_t* elements = env->GetLongArrayElements(arr.obj(), 0);
 
   // iterate through array, adding the BookmarkNode*s of the objects
   for (int i = 0; i < arraySize; ++i) {

@@ -16,7 +16,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/device_reauth/android/jni_headers/ReauthenticatorBridge_jni.h"
 
-static jlong JNI_ReauthenticatorBridge_Create(
+static int64_t JNI_ReauthenticatorBridge_Create(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& java_bridge,
     const base::android::JavaRef<jobject>& activity,

@@ -25,10 +25,10 @@ using extensions::WindowControllerList;
 }  // namespace
 
 // Implements Java |ExtensionWindowControllerBridgeImpl.Natives#create|
-static jlong JNI_ExtensionWindowControllerBridgeImpl_Create(
+static int64_t JNI_ExtensionWindowControllerBridgeImpl_Create(
     JNIEnv* env,
     const JavaRef<jobject>& caller,
-    jlong native_browser_window_ptr) {
+    int64_t native_browser_window_ptr) {
   BrowserWindowInterface* browser_window =
       reinterpret_cast<BrowserWindowInterface*>(native_browser_window_ptr);
 

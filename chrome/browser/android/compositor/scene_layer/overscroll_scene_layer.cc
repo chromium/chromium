@@ -103,9 +103,9 @@ void OverscrollSceneLayer::OnReset(JNIEnv* env) {
   glow_effect_->Reset();
 }
 
-static jlong JNI_OverscrollSceneLayer_Init(JNIEnv* env,
-                                           const JavaRef<jobject>& jobj,
-                                           const JavaRef<jobject>& jwindow) {
+static int64_t JNI_OverscrollSceneLayer_Init(JNIEnv* env,
+                                             const JavaRef<jobject>& jobj,
+                                             const JavaRef<jobject>& jwindow) {
   // This will automatically bind to the Java object and pass ownership there.
   OverscrollSceneLayer* tree_provider =
       new OverscrollSceneLayer(env, jobj, jwindow);

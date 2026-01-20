@@ -53,7 +53,7 @@ void TabBrowserControlsConstraintsHelper::UpdateState(
                                            animate, offset_tag_modifications);
 }
 
-static jlong JNI_TabBrowserControlsConstraintsHelper_Init(
+static int64_t JNI_TabBrowserControlsConstraintsHelper_Init(
     JNIEnv* env,
     const JavaRef<jobject>& obj) {
   return reinterpret_cast<intptr_t>(

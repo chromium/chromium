@@ -16,11 +16,11 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/ProxyNativeTask_jni.h"
 
-static jlong JNI_ProxyNativeTask_Init(JNIEnv* env,
-                                      const JavaRef<jobject>& jobj,
-                                      int32_t task_id,
-                                      std::string& extras,
-                                      const JavaRef<jobject>& jcallback) {
+static int64_t JNI_ProxyNativeTask_Init(JNIEnv* env,
+                                        const JavaRef<jobject>& jobj,
+                                        int32_t task_id,
+                                        std::string& extras,
+                                        const JavaRef<jobject>& jcallback) {
   std::unique_ptr<background_task::BackgroundTask> background_task =
       ChromeBackgroundTaskFactory::GetNativeBackgroundTaskFromTaskId(task_id);
 

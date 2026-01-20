@@ -447,7 +447,7 @@ static bool JNI_TranslateBridge_IsPageTranslated(
   return client->GetLanguageState().IsPageTranslated();
 }
 
-static jlong JNI_TranslateBridge_AddTranslationObserver(
+static int64_t JNI_TranslateBridge_AddTranslationObserver(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_web_contents,
     const base::android::JavaRef<jobject>& j_observer) {
@@ -455,13 +455,13 @@ static jlong JNI_TranslateBridge_AddTranslationObserver(
   GetTranslateClient(j_web_contents)
       ->translate_driver()
       ->AddTranslationObserver(observer);
-  return reinterpret_cast<jlong>(observer);
+  return reinterpret_cast<int64_t>(observer);
 }
 
 static void JNI_TranslateBridge_RemoveTranslationObserver(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_web_contents,
-    jlong j_observer_native_ptr) {
+    int64_t j_observer_native_ptr) {
   TranslationObserver* observer =
       reinterpret_cast<TranslationObserver*>(j_observer_native_ptr);
   GetTranslateClient(j_web_contents)

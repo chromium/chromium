@@ -66,11 +66,11 @@ static int JNI_FeedServiceBridge_GetLoadMoreTriggerScrollDistanceDp(
   return GetFeedConfig().load_more_trigger_scroll_distance_dp;
 }
 
-static jlong JNI_FeedServiceBridge_GetReliabilityLoggingId(JNIEnv* env) {
+static int64_t JNI_FeedServiceBridge_GetReliabilityLoggingId(JNIEnv* env) {
   return FeedServiceBridge::GetReliabilityLoggingId();
 }
 
-static jlong JNI_FeedServiceBridge_AddUnreadContentObserver(
+static int64_t JNI_FeedServiceBridge_AddUnreadContentObserver(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_observer,
     bool is_web_feed) {
@@ -82,7 +82,7 @@ static jlong JNI_FeedServiceBridge_AddUnreadContentObserver(
   api->AddUnreadContentObserver(is_web_feed ? StreamType(StreamKind::kFollowing)
                                             : StreamType(StreamKind::kForYou),
                                 observer);
-  return reinterpret_cast<jlong>(observer);
+  return reinterpret_cast<int64_t>(observer);
 }
 
 static void JNI_FeedServiceBridge_ReportOtherUserActionForStream(

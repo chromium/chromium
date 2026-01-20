@@ -17,7 +17,7 @@
 
 namespace task_manager {
 
-static jlong JNI_TaskManagerServiceBridge_AddObserver(
+static int64_t JNI_TaskManagerServiceBridge_AddObserver(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& observer,
     const int32_t refresh_time_millis,
@@ -25,11 +25,11 @@ static jlong JNI_TaskManagerServiceBridge_AddObserver(
   TaskManagerObserverAndroid* delegate =
       new TaskManagerObserverAndroid(env, observer, refresh_time_millis,
                                      static_cast<RefreshType>(resource_flags));
-  return reinterpret_cast<jlong>(delegate);
+  return reinterpret_cast<int64_t>(delegate);
 }
 
 static void JNI_TaskManagerServiceBridge_RemoveObserver(JNIEnv* env,
-                                                        const jlong ptr) {
+                                                        const int64_t ptr) {
   TaskManagerObserverAndroid* delegate =
       reinterpret_cast<TaskManagerObserverAndroid*>(ptr);
   delete delegate;
@@ -52,7 +52,7 @@ JNI_TaskManagerServiceBridge_GetIcon(JNIEnv* env, TaskId task_id) {
   return gfx::ConvertToJavaBitmap(bitmap);
 }
 
-static jlong JNI_TaskManagerServiceBridge_GetMemoryFootprintUsage(
+static int64_t JNI_TaskManagerServiceBridge_GetMemoryFootprintUsage(
     JNIEnv* env,
     TaskId task_id) {
   std::optional<base::ByteSize> usage =
@@ -67,15 +67,15 @@ static jdouble JNI_TaskManagerServiceBridge_GetPlatformIndependentCpuUsage(
       task_id);
 }
 
-static jlong JNI_TaskManagerServiceBridge_GetNetworkUsage(JNIEnv* env,
-                                                          TaskId task_id) {
+static int64_t JNI_TaskManagerServiceBridge_GetNetworkUsage(JNIEnv* env,
+                                                            TaskId task_id) {
   return TaskManagerInterface::GetTaskManager()
       ->GetNetworkUsage(task_id)
       .InBytes();
 }
 
-static jlong JNI_TaskManagerServiceBridge_GetProcessId(JNIEnv* env,
-                                                       TaskId task_id) {
+static int64_t JNI_TaskManagerServiceBridge_GetProcessId(JNIEnv* env,
+                                                         TaskId task_id) {
   return TaskManagerInterface::GetTaskManager()->GetProcessId(task_id);
 }
 
@@ -85,7 +85,7 @@ JNI_TaskManagerServiceBridge_GetGpuMemoryUsage(JNIEnv* env, TaskId task_id) {
   std::optional<base::ByteSize> usage =
       TaskManagerInterface::GetTaskManager()->GetGpuMemoryUsage(
           task_id, &has_duplicates);
-  jlong bytes = usage ? usage->InBytes() : -1;
+  int64_t bytes = usage ? usage->InBytes() : -1;
   return Java_GpuMemoryUsage_Constructor(env, bytes, has_duplicates);
 }
 

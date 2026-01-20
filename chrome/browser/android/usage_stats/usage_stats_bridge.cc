@@ -39,9 +39,9 @@ bool isSuccess(UsageStatsDatabase::Error error) {
 
 }  // namespace
 
-static jlong JNI_UsageStatsBridge_Init(JNIEnv* env,
-                                       const JavaRef<jobject>& j_this,
-                                       Profile* profile) {
+static int64_t JNI_UsageStatsBridge_Init(JNIEnv* env,
+                                         const JavaRef<jobject>& j_this,
+                                         Profile* profile) {
   std::unique_ptr<UsageStatsDatabase> usage_stats_database =
       std::make_unique<UsageStatsDatabase>(profile);
 
@@ -81,8 +81,8 @@ void UsageStatsBridge::GetAllEvents(JNIEnv* j_env,
 }
 
 void UsageStatsBridge::QueryEventsInRange(JNIEnv* j_env,
-                                          const jlong j_start,
-                                          const jlong j_end,
+                                          const int64_t j_start,
+                                          const int64_t j_end,
                                           const JavaRef<jobject>& j_callback) {
   ScopedJavaGlobalRef<jobject> callback(j_callback);
 
@@ -126,8 +126,8 @@ void UsageStatsBridge::DeleteAllEvents(JNIEnv* j_env,
 }
 
 void UsageStatsBridge::DeleteEventsInRange(JNIEnv* j_env,
-                                           const jlong j_start,
-                                           const jlong j_end,
+                                           const int64_t j_start,
+                                           const int64_t j_end,
                                            const JavaRef<jobject>& j_callback) {
   ScopedJavaGlobalRef<jobject> callback(j_callback);
 

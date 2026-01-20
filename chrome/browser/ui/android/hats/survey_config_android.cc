@@ -69,7 +69,7 @@ void SurveyConfigHolder::Destroy(JNIEnv* env) {
 }
 
 // static
-static jlong JNI_SurveyConfig_InitHolder(
+static int64_t JNI_SurveyConfig_InitHolder(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& caller,
     const JavaRef<jobject>& profile) {

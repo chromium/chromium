@@ -11,7 +11,7 @@ using jni_zero::JavaRef;
 
 namespace android {
 
-static jlong JNI_ResourceFactory_CreateToolbarContainerResource(
+static int64_t JNI_ResourceFactory_CreateToolbarContainerResource(
     JNIEnv* env,
     int32_t toolbar_left,
     int32_t toolbar_top,

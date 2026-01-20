@@ -41,7 +41,7 @@ class InsecureDownloadDialogBridge : public download::DownloadItem::Observer {
                     InsecureDownloadDialogCallback callback);
 
   // Called from Java via JNI.
-  void OnConfirmed(JNIEnv* env, jlong callback_id, bool accepted);
+  void OnConfirmed(JNIEnv* env, int64_t callback_id, bool accepted);
 
  private:
   // Download items that are requesting the dialog. Could get deleted while

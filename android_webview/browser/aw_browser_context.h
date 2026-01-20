@@ -104,7 +104,7 @@ class AwBrowserContext : public content::BrowserContext,
   void AddVisitedURLs(const std::vector<GURL>& urls);
 
   AwQuotaManagerBridge* GetQuotaManagerBridge();
-  jlong GetQuotaManagerBridge(JNIEnv* env);
+  int64_t GetQuotaManagerBridge(JNIEnv* env);
 
   CookieManager* GetCookieManager();
 

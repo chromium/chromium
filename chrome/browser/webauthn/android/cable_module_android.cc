@@ -416,7 +416,7 @@ using webauthn::authenticator::SystemInterface;
 
 static void JNI_CableAuthenticatorModuleProvider_OnHaveLinkingInformation(
     JNIEnv* env,
-    jlong system_interface_pointer,
+    int64_t system_interface_pointer,
     const base::android::JavaRef<jbyteArray>& cbor_java) {
   std::optional<std::vector<uint8_t>> optional_cbor;
 
@@ -437,7 +437,7 @@ static void JNI_CableAuthenticatorModuleProvider_OnHaveLinkingInformation(
 
 static void JNI_CableAuthenticatorModuleProvider_OnHaveWorkProfileResult(
     JNIEnv* env,
-    jlong system_interface_pointer,
+    int64_t system_interface_pointer,
     bool in_work_profile) {
   content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
       ->PostTask(

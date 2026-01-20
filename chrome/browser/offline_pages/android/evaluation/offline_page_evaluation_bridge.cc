@@ -185,7 +185,7 @@ RequestCoordinator* GetRequestCoordinator(Profile* profile,
 
 }  // namespace
 
-static jlong JNI_OfflinePageEvaluationBridge_CreateBridgeForProfile(
+static int64_t JNI_OfflinePageEvaluationBridge_CreateBridgeForProfile(
     JNIEnv* env,
     Profile* profile,
     const bool j_use_evaluation_scheduler) {
@@ -201,7 +201,7 @@ static jlong JNI_OfflinePageEvaluationBridge_CreateBridgeForProfile(
   OfflinePageEvaluationBridge* bridge = new OfflinePageEvaluationBridge(
       env, obj, profile, offline_page_model, request_coordinator);
 
-  return reinterpret_cast<jlong>(bridge);
+  return reinterpret_cast<int64_t>(bridge);
 }
 
 OfflinePageEvaluationBridge::OfflinePageEvaluationBridge(

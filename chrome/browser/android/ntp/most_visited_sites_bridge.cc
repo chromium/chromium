@@ -300,9 +300,9 @@ jdouble MostVisitedSitesBridge::GetSuggestionScore(JNIEnv* env,
   return most_visited_->GetSuggestionScore(url);
 }
 
-static jlong JNI_MostVisitedSitesBridge_Init(JNIEnv* env,
-                                             Profile* profile,
-                                             bool enable_custom_links) {
+static int64_t JNI_MostVisitedSitesBridge_Init(JNIEnv* env,
+                                               Profile* profile,
+                                               bool enable_custom_links) {
   MostVisitedSitesBridge* most_visited_sites =
       new MostVisitedSitesBridge(profile, enable_custom_links);
   return reinterpret_cast<intptr_t>(most_visited_sites);

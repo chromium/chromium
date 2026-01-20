@@ -19,7 +19,7 @@
 using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaRef;
 
-static jlong JNI_RecentTabsPagePrefs_Init(JNIEnv* env, Profile* profile) {
+static int64_t JNI_RecentTabsPagePrefs_Init(JNIEnv* env, Profile* profile) {
   RecentTabsPagePrefs* recent_tabs_page_prefs =
       new RecentTabsPagePrefs(profile);
   return reinterpret_cast<intptr_t>(recent_tabs_page_prefs);

@@ -27,7 +27,7 @@ using base::android::JavaRef;
 }  // namespace
 
 // Implements Java |AndroidBrowserWindow.Natives#create|.
-static jlong JNI_AndroidBrowserWindow_Create(
+static int64_t JNI_AndroidBrowserWindow_Create(
     JNIEnv* env,
     const JavaRef<jobject>& caller,
     int32_t browser_window_type,

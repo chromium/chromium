@@ -91,7 +91,7 @@ class AwSettings : public content::WebContentsObserver {
   void Destroy(JNIEnv* env, const base::android::JavaRef<jobject>& obj);
   void PopulateWebPreferencesLocked(JNIEnv* env,
                                     const base::android::JavaRef<jobject>& obj,
-                                    jlong web_prefs);
+                                    int64_t web_prefs);
   void ResetScrollAndScaleState(JNIEnv* env,
                                 const base::android::JavaRef<jobject>& obj);
   void UpdateEverythingLocked(JNIEnv* env,

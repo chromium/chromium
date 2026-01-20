@@ -177,7 +177,7 @@ LayerTitleCache::~LayerTitleCache() = default;
 // Native JNI methods
 // ----------------------------------------------------------------------------
 
-static jlong JNI_LayerTitleCache_Init(
+static int64_t JNI_LayerTitleCache_Init(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     int32_t fade_width,

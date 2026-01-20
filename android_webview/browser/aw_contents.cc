@@ -470,7 +470,7 @@ base::android::ScopedJavaLocalRef<jobject> AwContents::GetBrowserContext(
 }
 
 void AwContents::SetCompositorFrameConsumer(JNIEnv* env,
-                                            jlong compositor_frame_consumer) {
+                                            int64_t compositor_frame_consumer) {
   browser_view_renderer_.SetCurrentCompositorFrameConsumer(
       reinterpret_cast<CompositorFrameConsumer*>(compositor_frame_consumer));
 }
@@ -497,7 +497,8 @@ void AwContents::Destroy(JNIEnv* env) {
   delete this;
 }
 
-static jlong JNI_AwContents_Init(JNIEnv* env, jlong browser_context_pointer) {
+static int64_t JNI_AwContents_Init(JNIEnv* env,
+                                   int64_t browser_context_pointer) {
   AwBrowserContext* browser_context =
       reinterpret_cast<AwBrowserContext*>(browser_context_pointer);
   std::unique_ptr<WebContents> web_contents(content::WebContents::Create(
@@ -518,7 +519,7 @@ static bool JNI_AwContents_HasRequiredHardwareExtensions(JNIEnv* env) {
 }
 
 static void JNI_AwContents_SetAwDrawSWFunctionTable(JNIEnv* env,
-                                                    jlong function_table) {
+                                                    int64_t function_table) {
   RasterHelperSetAwDrawSWFunctionTable(
       reinterpret_cast<AwDrawSWFunctionTable*>(function_table));
 }
@@ -754,7 +755,7 @@ void AwContents::OnPermissionRequestCanceled(AwPermissionRequest* request) {
 
 void AwContents::PreauthorizePermission(JNIEnv* env,
                                         const JavaRef<jstring>& origin,
-                                        jlong resources) {
+                                        int64_t resources) {
   permission_request_handler_->PreauthorizePermission(
       GURL(base::android::ConvertJavaStringToUTF8(env, origin)), resources);
 }
@@ -1190,13 +1191,13 @@ void AwContents::ZoomBy(JNIEnv* env, jfloat delta) {
   browser_view_renderer_.ZoomBy(delta);
 }
 
-void AwContents::OnComputeScroll(JNIEnv* env, jlong animation_time_millis) {
+void AwContents::OnComputeScroll(JNIEnv* env, int64_t animation_time_millis) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   browser_view_renderer_.OnComputeScroll(
       base::TimeTicks() + base::Milliseconds(animation_time_millis));
 }
 
-jlong AwContents::ReleasePopupAwContents(JNIEnv* env) {
+int64_t AwContents::ReleasePopupAwContents(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return reinterpret_cast<intptr_t>(pending_contents_.release());
 }
@@ -1292,7 +1293,7 @@ void AwContents::RestoreScrollAfterTransition(JNIEnv* env,
 void AwContents::SmoothScroll(JNIEnv* env,
                               int32_t target_x,
                               int32_t target_y,
-                              jlong duration_ms) {
+                              int64_t duration_ms) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   float scale = browser_view_renderer_.page_scale_factor();
@@ -1325,7 +1326,7 @@ void AwContents::OnWebLayoutContentsSizeChanged(
       env, obj, contents_size_css.width(), contents_size_css.height());
 }
 
-jlong AwContents::CapturePicture(JNIEnv* env, int width, int height) {
+int64_t AwContents::CapturePicture(JNIEnv* env, int width, int height) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return reinterpret_cast<intptr_t>(
       new AwPicture(browser_view_renderer_.CapturePicture(width, height)));
@@ -1338,7 +1339,7 @@ void AwContents::EnableOnNewPicture(JNIEnv* env, bool enabled) {
 
 namespace {
 void InvokeVisualStateCallback(const JavaObjectWeakGlobalRef& java_ref,
-                               jlong request_id,
+                               int64_t request_id,
                                const JavaRef<jobject>& callback,
                                bool result) {
   JNIEnv* env = AttachCurrentThread();
@@ -1350,7 +1351,7 @@ void InvokeVisualStateCallback(const JavaObjectWeakGlobalRef& java_ref,
 }  // namespace
 
 void AwContents::InsertVisualStateCallback(JNIEnv* env,
-                                           jlong request_id,
+                                           int64_t request_id,
                                            const JavaRef<jobject>& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   web_contents_->GetPrimaryMainFrame()->InsertVisualStateCallback(
@@ -1648,12 +1649,12 @@ static void JNI_AwContents_SetShouldDownloadFavicons(JNIEnv* env) {
 namespace {
 
 // Post a task to a background thread to log a site visit.
-void LogSiteVisitOnBackgroundThread(jlong site_hash) {
+void LogSiteVisitOnBackgroundThread(int64_t site_hash) {
   // Logging a site visit involves writing to shared preferences, which should
   // not be done on the main thread.
   base::ThreadPool::PostTask(
       FROM_HERE, base::BindOnce(
-                     [](jlong site_hash) {
+                     [](int64_t site_hash) {
                        JNIEnv* env = AttachCurrentThread();
                        Java_AwSiteVisitLogger_logVisit(env, site_hash);
                      },
@@ -1690,8 +1691,8 @@ void AwContents::PrimaryPageChanged(content::Page& page) {
       uint32_t origin_hash = base::PersistentHash(origin.Serialize());
       uint32_t etld_plus1_hash = base::PersistentHash(etld_plus1);
 
-      jlong j_origin_hash = static_cast<jlong>(origin_hash);
-      jlong j_etld_plus1_hash = static_cast<jlong>(etld_plus1_hash);
+      int64_t j_origin_hash = static_cast<int64_t>(origin_hash);
+      int64_t j_etld_plus1_hash = static_cast<int64_t>(etld_plus1_hash);
 
       Java_AwContents_logOriginVisit(env, j_ref, j_origin_hash);
 

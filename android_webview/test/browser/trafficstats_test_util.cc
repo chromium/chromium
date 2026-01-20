@@ -13,8 +13,8 @@ static bool JNI_TrafficStatsTestUtil_CanGetTaggedBytes(JNIEnv* env) {
   return net::CanGetTaggedBytes();
 }
 
-static jlong JNI_TrafficStatsTestUtil_GetTaggedBytes(JNIEnv* env,
-                                                     int32_t jexpected_tag) {
+static int64_t JNI_TrafficStatsTestUtil_GetTaggedBytes(JNIEnv* env,
+                                                       int32_t jexpected_tag) {
   return net::GetTaggedBytes(jexpected_tag);
 }
 

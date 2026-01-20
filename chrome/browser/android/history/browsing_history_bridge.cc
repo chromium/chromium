@@ -199,9 +199,9 @@ Profile* BrowsingHistoryBridge::GetProfile() {
   return profile_;
 }
 
-static jlong JNI_BrowsingHistoryBridge_Init(JNIEnv* env,
-                                            const JavaRef<jobject>& obj,
-                                            Profile* profile) {
+static int64_t JNI_BrowsingHistoryBridge_Init(JNIEnv* env,
+                                              const JavaRef<jobject>& obj,
+                                              Profile* profile) {
   BrowsingHistoryBridge* bridge = new BrowsingHistoryBridge(env, obj, profile);
   return reinterpret_cast<intptr_t>(bridge);
 }

@@ -145,7 +145,7 @@ static void JNI_ServiceWorkerPaymentAppBridge_OnOpeningPaymentAppWindow(
       ->SetOpenedWindow(payment_handler_web_contents);
 }
 
-static jlong
+static int64_t
 JNI_ServiceWorkerPaymentAppBridge_GetSourceIdForPaymentAppFromScope(
     JNIEnv* env,
     const JavaRef<jobject>& jscope) {

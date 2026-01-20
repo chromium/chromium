@@ -74,7 +74,7 @@ static void JNI_ReadAloudPrefs_SetVoice(JNIEnv* env,
             ConvertJavaStringToUTF8(env, j_voice_id));
 }
 
-static jlong JNI_ReadAloudPrefs_GetReliabilityLoggingId(
+static int64_t JNI_ReadAloudPrefs_GetReliabilityLoggingId(
     JNIEnv* env,
     const JavaRef<jobject>& j_pref_service,
     const JavaRef<jstring>& j_metrics_id) {

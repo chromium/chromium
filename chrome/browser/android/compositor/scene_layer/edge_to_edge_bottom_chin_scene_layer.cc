@@ -112,7 +112,7 @@ bool EdgeToEdgeBottomChinSceneLayer::ShouldShowBackground() {
   return should_show_background_;
 }
 
-static jlong JNI_EdgeToEdgeBottomChinSceneLayer_Init(
+static int64_t JNI_EdgeToEdgeBottomChinSceneLayer_Init(
     JNIEnv* env,
     const JavaRef<jobject>& jobj) {
   // This will automatically bind to the Java object and pass ownership there.

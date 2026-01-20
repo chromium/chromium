@@ -33,7 +33,7 @@ class MerchantSignalDB {
   // Save signal for key.
   void Save(JNIEnv* env,
             std::string& key,
-            const jlong jtimestamp,
+            const int64_t jtimestamp,
             const base::android::JavaRef<jobject>& jcallback);
 
   // Load signal corresponding to key.

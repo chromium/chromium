@@ -123,12 +123,12 @@ void PartnerBookmarksReader::Reset(JNIEnv* env) {
   wip_next_available_id_ = 0;
 }
 
-jlong PartnerBookmarksReader::AddPartnerBookmark(
+int64_t PartnerBookmarksReader::AddPartnerBookmark(
     JNIEnv* env,
     const JavaRef<jstring>& jurl,
     const JavaRef<jstring>& jtitle,
     bool is_folder,
-    jlong parent_id,
+    int64_t parent_id,
     const JavaRef<jbyteArray>& favicon,
     const JavaRef<jbyteArray>& touchicon,
     bool fetch_uncached_favicons_from_server,
@@ -144,7 +144,7 @@ jlong PartnerBookmarksReader::AddPartnerBookmark(
     title = ConvertJavaStringToUTF16(env, jtitle);
   }
 
-  jlong node_id = 0;
+  int64_t node_id = 0;
   if (wip_partner_bookmarks_root_.get()) {
     std::unique_ptr<BookmarkNode> node = std::make_unique<BookmarkNode>(
         wip_next_available_id_++, base::Uuid::GenerateRandomV4(), GURL(url));
@@ -400,7 +400,7 @@ static void JNI_PartnerBookmarksReader_DisablePartnerBookmarksEditing(
   PartnerBookmarksShim::DisablePartnerBookmarksEditing();
 }
 
-static jlong JNI_PartnerBookmarksReader_Init(JNIEnv* env, Profile* profile) {
+static int64_t JNI_PartnerBookmarksReader_Init(JNIEnv* env, Profile* profile) {
   PartnerBookmarksShim* partner_bookmarks_shim =
       PartnerBookmarksShim::BuildForBrowserContext(profile);
   if (!partner_bookmarks_shim) {

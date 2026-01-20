@@ -16,9 +16,10 @@
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
-static jlong JNI_NtpSyncedThemeBridge_Init(JNIEnv* env,
-                                           const JavaRef<jobject>& j_profile,
-                                           const JavaRef<jobject>& j_java_obj) {
+static int64_t JNI_NtpSyncedThemeBridge_Init(
+    JNIEnv* env,
+    const JavaRef<jobject>& j_profile,
+    const JavaRef<jobject>& j_java_obj) {
   Profile* profile = Profile::FromJavaObject(j_profile);
   NtpSyncedThemeBridge* ntp_customization_theme_bridge =
       new NtpSyncedThemeBridge(env, profile, j_java_obj);

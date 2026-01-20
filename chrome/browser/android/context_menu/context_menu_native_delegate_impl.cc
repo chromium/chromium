@@ -230,7 +230,7 @@ void ContextMenuNativeDelegateImpl::SetPictureInPicture(
           blink::mojom::MediaPlayerActionType::kPictureInPicture, enter_pip));
 }
 
-static jlong JNI_ContextMenuNativeDelegateImpl_Init(
+static int64_t JNI_ContextMenuNativeDelegateImpl_Init(
     JNIEnv* env,
     content::WebContents* web_contents,
     const JavaRef<jobject>& jcontext_menu_params) {

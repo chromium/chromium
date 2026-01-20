@@ -169,9 +169,9 @@ ScopedJavaLocalRef<jobject> DownloadManagerService::CreateJavaDownloadInfo(
       item->IsTransient(), item->AllowAutoOpenAfterCompletion());
 }
 
-static jlong JNI_DownloadManagerService_Init(JNIEnv* env,
-                                             const JavaRef<jobject>& jobj,
-                                             bool is_full_browser_started) {
+static int64_t JNI_DownloadManagerService_Init(JNIEnv* env,
+                                               const JavaRef<jobject>& jobj,
+                                               bool is_full_browser_started) {
   DownloadManagerService* service = DownloadManagerService::GetInstance();
   service->Init(env, jobj, is_full_browser_started);
   return reinterpret_cast<intptr_t>(service);

@@ -429,9 +429,9 @@ void RecentlyClosedTabsBridge::RestoreAndroidTabGroups(
   }
 }
 
-static jlong JNI_RecentlyClosedBridge_Init(JNIEnv* env,
-                                           const JavaRef<jobject>& jbridge,
-                                           Profile* profile) {
+static int64_t JNI_RecentlyClosedBridge_Init(JNIEnv* env,
+                                             const JavaRef<jobject>& jbridge,
+                                             Profile* profile) {
   RecentlyClosedTabsBridge* bridge = new RecentlyClosedTabsBridge(
       ScopedJavaGlobalRef<jobject>(env, jbridge), profile);
   return reinterpret_cast<intptr_t>(bridge);

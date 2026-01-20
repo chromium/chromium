@@ -31,11 +31,11 @@ class BASE_EXPORT TaskRunnerAndroid {
 
   void Destroy(JNIEnv* env);
 
-  void PostDelayedTask(JNIEnv* env, jlong delay, int32_t taskIndex);
+  void PostDelayedTask(JNIEnv* env, int64_t delay, int32_t taskIndex);
 
   void PostDelayedTaskWithLocation(
       JNIEnv* env,
-      jlong delay,
+      int64_t delay,
       int32_t taskIndex,
       const android::JavaRef<jstring>& fileName,
       const android::JavaRef<jstring>& functionName,

@@ -88,7 +88,7 @@ ScopedBatchAndroid::ScopedBatchAndroid(
 ScopedBatchAndroid::~ScopedBatchAndroid() = default;
 
 static void JNI_TabStateStorageService_CommitBatch(JNIEnv* env,
-                                                   jlong batch_android_ptr) {
+                                                   int64_t batch_android_ptr) {
   delete reinterpret_cast<ScopedBatchAndroid*>(batch_android_ptr);
 }
 
@@ -165,8 +165,8 @@ void TabStateStorageServiceAndroid::PrintAll(JNIEnv* env) {
 #endif
 }
 
-jlong TabStateStorageServiceAndroid::CreateBatch(JNIEnv* env) {
-  return reinterpret_cast<jlong>(
+int64_t TabStateStorageServiceAndroid::CreateBatch(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(
       new ScopedBatchAndroid(tab_state_storage_service_->CreateScopedBatch()));
 }
 

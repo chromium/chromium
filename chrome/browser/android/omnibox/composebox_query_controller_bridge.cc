@@ -54,7 +54,7 @@ void RunJavaCallback(
 }
 }  // namespace
 
-static jlong JNI_ComposeBoxQueryControllerBridge_Init(
+static int64_t JNI_ComposeBoxQueryControllerBridge_Init(
     JNIEnv* env,
     Profile* profile,
     const base::android::JavaRef<jobject>& java_obj) {

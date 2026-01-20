@@ -55,7 +55,7 @@ class ContextualSearchManager {
   // time at which |search_url| was committed.
   void RemoveLastHistoryEntry(JNIEnv* env,
                               std::string& search_url,
-                              jlong search_start_time_ms);
+                              int64_t search_start_time_ms);
 
  private:
   void OnSearchTermResolutionResponse(

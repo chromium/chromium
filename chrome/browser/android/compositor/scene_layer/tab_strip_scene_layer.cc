@@ -654,8 +654,8 @@ SkColor TabStripSceneLayer::GetBackgroundColor() {
   return SceneLayer::GetBackgroundColor();
 }
 
-static jlong JNI_TabStripSceneLayer_Init(JNIEnv* env,
-                                         const JavaRef<jobject>& jobj) {
+static int64_t JNI_TabStripSceneLayer_Init(JNIEnv* env,
+                                           const JavaRef<jobject>& jobj) {
   // This will automatically bind to the Java object and pass ownership there.
   TabStripSceneLayer* scene_layer = new TabStripSceneLayer(env, jobj);
   return reinterpret_cast<intptr_t>(scene_layer);

@@ -92,7 +92,7 @@ void DataImporterBridge::ImportHistoryDone(
   base::android::RunIntCallbackAndroid(callback, count);
 }
 
-static jlong JNI_DataImporterBridge_Init(JNIEnv* env, Profile* profile) {
+static int64_t JNI_DataImporterBridge_Init(JNIEnv* env, Profile* profile) {
   DataImporterBridge* bridge = new DataImporterBridge(profile);
   return reinterpret_cast<intptr_t>(bridge);
 }

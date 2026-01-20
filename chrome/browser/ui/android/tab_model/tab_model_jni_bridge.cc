@@ -807,11 +807,11 @@ TabModelJniBridge::~TabModelJniBridge() {
   }
 }
 
-static jlong JNI_TabModelJniBridge_Init(JNIEnv* env,
-                                        const JavaRef<jobject>& obj,
-                                        Profile* profile,
-                                        int32_t j_activity_type,
-                                        unsigned char is_archived_tab_model) {
+static int64_t JNI_TabModelJniBridge_Init(JNIEnv* env,
+                                          const JavaRef<jobject>& obj,
+                                          Profile* profile,
+                                          int32_t j_activity_type,
+                                          unsigned char is_archived_tab_model) {
   TabModel* tab_model = new TabModelJniBridge(
       env, obj, profile, static_cast<ActivityType>(j_activity_type),
       is_archived_tab_model);

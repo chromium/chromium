@@ -108,7 +108,7 @@ static bool JNI_VariationsSeedLoader_ParseAndSaveSeedProtoFromByteArray(
   }
 }
 
-static jlong JNI_VariationsSeedLoader_GetSavedSeedDate(JNIEnv* env) {
+static int64_t JNI_VariationsSeedLoader_GetSavedSeedDate(JNIEnv* env) {
   return g_seed ? g_seed->date() : 0;
 }
 

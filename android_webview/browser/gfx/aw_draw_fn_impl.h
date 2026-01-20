@@ -35,7 +35,7 @@ class AwDrawFnImpl {
 
   void ReleaseHandle(JNIEnv* env);
   int32_t GetFunctorHandle(JNIEnv* env);
-  jlong GetCompositorFrameConsumer(JNIEnv* env);
+  int64_t GetCompositorFrameConsumer(JNIEnv* env);
 
   int functor_handle() { return functor_handle_; }
   void OnSync(AwDrawFn_OnSyncParams* params);

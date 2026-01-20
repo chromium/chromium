@@ -181,7 +181,7 @@ TabAndroid::GetAllNativeTabs(
     return tab_native_ptrs;
   }
 
-  std::vector<jlong> tab_ptr;
+  std::vector<int64_t> tab_ptr;
   base::android::JavaLongArrayToLongVector(env, j_tabs_ptr, &tab_ptr);
 
   for (size_t i = 0; i < tab_ptr.size(); ++i) {

@@ -20,9 +20,9 @@ static_assert(std::is_same<stack_unwinder::DoNothingFunction,
               "DoNothingFunction typedef must match the declared function "
               "type");
 
-static jlong JNI_StackUnwinderModuleContentsImpl_GetDoNothingFunction(
+static int64_t JNI_StackUnwinderModuleContentsImpl_GetDoNothingFunction(
     JNIEnv* env) {
-  return reinterpret_cast<jlong>(&DoNothing);
+  return reinterpret_cast<int64_t>(&DoNothing);
 }
 
 DEFINE_JNI(StackUnwinderModuleContentsImpl)

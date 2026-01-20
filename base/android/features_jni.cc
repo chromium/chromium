@@ -12,14 +12,15 @@
 namespace base {
 namespace android {
 
-static bool JNI_Features_IsEnabled(JNIEnv* env, jlong native_feature_pointer) {
+static bool JNI_Features_IsEnabled(JNIEnv* env,
+                                   int64_t native_feature_pointer) {
   return base::FeatureList::IsEnabled(
       *reinterpret_cast<base::Feature*>(native_feature_pointer));
 }
 
 static bool JNI_Features_GetFieldTrialParamByFeatureAsBoolean(
     JNIEnv* env,
-    jlong native_feature_pointer,
+    int64_t native_feature_pointer,
     std::string& param_name,
     const bool jdefault_value) {
   const base::Feature& feature =
@@ -30,7 +31,7 @@ static bool JNI_Features_GetFieldTrialParamByFeatureAsBoolean(
 
 static std::string JNI_Features_GetFieldTrialParamByFeatureAsString(
     JNIEnv* env,
-    jlong native_feature_pointer,
+    int64_t native_feature_pointer,
     std::string& param_name) {
   const base::Feature& feature =
       *reinterpret_cast<base::Feature*>(native_feature_pointer);

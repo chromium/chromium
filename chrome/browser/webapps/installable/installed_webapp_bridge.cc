@@ -43,9 +43,10 @@ class PermissionCallbackWithAMSC
 
 }  // namespace
 
-static void JNI_InstalledWebappBridge_NotifyPermissionsChange(JNIEnv* env,
-                                                              jlong j_provider,
-                                                              int type_int) {
+static void JNI_InstalledWebappBridge_NotifyPermissionsChange(
+    JNIEnv* env,
+    int64_t j_provider,
+    int type_int) {
   ContentSettingsType type = static_cast<ContentSettingsType>(type_int);
   DCHECK(IsKnownEnumValue(type));
   InstalledWebappProvider* provider =
@@ -53,9 +54,10 @@ static void JNI_InstalledWebappBridge_NotifyPermissionsChange(JNIEnv* env,
   provider->Notify(type);
 }
 
-static void JNI_InstalledWebappBridge_RunPermissionCallback(JNIEnv* env,
-                                                            jlong callback_ptr,
-                                                            int setting) {
+static void JNI_InstalledWebappBridge_RunPermissionCallback(
+    JNIEnv* env,
+    int64_t callback_ptr,
+    int setting) {
   DCHECK_LE(setting, static_cast<int>(PermissionDecision::kMaxValue));
   auto* callback = reinterpret_cast<PermissionCallbackWithAMSC*>(callback_ptr);
   std::move(*callback).Run(
@@ -91,7 +93,7 @@ InstalledWebappBridge::GetInstalledWebappPermissions(ContentSettingsType type) {
 void InstalledWebappBridge::SetProviderInstance(
     InstalledWebappProvider *provider) {
   Java_InstalledWebappBridge_setInstalledWebappProvider(
-      base::android::AttachCurrentThread(), (jlong) provider);
+      base::android::AttachCurrentThread(), (int64_t)provider);
 }
 
 void InstalledWebappBridge::DecidePermission(ContentSettingsType type,
@@ -127,7 +129,7 @@ void InstalledWebappBridge::DecidePermission(ContentSettingsType type,
 
   Java_InstalledWebappBridge_decidePermission(
       env, static_cast<int>(type), origin_url.spec(), last_committed_url.spec(),
-      reinterpret_cast<jlong>(callback_ptr));
+      reinterpret_cast<int64_t>(callback_ptr));
 }
 
 DEFINE_JNI(InstalledWebappBridge)

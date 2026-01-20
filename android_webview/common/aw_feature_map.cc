@@ -84,8 +84,8 @@ base::android::FeatureMap* GetFeatureMap() {
   return kFeatureMap.get();
 }
 
-static jlong JNI_AwFeatureMap_GetNativeMap(JNIEnv* env) {
-  return reinterpret_cast<jlong>(GetFeatureMap());
+static int64_t JNI_AwFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetFeatureMap());
 }
 
 }  // namespace android_webview

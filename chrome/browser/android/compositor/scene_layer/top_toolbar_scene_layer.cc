@@ -126,8 +126,8 @@ bool TopToolbarSceneLayer::ShouldShowBackground() {
   return should_show_background_;
 }
 
-static jlong JNI_TopToolbarSceneLayer_Init(JNIEnv* env,
-                                           const JavaRef<jobject>& jobj) {
+static int64_t JNI_TopToolbarSceneLayer_Init(JNIEnv* env,
+                                             const JavaRef<jobject>& jobj) {
   // This will automatically bind to the Java object and pass ownership there.
   TopToolbarSceneLayer* toolbar_scene_layer =
       new TopToolbarSceneLayer(env, jobj);

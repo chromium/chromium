@@ -1267,7 +1267,7 @@ class BASE_EXPORT TimeTicks : public time_internal::TimeBase<TimeTicks> {
 
   // Truncates the TimeTicks value to the precision of SystemClock#uptimeMillis.
   // Note that the clocks already share the same monotonic clock source.
-  jlong ToUptimeMillis() const;
+  int64_t ToUptimeMillis() const;
 
   // Returns the TimeTicks value as microseconds in the timebase of
   // SystemClock#uptimeMillis.
@@ -1276,7 +1276,7 @@ class BASE_EXPORT TimeTicks : public time_internal::TimeBase<TimeTicks> {
   // System.nanoTime() may be used to get sub-millisecond precision in Java code
   // and may be compared against this value as the two share the same clock
   // source (though be sure to convert nanos to micros).
-  jlong ToUptimeMicros() const;
+  int64_t ToUptimeMicros() const;
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

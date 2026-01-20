@@ -26,7 +26,7 @@ class JniOnceCallback {
     bool is_repeating = false;
     return Java_JniCallbackImpl_Constructor(
         env, is_repeating,
-        reinterpret_cast<jlong>(wrapped_callback_.release()));
+        reinterpret_cast<int64_t>(wrapped_callback_.release()));
   }
 
  private:
@@ -50,7 +50,7 @@ class JniRepeatingCallback {
     bool is_repeating = true;
     return Java_JniCallbackImpl_Constructor(
         env, is_repeating,
-        reinterpret_cast<jlong>(wrapped_callback_.release()));
+        reinterpret_cast<int64_t>(wrapped_callback_.release()));
   }
   JniRepeatingCallback(const JniRepeatingCallback&) = delete;
   const JniRepeatingCallback& operator=(const JniRepeatingCallback&) = delete;
@@ -110,7 +110,7 @@ ScopedJavaLocalRef<jobject> ToJniCallback(
 static void JNI_JniCallbackImpl_OnResult(
     JNIEnv* env,
     bool isRepeating,
-    jlong callbackPtr,
+    int64_t callbackPtr,
     const jni_zero::JavaRef<jobject>& j_result) {
   if (isRepeating) {
     auto* callback =
@@ -125,7 +125,7 @@ static void JNI_JniCallbackImpl_OnResult(
 
 static void JNI_JniCallbackImpl_Destroy(JNIEnv* env,
                                         bool isRepeating,
-                                        jlong callbackPtr) {
+                                        int64_t callbackPtr) {
   if (isRepeating) {
     auto* callback =
         reinterpret_cast<JniRepeatingWrappedCallbackType*>(callbackPtr);

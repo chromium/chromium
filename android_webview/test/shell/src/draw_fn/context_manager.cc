@@ -820,13 +820,13 @@ void ContextManager::CreateContext(
   DoCreateContext(env, width, height);
 }
 
-static jlong JNI_ContextManager_GetDrawFnFunctionTable(JNIEnv* env,
-                                                       bool use_vulkan) {
+static int64_t JNI_ContextManager_GetDrawFnFunctionTable(JNIEnv* env,
+                                                         bool use_vulkan) {
   draw_fn::SetDrawFnUseVulkan(use_vulkan);
   return reinterpret_cast<intptr_t>(draw_fn::GetDrawFnFunctionTable());
 }
 
-static jlong JNI_ContextManager_Init(JNIEnv* env, bool use_vulkan) {
+static int64_t JNI_ContextManager_Init(JNIEnv* env, bool use_vulkan) {
   ContextManager* manager = nullptr;
   if (use_vulkan) {
     manager = new draw_fn::ContextManagerVulkan;

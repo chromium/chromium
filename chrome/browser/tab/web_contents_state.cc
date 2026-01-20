@@ -530,7 +530,7 @@ JNI_WebContentsState_DeleteNavigationEntries(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& state,
     int saved_state_version,
-    jlong predicate_ptr) {
+    int64_t predicate_ptr) {
   base::span<const uint8_t> span =
       base::android::JavaByteBufferToSpan(env, state);
 
@@ -598,7 +598,7 @@ JNI_WebContentsState_GetVirtualUrlFromByteBuffer(JNIEnv* env,
 }
 
 static void JNI_WebContentsState_FreeStringPointer(JNIEnv* env,
-                                                   jlong string_pointer) {
+                                                   int64_t string_pointer) {
   delete reinterpret_cast<std::string*>(string_pointer);
 }
 

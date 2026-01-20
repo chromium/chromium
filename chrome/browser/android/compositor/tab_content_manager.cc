@@ -445,12 +445,12 @@ bool TabContentManager::IsTabCaptureInFlightForTesting(JNIEnv* env,
 // Native JNI methods
 // ----------------------------------------------------------------------------
 
-static jlong JNI_TabContentManager_Init(JNIEnv* env,
-                                        const JavaRef<jobject>& obj,
-                                        int32_t default_cache_size,
-                                        int32_t compression_queue_max_size,
-                                        int32_t write_queue_max_size,
-                                        bool save_jpeg_thumbnails) {
+static int64_t JNI_TabContentManager_Init(JNIEnv* env,
+                                          const JavaRef<jobject>& obj,
+                                          int32_t default_cache_size,
+                                          int32_t compression_queue_max_size,
+                                          int32_t write_queue_max_size,
+                                          bool save_jpeg_thumbnails) {
   // Ensure this and its thumbnail cache are created on the UI thread.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 

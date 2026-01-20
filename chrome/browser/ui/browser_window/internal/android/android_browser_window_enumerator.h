@@ -40,8 +40,8 @@ class AndroidBrowserWindowEnumerator {
 
   BrowserWindowInterface* Next();
 
-  void OnBrowserWindowAdded(JNIEnv* env, jlong j_browser_window_ptr);
-  void OnBrowserWindowRemoved(JNIEnv* env, jlong j_browser_window_ptr);
+  void OnBrowserWindowAdded(JNIEnv* env, int64_t j_browser_window_ptr);
+  void OnBrowserWindowRemoved(JNIEnv* env, int64_t j_browser_window_ptr);
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> j_enumerator_;

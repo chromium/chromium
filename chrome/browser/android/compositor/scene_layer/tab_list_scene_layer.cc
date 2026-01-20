@@ -195,8 +195,8 @@ SkColor TabListSceneLayer::GetBackgroundColor() {
   return background_color_;
 }
 
-static jlong JNI_TabListSceneLayer_Init(JNIEnv* env,
-                                        const JavaRef<jobject>& jobj) {
+static int64_t JNI_TabListSceneLayer_Init(JNIEnv* env,
+                                          const JavaRef<jobject>& jobj) {
   // This will automatically bind to the Java object and pass ownership there.
   TabListSceneLayer* scene_layer = new TabListSceneLayer(env, jobj);
   return reinterpret_cast<intptr_t>(scene_layer);

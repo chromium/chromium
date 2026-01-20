@@ -65,7 +65,7 @@ void InsecureDownloadDialogBridge::CreateDialog(
 }
 
 void InsecureDownloadDialogBridge::OnConfirmed(JNIEnv* env,
-                                               jlong callback_id,
+                                               int64_t callback_id,
                                                bool accepted) {
   if (!validator_.ValidateAndClearJavaCallback(callback_id))
     return;

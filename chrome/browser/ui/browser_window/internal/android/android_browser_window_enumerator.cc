@@ -33,7 +33,7 @@ BrowserWindowInterface* AndroidBrowserWindowEnumerator::Next() {
 
 void AndroidBrowserWindowEnumerator::OnBrowserWindowAdded(
     JNIEnv* env,
-    jlong j_browser_window_ptr) {
+    int64_t j_browser_window_ptr) {
   BrowserWindowInterface* browser_window =
       reinterpret_cast<BrowserWindowInterface*>(j_browser_window_ptr);
   DCHECK(!std::ranges::contains(browser_windows_, browser_window));
@@ -42,7 +42,7 @@ void AndroidBrowserWindowEnumerator::OnBrowserWindowAdded(
 
 void AndroidBrowserWindowEnumerator::OnBrowserWindowRemoved(
     JNIEnv* env,
-    jlong j_browser_window_ptr) {
+    int64_t j_browser_window_ptr) {
   std::erase(browser_windows_,
              reinterpret_cast<BrowserWindowInterface*>(j_browser_window_ptr));
 }

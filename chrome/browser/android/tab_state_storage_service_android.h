@@ -56,7 +56,7 @@ class TabStateStorageServiceAndroid : public base::SupportsUserData::Data {
 
   void PrintAll(JNIEnv* env);
 
-  jlong CreateBatch(JNIEnv* env);
+  int64_t CreateBatch(JNIEnv* env);
 
   void SetKey(JNIEnv* env,
               const std::string& window_tag,

@@ -20,7 +20,7 @@
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
-static jlong JNI_NtpThemeCollectionBridge_Init(
+static int64_t JNI_NtpThemeCollectionBridge_Init(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
     const JavaRef<jobject>& j_java_obj) {

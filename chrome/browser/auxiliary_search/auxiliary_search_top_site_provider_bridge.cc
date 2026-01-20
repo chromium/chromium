@@ -112,9 +112,8 @@ void AuxiliarySearchTopSiteProviderBridge::OnIconMadeAvailable(
                                                                 site_url);
 }
 
-static jlong JNI_AuxiliarySearchTopSiteProviderBridge_Init(
-    JNIEnv* env,
-    Profile* profile) {
+static int64_t JNI_AuxiliarySearchTopSiteProviderBridge_Init(JNIEnv* env,
+                                                             Profile* profile) {
   DCHECK(profile);
 
   return reinterpret_cast<intptr_t>(new AuxiliarySearchTopSiteProviderBridge(

@@ -32,7 +32,7 @@ CollectionSaveForwarderAndroid::CollectionSaveForwarderAndroid(
 
 CollectionSaveForwarderAndroid::~CollectionSaveForwarderAndroid() = default;
 
-static jlong JNI_CollectionSaveForwarder_CreateForTabGroup(
+static int64_t JNI_CollectionSaveForwarder_CreateForTabGroup(
     JNIEnv* env,
     Profile* profile,
     base::Token& tab_group_id,

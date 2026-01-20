@@ -35,7 +35,7 @@ void ExclusiveAccessManagerAndroid::EnterFullscreenModeForTab(
     const jni_zero::JavaRef<jobject>& jrender_frame_host_android,
     bool prefersNavigationBar,
     bool prefersStatusBar,
-    jlong displayId) {
+    int64_t displayId) {
   FullscreenTabParams fullscreen_tab_params{displayId, prefersNavigationBar,
                                             prefersStatusBar};
   content::RenderFrameHost* rfh =
@@ -75,7 +75,7 @@ bool ExclusiveAccessManagerAndroid::IsFullscreenForTabOrPending(
 
 bool ExclusiveAccessManagerAndroid::PreHandleKeyboardEvent(
     JNIEnv* env,
-    jlong nativeKeyEvent) {
+    int64_t nativeKeyEvent) {
   return eam_.HandleUserKeyEvent(
       *reinterpret_cast<input::NativeWebKeyboardEvent*>(nativeKeyEvent));
 }
@@ -157,7 +157,7 @@ void ExclusiveAccessManagerAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 
-static jlong JNI_ExclusiveAccessManager_Init(
+static int64_t JNI_ExclusiveAccessManager_Init(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& jeam,
     const jni_zero::JavaRef<jobject>& j_context,

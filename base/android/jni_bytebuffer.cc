@@ -36,7 +36,7 @@ std::optional<base::span<uint8_t>> MaybeJavaByteBufferToMutableSpan(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& buffer) {
   void* data = env->GetDirectBufferAddress(buffer.obj());
-  jlong size = env->GetDirectBufferCapacity(buffer.obj());
+  int64_t size = env->GetDirectBufferCapacity(buffer.obj());
 
   // !data && size == 0 is allowed - this is how a 0-length Buffer is
   // represented.

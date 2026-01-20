@@ -44,7 +44,7 @@ const Feature* FeatureMap::FindFeatureExposedToJava(
              << feature_name;
 }
 
-static bool JNI_FeatureMap_IsEnabled(jlong jfeature_map,
+static bool JNI_FeatureMap_IsEnabled(int64_t jfeature_map,
                                      std::string& feature_name) {
   FeatureMap* feature_map = reinterpret_cast<FeatureMap*>(jfeature_map);
   const base::Feature* feature =
@@ -53,7 +53,7 @@ static bool JNI_FeatureMap_IsEnabled(jlong jfeature_map,
 }
 
 static std::string JNI_FeatureMap_GetFieldTrialParamByFeature(
-    jlong jfeature_map,
+    int64_t jfeature_map,
     std::string& feature_name,
     std::string& param_name) {
   FeatureMap* feature_map = reinterpret_cast<FeatureMap*>(jfeature_map);
@@ -63,7 +63,7 @@ static std::string JNI_FeatureMap_GetFieldTrialParamByFeature(
 }
 
 static int32_t JNI_FeatureMap_GetFieldTrialParamByFeatureAsInt(
-    jlong jfeature_map,
+    int64_t jfeature_map,
     std::string& feature_name,
     std::string& param_name,
     const int32_t jdefault_value) {
@@ -75,7 +75,7 @@ static int32_t JNI_FeatureMap_GetFieldTrialParamByFeatureAsInt(
 }
 
 static jdouble JNI_FeatureMap_GetFieldTrialParamByFeatureAsDouble(
-    jlong jfeature_map,
+    int64_t jfeature_map,
     std::string& feature_name,
     std::string& param_name,
     const jdouble jdefault_value) {
@@ -87,7 +87,7 @@ static jdouble JNI_FeatureMap_GetFieldTrialParamByFeatureAsDouble(
 }
 
 static bool JNI_FeatureMap_GetFieldTrialParamByFeatureAsBoolean(
-    jlong jfeature_map,
+    int64_t jfeature_map,
     std::string& feature_name,
     std::string& param_name,
     const bool jdefault_value) {
@@ -99,7 +99,7 @@ static bool JNI_FeatureMap_GetFieldTrialParamByFeatureAsBoolean(
 }
 
 static std::vector<std::string>
-JNI_FeatureMap_GetFlattedFieldTrialParamsForFeature(jlong jfeature_map,
+JNI_FeatureMap_GetFlattedFieldTrialParamsForFeature(int64_t jfeature_map,
                                                     std::string& feature_name) {
   FeatureMap* feature_map = reinterpret_cast<FeatureMap*>(jfeature_map);
   base::FieldTrialParams params;

@@ -770,7 +770,7 @@ void CookieManager::ClearClientHintsCachedPerOriginMapIfNeeded() {
   }
 }
 
-static jlong JNI_AwCookieManager_GetDefaultCookieManager(JNIEnv* env) {
+static int64_t JNI_AwCookieManager_GetDefaultCookieManager(JNIEnv* env) {
   return reinterpret_cast<intptr_t>(CookieManager::GetDefaultInstance());
 }
 

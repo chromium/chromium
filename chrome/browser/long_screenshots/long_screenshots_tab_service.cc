@@ -52,7 +52,7 @@ const char kGoogleNewsPathPattern[] = "/articles/(.*)";
 // the compositior for some reason.
 static void JNI_LongScreenshotsTabService_ReleaseCaptureResultPtr(
     JNIEnv* env,
-    jlong j_capture_result_ptr) {
+    int64_t j_capture_result_ptr) {
   // `j_capture_result_ptr` is checked to not be nullptr in Java.
   delete reinterpret_cast<paint_preview::CaptureResult*>(j_capture_result_ptr);
 }
@@ -208,7 +208,7 @@ void LongScreenshotsTabService::OnCaptured(
 
   result->proto.mutable_metadata()->clear_chrome_version();
   Java_LongScreenshotsTabService_processPaintPreviewResponse(
-      env, java_ref_, reinterpret_cast<jlong>(result.release()));
+      env, java_ref_, reinterpret_cast<int64_t>(result.release()));
 }
 
 content::RenderFrameHost* LongScreenshotsTabService::GetRootRenderFrameHost(

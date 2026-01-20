@@ -284,7 +284,7 @@ OfflinePageBridge::OfflinePageBridge(JNIEnv* env,
                                      OfflinePageModel* offline_page_model)
     : key_(key), offline_page_model_(offline_page_model) {
   ScopedJavaLocalRef<jobject> j_offline_page_bridge =
-      Java_OfflinePageBridge_create(env, reinterpret_cast<jlong>(this));
+      Java_OfflinePageBridge_create(env, reinterpret_cast<int64_t>(this));
   java_ref_.Reset(j_offline_page_bridge);
 
   NotifyIfDoneLoading();
@@ -333,7 +333,7 @@ void OfflinePageBridge::GetAllPages(JNIEnv* env,
 
 void OfflinePageBridge::GetPageByOfflineId(
     JNIEnv* env,
-    jlong offline_id,
+    int64_t offline_id,
     const JavaRef<jobject>& j_callback_obj) {
   offline_page_model_->GetPageByOfflineId(
       offline_id, base::BindOnce(&SingleOfflinePageItemCallback,
@@ -493,7 +493,7 @@ void OfflinePageBridge::SavePage(JNIEnv* env,
 
 void OfflinePageBridge::PublishInternalPageByOfflineId(
     JNIEnv* env,
-    const jlong j_offline_id,
+    const int64_t j_offline_id,
     const base::android::JavaRef<jobject>& j_published_callback) {
   OfflinePageModel* offline_page_model =
       OfflinePageModelFactory::GetForKey(key_);
@@ -669,7 +669,7 @@ ScopedJavaLocalRef<jobject> OfflinePageBridge::GetOfflinePage(
 
 void OfflinePageBridge::GetLoadUrlParamsByOfflineId(
     JNIEnv* env,
-    jlong j_offline_id,
+    int64_t j_offline_id,
     int32_t launch_location,
     const base::android::JavaRef<jobject>& j_callback_obj) {
   ScopedJavaGlobalRef<jobject> j_callback_ref(j_callback_obj);

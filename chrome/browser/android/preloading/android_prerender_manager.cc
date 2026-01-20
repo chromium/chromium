@@ -28,7 +28,7 @@ AndroidPrerenderManager::AndroidPrerenderManager(JNIEnv* env) {}
 AndroidPrerenderManager::~AndroidPrerenderManager() = default;
 
 // static
-static jlong JNI_AndroidPrerenderManager_Init(JNIEnv* env) {
+static int64_t JNI_AndroidPrerenderManager_Init(JNIEnv* env) {
   return reinterpret_cast<intptr_t>(new AndroidPrerenderManager(env));
 }
 

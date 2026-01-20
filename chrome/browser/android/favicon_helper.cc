@@ -46,7 +46,7 @@ using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
-static jlong JNI_FaviconHelper_Init(JNIEnv* env) {
+static int64_t JNI_FaviconHelper_Init(JNIEnv* env) {
   return reinterpret_cast<intptr_t>(new FaviconHelper());
 }
 

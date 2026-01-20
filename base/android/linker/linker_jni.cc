@@ -270,8 +270,9 @@ String::String(JNIEnv* env, jstring str) {
   env->ReleaseStringUTFChars(str, bytes);
 }
 
-bool IsValidAddress(jlong address) {
-  bool result = static_cast<jlong>(static_cast<uintptr_t>(address)) == address;
+bool IsValidAddress(int64_t address) {
+  bool result =
+      static_cast<int64_t>(static_cast<uintptr_t>(address)) == address;
   if (!result) {
     LOG_ERROR("Invalid address 0x%" PRIx64, static_cast<uint64_t>(address));
   }
@@ -752,7 +753,7 @@ JNI_ZERO_BOUNDARY_EXPORT bool
 Java_org_chromium_base_library_1loader_LinkerJni_nativeUseRelros(
     JNIEnv* env,
     jclass clazz,
-    jlong local_load_address,
+    int64_t local_load_address,
     jobject remote_lib_info_obj) {
   LOG_INFO("Entering");
   // Copy the contents from the Java-side LibInfo object.

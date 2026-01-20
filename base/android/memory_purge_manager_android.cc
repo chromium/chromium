@@ -11,8 +11,9 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/memory_jni/MemoryPurgeManager_jni.h"
 
-static void JNI_MemoryPurgeManager_PostDelayedPurgeTaskOnUiThread(JNIEnv* env,
-                                                                  jlong delay) {
+static void JNI_MemoryPurgeManager_PostDelayedPurgeTaskOnUiThread(
+    JNIEnv* env,
+    int64_t delay) {
   auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
   base::android::PreFreezeBackgroundMemoryTrimmer::PostDelayedBackgroundTask(
       task_runner, FROM_HERE,

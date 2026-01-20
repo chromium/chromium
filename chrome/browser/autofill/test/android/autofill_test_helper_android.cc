@@ -33,7 +33,8 @@ PersonalDataManager* GetPersonalDataManagerForLastUsedProfile() {
 }  // anonymous namespace
 
 // static
-static jlong JNI_AutofillTestHelper_GetDateNDaysAgo(JNIEnv* env, int32_t days) {
+static int64_t JNI_AutofillTestHelper_GetDateNDaysAgo(JNIEnv* env,
+                                                      int32_t days) {
   return (AutofillClock::Now() - base::Days(days)).ToTimeT();
 }
 
@@ -100,8 +101,8 @@ static int32_t JNI_AutofillTestHelper_GetProfileUseCount(JNIEnv* env,
 }
 
 // static
-static jlong JNI_AutofillTestHelper_GetProfileUseDate(JNIEnv* env,
-                                                      std::string& guid) {
+static int64_t JNI_AutofillTestHelper_GetProfileUseDate(JNIEnv* env,
+                                                        std::string& guid) {
   PersonalDataManager* personal_data_manager =
       GetPersonalDataManagerForLastUsedProfile();
   const AutofillProfile* profile =
@@ -143,8 +144,8 @@ static int32_t JNI_AutofillTestHelper_GetCreditCardUseCount(JNIEnv* env,
 }
 
 // static
-static jlong JNI_AutofillTestHelper_GetCreditCardUseDate(JNIEnv* env,
-                                                         std::string& guid) {
+static int64_t JNI_AutofillTestHelper_GetCreditCardUseDate(JNIEnv* env,
+                                                           std::string& guid) {
   PersonalDataManager* personal_data_manager =
       GetPersonalDataManagerForLastUsedProfile();
   const CreditCard* card =
@@ -153,7 +154,7 @@ static jlong JNI_AutofillTestHelper_GetCreditCardUseDate(JNIEnv* env,
 }
 
 // TODO(crbug.com/40477114): Use a mock clock for testing.
-static jlong JNI_AutofillTestHelper_GetCurrentDate(JNIEnv* env) {
+static int64_t JNI_AutofillTestHelper_GetCurrentDate(JNIEnv* env) {
   return base::Time::Now().ToTimeT();
 }
 

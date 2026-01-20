@@ -57,21 +57,21 @@ ScopedJavaLocalRef<jobject> Profile::GetJavaObject() const {
 }
 
 static ScopedJavaLocalRef<jobject> JNI_Profile_GetOriginalProfile(JNIEnv* env,
-                                                                  jlong ptr) {
+                                                                  int64_t ptr) {
   Profile* self = reinterpret_cast<Profile*>(ptr);
   Profile* original_profile = self->GetOriginalProfile();
   DCHECK(original_profile);
   return original_profile->GetJavaObject();
 }
 
-static bool JNI_Profile_IsInitialProfile(JNIEnv* env, jlong ptr) {
+static bool JNI_Profile_IsInitialProfile(JNIEnv* env, int64_t ptr) {
   Profile* self = reinterpret_cast<Profile*>(ptr);
   return self->GetBaseName().value() == chrome::kInitialProfile;
 }
 
 static ScopedJavaLocalRef<jobject> JNI_Profile_GetOffTheRecordProfile(
     JNIEnv* env,
-    jlong ptr,
+    int64_t ptr,
     const JavaRef<jobject>& j_otr_profile_id,
     const bool j_create_if_needed) {
   Profile* self = reinterpret_cast<Profile*>(ptr);
@@ -88,7 +88,7 @@ static ScopedJavaLocalRef<jobject> JNI_Profile_GetOffTheRecordProfile(
 
 static ScopedJavaLocalRef<jobject> JNI_Profile_GetPrimaryOtrProfile(
     JNIEnv* env,
-    jlong ptr,
+    int64_t ptr,
     const bool j_create_if_needed) {
   Profile* self = reinterpret_cast<Profile*>(ptr);
   Profile* otr_profile = self->GetPrimaryOTRProfile(j_create_if_needed);
@@ -101,7 +101,7 @@ static ScopedJavaLocalRef<jobject> JNI_Profile_GetPrimaryOtrProfile(
 
 static bool JNI_Profile_HasOffTheRecordProfile(
     JNIEnv* env,
-    jlong ptr,
+    int64_t ptr,
     const JavaRef<jobject>& j_otr_profile_id) {
   Profile* self = reinterpret_cast<Profile*>(ptr);
   Profile::OTRProfileID otr_profile_id =
@@ -109,13 +109,13 @@ static bool JNI_Profile_HasOffTheRecordProfile(
   return self->HasOffTheRecordProfile(otr_profile_id);
 }
 
-static bool JNI_Profile_HasPrimaryOtrProfile(JNIEnv* env, jlong ptr) {
+static bool JNI_Profile_HasPrimaryOtrProfile(JNIEnv* env, int64_t ptr) {
   Profile* self = reinterpret_cast<Profile*>(ptr);
   return self->HasPrimaryOTRProfile();
 }
 
 static ScopedJavaLocalRef<jobject> JNI_Profile_GetProfileKey(JNIEnv* env,
-                                                             jlong ptr) {
+                                                             int64_t ptr) {
   Profile* self = reinterpret_cast<Profile*>(ptr);
   ProfileKeyAndroid* profile_key =
       self->GetProfileKey()->GetProfileKeyAndroid();
@@ -123,12 +123,12 @@ static ScopedJavaLocalRef<jobject> JNI_Profile_GetProfileKey(JNIEnv* env,
   return profile_key->GetJavaObject();
 }
 
-static bool JNI_Profile_IsChild(JNIEnv* env, jlong ptr) {
+static bool JNI_Profile_IsChild(JNIEnv* env, int64_t ptr) {
   Profile* self = reinterpret_cast<Profile*>(ptr);
   return self->IsChild();
 }
 
-static void JNI_Profile_Wipe(JNIEnv* env, jlong ptr) {
+static void JNI_Profile_Wipe(JNIEnv* env, int64_t ptr) {
   Profile* self = reinterpret_cast<Profile*>(ptr);
   self->Wipe();
 }

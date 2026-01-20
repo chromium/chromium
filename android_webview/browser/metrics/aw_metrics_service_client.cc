@@ -824,7 +824,7 @@ static void JNI_AwMetricsServiceClient_SetFastStartupForTesting(
 // static
 static void JNI_AwMetricsServiceClient_SetUploadIntervalForTesting(
     JNIEnv* env,
-    jlong upload_interval_ms) {
+    int64_t upload_interval_ms) {
   AwMetricsServiceClient::GetInstance()->SetUploadIntervalForTesting(
       base::Milliseconds(upload_interval_ms));
 }

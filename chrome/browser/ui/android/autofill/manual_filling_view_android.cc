@@ -356,7 +356,7 @@ static void JNI_ManualFillingComponentBridge_CachePasswordSheetDataForTesting(
 static void JNI_ManualFillingComponentBridge_NotifyFocusedFieldTypeForTesting(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_web_contents,
-    jlong j_focused_field_id,
+    int64_t j_focused_field_id,
     int32_t j_available) {
   ManualFillingControllerImpl::GetOrCreate(
       content::WebContents::FromJavaWebContents(j_web_contents))

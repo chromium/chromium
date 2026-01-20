@@ -88,9 +88,9 @@ void ContextualSearchTabHelper::Destroy(JNIEnv* env) {
   delete this;
 }
 
-static jlong JNI_ContextualSearchTabHelper_Init(JNIEnv* env,
-                                                const JavaRef<jobject>& obj,
-                                                Profile* profile) {
+static int64_t JNI_ContextualSearchTabHelper_Init(JNIEnv* env,
+                                                  const JavaRef<jobject>& obj,
+                                                  Profile* profile) {
   CHECK(profile);
   ContextualSearchTabHelper* tab = new ContextualSearchTabHelper(
       env, obj, profile);

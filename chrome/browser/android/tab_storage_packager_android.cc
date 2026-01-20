@@ -157,11 +157,11 @@ TabStoragePackagerAndroid::PackageTabStripCollectionData(
 
 long TabStoragePackagerAndroid::ConsolidateTabData(
     JNIEnv* env,
-    jlong timestamp_millis,
+    int64_t timestamp_millis,
     const jni_zero::JavaRef<jobject>& web_contents_state_buffer,
     std::optional<std::string> opener_app_id,
     int32_t theme_color,
-    jlong last_navigation_committed_timestamp_millis,
+    int64_t last_navigation_committed_timestamp_millis,
     bool tab_has_sensitive_content,
     TabAndroid* tab) {
   std::optional<std::vector<uint8_t>> web_contents_state_bytes;

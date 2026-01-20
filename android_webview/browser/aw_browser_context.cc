@@ -642,7 +642,7 @@ AwBrowserContext::GetJavaBrowserContext() {
   return base::android::ScopedJavaLocalRef<jobject>(obj_);
 }
 
-jlong AwBrowserContext::GetQuotaManagerBridge(JNIEnv* env) {
+int64_t AwBrowserContext::GetQuotaManagerBridge(JNIEnv* env) {
   return reinterpret_cast<intptr_t>(GetQuotaManagerBridge());
 }
 

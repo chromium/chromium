@@ -58,9 +58,9 @@ void ExtensionActionContextMenuBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
-static jlong JNI_ExtensionActionContextMenuBridge_Init(
+static int64_t JNI_ExtensionActionContextMenuBridge_Init(
     JNIEnv* env,
-    jlong browser_window_interface_ptr,
+    int64_t browser_window_interface_ptr,
     ToolbarActionsModel::ActionId& action_id,
     content::WebContents* web_contents,
     ExtensionContextMenuModel::ContextMenuSource context_menu_source) {
@@ -70,7 +70,7 @@ static jlong JNI_ExtensionActionContextMenuBridge_Init(
       browser, action_id, web_contents, context_menu_source);
   // The bridge is owned by the Java object and will be destroyed when
   // ExtensionActionContextMenuBridge.destroy() is called.
-  return reinterpret_cast<jlong>(bridge);
+  return reinterpret_cast<int64_t>(bridge);
 }
 
 }  // namespace extensions

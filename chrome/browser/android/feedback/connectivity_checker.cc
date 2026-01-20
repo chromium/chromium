@@ -173,7 +173,7 @@ static void JNI_ConnectivityChecker_CheckConnectivity(
     JNIEnv* env,
     Profile* profile,
     std::string& j_url,
-    jlong j_timeout_ms,
+    int64_t j_timeout_ms,
     const JavaRef<jobject>& j_callback,
     int32_t j_network_annotation_hash_code) {
   if (!profile) {

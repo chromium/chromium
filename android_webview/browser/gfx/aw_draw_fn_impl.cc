@@ -182,7 +182,7 @@ sk_sp<SkColorSpace> CreateColorSpace(T* params) {
 }  // namespace
 
 static void JNI_AwDrawFnImpl_SetDrawFnFunctionTable(JNIEnv* env,
-                                                    jlong function_table) {
+                                                    int64_t function_table) {
   g_draw_fn_function_table =
       reinterpret_cast<AwDrawFnFunctionTable*>(function_table);
 }
@@ -240,12 +240,12 @@ int32_t AwDrawFnImpl::GetFunctorHandle(JNIEnv* env) {
   return functor_handle_;
 }
 
-jlong AwDrawFnImpl::GetCompositorFrameConsumer(JNIEnv* env) {
+int64_t AwDrawFnImpl::GetCompositorFrameConsumer(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return reinterpret_cast<intptr_t>(GetCompositorFrameConsumer());
 }
 
-static jlong JNI_AwDrawFnImpl_Create(JNIEnv* env) {
+static int64_t JNI_AwDrawFnImpl_Create(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return reinterpret_cast<intptr_t>(new AwDrawFnImpl());
 }

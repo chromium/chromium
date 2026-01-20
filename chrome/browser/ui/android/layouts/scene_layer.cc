@@ -66,7 +66,7 @@ SkColor SceneLayer::GetBackgroundColor() {
   return SK_ColorWHITE;
 }
 
-static jlong JNI_SceneLayer_Init(JNIEnv* env, const JavaRef<jobject>& jobj) {
+static int64_t JNI_SceneLayer_Init(JNIEnv* env, const JavaRef<jobject>& jobj) {
   // This will automatically bind to the Java object and pass ownership there.
   SceneLayer* tree_provider = new SceneLayer(env, jobj);
   return reinterpret_cast<intptr_t>(tree_provider);

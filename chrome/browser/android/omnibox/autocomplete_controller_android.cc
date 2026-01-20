@@ -345,10 +345,10 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
     const int32_t j_window_open_disposition,
     const JavaRef<jstring>& j_current_url,
     ::metrics::OmniboxEventProto::PageClassification page_classification,
-    jlong elapsed_time_since_first_modified,
+    int64_t elapsed_time_since_first_modified,
     int32_t completed_length,
     const JavaRef<jobject>& j_web_contents,
-    jlong omnibox_action_ptr) {
+    int64_t omnibox_action_ptr) {
   std::u16string url = ConvertJavaStringToUTF16(env, j_current_url);
   const GURL current_url = GURL(url);
   const base::TimeTicks& now(base::TimeTicks::Now());
@@ -478,7 +478,7 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::
     UpdateMatchDestinationURLWithAdditionalSearchboxStats(
         JNIEnv* env,
         uintptr_t match_ptr,
-        jlong elapsed_time_since_input_change) {
+        int64_t elapsed_time_since_input_change) {
   auto* match = reinterpret_cast<AutocompleteMatch*>(match_ptr);
   autocomplete_controller_
       ->UpdateMatchDestinationURLWithAdditionalSearchboxStats(

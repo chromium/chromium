@@ -53,7 +53,7 @@ class AuxiliarySearchProvider : public KeyedService {
   void GetCustomTabs(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& j_url,
-      jlong j_begin_time,
+      int64_t j_begin_time,
       const base::android::JavaRef<jobject>& j_callback_obj) const;
 
   static void EnsureFactoryBuilt();

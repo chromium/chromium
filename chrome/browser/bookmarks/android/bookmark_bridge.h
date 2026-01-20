@@ -116,7 +116,7 @@ class BookmarkBridge : public ProfileObserver,
   void LoadFakePartnerBookmarkShimForTesting(JNIEnv* env);
 
   base::android::ScopedJavaLocalRef<jobject> GetBookmarkById(JNIEnv* env,
-                                                             jlong id,
+                                                             int64_t id,
                                                              int32_t type);
 
   void GetAllFoldersWithDepths(
@@ -151,20 +151,20 @@ class BookmarkBridge : public ProfileObserver,
       JNIEnv* env);
 
   std::string GetBookmarkGuidByIdForTesting(JNIEnv* env,
-                                            jlong id,
+                                            int64_t id,
                                             int32_t type);
 
   void GetChildIds(JNIEnv* env,
-                   jlong id,
+                   int64_t id,
                    int32_t type,
                    const base::android::JavaRef<jobject>& j_result_obj);
   std::vector<const bookmarks::BookmarkNode*> GetChildIdsImpl(
       const bookmarks::BookmarkNode* parent);
 
-  int32_t GetChildCount(JNIEnv* env, jlong id, int32_t type);
+  int32_t GetChildCount(JNIEnv* env, int64_t id, int32_t type);
 
   base::android::ScopedJavaLocalRef<jobject> GetChildAt(JNIEnv* env,
-                                                        jlong id,
+                                                        int64_t id,
                                                         int32_t type,
                                                         int32_t index);
 
@@ -174,28 +174,28 @@ class BookmarkBridge : public ProfileObserver,
 
   // Get the number of bookmarks in the sub tree of the specified bookmark node.
   // The specified node must be of folder type.
-  int32_t GetTotalBookmarkCount(JNIEnv* env, jlong id, int32_t type);
+  int32_t GetTotalBookmarkCount(JNIEnv* env, int64_t id, int32_t type);
 
   void SetBookmarkTitle(JNIEnv* env,
-                        jlong id,
+                        int64_t id,
                         int32_t type,
                         const std::u16string& title);
 
-  void SetBookmarkUrl(JNIEnv* env, jlong id, int32_t type, const GURL& url);
+  void SetBookmarkUrl(JNIEnv* env, int64_t id, int32_t type, const GURL& url);
 
   void SetPowerBookmarkMeta(JNIEnv* env,
-                            jlong id,
+                            int64_t id,
                             int32_t type,
                             const base::android::JavaRef<jbyteArray>& bytes);
 
   base::android::ScopedJavaLocalRef<jbyteArray>
-  GetPowerBookmarkMeta(JNIEnv* env, jlong id, int32_t type);
+  GetPowerBookmarkMeta(JNIEnv* env, int64_t id, int32_t type);
 
-  void DeletePowerBookmarkMeta(JNIEnv* env, jlong id, int32_t type);
+  void DeletePowerBookmarkMeta(JNIEnv* env, int64_t id, int32_t type);
 
-  bool DoesBookmarkExist(JNIEnv* env, jlong id, int32_t type);
+  bool DoesBookmarkExist(JNIEnv* env, int64_t id, int32_t type);
 
-  bool IsFolderVisible(JNIEnv* env, jlong id, int32_t type);
+  bool IsFolderVisible(JNIEnv* env, int64_t id, int32_t type);
 
   void SearchBookmarks(JNIEnv* env,
                        const base::android::JavaRef<jobject>& j_list,

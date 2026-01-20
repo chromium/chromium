@@ -95,13 +95,13 @@ void ExtensionsToolbarBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
-static jlong JNI_ExtensionsToolbarBridge_Init(
+static int64_t JNI_ExtensionsToolbarBridge_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& java_object,
-    jlong j_browser_window_interface) {
+    int64_t j_browser_window_interface) {
   BrowserWindowInterface* browser =
       reinterpret_cast<BrowserWindowInterface*>(j_browser_window_interface);
-  return reinterpret_cast<jlong>(
+  return reinterpret_cast<int64_t>(
       new ExtensionsToolbarBridge(browser, java_object));
 }
 

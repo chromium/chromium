@@ -462,7 +462,7 @@ PersonalDataManagerAndroid::CreateJavaBankAccountFromNative(
   }
   return Java_BankAccount_create(
       env,
-      static_cast<jlong>(bank_account.payment_instrument().instrument_id()),
+      static_cast<int64_t>(bank_account.payment_instrument().instrument_id()),
       jnickname, jdisplay_icon_url,
       ToJavaIntArray(env, supported_payment_rails_array),
       static_cast<bool>(bank_account.payment_instrument().is_fido_enrolled()),
@@ -723,9 +723,9 @@ static std::string JNI_PersonalDataManager_ToCountryCode(
   return CountryNames::GetInstance()->GetCountryCode(country_name);
 }
 
-static jlong JNI_PersonalDataManager_Init(JNIEnv* env,
-                                          const JavaRef<jobject>& obj,
-                                          Profile* profile) {
+static int64_t JNI_PersonalDataManager_Init(JNIEnv* env,
+                                            const JavaRef<jobject>& obj,
+                                            Profile* profile) {
   CHECK(profile);
   PersonalDataManagerAndroid* personal_data_manager_android =
       new PersonalDataManagerAndroid(

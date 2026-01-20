@@ -131,7 +131,7 @@ RootBeginFrameSourceWebView::RootBeginFrameSourceWebView()
                           /*requires_align_with_java=*/true),
       j_object_(Java_RootBeginFrameSourceWebView_Constructor(
           jni_zero::AttachCurrentThread(),
-          reinterpret_cast<jlong>(this))) {
+          reinterpret_cast<int64_t>(this))) {
   ObserveBeginFrameSource(&begin_frame_source_);
 }
 
