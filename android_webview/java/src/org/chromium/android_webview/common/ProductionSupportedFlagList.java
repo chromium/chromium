@@ -1226,5 +1226,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "UseLockFreeX509Verification",
                 "Enables lock-free certificate verification codepath."),
+        Flag.baseFeature(CcFeatures.REPORT_UKM, "Validate performance of UKM reporting."),
     };
 }
