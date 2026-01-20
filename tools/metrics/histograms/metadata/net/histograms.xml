@@ -2730,7 +2730,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.HostCache.EraseStale.NetworkChanges{HostType}"
-    units="changes" expires_after="2025-10-26">
+    units="changes" expires_after="2026-10-26">
   <owner>suzukikeita@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -2738,6 +2738,9 @@ chromium-metrics-reviews@google.com.
     the host cache how many network changes happened between setting and erasing
     it. This is recorded each time an erase happens, when clearing the host
     cache or evicting the entry.
+
+    WARNING: This metric was expired on 2025-10-26, but was re-enabled on
+    2026-01-20. Some data may be missing.
   </summary>
   <token key="HostType" variants="HostType"/>
 </histogram>
@@ -2755,49 +2758,61 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.HostCache.EraseValid.ValidFor{HostType}" units="ms"
-    expires_after="2025-10-26">
+    expires_after="2026-10-26">
   <owner>suzukikeita@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
     When erasing a valid DNS entry for {HostType} from the host cache, for how
     much longer it would have remained valid. This is recorded each time an
     erase happens, when clearing the host cache or evicting the entry.
+
+    WARNING: This metric was expired on 2025-10-26, but was re-enabled on
+    2026-01-20. Some data may be missing.
   </summary>
   <token key="HostType" variants="HostType"/>
 </histogram>
 
 <histogram name="Net.DNS.HostCache.Erase{HostType}" enum="EraseReason"
-    expires_after="2025-12-14">
+    expires_after="2026-12-14">
   <owner>suzukikeita@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
     The reason for erasing a DNS entry for {HostType} from the host cache. This
     is recorded each time an erase happens, when clearing the host cache or
     evicting the entry.
+
+    WARNING: This metric was expired on 2025-12-14, but was re-enabled on
+    2026-01-20. Some data may be missing.
   </summary>
   <token key="HostType" variants="HostType"/>
 </histogram>
 
 <histogram name="Net.DNS.HostCache.LookupStale.ExpiredBy{HostType}" units="ms"
-    expires_after="2025-08-10">
+    expires_after="2026-06-10">
   <owner>suzukikeita@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
     When looking up a stale DNS entry for {HostType} in the host cache, how long
     past the expiration time it is. This is recorded at the end of each DNS
     entry lookup.
+
+    WARNING: This metric was expired on 2025-06-10, but was re-enabled on
+    2026-01-20. Some data may be missing.
   </summary>
   <token key="HostType" variants="HostType"/>
 </histogram>
 
 <histogram name="Net.DNS.HostCache.LookupStale.NetworkChanges{HostType}"
-    units="changes" expires_after="2025-08-10">
+    units="changes" expires_after="2026-08-10">
   <owner>suzukikeita@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
     When looking up a stale DNS entry for {HostType} in the host cache, how many
     network changes happened between setting it and looking it up. This is
     recorded at the end of each DNS entry lookup.
+
+    WARNING: This metric was expired on 2025-08-10, but was re-enabled on
+    2026-01-20. Some data may be missing.
   </summary>
   <token key="HostType" variants="HostType"/>
 </histogram>
