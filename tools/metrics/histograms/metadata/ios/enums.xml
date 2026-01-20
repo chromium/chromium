@@ -374,6 +374,18 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Tips Notification"/>
 </enum>
 
+<!-- LINT.IfChange(IOSCrossPlatformPromoType) -->
+
+<enum name="IOSCrossPlatformPromoType">
+  <int value="1" label="Password"/>
+  <int value="2" label="Address"/>
+  <int value="3" label="Payment"/>
+  <int value="4" label="EnhancedBrowsing"/>
+  <int value="5" label="Lens"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/desktop_to_mobile_promos/promos_types.h:PromoType) -->
+
 <!-- LINT.IfChange(IOSDefaultBrowserBannerPromoPromoSessionEndedReason) -->
 
 <enum name="IOSDefaultBrowserBannerPromoPromoSessionEndedReason">

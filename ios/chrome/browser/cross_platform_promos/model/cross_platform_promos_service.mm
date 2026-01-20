@@ -9,6 +9,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
 #import "base/json/values_util.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
 #import "components/desktop_to_mobile_promos/features.h"
 #import "components/desktop_to_mobile_promos/pref_names.h"
@@ -115,7 +116,9 @@ void CrossPlatformPromosService::MaybeShowPromo() {
     return;
   }
 
-  switch (static_cast<desktop_to_mobile_promos::PromoType>(*promo_type)) {
+  desktop_to_mobile_promos::PromoType type =
+      static_cast<desktop_to_mobile_promos::PromoType>(*promo_type);
+  switch (type) {
     case desktop_to_mobile_promos::PromoType::kLens:
       ShowLensPromo(browser);
       break;
@@ -130,6 +133,9 @@ void CrossPlatformPromosService::MaybeShowPromo() {
       profile_->GetPrefs()->ClearPref(prefs::kIOSPromoReminder);
       return;
   }
+
+  base::UmaHistogramEnumeration(
+      "IOS.CrossPlatformPromos.Promo.Shown.FromAppForeground", type);
 
   // Clear the promo reminder pref after showing the promo.
   profile_->GetPrefs()->ClearPref(prefs::kIOSPromoReminder);

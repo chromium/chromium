@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_notification_client.h"
 
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "components/desktop_to_mobile_promos/promos_types.h"
 #import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_service.h"
@@ -93,6 +94,7 @@ class CrossPlatformPromosNotificationClientTest : public PlatformTest {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<TestProfileIOS> profile_;
   id scene_state_;
   std::unique_ptr<TestBrowser> browser_;
@@ -115,6 +117,12 @@ TEST_F(CrossPlatformPromosNotificationClientTest,
       desktop_to_mobile_promos::PromoType::kPassword);
 
   EXPECT_TRUE(client_->HandleNotificationInteraction(response));
+  histogram_tester_.ExpectUniqueSample(
+      "IOS.CrossPlatformPromos.PushNotification.Interaction",
+      desktop_to_mobile_promos::PromoType::kPassword, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "IOS.CrossPlatformPromos.Promo.Shown.FromPush",
+      desktop_to_mobile_promos::PromoType::kPassword, 1);
 }
 
 // Tests that HandleNotificationInteraction queues the promo if browser is not
@@ -127,12 +135,20 @@ TEST_F(CrossPlatformPromosNotificationClientTest, HandleInteraction_ColdStart) {
       desktop_to_mobile_promos::PromoType::kPassword);
 
   EXPECT_TRUE(client_->HandleNotificationInteraction(response));
+  histogram_tester_.ExpectUniqueSample(
+      "IOS.CrossPlatformPromos.PushNotification.Interaction",
+      desktop_to_mobile_promos::PromoType::kPassword, 1);
+  histogram_tester_.ExpectTotalCount(
+      "IOS.CrossPlatformPromos.Promo.Shown.FromPush", 0);
 
   // Now create browser and signal ready.
   CreateBrowser();
   EXPECT_CALL(*mock_service(), ShowCPEPromo(browser_.get()));
 
   client_->OnSceneActiveForegroundBrowserReady();
+  histogram_tester_.ExpectUniqueSample(
+      "IOS.CrossPlatformPromos.Promo.Shown.FromPush",
+      desktop_to_mobile_promos::PromoType::kPassword, 1);
 }
 
 // Tests CanHandleNotification.

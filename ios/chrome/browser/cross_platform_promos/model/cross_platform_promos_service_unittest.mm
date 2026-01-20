@@ -8,6 +8,7 @@
 
 #import "base/functional/bind.h"
 #import "base/json/values_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/time/clock.h"
@@ -117,6 +118,7 @@ class CrossPlatformPromosServiceTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::TimeSource::MOCK_TIME};
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<PrefService> prefs_;
   raw_ptr<syncer::FakeDeviceInfoSyncService> device_info_sync_service_;
@@ -198,6 +200,9 @@ TEST_F(CrossPlatformPromosServiceTest, MaybeShowPromo_Lens) {
   service_->MaybeShowPromo();
 
   EXPECT_OCMOCK_VERIFY(mock_handler);
+  histogram_tester_.ExpectUniqueSample(
+      "IOS.CrossPlatformPromos.Promo.Shown.FromAppForeground",
+      desktop_to_mobile_promos::PromoType::kLens, 1);
 }
 
 // Tests that the Enhanced Browsing promo is triggered when the pref changes.
@@ -216,6 +221,9 @@ TEST_F(CrossPlatformPromosServiceTest, MaybeShowPromo_ESB) {
   service_->MaybeShowPromo();
 
   EXPECT_OCMOCK_VERIFY(mock_handler);
+  histogram_tester_.ExpectUniqueSample(
+      "IOS.CrossPlatformPromos.Promo.Shown.FromAppForeground",
+      desktop_to_mobile_promos::PromoType::kEnhancedBrowsing, 1);
 }
 
 // Tests that the Password promo is triggered when the pref changes.
@@ -235,6 +243,9 @@ TEST_F(CrossPlatformPromosServiceTest, MaybeShowPromo_Password) {
   service_->MaybeShowPromo();
 
   EXPECT_OCMOCK_VERIFY(mock_handler);
+  histogram_tester_.ExpectUniqueSample(
+      "IOS.CrossPlatformPromos.Promo.Shown.FromAppForeground",
+      desktop_to_mobile_promos::PromoType::kPassword, 1);
 }
 
 // Tests that the promo type pref is cleared after showing a promo.
@@ -272,4 +283,6 @@ TEST_F(CrossPlatformPromosServiceTest, MaybeShowPromo_WrongGUID) {
   service_->MaybeShowPromo();
 
   EXPECT_OCMOCK_VERIFY(mock_handler);
+  histogram_tester_.ExpectTotalCount(
+      "IOS.CrossPlatformPromos.Promo.Shown.FromAppForeground", 0);
 }
