@@ -1714,8 +1714,6 @@ void CanvasResourceProvider::Clear() {
   else
     Canvas().clear(SkColors::kTransparent);
 
-  auto timer = CreateScopedRasterTimer();
-
   clear_frame_ = true;
   RasterRecord(recorder_->ReleaseMainRecording());
   // Images are locked for the duration of the rasterization, in case they get
