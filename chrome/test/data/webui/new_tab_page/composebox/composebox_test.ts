@@ -2574,6 +2574,9 @@ suite('NewTabPageComposeboxTest', () => {
   test('onInputStateChanged updates inputState', async () => {
     createComposeboxElement();
     const inputState = {
+      allowedModels: [],
+      allowedTools: [],
+      allowedInputTypes: [],
       activeModel: 0,
       activeTool: 0,
       disabledModels: [],
