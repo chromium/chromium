@@ -4192,13 +4192,17 @@ if (!is_robolectric && enable_java_templates) {
 
       args += rebase_path(sources, root_build_dir)
 
+      # The protobuf's src directory contains cpp_features.proto that can be
+      # imported in order to provide C++ specific codegen options.
+      _import_dirs = [ "//third_party/protobuf/src" ]
       if (defined(invoker.import_dirs)) {
-        foreach(_import_dir, invoker.import_dirs) {
-          args += [
-            "--import-dir",
-            rebase_path(_import_dir, root_build_dir),
-          ]
-        }
+        _import_dirs += invoker.import_dirs
+      }
+      foreach(_path, _import_dirs) {
+        args += [
+          "--import-dir",
+          rebase_path(_path, root_build_dir),
+        ]
       }
     }
 
