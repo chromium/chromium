@@ -9037,6 +9037,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.Startup.LockRetryResult"
+    enum="LockRetryResult" expires_after="2026-06-01">
+  <owner>torne@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Recorded after successfully acquiring the WebView data dir lock based on the
+    number of retry attempts and whether we saw an OverlappingFileLockException.
+
+    This is not recorded when we run out of retries and fail to acquire the lock
+    because this case throws an exception - we don't complete startup and so
+    would never actually store and upload the metric value.
+
+    This does not record the exact number of retries, just a few buckets - we're
+    primarily interested in whether OverlappingFileLockException is involved and
+    whether retrying provides any value at all.
+  </summary>
+</histogram>
+
 <histogram
     name="Android.WebView.Startup.NonblockingServiceConnectionDelay.{ServiceName}"
     units="ms" expires_after="2026-07-28">

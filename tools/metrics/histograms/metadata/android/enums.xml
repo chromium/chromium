@@ -1251,6 +1251,22 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="yes"/>
 </enum>
 
+<enum name="LockRetryResult">
+  <int value="0" label="Succeeded the first time"/>
+  <int value="1"
+      label="Succeeded with one retry, no OverlappingFileLockException"/>
+  <int value="2"
+      label="Succeeded with one retry, saw OverlappingFileLockException"/>
+  <int value="3"
+      label="Succeeded with 2-3 retries, no OverlappingFileLockException"/>
+  <int value="4"
+      label="Succeeded with 2-3 retries, saw OverlappingFileLockException"/>
+  <int value="5"
+      label="Succeeded with 4+ retries, no OverlappingFileLockException"/>
+  <int value="6"
+      label="Succeeded with 4+ retries, saw OverlappingFileLockException"/>
+</enum>
+
 <enum name="MainFrameIntentLaunch">
   <int value="0" label="Not from external app, to intent scheme"/>
   <int value="1" label="Not from external app, to custom scheme"/>
