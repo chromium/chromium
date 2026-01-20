@@ -98,6 +98,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Success"/>
   <int value="1" label="NoContents"/>
   <int value="2" label="DiscardTabFailure"/>
+  <int value="3" label="NoLifecycleUnit"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/performance_manager/mechanisms/page_discarder.cc:DiscardPageOnUIThreadOutcome) -->

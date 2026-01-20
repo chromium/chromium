@@ -34,7 +34,8 @@ enum class DiscardPageOnUIThreadOutcome {
   kSuccess = 0,
   kNoContents = 1,
   kDiscardTabFailure = 2,
-  kMaxValue = kDiscardTabFailure
+  kNoLifecycleUnit = 3,
+  kMaxValue = kNoLifecycleUnit
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/tab/enums.xml:DiscardPageOnUIThreadOutcome)
 
@@ -71,6 +72,7 @@ std::optional<base::ByteSize> PageDiscarder::DiscardPageNode(
       resource_coordinator::TabLifecycleUnitSource::GetTabLifecycleUnitExternal(
           contents.get());
   if (!lifecycle_unit) {
+    outcome = DiscardPageOnUIThreadOutcome::kNoLifecycleUnit;
     return std::nullopt;
   }
 
