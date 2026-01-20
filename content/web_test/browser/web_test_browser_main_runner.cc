@@ -232,14 +232,9 @@ void WebTestBrowserMainRunner::Initialize() {
     command_line.AppendSwitch(switches::kEnableBlinkTestFeatures);
   }
 
-  // With display compositor pixel dumps, we ensure that we complete all
-  // stages of compositing before draw. We also can't have checker imaging,
+  // With display compositor pixel dumps, we can't have checker imaging,
   // since it's incompatible with single threaded compositor and display
   // compositor pixel dumps.
-  //
-  // TODO(crbug.com/41420287) Add kRunAllCompositorStagesBeforeDraw back here
-  // once you figure out why it causes so much web test flakiness.
-  // command_line.AppendSwitch(switches::kRunAllCompositorStagesBeforeDraw);
   command_line.AppendSwitch(switches::kDisableCheckerImaging);
 
   command_line.AppendSwitch(switches::kMuteAudio);
