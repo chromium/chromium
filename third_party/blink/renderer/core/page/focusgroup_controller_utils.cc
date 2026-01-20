@@ -447,8 +447,8 @@ FocusgroupControllerUtils::GetEntryElementForFocusgroupSegmentFromFirst(
       continue;
     }
 
-    // Check for focusgroup-entry-priority attribute.
-    if (!entry_priority_item && HasFocusgroupEntryPriority(*item_in_segment)) {
+    // Check for focusgroupstart attribute.
+    if (!entry_priority_item && IsFocusgroupStart(*item_in_segment)) {
       entry_priority_item = item_in_segment;
     }
 
@@ -728,9 +728,8 @@ const Element* FocusgroupControllerUtils::GetOptedOutSubtreeRoot(
 }
 
 // static
-bool FocusgroupControllerUtils::HasFocusgroupEntryPriority(
-    const Element& element) {
-  return element.FastHasAttribute(html_names::kFocusgroupEntryPriorityAttr);
+bool FocusgroupControllerUtils::IsFocusgroupStart(const Element& element) {
+  return element.FastHasAttribute(html_names::kFocusgroupstartAttr);
 }
 
 }  // namespace blink

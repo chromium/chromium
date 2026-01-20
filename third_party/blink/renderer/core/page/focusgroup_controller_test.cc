@@ -1179,7 +1179,7 @@ TEST_F(FocusgroupControllerTest, EntryPriorityOverFirstInSegment) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="fg" focusgroup="toolbar">
       <button id="btn1" tabindex="1">Positive 1</button>
-      <button id="priority" focusgroup-entry-priority>Priority</button>
+      <button id="priority" focusgroupstart>Priority</button>
       <button id="pos2" tabindex="2">Positive 2</button>
     </div>
   )HTML");
@@ -1204,8 +1204,8 @@ TEST_F(FocusgroupControllerTest, MultipleEntryPriorityFirstInSegment) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="fg" focusgroup="toolbar">
       <button id="btn1">Button 1</button>
-      <button id="priority1" focusgroup-entry-priority>Priority 1</button>
-      <button id="priority2" focusgroup-entry-priority>Priority 2</button>
+      <button id="priority1" focusgroupstart>Priority 1</button>
+      <button id="priority2" focusgroupstart>Priority 2</button>
       <button id="btn2">Button 2</button>
     </div>
   )HTML");
@@ -1230,7 +1230,7 @@ TEST_F(FocusgroupControllerTest, EntryPriorityMemoryTakesPrecedence) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="fg" focusgroup="toolbar">
       <button id="btn1">Button 1</button>
-      <button id="priority" focusgroup-entry-priority>Priority</button>
+      <button id="priority" focusgroupstart>Priority</button>
       <button id="btn2">Button 2</button>
     </div>
   )HTML");
@@ -1306,7 +1306,7 @@ TEST_F(FocusgroupControllerTest, EntryPriorityWithReadingFlowOrder) {
     <div id="fg" class="flex-container" focusgroup="toolbar">
       <button id="btn1">Button 1</button>
       <button id="btn2">Button 2</button>
-      <button id="priority" focusgroup-entry-priority>Priority</button>
+      <button id="priority" focusgroupstart>Priority</button>
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
@@ -1342,8 +1342,8 @@ TEST_F(FocusgroupControllerTest, MultipleEntryPriorityWithReadingFlowOrder) {
       #btn1 { order: 2; }
     </style>
     <div id="fg" class="flex-container" focusgroup="toolbar">
-      <button id="priority1" focusgroup-entry-priority>Priority 1</button>
-      <button id="priority2" focusgroup-entry-priority>Priority 2</button>
+      <button id="priority1" focusgroupstart>Priority 1</button>
+      <button id="priority2" focusgroupstart>Priority 2</button>
       <button id="btn1">Button 1</button>
     </div>
   )HTML");
@@ -2096,13 +2096,13 @@ TEST_F(FocusgroupControllerTest, ReadingFlowComplexPartialReordering) {
       /*expect_wrap=*/true);
 }
 
-// Tests for focusgroup-entry-priority attribute helpers.
+// Tests for focusgroupstart attribute helpers.
 
-TEST_F(FocusgroupControllerTest, HasFocusgroupEntryPriorityAttribute) {
+TEST_F(FocusgroupControllerTest, IsFocusgroupStartAttribute) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="fg" focusgroup="toolbar">
       <button id="btn1">Button 1</button>
-      <button id="btn2" focusgroup-entry-priority>Button 2</button>
+      <button id="btn2" focusgroupstart>Button 2</button>
       <button id="btn3">Button 3</button>
     </div>
   )HTML");
@@ -2112,12 +2112,12 @@ TEST_F(FocusgroupControllerTest, HasFocusgroupEntryPriorityAttribute) {
   auto* btn2 = GetElementById("btn2");
   auto* btn3 = GetElementById("btn3");
 
-  EXPECT_FALSE(utils::HasFocusgroupEntryPriority(*btn1));
-  EXPECT_TRUE(utils::HasFocusgroupEntryPriority(*btn2));
-  EXPECT_FALSE(utils::HasFocusgroupEntryPriority(*btn3));
+  EXPECT_FALSE(utils::IsFocusgroupStart(*btn1));
+  EXPECT_TRUE(utils::IsFocusgroupStart(*btn2));
+  EXPECT_FALSE(utils::IsFocusgroupStart(*btn3));
 }
 
-TEST_F(FocusgroupControllerTest, HasFocusgroupEntryPriorityAttributeDynamic) {
+TEST_F(FocusgroupControllerTest, IsFocusgroupStartAttributeDynamic) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="fg" focusgroup="toolbar">
       <button id="btn1">Button 1</button>
@@ -2129,23 +2129,23 @@ TEST_F(FocusgroupControllerTest, HasFocusgroupEntryPriorityAttributeDynamic) {
   auto* btn1 = GetElementById("btn1");
   auto* btn2 = GetElementById("btn2");
 
-  EXPECT_FALSE(utils::HasFocusgroupEntryPriority(*btn1));
-  EXPECT_FALSE(utils::HasFocusgroupEntryPriority(*btn2));
+  EXPECT_FALSE(utils::IsFocusgroupStart(*btn1));
+  EXPECT_FALSE(utils::IsFocusgroupStart(*btn2));
 
   // Add attribute dynamically to btn1.
-  btn1->setAttribute(html_names::kFocusgroupEntryPriorityAttr, g_empty_atom);
+  btn1->setAttribute(html_names::kFocusgroupstartAttr, g_empty_atom);
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_TRUE(utils::HasFocusgroupEntryPriority(*btn1));
-  EXPECT_FALSE(utils::HasFocusgroupEntryPriority(*btn2));
+  EXPECT_TRUE(utils::IsFocusgroupStart(*btn1));
+  EXPECT_FALSE(utils::IsFocusgroupStart(*btn2));
 
   // Remove attribute from btn1 and add to btn2.
-  btn1->removeAttribute(html_names::kFocusgroupEntryPriorityAttr);
-  btn2->setAttribute(html_names::kFocusgroupEntryPriorityAttr, g_empty_atom);
+  btn1->removeAttribute(html_names::kFocusgroupstartAttr);
+  btn2->setAttribute(html_names::kFocusgroupstartAttr, g_empty_atom);
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_FALSE(utils::HasFocusgroupEntryPriority(*btn1));
-  EXPECT_TRUE(utils::HasFocusgroupEntryPriority(*btn2));
+  EXPECT_FALSE(utils::IsFocusgroupStart(*btn1));
+  EXPECT_TRUE(utils::IsFocusgroupStart(*btn2));
 }
 
 TEST_F(FocusgroupControllerTest, DoesElementContainBarrierWithOptOut) {
