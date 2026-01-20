@@ -34,6 +34,7 @@
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/chrome_features.h"
@@ -480,9 +481,8 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
 
   TestIsolatedWebAppInstallerModelObserver(&model).WaitForStepChange(
       Step::kInstallSuccess);
-  EXPECT_EQ(
-      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-      fake_provider()->registrar_unsafe().GetInstallState(url_info.app_id()));
+  EXPECT_TRUE(fake_provider()->registrar_unsafe().AppMatches(
+      url_info.app_id(), WebAppFilter::IsIsolatedApp()));
 }
 
 TEST_F(IsolatedWebAppInstallerViewControllerTest, CanLaunchAppAfterInstall) {
@@ -565,9 +565,8 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   controller.OnChildDialogAccepted();
 
   TestIsolatedWebAppInstallerModelObserver(&model).WaitForChildDialog();
-  EXPECT_NE(
-      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-      fake_provider()->registrar_unsafe().GetInstallState(url_info.app_id()));
+  EXPECT_FALSE(fake_provider()->registrar_unsafe().AppMatches(
+      url_info.app_id(), WebAppFilter::InstalledInOperatingSystemForTesting()));
 }
 
 TEST_F(IsolatedWebAppInstallerViewControllerTest,
