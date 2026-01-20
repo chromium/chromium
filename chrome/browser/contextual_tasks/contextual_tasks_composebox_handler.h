@@ -163,6 +163,9 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
       std::optional<int64_t> context_id,
       const lens::ContextualInputData& page_content_data);
 
+  // Returns the context ID for the active tab, if any.
+  std::optional<int64_t> GetActiveTabContextId();
+
   raw_ptr<ContextualTasksUI> web_ui_controller_;
   // The context controller for the current profile. The profile will outlive
   // this class.

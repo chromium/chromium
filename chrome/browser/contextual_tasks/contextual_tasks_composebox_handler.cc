@@ -43,6 +43,7 @@
 #include "net/base/mime_util.h"
 #include "net/base/url_util.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
+#include "third_party/lens_server_proto/aim_query.pb.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
@@ -632,6 +633,16 @@ void ContextualTasksComposeboxHandler::ContinueCreateAndSendQueryMessage(
         tool_mode ==
             omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN_UPLOAD;
 
+    if (auto active_tab_context_id = GetActiveTabContextId();
+        active_tab_context_id.has_value()) {
+      lens::ContextTurnMetadata active_tab_context_turn_metadata;
+      active_tab_context_turn_metadata.set_context_id(*active_tab_context_id);
+      active_tab_context_turn_metadata.mutable_tab_metadata()
+          ->set_is_active_tab(true);
+      create_client_to_aim_request_info->context_turn_metadata.push_back(
+          active_tab_context_turn_metadata);
+    }
+
     create_client_to_aim_request_info->file_tokens = GetUploadedContextTokens();
     lens::ClientToAimMessage client_to_page_message =
         session_handle->CreateClientToAimRequest(
@@ -876,4 +887,44 @@ ContextualTasksComposeboxHandler::GetLensSearchController() const {
     return controller;
   }
   return nullptr;
+}
+
+std::optional<int64_t>
+ContextualTasksComposeboxHandler::GetActiveTabContextId() {
+  auto* contextual_session_handle = GetContextualSessionHandle();
+  if (!contextual_session_handle) {
+    return std::nullopt;
+  }
+
+  auto* browser_window_interface = webui::GetBrowserWindowInterface(
+      web_ui_controller_->GetWebUIWebContents());
+  if (!browser_window_interface) {
+    return std::nullopt;
+  }
+  auto* tab_strip_model = browser_window_interface->GetTabStripModel();
+  if (!tab_strip_model) {
+    return std::nullopt;
+  }
+  auto* active_tab = tab_strip_model->GetActiveTab();
+  if (!active_tab) {
+    return std::nullopt;
+  }
+  SessionID active_tab_id =
+      sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
+  if (!active_tab_id.is_valid()) {
+    return std::nullopt;
+  }
+
+  auto file_infos = contextual_session_handle->GetUploadedContextFileInfos();
+  auto submitted_file_infos =
+      contextual_session_handle->GetSubmittedContextFileInfos();
+  file_infos.insert(file_infos.end(), submitted_file_infos.begin(),
+                    submitted_file_infos.end());
+  for (const auto& file_info : file_infos) {
+    if (file_info.tab_session_id &&
+        file_info.tab_session_id->id() == active_tab_id.id()) {
+      return file_info.GetContextId();
+    }
+  }
+  return std::nullopt;
 }
