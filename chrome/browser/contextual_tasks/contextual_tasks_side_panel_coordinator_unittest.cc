@@ -170,6 +170,20 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
     coordinator_ = std::make_unique<ContextualTasksSidePanelCoordinator>(
         browser_window_.get(), &mock_side_panel_ui_,
         &mock_active_task_context_provider_);
+
+    // Create a new tab.
+    tab_strip_model_->AppendWebContents(
+        content::WebContentsTester::CreateTestWebContents(profile_.get(),
+                                                          nullptr),
+        /*foreground=*/true);
+    EXPECT_EQ(1, tab_strip_model_->count());
+
+    ON_CALL(*browser_window_, GetActiveTabInterface())
+        .WillByDefault(Return(tab_strip_model_->GetActiveTab()));
+
+    ContextualTask expected_task(base::Uuid::GenerateRandomV4());
+    ON_CALL(*mock_controller_, CreateTask())
+        .WillByDefault(Return(expected_task));
   }
 
   void TearDown() override {
@@ -208,23 +222,21 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
 
 TEST_F(ContextualTasksSidePanelCoordinatorTest,
        OpenSidePanelWillCreateNewTask) {
-  // Create a new tab.
-  tab_strip_model_->AppendWebContents(
-      content::WebContentsTester::CreateTestWebContents(profile_.get(),
-                                                        nullptr),
-      /*foreground=*/true);
-  EXPECT_EQ(1, tab_strip_model_->count());
-
-  ON_CALL(*browser_window_, GetActiveTabInterface())
-      .WillByDefault(Return(tab_strip_model_->GetActiveTab()));
-
-  ContextualTask expected_task(base::Uuid::GenerateRandomV4());
-  ON_CALL(*mock_controller_, CreateTask()).WillByDefault(Return(expected_task));
-
   // Verify open the side panel with active tab not associated with a task will
   // create a new task.
   EXPECT_CALL(*mock_controller_, CreateTask()).Times(1);
+  coordinator_->Show(false);
+}
 
+TEST_F(ContextualTasksSidePanelCoordinatorTest, ShowSidePanelAlreadyOpen) {
+  // Verify mock_side_panel_ui will not call Show() if the side panel is already
+  // open.
+  ON_CALL(mock_side_panel_ui_, IsSidePanelEntryShowing(_))
+      .WillByDefault(Return(true));
+  EXPECT_CALL(
+      mock_side_panel_ui_,
+      Show(SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks), _, _))
+      .Times(0);
   coordinator_->Show(false);
 }
 
