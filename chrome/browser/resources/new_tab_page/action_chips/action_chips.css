@@ -278,6 +278,20 @@
   -webkit-line-clamp: 2;
 }
 
+.chip-remove-button {
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-size: 24px;
+  --cr-icon-image: url('chrome://resources/images/icon_clear.svg');
+  align-self: center;
+  display: none;
+  position: absolute;
+  right: 16px;
+}
+
+:host([show-simplified-ui_]) .action-chip:hover .chip-remove-button {
+  display: block;
+}
+
 @media (min-width: 560px) {
   :host {
     --ntp-chips-container-width: 449px;
