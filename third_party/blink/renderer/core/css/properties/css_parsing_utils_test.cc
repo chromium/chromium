@@ -323,7 +323,7 @@ TEST(CSSParsingUtilsTest, InternalColorsOnlyAllowedInUaMode) {
 TEST(CSSParsingUtilsTest, ConsumeColorRangePreservation) {
   const char* tests[] = {
       "color-mix(42deg)",
-      "color-contrast(42deg)",
+      "contrast-color(42deg)",
   };
   for (const char*& test : tests) {
     String input(test);

@@ -1828,14 +1828,6 @@
     // @import scope()
     "scope",
 
-    // color-contrast()
-    "color-contrast",
-    "vs",
-    "AA",
-    "AA-large",
-    "AAA",
-    "AAA-large",
-
     // initial-letter
     "drop",
     "raise",

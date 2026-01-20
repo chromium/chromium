@@ -1360,10 +1360,6 @@
       status: "stable",
     },
     {
-      name: "CSSColorContrast",
-      status: "experimental",
-    },
-    {
       name: "CSSColorTypedOM",
       status: "experimental",
     },
