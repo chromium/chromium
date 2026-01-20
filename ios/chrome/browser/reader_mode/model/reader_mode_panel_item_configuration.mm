@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -72,7 +73,9 @@ void ReaderModePanelItemConfiguration::DidTransitionToSmallEntrypoint() {
     engagement_tracker_->Dismissed(
         feature_engagement::kIPHiOSReaderModeLargeOmniboxEntrypointFeature);
   }
-  Invalidate();
+  if (IsProfileEligibleForBwg() || IsProactiveSuggestionsFrameworkEnabled()) {
+    Invalidate();
+  }
 }
 
 #pragma mark - ReaderModeTabHelper::Observer
@@ -92,7 +95,9 @@ void ReaderModePanelItemConfiguration::ReaderModeWebStateWillBecomeUnavailable(
     ReaderModeTabHelper* tab_helper,
     web::WebState* web_state,
     ReaderModeDeactivationReason reason) {
-  Invalidate();
+  if (IsProfileEligibleForBwg() || IsProactiveSuggestionsFrameworkEnabled()) {
+    Invalidate();
+  }
 }
 
 void ReaderModePanelItemConfiguration::ReaderModeDistillationFailed(
