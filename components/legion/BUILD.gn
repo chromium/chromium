@@ -45,6 +45,10 @@ source_set("legion") {
     "client.h",
     "client_impl.cc",
     "client_impl.h",
+    "connection.h",
+    "connection_basic.cc",
+    "connection_basic.h",
+    "connection_factory.h",
     "error_code.h",
     "legion_common.h",
     "secure_channel.h",
@@ -85,6 +89,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "client_impl_unittest.cc",
+    "connection_basic_unittest.cc",
     "secure_channel_impl_unittest.cc",
     "secure_session_async_impl_unittest.cc",
   ]
