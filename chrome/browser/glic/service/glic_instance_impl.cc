@@ -372,7 +372,7 @@ void GlicInstanceImpl::Close(EmbedderKey key, const CloseOptions& options) {
   if (!embedder) {
     return;
   }
-  if (base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding)) {
+  if (GlicEnabling::IsTrustFirstOnboardingEnabled()) {
     service_->metrics()->OnTrustFirstOnboardingDismissed();
   }
   instance_metrics_.OnClose();
@@ -383,7 +383,7 @@ bool GlicInstanceImpl::Toggle(ShowOptions&& options,
                               bool prevent_close,
                               glic::mojom::InvocationSource source,
                               std::optional<std::string> prompt_suggestion) {
-  if (base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding) &&
+  if (GlicEnabling::IsTrustFirstOnboardingEnabled() &&
       !service_->enabling().HasConsentedForProfile(profile_)) {
     service_->metrics()->OnTrustFirstOnboardingShown();
   }
