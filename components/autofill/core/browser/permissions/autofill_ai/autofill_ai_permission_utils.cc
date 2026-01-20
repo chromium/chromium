@@ -198,8 +198,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
 // Checks whether all requirements related to syncing state is met.
 [[nodiscard]] bool SatisfiesSyncingRequirements(
     AutofillAiAction action,
-    const syncer::SyncService* sync_service,
-    std::string* debug_message) {
+    const syncer::SyncService* sync_service) {
   switch (action) {
     case AutofillAiAction::kImportToWallet:
       return sync_service &&
@@ -499,8 +498,7 @@ bool MayPerformAutofillAiAction(const AutofillClient& client,
     return false;
   }
 
-  if (!SatisfiesSyncingRequirements(action, client.GetSyncService(),
-                                    debug_message)) {
+  if (!SatisfiesSyncingRequirements(action, client.GetSyncService())) {
     return false;
   }
 
