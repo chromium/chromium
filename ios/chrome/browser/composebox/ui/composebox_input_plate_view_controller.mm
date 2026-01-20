@@ -63,12 +63,8 @@ const CGFloat kCarouselHeight = 44.0f;
 /// The height of the AIM mode button.
 const CGFloat kAIMButtonHeight = 36.0f;
 /// The width of the AIM mode button.
-const CGFloat kAIMButtonBaseWidth = 108.0f;
-const CGFloat kXButtonWidthInButton = 14.0;
-const NSDirectionalEdgeInsets kModeIndicatorButtonInsets =
-    NSDirectionalEdgeInsetsMake(5, 8, 5, 8);
-const NSDirectionalEdgeInsets kImageGenerationButtonInsets =
-    NSDirectionalEdgeInsetsMake(5, 8, 5, 28);
+const CGFloat kAIMButtonDisabledWidth = 108.0f;
+const CGFloat kAIMButtonEnabledWidth = 122.0f;
 /// The spacing for the horizontal buttons stack view.
 const CGFloat kButtonsCompactSpacing = 4.0f;
 const CGFloat kButtonsStackViewSpacing = 6.0f;
@@ -189,7 +185,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   UIView* _inputPlateInternalContainerView;
   /// The button to toggle AI mode.
   UIButton* _aimButton;
-  UIView* _aimButtonXIndicator;
+  UIImageView* _aimButtonXIndicator;
   /// The button to toggle Image Generation mode.
   UIButton* _imageGenerationButton;
   /// The glow effect around the input plate container.
@@ -947,34 +943,38 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   }
 
   UIButtonConfiguration* config = _aimButton.configuration;
-  NSDirectionalEdgeInsets insets = kModeIndicatorButtonInsets;
-  self.aimButtonWidthConstraint.constant = kAIMButtonBaseWidth;
-  if (_AIModeEnabled) {
-    insets.trailing += kXButtonWidthInButton;
-    self.aimButtonWidthConstraint.constant += kXButtonWidthInButton;
+
+  if (self.AIModeEnabled) {
+    config.contentInsets = NSDirectionalEdgeInsetsMake(5, 8, 5, 22);
+    config.background.backgroundColor =
+        [_theme aimButtonBackgroundColorWithAIMEnabled:YES];
+    config.baseForegroundColor = [_theme aimButtonTextColorWithAIMEnabled:YES];
+    _aimButton.layer.borderWidth = 0;
+    _aimButton.accessibilityLabel = l10n_util::GetNSString(
+        IDS_IOS_COMPOSEBOX_AIM_BUTTON_DISABLE_ACTION_ACCESSIBILITY_LABEL);
+    self.aimButtonWidthConstraint.constant = kAIMButtonEnabledWidth;
+  } else {
+    config.contentInsets = NSDirectionalEdgeInsetsMake(5, 8, 5, 8);
+    config.background.backgroundColor =
+        [_theme aimButtonBackgroundColorWithAIMEnabled:NO];
+    config.baseForegroundColor = [_theme aimButtonTextColorWithAIMEnabled:NO];
+    _aimButton.layer.borderWidth = 1;
+    _aimButton.layer.borderColor =
+        [_theme aimButtonBorderColorWithAIMEnabled:NO].CGColor;
+    _aimButton.accessibilityLabel = l10n_util::GetNSString(
+        IDS_IOS_COMPOSEBOX_AIM_BUTTON_ENABLE_ACTION_ACCESSIBILITY_LABEL);
+    self.aimButtonWidthConstraint.constant = kAIMButtonDisabledWidth;
   }
-  config.contentInsets = insets;
-  config.background.backgroundColor =
-      [_theme aimButtonBackgroundColorWithAIMEnabled:_AIModeEnabled];
-  config.baseForegroundColor =
-      [_theme aimButtonTextColorWithAIMEnabled:_AIModeEnabled];
-  _aimButton.layer.borderWidth = _AIModeEnabled ? 0 : 1;
-  _aimButton.layer.borderColor =
-      [_theme aimButtonBorderColorWithAIMEnabled:_AIModeEnabled].CGColor;
-  _aimButton.accessibilityLabel = l10n_util::GetNSString(
-      _AIModeEnabled
-          ? IDS_IOS_COMPOSEBOX_AIM_BUTTON_DISABLE_ACTION_ACCESSIBILITY_LABEL
-          : IDS_IOS_COMPOSEBOX_AIM_BUTTON_ENABLE_ACTION_ACCESSIBILITY_LABEL);
 
   _aimButton.configuration = config;
 
   // Setup the X mark only after the config was aplied, otherwise the
   // constraints applied relative to the title label will be wrong for iOS 18.
-  [_aimButtonXIndicator removeFromSuperview];
-  _aimButtonXIndicator = nil;
-
-  if (_AIModeEnabled) {
-    _aimButtonXIndicator = [self setupXMarkInButton:_aimButton];
+  if (self.AIModeEnabled) {
+    [self setupXMarkInAIMButton];
+  } else {
+    [_aimButtonXIndicator removeFromSuperview];
+    _aimButtonXIndicator = nil;
   }
 }
 
@@ -994,29 +994,29 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   }
 }
 
-/// Adds and constraints the 'X' mark indicator to the given button.
-- (UIView*)setupXMarkInButton:(UIButton*)button {
-  UIImageView* xMarkImageView = [[UIImageView alloc] init];
-  xMarkImageView.translatesAutoresizingMaskIntoConstraints = NO;
+/// Adds and constraints the 'X' mark indicator to the AI Mode button.
+- (void)setupXMarkInAIMButton {
+  [_aimButtonXIndicator removeFromSuperview];
+
+  _aimButtonXIndicator = [[UIImageView alloc] init];
+  _aimButtonXIndicator.translatesAutoresizingMaskIntoConstraints = NO;
   UIImageConfiguration* configuration = [UIImageSymbolConfiguration
       configurationWithPointSize:kCloseIndicatorSize
                           weight:UIImageSymbolWeightBold
                            scale:UIImageSymbolScaleMedium];
-  xMarkImageView.image =
+  _aimButtonXIndicator.image =
       DefaultSymbolWithConfiguration(kXMarkSymbol, configuration);
   // The parent button view is the relevant element.
-  xMarkImageView.isAccessibilityElement = NO;
-  [button addSubview:xMarkImageView];
+  _aimButtonXIndicator.isAccessibilityElement = NO;
+  [_aimButton addSubview:_aimButtonXIndicator];
 
   [NSLayoutConstraint activateConstraints:@[
-    [button.titleLabel.trailingAnchor
-        constraintEqualToAnchor:xMarkImageView.leadingAnchor
+    [_aimButton.titleLabel.trailingAnchor
+        constraintEqualToAnchor:_aimButtonXIndicator.leadingAnchor
                        constant:-kCloseModeButtonMargin],
-    [button.titleLabel.centerYAnchor
-        constraintEqualToAnchor:xMarkImageView.centerYAnchor],
+    [_aimButton.titleLabel.centerYAnchor
+        constraintEqualToAnchor:_aimButtonXIndicator.centerYAnchor],
   ]];
-
-  return xMarkImageView;
 }
 
 /// Creates an extended touch target button with the given `image`.
@@ -1057,24 +1057,35 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [button addTarget:self
                 action:@selector(aimButtonTapped)
       forControlEvents:UIControlEventTouchUpInside];
+
+  UIButtonConfiguration* config =
+      [UIButtonConfiguration plainButtonConfiguration];
+
+  config.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+  config.image = CustomSymbolWithPointSize(kMagnifyingglassSparkSymbol,
+                                           kAIMButtonSymbolPointSize);
+
+  // Font setup
+  UIFont* font = [UIFont systemFontOfSize:kAIMButtonFontSize
+                                   weight:UIFontWeightMedium];
+  NSDictionary* attributes = @{NSFontAttributeName : font};
+  NSAttributedString* attributedTitle = [[NSAttributedString alloc]
+      initWithString:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_AIM_ACTION)
+          attributes:attributes];
+  config.attributedTitle = attributedTitle;
+  config.imagePadding = 5;
   button.layer.borderWidth = 0;
   button.accessibilityTraits = UIAccessibilityTraitButton;
   button.accessibilityIdentifier = kComposeboxAIMButtonAccessibilityIdentifier;
 
-  UIImage* icon = CustomSymbolWithPointSize(kMagnifyingglassSparkSymbol,
-                                            kAIMButtonSymbolPointSize);
-
-  button.configuration = [self
-      modeIndicatorButtonConfigWithTitle:l10n_util::GetNSString(
-                                             IDS_IOS_COMPOSEBOX_AIM_ACTION)
-                                   image:icon];
+  button.configuration = config;
 
   return button;
 }
 
 - (void)setupAIMButtonSizeConstraints {
-  self.aimButtonWidthConstraint =
-      [_aimButton.widthAnchor constraintEqualToConstant:kAIMButtonBaseWidth];
+  self.aimButtonWidthConstraint = [_aimButton.widthAnchor
+      constraintEqualToConstant:kAIMButtonDisabledWidth];
 
   [NSLayoutConstraint activateConstraints:@[
     [_aimButton.heightAnchor constraintEqualToConstant:kAIMButtonHeight],
@@ -1619,22 +1630,6 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   return image;
 }
 
-// Returns a base configuration for a mode indicator button.
-- (UIButtonConfiguration*)modeIndicatorButtonConfigWithTitle:(NSString*)title
-                                                       image:(UIImage*)image {
-  UIButtonConfiguration* config =
-      [UIButtonConfiguration plainButtonConfiguration];
-  config.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
-  config.imagePadding = 5;
-  config.image = image;
-  UIFont* font = [UIFont systemFontOfSize:kAIMButtonFontSize
-                                   weight:UIFontWeightMedium];
-  NSDictionary* attributes = @{NSFontAttributeName : font};
-  config.attributedTitle =
-      [[NSAttributedString alloc] initWithString:title attributes:attributes];
-  return config;
-}
-
 - (UIButton*)createImageGenerationButton {
   UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
   button.translatesAutoresizingMaskIntoConstraints = NO;
@@ -1643,20 +1638,51 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [button addTarget:self
                 action:@selector(imageGenerationButtonTapped)
       forControlEvents:UIControlEventTouchUpInside];
-  button.layer.borderWidth = 0;
 
   UIButtonConfiguration* config =
-      [self modeIndicatorButtonConfigWithTitle:
-                l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_CREATE_IMAGE_ACTION)
-                                         image:[self bananaIcon]];
-  config.contentInsets = kImageGenerationButtonInsets;
+      [UIButtonConfiguration plainButtonConfiguration];
+
+  config.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+  config.image = [self bananaIcon];
+
+  UIFont* font = [UIFont systemFontOfSize:kAIMButtonFontSize
+                                   weight:UIFontWeightMedium];
+  NSDictionary* attributes = @{NSFontAttributeName : font};
+  NSAttributedString* attributedTitle = [[NSAttributedString alloc]
+      initWithString:l10n_util::GetNSString(
+                         IDS_IOS_COMPOSEBOX_CREATE_IMAGE_ACTION)
+          attributes:attributes];
+  config.attributedTitle = attributedTitle;
+
+  config.imagePadding = 5;
+  button.layer.borderWidth = 0;
+
+  config.contentInsets = NSDirectionalEdgeInsetsMake(5, 8, 5, 28);
   config.background.backgroundColor =
       [_theme imageGenerationButtonBackgroundColor];
   config.baseForegroundColor = [_theme imageGenerationButtonTextColor];
   button.tintColor = [_theme imageGenerationButtonTextColor];
 
   button.configuration = config;
-  [self setupXMarkInButton:button];
+
+  UIImageView* xMarkImageView = [[UIImageView alloc] init];
+  xMarkImageView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  UIImageConfiguration* configuration = [UIImageSymbolConfiguration
+      configurationWithPointSize:kCloseIndicatorSize
+                          weight:UIImageSymbolWeightBold
+                           scale:UIImageSymbolScaleMedium];
+  xMarkImageView.image =
+      DefaultSymbolWithConfiguration(kXMarkSymbol, configuration);
+  [button addSubview:xMarkImageView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [button.titleLabel.trailingAnchor
+        constraintEqualToAnchor:xMarkImageView.leadingAnchor
+                       constant:-kCloseModeButtonMargin],
+    [button.titleLabel.centerYAnchor
+        constraintEqualToAnchor:xMarkImageView.centerYAnchor],
+  ]];
 
   return button;
 }
