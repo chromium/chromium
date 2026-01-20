@@ -65,6 +65,7 @@ class NetworkTrayViewTest : public AshTestBase {
   }
 
   void TearDown() override {
+    network_tray_view_ = nullptr;
     widget_.reset();
 
     AshTestBase::TearDown();
@@ -81,7 +82,7 @@ class NetworkTrayViewTest : public AshTestBase {
  private:
   std::unique_ptr<FakeCrosNetworkConfig> cros_network_;
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<NetworkTrayView, DanglingUntriaged> network_tray_view_;
+  raw_ptr<NetworkTrayView> network_tray_view_;
 };
 
 TEST_F(NetworkTrayViewTest, NetworkIconTooltip) {
