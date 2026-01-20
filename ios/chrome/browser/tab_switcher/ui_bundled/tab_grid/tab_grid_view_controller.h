@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_main_tab_grid_delegate.h"
 
-@protocol BWGCommands;
 @class ChromeAppBarPrototype;
 @class GridContainerViewController;
 @protocol GridCommands;
@@ -101,14 +100,10 @@ enum class TabGridPageConfiguration {
                         TabGridToolbarsMainTabGridDelegate,
                         UISearchBarDelegate>
 
-// Handler for Scene commands.
 @property(nonatomic, weak) id<SceneCommands> handler;
 
 // Handler for the TabGrid commands.
 @property(nonatomic, weak) id<TabGridCommands> tabGridHandler;
-
-// Handler for Gemini commands.
-@property(nonatomic, weak) id<BWGCommands> geminiHandler;
 
 // Delegate for this view controller to handle presenting tab UI.
 @property(nonatomic, weak) id<TabPresentationDelegate> tabPresentationDelegate;

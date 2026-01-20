@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/menu/ui_bundled/action_factory.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
-#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -258,18 +257,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
   return UIStatusBarStyleLightContent;
-}
-
-- (void)dismissViewControllerAnimated:(BOOL)flag
-                           completion:(void (^)())completion {
-  __weak TabGridViewController* weakSelf = self;
-  [super dismissViewControllerAnimated:flag
-                            completion:^() {
-                              if (completion) {
-                                completion();
-                              }
-                              [weakSelf showGeminiFloatyIfInvoked];
-                            }];
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -1346,19 +1333,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
     self.swipeToIncognitoIPHBottomConstraint.active = YES;
   }
-}
-
-// Helper method for dismissal block when attempting to show the Gemini floaty
-// if invoked.
-- (void)showGeminiFloatyIfInvoked {
-  // Sheet swipe gesture triggers [dismissViewControllerAnimated:completion:].
-  // Check if the presented view was truly dismissed which can be implied by
-  // `presentedViewController` == nil.
-  if (self.presentedViewController) {
-    return;
-  }
-
-  [self.geminiHandler showFloatyIfInvoked];
 }
 
 #pragma mark - UIGestureRecognizerDelegate

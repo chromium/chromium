@@ -876,8 +876,8 @@ const char kChromeAppStoreUrl[] =
   [self uninstallDelegatesForBrowser];
   [self.tabEventsMediator disconnect];
   [self.tabLifecycleMediator disconnect];
-  [self stopChildCoordinators];
   [self.dispatcher stopDispatchingToTarget:self];
+  [self stopChildCoordinators];
   [self destroyViewController];
   [self destroyViewControllerDependencies];
   _webUsageEnablerObserver.reset();
@@ -1451,10 +1451,8 @@ const char kChromeAppStoreUrl[] =
       HandlerForProtocol(_dispatcher, SceneCommands);
   _viewControllerDependencies.findInPageCommandsHandler =
       HandlerForProtocol(_dispatcher, FindInPageCommands);
-  if (IsGeminiCopresenceEnabled()) {
-    _viewControllerDependencies.geminiHandler =
-        HandlerForProtocol(_dispatcher, BWGCommands);
-  }
+  _viewControllerDependencies.geminiHandler =
+      HandlerForProtocol(_dispatcher, BWGCommands);
   _viewControllerDependencies.isOffTheRecord = profile->IsOffTheRecord();
   _viewControllerDependencies.urlLoadingBrowserAgent = _urlLoadingBrowserAgent;
   _viewControllerDependencies.tabUsageRecorderBrowserAgent =

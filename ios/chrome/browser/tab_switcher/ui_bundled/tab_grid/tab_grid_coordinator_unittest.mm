@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -128,11 +127,6 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
     [dispatcher startDispatchingToTarget:mock_application_handler
                              forProtocol:@protocol(SceneCommands)];
-
-    // Set up GeminiCommands mock.
-    id mock_gemini_handler = OCMProtocolMock(@protocol(BWGCommands));
-    [dispatcher startDispatchingToTarget:mock_gemini_handler
-                             forProtocol:@protocol(BWGCommands)];
 
     // Set up QuickDeleteCommands mock.
     id mock_quick_delete_handler_ =

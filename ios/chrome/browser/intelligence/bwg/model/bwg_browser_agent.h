@@ -224,11 +224,6 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
   // triggering logic related to ending floaty persistence.
   bool is_floaty_temporarily_hidden_ = false;
 
-  // Records when the floaty was last hidden. Prevents the floaty from
-  // reappearing too soon, particularly after a `HideFloatyIfInvoked()` call
-  // during parent/child view transitions.
-  base::TimeTicks floaty_hidden_timestamp_;
-
   // Weak pointer factory.
   base::WeakPtrFactory<BwgBrowserAgent> weak_factory_{this};
 };

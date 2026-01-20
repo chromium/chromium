@@ -131,9 +131,6 @@ typedef struct {
 // Command handler for omnibox commands.
 @property(nonatomic, weak) id<OmniboxCommands> omniboxCommandsHandler;
 
-// Command handler for Gemini commands.
-@property(nonatomic, weak) id<BWGCommands> geminiHandler;
-
 // Callback that will be invoked when the browser view visibility changed.
 @property(nonatomic, assign) const BrowserViewVisibilityStateChangedCallback&
     browserViewVisibilityStateChangedCallback;
