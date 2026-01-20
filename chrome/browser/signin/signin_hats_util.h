@@ -17,12 +17,12 @@ namespace signin {
 // On Win/Mac/Linux, if no browser is active for the profile and
 // `defer_if_no_browser` is true, the survey is deferred until a browser becomes
 // available. Otherwise, this is a no-op.
-void LaunchSigninHatsSurveyForProfile(const std::string& trigger,
-                                      Profile* profile,
-                                      bool defer_if_no_browser = false,
-                                      std::optional<signin_metrics::AccessPoint>
-                                          access_point_for_data_type_promo =
-                                              std::nullopt);
+void LaunchHatsSurveyForProfile(const std::string& trigger,
+                                Profile* profile,
+                                bool defer_if_no_browser = false,
+                                std::optional<signin_metrics::AccessPoint>
+                                    access_point_for_data_type_promo =
+                                        std::nullopt);
 }  // namespace signin
 
 #endif  // CHROME_BROWSER_SIGNIN_SIGNIN_HATS_UTIL_H_

@@ -738,7 +738,7 @@ void ProfilePickerFlowController::OnSwitchToProfileComplete(
     // profile picker accessed from the profile menu. This excludes first-run or
     // startup scenarios.
     if (entry_point_ == ProfilePicker::EntryPoint::kProfileMenuManageProfiles) {
-      signin::LaunchSigninHatsSurveyForProfile(
+      signin::LaunchHatsSurveyForProfile(
           kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker, profile);
     }
     RecordProfilePickerAction(

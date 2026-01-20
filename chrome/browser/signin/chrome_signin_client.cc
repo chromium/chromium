@@ -452,8 +452,8 @@ void ChromeSigninClient::OnPrimaryAccountChanged(
 
         if (consent_level == signin::ConsentLevel::kSignin) {
           std::string trigger = HatsSurveyTriggerForAccessPoint(access_point);
-          signin::LaunchSigninHatsSurveyForProfile(
-              trigger, profile_, /*defer_if_no_browser=*/true);
+          signin::LaunchHatsSurveyForProfile(trigger, profile_,
+                                             /*defer_if_no_browser=*/true);
         }
 
 #if !BUILDFLAG(IS_CHROMEOS)

@@ -473,7 +473,7 @@ void BubbleSignInPromoView::OnWidgetDestroying(views::Widget* widget) {
   }
 
   // Launch a HaTS survey if the user actively dismissed the promo.
-  signin::LaunchSigninHatsSurveyForProfile(
+  signin::LaunchHatsSurveyForProfile(
       kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed, profile,
       /*defer_if_no_browser=*/false, access_point_);
 

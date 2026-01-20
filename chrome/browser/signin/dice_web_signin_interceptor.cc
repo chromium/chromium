@@ -1287,7 +1287,7 @@ void DiceWebSigninInterceptor::OnChromeSigninChoice(
     case SigninInterceptionResult::kDeclined:
       RecordChromeSigninNumberOfDismissesForAccount(account_info.gaia,
                                                     processed_result);
-      signin::LaunchSigninHatsSurveyForProfile(
+      signin::LaunchHatsSurveyForProfile(
           kHatsSurveyTriggerIdentityDiceWebSigninDeclined, profile_);
       break;
     case SigninInterceptionResult::kAcceptedWithExistingProfile:
@@ -1302,7 +1302,7 @@ void DiceWebSigninInterceptor::OnChromeSigninChoice(
       signin_metrics::LogSignInStarted(access_point);
       identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
           account_info.account_id, signin::ConsentLevel::kSignin, access_point);
-      signin::LaunchSigninHatsSurveyForProfile(
+      signin::LaunchHatsSurveyForProfile(
           kHatsSurveyTriggerIdentityDiceWebSigninAccepted, profile_);
   }
 

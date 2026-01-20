@@ -191,7 +191,7 @@ void ProfileMenuView::OnClose() {
     // Launch a HaTS survey only if the user dismissed the menu without
     // selecting an item (e.g., by clicking outside or pressing ESC), and the
     // browser window remains active.
-    signin::LaunchSigninHatsSurveyForProfile(
+    signin::LaunchHatsSurveyForProfile(
         kHatsSurveyTriggerIdentityProfileMenuDismissed, &profile());
   }
 }
@@ -455,7 +455,7 @@ void ProfileMenuView::OnOtherProfileSelected(
           if (!browser) {
             return;
           }
-          signin::LaunchSigninHatsSurveyForProfile(
+          signin::LaunchHatsSurveyForProfile(
               kHatsSurveyTriggerIdentitySwitchProfileFromProfileMenu,
               browser->GetProfile());
         }));
