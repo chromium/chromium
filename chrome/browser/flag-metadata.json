@@ -7431,11 +7431,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "password-manual-fallback-available",
-    "owners": ["tchudakov@google.com", "vasilii@google.com", "chrome-password-manager-team@google.com"],
-    "expiry_milestone": 138
-  },
-  {
       "name": "password-removal-from-delete-browsing-data",
       "owners": ["noemies@google.com", "novakovica@google.com", "bling-transactions@google.com"],
       "expiry_milestone": 150
