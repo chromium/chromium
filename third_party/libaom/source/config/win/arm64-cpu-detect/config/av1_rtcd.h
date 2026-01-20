@@ -220,7 +220,8 @@ void av1_filter_intra_edge_neon(uint8_t *p, int sz, int strength);
 
 void av1_filter_intra_predictor_c(uint8_t *dst, ptrdiff_t stride, TX_SIZE tx_size, const uint8_t *above, const uint8_t *left, int mode);
 void av1_filter_intra_predictor_neon(uint8_t *dst, ptrdiff_t stride, TX_SIZE tx_size, const uint8_t *above, const uint8_t *left, int mode);
-#define av1_filter_intra_predictor av1_filter_intra_predictor_neon
+void av1_filter_intra_predictor_neon_i8mm(uint8_t *dst, ptrdiff_t stride, TX_SIZE tx_size, const uint8_t *above, const uint8_t *left, int mode);
+RTCD_EXTERN void (*av1_filter_intra_predictor)(uint8_t *dst, ptrdiff_t stride, TX_SIZE tx_size, const uint8_t *above, const uint8_t *left, int mode);
 
 void av1_fwd_txfm2d_16x16_c(const int16_t *input, int32_t *output, int stride, TX_TYPE tx_type, int bd);
 void av1_fwd_txfm2d_16x16_neon(const int16_t *input, int32_t *output, int stride, TX_TYPE tx_type, int bd);
@@ -526,6 +527,8 @@ static void setup_rtcd_internal(void)
     av1_dist_wtd_convolve_y = av1_dist_wtd_convolve_y_neon;
     if (flags & HAS_NEON_DOTPROD) av1_dist_wtd_convolve_y = av1_dist_wtd_convolve_y_neon_dotprod;
     if (flags & HAS_NEON_I8MM) av1_dist_wtd_convolve_y = av1_dist_wtd_convolve_y_neon_i8mm;
+    av1_filter_intra_predictor = av1_filter_intra_predictor_neon;
+    if (flags & HAS_NEON_I8MM) av1_filter_intra_predictor = av1_filter_intra_predictor_neon_i8mm;
     av1_get_crc32c_value = av1_get_crc32c_value_c;
     if (flags & HAS_ARM_CRC32) av1_get_crc32c_value = av1_get_crc32c_value_arm_crc32;
     av1_resize_and_extend_frame = av1_resize_and_extend_frame_neon;
