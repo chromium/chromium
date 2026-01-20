@@ -97,6 +97,7 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "v8/include/v8.h"
@@ -3777,6 +3778,7 @@ void PDFiumEngine::DrawSelections(size_t progressive_index,
     }
 
     visible_selection.Offset(-dirty_in_screen.OffsetFromOrigin());
+    visible_selection.Intersect(gfx::SkIRectToRect(image_data.bounds()));
     Highlight(region.value(), visible_selection, kHighlightColor,
               highlighted_rects);
   }
