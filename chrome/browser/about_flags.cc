@@ -1662,8 +1662,10 @@ const FeatureEntry::FeatureParam
         {"ShowContextMenuTabPreviews", "true"},
 };
 const FeatureEntry::FeatureParam kShowToolsAndModels[] = {
-    {"ShowContextMenu", "true"},     {"ShowToolsAndModels", "true"},
-    {"ShowComposeboxZps", "true"},   {"ShowComposeboxTypedSuggest", "true"},
+    {"ShowContextMenu", "true"},
+    {"ShowToolsAndModels", "true"},
+    {"ShowComposeboxZps", "true"},
+    {"ShowComposeboxTypedSuggest", "true"},
 };
 const FeatureEntry::FeatureParam kShowCanvasAndModelPicker[] = {
     {"ShowContextMenu", "true"},   {"ShowToolsAndModels", "true"},
@@ -1836,11 +1838,24 @@ const FeatureEntry::FeatureParam kNtpNextShowSimplificationUIWithDeepDive[] = {
     {"NtpNextShowDeepDiveSuggestionsParam", "true"},
     {"NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam", "false"},
 };
+
+const FeatureEntry::FeatureParam
+    kNtpNextShowChipsUIWithChromeNtpActionClient[] = {
+        {"NtpNextShowDeepDiveSuggestionsParam", "true"},
+        {"NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam", "true"},
+};
+
+const FeatureEntry::FeatureParam
+    kNtpNextShowSimplificationUIWithChromeNtpActionClient[] = {
+        {"NtpNextShowSimplificationUIParam", "true"},
+        {"NtpNextShowDeepDiveSuggestionsParam", "true"},
+        {"NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam", "true"},
+};
+
 const FeatureEntry::FeatureParam kNtpNextShowSimplificationUIWithDismissal[] = {
     {"NtpNextShowSimplificationUIParam", "true"},
     {"NtpNextShowDeepDiveSuggestionsParam", "true"},
     {"NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam", "true"},
-    {"NtpNextClientSensitivityCheckParam", "true"},
     {"NtpNextShowDismissalUIParam", "true"},
 };
 
@@ -1853,18 +1868,24 @@ const FeatureEntry::FeatureVariation kNtpNextVariations[] = {
      std::size(kNtpNextShowSimplificationUI), nullptr},
     {"- Show Row UI With Deep Dive", kNtpNextShowSimplificationUIWithDeepDive,
      std::size(kNtpNextShowSimplificationUIWithDeepDive), nullptr},
+    {"- Show Chips UI with a New Suggestions Client.",
+     kNtpNextShowChipsUIWithChromeNtpActionClient,
+     std::size(kNtpNextShowChipsUIWithChromeNtpActionClient), nullptr},
+    {"- Show Row UI with a New Suggestions Client.",
+     kNtpNextShowSimplificationUIWithChromeNtpActionClient,
+     std::size(kNtpNextShowSimplificationUIWithChromeNtpActionClient), nullptr},
     {"- Show Dismissal UI", kNtpNextShowSimplificationUIWithDismissal,
      std::size(kNtpNextShowSimplificationUIWithDismissal), nullptr},
 };
 
-const FeatureEntry::FeatureParam
-    kNtpFeatureOptimizationModuleRemovalDefault[] = {
+const FeatureEntry::FeatureParam kNtpFeatureOptimizationModuleRemovalDefault[] =
+    {
         {"ModuleMinStalenessUpdateTimeInterval", "24h"},
         {"StaleModulesCountThreshold", "14"},
 };
 
-const FeatureEntry::FeatureParam
-    kNtpFeatureOptimizationModuleRemovalTesting[] = {
+const FeatureEntry::FeatureParam kNtpFeatureOptimizationModuleRemovalTesting[] =
+    {
         {"ModuleMinStalenessUpdateTimeInterval", "1s"},
         {"StaleModulesCountThreshold", "2"},
 };
@@ -1872,11 +1893,11 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureVariation
     kNtpFeatureOptimizationModuleRemovalVariations[] = {
         {"- Default Auto-Removal Timing",
-        kNtpFeatureOptimizationModuleRemovalDefault,
-        std::size(kNtpFeatureOptimizationModuleRemovalDefault), nullptr},
+         kNtpFeatureOptimizationModuleRemovalDefault,
+         std::size(kNtpFeatureOptimizationModuleRemovalDefault), nullptr},
         {"- Auto-Removal Timing for Testing",
-        kNtpFeatureOptimizationModuleRemovalTesting,
-        std::size(kNtpFeatureOptimizationModuleRemovalTesting), nullptr},
+         kNtpFeatureOptimizationModuleRemovalTesting,
+         std::size(kNtpFeatureOptimizationModuleRemovalTesting), nullptr},
 };
 
 const FeatureEntry::FeatureParam
@@ -1894,11 +1915,11 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureVariation
     kNtpFeatureOptimizationShortcutsRemovalVariations[] = {
         {"- Default Auto-Removal Timing",
-        kNtpFeatureOptimizationShortcutsRemovalDefault,
-        std::size(kNtpFeatureOptimizationShortcutsRemovalDefault), nullptr},
+         kNtpFeatureOptimizationShortcutsRemovalDefault,
+         std::size(kNtpFeatureOptimizationShortcutsRemovalDefault), nullptr},
         {"- Auto-Removal Timing for Testing",
-        kNtpFeatureOptimizationShortcutsRemovalTesting,
-        std::size(kNtpFeatureOptimizationShortcutsRemovalTesting), nullptr},
+         kNtpFeatureOptimizationShortcutsRemovalTesting,
+         std::size(kNtpFeatureOptimizationShortcutsRemovalTesting), nullptr},
 };
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
@@ -4900,8 +4921,7 @@ const FeatureEntry::FeatureParam
         {"open_adjacently", "false"}};
 const FeatureEntry::FeatureVariation
     kRobustWindowManagementExperimentalVariations[] = {
-        {"Open Fullscreen",
-         kRobustWindowManagementExperimentalOpenAdjacently,
+        {"Open Fullscreen", kRobustWindowManagementExperimentalOpenAdjacently,
          std::size(kRobustWindowManagementExperimentalOpenAdjacently),
          nullptr}};
 
@@ -8818,7 +8838,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableGesturePropertiesDBusServiceDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kGesturePropertiesDBusService)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     {"enable-network-service-sandbox",
