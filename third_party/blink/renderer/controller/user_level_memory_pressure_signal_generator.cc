@@ -42,7 +42,6 @@ UserLevelMemoryPressureSignalGenerator* g_instance = nullptr;
 // static
 UserLevelMemoryPressureSignalGenerator*
 UserLevelMemoryPressureSignalGenerator::Instance() {
-  DCHECK(g_instance);
   return g_instance;
 }
 
