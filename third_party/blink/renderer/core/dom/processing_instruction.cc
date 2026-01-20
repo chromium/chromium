@@ -149,8 +149,7 @@ bool ProcessingInstruction::CheckStyleSheet(String& href, String& charset) {
   href = it_href != attrs.end() ? it_href->value : "";
 
   // Disallow "external" XSLT stylesheets in SVG documents in image contexts.
-  if (is_xsl_ && RuntimeEnabledFeatures::SvgImageNoExternalXsltEnabled() &&
-      SVGImage::IsInSVGImage(this) && !IsLocalSheet(href)) {
+  if (is_xsl_ && SVGImage::IsInSVGImage(this) && !IsLocalSheet(href)) {
     is_xsl_ = false;
     return false;
   }
