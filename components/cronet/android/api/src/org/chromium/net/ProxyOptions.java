@@ -104,17 +104,6 @@ public final class ProxyOptions {
     }
 
     /**
-     * Returns the list of proxies that are part of this proxy configuration.
-     *
-     * @deprecated This will be made package private before Cronet proxy APIs are made
-     *     non-experimental.
-     */
-    @Deprecated
-    public @NonNull List<Proxy> getProxyList() {
-        return mProxyList;
-    }
-
-    /**
      * An annotation for APIs which are not considered stable yet.
      *
      * <p>Experimental APIs are subject to change, breakage, or removal at any time and may not be
@@ -129,6 +118,10 @@ public final class ProxyOptions {
      */
     @RequiresOptIn
     public @interface Experimental {}
+
+    @NonNull List<Proxy> getProxyList() {
+        return mProxyList;
+    }
 
     private ProxyOptions(@NonNull List<Proxy> proxyList) {
         if (Objects.requireNonNull(proxyList).isEmpty()) {
