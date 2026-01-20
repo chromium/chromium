@@ -284,7 +284,7 @@ GURL AddAimToolModeToEndpointUrl(
     const GURL& url_to_modify) {
   GURL modified_url = GURL(url_to_modify);
   if (search_terms_args.aim_tool_mode !=
-      omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED) {
+      omnibox::ToolMode::TOOL_MODE_UNSPECIFIED) {
     modified_url = net::AppendOrReplaceQueryParameter(
         url_to_modify, "azm",
         base::NumberToString(

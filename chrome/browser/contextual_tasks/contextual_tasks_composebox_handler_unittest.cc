@@ -939,7 +939,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
 }
 
 struct ToolModeTestParam {
-  omnibox::ChromeAimToolsAndModels tool_mode;
+  omnibox::ToolMode tool_mode;
   bool expected_deep_search_selected;
   bool expected_create_images_selected;
 };
@@ -951,14 +951,11 @@ class ContextualTasksComposeboxHandlerToolModeTest
 TEST_P(ContextualTasksComposeboxHandlerToolModeTest, SetsToolModeFlags) {
   const auto& param = GetParam();
 
-  if (param.tool_mode ==
-      omnibox::ChromeAimToolsAndModels::TOOL_MODE_DEEP_SEARCH) {
+  if (param.tool_mode == omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH) {
     handler_->SetDeepSearchMode(true);
-  } else if (param.tool_mode ==
-             omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN) {
+  } else if (param.tool_mode == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN) {
     handler_->SetCreateImageMode(true, false);
-  } else if (param.tool_mode ==
-             omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN_UPLOAD) {
+  } else if (param.tool_mode == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD) {
     handler_->SetCreateImageMode(true, true);
   }
 
@@ -981,17 +978,13 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ContextualTasksComposeboxHandlerToolModeTest,
     ::testing::Values(
-        ToolModeTestParam{
-            omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED, false,
-            false},
-        ToolModeTestParam{
-            omnibox::ChromeAimToolsAndModels::TOOL_MODE_DEEP_SEARCH, true,
-            false},
-        ToolModeTestParam{omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN,
-                          false, true},
-        ToolModeTestParam{
-            omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN_UPLOAD, false,
-            true}));
+        ToolModeTestParam{omnibox::ToolMode::TOOL_MODE_UNSPECIFIED, false,
+                          false},
+        ToolModeTestParam{omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH, true,
+                          false},
+        ToolModeTestParam{omnibox::ToolMode::TOOL_MODE_IMAGE_GEN, false, true},
+        ToolModeTestParam{omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD, false,
+                          true}));
 
 TEST_F(ContextualTasksComposeboxHandlerTest, AddTabContext_Delayed) {
   ASSERT_NE(mock_contextual_tasks_service_ptr_, nullptr)

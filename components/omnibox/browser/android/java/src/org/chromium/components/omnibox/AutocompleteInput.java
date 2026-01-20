@@ -10,7 +10,7 @@ import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
-import org.chromium.components.omnibox.AimToolsAndModelsProto.ChromeAimToolsAndModels;
+import org.chromium.components.omnibox.AimToolsProto.ToolMode;
 import org.chromium.url.GURL;
 
 import java.util.Locale;
@@ -118,13 +118,13 @@ public class AutocompleteInput {
     }
 
     /** Returns the Autocomplete Tool to use to fulfill the Request. */
-    public /* ChromeAimToolsAndModels */ int getToolMode() {
+    public /* ToolMode */ int getToolMode() {
         return switch (mRequestType) {
             case AutocompleteRequestType.IMAGE_GENERATION ->
                     mHasAttachments
-                            ? ChromeAimToolsAndModels.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE
-                            : ChromeAimToolsAndModels.TOOL_MODE_IMAGE_GEN_VALUE;
-            default -> ChromeAimToolsAndModels.TOOL_MODE_UNSPECIFIED_VALUE;
+                            ? ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE
+                            : ToolMode.TOOL_MODE_IMAGE_GEN_VALUE;
+            default -> ToolMode.TOOL_MODE_UNSPECIFIED_VALUE;
         };
     }
 

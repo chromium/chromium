@@ -6,7 +6,7 @@ syntax = 'proto2';
 
 option optimize_for = LITE_RUNTIME;
 option java_package = 'org.chromium.components.omnibox';
-option java_outer_classname = 'AimToolsAndModelsProto';
+option java_outer_classname = 'AimInputTypesProto';
 
 package omnibox;
 
@@ -14,7 +14,7 @@ package omnibox;
 // Assume text inputs are always allowed.
 // Next ID: 3
 enum InputType {
-  // Unspecified input type (no restrictions will be applied)
+  // Unspecified input type.
   INPUT_TYPE_UNSPECIFIED = 0;
   // Lens image
   INPUT_TYPE_LENS_IMAGE = 1;

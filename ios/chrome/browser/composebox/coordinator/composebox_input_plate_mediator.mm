@@ -1239,14 +1239,13 @@ CreateInputDataFromAnnotatedPageContent(
 
 #pragma mark - ComposeboxOmniboxClientDelegate
 
-- (omnibox::ChromeAimToolsAndModels)composeboxToolMode {
+- (omnibox::ToolMode)composeboxToolMode {
   if (_modeHolder.mode == ComposeboxMode::kImageGeneration) {
-    return _items.count > 0
-               ? omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN_UPLOAD
-               : omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN;
+    return _items.count > 0 ? omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD
+                            : omnibox::ToolMode::TOOL_MODE_IMAGE_GEN;
   }
 
-  return omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED;
+  return omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
 }
 
 - (std::optional<lens::proto::LensOverlaySuggestInputs>)suggestInputs {

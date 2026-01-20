@@ -605,9 +605,8 @@ using base::UserMetricsAction;
   std::optional<lens::proto::LensOverlaySuggestInputs> suggestInputs =
       _omniboxClient->GetLensOverlaySuggestInputs();
 
-  if (!suggestInputs ||
-      _omniboxClient->AimToolMode() !=
-          omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED) {
+  if (!suggestInputs || _omniboxClient->AimToolMode() !=
+                            omnibox::ToolMode::TOOL_MODE_UNSPECIFIED) {
     return;
   }
 
