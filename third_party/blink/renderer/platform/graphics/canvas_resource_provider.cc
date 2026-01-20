@@ -1714,9 +1714,7 @@ void CanvasResourceProvider::ClearAtCreation() {
   else
     Canvas().clear(SkColors::kTransparent);
 
-  clear_frame_ = true;
   RasterRecord(recorder_->ReleaseMainRecording());
-  last_recording_ = std::nullopt;
 }
 
 uint32_t CanvasResourceProvider::ContentUniqueID() const {
