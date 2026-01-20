@@ -37,6 +37,10 @@ class FilePath;
 //   "api_keys": {
 //     "GOOGLE_CLIENT_ID_MAIN": "example_key",
 //     ...
+//   },
+//   "flags": {
+//     "enable_issue_token_fetch": true,
+//     ...
 //   }
 // }
 class COMPONENT_EXPORT(GOOGLE_APIS) GaiaConfig {
@@ -64,6 +68,11 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaConfig {
   // |out_api_key| will be set to that string.
   // Otherwise, returns false. |out_api_key| will be unmodified.
   bool GetAPIKeyIfExists(std::string_view key, std::string* out_api_key);
+
+  // Searches for a boolean flag by `key`.
+  // Returns the value of the flag if it exists and contains a boolean value.
+  // Otherwise, returns std::nullopt.
+  std::optional<bool> GetFlagIfExists(std::string_view key);
 
   // Serializes the state of |this| into |command_line|, in a way that
   // GaiaConfig::GetInstance() would honor. Internally, it uses switch

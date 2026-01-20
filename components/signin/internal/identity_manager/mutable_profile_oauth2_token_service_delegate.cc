@@ -44,6 +44,7 @@
 #include "google_apis/gaia/gaia_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_config.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -191,6 +192,14 @@ bool CanMoveAccountToService(
 }
 
 bool ShouldUseIssueTokenForUnboundTokens() {
+  if (GaiaConfig* gaia_config = GaiaConfig::GetInstance()) {
+    std::optional<bool> enable_issue_token_fetch =
+        gaia_config->GetFlagIfExists("enable_issue_token_fetch");
+    if (enable_issue_token_fetch.has_value()) {
+      return *enable_issue_token_fetch;
+    }
+  }
+
   // IssueToken can be used only with official Google API keys.
   if (!google_apis::IsGoogleChromeAPIKeyUsed() &&
       !g_ignore_non_official_api_keys_for_testing) {

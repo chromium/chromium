@@ -55,6 +55,7 @@
 #include "components/webdata/common/web_database_service.h"
 #include "crypto/kdf.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_config.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -1195,14 +1196,11 @@ class MutableProfileOAuth2TokenServiceDelegateAccessTokenFetchTest
       public testing::WithParamInterface<bool> {
  public:
   MutableProfileOAuth2TokenServiceDelegateAccessTokenFetchTest() {
-    // TODO(https://crbug.com/474158698): replace the feature override with a
-    // GaiaConfig override.
-    scoped_feature_list_.InitWithFeatureState(
-        switches::kUseIssueTokenToFetchAccessTokens, ShouldUseIssueToken());
-    if (ShouldUseIssueToken()) {
-      MutableProfileOAuth2TokenServiceDelegate::
-          SetIgnoreNonOfficialApiKeysForTesting();
-    }
+    // Use `GaiaConfig` to force the choice of the access token endpoint.
+    auto config_dict = base::Value::Dict().SetByDottedPath(
+        "flags.enable_issue_token_fetch", ShouldUseIssueToken());
+    scoped_config_override_ = GaiaConfig::SetScopedConfigForTesting(
+        std::make_unique<GaiaConfig>(std::move(config_dict)));
   }
 
   void AddSuccessfulAccessTokenResponse() {
@@ -1216,7 +1214,9 @@ class MutableProfileOAuth2TokenServiceDelegateAccessTokenFetchTest
   bool ShouldUseIssueToken() { return GetParam(); }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kUseIssueTokenToFetchAccessTokens};
+  base::ScopedClosureRunner scoped_config_override_;
 };
 
 TEST_P(MutableProfileOAuth2TokenServiceDelegateAccessTokenFetchTest,

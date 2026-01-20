@@ -71,6 +71,15 @@ bool GaiaConfig::GetAPIKeyIfExists(std::string_view key,
   return true;
 }
 
+std::optional<bool> GaiaConfig::GetFlagIfExists(std::string_view key) {
+  const base::Value::Dict* flags = parsed_config_.FindDict("flags");
+  if (!flags) {
+    return std::nullopt;
+  }
+
+  return flags->FindBool(key);
+}
+
 void GaiaConfig::SerializeContentsToCommandLineSwitch(
     base::CommandLine* command_line) const {
   command_line->AppendSwitchASCII(switches::kGaiaConfigContents,

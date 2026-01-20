@@ -337,6 +337,7 @@ bundle_data("google_apis_unittest_bundle_data") {
     "test/data/calendar/events.json",
     "test/data/calendar/invalid_events.json",
     "test/data/gaia/all_base_urls.json",
+    "test/data/gaia/all_flags.json",
     "test/data/gaia/all_urls.json",
     "test/data/gaia/api_keys.json",
     "test/data/gaia/bad_url.json",
