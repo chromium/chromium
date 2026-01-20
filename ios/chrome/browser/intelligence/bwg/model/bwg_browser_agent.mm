@@ -473,6 +473,22 @@ void BwgBrowserAgent::FullscreenWillAnimate(FullscreenController* controller,
   }];
 }
 
+void BwgBrowserAgent::FullscreenEnabledStateChanged(
+    FullscreenController* controller,
+    bool enabled) {
+  FullscreenProgressUpdated(controller,
+                            enabled ? kFullscreenEnabled : kFullscreenDisabled);
+}
+
+void BwgBrowserAgent::FullscreenDidAnimate(FullscreenController* controller,
+                                           FullscreenAnimatorStyle style) {
+  if (style == FullscreenAnimatorStyle::ENTER_FULLSCREEN) {
+    FullscreenProgressUpdated(controller, kFullscreenEnabled);
+  } else {
+    FullscreenProgressUpdated(controller, kFullscreenDisabled);
+  }
+}
+
 void BwgBrowserAgent::FullscreenControllerWillShutDown(
     FullscreenController* controller) {
   controller->RemoveObserver(this);

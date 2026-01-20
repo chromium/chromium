@@ -41,9 +41,9 @@ class PageContext;
 // A browser agent responsible for presenting the floaty and managing
 // its protocol handlers.
 class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
-                        FullscreenControllerObserver,
-                        public TabsDependencyInstaller,
-                        public GeminiTabHelperObserver {
+                        public GeminiTabHelperObserver,
+                        public FullscreenControllerObserver,
+                        public TabsDependencyInstaller {
  public:
   BwgBrowserAgent(const BwgBrowserAgent&) = delete;
   BwgBrowserAgent& operator=(const BwgBrowserAgent&) = delete;
@@ -170,6 +170,10 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
                                  CGFloat progress) override;
   void FullscreenWillAnimate(FullscreenController* controller,
                              FullscreenAnimator* animator) override;
+  void FullscreenDidAnimate(FullscreenController* controller,
+                            FullscreenAnimatorStyle style) override;
+  void FullscreenEnabledStateChanged(FullscreenController* controller,
+                                     bool enabled) override;
   void FullscreenControllerWillShutDown(
       FullscreenController* controller) override;
 
