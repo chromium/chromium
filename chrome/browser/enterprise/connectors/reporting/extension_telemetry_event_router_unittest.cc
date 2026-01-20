@@ -121,6 +121,7 @@ class ExtensionTelemetryEventRouterTest : public testing::Test {
     extension_info->set_name(kFakeExtensionName);
     extension_info->set_version(kFakeExtensionVersion);
     extension_info->set_install_location(install_location);
+    extension_info->set_is_from_store(false);
     if (install_location == ExtensionInfo::UNPACKED) {
       extension_info->add_file_infos();
     }
@@ -280,7 +281,7 @@ TEST_P(ExtensionTelemetryEventInstallLocationTest,
     }
   })",
         install_location_ == ExtensionInfo::UNPACKED ? R"(
-        "file_info": [ {
+        "file_infos": [ {
           "hash": "",
           "name": ""
         } ],

@@ -377,7 +377,7 @@ const char ExtensionTelemetryEventRouter::kKeyCount[] = "count";
 const char ExtensionTelemetryEventRouter::kKeyMethod[] = "method";
 const char ExtensionTelemetryEventRouter::kKeyNewUrl[] = "new_url";
 const char ExtensionTelemetryEventRouter::kKeyCurrentUrl[] = "current_url";
-const char ExtensionTelemetryEventRouter::kKeyFileInfo[] = "file_info";
+const char ExtensionTelemetryEventRouter::kKeyFileInfo[] = "file_infos";
 const char ExtensionTelemetryEventRouter::kKeyHash[] = "hash";
 
 // static
