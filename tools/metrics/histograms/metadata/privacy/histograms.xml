@@ -175,7 +175,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.3PCD.RollbackNotice.Action"
-    enum="RollBack3pcdNoticeAction" expires_after="2026-03-31">
+    enum="RollBack3pcdNoticeAction" expires_after="2026-06-30">
   <owner>fmacintosh@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -184,7 +184,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.3PCD.RollbackNotice.AutomaticallyDismissed"
-    enum="Boolean" expires_after="2026-05-31">
+    enum="Boolean" expires_after="2026-06-30">
   <owner>fmacintosh@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -194,7 +194,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.3PCD.RollbackNotice.ShouldShow" enum="Boolean"
-    expires_after="2026-05-31">
+    expires_after="2026-06-30">
   <owner>fmacintosh@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -248,7 +248,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.CookieControlsActivated.PageRefreshCount"
-    units="count" expires_after="2026-02-09">
+    units="count" expires_after="2026-06-30">
   <owner>fmacintosh@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -258,7 +258,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.CookieControlsActivated.SiteDataAccessType"
-    enum="ThirdPartySiteDataAccessType" expires_after="2026-06-21">
+    enum="ThirdPartySiteDataAccessType" expires_after="2026-06-30">
   <owner>fmacintosh@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
