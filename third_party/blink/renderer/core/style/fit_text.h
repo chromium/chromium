@@ -34,20 +34,19 @@ class CORE_EXPORT FitText {
 
  public:
   FitText() = default;
-  FitText(FitTextType type,
-          FitTextTarget target,
-          std::optional<float> size_limit)
-      : type_(type), target_(target), size_limit_(size_limit) {}
+  FitText(FitTextType type, FitTextTarget target, std::optional<float> limit)
+      : type_(type), target_(target), scale_factor_limit_(limit) {}
 
   bool operator==(const FitText& other) const {
     return type_ == other.type_ && target_ == other.target_ &&
-           size_limit_ == other.size_limit_;
+           scale_factor_limit_ == other.scale_factor_limit_;
   }
 
   FitTextType Type() const { return type_; }
   FitTextTarget Target() const { return target_; }
   FitTextMethod Method() const { return FitTextMethod::kScale; }
-  std::optional<float> SizeLimit() const { return size_limit_; }
+  // This returns 1.0 for "100%".
+  std::optional<float> ScaleFactorLimit() const { return scale_factor_limit_; }
 
   // A debug helper.
   String ToString() const;
@@ -55,7 +54,7 @@ class CORE_EXPORT FitText {
  private:
   FitTextType type_ = FitTextType::kNone;
   FitTextTarget target_ = FitTextTarget::kConsistent;
-  std::optional<float> size_limit_;
+  std::optional<float> scale_factor_limit_;
 };
 
 }  // namespace blink

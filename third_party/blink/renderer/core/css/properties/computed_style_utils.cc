@@ -5209,9 +5209,9 @@ CSSValue* ComputedStyleUtils::ValueForFitText(const ComputedStyle& style,
       break;
   }
 
-  if (auto size = fit_text.SizeLimit()) {
-    // TODO(crbug.com/417306102): This should be <percentage>.
-    list->Append(*ZoomAdjustedPixelValue(*size, style));
+  if (auto limit = fit_text.ScaleFactorLimit()) {
+    list->Append(*CSSNumericLiteralValue::Create(
+        *limit * 100, CSSPrimitiveValue::UnitType::kPercentage));
   }
   return list;
 }

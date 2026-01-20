@@ -9512,18 +9512,17 @@ CSSValue* ConsumeFitText(CSSParserTokenStream& stream,
     list->Append(*target);
   }
 
-  // TODO(crbug.com/417306102): This should be <percentage>.
-  if (CSSValue* size =
-          ConsumeLength(stream, context, local_context,
-                        CSSPrimitiveValue::ValueRange::kNonNegative)) {
-    list->Append(*size);
+  if (CSSValue* percent =
+          ConsumePercent(stream, context, local_context,
+                         CSSPrimitiveValue::ValueRange::kNonNegative)) {
+    list->Append(*percent);
   }
 
   // The list is either:
   // - [type]
   // - [type, target]
-  // - [type, size], or
-  // - [type, target, size]
+  // - [type, percentage], or
+  // - [type, target, percentage]
   return list;
 }
 

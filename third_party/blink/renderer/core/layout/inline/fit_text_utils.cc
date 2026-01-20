@@ -78,20 +78,15 @@ ShapeResult* ShapeForFit(const InlineItem& item,
                       options);
 }
 
-std::optional<float> ComputeSizeLimit(const FitText& fit_text,
-                                      bool is_grow,
-                                      const InlineNode node) {
-  auto limit = fit_text.SizeLimit();
+std::optional<float> MinimumSize(bool is_grow, const InlineNode node) {
   if (!is_grow) {
     if (const auto* settings = node.GetDocument().GetSettings()) {
       if (int min_size = settings->GetMinimumFontSize(); min_size > 0) {
-        float physical_min =
-            min_size * node.GetDocument().GetFrame()->DevicePixelRatio();
-        limit = limit ? std::max(*limit, physical_min) : physical_min;
+        return min_size * node.GetDocument().GetFrame()->DevicePixelRatio();
       }
     }
   }
-  return limit;
+  return std::nullopt;
 }
 
 // A helper for font-size scaling.
@@ -246,7 +241,7 @@ ParagraphScale MeasurePerBlockScale(const InlineNode node,
         node.ItemsData(cursor.CurrentItem()->UsesFirstLineStyle());
     HarfBuzzShaper shaper(items_data.text_content);
     ShapeResultSpacing spacing(items_data.text_content);
-    const auto limit = ComputeSizeLimit(fit_text, is_grow, node);
+    const auto limit = MinimumSize(is_grow, node);
     for (InlineCursor descendants = cursor.CursorForDescendants(); descendants;
          descendants.MoveToNextInlineLeaf()) {
       const auto& current = descendants.Current();
@@ -296,8 +291,17 @@ ParagraphScale MeasurePerBlockScale(const InlineNode node,
       }
     }
   }
-  return {std::isfinite(minimum_scale) ? minimum_scale : 1.0f,
-          additional_paint_time_scale};
+  if (std::isfinite(minimum_scale)) {
+    if (fit_text.ScaleFactorLimit().has_value()) {
+      float limit = *fit_text.ScaleFactorLimit();
+      minimum_scale = fit_text.Type() == FitTextType::kGrow
+                          ? std::min(minimum_scale, std::max(limit, 1.0f))
+                          : std::max(minimum_scale, std::min(limit, 1.0f));
+    }
+    return {minimum_scale, additional_paint_time_scale};
+  } else {
+    return {1.0f, additional_paint_time_scale};
+  }
 }
 
 LineFitter::LineFitter(const InlineNode node, LineInfo* line_info)
@@ -352,15 +356,22 @@ float LineFitter::MeasureScale() {
     return std::numeric_limits<float>::infinity();
   }
 
-  return (container_width - static_total_size).ToFloat() /
-         flexible_total_size.ToFloat();
+  float scale_factor = (container_width - static_total_size).ToFloat() /
+                       flexible_total_size.ToFloat();
+  if (fit_text.ScaleFactorLimit().has_value()) {
+    float limit = *fit_text.ScaleFactorLimit();
+    return fit_text.Type() == FitTextType::kGrow
+               ? std::min(scale_factor, std::max(limit, 1.0f))
+               : std::max(scale_factor, std::min(limit, 1.0f));
+  }
+  return scale_factor;
 }
 
 bool LineFitter::FitLine(float scale_factor,
                          std::optional<float> additional_paint_time_scale) {
   const bool is_grow = scale_factor > 1.0f;
   const FitText& fit_text = node_.Style().TextFit();
-  auto limit = ComputeSizeLimit(fit_text, is_grow, node_);
+  auto limit = MinimumSize(is_grow, node_);
 
   switch (fit_text.Method()) {
     case FitTextMethod::kScale:

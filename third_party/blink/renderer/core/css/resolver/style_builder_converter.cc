@@ -4209,15 +4209,17 @@ FitText StyleBuilderConverter::ConvertFitText(StyleResolverState& state,
     }
   }
 
-  std::optional<float> size_limit;
+  std::optional<double> limit;
   if (list.length() > next_index) {
-    FontDescription::Size parent_size(FontSizeFunctions::InitialKeywordSize(),
-                                      std::numeric_limits<float>::max(), true);
-    size_limit.emplace(ComputeFontSize(
-        state.CssToLengthConversionData(),
-        To<CSSPrimitiveValue>(list.Item(next_index)), parent_size));
+    if (const auto* limit_value =
+            DynamicTo<CSSPrimitiveValue>(list.Item(next_index))) {
+      limit.emplace(limit_value->ComputePercentage<float>(
+                        state.CssToLengthConversionData()) /
+                    100);
+    }
+    ++next_index;
   }
-  return FitText(type, target, size_limit);
+  return FitText(type, target, limit);
 }
 
 TextOverflowData StyleBuilderConverter::ConvertTextOverflow(

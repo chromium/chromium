@@ -36,12 +36,12 @@ String FitText::ToString() const {
       break;
   }
 
-  String size_limit;
-  if (SizeLimit()) {
-    size_limit = String::Number(*SizeLimit());
+  String limit;
+  if (ScaleFactorLimit()) {
+    limit = String::Number(*ScaleFactorLimit());
   }
   return StrCat({"FitText {type:", type, ", target:", target,
-                 size_limit.empty() ? "" : ", size-limit:", size_limit, "}"});
+                 limit.empty() ? "" : ", scale-factor-limit:", limit, "}"});
 }
 
 }  // namespace blink

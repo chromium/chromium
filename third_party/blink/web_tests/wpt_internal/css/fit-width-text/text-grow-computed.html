@@ -15,11 +15,10 @@ test_computed_value('text-fit', 'grow consistent', 'grow');
 test_computed_value('text-fit', 'grow per-line');
 test_computed_value('text-fit', 'grow per-line-all');
 
-// TODO(crbug.com/417306102): The `limit` component should be a percentage value.
-test_computed_value('text-fit', 'grow per-line 32px');
-test_computed_value('text-fit', 'grow consistent 3em', 'grow 60px');
+test_computed_value('text-fit', 'grow per-line 200%');
+test_computed_value('text-fit', 'grow consistent 300%', 'grow 300%');
 
-test_computed_value('text-fit', 'shrink per-line 4ch', 'shrink per-line 40px');
-test_computed_value('text-fit', 'shrink consistent 2lh', 'shrink 40px');
+test_computed_value('text-fit', 'shrink per-line 40%', 'shrink per-line 40%');
+test_computed_value('text-fit', 'shrink consistent 20%', 'shrink 20%');
 </script>
 </body>
