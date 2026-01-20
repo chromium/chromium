@@ -315,6 +315,7 @@
 <translation id="21133533946938348">Ancorar pestana</translation>
 <translation id="2117650889962717098">Cambia ao modo de incógnito para manter a túa navegación privada</translation>
 <translation id="2119636449201577317">Abrir en…</translation>
+<translation id="2119962645034852864">Algúns servizos non están dispoñibles para a túa conta</translation>
 <translation id="2120553909046681540">A túa organización desactivou a navegación privada.</translation>
 <translation id="2122754583996902531">O teu navegador está xestionado. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">Os chats da túa organización non se usan para mellorar os nosos modelos. Gemini pode mostrar información inexacta, mesmo sobre persoas, polo que é recomendable que a verifiques. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
@@ -873,6 +874,7 @@
 <translation id="4302061870579014542">Definir posición</translation>
 <translation id="4304713468139749426">Xestor de contrasinais</translation>
 <translation id="4309403553630140242">Toca dúas veces para obter máis información</translation>
+<translation id="4310738531374808763">Personaliza a páxina de inicio</translation>
 <translation id="4320848494125124980">Recentes</translation>
 <translation id="4322394346347055525">Pechar outras pestanas</translation>
 <translation id="4324735664183300693">Activar notificacións</translation>
@@ -1711,6 +1713,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> por cento descargado</translation>
 <translation id="7345061034321640811">Non se permite a importación</translation>
+<translation id="7347998088283246662">Importa os contrasinais, o historial, os marcadores e moito máis</translation>
 <translation id="7352651011704765696">Produciuse un erro</translation>
 <translation id="7364796246159120393">Seleccionar ficheiro</translation>
 <translation id="736564850024123010">Cambia a posición da barra de enderezos para desfrutar dunha experiencia personalizada.</translation>
@@ -2236,6 +2239,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="914781932147356857">Marcar todo…</translation>
 <translation id="9148126808321036104">Iniciar sesión de novo</translation>
 <translation id="9149866541089851383">Editar...</translation>
+<translation id="9152637745605628097">Escolle entre temas e cores, ou carga unha imaxe</translation>
 <translation id="9159628751968616911">Enviar a páxina web</translation>
 <translation id="9162432979321511934">Activa a opción Autofill Passwords (Autocompletar contrasinais)</translation>
 <translation id="9165320910061267720">Para recibir notificacións de alertas sobre baixadas de prezos, tes que activalas na configuración de iOS.</translation>

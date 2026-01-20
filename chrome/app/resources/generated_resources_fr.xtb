@@ -2510,6 +2510,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2672142220933875349">Fichier crx incorrect. Échec du déballage.</translation>
 <translation id="2672200806060988299">Les titres et les URL de vos onglets sont envoyés à Google et peuvent être consultés par des réviseurs humains afin d'améliorer cette fonctionnalité.</translation>
 <translation id="2673135533890720193">Consulter votre historique de navigation</translation>
+<translation id="2673397477544385203">Alimente localement des fonctionnalités comme la Détection d'escroquerie. Si vous désactivez cette option, les modèles d'IA générative seront supprimés de votre appareil et ces fonctionnalités seront désactivées.</translation>
 <translation id="2673848446870717676">Assurez-vous que votre appareil Bluetooth est en mode association et à proximité. Associez uniquement des appareils de confiance. Les appareils associés sont visibles dans tous les comptes sur ce Chromebook.</translation>
 <translation id="2673873887296220733">Copier 1 fichier dans <ph name="CLOUD_PROVIDER" /> et l'ouvrir ?</translation>
 <translation id="267442004702508783">actualiser</translation>
@@ -3966,6 +3967,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3678156199662914018">Extension : <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Les pages que vous consultez dans cette fenêtre ne sont pas consignées dans l'historique du navigateur et ne laissent aucune autre trace sur votre ordinateur (des cookies, par exemple), une fois que vous vous êtes déconnecté. Les fichiers téléchargés et vos favoris ne sont pas conservés.</translation>
 <translation id="3679126865530709868">Pavé tactile intégré</translation>
+<translation id="3680166671911524673">IA générative sur l'appareil activée</translation>
 <translation id="3680683624079082902">Voix de la synthèse vocale</translation>
 <translation id="3681017028939109078">Afficher des suggestions de fenêtres au démarrage de l'écran partagé</translation>
 <translation id="3681191721636073359">Chrome considère que vous ne souhaitez pas utiliser votre position sur ce site. Les demandes sont donc masquées pour réduire les interruptions.</translation>

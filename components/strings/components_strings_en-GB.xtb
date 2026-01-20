@@ -186,6 +186,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1289129165308566697">See your history on other devices</translation>
 <translation id="1292571435393770077">Tray 16</translation>
 <translation id="1292701964462482250">'Software on your computer is stopping Chrome from safely connecting to the web' (Windows computers only)</translation>
+<translation id="1293154089865862473">Page content from the checkout page is shared with Google to offer these options. To hide pay later options in autofill, go to <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1293797321964802402">Envelope 9 x 11 in</translation>
 <translation id="129553762522093515">Recently closed</translation>
@@ -1124,6 +1125,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2782088940970074970">Car hire</translation>
 <translation id="278436560439594386">Home appliances</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
+<translation id="2784540996156451674">Page content from the checkout page is shared with Google to offer these options.</translation>
 <translation id="2784949926578158345">The connection was reset.</translation>
 <translation id="2786008859124691917">Bicycles and Accessories</translation>
 <translation id="2792012897584536778">Administrators of this device have set up security certificates that may allow them to see the content of websites that you visit.</translation>
@@ -2482,6 +2484,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4950898438188848926">Tab switch button, press Enter to switch to the open tab, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Actions</translation>
 <translation id="4953689047182316270">Respond to Accessibility Events</translation>
+<translation id="4954891067389874142">Pay faster when your card is saved. Card details are encrypted in Google Wallet.</translation>
 <translation id="4957080528849277028">View your Chrome history button, activate to view and manage your browsing history in Chrome settings</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 site}other{+ # sites}}</translation>
 <translation id="4958444002117714549">Expand list</translation>
@@ -4011,6 +4014,7 @@ Additional details:
 <translation id="7408613996403626141">Toys</translation>
 <translation id="7410852728357935715">Cast to a device</translation>
 <translation id="741204030948306876">Yes, I'm in</translation>
+<translation id="7412081313067625215">Your card is saved in Google Wallet so that you can autofill it for future purchases</translation>
 <translation id="7416351320495623771">Manage passwords...</translation>
 <translation id="7416898721136759658">Grants, scholarships and financial aid</translation>
 <translation id="741772962178517671">Affirm</translation>
@@ -4144,6 +4148,7 @@ Additional details:
 <translation id="759889825892636187"><ph name="HOST_NAME" /> is currently unable to handle this request.</translation>
 <translation id="7599089013883397081">Downloading timed out</translation>
 <translation id="7602868996817972616">Ask Google about this page</translation>
+<translation id="7606123685356405076">Gemini 3 models</translation>
 <translation id="7610193165460212391">Value is out of range <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">Thick</translation>
 <translation id="7613889955535752492">Exp: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

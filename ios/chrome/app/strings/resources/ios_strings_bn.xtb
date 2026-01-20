@@ -315,6 +315,7 @@
 <translation id="21133533946938348">ট্যাব পিন করুন</translation>
 <translation id="2117650889962717098">ছদ্মবেশী মোডে পরিবর্তন করে আপনার ব্রাউজিং ব্যক্তিগত করে রাখুন</translation>
 <translation id="2119636449201577317">এই অ্যাপে খুলুন…</translation>
+<translation id="2119962645034852864">আপনার অ্যাকাউন্টের জন্য কিছু পরিষেবা উপলভ্য নেই</translation>
 <translation id="2120553909046681540">আপনার সংস্থা ব্যক্তিগত ব্রাউজিংয়ের সুবিধা বন্ধ করে দিয়েছে।</translation>
 <translation id="2122754583996902531">আপনার ব্রাউজার ম্যানেজ করা হয়। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">আমাদের মডেল উন্নত করতে, আপনার প্রতিষ্ঠানের চ্যাট ব্যবহার করা হয় না। Gemini ভুল তথ্য দেখাতে পারে, এর মধ্যে লোকজন সম্পর্কিত তথ্যও অন্তর্ভুক্ত, তাই উত্তর ডবল-চেক করুন। <ph name="YOUR_PRIVACY_GEMINI" /></translation>
@@ -873,6 +874,7 @@
 <translation id="4302061870579014542">পজিশন সেট করুন</translation>
 <translation id="4304713468139749426">পাসওয়ার্ড ম্যানেজার</translation>
 <translation id="4309403553630140242">আরও তথ্য জানতে ডবল ট্যাপ করুন</translation>
+<translation id="4310738531374808763">আপনার হোমপেজ কাস্টমাইজ করুন</translation>
 <translation id="4320848494125124980">সাম্প্রতিক</translation>
 <translation id="4322394346347055525">অন্যান্য ট্যাব বন্ধ করুন</translation>
 <translation id="4324735664183300693">বিজ্ঞপ্তি চালু করুন</translation>
@@ -1712,6 +1714,7 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> শতাংশ ডাউনলোড হয়েছে</translation>
 <translation id="7345061034321640811">ইমপোর্ট করার অনুমতি নেই</translation>
+<translation id="7347998088283246662">পাসওয়ার্ড, ইতিহাস, বুকমার্ক ও আরও অনেক কিছু ইমপোর্ট করুন</translation>
 <translation id="7352651011704765696">কিছু সমস্যা হয়েছে</translation>
 <translation id="7364796246159120393">ফাইল বেছে নিন</translation>
 <translation id="736564850024123010">কাস্টমাইজ করা অভিজ্ঞতার জন্য আপনার অ্যাড্রেস বারের অবস্থান পরিবর্তন করুন।</translation>
@@ -2237,6 +2240,7 @@
 <translation id="914781932147356857">সবগুলি চিহ্নিত করুন…</translation>
 <translation id="9148126808321036104">আবার সাইন-ইন করুন</translation>
 <translation id="9149866541089851383">সম্পাদনা...</translation>
+<translation id="9152637745605628097">থিম, রঙ থেকে বেছে নিন অথবা ছবি আপলোড করুন</translation>
 <translation id="9159628751968616911">ওয়েবপেজ পাঠান</translation>
 <translation id="9162432979321511934">অটোফিল পাসওয়ার্ড চালু করুন</translation>
 <translation id="9165320910061267720">ভাড়া কমে যাওয়া সংক্রান্ত সতর্কতার বিজ্ঞপ্তি পেতে, আপনার iOS সেটিংসে বিজ্ঞপ্তিগুলি চালু করতে হবে।</translation>

@@ -315,6 +315,7 @@
 <translation id="21133533946938348">Épingler l'onglet</translation>
 <translation id="2117650889962717098">Protégez la confidentialité de votre navigation en passant en mode navigation privée</translation>
 <translation id="2119636449201577317">Ouvrir dans…</translation>
+<translation id="2119962645034852864">Certains services ne sont pas disponibles pour votre compte</translation>
 <translation id="2120553909046681540">Votre organisation a désactivé la navigation privée.</translation>
 <translation id="2122754583996902531">Votre navigateur est géré. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">Les discussions de votre organisation ne sont pas utilisées pour améliorer nos modèles. Vérifiez les réponses de Gemini, car elles peuvent contenir des informations inexactes, y compris sur des personnes. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
@@ -873,6 +874,7 @@
 <translation id="4302061870579014542">Définir la position</translation>
 <translation id="4304713468139749426">Gestionnaire de mots de passe</translation>
 <translation id="4309403553630140242">Appuyez deux fois pour obtenir plus d'informations</translation>
+<translation id="4310738531374808763">Personnalisez votre page d'accueil</translation>
 <translation id="4320848494125124980">Récents</translation>
 <translation id="4322394346347055525">Fermer les autres onglets</translation>
 <translation id="4324735664183300693">Activer les notifications</translation>
@@ -1711,6 +1713,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> % téléchargés</translation>
 <translation id="7345061034321640811">Importation non autorisée</translation>
+<translation id="7347998088283246662">Importez vos mots de passe, historique, favoris et plus encore</translation>
 <translation id="7352651011704765696">Un problème est survenu</translation>
 <translation id="7364796246159120393">Choisir un fichier</translation>
 <translation id="736564850024123010">Déplacez la barre d'adresse pour une expérience personnalisée.</translation>
@@ -2236,6 +2239,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="914781932147356857">Tout marquer…</translation>
 <translation id="9148126808321036104">Nouvelle connexion</translation>
 <translation id="9149866541089851383">Modifier...</translation>
+<translation id="9152637745605628097">Choisissez parmi des thèmes et des couleurs, ou importez une image</translation>
 <translation id="9159628751968616911">Envoyer la page Web</translation>
 <translation id="9162432979321511934">Activez "Préremplir les mots de passe"</translation>
 <translation id="9165320910061267720">Pour recevoir des alertes en cas de baisse de prix, vous devez activer les notifications dans les paramètres iOS.</translation>

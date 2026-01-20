@@ -2509,6 +2509,7 @@
 <translation id="2672142220933875349">crx 檔案損毀，無法解除封裝。</translation>
 <translation id="2672200806060988299">你的分頁標題和網址會傳送給 Google，也可能由人工審查員查看，以改善這項功能。</translation>
 <translation id="2673135533890720193">讀取你的瀏覽記錄</translation>
+<translation id="2673397477544385203">可在本機執行詐騙偵測等功能。關閉這項設定後，系統會從裝置刪除生成式 AI 模型，並停用這些功能。</translation>
 <translation id="2673848446870717676">請確認你的藍牙裝置放在附近，且處於配對模式。只配對你信任的裝置。在這部 Chromebook 上，所有帳戶都能看到配對的裝置。</translation>
 <translation id="2673873887296220733">要將 1 個檔案複製到「<ph name="CLOUD_PROVIDER" />」再開啟嗎？</translation>
 <translation id="267442004702508783">重新整理</translation>
@@ -3964,6 +3965,7 @@
 <translation id="3678156199662914018">擴充功能：<ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">你在這個視窗瀏覽的網頁不會顯示在瀏覽器記錄中，而且在你登出後，電腦上也不會留下 Cookie 等其他追蹤記錄。此外，系統不會保留你下載的檔案和建立的書籤。</translation>
 <translation id="3679126865530709868">內建觸控板</translation>
+<translation id="3680166671911524673">裝置端生成式 AI 已啟用</translation>
 <translation id="3680683624079082902">文字轉語音的聲音</translation>
 <translation id="3681017028939109078">進入分割畫面模式時顯示視窗建議</translation>
 <translation id="3681191721636073359">Chrome 認為你不想在這個網站使用位置資訊，因此會隱藏要求，減少干擾。</translation>
@@ -8697,6 +8699,7 @@
 <translation id="6949089178006131285">讀取 ChromeOS Flex 網路資訊</translation>
 <translation id="6949434160682548041">密碼 (選填)</translation>
 <translation id="6950143189069683062">記憶體詳細資料</translation>
+<translation id="6950351336108213154">正在更新周邊裝置</translation>
 <translation id="6950627417367801484">還原應用程式</translation>
 <translation id="6954936693361896459">改為投放這個分頁</translation>
 <translation id="6955446738988643816">檢查彈出式視窗</translation>
@@ -11622,6 +11625,7 @@
 <translation id="8921369299636221117">無法提供 Concierge 服務。</translation>
 <translation id="8922348435910470639">重複預約</translation>
 <translation id="8922624386829239660">在滑鼠輕觸畫面邊緣時移動畫面</translation>
+<translation id="8923670289674436542">進階：自訂</translation>
 <translation id="8923880975836399332">深藍綠色</translation>
 <translation id="8925124370124776087">已隱藏標題列</translation>
 <translation id="8925308599005372373">上傳 PDF</translation>

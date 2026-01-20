@@ -86,6 +86,9 @@ Prueba a esperar unos minutos antes de cerrar sesión. Si cierras sesión ahora,
 <translation id="2767464022270041271">No hay contraseñas guardadas. El Gestor de contraseñas de Google puede comprobar tus contraseñas cuando las guardas.</translation>
 <translation id="2788811701191021538">Abre la página de configuración de métodos de pago en Chrome.</translation>
 <translation id="2876628302275096482">Más información sobre <ph name="BEGIN_LINK" />cómo protege Chrome la privacidad de tus datos<ph name="END_LINK" /></translation>
+<translation id="288992067439702510">Has alcanzado el límite de marcadores de Google Chrome (<ph name="LIMIT" />), por lo que algunos de ellos aún no se han guardado en tu cuenta de Google.
+
+No podrás guardar marcadores nuevos en tu cuenta hasta que elimines algunos. Si cierras sesión ahora, se eliminarán los marcadores que no hayas guardado.</translation>
 <translation id="2922914028977213693">Toca aquí para sacar el máximo partido a Chrome en tu iPad.</translation>
 <translation id="292371311537977079">Configuración de Chrome</translation>
 <translation id="2923827943290349720">Ocultar las pestañas de Incógnito al cerrar Chrome</translation>

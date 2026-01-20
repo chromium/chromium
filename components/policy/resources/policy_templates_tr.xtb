@@ -2225,6 +2225,21 @@ Bu politika yalnızca yeni bağlantı denemelerinde geçerli olup mevcut bağlan
       Bu özelliğin düzgün bir şekilde çalışması için Google ağı ortamı dışında bulunmayan ek bileşenler gerektirdiğini unutmayın.</translation>
 <translation id="2536525645274582300">Google Konum Hizmetleri'nin etkinleştirilip etkinleştirilmeyeceğine kullanıcı karar verir</translation>
 <translation id="2536717624356629471">ChromeOS için Konsantrasyon Modundaki Sesleri Etkinleştir</translation>
+<translation id="2543785467842238592">Bu politika, yönetilen bir tarayıcı için SaaS alan ziyaretleri ve içerik aktarımlarıyla ilgili <ph name="PRODUCT_NAME" /> raporlamasını kontrol eder.
+
+Politika ayarlandığında rapor oluşturmak için SaaS alanlarıyla eşleşen URL'ler kullanılır. Eşleşmeyen URL'ler yoksayılır.
+
+Politika ayarlanmaz veya boş bir listeye ayarlanırsa rapor oluşturulmaz.
+
+Eşleşen kalıplar, https://support.google.com/chrome/a?p=url_blocklist_filter_format adresinde bulabileceğiniz "<ph name="URL_BLOCKLIST_POLICY_NAME" />" politikasıyla benzer bir biçimi kullanır. Aşağıdaki birkaç istisna geçerlidir:
+
+ * URL ana makinesi, ana makine adıyla eşleşmeli veya SaaS siteleri listesindeki alanlardan birinin ana makine adının alt alan adı olmalıdır.
+
+ * URL yolu, eşleşen SaaS siteleri listesi girişindeki yolla başlamalıdır.
+
+ * Eşleştirme işlemi sırasında URL şeması, bağlantı noktası ve sorgu dikkate alınmaz.
+
+Bu politika değeri, bulut politikası altyapısıyla doldurulur ve yöneticiler tarafından doğrudan ayarlanamaz.</translation>
 <translation id="254653220329944566"><ph name="PRODUCT_NAME" /> bulut raporlamayı etkinleştirir</translation>
 <translation id="2547854230073316008">Bu politikanın ayarlanması, her ekran için çözünürlük ve ölçeklendirme faktörünün ayarlanmasını sağlar. Harici ekran ayarları, bağlı ekranlar için geçerlidir. (Bir ekran belirtilen çözünürlüğü veya ölçeklendirmeyi desteklemiyorsa bu politika geçerli olmaz.)
 
@@ -9293,6 +9308,23 @@ Bu politikanın yalnızca yönetilen tarayıcılar için geçerli olduğunu ve y
 <translation id="70681795425744184">CRD'nin uzak bir ana makineden proxy kullanılarak gelen WebAuthn API isteklerini yürütmesine izin verme.</translation>
 <translation id="7070525176564511548">Her hafta (168 saatte bir) şifre girilmesi gerekiyor</translation>
 <translation id="7072208053150563108">Makine şifresi değişim hızı</translation>
+<translation id="7072438666478490567">Bu politika, yönetilen bir profil için SaaS alan ziyaretleri ve içerik aktarımlarıyla ilgili <ph name="PRODUCT_NAME" /> raporlamasını kontrol eder.
+
+Politika ayarlandığında rapor oluşturmak için SaaS alanlarıyla eşleşen URL'ler kullanılır. Eşleşmeyen URL'ler yoksayılır.
+
+Politika ayarlanmaz veya boş bir listeye ayarlanırsa rapor oluşturulmaz.
+
+Eşleşen kalıplar, https://support.google.com/chrome/a?p=url_blocklist_filter_format adresinde bulabileceğiniz "<ph name="URL_BLOCKLIST_POLICY_NAME" />" politikasıyla benzer bir biçimi kullanır. Aşağıdaki birkaç istisna geçerlidir:
+
+ * URL ana makinesi, ana makine adıyla eşleşmeli veya SaaS siteleri listesindeki alanlardan birinin ana makine adının alt alan adı olmalıdır.
+
+ * URL yolu, eşleşen SaaS siteleri listesi girişindeki yolla başlamalıdır.
+
+ * Eşleştirme işlemi sırasında URL şeması, bağlantı noktası ve sorgu dikkate alınmaz.
+
+Bu politika yalnızca kullanıcı politikası olarak ayarlanabilir.
+
+Bu politika değeri, bulut politikası altyapısıyla doldurulur ve yöneticiler tarafından doğrudan ayarlanamaz.</translation>
 <translation id="7072567600438630966">Telefon Merkezi'nin etkinleştirilmesine izin ver.</translation>
 <translation id="7074437930865599190">User-Agent dizesi ana sürümünü 99'da dondur</translation>
 <translation id="7075847434649667522">Sunucu kimlik doğrulaması için platform güvenilir sertifika depolarındaki kullanıcılar tarafından eklenen TLS sertifikalarını kullan</translation>

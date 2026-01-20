@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">स्कैन टाइप</translation>
 <translation id="28682968802727151">मिरर के कंट्रोल पैनल की झलक</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> प्लग किया गया.</translation>
+<translation id="3063987824612038785">कैमरे से ली गई सभी फ़ोटो, Google Drive में सेव हो जाएंगी</translation>
 <translation id="3067436040345934772">दाईं ओर पैन करें</translation>
 <translation id="3081586908890909590">वीडियो रिकॉर्डिंग मोड पर जाएं</translation>
 <translation id="3091480460059548935">इमेज की झलक में टेक्स्ट की पहचान करने की सुविधा</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">वीडियो प्रोसेस किया जा रहा है...</translation>
 <translation id="3789724198583203151">घड़ी की उल्टी दिशा में 90 डिग्री घुमाएं</translation>
 <translation id="3810838688059735925">वीडियो</translation>
+<translation id="386366972082231038">कैमरे से ली गई सभी फ़ोटो, OneDrive में सेव हो जाएंगी</translation>
 <translation id="4060608699153044055">डिवाइस का स्टोरेज कम होने की वजह से, वीडियो रिकॉर्डिंग नहीं की जा सकती. रिकॉर्डिंग शुरू करने के लिए, आपको अपने डिवाइस पर कुछ जगह खाली करनी होगी.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> एमपी</translation>
 <translation id="4118525110028899586">रिकॉर्डिंग रोकें</translation>
@@ -157,6 +159,7 @@
 <translation id="7983668134180549431">टेक्स्ट पहचाना गया.</translation>
 <translation id="8079255378695216066">वीडियो रिकॉर्डिंग शुरू नहीं की जा सकी</translation>
 <translation id="8120146556401698679">पैन करें, झुकाएं, और ज़ूम करें</translation>
+<translation id="8127459436205030819">आपकी फ़ोटो फ़ाइलें, आपके एडमिन को दिख सकती हैं</translation>
 <translation id="8131740175452115882">पुष्टि करें</translation>
 <translation id="8145038249676204903">फ़ोटो खींचने वाले मोड पर जाएं</translation>
 <translation id="8167081290930651932">फ़ोटो फ़ॉर्मैट में सेव करें</translation>

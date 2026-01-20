@@ -186,6 +186,7 @@
 <translation id="1289129165308566697">আন ডিভাইচত আপোনাৰ ইতিহাস চাওক</translation>
 <translation id="1292571435393770077">ট্ৰে’ ১৬</translation>
 <translation id="1292701964462482250">"আপোনাৰ কম্পিউটাৰৰ ছফ্‌টৱেৰৰে Chromeক ৱেবৰ সৈতে সুৰক্ষিত ভাৱে সংযুক্ত হোৱাত বাধা প্ৰদান কৰি আছে (কেৱল Windows কম্পিউটাৰ)</translation>
+<translation id="1293154089865862473">এই বিকল্পসমূহ আগবঢ়াবলৈ চেকআউট পৃষ্ঠাৰ সমল Googleৰ সৈতে শ্বেয়াৰ কৰা হয়। স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধাত পাছত পৰিশোধ কৰাৰ বিকল্পসমূহ লুকুৱাবলৈ, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />লৈ যাওক।</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1293797321964802402">এনভেল’প ৯ x ১১ ইঞ্চি</translation>
 <translation id="129553762522093515">শেহতীয়াকৈ বন্ধ কৰা</translation>
@@ -1124,6 +1125,7 @@
 <translation id="2782088940970074970">গাড়ী ভাড়ালৈ দিয়া সেৱা</translation>
 <translation id="278436560439594386">ঘৰত ব্যৱহৃত সা-সৰঞ্জাম</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
+<translation id="2784540996156451674">এই বিকল্পসমূহ আগবঢ়াবলৈ চেকআউট পৃষ্ঠাৰ সমল Googleৰ সৈতে শ্বেয়াৰ কৰা হয়।</translation>
 <translation id="2784949926578158345">ইণ্টাৰনেট সংযোগ ৰিছেট কৰা হ’ল৷</translation>
 <translation id="2786008859124691917">চাইকেল আৰু আনুষংগিক সামগ্ৰী</translation>
 <translation id="2792012897584536778">এই ডিভাচৰ প্ৰশাসকে কিছুমান সুৰক্ষা সম্পর্কীয় প্ৰমাণপত্ৰ ছেট আপ কৰিছে, যিবোৰে তেওঁলোকক আপুনি চোৱা সমল বা ৱেবছাইটসমূহ চাবলৈ অনুমতি দিব পাৰে।</translation>
@@ -2478,6 +2480,7 @@
 <translation id="4950898438188848926">টেব সলনি কৰা বুটাম, খুলি থোৱা <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> টেবটোলৈ যাবলৈ Enter দবাওক</translation>
 <translation id="495170559598752135">কাৰ্যসমূহ</translation>
 <translation id="4953689047182316270">সাধ্যসুবিধাৰ অনুষ্ঠানলৈ সঁহাৰি জনাওক</translation>
+<translation id="4954891067389874142">আপুনি কাৰ্ডখন ছেভ কৰি থোৱা থাকিলে ক্ষিপ্ৰভাৱে পৰিশোধ কৰক। কাৰ্ডৰ সবিশেষ Google Walletত এনক্ৰিপ্ট কৰা হয়।</translation>
 <translation id="4957080528849277028">আপোনাৰ Chromeৰ ইতিহাস চোৱাৰ বুটাম, Chromeৰ ছেটিঙত আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস চাবলৈ আৰু পৰিচালনা কৰিবলৈ সক্ৰিয় কৰক</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{আৰু ১ টা ছাইট}one{আৰু # টা ছাইট}other{আৰু # টা ছাইট}}</translation>
 <translation id="4958444002117714549">তালিকা প্ৰসাৰিত কৰক</translation>
@@ -3517,6 +3520,7 @@
 <translation id="6635900375070654124">এটা বিশ্বাসযোগ্যতা প্ৰমাণকাৰী ডিভাইচ</translation>
 <translation id="6641852376826221947">আপোনাৰ ক্ৰয় নিশ্চিত কৰক</translation>
 <translation id="6643016212128521049">মচক</translation>
+<translation id="6644868143085860957">এই কাৰ্ডখন Google Walletত ছেভ কৰিব পৰা নগ’ল। তাৰ পৰিৱৰ্তে সেইখন এই ডিভাইচটোৰ Chromeত ছেভ কৰা হৈছে।</translation>
 <translation id="6645291930348198241">কুকীসমূহ আৰু ছাইটৰ ডেটা এক্সেছ কৰক।</translation>
 <translation id="6645478838938543427">মূল্য কমাৰ সতৰ্কবাৰ্তা <ph name="EMAIL_ADDRESS" />লৈ পঠিওৱা হ’ব</translation>
 <translation id="6648459603387803038">আপোনাৰ প্ৰশাসকে দূৰৰ পৰাই আপোনাৰ ব্ৰাউজাৰৰ ছেটআপ সলনি কৰিব পাৰে। এই ডিভাইচটোত কৰা কাৰ্যকলাপ Chromeৰ বাহিৰৰ পৰাও পৰিচালনা কৰা হ’ব পাৰে।</translation>
@@ -4004,6 +4008,7 @@
 <translation id="7408613996403626141">পুতলা</translation>
 <translation id="7410852728357935715">ডিভাইচলৈ কাষ্ট কৰক</translation>
 <translation id="741204030948306876">হয়, মই সন্মত</translation>
+<translation id="7412081313067625215">আপোনাৰ কাৰ্ডখন Google Walletত ছেভ কৰা হয়, যাতে আপুনি ভৱিষ্যতে কৰা ক্ৰয়ৰ বাবে সেইখন স্বয়ংক্ৰিয়ভাৱে পূৰ কৰিব পাৰে</translation>
 <translation id="7416351320495623771">পাছৱৰ্ড পৰিচালনা কৰক…</translation>
 <translation id="7416898721136759658">অনুদান, জলপানি আৰু বিত্তীয় সহায়</translation>
 <translation id="741772962178517671">Affirm</translation>
@@ -4137,6 +4142,7 @@
 <translation id="759889825892636187"><ph name="HOST_NAME" />এ এই মুহূৰ্তত এই অনুৰোধটো নিয়ন্ত্ৰণ কৰিব নোৱাৰে।</translation>
 <translation id="7599089013883397081">ডাউনল’ড কৰাৰ সময় উকলিছে</translation>
 <translation id="7602868996817972616">Googleক এই পৃষ্ঠাখনৰ বিষয়ে সোধক</translation>
+<translation id="7606123685356405076">Gemini 3 মডেল</translation>
 <translation id="7610193165460212391"><ph name="VALUE" /> মান পৰিসৰৰ বাহিৰৰ।</translation>
 <translation id="761261689936461781">মোটা</translation>
 <translation id="7613889955535752492">ম্যাদ উকলিব: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

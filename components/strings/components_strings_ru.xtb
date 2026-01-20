@@ -186,6 +186,7 @@
 <translation id="1289129165308566697">Доступ к истории на других устройствах</translation>
 <translation id="1292571435393770077">Лоток 16</translation>
 <translation id="1292701964462482250">"ПО, установленное на компьютере, не позволяет Chrome безопасно подключиться к Интернету" (только для Windows)</translation>
+<translation id="1293154089865862473">Чтобы предлагать эти варианты, Google получает доступ к контенту на странице покупки. Если вы хотите скрыть варианты оплаты в рассрочку, предлагаемые автозаполнением, перейдите в <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="1293556467332435079">Файлы</translation>
 <translation id="1293797321964802402">Конверт 229 x 279 мм</translation>
 <translation id="129553762522093515">Недавно закрытые</translation>
@@ -265,6 +266,7 @@
 <translation id="1408787208417187241">Три скобы сверху</translation>
 <translation id="1410365862999780287">Другие пользователи этого устройства не увидят, что вы делали, поэтому вы можете пользоваться браузером с большей приватностью. Сайты, которые вы посещаете, и используемые ими сервисы, в том числе продукты Google, продолжат собирать данные как прежде. Новые закладки, скачанные файлы и страницы в списке для чтения будут сохранены.</translation>
 <translation id="1410941016594047814">Конверт Invite</translation>
+<translation id="1413235258620101697">CVC-код этой карты будет зашифрован и сохранен в Google Кошельке, чтобы вы могли оплачивать покупки быстрее.</translation>
 <translation id="1413809658975081374">Ошибка нарушения конфиденциальности</translation>
 <translation id="1414134146594747368">Образование детей от 0 до 5 лет</translation>
 <translation id="1419305130220238697">Кнопка "Управлять скачанными файлами в Chrome". Нажмите ее, чтобы управлять файлами, скачанными в Chrome.</translation>
@@ -1124,6 +1126,7 @@
 <translation id="2782088940970074970">Прокат автомобилей</translation>
 <translation id="278436560439594386">Бытовая техника</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
+<translation id="2784540996156451674">Чтобы предлагать эти варианты, Google получает доступ к контенту на странице покупки.</translation>
 <translation id="2784949926578158345">Соединение сброшено.</translation>
 <translation id="2786008859124691917">Велосипеды и аксессуары</translation>
 <translation id="2792012897584536778">Администраторы этого устройства настроили сертификаты безопасности, которые дают возможность просматривать контент посещаемых вами сайтов.</translation>
@@ -2481,6 +2484,7 @@
 <translation id="4950898438188848926">Кнопка переключения между вкладками. Чтобы переключиться на открытую вкладку (<ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" />), нажмите клавишу "Ввод".</translation>
 <translation id="495170559598752135">Действия</translation>
 <translation id="4953689047182316270">Использование специальных возможностей</translation>
+<translation id="4954891067389874142">Так вы сможете оплачивать покупки быстрее. Реквизиты карты будут зашифрованы в Google Кошельке.</translation>
 <translation id="4957080528849277028">Кнопка "Посмотреть историю Chrome". Нажмите ее, чтобы перейти к управлению историей браузера в настройках Chrome.</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{и ещё 1 сайт}one{и ещё # сайт}few{и ещё # сайта}many{и ещё # сайтов}other{и ещё # сайта}}</translation>
 <translation id="4958444002117714549">Развернуть список</translation>
@@ -3019,6 +3023,7 @@
 <translation id="5843987376989109187">Этот язык пока не поддерживается.
     <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Источники питания</translation>
+<translation id="5848445080378515710">После проверки заказа войдите в аккаунт <ph name="BNPL_ISSUER_NAME" /> или создайте его. Этот аккаунт будет автоматически связан с Google Кошельком.</translation>
 <translation id="584902713199270089">Знакомства и общение</translation>
 <translation id="5851548754964597211">Список вкладок</translation>
 <translation id="5851868085455377790">Издатель</translation>
@@ -4010,6 +4015,7 @@
 <translation id="7408613996403626141">Игрушки</translation>
 <translation id="7410852728357935715">Транслировать на устройство</translation>
 <translation id="741204030948306876">ОК</translation>
+<translation id="7412081313067625215">Карта сохранена в Google Кошельке. В дальнейшем ее реквизиты будут автоматически подставляться при покупках.</translation>
 <translation id="7416351320495623771">Управление паролями</translation>
 <translation id="7416898721136759658">Гранты, стипендии и финансовая помощь</translation>
 <translation id="741772962178517671">Affirm</translation>
@@ -4143,6 +4149,7 @@
 <translation id="759889825892636187">Сайт <ph name="HOST_NAME" /> пока не может обработать этот запрос.</translation>
 <translation id="7599089013883397081">Превышено время ожидания</translation>
 <translation id="7602868996817972616">Спросить Google об этой странице</translation>
+<translation id="7606123685356405076">Модели Gemini 3</translation>
 <translation id="7610193165460212391">Значение <ph name="VALUE" /> лежит за пределами разрешенного диапазона.</translation>
 <translation id="761261689936461781">Толстая</translation>
 <translation id="7613889955535752492">Срок действия: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

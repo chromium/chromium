@@ -2521,6 +2521,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2672142220933875349">Loš crx fajl, raspakivanje nije uspjelo.</translation>
 <translation id="2672200806060988299">Naslovi vaših kartica i URL-ovi se šalju Googleu i mogu ih vidjeti osobe koje vrše pregled radi poboljšanja ove funkcije.</translation>
 <translation id="2673135533890720193">Čitati vašu historiju pregledanja</translation>
+<translation id="2673397477544385203">Omogućava funkcije kao što je lokalno otkrivanje prevara. Isključivanje ove opcije briše modele generativnog AI-ja s uređaja i onemogućava ove funkcije.</translation>
 <translation id="2673848446870717676">Provjerite je li Bluetooth uređaj u načinu rada za uparivanje i u blizini. Uparite samo s uređajima kojima vjerujete. Upareni uređaji su vidljivi svim računima na ovom Chromebooku.</translation>
 <translation id="2673873887296220733">Kopirati 1 fajl na uslugu <ph name="CLOUD_PROVIDER" /> radi otvaranja?</translation>
 <translation id="267442004702508783">osvježavanje</translation>
@@ -3979,6 +3980,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3678156199662914018">Ekstenzija: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Stranice koje prikazujete u ovom prozoru se neće prikazivati u historiji preglednika i neće, nakon odjave, ostaviti na računaru druge tragove, kao što su kolačići. Fajlovi koje preuzimate i oznake koje kreirate se neće zadržati.</translation>
 <translation id="3679126865530709868">Ugrađena dodirna podloga</translation>
+<translation id="3680166671911524673">Generativni AI na uređaju je omogućen</translation>
 <translation id="3680683624079082902">Glas pretvaranja teksta u govor</translation>
 <translation id="3681017028939109078">Prikaži prijedloge prozora prilikom pokretanja podijeljenog ekrana</translation>
 <translation id="3681191721636073359">Chrome smatra da ne želite koristiti svoju lokaciju na ovoj web lokaciji. Zato su zahtjevi sakriveni da se smanje ometanja.</translation>

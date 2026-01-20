@@ -2167,6 +2167,21 @@ Cette règle ne s'applique qu'aux nouvelles tentatives de connexion et n'invalid
       Notez que cette fonctionnalité nécessite des composants supplémentaires qui ne sont pas disponibles en dehors de l'environnement réseau de Google pour fonctionner correctement.</translation>
 <translation id="2536525645274582300">L'utilisateur décide d'activer ou non les services de localisation Google</translation>
 <translation id="2536717624356629471">Activer les sons en mode Sans distractions pour ChromeOS</translation>
+<translation id="2543785467842238592">Cette règle permet de contrôler la création de rapports <ph name="PRODUCT_NAME" /> sur les visites de domaines SaaS et les transferts de contenu pour un navigateur géré.
+
+Lorsqu'elle est configurée, les URL correspondant aux domaines SaaS sont utilisées pour générer un rapport. Les URL dont le préfixe ne correspond à aucune entrée de la liste sont ignorées.
+
+Si cette règle n'est pas configurée ou que la liste est vide, aucun rapport n'est généré.
+
+Les formats correspondants sont semblables à ceux de la règle <ph name="URL_BLOCKLIST_POLICY_NAME" /> décrite sur https://support.google.com/chrome/a?p=url_blocklist_filter_format. À quelques exceptions près ci-dessous :
+
+ * L'hôte de l'URL doit correspondre au nom d'hôte ou être un sous-domaine du nom d'hôte de l'un des domaines de la liste des sites SaaS.
+
+ * Le chemin de l'URL doit commencer par le chemin d'accès de l'entrée correspondante de la liste des sites SaaS.
+
+ * Le schéma, le port et la requête d'URL ne sont pas pris en compte lors de la mise en correspondance.
+
+La valeur de cette règle est renseignée par l'infrastructure de règles cloud. Les administrateurs ne peuvent pas la définir directement.</translation>
 <translation id="254653220329944566">Active la création de rapports dans le cloud pour <ph name="PRODUCT_NAME" /></translation>
 <translation id="2547854230073316008">Permet de définir la résolution et le facteur de scaling de chaque écran. Les paramètres des écrans externes s'appliquent aux écrans connectés. (Cette règle ne s'applique pas si un écran n'accepte pas la résolution ni le scaling spécifiés.)
 
@@ -9126,6 +9141,23 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 <translation id="70681795425744184">Ne pas autoriser CRD à exécuter les requêtes API WebAuthn envoyées par un proxy à partir d'un hôte à distance.</translation>
 <translation id="7070525176564511548">La saisie du mot de passe est requise toutes les semaines (toutes les 168 heures)</translation>
 <translation id="7072208053150563108">Fréquence de modification du mot de passe machine</translation>
+<translation id="7072438666478490567">Cette règle permet de contrôler la création de rapports <ph name="PRODUCT_NAME" /> sur les visites de domaines SaaS et les transferts de contenu pour un profil géré.
+
+Lorsqu'elle est configurée, les URL correspondant aux domaines SaaS sont utilisées pour générer un rapport. Les URL dont le préfixe ne correspond à aucune entrée de la liste sont ignorées.
+
+Si cette règle n'est pas configurée ou que la liste est vide, aucun rapport n'est généré.
+
+Les formats correspondants sont semblables à ceux de la règle <ph name="URL_BLOCKLIST_POLICY_NAME" /> décrite sur https://support.google.com/chrome/a?p=url_blocklist_filter_format. À quelques exceptions près ci-dessous :
+
+ * L'hôte de l'URL doit correspondre au nom d'hôte ou être un sous-domaine du nom d'hôte de l'un des domaines de la liste des sites SaaS.
+
+ * Le chemin de l'URL doit commencer par le chemin d'accès de l'entrée correspondante de la liste des sites SaaS.
+
+ * Le schéma, le port et la requête d'URL ne sont pas pris en compte lors de la mise en correspondance.
+
+Cette règle ne peut être configurée que comme règle relative aux utilisateurs du cloud.
+
+La valeur de cette règle est renseignée par l'infrastructure de règles cloud. Les administrateurs ne peuvent pas la définir directement.</translation>
 <translation id="7072567600438630966">Autorisez l'activation de Phone Hub.</translation>
 <translation id="7074437930865599190">Figer la version majeure de la chaîne user-agent sur la version 99</translation>
 <translation id="7075847434649667522">Utiliser les certificats TLS ajoutés par l'utilisateur depuis des magasins de confiance de la plate-forme pour l'authentification du serveur</translation>

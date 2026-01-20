@@ -2264,6 +2264,21 @@ Esta política se aplica solo a los intentos de conexión nuevos y no invalida l
       Debe tenerse en cuenta que, para que tenga un funcionamiento correcto, esta función requiere componentes adicionales que no están disponibles fuera del entorno de red de Google.</translation>
 <translation id="2536525645274582300">El usuario decide si habilita los servicios de ubicación de Google</translation>
 <translation id="2536717624356629471">Habilitar sonidos en el Modo sin distracciones para ChromeOS</translation>
+<translation id="2543785467842238592">Esta política controla los informes de <ph name="PRODUCT_NAME" /> sobre las visitas a dominios SaaS y las transferencias de contenido para un navegador administrado.
+
+Si estableces la política, se usarán las URLs que coincidan con los dominios SaaS para generar el informe. Se ignorarán las URLs que no coincidan.
+
+Si no estableces la política o la estableces como una lista vacía, no se generará ningún informe.
+
+Los patrones de coincidencia usan un formato similar a los de la política "<ph name="URL_BLOCKLIST_POLICY_NAME" />", que se documentan en https://support.google.com/chrome/a?p=url_blocklist_filter_format. Hay algunas excepciones, que se indican a continuación:
+
+ * El host de la URL debe coincidir con el nombre de host o ser un subdominio del nombre de host de uno de los dominios de la lista de sitios SaaS.
+
+ * La ruta de URL debe comenzar con la ruta de acceso de la entrada de la lista de sitios SaaS coincidentes.
+
+ * El esquema, el puerto y la consulta de URL se ignoran durante el proceso de coincidencia.
+
+La infraestructura de políticas de la nube completa este valor de política, y los administradores no pueden establecerlo directamente.</translation>
 <translation id="254653220329944566">Habilitar los informes en la nube de <ph name="PRODUCT_NAME" /></translation>
 <translation id="2547854230073316008">Si estableces la política, se especificarán la resolución y el factor de escala para cada pantalla. Se aplicará la configuración de pantallas externas a las pantallas que se conecten. (No se aplicará la política si las pantallas no admiten la escala o la resolución especificadas).
 
@@ -9519,6 +9534,23 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 <translation id="70681795425744184">No permitir que CRD realice solicitudes a la API de WebAuthn que se envíen al proxy a través de un host remoto</translation>
 <translation id="7070525176564511548">Se requiere el ingreso de la contraseña cada semana (168 horas)</translation>
 <translation id="7072208053150563108">Frecuencia de cambio de la contraseña del dispositivo</translation>
+<translation id="7072438666478490567">Esta política controla los informes de <ph name="PRODUCT_NAME" /> sobre las visitas a dominios SaaS y las transferencias de contenido para un perfil administrado.
+
+Si estableces la política, se usarán las URLs que coincidan con los dominios SaaS para generar el informe. Se ignorarán las URLs que no coincidan.
+
+Si no estableces la política o la estableces como una lista vacía, no se generará ningún informe.
+
+Los patrones de coincidencia usan un formato similar a los de la política "<ph name="URL_BLOCKLIST_POLICY_NAME" />", que se documentan en https://support.google.com/chrome/a?p=url_blocklist_filter_format. Hay algunas excepciones, que se indican a continuación:
+
+ * El host de la URL debe coincidir con el nombre de host o ser un subdominio del nombre de host de uno de los dominios de la lista de sitios SaaS.
+
+ * La ruta de URL debe comenzar con la ruta de acceso de la entrada de la lista de sitios SaaS coincidentes.
+
+ * El esquema, el puerto y la consulta de URL se ignoran durante el proceso de coincidencia.
+
+Esta política solo se puede establecer como política del usuario en la nube.
+
+La infraestructura de políticas de la nube completa este valor de política, y los administradores no pueden establecerlo directamente.</translation>
 <translation id="7072567600438630966">Permite habilitar Phone Hub</translation>
 <translation id="7074437930865599190">Bloquear la versión principal del string usuario-agente en 99</translation>
 <translation id="7075847434649667522">Usar certificados TLS agregados por el usuario desde almacenes de confianza de la plataforma para la autenticación del servidor</translation>

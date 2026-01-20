@@ -4968,6 +4968,19 @@ Dit beleid heeft geen effect als je het toepast, leeg laat of niet instelt.</tra
 <translation id="4501388411278568771">HTTPS-upgrades kunnen worden toegepast, afhankelijk van de lanceringsstatus van de functie.</translation>
 <translation id="45036050223225148">Het ClientHallo-experiment met TLS-versleuteling uitzetten</translation>
 <translation id="4503935079903510542">De UEFI-opstartschijfimage die wordt gebruikt om de VM te installeren op x86_64-apparaten.</translation>
+<translation id="4505299160236615603">Als je het beleid instelt, wordt toegang geboden tot de vermelde URL's in de incognitomodus. Gebruik dit beleid om uitzonderingen te openen voor bepaalde URL-patronen die zijn gedefinieerd in <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />, met de indeling die wordt gespecificeerd op (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+Als zowel dit beleid als <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> zijn ingesteld, heeft de toelatingslijst voorrang. Als een URL overeenkomt met een patroon op de toelatingslijst, wordt deze toegestaan. Als een URL overeenkomt met een patroon op de blokkeerlijst (maar niet op de toelatingslijst), wordt deze geblokkeerd. Als een URL met geen van beide overeenkomt, wordt het algemene beleid van <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> gebruikt als reserve.
+
+Als je dit beleid instelt en <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> niet, wordt elke URL die niet op de toelatingslijst staat, geblokkeerd in de incognitomodus.
+
+Als je <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> instelt op Niet toestaan (waarde 1), maar dit beleid instelt, is de incognitomodus alleen beschikbaar voor de URL's die overeenkomen met de toelatingslijst.
+
+Als je het beleid niet instelt, zijn er geen uitzonderingen toegestaan op <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> en <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" />.
+
+Dit beleid is alleen van invloed op de incognitomodus. Als je URL's wilt toestaan voor alle gebruikersprofielen, gebruik je het beleid <ph name="URL_ALLOWLIST_POLICY_NAME" />.
+
+Dit beleid is beperkt tot 1000 items.</translation>
 <translation id="4508728400492074981">Beheert het beleid voor de functie First-Party Sets.</translation>
 <translation id="4510131075424939993">Geef een saltwaarde op om te gebruiken in <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> bij de evaluatie van identiteitsgegevens</translation>
 <translation id="4510923771103268849">De gebruiker heeft toestemming voor roottoegang tot Crostini-containers</translation>
@@ -5244,6 +5257,17 @@ Dit beleid is tijdelijk en wordt in de toekomst verwijderd.</translation>
       Opmerking: Deze instelling overschrijft <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" /> (indien aanwezig).</translation>
 <translation id="4658380868451934335">Dicteren op het inlogscherm aanzetten</translation>
 <translation id="4658420696622830453">Beheeropties voor beschermde content</translation>
+<translation id="4660251990929524821">Als je het beleid <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> instelt, worden webpagina's met verboden URL's niet geladen in de incognitomodus. Beheerders kunnen de lijst met URL-patronen invullen die moeten worden geblokkeerd. Bekijk hoe je een URL-patroon opmaakt (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+Als je dit beleid en het beleid <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> instelt, heeft de toelatingslijst voorrang. Als een URL overeenkomt met een patroon op de toelatingslijst, wordt deze toegestaan. Als een URL overeenkomt met een patroon op de blokkeerlijst maar niet op de toelatingslijst, wordt deze geblokkeerd. Als een URL met geen van beide overeenkomt, wordt het algemene beleid van <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> gebruikt als reserve.
+
+Als je het beleid <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> instelt en dit beleid niet, wordt elke URL die niet op de toelatingslijst staat, geblokkeerd in de incognitomodus.
+
+Als <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> is ingesteld op Niet toestaan (waarde 1), maar het beleid <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> is ingesteld, is de incognitomodus alleen beschikbaar voor de URL's die overeenkomen met de toelatingslijst.
+
+Dit beleid is alleen van invloed op de incognitomodus. Als je URL's wilt blokkeren voor alle gebruikersprofielen, gebruik je het beleid <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+Dit beleid is beperkt tot 1000 items.</translation>
 <translation id="4660356908994631271">De Google Lens-knop tonen in het zoekvak op de pagina Nieuw tabblad.</translation>
 <translation id="4661885151480410620">Gedragsveranderingen zijn afhankelijk van het releaseproces van Chrome.</translation>
 <translation id="4661889655253181651">Met instellingen voor content kun je opgeven hoe content van een bepaald type (zoals cookies, afbeeldingen of JavaScript) wordt verwerkt.</translation>
@@ -10086,6 +10110,17 @@ Als je dit beleid niet instelt, wordt het pdf-weergaveprogramma gekozen door de 
       Als je het beleid niet toepast, kunnen gebruikers niet door waarschuwingspagina's klikken.</translation>
 <translation id="7750991880413385988">Pagina 'Nieuw tabblad' openen</translation>
 <translation id="7752154519644940493">Instellingen voor de functie Inline afbeelding van generatieve AI</translation>
+<translation id="7752654588237652882">Specificeert of de gebruiker pagina's mag openen in de incognitomodus in <ph name="PRODUCT_NAME" />.
+
+      Als dit beleid wordt toegepast of niet is ingesteld, kunnen pagina's worden geopend in de incognitomodus.
+
+      Als dit beleid niet wordt toegepast, kunnen pagina's niet worden geopend in de incognitomodus.
+
+      Als dit beleid wordt afgedwongen, kunnen pagina's UITSLUITEND worden geopend in de incognitomodus. De optie Afgedwongen werkt niet voor Android in Chrome.
+
+Het beleid <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> heeft prioriteit boven dit beleid en kan de incognitomodus opnieuw aanzetten voor specifieke URL's. Als de incognitomodus door dit beleid wordt uitgezet als er een toelatingslijst wordt verstrekt, is de incognitomodus alleen beschikbaar voor URL's die overeenkomen met de toelatingslijst. Alle andere pagina's worden geblokkeerd.
+
+      Opmerking: Als iOS wordt gebruikt en het beleid wordt aangepast tijdens een sessie, treedt de aanpassing pas in werking na een herstart.</translation>
 <translation id="7753678409577376761">Beginpunt voor werkbalk met experimentele browserfuncties aanzetten</translation>
 <translation id="7754704193130578113">Altijd vragen waar een bestand moet worden opgeslagen</translation>
 <translation id="7754893969683595513">Als je het beleid instelt, wordt de periode in milliseconden gespecificeerd waarna de apparaatbeheerservice wordt gevraagd om informatie over het gebruikersbeleid. Geldige waarden liggen tussen 1.800.000 (30 minuten) en 86.400.000 (1 dag). Waarden buiten dit bereik worden vast ingesteld op de respectieve grenswaarde.

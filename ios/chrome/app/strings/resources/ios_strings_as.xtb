@@ -315,6 +315,7 @@
 <translation id="21133533946938348">টেব পিন কৰক</translation>
 <translation id="2117650889962717098">ইনক’গনিট’ ম’ডলৈ সলনি কৰি আপোনাৰ ব্ৰাউজিং ব্যক্তিগত কৰি ৰাখক</translation>
 <translation id="2119636449201577317">ইয়াত খোলক…</translation>
+<translation id="2119962645034852864">কিছুমান সেৱা আপোনাৰ একাউণ্টৰ বাবে উপলব্ধ নহয়</translation>
 <translation id="2120553909046681540">আপোনাৰ প্ৰতিষ্ঠানে ব্যক্তিগত ব্ৰাউজিং অফ কৰিছে।</translation>
 <translation id="2122754583996902531">আপোনাৰ ব্ৰাউজাৰটো পৰিচালিত। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">আমাৰ মডেলসমূহ উন্নত কৰিবলৈ আপোনাৰ প্ৰতিষ্ঠানৰ চাটসমূহ ব্যৱহাৰ কৰা নহয়। Geminiএ লোকসকলৰ বিষয়ে তথ্যকে ধৰি ভুল তথ্য প্ৰদৰ্শন কৰিব পাৰে, সেয়ে এয়া পুনৰ পৰীক্ষা কৰক। <ph name="YOUR_PRIVACY_GEMINI" /></translation>
@@ -873,6 +874,7 @@
 <translation id="4302061870579014542">স্থান ছেট কৰক</translation>
 <translation id="4304713468139749426">পাছৱৰ্ড পৰিচালক</translation>
 <translation id="4309403553630140242">অধিক তথ্যৰ বাবে দুবাৰ টিপক</translation>
+<translation id="4310738531374808763">আপোনাৰ গৃহপৃষ্ঠা কাষ্টমাইজ কৰক</translation>
 <translation id="4320848494125124980">শেহতীয়া</translation>
 <translation id="4322394346347055525">অন্য টেবসমূহ বন্ধ কৰক</translation>
 <translation id="4324735664183300693">জাননী অন কৰক</translation>
@@ -1711,6 +1713,7 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> শতাংশ ডাউনল’ড কৰা হ’ল</translation>
 <translation id="7345061034321640811">আমদানি কৰাৰ অনুমতি নাই</translation>
+<translation id="7347998088283246662">পাছৱৰ্ড, ইতিহাস, বুকমাৰ্ক আৰু আন বহুতো বস্তু আমদানি কৰক</translation>
 <translation id="7352651011704765696">কিবা সমস্যা হৈছে</translation>
 <translation id="7364796246159120393">ফাইল বাছনি কৰক</translation>
 <translation id="736564850024123010">এটা কাষ্টমাইজ কৰা অভিজ্ঞতাৰ বাবে আপোনাৰ ঠিকনাৰ বাৰৰ স্থান সলনি কৰক।</translation>
@@ -2242,6 +2245,7 @@
 <translation id="914781932147356857">সকলো চিহ্নিত কৰক…</translation>
 <translation id="9148126808321036104">আকৌ ছাইন ইন কৰক</translation>
 <translation id="9149866541089851383">সম্পাদনা কৰক...</translation>
+<translation id="9152637745605628097">থীম, ৰঙৰ পৰা বাছনি কৰক বা এখন প্ৰতিচ্ছবি আপল’ড কৰক</translation>
 <translation id="9159628751968616911">ৱেবপৃষ্ঠা পঠিয়াওক</translation>
 <translation id="9162432979321511934">পাছৱৰ্ড স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱা সুবিধাটো অন কৰক</translation>
 <translation id="9165320910061267720">মূল্য কমাৰ সতৰ্কবাৰ্তা সম্পৰ্কীয় জাননী পাবলৈ, আপুনি আপোনাৰ iOS ছেটিঙত জাননী পোৱাৰ সুবিধাটো অন কৰিব লাগিব।</translation>

@@ -315,6 +315,7 @@
 <translation id="21133533946938348">Piespraust cilni</translation>
 <translation id="2117650889962717098">Nodrošiniet pārlūkošanas konfidencialitāti, pārejot uz inkognito režīmu</translation>
 <translation id="2119636449201577317">Atvērt šeit:</translation>
+<translation id="2119962645034852864">Noteikti pakalpojumi nav pieejami jūsu kontam.</translation>
 <translation id="2120553909046681540">Jūsu organizācija izslēdza privātu pārlūkošanu.</translation>
 <translation id="2122754583996902531">Jūsu pārlūks tiek pārvaldīts. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="21243612977487926">Jūsu organizācijas tērzēšanas sarunas netiek izmantotas mūsu modeļu uzlabošanai. Gemini var rādīt neprecīzu informāciju, tostarp par personām, tādēļ pārbaudiet to. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
@@ -873,6 +874,7 @@
 <translation id="4302061870579014542">Iestatīt pozīciju</translation>
 <translation id="4304713468139749426">Paroļu pārvaldnieks</translation>
 <translation id="4309403553630140242">Veiciet dubultskārienu, lai skatītu plašāku informāciju.</translation>
+<translation id="4310738531374808763">Sākumlapas pielāgošana</translation>
 <translation id="4320848494125124980">Nesenie</translation>
 <translation id="4322394346347055525">Aizvērt citas cilnes</translation>
 <translation id="4324735664183300693">Ieslēgt paziņojumus</translation>
@@ -1711,6 +1713,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">Lejupielādēti <ph name="PERCENT" /> %</translation>
 <translation id="7345061034321640811">Importēšana nav atļauta</translation>
+<translation id="7347998088283246662">Importējiet paroles, vēsturi, grāmatzīmes un citus datus.</translation>
 <translation id="7352651011704765696">Radās problēma</translation>
 <translation id="7364796246159120393">Izvēlēties failu</translation>
 <translation id="736564850024123010">Mainiet adreses joslas pozīciju, lai pielāgotu saskarni savai gaumei un vajadzībām.</translation>
@@ -2236,6 +2239,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="914781932147356857">Atzīmēt visus…</translation>
 <translation id="9148126808321036104">Pierakstieties vēlreiz</translation>
 <translation id="9149866541089851383">Rediģēt ...</translation>
+<translation id="9152637745605628097">Izvēlieties kādu no motīviem vai krāsām vai augšupielādējiet attēlu.</translation>
 <translation id="9159628751968616911">Tīmekļa lapas nosūtīšana</translation>
 <translation id="9162432979321511934">Ieslēdziet paroļu automātisko aizpildi</translation>
 <translation id="9165320910061267720">Lai saņemtu paziņojumus par cenu kritumu, jums jāieslēdz paziņojumi iOS iestatījumos.</translation>

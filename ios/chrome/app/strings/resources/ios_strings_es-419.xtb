@@ -315,6 +315,7 @@
 <translation id="21133533946938348">Fijar pestaña</translation>
 <translation id="2117650889962717098">Cambia al modo Incógnito para mantener tu navegación en privado</translation>
 <translation id="2119636449201577317">Abrir en…</translation>
+<translation id="2119962645034852864">Algunos servicios no están disponibles para tu cuenta</translation>
 <translation id="2120553909046681540">Tu organización desactivó la navegación privada.</translation>
 <translation id="2122754583996902531">Tu navegador está administrado. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">Los chats de tu organización no se usan para mejorar nuestros modelos. Es posible que Gemini muestre información imprecisa, incluidos datos sobre personas, así que verifica las respuestas. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
@@ -873,6 +874,7 @@
 <translation id="4302061870579014542">Establecer posición</translation>
 <translation id="4304713468139749426">Administrador de contraseñas</translation>
 <translation id="4309403553630140242">Presiona dos veces para obtener más información</translation>
+<translation id="4310738531374808763">Personaliza la página principal</translation>
 <translation id="4320848494125124980">Recientes</translation>
 <translation id="4322394346347055525">Cerrar las demás pestañas</translation>
 <translation id="4324735664183300693">Activar notificaciones</translation>
@@ -1711,6 +1713,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> % descargado</translation>
 <translation id="7345061034321640811">No se permite la importación</translation>
+<translation id="7347998088283246662">Importa contraseñas, historial, favoritos y mucho más</translation>
 <translation id="7352651011704765696">Se produjo un error</translation>
 <translation id="7364796246159120393">Seleccionar archivo</translation>
 <translation id="736564850024123010">Cambia la posición de la barra de direcciones para obtener una experiencia personalizada.</translation>
@@ -2236,6 +2239,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="914781932147356857">Marcar todas…</translation>
 <translation id="9148126808321036104">Volver a acceder</translation>
 <translation id="9149866541089851383">Editar...</translation>
+<translation id="9152637745605628097">Elige entre temas y colores, o sube una imagen</translation>
 <translation id="9159628751968616911">Envía la página web</translation>
 <translation id="9162432979321511934">Activa la función Autocompletar contraseñas.</translation>
 <translation id="9165320910061267720">Para recibir notificaciones sobre alertas de descuentos, debes activarlas en la configuración de iOS.</translation>

@@ -2509,6 +2509,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2672142220933875349">File crx non valido, decompressione non riuscita.</translation>
 <translation id="2672200806060988299">I titoli e gli URL delle schede vengono inviati a Google e potrebbero essere esaminati da revisori per migliorare questa funzionalità.</translation>
 <translation id="2673135533890720193">Leggere la cronologia di navigazione</translation>
+<translation id="2673397477544385203">Supporta localmente funzionalità come la Protezione antifrode. Se disattivi questa opzione, i modelli di AI generativa verranno eliminati dal dispositivo e queste funzionalità verranno disattivate.</translation>
 <translation id="2673848446870717676">Assicurati che il dispositivo Bluetooth sia in modalità di accoppiamento e nelle vicinanze. Esegui l'accoppiamento solo con i dispositivi che ritieni attendibili. I dispositivi accoppiati sono visibili a tutti gli account su questo Chromebook.</translation>
 <translation id="2673873887296220733">Vuoi copiare 1 file in <ph name="CLOUD_PROVIDER" /> per aprirlo?</translation>
 <translation id="267442004702508783">aggiorna</translation>
@@ -3967,6 +3968,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3678156199662914018">Estensione: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Le pagine visualizzate in questa finestra non verranno memorizzate nella cronologia del browser e non lasceranno altre tracce, ad esempio cookie, sul computer dopo l'uscita dall'account. I file scaricati e i preferiti creati non verranno conservati.</translation>
 <translation id="3679126865530709868">Touchpad integrato</translation>
+<translation id="3680166671911524673">AI generativa sul dispositivo attivata</translation>
 <translation id="3680683624079082902">Voce per sintesi vocale</translation>
 <translation id="3681017028939109078">Mostra suggerimenti per le finestre all'avvio dello schermo diviso</translation>
 <translation id="3681191721636073359">Chrome ritiene che tu non voglia usare la tua posizione su questo sito. Pertanto, le richieste vengono nascoste per ridurre le interruzioni.</translation>

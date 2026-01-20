@@ -315,6 +315,7 @@
 <translation id="21133533946938348">Закріпити вкладку</translation>
 <translation id="2117650889962717098">Перейдіть в анонімний режим, щоб конфіденційно переглядати вебсторінки</translation>
 <translation id="2119636449201577317">Відкрити в…</translation>
+<translation id="2119962645034852864">Деякі сервіси недоступні для вашого облікового запису</translation>
 <translation id="2120553909046681540">Адміністратор вашої організації вимкнув режим анонімного перегляду.</translation>
 <translation id="2122754583996902531">Вашим веб-переглядачем керує адміністратор. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">Чати вашої організації не використовуються для вдосконалення наших моделей. Gemini може показувати неточну інформацію (зокрема про людей), тому радимо ретельно перевіряти відповіді. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
@@ -873,6 +874,7 @@
 <translation id="4302061870579014542">Вибрати</translation>
 <translation id="4304713468139749426">Менеджер паролів</translation>
 <translation id="4309403553630140242">Двічі торкніться, щоб дізнатися більше</translation>
+<translation id="4310738531374808763">Налаштуйте домашню сторінку</translation>
 <translation id="4320848494125124980">Нещодавні</translation>
 <translation id="4322394346347055525">Закрити інші вкладки</translation>
 <translation id="4324735664183300693">Увімкнути сповіщення</translation>
@@ -1711,6 +1713,7 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">Завантажено <ph name="PERCENT" />%</translation>
 <translation id="7345061034321640811">Імпорт заборонено</translation>
+<translation id="7347998088283246662">Імпортуйте паролі, історію, закладки тощо</translation>
 <translation id="7352651011704765696">Виникли проблеми</translation>
 <translation id="7364796246159120393">Вибрати файл</translation>
 <translation id="736564850024123010">Щоб персоналізувати головний екран, змініть положення адресного рядка.</translation>
@@ -2236,6 +2239,7 @@
 <translation id="914781932147356857">Позначити всі…</translation>
 <translation id="9148126808321036104">Увійти знову</translation>
 <translation id="9149866541089851383">Редагувати...</translation>
+<translation id="9152637745605628097">Виберіть тему, колір або завантажте зображення</translation>
 <translation id="9159628751968616911">Надіслати вебсторінку</translation>
 <translation id="9162432979321511934">Увімкніть автозаповнення паролів</translation>
 <translation id="9165320910061267720">Щоб отримувати сповіщення про зниження цін, увімкніть їх у налаштуваннях iOS.</translation>

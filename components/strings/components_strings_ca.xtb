@@ -186,6 +186,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1289129165308566697">Consulta el teu historial en altres dispositius</translation>
 <translation id="1292571435393770077">Safata 16</translation>
 <translation id="1292701964462482250">"L'ordinador conté programari que impedeix que Chrome es connecti de manera segura al web" (només en ordinadors Windows)</translation>
+<translation id="1293154089865862473">El contingut de la pàgina de tramitació de la compra es comparteix amb Google per oferir aquestes opcions. Per amagar les opcions que permeten pagar més tard a Emplenament automàtic, ves a <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="1293556467332435079">Fitxers</translation>
 <translation id="1293797321964802402">Sobre de 9 x 11 polzades</translation>
 <translation id="129553762522093515">Tancades recentment</translation>
@@ -1125,6 +1126,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2782088940970074970">Lloguers de cotxes</translation>
 <translation id="278436560439594386">Aparells domèstics</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
+<translation id="2784540996156451674">El contingut de la pàgina de tramitació de la compra es comparteix amb Google per oferir aquestes opcions.</translation>
 <translation id="2784949926578158345">S'ha restablert la connexió.</translation>
 <translation id="2786008859124691917">Bicicletes i accessoris</translation>
 <translation id="2792012897584536778">Els administradors d'aquest dispositiu han configurat certificats de seguretat que els permeten veure el contingut dels llocs web que visites.</translation>
@@ -2483,6 +2485,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4950898438188848926">Botó per canviar de pestanya; prem Retorn per canviar a la pestanya oberta, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Accions</translation>
 <translation id="4953689047182316270">Respondre als esdeveniments d'accessibilitat</translation>
+<translation id="4954891067389874142">Pagaràs més ràpidament quan es desi la targeta. Les dades de la targeta s'encripten a Google Wallet.</translation>
 <translation id="4957080528849277028">Botó Mostra l'historial de Chrome: activa'l per veure i gestionar l'historial de navegació a la configuració de Chrome</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 lloc web}other{+ # llocs web}}</translation>
 <translation id="4958444002117714549">Desplega la llista</translation>
@@ -4013,6 +4016,7 @@ Detalls addicionals:
 <translation id="7408613996403626141">Joguines</translation>
 <translation id="7410852728357935715">Emet a un dispositiu</translation>
 <translation id="741204030948306876">Sí, endavant</translation>
+<translation id="7412081313067625215">La targeta es desa a Google Wallet perquè puguis utilitzar-la per a l'emplenament automàtic en compres futures</translation>
 <translation id="7416351320495623771">Gestiona les contrasenyes…</translation>
 <translation id="7416898721136759658">Subvencions, beques i ajudes financeres</translation>
 <translation id="741772962178517671">Affirm</translation>
@@ -4146,6 +4150,7 @@ Detalls addicionals:
 <translation id="759889825892636187"><ph name="HOST_NAME" /> no pot gestionar la sol·licitud en aquest moment.</translation>
 <translation id="7599089013883397081">S'ha esgotat el temps d'espera per a la baixada</translation>
 <translation id="7602868996817972616">Pregunta a Google sobre aquesta pàgina</translation>
+<translation id="7606123685356405076">Models de Gemini 3</translation>
 <translation id="7610193165460212391">El valor es troba fora de l'interval <ph name="VALUE" /> .</translation>
 <translation id="761261689936461781">Gruixut</translation>
 <translation id="7613889955535752492">Data de caducitat: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

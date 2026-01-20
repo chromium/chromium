@@ -186,6 +186,7 @@
 <translation id="1289129165308566697">查看其他裝置上的記錄</translation>
 <translation id="1292571435393770077">紙匣 16</translation>
 <translation id="1292701964462482250">「您電腦上的軟件正阻止 Chrome 建立安全網絡連線」(僅限 Windows 電腦)</translation>
+<translation id="1293154089865862473">系統會與 Google 分享結帳頁面內容，以提供這些選項。如要隱藏自動填入的「稍後付款」選項，請前往<ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />。</translation>
 <translation id="1293556467332435079">檔案</translation>
 <translation id="1293797321964802402">9 x 11 吋信封</translation>
 <translation id="129553762522093515">最近關閉的分頁</translation>
@@ -265,6 +266,7 @@
 <translation id="1408787208417187241">三釘 (頂端)</translation>
 <translation id="1410365862999780287">此裝置的其他使用者不會看到你的活動，瀏覽活動記錄的私隱更有保障。無痕模式不會影響網站及其使用的服務 (包括 Google) 收集資料的方式，且下載檔案、書籤和閱讀清單項目仍會保留在裝置上。</translation>
 <translation id="1410941016594047814">Invite 信封</translation>
+<translation id="1413235258620101697">為加快結帳速度，這張卡片的驗證碼會加密儲存在 Google 錢包中</translation>
 <translation id="1413809658975081374">私隱設定發生錯誤</translation>
 <translation id="1414134146594747368">幼兒園</translation>
 <translation id="1419305130220238697">管理 Chrome 嘅下載項目按鈕，啟動之後就可以管理您喺 Chrome 度下載嘅檔案</translation>
@@ -1124,6 +1126,7 @@
 <translation id="2782088940970074970">租車</translation>
 <translation id="278436560439594386">家庭電器</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
+<translation id="2784540996156451674">系統會與 Google 分享結帳頁面內容，以提供這些選項。</translation>
 <translation id="2784949926578158345">連線已重設。</translation>
 <translation id="2786008859124691917">單車和配件</translation>
 <translation id="2792012897584536778">此裝置的管理員已設定安全性憑證，這些憑證可允許管理員查看您瀏覽的網站內容。</translation>
@@ -2481,6 +2484,7 @@
 <translation id="4950898438188848926">分頁切換按鈕，㩒一下 Enter 鍵就可以轉去開以下嘅分頁：<ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">動作</translation>
 <translation id="4953689047182316270">回應無障礙功能事件</translation>
+<translation id="4954891067389874142">儲存信用卡可加快付款速度。「Google 錢包」會加密信用卡詳情。</translation>
 <translation id="4957080528849277028">睇 Chrome 記錄按鈕，啟用之後就可以喺 Chrome 設定度睇同管理瀏覽記錄</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{和另外 1 個網站}other{和另外 # 個網站}}</translation>
 <translation id="4958444002117714549">展開清單</translation>
@@ -3019,6 +3023,7 @@
 <translation id="5843987376989109187">目前不支援此語言。
     <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">電力供應</translation>
+<translation id="5848445080378515710">確認訂單後，你必須登入「<ph name="BNPL_ISSUER_NAME" />」或建立帳戶。這個帳戶會自動連結至 Google 錢包。</translation>
 <translation id="584902713199270089">約會和交友</translation>
 <translation id="5851548754964597211">分頁清單</translation>
 <translation id="5851868085455377790">發行者</translation>
@@ -4010,6 +4015,7 @@
 <translation id="7408613996403626141">玩具</translation>
 <translation id="7410852728357935715">投放至裝置</translation>
 <translation id="741204030948306876">確認</translation>
+<translation id="7412081313067625215">付款卡已儲存至「Google 錢包」，日後購物時可自動填入資料</translation>
 <translation id="7416351320495623771">管理密碼…</translation>
 <translation id="7416898721136759658">補助金、獎學金和財務資助</translation>
 <translation id="741772962178517671">Affirm</translation>
@@ -4143,6 +4149,7 @@
 <translation id="759889825892636187"><ph name="HOST_NAME" /> 目前無法處理這個請求。</translation>
 <translation id="7599089013883397081">下載逾時</translation>
 <translation id="7602868996817972616">問 Google 關於此頁的問題</translation>
+<translation id="7606123685356405076">Gemini 3 模型</translation>
 <translation id="7610193165460212391">值超出 <ph name="VALUE" /> 的範圍。</translation>
 <translation id="761261689936461781">粗</translation>
 <translation id="7613889955535752492">到期日：<ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

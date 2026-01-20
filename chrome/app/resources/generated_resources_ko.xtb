@@ -2524,6 +2524,7 @@
 <translation id="2672142220933875349">잘못된 crx 파일입니다. 압축을 해제하지 못했습니다.</translation>
 <translation id="2672200806060988299">탭 제목과 URL은 Google로 전송되며 기능 개선을 위해 인적 검토자가 이를 확인할 수 있습니다.</translation>
 <translation id="2673135533890720193">방문 기록 확인</translation>
+<translation id="2673397477544385203">로컬에서 사기 탐지 등의 기능을 지원합니다. 사용 중지하면 기기에서 생성형 AI 모델이 삭제되고 이러한 기능이 사용 중지됩니다.</translation>
 <translation id="2673848446870717676">블루투스 기기를 페어링 모드로 설정하고 가까이 두세요. 신뢰하는 기기만 페어링하세요. 페어링된 기기는 이 Chromebook의 모든 계정에 표시됩니다.</translation>
 <translation id="2673873887296220733">파일 1개를 <ph name="CLOUD_PROVIDER" />에 복사하여 여시겠습니까?</translation>
 <translation id="267442004702508783">새로고침</translation>
@@ -3982,6 +3983,7 @@
 <translation id="3678156199662914018">확장 프로그램: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">이 창에서 보는 페이지는 방문 기록에 나타나지 않으며, 로그아웃한 후 쿠키와 같은 다른 흔적을 컴퓨터에 남기지 않습니다. 다운로드한 파일과 생성한 북마크는 보관되지 않습니다.</translation>
 <translation id="3679126865530709868">내장 터치패드</translation>
+<translation id="3680166671911524673">온디바이스 생성형 AI 사용 설정됨</translation>
 <translation id="3680683624079082902">텍스트 음성 변환 음성</translation>
 <translation id="3681017028939109078">화면 분할 시작 시 창 추천 표시</translation>
 <translation id="3681191721636073359">Chrome은 사용자가 이 사이트에서 위치를 사용하지 않으려는 것으로 판단했습니다. 따라서 방해 요소를 줄이기 위해 알림 요청을 표시하지 않습니다.</translation>

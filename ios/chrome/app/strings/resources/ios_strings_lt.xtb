@@ -315,6 +315,7 @@
 <translation id="21133533946938348">Pažymėti skirtuką</translation>
 <translation id="2117650889962717098">Toliau naršykite privačiai perjungę į inkognito režimą</translation>
 <translation id="2119636449201577317">Atidaryti…</translation>
+<translation id="2119962645034852864">Kai kurios paslaugos jūsų paskyroje nepasiekiamos</translation>
 <translation id="2120553909046681540">Organizacija išjungė privatų naršymą.</translation>
 <translation id="2122754583996902531">Jūsų naršyklė tvarkoma. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">Jūsų organizacijos pokalbiai nenaudojami modeliams tobulinti. „Gemini“ gali pateikti netikslios informacijos, įskaitant informaciją apie žmones, todėl dar kartą patikrinkite atsakymus. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
@@ -873,6 +874,7 @@
 <translation id="4302061870579014542">Nustatyti poziciją</translation>
 <translation id="4304713468139749426">Slaptažodžių tvarkytuvė</translation>
 <translation id="4309403553630140242">Norėdami gauti daugiau informacijos, dukart palieskite.</translation>
+<translation id="4310738531374808763">Tinkinkite pagrindinį puslapį</translation>
 <translation id="4320848494125124980">Naujausi</translation>
 <translation id="4322394346347055525">Uždaryti kitus skirtukus</translation>
 <translation id="4324735664183300693">Įjungti pranešimus</translation>
@@ -1711,6 +1713,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">Atsisiųsta <ph name="PERCENT" /> proc.</translation>
 <translation id="7345061034321640811">Importuoti neleidžiama</translation>
+<translation id="7347998088283246662">Importuokite slaptažodžius, istoriją, žymes ir kt.</translation>
 <translation id="7352651011704765696">Kažkas negerai</translation>
 <translation id="7364796246159120393">Pasirinkti failą</translation>
 <translation id="736564850024123010">Perjunkite adreso juostos poziciją, kad galėtumėte naudotis tinkintomis funkcijomis.</translation>
@@ -2236,6 +2239,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="914781932147356857">Pažymėti visus…</translation>
 <translation id="9148126808321036104">Prisijungti dar kartą</translation>
 <translation id="9149866541089851383">Redaguoti...</translation>
+<translation id="9152637745605628097">Pasirinkite iš temų, spalvų arba įkelkite vaizdą</translation>
 <translation id="9159628751968616911">Siųsti tinklalapį</translation>
 <translation id="9162432979321511934">Įjunkite parinktį „Automatinis slaptažodžių pildymas“</translation>
 <translation id="9165320910061267720">Jei norite gauti įspėjimų apie sumažintas kainas pranešimus, turite įjungti pranešimus „iOS“ nustatymuose.</translation>

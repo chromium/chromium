@@ -2510,6 +2510,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2672142220933875349">El archivo crx no es válido y no se ha podido descomprimir.</translation>
 <translation id="2672200806060988299">Los títulos y las URLs de tus pestañas se envían a Google, y es posible que los vean revisores humanos para mejorar esta función.</translation>
 <translation id="2673135533890720193">Leer tu historial de navegación</translation>
+<translation id="2673397477544385203">Permite funciones como la detección de estafas de forma local. Si desactivas esta opción, se eliminarán los modelos de IA generativa de tu dispositivo y se inhabilitarán esas funciones.</translation>
 <translation id="2673848446870717676">Comprueba que tu dispositivo Bluetooth esté cerca y en modo Emparejamiento. Emparéjalo solo con dispositivos de confianza. Todas las cuentas de este Chromebook pueden ver los dispositivos emparejados.</translation>
 <translation id="2673873887296220733">¿Copiar 1 archivo a <ph name="CLOUD_PROVIDER" /> para abrirlo?</translation>
 <translation id="267442004702508783">actualizar</translation>
@@ -3603,7 +3604,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3435738964857648380">Seguridad</translation>
 <translation id="343578350365773421">No hay papel</translation>
 <translation id="3435896845095436175">Habilitar</translation>
-<translation id="3436118221454753036">Pregunta a Modo IA</translation>
+<translation id="3436118221454753036">Pregunta al Modo IA</translation>
 <translation id="3437072258256045988">Gestiona tu actividad en las apps de Gemini</translation>
 <translation id="3437397693214267762">Consulta tu Calendario de Outlook y tus archivos de SharePoint y de OneDrive</translation>
 <translation id="3438633801274389918">Ninja</translation>
@@ -3968,6 +3969,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3678156199662914018">Extensión: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Las páginas que aparezcan en esta ventana no se mostrarán en el historial del navegador y no dejarán otros rastros, como cookies, en el ordenador después de cerrar sesión. No se conservarán los archivos que descargues ni los marcadores que crees.</translation>
 <translation id="3679126865530709868">Panel táctil integrado</translation>
+<translation id="3680166671911524673">IA generativa en el dispositivo habilitada</translation>
 <translation id="3680683624079082902">Voz de conversión de texto a voz</translation>
 <translation id="3681017028939109078">Mostrar sugerencias de ventanas al iniciar la pantalla dividida</translation>
 <translation id="3681191721636073359">Chrome cree que no quieres usar tu ubicación en este sitio. Por lo tanto, las solicitudes se ocultan para reducir las interrupciones.</translation>

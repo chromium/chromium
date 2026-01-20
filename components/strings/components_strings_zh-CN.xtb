@@ -1151,7 +1151,7 @@
 <translation id="2859383374160668142">您可以随时查看所跟踪商品的降价信息。</translation>
 <translation id="2859806420264540918">此网站展示过侵扰性或误导性广告。</translation>
 <translation id="28618371182701850">电动与插电式车辆</translation>
-<translation id="2873317327342476681">恐龙游戏：点按恐龙或按空格键即可开始玩</translation>
+<translation id="2873317327342476681">恐龙游戏：点按恐龙或按空格键即可开玩</translation>
 <translation id="287387905105155974">帮助气泡</translation>
 <translation id="28761159517501904">影片</translation>
 <translation id="2876489322757410363">将要退出无痕模式，以便通过外部应用付款。是否继续？</translation>
@@ -1504,7 +1504,7 @@
 <translation id="3415471717466570460">您的搜索内容、最佳匹配结果和相应网页内容将发送给 Google，并且可能会由人工审核员查看，以改进此功能。这是一项实验性功能，并非始终准确无误。</translation>
 <translation id="3422248202833853650">请尝试退出其他程序以释放内存。</translation>
 <translation id="3422472998109090673">目前无法访问 <ph name="HOST_NAME" />。</translation>
-<translation id="3422794267539320056">点按恐龙或按空格键即可开始玩游戏</translation>
+<translation id="3422794267539320056">点按恐龙或按空格键即可开玩</translation>
 <translation id="3423742043356668186">系统指定</translation>
 <translation id="3427342743765426898">恢复修改(&amp;R)</translation>
 <translation id="342781501876943858">如果您在其他网站上重复使用了您的密码，Chromium 建议您重置该密码。</translation>
@@ -1530,7 +1530,7 @@
 <translation id="3461266716147554923"><ph name="URL" /> 想查看复制到剪贴板的文字和图片</translation>
 <translation id="3461824795358126837">荧光笔</translation>
 <translation id="3462200631372590220">隐藏详情</translation>
-<translation id="3462288464915106745"><ph name="CONTEXTUAL_SEARCH_OPEN_LENS_FOCUSED_FRIENDLY_MATCH_TEXT" />，按 Enter 键可向 Google 询问此页面</translation>
+<translation id="3462288464915106745"><ph name="CONTEXTUAL_SEARCH_OPEN_LENS_FOCUSED_FRIENDLY_MATCH_TEXT" />，按 Enter 键即可问问 Google 有关此页面的问题</translation>
 <translation id="3465972433695735758">无法访问此 PDF 文件。已提取文本，由 Google AI 提供支持</translation>
 <translation id="346601286295919445">化学</translation>
 <translation id="3467081767799433066">启用广告衡量功能后，为了衡量各自的广告效果，网站之间会分享有限类型的数据，例如您在访问某个网站后是否购买了商品。</translation>
@@ -2564,7 +2564,7 @@
 <translation id="5097099694988056070">设备统计信息（例如 CPU/RAM 使用情况）</translation>
 <translation id="5097468150760963273">27 x 39 英寸</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5102512728737175215">依次按 Tab 键和 Enter 键即可询问 AI 模式</translation>
+<translation id="5102512728737175215">依次按 Tab 键和 Enter 键即可问问 AI 模式</translation>
 <translation id="510644072453496781">纸板（封边）</translation>
 <translation id="5106648964679263509">已填写<ph name="BNPL_ISSUER_NAME" />的虚拟卡信息</translation>
 <translation id="5108567515277121477">会员卡</translation>
@@ -2898,7 +2898,7 @@
 <translation id="5624120631404540903">管理密码</translation>
 <translation id="5628060911499153873">保存您的信息，即可在各项 Google 产品中更快地完成操作。您的信息会保存到 <ph name="ACCOUNT" /> 的 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />。</translation>
 <translation id="5629630648637658800">无法加载策略设置</translation>
-<translation id="5630981295558454585">“向 Google 询问此页面”按钮，启用即可向 Google 询问此页面</translation>
+<translation id="5630981295558454585">“问问 Google 有关此页面的问题”按钮，启用即可问问 Google 有关此页面的问题</translation>
 <translation id="5631439013527180824">设备管理令牌无效</translation>
 <translation id="5632485077360054581">操作步骤</translation>
 <translation id="563324245173044180">欺骗性内容已被拦截。</translation>
@@ -3517,6 +3517,7 @@
 <translation id="6635900375070654124">身份验证器设备</translation>
 <translation id="6641852376826221947">确认您的支付信息</translation>
 <translation id="6643016212128521049">清除</translation>
+<translation id="6644868143085860957">此卡无法保存到 Google 钱包中，已改为保存到此设备上的 Chrome 中。</translation>
 <translation id="6645291930348198241">访问 Cookie 和网站数据。</translation>
 <translation id="6645478838938543427">系统会将降价提醒发送到 <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="6648459603387803038">您的管理员可以远程更改您的浏览器设置。此设备上的活动可能也在接受 Chrome 外部的管理。</translation>
@@ -3779,7 +3780,7 @@
 <translation id="7050187094878475250">您尝试访问 <ph name="DOMAIN" />，但服务器提供的证书不可信（有效期过长）。</translation>
 <translation id="7053983685419859001">屏蔽</translation>
 <translation id="7054717457611655239">从现在起，请将您的文件保存到“<ph name="CLOUD_PROVIDER" />”。</translation>
-<translation id="7057567173736333354">描述您的图片</translation>
+<translation id="7057567173736333354">描述想生成的图片</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> 已验证，此网站的证书是由 <ph name="ISSUER" /> 签发的。</translation>
 <translation id="7058774143982824355">CSV 密码解析器服务</translation>
 <translation id="706295145388601875">在 Chrome 设置中添加和管理地址</translation>
@@ -4137,7 +4138,7 @@
 <translation id="7598391785903975535">少于 <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> 目前无法处理此请求。</translation>
 <translation id="7599089013883397081">下载超时</translation>
-<translation id="7602868996817972616">向 Google 询问此页面</translation>
+<translation id="7602868996817972616">问问 Google 有关此页面的问题</translation>
 <translation id="7610193165460212391">值超出了范围 (<ph name="VALUE" />)。</translation>
 <translation id="761261689936461781">粗</translation>
 <translation id="7613889955535752492">过期时间：<ph name="EXPIRATION_YEAR" /> 年 <ph name="EXPIRATION_MONTH" /> 月</translation>

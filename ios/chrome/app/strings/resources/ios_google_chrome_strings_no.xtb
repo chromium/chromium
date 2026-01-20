@@ -86,6 +86,9 @@ Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir di
 <translation id="2767464022270041271">Ingen lagrede passord. Google Passordlagring kan sjekke passordene dine når du lagrer dem.</translation>
 <translation id="2788811701191021538">Åpner innstillingssiden for betalingsmåter i Chrome.</translation>
 <translation id="2876628302275096482">Finn ut mer om <ph name="BEGIN_LINK" />hvordan Chrome holder dataene dine private<ph name="END_LINK" /></translation>
+<translation id="288992067439702510">Du har nådd Google Chrome sin grense på <ph name="LIMIT" /> bokmerker, så noen av bokmerkene dine er ikke lagret i Google-kontoen din ennå.
+
+Du kan ikke lagre nye bokmerker i kontoen din før du sletter noen. Hvis du logger av nå, slettes bokmerker som ikke er lagret.</translation>
 <translation id="2922914028977213693">Trykk her for å få mest mulig ut av Chrome på iPad.</translation>
 <translation id="292371311537977079">Chrome-innstillinger</translation>
 <translation id="2923827943290349720">Lås inkognitofanene dine når du lukker Chrome</translation>

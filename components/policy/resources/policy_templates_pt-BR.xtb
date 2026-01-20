@@ -1801,7 +1801,7 @@ Se a política for desativada, os usuários não terão acesso a essa funcionali
 
       Definir <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valor 2) impede que qualquer variação seja aplicada ao navegador na tela de login. Esse modo não é recomendado, porque pode impedir que os desenvolvedores do <ph name="PRODUCT_OS_NAME" /> forneçam correções críticas de segurança de maneira rápida.</translation>
 <translation id="2215746393279570703">Configurações de SSO flutuante</translation>
-<translation id="2219724363635419721">Desative a Legenda instantânea</translation>
+<translation id="2219724363635419721">Desative a legenda instantânea</translation>
 <translation id="2221779615493499989">Informar o status de rede dos usuários em dispositivos registrados.
 
       Se a política for definida como falsa, as informações não serão enviadas.
@@ -5153,6 +5153,19 @@ Esta política não vai ter efeito se for ativada, deixada vazia ou não for def
 <translation id="4501388411278568771">Os upgrades do HTTPS podem ser aplicados dependendo do status de lançamento do recurso.</translation>
 <translation id="45036050223225148">Desativar o experimento Encrypted ClientHello do TLS</translation>
 <translation id="4503935079903510542">A imagem de disco inicializável pelo UEFI usada para instalar a VM em dispositivos x86_64.</translation>
+<translation id="4505299160236615603">Definir a política concede acesso aos URLs listados no modo de navegação anônima. Ela pode abrir exceções para alguns padrões de URL definidos em <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />, usando o formato especificado em ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
+
+Se esta política e <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> forem definidas, a lista de permissões terá precedência. Se um URL corresponder a um padrão na lista de permissões, ele será permitido. Se corresponder a um padrão na lista de bloqueio (mas não na lista de permissões), será bloqueado. Se um URL não corresponder a nenhuma delas, as políticas gerais <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> serão usadas como substitutas.
+
+Se esta política estiver definida e a <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> não, qualquer URL que não estiver na lista de permissões será bloqueado no modo de navegação anônima.
+
+Se a política <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> estiver definida como não permitida (valor 1), mas esta política estiver configurada, o modo de navegação anônima só vai estar disponível para URLs que corresponderem à lista de permissões.
+
+Se a política não for definida, nenhuma exceção a <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> e <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> será permitida.
+
+A política afeta apenas o modo de navegação anônima. Se quiser permitir URLs para todos os perfis de usuário, use a política <ph name="URL_ALLOWLIST_POLICY_NAME" />.
+
+Esta política tem um limite de 1.000 entradas.</translation>
 <translation id="4508728400492074981">Controla as políticas do recurso First-Party Sets.</translation>
 <translation id="4510131075424939993">Especificar o valor de um sal a ser usado na política <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> ao avaliar as informações de identidade</translation>
 <translation id="4510923771103268849">O usuário tem permissão de acesso root aos contêineres do Crostini</translation>
@@ -5451,6 +5464,17 @@ Essa política é temporária e será removida.</translation>
       Observação: esta configuração substituirá <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" />, caso presente.</translation>
 <translation id="4658380868451934335">Ativar o Ditado na tela de login</translation>
 <translation id="4658420696622830453">Controles de conteúdo protegido</translation>
+<translation id="4660251990929524821">Se a política <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> for definida, as páginas da web que têm URLs proibidos não vão ser carregadas no modo de navegação anônima. Os admins podem especificar a lista de padrões de URL a serem bloqueados. Confira como formatar um padrão de URL ( https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+Se esta política e a <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> estiverem definidas, a lista de permissões terá precedência. Se um URL corresponder a um padrão na lista de permissões, ele será permitido. Se corresponder a um padrão na lista de bloqueio, mas não na lista de permissões, será bloqueado. Se um URL não corresponder a nenhuma delas, as políticas gerais <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> serão usadas como substitutas.
+
+Se a política <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> estiver definida e esta não, qualquer URL que não estiver na lista de permissões será bloqueado no modo de navegação anônima.
+
+Se <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> for definida como não permitida (valor 1), mas a política <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> estiver configurada, o modo de navegação anônima vai estar disponível apenas para URLs que corresponderem à lista de permissões.
+
+A política afeta apenas o modo de navegação anônima. Se quiser bloquear URLs para todos os perfis de usuário, use a política <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+Esta política tem um limite de 1.000 entradas.</translation>
 <translation id="4660356908994631271">Mostrar o botão do Google Lens na caixa de pesquisa da página "Nova guia".</translation>
 <translation id="4661885151480410620">Mudanças de comportamento podem ter efeito dependendo do processo de lançamento do recurso.</translation>
 <translation id="4661889655253181651">As configurações de conteúdo permitem que você especifique como o conteúdo de um tipo específico (por exemplo, cookies, imagens ou JavaScript) é tratado.</translation>
@@ -5986,15 +6010,15 @@ da versão do ChromeOS ou do dispositivo) serão sempre exibidas ou ocultas na t
 
           Se a política for deixada sem definição, nenhuma informação complementar vai ser mostrada e a criação do tíquete vai funcionar normalmente.</translation>
 <translation id="4960597185231686653">Uma sinalização booleana indicando se o teclado na tela pode oferecer entrada de texto por voz.</translation>
-<translation id="49677896192199414">Ative a Legenda instantânea.
+<translation id="49677896192199414">Ative a legenda instantânea.
 
-Se essa política for ativada, a Legenda instantânea vai ficar sempre ativada.
+Se essa política for ativada, a legenda instantânea vai ficar sempre ativada.
 
-Se ela for desativada, a Legenda instantânea também vai ficar desativada.
+Se ela for desativada, a legenda instantânea também vai ficar desativada.
 
 Se for definida como obrigatória, o usuário não poderá mudar nem substituir essa política.
 
-Se for deixada sem definição, a Legenda instantânea vai ficar desativada inicialmente, mas poderá ser ativada pelo usuário a qualquer momento.</translation>
+Se for deixada sem definição, a legenda instantânea vai ficar desativada inicialmente, mas poderá ser ativada pelo usuário a qualquer momento.</translation>
 <translation id="4970046075219007744">Permitir que apps da Web solicitem acesso a tipos de arquivos usando a API File Handling</translation>
 <translation id="4970855112942626932">Desativar login no navegador</translation>
 <translation id="4974091268178043378">Modo de cor do ChromeOS</translation>
@@ -6783,7 +6807,7 @@ os atalhos baseados em pesquisa vão funcionar como padrão.</translation>
 <translation id="5476152378885134514">Bloquear a área de transferência nesses sites</translation>
 <translation id="5479841110985196412">Ativar o teclado virtual de acessibilidade</translation>
 <translation id="5480380613778757009">Se a política for desativada ou deixada sem definição, todas as configurações de tela que foram definidas em Sessões de visitante gerenciadas serão redefinidas assim que a sessão for encerrada. Se a política for definida como "Verdadeira", as propriedades de tela permanecerão após a Sessão de visitante gerenciada ser encerrada.</translation>
-<translation id="548137908954174608">Ative a Legenda instantânea</translation>
+<translation id="548137908954174608">Ative a legenda instantânea</translation>
 <translation id="5483012943408894695">Origens ou padrões de nome do host aos quais as restrições sobre origens não seguras não se aplicam</translation>
 <translation id="5483065054530244863">Permitir certificados SHA-1 assinados emitidos pelas âncoras de confiança locais</translation>
 <translation id="5485491014653571963">Esta configuração permite integrações dos apps do Gemini.
@@ -10553,6 +10577,17 @@ Quando ela for deixada sem definição, o renderizador de PDF será escolhido pe
       Se a política for definida como "Desativada", os usuários serão impedidos de ignorar as páginas de aviso.</translation>
 <translation id="7750991880413385988">Abrir Nova guia</translation>
 <translation id="7752154519644940493">Configurações do recurso de imagem inline da IA generativa</translation>
+<translation id="7752654588237652882">Especifica se o usuário pode abrir páginas no modo de navegação anônima no <ph name="PRODUCT_NAME" />.
+
+      Se a política for definida como "Ativada" ou não for definida, as páginas poderão ser abertas no modo de navegação anônima.
+
+      Se ela for definida como "Desativada", as páginas não poderão ser abertas no modo de navegação anônima.
+
+      Se a opção "Forçada" for selecionada, as páginas poderão ser abertas SOMENTE no modo de navegação anônima. A opção "Forçada" não funciona para o Android no Chrome
+
+      A política <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> tem precedência e pode reativar o modo de navegação anônima para URLs específicos. Quando o modo de navegação anônima é desativado por essa política e uma lista de permissões é fornecida, ele fica disponível apenas para URLs que correspondem a essa lista, enquanto todas as outras páginas são bloqueadas.
+
+      Observação: no iOS, se a política for alterada durante a sessão, ela só terá efeito após a reinicialização.</translation>
 <translation id="7753678409577376761">Ativar o ponto de entrada da barra de ferramentas de recursos experimentais do navegador</translation>
 <translation id="7754704193130578113">Perguntar onde salvar cada arquivo antes de fazer download</translation>
 <translation id="7754893969683595513">A definição da política especifica um período em milissegundos em que o serviço de gerenciamento do dispositivo recebe consultas sobre informações de políticas do usuário. O intervalo válido de valores é de 1.800.000 (30 minutos) até 86.400.000 (1 dia). Valores fora desse intervalo serão ajustados para o respectivo limite.

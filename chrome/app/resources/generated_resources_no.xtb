@@ -2516,6 +2516,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2672142220933875349">Skadet crx-fil. Kunne ikke pakke den ut.</translation>
 <translation id="2672200806060988299">Titlene og nettadressene til fanene dine sendes til Google og kan bli sett av menneskelige evaluerere som jobber med å gjøre denne funksjonen bedre.</translation>
 <translation id="2673135533890720193">lese nettleserloggen din</translation>
+<translation id="2673397477544385203">Driver funksjoner som svindelovervåking lokalt. Hvis du slår av dette, slettes modeller for generativ AI fra enheten din, og disse funksjonene deaktiveres.</translation>
 <translation id="2673848446870717676">Sørg for at Bluetooth-enheten din er i sammenkoblingsmodus og i nærheten. Koble bare til enheter du stoler på. Sammenkoblede enheter er synlige for alle kontoer på denne Chromebooken.</translation>
 <translation id="2673873887296220733">Vil du kopiere 1 fil til <ph name="CLOUD_PROVIDER" /> for å åpne den?</translation>
 <translation id="267442004702508783">last inn på nytt</translation>
@@ -3974,6 +3975,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3678156199662914018">Utvidelse: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Sider i dette vinduet vises ikke i nettleserloggen, og de legger ikke igjen andre spor (f.eks. informasjonskapsler) på datamaskinen etter at du har logget av. Filer du laster ned og bokmerker du oppretter, blir ikke tatt vare på.</translation>
 <translation id="3679126865530709868">Innebygd styreflate</translation>
+<translation id="3680166671911524673">Generativ AI på enheten er aktivert</translation>
 <translation id="3680683624079082902">Stemme for tekst til tale</translation>
 <translation id="3681017028939109078">Vis forslag til vinduer når du starter delt skjerm</translation>
 <translation id="3681191721636073359">Chrome tror at du ikke vil bruke posisjonen din på dette nettstedet. Derfor skjules forespørsler for å redusere avbrudd.</translation>
@@ -8712,6 +8714,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6949089178006131285">lese ChromeOS Flex-nettverksinformasjon</translation>
 <translation id="6949434160682548041">Passord (valgfritt)</translation>
 <translation id="6950143189069683062">Minnedetaljer</translation>
+<translation id="6950351336108213154">Oppdaterer eksterne enheter</translation>
 <translation id="6950627417367801484">Gjenopprett apper</translation>
 <translation id="6954936693361896459">Cast denne fanen i stedet</translation>
 <translation id="6955446738988643816">Undersøk forgrunnsvindu</translation>
@@ -11638,6 +11641,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="8921369299636221117">Concierge-tjenesten er ikke tilgjengelig.</translation>
 <translation id="8922348435910470639">Dobbeltbooking</translation>
 <translation id="8922624386829239660">Beveg skjermen når musen berører kantene av skjermen</translation>
+<translation id="8923670289674436542">Forbedret: egendefinert</translation>
 <translation id="8923880975836399332">Mørk blågrønn</translation>
 <translation id="8925124370124776087">Tittellinjen er skjult</translation>
 <translation id="8925308599005372373">Last opp en PDF-fil</translation>

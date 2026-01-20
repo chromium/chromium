@@ -315,6 +315,7 @@
 <translation id="21133533946938348">הצמדת כרטיסייה</translation>
 <translation id="2117650889962717098">כדי לשמור על פרטיות הגלישה, אפשר לעבור למצב פרטי</translation>
 <translation id="2119636449201577317">פתיחה באמצעות…</translation>
+<translation id="2119962645034852864">חלק מהשירותים לא זמינים בחשבון שלך</translation>
 <translation id="2120553909046681540">הארגון שלך כיבה את אפשרות הגלישה הפרטית.</translation>
 <translation id="2122754583996902531">הדפדפן שלך מנוהל. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">‏השיחות במסגרת הארגון לא משמשות לשיפור המודלים שלנו. ‫Gemini עלול לתת מידע לא מדויק, גם בנוגע לאנשים, אז כדאי לבדוק היטב את התשובות שלו. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
@@ -873,6 +874,7 @@
 <translation id="4302061870579014542">הגדרת המיקום</translation>
 <translation id="4304713468139749426">מנהל הסיסמאות</translation>
 <translation id="4309403553630140242">לחיצה פעמיים תציג מידע נוסף</translation>
+<translation id="4310738531374808763">התאמה אישית של דף הבית</translation>
 <translation id="4320848494125124980">מהזמן האחרון</translation>
 <translation id="4322394346347055525">סגירת כרטיסיות אחרות</translation>
 <translation id="4324735664183300693">הפעלת ההתראות</translation>
@@ -1711,6 +1713,7 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">הושלמה הורדה של <ph name="PERCENT" /> אחוז</translation>
 <translation id="7345061034321640811">הייבוא אסור</translation>
+<translation id="7347998088283246662">אפשר לייבא סיסמאות, היסטוריה, סימניות ועוד</translation>
 <translation id="7352651011704765696">משהו השתבש</translation>
 <translation id="7364796246159120393">בחירת קובץ</translation>
 <translation id="736564850024123010">כדי להתאים אישית את חוויית השימוש, אפשר לשנות את המיקום של סרגל הכתובות.</translation>
@@ -2236,6 +2239,7 @@
 <translation id="914781932147356857">סימון הכול…</translation>
 <translation id="9148126808321036104">כניסה חוזרת</translation>
 <translation id="9149866541089851383">עריכה…</translation>
+<translation id="9152637745605628097">אפשר לבחור מתוך קטגוריות העיצוב והאוספים המיוחדים או להעלות תמונה</translation>
 <translation id="9159628751968616911">שליחת דף האינטרנט</translation>
 <translation id="9162432979321511934">מפעילים את האפשרות מילוי אוטומטי של סיסמאות.</translation>
 <translation id="9165320910061267720">‏כדי לקבל התראות על הנחות, צריך להפעיל את ההתראות בהגדרות iOS.</translation>

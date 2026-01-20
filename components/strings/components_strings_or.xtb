@@ -186,6 +186,7 @@
 <translation id="1289129165308566697">ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକରେ ଆପଣଙ୍କର ଇତିହାସ ଦେଖନ୍ତୁ</translation>
 <translation id="1292571435393770077">ଟ୍ରେ 16</translation>
 <translation id="1292701964462482250">"ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର୍‌ରେ ଥିବା ସଫ୍ଟୱେୟାର୍ Chromeକୁ ୱେବ୍ ସହ ସୁରକ୍ଷିତ ସଂଯୋଗ କରିବାରେ ବାଧା ଦେଉଛି" (କେବଳ Windows କମ୍ପ୍ୟୁଟର୍)</translation>
+<translation id="1293154089865862473">ଏହି ବିକଳ୍ପଗୁଡ଼ିକ ଅଫର କରିବା ପାଇଁ ଚେକଆଉଟ ପୃଷ୍ଠାରୁ ପୃଷ୍ଠାର ବିଷୟବସ୍ତୁକୁ Google ସହ ସେୟାର କରାଯାଏ। ଅଟୋଫିଲରେ ପରେ ପେମେଣ୍ଟ କରନ୍ତୁ ବିକଳ୍ପଗୁଡ଼ିକୁ ଲୁଚାଇବା ପାଇଁ <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />କୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1293797321964802402">ଏନଭେଲପ 9 x 11 in</translation>
 <translation id="129553762522093515">ବର୍ତ୍ତମାନ ବନ୍ଦ ହୋଇଛି</translation>
@@ -1124,6 +1125,7 @@
 <translation id="2782088940970074970">କାର ଭଡ଼ା</translation>
 <translation id="278436560439594386">ହୋମ ଉପକରଣଗୁଡ଼ିକ</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
+<translation id="2784540996156451674">ଏହି ବିକଳ୍ପଗୁଡ଼ିକ ଅଫର କରିବା ପାଇଁ ଚେକଆଉଟ ପୃଷ୍ଠାରୁ ପୃଷ୍ଠାର ବିଷୟବସ୍ତୁକୁ Google ସହ ସେୟାର କରାଯାଏ।</translation>
 <translation id="2784949926578158345">ସଂଯୋଗଟି ରିସେଟ୍ କରାଯାଇଛି।</translation>
 <translation id="2786008859124691917">ସାଇକେଲ ଓ ଆକ୍ସେସୋରୀ</translation>
 <translation id="2792012897584536778">ଏହି ଡିଭାଇସ୍‌ର ଆଡ୍‌ମିନିଷ୍ଟ୍ରେଟର୍‌ମାନେ ସୁରକ୍ଷା ସାର୍ଟିଫିକେଟ୍‌ଗୁଡ଼ିକ ସେଟ୍‌ଅପ୍ କରିଛନ୍ତି ଯାହା ଆପଣ ଯାଇଥିବା ୱେବ୍‌ସାଇଟ୍‌ଗୁଡ଼ିକର ବିଷୟବସ୍ତୁ ଦେଖିବା ପାଇଁ ହୁଏତ ସେମାନଙ୍କୁ ଅନୁମତି ଦେଇପାରେ।</translation>
@@ -2479,6 +2481,7 @@
 <translation id="4950898438188848926">ଟାବ୍ ସ୍ୱିଚ୍ କରିବା ବଟନ୍, ଖୋଲାଥିବା ଟାବ୍‍କୁ ଯିବା ପାଇଁ Enter ଦବାନ୍ତୁ, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">କାର୍ଯ୍ୟ</translation>
 <translation id="4953689047182316270">ଆକ୍ସେସିବିଲିଟୀ ଇଭେଣ୍ଟକୁ ପ୍ରତିକ୍ରିୟା ଦିଏ</translation>
+<translation id="4954891067389874142">ଆପଣଙ୍କ କାର୍ଡକୁ ସେଭ କରାଗଲେ ଶୀଘ୍ର ପେମେଣ୍ଟ କରନ୍ତୁ। Google Walletରେ କାର୍ଡ ବିବରଣୀକୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇଛି।</translation>
 <translation id="4957080528849277028">'ଆପଣଙ୍କ Chrome ଇତିହାସ ଦେଖନ୍ତୁ' ବଟନ, Chrome ସେଟିଂସରେ ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଇତିହାସ ଭ୍ୟୁ କରି ପରିଚାଳନା କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 ସାଇଟ}other{+ # ସାଇଟ}}</translation>
 <translation id="4958444002117714549">ତାଲିକାକୁ ପ୍ରସାରିତ କରନ୍ତୁ</translation>
@@ -3518,6 +3521,7 @@
 <translation id="6635900375070654124">ଏକ ଅଥେଣ୍ଟିକେଟର ଡିଭାଇସ</translation>
 <translation id="6641852376826221947">ଆପଣଙ୍କ କ୍ରୟକୁ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="6643016212128521049">ଖାଲି କରନ୍ତୁ</translation>
+<translation id="6644868143085860957">ଏହି କାର୍ଡକୁ Google Walletରେ ସେଭ କରାଯାଇପାରିଲା ନାହିଁ। ଏହା ପରିବର୍ତ୍ତେ ଏହାକୁ ଏହି ଡିଭାଇସରେ Chromeରେ ସେଭ କରାଯାଇଛି।</translation>
 <translation id="6645291930348198241">କୁକୀ ଏବଂ ସାଇଟ୍ ଡାଟା ଆକ୍ସେସ୍ କରନ୍ତୁ।</translation>
 <translation id="6645478838938543427">ମୂଲ୍ୟ ହ୍ରାସ ଆଲର୍ଟ <ph name="EMAIL_ADDRESS" />କୁ ପଠାଯିବ</translation>
 <translation id="6648459603387803038">ଆପଣଙ୍କର ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ଆପଣଙ୍କ ବ୍ରାଉଜର୍ ସେଟଅପକୁ ରିମୋଟ୍ ଭାବରେ ବଦଳାଇପାରିବେ। ଏହି ଡିଭାଇସରେ କରାଯାଉଥିବା କାର୍ଯ୍ୟକଳାପ Chrome ବାହାରେ ମଧ୍ୟ ପରିଚାଳନା କରାଯାଇପାରେ।</translation>
@@ -4005,6 +4009,7 @@
 <translation id="7408613996403626141">ଖେଳଣା</translation>
 <translation id="7410852728357935715">ଏକ ଡିଭାଇସକୁ କାଷ୍ଟ କରନ୍ତୁ</translation>
 <translation id="741204030948306876">ହଁ, ମୁଁ ପ୍ରସ୍ତୁତ</translation>
+<translation id="7412081313067625215">ଆପଣଙ୍କ କାର୍ଡକୁ Google Walletରେ ସେଭ କରାଯାଇଛି ଯାହା ଫଳରେ ଆପଣ ଭବିଷ୍ୟତର କ୍ରୟଗୁଡ଼ିକ ପାଇଁ ଏହାକୁ ଅଟୋଫିଲ କରିପାରିବେ</translation>
 <translation id="7416351320495623771">ପାସ୍‌ୱର୍ଡଗୁଡ଼ିକୁ ପରିଚାଳିତ କରନ୍ତୁ…</translation>
 <translation id="7416898721136759658">ଅନୁଦାନ, ବୃତ୍ତି ଏବଂ ଆର୍ଥିକ ସହାୟତା</translation>
 <translation id="741772962178517671">Affirm</translation>
@@ -4138,6 +4143,7 @@
 <translation id="759889825892636187"><ph name="HOST_NAME" /> ବର୍ତ୍ତମାନ ଏହି ଅନୁରୋଧ ପରିଚାଳନା କରିବାକୁ ଅକ୍ଷମ।</translation>
 <translation id="7599089013883397081">ଡାଉନଲୋଡ କରିବା ସମୟ ସମାପ୍ତ ହୋଇଯାଇଛି</translation>
 <translation id="7602868996817972616">ଏହି ପୃଷ୍ଠା ବିଷୟରେ Googleକୁ ପଚାରନ୍ତୁ</translation>
+<translation id="7606123685356405076">Gemini 3 ମଡେଲ</translation>
 <translation id="7610193165460212391">ମୂଲ୍ୟ <ph name="VALUE" /> ପରିସୀମା ବାହାରେ ଅଛି।</translation>
 <translation id="761261689936461781">ମୋଟା</translation>
 <translation id="7613889955535752492">ସମୟ ଅବଧିର ସମାପ୍ତି: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

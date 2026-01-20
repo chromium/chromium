@@ -315,6 +315,7 @@
 <translation id="21133533946938348">Fijar pestaña</translation>
 <translation id="2117650889962717098">Mantén tu navegación privada cambiando al modo Incógnito</translation>
 <translation id="2119636449201577317">Abrir en…</translation>
+<translation id="2119962645034852864">Algunos servicios no están disponibles en tu cuenta</translation>
 <translation id="2120553909046681540">Tu organización ha desactivado la navegación privada.</translation>
 <translation id="2122754583996902531">Tu navegador está administrado. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">Las conversaciones de tu organización no se usan para mejorar nuestros modelos. Gemini puede mostrar información incorrecta (incluidos datos sobre personas), así que comprueba sus respuestas. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
@@ -873,6 +874,7 @@
 <translation id="4302061870579014542">Establecer posición</translation>
 <translation id="4304713468139749426">Gestor de contraseñas</translation>
 <translation id="4309403553630140242">Toca dos veces para consultar más información</translation>
+<translation id="4310738531374808763">Personalizar tu página principal</translation>
 <translation id="4320848494125124980">Recientes</translation>
 <translation id="4322394346347055525">Cerrar las demás pestañas</translation>
 <translation id="4324735664183300693">Activar notificaciones</translation>
@@ -934,6 +936,7 @@
 <translation id="4565377596337484307">Ocultar contraseña</translation>
 <translation id="4568230126482344545">Ocultar Pestañas recientes</translation>
 <translation id="4578835633387306383">Activar…</translation>
+<translation id="4580621046861724270">Algunos marcadores no se han guardado</translation>
 <translation id="4580716718466706433">Ve al Gestor de contraseñas</translation>
 <translation id="4585751637295612750">Abre una pestaña nueva para añadirla a tu pregunta</translation>
 <translation id="4587589328781138893">Sitios web</translation>
@@ -1221,7 +1224,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="5567439033041178034">MÁS INFORMACIÓN</translation>
 <translation id="5578795271662203820">Buscar esta imagen en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Ocultar Lista de lectura</translation>
-<translation id="5581786858144165447">Pregunta a Modo IA</translation>
+<translation id="5581786858144165447">Pregunta al Modo IA</translation>
 <translation id="5585019845078534178">Tarjetas</translation>
 <translation id="5591526871732898147">Imagen adjunta {index}</translation>
 <translation id="5595485650161345191">Editar dirección</translation>
@@ -1711,6 +1714,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" />% descargado</translation>
 <translation id="7345061034321640811">Importación no permitida</translation>
+<translation id="7347998088283246662">Importa tus contraseñas, historial, marcadores y más</translation>
 <translation id="7352651011704765696">Se ha producido un problema</translation>
 <translation id="7364796246159120393">Seleccionar archivo</translation>
 <translation id="736564850024123010">Cambia la posición de la barra de direcciones para personalizar tu experiencia.</translation>
@@ -2236,6 +2240,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="914781932147356857">Marcar todas…</translation>
 <translation id="9148126808321036104">Volver a iniciar sesión</translation>
 <translation id="9149866541089851383">Editar...</translation>
+<translation id="9152637745605628097">Elige un tema o color, o sube una imagen</translation>
 <translation id="9159628751968616911">Enviar página web</translation>
 <translation id="9162432979321511934">Activa Autocompletar contraseñas</translation>
 <translation id="9165320910061267720">Para recibir notificaciones de alertas por bajada de precio, deberás activarlas en los ajustes de iOS.</translation>

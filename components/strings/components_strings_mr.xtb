@@ -186,6 +186,7 @@
 <translation id="1289129165308566697">इतर डिव्हाइसवर तुमचा इतिहास पहा</translation>
 <translation id="1292571435393770077">ट्रे १६</translation>
 <translation id="1292701964462482250">"तुमच्या कॉंप्युटरवरील सॉफ्टवेअर Chrome ला सुरक्षितपणे वेबशी कनेक्ट होण्यापासून थांबवत आहे" (फक्‍त Windows कॉंप्युटरचा)</translation>
+<translation id="1293154089865862473">हे पर्याय देण्यासाठी चेकआउट पेजवरील पेज आशय Google सोबत शेअर केला जातो. ऑटोफिलमध्ये नंतर पेमेंट करण्याचे पर्याय लपवण्यासाठी, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> वर जा.</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1293797321964802402">एन्व्हलप ९ x ११ इंच</translation>
 <translation id="129553762522093515">अलीकडे बंद केलेले</translation>
@@ -265,6 +266,7 @@
 <translation id="1408787208417187241">ट्रिपल स्टेपल टॉप</translation>
 <translation id="1410365862999780287">हे डिव्हाइस वापरणाऱ्या इतरांना तुमची अ‍ॅक्टिव्हिटी दिसणार नाही, जेणेकरून तुम्ही आणखी खाजगीरीत्या ब्राउझ करू शकता. Google च्या समावेशासह, तुम्ही भेट देत असलेल्या वेबसाइटद्वारे आणि ते वापरत असलेल्या सेवांद्वारे डेटा कसा गोळा केला जातो यात यामुळे बदल होणार नाही. डाउनलोड, बुकमार्क आणि वाचन सूची आयटम सेव्ह केले जातील.</translation>
 <translation id="1410941016594047814">एन्व्हलप इनव्हाइट</translation>
+<translation id="1413235258620101697">या कार्डचा CVC एन्क्रिप्ट केला जाईल आणि जलद चेकआउटसाठी Google Wallet मध्ये सेव्ह केला जाईल</translation>
 <translation id="1413809658975081374">गोपनीयता एरर</translation>
 <translation id="1414134146594747368">बालवाडी</translation>
 <translation id="1419305130220238697">Chrome मधील डाउनलोड व्यवस्थापित करा बटण, तुम्ही Chrome मध्ये डाउनलोड केलेल्या फाइल व्यवस्थापित करण्यासाठी ॲक्टिव्हेट करा</translation>
@@ -1124,6 +1126,7 @@
 <translation id="2782088940970074970">कार रेंटल</translation>
 <translation id="278436560439594386">घरातील उपकरणे</translation>
 <translation id="2784474685437057136">B5 अतिरिक्त</translation>
+<translation id="2784540996156451674">हे पर्याय देण्यासाठी चेकआउट पेजवरील पेज आशय Google सोबत शेअर केला जातो.</translation>
 <translation id="2784949926578158345">कनेक्शन रीसेट केले.</translation>
 <translation id="2786008859124691917">सायकल आणि अ‍ॅक्सेसरी</translation>
 <translation id="2792012897584536778">या डिव्हाइसच्या अ‍ॅडमिनिस्ट्रेटरने सुरक्षा सर्टिफिकेट सेट केले आहे जे त्यांना तुम्ही भेट देत असलेल्या वेबसाइटचा आशय पाहण्याची परवानगी देऊ शकतात.</translation>
@@ -2481,6 +2484,7 @@
 <translation id="4950898438188848926">टॅब स्विच बटण, उघड्या टॅबवर स्विच करण्यासाठी एंटर प्रेस करा, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">क्रिया</translation>
 <translation id="4953689047182316270">ॲक्सेसिबिलिटी कामक्रमांना प्रतिसाद द्या</translation>
+<translation id="4954891067389874142">तुमचे कार्ड सेव्ह केलेले असताना, अधिक जलद पेमेंट करा. कार्डचे तपशील Google Wallet मध्ये एन्क्रिप्ट केलेले असतात.</translation>
 <translation id="4957080528849277028">तुमचा Chrome इतिहास पहा बटण, Chrome सेटिंग्जमध्ये तुमचा ब्राउझिंग इतिहास पाहण्यासाठी आणि व्यवस्थापित करण्यासाठी अ‍ॅक्टिव्हेट करा</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{आणखी १ साइट}other{आणखी # साइट}}</translation>
 <translation id="4958444002117714549">सूची विस्तार करा</translation>
@@ -3019,6 +3023,7 @@
 <translation id="5843987376989109187">या भाषेला अद्याप सपोर्ट नाही.
     <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">वीज पुरवठ्याच्या वस्तू</translation>
+<translation id="5848445080378515710">तुम्ही तुमच्या ऑर्डरचे पुनरावलोकन केल्यानंतर, तुम्ही <ph name="BNPL_ISSUER_NAME" /> खात्यामध्ये साइन इन करणे किंवा ते तयार करणे आवश्यक आहे. हे खाते Google Wallet मध्ये आपोआप लिंक केले जाईल.</translation>
 <translation id="584902713199270089">डेटिंग आणि वैयक्तिक गोष्टी</translation>
 <translation id="5851548754964597211">टॅब सूची</translation>
 <translation id="5851868085455377790">जारीकर्ता</translation>
@@ -4011,6 +4016,7 @@
 <translation id="7408613996403626141">खेळणी</translation>
 <translation id="7410852728357935715">डिव्हाइसवर कास्ट करा</translation>
 <translation id="741204030948306876">होय, मला मान्य आहे</translation>
+<translation id="7412081313067625215">तुमचे कार्ड Google Wallet मध्ये सेव्ह केले आहे, त्यामुळे तुम्ही भविष्यातील खरेदीसाठी ते ऑटोफिल करू शकता</translation>
 <translation id="7416351320495623771">पासवर्ड व्यवस्थापित करा…</translation>
 <translation id="7416898721136759658">अनुदाने, शिष्यवृत्ती आणि अर्थसाहाय्य</translation>
 <translation id="741772962178517671">Affirm</translation>
@@ -4144,6 +4150,7 @@
 <translation id="759889825892636187"><ph name="HOST_NAME" /> सध्या ही विनंती हाताळण्यात अक्षम आहे.</translation>
 <translation id="7599089013883397081">डाउनलोड करणे टाइम आउट झाले</translation>
 <translation id="7602868996817972616">Google ला या पेजबद्दल विचारा</translation>
+<translation id="7606123685356405076">Gemini 3 मॉडेल</translation>
 <translation id="7610193165460212391">मूल्य <ph name="VALUE" /> श्रेणीच्या बाहेर आहे.</translation>
 <translation id="761261689936461781">जाड</translation>
 <translation id="7613889955535752492">कालबाह्य: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

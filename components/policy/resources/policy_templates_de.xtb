@@ -2165,6 +2165,21 @@ Diese Richtlinie gilt nur für neue Verbindungsversuche und macht bestehende Ver
       Damit diese Funktion richtig funktioniert, sind zusätzliche Komponenten erforderlich, die außerhalb der Netzwerkumgebung von Google nicht verfügbar sind.</translation>
 <translation id="2536525645274582300">Der Nutzer entscheidet, ob die Standortdienste von Google aktiviert werden sollen</translation>
 <translation id="2536717624356629471">Im Konzentrationsmodus Töne für ChromeOS aktivieren</translation>
+<translation id="2543785467842238592">Mit dieser Richtlinie wird festgelegt, ob <ph name="PRODUCT_NAME" /> Berichte zu Besuchen von SaaS-Domains und Inhaltsübertragungen für einen verwalteten Browser erstellt.
+
+Wenn die Richtlinie konfiguriert ist, werden die URLs, die mit SaaS-Domains übereinstimmen, dazu verwendet, einen Bericht zu erstellen. Nicht übereinstimmende URLs werden ignoriert.
+
+Wenn die Richtlinie nicht konfiguriert oder auf eine leere Liste festgelegt ist, wird kein Bericht erstellt.
+
+Für die Abgleichsmuster wird ein ähnliches Format wie für diejenigen der Richtlinie „<ph name="URL_BLOCKLIST_POLICY_NAME" />“ verwendet. Diese sind unter https://support.google.com/chrome/a?p=url_blocklist_filter_format beschrieben. Es gibt jedoch einige Ausnahmen:
+
+ * Der URL-Host muss mit dem Hostnamen übereinstimmen oder eine Subdomain des Hostnamens einer der Domains aus der Liste der SaaS-Websites sein.
+
+ * Der URL-Pfad muss mit dem Pfad aus dem Eintrag der Liste der übereinstimmenden SaaS-Websites beginnen.
+
+ * Das URL-Schema, der Port und die Abfrage werden beim Abgleich ignoriert.
+
+Dieser Richtlinienwert wird von der Cloud-Richtlinieninfrastruktur ausgefüllt und kann nicht direkt von Administratoren festgelegt werden.</translation>
 <translation id="254653220329944566">Cloud-Berichte für <ph name="PRODUCT_NAME" /> aktivieren</translation>
 <translation id="2547854230073316008">Wenn die Richtlinie konfiguriert ist, wird die Auflösung und der Skalierungsfaktor der einzelnen Bildschirme festgelegt. Externe Bildschirmeinstellungen werden auf alle angeschlossenen Bildschirme angewendet. Die Richtlinie wird nicht angewendet, wenn ein Bildschirm die Auflösung oder den Skalierungsfaktor nicht unterstützt.
 
@@ -9111,6 +9126,23 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 <translation id="70681795425744184">Nicht zulassen, dass CRD WebAuthn API-Anfragen ausführt, die von einem Remote-Host über einen Proxy weitergeleitet werden.</translation>
 <translation id="7070525176564511548">Passworteingabe wöchentlich erforderlich (alle 168 Stunden)</translation>
 <translation id="7072208053150563108">Änderungsrate des Computerpassworts</translation>
+<translation id="7072438666478490567">Mit dieser Richtlinie wird festgelegt, ob <ph name="PRODUCT_NAME" /> Berichte zu Besuchen von SaaS-Domains und Inhaltsübertragungen für ein verwaltetes Profil erstellt.
+
+Wenn die Richtlinie konfiguriert ist, werden die URLs, die mit SaaS-Domains übereinstimmen, dazu verwendet, einen Bericht zu erstellen. Nicht übereinstimmende URLs werden ignoriert.
+
+Wenn die Richtlinie nicht konfiguriert oder auf eine leere Liste festgelegt ist, wird kein Bericht erstellt.
+
+Für die Abgleichsmuster wird ein ähnliches Format wie für diejenigen der Richtlinie „<ph name="URL_BLOCKLIST_POLICY_NAME" />“ verwendet. Diese sind unter https://support.google.com/chrome/a?p=url_blocklist_filter_format beschrieben. Es gibt jedoch einige Ausnahmen:
+
+ * Der URL-Host muss mit dem Hostnamen übereinstimmen oder eine Subdomain des Hostnamens einer der Domains aus der Liste der SaaS-Websites sein.
+
+ * Der URL-Pfad muss mit dem Pfad aus dem Eintrag der Liste der übereinstimmenden SaaS-Websites beginnen.
+
+ * Das URL-Schema, der Port und die Abfrage werden beim Abgleich ignoriert.
+
+Diese Richtlinie kann nur als Cloud-Nutzerrichtlinie konfiguriert werden.
+
+Dieser Richtlinienwert wird von der Cloud-Richtlinieninfrastruktur ausgefüllt und kann nicht direkt von Administratoren festgelegt werden.</translation>
 <translation id="7072567600438630966">Aktivieren von Phone Hub zulassen.</translation>
 <translation id="7074437930865599190">Hauptversion im User-Agent-String als „99“ festschreiben</translation>
 <translation id="7075847434649667522">Vom Nutzer hinzugefügte TLS-Zertifikate aus Plattform-Trust Stores für die Serverauthentifizierung verwenden</translation>

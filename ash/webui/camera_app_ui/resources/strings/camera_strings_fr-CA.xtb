@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Type de recherche</translation>
 <translation id="28682968802727151">Aperçu du miroir</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> est branchée.</translation>
+<translation id="3063987824612038785">Tous les fichiers de l'appareil photo seront enregistrés dans Google Disque</translation>
 <translation id="3067436040345934772">Panoramique vers la droite</translation>
 <translation id="3081586908890909590">Passer au mode vidéo</translation>
 <translation id="3091480460059548935">Détection de texte dans l'aperçu</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">Traitement de la vidéo en cours…</translation>
 <translation id="3789724198583203151">Faire pivoter de 90 degrés dans le sens inverse des aiguilles d'une montre</translation>
 <translation id="3810838688059735925">Vidéo</translation>
+<translation id="386366972082231038">Tous les fichiers de l'appareil photo seront enregistrés sur OneDrive</translation>
 <translation id="4060608699153044055">Vous ne pouvez pas enregistrer en raison du faible espace de stockage de l'appareil. Pour commencer l'enregistrement, vous devez libérer de l'espace sur votre appareil.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpx</translation>
 <translation id="4118525110028899586">Interrompre l'enregistrement</translation>
@@ -157,6 +159,7 @@ Si vos commentaires portaient sur la qualité de l'image ou de la vidéo, veuill
 <translation id="7983668134180549431">Texte détecté.</translation>
 <translation id="8079255378695216066">Impossible de commencer l'enregistrement</translation>
 <translation id="8120146556401698679">Panoramique, inclinaison, zoom</translation>
+<translation id="8127459436205030819">Vos fichiers peuvent être visibles par votre administrateur</translation>
 <translation id="8131740175452115882">Confirmer</translation>
 <translation id="8145038249676204903">Passer au mode photo</translation>
 <translation id="8167081290930651932">Enregistrer en tant que photo</translation>

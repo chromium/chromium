@@ -315,6 +315,7 @@
 <translation id="21133533946938348">Fäst flik</translation>
 <translation id="2117650889962717098">Surfa privat genom att växla till inkognitoläge</translation>
 <translation id="2119636449201577317">Öppna i …</translation>
+<translation id="2119962645034852864">Vissa tjänster är inte tillgängliga för ditt konto</translation>
 <translation id="2120553909046681540">Organisationen har inaktiverat privat surfning.</translation>
 <translation id="2122754583996902531">Din webbläsare hanteras. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">Organisationens chattar används inte för att förbättra våra modeller. Gemini kan visa felaktig information, inklusive om personer, så dubbelkolla svaren. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
@@ -873,6 +874,7 @@
 <translation id="4302061870579014542">Ange position</translation>
 <translation id="4304713468139749426">Lösenordshantering</translation>
 <translation id="4309403553630140242">Dubbeltryck för mer information</translation>
+<translation id="4310738531374808763">Anpassa din startsida</translation>
 <translation id="4320848494125124980">Senaste</translation>
 <translation id="4322394346347055525">Stäng andra flikar</translation>
 <translation id="4324735664183300693">Aktivera aviseringar</translation>
@@ -1711,6 +1713,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> procent har laddats ned</translation>
 <translation id="7345061034321640811">Import tillåts inte</translation>
+<translation id="7347998088283246662">Importera lösenord, historik, bokmärken med mera</translation>
 <translation id="7352651011704765696">Något gick fel</translation>
 <translation id="7364796246159120393">Välj fil</translation>
 <translation id="736564850024123010">Anpassa upplevelsen genom att ändra adressfältets position.</translation>
@@ -2236,6 +2239,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="914781932147356857">Markera alla …</translation>
 <translation id="9148126808321036104">Logga in igen</translation>
 <translation id="9149866541089851383">Redigera...</translation>
+<translation id="9152637745605628097">Välj bland teman och färger eller ladda upp en bild</translation>
 <translation id="9159628751968616911">Skicka webbsida</translation>
 <translation id="9162432979321511934">Aktivera Autofyll lösenord</translation>
 <translation id="9165320910061267720">Om du vill få aviseringar om sänkta priser måste du aktivera aviseringar i iOS-inställningarna.</translation>

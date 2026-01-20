@@ -186,6 +186,7 @@
 <translation id="1289129165308566697">Погледајте историју на другим уређајима</translation>
 <translation id="1292571435393770077">16. фиока</translation>
 <translation id="1292701964462482250">„Софтвер на вашем рачунару онемогућава Chrome-у да се безбедно повеже на веб“ (само на Windows рачунарима)</translation>
+<translation id="1293154089865862473">Садржај странице са странице за плаћање дели се са Google-ом да би Google пружао ове опције. Да бисте сакрили опције за касније плаћање у аутоматском попуњавању, идите на <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="1293556467332435079">Фајлови</translation>
 <translation id="1293797321964802402">Коверта 23×28 cm</translation>
 <translation id="129553762522093515">Недавно затворено</translation>
@@ -265,6 +266,7 @@
 <translation id="1408787208417187241">Троструко спајање на врху</translation>
 <translation id="1410365862999780287">Други који користе овај уређај неће видети ваше активности, па можете да прегледате приватније. Ово не мења начин на који податке прикупљају веб-сајтови које посећујете и услуге које они користе, укључујући Google. Сачуваће се преузимања, обележивачи и ставке на листи за читање.</translation>
 <translation id="1410941016594047814">Коверта Invite</translation>
+<translation id="1413235258620101697">CVC ове картице ће бити шифрован и сачуван у Google новчанику ради бржег плаћања</translation>
 <translation id="1413809658975081374">Грешка у вези са приватношћу</translation>
 <translation id="1414134146594747368">Предшколски узраст</translation>
 <translation id="1419305130220238697">Дугме Управљај преузимањима у Chrome-у, активирајте га да бисте управљали фајловима које сте преузели у Chrome-у</translation>
@@ -1124,6 +1126,7 @@
 <translation id="2782088940970074970">Изнајмљивање аутомобила</translation>
 <translation id="278436560439594386">Кућни апарати</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
+<translation id="2784540996156451674">Садржај странице са странице за плаћање дели се са Google-ом да би Google пружао ове опције.</translation>
 <translation id="2784949926578158345">Веза је враћена на почетне вредности.</translation>
 <translation id="2786008859124691917">Бицикли и опрема</translation>
 <translation id="2792012897584536778">Администратори овог уређаја су подесили безбедносне сертификате који могу да им омогуће да виде садржај веб-сајтова које посећујете.</translation>
@@ -2482,6 +2485,7 @@
 <translation id="4950898438188848926">Дугме за промену картице, притисните Enter да бисте прешли на отворену картицу, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Радње</translation>
 <translation id="4953689047182316270">одговара на догађаје приступачности</translation>
+<translation id="4954891067389874142">Плаћајте брже уз сачувану картицу. Детаљи о картици се шифрују у Google новчанику.</translation>
 <translation id="4957080528849277028">Дугме Прикажи историју Chrome-а, активирајте га да бисте прегледали историју прегледања и управљали њом у подешавањима Chrome-а</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{и још 1 сајт}one{и још # сајт}few{и још # сајта}other{и још # сајтова}}</translation>
 <translation id="4958444002117714549">Прошири листу</translation>
@@ -3020,6 +3024,7 @@
 <translation id="5843987376989109187">Овај језик још није подржан.
     <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Уређаји за напајање</translation>
+<translation id="5848445080378515710">Када прегледате поруџбину, морате да се пријавите на <ph name="BNPL_ISSUER_NAME" /> налог или да га отворите. Тај налог ће се аутоматски повезати у Google новчанику.</translation>
 <translation id="584902713199270089">Познанства</translation>
 <translation id="5851548754964597211">Листа картица</translation>
 <translation id="5851868085455377790">Издавалац</translation>
@@ -4010,6 +4015,7 @@
 <translation id="7408613996403626141">Играчке</translation>
 <translation id="7410852728357935715">Пребацујте на уређај</translation>
 <translation id="741204030948306876">Да, омогући</translation>
+<translation id="7412081313067625215">Картица се чува у Google новчанику да бисте могли аутоматски да попуњавате податке са ње за будуће куповине</translation>
 <translation id="7416351320495623771">Управљај лозинкама...</translation>
 <translation id="7416898721136759658">Донације, стипендије и финансијска помоћ</translation>
 <translation id="741772962178517671">Affirm</translation>
@@ -4143,6 +4149,7 @@
 <translation id="759889825892636187">Хост <ph name="HOST_NAME" /> тренутно не може да обради овај захтев.</translation>
 <translation id="7599089013883397081">Време за преузимање је истекло</translation>
 <translation id="7602868996817972616">Упитајте Google о овој страници</translation>
+<translation id="7606123685356405076">Gemini 3 модели</translation>
 <translation id="7610193165460212391">Вредност је изван опсега <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">Дебела</translation>
 <translation id="7613889955535752492">Истиче: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

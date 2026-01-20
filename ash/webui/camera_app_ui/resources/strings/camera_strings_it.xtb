@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Tipo di scansione</translation>
 <translation id="28682968802727151">Anteprima specchio</translation>
 <translation id="2879583609344924966">Videocamera <ph name="CAMERA" /> collegata.</translation>
+<translation id="3063987824612038785">Tutti i file della Fotocamera verranno salvati su Google Drive</translation>
 <translation id="3067436040345934772">Panoramica a destra</translation>
 <translation id="3081586908890909590">Passa alla modalità video</translation>
 <translation id="3091480460059548935">Rilevamento del testo in anteprima</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">Elaborazione del video in corso…</translation>
 <translation id="3789724198583203151">Ruota di 90 gradi in senso antiorario</translation>
 <translation id="3810838688059735925">Video</translation>
+<translation id="386366972082231038">Tutti i file della Fotocamera verranno salvati su OneDrive</translation>
 <translation id="4060608699153044055">Impossibile registrare perché lo spazio di archiviazione del dispositivo è in esaurimento. Per avviare la registrazione, devi liberare spazio sul dispositivo.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Metti in pausa la registrazione</translation>
@@ -157,6 +159,7 @@ Se il feedback riguarda la qualità di immagini o video, allega una foto o un vi
 <translation id="7983668134180549431">Testo rilevato.</translation>
 <translation id="8079255378695216066">Impossibile avviare la registrazione</translation>
 <translation id="8120146556401698679">Panoramica Inclinazione Zoom</translation>
+<translation id="8127459436205030819">I tuoi file potrebbero essere visibili all'amministratore</translation>
 <translation id="8131740175452115882">Conferma</translation>
 <translation id="8145038249676204903">Passa alla modalità foto</translation>
 <translation id="8167081290930651932">Salva come foto</translation>

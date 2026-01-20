@@ -315,6 +315,7 @@
 <translation id="21133533946938348">Tab anpinnen</translation>
 <translation id="2117650889962717098">Im Inkognitomodus kannst du deine Browsing-Aktivitäten privat halten</translation>
 <translation id="2119636449201577317">Öffnen in…</translation>
+<translation id="2119962645034852864">Einige Dienste sind für dein Konto nicht verfügbar</translation>
 <translation id="2120553909046681540">Deine Organisation hat das private Surfen deaktiviert.</translation>
 <translation id="2122754583996902531">Dein Browser wird verwaltet. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">Die Chats deiner Organisation werden nicht zur Optimierung unserer Modelle verwendet. Da Gemini Fehler machen kann, auch bei Informationen über Personen, solltest du die Antworten überprüfen. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
@@ -873,6 +874,7 @@
 <translation id="4302061870579014542">Positionieren</translation>
 <translation id="4304713468139749426">Passwort­manager</translation>
 <translation id="4309403553630140242">Für weitere Informationen doppeltippen</translation>
+<translation id="4310738531374808763">Startseite anpassen</translation>
 <translation id="4320848494125124980">Zuletzt verwendet</translation>
 <translation id="4322394346347055525">Andere Tabs schließen</translation>
 <translation id="4324735664183300693">Benachrichtigungen aktivieren</translation>
@@ -1711,6 +1713,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> % heruntergeladen</translation>
 <translation id="7345061034321640811">Import nicht zulässig</translation>
+<translation id="7347998088283246662">Du kannst Passwörter, deinen Verlauf, Lesezeichen und mehr importieren</translation>
 <translation id="7352651011704765696">Ein Problem ist aufgetreten</translation>
 <translation id="7364796246159120393">Datei auswählen</translation>
 <translation id="736564850024123010">Du kannst die Position der Adressleiste verschieben, um den Browser an deine Bedürfnisse anzupassen.</translation>
@@ -2236,6 +2239,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="914781932147356857">Alle markieren…</translation>
 <translation id="9148126808321036104">Erneut anmelden</translation>
 <translation id="9149866541089851383">Bearbeiten...</translation>
+<translation id="9152637745605628097">Du kannst Designs und Farben auswählen oder ein Bild hochladen</translation>
 <translation id="9159628751968616911">Webseite senden</translation>
 <translation id="9162432979321511934">Aktiviere die Option zum automatischen Ausfüllen von Passwörtern</translation>
 <translation id="9165320910061267720">Wenn du Benachrichtigungen zu Preisnachlässen erhalten möchtest, musst du Benachrichtigungen in den iOS-Einstellungen aktivieren.</translation>

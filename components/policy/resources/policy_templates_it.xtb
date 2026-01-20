@@ -2213,6 +2213,21 @@ Questa policy si applica solo ai nuovi tentativi di connessione e non invalida l
       Tieni presente che per il corretto comportamento di questa funzionalità sono necessari componenti aggiuntivi non disponibili al di fuori dell'ambiente della rete Google.</translation>
 <translation id="2536525645274582300">L'utente decide se abilitare i servizi di geolocalizzazione di Google</translation>
 <translation id="2536717624356629471">Attiva i suoni in modalità Niente distrazioni per ChromeOS</translation>
+<translation id="2543785467842238592">Questa policy consente di controllare il reporting di <ph name="PRODUCT_NAME" /> relativo alle visite ai domini SaaS e ai trasferimenti dei contenuti per un browser gestito.
+
+Se la policy viene configurata, gli URL corrispondenti ai domini SaaS verranno utilizzati per generare il report. Gli URL senza corrispondenza verranno ignorati.
+
+Se la policy non viene configurata o se viene impostata su un elenco vuoto, non verrà generato alcun report.
+
+Per le sequenze corrispondenti viene usato un formato simile a quello utilizzato per la policy "<ph name="URL_BLOCKLIST_POLICY_NAME" />", documentati all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format. Con alcune eccezioni riportate di seguito:
+
+ * L'host dell'URL deve corrispondere al nome host o essere un sottodominio del nome host di uno dei domini dell'elenco dei siti SaaS.
+
+ * Il percorso dell'URL deve iniziare con il percorso della voce dell'elenco dei siti SaaS corrispondenti.
+
+ * Lo schema, la porta e la query dell'URL vengono ignorati durante il processo di corrispondenza.
+
+Questo valore della policy viene compilato dall'infrastruttura della policy per il cloud e gli amministratori non possono impostarlo direttamente.</translation>
 <translation id="254653220329944566">Consente di attivare il reporting su cloud di <ph name="PRODUCT_NAME" /></translation>
 <translation id="2547854230073316008">La configurazione della policy consente di impostare la risoluzione e il fattore di scalabilità per ogni display. Le impostazioni del display esterno si applicano ai display collegati. la policy non viene applicata se un display non supporta la risoluzione o la scalabilità specificate.
 
@@ -9285,6 +9300,23 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
 <translation id="70681795425744184">Non consentire a CRD di eseguire richieste API WebAuthn trasferite al proxy da un host remoto.</translation>
 <translation id="7070525176564511548">Richiedi l'inserimento della password ogni settimana (168 ore)</translation>
 <translation id="7072208053150563108">Frequenza di modifica della password del computer</translation>
+<translation id="7072438666478490567">Questa policy consente di controllare il reporting di <ph name="PRODUCT_NAME" /> relativo alle visite ai domini SaaS e ai trasferimenti dei contenuti per un profilo gestito.
+
+Se la policy viene configurata, gli URL corrispondenti ai domini SaaS verranno utilizzati per generare il report. Gli URL senza corrispondenza verranno ignorati.
+
+Se la policy non viene configurata o se viene impostata su un elenco vuoto, non verrà generato alcun report.
+
+Per le sequenze corrispondenti viene usato un formato simile a quello utilizzato per la policy "<ph name="URL_BLOCKLIST_POLICY_NAME" />", documentati all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format. Con alcune eccezioni riportate di seguito:
+
+ * L'host dell'URL deve corrispondere al nome host o essere un sottodominio del nome host di uno dei domini dell'elenco dei siti SaaS.
+
+ * Il percorso dell'URL deve iniziare con il percorso della voce dell'elenco dei siti SaaS corrispondenti.
+
+ * Lo schema, la porta e la query dell'URL vengono ignorati durante il processo di corrispondenza.
+
+Questa policy può essere impostata soltanto come policy per gli utenti cloud.
+
+Questo valore della policy viene compilato dall'infrastruttura della policy per il cloud e gli amministratori non possono impostarlo direttamente.</translation>
 <translation id="7072567600438630966">Consenti l'attivazione di Phone Hub</translation>
 <translation id="7074437930865599190">Blocca la versione principale della stringa user agent a 99</translation>
 <translation id="7075847434649667522">Utilizza i certificati TLS aggiunti dagli utenti da archivi di attendibilità della piattaforma per autenticare il server</translation>

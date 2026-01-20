@@ -874,6 +874,7 @@
 <translation id="4302061870579014542">Vælg placering</translation>
 <translation id="4304713468139749426">Adgangs­kode­admin­istrator</translation>
 <translation id="4309403553630140242">Tryk to gange for at få flere oplysninger</translation>
+<translation id="4310738531374808763">Tilpas din startside</translation>
 <translation id="4320848494125124980">Seneste</translation>
 <translation id="4322394346347055525">Luk alle andre faner</translation>
 <translation id="4324735664183300693">Aktivér notifikationer</translation>
@@ -1712,6 +1713,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> procent er downloadet</translation>
 <translation id="7345061034321640811">Import er ikke tilladt</translation>
+<translation id="7347998088283246662">Importér adgangskoder, historik, bogmærker m.m.</translation>
 <translation id="7352651011704765696">Noget gik galt</translation>
 <translation id="7364796246159120393">Vælg fil</translation>
 <translation id="736564850024123010">Flyt din adresselinje for at få en tilpasset oplevelse.</translation>
@@ -2237,6 +2239,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="914781932147356857">Markér alle…</translation>
 <translation id="9148126808321036104">Log ind igen</translation>
 <translation id="9149866541089851383">Rediger...</translation>
+<translation id="9152637745605628097">Vælg mellem temaer og farver, eller upload et billede</translation>
 <translation id="9159628751968616911">Send webside</translation>
 <translation id="9162432979321511934">Aktivér Adgangskoder via Autofyld</translation>
 <translation id="9165320910061267720">Hvis du vil have notifikationer om prisfald, skal du aktivere notifikationer i iOS-indstillingerne.</translation>

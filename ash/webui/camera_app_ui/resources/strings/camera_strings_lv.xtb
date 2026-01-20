@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Meklēšanas veids</translation>
 <translation id="28682968802727151">Spoguļot priekšskatījumu</translation>
 <translation id="2879583609344924966">Kamera <ph name="CAMERA" /> ir pievienota.</translation>
+<translation id="3063987824612038785">Visi kameras faili tiks saglabāti Google diskā</translation>
 <translation id="3067436040345934772">Bīdīt pa labi</translation>
 <translation id="3081586908890909590">Ieslēdziet, lai ierakstītu videoklipu</translation>
 <translation id="3091480460059548935">Teksta noteikšana priekšskatījumā</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">Notiek videoklipa apstrāde…</translation>
 <translation id="3789724198583203151">Pagriezt par 90 grādiem pretēji pulksteņrādītāju kustības virzienam</translation>
 <translation id="3810838688059735925">Video</translation>
+<translation id="386366972082231038">Visi kameras faili tiks saglabāti pakalpojumā OneDrive</translation>
 <translation id="4060608699153044055">Nevar veikt ierakstīšanu, jo ierīces krātuvē ir maz brīvas vietas. Lai varētu sākt ierakstīšanu, ierīcē ir jāatbrīvo vieta.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Pārtraukt ierakstīšanu</translation>
@@ -157,6 +159,7 @@ Ja atsauksme ir par attēlu vai videoklipu kvalitāti, lūdzu, pievienojiet foto
 <translation id="7983668134180549431">Konstatēts teksts.</translation>
 <translation id="8079255378695216066">Nevar sākt ierakstīšanu</translation>
 <translation id="8120146556401698679">Pārvietot/noliekt/tālummainīt</translation>
+<translation id="8127459436205030819">Jūsu faili var būt redzami jūsu administratoram.</translation>
 <translation id="8131740175452115882">Apstiprināt</translation>
 <translation id="8145038249676204903">Pārslēgt, lai uzņemtu fotoattēlu</translation>
 <translation id="8167081290930651932">Saglabāt kā fotoattēlu</translation>

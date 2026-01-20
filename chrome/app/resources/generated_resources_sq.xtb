@@ -2507,6 +2507,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2672142220933875349">Skedar i prishur crx. Shpaketimi dështoi.</translation>
 <translation id="2672200806060988299">Titujt e skedave dhe URL-të dërgohen te Google dhe mund të shikohen nga shqyrtues njerëzore për të përmirësuar këtë veçori.</translation>
 <translation id="2673135533890720193">Lexo historikun e shfletimit</translation>
+<translation id="2673397477544385203">Mundëson veçoritë si "Zbulimi i mashtrimeve" në nivel lokal. Çaktivizimi i kësaj i fshin modelet e IA-së gjeneruese nga pajisja jote dhe i çaktivizon këto veçori.</translation>
 <translation id="2673848446870717676">Sigurohu që pajisja jote me Bluetooth të jetë në modalitetin e çiftimit dhe në afërsi. Çiftoje vetëm me pajisjet të cilave u beson. Pajisjet e çiftuara janë të dukshme për të gjitha llogaritë në këtë Chromebook.</translation>
 <translation id="2673873887296220733">Të kopjohet 1 skedar te <ph name="CLOUD_PROVIDER" /> për ta hapur?</translation>
 <translation id="267442004702508783">rifresko</translation>
@@ -3965,6 +3966,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3678156199662914018">Shtesa: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Faqet që shikon në këtë dritare nuk do të shfaqen në historikun e shfletuesit dhe nuk do të lenë në kompjuter gjurmë të tjera, si kuki, pasi del. Skedarët që shkarkon dhe faqeshënuesit që krijon nuk do të ruhen.</translation>
 <translation id="3679126865530709868">Blloku me prekje i integruar</translation>
+<translation id="3680166671911524673">IA-ja gjeneruese në pajisje është aktivizuar</translation>
 <translation id="3680683624079082902">Zëri për "tekstin në ligjërim"</translation>
 <translation id="3681017028939109078">Shfaq sugjerime për dritare kur nis ekranin e ndarë</translation>
 <translation id="3681191721636073359">Chrome mendon se ti nuk dëshiron të përdorësh vendndodhjen tënde në këtë sajt. Për këtë arsye, kërkesat janë fshehur për të reduktuar ndërprerjet.</translation>

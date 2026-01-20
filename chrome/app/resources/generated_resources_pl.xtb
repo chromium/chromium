@@ -2495,6 +2495,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2672142220933875349">Nieprawidłowy plik CRX. Nie udało się go rozpakować.</translation>
 <translation id="2672200806060988299">Twoje tytuły kart i adresy URL są wysyłane do Google. Mogą je zobaczyć weryfikatorzy, którzy pracują nad ulepszaniem tej funkcji.</translation>
 <translation id="2673135533890720193">Odczytywanie historii przeglądania</translation>
+<translation id="2673397477544385203">Umożliwia lokalne działanie funkcji takich jak wykrywanie oszustw. Wyłączenie tej opcji spowoduje usunięcie modeli generatywnej AI z urządzenia i wyłączenie tych funkcji.</translation>
 <translation id="2673848446870717676">Sprawdź, czy urządzenie Bluetooth znajduje się w pobliżu i ma włączony tryb parowania. Paruj tylko z urządzeniami, którym ufasz. Sparowane urządzenia są widoczne na wszystkich kontach na tym Chromebooku.</translation>
 <translation id="2673873887296220733">Skopiować 1 plik do usługi <ph name="CLOUD_PROVIDER" />, aby go otworzyć?</translation>
 <translation id="267442004702508783">odśwież</translation>
@@ -3949,6 +3950,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3678156199662914018">Rozszerzenie: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Strony wyświetlane w tym oknie nie pojawią się w historii przeglądarki. Gdy się wylogujesz, nie zostanie po nich na komputerze żaden ślad (np. w postaci plików cookie). Nie zostaną też zachowane pobrane pliki ani utworzone zakładki.</translation>
 <translation id="3679126865530709868">Touchpad wbudowany</translation>
+<translation id="3680166671911524673">Włączono generatywną AI na urządzeniu</translation>
 <translation id="3680683624079082902">Głos zamiany tekstu na mowę</translation>
 <translation id="3681017028939109078">Przy włączaniu podzielonego ekranu sugeruj okna</translation>
 <translation id="3681191721636073359">Chrome uważa, że nie chcesz używać swojej lokalizacji na tej stronie internetowej. Żądania są ukrywane, aby nie przeszkadzać Ci w przeglądaniu.</translation>
@@ -8689,6 +8691,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6949089178006131285">Odczytywanie informacji o sieci ChromeOS Flex</translation>
 <translation id="6949434160682548041">Hasło (opcjonalnie)</translation>
 <translation id="6950143189069683062">Informacje dotyczące pamięci</translation>
+<translation id="6950351336108213154">Aktualizuję urządzenia peryferyjne</translation>
 <translation id="6950627417367801484">Przywróć aplikacje</translation>
 <translation id="6954936693361896459">Zamiast tego przesyłaj tę kartę</translation>
 <translation id="6955446738988643816">Sprawdź wyskakujące okienko</translation>
@@ -11612,6 +11615,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8921369299636221117">Usługa Concierge jest niedostępna.</translation>
 <translation id="8922348435910470639">Podwójna rezerwacja</translation>
 <translation id="8922624386829239660">Przesuwaj ekran, gdy mysz dotyka krawędzi ekranu</translation>
+<translation id="8923670289674436542">Ulepszone: niestandardowe</translation>
 <translation id="8923880975836399332">Ciemny morski</translation>
 <translation id="8925124370124776087">Pasek tytułu jest teraz ukryty</translation>
 <translation id="8925308599005372373">Prześlij plik PDF</translation>

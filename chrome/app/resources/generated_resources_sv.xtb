@@ -2522,6 +2522,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2672142220933875349">CRX-filen fungerar inte. Det gick inte att packa upp.</translation>
 <translation id="2672200806060988299">Dina fliktitlar och webbadresser skickas till Google och kan ses av mänskliga granskare för att förbättra den här funktionen.</translation>
 <translation id="2673135533890720193">Läsa webbhistoriken</translation>
+<translation id="2673397477544385203">Möjliggör funktioner som bedrägeridetektering lokalt. Om du inaktiverar detta raderas generativa AI-modeller från enheten och dessa funktioner inaktiveras.</translation>
 <translation id="2673848446870717676">Kontrollera att Bluetooth-enheten är i parkopplingsläge och finns i närheten. Parkoppla bara betrodda enheter. Parkopplade enheter är synliga för alla konton på denna Chromebook.</translation>
 <translation id="2673873887296220733">Vill du kopiera 1 fil till <ph name="CLOUD_PROVIDER" /> och öppna den?</translation>
 <translation id="267442004702508783">uppdatera</translation>
@@ -3980,6 +3981,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3678156199662914018">Tillägg: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Sidor du visar i det här fönstret syns inte i webbläsarhistoriken och de lämnar inga andra spår efter sig (till exempel cookies) på datorn när du har loggat ut. Filer som du laddar ned och bokmärken du skapar sparas inte.</translation>
 <translation id="3679126865530709868">Inbyggd styrplatta</translation>
+<translation id="3680166671911524673">Generativ AI på enheten har aktiverats</translation>
 <translation id="3680683624079082902">Röst för text till tal</translation>
 <translation id="3681017028939109078">Visa fönsterförslag när delad skärm startas</translation>
 <translation id="3681191721636073359">Chrome tror att du inte vill använda din plats på den här webbplatsen. Därför döljs begäranden för att minska störningar.</translation>

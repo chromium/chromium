@@ -315,6 +315,7 @@
 <translation id="21133533946938348">Lap rögzítése</translation>
 <translation id="2117650889962717098">Megőrizheti a böngészés privát jellegét az inkognitó módra való váltással</translation>
 <translation id="2119636449201577317">Megnyitás itt…</translation>
+<translation id="2119962645034852864">Egyes szolgáltatások nem állnak rendelkezésre a fiókjában</translation>
 <translation id="2120553909046681540">Szervezete kikapcsolta az inkognitó módban való böngészést.</translation>
 <translation id="2122754583996902531">A böngésző felügyelet alatt áll. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="21243612977487926">Szervezete csevegéseit nem használjuk fel a modelljeink javítására. Előfordulhat, hogy a Gemini pontatlan információkat jelenít meg, többek között személyekről is, ezért alaposan ellenőrizze a válaszait. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
@@ -873,6 +874,7 @@
 <translation id="4302061870579014542">Pozíció beállítása</translation>
 <translation id="4304713468139749426">Jelszókezelő</translation>
 <translation id="4309403553630140242">További információért koppintson duplán.</translation>
+<translation id="4310738531374808763">A kezdőlap személyre szabása</translation>
 <translation id="4320848494125124980">Legutóbbiak</translation>
 <translation id="4322394346347055525">Egyéb lapok bezárása</translation>
 <translation id="4324735664183300693">Értesítések bekapcsolása</translation>
@@ -1711,6 +1713,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> százalék letöltve</translation>
 <translation id="7345061034321640811">Az importálás nem engedélyezett</translation>
+<translation id="7347998088283246662">Importálhatja a jelszavakat, az előzményeket, a könyvjelzőket és egyebeket</translation>
 <translation id="7352651011704765696">Valami nem működik</translation>
 <translation id="7364796246159120393">Fájl kiválasztása</translation>
 <translation id="736564850024123010">A személyre szabott élmény érdekében módosíthatja a címsáv pozícióját.</translation>
@@ -2236,6 +2239,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="914781932147356857">Az összes megjelölése…</translation>
 <translation id="9148126808321036104">Jelentkezzen be újra</translation>
 <translation id="9149866541089851383">Szerkesztés...</translation>
+<translation id="9152637745605628097">Választhat témák és színek közül, vagy feltölthet képet</translation>
 <translation id="9159628751968616911">Weboldal küldése</translation>
 <translation id="9162432979321511934">Kapcsolja be a Jelszavak automatikus kitöltése beállítást</translation>
 <translation id="9165320910061267720">Ha értesítéseket szeretne kapni az árcsökkenésekről, be kell kapcsolnia az értesítéseket az iOS beállításaiban.</translation>

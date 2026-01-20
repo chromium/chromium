@@ -186,6 +186,7 @@
 <translation id="1289129165308566697">Басқа құрылғыларда тарихыңызды көріңіз</translation>
 <translation id="1292571435393770077">16-науа</translation>
 <translation id="1292701964462482250">"Компьютердегі бағдарламалық құрал Chrome жүйесінің интернетке қауіпсіз қосылуына жол бермей тұр" (тек Windows компьютерлерінде)</translation>
+<translation id="1293154089865862473">Бұл опцияларды ұсыну үшін төлеу бетіндегі контент Google-ға жіберіледі. Автотолтыруда кейін төлеу опцияларын жасыру үшін <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> бөліміне өтіңіз.</translation>
 <translation id="1293556467332435079">Файлдар</translation>
 <translation id="1293797321964802402">229 x 279 мм хатқалта</translation>
 <translation id="129553762522093515">Жақында жабылған</translation>
@@ -1124,6 +1125,7 @@
 <translation id="2782088940970074970">Көлік жалдау</translation>
 <translation id="278436560439594386">Тұрмыстық техника</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
+<translation id="2784540996156451674">Бұл опцияларды ұсыну үшін төлеу бетіндегі контент Google-ға жіберіледі.</translation>
 <translation id="2784949926578158345">Байланыс қалпына келтірілді.</translation>
 <translation id="2786008859124691917">Велосипедтер және аксессуарлары</translation>
 <translation id="2792012897584536778">Бұл құрылғының әкімшілері қауіпсіздік сертификаттарын орнатты, енді олар сіз кірген веб-сайттардың контентін көруі мүмкін.</translation>
@@ -2481,6 +2483,7 @@
 <translation id="4950898438188848926">Қойынды ауыстыру түймесі: ашық қойындыға ауысу үшін Enter пернесін басыңыз, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Әрекеттер</translation>
 <translation id="4953689047182316270">Арнайы мүмкіндіктер оқиғаларына жауап беру</translation>
+<translation id="4954891067389874142">Карта сақталса, жылдам төлеуге болады. Карта мәліметтері Google Wallet-те шифрланады.</translation>
 <translation id="4957080528849277028">"Chrome тарихын көру" түймесі, Chrome параметрлерінде браузерді қолдану тарихын көру және басқару үшін белсендіріңіз</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 сайт}other{+ # сайт}}</translation>
 <translation id="4958444002117714549">Тізімді жаю</translation>
@@ -4009,6 +4012,7 @@
 <translation id="7408613996403626141">Ойыншықтар</translation>
 <translation id="7410852728357935715">Құрылғыға трансляциялау</translation>
 <translation id="741204030948306876">Жарайды</translation>
+<translation id="7412081313067625215">Болашақта сатып алған кезде автоматты түрде толтырылуы үшін, карта Google Wallet-ке сақталды.</translation>
 <translation id="7416351320495623771">Құпия сөздерді басқару...</translation>
 <translation id="7416898721136759658">Гранттар, шәкіртақылар және қаржылай көмек</translation>
 <translation id="741772962178517671">Affirm</translation>
@@ -4142,6 +4146,7 @@
 <translation id="759889825892636187"><ph name="HOST_NAME" /> қазір бұл сұрауды өңдей алмайды.</translation>
 <translation id="7599089013883397081">Жүктеп алу уақыты өтіп кетті</translation>
 <translation id="7602868996817972616">Google-дан осы бет туралы сұрау</translation>
+<translation id="7606123685356405076">Gemini 3 модельдері</translation>
 <translation id="7610193165460212391">Мән <ph name="VALUE" /> ауқымынан тыс.</translation>
 <translation id="761261689936461781">Жуан</translation>
 <translation id="7613889955535752492">Мерзімі бітеді: <ph name="EXPIRATION_MONTH" /> / <ph name="EXPIRATION_YEAR" /></translation>

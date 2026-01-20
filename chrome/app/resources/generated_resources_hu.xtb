@@ -2521,6 +2521,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2672142220933875349">Hibás crx-fájl, a kicsomagolás sikertelen.</translation>
 <translation id="2672200806060988299">A rendszer elküldi a Google-nak a lapcímeket és az URL-eket, így a funkció továbbfejlesztése érdekében felülvizsgálatot végző emberek is láthatják őket.</translation>
 <translation id="2673135533890720193">A böngészési előzmények olvasása</translation>
+<translation id="2673397477544385203">Helyileg működteti a csalásészleléshez hasonló funkciókat. A kikapcsolásával törli a GenAI-modelleket az eszközről, és letiltja ezeket a funkciókat.</translation>
 <translation id="2673848446870717676">Győződjön meg arról, hogy a Bluetooth-eszköz párosítási módban és a közelben van. Csak olyan eszközökkel párosítson, amelyeket megbízhatónak tart. A párosított eszközök a Chromebookon lévő összes fiók számára láthatók.</translation>
 <translation id="2673873887296220733">Átmásol 1 fájlt a(z) <ph name="CLOUD_PROVIDER" /> szolgáltatásba, hogy meg tudja nyitni?</translation>
 <translation id="267442004702508783">frissítés</translation>
@@ -3979,6 +3980,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3678156199662914018">Bővítmény: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Az oldalak, melyeket ebben az ablakban megtekint, a kijelentkezést követően nem fognak megjelenni a böngészési előzmények között, és nem hagynak egyéb nyomokat (pl. cookie-kat) a számítógépen. Az Ön által letöltött fájlokat és a létrehozott könyvjelzőket nem őrzi meg a rendszer.</translation>
 <translation id="3679126865530709868">Beépített érintőpad</translation>
+<translation id="3680166671911524673">Eszközalapú GenAI engedélyezve</translation>
 <translation id="3680683624079082902">Szövegfelolvasó hangja</translation>
 <translation id="3681017028939109078">Ablakjavaslatok megjelenítése az osztott képernyős mód indításakor</translation>
 <translation id="3681191721636073359">A Chrome úgy véli, hogy Ön nem szeretné használni a tartózkodási helyét ezen a webhelyen. Ezért a kérések el vannak rejtve a megszakítások számának csökkentése érdekében.</translation>

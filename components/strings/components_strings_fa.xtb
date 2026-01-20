@@ -186,6 +186,7 @@
 <translation id="1289129165308566697">سابقه‌تان را در دستگاه‌های دیگر ببینید</translation>
 <translation id="1292571435393770077">سینی ۱۶</translation>
 <translation id="1292701964462482250">‏«نرم‌افزاری در رایانه شما مانع از اتصال ایمن Chrome به وب می‌شود» (فقط رایانه‌های Windows)</translation>
+<translation id="1293154089865862473">‏محتوای صفحه از صفحه تسویه‌حساب با Google هم‌رسانی می‌شود تا این گزینه‌ها ارائه شود. برای پنهان کردن گزینه‌های «بعداً پرداخت شود» در «تکمیل خودکار»، به <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> بروید.</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1293797321964802402">پاکت ۱۱×۹ اینچی</translation>
 <translation id="129553762522093515">اخیراً بسته‌شده</translation>
@@ -265,6 +266,7 @@
 <translation id="1408787208417187241">سه منگنه در بالا</translation>
 <translation id="1410365862999780287">‏افراد دیگری که از این دستگاه استفاده می‌کنند فعالیت شما را نخواهند دید تا بتوانید مرور خصوصی‌تری داشته باشید. نحوه جمع‌آوری داده‌ها توسط وب‌سایت‌هایی که بازدید می‌کنید و سرویس‌هایی که استفاده می‌کنید (شامل Google) تغییر نخواهد کرد. بااین‌حال، نشانک‌ها و موارد فهرست خواندن ذخیره خواهند شد.</translation>
 <translation id="1410941016594047814">پاکت دعوت‌نامه</translation>
+<translation id="1413235258620101697">‏برای تسویه‌حساب سریع‌تر، کد تأیید این کارت رمزگذاری خواهد شد و در «کیف پول Google» ذخیره می‌شود</translation>
 <translation id="1413809658975081374">خطای حریم خصوصی</translation>
 <translation id="1414134146594747368">پیش‌دبستانی</translation>
 <translation id="1419305130220238697">‏دکمه «مدیریت بارگیری‌ها در Chrome»؛ برای مدیریت فایل‌هایی که در Chrome بارگیری کرده‌اید، آن را فعال کنید</translation>
@@ -1125,6 +1127,7 @@
 <translation id="2782088940970074970">اجاره خودرو</translation>
 <translation id="278436560439594386">لوازم خانگی</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
+<translation id="2784540996156451674">‏محتوای صفحه از صفحه تسویه‌حساب با Google هم‌رسانی می‌شود تا این گزینه‌ها ارائه شود.</translation>
 <translation id="2784949926578158345">اتصال مجدداً برقرار شد.</translation>
 <translation id="2786008859124691917">دوچرخه و لوازم جانبی</translation>
 <translation id="2792012897584536778">سرپرستان این دستگاه چند گواهینامه امنیتی راه‌اندازی کرده‌اند که می‌تواند به آن‌ها اجازه دهد محتوای وب‌سایت‌هایی را که بازدید می‌کنید، ببینند.</translation>
@@ -1534,7 +1537,7 @@
 <translation id="3461824795358126837">ماژیک</translation>
 <translation id="3462200631372590220">پنهان کردن پیشرفته</translation>
 <translation id="3462288464915106745">‏‫<ph name="CONTEXTUAL_SEARCH_OPEN_LENS_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای پرسیدن از Google درباره این صفحه، کلید Enter را فشار دهید</translation>
-<translation id="3465972433695735758">‏این فایل PDF غیرقابل‌دسترس است. نوشتار، با بهره‌گیری از هوش مصنوعی Google، استخراج شد</translation>
+<translation id="3465972433695735758">‏این فایل PDF غیرقابل‌دسترس است. نوشتار، با بهره‌گیری از «هوشواره Google»، استخراج شد</translation>
 <translation id="346601286295919445">شیمی</translation>
 <translation id="3467081767799433066">با سنجش آگهی، انواع محدودی از داده‌ها بین سایت‌ها هم‌رسانی می‌شود تا سایت‌ها بتوانند عملکرد آگهی‌هایشان را بسنجند؛ مثلاً آیا پس‌از بازدید از سایت خریدی انجام داده‌اید یا نه.</translation>
 <translation id="3468054117417088249">‏<ph name="TAB_SWITCH_SUFFIX" />، اکنون باز است، برای جابه‌جا شدن به برگه باز، ابتدا دکمه Tab سپس Enter را فشار دهید</translation>
@@ -2483,6 +2486,7 @@
 <translation id="4950898438188848926">‏دکمه جابه‌جایی برگه، برای جابه‌جایی به برگه باز، کلید Enter را فشار دهید، <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">کنش‌ها</translation>
 <translation id="4953689047182316270">پاسخ دادن به رویدادهای مربوط به دسترس‌پذیری</translation>
+<translation id="4954891067389874142">‏وقتی کارتتان ذخیره شده باشد، می‌توانید سریع‌تر پرداخت کنید. جزئیات کارت در «کیف پول Google» رمزگذاری می‌شود.</translation>
 <translation id="4957080528849277028">‏دکمه «مشاهده سابقه Chrome»؛ برای مشاهده و مدیریت سابقه مرور در تنظیمات Chrome، آن را فعال کنید</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{‫+ ۱ سایت}one{‫+ # سایت}other{‫+ # سایت}}</translation>
 <translation id="4958444002117714549">بزرگ کردن فهرست</translation>
@@ -2952,7 +2956,7 @@
 <translation id="5715150588940290235">کدهای امنیتی ذخیره‌شده حذف شود؟</translation>
 <translation id="5715918316982363436">‫<ph name="TAB_COUNT" /> از <ph name="WINDOW_COUNT" /> در این دستگاه</translation>
 <translation id="5716325061445053985">برای باز کردن زبانه در تلفنتان، تک‌ضرب بزنید</translation>
-<translation id="5717509257172454543">اسکیت روی یخ</translation>
+<translation id="5717509257172454543">پاتیناژ</translation>
 <translation id="5718601519531438273">شامل اطلاعاتی مانند گذرنامه و گواهینامه رانندگی می‌شود</translation>
 <translation id="5720705177508910913">کاربر کنونی</translation>
 <translation id="5720895412771013401">رایانه رومیزی</translation>
@@ -3021,6 +3025,7 @@
 <translation id="5843987376989109187">هنوز از این زبان پشتیبانی نمی‌شود.
     <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">منبع تغذیه</translation>
+<translation id="5848445080378515710">‏پس‌از بررسی سفارشتان، باید به سیستم وارد شوید یا با <ph name="BNPL_ISSUER_NAME" /> حساب ایجاد کنید. این حساب به‌طور خودکار در «کیف پول Google» پیوند داده خواهد شد.</translation>
 <translation id="584902713199270089">دوستیابی و شخصیت</translation>
 <translation id="5851548754964597211">فهرست برگه</translation>
 <translation id="5851868085455377790">صادرکننده</translation>
@@ -4012,6 +4017,7 @@
 <translation id="7408613996403626141">اسباب‌بازی</translation>
 <translation id="7410852728357935715">پخش محتوا به دستگاه</translation>
 <translation id="741204030948306876">بله، موافقم</translation>
+<translation id="7412081313067625215">‏کارت شما در «کیف پول Google» ذخیره شده است، بنابراین می‌توانید اطلاعات کارت را به‌طور خودکار برای خریدهای آینده تکمیل کنید</translation>
 <translation id="7416351320495623771">مدیریت گذرواژه‌ها…</translation>
 <translation id="7416898721136759658">کمک‌هزینه، بورس تحصیلی، و کمک مالی</translation>
 <translation id="741772962178517671">Affirm</translation>
@@ -4145,6 +4151,7 @@
 <translation id="759889825892636187"><ph name="HOST_NAME" /> درحال حاضر نمی‌تواند این درخواست را انجام دهد.</translation>
 <translation id="7599089013883397081">مهلت زمانی بارگیری تمام شد</translation>
 <translation id="7602868996817972616">‏پرسیدن از Google درباره این صفحه</translation>
+<translation id="7606123685356405076">‏مدل‌های Gemini 3</translation>
 <translation id="7610193165460212391">مقدار خارج از محدوده <ph name="VALUE" /> است.</translation>
 <translation id="761261689936461781">ضخیم</translation>
 <translation id="7613889955535752492">انقضا: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
@@ -5103,7 +5110,7 @@
 <translation id="9173995187295789444">درحال جستجوی دستگاه‌های بلوتوث...</translation>
 <translation id="917450738466192189">گواهی سرور نامعتبر است.</translation>
 <translation id="9174917557437862841">‏دکمه جابه‌جایی برگه، برای جابه‌جایی به این برگه، Enter را فشار دهید</translation>
-<translation id="9177283544810807743">‏این فایل PDF غیرقابل‌دسترس است. نوشتار، با بهره‌گیری از هوش مصنوعی Google، استخراج شد</translation>
+<translation id="9177283544810807743">‏این فایل PDF غیرقابل‌دسترس است. نوشتار، با بهره‌گیری از «هوشواره Google»، استخراج شد</translation>
 <translation id="9179703756951298733">‏اطلاعات پرداخت‌ها و کارت اعتباری‌تان را در تنظیمات Chrome مدیریت کنید</translation>
 <translation id="9179766227052716237">سازمان شما می‌گوید: «<ph name="CUSTOM_MESSAGE" />»</translation>
 <translation id="9179907736442194268">اگر قیمت در هر سایتی کاهش پیدا کند، هشدار ایمیلی دریافت می‌کنید</translation>

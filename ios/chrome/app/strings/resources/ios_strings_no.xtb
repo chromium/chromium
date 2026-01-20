@@ -315,6 +315,7 @@
 <translation id="21133533946938348">Fest fanen</translation>
 <translation id="2117650889962717098">Hold surfingen din privat ved å bytte til inkognitomodus</translation>
 <translation id="2119636449201577317">Åpne i…</translation>
+<translation id="2119962645034852864">Noen tjenester er ikke tilgjengelige for kontoen din</translation>
 <translation id="2120553909046681540">Organisasjonen din har slått av privat surfing.</translation>
 <translation id="2122754583996902531">Nettleseren din administreres. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">Chattene til organisasjonen din brukes ikke til å forbedre modellene våre. Gemini kan vise unøyaktig informasjon, blant annet om mennesker, så du bør dobbeltsjekke svarene den gir.<ph name="YOUR_PRIVACY_GEMINI" /></translation>
@@ -935,6 +936,7 @@
 <translation id="4565377596337484307">Skjul passord</translation>
 <translation id="4568230126482344545">Skjul nylige faner</translation>
 <translation id="4578835633387306383">Slå på…</translation>
+<translation id="4580621046861724270">Noen bokmerker er ikke lagret</translation>
 <translation id="4580716718466706433">Gå til «Passordlagring»</translation>
 <translation id="4585751637295612750">Åpne en ny fane for å legge den til i spørsmålet ditt</translation>
 <translation id="4587589328781138893">Nettsteder</translation>

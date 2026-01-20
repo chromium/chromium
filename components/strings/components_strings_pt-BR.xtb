@@ -76,7 +76,7 @@
 <translation id="111897705806685148">Usar a chave de acesso de outro dispositivo</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pressione "Tab" e "Enter" para gerenciar quais informações do Chrome você salva na sua Conta do Google</translation>
 <translation id="1122714970786750095">Eletroeletrônicos</translation>
-<translation id="1123753900084781868">A "Legenda instantânea" não está disponível no momento</translation>
+<translation id="1123753900084781868">A legenda instantânea não está disponível no momento</translation>
 <translation id="1124643885833329193">Local exato</translation>
 <translation id="112840717907525620">Cache da política OK</translation>
 <translation id="1131264053432022307">Imagem que você copiou</translation>
@@ -186,6 +186,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1289129165308566697">Veja seu histórico em outros dispositivos</translation>
 <translation id="1292571435393770077">Bandeja 16</translation>
 <translation id="1292701964462482250">"Algum software no seu computador está impedindo o Google Chrome de se conectar com segurança à Web" (somente computadores Windows)</translation>
+<translation id="1293154089865862473">Para oferecer essas opções, o conteúdo da página de finalização da compra é compartilhado com o Google. Se quiser ocultar as opções de parcelamento no preenchimento automático, acesse as <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="1293556467332435079">Arquivos</translation>
 <translation id="1293797321964802402">Envelope de 23 cm x 28 cm</translation>
 <translation id="129553762522093515">Fechadas recentemente</translation>
@@ -1124,6 +1125,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2782088940970074970">Aluguel de carro</translation>
 <translation id="278436560439594386">Aparelhos domésticos</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
+<translation id="2784540996156451674">Para oferecer essas opções, o conteúdo da página de finalização da compra é compartilhado com o Google.</translation>
 <translation id="2784949926578158345">A conexão foi redefinida.</translation>
 <translation id="2786008859124691917">Bicicletas e acessórios</translation>
 <translation id="2792012897584536778">Os administradores deste dispositivo configuraram certificados de segurança que podem permitir que eles vejam o conteúdo dos sites que você visita.</translation>
@@ -1867,7 +1869,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="398470910934384994">Pássaros</translation>
 <translation id="3985750352229496475">Gerenciar endereços…</translation>
 <translation id="3986557181852957825">Logotipo do Google Pay e da Klarna</translation>
-<translation id="3986705137476756801">Desativar "Legenda instantânea" por enquanto</translation>
+<translation id="3986705137476756801">Desativar legenda instantânea por enquanto</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Menos de 1 MB</translation>
 <translation id="3990250421422698716">Ajustar desvio</translation>
@@ -2482,6 +2484,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4950898438188848926">Botão de alternância de guia. Pressione Enter para mudar para a guia aberta, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Ações</translation>
 <translation id="4953689047182316270">Responder a eventos de acessibilidade</translation>
+<translation id="4954891067389874142">Salve seu cartão para pagar mais rápido. Os detalhes do cartão são criptografados na Carteira do Google.</translation>
 <translation id="4957080528849277028">Botão "Ver seu histórico do Chrome". Ative para abrir e gerenciar seu histórico de navegação nas configurações do Chrome</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{e mais 1 site}one{e mais # site}other{e mais # sites}}</translation>
 <translation id="4958444002117714549">Expandir lista</translation>
@@ -3085,7 +3088,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5950901984834744590">Lâminas e barbeadores</translation>
 <translation id="5951495562196540101">Não é possível fazer a inscrição com a conta pessoal (pacote de licença disponível).</translation>
 <translation id="5952076224478208938">Marca</translation>
-<translation id="5953516610448771166">O recurso Legenda instantânea não está disponível para esse tipo de mídia. Se quiser ver legendas, bloqueie a configuração <ph name="CONTENT_SETTINGS" /> para este site.</translation>
+<translation id="5953516610448771166">O recurso de legenda instantânea não está disponível para esse tipo de mídia. Se quiser ver legendas, bloqueie a configuração <ph name="CONTENT_SETTINGS" /> para este site.</translation>
 <translation id="5960795367348889467">Verificação</translation>
 <translation id="5963413905009737549">Seção</translation>
 <translation id="5964247741333118902">Conteúdo incorporado</translation>
@@ -4011,6 +4014,7 @@ Mais detalhes:
 <translation id="7408613996403626141">Brinquedos</translation>
 <translation id="7410852728357935715">Transmitir para um dispositivo</translation>
 <translation id="741204030948306876">Sim</translation>
+<translation id="7412081313067625215">O cartão foi salvo na Carteira do Google e vai estar disponível para preenchimento automático em compras futuras</translation>
 <translation id="7416351320495623771">Gerenciar senhas…</translation>
 <translation id="7416898721136759658">Bolsas de estudo, subsídios e ajuda financeira</translation>
 <translation id="741772962178517671">Affirm</translation>
@@ -4144,6 +4148,7 @@ Mais detalhes:
 <translation id="759889825892636187"><ph name="HOST_NAME" /> não consegue atender a esta solicitação no momento.</translation>
 <translation id="7599089013883397081">O tempo de download expirou</translation>
 <translation id="7602868996817972616">Perguntar ao Google sobre esta página</translation>
+<translation id="7606123685356405076">Modelos do Gemini 3</translation>
 <translation id="7610193165460212391">O valor não corresponde ao período <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">Grosso</translation>
 <translation id="7613889955535752492">Data de expiração: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

@@ -2525,6 +2525,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2672142220933875349">Ffeil crx gwael, dadbacio wedi methu.</translation>
 <translation id="2672200806060988299">Anfonir teitlau eich tab a'ch cyfeiriadau URL i Google a gall adolygwyr dynol eu gweld i wella'r nodwedd hon.</translation>
 <translation id="2673135533890720193">Darllen eich hanes pori</translation>
+<translation id="2673397477544385203">Yn pweru nodweddion megis canfod sgamiau yn lleol. Mae diffodd hyn yn dileu modelau GenAI o'ch dyfais ac yn analluogi'r nodweddion hyn.</translation>
 <translation id="2673848446870717676">Gwnewch yn siŵr bod eich dyfais Bluetooth yn y modd paru a gerllaw. Parwch gyda dyfeisiau rydych yn ymddiried ynddynt yn unig. Mae dyfeisiau sydd wedi'u paru yn weladwy i bob cyfrif ar y Chromebook hwn.</translation>
 <translation id="2673873887296220733">Copïo 1 ffeil i <ph name="CLOUD_PROVIDER" /> i'w hagor?</translation>
 <translation id="267442004702508783">ail-lwytho</translation>
@@ -3983,6 +3984,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3678156199662914018">Estyniad: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Ni fydd tudalennau rydych yn edrych arnynt yn y ffenestr hon yn ymddangos yn yr hanes pori ac ni fyddant yn gadael olion eraill, megis cwcis, ar y cyfrifiadur ar ôl i chi allgofnodi. Ni fydd unrhyw ffeiliau rydych yn eu lawrlwytho a nodau tudalen rydych yn eu creu yn cael eu cadw.</translation>
 <translation id="3679126865530709868">Pad cyffwrdd integredig</translation>
+<translation id="3680166671911524673">GenAI ar y ddyfais wedi'i Alluogi</translation>
 <translation id="3680683624079082902">Llais testun i leferydd</translation>
 <translation id="3681017028939109078">Dangos awgrymiadau ffenestr wrth ddechrau sgrîn hollt</translation>
 <translation id="3681191721636073359">Mae Chrome yn meddwl nad ydych chi eisiau defnyddio'ch lleoliad ar y wefan hon. Felly, mae ceisiadau wedi'u cuddio i leihau ymyrraeth.</translation>

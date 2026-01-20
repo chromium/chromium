@@ -2513,6 +2513,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2672142220933875349">Vigane crx-fail, lahtipakkimine nurjus.</translation>
 <translation id="2672200806060988299">Teie vahelehtede pealkirjad ja URL-id saadetakse Google'ile ning selle funktsiooni täiustamiseks võivad ülevaatajad neid näha.</translation>
 <translation id="2673135533890720193">Sirvimisajaloo lugemine</translation>
+<translation id="2673397477544385203">Toetab selliseid funktsioone nagu seadmesisene pettuste tuvastamine. Selle väljalülitamisel kustutatakse GenAI mudelid teie seadmest ja need funktsioonid keelatakse.</translation>
 <translation id="2673848446870717676">Veenduge, et teie Bluetooth-seade oleks sidumisrežiimis ja läheduses. Siduge ainult seadmetega, mida usaldate. Seotud seadmed on nähtavad selle Chromebooki kõikidele kontodele.</translation>
 <translation id="2673873887296220733">Kas kopeerida avamiseks üks fail teenusesse <ph name="CLOUD_PROVIDER" />?</translation>
 <translation id="267442004702508783">värskendab</translation>
@@ -3971,6 +3972,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3678156199662914018">Laiend: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Lehti, mida vaatate selles aknas, ei lisata teie brauseri ajalukku ja pärast väljalogimist ei jää neist arvutisse ka muid jälgi (nt küpsisefaile). Allalaaditud faile ja loodud järjehoidjaid ei säilitata.</translation>
 <translation id="3679126865530709868">Sisseehitatud puuteplaat</translation>
+<translation id="3680166671911524673">Seadmesisene GenAI on lubatud</translation>
 <translation id="3680683624079082902">Kõnesünteesi hääl</translation>
 <translation id="3681017028939109078">Kuva jagatud ekraanikuva käivitamisel aknasoovitused</translation>
 <translation id="3681191721636073359">Chrome arvab, et te ei soovi sellel saidil asukohta kasutada. Taotlused peidetakse, et need ei häiriks.</translation>

@@ -315,6 +315,7 @@
 <translation id="21133533946938348">ටැබය වෙත අමුණන්න</translation>
 <translation id="2117650889962717098">අප්‍රසිද්ධ ප්‍රකාරයට මාරු වීමෙන් ඔබේ බ්‍රවුස් කිරීම පෞද්ගලිකව තබා ගන්න</translation>
 <translation id="2119636449201577317">මෙහි විවෘත කරන්න…</translation>
+<translation id="2119962645034852864">සමහර සේවා ඔබේ ගිණුම සඳහා නොමැත</translation>
 <translation id="2120553909046681540">ඔබේ සංවිධානය රහසිගත බ්‍රවුස් කිරීම ක්‍රියාවිරහිත කර දැමීය.</translation>
 <translation id="2122754583996902531">ඔබේ බ්‍රවුසරය කළමනාකරණය කෙරේ. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">ඔබේ සංවිධානයේ කථාබස් අපගේ ආකෘති වැඩිදියුණු කිරීමට භාවිත නොකෙරේ. Gemini මිනිසුන් පිළිබඳ ඇතුළුව සාවද්‍ය තොරතුරු පෙන්විය හැකි බැවින්, එය දෙවරක් පරීක්ෂා කර බලන්න. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
@@ -873,6 +874,7 @@
 <translation id="4302061870579014542">පිහිටීම සකසන්න</translation>
 <translation id="4304713468139749426">මුරපද කළමනාකරු</translation>
 <translation id="4309403553630140242">වැඩිදුර තොරතුරු සඳහා දෙවරක් තට්ටු කරන්න</translation>
+<translation id="4310738531374808763">ඔබේ මුල් පිටුව අභිරුචිකරණය කරන්න</translation>
 <translation id="4320848494125124980">මෑත</translation>
 <translation id="4322394346347055525">වෙනත් ටැබ් වසන්න</translation>
 <translation id="4324735664183300693">දැනුම්දීම් ක්‍රියාත්මක කරන්න</translation>
@@ -1711,6 +1713,7 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> ක් බාගන්නා ලදි</translation>
 <translation id="7345061034321640811">ආයාත කිරීමට ඉඩ නැත</translation>
+<translation id="7347998088283246662">මුරපද, ඉතිහාසය, පිටුසන් සහ තවත් දේ ආයාත කරන්න</translation>
 <translation id="7352651011704765696">යමක් වැරදිනි</translation>
 <translation id="7364796246159120393">ගොනුව තෝරන්න</translation>
 <translation id="736564850024123010">අභිරුචි කළ අත්දැකීමක් සඳහා ඔබේ ලිපින තීරුවේ පිහිටීම මාරු කරන්න.</translation>
@@ -2236,6 +2239,7 @@
 <translation id="914781932147356857">සියල්ල ලකුණු කරන්න…</translation>
 <translation id="9148126808321036104">නැවත පිවිසෙන්න</translation>
 <translation id="9149866541089851383">සකසන්න...</translation>
+<translation id="9152637745605628097">තේමා, වර්ණ වලින් තෝරා ගන්න හෝ රූපයක් උඩුගත කරන්න</translation>
 <translation id="9159628751968616911">වෙබ් පිටුව යවන්න</translation>
 <translation id="9162432979321511934">මුරපද ස්වයං පිරවුම ක්‍රියාත්මක කරන්න</translation>
 <translation id="9165320910061267720">මිල පහත වැටීමේ ඇඟවීම් පිළිබඳ දැනුම්දීම් ලබා ගැනීම සඳහා, ඔබට ඔබේ iOS සැකසීම් තුළ දැනුම්දීම් ක්‍රියාත්මක කිරීමට අවශ්‍ය වනු ඇත.</translation>
