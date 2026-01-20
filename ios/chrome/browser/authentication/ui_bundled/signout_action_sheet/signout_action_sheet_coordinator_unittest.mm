@@ -255,6 +255,9 @@ TEST_F(SignoutActionSheetCoordinatorTest, ShouldShowActionSheetIfUnsyncedData) {
       "Sync.UnsyncedDataOnSignout2",
       syncer::DataTypeForHistograms::kPreferences, 0u);
 
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarksLimitExceededOnSignoutPrompt", false, 1u);
+
   histogram_tester.ExpectTotalCount("Sync.SignoutWithUnsyncedData", 0u);
 }
 
@@ -318,10 +321,15 @@ TEST_F(SignoutActionSheetCoordinatorTest,
 
   EXPECT_CALL(completion_callback_, Run);
 
+  base::HistogramTester histogram_tester;
+
   [signout_coordinator_ start];
 
   // The action sheet should be shown.
   ASSERT_NE(nil, signout_coordinator_.message);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarksLimitExceededOnSignoutPrompt", true, 1u);
 }
 
 // TODO(crbug.com/40075765): Add test for recording signout outcome upon warning

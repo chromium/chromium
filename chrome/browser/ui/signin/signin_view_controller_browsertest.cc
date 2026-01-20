@@ -483,6 +483,8 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
   VerifyUnsyncedDataCountHistograms(
       histogram_tester,
       ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarksLimitExceededOnSignoutPrompt", false, 1);
 
   // User was signed out.
   EXPECT_FALSE(
@@ -588,6 +590,8 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
     VerifyUnsyncedDataCountHistograms(
         histogram_tester,
         ChromeSignoutConfirmationPromptVariant::kTooManyBookmarks);
+    histogram_tester.ExpectUniqueSample(
+        "Sync.BookmarksLimitExceededOnSignoutPrompt", true, 1);
   }
 
   // User is still signed in.
@@ -617,6 +621,8 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
     VerifyUnsyncedDataCountHistograms(
         histogram_tester,
         ChromeSignoutConfirmationPromptVariant::kTooManyBookmarks);
+    histogram_tester.ExpectUniqueSample(
+        "Sync.BookmarksLimitExceededOnSignoutPrompt", true, 1);
   }
 
   // User was signed out.

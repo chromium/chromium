@@ -13,6 +13,7 @@ import androidx.annotation.MainThread;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -131,11 +132,14 @@ public class SignOutCoordinator {
         @UserActionableError int userActionableError = syncService.getUserActionableError();
         syncService.getTypesWithUnsyncedData(
                 unsyncedTypes -> {
-                    switch (getUiState(
-                            identityManager,
-                            !unsyncedTypes.isEmpty(),
-                            showConfirmDialog,
-                            userActionableError)) {
+                    @UiState
+                    int uiState =
+                            getUiState(
+                                    identityManager,
+                                    !unsyncedTypes.isEmpty(),
+                                    showConfirmDialog,
+                                    userActionableError);
+                    switch (uiState) {
                         case UiState.SNACK_BAR ->
                                 signOutAndShowSnackbar(
                                         context,
@@ -171,6 +175,12 @@ public class SignOutCoordinator {
                                         dialogManager,
                                         signOutReason,
                                         onSignOut);
+                    }
+                    if (uiState != UiState.SNACK_BAR) {
+                        RecordHistogram.recordBooleanHistogram(
+                                "Sync.BookmarksLimitExceededOnSignoutPrompt",
+                                userActionableError
+                                        == UserActionableError.BOOKMARKS_LIMIT_EXCEEDED);
                     }
                 });
     }

@@ -258,10 +258,9 @@ using signin_metrics::SignoutDataLossAlertReason;
           syncer::SyncService::UserActionableError::kBookmarksLimitExceeded;
 
   if (!set.empty() || bookmarksLimitExceeded) {
+    base::UmaHistogramBoolean("Sync.BookmarksLimitExceededOnSignoutPrompt",
+                              bookmarksLimitExceeded);
     for (syncer::DataType type : set) {
-      // TODO(crbug.com/452968646) The current metric won't be recorded if the
-      //  signout is aborted due to the bookmarks limit exceeded. Implement a
-      //  new metric to cover this case for each platform.
       base::UmaHistogramEnumeration("Sync.UnsyncedDataOnSignout2",
                                     syncer::DataTypeHistogramValue(type));
     }

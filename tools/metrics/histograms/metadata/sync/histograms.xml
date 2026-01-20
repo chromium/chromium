@@ -494,6 +494,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.BookmarksLimitExceededOnSignoutPrompt" enum="Boolean"
+    expires_after="2027-01-19">
+  <owner>mtatarski@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records whether the bookmarks limit exceeded error was present when a
+    sign-out confirmation dialog was shown. This helps track how often this
+    specific error is a reason for the confirmation dialog. Recorded on all
+    platforms.
+  </summary>
+</histogram>
+
 <histogram name="Sync.BookmarksModelMetadataCorruptionReason"
     enum="SyncBookmarkModelMetadataCorruptionReason" expires_after="2026-07-05">
   <owner>rushans@google.com</owner>

@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -805,6 +806,9 @@ void SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes(
                             /*uninstall_account_extensions_on_signout=*/false);
     return;
   }
+
+  base::UmaHistogramBoolean("Sync.BookmarksLimitExceededOnSignoutPrompt",
+                            is_bookmarks_limit_exceeded);
 
   ChromeSignoutConfirmationPromptVariant prompt_variant =
       GetSignoutConfirmationPromptVariant(
