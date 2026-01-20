@@ -153,6 +153,7 @@ public class GoogleBottomBarActionsHandlerTest {
 
     @Test
     public void testSaveAction_buttonConfigHasNoPendingIntent_showsTooltip() {
+        TextBubble.setSkipShowCheckForTesting(true);
         mHistogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SAVE_DISABLED);
@@ -165,7 +166,6 @@ public class GoogleBottomBarActionsHandlerTest {
                         context.getString(
                                 R.string.google_bottom_bar_save_disabled_button_description),
                         /* pendingIntent= */ null);
-        TextBubble.setSkipShowCheckForTesting(true);
 
         View.OnClickListener clickListener =
                 mGoogleBottomBarActionsHandler.getClickListener(buttonConfig);

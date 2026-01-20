@@ -18,6 +18,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.build.annotations.NullMarked;
@@ -40,7 +41,9 @@ public class Fido2ApiCallHelper {
     private static @Nullable Fido2ApiCallHelper sInstance;
 
     public static void overrideInstanceForTesting(Fido2ApiCallHelper instance) {
+        Fido2ApiCallHelper prev = sInstance;
         sInstance = instance;
+        ResettersForTesting.register(() -> sInstance = prev);
     }
 
     /**
