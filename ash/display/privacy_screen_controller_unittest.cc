@@ -91,6 +91,7 @@ class PrivacyScreenControllerTest : public NoSessionAshTestBase {
     // destroy it first.
     display_change_observer_ = nullptr;
     controller()->RemoveObserver(observer());
+    native_display_delegate_ = nullptr;
     AshTestBase::TearDown();
   }
 
@@ -132,8 +133,7 @@ class PrivacyScreenControllerTest : public NoSessionAshTestBase {
 
  private:
   std::unique_ptr<display::test::ActionLogger> logger_;
-  raw_ptr<display::test::TestNativeDisplayDelegate,
-          DanglingUntriaged>
+  raw_ptr<display::test::TestNativeDisplayDelegate>
       native_display_delegate_;  // Not owned.
   std::unique_ptr<display::DisplayChangeObserver> display_change_observer_;
   std::unique_ptr<display::DisplayConfigurator::TestApi> test_api_;
