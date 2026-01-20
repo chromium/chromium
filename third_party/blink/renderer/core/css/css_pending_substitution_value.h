@@ -28,7 +28,7 @@ class CSSPendingSubstitutionValue : public CSSValue {
   CSSPropertyID ShorthandPropertyId() const { return shorthand_property_id_; }
 
   bool Equals(const CSSPendingSubstitutionValue& other) const {
-    return shorthand_value_ == other.shorthand_value_;
+    return *shorthand_value_ == *other.shorthand_value_;
   }
   String CustomCSSText() const;
 
