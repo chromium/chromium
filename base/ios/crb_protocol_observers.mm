@@ -126,13 +126,12 @@ id Iterator::GetNext() {
 }
 
 - (BOOL)empty {
-  int count = 0;
   for (id observer : _observers) {
     if (observer != nil) {
-      ++count;
+      return NO;
     }
   }
-  return count == 0;
+  return YES;
 }
 
 #pragma mark - NSObject
