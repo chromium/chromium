@@ -221,26 +221,23 @@ TEST_F(PushNotificationAccountContextManagerTest, RemoveMultipleAccounts) {
 TEST_F(PushNotificationAccountContextManagerTest, AddDuplicateThenRemove) {
   static const TestCase kTestCase[] = {{"0"}};
   const TestCase kRemovalTestCase = {"5"};
-  static const TestCase kNoDuplicatesTestCase[] = {kRemovalTestCase};
 
   AddTestCasesToManagerAndValidate(
       manager_, kTestCase, profile_attributes_storage(), profile_name());
 
+  // Add testcase.
   UpdateProfileAuthInfo(profile_attributes_storage(), profile_name(),
                         kRemovalTestCase.gaia);
   [manager_ addAccount:GaiaId(kRemovalTestCase.gaia)];
 
-  for (const TestCase& test_case : kNoDuplicatesTestCase) {
-    UpdateProfileAuthInfo(profile_attributes_storage(), profile_name(),
-                          test_case.gaia);
-    [manager_ addAccount:GaiaId(test_case.gaia)];
-  }
+  // Add duplicate testcase.
+  UpdateProfileAuthInfo(profile_attributes_storage(), profile_name(),
+                        kRemovalTestCase.gaia);
+  [manager_ addAccount:GaiaId(kRemovalTestCase.gaia)];
 
-  // Validate the occurence counter has increased.
+  // Validate the occurrence counter has increased.
   ASSERT_EQ(
-      [manager_
-          registrationCountForAccount:GaiaId(kNoDuplicatesTestCase[0].gaia)],
-      2u);
+      [manager_ registrationCountForAccount:GaiaId(kRemovalTestCase.gaia)], 2u);
   // Remove the duplicate testcase twice.
   [manager_ removeAccount:GaiaId(kRemovalTestCase.gaia)];
   ASSERT_EQ([manager_ removeAccount:GaiaId(kRemovalTestCase.gaia)], true);

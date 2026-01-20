@@ -363,44 +363,44 @@ namespace {
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
 // To disable a data driven test, please add the name of the test file
 // (i.e., "NNN_some_site.html") as a literal to the initializer_list given
-// to the failing_test_names constructor.
-const auto& GetFailingTestNames() {
-  static std::set<std::string> failing_test_names{
-      // TODO(crbug.com/40266699): These pages contains iframes. Until filling
-      // across iframes is also supported on iOS, iOS has has different
-      // expectations compared to non-iOS platforms.
-      "049_register_ebay.com.html",
-      "148_payment_dickblick.com.html",
-      // TODO(crbug.com/40229922): These pages contain labels which are only
-      // inferred by the label detection improvements that haven't been
-      // implemented on iOS.
-      "074_register_threadless.com.html",
-      "097_register_alaskaair.com.html",
-      "115_checkout_walgreens.com.html",
-      "116_cc_checkout_walgreens.com.html",
-      "150_checkout_venus.com_search_field.html",
-      // TODO(crbug.com/473467160): Analyze the root causes of these
-      // regressions.
-      "110_checkout_harryanddavid.com.html",
-      "123_bug_459132.html",
-      "132_bug_469012.html",
-  };
-  return failing_test_names;
+// to the kFailingTestNames constructor.
+bool IsFailingTestName(const std::string& test_name) {
+  static constexpr auto kFailingTestNames =
+      base::MakeFixedFlatSet<std::string_view>({
+          // TODO(crbug.com/40266699): These pages contains iframes. Until
+          // filling across iframes is also supported on iOS, iOS has has
+          // different expectations compared to non-iOS platforms.
+          "049_register_ebay.com.html",
+          "148_payment_dickblick.com.html",
+          // TODO(crbug.com/40229922): These pages contain labels which are only
+          // inferred by the label detection improvements that haven't been
+          // implemented on iOS.
+          "074_register_threadless.com.html",
+          "097_register_alaskaair.com.html",
+          "115_checkout_walgreens.com.html",
+          "116_cc_checkout_walgreens.com.html",
+          "150_checkout_venus.com_search_field.html",
+          // TODO(crbug.com/473467160): Analyze the root causes of these
+          // regressions.
+          "110_checkout_harryanddavid.com.html",
+          "123_bug_459132.html",
+          "132_bug_469012.html",
+      });
+  return kFailingTestNames.contains(test_name);
 }
 #endif
 
 }  // namespace
 
 // If disabling a test, prefer to add the name names of the specific test cases
-// to GetFailingTestNames(), directly above, instead of renaming the test to
+// to IsFailingTestName(), directly above, instead of renaming the test to
 // DISABLED_DataDrivenHeuristics.
 TEST_P(FormStructureBrowserTest, DataDrivenHeuristics) {
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   GTEST_SKIP() << "DataDrivenHeuristics tests are only supported with legacy "
                   "parsing patterns";
 #else
-  bool is_expected_to_pass =
-      !GetFailingTestNames().contains(GetParam().BaseName().value());
+  bool is_expected_to_pass = !IsFailingTestName(GetParam().BaseName().value());
   RunOneDataDrivenTest(GetParam(), GetIOSOutputDirectory(),
                        is_expected_to_pass);
 #endif

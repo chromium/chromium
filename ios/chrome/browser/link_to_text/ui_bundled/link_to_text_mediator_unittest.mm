@@ -47,17 +47,17 @@ using shared_highlighting::TextFragment;
 using web::FakeWebState;
 
 namespace {
-const CGFloat kCaretWidth = 4.0;
-const CGFloat kFakeLeftInset = 50;
-const CGFloat kFakeTopInset = 100;
-const char kTestQuote[] = "some selected text on a page";
-const char kTestHighlightURL[] =
+constexpr CGFloat kCaretWidth = 4.0;
+constexpr CGFloat kFakeLeftInset = 50;
+constexpr CGFloat kFakeTopInset = 100;
+constexpr char kTestQuote[] = "some selected text on a page";
+constexpr char kTestHighlightURL[] =
     "https://www.chromium.org/#:~:text=selected%20text";
-const char kTestBaseURL[] = "https://www.chromium.org/";
-const TextFragment kTestTextFragment = TextFragment("selected text");
+constexpr char kTestBaseURL[] = "https://www.chromium.org/";
+constexpr char kTestTextFragment[] = "selected text";
 
-const char kSuccessUkmMetric[] = "Success";
-const char kErrorUkmMetric[] = "Error";
+constexpr char kSuccessUkmMetric[] = "Success";
+constexpr char kErrorUkmMetric[] = "Error";
 
 // Fake version of JS Feature which directly invokes the passed callback using
 // the provided latency and response values, without actually invoking JS (or
@@ -161,7 +161,7 @@ class LinkToTextMediatorTest : public PlatformTest {
     base::Value::Dict response_value;
     response_value.Set("status",
                        static_cast<double>(LinkGenerationOutcome::kSuccess));
-    response_value.Set("fragment", kTestTextFragment.ToValue());
+    response_value.Set("fragment", TextFragment(kTestTextFragment).ToValue());
     response_value.Set("selectedText", selected_text);
     response_value.Set("selectionRect", std::move(rect_value));
     return std::make_unique<base::Value>(std::move(response_value));
