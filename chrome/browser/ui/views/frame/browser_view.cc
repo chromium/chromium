@@ -4871,7 +4871,11 @@ int BrowserView::NonClientHitTest(const gfx::Point& point) {
   // The top container while in immersive fullscreen on macOS lives in another
   // Widget (OverlayWidgetMac). This means that BrowserView does not need to
   // consult BrowserViewLayout::NonClientHitTest() to calculate the hit test.
-  if (ImmersiveModeController::From(browser())->IsEnabled()) {
+  //
+  // Note that this can occasionally be hit during teardown, so check if the
+  // controller still exists.
+  if (auto* controller = ImmersiveModeController::From(browser());
+      controller && controller->IsEnabled()) {
     // Handle hits on the overlay widget when it is hovering overtop of the
     // content view.
     gfx::Point screen_point(point);
