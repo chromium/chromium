@@ -20,6 +20,10 @@ namespace syncer {
 class DataTypeControllerDelegate;
 }  // namespace syncer
 
+namespace optimization_guide {
+class OptimizationGuideDecider;
+}  // namespace optimization_guide
+
 namespace skills {
 
 class SkillsSyncBridge;
@@ -29,8 +33,10 @@ class SkillsSyncBridge;
 // It also notifies observers when skills are changed.
 class SkillsServiceImpl : public SkillsService {
  public:
-  SkillsServiceImpl(version_info::Channel channel,
-                    syncer::OnceDataTypeStoreFactory create_store_callback);
+  SkillsServiceImpl(
+      optimization_guide::OptimizationGuideDecider* optimization_guide,
+      version_info::Channel channel,
+      syncer::OnceDataTypeStoreFactory create_store_callback);
   ~SkillsServiceImpl() override;
 
   // TODO(crbug.com/475863107) Add strong typing to help caller avoid swapping

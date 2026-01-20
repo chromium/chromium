@@ -22,6 +22,8 @@ source_set("internal") {
   ]
 
   deps = [
+    "//components/optimization_guide/core",
+    "//components/skills:features",
     "//components/skills/proto",
     "//components/sync/model",
     "//components/sync/protocol",
@@ -40,6 +42,9 @@ source_set("unit_tests") {
     ":internal",
     "//base",
     "//base/test:test_support",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/core:test_support",
+    "//components/skills:features",
     "//components/skills/proto",
     "//components/skills/public",
     "//components/sync:test_support",

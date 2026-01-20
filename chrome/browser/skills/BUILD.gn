@@ -18,6 +18,7 @@ source_set("skills") {
   ]
 
   deps = [
+    "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync:factories",
     "//chrome/browser/ui/browser_window",

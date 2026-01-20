@@ -7,6 +7,9 @@
 #include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/uuid.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decider.h"
+#include "components/optimization_guide/proto/hints.pb.h"
+#include "components/skills/features.h"
 #include "components/skills/internal/skills_sync_bridge.h"
 #include "components/skills/public/skill.h"
 #include "components/sync/base/data_type.h"
@@ -17,6 +20,7 @@
 namespace skills {
 
 SkillsServiceImpl::SkillsServiceImpl(
+    optimization_guide::OptimizationGuideDecider* optimization_guide,
     version_info::Channel channel,
     syncer::OnceDataTypeStoreFactory create_store_callback) {
   sync_bridge_ = std::make_unique<SkillsSyncBridge>(
@@ -24,6 +28,15 @@ SkillsServiceImpl::SkillsServiceImpl(
           syncer::SKILL,
           base::BindRepeating(&syncer::ReportUnrecoverableError, channel)),
       std::move(create_store_callback), *this);
+  if (base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
+    // If the Skills feature is enabled, register the optimization type to
+    // signal to Optimization Guide that it should fetch and cache the URL-keyed
+    // Skills on each page load.
+    if (optimization_guide) {
+      optimization_guide->RegisterOptimizationTypes(
+          {optimization_guide::proto::SKILLS});
+    }
+  }
 }
 
 SkillsServiceImpl::~SkillsServiceImpl() = default;
