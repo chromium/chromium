@@ -12022,10 +12022,6 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {
-                        "ZSSExtractAnnotatedPageContent": "true",
-                        "ZSSExtractInnerText": "false"
-                    },
                     "enable_features": [
                         "GlicZeroStateSuggestions"
                     ]
