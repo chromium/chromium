@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
       root_node()->children()[1]->children()[1].get();
   VerticalTabGroupHeaderView* group_header =
       static_cast<VerticalTabGroupView*>(group_node->get_view_for_testing())
-          ->group_header_for_testing();
+          ->group_header();
   EXPECT_EQ(group_header->collapse_icon_for_testing()
                 ->GetImageModel()
                 .GetVectorIcon()

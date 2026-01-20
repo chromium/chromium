@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_view.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 #include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_collection_types.h"
@@ -182,18 +183,23 @@ void RootTabCollectionNode::OnTabGroupChanged(const TabGroupChange& change) {
   if (tab_strip_model_->closing_all()) {
     return;
   }
+  TabCollectionNode* group_node =
+      GetNodeForHandle(change.model->group_model()
+                           ->GetTabGroup(change.group)
+                           ->GetCollectionHandle());
+  if (!group_node) {
+    return;
+  }
+
+  if (change.type == TabGroupChange::kEditorOpened) {
+    group_node->GetController()->ShowGroupEditorBubble(group_node);
+  }
 
   if (change.type != TabGroupChange::kVisualsChanged) {
     return;
   }
 
-  TabCollectionNode* group_node =
-      GetNodeForHandle(change.model->group_model()
-                           ->GetTabGroup(change.group)
-                           ->GetCollectionHandle());
-  if (group_node) {
-    group_node->NotifyDataChanged();
-  }
+  group_node->NotifyDataChanged();
 }
 
 void RootTabCollectionNode::OnTabChangedAt(tabs::TabInterface* tab,

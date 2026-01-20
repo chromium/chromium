@@ -55,9 +55,7 @@ class VerticalTabGroupView
 
   const TabCollectionNode* collection_node() const { return collection_node_; }
 
-  VerticalTabGroupHeaderView* group_header_for_testing() {
-    return group_header_;
-  }
+  VerticalTabGroupHeaderView* group_header() { return group_header_; }
 
  private:
   // VerticalDraggedTabsContainer:
