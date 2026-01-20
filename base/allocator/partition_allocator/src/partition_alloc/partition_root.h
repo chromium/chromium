@@ -2263,27 +2263,27 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternal(size_t requested_size,
   static_assert(!ContainsFlags(
       flags, AllocFlags::kMemoryShouldBeTaggedForMte));  // Internal only.
 
+#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+  if constexpr (!ContainsFlags(flags, AllocFlags::kNoMemoryToolOverride)) {
+    if (!PartitionRoot::AllocWithMemoryToolProlog<flags>(requested_size)) {
+      // Early return if AllocWithMemoryToolProlog returns false
+      return nullptr;
+    }
+    constexpr bool zero_fill = ContainsFlags(flags, AllocFlags::kZeroFill);
+    void* result =
+        zero_fill ? calloc(1, requested_size) : malloc(requested_size);
+    if constexpr (!ContainsFlags(flags, AllocFlags::kReturnNull)) {
+      PA_CHECK(result);
+    }
+    return result;
+  }
+#endif  // defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+
   constexpr bool no_hooks = ContainsFlags(flags, AllocFlags::kNoHooks);
   bool hooks_enabled;
 
   if constexpr (!no_hooks) {
     PA_DCHECK(initialized);
-
-#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
-    if constexpr (!ContainsFlags(flags, AllocFlags::kNoMemoryToolOverride)) {
-      if (!PartitionRoot::AllocWithMemoryToolProlog<flags>(requested_size)) {
-        // Early return if AllocWithMemoryToolProlog returns false
-        return nullptr;
-      }
-      constexpr bool zero_fill = ContainsFlags(flags, AllocFlags::kZeroFill);
-      void* result =
-          zero_fill ? calloc(1, requested_size) : malloc(requested_size);
-      if constexpr (!ContainsFlags(flags, AllocFlags::kReturnNull)) {
-        PA_CHECK(result);
-      }
-      return result;
-    }
-#endif  // defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
     void* object = nullptr;
     hooks_enabled = PartitionAllocHooks::AreHooksEnabled();
     if (hooks_enabled) {
