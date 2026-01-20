@@ -878,6 +878,13 @@ const char kChromeAppStoreUrl[] =
   [self.tabEventsMediator disconnect];
   [self.tabLifecycleMediator disconnect];
   [self.dispatcher stopDispatchingToTarget:self];
+  // TODO:(crbug.com/477258591): Remove this nil call when clean up is resolved.
+  if (IsGeminiCopresenceEnabled()) {
+    // Gemini commands can be called during view controller
+    // dismissals. Since the dispatcher no longer listens for commands, early
+    // nil `geminiHandler` to avoid a crash.
+    _viewController.geminiHandler = nil;
+  }
   [self stopChildCoordinators];
   [self destroyViewController];
   [self destroyViewControllerDependencies];
@@ -1452,8 +1459,10 @@ const char kChromeAppStoreUrl[] =
       HandlerForProtocol(_dispatcher, SceneCommands);
   _viewControllerDependencies.findInPageCommandsHandler =
       HandlerForProtocol(_dispatcher, FindInPageCommands);
-  _viewControllerDependencies.geminiHandler =
-      HandlerForProtocol(_dispatcher, BWGCommands);
+  if (IsGeminiCopresenceEnabled()) {
+    _viewControllerDependencies.geminiHandler =
+        HandlerForProtocol(_dispatcher, BWGCommands);
+  }
   _viewControllerDependencies.isOffTheRecord = profile->IsOffTheRecord();
   _viewControllerDependencies.urlLoadingBrowserAgent = _urlLoadingBrowserAgent;
   _viewControllerDependencies.tabUsageRecorderBrowserAgent =
