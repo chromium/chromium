@@ -6,21 +6,27 @@
 
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
-#import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/test/ios/wait_util.h"
 #import "base/types/expected.h"
+#import "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
+#import "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#import "components/optimization_guide/proto/features/bling_prototyping.pb.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "ios/chrome/browser/ai_prototyping/utils/page_context_util.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
+#import "ios/web/public/web_state.h"
 
 namespace {
 NSString* kErrorDomain = @"PageContextAppInterfaceError";
 NSInteger kPageContextWrapperErrorCode = 0;
 NSInteger kPageContextLocalStorageErrorCode = 1;
+NSInteger kMQLSUploadErrorCode = 2;
 NSUInteger kMaxUrlChars = 20;
 base::TimeDelta kPageLoadTimeout = base::Seconds(30);
 
@@ -136,6 +142,78 @@ NSString* StringFromPageContextWrapperError(PageContextWrapperError error) {
   self.pageContextCaptureComplete = YES;
 }
 
+// Uploads the page context to MQLS. Returns an error if any occurs.
+- (NSError*)uploadPageContextToMQLS:
+    (const optimization_guide::proto::PageContext&)pageContext {
+  web::WebState* web_state = chrome_test_util::GetCurrentBrowser()
+                                 ->GetWebStateList()
+                                 ->GetActiveWebState();
+  if (!web_state) {
+    return
+        [NSError errorWithDomain:kErrorDomain
+                            code:kMQLSUploadErrorCode
+                        userInfo:@{
+                          NSLocalizedDescriptionKey : @"WebState not available."
+                        }];
+  }
+
+  OptimizationGuideService* optimization_guide_service =
+      OptimizationGuideServiceFactory::GetForProfile(
+          ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
+  if (!optimization_guide_service) {
+    return [NSError errorWithDomain:kErrorDomain
+                               code:kMQLSUploadErrorCode
+                           userInfo:@{
+                             NSLocalizedDescriptionKey :
+                                 @"OptimizationGuideService not available."
+                           }];
+  }
+
+  auto* mqls_service =
+      optimization_guide_service->GetModelQualityLogsUploaderService();
+  if (!mqls_service) {
+    return [NSError errorWithDomain:kErrorDomain
+                               code:kMQLSUploadErrorCode
+                           userInfo:@{
+                             NSLocalizedDescriptionKey :
+                                 @"ModelQualityLogsUploaderService not "
+                                 @"available."
+                           }];
+  }
+
+  const optimization_guide::MqlsFeatureMetadata* metadata =
+      optimization_guide::MqlsFeatureRegistry::GetInstance().GetFeature(
+          optimization_guide::proto::LogAiDataRequest::FeatureCase::
+              kBlingPrototyping);
+
+  if (!metadata || !mqls_service->CanUploadLogs(metadata)) {
+    return [NSError
+        errorWithDomain:kErrorDomain
+                   code:kMQLSUploadErrorCode
+               userInfo:@{
+                 NSLocalizedDescriptionKey : @"ModelQualityLogs upload is not "
+                                             @"enabled for BlingPrototyping."
+               }];
+  }
+
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry =
+      std::make_unique<optimization_guide::ModelQualityLogEntry>(
+          mqls_service->GetWeakPtr());
+
+  optimization_guide::proto::BlingPrototypingLoggingData proto_logging_data;
+  *proto_logging_data.mutable_request()->mutable_page_context() = pageContext;
+
+  if ([self.config.mqlsLoggingTag length] > 0) {
+    proto_logging_data.mutable_metadata()->set_logging_tag(
+        base::SysNSStringToUTF8(self.config.mqlsLoggingTag));
+  }
+
+  *log_entry->log_ai_data_request()->mutable_bling_prototyping() =
+      proto_logging_data;
+  optimization_guide::ModelQualityLogEntry::Upload(std::move(log_entry));
+  return nil;
+}
+
 - (void)OnPageContextWrapperCallback:
     (PageContextWrapperCallbackResponse)response {
   // Handle PageContextWrapper errors.
@@ -149,7 +227,9 @@ NSString* StringFromPageContextWrapperError(PageContextWrapperError error) {
                                      userInfo:userInfo];
     self.pageContextResult =
         [[PageContextExtractionResult alloc] initWithPageContext:nil
-                                                           error:error
+                                                    wrapperError:error
+                                                      storeError:nil
+                                                       mqlsError:nil
                                                         filePath:nil];
     [self pageContextResultCompleted];
     return;
@@ -192,6 +272,12 @@ NSString* StringFromPageContextWrapperError(PageContextWrapperError error) {
     CHECK(filePath != nil || pageContextStoreError != nil);
   }
 
+  // Optionally upload page context to MQLS.
+  NSError* mqls_upload_error = nil;
+  if (self.config.shouldUploadToMQLS) {
+    mqls_upload_error = [self uploadPageContextToMQLS:*response.value()];
+  }
+
   const std::string& serialized_string = response.value()->SerializeAsString();
 
   NSString* pageContext =
@@ -200,7 +286,9 @@ NSString* StringFromPageContextWrapperError(PageContextWrapperError error) {
 
   self.pageContextResult = [[PageContextExtractionResult alloc]
       initWithPageContext:pageContext
-                    error:pageContextStoreError
+             wrapperError:nil
+               storeError:pageContextStoreError
+                mqlsError:mqls_upload_error
                  filePath:filePath];
   [self pageContextResultCompleted];
 }

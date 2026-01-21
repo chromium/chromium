@@ -9,6 +9,8 @@
 
 static NSString* const kStorePageContextLocally =
     @"--save_page_context_locally";
+static NSString* const kUploadToMQLS = @"--upload_to_mqls";
+static NSString* const kMQLSLoggingTag = @"--mqls_logging_tag=";
 static NSString* const kInputFile = @"--input_urls_file=";
 static NSString* const kOutputDirName = @"--output_dir=";
 static NSString* const kModelQuery = @"--model_query=";
@@ -27,6 +29,12 @@ static NSString* const kModelQuery = @"--model_query=";
 
 // Query to send to the model.
 + (NSString*)readModelQueryFromTestArgs;
+
+// Tag to identify the MQLS log.
++ (NSString*)readMQLSLoggingTagFromTestArgs;
+
+// Whether to upload to MQLS.
++ (BOOL)shouldUploadToMQLSFromTestArgs;
 
 @end
 

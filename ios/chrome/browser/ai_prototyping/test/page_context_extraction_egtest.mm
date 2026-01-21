@@ -5,9 +5,11 @@
 #import <XCTest/XCTest.h>
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/optimization_guide/core/feature_registry/feature_registration.h"
 #import "ios/chrome/browser/ai_prototyping/test/page_context_app_interface.h"
 #import "ios/chrome/browser/ai_prototyping/test/page_context_extraction_data.h"
 #import "ios/chrome/browser/ai_prototyping/test/test_args.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -33,6 +35,7 @@ NSString* kErrorDomain = @"PageContextExtraction";
 
 @interface PageContextExtraction ()
 - (BOOL)processAndLogResultsForUrls:(NSArray<NSString*>*)urlsArray;
+- (BOOL)hasAnyError:(PageContextExtractionResult*)result;
 @end
 
 @implementation PageContextExtraction
@@ -42,11 +45,40 @@ NSString* kErrorDomain = @"PageContextExtraction";
   self.config = [[PageContextExtractionConfig alloc]
       initWithShouldStorePageContextLocally:
           [TestArgs shouldStorePageContextLocallyFromTestArgs]
+                         shouldUploadToMQLS:[TestArgs
+                                                shouldUploadToMQLSFromTestArgs]
                                   outputDir:[TestArgs
                                                 readOutputDirNameFromTestArgs]
                                  modelQuery:[TestArgs
-                                                readModelQueryFromTestArgs]];
+                                                readModelQueryFromTestArgs]
+                             mqlsLoggingTag:
+                                 [TestArgs readMQLSLoggingTagFromTestArgs]];
   self.results = [NSMutableArray array];
+  if (self.config.shouldUploadToMQLS) {
+    [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
+    // Metrics consent must be granted to upload to MQLS.
+    GREYAssertFalse(
+        [MetricsAppInterface setMetricsAndCrashReportingForTesting:YES],
+        @"User consent has already been granted.");
+  }
+}
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  if ([TestArgs shouldUploadToMQLSFromTestArgs]) {
+    config.features_enabled.push_back(
+        optimization_guide::features::kBlingPrototypingMqlsLogging);
+  }
+  return config;
+}
+
+- (void)tearDownHelper {
+  // Metrics consent may have been overwritten if for MQLS upload.
+  // Revoke metrics consent and update MetricsServicesManager.
+  GREYAssert([MetricsAppInterface setMetricsAndCrashReportingForTesting:NO],
+             @"Unpaired set/reset of user consent.");
+  [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
+  [super tearDownHelper];
 }
 
 - (NSArray<NSString*>*)urlsFromInputFile:(NSString*)filePath {
@@ -102,7 +134,9 @@ NSString* kErrorDomain = @"PageContextExtraction";
                             code:kPageContextExtractionTimeoutErrorCode
                         userInfo:userInfo];
     return [[PageContextExtractionResult alloc] initWithPageContext:nil
-                                                              error:error
+                                                       wrapperError:error
+                                                         storeError:nil
+                                                          mqlsError:nil
                                                            filePath:nil];
   }
 
@@ -114,16 +148,21 @@ NSString* kErrorDomain = @"PageContextExtraction";
   PageContextExtractionResult* result =
       [self triggerPageContextExtractionAndWaitForResult:url];
 
-  if (result.error) {
+  if ([self hasAnyError:result]) {
     NSLog(@"[PageContextExtraction] Failed to extract page context for url:%@ "
-          @"with error: %@",
-          url, result.error);
+          @"with errors: wrapperError: %@, storeError: %@, mqlsError: %@",
+          url, result.wrapperError, result.storeError, result.mqlsError);
   } else {
     NSLog(@"[PageContextExtraction] Successfully extracted page context for "
           @"url:%@",
           url);
   }
   [self.results addObject:result];
+}
+
+- (BOOL)hasAnyError:(PageContextExtractionResult*)result {
+  return result.wrapperError != nil || result.storeError != nil ||
+         result.mqlsError != nil;
 }
 
 // Extract page context for input urls.
@@ -166,19 +205,42 @@ NSString* kErrorDomain = @"PageContextExtraction";
     NSString* urlString = urlsArray[index];
     [summaryLog appendFormat:@"%tu. URL: %@\n", index + 1, urlString];
 
-    if (result.error) {
-      hasErrors = YES;
-      [summaryLog appendFormat:@"   - Failure: %@\n", result.error];
-    } else {
+    if (![self hasAnyError:(result)]) {
       [summaryLog appendString:@"   - Success\n"];
-      if (self.config.shouldStorePageContextLocally) {
-        if (result.filePath) {
-          [summaryLog appendFormat:@"     - Saved to: %@\n", result.filePath];
-        } else {
-          hasErrors = YES;
-          [summaryLog appendString:@"     - Failure: File path is nil when it "
-                                   @"should be saved.\n"];
-        }
+    } else {
+      hasErrors = YES;
+      [summaryLog appendString:@"   - Fail\n"];
+      if (result.wrapperError) {
+        [summaryLog
+            appendFormat:@"     - Wrapper Failure: %@\n", result.wrapperError];
+      }
+      if (result.storeError) {
+        [summaryLog
+            appendFormat:@"     - Store Failure: %@\n", result.storeError];
+      }
+      if (result.mqlsError) {
+        [summaryLog
+            appendFormat:@"     - MQLS Failure: %@\n", result.mqlsError];
+      }
+    }
+
+    if (self.config.shouldStorePageContextLocally) {
+      if (result.filePath) {
+        [summaryLog appendFormat:@"     - Saved to: %@\n", result.filePath];
+      } else {
+        hasErrors = YES;
+        [summaryLog appendString:@"     - Failure: File path is nil when it "
+                                 @"should be saved.\n"];
+      }
+    }
+
+    if (self.config.shouldUploadToMQLS && !result.mqlsError) {
+      if ([self.config.mqlsLoggingTag length] > 0) {
+        [summaryLog
+            appendFormat:@"     - Uploaded to MQLS with logging tag: %@\n",
+                         self.config.mqlsLoggingTag];
+      } else {
+        [summaryLog appendString:@"     - Uploaded to MQLS\n"];
       }
     }
     [summaryLog appendString:@" -----------------------\n"];

@@ -13,13 +13,17 @@ source_set("eg_app_support+eg2") {
   ]
   deps = [
     "//base",
-    "//base/test:test_support",
+    "//components/optimization_guide/core:features",
+    "//components/optimization_guide/core:model_execution",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/ai_prototyping/utils",
     "//ios/chrome/browser/intelligence/proto_wrappers",
+    "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/test/app:test_support",
+    "//ios/web/public",
   ]
 }
 
@@ -43,6 +47,8 @@ source_set("eg2_tests") {
   sources = [ "page_context_extraction_egtest.mm" ]
   deps = [
     ":eg_test_support+eg2",
+    "//components/optimization_guide/core:features",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
   ]

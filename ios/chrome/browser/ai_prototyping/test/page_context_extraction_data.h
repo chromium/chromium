@@ -10,6 +10,9 @@
 // Configuration for triggering a page context capture.
 @interface PageContextExtractionConfig : NSObject <NSSecureCoding>
 
+// When true, the captured page context will be uploaded to MQLS.
+@property(nonatomic, assign) BOOL shouldUploadToMQLS;
+
 // When true, the captured page context will be stored in a local file on
 // device.
 @property(nonatomic, assign) BOOL shouldStorePageContextLocally;
@@ -20,9 +23,14 @@
 // Query to send to the model.
 @property(nonatomic, copy, readonly) NSString* modelQuery;
 
+// Tag to identify the MQLS log.
+@property(nonatomic, copy, readonly) NSString* mqlsLoggingTag;
+
 - (instancetype)initWithShouldStorePageContextLocally:(BOOL)shouldStore
+                                   shouldUploadToMQLS:(BOOL)shouldUpload
                                             outputDir:(NSString*)outputDir
-                                           modelQuery:(NSString*)modelQuery;
+                                           modelQuery:(NSString*)modelQuery
+                                       mqlsLoggingTag:(NSString*)mqlsLoggingTag;
 @end
 
 // Response containing the result of a page context capture.
@@ -31,14 +39,18 @@
 // The captured page context as a string.
 @property(nonatomic, copy, readonly) NSString* pageContext;
 
-// An error, if one occurred during capture.
-@property(nonatomic, copy, readonly) NSError* error;
+// Errors, if any occurred during different stages of capture and upload.
+@property(nonatomic, copy, readonly) NSError* wrapperError;
+@property(nonatomic, copy, readonly) NSError* storeError;
+@property(nonatomic, copy, readonly) NSError* mqlsError;
 
 // The local file path where the context was stored, if requested.
 @property(nonatomic, copy, readonly) NSString* filePath;
 
 - (instancetype)initWithPageContext:(NSString*)pageContext
-                              error:(NSError*)error
+                       wrapperError:(NSError*)wrapperError
+                         storeError:(NSError*)storeError
+                          mqlsError:(NSError*)mqlsError
                            filePath:(NSString*)filePath;
 
 @end

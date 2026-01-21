@@ -7,13 +7,18 @@
 @implementation PageContextExtractionConfig
 
 - (instancetype)initWithShouldStorePageContextLocally:(BOOL)shouldStore
+                                   shouldUploadToMQLS:(BOOL)shouldUpload
                                             outputDir:(NSString*)outputDir
-                                           modelQuery:(NSString*)modelQuery {
+                                           modelQuery:(NSString*)modelQuery
+                                       mqlsLoggingTag:
+                                           (NSString*)mqlsLoggingTag {
   self = [super init];
   if (self) {
     _shouldStorePageContextLocally = shouldStore;
+    _shouldUploadToMQLS = shouldUpload;
     _outputDir = outputDir;
     _modelQuery = modelQuery;
+    _mqlsLoggingTag = mqlsLoggingTag;
   }
   return self;
 }
@@ -27,8 +32,10 @@
 - (void)encodeWithCoder:(NSCoder*)coder {
   [coder encodeBool:self.shouldStorePageContextLocally
              forKey:@"shouldStorePageContextLocally"];
+  [coder encodeBool:self.shouldUploadToMQLS forKey:@"shouldUploadToMQLS"];
   [coder encodeObject:self.outputDir forKey:@"outputDir"];
   [coder encodeObject:self.modelQuery forKey:@"modelQuery"];
+  [coder encodeObject:self.mqlsLoggingTag forKey:@"mqlsLoggingTag"];
 }
 
 - (instancetype)initWithCoder:(NSCoder*)coder {
@@ -36,10 +43,13 @@
   if (self) {
     _shouldStorePageContextLocally =
         [coder decodeBoolForKey:@"shouldStorePageContextLocally"];
+    _shouldUploadToMQLS = [coder decodeBoolForKey:@"shouldUploadToMQLS"];
     _outputDir = [coder decodeObjectOfClass:[NSString class]
                                      forKey:@"outputDir"];
     _modelQuery = [coder decodeObjectOfClass:[NSString class]
                                       forKey:@"modelQuery"];
+    _mqlsLoggingTag = [coder decodeObjectOfClass:[NSString class]
+                                          forKey:@"mqlsLoggingTag"];
   }
   return self;
 }
@@ -49,12 +59,16 @@
 @implementation PageContextExtractionResult
 
 - (instancetype)initWithPageContext:(NSString*)pageContext
-                              error:(NSError*)error
+                       wrapperError:(NSError*)wrapperError
+                         storeError:(NSError*)storeError
+                          mqlsError:(NSError*)mqlsError
                            filePath:(NSString*)filePath {
   self = [super init];
   if (self) {
     _pageContext = [pageContext copy];
-    _error = [error copy];
+    _wrapperError = [wrapperError copy];
+    _storeError = [storeError copy];
+    _mqlsError = [mqlsError copy];
     _filePath = [filePath copy];
   }
   return self;
@@ -68,7 +82,9 @@
 
 - (void)encodeWithCoder:(NSCoder*)coder {
   [coder encodeObject:self.pageContext forKey:@"pageContext"];
-  [coder encodeObject:self.error forKey:@"error"];
+  [coder encodeObject:self.wrapperError forKey:@"wrapperError"];
+  [coder encodeObject:self.storeError forKey:@"storeError"];
+  [coder encodeObject:self.mqlsError forKey:@"mqlsError"];
   [coder encodeObject:self.filePath forKey:@"filePath"];
 }
 
@@ -77,7 +93,12 @@
   if (self) {
     _pageContext = [coder decodeObjectOfClass:[NSString class]
                                        forKey:@"pageContext"];
-    _error = [coder decodeObjectOfClass:[NSError class] forKey:@"error"];
+    _wrapperError = [coder decodeObjectOfClass:[NSError class]
+                                        forKey:@"wrapperError"];
+    _storeError = [coder decodeObjectOfClass:[NSError class]
+                                      forKey:@"storeError"];
+    _mqlsError = [coder decodeObjectOfClass:[NSError class]
+                                     forKey:@"mqlsError"];
     _filePath = [coder decodeObjectOfClass:[NSString class] forKey:@"filePath"];
   }
   return self;
