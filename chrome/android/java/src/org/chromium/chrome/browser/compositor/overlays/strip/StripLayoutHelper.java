@@ -3523,7 +3523,7 @@ public class StripLayoutHelper
         TabRemover tabRemover = mTabGroupModelFilter.getTabModel().getTabRemover();
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_CLOSE_REFACTOR_ANDROID)) {
             int nextIndex = getNextIndexAfterClose(Collections.singleton(tab));
-            paramsBuilder.recommendedNextTab(mModel.getTabAtChecked(nextIndex));
+            paramsBuilder.recommendedNextTab(mModel.getTabAt(nextIndex));
             tabRemover.closeTabs(paramsBuilder.build(), /* allowDialog= */ true, listener);
         } else {
             tabRemover.prepareCloseTabs(
