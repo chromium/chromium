@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window_state.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_native_widget.h"
 #include "chrome/browser/ui/views/frame/browser_native_widget_factory.h"
@@ -84,9 +85,9 @@ class ThemeChangedObserver : public views::WidgetObserver {
       widget_observation{this};
 };
 
-bool IsUsingLinuxSystemTheme(Profile* profile) {
+bool IsUsingLinuxSystemTheme(ThemeService* theme_service) {
 #if BUILDFLAG(IS_LINUX)
-  return ThemeServiceFactory::GetForProfile(profile)->UsingSystemTheme();
+  return theme_service->UsingSystemTheme();
 #else
   return false;
 #endif
@@ -114,7 +115,14 @@ BrowserWidget::BrowserWidget(BrowserView* browser_view)
     : browser_native_widget_(nullptr),
       root_view_(nullptr),
       browser_frame_view_(nullptr),
-      browser_view_(browser_view) {
+      browser_view_(browser_view),
+      theme_service_(ThemeServiceFactory::GetForProfile(
+          browser_view_->browser()->GetProfile())) {
+  // theme_service_ can be cached since BrowserView::browser_ and
+  // Browser::profile_ are both const. The return value of
+  // `ThemeServiceFactory::GetForProfile(browser_view_->browser()->GetProfile()`
+  // will not change.
+  CHECK(theme_service_);
   set_is_secondary_widget(false);
   // Don't focus anything on creation, selecting a tab will set the focus.
   set_focus_on_creation(false);
@@ -303,11 +311,12 @@ bool BrowserWidget::GetAccelerator(int command_id,
 const ui::ThemeProvider* BrowserWidget::GetThemeProvider() const {
   Browser* browser = browser_view_->browser();
   auto* app_controller = browser->app_controller();
+  auto* theme_service = GetThemeService();
   // Ignore the system theme for web apps with window-controls-overlay as the
   // display_override so the web contents can blend with the overlay by using
   // the developer-provided theme color for a better experience. Context:
   // https://crbug.com/1219073.
-  if (app_controller && (!IsUsingLinuxSystemTheme(browser->profile()) ||
+  if (app_controller && (!IsUsingLinuxSystemTheme(theme_service) ||
                          app_controller->AppUsesWindowControlsOverlay())) {
     return app_controller->GetThemeProvider();
   }
@@ -323,15 +332,15 @@ ui::ColorProviderKey::ThemeInitializerSupplier* BrowserWidget::GetCustomTheme()
 
   Browser* browser = browser_view_->browser();
   auto* app_controller = browser->app_controller();
+  auto* theme_service = GetThemeService();
   // Ignore the system theme for web apps with window-controls-overlay as the
   // display_override so the web contents can blend with the overlay by using
   // the developer-provided theme color for a better experience. Context:
   // https://crbug.com/1219073.
-  if (app_controller && (!IsUsingLinuxSystemTheme(browser->profile()) ||
+  if (app_controller && (!IsUsingLinuxSystemTheme(theme_service) ||
                          app_controller->AppUsesWindowControlsOverlay())) {
     return app_controller->GetThemeSupplier();
   }
-  auto* theme_service = ThemeServiceFactory::GetForProfile(browser->profile());
   return theme_service->UsingDeviceTheme() ? nullptr
                                            : theme_service->GetThemeSupplier();
 }
@@ -446,9 +455,7 @@ ui::ColorProviderKey BrowserWidget::GetColorProviderKey() const {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  const auto* theme_service =
-      ThemeServiceFactory::GetForProfile(browser_view_->browser()->profile());
-  CHECK(theme_service);
+  auto* theme_service = GetThemeService();
 
   // color_mode.
   [this, &key, theme_service]() {
@@ -603,4 +610,12 @@ bool BrowserWidget::RegenerateFrameOnThemeChange(
 
 bool BrowserWidget::IsIncognitoBrowser() const {
   return browser_view_->browser()->profile()->IsIncognitoProfile();
+}
+
+ThemeService* BrowserWidget::GetThemeService() const {
+  if (base::FeatureList::IsEnabled(features::kBrowserWidgetCacheThemeService)) {
+    return theme_service_;
+  }
+  return ThemeServiceFactory::GetForProfile(
+      browser_view_->browser()->GetProfile());
 }

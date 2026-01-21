@@ -24,6 +24,7 @@ enum class BrowserThemeChangeType;
 class BrowserView;
 class BrowserNativeWidget;
 class SystemMenuModelBuilder;
+class ThemeService;
 
 namespace input {
 struct NativeWebKeyboardEvent;
@@ -155,6 +156,8 @@ class BrowserWidget : public views::Widget,
   // Returns true if the browser instance belongs to an incognito profile.
   bool IsIncognitoBrowser() const;
 
+  ThemeService* GetThemeService() const;
+
   raw_ptr<BrowserNativeWidget> browser_native_widget_;
 
   // A weak reference to the root view associated with the window. We save a
@@ -167,6 +170,9 @@ class BrowserWidget : public views::Widget,
 
   // The BrowserView is our ClientView. This is a pointer to it.
   raw_ptr<BrowserView> browser_view_;
+
+  // Cache theme_service_ if feature BrowserWidgetCacheThemeService is enabled.
+  raw_ptr<ThemeService> theme_service_;
 
   std::unique_ptr<SystemMenuModelBuilder> menu_model_builder_;
 
