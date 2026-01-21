@@ -56,17 +56,14 @@ BASE_FEATURE(kContextualTasksForceCountryCodeUS,
 BASE_FEATURE(kContextualTasksRemoveTasksWithoutThreadsOrTabAssociations,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::FeatureParam<double> kMinEmbeddingSimilarityScore{
-    &kContextualTasksContext, "ContextualTasksContextEmbeddingSimilarityScore",
-    0.8};
-
 const base::FeatureParam<bool> kOnlyUseTitlesForSimilarity(
     &kContextualTasksContext,
     "ContextualTasksContextOnlyUseTitles",
     false);
 
-const base::FeatureParam<double> kMinMultiSignalScore{
-    &kContextualTasksContext, "ContextualTasksContextMinMultiSignalScore", 0.8};
+const base::FeatureParam<double> kTabSelectionScoreThreshold{
+    &kContextualTasksContext,
+    "ContextualTasksContextTabSelectionScoreThreshold", 0.8};
 
 const base::FeatureParam<double> kContentVisibilityThreshold{
     &kContextualTasksContext,

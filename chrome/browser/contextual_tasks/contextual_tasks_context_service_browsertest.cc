@@ -421,8 +421,6 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, Success) {
       "ContextualTasks.Context.TabOverlapPercentage", 100, 1);
   histogram_tester.ExpectUniqueSample("ContextualTasks.Context.TabExcessCount",
                                       0, 1);
-
-  EXPECT_TRUE(logs_uploader()->uploaded_logs().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
@@ -526,8 +524,18 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   EXPECT_EQ(1u, future.Get().size());
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
-                       MultiSignalScoringMetrics) {
+struct ContextualTasksTestParams {
+  mojom::TabSelectionMode mode;
+  int expected_tab_score_bucket;
+};
+
+class ContextualTasksContextServiceParameterizedTest
+    : public ContextualTasksContextServiceTest,
+      public testing::WithParamInterface<ContextualTasksTestParams> {};
+
+IN_PROC_BROWSER_TEST_P(ContextualTasksContextServiceParameterizedTest,
+                       LogSignalsAndMetricsInAllTabSelectionModes) {
+  const ContextualTasksTestParams& params = GetParam();
   base::HistogramTester histogram_tester;
 
   test_clock_.SetNowTicks(base::TimeTicks::Now());
@@ -556,8 +564,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery(
-      {.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring},
-      "summarize the test page",
+      {.tab_selection_mode = params.mode}, "summarize the test page",
       /*explicit_urls=*/{GURL("https://notinrelevantset.com")},
       future.GetCallback());
   EXPECT_EQ(1u, future.Get().size());
@@ -573,8 +580,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
       "ContextualTasks.Context.EmbeddingSimilarityScore", 99, 1);
   histogram_tester.ExpectTotalCount(
       "ContextualTasks.Context.DurationSinceLastActive", 1);
-  histogram_tester.ExpectUniqueSample("ContextualTasks.Context.TabScore", 100,
-                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.MatchingWordsCount", 2, 1);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.Context.TabScore",
+                                      params.expected_tab_score_bucket, 1);
   histogram_tester.ExpectUniqueSample(
       "ContextualTasks.Context.ExplicitTabsCount", 1, 1);
   histogram_tester.ExpectUniqueSample("ContextualTasks.Context.TabOverlapCount",
@@ -601,13 +610,24 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   EXPECT_EQ(uploaded_quality_log.eligible_tabs()[0].number_of_common_words(),
             2);
   EXPECT_NEAR(uploaded_quality_log.eligible_tabs()[0].aggregate_tab_score(),
-                  1.0f, 0.001f);
+              1.0f, 0.001f);
   EXPECT_EQ(uploaded_quality_log.eligible_tabs()[0].was_explicitly_chosen(),
             false);
 }
 
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ContextualTasksContextServiceParameterizedTest,
+    testing::Values(
+        ContextualTasksTestParams{mojom::TabSelectionMode::kEmbeddingsMatch,
+                                  99},
+        ContextualTasksTestParams{mojom::TabSelectionMode::kStaticSignalsOnly,
+                                  99},
+        ContextualTasksTestParams{mojom::TabSelectionMode::kMultiSignalScoring,
+                                  100}));
+
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
-                       HighEmbeddingsScoreQualifiesTab) {
+                       MultiSignalScoring_HighEmbeddingsScoreQualifiesTab) {
   base::HistogramTester histogram_tester;
 
   test_clock_.SetNowTicks(base::TimeTicks::Now());
@@ -653,7 +673,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
-                       HighRecencyLongDurationQualifiesTab) {
+                       MultiSignalScoring_HighRecencyLongDurationQualifiesTab) {
   base::HistogramTester histogram_tester;
 
   test_clock_.SetNowTicks(base::TimeTicks::Now());
@@ -687,8 +707,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
       "ContextualTasks.Context.RelevantTabsCount", 1, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
-                       HighRecencyShortDurationDoesNotQualifyTab) {
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksContextServiceTest,
+    MultiSignalScoring_HighRecencyShortDurationDoesNotQualifyTab) {
   base::HistogramTester histogram_tester;
 
   test_clock_.SetNowTicks(base::TimeTicks::Now());
@@ -723,7 +744,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
-                       HighLexicalMatchScoreQualifiesTab) {
+                       MultiSignalScoring_HighLexicalMatchScoreQualifiesTab) {
   base::HistogramTester histogram_tester;
 
   test_clock_.SetNowTicks(base::TimeTicks::Now());
@@ -751,7 +772,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
       "ContextualTasks.Context.RelevantTabsCount", 1, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, NotRelevantTab) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
+                       MultiSignalScoring_NotRelevantTab) {
   base::HistogramTester histogram_tester;
 
   test_clock_.SetNowTicks(base::TimeTicks::Now());

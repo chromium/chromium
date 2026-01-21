@@ -5,6 +5,10 @@
 module contextual_tasks.mojom;
 
 enum TabSelectionMode {
+  // Only Embeddings match signal is used to score the tabs.
   kEmbeddingsMatch = 0,
+  // Both Static and Behavioral signals are used to score the tabs.
   kMultiSignalScoring = 1,
+  // Only Static signals are used to score the tabs.
+  kStaticSignalsOnly = 2,
 };
