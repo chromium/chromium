@@ -22,6 +22,7 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -784,6 +785,33 @@ public class SigninPromoCoordinatorTest {
                 () -> {
                     assertTrue(mPromoCoordinator.canShowPromo());
                 });
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        "EnableSeamlessSignin"
+                + ":seamless-signin-promo-type/compact"
+                + "/seamless-signin-string-type/continueButton"
+    })
+    public void testHistorySyncOptIn_RecentTabs() {
+        signinAndOptOutHistorySyncIfNeeded(SigninAccessPoint.RECENT_TABS);
+        setUpSignInPromo(SigninAccessPoint.RECENT_TABS);
+
+        onView(withId(R.id.signin_promo_primary_button)).perform(click());
+
+        @HistorySyncConfig.OptInMode
+        ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
+                ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
+        verify(mCoordinator).startSigninFlow(configCaptor.capture());
+        BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
+        Context context = mActivityTestRule.getActivity();
+        assertEquals(
+                context.getString(R.string.history_sync_recent_tabs_title),
+                config.historySyncConfig.title);
+        assertEquals(
+                context.getString(R.string.history_sync_recent_tabs_subtitle),
+                config.historySyncConfig.subtitle);
     }
 
     @Test

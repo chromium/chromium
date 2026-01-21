@@ -616,6 +616,10 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         boolean shouldSignOutOnDecline =
                 mDidShowSigninStep
                         && mConfig.historyOptInMode == HistorySyncConfig.OptInMode.REQUIRED;
+        boolean showEmailInFooter =
+                !mDidShowSigninStep
+                        || (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+                                && mSigninAccessPoint == SigninAccessPoint.RECENT_TABS);
         mHistorySyncCoordinator =
                 new HistorySyncCoordinator(
                         mActivity,
@@ -623,7 +627,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
                         profile,
                         mConfig.historySyncConfig,
                         mSigninAccessPoint,
-                        /* showEmailInFooter= */ !mDidShowSigninStep,
+                        showEmailInFooter,
                         shouldSignOutOnDecline,
                         null);
         assert mDialogModel != null;

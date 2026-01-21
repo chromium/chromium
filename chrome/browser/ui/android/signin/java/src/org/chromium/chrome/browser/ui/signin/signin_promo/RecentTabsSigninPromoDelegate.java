@@ -233,6 +233,22 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
         return !isSeamlessSigninAllowed();
     }
 
+    @Override
+    String getHistorySyncOptInTitle() {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
+            return mContext.getString(R.string.history_sync_recent_tabs_title);
+        }
+        return super.getHistorySyncOptInTitle();
+    }
+
+    @Override
+    String getHistorySyncOptInSubtitle() {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
+            return mContext.getString(R.string.history_sync_recent_tabs_subtitle);
+        }
+        return super.getHistorySyncOptInSubtitle();
+    }
+
     private @PromoState int computePromoState() {
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfile);

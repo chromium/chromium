@@ -135,7 +135,6 @@ public class HistorySyncView extends ConstraintLayout {
 
         assert mAcceptButton != null && mDeclineButton != null;
         mAcceptButton.setText(R.string.history_sync_primary_action);
-        mDeclineButton.setText(R.string.history_sync_secondary_action);
 
         mAcceptButton.setVisibility(VISIBLE);
         mDeclineButton.setVisibility(VISIBLE);

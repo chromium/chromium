@@ -32,6 +32,9 @@ class HistorySyncProperties {
     static final PropertyModel.WritableObjectPropertyKey<String> SUBTITLE_STRING =
             new PropertyModel.WritableObjectPropertyKey<>("subtitle_string");
 
+    static final PropertyModel.WritableObjectPropertyKey<String> DECLINE_STRING =
+            new PropertyModel.WritableObjectPropertyKey<>("decline_string");
+
     static final PropertyModel.WritableObjectPropertyKey<CharSequence> FOOTER_STRING =
             new PropertyModel.WritableObjectPropertyKey<>("footer_string");
 
@@ -48,6 +51,7 @@ class HistorySyncProperties {
                 ON_DECLINE_CLICKED,
                 TITLE_STRING,
                 SUBTITLE_STRING,
+                DECLINE_STRING,
                 FOOTER_STRING,
                 MINOR_MODE_RESTRICTION_STATUS,
                 USE_LANDSCAPE_LAYOUT
@@ -61,6 +65,7 @@ class HistorySyncProperties {
             OnClickListener onDeclineClicked,
             String titleString,
             String subtitleString,
+            String declineString,
             String footerString,
             Boolean useLandscapeLayout) {
         return new PropertyModel.Builder(ALL_KEYS)
@@ -69,6 +74,7 @@ class HistorySyncProperties {
                 .with(ON_DECLINE_CLICKED, onDeclineClicked)
                 .with(TITLE_STRING, titleString)
                 .with(SUBTITLE_STRING, subtitleString)
+                .with(DECLINE_STRING, declineString)
                 .with(FOOTER_STRING, footerString)
                 .with(USE_LANDSCAPE_LAYOUT, useLandscapeLayout)
                 .with(MINOR_MODE_RESTRICTION_STATUS, ScreenMode.PENDING)

@@ -3761,6 +3761,15 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_SIGNIN_PROMO_DESCRIPTION_BOOKMARKS_GROUP4" desc="This string is the description of a card that appears when the user opens Chrome's bookmarks; the user is signed out of Chrome. The headline above this string is 'Get all your bookmarks'." meaning="This message means that the user can get the bookmarks from their computer on their phone, and their phone's bookmarks on their computer. We want users to read this card and tap the 'Sign in as John' button and sign-in. The tone should be inviting.">
         To get your bookmarks and more on all your devices, sign in to Chrome
       </message>
+      <message name="IDS_HISTORY_SYNC_RECENT_TABS_TITLE" desc="Title of a page that asks users to start syncing their tabs and browsing history, so they can get back to sites they visited more quickly without having to type them, for example by seeing these sites suggested in the Omnibox. This also allows users to access their recent tabs and browsing history across all their devices.">
+        Sync tabs and history
+      </message>
+      <message name="IDS_HISTORY_SYNC_RECENT_TABS_SUBTITLE" desc="Text of a page that asks users to start syncing their tabs and browsing history, so they can get back to sites they visited more quickly without having to type them, for example by seeing these sites suggested in the Omnibox. This also allows users to access their recent tabs and browsing history across all their devices.">
+        To see tabs from your other devices, sync your tabs and history
+      </message>
+      <message name="IDS_HISTORY_SYNC_RECENT_TABS_SECONDARY_ACTION" desc="Text for the decline button on the history sync screen that asks users to start syncing their tabs and browsing history. By clicking this button users dismiss the screen and is signed out. [CHAR_LIMIT=20]">
+        Cancel
+      </message>
 
       <!-- Strings for signin promos when Unified Consent is enabled. -->
       <message name="IDS_SYNC_PROMO_TITLE_BOOKMARKS" desc="This string is the headline of a card that appears when the user opens Chrome's bookmarks; the user may be signed in to Chrome, but isn't syncing their Chrome data. The line below this string is 'Sync to get your bookmarks from your other devices'. [CHAR_LIMIT=70]" meaning="This headline means that the user can get the bookmarks from their computer on their phone, and their phone's bookmarks on their computer. We want users to read this card and tap the 'Continue' button and turn on sync. The tone should be inviting.">

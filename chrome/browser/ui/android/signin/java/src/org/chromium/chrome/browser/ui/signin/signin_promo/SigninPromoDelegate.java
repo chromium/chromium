@@ -265,6 +265,14 @@ public abstract class SigninPromoDelegate {
         return getConfigForExpandedBottomSheet(isSeamlessSigninAllowed());
     }
 
+    String getHistorySyncOptInTitle() {
+        return mContext.getString(R.string.history_sync_title);
+    }
+
+    String getHistorySyncOptInSubtitle() {
+        return mContext.getString(R.string.history_sync_subtitle);
+    }
+
     private BottomSheetSigninAndHistorySyncConfig getConfigForCollapsedBottomSheet() {
         return getBaseConfigBuilder(WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET).build();
     }
@@ -292,8 +300,8 @@ public abstract class SigninPromoDelegate {
                         NoAccountSigninMode.BOTTOM_SHEET,
                         mode,
                         getHistoryOptInMode(),
-                        mContext.getString(R.string.history_sync_title),
-                        mContext.getString(R.string.history_sync_subtitle));
+                        getHistorySyncOptInTitle(),
+                        getHistorySyncOptInSubtitle());
         if (surveyType != null) {
             config.signinSurveyType(surveyType);
         }
