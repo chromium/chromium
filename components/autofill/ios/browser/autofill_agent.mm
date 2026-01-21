@@ -568,6 +568,13 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
        suggestionDelegate:
            (const base::WeakPtr<autofill::AutofillSuggestionDelegate>&)
                delegate {
+  if (popup_suggestions.empty() &&
+      base::FeatureList::IsEnabled(
+          autofill::features::
+              kAutofillAndroidKeyboardAccessoryDynamicPositioning)) {
+    [self hideAutofillPopup];
+  }
+
   // Convert the suggestions into an NSArray for the keyboard.
   NSMutableArray<FormSuggestion*>* suggestions = [[NSMutableArray alloc] init];
   for (auto popup_suggestion : popup_suggestions) {

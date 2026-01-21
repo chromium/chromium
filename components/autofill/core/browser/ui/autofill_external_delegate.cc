@@ -367,9 +367,12 @@ void AutofillExternalDelegate::AttemptToDisplayAutofillSuggestions(
     OnAutofillAvailabilityEvent(
         mojom::AutofillSuggestionAvailability::kNoSuggestions);
     // No suggestions, any popup currently showing is obsolete.
-    manager_->client().HideAutofillSuggestions(
-        SuggestionHidingReason::kNoSuggestions);
-    return;
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillAndroidKeyboardAccessoryDynamicPositioning)) {
+      manager_->client().HideAutofillSuggestions(
+          SuggestionHidingReason::kNoSuggestions);
+      return;
+    }
   }
 
   if (!query_field_.is_focusable() || !manager_->driver().CanShowAutofillUi()) {

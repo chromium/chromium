@@ -537,7 +537,14 @@ class ManualFillingMediator
             // KEYBOARD_EXTENSION_STATE.
             return;
         } else if (property == FIELD_BOUNDS) {
-            // Do nothing. FIELD_BOUNDS is used when keyboard accessory style is modified.
+            // For password fields, the accessory is shown before the FIELD_BOUNDS property is set.
+            // Re-triggering the style and space update here ensures that FIELD_BOUNDS are used to
+            // adjust the screen position once they become available. Ideally, this call should not
+            // be necessary.
+            if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)) {
+                updateStyleAndControlSpaceForState(mModel.get(KEYBOARD_EXTENSION_STATE));
+            }
             return;
         }
         throw new IllegalArgumentException("Unhandled property: " + property);
