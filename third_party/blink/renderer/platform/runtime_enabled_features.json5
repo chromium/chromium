@@ -488,6 +488,10 @@
       status: "stable",
     },
     {
+      name: "AllImagesPaintedSentToElementTiming",
+      status: "experimental",
+    },
+    {
       name: "AllowContentInitiatedDataUrlNavigations",
       base_feature: "none",
     },

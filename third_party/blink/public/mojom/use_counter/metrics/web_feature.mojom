@@ -5089,6 +5089,7 @@ enum WebFeature {
   kStorageAccessAPI_requestStorageAccessFor_Method_AsyncSuccess = 5773,
   kWebAudioRenderSizeHint = 5774,
   kWebAudioRenderQuantumSize = 5775,
+  kImageElementTimingNotImageOrVideoNode = 5776,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

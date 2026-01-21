@@ -145,6 +145,8 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
                       const ComputedStyle* old_style,
                       const StyleChangeContext&) override;
 
+  void InsertedIntoTree() override;
+
   bool CanBeSelectionLeafInternal() const final {
     NOT_DESTROYED();
     return true;

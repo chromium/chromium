@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
@@ -44,7 +45,7 @@ bool IsExplicitlyRegisteredForElementTiming(const Element* element) {
 // "CORE_EXPORT" is needed to make this function visible to tests.
 bool CORE_EXPORT
 IsExplicitlyRegisteredForElementTiming(const LayoutObject& layout_object) {
-  const auto* element = DynamicTo<Element>(layout_object.GetNode());
+  const auto* element = DynamicTo<Element>(layout_object.GeneratingNode());
 
   return IsExplicitlyRegisteredForElementTiming(element);
 }
@@ -57,7 +58,7 @@ bool ContributesToContainerTiming(const Element* element) {
 }
 
 bool ContributesToContainerTiming(const LayoutObject& layout_object) {
-  const auto* element = DynamicTo<Element>(layout_object.GetNode());
+  const auto* element = DynamicTo<Element>(layout_object.GeneratingNode());
   return ContributesToContainerTiming(element);
 }
 
@@ -137,8 +138,8 @@ void ImageElementTiming::NotifyImagePainted(
   // https://crbug.com/1027948
   if (it != images_notified_.end() && !it->value.is_painted_) {
     it->value.is_painted_ = true;
-    DCHECK(layout_object.GetNode());
-    NotifyImagePaintedInternal(*layout_object.GetNode(), layout_object,
+    DCHECK(layout_object.GeneratingNode());
+    NotifyImagePaintedInternal(*layout_object.GeneratingNode(), layout_object,
                                cached_image, current_paint_chunk_properties,
                                it->value.load_time_, image_border);
   }

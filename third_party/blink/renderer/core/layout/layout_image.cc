@@ -75,6 +75,21 @@ void LayoutImage::WillBeDestroyed() {
   LayoutReplaced::WillBeDestroyed();
 }
 
+void LayoutImage::InsertedIntoTree() {
+  NOT_DESTROYED();
+  ImageResourceContent* image_content = image_resource_->CachedImage();
+  LocalDOMWindow* window = GetDocument().domWindow();
+
+  // If the image content was ready before attaching to the layout image, and
+  // and it did not have a node, it would not be possible to know if the node
+  // would be required for timing. Notify at this point now it is attached to
+  // its parent.
+  if (!GetNode() && window && image_content && image_content->IsLoaded()) {
+    ImageElementTiming::From(*window).NotifyImageFinished(*this, image_content);
+  }
+  LayoutReplaced::InsertedIntoTree();
+}
+
 void GetImageSizeChangeTracingData(perfetto::TracedValue context,
                                    Node* node,
                                    LocalFrame* frame) {

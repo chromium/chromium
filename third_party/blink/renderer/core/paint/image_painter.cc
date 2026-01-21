@@ -267,11 +267,19 @@ void ImagePainter::PaintIntoRect(GraphicsContext& context,
   // timing data. Do so now in order to mark the resulting PaintImage as
   // an LCP candidate.
   ImageResourceContent* image_content = image_resource.CachedImage();
+  bool is_image_or_video_element =
+      IsA<HTMLImageElement>(node) || IsA<HTMLVideoElement>(node);
   if (image_content &&
-      (IsA<HTMLImageElement>(node) || IsA<HTMLVideoElement>(node)) &&
+      (RuntimeEnabledFeatures::AllImagesPaintedSentToElementTimingEnabled() ||
+       is_image_or_video_element) &&
       image_content->IsLoaded()) {
-    LocalDOMWindow* window = layout_image_.GetDocument().domWindow();
+    Document& document = layout_image_.GetDocument();
+    LocalDOMWindow* window = document.domWindow();
     DCHECK(window);
+    if (!is_image_or_video_element) {
+      UseCounter::Count(document,
+                        WebFeature::kImageElementTimingNotImageOrVideoNode);
+    }
     ImageElementTiming::From(*window).NotifyImagePainted(
         layout_image_, *image_content,
         context.GetPaintController().CurrentPaintChunkProperties(),

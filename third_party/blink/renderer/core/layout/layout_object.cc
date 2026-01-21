@@ -34,6 +34,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/feature_list.h"
 #include "partition_alloc/partition_alloc.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
@@ -151,6 +152,10 @@
 namespace blink {
 
 namespace {
+
+// Kill switch for the new GeneratingNode() algorithm traversing ancestors
+BASE_FEATURE(kGeneratingNodeTraversesAncestorsKillSwitch,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 LayoutObject* FindColumnSpannerContainer(
     const LayoutObject* spanner,
@@ -3906,6 +3911,23 @@ bool LayoutObject::IsRooted() const {
   if (object->HasLayer())
     return To<LayoutBoxModelObject>(object)->Layer()->Root()->IsRootLayer();
   return false;
+}
+
+Node* LayoutObject::GeneratingNode() const {
+  NOT_DESTROYED();
+  if (base::FeatureList::IsEnabled(
+          kGeneratingNodeTraversesAncestorsKillSwitch)) {
+    Node* node = GetNode();
+    if (!node) {
+      return Parent() ? Parent()->GeneratingNode() : nullptr;
+    }
+    if (node->IsPseudoElement()) {
+      return &To<PseudoElement>(node)->UltimateOriginatingElement();
+    }
+    return node;
+  } else {
+    return IsPseudoElement() ? GetNode()->ParentOrShadowHostNode() : GetNode();
+  }
 }
 
 Node* LayoutObject::EnclosingNode() const {

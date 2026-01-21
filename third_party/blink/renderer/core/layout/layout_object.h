@@ -1696,12 +1696,12 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
 
   // Returns the styled node that caused the generation of this layoutObject.
-  // This is the same as node() except for layoutObjects of :before, :after and
-  // :first-letter pseudo-elements for which their parent node is returned.
-  Node* GeneratingNode() const {
-    NOT_DESTROYED();
-    return IsPseudoElement() ? GetNode()->ParentOrShadowHostNode() : GetNode();
-  }
+  // It will its GetNode(), or the first layout ancestor GetNode().
+  //
+  // For layout objects as :before, :after or :first-letter pseudo-elements, it
+  // will return the generating node of the first non-pseudo-element parent
+  // node.
+  Node* GeneratingNode() const;
 
   // Return the Node of this object, or, if it has none (anonymous object),
   // return that of the nearest ancestor that has one.
