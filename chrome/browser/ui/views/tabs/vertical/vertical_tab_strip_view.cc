@@ -22,6 +22,7 @@
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 constexpr int kRegionVeritcalInteriorMargin = 8;
@@ -148,6 +149,46 @@ void VerticalTabStripView::SetCollapsedState(bool is_collapsed) {
     is_collapsed_ = is_collapsed;
     InvalidateLayout();
   }
+}
+
+bool VerticalTabStripView::IsPositionInWindowCaption(const gfx::Point& point) {
+  for (views::View* child : children()) {
+    if (!child->GetVisible()) {
+      continue;
+    }
+
+    gfx::Point point_in_child = point;
+    ConvertPointToTarget(this, child, &point_in_child);
+    if (!child->HitTestPoint(point_in_child)) {
+      continue;
+    }
+
+    auto* scroll_view = views::AsViewClass<views::ScrollView>(child);
+    if (!scroll_view) {
+      return true;
+    }
+
+    if (scroll_view->vertical_scroll_bar()->GetVisible()) {
+      gfx::Point point_in_sb = point_in_child;
+      ConvertPointToTarget(scroll_view, scroll_view->vertical_scroll_bar(),
+                           &point_in_sb);
+      if (scroll_view->vertical_scroll_bar()->HitTestPoint(point_in_sb)) {
+        return false;
+      }
+    }
+
+    if (scroll_view->contents()) {
+      gfx::Point point_in_content = point_in_child;
+      ConvertPointToTarget(scroll_view, scroll_view->contents(),
+                           &point_in_content);
+      if (scroll_view->contents()->HitTestPoint(point_in_content)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  return true;
 }
 
 views::View* VerticalTabStripView::AddScrollViewContents(

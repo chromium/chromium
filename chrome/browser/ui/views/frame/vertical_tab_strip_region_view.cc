@@ -8,6 +8,7 @@
 #include <variant>
 
 #include "base/callback_list.h"
+#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -320,13 +321,29 @@ void VerticalTabStripRegionView::AnimationProgressed(
 
 bool VerticalTabStripRegionView::IsPositionInWindowCaption(
     const gfx::Point& point) {
-  gfx::Point point_in_target = point;
-  views::View::ConvertPointToTarget(this, top_button_container_,
-                                    &point_in_target);
-  if (top_button_container_->HitTestPoint(point_in_target)) {
-    return top_button_container_->IsPositionInWindowCaption(point_in_target);
+  // Check the resize area first, it should always take precedence over other
+  // children regardless of order.
+  if (IsHitInView(resize_area_, point)) {
+    return false;
   }
-  return false;
+
+  for (views::View* child : children()) {
+    if (!child->GetVisible()) {
+      continue;
+    }
+    gfx::Point point_in_child = point;
+    views::View::ConvertPointToTarget(this, child, &point_in_child);
+    if (child->HitTestPoint(point_in_child)) {
+      if (child == top_button_container_) {
+        return top_button_container_->IsPositionInWindowCaption(point_in_child);
+      }
+      if (child == tab_strip_view_) {
+        return tab_strip_view_->IsPositionInWindowCaption(point_in_child);
+      }
+      return false;
+    }
+  }
+  return true;
 }
 
 void VerticalTabStripRegionView::CreateTabStripController(

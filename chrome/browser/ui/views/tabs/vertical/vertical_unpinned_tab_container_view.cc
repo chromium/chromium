@@ -21,9 +21,34 @@
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_targeter.h"
+#include "ui/views/view_targeter_delegate.h"
 
 namespace {
 constexpr int kTabVerticalPadding = 2;
+
+class VerticalUnpinnedTabContainerViewTargeter
+    : public views::ViewTargeterDelegate {
+ public:
+  explicit VerticalUnpinnedTabContainerViewTargeter(views::View* view)
+      : view_(view) {}
+  ~VerticalUnpinnedTabContainerViewTargeter() override = default;
+
+  bool DoesIntersectRect(const views::View* target,
+                         const gfx::Rect& rect) const override {
+    gfx::Rect content_bounds;
+    for (const views::View* child : view_->children()) {
+      if (child->GetVisible()) {
+        content_bounds.Union(child->GetMirroredBounds());
+      }
+    }
+    return content_bounds.Intersects(rect);
+  }
+
+ private:
+  raw_ptr<views::View> view_;
+};
+
 }  // namespace
 
 VerticalUnpinnedTabContainerView::VerticalUnpinnedTabContainerView(
@@ -32,8 +57,10 @@ VerticalUnpinnedTabContainerView::VerticalUnpinnedTabContainerView(
       collection_node_(collection_node),
       layout_manager_(*SetLayoutManager(
           std::make_unique<TabCollectionAnimatingLayoutManager>(
-              std::make_unique<views::DelegatingLayoutManager>(this),
-              this))) {
+              std::make_unique<views::DelegatingLayoutManager>(this)))) {
+  SetEventTargeter(std::make_unique<views::ViewTargeter>(
+      std::make_unique<VerticalUnpinnedTabContainerViewTargeter>(this)));
+
   collection_node->set_remove_child_from_node(base::BindRepeating(
       &TabCollectionAnimatingLayoutManager::AnimateAndDestroyChildView,
       base::Unretained(&layout_manager_.get())));

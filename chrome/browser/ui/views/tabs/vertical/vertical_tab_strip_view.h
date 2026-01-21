@@ -37,6 +37,8 @@ class VerticalTabStripView final : public views::View,
 
   void SetCollapsedState(bool is_collapsed);
 
+  bool IsPositionInWindowCaption(const gfx::Point& point);
+
   // LayoutDelegate:
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
