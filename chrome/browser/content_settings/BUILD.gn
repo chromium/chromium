@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/guest_view/buildflags/buildflags.gni")
 import("//content/public/common/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
@@ -91,6 +92,7 @@ source_set("impl") {
     "//components/content_settings/browser/ui",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
+    "//components/guest_view/buildflags",
     "//components/pref_registry",
     "//components/supervised_user/core/browser",
     "//pdf:features",
@@ -115,10 +117,11 @@ source_set("impl") {
       "generated_permission_prompting_behavior_pref.cc",
     ]
 
-    deps += [
-      "//chrome/browser/ui/tabs",
-      "//components/guest_view/browser",
-    ]
+    deps += [ "//chrome/browser/ui/tabs" ]
+  }
+
+  if (enable_guest_view) {
+    deps += [ "//components/guest_view/browser" ]
   }
 
   if (enable_extensions_core) {

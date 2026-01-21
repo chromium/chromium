@@ -11,10 +11,13 @@
 #include "content/public/browser/render_frame_host.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/guest_view/extensions_guest_view_manager_delegate.h"
-#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_embedder.h"
 #include "extensions/browser/guest_view/web_view/web_view_content_script_manager.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_embedder.h"
+#endif
 
 namespace extensions {
 
@@ -46,6 +49,7 @@ ExtensionsGuestView::CreateGuestViewManagerDelegate() const {
 }
 
 void ExtensionsGuestView::ReadyToCreateMimeHandlerView(bool success) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto* render_frame_host = content::RenderFrameHost::FromID(frame_id_);
   if (!render_frame_host) {
@@ -55,6 +59,7 @@ void ExtensionsGuestView::ReadyToCreateMimeHandlerView(bool success) {
           render_frame_host->GetFrameTreeNodeId())) {
     mhve->ReadyToCreateMimeHandlerView(success);
   }
+#endif
 }
 
 void ExtensionsGuestView::CanExecuteContentScript(

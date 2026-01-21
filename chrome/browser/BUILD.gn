@@ -19,6 +19,7 @@ import("//chrome/services/speech/buildflags/buildflags.gni")
 import("//components/captive_portal/core/features.gni")
 import("//components/compose/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
+import("//components/guest_view/buildflags/buildflags.gni")
 import("//components/lens/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
 import("//components/on_device_translation/buildflags/features.gni")
@@ -7591,6 +7592,23 @@ static_library("browser") {
     sources += [ "download/download_crx_util_android.cc" ]
   }
 
+  if (enable_guest_view && enable_extensions_core) {
+    sources += [
+      "guest_view/chrome_guest_view_manager_delegate.cc",
+      "guest_view/chrome_guest_view_manager_delegate.h",
+      "guest_view/extension_options/chrome_extension_options_guest_delegate.cc",
+      "guest_view/extension_options/chrome_extension_options_guest_delegate.h",
+      "guest_view/web_view/chrome_web_view_guest_delegate.cc",
+      "guest_view/web_view/chrome_web_view_guest_delegate.h",
+      "guest_view/web_view/chrome_web_view_permission_helper_delegate.cc",
+      "guest_view/web_view/chrome_web_view_permission_helper_delegate.h",
+      "guest_view/web_view/context_menu_content_type_web_view.cc",
+      "guest_view/web_view/context_menu_content_type_web_view.h",
+    ]
+
+    deps += [ "//components/guest_view/browser" ]
+  }
+
   if (enable_extensions_core) {
     sources += [
       "download/download_crx_util.cc",
@@ -7656,18 +7674,8 @@ static_library("browser") {
       "clipboard/chrome_clipboard_permission_context_delegate.h",
       "guest_view/app_view/chrome_app_view_guest_delegate.cc",
       "guest_view/app_view/chrome_app_view_guest_delegate.h",
-      "guest_view/chrome_guest_view_manager_delegate.cc",
-      "guest_view/chrome_guest_view_manager_delegate.h",
-      "guest_view/extension_options/chrome_extension_options_guest_delegate.cc",
-      "guest_view/extension_options/chrome_extension_options_guest_delegate.h",
       "guest_view/mime_handler_view/chrome_mime_handler_view_guest_delegate.cc",
       "guest_view/mime_handler_view/chrome_mime_handler_view_guest_delegate.h",
-      "guest_view/web_view/chrome_web_view_guest_delegate.cc",
-      "guest_view/web_view/chrome_web_view_guest_delegate.h",
-      "guest_view/web_view/chrome_web_view_permission_helper_delegate.cc",
-      "guest_view/web_view/chrome_web_view_permission_helper_delegate.h",
-      "guest_view/web_view/context_menu_content_type_web_view.cc",
-      "guest_view/web_view/context_menu_content_type_web_view.h",
       "media/extension_media_access_handler.cc",
       "media/extension_media_access_handler.h",
       "metrics/extensions_metrics_provider.cc",

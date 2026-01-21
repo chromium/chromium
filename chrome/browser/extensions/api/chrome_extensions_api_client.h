@@ -44,8 +44,8 @@ class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
       SettingsChangedCallback observer,
       std::map<settings_namespace::Namespace,
                raw_ptr<ValueStoreCache, CtnExperimental>>* caches) override;
-  void AttachWebContentsHelpers(content::WebContents* web_contents) const
-      override;
+  void AttachWebContentsHelpers(
+      content::WebContents* web_contents) const override;
   bool ShouldHideResponseHeader(const GURL& url,
                                 const std::string& header_name) const override;
   bool ShouldHideBrowserNetworkRequest(
@@ -64,16 +64,21 @@ class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
   void OpenFileUrlForTesting(const GURL& file_url,
                              content::BrowserContext* browser_context) override;
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
   std::unique_ptr<AppViewGuestDelegate> CreateAppViewGuestDelegate()
       const override;
+#endif
   std::unique_ptr<ExtensionOptionsGuestDelegate>
   CreateExtensionOptionsGuestDelegate(
       ExtensionOptionsGuest* guest) const override;
   std::unique_ptr<guest_view::GuestViewManagerDelegate>
   CreateGuestViewManagerDelegate() const override;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   std::unique_ptr<MimeHandlerViewGuestDelegate>
   CreateMimeHandlerViewGuestDelegate(
       MimeHandlerViewGuest* guest) const override;
+#endif
   std::unique_ptr<WebViewGuestDelegate> CreateWebViewGuestDelegate(
       WebViewGuest* web_view_guest) const override;
   std::unique_ptr<WebViewPermissionHelperDelegate>

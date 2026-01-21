@@ -9,6 +9,7 @@ import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//chrome/common/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
+import("//components/guest_view/buildflags/buildflags.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//content/public/common/features.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -984,7 +985,6 @@ source_set("extensions") {
       "//components/favicon/content",
       "//components/feedback",
       "//components/gcm_driver",
-      "//components/guest_view/browser",
       "//components/guest_view/common:mojom",
       "//components/history/core/browser",
       "//components/history/core/common",
@@ -1547,6 +1547,10 @@ source_set("extensions") {
       deps += [ "//chrome/browser/ui/toasts" ]
     }
   }  # if (enable_extensions)
+
+  if (enable_guest_view) {
+    deps += [ "//components/guest_view/browser" ]
+  }
 
   if (enable_platform_apps) {
     sources += [

@@ -28,7 +28,7 @@
 #include "extensions/browser/user_script_world_configuration_manager.h"
 #include "extensions/buildflags/buildflags.h"
 
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_stream_manager.h"
 #endif
 
@@ -55,7 +55,7 @@ void EnsureCoreBrowserContextKeyedServiceFactoriesBuilt() {
   ExtensionRegistrarFactory::GetInstance();
   ImageLoaderFactory::GetInstance();
   MessageTracker::GetFactory();
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   MimeHandlerStreamManager::EnsureFactoryBuilt();
 #endif
   PendingExtensionManagerFactory::GetInstance();

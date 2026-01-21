@@ -276,9 +276,7 @@
         "chrome://parent-access/*",
         "chrome://password-change/*",
         "chrome://lock-reauth/*"
-      ],
-      // "desktop_android" is not supported.
-      "platforms": ["chromeos", "linux", "mac", "win"]
+      ]
     }, {
       "internal": true,
       "channel": "stable",

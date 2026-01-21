@@ -31,7 +31,7 @@
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "base/strings/string_util.h"
-#include "components/grit/components_resources.h"
+#include "components/grit/components_resources.h"  // nogncheck
 #include "components/pdf/common/constants.h"
 #include "pdf/pdf_features.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -79,7 +79,6 @@ ProcessIdToHelperMap* GetProcessIdToHelperMap() {
 }
 
 }  // namespace
-
 
 // static
 MimeHandlerViewAttachHelper* MimeHandlerViewAttachHelper::Get(

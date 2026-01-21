@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
+import("//components/guest_view/buildflags/buildflags.gni")
 import("//pdf/features.gni")
 
 assert(enable_extensions_core)
@@ -13,13 +14,13 @@ assert(enable_extensions_core)
 schema_sources_ = [
   "activity_log_private.json",
   "bookmarks.json",
-  "cookies.json",
   "context_menus.json",
+  "cookies.json",
   "debugger.json",
   "desktop_capture.json",
   "developer_private.idl",
-  "downloads.idl",
   "downloads_internal.idl",
+  "downloads.idl",
   "enterprise_hardware_platform.idl",
   "font_settings.json",
   "gcm.json",
@@ -32,9 +33,9 @@ schema_sources_ = [
   "permissions.json",
   "processes.idl",
   "reading_list.webidl",
+  "scripting.idl",
   "search.idl",
   "sessions.json",
-  "scripting.idl",
   "tab_capture.idl",
   "tab_groups.json",
   "tabs.json",
@@ -51,6 +52,10 @@ schema_sources_ = [
 
 if (enable_service_discovery) {
   schema_sources_ += [ "mdns.idl" ]
+}
+
+if (enable_guest_view) {
+  schema_sources_ += [ "chrome_web_view_internal.json" ]
 }
 
 # Schemas that should be used only to generate the JSON strings and function
@@ -75,7 +80,6 @@ if (enable_extensions) {
     "autotest_private.idl",
     "bookmark_manager_private.json",
     "braille_display_private.idl",
-    "chrome_web_view_internal.json",
     "command_line_private.json",
     "content_settings.json",
     "crash_report_private.idl",

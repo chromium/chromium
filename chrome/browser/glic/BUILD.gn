@@ -5,6 +5,7 @@
 import("//build/config/gclient_args.gni")
 import("//build/config/ozone.gni")
 import("//chrome/common/features.gni")
+import("//components/guest_view/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(enable_glic || enable_glic_android)
@@ -356,7 +357,6 @@ source_set("impl") {
       "//chrome/browser/lens/region_search",
       "//chrome/browser/themes",
       "//chrome/browser/ui/views/tabs/glic",
-      "//components/guest_view/browser",
       "//components/password_manager/core/browser/actor_login:common",
       "//extensions/browser",
     ]
@@ -376,6 +376,10 @@ source_set("impl") {
     ]
   } else {  # is_android
     deps += [ ":actor_types_for_migration" ]
+  }
+
+  if (enable_guest_view) {
+    deps += [ "//components/guest_view/browser" ]
   }
 
   if (is_mac) {

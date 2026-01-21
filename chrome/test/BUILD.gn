@@ -23,6 +23,7 @@ import("//components/allocation_recorder/testing/testing.gni")
 import("//components/captive_portal/core/features.gni")
 import("//components/compose/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
+import("//components/guest_view/buildflags/buildflags.gni")
 import("//components/lens/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
 import("//components/on_device_translation/buildflags/features.gni")
@@ -273,6 +274,9 @@ static_library("test_support") {
     "base/web_ui_test_data_source.h",
   ]
 
+  if (enable_guest_view) {
+    public_deps += [ "//components/guest_view/browser:test_support" ]
+  }
   if (!is_android) {
     public_deps += [ "//chrome/renderer:process_state" ]
     deps += [ "//chrome/browser/apps/app_service/publishers" ]
@@ -464,7 +468,6 @@ static_library("test_support") {
       "//chrome/browser/preloading:test_support",
       "//chrome/browser/ui/autofill:test_support",
       "//chrome/common/extensions/api",
-      "//components/guest_view/browser:test_support",
       "//extensions:test_support",
       "//extensions/browser:test_support",
       "//extensions/common:test_support",
@@ -1832,6 +1835,12 @@ source_set("platform_browser_tests") {
       deps += [
         "//chrome/browser/apps/app_service",
         "//chrome/browser/ui/browser_window",
+      ]
+    }
+    if (enable_guest_view) {
+      deps += [
+        "//components/guest_view/browser",
+        "//components/guest_view/browser:test_support",
       ]
     }
     if (!is_android || enable_desktop_android_extensions) {

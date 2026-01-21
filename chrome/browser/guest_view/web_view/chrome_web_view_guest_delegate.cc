@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "build/build_config.h"
-#include "chrome/browser/controlled_frame/controlled_frame_user_agent_util.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
@@ -21,6 +20,10 @@
 #include "extensions/browser/guest_view/web_view/web_view_constants.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/controlled_frame/controlled_frame_user_agent_util.h"
+#endif
 
 using guest_view::GuestViewEvent;
 
@@ -78,8 +81,9 @@ bool ChromeWebViewGuestDelegate::HandleContextMenu(
   // It's possible for the returned menu to be null, so early out to avoid
   // a crash. TODO(wjmaclean): find out why it's possible for this to happen
   // in the first place, and if it's an error.
-  if (!pending_menu_)
+  if (!pending_menu_) {
     return false;
+  }
 
   // Pass it to embedder.
   int request_id = ++pending_context_menu_request_id_;
@@ -93,12 +97,14 @@ bool ChromeWebViewGuestDelegate::HandleContextMenu(
 }
 
 void ChromeWebViewGuestDelegate::OnShowContextMenu(int request_id) {
-  if (!pending_menu_)
+  if (!pending_menu_) {
     return;
+  }
 
   // Make sure this was the correct request.
-  if (request_id != pending_context_menu_request_id_)
+  if (request_id != pending_context_menu_request_id_) {
     return;
+  }
 
   // TODO(lazyboy): Implement.
 
@@ -124,11 +130,13 @@ bool ChromeWebViewGuestDelegate::NavigateToURLShouldBlock(const GURL& url) {
 
 std::optional<blink::UserAgentOverride>
 ChromeWebViewGuestDelegate::GetDefaultUserAgentOverride() {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Controlled Frame has its own UserAgentOverride.
   if (web_view_guest()->IsOwnedByControlledFrameEmbedder()) {
     return controlled_frame::GetDefaultControlledFrameUserAgentOverride(
         enable_client_hints_brand_);
   }
+#endif
   return std::nullopt;
 }
 

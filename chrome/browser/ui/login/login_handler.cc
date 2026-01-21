@@ -45,12 +45,6 @@
 #include "ui/gfx/text_elider.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "components/guest_view/browser/guest_view_base.h"
-#include "extensions/browser/view_type_utils.h"  // nogncheck
-#include "extensions/common/mojom/view_type.mojom.h"
-#endif
-
 using content::BrowserThread;
 using content::NavigationController;
 using content::WebContents;

@@ -186,6 +186,10 @@ static std::string TerminationStatusToString(base::TerminationStatus status) {
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM:
       return "oom killed";
 #endif
+#if BUILDFLAG(IS_ANDROID)
+    case base::TERMINATION_STATUS_OOM_PROTECTED:
+      return "oom";
+#endif
     case base::TERMINATION_STATUS_OOM:
       return "oom";
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED:

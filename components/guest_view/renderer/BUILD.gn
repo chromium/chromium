@@ -2,11 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Currently, GuestViews are only used by extensions, so we have this
-# assert to prevent the accidental building of GuestViews on mobile
-# platforms. If you're now using GuestViews on mobile, go ahead and
-# remove this assert.
-assert(!is_android && !is_ios)
+import("//build/config/chrome_build.gni")
+import("//components/guest_view/buildflags/buildflags.gni")
+
+assert(enable_guest_view)
 
 static_library("renderer") {
   sources = [

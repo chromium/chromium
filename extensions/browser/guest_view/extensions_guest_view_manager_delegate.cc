@@ -21,10 +21,8 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
-#include "extensions/browser/guest_view/app_view/app_view_guest.h"
 #include "extensions/browser/guest_view/extension_options/extension_options_guest.h"
 #include "extensions/browser/guest_view/guest_view_events.h"
-#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
@@ -36,6 +34,13 @@
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/utils/extension_utils.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-forward.h"
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+#include "extensions/browser/guest_view/app_view/app_view_guest.h"
+#endif
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#endif
 
 using guest_view::GuestViewBase;
 using guest_view::GuestViewManager;
@@ -124,8 +129,8 @@ void ExtensionsGuestViewManagerDelegate::DispatchEvent(
   // extensions::events::HistogramValue as an argument.
   events::HistogramValue histogram_value =
       guest_view_events::GetEventHistogramValue(event_name);
-  DCHECK_NE(events::UNKNOWN, histogram_value) << "Event " << event_name
-                                              << " must have a histogram value";
+  DCHECK_NE(events::UNKNOWN, histogram_value)
+      << "Event " << event_name << " must have a histogram value";
 
   content::RenderFrameHost* owner = guest->owner_rfh();
   if (!owner || !ExtensionsBrowserClient::Get()->IsValidContext(
@@ -161,16 +166,20 @@ bool ExtensionsGuestViewManagerDelegate::IsOwnedByControlledFrameEmbedder(
 
 void ExtensionsGuestViewManagerDelegate::RegisterAdditionalGuestViewTypes(
     GuestViewManager* manager) {
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
   manager->RegisterGuestViewType(AppViewGuest::Type,
                                  base::BindRepeating(&AppViewGuest::Create),
                                  base::NullCallback());
+#endif
   manager->RegisterGuestViewType(
       ExtensionOptionsGuest::Type,
       base::BindRepeating(&ExtensionOptionsGuest::Create),
       base::NullCallback());
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   manager->RegisterGuestViewType(
       MimeHandlerViewGuest::Type,
       base::BindRepeating(&MimeHandlerViewGuest::Create), base::NullCallback());
+#endif
   manager->RegisterGuestViewType(WebViewGuest::Type,
                                  base::BindRepeating(&WebViewGuest::Create),
                                  base::BindRepeating(&WebViewGuest::CleanUp));

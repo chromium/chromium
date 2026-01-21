@@ -91,13 +91,15 @@ group("api_implementations") {
         "//extensions/browser/api/webcam_private",
       ]
     }
+  }
 
-    if (enable_guest_view) {
-      public_deps += [
-        "//extensions/browser/api/guest_view",
-        "//extensions/browser/api/guest_view/app_view",
-        "//extensions/browser/api/guest_view/web_view",
-      ]
+  if (enable_guest_view) {
+    public_deps += [
+      "//extensions/browser/api/guest_view",
+      "//extensions/browser/api/guest_view/web_view",
+    ]
+    if (enable_platform_apps) {
+      public_deps += [ "//extensions/browser/api/guest_view/app_view" ]
     }
   }
 }
