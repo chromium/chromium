@@ -18,6 +18,7 @@
 #include "cc/paint/paint_shader.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/effects/SkGradient.h"
@@ -614,7 +615,7 @@ cc::PaintCanvas* Canvas::CreateOwnedCanvas(const Size& size, bool is_opaque) {
   bitmap_.emplace();
   bitmap_->allocPixels(info);
   // Ensure that the bitmap is zeroed, since the code expects that.
-  UNSAFE_TODO(memset(bitmap_->getPixels(), 0, bitmap_->computeByteSize()));
+  bitmap_->eraseColor(SkColors::kTransparent);
 
   owned_canvas_.emplace(bitmap_.value());
   return &owned_canvas_.value();
