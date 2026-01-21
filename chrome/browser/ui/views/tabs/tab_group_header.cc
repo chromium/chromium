@@ -706,8 +706,13 @@ void TabGroupHeader::CreateHeaderWithTitle() {
   const int title_chip_vertical_inset = 0;
   if (!should_show_header_icon_) {
     sync_icon_->SetBounds(0, 0, 0, 0);
-    title_->SetBounds(title_chip_insets.left(), title_chip_vertical_inset,
-                      text_width, text_height);
+    // If the title and its insets are narrower than the minimum width of the
+    // chip, divide the whitespace remainder between the start and end of the
+    // chip so the title appears centered.
+    const int text_offset = std::max(
+        0, (title_chip_width - text_width - title_chip_insets.width()) / 2);
+    title_->SetBounds(title_chip_insets.left() + text_offset,
+                      title_chip_vertical_inset, text_width, text_height);
     attention_indicator_->SetBounds(0, 0, 0, 0);
   } else {
     sync_icon_->SetBounds(start_of_sync_icon, title_chip_vertical_inset,
