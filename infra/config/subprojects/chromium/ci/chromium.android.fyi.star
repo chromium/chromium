@@ -9,6 +9,7 @@ load("@chromium-luci//builders.star", "os")
 load("@chromium-luci//ci.star", "ci")
 load("@chromium-luci//consoles.star", "consoles")
 load("@chromium-luci//gn_args.star", "gn_args")
+load("@chromium-luci//html.star", "linkify")
 load("@chromium-luci//targets.star", "targets")
 load("//lib/ci_constants.star", "ci_constants")
 load("//lib/siso.star", "siso")
@@ -44,7 +45,12 @@ consoles.console_view(
 
 ci.builder(
     name = "android-15-chrome-wpt-fyi-rel",
-    description_html = "This builder runs upstream web platform tests for reporting results to wpt.fyi.",
+    description_html = "This builder runs upstream web platform tests for {}.".format(
+        linkify(
+            "https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_platform_tests.md#wpt_fyi-integration",
+            "reporting results to wpt.fyi",
+        ),
+    ),
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -106,7 +112,12 @@ ci.builder(
 
 ci.builder(
     name = "android-15-webview-wpt-fyi-rel",
-    description_html = "This builder runs upstream web platform tests for reporting results to wpt.fyi.",
+    description_html = "This builder runs upstream web platform tests for {}.".format(
+        linkify(
+            "https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_platform_tests.md#wpt_fyi-integration",
+            "reporting results to wpt.fyi",
+        ),
+    ),
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",

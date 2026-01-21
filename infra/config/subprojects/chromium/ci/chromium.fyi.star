@@ -1098,6 +1098,12 @@ ci.builder(
 
 fyi_ios_builder(
     name = "ios-wpt-fyi-rel",
+    description_html = "This builder runs upstream web platform tests for {}.".format(
+        linkify(
+            "https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_platform_tests.md#wpt_fyi-integration",
+            "reporting results to wpt.fyi",
+        ),
+    ),
     schedule = "with 5h interval",
     triggered_by = [],
     builder_spec = builder_config.builder_spec(
@@ -1144,6 +1150,7 @@ fyi_ios_builder(
     console_view_entry = consoles.console_view_entry(
         category = "mac",
     ),
+    contact_team_email = "chrome-product-engprod@google.com",
 )
 
 ci.builder(

@@ -424,6 +424,24 @@ the script.
     and over again), put it in "dry run" mode by landing [this
     CL](https://crrev.com/c/462381/).
 
+### wpt.fyi Integration
+
+https://wpt.fyi/ is a dashboard for comparing WPT results between browsers over
+time.
+WPT doesn't have robust mobile testing infrastructure, so [wpt.fyi results for
+Chrome's mobile products][wpt-fyi-results] (WebView, Clank, and Bling) are
+generated and uploaded from LUCI instead of wpt's GitHub Actions.
+
+Each product has CI builder(s) that run the entire WPT suite.
+The builders are meant to collect data, not verify code changes, so test
+failures will not trigger retries or turn builds red.
+The [`wpt-uploader` "builder"][wpt-uploader] periodically aggregates the latest
+results and sends them to [wpt.fyi's upload API][wpt-fyi-upload-api].
+
+[wpt-fyi-results]: https://wpt.fyi/runs?label=master&product=chrome_android%5Bexperimental%5D&product=chrome_ios%5Bexperimental%5D&product=android_webview%5Bexperimental%5D&product=chrome_android%5Bstable%5D
+[wpt-uploader]: https://ci.chromium.org/ui/p/infra/builders/cron/wpt-uploader
+[wpt-fyi-upload-api]: https://github.com/web-platform-tests/wpt.fyi/blob/main/api/README.md#apiresultsupload
+
 ### GitHub credentials
 
 When manually running the `wpt-import` and `wpt-export` scripts, several

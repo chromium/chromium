@@ -750,6 +750,7 @@ ios_builder(
     gn_args = "ci/ios-wpt-fyi-rel",
     builderless = True,
     cpu = cpu.ARM64,
+    contact_team_email = "chrome-product-engprod@google.com",
 )
 
 ios_builder(
