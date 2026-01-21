@@ -1632,12 +1632,6 @@ const char kWelcomeBackName[] = "Enable Welcome Back screen";
 const char kWelcomeBackDescription[] =
     "When enabled, returning users will see the Welcome Back screen.";
 
-const char kYoutubeIncognitoName[] =
-    "Enable the opening of links from Youtube incognito in Chrome incognito";
-const char kYoutubeIncognitoDescription[] =
-    "When enabled, the links from Youtube incognito will be opened in Chrome "
-    "incognito.";
-
 const char kZeroStateSuggestionsName[] = "Enable Zero-State Suggestions";
 const char kZeroStateSuggestionsDescription[] =
     "Enables fetching zero-state suggestions for the 'Ask Gemini' feature,"

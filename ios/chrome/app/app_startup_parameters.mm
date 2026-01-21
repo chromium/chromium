@@ -35,18 +35,6 @@ enum class AppModeFetchingOutcomeType {
   kMaxValue = kTimeOut
 };
 
-// Returns whether the application should be requested based on the id of the
-// app requesting the opening of an external link.
-bool ShouldRequestAppMode(NSString* app_id) {
-  if (IsYoutubeIncognitoTargetAllEnabled()) {
-    return true;
-  }
-  if (IsYoutubeIncognitoTargetFirstPartyEnabled()) {
-    return IsCallerAppFirstParty(app_id);
-  }
-  return IsCallerAppAllowListed(app_id);
-}
-
 // Returns a `ApplicationModeRequestStatus` based on the source `app_ID`, the
 // `ApplicationModeRequestStatus` and if the mode is forced or not.
 ApplicationModeRequestStatus ApplicationModeAvailability(
@@ -58,7 +46,7 @@ ApplicationModeRequestStatus ApplicationModeAvailability(
   // URL) or it is incognito forced.
   if ((application_mode_forced &&
        mode == ApplicationModeForTabOpening::INCOGNITO) ||
-      !ShouldRequestAppMode(app_id)) {
+      !IsCallerAppAllowListed(app_id)) {
     return ApplicationModeRequestStatus::kAvailable;
   }
   return ApplicationModeRequestStatus::kUnavailable;
@@ -325,8 +313,7 @@ ApplicationModeRequestStatus ApplicationModeAvailability(
     _applicationMode = ApplicationModeForTabOpening::APP_SWITCHER_INCOGNITO;
     outcome = AppModeFetchingOutcomeType::kIncognito;
   } else {
-    if (error &&
-        !IsYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitialEnabled()) {
+    if (error) {
       _applicationMode =
           ApplicationModeForTabOpening::APP_SWITCHER_UNDETERMINED;
       outcome = [error.domain isEqualToString:@"AppSwitcherTimeoutError"]

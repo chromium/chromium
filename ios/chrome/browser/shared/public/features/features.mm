@@ -514,42 +514,6 @@ BASE_FEATURE(kSeparateProfilesForManagedAccountsForceMigration,
 
 BASE_FEATURE(kOmahaResyncTimerOnForeground, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kYoutubeIncognito, base::FEATURE_ENABLED_BY_DEFAULT);
-
-const char kYoutubeIncognitoTargetApps[] = "youtube-incognito-target-apps";
-
-const char kYoutubeIncognitoTargetAppsAllowlisted[] = "allow-listed";
-const char kYoutubeIncognitoTargetAppsFirstParty[] = "first-party";
-const char kYoutubeIncognitoTargetAppsAll[] = "all";
-
-const char kYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitialParam[] =
-    "youtube-incognito-error-handling-without-incognito-interstitial";
-
-bool IsYoutubeIncognitoTargetAllowListedEnabled() {
-  std::string target_apps = base::GetFieldTrialParamByFeatureAsString(
-      kYoutubeIncognito, kYoutubeIncognitoTargetApps, "");
-  return target_apps == kYoutubeIncognitoTargetAppsAllowlisted ||
-         target_apps == "";
-}
-
-bool IsYoutubeIncognitoTargetFirstPartyEnabled() {
-  std::string target_apps = base::GetFieldTrialParamByFeatureAsString(
-      kYoutubeIncognito, kYoutubeIncognitoTargetApps, "");
-  return target_apps == kYoutubeIncognitoTargetAppsFirstParty;
-}
-
-bool IsYoutubeIncognitoTargetAllEnabled() {
-  std::string target_apps = base::GetFieldTrialParamByFeatureAsString(
-      kYoutubeIncognito, kYoutubeIncognitoTargetApps, "");
-  return target_apps == kYoutubeIncognitoTargetAppsAll;
-}
-
-bool IsYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitialEnabled() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kYoutubeIncognito,
-      kYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitialParam, false);
-}
-
 BASE_FEATURE(kIOSReactivationNotifications, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kIOSReactivationNotificationsTriggerTimeParam[] =

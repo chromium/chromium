@@ -928,35 +928,6 @@ const FeatureEntry::FeatureVariation kUpdatedFirstRunSequenceVariations[] = {
      kUpdatedFirstRunSequenceArm3, std::size(kUpdatedFirstRunSequenceArm3),
      nullptr}};
 
-const FeatureEntry::FeatureParam
-    kYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitial[] = {
-        {kYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitialParam,
-         "true"},
-};
-
-const FeatureEntry::FeatureParam kYoutubeIncognitoTargetAllowListed[] = {
-    {kYoutubeIncognitoTargetApps, kYoutubeIncognitoTargetAppsAllowlisted},
-};
-const FeatureEntry::FeatureParam kYoutubeIncognitoTargetFirstParty[] = {
-    {kYoutubeIncognitoTargetApps, kYoutubeIncognitoTargetAppsFirstParty},
-};
-const FeatureEntry::FeatureParam kYoutubeIncognitoTargetAll[] = {
-    {kYoutubeIncognitoTargetApps, kYoutubeIncognitoTargetAppsAll},
-};
-
-const FeatureEntry::FeatureVariation kYoutubeIncognitoVariations[] = {
-    {"Error handling without Incognito Interstitial",
-     kYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitial,
-     std::size(kYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitial),
-     nullptr},
-    {"Enable for listed apps", kYoutubeIncognitoTargetAllowListed,
-     std::size(kYoutubeIncognitoTargetAllowListed), nullptr},
-    {"Enable for first party apps", kYoutubeIncognitoTargetFirstParty,
-     std::size(kYoutubeIncognitoTargetFirstParty), nullptr},
-    {"Enable for all apps", kYoutubeIncognitoTargetAll,
-     std::size(kYoutubeIncognitoTargetAll), nullptr},
-};
-
 const FeatureEntry::FeatureParam kSlowFullscreenTransitionSpeed[] = {
     {kFullscreenTransitionSpeedParam, "0"}};
 const FeatureEntry::FeatureParam kDefaultFullscreenTransitionSpeed[] = {
@@ -2028,11 +1999,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kLensUnaryApisWithHttpTransportEnabledDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kLensUnaryApisWithHttpTransportEnabled)},
-    {"ios-youtube-incognito", flag_descriptions::kYoutubeIncognitoName,
-     flag_descriptions::kYoutubeIncognitoDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kYoutubeIncognito,
-                                    kYoutubeIncognitoVariations,
-                                    "YoutubeIncognito")},
     {"lens-overlay-disable-iph-pan-gesture",
      flag_descriptions::kLensOverlayDisableIPHPanGestureName,
      flag_descriptions::kLensOverlayDisableIPHPanGestureDescription,

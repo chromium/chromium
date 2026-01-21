@@ -506,47 +506,6 @@ BASE_DECLARE_FEATURE(kSeparateProfilesForManagedAccountsForceMigration);
 // Feature to control resyncing the omaha ping timer on foregrounding.
 BASE_DECLARE_FEATURE(kOmahaResyncTimerOnForeground);
 
-// Feature flag to enable the opening of links from Youtube Incognito in Chrome
-// incognito.
-BASE_DECLARE_FEATURE(kYoutubeIncognito);
-
-// Feature param to specify whether the youtube incognito handling is done
-// without the incognito interstitial.
-extern const char
-    kYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitialParam[];
-
-// A parameter to choose what type of apps allowed for `kYoutubeIncognito`
-// experiment (default to allow listed)
-extern const char kYoutubeIncognitoTargetApps[];
-
-// A parameter value for `kYoutubeIncognitoTargetApps` to only enable the
-// feature for the allow listed apps.
-extern const char kYoutubeIncognitoTargetAppsAllowlisted[];
-
-// A parameter value for `kYoutubeIncognitoTargetApps` to only enable the
-// feature for the first party apps.
-extern const char kYoutubeIncognitoTargetAppsFirstParty[];
-
-// A parameter value for `kYoutubeIncognitoTargetApps` to only enable the
-// feature for all apps.
-extern const char kYoutubeIncognitoTargetAppsAll[];
-
-// Returns whether
-// `kYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitialParam` is enabled.
-bool IsYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitialEnabled();
-
-// Returns whether `kYoutubeIncognitoTargetApps` is
-// `kYoutubeIncognitoTargetAppsAllowlisted`.
-bool IsYoutubeIncognitoTargetAllowListedEnabled();
-
-// Returns whether `kYoutubeIncognitoTargetApps` is
-// `kYoutubeIncognitoTargetAppsFirstParty`.
-bool IsYoutubeIncognitoTargetFirstPartyEnabled();
-
-// Returns whether `kYoutubeIncognitoTargetApps` is
-// `kYoutubeIncognitoTargetAppsAll`.
-bool IsYoutubeIncognitoTargetAllEnabled();
-
 // Feature flag to enable Reactivation Notifications.
 BASE_DECLARE_FEATURE(kIOSReactivationNotifications);
 

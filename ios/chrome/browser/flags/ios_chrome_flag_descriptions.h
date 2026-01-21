@@ -982,9 +982,6 @@ extern const char kWebPageTextZoomIPadDescription[];
 extern const char kWelcomeBackName[];
 extern const char kWelcomeBackDescription[];
 
-extern const char kYoutubeIncognitoName[];
-extern const char kYoutubeIncognitoDescription[];
-
 extern const char kZeroStateSuggestionsName[];
 extern const char kZeroStateSuggestionsDescription[];
 
