@@ -592,6 +592,16 @@ void SitePerProcessIgnoreCertErrorsBrowserTest::
   mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
 }
 
+class MainFrameThresholdTestBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  bool ShouldReuseAnyExistingProcessForNewMainFrameSiteInstance(
+      content::BrowserContext* browser_context,
+      const GURL& site_instance_original_url) override {
+    return true;
+  }
+};
+
 // SitePerProcessAutoplayBrowserTest
 
 class SitePerProcessAutoplayBrowserTest : public SitePerProcessBrowserTest {
@@ -14157,6 +14167,11 @@ class SitePerProcessWithMainFrameThresholdTestBase
   }
   ~SitePerProcessWithMainFrameThresholdTestBase() override = default;
 
+  void SetUpOnMainThread() override {
+    SitePerProcessBrowserTestBase::SetUpOnMainThread();
+    test_client_ = std::make_unique<MainFrameThresholdTestBrowserClient>();
+  }
+
   Shell* CreateShellAndNavigateToURL(const GURL& url) {
     const GURL kOtherUrl =
         embedded_test_server()->GetURL("bar.test", "/title1.html");
@@ -14173,6 +14188,8 @@ class SitePerProcessWithMainFrameThresholdTestBase
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+
+  std::unique_ptr<MainFrameThresholdTestBrowserClient> test_client_;
 };
 
 class SitePerProcessWithMainFrameThresholdTest

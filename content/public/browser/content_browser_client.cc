@@ -189,7 +189,7 @@ bool ContentBrowserClient::
         BrowserContext* browser_context,
         const GURL& site_instance_original_url) {
   DCHECK(browser_context);
-  return true;
+  return false;
 }
 
 bool ContentBrowserClient::ShouldAllowProcessPerSiteForMultipleMainFrames(
