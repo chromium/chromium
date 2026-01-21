@@ -5,7 +5,6 @@
 #include <iostream>
 #include <memory>
 #include <string_view>
-#include <unordered_map>
 #include <vector>
 
 #include "base/at_exit.h"
@@ -30,6 +29,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
 #include "net/http/http_util.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 using disk_cache::Backend;
 using disk_cache::BackendResult;
@@ -445,7 +445,7 @@ void ListDups(CommandMarshal* command_marshal) {
   disk_cache::EntryResult result = entry_iterator->OpenNextEntry(cb.callback());
   command_marshal->ReturnSuccess();
 
-  std::unordered_map<std::string, std::vector<EntryData>> md5_entries;
+  absl::flat_hash_map<std::string, std::vector<EntryData>> md5_entries;
 
   int total_entries = 0;
 
@@ -476,12 +476,7 @@ void ListDups(CommandMarshal* command_marshal) {
     if (response_info.headers)
       response_info.headers->GetMimeType(&entry_data.mime_type);
 
-    auto iter = md5_entries.find(hash);
-    if (iter == md5_entries.end()) {
-      md5_entries.emplace(hash, std::vector<EntryData>{entry_data});
-    } else {
-      iter->second.push_back(entry_data);
-    }
+    md5_entries[hash].push_back(entry_data);
 
     entry->Close();
     entry = nullptr;
