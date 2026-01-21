@@ -2269,8 +2269,9 @@ TEST_P(FrameSinkVideoCapturerTest, BufferFormatPreferencePassedToGpuFramePool) {
 
   NiceMock<MockConsumer> consumer;
   StartCapture(&consumer);
-  EXPECT_EQ(capturer_->gpu_frame_pool_buffer_format_for_testing(),
-            buffer_format_preference_);
+  EXPECT_EQ(
+      capturer_->mappable_si_frame_pool_buffer_format_preference_for_testing(),
+      buffer_format_preference_);
   StopCapture();
 }
 

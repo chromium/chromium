@@ -191,12 +191,11 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
                                        const gfx::Size& source_size,
                                        media::VideoPixelFormat pixel_format);
 
-  // Returns the BufferFormatPreference currently used by the gpu frame pool.
-  // Intended for test verification. Assumes that the frame pool is of type
-  // MappableSharedImageVideoFramePool, which must hold true for tests that
-  // query this method.
-  mojom::BufferFormatPreference gpu_frame_pool_buffer_format_for_testing()
-      const {
+  // Returns the BufferFormatPreference currently used by the frame pool.
+  // Assumes that the frame pool is of type MappableSharedImageVideoFramePool,
+  // which must hold true for tests that query this method.
+  mojom::BufferFormatPreference
+  mappable_si_frame_pool_buffer_format_preference_for_testing() const {
     return static_cast<MappableSharedImageVideoFramePool*>(frame_pool_.get())
         ->buffer_format_preference();
   }
