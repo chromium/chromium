@@ -133,7 +133,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualSearch.File.Size.{ContextualSearchFileTypes}.{ContextualSearchSource}"
-    units="bytes" expires_after="2026-03-29">
+    units="bytes" expires_after="2027-01-20">
   <owner>hujasonx@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -193,7 +193,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextualSearch.Query.TextLength.{ContextualSearchSource}"
-    units="characters" expires_after="2026-03-22">
+    units="characters" expires_after="2027-01-20">
   <owner>hujasonx@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -258,7 +258,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualSearch.Session.File.Browser.UploadAttemptCount.{ContextualSearchFileTypes}.{ContextualSearchSource}"
-    units="count" expires_after="2026-01-20">
+    units="count" expires_after="2027-01-20">
   <owner>hujasonx@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -289,7 +289,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualSearch.Session.File.Browser.UploadFailureCount.{ContextualSearchFileTypes}.{ContextualSearchSource}"
-    units="count" expires_after="2026-04-19">
+    units="count" expires_after="2027-01-20">
   <owner>hujasonx@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -351,7 +351,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualSearch.Session.File.Browser.ValidationFailureCount.{ContextualSearchFileTypes}.{ErrorType}.{ContextualSearchSource}"
-    units="count" expires_after="2026-01-20">
+    units="count" expires_after="2027-01-20">
   <owner>hujasonx@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -400,7 +400,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualSearch.Session.File.DeletedCount.{ContextualSearchFileTypes}.{FileState}.{ContextualSearchSource}"
-    units="count" expires_after="2026-01-20">
+    units="count" expires_after="2027-01-20">
   <owner>hujasonx@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
