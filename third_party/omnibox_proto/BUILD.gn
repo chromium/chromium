@@ -25,6 +25,8 @@ _proto_files = [
   "rich_answer_template.proto",
   "rich_suggest_template.proto",
   "search_context.proto",
+  "searchbox_config.proto",
+  "searchbox_config_constraints.proto",
   "suggest_template_info.proto",
   "types.proto",
 ]

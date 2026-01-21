@@ -1,0 +1,64 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto2';
+
+option optimize_for = LITE_RUNTIME;
+option java_package = 'org.chromium.components.omnibox';
+option java_outer_classname = 'SearchboxConfigConstraintsProto';
+
+package omnibox;
+
+import "aim_input_types.proto";
+import "aim_models.proto";
+import "aim_tools.proto";
+
+// A set of rules that are applied to the input plate or fusebox.
+// Next ID: 7
+message RuleSet {
+  // Server determined allowed tools based on user/geo/platform.
+  repeated ToolMode allowed_tools = 1;
+  // Server determined allowed input_types based on user/geo/platform.
+  repeated InputType allowed_input_types = 2;
+  // Server determined allowed models based on user/geo/platform.
+  repeated ModelMode allowed_models = 5;
+  // Rules for restricting tools.
+  repeated ToolRule tool_rules = 3;
+  // Rules for restricting input types.
+  repeated InputTypeRule input_type_rules = 4;
+  // Rules for restricting based on models.
+  repeated ModelRule model_rules = 6;
+}
+
+// Rule for restricting a tool.
+// Next ID: 3
+message ToolRule {
+  // The tool that is being restricted.
+  optional ToolMode tool = 1;
+  // The input types that are allowed to be used with the tool.
+  repeated InputType allowed_input_types = 2;
+}
+
+// Rule for restricting an InputType.
+// Next ID: 4
+message InputTypeRule {
+  // The input type that is being restricted.
+  optional InputType input_type = 1;
+  // Maximum number of instances for the input_type.
+  // Set to 0 for no limit.
+  optional int32 max_instance = 2;
+  // The input types that are allowed to be used with the input_type.
+  repeated InputType allowed_input_types = 3;
+}
+
+// Rule for restricting a model.
+// Next ID: 4
+message ModelRule {
+  // The model that is being restricted.
+  optional ModelMode model = 1;
+  // The tools that are allowed to be used with the model.
+  repeated ToolMode allowed_tools = 2;
+  // The input types that are allowed to be used with the model.
+  repeated InputType allowed_input_types = 3;
+}
