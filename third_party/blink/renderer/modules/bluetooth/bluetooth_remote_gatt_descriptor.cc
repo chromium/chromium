@@ -80,9 +80,6 @@ void BluetoothRemoteGATTDescriptor::WriteValueCallback(
     ScriptPromiseResolver<IDLUndefined>* resolver,
     DOMDataView* new_value,
     mojom::blink::WebBluetoothResult result) {
-  if (!resolver->GetExecutionContext() ||
-      resolver->GetExecutionContext()->IsContextDestroyed())
-    return;
 
   // If the resolver is not in the set of ActiveAlgorithms then the frame
   // disconnected so we reject.
