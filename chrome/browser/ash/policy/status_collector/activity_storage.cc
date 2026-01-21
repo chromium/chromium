@@ -94,22 +94,23 @@ void ActivityStorage::RemoveOverlappingActivityPeriods() {
          std::map<int64_t, base::TimeDelta>* day_capacities,
          const int64_t start, const int64_t end,
          const std::string& activity_id) {
-        if (day_capacities->count(start) == 0)
-          day_capacities->emplace(start, base::Days(1));
-        if (day_capacities->at(start).is_zero())
+        auto [start_duration_iter, unused_start_inserted] =
+            day_capacities->try_emplace(start, base::Days(1));
+        base::TimeDelta& start_duration = start_duration_iter->second;
+        if (start_duration.is_zero()) {
           return;
-        base::TimeDelta duration = std::min(base::Milliseconds(end - start),
-                                            day_capacities->at(start));
-        day_capacities->at(start) -= duration;
+        }
+        base::TimeDelta duration =
+            std::min(base::Milliseconds(end - start), start_duration);
+        start_duration -= duration;
 
         enterprise_management::TimePeriod period;
         period.set_start_timestamp(start);
         period.set_end_timestamp(start + duration.InMilliseconds());
-        if (periods_by_activity_id->count(activity_id) == 0) {
-          Activities activities;
-          periods_by_activity_id->emplace(activity_id, activities);
-        }
-        Activities& activities = periods_by_activity_id->at(activity_id);
+        auto [activities_iter, unused_activities_inserted] =
+            periods_by_activity_id->try_emplace(activity_id,
+                                                ActivityStorage::Activities());
+        ActivityStorage::Activities& activities = activities_iter->second;
         activities.push_back(period);
       },
       &periods_by_activity_id, &day_capacities));
@@ -120,12 +121,11 @@ void ActivityStorage::RemoveOverlappingActivityPeriods() {
 const ActivityStorage::Activities ActivityStorage::GetActivityPeriodsWithNoId(
     base::Time end_time) const {
   const auto& activity_periods = GetActivityPeriods(end_time);
-  std::string no_id;
-  if (activity_periods.count(no_id)) {
-    return activity_periods.at(no_id);
-  } else {
-    return {};
+  if (auto it = activity_periods.find("");
+      it != activity_periods.end()) {
+    return it->second;
   }
+  return {};
 }
 
 const std::map<std::string, ActivityStorage::Activities>
@@ -144,11 +144,9 @@ ActivityStorage::GetActivityPeriods(base::Time end_time) const {
         enterprise_management::TimePeriod period;
         period.set_start_timestamp(start);
         period.set_end_timestamp(end);
-        if (periods_by_activity_id->count(activity_id) == 0) {
-          Activities activities;
-          periods_by_activity_id->emplace(activity_id, activities);
-        }
-        Activities& activities = periods_by_activity_id->at(activity_id);
+        auto [activities_iter, unused] = periods_by_activity_id->try_emplace(
+            activity_id, ActivityStorage::Activities());
+        ActivityStorage::Activities& activities = activities_iter->second;
         activities.push_back(period);
       },
       &periods_by_activity_id, day_key));
