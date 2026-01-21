@@ -41,7 +41,7 @@
 
 #contextEntrypoint {
   color: var(--color-searchbox-results-foreground);
-  padding-inline: 8px;
+  padding-inline: var(--contextual-entrypoint-and-carousel-context-entrypoint-padding-inline, 8px);
 }
 
 #toolChipsContainer {

@@ -64,7 +64,6 @@ contextual-entrypoint-and-carousel[searchbox-layout-mode="TallBottomContext"] {
   --contextual-entrypoint-and-carousel-context-menu-container-margin-bottom: 9px;
 }
 
-contextual-entrypoint-and-carousel[searchbox-layout-mode="Compact"],
 contextual-entrypoint-and-carousel[searchbox-layout-mode="TallTopContext"] {
   --contextual-entrypoint-and-carousel-contextual-chip-padding-bottom: 10px;
 
@@ -72,6 +71,12 @@ contextual-entrypoint-and-carousel[searchbox-layout-mode="TallTopContext"] {
     --contextual-entrypoint-and-carousel-contextual-chip-padding-bottom: 0px;
     --contextual-entrypoint-and-carousel-context-menu-container-margin-bottom: 9px;
   }
+}
+
+contextual-entrypoint-and-carousel[searchbox-layout-mode="Compact"] {
+  --contextual-entrypoint-and-carousel-context-entrypoint-padding-inline: 0px;
+  --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start: 12px;
+  --contextual-entrypoint-and-carousel-contextual-chip-padding-bottom: 16px;
 }
 
 /**
