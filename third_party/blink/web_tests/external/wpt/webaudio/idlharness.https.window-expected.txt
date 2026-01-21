@@ -1,7 +1,5 @@
 This is a testharness.js-based test.
-Found 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] BaseAudioContext interface: attribute renderQuantumSize
-  assert_true: The prototype object must have a property "renderQuantumSize" expected true got false
+Found 27 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] AudioContext interface: attribute playbackStats
   assert_true: The prototype object must have a property "playbackStats" expected true got false
 [FAIL] AudioContext interface: operation createMediaStreamTrackSource(MediaStreamTrack)
@@ -12,10 +10,6 @@ Found 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_inherits: property "createMediaStreamTrackSource" not found in prototype chain
 [FAIL] AudioContext interface: calling createMediaStreamTrackSource(MediaStreamTrack) on context with too few arguments must throw TypeError
   assert_inherits: property "createMediaStreamTrackSource" not found in prototype chain
-[FAIL] BaseAudioContext interface: context must inherit property "renderQuantumSize" with the proper type
-  assert_inherits: property "renderQuantumSize" not found in prototype chain
-[FAIL] BaseAudioContext interface: new OfflineAudioContext(1, 1, sample_rate) must inherit property "renderQuantumSize" with the proper type
-  assert_inherits: property "renderQuantumSize" not found in prototype chain
 [FAIL] MediaStreamTrackAudioSourceNode interface: existence and properties of interface object
   assert_own_property: self does not have own property "MediaStreamTrackAudioSourceNode" expected property "MediaStreamTrackAudioSourceNode" missing
 [FAIL] MediaStreamTrackAudioSourceNode interface object length

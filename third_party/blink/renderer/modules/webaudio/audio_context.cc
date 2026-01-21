@@ -424,8 +424,10 @@ AudioContext* AudioContext::Create(ExecutionContext* context,
   }
 
   std::optional<uint32_t> render_quantum_frames = 128;
-  if (RuntimeEnabledFeatures::WebAudioConfigurableRenderQuantumEnabled() &&
+  if (RuntimeEnabledFeatures::WebAudioConfigurableRenderQuantumEnabled(
+          context) &&
       context_options->hasRenderSizeHint()) {
+    UseCounter::Count(context, WebFeature::kWebAudioRenderSizeHint);
     const auto* hint = context_options->renderSizeHint();
     switch (hint->GetContentType()) {
       case V8UnionAudioContextRenderSizeCategoryOrUnsignedLong::ContentType::
