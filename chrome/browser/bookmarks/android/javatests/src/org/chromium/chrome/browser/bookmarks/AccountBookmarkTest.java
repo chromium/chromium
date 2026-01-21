@@ -57,8 +57,6 @@ public class AccountBookmarkTest {
 
     @Before
     public void setUp() throws Exception {
-        // Auto form factors are very small, disable the promo to leave room for bookmarks.
-        BookmarkPromoHeader.forcePromoVisibilityForTesting(false);
         mBookmarkModel =
                 runOnUiThreadBlocking(
                         () ->

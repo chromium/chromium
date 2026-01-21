@@ -101,7 +101,6 @@ public class BookmarkOpenerTest {
      */
     private void openBookmarkManager(CtaPageStation pageStation) {
         SigninPromoCoordinator.disablePromoForTesting();
-        BookmarkPromoHeader.forcePromoVisibilityForTesting(false);
 
         if (pageStation.getActivity().isTablet()) {
             pageStation = pageStation.loadWebPageProgrammatically(getOriginalNativeBookmarksUrl());

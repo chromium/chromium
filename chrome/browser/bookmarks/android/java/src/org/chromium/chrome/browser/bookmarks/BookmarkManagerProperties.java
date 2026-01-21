@@ -16,8 +16,6 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 /** Responsible for hosting properties of BookmarkManager views. */
 @NullMarked
 public class BookmarkManagerProperties {
-    public static final WritableObjectPropertyKey<BookmarkPromoHeader> BOOKMARK_PROMO_HEADER =
-            new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<BatchUploadCardCoordinator>
             BATCH_UPLOAD_CARD_COORDINATOR = new WritableObjectPropertyKey<>();
     // TODO(https://crbug.com/1416611): Replace with individual fields.
@@ -35,7 +33,6 @@ public class BookmarkManagerProperties {
             new WritableObjectPropertyKey<>();
 
     static final PropertyKey[] ALL_KEYS = {
-        BOOKMARK_PROMO_HEADER,
         BATCH_UPLOAD_CARD_COORDINATOR,
         BOOKMARK_LIST_ENTRY,
         BOOKMARK_ID,

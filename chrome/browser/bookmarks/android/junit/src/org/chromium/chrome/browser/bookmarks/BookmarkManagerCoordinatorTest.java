@@ -27,7 +27,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
@@ -63,7 +62,6 @@ import org.chromium.ui.base.WindowAndroid;
     ChromeSwitches.DISABLE_NATIVE_INITIALIZATION
 })
 @Features.EnableFeatures({
-    ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP,
     ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES,
     SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
 })
@@ -156,17 +154,6 @@ public class BookmarkManagerCoordinatorTest {
 
     @Test
     public void testCreateView() {
-        FrameLayout parent = new FrameLayout(mActivity);
-        assertNotNull(mCoordinator.buildSectionHeaderView(parent));
-        assertNotNull(BookmarkManagerCoordinator.buildDividerView(parent));
-        assertNotNull(BookmarkManagerCoordinator.buildCompactImprovedBookmarkRow(parent));
-        assertNotNull(BookmarkManagerCoordinator.buildVisualImprovedBookmarkRow(parent));
-        assertNotNull(mCoordinator.buildSearchBoxRow(parent));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
-    public void testCreateViewUNOPhase2FollowUpEnabled() {
         FrameLayout parent = new FrameLayout(mActivity);
         assertNotNull(mCoordinator.buildBatchUploadCardView(parent));
         assertNotNull(mCoordinator.buildSectionHeaderView(parent));

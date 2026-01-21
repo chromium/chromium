@@ -14,7 +14,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -66,7 +65,6 @@ import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({
-    UNO_PHASE_2_FOLLOW_UP,
     ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES,
     SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
 })

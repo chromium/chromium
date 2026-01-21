@@ -135,8 +135,7 @@ public class BookmarkManagerCoordinator
     private final BookmarkManagerMediator mMediator;
     private final ImageFetcher mImageFetcher;
     private final SnackbarManager mSnackbarManager;
-    private final @Nullable SigninPromoCoordinator mSigninPromoCoordinator;
-    private final @Nullable BookmarkPromoHeader mPromoHeaderManager;
+    private final SigninPromoCoordinator mSigninPromoCoordinator;
     private final BookmarkModel mBookmarkModel;
     private final Profile mProfile;
     private final BookmarkUiPrefs mBookmarkUiPrefs;
@@ -289,48 +288,39 @@ public class BookmarkManagerCoordinator
                         bookmarkManagerOpener,
                         priceDropNotificationManager,
                         Clipboard.getInstance());
-        mPromoHeaderManager = mMediator.getPromoHeaderManager();
 
         bookmarkDelegateSupplier.set(/* object= */ mMediator);
 
         mMainView.addOnAttachStateChangeListener(this);
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
-            mSigninPromoCoordinator =
-                    new SigninPromoCoordinator(
-                            windowAndroid,
-                            activity,
-                            mProfile.getOriginalProfile(),
-                            activityResultTracker,
-                            SigninAndHistorySyncActivityLauncherImpl.get(),
-                            bottomSheetControllerSupplier.get(),
-                            ObservableSuppliers.createNonNull(mModalDialogManager),
-                            snackbarManager,
-                            DeviceLockActivityLauncherImpl.get(),
-                            new BookmarkSigninPromoDelegate(
-                                    activity,
-                                    mProfile.getOriginalProfile(),
-                                    SigninAndHistorySyncActivityLauncherImpl.get(),
-                                    mMediator::onPromoVisibilityChange,
-                                    this::openSettings));
-            dragReorderableRecyclerViewAdapter.registerType(
-                    ViewType.SIGNIN_PROMO,
-                    mSigninPromoCoordinator::buildPromoView,
-                    // SigninPromoCoordinator owns the model and keys for the promo inside it.
-                    // The PropertyModel and BookmarkManagerProperties key passed to this binder
-                    // method are thus not needed.
-                    (model, view, key) -> mSigninPromoCoordinator.setView(view));
-            dragReorderableRecyclerViewAdapter.registerType(
-                    ViewType.BATCH_UPLOAD_CARD,
-                    this::buildBatchUploadCardView,
-                    BookmarkManagerViewBinder::bindBatchUploadCardView);
-        } else {
-            mSigninPromoCoordinator = null;
-            dragReorderableRecyclerViewAdapter.registerType(
-                    ViewType.SIGNIN_PROMO,
-                    this::buildPersonalizedPromoView,
-                    BookmarkManagerViewBinder::bindPersonalizedPromoView);
-        }
+        mSigninPromoCoordinator =
+                new SigninPromoCoordinator(
+                        windowAndroid,
+                        activity,
+                        mProfile.getOriginalProfile(),
+                        activityResultTracker,
+                        SigninAndHistorySyncActivityLauncherImpl.get(),
+                        bottomSheetControllerSupplier.get(),
+                        ObservableSuppliers.createNonNull(mModalDialogManager),
+                        snackbarManager,
+                        DeviceLockActivityLauncherImpl.get(),
+                        new BookmarkSigninPromoDelegate(
+                                activity,
+                                mProfile.getOriginalProfile(),
+                                SigninAndHistorySyncActivityLauncherImpl.get(),
+                                mMediator::onPromoVisibilityChange,
+                                this::openSettings));
+        dragReorderableRecyclerViewAdapter.registerType(
+                ViewType.SIGNIN_PROMO,
+                mSigninPromoCoordinator::buildPromoView,
+                // SigninPromoCoordinator owns the model and keys for the promo inside it.
+                // The PropertyModel and BookmarkManagerProperties key passed to this binder
+                // method are thus not needed.
+                (model, view, key) -> mSigninPromoCoordinator.setView(view));
+        dragReorderableRecyclerViewAdapter.registerType(
+                ViewType.BATCH_UPLOAD_CARD,
+                this::buildBatchUploadCardView,
+                BookmarkManagerViewBinder::bindBatchUploadCardView);
         dragReorderableRecyclerViewAdapter.registerType(
                 ViewType.SECTION_HEADER,
                 this::buildSectionHeaderView,
@@ -381,10 +371,7 @@ public class BookmarkManagerCoordinator
         mMainView.removeOnAttachStateChangeListener(this);
         mSelectableListLayout.onDestroyed();
         mMediator.onDestroy();
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
-            assert mSigninPromoCoordinator != null;
-            mSigninPromoCoordinator.destroy();
-        }
+        mSigninPromoCoordinator.destroy();
     }
 
     /** Returns the view that shows the main bookmarks UI. */
@@ -478,12 +465,6 @@ public class BookmarkManagerCoordinator
     }
 
     @VisibleForTesting
-    View buildPersonalizedPromoView(ViewGroup parent) {
-        assumeNonNull(mPromoHeaderManager);
-        return mPromoHeaderManager.createPersonalizedSigninAndSyncPromoHolder(parent);
-    }
-
-    @VisibleForTesting
     View buildBatchUploadCardView(ViewGroup parent) {
         // The signin_settings_card_view is used for Batch Upload Cards.
         return inflate(parent, R.layout.signin_settings_card_view);
@@ -523,7 +504,6 @@ public class BookmarkManagerCoordinator
     }
 
     boolean canShowSigninPromo() {
-        assert mSigninPromoCoordinator != null;
         return mSigninPromoCoordinator.canShowPromo();
     }
 

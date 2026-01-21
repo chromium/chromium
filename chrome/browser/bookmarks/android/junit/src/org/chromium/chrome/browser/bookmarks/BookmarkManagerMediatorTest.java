@@ -62,7 +62,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
@@ -148,10 +147,7 @@ import java.util.function.Consumer;
 /** Unit tests for {@link BookmarkManagerMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowPostTask.class})
-@EnableFeatures({
-    ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP,
-    ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES
-})
+@EnableFeatures({ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES})
 public class BookmarkManagerMediatorTest {
     private static final GURL EXAMPLE_URL = JUnitTestGURLs.EXAMPLE_URL;
     private static final String EXAMPLE_URL_FORMATTED =
@@ -1418,29 +1414,6 @@ public class BookmarkManagerMediatorTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
-    public void testPromoHeader() {
-        BookmarkPromoHeader.forcePromoVisibilityForTesting(true);
-        mMediator.getPromoHeaderManager().syncStateChanged();
-        finishLoading();
-        mMediator.openFolder(mFolderId1);
-
-        verifyCurrentViewTypes(
-                ViewType.SEARCH_BOX,
-                ViewType.SIGNIN_PROMO,
-                ViewType.IMPROVED_BOOKMARK_COMPACT,
-                ViewType.IMPROVED_BOOKMARK_COMPACT);
-
-        BookmarkPromoHeader.forcePromoVisibilityForTesting(false);
-        mMediator.getPromoHeaderManager().syncStateChanged();
-
-        verifyCurrentViewTypes(
-                ViewType.SEARCH_BOX,
-                ViewType.IMPROVED_BOOKMARK_COMPACT,
-                ViewType.IMPROVED_BOOKMARK_COMPACT);
-    }
-
-    @Test
     public void testSearchBox() {
         when(mBookmarkModel.searchBookmarks(eq("3"), anyInt()))
                 .thenReturn(Collections.singletonList(mFolderId3));
@@ -1699,7 +1672,6 @@ public class BookmarkManagerMediatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
     public void testRootLevelFolders_batchUploadCardPresentWhenLocalBookmarksExist() {
         doReturn(true).when(mBookmarkModel).areAccountBookmarkFoldersActive();
         BookmarkId accountReadingListId = new BookmarkId(mId++, BookmarkType.READING_LIST);
@@ -1772,7 +1744,6 @@ public class BookmarkManagerMediatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
     public void testRootLevelFolders_batchUploadCardPresentWhenLocalReadingListItemsExist() {
         doReturn(true).when(mBookmarkModel).areAccountBookmarkFoldersActive();
         BookmarkId accountReadingListId = new BookmarkId(mId++, BookmarkType.READING_LIST);
@@ -1845,7 +1816,6 @@ public class BookmarkManagerMediatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
     public void testRootLevelFolders_batchUploadCardDoesNotPresentWhenOnlyLocalPasswordsExist() {
         doReturn(true).when(mBookmarkModel).areAccountBookmarkFoldersActive();
         BookmarkId accountReadingListId = new BookmarkId(mId++, BookmarkType.READING_LIST);

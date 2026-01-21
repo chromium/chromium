@@ -62,7 +62,6 @@ public class BookmarkPaneTest {
 
     @Before
     public void setUp() {
-        BookmarkPromoHeader.forcePromoVisibilityForTesting(true);
         mStartingPage = mCtaTestRule.startOnBlankPage();
     }
 

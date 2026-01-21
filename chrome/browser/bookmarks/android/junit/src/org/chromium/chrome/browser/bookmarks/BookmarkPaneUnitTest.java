@@ -24,6 +24,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
+import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.page_image_service.ImageServiceBridge;
@@ -53,10 +54,7 @@ import java.util.function.DoubleConsumer;
     ChromeFeatureList.BOOKMARK_PANE_ANDROID,
     SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
 })
-@DisableFeatures({
-    ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP,
-    ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES
-})
+@DisableFeatures({ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES})
 public class BookmarkPaneUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -79,6 +77,7 @@ public class BookmarkPaneUnitTest {
     @Mock private ImageServiceBridge.Natives mImageServiceBridgeNatives;
     @Mock private FaviconHelper.Natives mFaviconHelperNatives;
     @Mock private SyncService mSyncService;
+    @Mock private ReauthenticatorBridge mReauthenticatorBridge;
 
     private BookmarkPane mBookmarkPane;
 
@@ -98,6 +97,7 @@ public class BookmarkPaneUnitTest {
         when(mFaviconHelperNatives.init()).thenReturn(1L);
         FaviconHelperJni.setInstanceForTesting(mFaviconHelperNatives);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
+        ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorBridge);
 
         mBookmarkPane =
                 new BookmarkPane(
