@@ -26,12 +26,12 @@ public interface WebViewNavigationListenerBoundaryInterface
 
     void onFirstContentfulPaint(/* WebViewPage */ InvocationHandler page, long loadTimeUs);
 
-    default void onFirstContentfulPaintMillis(
-            /* WebViewPage */ InvocationHandler page, long durationMillis) {}
+    void onFirstContentfulPaintMillis(
+            /* WebViewPage */ InvocationHandler page, long durationMillis);
 
-    default void onLargestContentfulPaintMillis(
-            /* WebViewPage */ InvocationHandler page, long durationMillis) {}
+    void onLargestContentfulPaintMillis(
+            /* WebViewPage */ InvocationHandler page, long durationMillis);
 
-    default void onPerformanceMarkMillis(
-            /* WebViewPage */ InvocationHandler page, String markName, long durationMillis) {}
+    void onPerformanceMarkMillis(
+            /* WebViewPage */ InvocationHandler page, String markName, long durationMillis);
 }
