@@ -338,6 +338,7 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/devtools/devtools_policy_dialog.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
@@ -3534,7 +3535,15 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       break;
 
     case IDC_VIEW_SOURCE:
-      embedder_web_contents_->GetPrimaryMainFrame()->ViewSource();
+      if (base::FeatureList::IsEnabled(features::kDevToolsShowPolicyDialog) &&
+          !DevToolsWindow::AllowDevToolsFor(GetProfile(),
+                                            embedder_web_contents_)) {
+#if !BUILDFLAG(IS_ANDROID)
+        DevToolsPolicyDialog::Show(embedder_web_contents_);
+#endif
+      } else {
+        embedder_web_contents_->GetPrimaryMainFrame()->ViewSource();
+      }
       break;
 
     case IDC_CONTENT_CONTEXT_INSPECTELEMENT:
@@ -3813,13 +3822,6 @@ bool RenderViewContextMenu::IsViewSourceEnabled() const {
     return false;
   }
 
-  // Additional DevTools policy check if the new policy dialog feature is not
-  // enabled.
-  if (base::FeatureList::IsEnabled(features::kDevToolsShowPolicyDialog) &&
-      (!IsDevCommandEnabled(IDC_CONTENT_CONTEXT_INSPECTELEMENT) ||
-       !DevToolsWindow::AllowDevToolsFor(GetProfile(), source_web_contents_))) {
-    return false;
-  }
 
   // Disallow ViewSource if DevTools are disabled.
   if (!IsDevCommandEnabled(IDC_CONTENT_CONTEXT_INSPECTELEMENT)) {

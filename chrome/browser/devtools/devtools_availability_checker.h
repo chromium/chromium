@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_DEVTOOLS_DEVTOOLS_AVAILABILITY_CHECKER_H_
 #define CHROME_BROWSER_DEVTOOLS_DEVTOOLS_AVAILABILITY_CHECKER_H_
 
+class GURL;
 class Profile;
 
 namespace content {
@@ -31,5 +32,8 @@ bool IsInspectionAllowed(Profile* profile,
 // |web_app| may be null, in which case this function just checks
 // the settings for |profile|.
 bool IsInspectionAllowed(Profile* profile, const web_app::WebApp* web_app);
+
+// Checks the developer tools policies for a given |url|.
+bool IsInspectionAllowed(Profile* profile, const GURL& url);
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVTOOLS_AVAILABILITY_CHECKER_H_

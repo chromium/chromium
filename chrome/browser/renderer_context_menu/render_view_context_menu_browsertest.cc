@@ -2924,9 +2924,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyContextMenuBrowserTest, DevToolsBlocked) {
   EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_INSPECTELEMENT));
   EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_INSPECTELEMENT));
 
-  // View Source should be present but disabled (grayed out).
+  // View Source should be present and enabled (to show the dialog).
   EXPECT_TRUE(menu->IsItemPresent(IDC_VIEW_SOURCE));
-  EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_VIEW_SOURCE));
+  EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_VIEW_SOURCE));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsPolicyContextMenuBrowserTest, DevToolsAllowed) {

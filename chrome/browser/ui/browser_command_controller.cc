@@ -25,6 +25,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/commerce/browser_utils.h"
 #include "chrome/browser/defaults.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/devtools/devtools_policy_dialog.h"
+#endif
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/feedback/public/feedback_source.h"
@@ -736,12 +739,19 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_BOOKMARK_ALL_TABS:
       BookmarkAllTabs(browser_);
       break;
-    case IDC_VIEW_SOURCE:
-      browser_->tab_strip_model()
-          ->GetActiveWebContents()
-          ->GetPrimaryMainFrame()
-          ->ViewSource();
+    case IDC_VIEW_SOURCE: {
+      content::WebContents* web_contents =
+          browser_->tab_strip_model()->GetActiveWebContents();
+      if (base::FeatureList::IsEnabled(features::kDevToolsShowPolicyDialog) &&
+          !DevToolsWindow::AllowDevToolsFor(profile(), web_contents)) {
+#if !BUILDFLAG(IS_ANDROID)
+        DevToolsPolicyDialog::Show(web_contents);
+#endif
+      } else {
+        web_contents->GetPrimaryMainFrame()->ViewSource();
+      }
       break;
+    }
     case IDC_PRINT:
       Print(browser_);
       break;
@@ -1546,10 +1556,7 @@ void BrowserCommandController::InitCommandState() {
                                           dev_tools_enabled);
     command_updater_.UpdateCommandEnabled(IDC_DEV_TOOLS_TOGGLE,
                                           dev_tools_enabled);
-    command_updater_.UpdateCommandEnabled(
-        IDC_VIEW_SOURCE,
-        DevToolsWindow::AllowDevToolsFor(
-            profile(), browser_->tab_strip_model()->GetActiveWebContents()));
+    command_updater_.UpdateCommandEnabled(IDC_VIEW_SOURCE, dev_tools_enabled);
 #if BUILDFLAG(IS_MAC)
     command_updater_.UpdateCommandEnabled(IDC_TOGGLE_JAVASCRIPT_APPLE_EVENTS,
                                           dev_tools_enabled);

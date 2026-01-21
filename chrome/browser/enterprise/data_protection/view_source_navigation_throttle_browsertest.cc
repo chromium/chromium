@@ -5,10 +5,12 @@
 #include "chrome/browser/enterprise/data_protection/view_source_navigation_throttle.h"
 
 #include "base/path_service.h"
+#include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -194,6 +196,152 @@ IN_PROC_BROWSER_TEST_F(ViewSourceNavigationThrottleBrowserTest,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), view_source_url));
   EXPECT_TRUE(IsInterstitialBeingShown());
+}
+
+IN_PROC_BROWSER_TEST_F(ViewSourceNavigationThrottleBrowserTest,
+                       DevToolsBlocked) {
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kDevToolsAvailability,
+      static_cast<int>(
+          policy::DeveloperToolsPolicyHandler::Availability::kDisallowed));
+
+  GURL url(embedded_test_server()->GetURL("/simple.html"));
+  GURL view_source_url("view-source:" + url.spec());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), view_source_url));
+  EXPECT_FALSE(IsInterstitialBeingShown());
+}
+
+IN_PROC_BROWSER_TEST_F(ViewSourceNavigationThrottleBrowserTest,
+                       BlocklistedUrl) {
+  GURL url(embedded_test_server()->GetURL("/simple.html"));
+  base::Value::List blocklist;
+  blocklist.Append(url.host());
+  browser()->profile()->GetPrefs()->SetList(
+      prefs::kDeveloperToolsAvailabilityBlocklist, std::move(blocklist));
+
+  GURL view_source_url("view-source:" + url.spec());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), view_source_url));
+  EXPECT_FALSE(IsInterstitialBeingShown());
+}
+
+IN_PROC_BROWSER_TEST_F(ViewSourceNavigationThrottleBrowserTest,
+                       AllowlistedUrl) {
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kDevToolsAvailability,
+      static_cast<int>(
+          policy::DeveloperToolsPolicyHandler::Availability::kDisallowed));
+  GURL url(embedded_test_server()->GetURL("/simple.html"));
+  base::Value::List allowlist;
+  allowlist.Append(url.host());
+  browser()->profile()->GetPrefs()->SetList(
+      prefs::kDeveloperToolsAvailabilityAllowlist, std::move(allowlist));
+
+  GURL view_source_url("view-source:" + url.spec());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), view_source_url));
+  EXPECT_EQ(browser()
+                ->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetLastCommittedURL(),
+            view_source_url);
+}
+
+IN_PROC_BROWSER_TEST_F(ViewSourceNavigationThrottleBrowserTest,
+                       DevToolsAllowed) {
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kDevToolsAvailability,
+      static_cast<int>(
+          policy::DeveloperToolsPolicyHandler::Availability::kAllowed));
+
+  GURL url(embedded_test_server()->GetURL("/simple.html"));
+  GURL view_source_url("view-source:" + url.spec());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), view_source_url));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), view_source_url);
+}
+
+IN_PROC_BROWSER_TEST_F(ViewSourceNavigationThrottleBrowserTest,
+                       AllowlistedUrl_NotMatching) {
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kDevToolsAvailability,
+      static_cast<int>(
+          policy::DeveloperToolsPolicyHandler::Availability::kDisallowed));
+  base::Value::List allowlist;
+  allowlist.Append("example.com");
+  browser()->profile()->GetPrefs()->SetList(
+      prefs::kDeveloperToolsAvailabilityAllowlist, std::move(allowlist));
+
+  GURL url(embedded_test_server()->GetURL("/simple.html"));
+  GURL view_source_url("view-source:" + url.spec());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), view_source_url));
+  EXPECT_FALSE(IsInterstitialBeingShown());
+}
+
+IN_PROC_BROWSER_TEST_F(ViewSourceNavigationThrottleBrowserTest,
+                       AllowlistTakesPrecedence) {
+  GURL url(embedded_test_server()->GetURL("/simple.html"));
+  base::Value::List allowlist;
+  allowlist.Append(url.host());
+  browser()->profile()->GetPrefs()->SetList(
+      prefs::kDeveloperToolsAvailabilityAllowlist, std::move(allowlist));
+  base::Value::List blocklist;
+  blocklist.Append(url.host());
+  browser()->profile()->GetPrefs()->SetList(
+      prefs::kDeveloperToolsAvailabilityBlocklist, std::move(blocklist));
+
+  GURL view_source_url("view-source:" + url.spec());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), view_source_url));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), view_source_url);
+}
+
+IN_PROC_BROWSER_TEST_F(ViewSourceNavigationThrottleBrowserTest,
+                       NoMatchOnLists_DefaultAllowed) {
+  base::Value::List allowlist;
+  allowlist.Append("example.com");
+  browser()->profile()->GetPrefs()->SetList(
+      prefs::kDeveloperToolsAvailabilityAllowlist, std::move(allowlist));
+  base::Value::List blocklist;
+  blocklist.Append("something.com");
+  browser()->profile()->GetPrefs()->SetList(
+      prefs::kDeveloperToolsAvailabilityBlocklist, std::move(blocklist));
+
+  GURL url(embedded_test_server()->GetURL("/simple.html"));
+  GURL view_source_url("view-source:" + url.spec());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), view_source_url));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), view_source_url);
+}
+
+IN_PROC_BROWSER_TEST_F(ViewSourceNavigationThrottleBrowserTest,
+                       NoMatchOnLists_Disallowed) {
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kDevToolsAvailability,
+      static_cast<int>(
+          policy::DeveloperToolsPolicyHandler::Availability::kDisallowed));
+  base::Value::List allowlist;
+  allowlist.Append("example.com");
+  browser()->profile()->GetPrefs()->SetList(
+      prefs::kDeveloperToolsAvailabilityAllowlist, std::move(allowlist));
+  base::Value::List blocklist;
+  blocklist.Append("something.com");
+  browser()->profile()->GetPrefs()->SetList(
+      prefs::kDeveloperToolsAvailabilityBlocklist, std::move(blocklist));
+
+  GURL url(embedded_test_server()->GetURL("/simple.html"));
+  GURL view_source_url("view-source:" + url.spec());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), view_source_url));
+  EXPECT_FALSE(IsInterstitialBeingShown());
 }
 
 }  // namespace enterprise_data_protection

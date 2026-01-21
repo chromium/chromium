@@ -12,6 +12,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/extension_host.h"
@@ -212,3 +213,24 @@ bool IsInspectionAllowed(Profile* profile, const web_app::WebApp* web_app) {
   }
 }
 #endif
+
+bool IsInspectionAllowed(Profile* profile, const GURL& url) {
+  policy::DeveloperToolsPolicyChecker* checker =
+      policy::DeveloperToolsPolicyCheckerFactory::GetForBrowserContext(profile);
+  if (checker) {
+    if (auto url_check = checker->CheckDevToolsAvailabilityForUrl(url)) {
+      return *url_check;
+    }
+  }
+  // If the URL-based policy doesn't have a rule for this URL, we fall back to
+  // the general enum-based policy.
+  using Availability = policy::DeveloperToolsPolicyHandler::Availability;
+  Availability availability = GetDevToolsAvailability(profile);
+  switch (availability) {
+    case Availability::kDisallowed:
+      return false;
+    case Availability::kAllowed:
+    case Availability::kDisallowedForForceInstalledExtensions:
+      return true;
+  }
+}
