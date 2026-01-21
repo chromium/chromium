@@ -42,6 +42,10 @@ void SyncBreadcrumbsLog() {
 
 @implementation SceneDelegate
 
+- (void)dealloc {
+  CHECK(!_sceneState, base::NotFatalUntil::M152);
+}
+
 #pragma mark - UIWindowSceneDelegate
 
 // This getter is called when the SceneDelegate is created. Returning a

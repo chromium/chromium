@@ -894,7 +894,7 @@ const char kChromeAppStoreUrl[] =
 }
 
 - (void)dealloc {
-  DCHECK(!_bookmarksCoordinator);
+  CHECK(!self.started, base::NotFatalUntil::M152);
 }
 
 #pragma mark - Public

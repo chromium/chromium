@@ -527,6 +527,7 @@ void OnListFamilyMembersResponse(
 
 - (void)dealloc {
   CHECK(!_authServiceObserverBridge, base::NotFatalUntil::M145);
+  CHECK(!self.browserLifecycleManager, base::NotFatalUntil::M152);
 }
 
 - (void)setProfileState:(ProfileState*)profileState {

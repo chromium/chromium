@@ -39,6 +39,7 @@ class SceneDelegateTest : public PlatformTest {
   }
 
   void TearDown() override {
+    [delegate_ sceneDidDisconnect:mock_scene_];
     delegate_ = nil;
     PlatformTest::TearDown();
   }
@@ -101,4 +102,5 @@ TEST_F(SceneDelegateTest, TestInitialConnectionWithShortcutSetsIntent) {
                    options:mock_options];
 
   EXPECT_TRUE(coldStartDelegate.sceneState.startupHadExternalIntent);
+  [coldStartDelegate sceneDidDisconnect:mock_scene_];
 }

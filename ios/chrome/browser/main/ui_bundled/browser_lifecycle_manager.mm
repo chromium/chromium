@@ -74,7 +74,8 @@
 }
 
 - (void)dealloc {
-  DCHECK(_isShutdown) << "-shutdown must be called before -dealloc";
+  CHECK(_isShutdown, base::NotFatalUntil::M152)
+      << "-shutdown must be called before -dealloc";
 }
 
 - (void)createMainCoordinatorAndInterface {
@@ -232,7 +233,7 @@
 }
 
 - (void)shutdown {
-  DCHECK(!_isShutdown);
+  CHECK(!_isShutdown, base::NotFatalUntil::M152);
   _isShutdown = YES;
 
   // Inform the command dispatchers of the shutdown. Should be in reverse
