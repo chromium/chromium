@@ -64,18 +64,6 @@ class DiceAccountReconcilorDelegateTest : public testing::Test {
   DiceAccountReconcilorDelegate delegate_;
 };
 
-TEST_F(DiceAccountReconcilorDelegateTest, GetConsentLevelForPrimaryAccount) {
-  EXPECT_EQ(delegate().GetConsentLevelForPrimaryAccount(),
-            ConsentLevel::kSignin);
-
-  // Sign in.
-  identity_test_environment().MakePrimaryAccountAvailable(
-      "test@gmail.com", ConsentLevel::kSignin);
-  // Simulate Dice User migrating.
-  pref_service()->SetBoolean(prefs::kExplicitBrowserSignin, false);
-  EXPECT_EQ(delegate().GetConsentLevelForPrimaryAccount(), ConsentLevel::kSync);
-}
-
 TEST_F(DiceAccountReconcilorDelegateTest,
        IsCookieBasedConsistencyModePreChromeSignIn) {
   EXPECT_TRUE(delegate().IsCookieBasedConsistencyMode());

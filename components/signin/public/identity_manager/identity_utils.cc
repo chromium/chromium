@@ -70,23 +70,15 @@ bool IsUsernameAllowedByPatternFromPrefs(const PrefService* prefs,
       username, prefs->GetString(prefs::kGoogleServicesUsernamePattern));
 }
 
-bool IsImplicitBrowserSigninOrExplicitDisabled(
-    const IdentityManager* identity_manager,
-    const PrefService* prefs) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Check if the user is implicitly signed in.
-  // Signed out users or signed in explicitly should return false.
-  return identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
-         !prefs->GetBoolean(prefs::kExplicitBrowserSignin);
-#else
-  return true;
-#endif
-}
-
 bool AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
     signin::IdentityManager& manager,
     PrefService& prefs) {
-  return !signin::IsImplicitBrowserSigninOrExplicitDisabled(&manager, &prefs);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  return !manager.HasPrimaryAccount(signin::ConsentLevel::kSignin) ||
+         prefs.GetBoolean(prefs::kExplicitBrowserSignin);
+#else
+  return false;
+#endif
 }
 
 base::flat_set<GaiaId> GetAllGaiaIdsForKeyedPreferences(

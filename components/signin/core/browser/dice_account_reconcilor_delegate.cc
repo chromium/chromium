@@ -245,28 +245,7 @@ bool DiceAccountReconcilorDelegate::
 
 ConsentLevel DiceAccountReconcilorDelegate::GetConsentLevelForPrimaryAccount()
     const {
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  // A supervised user regardless of consent should not be signed out in certain
-  // cases such as clearing browsing data. In this instance the account
-  // reconciler should not remove the primary account.
-  if (IsAccountSupervised(identity_manager_)) {
-    return ConsentLevel::kSignin;
-  }
-#endif
-
-  if (!IsImplicitBrowserSigninOrExplicitDisabled(identity_manager_,
-                                                 signin_client_->GetPrefs())) {
-    return ConsentLevel::kSignin;
-  }
-
-  // In some cases, clearing the primary account is not allowed regardless of
-  // the consent level (e.g. cloud-managed profiles). In these cases, the dice
-  // account reconcilor delegate should never remove the primary account
-  // regardless of the consent.
-  // TODO(https://crbug.com.1464264): Migrate away from `ConsentLevel::kSync`
-  // on desktop platforms.
-  return signin_client_->IsClearPrimaryAccountAllowed() ? ConsentLevel::kSync
-                                                        : ConsentLevel::kSignin;
+  return ConsentLevel::kSignin;
 }
 
 void DiceAccountReconcilorDelegate::OnReconcileError(

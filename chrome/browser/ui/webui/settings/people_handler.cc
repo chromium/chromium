@@ -63,7 +63,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
@@ -1430,10 +1429,7 @@ base::Value::Dict PeopleHandler::GetChromeSigninUserChoiceInfo() {
   AccountInfo account =
       signin_ui_util::GetSingleAccountForPromos(identity_manager);
 
-  bool should_show_settings =
-      !signin::IsImplicitBrowserSigninOrExplicitDisabled(
-          identity_manager, profile_->GetPrefs()) &&
-      !account.IsEmpty();
+  bool should_show_settings = !account.IsEmpty();
 
   ChromeSigninUserChoice choice =
       should_show_settings
@@ -1463,8 +1459,6 @@ void PeopleHandler::HandleGetChromeSigninUserChoiceInfo(
 
 void PeopleHandler::HandleSetChromeSigninUserChoice(
     const base::Value::List& args) {
-  CHECK(!signin::IsImplicitBrowserSigninOrExplicitDisabled(
-      IdentityManagerFactory::GetForProfile(profile_), profile_->GetPrefs()));
   CHECK_EQ(2U, args.size());
 
   CHECK(args[0].is_int());

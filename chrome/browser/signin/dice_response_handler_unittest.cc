@@ -1406,31 +1406,4 @@ TEST_F(DiceResponseHandlerTest, SignoutPrimaryAccountWithSignoutRestrictions) {
   EXPECT_EQ(0, reconcilor_blocked_count_);
   EXPECT_EQ(0, reconcilor_unblocked_count_);
 }
-
-TEST_F(DiceResponseHandlerTest, SignoutImplicitPrimaryAccountSignin) {
-  // Setup.
-  // Configure Dice params.
-  DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNOUT);
-  const char kSecondarySignedOutEmail[] = "secondary_signed_out@gmail.com";
-  dice_params.signout_info->account_infos.push_back(
-      GetDiceResponseParamsAccountInfo(kSecondarySignedOutEmail));
-  const std::string dice_primary_account_email =
-      dice_params.signout_info->account_infos[0].email;
-  // Configure Chrome.
-  AccountInfo primary_account = identity_test_env_.MakePrimaryAccountAvailable(
-      dice_primary_account_email, signin::ConsentLevel::kSignin);
-  // Mark as implicit sign in.
-  pref_service().SetBoolean(prefs::kExplicitBrowserSignin, false);
-  identity_test_env_.MakeAccountAvailable(kSecondarySignedOutEmail);
-  AccountInfo secondary_not_signed_out =
-      identity_test_env_.MakeAccountAvailable("other@gmail.com");
-  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3U);
-  EXPECT_TRUE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-
-  // Receive signout response including primary and secondary account.
-  RunSignoutTest(dice_params, {secondary_not_signed_out.account_id},
-                 /*primary_account=*/CoreAccountId(),
-                 /*invalid_primary_account=*/false);
-}
 }  // namespace

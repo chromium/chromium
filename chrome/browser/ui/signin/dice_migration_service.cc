@@ -32,7 +32,6 @@
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder_outcome.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/user_education_features.h"
@@ -95,12 +94,9 @@ bool IsUserEligibleForDiceMigration(Profile* profile) {
     // The user is not signed in or has sync enabled.
     return false;
   }
-  if (!signin::IsImplicitBrowserSigninOrExplicitDisabled(identity_manager,
-                                                         profile->GetPrefs())) {
-    // The user is not implicitly signed in.
-    return false;
-  }
-  return true;
+
+  // The user is implicitly signed in.
+  return !profile->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin);
 }
 
 void SetBannerImage(ui::DialogModel::Builder& builder,

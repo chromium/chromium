@@ -111,15 +111,13 @@ class DiceMigrationServiceBrowserTest : public InProcessBrowserTest {
   bool IsImplicitlySignedIn() {
     return GetIdentityManager()->HasPrimaryAccount(
                signin::ConsentLevel::kSignin) &&
-           signin::IsImplicitBrowserSigninOrExplicitDisabled(
-               GetIdentityManager(), GetPrefs());
+           !GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin);
   }
 
   bool IsExplicitlySignedIn() {
     return GetIdentityManager()->HasPrimaryAccount(
                signin::ConsentLevel::kSignin) &&
-           !signin::IsImplicitBrowserSigninOrExplicitDisabled(
-               GetIdentityManager(), GetPrefs());
+           GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin);
   }
 
   void FireDialogTriggerTimer() {
@@ -212,8 +210,6 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, ExplicitlySignedIn) {
   // The user is explicitly signed in.
   ASSERT_TRUE(
       GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  ASSERT_FALSE(signin::IsImplicitBrowserSigninOrExplicitDisabled(
-      GetIdentityManager(), GetPrefs()));
 
   EXPECT_FALSE(
       GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());

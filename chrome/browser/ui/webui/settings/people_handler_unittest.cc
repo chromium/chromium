@@ -1345,20 +1345,6 @@ TEST_F(PeopleHandlerTest,
       false, ChromeSigninUserChoice::kNoChoice, "");
 }
 
-TEST_F(PeopleHandlerTest, ChromeSigninUserAvailableOnDiceSignin) {
-  const std::string email("user@gmail.com");
-  identity_test_env()->MakePrimaryAccountAvailable(email,
-                                                   ConsentLevel::kSignin);
-  // Simulates Dice signin.
-  SetExplicitSignin(false);
-
-  CreatePeopleHandler();
-
-  SimulateHandleGetChromeSigninUserChoiceInfo();
-  ExpectChromeSigninUserChoiceInfoFromWebUiResponse(
-      false, ChromeSigninUserChoice::kNoChoice, email);
-}
-
 TEST_F(PeopleHandlerTest, ChromeSigninUserInfoUpdateOnPrefValueChange) {
   const std::string email("user@gmail.com");
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(

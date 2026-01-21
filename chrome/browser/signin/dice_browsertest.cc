@@ -1725,51 +1725,6 @@ IN_PROC_BROWSER_TEST_F(
       prefs::kCookieClearOnExitMigrationNoticeComplete));
 }
 
-// Signin implicitlty, Dice Signin.
-IN_PROC_BROWSER_TEST_F(
-    DiceExplicitSigninBrowserTestWithForcedDiceMigrationDisabled,
-    PRE_DiceUserMigratedClearsCookie) {
-  signin::MakeAccountAvailable(
-      GetIdentityManager(),
-      signin::AccountAvailabilityOptionsBuilder()
-          .AsPrimary(signin::ConsentLevel::kSignin)
-          // `kWebSignin` is not explicit before the migration.
-          .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
-          .Build(kMainGmailEmail));
-  // Set the SAPISID cookie so that its deletion can be detected later.
-  // Set a max-age so that it's persisted on disk.
-  std::string gaia_cookie = base::StrCat(
-      {GaiaConstants::kGaiaSigninCookieName, "=foo; secure; max-age=1000"});
-  ASSERT_TRUE(content::SetCookie(browser()->profile(),
-                                 GURL("https://google.com/"), gaia_cookie));
-  ASSERT_TRUE(
-      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  ASSERT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
-      prefs::kExplicitBrowserSignin));
-}
-
-// Dice Signin with UNO enabled.
-IN_PROC_BROWSER_TEST_F(
-    DiceExplicitSigninBrowserTestWithForcedDiceMigrationDisabled,
-    DiceUserMigratedClearsCookie) {
-  Profile* profile = browser()->profile();
-  // The user is still signed in implicitly.
-  ASSERT_TRUE(
-      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  ASSERT_TRUE(gaia::AreEmailsSame(
-      GetIdentityManager()
-          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .email,
-      kMainGmailEmail));
-  ASSERT_FALSE(profile->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
-
-  content::DeleteCookies(profile, network::mojom::CookieDeletionFilter());
-
-  // User should be signed out.
-  EXPECT_FALSE(
-      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-}
-
 class DiceBrowserTestWithExplicitSignin : public DiceBrowserTest {
  public:
   // Sets the user choice for Chrome Signin on `main_email_`.
