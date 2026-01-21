@@ -737,7 +737,7 @@ TEST_F(LayerContextImplLayerLifecycleTest, LayerLifecycleAndEdgeCases) {
   VerifyLayerExists(kNonExistentLayerId, false);
   VerifyLayerOrder({1, kLayerId1});
 
-  // Test Case 4: Updating on Previously Removed Layer shoulf fail
+  // Test Case 4: Updating on Previously Removed Layer should fail
   // Update 11: Remove kLayerId1.
   auto update11 = CreateDefaultUpdate();
   RemoveLayerInUpdate(update11.get(), kLayerId1);
@@ -756,7 +756,7 @@ TEST_F(LayerContextImplLayerLifecycleTest, LayerLifecycleAndEdgeCases) {
 
   VerifyLayerExists(kLayerId1, false);  // Should not be re-created
 
-  // Test Case 5: Duplicate or non existent layer IDs in the Layer Order should
+  // Test Case 5: Duplicate or non-existent layer IDs in the Layer Order should
   // fail. Update 13: Create kLayerId1 again.
   auto update13 = CreateDefaultUpdate();
   AddDefaultLayerToUpdate(update13.get(), cc::mojom::LayerType::kLayer,
@@ -782,7 +782,7 @@ TEST_F(LayerContextImplLayerLifecycleTest, LayerLifecycleAndEdgeCases) {
   VerifyLayerBounds(kLayerId1, kUpdatedBounds5);  // Layer should be updated
   VerifyLayerOrder({1, kLayerId1});  // Layer Order should not update
 
-  // Update 15: Try to add a Non Existent layer to Layer Order
+  // Update 15: Try to add a non-existent layer to Layer Order
   auto update15 = CreateDefaultUpdate();
   update15->layer_order = layer_order_;
   update15->layer_order->push_back(kNonExistentLayerId);
@@ -792,7 +792,7 @@ TEST_F(LayerContextImplLayerLifecycleTest, LayerLifecycleAndEdgeCases) {
   EXPECT_EQ(result15.error(), "Invalid or duplicate layer ID");
 
   // Test Case 7: Invalid Property Tree Indices on Creation
-  // Update 16: Try to send a layer update with a1valid transform node index
+  // Update 16: Try to send a layer update with an invalid transform node index
   auto update16 = CreateDefaultUpdate();
   update16->layers.push_back(
       CreateManualLayer(kLayerId2, cc::mojom::LayerType::kLayer,

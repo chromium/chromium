@@ -960,39 +960,55 @@ base::expected<void, std::string> CreateOrUpdateLayers(
     std::optional<std::vector<int32_t>>& layer_order,
     cc::LayerTreeImpl& layers) {
   TRACE_EVENT1("viz", "CreateOrUpdateLayers", "LayerCount", updates.size());
-  if (!layer_order) {
-    // No layer list changes. Only update existing layers.
-    for (auto& wire : updates) {
-      cc::LayerImpl* layer = layers.LayerById(wire->id);
-      if (!layer) {
+
+  // First, apply all updates. This may create new layers or update existing
+  // ones.
+  for (auto& wire : updates) {
+    cc::LayerImpl* layer = layers.LayerById(wire->id);
+    if (layer) {
+      RETURN_IF_ERROR(UpdateLayer(*wire, *layer));
+    } else {
+      if (!layer_order) {
+        // If there's a new layer, there must also be a new |layer_order|.
         return base::unexpected("Invalid layer ID");
       }
-      RETURN_IF_ERROR(UpdateLayer(*wire, *layer));
+      std::unique_ptr<cc::LayerImpl> new_layer;
+      RETURN_IF_ERROR(CreateLayer(host_impl, layers, *wire, new_layer));
+      cc::LayerImpl* layer_ptr = new_layer.get();
+      RETURN_IF_ERROR(UpdateLayer(*wire, *layer_ptr));
+      layers.AddLayer(std::move(new_layer));
     }
-    return base::ok();
   }
 
-  // The layer list contents changed, so we need to rebuild the tree.
-  cc::OwnedLayerImplList old_layers = layers.DetachLayers();
-  cc::OwnedLayerImplMap layer_map;
-  for (auto& layer : old_layers) {
-    const int id = layer->id();
-    layer_map[id] = std::move(layer);
-  }
-  for (auto& wire : updates) {
-    auto& layer = layer_map[wire->id];
-    if (!layer) {
-      RETURN_IF_ERROR(CreateLayer(host_impl, layers, *wire, layer));
+  if (layer_order) {
+    cc::OwnedLayerImplList old_layers = layers.DetachLayers();
+    std::vector<std::pair<int, size_t>> layer_indices_vector;
+    layer_indices_vector.reserve(old_layers.size());
+    for (size_t i = 0; i < old_layers.size(); ++i) {
+      layer_indices_vector.emplace_back(old_layers[i]->id(), i);
     }
-    RETURN_IF_ERROR(UpdateLayer(*wire, *layer));
-  }
-  for (auto id : *layer_order) {
-    auto& layer = layer_map[id];
-    if (!layer) {
-      return base::unexpected("Invalid or duplicate layer ID");
+
+    // Layer ids should be unique here, so doing a std::sort and
+    // base::sorted_unique initializer is the most efficient, avoiding
+    // a std::stable_sort inside base::flat_map.
+    std::sort(layer_indices_vector.begin(), layer_indices_vector.end());
+    base::flat_map<int, size_t> layer_indices(base::sorted_unique,
+                                              std::move(layer_indices_vector));
+
+    for (auto id : *layer_order) {
+      auto it = layer_indices.find(id);
+      if (it == layer_indices.end()) {
+        return base::unexpected("Invalid or duplicate layer ID");
+      }
+      size_t index = it->second;
+      auto& layer = old_layers[index];
+      if (!layer) {
+        return base::unexpected("Invalid or duplicate layer ID");
+      }
+      layers.AddLayer(std::move(layer));
     }
-    layers.AddLayer(std::move(layer));
   }
+
   return base::ok();
 }
 
