@@ -16096,15 +16096,6 @@
                     ]
                 },
                 {
-                    "name": "ManagedDisabled",
-                    "enable_features": [
-                        "MediaAppPdfMahi"
-                    ],
-                    "disable_features": [
-                        "MahiManaged"
-                    ]
-                },
-                {
                     "name": "Disabled",
                     "disable_features": [
                         "MediaAppPdfMahi"

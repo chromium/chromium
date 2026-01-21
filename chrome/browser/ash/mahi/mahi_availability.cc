@@ -37,12 +37,6 @@ base::expected<bool, Error> CanUseMahiService() {
       return false;
     }
 
-    // Controls for managed users.
-    if (profile->GetProfilePolicyConnector()->IsManaged() &&
-        !chromeos::features::IsMahiManagedEnabled()) {
-      return false;
-    }
-
     // Guest session is not allowed when not in demo mode.
     if (profile->IsGuestSession()) {
       return false;
