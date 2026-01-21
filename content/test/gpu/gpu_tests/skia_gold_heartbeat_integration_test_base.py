@@ -280,10 +280,12 @@ class SkiaGoldHeartbeatIntegrationTestBase(sgitb.SkiaGoldIntegrationTestBase):
 
         raise RuntimeError(f'Received unknown message type {response_type}')
     except wss.WebsocketReceiveMessageTimeoutError:
-      websocket_utils.HandleWebsocketReceiveTimeoutError(tab, start_time)
+      websocket_utils.HandleWebsocketReceiveTimeoutError(
+          tab, start_time, additional_info=str(loop_state))
       raise
     except wss.ClientClosedConnectionError as e:
-      websocket_utils.HandlePrematureSocketClose(e, start_time)
+      websocket_utils.HandlePrematureSocketClose(
+          e, start_time, additional_info=str(loop_state))
     finally:
       try:
         test_messages = tab.EvaluateJavaScript(

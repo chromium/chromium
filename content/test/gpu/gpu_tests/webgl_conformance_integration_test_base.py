@@ -310,10 +310,14 @@ class WebGLConformanceIntegrationTestBase(
           break
         raise RuntimeError(f'Received unknown message type {response_type}')
     except wss.WebsocketReceiveMessageTimeoutError:
-      websocket_utils.HandleWebsocketReceiveTimeoutError(self.tab, start_time)
+      websocket_utils.HandleWebsocketReceiveTimeoutError(
+          self.tab,
+          start_time,
+          additional_info=f'test_started: {got_test_started}')
       raise
     except wss.ClientClosedConnectionError as e:
-      websocket_utils.HandlePrematureSocketClose(e, start_time)
+      websocket_utils.HandlePrematureSocketClose(
+          e, start_time, additional_info=f'test_started: {got_test_started}')
 
   def _GetHeartbeatTimeout(self) -> int:
     return int(self._GetNonSlowHeartbeatTimeout() * self._GetSlowMultiplier())
