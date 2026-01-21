@@ -560,8 +560,6 @@ TEST_F(WebAppRegistrarTest, CanFindAppsInScope) {
       origin_scope,
       web_app::WebAppFilter::InstalledInOperatingSystemForTesting());
   EXPECT_EQ(0u, in_scope.size());
-  // TODO(crbug.com/340952100): Evaluate call sites of DoesScopeContainAnyApp
-  // for correctness (note: multiple instances within this function).
   EXPECT_FALSE(registrar().DoesScopeContainAnyApp(
       origin_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
                      proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
