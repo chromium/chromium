@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
+#include "base/syslog_logging.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/chromebox_for_meetings/artemis/artemis_features.h"
@@ -776,6 +777,10 @@ void DataAggregatorService::HandleEnqueueResponse(
 
     LOG(ERROR) << "Recent enqueue failed with error code: " << status->code
                << ". Trying again in " << retry_delay;
+
+    // TODO(crbug.com/475558926): Remove when fixed.
+    SYSLOG(ERROR) << "Recent enqueue failed with error code: " << status->code
+                  << ". Trying again in " << retry_delay;
 
     current_enqueue_retries_++;
     base::UmaHistogramTimes(kTimeWaitedBeforeEnqueueRetryMetricName,
