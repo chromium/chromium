@@ -772,6 +772,14 @@ bool LensSearchController::RunLensEligibilityChecks(
     return true;
   }
 
+  // The Omnibox contextual query invocation source permits the overlay to open
+  // without user permission via the bubble. This is because the user should
+  // have already added the active tab context to the page.
+  if (invocation_source ==
+      lens::LensOverlayInvocationSource::kOmniboxContextualQuery) {
+    return true;
+  }
+
   // If the user hasn't granted permission, request user permission before
   // showing the UI.
   if (!lens::CanSharePageScreenshotWithLensOverlay(pref_service_) ||
