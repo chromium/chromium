@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/page_content_annotations/annotate_page_content_request.h"
 #include "components/continuous_search/browser/search_result_extractor_client.h"
 #include "components/continuous_search/common/search_result_extractor_client_status.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
@@ -47,7 +48,8 @@ class PageContentAnnotationsWebContentsObserver
 
  protected:
   explicit PageContentAnnotationsWebContentsObserver(
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      GetTabIdCallback get_tab_id_callback);
 
  private:
   friend class content::WebContentsUserData<
@@ -89,6 +91,8 @@ class PageContentAnnotationsWebContentsObserver
   // |web_contents|.
   continuous_search::SearchResultExtractorClient
       search_result_extractor_client_;
+
+  const GetTabIdCallback get_tab_id_callback_;
 
   std::optional<float> content_visibility_score_;
 

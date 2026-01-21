@@ -75,7 +75,11 @@ class AnnotatePageContentRequestTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
-    request_ = AnnotatedPageContentRequest::Create(web_contents());
+    request_ = AnnotatedPageContentRequest::Create(
+        web_contents(),
+        base::BindRepeating([](content::WebContents* web_contents) {
+          return std::make_optional(reinterpret_cast<int64_t>(web_contents));
+        }));
     request_->SetFetchPageContextCallbackForTesting(base::BindRepeating(
         [](content::WebContents&, const FetchPageContextOptions&,
            std::unique_ptr<FetchPageProgressListener>,

@@ -78,6 +78,14 @@ GenerateMockRelatedSearchExtractorResults(
   return results;
 }
 
+// Generates a unique id for tab's WebContents that's sufficient for test
+// purposes.
+// TODO(crbug.com/440643544): Update if/when a usable tab ID is implemented in
+// production for all platforms.
+std::optional<int64_t> MakeTabId(content::WebContents* web_contents) {
+  return reinterpret_cast<int64_t>(web_contents);
+}
+
 }  // namespace
 
 const TemplateURLService::Initializer kTemplateURLData[] = {
@@ -210,7 +218,7 @@ class PageContentAnnotationsWebContentsObserverTest
         history::TestHistoryDatabaseParamsForPath(temp_dir_.GetPath())));
 
     PageContentAnnotationsWebContentsObserver::CreateForWebContents(
-        web_contents());
+        web_contents(), base::BindRepeating(&MakeTabId));
   }
 
   void TearDown() override {

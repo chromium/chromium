@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//pdf/features.gni")
+
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
@@ -10,17 +12,29 @@ if (is_android) {
 
 source_set("page_content_annotations") {
   sources = [
+    "annotate_page_content_request.cc",
+    "annotate_page_content_request.h",
     "page_content_annotations_service_factory.h",
     "page_content_annotations_web_contents_observer.h",
   ]
   public_deps = [
+    ":extraction_service",
+    ":fetcher",
     "//base",
     "//chrome/browser/profiles:profile",
     "//components/continuous_search/browser",
     "//components/continuous_search/common",
+    "//components/optimization_guide/content/browser",
+    "//components/optimization_guide/content/browser:page_context_eligibility",
     "//components/page_content_annotations/core",
+    "//components/pdf/common:constants",
     "//content/public/browser",
+    "//pdf:buildflags",
+    "//services/metrics/public/cpp:metrics_cpp",
   ]
+  if (enable_pdf) {
+    public_deps += [ "//components/pdf/browser" ]
+  }
 }
 
 source_set("extraction_service") {
@@ -30,7 +44,10 @@ source_set("extraction_service") {
     "page_content_extraction_types.cc",
     "page_content_extraction_types.h",
   ]
-  deps = [ ":fetcher" ]
+  deps = [
+    ":fetcher",
+    "//build:buildflag_header_h",
+  ]
   public_deps = [
     "//base",
     "//chrome/browser/profiles:profile",

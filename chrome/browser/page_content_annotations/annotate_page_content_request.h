@@ -20,6 +20,9 @@ class PageContextEligibility;
 
 namespace page_content_annotations {
 
+using GetTabIdCallback =
+    base::RepeatingCallback<std::optional<int64_t>(content::WebContents*)>;
+
 // Class for deciding when a page is ready for getting page content, and
 // extracts page content.
 class AnnotatedPageContentRequest {
@@ -31,10 +34,12 @@ class AnnotatedPageContentRequest {
                                    FetchPageContextResultCallback)>;
 
   static std::unique_ptr<AnnotatedPageContentRequest> Create(
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      GetTabIdCallback get_tab_id_callback);
 
   AnnotatedPageContentRequest(content::WebContents* web_contents,
-                              blink::mojom::AIPageContentOptionsPtr request);
+                              blink::mojom::AIPageContentOptionsPtr request,
+                              GetTabIdCallback get_tab_id_callback);
 
   AnnotatedPageContentRequest(const AnnotatedPageContentRequest&) = delete;
   AnnotatedPageContentRequest& operator=(const AnnotatedPageContentRequest&) =
@@ -115,6 +120,7 @@ class AnnotatedPageContentRequest {
   std::optional<ExtractedPageContentResult> cached_content_;
 
   FetchPageContextCallback fetch_page_context_callback_;
+  GetTabIdCallback get_tab_id_callback_;
 
   base::WeakPtrFactory<AnnotatedPageContentRequest> weak_factory_{this};
 };

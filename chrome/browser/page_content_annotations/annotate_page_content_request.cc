@@ -31,10 +31,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/tab_android.h"
-#endif
-
 #if BUILDFLAG(ENABLE_PDF)
 #include "components/pdf/browser/pdf_document_helper.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
@@ -58,21 +54,12 @@ void RecordPdfPageCountMetrics(
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
-std::optional<int64_t> GetTabId(content::WebContents* web_contents) {
-#if BUILDFLAG(IS_ANDROID)
-  if (TabAndroid* tab = TabAndroid::FromWebContents(web_contents)) {
-    return tab->GetAndroidId();
-  }
-#endif
-  // TODO(440643544): Implement an usable tab ID for other platforms.
-  return std::nullopt;
-}
-
 }  // namespace
 
 // static
 std::unique_ptr<AnnotatedPageContentRequest>
-AnnotatedPageContentRequest::Create(content::WebContents* web_contents) {
+AnnotatedPageContentRequest::Create(content::WebContents* web_contents,
+                                    GetTabIdCallback get_tab_id_callback) {
   auto request = blink::mojom::AIPageContentOptions::New();
   request->mode =
       (page_content_annotations::features::AnnotatedPageContentMode() ==
@@ -82,20 +69,22 @@ AnnotatedPageContentRequest::Create(content::WebContents* web_contents) {
   request->on_critical_path = page_content_annotations::features::
       IsAnnotatedPageContentOnCriticalPath();
 
-  return std::make_unique<AnnotatedPageContentRequest>(web_contents,
-                                                       std::move(request));
+  return std::make_unique<AnnotatedPageContentRequest>(
+      web_contents, std::move(request), std::move(get_tab_id_callback));
 }
 
 AnnotatedPageContentRequest::AnnotatedPageContentRequest(
     content::WebContents* web_contents,
-    blink::mojom::AIPageContentOptionsPtr request)
+    blink::mojom::AIPageContentOptionsPtr request,
+    GetTabIdCallback get_tab_id_callback)
     : web_contents_(web_contents),
       request_(std::move(request)),
       delay_(features::GetAnnotatedPageContentCaptureDelay()),
       include_inner_text_(
           features::ShouldAnnotatedPageContentStudyIncludeInnerText()),
       fetch_page_context_callback_(
-          base::BindRepeating(&page_content_annotations::FetchPageContext)) {
+          base::BindRepeating(&page_content_annotations::FetchPageContext)),
+      get_tab_id_callback_(std::move(get_tab_id_callback)) {
   // Post to a background thread to avoid blocking the set up of the overlay.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
@@ -204,8 +193,8 @@ void AnnotatedPageContentRequest::ResetForNewNavigation() {
   auto* page_content_extraction_service =
       PageContentExtractionServiceFactory::GetForProfile(profile);
   if (page_content_extraction_service) {
-    page_content_extraction_service->OnNewNavigation(GetTabId(web_contents_),
-                                                     web_contents_);
+    page_content_extraction_service->OnNewNavigation(
+        get_tab_id_callback_.Run(web_contents_), web_contents_);
   }
 }
 
@@ -335,7 +324,7 @@ void AnnotatedPageContentRequest::OnPageContextFetched(
       PageContentExtractionServiceFactory::GetForProfile(profile);
   page_content_extraction_service->OnPageContentExtracted(
       web_contents_->GetPrimaryPage(), page_content_result->proto,
-      screenshot_data, GetTabId(web_contents_));
+      screenshot_data, get_tab_id_callback_.Run(web_contents_));
 
   GURL url = web_contents_->GetLastCommittedURL();
   bool is_eligible_for_server_upload =
@@ -417,7 +406,7 @@ void AnnotatedPageContentRequest::OnVisibilityChanged(
       PageContentExtractionServiceFactory::GetForProfile(profile);
   if (page_content_extraction_service) {
     page_content_extraction_service->OnVisibilityChanged(
-        GetTabId(web_contents_), web_contents_, visibility);
+        get_tab_id_callback_.Run(web_contents_), web_contents_, visibility);
   }
 
   auto triggering_mode = features::GetPageContentExtractionTriggeringMode();
