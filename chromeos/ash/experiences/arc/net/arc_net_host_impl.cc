@@ -419,7 +419,6 @@ void ArcNetHostImpl::CreateNetworkFailureCallback(
 
 void ArcNetHostImpl::CreateNetwork(mojom::WifiConfigurationPtr cfg,
                                    CreateNetworkCallback callback) {
-  // TODO(b/276035404): Add unit tests to improve test coverage.
   if (!cfg->eap) {
     base::Value::Dict empty_eap;
     CreateNetworkWithEapTranslated(std::move(cfg), std::move(callback),
