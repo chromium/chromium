@@ -18,7 +18,6 @@ items:
 - caption: Disable browser experimental features toolbar entrypoint
   value: false
 owners:
-- elainechien@chromium.org
 - labs-on-chrome@google.com
 schema:
   type: boolean
