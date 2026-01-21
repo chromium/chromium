@@ -31,9 +31,6 @@ class WebState;
 // Called before the object is destroyed.
 - (void)disconnect;
 
-// Dispatcher for this object.
-@property(nonatomic, weak) id<LoadQueryCommands> dispatcher;
-
 // Whether or not the Text To Speech user preference is enabled.
 @property(nonatomic, readonly) BOOL textToSpeechEnabled;
 

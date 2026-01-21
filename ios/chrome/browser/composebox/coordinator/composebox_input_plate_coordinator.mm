@@ -184,7 +184,6 @@ const CGFloat kSnackbarBottomMargin = 10;
   _mediator.metricsRecorder = _metricsRecorder;
 
   _viewController.mutator = _mediator;
-  _voiceSearchController.dispatcher = _mediator;
 
   _locationBar = std::make_unique<WebLocationBarImpl>(self);
   _locationBar->SetURLLoader(self);
@@ -231,7 +230,6 @@ const CGFloat kSnackbarBottomMargin = 10;
   _picker = nil;
   [_voiceSearchController dismissMicPermissionHelp];
   [_voiceSearchController disconnect];
-  _voiceSearchController.dispatcher = nil;
   _voiceSearchController = nil;
   [_mediator disconnect];
   _mediator = nil;

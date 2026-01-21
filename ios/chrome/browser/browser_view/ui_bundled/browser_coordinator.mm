@@ -1513,7 +1513,6 @@ const char kChromeAppStoreUrl[] =
   _loadQueryCommandsHandler =
       HandlerForProtocol(_dispatcher, LoadQueryCommands);
   _viewController.loadQueryCommandsHandler = _loadQueryCommandsHandler;
-  _voiceSearchController.dispatcher = _loadQueryCommandsHandler;
   if (!IsChromeNextIaEnabled()) {
     _omniboxCommandsHandler = HandlerForProtocol(_dispatcher, OmniboxCommands);
   }
@@ -1532,7 +1531,6 @@ const char kChromeAppStoreUrl[] =
 
   [_voiceSearchController dismissMicPermissionHelp];
   [_voiceSearchController disconnect];
-  _voiceSearchController.dispatcher = nil;
   _voiceSearchController = nil;
 
   [_bookmarksCoordinator stop];

@@ -1078,7 +1078,6 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
 
   if (![self isViewLoaded]) {
     self.typingShield = nil;
-    _voiceSearchController.dispatcher = nil;
     [self.toolbarCoordinator stop];
     self.toolbarCoordinator = nil;
     _toolbarsSize = nil;
@@ -1317,9 +1316,6 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
   DCHECK([self isViewLoaded]);
 
   [self updateBroadcastState];
-  if (_voiceSearchController) {
-    _voiceSearchController.dispatcher = self.loadQueryCommandsHandler;
-  }
 
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     const bool canShowTabStrip = CanShowTabStrip(self);
