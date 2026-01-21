@@ -21,7 +21,7 @@
   --end-angle-submit_: 330deg;
 
   --expand-timing_: var(--glif-rotation-duration_)
-      var(--standard-curve, --search-animated-glow-standard-curve);
+      var(--standard-curve, var(--search-animated-glow-standard-curve));
 
   /* All gradient rotation and background blur/border shrinking needs to be at
    * interval, otherwise border-radius due to border width
@@ -159,7 +159,7 @@
   :host([entrypoint-name='Omnibox'][animation-state='expanding']) .gradient::before {
     --gradient-spin-expand-peak-opacity_: 0.3;
   }
-  :host {
+  :host([entrypoint-name='ContextualTasks']) {
     --color-composebox-scrim-background: rgba(16, 18, 24, 1);
     --color-drag-placeholder-font:  rgba(230, 232, 240, 1);
     --color-dragging-opaque-frost-backup_: rgba(44, 45, 53, 1);
@@ -213,7 +213,7 @@
   * in dragging mode.
   */
   background-color: var(--cr-composebox-background-color,
-      --color-search-animated-glow-background);
+      var(--color-search-animated-glow-background));
   border-radius: inherit;
   content: '';
   inset: 0px;
@@ -325,7 +325,7 @@
    * are blurred, it makes the gradient glow instead
    * of being fully solid. */
   background-color: var(--cr-composebox-background-color,
-      --color-search-animated-glow-background);
+      var(--color-search-animated-glow-background));
   border-radius: inherit;
   content: '';
   contain: paint;
@@ -358,8 +358,8 @@
 
 :host([animation-state='expanding'][is-collapsible]) .background::before {
   animation: color-pulse-on-expand var(--expand-duration,
-      --search-animated-glow-expand-duration)
-      var(--standard-curve, --search-animated-glow-standard-curve);
+      var(--search-animated-glow-expand-duration))
+      var(--standard-curve, var(--search-animated-glow-standard-curve));
 }
 
 :host([animation-state='listening']) .background::before {
@@ -436,7 +436,7 @@
   animation: none;
   /* Frosted glass color; overlays the actual composebox background: */
   background-color: var(--color-search-animated-glow-dragging-opaque-frost,
-      --color-dragging-opaque-frost-backup_);
+      var(--color-dragging-opaque-frost-backup_));
   filter: blur(28px);
   z-index: var(--search-animated-glow-background-z-index, 3);
 }
