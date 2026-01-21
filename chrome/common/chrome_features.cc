@@ -288,6 +288,10 @@ BASE_FEATURE(kGlicActorUiTabIndicatorSpinnerIgnoreReducedMotion,
 // and other elements.
 BASE_FEATURE(kActorUiThemed, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, post tasks in the window controller to fix re-entrancy crash.
+BASE_FEATURE(kGlicActorPostTaskUiUpdateEnabled,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If enabled, shows handoff button in immersive mode.
 BASE_FEATURE(kGlicHandoffButtonShowInImmersiveMode,
              base::FEATURE_ENABLED_BY_DEFAULT);
