@@ -57,6 +57,7 @@ android_library("java") {
       ":jni_headers",
       "//chrome/browser/extensions:extension_context_menu_model_enums",
       "//extensions/browser:extension_action_enums",
+      "//extensions/common:java_features_srcjar",
     ]
     resources_package = "org.chromium.chrome.browser.ui.extensions"
   }
