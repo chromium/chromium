@@ -961,7 +961,8 @@ bool CSPDirectiveListShouldDisableWasmEval(
               "following Content Security policy directive because ",
               infix,
               " an allowed source of script in the following Content Security "
-              "Policy directive: "});
+              "Policy directive: \"",
+              raw_directive, "\"."});
   return true;
 }
 
