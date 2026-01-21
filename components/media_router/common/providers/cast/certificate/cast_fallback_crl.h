@@ -1,12 +1,16 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// no-include-guard-because-pch-file
+
+#ifndef COMPONENTS_MEDIA_ROUTER_COMMON_PROVIDERS_CAST_CERTIFICATE_CAST_FALLBACK_CRL_H_
+#define COMPONENTS_MEDIA_ROUTER_COMMON_PROVIDERS_CAST_CERTIFICATE_CAST_FALLBACK_CRL_H_
 
 #include <time.h>
 
+#include <array>
+
 // fallback CRL:
-const unsigned char kCastFallbackCRLs[] = {
+inline constexpr auto kCastFallbackCRLs = std::to_array<unsigned char>({
     0x0a, 0xfc, 0x0d, 0x0a, 0xa8, 0x04, 0x08, 0x00, 0x10, 0x90, 0xbe, 0xb5,
     0xa6, 0x06, 0x18, 0xd0, 0x84, 0xdd, 0xa6, 0x06, 0x22, 0x20, 0x1c, 0xb9,
     0x45, 0xbb, 0xf5, 0x7c, 0xc8, 0xd3, 0x46, 0x1e, 0x4c, 0xb3, 0xda, 0xbe,
@@ -157,7 +161,9 @@ const unsigned char kCastFallbackCRLs[] = {
     0xe0, 0x75, 0x3f, 0x4f, 0x7f, 0x3a, 0xe7, 0xf1, 0x44, 0x36, 0x7e, 0xf8,
     0x4b, 0x36, 0xcd, 0xc6, 0x14, 0x3a, 0x55, 0xfc, 0xa9, 0x98, 0x01, 0x43,
     0x6c, 0x51, 0x42,
-};
+});
 
 // A valid time for the fallback CRL:
-const time_t kCastFallbackCRLTimestamp = 1692255600;
+inline constexpr time_t kCastFallbackCRLTimestamp = 1692255600;
+
+#endif  // COMPONENTS_MEDIA_ROUTER_COMMON_PROVIDERS_CAST_CERTIFICATE_CAST_FALLBACK_CRL_H_
