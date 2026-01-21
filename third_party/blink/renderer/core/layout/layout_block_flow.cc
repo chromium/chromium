@@ -128,17 +128,6 @@ bool LayoutBlockFlow::CanContainFirstFormattedLine() const {
          IsGridItem();
 }
 
-void LayoutBlockFlow::WillBeDestroyed() {
-  NOT_DESTROYED();
-  // Make sure to destroy anonymous children first while they are still
-  // connected to the rest of the tree, so that they will properly dirty line
-  // boxes that they are removed from. Effects that do :before/:after only on
-  // hover could crash otherwise.
-  Children()->DestroyLeftoverChildren();
-
-  LayoutBlock::WillBeDestroyed();
-}
-
 void LayoutBlockFlow::AddChildBeforeDescendant(
     LayoutObject* new_child,
     LayoutObject* before_descendant) {

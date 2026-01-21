@@ -138,7 +138,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   virtual void WillCollectInlines() { NOT_DESTROYED(); }
 
  protected:
-  void WillBeDestroyed() override;
   void StyleDidChange(StyleDifference,
                       const ComputedStyle* old_style,
                       const StyleChangeContext&) override;
