@@ -209,6 +209,7 @@ TitleWithIconAfterLabelView::TitleWithIconAfterLabelView(
                 view->GetColorProvider()->GetColor(ui::kColorDialogBackground));
           },
           base::Unretained(this))));
+  icon_view->SetID(DialogViewId::BUBBLE_TITLE_ICON);
 
   // Center the icon against the first line of the title label. This needs to be
   // done after we create the title label, so that we can use its preferred
