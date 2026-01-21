@@ -25,6 +25,8 @@ class WebAppFilter {
   // like stub ones. To also consider stub apps, use
   // `IsIsolatedWebAppIncludingUninstalling()` instead.
   static WebAppFilter IsIsolatedApp();
+  // Only Consider sub apps of isolated web apps (connected via parent_app_id).
+  static WebAppFilter IsIsolatedSubApp();
   // Only consider isolated web apps installed in developer mode, that are not
   // scheduled for uninstallation, like stub ones.
   static WebAppFilter IsDevModeIsolatedApp();
@@ -94,6 +96,7 @@ class WebAppFilter {
     bool must_be_in_dev_mode = false;
     bool must_have_no_external_management = false;
     bool must_be_policy_installed = false;
+    bool is_sub_app = false;
   };
 
   bool opens_in_browser_tab_ = false;

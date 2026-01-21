@@ -611,7 +611,7 @@ DisplayMode WebAppRegistrar::GetAppEffectiveDisplayMode(
     return DisplayMode::kBrowser;
   }
 
-  bool is_isolated = IsIsolated(app_id);
+  bool is_isolated = IsIsolatedApp(app_id);
 
   auto app_display_mode = GetAppDisplayMode(app_id);
   std::optional<mojom::UserDisplayMode> user_display_mode =
@@ -991,7 +991,7 @@ bool WebAppRegistrar::IsInstallState(
 bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
                                  const WebAppFilter& filter) const {
   if (filter.is_isolated_apps_including_uninstalling_) {
-    return IsIsolated(app_id);
+    return IsIsolatedApp(app_id);
   }
 
   // All filters below this line rely on the app not being a stub app, which can
@@ -1033,16 +1033,24 @@ bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
 #endif
 
   if (const auto& iwa_filter = filter.isolated_app_filter_) {
-    if (!IsIsolated(app_id)) {
+    webapps::AppId iwa_app_id;
+    if (IsIsolatedApp(app_id) && !iwa_filter->is_sub_app) {
+      iwa_app_id = app_id;
+    } else if (iwa_filter->is_sub_app && IsIsolatedSubApp(app_id)) {
+      // Point at parent app when performing additional isolated app filters
+      // below (because of isolation_data only being available on the parent).
+      iwa_app_id = GetAppById(app_id)->parent_app_id().value();
+    } else {
       return false;
     }
-    const WebApp& iwa = CHECK_DEREF(GetAppById(app_id));
+
+    const WebApp& iwa = CHECK_DEREF(GetAppById(iwa_app_id));
     bool matches = true;
     if (iwa_filter->must_be_in_dev_mode) {
       matches &= iwa.isolation_data()->location().dev_mode();
     }
     if (iwa_filter->must_be_policy_installed) {
-      matches &= IsInstalledByPolicy(app_id);
+      matches &= IsInstalledByPolicy(iwa_app_id);
     }
     if (iwa_filter->must_have_no_external_management) {
       matches &=
@@ -2221,9 +2229,15 @@ std::vector<webapps::AppId> WebAppRegistrar::GetAppIdsForAppSet(
   return app_ids;
 }
 
-bool WebAppRegistrar::IsIsolated(const webapps::AppId& app_id) const {
+bool WebAppRegistrar::IsIsolatedApp(const webapps::AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
   return web_app && web_app->isolation_data().has_value();
+}
+
+bool WebAppRegistrar::IsIsolatedSubApp(const webapps::AppId& app_id) const {
+  auto* web_app = GetAppById(app_id);
+  return web_app && web_app->parent_app_id() &&
+         IsIsolatedApp(*web_app->parent_app_id());
 }
 
 int WebAppRegistrar::CountUserInstalledNotLocallyInstalledApps() const {

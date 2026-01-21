@@ -49,6 +49,13 @@ WebAppFilter WebAppFilter::IsDevModeIsolatedApp() {
 }
 
 // static
+WebAppFilter WebAppFilter::IsIsolatedSubApp() {
+  WebAppFilter filter;
+  filter.isolated_app_filter_ = {{.is_sub_app = true}};
+  return filter;
+}
+
+// static
 WebAppFilter WebAppFilter::PolicyInstalledIsolatedWebApp() {
   WebAppFilter filter;
   filter.isolated_app_filter_ = {{.must_be_policy_installed = true}};
