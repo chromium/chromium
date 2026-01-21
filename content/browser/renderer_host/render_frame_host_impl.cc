@@ -12519,8 +12519,6 @@ void RenderFrameHostImpl::CommitNavigation(
               GetSiteInstance()->GetSiteInfo().is_sandboxed());
   }
 
-  // TODO(crbug.com/40092527): Compute the Origin to commit here.
-
   // If this is an attempt to commit a URL in an incompatible process, capture a
   // crash dump to diagnose why it is occurring.
   // TODO(creis): Remove this check after we've gathered enough information to
