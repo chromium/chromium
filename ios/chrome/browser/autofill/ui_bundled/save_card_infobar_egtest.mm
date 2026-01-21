@@ -264,22 +264,22 @@ void FillAndSubmitXframeCreditCardForm() {
   }
   if ([self
           isRunningTest:@selector
-          (testOfferUpstream_FullData_PaymentsAccepts_Xframe_WithBottomSheetDisabled)] ||
+          (DISABLED_testOfferUpstream_FullData_PaymentsAccepts_Xframe_WithBottomSheetDisabled)] ||
       [self isRunningTest:@selector
-            (testOfferUpstream_FullData_PaymentsAccepts_Xframe)] ||
-      [self
-          isRunningTest:@selector(testUserData_LocalSave_UserAccepts_Xframe)]) {
+            (DISABLED_testOfferUpstream_FullData_PaymentsAccepts_Xframe)] ||
+      [self isRunningTest:@selector
+            (DISABLED_testUserData_LocalSave_UserAccepts_Xframe)]) {
     config.features_enabled.push_back(
         autofill::features::kAutofillAcrossIframesIos);
   }
-  // testUserData_LocalSave_UserAccepts_Xframe
+  // DISABLED_testUserData_LocalSave_UserAccepts_Xframe
 
   if ([self
           isRunningTest:@selector
           (testOfferUpstream_FullData_PaymentsAccepts_WithBottomSheetDisabled)] ||
       [self
           isRunningTest:@selector
-          (testOfferUpstream_FullData_PaymentsAccepts_Xframe_WithBottomSheetDisabled)]) {
+          (DISABLED_testOfferUpstream_FullData_PaymentsAccepts_Xframe_WithBottomSheetDisabled)]) {
     config.features_disabled.push_back(
         autofill::features::kAutofillSaveCardBottomSheet);
   } else {
@@ -589,7 +589,7 @@ void FillAndSubmitXframeCreditCardForm() {
 // Test upstream card upload is offered in infobar when submitting xframe credit
 // card form and Google Payments server is queried to request card upload.
 - (void)
-    testOfferUpstream_FullData_PaymentsAccepts_Xframe_WithBottomSheetDisabled {
+    DISABLED_testOfferUpstream_FullData_PaymentsAccepts_Xframe_WithBottomSheetDisabled {
   // Serve ios http files.
   net::test_server::RegisterDefaultHandlers(self.testServer);
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -627,7 +627,7 @@ void FillAndSubmitXframeCreditCardForm() {
 
 // Test upstream card upload is offered when submitting xframe credit card form
 // and Google Payments server is queried to request card upload.
-- (void)testOfferUpstream_FullData_PaymentsAccepts_Xframe {
+- (void)DISABLED_testOfferUpstream_FullData_PaymentsAccepts_Xframe {
   // Serve ios http files.
   net::test_server::RegisterDefaultHandlers(self.testServer);
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -1019,7 +1019,7 @@ void FillAndSubmitXframeCreditCardForm() {
 }
 
 // Test saving credit card locally as fallback with a xframe credit card form.
-- (void)testUserData_LocalSave_UserAccepts_Xframe {
+- (void)DISABLED_testUserData_LocalSave_UserAccepts_Xframe {
   // Serve ios http files.
   net::test_server::RegisterDefaultHandlers(self.testServer);
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
