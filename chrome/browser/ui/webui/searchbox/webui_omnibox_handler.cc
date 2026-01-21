@@ -399,8 +399,3 @@ void WebuiOmniboxHandler::OnAimEligibilityChanged() {
 int WebuiOmniboxHandler::GetContextMenuMaxTabSuggestions() {
   return omnibox::kContextMenuMaxTabSuggestions.Get();
 }
-
-std::optional<lens::LensOverlayInvocationSource>
-WebuiOmniboxHandler::GetInvocationSource() const {
-  return lens::LensOverlayInvocationSource::kOmniboxContextualQuery;
-}

@@ -40,6 +40,7 @@ source_set("test_support") {
     "//base",
     "//components/application_locale_storage",
     "//components/contextual_search:test_support",
+    "//components/lens:lens_url_utils",
     "//components/omnibox/composebox/ios",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/application_context",

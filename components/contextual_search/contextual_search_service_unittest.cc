@@ -75,7 +75,8 @@ class ContextualSearchServiceTest : public testing::Test {
 
 TEST_F(ContextualSearchServiceTest, Session) {
   // Try to get a session that does not exist.
-  auto bad_handle = service_->GetSession(base::UnguessableToken::Create());
+  auto bad_handle = service_->GetSession(base::UnguessableToken::Create(),
+                                         /*invocation_source=*/std::nullopt);
   ASSERT_THAT(bad_handle, IsNull());
 
   // Create a new session.
@@ -86,7 +87,8 @@ TEST_F(ContextualSearchServiceTest, Session) {
   config_params1->enable_multi_context_input_flow = false;
   config_params1->enable_viewport_images = false;
   auto session1_handle1 = service_->CreateSession(
-      std::move(config_params1), ContextualSearchSource::kUnknown);
+      std::move(config_params1), ContextualSearchSource::kUnknown,
+      /*invocation_source=*/std::nullopt);
   // Check the search content sharing settings to notify the session handle
   // that the client is properly checking the pref value.
   session1_handle1->CheckSearchContentSharingSettings(&pref_service_);
@@ -102,14 +104,16 @@ TEST_F(ContextualSearchServiceTest, Session) {
   config_params2->enable_multi_context_input_flow = false;
   config_params2->enable_viewport_images = false;
   auto session2_handle1 = service_->CreateSession(
-      std::move(config_params2), ContextualSearchSource::kUnknown);
+      std::move(config_params2), ContextualSearchSource::kUnknown,
+      /*invocation_source=*/std::nullopt);
   session2_handle1->CheckSearchContentSharingSettings(&pref_service_);
   ASSERT_THAT(session2_handle1, NotNull());
   ASSERT_THAT(session2_handle1->GetController(), NotNull());
   ASSERT_THAT(session2_handle1->GetMetricsRecorder(), NotNull());
 
   // Get a new handle to session two.
-  auto session2_handle2 = service_->GetSession(session2_handle1->session_id());
+  auto session2_handle2 = service_->GetSession(
+      session2_handle1->session_id(), /*invocation_source=*/std::nullopt);
   session2_handle2->CheckSearchContentSharingSettings(&pref_service_);
   ASSERT_THAT(session2_handle2, NotNull());
   EXPECT_EQ(session2_handle2->GetController(),
@@ -123,7 +127,8 @@ TEST_F(ContextualSearchServiceTest, Session) {
 
   // Release the first handle to session two. The session should still be alive.
   session2_handle1.reset();
-  auto session2_handle3 = service_->GetSession(session2_handle2->session_id());
+  auto session2_handle3 = service_->GetSession(
+      session2_handle2->session_id(), /*invocation_source=*/std::nullopt);
   session2_handle3->CheckSearchContentSharingSettings(&pref_service_);
   ASSERT_THAT(session2_handle3, NotNull());
   EXPECT_EQ(session2_handle3->GetController(),
@@ -136,11 +141,13 @@ TEST_F(ContextualSearchServiceTest, Session) {
   auto session_id = session2_handle2->session_id();
   session2_handle2.reset();
   session2_handle3.reset();
-  auto session2_handle4 = service_->GetSession(session_id);
+  auto session2_handle4 =
+      service_->GetSession(session_id, /*invocation_source=*/std::nullopt);
   ASSERT_THAT(session2_handle4, IsNull());
 
   // Get a new handle to session one.
-  auto session1_handle2 = service_->GetSession(session1_handle1->session_id());
+  auto session1_handle2 = service_->GetSession(
+      session1_handle1->session_id(), /*invocation_source=*/std::nullopt);
   session1_handle2->CheckSearchContentSharingSettings(&pref_service_);
   ASSERT_THAT(session1_handle2, NotNull());
   EXPECT_EQ(session1_handle2->GetController(),
@@ -362,7 +369,8 @@ TEST_F(ContextualSearchServiceTest, NullController) {
   auto config_params =
       std::make_unique<ContextualSearchContextController::ConfigParams>();
   auto session_handle = service_->CreateSession(
-      std::move(config_params), ContextualSearchSource::kUnknown);
+      std::move(config_params), ContextualSearchSource::kUnknown,
+      /*invocation_source=*/std::nullopt);
   ASSERT_THAT(session_handle, NotNull());
   session_handle->CheckSearchContentSharingSettings(&pref_service_);
 
@@ -396,7 +404,8 @@ TEST_F(ContextualSearchServiceTest, CreateSessionAfterShutdown) {
   auto config_params =
       std::make_unique<ContextualSearchContextController::ConfigParams>();
   auto session_handle = service_->CreateSession(
-      std::move(config_params), ContextualSearchSource::kUnknown);
+      std::move(config_params), ContextualSearchSource::kUnknown,
+      /*invocation_source=*/std::nullopt);
 
   ASSERT_THAT(session_handle, NotNull());
   ASSERT_THAT(session_handle->GetController(), NotNull());

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
 
-
 #include <memory>
 #include <utility>
 #include <vector>
@@ -203,7 +202,8 @@ class ContextualTasksComposeboxHandlerTest
     contextual_session_handle->CheckSearchContentSharingSettings(
         profile()->GetPrefs());
     session_handle_ =
-        service_->GetSession(contextual_session_handle->session_id());
+        service_->GetSession(contextual_session_handle->session_id(),
+                             /*invocation_source=*/std::nullopt);
     ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents())
         ->SetTaskSession(std::nullopt, std::move(contextual_session_handle));
 
@@ -792,8 +792,9 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(ContextualTasksComposeboxHandlerTest,
-       CreateAndSendQueryMessage_NoRecontextualizationIfScreenshotUnchanged_SkBitmap) {
+TEST_F(
+    ContextualTasksComposeboxHandlerTest,
+    CreateAndSendQueryMessage_NoRecontextualizationIfScreenshotUnchanged_SkBitmap) {
   ASSERT_NE(mock_contextual_tasks_service_ptr_, nullptr)
       << "Mock controller is NULL!";
   std::string kQuery = "valid tab query";

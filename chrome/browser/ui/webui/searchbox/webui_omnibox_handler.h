@@ -99,11 +99,6 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
 
   void OnNavigationFinished(content::NavigationHandle* navigation_handle);
 
- protected:
-  // ContextualSearchboxHandler:
-  std::optional<lens::LensOverlayInvocationSource> GetInvocationSource()
-      const override;
-
  private:
   // Delegate to observe WebContents.
   // Managed as a separate class to prevent member naming conflicts

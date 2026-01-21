@@ -11,6 +11,7 @@
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/contextual_search/contextual_search_service.h"
 #import "components/contextual_search/contextual_search_session_handle.h"
+#import "components/lens/lens_overlay_invocation_source.h"
 #import "components/omnibox/browser/location_bar_model_impl.h"
 #import "components/omnibox/composebox/ios/composebox_query_controller_ios.h"
 #import "components/search_engines/template_url_service.h"
@@ -155,7 +156,8 @@ const CGFloat kSnackbarBottomMargin = 10;
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       contextualSearchSession = _contextualService->CreateSession(
           std::move(query_controller_config_params),
-          contextual_search::ContextualSearchSource::kOmnibox);
+          contextual_search::ContextualSearchSource::kOmnibox,
+          lens::LensOverlayInvocationSource::kOmniboxContextualQuery);
 
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForProfile(self.profile);

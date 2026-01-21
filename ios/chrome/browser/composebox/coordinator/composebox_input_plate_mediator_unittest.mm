@@ -143,7 +143,8 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
                            testing::Return(base::CallbackListSubscription())));
     auto session_handle = service_->CreateSession(
         std::move(config_params),
-        contextual_search::ContextualSearchSource::kUnknown);
+        contextual_search::ContextualSearchSource::kUnknown,
+        /*invocation_source=*/std::nullopt);
     // Check the search content sharing settings to notify the session handle
     // that the client is properly checking the pref value.
     session_handle->CheckSearchContentSharingSettings(&pref_service_);

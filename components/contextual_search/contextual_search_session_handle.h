@@ -14,6 +14,7 @@
 #include "base/unguessable_token.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 
 class GURL;
@@ -53,6 +54,10 @@ class ContextualSearchSessionHandle {
   base::WeakPtr<ContextualSearchSessionHandle> AsWeakPtr();
 
   base::UnguessableToken session_id() const { return session_id_; }
+
+  std::optional<lens::LensOverlayInvocationSource> invocation_source() const {
+    return invocation_source_;
+  }
 
   // Returns the ContextualSearchContextController reference held by this
   // handle or nullptr if the session is not valid.
@@ -162,8 +167,10 @@ class ContextualSearchSessionHandle {
   friend class ContextualSearchService;
   friend class MockContextualSearchSessionHandle;
 
-  ContextualSearchSessionHandle(base::WeakPtr<ContextualSearchService> service,
-                                const SessionId& session_id);
+  ContextualSearchSessionHandle(
+      base::WeakPtr<ContextualSearchService> service,
+      const SessionId& session_id,
+      std::optional<lens::LensOverlayInvocationSource> invocation_source);
 
   // The list of uploaded but not yet committed context tokens for this
   // particular instance of the session. This list is unique to this instance of
@@ -184,6 +191,9 @@ class ContextualSearchSessionHandle {
   // handle may outlive the service.
   const base::WeakPtr<ContextualSearchService> service_;
   const base::UnguessableToken session_id_;
+
+  // The invocation source to send with generated search URLs or query payloads.
+  const std::optional<lens::LensOverlayInvocationSource> invocation_source_;
 
   // This needs to be the last member to ensure all outstanding WeakPtrs are
   // invalidated before the rest of the members.

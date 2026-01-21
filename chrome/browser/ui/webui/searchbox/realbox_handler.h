@@ -41,11 +41,6 @@ class RealboxHandler : public ContextualSearchboxHandler {
   std::string AutocompleteIconToResourceName(
       const gfx::VectorIcon& icon) const override;
 
- protected:
-  // ContextualSearchboxHandler:
-  std::optional<lens::LensOverlayInvocationSource> GetInvocationSource()
-      const override;
-
  private:
   base::WeakPtrFactory<RealboxHandler> weak_ptr_factory_{this};
 };

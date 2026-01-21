@@ -96,10 +96,6 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
       const gfx::VectorIcon& icon) const override;
 
  protected:
-  // ContextualSearchboxHandler:
-  std::optional<lens::LensOverlayInvocationSource> GetInvocationSource()
-      const override;
-
   ComposeboxHandler(
       mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
       mojo::PendingRemote<composebox::mojom::Page> pending_page,
