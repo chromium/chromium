@@ -7211,7 +7211,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "ContextualTasksEntryPoint": "toolbar-permanent"
+                        "ContextualTasksEntryPoint": "toolbar-revisit"
                     },
                     "enable_features": [
                         "ContextualTasks",
