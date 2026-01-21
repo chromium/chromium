@@ -9,7 +9,7 @@
 #include <string>
 #include <utility>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -59,7 +59,7 @@ class SecurityKeyMessageReaderImplTest : public testing::Test {
                     const std::string& message_payload);
 
   // Writes some data to the write-end of the pipe.
-  void WriteData(const char* data, int length);
+  void WriteData(base::span<const uint8_t> data);
 
   std::unique_ptr<SecurityKeyMessageReader> reader_;
   base::File read_file_;
@@ -118,18 +118,16 @@ void SecurityKeyMessageReaderImplTest::WriteMessage(
     const std::string& message_payload) {
   uint32_t length =
       SecurityKeyMessage::kMessageTypeSizeBytes + message_payload.size();
-  WriteData(reinterpret_cast<char*>(&length),
-            SecurityKeyMessage::kHeaderSizeBytes);
-  WriteData(reinterpret_cast<char*>(&message_type),
-            SecurityKeyMessage::kMessageTypeSizeBytes);
+  WriteData(base::byte_span_from_ref(length));
+  WriteData(base::byte_span_from_ref(message_type));
   if (!message_payload.empty()) {
-    WriteData(message_payload.data(), message_payload.size());
+    WriteData(base::as_byte_span(message_payload));
   }
 }
 
-void SecurityKeyMessageReaderImplTest::WriteData(const char* data, int length) {
-  int written = UNSAFE_TODO(write_file_.WriteAtCurrentPos(data, length));
-  ASSERT_EQ(length, written);
+void SecurityKeyMessageReaderImplTest::WriteData(
+    base::span<const uint8_t> data) {
+  ASSERT_TRUE(write_file_.WriteAtCurrentPosAndCheck(data));
 }
 
 TEST_F(SecurityKeyMessageReaderImplTest, SingleMessageWithNoPayload) {
@@ -164,7 +162,7 @@ TEST_F(SecurityKeyMessageReaderImplTest, SingleMessageViaSingleWrite) {
   payload[3] = 0;
   // Overwite the 'T' value with the actual type.
   payload[4] = static_cast<char>(kTestMessageType);
-  WriteData(payload.data(), payload.size());
+  WriteData(base::as_byte_span(payload));
   RunLoop();
   ASSERT_EQ(1u, messages_received_.size());
   ASSERT_EQ(kTestMessageType, messages_received_[0]->type());
@@ -186,7 +184,7 @@ TEST_F(SecurityKeyMessageReaderImplTest, SingleMessageViaMultipleWrites) {
   payload[4] = static_cast<char>(kTestMessageType);
 
   for (uint32_t i = 0; i < payload.size(); i++) {
-    WriteData(&payload[i], 1);
+    WriteData(base::as_byte_span(payload).subspan(i, 1u));
   }
   RunLoop();
   ASSERT_EQ(1u, messages_received_.size());
@@ -217,38 +215,38 @@ TEST_F(SecurityKeyMessageReaderImplTest, EmptyFile) {
 TEST_F(SecurityKeyMessageReaderImplTest, InvalidMessageLength) {
   uint32_t length = kMaxSecurityKeyMessageByteCount + 1;
   ASSERT_FALSE(SecurityKeyMessage::IsValidMessageSize(length));
-  WriteData(reinterpret_cast<char*>(&length), sizeof(length));
+  WriteData(base::byte_span_from_ref(length));
   CloseWriteFileAndRunLoop();
   ASSERT_EQ(0u, messages_received_.size());
 }
 
 TEST_F(SecurityKeyMessageReaderImplTest, ShortHeader) {
   // Write only 3 bytes - the message length header is supposed to be 4 bytes.
-  WriteData("xxx", SecurityKeyMessage::kHeaderSizeBytes - 1);
+  WriteData(base::as_byte_span(std::string_view("xxx")));
   CloseWriteFileAndRunLoop();
   ASSERT_EQ(0u, messages_received_.size());
 }
 
 TEST_F(SecurityKeyMessageReaderImplTest, ZeroLengthMessage) {
   uint32_t length = 0;
-  WriteData(reinterpret_cast<char*>(&length), sizeof(length));
+  WriteData(base::byte_span_from_ref(length));
   CloseWriteFileAndRunLoop();
   ASSERT_EQ(0u, messages_received_.size());
 }
 
 TEST_F(SecurityKeyMessageReaderImplTest, MissingControlCode) {
   uint32_t length = 1;
-  WriteData(reinterpret_cast<char*>(&length), sizeof(length));
+  WriteData(base::byte_span_from_ref(length));
   CloseWriteFileAndRunLoop();
   ASSERT_EQ(0u, messages_received_.size());
 }
 
 TEST_F(SecurityKeyMessageReaderImplTest, MissingPayload) {
   uint32_t length = 2;
-  WriteData(reinterpret_cast<char*>(&length), sizeof(length));
+  WriteData(base::byte_span_from_ref(length));
 
   char test_control_code = static_cast<char>(kTestMessageType);
-  WriteData(&test_control_code, sizeof(test_control_code));
+  WriteData(base::byte_span_from_ref(test_control_code));
   CloseWriteFileAndRunLoop();
   ASSERT_EQ(0u, messages_received_.size());
 }

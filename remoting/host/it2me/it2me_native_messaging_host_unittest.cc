@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -403,18 +402,18 @@ std::optional<base::Value::Dict>
 It2MeNativeMessagingHostTest::ReadMessageFromOutputPipe() {
   while (true) {
     uint32_t length;
-    int read_result = UNSAFE_TODO(output_read_file_.ReadAtCurrentPos(
-        reinterpret_cast<char*>(&length), sizeof(length)));
-    if (read_result != sizeof(length)) {
+    if (!output_read_file_.ReadAtCurrentPosAndCheck(
+            base::byte_span_from_ref(length))) {
       // The output pipe has been closed, return an empty message.
       return std::nullopt;
     }
 
     std::string message_json(length, '\0');
-    read_result = UNSAFE_TODO(
-        output_read_file_.ReadAtCurrentPos(std::data(message_json), length));
-    if (read_result != static_cast<int>(length)) {
-      LOG(ERROR) << "Message size (" << read_result
+    std::optional<size_t> read_result = output_read_file_.ReadAtCurrentPos(
+        base::as_writable_byte_span(message_json));
+    if (read_result != length) {
+      LOG(ERROR) << "Message size ("
+                 << (read_result ? static_cast<int64_t>(*read_result) : -1)
                  << ") doesn't match the header (" << length << ").";
       return std::nullopt;
     }
