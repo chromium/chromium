@@ -24,9 +24,6 @@ class DeviceNamePolicyHandler {
     // used to generate and format the hostname.
     kPolicyHostnameChosenByAdmin,
 
-    // Policy in place which allows managed users to configure the device name.
-    kPolicyHostnameConfigurableByManagedUser,
-
     // Policy in place which prohibits users from configuring device name.
     kPolicyHostnameNotConfigurable,
   };

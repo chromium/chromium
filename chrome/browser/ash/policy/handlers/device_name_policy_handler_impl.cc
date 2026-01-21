@@ -196,10 +196,6 @@ std::ostream& operator<<(
       stream << "[Admin chooses hostname template]";
       break;
     case DeviceNamePolicyHandlerImpl::DeviceNamePolicy::
-        kPolicyHostnameConfigurableByManagedUser:
-      stream << "[Managed user can choose hostname]";
-      break;
-    case DeviceNamePolicyHandlerImpl::DeviceNamePolicy::
         kPolicyHostnameNotConfigurable:
       stream << "[Managed user cannot choose hostname]";
       break;
