@@ -117,10 +117,8 @@ class AwBrowserProcess {
   GetOriginTrialsSettingsStorage();
   AwContentBrowserClient* GetBrowserClient();
 
-  // Returns true if we should init Perfetto during browser main.
-  // Will return false if Perfetto was already initialized during factory init,
-  // or disabled by feature flag.
-  static bool ShouldInitPerfettoDuringBrowserMain();
+  // Returns true if we manually initialized Perfetto early during startup.
+  static bool DidEarlyPerfettoInitialization();
 
  private:
   void CreateSafeBrowsingUIManager();

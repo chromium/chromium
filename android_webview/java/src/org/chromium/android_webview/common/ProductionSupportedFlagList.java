@@ -1063,26 +1063,8 @@ public final class ProductionSupportedFlagList {
                     + " startups: After enabling this flag, applications must be started and then"
                     + " restarted for tracing to apply."),
         Flag.baseFeature(
-                AwFeatures.WEBVIEW_DISABLE_PERFETTO_INIT,
-                "Disables Perfetto initialization if enabled. "
-                        + "When enabled, the "
-                        + AwFeatures.WEBVIEW_EARLY_PERFETTO_INIT
-                        + " and "
-                        + AwFeatures.WEBVIEW_BACKGROUND_PERFETTO_INIT
-                        + " are both ignored. "
-                        + "After enabling this flag, applications must be started and then "
-                        + "restarted for tracing to apply."),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_EARLY_PERFETTO_INIT,
                 "Initializes Perfetto as early as possible, right after native library load. "
-                        + "After enabling this flag, applications must be started and then "
-                        + "restarted for tracing to apply."),
-        Flag.baseFeature(
-                AwFeatures.WEBVIEW_BACKGROUND_PERFETTO_INIT,
-                "Initializes Perfetto on a background thread once native library has been loaded. "
-                        + "This flag is ignored if "
-                        + AwFeatures.WEBVIEW_EARLY_PERFETTO_INIT
-                        + " is enabled."
                         + "After enabling this flag, applications must be started and then "
                         + "restarted for tracing to apply."),
         Flag.baseFeature(

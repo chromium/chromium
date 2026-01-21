@@ -58,8 +58,6 @@ BASE_DECLARE_FEATURE(kWebViewReducedSeedExpiration);
 BASE_DECLARE_FEATURE(kWebViewReducedSeedRequestPeriod);
 BASE_DECLARE_FEATURE(kWebViewEarlyStartupTracing);
 BASE_DECLARE_FEATURE(kWebViewEarlyPerfettoInit);
-BASE_DECLARE_FEATURE(kWebViewBackgroundPerfettoInit);
-BASE_DECLARE_FEATURE(kWebViewDisablePerfettoInit);
 BASE_DECLARE_FEATURE(kWebViewCacheBoundaryInterfaceMethods);
 BASE_DECLARE_FEATURE(kWebViewOptInToGmsBindServiceOptimization);
 BASE_DECLARE_FEATURE(kWebViewMoveWorkToProviderInit);
