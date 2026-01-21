@@ -787,9 +787,9 @@ config("compiler") {
     cflags_cc += [ "-Wno-trigraphs" ]
   }
 
-  if (use_relative_vtables_abi) {
+  # Fuchsia enables this by default.
+  if (use_relative_vtables_abi && !is_fuchsia) {
     cflags_cc += [ "-fexperimental-relative-c++-abi-vtables" ]
-    ldflags += [ "-fexperimental-relative-c++-abi-vtables" ]
   }
 
   if (is_wasm) {

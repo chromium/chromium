@@ -18,10 +18,7 @@ config("compiler") {
   # https://fuchsia.googlesource.com/zircon/+/master/system/private/zircon/stack.h#9),
   # but on other platforms it's much higher, so a variety of code assumes more
   # will be available. Raise to 8M which matches e.g. macOS.
-  ldflags = [
-    "-Wl,-z,stack-size=0x800000",
-    "-fexperimental-relative-c++-abi-vtables",
-  ]
+  ldflags = [ "-Wl,-z,stack-size=0x800000" ]
 
   if (optimize_for_size) {
     # Enable LLD's balanced partitioning for ordering function sections.
@@ -35,8 +32,6 @@ config("compiler") {
     # performance for binary size savings is acceptable.
     ldflags += [ "-Wl,--bp-compression-sort=function" ]
   }
-
-  cflags_cc = [ "-fexperimental-relative-c++-abi-vtables" ]
 
   if (is_web_engine) {
     defines = [ "IS_WEB_ENGINE" ]
