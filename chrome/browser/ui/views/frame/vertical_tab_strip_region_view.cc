@@ -37,6 +37,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/resize_area.h"
@@ -60,6 +61,11 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
     : tab_strip_model_(browser_view->browser()->GetTabStripModel()),
       state_controller_(state_controller),
       resize_animation_(this) {
+  // For z-ordering purposes this needs to be on a layer.
+  SetPaintToLayer();
+  // Because corners may be transparent, this must be set to false.
+  layer()->SetFillsBoundsOpaquely(false);
+
   flex_layout_ = SetLayoutManager(std::make_unique<views::FlexLayout>());
   flex_layout_->SetOrientation(views::LayoutOrientation::kVertical)
       .SetCollapseMargins(true)
