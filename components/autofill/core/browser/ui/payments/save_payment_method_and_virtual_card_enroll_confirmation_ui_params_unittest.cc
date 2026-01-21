@@ -162,9 +162,12 @@ TEST(SavePaymentMethodAndVirtualCardEnrollConfirmationUiParamsTest,
 
 // Verify that SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
 // attributes are correctly set for save IBAN upload failure and max strike is
-// not hit.
+// not hit when Google Wallet branding is disabled.
 TEST(SavePaymentMethodAndVirtualCardEnrollConfirmationUiParamsTest,
-     VerifyAttributesForSaveIbanFailure) {
+     VerifyAttributesForSaveIbanFailure_WalletBrandingDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(features::kAutofillEnableWalletBranding);
+
   SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params =
       SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
           CreateForSaveIbanFailure(/*hit_max_strikes=*/false);
@@ -187,10 +190,43 @@ TEST(SavePaymentMethodAndVirtualCardEnrollConfirmationUiParamsTest,
 }
 
 // Verify that SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
-// attributes are correctly set for save IBAN upload failure with max strike
-// hit.
+// attributes are correctly set for save IBAN upload failure and max strike is
+// not hit.
 TEST(SavePaymentMethodAndVirtualCardEnrollConfirmationUiParamsTest,
-     VerifyAttributesForSaveIbanFailureMaxStrikeHit) {
+     VerifyAttributesForSaveIbanFailure) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableWalletBranding);
+
+  SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params =
+      SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
+          CreateForSaveIbanFailure(/*hit_max_strikes=*/false);
+
+  EXPECT_FALSE(ui_params.is_success);
+  EXPECT_EQ(ui_params.title_text,
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_IBAN_CONFIRMATION_FAILURE_TITLE_TEXT));
+  EXPECT_EQ(
+      ui_params.description_text,
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_IBAN_TO_WALLET_CONFIRMATION_FAILURE_DESCRIPTION_TEXT));
+  EXPECT_EQ(
+      ui_params.failure_ok_button_text,
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUTTON_TEXT));
+  EXPECT_EQ(
+      ui_params.failure_ok_button_accessible_name,
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_OK_BUTTON_ACCESSIBLE_NAME));
+}
+
+// Verify that SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
+// attributes are correctly set for save IBAN upload failure with max strike
+// hit when Google Wallet branding is disabled.
+TEST(SavePaymentMethodAndVirtualCardEnrollConfirmationUiParamsTest,
+     VerifyAttributesForSaveIbanFailureMaxStrikeHit_WalletBrandingDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(features::kAutofillEnableWalletBranding);
+
   SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params =
       SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
           CreateForSaveIbanFailure(/*hit_max_strikes=*/true);
@@ -203,6 +239,36 @@ TEST(SavePaymentMethodAndVirtualCardEnrollConfirmationUiParamsTest,
       ui_params.description_text,
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_IBAN_CONFIRMATION_FAILURE_HIT_MAX_STRIKE_DESCRIPTION_TEXT));
+  EXPECT_EQ(
+      ui_params.failure_ok_button_text,
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUTTON_TEXT));
+  EXPECT_EQ(
+      ui_params.failure_ok_button_accessible_name,
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_OK_BUTTON_ACCESSIBLE_NAME));
+}
+
+// Verify that SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
+// attributes are correctly set for save IBAN upload failure with max strike
+// hit.
+TEST(SavePaymentMethodAndVirtualCardEnrollConfirmationUiParamsTest,
+     VerifyAttributesForSaveIbanFailureMaxStrikeHit) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableWalletBranding);
+
+  SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params =
+      SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
+          CreateForSaveIbanFailure(/*hit_max_strikes=*/true);
+
+  EXPECT_FALSE(ui_params.is_success);
+  EXPECT_EQ(ui_params.title_text,
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_IBAN_CONFIRMATION_FAILURE_TITLE_TEXT));
+  EXPECT_EQ(
+      ui_params.description_text,
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_IBAN_TO_WALLET_CONFIRMATION_FAILURE_HIT_MAX_STRIKE_DESCRIPTION_TEXT));
   EXPECT_EQ(
       ui_params.failure_ok_button_text,
       l10n_util::GetStringUTF16(
