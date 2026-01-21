@@ -51,6 +51,9 @@ BASE_DECLARE_FEATURE(kDisableBoostPriority);
 enum class DisableBoostPriorityExemption {
   // Priority boosting is disabled for all processes except Browser and Network.
   kBrowserNetwork,
+  // Priority boosting is disabled for all processes except GPU, Browser, and
+  // Network.
+  kGpuBrowserNetwork,
 };
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE_PARAM(DisableBoostPriorityExemption,

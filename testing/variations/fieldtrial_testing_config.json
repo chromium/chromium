@@ -9040,6 +9040,15 @@
             ],
             "experiments": [
                 {
+                    "name": "EnabledGpuBrowserNetwork",
+                    "params": {
+                        "exempt_processes": "GpuBrowserNetwork"
+                    },
+                    "enable_features": [
+                        "DisableBoostPriority"
+                    ]
+                },
+                {
                     "name": "EnabledBrowserNetwork",
                     "params": {
                         "exempt_processes": "BrowserNetwork"
