@@ -237,7 +237,10 @@ std::optional<LaunchMode> GetLaunchModeFast(
       {switches::kFromInstaller, LaunchMode::kNone},
       {switches::kUninstall, LaunchMode::kNone},
       {switches::kNotificationLaunchId, LaunchMode::kWinPlatformNotification},
+      {switches::kStartupForegroundLaunch,
+       LaunchMode::kStartupForegroundLaunch},
   };
+
   for (const auto& [switch_val, mode] : switch_to_mode) {
     if (command_line.HasSwitch(switch_val)) {
       return mode;

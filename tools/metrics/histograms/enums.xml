@@ -7482,6 +7482,9 @@ shown properly on the user-facing crash UI.
     Web App launched as a registered protocol handler
   </int>
   <int value="29" label="kWithAppId">Launched with an AppId on Windows</int>
+  <int value="30" label="kStartupForegroundLaunch">
+    Launched automatically upon system startup
+  </int>
 </enum>
 
 <enum name="LaunchSource">

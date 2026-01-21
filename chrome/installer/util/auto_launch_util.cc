@@ -67,11 +67,8 @@ void EnableStartAtLogin(StartupLaunchMode startup_launch_mode) {
           app_launch_prefetch::SubprocessType::kBrowserBackground));
       break;
     case StartupLaunchMode::kForeground:
-      // TODO(crbug.com/458756948): Add a switch here so that metrics can be
-      // recorded for browser instances launched by Foreground Launch.
+      cmd_line.AppendSwitch(switches::kStartupForegroundLaunch);
       break;
-    default:
-      NOTREACHED();
   }
   if (auto key_name = GetAutoLaunchKeyName(); !key_name.empty()) {
     base::win::AddCommandToAutoRun(HKEY_CURRENT_USER, key_name,

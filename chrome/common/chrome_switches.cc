@@ -936,6 +936,10 @@ const char kSourceAppId[] = "source-app-id";
 // metrics.
 const char kSourceShortcut[] = "source-shortcut";
 
+// Identifies Chrome instances that start in foreground mode at startup to
+// record related metrics.
+const char kStartupForegroundLaunch[] = "startup-foreground-launch";
+
 // Runs un-installation steps that were done by chrome first-run.
 const char kUninstall[] = "uninstall";
 

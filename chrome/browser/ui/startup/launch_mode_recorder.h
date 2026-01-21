@@ -72,7 +72,10 @@ enum class LaunchMode {
   // likely means Chrome was launched from the Windows taskbar or start menu.
   // These launches were previously in the kOther bucket.
   kWithAppId = 29,
-  kMaxValue = kWithAppId,
+
+  // Windows-only, Chrome launched in foreground upon system booting up.
+  kStartupForegroundLaunch = 30,
+  kMaxValue = kStartupForegroundLaunch,
 };
 
 // Computes and records the launch mode based on `command_line` and process
