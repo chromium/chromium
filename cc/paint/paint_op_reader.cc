@@ -1065,7 +1065,8 @@ NOINLINE void PaintOpReader::SetInvalid(DeserializationError error) {
       "PaintOpReader deserialization error");
   base::UmaHistogramEnumeration("GPU.PaintOpReader.DeserializationError",
                                 error);
-  if (valid_ && options_.crash_dump_on_failure && base::RandInt(1, 10) == 1) {
+  if (valid_ && options_.crash_dump_on_failure &&
+      base::RandIntInclusive(1, 10) == 1) {
     crash_reporter::ScopedCrashKeyString crash_key_scope(
         &deserialization_error_crash_key,
         base::NumberToString(static_cast<int>(error)));

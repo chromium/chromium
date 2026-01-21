@@ -45,7 +45,7 @@ int GetSumOfAllValues(const std::map<GURL, int>& map) {
 }
 
 int GetNewSessionID() {
-  return base::RandInt(1, 1 << 30);
+  return base::RandIntInclusive(1, 1 << 30);
 }
 
 }  // namespace

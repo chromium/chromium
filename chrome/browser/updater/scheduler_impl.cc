@@ -68,7 +68,7 @@ void WakeAllUpdaters(base::OnceClosure callback) {
     return;
   }
   std::optional<base::FilePath> executable = GetUpdaterExecutablePath(
-      scope, versions.at(base::RandInt(0, versions.size() - 1)));
+      scope, versions.at(base::RandIntInclusive(0, versions.size() - 1)));
   if (!executable) {
     return;
   }

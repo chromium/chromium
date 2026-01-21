@@ -114,7 +114,7 @@ TEST_F(DiskDataAllocatorTest, ReadWriteDiscardMultiple) {
       data_written;
 
   for (int i = 0; i < 10; i++) {
-    int size = base::RandInt(100, 1000);
+    int size = base::RandIntInclusive(100, 1000);
     auto data = base::RandBytesAsString(size);
     auto reserved_chunk = allocator.TryReserveChunk(size);
     ASSERT_TRUE(reserved_chunk);

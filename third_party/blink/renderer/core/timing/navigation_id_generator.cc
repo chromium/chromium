@@ -29,7 +29,8 @@ constexpr uint32_t kNavigationIdIncrement = 7;
 }  // namespace
 
 void NavigationIdGenerator::ResetNavigationId() {
-  navigation_id_ = base::RandInt(kMinNavigationId, kMaxNavigationIdForReset);
+  navigation_id_ =
+      base::RandIntInclusive(kMinNavigationId, kMaxNavigationIdForReset);
 }
 
 void NavigationIdGenerator::IncrementNavigationId() {

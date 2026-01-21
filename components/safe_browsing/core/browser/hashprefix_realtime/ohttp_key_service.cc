@@ -270,7 +270,8 @@ void OhttpKeyService::NotifyLookupResponse(
         base::BindOnce(&OhttpKeyService::MaybeStartServerTriggeredFetch,
                        weak_factory_.GetWeakPtr(), key,
                        FetchTriggerReason::kKeyRelatedHttpErrorCode),
-        base::Seconds(base::RandInt(0, kServerTriggeredFetchMaxDelayTimeSec)));
+        base::Seconds(
+            base::RandIntInclusive(0, kServerTriggeredFetchMaxDelayTimeSec)));
     return;
   }
 
@@ -284,7 +285,8 @@ void OhttpKeyService::NotifyLookupResponse(
         base::BindOnce(&OhttpKeyService::MaybeStartServerTriggeredFetch,
                        weak_factory_.GetWeakPtr(), key,
                        FetchTriggerReason::kKeyRotatedHeader),
-        base::Seconds(base::RandInt(0, kServerTriggeredFetchMaxDelayTimeSec)));
+        base::Seconds(
+            base::RandIntInclusive(0, kServerTriggeredFetchMaxDelayTimeSec)));
     return;
   }
 }

@@ -47,7 +47,7 @@ namespace {
 std::u16string GenerateText(size_t length) {
   std::u16string random_string;
   for (size_t index = 0; index < length; ++index) {
-    random_string += static_cast<char16_t>(base::RandInt('A', 'Z'));
+    random_string += static_cast<char16_t>(base::RandIntInclusive('A', 'Z'));
   }
   return random_string;
 }

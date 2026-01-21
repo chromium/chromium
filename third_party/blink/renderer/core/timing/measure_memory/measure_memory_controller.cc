@@ -190,7 +190,7 @@ struct RandomBitGenerator {
     return static_cast<size_t>(std::numeric_limits<int>::max());
   }
   size_t operator()() {
-    return static_cast<size_t>(base::RandInt(min(), max()));
+    return static_cast<size_t>(base::RandIntInclusive(min(), max()));
   }
 };
 

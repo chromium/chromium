@@ -56,8 +56,8 @@ int GetBirthYearOffset(PrefService* local_state) {
       local_state->GetInteger(kUserDemographicsBirthYearOffsetPrefName);
   if (offset == kUserDemographicsBirthYearNoiseOffsetDefaultValue) {
     // Generate a new random offset when not already cached.
-    offset = base::RandInt(-kUserDemographicsBirthYearNoiseOffsetRange,
-                           kUserDemographicsBirthYearNoiseOffsetRange);
+    offset = base::RandIntInclusive(-kUserDemographicsBirthYearNoiseOffsetRange,
+                                    kUserDemographicsBirthYearNoiseOffsetRange);
     local_state->SetInteger(kUserDemographicsBirthYearOffsetPrefName, offset);
   }
   return offset;

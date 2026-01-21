@@ -72,7 +72,7 @@ base::File OpenProfilingFile() {
   // well for the coverage builder.
   // TODO(crbug.com/40121559): Check if this is an appropriate value for
   // the PGO builds.
-  int pool_index = base::RandInt(0, 3);
+  int pool_index = base::RandIntInclusive(0, 3);
   std::string filename = base::StrCat(
       {"child_pool-", base::NumberToString(pool_index), ".profraw"});
 #if BUILDFLAG(IS_WIN)

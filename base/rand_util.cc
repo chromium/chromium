@@ -54,6 +54,10 @@ int RandInt(int min, int max) {
   return result;
 }
 
+int RandIntInclusive(int min, int max) {
+  return RandInt(min, max);
+}
+
 double RandDouble() {
   return BitsToOpenEndedUnitInterval(base::RandUint64());
 }

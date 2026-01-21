@@ -701,7 +701,7 @@ void FocusModeController::OnTimerTick() {
       return;
     case FocusModeSession::State::kEnding:
       timer_.Stop();
-      congratulatory_index_ = base::RandInt(
+      congratulatory_index_ = base::RandIntInclusive(
           /*min=*/0, /*max=*/focus_mode_util::kCongratulatoryTitleNum - 1);
 
       if (media_widget_) {

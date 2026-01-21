@@ -2128,7 +2128,7 @@ BackForwardCacheCanStoreTreeResult::GetWebExposedNotRestoredReasons() {
   DCHECK(is_root_outermost_main_frame_);
   uint32_t count = GetCrossOriginReachableFrameCount();
   int exposed_cross_origin_iframe_index =
-      count == 0 ? 0 : base::RandInt(0, count - 1);
+      count == 0 ? 0 : base::RandIntInclusive(0, count - 1);
   return GetWebExposedNotRestoredReasonsInternal(
       exposed_cross_origin_iframe_index);
 }

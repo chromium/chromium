@@ -483,7 +483,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest, E2E_ONLY(TwoClientAddPass)) {
   // prevent them from overwriting each other.
   for (int i = 0; i < num_clients(); ++i) {
     GetPasswordStore(i)->AddLogin(CreateTestPasswordForm(
-        base::RandInt(0, std::numeric_limits<int32_t>::max()),
+        base::RandIntInclusive(0, std::numeric_limits<int32_t>::max()),
         GetPasswordStoreType()));
   }
 

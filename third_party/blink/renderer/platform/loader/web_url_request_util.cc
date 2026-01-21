@@ -78,7 +78,7 @@ int GetInitialRequestID() {
   // to something higher like 2^31).
   const int kMin = 0;
   const int kMax = 1 << 20;
-  return base::RandInt(kMin, kMax);
+  return base::RandIntInclusive(kMin, kMax);
 }
 
 }  // namespace

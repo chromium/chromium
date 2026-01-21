@@ -24,7 +24,8 @@ void WallpaperDailyRefreshScheduler::RegisterProfilePrefs(
   // Randomize the checkpoint time to prevent server load spikes.
   // First time is between 12:00am and 10:59pm and the second time is an hour
   // from the first.
-  const int kFirstCheckpointOffsetMinutes = base::RandInt(0, 23 * 60 - 1);
+  const int kFirstCheckpointOffsetMinutes =
+      base::RandIntInclusive(0, 23 * 60 - 1);
   const int kSecondCheckpointOffsetMinutes = kFirstCheckpointOffsetMinutes + 60;
   registry->RegisterIntegerPref(prefs::kWallpaperDailyRefreshScheduleType,
                                 static_cast<int>(ScheduleType::kCustom));

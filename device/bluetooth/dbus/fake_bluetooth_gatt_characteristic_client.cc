@@ -600,7 +600,7 @@ FakeBluetoothGattCharacteristicClient::GetHeartRateMeasurementValue() {
   value.flags |= (0x01 << 4);
 
   // Pick a value between 117 bpm and 153 bpm for heart rate.
-  value.bpm = static_cast<uint8_t>(base::RandInt(117, 153));
+  value.bpm = static_cast<uint8_t>(base::RandIntInclusive(117, 153));
 
   // Total calories burned in kJoules since the last reset. Increment this by 1
   // every time. It's fine if it overflows: it becomes 0 when the user resets

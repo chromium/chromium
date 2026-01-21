@@ -313,7 +313,7 @@ constexpr int kDisableDelayVarianceSeconds = 20;
 
 // static
 base::TimeDelta BrowserAccessibilityStateImpl::GetRandomizedDisableDelay() {
-  const base::TimeDelta variance = base::Seconds(base::RandInt(
+  const base::TimeDelta variance = base::Seconds(base::RandIntInclusive(
       -kDisableDelayVarianceSeconds, kDisableDelayVarianceSeconds));
   return kDisableDelay + variance;
 }

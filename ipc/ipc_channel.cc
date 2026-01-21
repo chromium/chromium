@@ -114,10 +114,9 @@ std::string Channel::GenerateUniqueRandomChannelID() {
   // component. The strong random component prevents other processes from
   // hijacking or squatting on predictable channel names.
   int process_id = base::GetCurrentProcId();
-  return base::StringPrintf("%d.%u.%d",
-      process_id,
-      g_last_id.GetNext(),
-      base::RandInt(0, std::numeric_limits<int32_t>::max()));
+  return base::StringPrintf(
+      "%d.%u.%d", process_id, g_last_id.GetNext(),
+      base::RandIntInclusive(0, std::numeric_limits<int32_t>::max()));
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

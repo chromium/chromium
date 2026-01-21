@@ -477,7 +477,7 @@ void ChromeOmniboxClient::MaybeShowOnFocusHatsSurvey(
 void ChromeOmniboxClient::CheckConditionsAndLaunchSurvey() {
   // Roll the dice as we want to show one of two surveys to the treatment
   // group but only one survey to the control group.
-  bool show_happiness_survey = base::RandInt(0, 1) == 0;
+  bool show_happiness_survey = base::RandIntInclusive(0, 1) == 0;
 
   // Don't show the suggestions utility survey to control group.
   if (!omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get().enabled &&

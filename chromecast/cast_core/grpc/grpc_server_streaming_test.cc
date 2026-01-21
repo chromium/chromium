@@ -50,7 +50,7 @@ class GrpcServerStreamingTest : public ::testing::Test {
 };
 
 TEST_F(GrpcServerStreamingTest, ServerStreamingCallSucceeds) {
-  const int kMaxResponseCount = base::RandInt(10, 300);
+  const int kMaxResponseCount = base::RandIntInclusive(10, 300);
   int server_response_count = 0;
   auto writes_available_callback = base::BindLambdaForTesting(
       [&](grpc::Status status,

@@ -37,7 +37,7 @@ std::string GetRandomOtherId() {
   // so that adding a letter to it makes it too long.
   std::vector<char> result(500);
   for (char& c : result) {
-    c = kLetters[base::RandInt(
+    c = kLetters[base::RandIntInclusive(
         0, (kLetters.size() * sizeof(decltype(kLetters)::value_type)) - 1)];
   }
   return std::string(result.begin(), result.end());

@@ -44,7 +44,7 @@ TEST(UserspaceSwap, GetUsedSuperpages) {
   uint64_t mem_area_len[kNumAllocations] = {};
   for (size_t i = 0; i < kNumAllocations; ++i) {
     UNSAFE_TODO(mem_area_len[i]) =
-        base::RandInt(kMinAllocationSize, kMaxAllocationSize);
+        base::RandIntInclusive(kMinAllocationSize, kMaxAllocationSize);
     UNSAFE_TODO(mem_area[i]) =
         reinterpret_cast<uintptr_t>(malloc(UNSAFE_TODO(mem_area_len[i])));
     UNSAFE_TODO(ASSERT_NE(mem_area[i], 0u));
@@ -75,7 +75,7 @@ TEST(UserspaceSwap, LimitSuperpagesReturned) {
   uint64_t mem_area_len[kNumAllocations] = {};
   for (size_t i = 0; i < kNumAllocations; ++i) {
     UNSAFE_TODO(mem_area_len[i]) =
-        base::RandInt(kMinAllocationSize, kMaxAllocationSize);
+        base::RandIntInclusive(kMinAllocationSize, kMaxAllocationSize);
     UNSAFE_TODO(mem_area[i]) =
         reinterpret_cast<uintptr_t>(malloc(UNSAFE_TODO(mem_area_len[i])));
     UNSAFE_TODO(ASSERT_NE(mem_area[i], 0u));

@@ -227,7 +227,7 @@ std::string GetDefaultTraceBasename(TraceBasenameType type) {
   // - the second time, if test execution finishes normally, to calculate the
   // resulting name of the file, including test result.
   static std::string random_seed =
-      base::NumberToString(base::RandInt(1e7, 1e8 - 1));
+      base::NumberToString(base::RandIntInclusive(1e7, 1e8 - 1));
   std::string status;
   if (type == TraceBasenameType::kWithTestStatus) {
     if (test_info) {

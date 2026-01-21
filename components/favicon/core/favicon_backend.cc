@@ -74,8 +74,9 @@ std::unique_ptr<FaviconBackend> FaviconBackend::Create(
   }
 
   // Computing metrics is costly, only do it every so often.
-  if (base::RandInt(1, 100) == 50)
+  if (base::RandIntInclusive(1, 100) == 50) {
     db->ComputeDatabaseMetrics();
+  }
 
   // WrapUnique() as constructor is private.
   return base::WrapUnique(new FaviconBackend(std::move(db), delegate));

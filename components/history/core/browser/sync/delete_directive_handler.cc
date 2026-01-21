@@ -32,7 +32,7 @@ std::string RandASCIIString(size_t length) {
   const int kMin = static_cast<int>(' ');
   const int kMax = static_cast<int>('~');
   for (size_t i = 0; i < length; ++i) {
-    result.push_back(static_cast<char>(base::RandInt(kMin, kMax)));
+    result.push_back(static_cast<char>(base::RandIntInclusive(kMin, kMax)));
   }
   return result;
 }

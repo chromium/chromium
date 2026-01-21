@@ -445,7 +445,7 @@ void OffscreenCanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
     host->DiscardResources();
     host->DiscardResourceDispatcher();
   }
-  uint32_t delay = base::RandInt(1, kMaxIframeContextLoseDelay);
+  uint32_t delay = base::RandIntInclusive(1, kMaxIframeContextLoseDelay);
   dispatch_context_lost_event_timer_.StartOneShot(base::Milliseconds(delay),
                                                   FROM_HERE);
 }

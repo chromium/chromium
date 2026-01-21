@@ -54,7 +54,7 @@ const std::vector<std::string>& GetFixedHosts() {
 std::string GetRandomString(int length) {
   std::string prefix;
   for (int i = 0; i < length; i++) {
-    prefix += ('a' + base::RandInt(0, 25));
+    prefix += ('a' + base::RandIntInclusive(0, 25));
   }
   return prefix;
 }

@@ -59,8 +59,8 @@ TEST_F(RateLimiterTokenBucketTest, RandomizedEventsStream) {
   // allowing one event through and no more.
   for (size_t i = 0; i < kEventCount; ++i) {
     // Allow the minimal intake (step forward by 1 period, plus add a random).
-    task_environment_.FastForwardBy(kFillingPeriod +
-                                    base::Milliseconds(base::RandInt(0, 100)));
+    task_environment_.FastForwardBy(
+        kFillingPeriod + base::Milliseconds(base::RandIntInclusive(0, 100)));
     // See that it was enough for matching event size, but no more.
     ASSERT_TRUE(
         rate_limiter_.Acquire(kMaxLevel * kFillingPeriod / kFillingTime));

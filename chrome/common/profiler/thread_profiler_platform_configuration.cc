@@ -276,7 +276,8 @@ AndroidPlatformConfiguration::ChooseEnabledProcess() const {
   }
   DCHECK_EQ(100, total_weight);
 
-  int chosen = base::RandInt(0, total_weight - 1);  // Max is inclusive.
+  int chosen =
+      base::RandIntInclusive(0, total_weight - 1);  // Max is inclusive.
   int cumulative_weight = 0;
   for (const auto& process_enable_weight : process_enable_weights) {
     if (chosen >= cumulative_weight &&

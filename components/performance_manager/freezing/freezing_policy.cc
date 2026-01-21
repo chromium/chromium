@@ -1404,7 +1404,7 @@ void FreezingPolicy::RecordFreezingEligibilityUKMForPageStatic(
 
 base::TimeTicks FreezingPolicy::GenerateRandomPeriodicUnfreezePhase() const {
   return base::TimeTicks() +
-         base::Milliseconds(base::RandInt(
+         base::Milliseconds(base::RandIntInclusive(
              0, features::kInfiniteTabsFreezing_UnfreezeInterval.Get()
                     .InMilliseconds()));
 }

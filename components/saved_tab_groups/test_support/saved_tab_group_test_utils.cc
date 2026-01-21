@@ -25,7 +25,7 @@ LocalTabGroupID GenerateRandomTabGroupID() {
 }
 
 LocalTabID GenerateRandomTabID() {
-  return base::RandInt(0, 1000);
+  return base::RandIntInclusive(0, 1000);
 }
 
 void CompareSavedTabGroupTabs(const std::vector<SavedTabGroupTab>& v1,

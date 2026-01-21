@@ -1319,7 +1319,7 @@ void HistoryBackend::InitImpl(
 
   // Generate the history and favicon database metrics only after performing
   // any migration work.
-  if (base::RandInt(1, 100) == 50) {
+  if (base::RandIntInclusive(1, 100) == 50) {
     // Only do this computation sometimes since it can be expensive.
     db_->ComputeDatabaseMetrics(history_name);
   }

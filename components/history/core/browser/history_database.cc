@@ -278,7 +278,7 @@ void HistoryDatabase::ComputeDatabaseMetrics(
 
   // Compute the advanced metrics even less often, pending timing data showing
   // that's not necessary.
-  if (base::RandInt(1, 3) == 3) {
+  if (base::RandIntInclusive(1, 3) == 3) {
     // Collect all URLs visited within the last month.
     base::Time one_month_ago = base::Time::Now() - base::Days(30);
     sql::Statement url_sql(db_.GetUniqueStatement(

@@ -156,7 +156,7 @@ bool IsChromeLabsEnabled() {
       chrome_labs_prefs::kChromeLabsActivationThresholdDefaultValue) {
     g_browser_process->local_state()->SetInteger(
         chrome_labs_prefs::kChromeLabsActivationThreshold,
-        base::RandInt(1, 100));
+        base::RandIntInclusive(1, 100));
   }
 
   // The percentage of users that should see the feature.

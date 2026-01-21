@@ -1325,7 +1325,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, SC_HoistBMs10LevelUp) {
   const BookmarkNode* folder_L10 = nullptr;
 
   for (size_t level = 0; level < kNumLevels; ++level) {
-    const size_t num_bookmarks = base::RandInt(0, 9);
+    const size_t num_bookmarks = base::RandIntInclusive(0, 9);
     for (size_t i = 0; i < num_bookmarks; ++i) {
       const std::u16string title = IndexedURLTitle(i);
       const GURL url = GURL(IndexedURL(i));
@@ -1419,7 +1419,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, SC_SinkBMs10LevelDown) {
   const BookmarkNode* folder_L0 = nullptr;
   const BookmarkNode* folder_L10 = nullptr;
   for (size_t level = 0; level < kNumLevels; ++level) {
-    size_t num_bookmarks = base::RandInt(0, 9);
+    size_t num_bookmarks = base::RandIntInclusive(0, 9);
     for (size_t i = 0; i < num_bookmarks; ++i) {
       const std::u16string title = IndexedURLTitle(i);
       const GURL url = GURL(IndexedURL(i));
@@ -1513,7 +1513,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
   const BookmarkNode* folder = GetBookmarkBarNode(0);
   const BookmarkNode* folder_L5 = nullptr;
   for (size_t level = 0; level < 15; ++level) {
-    size_t num_bookmarks = base::RandInt(0, 9);
+    size_t num_bookmarks = base::RandIntInclusive(0, 9);
     for (size_t i = 0; i < num_bookmarks; ++i) {
       const std::u16string title = IndexedURLTitle(i);
       const GURL url = GURL(IndexedURL(i));
@@ -1585,7 +1585,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
   const BookmarkNode* folder = GetBookmarkBarNode(0);
   const BookmarkNode* folder_L5 = nullptr;
   for (size_t level = 0; level < kNumLevels; ++level) {
-    const size_t num_bookmarks = base::RandInt(0, 9);
+    const size_t num_bookmarks = base::RandIntInclusive(0, 9);
     for (size_t i = 0; i < num_bookmarks; ++i) {
       const std::u16string title = IndexedURLTitle(i);
       const GURL url = GURL(IndexedURL(i));
@@ -1663,7 +1663,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, SC_HoistFolder5LevelsUp) {
   const BookmarkNode* folder = GetBookmarkBarNode(0);
   const BookmarkNode* folder_L5 = nullptr;
   for (size_t level = 0; level < kNumLevels; ++level) {
-    size_t num_bookmarks = base::RandInt(0, 9);
+    size_t num_bookmarks = base::RandIntInclusive(0, 9);
     for (size_t i = 0; i < num_bookmarks; ++i) {
       const std::u16string title = IndexedURLTitle(i);
       const GURL url = GURL(IndexedURL(i));
@@ -2405,7 +2405,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, RacyPositionChanges) {
   for (size_t i = 0; i < kNumBookmarks; ++i) {
     const BookmarkNode* node = GetUniqueNodeByURL(0, GURL(IndexedURL(i)));
     size_t rand_pos =
-        static_cast<size_t>(base::RandInt(0, int{kNumBookmarks} - 1));
+        static_cast<size_t>(base::RandIntInclusive(0, int{kNumBookmarks} - 1));
     DVLOG(1) << "Moving client 0's bookmark " << i << " to position "
              << rand_pos;
     Move(0, node, node->parent(), rand_pos);
@@ -2415,7 +2415,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, RacyPositionChanges) {
   for (size_t i = 0; i < kNumBookmarks; ++i) {
     const BookmarkNode* node = GetUniqueNodeByURL(1, GURL(IndexedURL(i)));
     size_t rand_pos =
-        static_cast<size_t>(base::RandInt(0, int{kNumBookmarks} - 1));
+        static_cast<size_t>(base::RandIntInclusive(0, int{kNumBookmarks} - 1));
     DVLOG(1) << "Moving client 1's bookmark " << i << " to position "
              << rand_pos;
     Move(1, node, node->parent(), rand_pos);
@@ -2427,7 +2427,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, RacyPositionChanges) {
   for (size_t i = 0; i < kNumBookmarks; ++i) {
     const BookmarkNode* node = GetUniqueNodeByURL(1, GURL(IndexedURL(i)));
     size_t rand_pos =
-        static_cast<size_t>(base::RandInt(0, int{kNumBookmarks} - 1));
+        static_cast<size_t>(base::RandIntInclusive(0, int{kNumBookmarks} - 1));
     DVLOG(1) << "Moving client 1's bookmark " << i << " to position "
              << rand_pos;
     Move(1, node, node->parent(), rand_pos);
@@ -2437,7 +2437,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, RacyPositionChanges) {
   for (size_t i = 0; i < kNumBookmarks; ++i) {
     const BookmarkNode* node = GetUniqueNodeByURL(0, GURL(IndexedURL(i)));
     size_t rand_pos =
-        static_cast<size_t>(base::RandInt(0, int{kNumBookmarks} - 1));
+        static_cast<size_t>(base::RandIntInclusive(0, int{kNumBookmarks} - 1));
     DVLOG(1) << "Moving client 0's bookmark " << i << " to position "
              << rand_pos;
     Move(0, node, node->parent(), rand_pos);

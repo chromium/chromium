@@ -260,8 +260,9 @@ AdsPageLoadMetricsObserver::HeavyAdThresholdNoiseProvider::
 base::ByteCount AdsPageLoadMetricsObserver::HeavyAdThresholdNoiseProvider::
     GetNetworkThresholdNoiseForFrame() const {
   return base::ByteCount(
-      use_noise_ ? base::RandInt(0, kMaxNetworkThresholdNoiseBytes.InBytes())
-                 : 0);
+      use_noise_
+          ? base::RandIntInclusive(0, kMaxNetworkThresholdNoiseBytes.InBytes())
+          : 0);
 }
 
 AdsPageLoadMetricsObserver::AdsPageLoadMetricsObserver(

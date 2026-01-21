@@ -1485,9 +1485,9 @@ void ChromePasswordProtectionService::MaybeLogPasswordCapture(bool did_log_in) {
 
   // Set a timer to log it again in 24-28 days. Spread it to avoid hammering the
   // backend with fixed cycle after this code lands in Stable.
-  base::TimeDelta delay =
-      base::Days((kPasswordCaptureEventLogFreqDaysMin +
-                  base::RandInt(0, kPasswordCaptureEventLogFreqDaysExtra)));
+  base::TimeDelta delay = base::Days(
+      (kPasswordCaptureEventLogFreqDaysMin +
+       base::RandIntInclusive(0, kPasswordCaptureEventLogFreqDaysExtra)));
   SetLogPasswordCaptureTimer(delay);
 
   // Write the deadline to a pref to carry over restarts.

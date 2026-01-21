@@ -1230,7 +1230,7 @@ void FakeBluetoothDeviceClient::DiscoverySimulationTimer() {
     }
   } else if (discovery_simulation_step_ == 4) {
     UpdateDeviceRSSI(dbus::ObjectPath(kLowEnergyPath),
-                     base::RandInt(kMinRSSI, kMaxRSSI));
+                     base::RandIntInclusive(kMinRSSI, kMaxRSSI));
     CreateDevice(dbus::ObjectPath(FakeBluetoothAdapterClient::kAdapterPath),
                  dbus::ObjectPath(kDisplayPinCodePath));
     CreateDevice(dbus::ObjectPath(FakeBluetoothAdapterClient::kAdapterPath),
@@ -1240,7 +1240,7 @@ void FakeBluetoothDeviceClient::DiscoverySimulationTimer() {
     CreateDevice(dbus::ObjectPath(FakeBluetoothAdapterClient::kAdapterPath),
                  dbus::ObjectPath(kConnectUnpairablePath));
     UpdateDeviceRSSI(dbus::ObjectPath(kLowEnergyPath),
-                     base::RandInt(kMinRSSI, kMaxRSSI));
+                     base::RandIntInclusive(kMinRSSI, kMaxRSSI));
 
   } else if (discovery_simulation_step_ == 8) {
     CreateDevice(dbus::ObjectPath(FakeBluetoothAdapterClient::kAdapterPath),
@@ -1250,7 +1250,7 @@ void FakeBluetoothDeviceClient::DiscoverySimulationTimer() {
                    dbus::ObjectPath(kRequestPinCodePath));
     }
     UpdateDeviceRSSI(dbus::ObjectPath(kLowEnergyPath),
-                     base::RandInt(kMinRSSI, kMaxRSSI));
+                     base::RandIntInclusive(kMinRSSI, kMaxRSSI));
   } else if (discovery_simulation_step_ == 10) {
     CreateDevice(dbus::ObjectPath(FakeBluetoothAdapterClient::kAdapterPath),
                  dbus::ObjectPath(kConfirmPasskeyPath));
@@ -1263,16 +1263,16 @@ void FakeBluetoothDeviceClient::DiscoverySimulationTimer() {
     CreateDevice(dbus::ObjectPath(FakeBluetoothAdapterClient::kAdapterPath),
                  dbus::ObjectPath(kJustWorksPath));
     UpdateDeviceRSSI(dbus::ObjectPath(kLowEnergyPath),
-                     base::RandInt(kMinRSSI, kMaxRSSI));
+                     base::RandIntInclusive(kMinRSSI, kMaxRSSI));
 
   } else if (discovery_simulation_step_ == 13) {
     UpdateDeviceRSSI(dbus::ObjectPath(kLowEnergyPath),
-                     base::RandInt(kMinRSSI, kMaxRSSI));
+                     base::RandIntInclusive(kMinRSSI, kMaxRSSI));
     RemoveDevice(dbus::ObjectPath(FakeBluetoothAdapterClient::kAdapterPath),
                  dbus::ObjectPath(kVanishingDevicePath));
   } else if (discovery_simulation_step_ == 14) {
     UpdateDeviceRSSI(dbus::ObjectPath(kLowEnergyPath),
-                     base::RandInt(kMinRSSI, kMaxRSSI));
+                     base::RandIntInclusive(kMinRSSI, kMaxRSSI));
     return;
   }
 

@@ -98,7 +98,7 @@ class RandomMojoDelays {
         continue;
       }
       // Skip the resume with a 1/kInverseProbabilityOfNotResuming chance.
-      if (base::RandInt(1, kInverseProbabilityOfNotResuming) >= 2) {
+      if (base::RandIntInclusive(1, kInverseProbabilityOfNotResuming) >= 2) {
         wptr->ResumeIncomingMethodCallProcessing();
         it = paused_binding_state_bases.erase(it);
         continue;
@@ -141,7 +141,7 @@ class RandomMojoDelays {
         it = binding_state_bases.erase(it);
         continue;
       }
-      if (base::RandInt(1, kInverseProbabilityOfDelay) >= 2) {
+      if (base::RandIntInclusive(1, kInverseProbabilityOfDelay) >= 2) {
         it++;
         continue;
       }

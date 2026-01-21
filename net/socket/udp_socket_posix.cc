@@ -954,7 +954,8 @@ int UDPSocketPosix::RandomBind(const IPAddress& address) {
   DCHECK_EQ(bind_type_, DatagramSocket::RANDOM_BIND);
 
   for (int i = 0; i < kBindRetries; ++i) {
-    int rv = DoBind(IPEndPoint(address, base::RandInt(kPortStart, kPortEnd)));
+    int rv = DoBind(
+        IPEndPoint(address, base::RandIntInclusive(kPortStart, kPortEnd)));
     if (rv != ERR_ADDRESS_IN_USE)
       return rv;
   }

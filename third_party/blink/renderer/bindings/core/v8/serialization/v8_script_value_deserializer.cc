@@ -328,7 +328,7 @@ void V8ScriptValueDeserializer::MaskDeserializationTimings(
   // Deserialize the message in an empty isolate a random number of times
   // to mask whether the time of the original deserialization in the
   // target isolate.
-  int iterations = base::RandInt(4, 8);
+  int iterations = base::RandIntInclusive(4, 8);
 
   while (iterations--) {
     v8::ValueDeserializer deserializer(isolate, serialized->Data(),

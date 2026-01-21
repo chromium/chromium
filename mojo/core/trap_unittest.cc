@@ -1876,12 +1876,13 @@ void ReadAllMessages(const MojoTrapEvent* event) {
 }
 
 MojoHandle RandomHandle(base::span<MojoHandle> handles) {
-  return handles[base::RandInt(0, static_cast<int>(handles.size()) - 1)];
+  return handles[base::RandIntInclusive(0,
+                                        static_cast<int>(handles.size()) - 1)];
 }
 
 void DoRandomThing(base::span<MojoHandle> traps,
                    base::span<MojoHandle> watched_handles) {
-  switch (base::RandInt(0, 10)) {
+  switch (base::RandIntInclusive(0, 10)) {
     case 0:
       MojoClose(RandomHandle(traps));
       break;

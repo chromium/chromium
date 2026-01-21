@@ -23,11 +23,11 @@ UkmMetricsTable::MetricsRow GetSampleMetricsRow() {
   static auto metric_hash_generator = UkmMetricHash::Generator();
   return UkmMetricsTable::MetricsRow{
       .event_timestamp = base::Time::Now(),
-      .source_id = base::RandInt(0, 1000),
+      .source_id = base::RandIntInclusive(0, 1000),
       .event_id = event_id_generator.GenerateNextId(),
       .event_hash = event_hash_generator.GenerateNextId(),
       .metric_hash = metric_hash_generator.GenerateNextId(),
-      .metric_value = base::RandInt(-1000, 1000)};
+      .metric_value = base::RandIntInclusive(-1000, 1000)};
 }
 
 }  // namespace

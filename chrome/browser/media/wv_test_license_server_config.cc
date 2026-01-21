@@ -140,7 +140,7 @@ WVTestLicenseServerConfig::GetServerEnvironment() {
 bool WVTestLicenseServerConfig::SelectServerPort() {
   // Try all ports within the range of kMinPort to (kMinPort + kPortRangeSize)
   // Instead of starting from kMinPort, use a random port within that range.
-  uint16_t start_seed = base::RandInt(0, kPortRangeSize);
+  uint16_t start_seed = base::RandIntInclusive(0, kPortRangeSize);
   uint16_t try_port = 0;
   for (uint16_t i = 0; i < kPortRangeSize; ++i) {
     try_port = kMinPort + (start_seed + i) % kPortRangeSize;

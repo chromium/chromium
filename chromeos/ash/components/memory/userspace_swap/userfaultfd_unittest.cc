@@ -569,7 +569,7 @@ TEST_F(UserfaultFDTest,
       // We generate our fault at a random point within the page and expect to
       // read the character that the fault handler wrote through that entire
       // page.
-      off_t random_offset = base::RandInt(0, kPageSize - 1);
+      off_t random_offset = base::RandIntInclusive(0, kPageSize - 1);
       UNSAFE_TODO(EXPECT_EQ(
           *(static_cast<char*>(mem) + (pg_num * kPageSize + random_offset)),
           'a' + static_cast<char>(pg_num)));
@@ -641,7 +641,7 @@ TEST_F(UserfaultFDTest, ReadFaultRegisteredOnPartialRange) {
       // We generate our fault at a random point within the page and expect to
       // read the character that the fault handler wrote through that entire
       // page.
-      off_t random_offset = base::RandInt(0, kPageSize - 1);
+      off_t random_offset = base::RandIntInclusive(0, kPageSize - 1);
       UNSAFE_TODO(EXPECT_EQ(
           *(static_cast<char*>(mem) + (pg_num * kPageSize + random_offset)),
           'a' + static_cast<char>(pg_num)));

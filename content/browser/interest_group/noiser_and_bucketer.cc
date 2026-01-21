@@ -16,7 +16,7 @@ namespace {
 template <typename T>
 T Noise(T input, int min, int max) {
   if (base::RandDouble() < 0.01) {
-    return static_cast<T>(base::RandInt(min, max));
+    return static_cast<T>(base::RandIntInclusive(min, max));
   }
   return input;
 }

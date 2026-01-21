@@ -369,7 +369,7 @@ TEST_F(SyncedSessionTrackerTest, ManyGetTabs) {
     for (int i = 0; i < kMaxAttempts; ++i) {
       // More attempts than tabs means we'll sometimes get the same tabs,
       // sometimes have to allocate new tabs.
-      int rand_tab_num = base::RandInt(0, kMaxTabs);
+      int rand_tab_num = base::RandIntInclusive(0, kMaxTabs);
       sessions::SessionTab* tab = tracker_.GetTab(
           tag, SessionID::FromSerializedValue(rand_tab_num + 1));
       ASSERT_TRUE(tab);

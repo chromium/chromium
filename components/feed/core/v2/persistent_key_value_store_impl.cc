@@ -202,7 +202,7 @@ void PersistentKeyValueStoreImpl::Put(const std::string& key,
   // (sum of bytes written) / `cleanup_interval_in_written_bytes`.
   int cleanup_interval_in_written_bytes =
       GetFeedConfig().persistent_kv_store_cleanup_interval_in_written_bytes;
-  int rand_int = base::RandInt(0, cleanup_interval_in_written_bytes);
+  int rand_int = base::RandIntInclusive(0, cleanup_interval_in_written_bytes);
   if (cleanup_interval_in_written_bytes > 0 &&
       rand_int < static_cast<int>(value.size())) {
     EvictOldEntries(base::DoNothing());

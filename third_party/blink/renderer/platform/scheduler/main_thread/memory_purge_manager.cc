@@ -219,7 +219,7 @@ bool MemoryPurgeManager::AreAllPagesFrozen() const {
 }
 
 base::TimeDelta MemoryPurgeManager::GetTimeToPurgeAfterBackgrounded() const {
-  return base::Seconds(base::RandInt(
+  return base::Seconds(base::RandIntInclusive(
       static_cast<int>(kMemoryPurgeInBackgroundMinDelay.Get().InSeconds()),
       static_cast<int>(kMemoryPurgeInBackgroundMaxDelay.Get().InSeconds())));
 }

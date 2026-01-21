@@ -692,7 +692,7 @@ void UpdateDebugReportCooldown(
   CHECK_GE(restricted_cooldown_random_max, 0);
   // Give a restricted cooldown in 1/(restricted_cooldown_random_max+1)
   // chance. Treat INT_MAX `restricted_cooldown_random_max` as 0 chance.
-  int cooldown_rand = base::RandInt(0, restricted_cooldown_random_max);
+  int cooldown_rand = base::RandIntInclusive(0, restricted_cooldown_random_max);
   DebugReportCooldownType cooldown_type =
       restricted_cooldown_random_max == INT_MAX || cooldown_rand != 0
           ? DebugReportCooldownType::kShortCooldown
@@ -729,7 +729,7 @@ bool SampleDebugReport(
           base::Hours(1)));
   // Only allow sending debug reports 1/(sampling_max_rand+1) chance. Treat
   // INT_MAX `sampling_random_max` as 0 chance.
-  int sampling_rand = base::RandInt(0, sampling_random_max);
+  int sampling_rand = base::RandIntInclusive(0, sampling_random_max);
   // Don't do sampling if the report is from B&A response, which has already
   // been sampled on server side.
   if (is_from_server_response ||
@@ -6049,7 +6049,7 @@ void InterestGroupAuction::OnScoreAdComplete(
     // Update which of the executions gets used for 'reserved.once'.
     ++seller_reserved_once_rep_count_;
     if (seller_reserved_once_rep_count_ == 1 ||
-        base::RandInt(1, seller_reserved_once_rep_count_) == 1) {
+        base::RandIntInclusive(1, seller_reserved_once_rep_count_) == 1) {
       seller_reserved_once_rep_ = bid->bid_state.get();
     }
 
@@ -6172,7 +6172,7 @@ void InterestGroupAuction::UpdateAuctionLeaders(
     // chance. This is the select random value from a stream with fixed
     // storage problem.
     ++leader_info.num_top_bids;
-    if (1 == base::RandInt(1, leader_info.num_top_bids)) {
+    if (1 == base::RandIntInclusive(1, leader_info.num_top_bids)) {
       is_top_bid = true;
     }
     if (owner != leader_info.top_bid->bid->interest_group->owner) {
@@ -6238,7 +6238,7 @@ void InterestGroupAuction::OnNewHighestScoringOtherBid(
   ++leader_info.num_second_highest_bids;
   // In case of a tie, randomly pick one. This is the select random value from
   // a stream with fixed storage problem.
-  if (1 == base::RandInt(1, leader_info.num_second_highest_bids)) {
+  if (1 == base::RandIntInclusive(1, leader_info.num_second_highest_bids)) {
     leader_info.highest_scoring_other_bid = bid_value;
     leader_info.highest_scoring_other_bid_in_seller_currency =
         bid_in_seller_currency;

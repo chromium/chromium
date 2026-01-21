@@ -29,11 +29,11 @@ ChangeRateMonitor::ChangeRateMonitor() {
 ChangeRateMonitor::~ChangeRateMonitor() = default;
 
 void ChangeRateMonitor::Reset() {
-  observation_window_time_ = base::Seconds(base::RandInt(
+  observation_window_time_ = base::Seconds(base::RandIntInclusive(
       kMinObservationWindowInSeconds, kMaxObservationWindowInSeconds));
   change_count_threshold_ =
-      base::RandInt(kMinChangesThreshold, kMaxChangesThreshold);
-  penalty_duration_ = base::Seconds(base::RandInt(
+      base::RandIntInclusive(kMinChangesThreshold, kMaxChangesThreshold);
+  penalty_duration_ = base::Seconds(base::RandIntInclusive(
       kMinPenaltyDurationInSeconds, kMaxPenaltyDurationInSeconds));
   start_time_ = base::TimeTicks::Now();
   change_count_.fill(0);

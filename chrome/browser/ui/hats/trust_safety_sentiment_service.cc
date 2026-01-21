@@ -56,12 +56,12 @@ base::TimeDelta GetMinSessionTime() {
 
 int GetRequiredNtpCount() {
   return base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurveyV2)
-             ? base::RandInt(
+             ? base::RandIntInclusive(
                    features::kTrustSafetySentimentSurveyV2NtpVisitsMinRange
                        .Get(),
                    features::kTrustSafetySentimentSurveyV2NtpVisitsMaxRange
                        .Get())
-             : base::RandInt(
+             : base::RandIntInclusive(
                    features::kTrustSafetySentimentSurveyNtpVisitsMinRange.Get(),
                    features::kTrustSafetySentimentSurveyNtpVisitsMaxRange
                        .Get());
@@ -291,7 +291,7 @@ void TrustSafetySentimentService::OpenedNewTabPage() {
   // Choose a trigger at random to avoid any order biasing.
   auto winning_area_iterator = pending_triggers_.begin();
   std::advance(winning_area_iterator,
-               base::RandInt(0, pending_triggers_.size() - 1));
+               base::RandIntInclusive(0, pending_triggers_.size() - 1));
 
   // The winning feature area should never be kIneligible, as this will
   // have either been removed above, or blocked showing any survey.

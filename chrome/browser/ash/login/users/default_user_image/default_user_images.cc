@@ -383,7 +383,7 @@ const gfx::ImageSkia& GetStubDefaultImage() {
 }
 
 int GetRandomDefaultImageIndex() {
-  return UNSAFE_TODO(kCurrentImageIndexes)[base::RandInt(
+  return UNSAFE_TODO(kCurrentImageIndexes)[base::RandIntInclusive(
       0, std::size(kCurrentImageIndexes) - 1)];
 }
 

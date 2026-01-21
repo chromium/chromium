@@ -190,7 +190,7 @@ AnimationWorkletProxyClient::SelectGlobalScopeAndUpdateAnimatorsIfNecessary() {
     // Introduce an element of randomness in the switching interval to make
     // stateful dependences easier to spot.
     next_global_scope_switch_countdown_ =
-        base::RandInt(0, kMaxMutateCountToSwitch - 1);
+        base::RandIntInclusive(0, kMaxMutateCountToSwitch - 1);
   }
   return global_scopes_[current_global_scope_index_];
 }

@@ -190,7 +190,7 @@ void ConstructTree(views::View* view, int depth) {
   if (depth == 0) {
     return;
   }
-  int count = base::RandInt(1, 5);
+  int count = base::RandIntInclusive(1, 5);
   for (int i = 0; i < count; i++) {
     views::View* v = new views::View;
     view->AddChildViewRaw(v);

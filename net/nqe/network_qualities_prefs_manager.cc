@@ -128,7 +128,7 @@ void NetworkQualitiesPrefsManager::OnChangeInCachedNetworkQuality(
     // Generate a random number in the range [0, |kMaxCacheSize| - 1] since the
     // number of network IDs in |prefs_| other than |network_id| is
     // |kMaxCacheSize|.
-    int index_to_delete = base::RandInt(0, kMaxCacheSize - 1);
+    int index_to_delete = base::RandIntInclusive(0, kMaxCacheSize - 1);
 
     for (auto it : prefs_) {
       // Delete the kth element in the dictionary, not including the element

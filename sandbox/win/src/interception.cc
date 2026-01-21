@@ -53,7 +53,7 @@ namespace internal {
 size_t GetGranularAlignedRandomOffset(size_t size) {
   CHECK_LE(size, kAllocGranularity);
   unsigned int offset = static_cast<unsigned int>(
-      base::RandInt(0, static_cast<int>(kAllocGranularity - size)));
+      base::RandIntInclusive(0, static_cast<int>(kAllocGranularity - size)));
 
   // Find an alignment between 64 and the page size (4096).
   size_t align_size = kPageSize;

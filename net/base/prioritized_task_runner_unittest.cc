@@ -353,7 +353,7 @@ TEST_F(PrioritizedTaskRunnerTest, OrderSamePriorityByPostOrder) {
   // the same priorities should run in posting order.
   BlockTaskRunner(task_runner.get());
   for (int i = 0; i < 1000; i++) {
-    int priority = base::RandInt(0, 2);
+    int priority = base::RandIntInclusive(0, 2);
     int id = (priority * 1000) + i;
 
     expected.push_back(id);

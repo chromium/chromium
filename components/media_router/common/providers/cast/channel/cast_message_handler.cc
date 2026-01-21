@@ -82,7 +82,8 @@ CastMessageHandler::CastMessageHandler(CastSocketService* socket_service,
                                        std::string_view user_agent,
                                        std::string_view browser_version,
                                        std::string_view locale)
-    : source_id_(base::StringPrintf("sender-%d", base::RandInt(0, 1000000))),
+    : source_id_(
+          base::StringPrintf("sender-%d", base::RandIntInclusive(0, 1000000))),
       parse_json_(std::move(parse_json)),
       user_agent_(user_agent),
       browser_version_(browser_version),

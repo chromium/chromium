@@ -115,7 +115,8 @@ void KeyData::EnsureKeyUpdated(const uint64_t project_name_hash,
     // If the key does not exist, generate a new one. Set the last rotation to a
     // uniformly selected day between today and |key_rotation_period| days
     // ago, to uniformly distribute users amongst rotation cohorts.
-    const int rotation_seed = base::RandInt(0, key_rotation_period_days - 1);
+    const int rotation_seed =
+        base::RandIntInclusive(0, key_rotation_period_days - 1);
     storage_delegate_->UpsertKey(project_name_hash,
                                  base::Days(now - rotation_seed),
                                  key_rotation_period);

@@ -40,7 +40,7 @@ class BasicLockTestThread : public SimpleThread {
     for (int i = 0; i < 10; i++) {
       lock_->Acquire();
       acquired_++;
-      PlatformThread::Sleep(Milliseconds(base::RandInt(0, 19)));
+      PlatformThread::Sleep(Milliseconds(base::RandIntInclusive(0, 19)));
       lock_->Release();
     }
   }
@@ -98,13 +98,13 @@ TEST(CheckedLockTest, Basic) {
   for (int i = 0; i < 10; i++) {
     lock.Acquire();
     acquired++;
-    PlatformThread::Sleep(Milliseconds(base::RandInt(0, 19)));
+    PlatformThread::Sleep(Milliseconds(base::RandIntInclusive(0, 19)));
     lock.Release();
   }
   for (int i = 0; i < 5; i++) {
     lock.Acquire();
     acquired++;
-    PlatformThread::Sleep(Milliseconds(base::RandInt(0, 19)));
+    PlatformThread::Sleep(Milliseconds(base::RandIntInclusive(0, 19)));
     lock.Release();
   }
 

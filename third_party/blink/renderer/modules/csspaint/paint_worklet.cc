@@ -92,7 +92,7 @@ int PaintWorklet::GetPaintsBeforeSwitching() {
   // according to the actual paints per frame. For example, if we found that
   // there are typically ~1000 paints in each frame, we'd want to set the number
   // to average at 500.
-  return base::RandInt(0, kMaxPaintCountToSwitch - 1);
+  return base::RandIntInclusive(0, kMaxPaintCountToSwitch - 1);
 }
 
 wtf_size_t PaintWorklet::SelectNewGlobalScope() {

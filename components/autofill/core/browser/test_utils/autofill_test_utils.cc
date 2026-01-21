@@ -98,7 +98,7 @@ std::string GetRandomCardNumber() {
   std::string value;
   value.reserve(length);
   for (size_t i = 0; i < length; ++i) {
-    value.push_back(static_cast<char>(base::RandInt('0', '9')));
+    value.push_back(static_cast<char>(base::RandIntInclusive('0', '9')));
   }
   return value;
 }
@@ -547,11 +547,12 @@ CreditCard GetRandomCreditCard(CreditCard::RecordType record_type) {
                 base::Uuid::GenerateRandomV4().AsLowercaseString().substr(24));
   test::SetCreditCardInfo(
       &credit_card, "Justin Thyme", GetRandomCardNumber().c_str(),
-      base::StringPrintf("%d", base::RandInt(1, 12)).c_str(),
-      base::StringPrintf("%d", now.year + base::RandInt(1, 4)).c_str(), "1");
+      base::StringPrintf("%d", base::RandIntInclusive(1, 12)).c_str(),
+      base::StringPrintf("%d", now.year + base::RandIntInclusive(1, 4)).c_str(),
+      "1");
   if (record_type == CreditCard::RecordType::kMaskedServerCard) {
     credit_card.SetNetworkForMaskedCard(
-        kNetworks[base::RandInt(0, kNetworks.size() - 1)]);
+        kNetworks[base::RandIntInclusive(0, kNetworks.size() - 1)]);
   }
 
   return credit_card;

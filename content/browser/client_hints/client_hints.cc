@@ -77,7 +77,7 @@ constexpr size_t kMaxRandomNumbers = 21;
 // amount of noise for a given origin.
 uint8_t RandomizationSalt() {
   if (randomization_salt == 0)
-    randomization_salt = base::RandInt(1, kMaxRandomNumbers);
+    randomization_salt = base::RandIntInclusive(1, kMaxRandomNumbers);
   DCHECK_LE(1, randomization_salt);
   DCHECK_GE(kMaxRandomNumbers, randomization_salt);
   return randomization_salt;

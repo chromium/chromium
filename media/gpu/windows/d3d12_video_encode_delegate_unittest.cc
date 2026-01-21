@@ -234,8 +234,9 @@ TEST_F(D3D12VideoEncodeDelegateTestWithProcessFrame, EncodeFrameWithoutVP) {
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateREC709();
   constexpr size_t kPayloadSize = 1024;
   auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kPayloadSize);
-  BitstreamBuffer bitstream_buffer(base::RandInt(0, H264DPB::kDPBMaxSize - 1),
-                                   shared_memory.Duplicate(), kPayloadSize);
+  BitstreamBuffer bitstream_buffer(
+      base::RandIntInclusive(0, H264DPB::kDPBMaxSize - 1),
+      shared_memory.Duplicate(), kPayloadSize);
   EXPECT_CALL(*GetVideoProcessorWrapper(), ProcessFrames).Times(0);
   EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata)
       .WillOnce(Return(GetEncoderOutputMetadataResourceMap(kPayloadSize)));
@@ -261,8 +262,9 @@ TEST_F(D3D12VideoEncodeDelegateTestWithProcessFrame, EncodeFrameWithVP) {
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
   constexpr size_t kPayloadSize = 1024;
   auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kPayloadSize);
-  BitstreamBuffer bitstream_buffer(base::RandInt(0, H264DPB::kDPBMaxSize - 1),
-                                   shared_memory.Duplicate(), kPayloadSize);
+  BitstreamBuffer bitstream_buffer(
+      base::RandIntInclusive(0, H264DPB::kDPBMaxSize - 1),
+      shared_memory.Duplicate(), kPayloadSize);
   EXPECT_CALL(*GetVideoProcessorWrapper(), ProcessFrames)
       .WillOnce([&](ID3D12Resource*, UINT, const gfx::ColorSpace&,
                     const gfx::Rect& input_rectangle, ID3D12Resource*, UINT,
@@ -300,8 +302,9 @@ TEST_F(D3D12VideoEncodeDelegateTest, EncodeWithTooManyReferenceBuffersFails) {
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateREC709();
   constexpr size_t kPayloadSize = 1024;
   auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kPayloadSize);
-  BitstreamBuffer bitstream_buffer(base::RandInt(0, H264DPB::kDPBMaxSize - 1),
-                                   shared_memory.Duplicate(), kPayloadSize);
+  BitstreamBuffer bitstream_buffer(
+      base::RandIntInclusive(0, H264DPB::kDPBMaxSize - 1),
+      shared_memory.Duplicate(), kPayloadSize);
 
   VideoEncoder::EncodeOptions options;
   // Fill reference_buffers with one more than supported to trigger failure.

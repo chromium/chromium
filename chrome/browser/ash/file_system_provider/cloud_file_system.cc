@@ -180,7 +180,8 @@ void CloudFileSystem::AddWatcherOnCachedFileImpl(
   }
   // Set a random delay in the interval attempts*[0,2] seconds to stagger
   // AddWatcher requests.
-  base::TimeDelta delay = attempts * base::Milliseconds(base::RandInt(1, 2000));
+  base::TimeDelta delay =
+      attempts * base::Milliseconds(base::RandIntInclusive(1, 2000));
   // Notifications are received though Notify() so no notification_callback
   // is needed. Call this function recursively to continuously retry upon
   // FILE_ERROR_SECURITY errors until the max number of attempts have been made.

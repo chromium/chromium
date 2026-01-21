@@ -441,7 +441,7 @@ void VisitedURLRankingServiceImpl::RecordAction(
   // would assume if the user clicks on first 5 mins, then it's a success,
   // otherwise failure.
   if (action == ScoredURLUserAction::kSeen) {
-    if (base::RandInt(1, seen_records_sampling_rate_) > 1) {
+    if (base::RandIntInclusive(1, seen_records_sampling_rate_) > 1) {
       return;
     }
     wait_for_activation = seen_record_delay_;

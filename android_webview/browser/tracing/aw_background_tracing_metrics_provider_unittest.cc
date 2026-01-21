@@ -122,7 +122,7 @@ TEST_F(AwBackgroundTracingMetricsProviderTest, HandlesOversizeTraceLog) {
   // Writing a random string to the trace makes it less likely to compress well
   // and fit into the upload limit.
   for (int i = 0; i < size; i++) {
-    trace[i] = base::RandInt('a', 'z');
+    trace[i] = base::RandIntInclusive('a', 'z');
   }
 
   content::BackgroundTracingManager::GetInstance().SaveTraceForTesting(

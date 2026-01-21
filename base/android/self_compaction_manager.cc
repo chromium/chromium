@@ -205,7 +205,7 @@ bool SelfCompactionManager::ShouldContinueCompaction(
 base::TimeDelta SelfCompactionManager::GetDelayBetweenCompaction() {
   // We choose a random, small amount of time here, so that we are not trying
   // to compact in every process at the same time.
-  return base::Milliseconds(base::RandInt(100, 300));
+  return base::Milliseconds(base::RandIntInclusive(100, 300));
 }
 
 void SelfCompactionManager::MaybeRunOnSelfCompactCallback() {

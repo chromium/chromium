@@ -67,7 +67,7 @@ bool GetRandomIsEnabled(version_info::Channel channel) {
     case version_info::Channel::UNKNOWN:
       break;
   }
-  return base::RandInt(1, 100) <= enabled_percent;
+  return base::RandIntInclusive(1, 100) <= enabled_percent;
 }
 
 // Returns true if `prefs` contains both breadcrumbs prefs, and the timestamp is

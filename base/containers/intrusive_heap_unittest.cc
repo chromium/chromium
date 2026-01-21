@@ -118,9 +118,9 @@ enum SameSizeOperations : int {
 template <typename T>
 void DoGrowingOperation(IntrusiveHeap<T>* heap) {
   GrowingOperations op = static_cast<GrowingOperations>(
-      base::RandInt(0, kGrowingOperationsCount - 1));
+      base::RandIntInclusive(0, kGrowingOperationsCount - 1));
 
-  int value = base::RandInt(0, 1000);
+  int value = base::RandIntInclusive(0, 1000);
   size_t old_size = heap->size();
   typename IntrusiveHeap<T>::const_iterator it;
 
@@ -193,10 +193,10 @@ struct TakeTop<T, false> {
 template <typename T>
 void DoShrinkingOperation(IntrusiveHeap<T>* heap) {
   ShrinkingOperations op = static_cast<ShrinkingOperations>(
-      base::RandInt(0, kShrinkingOperationsCount - 1));
+      base::RandIntInclusive(0, kShrinkingOperationsCount - 1));
 
   size_t old_size = heap->size();
-  size_t index = static_cast<size_t>(base::RandInt(0, old_size - 1));
+  size_t index = static_cast<size_t>(base::RandIntInclusive(0, old_size - 1));
 
   switch (op) {
     case kTake: {
@@ -232,14 +232,14 @@ void DoShrinkingOperation(IntrusiveHeap<T>* heap) {
 template <typename T>
 void DoSameSizeOperation(IntrusiveHeap<T>* heap) {
   SameSizeOperations op = static_cast<SameSizeOperations>(
-      base::RandInt(0, kSameSizeOperationsCount - 1));
+      base::RandIntInclusive(0, kSameSizeOperationsCount - 1));
 
   size_t old_size = heap->size();
-  size_t index = static_cast<size_t>(base::RandInt(0, old_size - 1));
+  size_t index = static_cast<size_t>(base::RandIntInclusive(0, old_size - 1));
   if (op == kReplaceTop) {
     index = 0;
   }
-  int new_value = base::RandInt(0, 1000);
+  int new_value = base::RandIntInclusive(0, 1000);
   typename IntrusiveHeap<T>::const_iterator it;
 
   switch (op) {
@@ -275,8 +275,8 @@ void DoRandomHeapOperation(IntrusiveHeap<T>* heap) {
   static constexpr int kMinHeapSize = 10u;
   static constexpr int kMaxHeapSize = 100u;
 
-  OperationTypes operation_type =
-      static_cast<OperationTypes>(base::RandInt(0, kOperationTypesCount - 1));
+  OperationTypes operation_type = static_cast<OperationTypes>(
+      base::RandIntInclusive(0, kOperationTypesCount - 1));
 
   // Keep the heap size bounded by forcing growing and shrinking operations when
   // it exceeds the bounds.

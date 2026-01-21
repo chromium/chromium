@@ -58,7 +58,7 @@ ProfileThemeColors GetProfileThemeColorsFromHighlightColor(
 
 size_t GenerateRandomIndex(size_t size) {
   DCHECK_GT(size, 0u);
-  return static_cast<size_t>(base::RandInt(0, size - 1));
+  return static_cast<size_t>(base::RandIntInclusive(0, size - 1));
 }
 
 std::vector<int> GetAvailableColorIndices(

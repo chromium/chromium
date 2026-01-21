@@ -116,7 +116,7 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
     GestureEventWithLatencyInfo fling_start_with_latency(fling_start);
     if (wait_before_processing) {
       // Wait for up to one frame before processing the event.
-      AdvanceTime(base::RandInt(0, static_cast<int>(kFrameDelta)));
+      AdvanceTime(base::RandIntInclusive(0, static_cast<int>(kFrameDelta)));
     }
     fling_controller_->ObserveAndMaybeConsumeGestureEvent(
         fling_start_with_latency);

@@ -42,7 +42,7 @@ void MaybeSet(UkmEvent& event,
 bool ShouldRecordUkm() {
   // We only need to generate this random number once while the current process
   // is running.
-  static const int random_value_per_session = base::RandInt(0, 99);
+  static const int random_value_per_session = base::RandIntInclusive(0, 99);
 
   const int kSamplingRate =
       base::FeatureList::IsEnabled(

@@ -91,8 +91,8 @@ class SHA1EntropyGenerator : public TrialEntropyGenerator {
   double GenerateEntropyValue() const override {
     // Use a random UUID + 13 additional bits of entropy to match how the
     // SHA1EntropyProvider is used in metrics_service.cc.
-    const int low_entropy_source =
-        static_cast<uint16_t>(base::RandInt(0, kMaxLowEntropySize - 1));
+    const int low_entropy_source = static_cast<uint16_t>(
+        base::RandIntInclusive(0, kMaxLowEntropySize - 1));
     const std::string high_entropy_source =
         base::Uuid::GenerateRandomV4().AsLowercaseString() +
         base::NumberToString(low_entropy_source);
@@ -120,8 +120,8 @@ class NormalizedMurmurHashEntropyGenerator : public TrialEntropyGenerator {
   double GenerateEntropyValue() const override {
     return GenerateNormalizedMurmurHashEntropy(
         {
-            .value =
-                static_cast<uint32_t>(base::RandInt(0, kMaxLowEntropySize - 1)),
+            .value = static_cast<uint32_t>(
+                base::RandIntInclusive(0, kMaxLowEntropySize - 1)),
             .range = kMaxLowEntropySize,
         },
         trial_name_);

@@ -167,7 +167,8 @@ ResponsivenessMetrics::ResponsivenessMetrics(
           // to discourage developers from using interactionId to count the
           // number of interactions. See
           // https://wicg.github.io/event-timing/#user-interaction-value.
-          base::RandInt(kMinFirstInteractionID, kMaxFirstInteractionID)) {}
+          base::RandIntInclusive(kMinFirstInteractionID,
+                                 kMaxFirstInteractionID)) {}
 
 ResponsivenessMetrics::~ResponsivenessMetrics() = default;
 
@@ -233,8 +234,9 @@ void ResponsivenessMetrics::RecordUserInteractionUKM(
   ukm::UkmRecorder* ukm_recorder = window->UkmRecorder();
   ukm::SourceId source_id = window->UkmSourceID();
   if (source_id != ukm::kInvalidSourceId &&
-      (!sampling_ || base::RandInt(kMinValueForSampling,
-                                   kMaxValueForSampling) <= kUkmSamplingRate)) {
+      (!sampling_ ||
+       base::RandIntInclusive(kMinValueForSampling, kMaxValueForSampling) <=
+           kUkmSamplingRate)) {
     ukm::builders::Responsiveness_UserInteraction(source_id)
         .SetInteractionType(static_cast<int64_t>(interaction_type))
         .SetMaxEventDuration(max_event_duration.InMilliseconds())

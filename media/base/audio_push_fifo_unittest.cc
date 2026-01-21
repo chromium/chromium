@@ -158,8 +158,8 @@ class AudioPushFifoTest : public testing::TestWithParam<int> {
     results_.push_back(result);
   }
 
-  // Note: Not using base::RandInt() because it is horribly slow on debug
-  // builds.  The following is a very simple, deterministic LCG:
+  // Note: Not using base::RandIntInclusive() because it is horribly slow on
+  // debug builds.  The following is a very simple, deterministic LCG:
   int NextRandomInt() {
     rand_seed_ = (1103515245 * rand_seed_ + 12345) % (1 << 31);
     return static_cast<int>(rand_seed_);

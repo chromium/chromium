@@ -50,5 +50,5 @@ float NoisyMetricsRecorder::GetRandBetween0And1() const {
 }
 
 int NoisyMetricsRecorder::GetRandEither0Or1() const {
-  return base::RandInt(0, 1);
+  return base::RandIntInclusive(0, 1);
 }

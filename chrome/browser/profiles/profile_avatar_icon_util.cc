@@ -934,7 +934,7 @@ size_t GetRandomAvatarIconIndex(
   size_t interval_end = GetDefaultAvatarIconCount();
   size_t interval_length = interval_end - interval_begin;
 
-  size_t random_offset = base::RandInt(0, interval_length - 1);
+  size_t random_offset = base::RandIntInclusive(0, interval_length - 1);
   // Find the next unused index.
   for (size_t i = 0; i < interval_length; ++i) {
     size_t icon_index = interval_begin + (random_offset + i) % interval_length;

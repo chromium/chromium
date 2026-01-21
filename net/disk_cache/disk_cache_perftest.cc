@@ -419,7 +419,7 @@ bool DiskCachePerfTest::TimeWrites(const std::string& story) {
   for (size_t i = 0; i < kNumEntries; i++) {
     TestEntry entry;
     entry.key = GenerateKey(true);
-    entry.data_len = base::RandInt(0, kBodySize);
+    entry.data_len = base::RandIntInclusive(0, kBodySize);
     entries_.push_back(entry);
   }
 
@@ -580,7 +580,7 @@ TEST_F(DiskCachePerfTest, BlockFilesPerformance) {
 
   // Fill up the 32-byte block file (use three files).
   for (auto& addr : address) {
-    int block_size = base::RandInt(1, 4);
+    int block_size = base::RandIntInclusive(1, 4);
     EXPECT_TRUE(files.CreateBlock(disk_cache::RANKINGS, block_size, &addr));
   }
 
@@ -589,8 +589,8 @@ TEST_F(DiskCachePerfTest, BlockFilesPerformance) {
   base::ElapsedTimer random_timer;
 
   for (int i = 0; i < 200000; i++) {
-    int block_size = base::RandInt(1, 4);
-    int entry = base::RandInt(0, kNumBlocks - 1);
+    int block_size = base::RandIntInclusive(1, 4);
+    int entry = base::RandIntInclusive(0, kNumBlocks - 1);
 
     files.DeleteBlock(address[entry], false);
     EXPECT_TRUE(

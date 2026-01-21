@@ -274,8 +274,8 @@ LocalFrameUkmAggregator::GetScopedForcedLayoutTimer(
   // avoid overflowing the counters.
   bool should_report_uma_this_frame = !calls_to_next_forced_style_layout_uma_;
   if (should_report_uma_this_frame) {
-    calls_to_next_forced_style_layout_uma_ =
-        base::RandInt(0, mean_calls_between_forced_style_layout_uma_ * 2);
+    calls_to_next_forced_style_layout_uma_ = base::RandIntInclusive(
+        0, mean_calls_between_forced_style_layout_uma_ * 2);
   } else {
     DCHECK_GT(calls_to_next_forced_style_layout_uma_, 0u);
     --calls_to_next_forced_style_layout_uma_;

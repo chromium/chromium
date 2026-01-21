@@ -786,13 +786,14 @@ class DnsTransactionTestBase : public testing::Test {
   }
 
   // Add expected query of |dotted_name| and |qtype| and no response.
-  void AddHangingQuery(
-      std::string_view dotted_name,
-      uint16_t qtype,
-      DnsQuery::PaddingStrategy padding_strategy =
-          DnsQuery::PaddingStrategy::NONE,
-      uint16_t id = base::RandInt(0, std::numeric_limits<uint16_t>::max()),
-      bool enqueue_transaction_id = true) {
+  void AddHangingQuery(std::string_view dotted_name,
+                       uint16_t qtype,
+                       DnsQuery::PaddingStrategy padding_strategy =
+                           DnsQuery::PaddingStrategy::NONE,
+                       uint16_t id = base::RandIntInclusive(
+                           0,
+                           std::numeric_limits<uint16_t>::max()),
+                       bool enqueue_transaction_id = true) {
     auto data = std::make_unique<DnsSocketData>(
         id, dotted_name, qtype, ASYNC, Transport::UDP, nullptr /* opt_rdata */,
         padding_strategy);
@@ -801,16 +802,17 @@ class DnsTransactionTestBase : public testing::Test {
 
   // Add expected query of |dotted_name| and |qtype| and matching response with
   // no answer and RCODE set to |rcode|. The id will be generated randomly.
-  void AddQueryAndRcode(
-      std::string_view dotted_name,
-      uint16_t qtype,
-      int rcode,
-      IoMode mode,
-      Transport trans,
-      DnsQuery::PaddingStrategy padding_strategy =
-          DnsQuery::PaddingStrategy::NONE,
-      uint16_t id = base::RandInt(0, std::numeric_limits<uint16_t>::max()),
-      bool enqueue_transaction_id = true) {
+  void AddQueryAndRcode(std::string_view dotted_name,
+                        uint16_t qtype,
+                        int rcode,
+                        IoMode mode,
+                        Transport trans,
+                        DnsQuery::PaddingStrategy padding_strategy =
+                            DnsQuery::PaddingStrategy::NONE,
+                        uint16_t id = base::RandIntInclusive(
+                            0,
+                            std::numeric_limits<uint16_t>::max()),
+                        bool enqueue_transaction_id = true) {
     CHECK_NE(dns_protocol::kRcodeNOERROR, rcode);
     auto data = std::make_unique<DnsSocketData>(id, dotted_name, qtype, mode,
                                                 trans, nullptr /* opt_rdata */,

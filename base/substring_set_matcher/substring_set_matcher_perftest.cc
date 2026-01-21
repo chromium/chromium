@@ -24,7 +24,7 @@ std::string GetRandomString(size_t len) {
   std::vector<char> random_chars;
   random_chars.reserve(len);
   for (size_t i = 0; i < len; i++) {
-    random_chars.push_back(base::RandInt('a', 'z'));
+    random_chars.push_back(base::RandIntInclusive('a', 'z'));
   }
 
   return std::string(random_chars.begin(), random_chars.end());

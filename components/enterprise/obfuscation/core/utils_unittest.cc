@@ -35,7 +35,7 @@ void ObfuscateTestDataInChunks(base::span<const uint8_t> test_data,
     // Generate a random chunk size between 1 and remaining data size, capped at
     // `kMaxChunkSize`.
     size_t chunk_size =
-        base::RandInt(1, std::min(reader.remaining(), kMaxChunkSize));
+        base::RandIntInclusive(1, std::min(reader.remaining(), kMaxChunkSize));
 
     // Read in the next chunk.
     auto current_chunk = reader.Read(chunk_size);

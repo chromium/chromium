@@ -188,13 +188,13 @@ views::Label* GetSummaryLabel(views::View* mahi_view) {
 // Generates a random string, given the maximum amount of words the string can
 // have.
 std::u16string GetRandomString(int max_words_count) {
-  int string_length = base::RandInt(1, max_words_count);
+  int string_length = base::RandIntInclusive(1, max_words_count);
   std::vector<char> random_chars;
   for (int string_index = 0; string_index < string_length; string_index++) {
-    int word_length = base::RandInt(1, 10);
+    int word_length = base::RandIntInclusive(1, 10);
     for (int word_index = 0; word_index < word_length; word_index++) {
       // Add a random character from 'a' to 'z' to the string.
-      random_chars.push_back(base::RandInt('a', 'z'));
+      random_chars.push_back(base::RandIntInclusive('a', 'z'));
     }
 
     // Add a space between each word.

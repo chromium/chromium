@@ -52,7 +52,8 @@ void GetGaiaTestAccount(std::string& out_email, std::string& out_password) {
   CHECK(!default_pool->empty());
 
   const base::Value::Dict& account =
-      (*default_pool)[base::RandInt(0, default_pool->size() - 1)].GetDict();
+      (*default_pool)[base::RandIntInclusive(0, default_pool->size() - 1)]
+          .GetDict();
   out_email = *account.FindString("email");
   out_password = *account.FindString("password");
 }

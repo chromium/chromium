@@ -113,8 +113,9 @@ NOINLINE void FatalGpuProcessLaunchFailureOnBackground() {
     // app has crashed which doesn't look good. So we use SIGKILL instead. But
     // still do a crash dump for 1% cases to make sure we're not regressing this
     // case.
-    if (base::RandInt(1, 100) == 1)
+    if (base::RandIntInclusive(1, 100) == 1) {
       base::debug::DumpWithoutCrashing();
+    }
     kill(getpid(), SIGKILL);
   }
 }

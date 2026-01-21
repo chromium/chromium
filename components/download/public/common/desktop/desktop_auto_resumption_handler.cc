@@ -30,7 +30,7 @@ base::TimeDelta DesktopAutoResumptionHandler::ComputeBackoffDelay(
   // Add random jitter of +/- 15% of the calculated delay to avoid thundering
   // herd
   int64_t jitter_ms = (delay * 15) / 100;  // 15% of delay
-  delay += base::RandInt(-jitter_ms, jitter_ms);
+  delay += base::RandIntInclusive(-jitter_ms, jitter_ms);
 
   return base::Milliseconds(delay);
 }

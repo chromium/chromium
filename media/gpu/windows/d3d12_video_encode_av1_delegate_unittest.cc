@@ -251,8 +251,9 @@ TEST_F(D3D12VideoEncodeAV1DelegateTest, EncodeFrame) {
     constexpr size_t kBufferSize = 4096;
     constexpr size_t kStreamSize = 3072;
     auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kBufferSize);
-    BitstreamBuffer bitstream_buffer(base::RandInt(0, 7 /*MaxDPBSize - 1*/),
-                                     shared_memory.Duplicate(), kBufferSize);
+    BitstreamBuffer bitstream_buffer(
+        base::RandIntInclusive(0, 7 /*MaxDPBSize - 1*/),
+        shared_memory.Duplicate(), kBufferSize);
     EXPECT_CALL(*GetVideoEncoderWrapper(), Encode)
         .WillOnce(Return(EncoderStatus::Codes::kOk));
     EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata)
@@ -293,8 +294,9 @@ TEST_F(D3D12VideoEncodeAV1DelegateTest, ExternalRateControl) {
     constexpr size_t kBufferSize = 4096;
     constexpr size_t kStreamSize = 3072;
     auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kBufferSize);
-    BitstreamBuffer bitstream_buffer(base::RandInt(0, 7 /*MaxDPBSize - 1*/),
-                                     shared_memory.Duplicate(), kBufferSize);
+    BitstreamBuffer bitstream_buffer(
+        base::RandIntInclusive(0, 7 /*MaxDPBSize - 1*/),
+        shared_memory.Duplicate(), kBufferSize);
     EXPECT_CALL(*GetVideoEncoderWrapper(), Encode)
         .WillOnce(Return(EncoderStatus::Codes::kOk));
     EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata)

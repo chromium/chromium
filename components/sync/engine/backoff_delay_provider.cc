@@ -73,7 +73,7 @@ BackoffDelayProvider::~BackoffDelayProvider() = default;
 base::TimeDelta BackoffDelayProvider::GetDelay(
     const base::TimeDelta& last_delay) {
   // Flip a coin to randomize backoff interval by +/- kBackoffJitterFactor.
-  const int jitter_sign = base::RandInt(0, 1) * 2 - 1;
+  const int jitter_sign = base::RandIntInclusive(0, 1) * 2 - 1;
   return GetDelayImpl(last_delay, jitter_sign);
 }
 

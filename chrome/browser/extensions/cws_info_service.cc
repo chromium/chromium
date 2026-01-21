@@ -252,7 +252,7 @@ CWSInfoService::CWSInfoService(Profile* profile)
   // option is enabled.
   startup_delay_secs_ = base::FeatureList::IsEnabled(kCWSInfoFastCheck)
                             ? kFastStartupCheckDelaySeconds
-                            : base::RandInt(/*min=*/30, /*max=*/600);
+                            : base::RandIntInclusive(/*min=*/30, /*max=*/600);
   ScheduleCheck(startup_delay_secs_);
 }
 
