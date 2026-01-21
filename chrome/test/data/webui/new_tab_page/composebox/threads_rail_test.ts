@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AI_MODE_HISTORY_URL} from 'chrome://resources/cr_components/composebox/threads_rail.js';
-import type {ThreadsRailElement} from 'chrome://resources/cr_components/composebox/threads_rail.js';
-import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
+import type {ThreadsRailElement} from 'chrome://new-tab-page/lazy_load.js';
+import {ComposeboxWindowProxy} from 'chrome://new-tab-page/lazy_load.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -12,16 +11,19 @@ import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {installMock} from '../test_support.js';
 
 const AIM_THREADS_HISTORY_LABEL = 'AI Mode history';
+const AIM_THREADS_URL = 'https://www.google.com/search?udm=50&atvm=1';
 
 suite('NewTabPageThreadsRailTest', () => {
   let threadsRailElement: ThreadsRailElement;
-  let windowProxy: TestMock<WindowProxy>;
+  let windowProxy: TestMock<ComposeboxWindowProxy>;
 
   setup(() => {
-    loadTimeData.resetForTesting(
-        {aimThreadsHistoryLabel: AIM_THREADS_HISTORY_LABEL});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    windowProxy = installMock(WindowProxy);
+    windowProxy = installMock(ComposeboxWindowProxy);
+    loadTimeData.overrideValues({
+      aimThreadsHistoryLabel: AIM_THREADS_HISTORY_LABEL,
+      threadsUrl: AIM_THREADS_URL,
+    });
     threadsRailElement = document.createElement('cr-threads-rail');
     document.body.appendChild(threadsRailElement);
     return threadsRailElement.updateComplete;
@@ -49,6 +51,6 @@ suite('NewTabPageThreadsRailTest', () => {
     historyButton.click();
     const args = windowProxy.getArgs('navigate');
     assertEquals(1, args.length);
-    assertEquals(AI_MODE_HISTORY_URL, args[0]);
+    assertEquals(loadTimeData.getString('threadsUrl'), args[0]);
   });
 });

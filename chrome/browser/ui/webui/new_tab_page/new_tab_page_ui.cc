@@ -119,6 +119,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "media/base/media_switches.h"
+#include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "skia/ext/skia_utils_base.h"
@@ -187,11 +188,16 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddString("undoDescription", l10n_util::GetStringFUTF16(
                                            IDS_UNDO_DESCRIPTION,
                                            undo_accelerator.GetShortcutText()));
-  source->AddString("googleBaseUrl",
-                    GURL(TemplateURLServiceFactory::GetForProfile(profile)
-                             ->search_terms_data()
-                             .GoogleBaseURLValue())
-                        .spec());
+
+  GURL google_base_url = GURL(TemplateURLServiceFactory::GetForProfile(profile)
+                                  ->search_terms_data()
+                                  .GoogleBaseURLValue());
+  source->AddString("googleBaseUrl", google_base_url.spec());
+
+  GURL threads_url = google_base_url.Resolve("/search");
+  threads_url = net::AppendQueryParameter(threads_url, "udm", "50");
+  threads_url = net::AppendQueryParameter(threads_url, "atvm", "1");
+  source->AddString("threadsUrl", threads_url.spec());
 
   source->AddInteger(
       "preconnectStartTimeThreshold",
