@@ -114,10 +114,26 @@ public class UploadImagePreviewLayoutViewBinderUnitTest {
     }
 
     @Test
-    public void testSetTopMargin() {
+    public void testSetLogoSearchBoxMargin() {
+        int expectedMargin = 45;
+        mModel.set(NtpThemeProperty.SEARCH_BOX_TOP_MARGIN, expectedMargin);
+
+        verify(mLayoutView).setSearchBoxTopMargin(eq(expectedMargin));
+    }
+
+    @Test
+    public void testSetSearchBoxHeight() {
+        int expectedHeight = 56;
+        mModel.set(NtpThemeProperty.SEARCH_BOX_HEIGHT, expectedHeight);
+
+        verify(mLayoutView).setSearchBoxHeight(eq(expectedHeight));
+    }
+
+    @Test
+    public void testTopGuidelineBegin() {
         int topMargin = 105;
-        mModel.set(NtpThemeProperty.TOP_INSETS, topMargin);
-        verify(mLayoutView).setTopInsets(eq(topMargin));
+        mModel.set(NtpThemeProperty.TOP_GUIDELINE_BEGIN, topMargin);
+        verify(mLayoutView).setTopGuidelineBegin(eq(topMargin));
     }
 
     @Test

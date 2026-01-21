@@ -107,27 +107,4 @@ public class NewTabPageUtils {
         marginLayoutParams.topMargin = topMargin;
         view.setLayoutParams(marginLayoutParams);
     }
-
-    /**
-     * Returns the adjusted height of the search box on NTP.
-     *
-     * @param resources The resources to get dimens.
-     * @param showSearchBoxTall Whether to show a tall search box.
-     * @param hasShadowApplied Whether a shadow is shown on the search box. Drawing shadow requires
-     *     extra paddings on top and bottom of the search box.
-     */
-    static int getSearchBoxHeightWithShadows(
-            Resources resources, boolean showSearchBoxTall, boolean hasShadowApplied) {
-        int searchBoxHeight =
-                showSearchBoxTall
-                        ? resources.getDimensionPixelSize(R.dimen.ntp_search_box_height_tall)
-                        : resources.getDimensionPixelSize(R.dimen.ntp_search_box_height);
-        if (!hasShadowApplied) return searchBoxHeight;
-
-        int extraPadding =
-                resources.getDimensionPixelSize(
-                                R.dimen.composeplate_view_button_padding_for_shadow_bottom)
-                        * 2;
-        return searchBoxHeight + extraPadding;
-    }
 }

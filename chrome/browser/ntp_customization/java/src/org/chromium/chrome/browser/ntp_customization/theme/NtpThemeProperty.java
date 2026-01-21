@@ -58,7 +58,7 @@ public class NtpThemeProperty {
 
     // The top margin in pixels applied to the layout to avoid overlapping with the status bar and
     // the tool bar.
-    public static final PropertyModel.WritableIntPropertyKey TOP_INSETS =
+    public static final PropertyModel.WritableIntPropertyKey TOP_GUIDELINE_BEGIN =
             new PropertyModel.WritableIntPropertyKey();
 
     // The bottom inset in pixels to ensure interactive buttons clear the system navigation
@@ -78,6 +78,10 @@ public class NtpThemeProperty {
     public static final PropertyModel.WritableIntPropertyKey SEARCH_BOX_HEIGHT =
             new PropertyModel.WritableIntPropertyKey();
 
+    // The top margin of the search box in pixels.
+    public static final PropertyModel.WritableIntPropertyKey SEARCH_BOX_TOP_MARGIN =
+            new PropertyModel.WritableIntPropertyKey();
+
     public static final PropertyKey[] THEME_KEYS =
             new PropertyKey[] {
                 LEARN_MORE_BUTTON_CLICK_LISTENER,
@@ -94,10 +98,11 @@ public class NtpThemeProperty {
                 LOGO_BITMAP,
                 LOGO_VISIBILITY,
                 LOGO_PARAMS,
-                TOP_INSETS,
+                TOP_GUIDELINE_BEGIN,
                 BOTTOM_INSETS,
                 SIDE_AND_BOTTOM_INSETS,
                 SEARCH_BOX_WIDTH,
-                SEARCH_BOX_HEIGHT
+                SEARCH_BOX_HEIGHT,
+                SEARCH_BOX_TOP_MARGIN
             };
 }

@@ -53,6 +53,7 @@ found in the LICENSE file.
     <dimen name="signin_promo_lateral_paddings">16dp</dimen>
     <dimen name="ntp_search_box_lateral_margin_tablet">100dp</dimen>
     <dimen name="mvt_container_lateral_margin">@dimen/signin_promo_lateral_paddings</dimen>
+    <dimen name="mvt_container_top_margin">23dp</dimen>
 
     <!-- Bookmark Bar chip -->
     <dimen name="bookmark_bar_chip_corner_radius">8dp</dimen>

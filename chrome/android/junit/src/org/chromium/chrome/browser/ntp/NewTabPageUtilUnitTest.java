@@ -43,7 +43,6 @@ public class NewTabPageUtilUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private Context mContext;
-    private Resources mResources;
     private View mView;
 
     @Before
@@ -52,7 +51,6 @@ public class NewTabPageUtilUnitTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
-        mResources = mContext.getResources();
         mView = new View(mContext);
         mView.setLayoutParams(new MarginLayoutParams(100, 100));
     }
@@ -237,44 +235,5 @@ public class NewTabPageUtilUnitTest {
                 mView, shouldShowLogo, isWhiteBackgroundOnSearchBoxApplied, isTablet);
         MarginLayoutParams layoutParams = (MarginLayoutParams) mView.getLayoutParams();
         assertEquals(expectedTopMargin, layoutParams.topMargin);
-    }
-
-    @Test
-    public void testGetSearchBoxHeightWithShadows() {
-        // Mock dimension values.
-        int searchBoxHeightTall =
-                mResources.getDimensionPixelSize(R.dimen.ntp_search_box_height_tall);
-        int searchBoxHeight = mResources.getDimensionPixelSize(R.dimen.ntp_search_box_height);
-        int paddingForShadowBottom =
-                mResources.getDimensionPixelSize(
-                        R.dimen.composeplate_view_button_padding_for_shadow_bottom);
-
-        // Test case 1: Tall search box with shadow.
-        int expectedHeight = searchBoxHeightTall + (paddingForShadowBottom * 2);
-        int actualHeight =
-                NewTabPageUtils.getSearchBoxHeightWithShadows(
-                        mResources, /* showSearchBoxTall= */ true, /* hasShadowApplied= */ true);
-        assertEquals(expectedHeight, actualHeight);
-
-        // Test case 2: Tall search box without shadow.
-        expectedHeight = searchBoxHeightTall;
-        actualHeight =
-                NewTabPageUtils.getSearchBoxHeightWithShadows(
-                        mResources, /* showSearchBoxTall= */ true, /* hasShadowApplied= */ false);
-        assertEquals(expectedHeight, actualHeight);
-
-        // Test case 3: Regular search box with shadow.
-        expectedHeight = searchBoxHeight + (paddingForShadowBottom * 2);
-        actualHeight =
-                NewTabPageUtils.getSearchBoxHeightWithShadows(
-                        mResources, /* showSearchBoxTall= */ false, /* hasShadowApplied= */ true);
-        assertEquals(expectedHeight, actualHeight);
-
-        // Test case 4: Regular search box without shadow.
-        expectedHeight = searchBoxHeight;
-        actualHeight =
-                NewTabPageUtils.getSearchBoxHeightWithShadows(
-                        mResources, /* showSearchBoxTall= */ false, /* hasShadowApplied= */ false);
-        assertEquals(expectedHeight, actualHeight);
     }
 }

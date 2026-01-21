@@ -120,7 +120,7 @@ public class LogoUtils {
             View logoView, int logoHeight, int logoTopMargin) {
         MarginLayoutParams layoutParams = (MarginLayoutParams) logoView.getLayoutParams();
 
-        if (layoutParams.height == logoHeight) {
+        if (layoutParams.height == logoHeight && layoutParams.topMargin == logoTopMargin) {
             return;
         }
 

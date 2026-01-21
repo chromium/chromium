@@ -10,6 +10,8 @@ import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProper
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LOGO_PARAMS;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LOGO_VISIBILITY;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.PREVIEW_KEYS;
+import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.SEARCH_BOX_HEIGHT;
+import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.SEARCH_BOX_TOP_MARGIN;
 
 import android.app.Activity;
 import android.content.res.Resources;
@@ -27,11 +29,13 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.feed.FeedStreamViewResizerUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.logo.LogoUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -92,6 +96,7 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
             Bitmap bitmap,
             Callback<Boolean> onBottomSheetClickedCallback) {
         mPreviewPropertyModel = new PropertyModel(PREVIEW_KEYS);
+        mActivity = activity;
         mPreviewLayout =
                 (UploadImagePreviewLayout)
                         LayoutInflater.from(activity)
@@ -100,9 +105,8 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
                                         null);
         mCropImageView = mPreviewLayout.findViewById(R.id.preview_image);
         mToolBarHeight =
-                activity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
+                mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
 
-        mActivity = activity;
         mUiConfig = new UiConfig(mPreviewLayout);
         mShouldShowLogoAndSearchBox =
                 ChromeFeatureList.sNewTabPageCustomizationV2ShowLogoAndSearchBox.getValue();
@@ -157,6 +161,7 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
 
         if (mShouldShowLogoAndSearchBox) {
             setUpLogo(activity, profile, mPreviewPropertyModel);
+            setUpSearchBox(mPreviewPropertyModel, profile);
         }
 
         mDialog.show();
@@ -171,7 +176,8 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
                         WindowInsetsCompat.Type.systemBars()
                                 | WindowInsetsCompat.Type.displayCutout());
 
-        mPreviewPropertyModel.set(NtpThemeProperty.TOP_INSETS, mToolBarHeight + combinedInsets.top);
+        mPreviewPropertyModel.set(
+                NtpThemeProperty.TOP_GUIDELINE_BEGIN, mToolBarHeight + combinedInsets.top);
 
         // Groups Left, Right, and Bottom into a Rect to update the model once. We pass 0 for top
         // since it's handled by the TOP_INSETS property above.
@@ -188,18 +194,20 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
     }
 
     private void updateSearchBoxWidthPreview() {
-        Resources res = mActivity.getResources();
         // 1. Computes the padding added to the feed section.
+        Resources resources = mActivity.getResources();
         int totalFeedPaddingPerSide =
                 FeedStreamViewResizerUtils.computePadding(
                         mActivity, mUiConfig, mCropImageView, mToolBarHeight);
-        int compensation = FeedStreamViewResizerUtils.getFeedNtpCompensationMargin(res, mUiConfig);
+        int compensation =
+                FeedStreamViewResizerUtils.getFeedNtpCompensationMargin(resources, mUiConfig);
         int effectiveFeedPaddingTotal = (totalFeedPaddingPerSide + compensation) * 2;
 
         // 2. Computes the margin added to the ntp.
         // isTablet is hardcoded to false as this coordinator is guarded against creation on
         // tablets.
-        int ntpMarginsTotal = getSearchBoxTwoSideMargin(res, mUiConfig, /* isTablet= */ false);
+        int ntpMarginsTotal =
+                getSearchBoxTwoSideMargin(resources, mUiConfig, /* isTablet= */ false);
 
         int finalWidth = mCropImageView.getWidth() - effectiveFeedPaddingTotal - ntpMarginsTotal;
 
@@ -273,9 +281,26 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
         model.set(
                 LOGO_PARAMS,
                 LogoUtils.getLogoViewLayoutParams(
-                        activity.getResources(),
+                        mActivity.getResources(),
                         /* isLogoDoodle= */ logoBitmap != null,
                         LogoUtils.getDoodleSize(activity.isInMultiWindowMode())));
+    }
+
+    private void setUpSearchBox(PropertyModel propertyModel, Profile profile) {
+        Resources resources = mActivity.getResources();
+        boolean showSearchBoxTall =
+                ComposeplateUtils.isComposeplateEnabled(/* isTablet= */ false, profile)
+                        && ChromeFeatureList.sAndroidComposeplateV2Enabled.getValue();
+
+        propertyModel.set(
+                SEARCH_BOX_HEIGHT,
+                NtpCustomizationUtils.getSearchBoxHeightWithShadows(
+                        resources, showSearchBoxTall, /* hasShadowApplied= */ true));
+
+        propertyModel.set(
+                SEARCH_BOX_TOP_MARGIN,
+                NtpCustomizationUtils.getLogoViewBottomMarginPx(
+                        resources, /* applyShadow= */ true));
     }
 
     PropertyModel getPropertyModelForTesting() {

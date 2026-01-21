@@ -26,6 +26,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtil
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -90,6 +91,7 @@ public class NtpCustomizationUtilsUnitTest {
     @Mock private Drawable mDrawable;
 
     private Context mContext;
+    private Resources mResources;
 
     @Before
     public void setUp() {
@@ -97,6 +99,7 @@ public class NtpCustomizationUtilsUnitTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
+        mResources = mContext.getResources();
     }
 
     @After
@@ -1186,5 +1189,44 @@ public class NtpCustomizationUtilsUnitTest {
                 /* hasShown= */ false);
         assertFalse(
                 NtpCustomizationUtils.getNtpCustomizationBottomSheetShownFromSharedPreference());
+    }
+
+    @Test
+    public void testGetSearchBoxHeightWithShadows() {
+        // Mock dimension values.
+        int searchBoxHeightTall =
+                mResources.getDimensionPixelSize(R.dimen.ntp_search_box_height_tall);
+        int searchBoxHeight = mResources.getDimensionPixelSize(R.dimen.ntp_search_box_height);
+        int paddingForShadowBottom =
+                mResources.getDimensionPixelSize(
+                        R.dimen.composeplate_view_button_padding_for_shadow_bottom);
+
+        // Test case 1: Tall search box with shadow.
+        int expectedHeight = searchBoxHeightTall + (paddingForShadowBottom * 2);
+        int actualHeight =
+                NtpCustomizationUtils.getSearchBoxHeightWithShadows(
+                        mResources, /* showSearchBoxTall= */ true, /* hasShadowApplied= */ true);
+        assertEquals(expectedHeight, actualHeight);
+
+        // Test case 2: Tall search box without shadow.
+        expectedHeight = searchBoxHeightTall;
+        actualHeight =
+                NtpCustomizationUtils.getSearchBoxHeightWithShadows(
+                        mResources, /* showSearchBoxTall= */ true, /* hasShadowApplied= */ false);
+        assertEquals(expectedHeight, actualHeight);
+
+        // Test case 3: Regular search box with shadow.
+        expectedHeight = searchBoxHeight + (paddingForShadowBottom * 2);
+        actualHeight =
+                NtpCustomizationUtils.getSearchBoxHeightWithShadows(
+                        mResources, /* showSearchBoxTall= */ false, /* hasShadowApplied= */ true);
+        assertEquals(expectedHeight, actualHeight);
+
+        // Test case 4: Regular search box without shadow.
+        expectedHeight = searchBoxHeight;
+        actualHeight =
+                NtpCustomizationUtils.getSearchBoxHeightWithShadows(
+                        mResources, /* showSearchBoxTall= */ false, /* hasShadowApplied= */ false);
+        assertEquals(expectedHeight, actualHeight);
     }
 }

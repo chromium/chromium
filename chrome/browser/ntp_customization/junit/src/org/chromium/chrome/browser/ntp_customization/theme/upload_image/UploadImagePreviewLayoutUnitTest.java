@@ -34,6 +34,7 @@ public class UploadImagePreviewLayoutUnitTest {
     private Activity mActivity;
     private UploadImagePreviewLayout mLayout;
     private ImageView mLogoView;
+    private View mSearchBoxView;
     private Guideline mGuidelineTop;
 
     @Before
@@ -48,6 +49,7 @@ public class UploadImagePreviewLayoutUnitTest {
 
         mLogoView = mLayout.findViewById(R.id.default_search_engine_logo);
         mGuidelineTop = mLayout.findViewById(R.id.guideline_top);
+        mSearchBoxView = mLayout.findViewById(R.id.search_box_container);
     }
 
     @Test
@@ -100,21 +102,32 @@ public class UploadImagePreviewLayoutUnitTest {
     }
 
     @Test
-    public void testSetTopInsets() {
-        int logoHeight = 100;
-        int logoTopMargin = 50;
-        mLayout.setLogoViewLayoutParams(logoHeight, logoTopMargin);
+    public void testSetLogoSearchBoxMargin() {
+        int expectedMargin = 60;
 
+        mLayout.setSearchBoxTopMargin(expectedMargin);
+
+        ViewGroup.MarginLayoutParams params =
+                (ViewGroup.MarginLayoutParams) mSearchBoxView.getLayoutParams();
+
+        assertEquals(
+                "Search box top margin should be updated to create the gap",
+                expectedMargin,
+                params.topMargin);
+    }
+
+    @Test
+    public void testSetTopInsets() {
         int topInsetAndToolBarHeight = 120;
-        mLayout.setTopInsets(topInsetAndToolBarHeight);
+        mLayout.setTopGuidelineBegin(topInsetAndToolBarHeight);
 
         // Verifies the guideline was moved
         ConstraintLayout.LayoutParams params =
                 (ConstraintLayout.LayoutParams) mGuidelineTop.getLayoutParams();
 
         assertEquals(
-                "Guideline begin should be sum of inset and logo margin",
-                topInsetAndToolBarHeight + logoTopMargin,
+                "Guideline should only account for top inset and toolbar height",
+                topInsetAndToolBarHeight,
                 params.guideBegin);
     }
 }
