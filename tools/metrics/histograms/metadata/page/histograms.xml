@@ -1477,6 +1477,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-05-24">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time {Event}, for Google Search page loads. The recorded values
     are calculated based on the metrics recorded by the JavaScript, which is
@@ -2014,9 +2015,10 @@ chromium-metrics-reviews@google.com.
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
-    Measures the time from when a prerender navigation starts to when the
-    prerendered page is activated, for GWS page loads for {IncognitoSuffix}.
-    Only recorded for GWS navigations that were prerendered and activated.
+    Measures the time from when a initial prerender navigation starts in the
+    background to when the prerendered page is activated, for GWS page loads for
+    {IncognitoSuffix}. Only recorded for GWS navigations that were prerendered
+    and activated.
   </summary>
   <token key="IncognitoSuffix" variants="IncognitoSuffix"/>
 </histogram>
