@@ -55,9 +55,6 @@ struct BiddingAndAuctionServerKey;
 // Bidding and scoring signals need different structs when sending requests, but
 // they use the same response format, since it's only the compressed data itself
 // that varies based on signals type.
-//
-// TODO(https://crbug.com/333445540): This is currently only an API, with no
-// implementation. Need to actually implement the API.
 class CONTENT_EXPORT TrustedSignalsFetcher {
  public:
   static constexpr std::string_view kRequestMediaType =
