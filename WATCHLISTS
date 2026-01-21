@@ -89,6 +89,8 @@
                   'AccessibilitySettings' \
                   'PageZoom' \
                   '|components/browser_ui/accessibility/android/' \
+                  '|ui/accessibility/android/java/src/org/chromium/ui/accessibility/' \
+                  '|ui/accessibility/android/' \
     },
     'android_accessibility_web': {
       'filepath': 'WebContentsAccessibility' \
