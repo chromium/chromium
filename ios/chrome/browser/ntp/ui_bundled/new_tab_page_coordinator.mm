@@ -1183,9 +1183,9 @@
 }
 
 - (void)cancelOmniboxEdit {
-  id<OmniboxCommands> omniboxCommandHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
-  [omniboxCommandHandler cancelOmniboxEdit];
+  id<BrowserCoordinatorCommands> browserCoordinatorHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  [browserCoordinatorHandler hideComposebox];
 }
 
 - (void)onFakeboxBlur {
@@ -1195,11 +1195,18 @@
 }
 
 - (void)focusOmnibox {
-  id<FakeboxFocuser> fakeboxFocuserHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), FakeboxFocuser);
-  [fakeboxFocuserHandler focusOmniboxFromFakebox:_fakeboxTapped
-                                          pinned:[self isFakeboxPinned]
-                  fakeboxButtonsSnapshotProvider:self.headerViewController];
+  if (IsChromeNextIaEnabled()) {
+    id<BrowserCoordinatorCommands> browserCoordinatorHandler =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                           BrowserCoordinatorCommands);
+    [browserCoordinatorHandler showComposebox];
+  } else {
+    id<FakeboxFocuser> fakeboxFocuserHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), FakeboxFocuser);
+    [fakeboxFocuserHandler focusOmniboxFromFakebox:_fakeboxTapped
+                                            pinned:[self isFakeboxPinned]
+                    fakeboxButtonsSnapshotProvider:self.headerViewController];
+  }
 }
 
 - (void)refreshNTPContent {

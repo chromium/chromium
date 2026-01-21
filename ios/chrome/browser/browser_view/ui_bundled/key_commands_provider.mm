@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
@@ -361,7 +362,7 @@ using base::UserMetricsAction;
 
 - (void)keyCommand_openLocation {
   RecordAction(UserMetricsAction("MobileKeyCommandOpenLocation"));
-  [_omniboxHandler focusOmnibox];
+  [self.browserCoordinatorHandler showComposebox];
 }
 
 - (void)keyCommand_closeTab {

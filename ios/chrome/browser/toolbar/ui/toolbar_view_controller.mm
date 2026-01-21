@@ -127,6 +127,20 @@
                                         curve:curve];
 }
 
+- (void)triggerToolbarSlideInAnimation {
+  // TODO(crbug.com/472279443): Implement this.
+  NOTREACHED();
+}
+
+- (void)focusLocationBarForVoiceOver {
+  if (!_visible) {
+    return;
+  }
+  // TODO(crbug.com/472279443): Focus the real location bar.
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  _omniboxButton);
+}
+
 #pragma mark - Private
 
 // Returns whether the a accessory view position should be used.
@@ -266,9 +280,7 @@
 
 // Handles omnibox tap.
 - (void)omniboxTapped {
-  [self.browserCoordinatorHandler
-      showComposeboxFromEntrypoint:ComposeboxEntrypoint::kOther
-                         withQuery:nil];
+  [self.browserCoordinatorHandler showComposebox];
 }
 
 // Handles tab grid button touch down.

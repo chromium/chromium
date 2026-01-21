@@ -563,9 +563,9 @@ const CGFloat kSnackbarBottomMargin = 10;
 
 /// Dismisses the composebox via a command to the browser coordinator.
 - (void)dismissComposebox {
-  id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
+  id<BrowserCoordinatorCommands> browserCoordinatorHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
-  [commands hideComposeboxImmediately:NO];
+  [browserCoordinatorHandler hideComposebox];
 }
 
 /// Displays a snackbar error indicating the maximum number of attachments has

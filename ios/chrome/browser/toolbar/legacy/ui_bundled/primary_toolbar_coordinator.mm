@@ -18,9 +18,9 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/guided_tour_commands.h"
-#import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -63,8 +63,8 @@
 
   self.viewController = [[PrimaryToolbarViewController alloc] init];
   self.viewController.shouldHideOmniboxOnNTP = !isOffTheRecord;
-  self.viewController.omniboxCommandsHandler =
-      HandlerForProtocol(dispatcher, OmniboxCommands);
+  self.viewController.browserCoordinatorHandler =
+      HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
   self.viewController.popupMenuCommandsHandler =
       HandlerForProtocol(dispatcher, PopupMenuCommands);
   CHECK(self.viewControllerDelegate);

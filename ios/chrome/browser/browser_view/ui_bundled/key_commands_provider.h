@@ -13,7 +13,6 @@
 class Browser;
 @protocol BrowserCoordinatorCommands;
 @protocol FindInPageCommands;
-@protocol OmniboxCommands;
 @protocol QuickDeleteCommands;
 @protocol SceneCommands;
 @protocol SettingsCommands;
@@ -29,7 +28,6 @@ class Browser;
 @property(nonatomic, weak) id<BookmarksCommands> bookmarksHandler;
 @property(nonatomic, weak) id<BrowserCoordinatorCommands>
     browserCoordinatorHandler;
-@property(nonatomic, weak) id<OmniboxCommands> omniboxHandler;
 @property(nonatomic, weak) id<QuickDeleteCommands> quickDeleteHandler;
 
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;

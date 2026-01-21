@@ -3113,9 +3113,10 @@ using UserFeedbackDataCallback =
   if (!self.currentInterface.browser) {
     return;
   }
-  id<OmniboxCommands> omniboxCommandsHandler = HandlerForProtocol(
-      self.currentInterface.browser->GetCommandDispatcher(), OmniboxCommands);
-  [omniboxCommandsHandler focusOmnibox];
+  id<BrowserCoordinatorCommands> browserCoordinatorHandler =
+      HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
+                         BrowserCoordinatorCommands);
+  [browserCoordinatorHandler showComposebox];
 }
 
 - (void)showDefaultBrowserSettingsWithSourceForUMA:
@@ -3846,10 +3847,12 @@ using UserFeedbackDataCallback =
 - (void)displayCurrentBVCAndFocusOmnibox:(BOOL)focusOmnibox {
   ProceduralBlock completion = nil;
   if (focusOmnibox) {
-    id<OmniboxCommands> omniboxHandler = HandlerForProtocol(
-        self.currentInterface.browser->GetCommandDispatcher(), OmniboxCommands);
+    id<BrowserCoordinatorCommands> browserCoordinatorHandler =
+        HandlerForProtocol(
+            self.currentInterface.browser->GetCommandDispatcher(),
+            BrowserCoordinatorCommands);
     completion = ^{
-      [omniboxHandler focusOmnibox];
+      [browserCoordinatorHandler showComposebox];
     };
   }
   [self.mainCoordinator

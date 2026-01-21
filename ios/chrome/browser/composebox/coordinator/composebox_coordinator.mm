@@ -244,14 +244,14 @@
 
 - (void)composeboxViewControllerDidTapCloseButton:
     (ComposeboxInputPlateViewController*)viewController {
-  [self dismissComposeboxImmediately:NO];
+  [self dismissComposebox];
 }
 
 #pragma mark - ComposeboxNavigationMediatorDelegate
 
 - (void)navigationMediatorDidFinish:
     (ComposeboxNavigationMediator*)navigationMediator {
-  [self dismissComposeboxImmediately:NO];
+  [self dismissComposebox];
 }
 
 - (void)navigationMediator:(ComposeboxNavigationMediator*)navigationMediator
@@ -274,10 +274,10 @@
 // Sends the command to get the composebox dismissed. If not `immediately`,
 // stop the prototoype on the next run loop as this might be called while the
 // prototype's omnibox is loading a query.
-- (void)dismissComposeboxImmediately:(BOOL)immediately {
-  id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
+- (void)dismissComposebox {
+  id<BrowserCoordinatorCommands> browserCoordinatorHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
-  [commands hideComposeboxImmediately:immediately];
+  [browserCoordinatorHandler hideComposebox];
 }
 
 - (ComposeboxTheme*)createTheme {

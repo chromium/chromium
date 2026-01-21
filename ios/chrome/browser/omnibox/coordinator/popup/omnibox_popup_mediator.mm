@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/omnibox/ui/popup/carousel/carousel_item_menu_provider.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_consumer.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_presenter.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -290,7 +291,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 }
 
 - (void)closeButtonTapped {
-  [self.omniboxCommandsHandler cancelOmniboxEdit];
+  [self.browserCoordinatorCommandsHandler hideComposebox];
   [self.omniboxAutocompleteController closeOmniboxPopup];
 }
 

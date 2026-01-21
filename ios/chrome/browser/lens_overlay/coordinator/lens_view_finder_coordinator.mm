@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
@@ -23,6 +24,7 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 
 namespace {
@@ -296,9 +298,9 @@ LensViewFinderTransition TransitionFromPresentationStyle(
 - (void)cancelOmniboxEdit {
   Browser* browser = self.browser;
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
-  id<OmniboxCommands> omniboxCommandsHandler =
-      HandlerForProtocol(dispatcher, OmniboxCommands);
-  [omniboxCommandsHandler cancelOmniboxEdit];
+  id<BrowserCoordinatorCommands> browserCoordinatorHandler =
+      HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
+  [browserCoordinatorHandler hideComposebox];
 }
 
 @end

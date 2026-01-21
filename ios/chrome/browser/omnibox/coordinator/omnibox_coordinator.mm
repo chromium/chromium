@@ -46,6 +46,7 @@
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
@@ -162,8 +163,8 @@
   mediator.faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForProfile(profile);
   mediator.consumer = viewController;
-  mediator.omniboxCommandsHandler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), OmniboxCommands);
+  mediator.browserCoordinatorCommandsHandler = HandlerForProtocol(
+      browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
   mediator.lensCommandsHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), LensCommands);
   mediator.loadQueryCommandsHandler =
@@ -238,7 +239,8 @@
   OmniboxPedalAnnotator* annotator = [[OmniboxPedalAnnotator alloc] init];
   annotator.sceneHandler = HandlerForProtocol(dispatcher, SceneCommands);
   annotator.settingsHandler = HandlerForProtocol(dispatcher, SettingsCommands);
-  annotator.omniboxHandler = HandlerForProtocol(dispatcher, OmniboxCommands);
+  annotator.browserCoordinatorHandler =
+      HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
   annotator.quickDeleteHandler =
       HandlerForProtocol(dispatcher, QuickDeleteCommands);
 

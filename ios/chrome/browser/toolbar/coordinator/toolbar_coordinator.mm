@@ -785,16 +785,37 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 #pragma mark - ToolbarCommands
 
 - (void)triggerToolbarSlideInAnimation {
+  if (IsChromeNextIaEnabled()) {
+    [_topToolbarViewController triggerToolbarSlideInAnimation];
+    [_bottomToolbarViewController triggerToolbarSlideInAnimation];
+    return;
+  }
   for (id<ToolbarCommands> coordinator in self.coordinators) {
     [coordinator triggerToolbarSlideInAnimation];
   }
 }
 
 - (void)indicateLensOverlayVisible:(BOOL)lensOverlayVisible {
+  if (IsChromeNextIaEnabled()) {
+    // TODO(crbug.com/472279443): Implement this.
+    NOTREACHED();
+  }
+
   [self.locationBarCoordinator setLensOverlayVisible:lensOverlayVisible];
 
   for (id<ToolbarCommands> coordinator in self.coordinators) {
     [coordinator indicateLensOverlayVisible:lensOverlayVisible];
+  }
+}
+
+- (void)focusLocationBarForVoiceOver {
+  if (IsChromeNextIaEnabled()) {
+    [_topToolbarViewController focusLocationBarForVoiceOver];
+    [_bottomToolbarViewController focusLocationBarForVoiceOver];
+  } else {
+    id<OmniboxCommands> omniboxHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), OmniboxCommands);
+    [omniboxHandler focusOmniboxForVoiceOver];
   }
 }
 

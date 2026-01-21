@@ -17,11 +17,11 @@
 #import "ui/base/window_open_disposition.h"
 
 @class BrowserActionFactory;
+@protocol BrowserCoordinatorCommands;
 @class CarouselItem;
 @protocol CarouselItemConsumer;
 @protocol LoadQueryCommands;
 @class OmniboxAutocompleteController;
-@protocol OmniboxCommands;
 @class OmniboxImageFetcher;
 @protocol OmniboxPopupConsumer;
 @class OmniboxPopupMediator;
@@ -72,7 +72,8 @@ class Tracker;
 @property(nonatomic, weak) id<OmniboxPopupConsumer> consumer;
 
 @property(nonatomic, weak) id<SceneCommands> sceneHandler;
-@property(nonatomic, weak) id<OmniboxCommands> omniboxCommandsHandler;
+@property(nonatomic, weak) id<BrowserCoordinatorCommands>
+    browserCoordinatorCommandsHandler;
 
 /// Browser scene state to notify about events happening in this popup.
 @property(nonatomic, weak) SceneState* sceneState;

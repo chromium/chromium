@@ -9,9 +9,9 @@
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/guided_tour_commands.h"
-#import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -48,8 +48,8 @@
   self.viewController = [[SecondaryToolbarViewController alloc] init];
   self.viewController.buttonFactory =
       [self buttonFactoryWithType:ToolbarType::kSecondary];
-  self.viewController.omniboxCommandsHandler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), OmniboxCommands);
+  self.viewController.browserCoordinatorHandler = HandlerForProtocol(
+      browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
   self.viewController.popupMenuCommandsHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), PopupMenuCommands);
   self.viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(browser);

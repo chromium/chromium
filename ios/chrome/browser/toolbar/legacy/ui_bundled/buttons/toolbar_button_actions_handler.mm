@@ -12,8 +12,8 @@
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
-#import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -83,7 +83,7 @@
 }
 
 - (void)cancelOmniboxFocusAction {
-  [self.omniboxHandler cancelOmniboxEdit];
+  [self.browserCoordinatorHandler hideComposebox];
 }
 
 @end

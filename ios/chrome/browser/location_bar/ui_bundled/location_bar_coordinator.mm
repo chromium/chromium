@@ -568,7 +568,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
         destination_url_entered_without_scheme, self.isOffTheRecord);
     UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
   }
-  [self cancelOmniboxEdit];
+  id<BrowserCoordinatorCommands> browserCoordinatorHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  [browserCoordinatorHandler hideComposebox];
 }
 
 #pragma mark - OmniboxCommands
@@ -581,16 +583,14 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
 - (void)focusOmnibox {
-  if (MaybeShowComposebox(self.browser, ComposeboxEntrypoint::kOther)) {
-    return;
-  }
+  CHECK(!IsComposeboxIOSEnabled());
   // When the NTP and fakebox are visible, make the fakebox animates into place
   // before focusing the omnibox.
   if (IsVisibleURLNewTabPage([self webState]) && !self.isOffTheRecord) {
-    id<BrowserCoordinatorCommands> browserCoordinatorCommandsHandler =
+    id<BrowserCoordinatorCommands> browserCoordinatorHandler =
         HandlerForProtocol(self.browser->GetCommandDispatcher(),
                            BrowserCoordinatorCommands);
-    [browserCoordinatorCommandsHandler focusFakebox];
+    [browserCoordinatorHandler focusFakebox];
   } else {
     [self setFakeboxButtonsSnapshotProvider:nil];
     [self.omniboxCoordinator focusOmnibox];
@@ -602,16 +602,12 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
 - (void)cancelOmniboxEdit {
+  CHECK(!IsComposeboxIOSEnabled());
   [self cancelOmniboxEditWithCompletion:nil];
 }
 
 - (void)cancelOmniboxEditWithCompletion:(ProceduralBlock)completion {
-  if (IsComposeboxIOSEnabled()) {
-    id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
-    [commands hideComposeboxImmediately:NO completion:completion];
-    return;
-  }
+  CHECK(!IsComposeboxIOSEnabled());
   if (self.isCancellingOmniboxEdit) {
     return;
   }
@@ -649,7 +645,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 #pragma mark - LocationBarViewControllerDelegate
 
 - (void)locationBarSteadyViewTapped {
-  [self focusOmnibox];
+  id<BrowserCoordinatorCommands> browserCoordinatorHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  [browserCoordinatorHandler showComposebox];
 }
 
 - (void)locationBarCopyTapped {
@@ -865,7 +863,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     UrlLoadingBrowserAgent::FromBrowser(browser)->Load(params);
   }
 
-  [self cancelOmniboxEdit];
+  id<BrowserCoordinatorCommands> browserCoordinatorHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  [browserCoordinatorHandler hideComposebox];
 }
 
 - (UIView*)locationBarSteadyViewVisualCopy {

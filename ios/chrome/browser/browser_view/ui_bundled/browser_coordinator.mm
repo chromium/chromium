@@ -90,6 +90,7 @@
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_coordinator.h"
+#import "ios/chrome/browser/composebox/coordinator/composebox_entrypoint.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/contextual_panel/coordinator/contextual_sheet_coordinator.h"
@@ -1056,7 +1057,7 @@ const char kChromeAppStoreUrl[] =
 
   // The composebox replaces the omnibox.
   if (dismissOmnibox) {
-    [self hideComposeboxImmediately:NO];
+    [self hideComposebox];
   }
 
   BOOL dismissPresentedViewController = YES;
@@ -1449,6 +1450,8 @@ const char kChromeAppStoreUrl[] =
   _viewControllerDependencies.sideSwipeCoordinator = _sideSwipeCoordinator;
   _viewControllerDependencies.bookmarksCoordinator = _bookmarksCoordinator;
   _viewControllerDependencies.fullscreenController = _fullscreenController;
+  _viewControllerDependencies.browserCoordinatorHandler =
+      HandlerForProtocol(_dispatcher, BrowserCoordinatorCommands);
   _viewControllerDependencies.textZoomHandler =
       HandlerForProtocol(_dispatcher, TextZoomCommands);
   _viewControllerDependencies.helpHandler =
@@ -1457,6 +1460,8 @@ const char kChromeAppStoreUrl[] =
       HandlerForProtocol(_dispatcher, PopupMenuCommands);
   _viewControllerDependencies.sceneHandler =
       HandlerForProtocol(_dispatcher, SceneCommands);
+  _viewControllerDependencies.toolbarHandler =
+      HandlerForProtocol(_dispatcher, ToolbarCommands);
   _viewControllerDependencies.findInPageCommandsHandler =
       HandlerForProtocol(_dispatcher, FindInPageCommands);
   if (IsGeminiCopresenceEnabled()) {
@@ -1509,9 +1514,9 @@ const char kChromeAppStoreUrl[] =
       HandlerForProtocol(_dispatcher, LoadQueryCommands);
   _viewController.loadQueryCommandsHandler = _loadQueryCommandsHandler;
   _voiceSearchController.dispatcher = _loadQueryCommandsHandler;
-  _omniboxCommandsHandler = HandlerForProtocol(_dispatcher, OmniboxCommands);
-  _keyCommandsProvider.omniboxHandler = _omniboxCommandsHandler;
-  _viewController.omniboxCommandsHandler = _omniboxCommandsHandler;
+  if (!IsChromeNextIaEnabled()) {
+    _omniboxCommandsHandler = HandlerForProtocol(_dispatcher, OmniboxCommands);
+  }
 
   _tabStripCoordinator.baseViewController = viewController;
   _NTPCoordinator.baseViewController = viewController;
@@ -1930,7 +1935,7 @@ const char kChromeAppStoreUrl[] =
   [self dismissSearchWhatYouSeePromo];
   [self dismissNotificationsOptIn];
   [self hideWelcomeBackPromo];
-  [self hideComposeboxImmediately:YES];
+  [self hideComposeboxImmediately:YES completion:nil];
 }
 
 // Starts independent mediators owned by this coordinator.
@@ -2062,6 +2067,36 @@ const char kChromeAppStoreUrl[] =
 - (void)resetComposebox {
   _browserOmniboxStateProvider.composeboxStateProvider = nil;
   _composeboxCoordinator = nil;
+}
+
+// Hides the compose box. If `immediately` is NO, the operation stops on the
+// next run loop. The completion block is called once hidden.
+- (void)hideComposeboxImmediately:(BOOL)immediately
+                       completion:(ProceduralBlock)completion {
+  if (!_composeboxCoordinator || immediately) {
+    [_composeboxCoordinator stop];
+    [self resetComposebox];
+    if (completion) {
+      completion();
+    }
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  base::OnceClosure animationCompletion = base::BindOnce(^{
+    [weakSelf.composeboxCoordinator stopAnimatedWithCompletion:^{
+      [weakSelf resetComposebox];
+      if (completion) {
+        completion();
+      }
+    }];
+  });
+  // Stop the prototoype on the next run loop as this might be called while
+  // the prototype's omnibox is loading a query. TODO(crbug.com/454302076):
+  // Remove this workaround once the omnibox can be safely dismissed while
+  // openMatch.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(animationCompletion));
 }
 
 #pragma mark - ActivityServiceCommands
@@ -2769,6 +2804,15 @@ const char kChromeAppStoreUrl[] =
   [_signinCoordinator start];
 }
 
+- (void)showComposebox {
+  if (IsComposeboxIOSEnabled()) {
+    [self showComposeboxFromEntrypoint:ComposeboxEntrypoint::kOther
+                             withQuery:nil];
+  } else {
+    [_omniboxCommandsHandler focusOmnibox];
+  }
+}
+
 - (void)showComposeboxFromEntrypoint:(ComposeboxEntrypoint)entrypoint
                            withQuery:(NSString*)query {
   CHECK(base::FeatureList::IsEnabled(kComposeboxIOS));
@@ -2785,36 +2829,20 @@ const char kChromeAppStoreUrl[] =
   _browserOmniboxStateProvider.composeboxStateProvider = _composeboxCoordinator;
 }
 
-- (void)hideComposeboxImmediately:(BOOL)immediately {
-  [self hideComposeboxImmediately:immediately completion:nil];
+- (void)hideComposebox {
+  if (IsComposeboxIOSEnabled()) {
+    [self hideComposeboxImmediately:NO completion:nil];
+  } else {
+    [_omniboxCommandsHandler cancelOmniboxEdit];
+  }
 }
 
-- (void)hideComposeboxImmediately:(BOOL)immediately
-                       completion:(ProceduralBlock)completion {
-  if (!_composeboxCoordinator || immediately) {
-    [_composeboxCoordinator stop];
-    [self resetComposebox];
-    if (completion) {
-      completion();
-    }
-    return;
+- (void)hideComposeboxWithCompletion:(ProceduralBlock)completion {
+  if (IsComposeboxIOSEnabled()) {
+    [self hideComposeboxImmediately:NO completion:completion];
+  } else {
+    [_omniboxCommandsHandler cancelOmniboxEditWithCompletion:completion];
   }
-
-  __weak __typeof(self) weakSelf = self;
-  base::OnceClosure animationCompletion = base::BindOnce(^{
-    [weakSelf.composeboxCoordinator stopAnimatedWithCompletion:^{
-      [weakSelf resetComposebox];
-      if (completion) {
-        completion();
-      }
-    }];
-  });
-  // Stop the prototoype on the next run loop as this might be called while
-  // the prototype's omnibox is loading a query. TODO(crbug.com/454302076):
-  // Remove this workaround once the omnibox can be safely dismissed while
-  // openMatch.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, std::move(animationCompletion));
 }
 
 #pragma mark - ContextualPanelEntrypointIPHCommands
@@ -4581,8 +4609,9 @@ const char kChromeAppStoreUrl[] =
 }
 
 - (void)prepareForPageInfoPresentation {
-  // Dismiss the omnibox (if open).
-  [_omniboxCommandsHandler cancelOmniboxEdit];
+  id<BrowserCoordinatorCommands> browserCoordinatorHandler =
+      HandlerForProtocol(self.dispatcher, BrowserCoordinatorCommands);
+  [browserCoordinatorHandler hideComposebox];
 }
 
 - (CGPoint)convertToPresentationCoordinatesForOrigin:(CGPoint)origin {

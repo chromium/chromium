@@ -15,5 +15,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
   ]
 }

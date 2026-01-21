@@ -9,10 +9,12 @@
 #import "ios/chrome/browser/scanner/ui_bundled/scanner_presenting.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 @interface QRScannerLegacyCoordinator () <ScannerPresenting>
 
@@ -54,10 +56,11 @@
 - (void)showQRScanner {
   DCHECK(self.browser);
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-  id<OmniboxCommands> handler = HandlerForProtocol(dispatcher, OmniboxCommands);
   id<LoadQueryCommands> loadQueryHandler =
       HandlerForProtocol(dispatcher, LoadQueryCommands);
-  [handler cancelOmniboxEdit];
+  id<BrowserCoordinatorCommands> browserCoordinatorHandler =
+      HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
+  [browserCoordinatorHandler hideComposebox];
   self.viewController = [[QRScannerViewController alloc]
       initWithPresentationProvider:self
                        queryLoader:loadQueryHandler];

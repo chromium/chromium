@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
@@ -226,9 +227,9 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   // Cancel any omnibox editing.
   Browser* browser = self.browser;
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
-  id<OmniboxCommands> omniboxCommandsHandler =
-      HandlerForProtocol(dispatcher, OmniboxCommands);
-  [omniboxCommandsHandler cancelOmniboxEdit];
+  id<BrowserCoordinatorCommands> browserCoordinatorHandler =
+      HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
+  [browserCoordinatorHandler hideComposebox];
 
   // Early return if Lens is not available.
   if (!ios::provider::IsLensSupported()) {

@@ -9,7 +9,7 @@
 #import "base/time/time.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_reason.h"
-#import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/animation_util.h"
@@ -499,8 +499,8 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   for (LegacyToolbarButton* button in self.view.allButtons) {
     if (button != self.view.toolsMenuButton &&
         button != self.view.openNewTabButton) {
-      [button addTarget:self.omniboxCommandsHandler
-                    action:@selector(cancelOmniboxEdit)
+      [button addTarget:self.browserCoordinatorHandler
+                    action:@selector(hideComposebox)
           forControlEvents:UIControlEventTouchUpInside];
     }
     [button addTarget:self

@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 struct AutocompleteMatch;
-@protocol OmniboxCommands;
+@protocol BrowserCoordinatorCommands;
 @class OmniboxPedalData;
 @protocol QuickDeleteCommands;
 @protocol SceneCommands;
@@ -23,8 +23,9 @@ struct AutocompleteMatch;
 /// The endpoint that handles Actions and Pedals settings commands.
 @property(nonatomic, weak) id<SettingsCommands> settingsHandler;
 
-/// The endpoint that handles Omnibox commands.
-@property(nonatomic, weak) id<OmniboxCommands> omniboxHandler;
+/// The endpoint that handles BrowserCoordinator commands.
+@property(nonatomic, weak) id<BrowserCoordinatorCommands>
+    browserCoordinatorHandler;
 
 /// The endpoint that handles QuickDelete commands.
 @property(nonatomic, weak) id<QuickDeleteCommands> quickDeleteHandler;

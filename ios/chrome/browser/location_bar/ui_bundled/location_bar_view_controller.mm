@@ -405,7 +405,7 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 #pragma mark - LocationBarConsumer
 
 - (void)defocusOmnibox {
-  [self.dispatcher cancelOmniboxEdit];
+  [self.dispatcher hideComposebox];
 }
 
 - (void)setPlaceholderText:(NSString*)searchProviderName {
@@ -993,7 +993,7 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
         NSString* url = base::SysUTF8ToNSString(optionalURL.value().spec());
         dispatch_async(dispatch_get_main_queue(), ^{
           [self.dispatcher loadQuery:url immediately:YES];
-          [self.dispatcher cancelOmniboxEdit];
+          [self.dispatcher hideComposebox];
         });
       }));
 }
@@ -1011,7 +1011,7 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
         NSString* query = base::SysUTF16ToNSString(optionalText.value());
         dispatch_async(dispatch_get_main_queue(), ^{
           [self.dispatcher loadQuery:query immediately:YES];
-          [self.dispatcher cancelOmniboxEdit];
+          [self.dispatcher hideComposebox];
         });
       }));
 }

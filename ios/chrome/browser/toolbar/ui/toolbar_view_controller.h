@@ -49,6 +49,13 @@
 // Layout Guide Center.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
+// Triggers the animation for the slide in of the toolbar.
+- (void)triggerToolbarSlideInAnimation;
+
+// Moves the focus of VoiceOver to the location bar, without activating it if
+// this toolbar is visible.
+- (void)focusLocationBarForVoiceOver;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_TOOLBAR_VIEW_CONTROLLER_H_

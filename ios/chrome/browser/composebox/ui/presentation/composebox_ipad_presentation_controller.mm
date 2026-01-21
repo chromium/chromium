@@ -140,7 +140,7 @@ const CGFloat kComposeboxOmniboxLayoutGuideTopOffset = 20.0f;
 
 // Called when the scrim is tapped.
 - (void)dimmingViewTapped:(UITapGestureRecognizer*)sender {
-  [self.browserCoordinatorHandler hideComposeboxImmediately:NO];
+  [self.browserCoordinatorHandler hideComposebox];
 }
 
 @end

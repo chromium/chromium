@@ -25,6 +25,7 @@
 
 @class BookmarksCoordinator;
 @class BrowserContentViewController;
+@protocol BrowserCoordinatorCommands;
 @protocol BWGCommands;
 @protocol DefaultPromoNonModalPresentationDelegate;
 @protocol FindInPageCommands;
@@ -35,7 +36,6 @@ class FullscreenController;
 @class LayoutGuideCenter;
 @protocol LoadQueryCommands;
 @class NewTabPageCoordinator;
-@protocol OmniboxCommands;
 @protocol PopupMenuCommands;
 @class PopupMenuCoordinator;
 @class SafeAreaProvider;
@@ -46,6 +46,7 @@ class SnapshotBrowserAgent;
 class TabUsageRecorderBrowserAgent;
 @protocol TextZoomCommands;
 @class ToolbarAccessoryPresenter;
+@protocol ToolbarCommands;
 @class ToolbarCoordinator;
 class UrlLoadingBrowserAgent;
 @protocol VoiceSearchController;
@@ -59,10 +60,12 @@ typedef struct {
   SideSwipeCoordinator* sideSwipeCoordinator;
   BookmarksCoordinator* bookmarksCoordinator;
   raw_ptr<FullscreenController> fullscreenController;
+  id<BrowserCoordinatorCommands> browserCoordinatorHandler;
   id<TextZoomCommands> textZoomHandler;
   id<HelpCommands> helpHandler;
   id<PopupMenuCommands> popupMenuCommandsHandler;
   id<SceneCommands> sceneHandler;
+  id<ToolbarCommands> toolbarHandler;
   id<FindInPageCommands> findInPageCommandsHandler;
   id<BWGCommands> geminiHandler;
   LayoutGuideCenter* layoutGuideCenter;
@@ -127,9 +130,6 @@ typedef struct {
 
 // Command handler for load query commands.
 @property(nonatomic, weak) id<LoadQueryCommands> loadQueryCommandsHandler;
-
-// Command handler for omnibox commands.
-@property(nonatomic, weak) id<OmniboxCommands> omniboxCommandsHandler;
 
 // Command handler for Gemini commands.
 @property(nonatomic, weak) id<BWGCommands> geminiHandler;
