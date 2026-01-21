@@ -4944,7 +4944,7 @@
     },
     {
       name: "content-visibility",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
       field_template: "keyword",
       keywords: ["visible", "auto", "hidden"],
       default_value: "visible",

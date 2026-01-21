@@ -9953,14 +9953,6 @@ const CSSValue* ContentVisibility::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.ContentVisibility());
 }
 
-const CSSValue* ContentVisibility::ParseSingleValue(
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    CSSParserLocalContext& local_context) const {
-  return css_parsing_utils::ConsumeIdent<
-      CSSValueID::kVisible, CSSValueID::kAuto, CSSValueID::kHidden>(stream);
-}
-
 const CSSValue* TabSize::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,

@@ -1218,6 +1218,9 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kRowRuleVisibilityItems:
       return value_id == CSSValueID::kAll || value_id == CSSValueID::kAround ||
              value_id == CSSValueID::kBetween;
+    case CSSPropertyID::kContentVisibility:
+      return value_id == CSSValueID::kVisible ||
+             value_id == CSSValueID::kAuto || value_id == CSSValueID::kHidden;
     case CSSPropertyID::kDirection:
       return value_id == CSSValueID::kLtr || value_id == CSSValueID::kRtl;
     case CSSPropertyID::kDominantBaseline:
@@ -1742,6 +1745,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kColorRendering,
     CSSPropertyID::kColumnRuleBreak,
     CSSPropertyID::kColumnRuleVisibilityItems,
+    CSSPropertyID::kContentVisibility,
     CSSPropertyID::kContinue,
     CSSPropertyID::kDirection,
     CSSPropertyID::kDominantBaseline,
