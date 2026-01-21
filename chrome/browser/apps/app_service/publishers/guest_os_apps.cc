@@ -169,9 +169,6 @@ AppPtr GuestOSApps::CreateApp(
 
   if (generate_new_icon_key) {
     IconEffects icon_effects = IconEffects::kCrOsStandardIcon;
-    if (crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
-      icon_effects |= IconEffects::kGuestOsBadge;
-    }
     app->icon_key = IconKey(icon_effects);
   }
 

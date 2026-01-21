@@ -138,7 +138,6 @@ using CrostiniSuccessCallback =
 enum class RestartSource {
   kOther,
   kInstaller,
-  kMultiContainerCreation,
 };
 
 enum class InstallLinuxPackageProgressStatus {

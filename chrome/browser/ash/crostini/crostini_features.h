@@ -80,9 +80,6 @@ class CrostiniFeatures {
   // Returns whether we are running a baguette (containerless) crostini.
   virtual bool IsBaguette(Profile* profile) const;
 
-  // Returns true if user is allowed to use multiple (non-default) containers.
-  virtual bool IsMultiContainerAllowed(Profile*) const;
-
   // TODO(crbug.com/40647881): Move other functions from crostini_util to here.
 
  protected:

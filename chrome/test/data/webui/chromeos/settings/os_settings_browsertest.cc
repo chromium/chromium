@@ -352,11 +352,6 @@ IN_PROC_BROWSER_TEST_F(OSSettingsCrostiniTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsCrostiniTest,
-                       CrostiniPageCrostiniExtraContainersSubpage) {
-  RunSettingsTest("crostini_page/crostini_extra_containers_subpage_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsCrostiniTest,
                        CrostiniPageCrostiniPortForwarding) {
   RunSettingsTest("crostini_page/crostini_port_forwarding_test.js");
 }

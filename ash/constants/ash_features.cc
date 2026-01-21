@@ -467,9 +467,6 @@ BASE_FEATURE(kCrostiniGpuSupport, base::FEATURE_DISABLED_BY_DEFAULT);
 // Force enable recreating the LXD DB at LXD launch.
 BASE_FEATURE(kCrostiniResetLxdDb, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables experimental UI creating and managing multiple Crostini containers.
-BASE_FEATURE(kCrostiniMultiContainer, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables or disables Crostini Qt application IME support.
 BASE_FEATURE(kCrostiniQtImeSupport, base::FEATURE_DISABLED_BY_DEFAULT);
 

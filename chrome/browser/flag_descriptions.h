@@ -6810,11 +6810,6 @@ inline constexpr char kCrostiniContainerlessName[] =
 inline constexpr char kCrostiniContainerlessDescription[] =
     "Experimental support for Crostini without LXD containers (aka Baguette)";
 
-inline constexpr char kCrostiniMultiContainerName[] =
-    "Allow multiple Crostini containers";
-inline constexpr char kCrostiniMultiContainerDescription[] =
-    "Experimental UI for creating and managing multiple Crostini containers";
-
 inline constexpr char kCrostiniQtImeSupportName[] =
     "Crostini IME support for Qt applications";
 inline constexpr char kCrostiniQtImeSupportDescription[] =

@@ -517,9 +517,6 @@ void CrostiniExportImport::EnsureLxdStartedThenSharePath(
   auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile_);
   crostini::CrostiniManager::RestartOptions options;
   options.stop_after_lxd_available = true;
-  if (create_new_container) {
-    options.restart_source = crostini::RestartSource::kMultiContainerCreation;
-  }
   crostini_manager->RestartCrostiniWithOptions(
       container_id, std::move(options),
       base::BindOnce(&CrostiniExportImport::SharePath,

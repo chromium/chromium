@@ -390,9 +390,6 @@ class CrostiniManager::CrostiniRestarter
   const std::map<mojom::InstallerState, base::TimeDelta>
       stage_timeouts_already_installed_ = {
           {mojom::InstallerState::kInstallImageLoader, base::Minutes(5)},
-          // The configure step should only be reached during multi-container
-          // installation.
-          {mojom::InstallerState::kConfigureContainer, base::Seconds(5)},
       };
 
   raw_ptr<Profile> profile_;
@@ -461,9 +458,7 @@ void CrostiniManager::CrostiniRestarter::Restart() {
   // TODO(b/205650706): It is possible to invoke a CrostiniRestarter to install
   // Crostini without using the actual installer. We should handle these better.
   RestartSource restart_source = requests_[0].options.restart_source;
-  is_initial_install_ =
-      restart_source == RestartSource::kInstaller ||
-      restart_source == RestartSource::kMultiContainerCreation;
+  is_initial_install_ = restart_source == RestartSource::kInstaller;
 
   StartStage(mojom::InstallerState::kStart);
   if (ReturnEarlyIfNeeded()) {
@@ -1115,14 +1110,6 @@ void CrostiniManager::CrostiniRestarter::LogRestarterResult(
       base::UmaHistogramEnumeration("Crostini.RestarterResult.Installer",
                                     result);
       return;
-    case RestartSource::kMultiContainerCreation:
-      if (!is_initial_install_) {
-        LOG(WARNING) << "Restart request for multi-container creation was not "
-                        "first request.";
-      }
-      base::UmaHistogramEnumeration(
-          "Crostini.RestarterResult.MultiContainerCreation", result);
-      return;
     default:
       NOTREACHED();
   }
@@ -1179,9 +1166,8 @@ CrostiniManager::TerminaFlavor CrostiniManager::GetTerminaFlavor(
           termina_flavor = TerminaFlavor::UNKNOWN;
           break;
         } else {
-          LOG(WARNING)
-              << "Multiple crostini-style termina guests exist, we are likely "
-                 "in a multi-container state which will be deprecated soon.";
+          LOG(WARNING) << "Multiple crostini-style termina guests exist, this "
+                          "feature has been deprecated.";
         }
       }
       termina_flavor = TerminaFlavor::CROSTINI;
@@ -3930,18 +3916,6 @@ void CrostiniManager::RegisterContainerTerminal(
 
 void CrostiniManager::RegisterContainer(const guest_os::GuestId& container_id) {
   RegisterContainerTerminal(container_id);
-
-  if (CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_) &&
-      container_id != DefaultContainerId()) {
-    // TODO(b/217469540): The default container is still using sshfs for now,
-    // so start off using this approach only for non-default.
-    if (mount_provider_ids_.find(container_id) == mount_provider_ids_.end()) {
-      auto* registry = guest_os::GuestOsServiceFactory::GetForProfile(profile_)
-                           ->MountProviderRegistry();
-      mount_provider_ids_[container_id] = registry->Register(
-          std::make_unique<CrostiniMountProvider>(profile_, container_id));
-    }
-  }
 
   guest_os::GuestOsSharePathFactory::GetForProfile(profile_)->RegisterGuest(
       container_id);

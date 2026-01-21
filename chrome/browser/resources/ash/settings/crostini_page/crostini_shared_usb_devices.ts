@@ -7,8 +7,6 @@
  * shared usb devices subpage for Crostini.
  */
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-
 import type {ContainerInfo} from '../guest_os/guest_os_browser_proxy.js';
 import {SettingsGuestOsSharedUsbDevicesElement} from '../guest_os/guest_os_shared_usb_devices.js';
 
@@ -33,16 +31,6 @@ export class CrostiniSharedUsbDevicesElement extends
         type: Object,
         value() {
           return DEFAULT_CROSTINI_GUEST_ID;
-        },
-      },
-
-      /**
-       * Whether the guest OS hosts multiple containers.
-       */
-      hasContainers: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('showCrostiniExtraContainers');
         },
       },
     };

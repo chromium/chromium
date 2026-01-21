@@ -48,7 +48,6 @@ using ::chromeos::settings::mojom::kBruschettaManageSharedFoldersSubpagePath;
 using ::chromeos::settings::mojom::kBruschettaUsbPreferencesSubpagePath;
 using ::chromeos::settings::mojom::kCrostiniBackupAndRestoreSubpagePath;
 using ::chromeos::settings::mojom::kCrostiniDetailsSubpagePath;
-using ::chromeos::settings::mojom::kCrostiniExtraContainersSubpagePath;
 using ::chromeos::settings::mojom::kCrostiniManageSharedFoldersSubpagePath;
 using ::chromeos::settings::mojom::kCrostiniPortForwardingSubpagePath;
 using ::chromeos::settings::mojom::kCrostiniUsbPreferencesSubpagePath;
@@ -328,42 +327,6 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"crostiniMicDialogShutdownButton",
        IDS_SETTINGS_CROSTINI_MIC_DIALOG_SHUTDOWN_BUTTON},
       {"crostiniRemove", IDS_SETTINGS_CROSTINI_REMOVE},
-      {"crostiniExtraContainersLabel",
-       IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_LABEL},
-      {"crostiniExtraContainersDescription",
-       IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_DESCRIPTION},
-      {"crostiniExtraContainersCreate",
-       IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE},
-      {"crostiniExtraContainersDelete",
-       IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_DELETE},
-      {"crostiniExtraContainersStop",
-       IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_STOP},
-      {"crostiniExtraContainersTableTitle",
-       IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_TABLE_TITLE},
-      {"crostiniExtraContainersVmNameLabel",
-       IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_VM_NAME_LABEL},
-      {"crostiniExtraContainersContainerNameLabel",
-       IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CONTAINER_NAME_LABEL},
-      {"crostiniExtraContainersContainerIpLabel",
-       IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CONTAINER_IP_LABEL},
-      {"crostiniExtraContainersShareMicrophone",
-       IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_SHARE_MICROPHONE},
-      {"crostiniExtraContainersAppBadgeColor",
-       IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_APP_BADGE_COLOR},
-      {"crostiniExtraContainersCreateDialogTitle",
-       IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_TITLE},
-      {"crostiniExtraContainersCreateDialogContainerExistsError",
-       IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_CONTAINER_EXISTS_ERROR},
-      {"crostiniExtraContainersCreateDialogEmptyContainerNameError",
-       IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_EMPTY_CONTAINER_NAME_ERROR},
-      {"crostiniExtraContainersCreateDialogImageServer",
-       IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_IMAGE_SERVER},
-      {"crostiniExtraContainersCreateDialogImageAlias",
-       IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_IMAGE_ALIAS},
-      {"crostiniExtraContainersCreateDialogAddContainerFile",
-       IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_ADD_CONTAINER_LABEL},
-      {"crostiniExtraContainersCreateDialogAddContainerButtonLabel",
-       IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_ADD_CONTAINER_BUTTON_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -469,8 +432,6 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("showCrostiniPortForwarding",
                           IsPortForwardingAllowed());
   html_source->AddBoolean("isBaguette", IsBaguette());
-  html_source->AddBoolean("showCrostiniExtraContainers",
-                          IsMultiContainerAllowed());
   html_source->AddBoolean("isOwnerProfile",
                           ProfileHelper::IsOwnerProfile(profile_));
   html_source->AddBoolean("isEnterpriseManaged",
@@ -562,14 +523,6 @@ void CrostiniSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                                    mojom::SearchResultDefaultRank::kMedium,
                                    mojom::kCrostiniPortForwardingSubpagePath);
 
-  // Extra containers.
-  generator->RegisterNestedSubpage(IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_LABEL,
-                                   mojom::Subpage::kCrostiniExtraContainers,
-                                   mojom::Subpage::kCrostiniDetails,
-                                   mojom::SearchResultIcon::kPenguin,
-                                   mojom::SearchResultDefaultRank::kMedium,
-                                   mojom::kCrostiniExtraContainersSubpagePath);
-
   // Bruschetta subpage.
   generator->RegisterTopLevelSubpage(IDS_SETTINGS_BRUSCHETTA_LABEL,
                                      mojom::Subpage::kBruschettaDetails,
@@ -606,10 +559,6 @@ bool CrostiniSection::IsBaguette() const {
   return crostini::CrostiniFeatures::Get()->IsBaguette(profile_);
 }
 
-bool CrostiniSection::IsMultiContainerAllowed() const {
-  return crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_);
-}
-
 void CrostiniSection::UpdateSearchTags() {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
 
@@ -636,8 +585,6 @@ void CrostiniSection::UpdateSearchTags() {
   }
 
   updater.AddSearchTags(GetCrostiniDiskResizingSearchConcepts());
-
-  // TODO(crbug:1261319): search concepts for extras containers.
 }
 
 }  // namespace ash::settings

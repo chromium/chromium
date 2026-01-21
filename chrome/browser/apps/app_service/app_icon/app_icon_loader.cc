@@ -421,18 +421,6 @@ void AppIconLoader::ApplyBadges(IconEffects icon_effects,
                                 const std::optional<std::string>& app_id,
                                 IconValuePtr iv) {
   TRACE_EVENT0("ui", "AppIconLoader::ApplyBadges");
-#if BUILDFLAG(IS_CHROMEOS)
-  if (icon_effects & apps::IconEffects::kGuestOsBadge) {
-    CHECK(profile_ != nullptr && app_id.has_value());
-    auto* registry =
-        guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_);
-    if (registry) {
-      registry->ApplyContainerBadge(app_id, &iv->uncompressed);
-    }
-    std::move(callback_).Run(std::move(iv));
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   const bool rounded_corners = icon_effects & apps::IconEffects::kRoundCorners;
 

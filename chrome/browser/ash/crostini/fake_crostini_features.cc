@@ -97,9 +97,4 @@ bool FakeCrostiniFeatures::IsPortForwardingAllowed(Profile* profile) const {
   return original_features_->IsPortForwardingAllowed(profile);
 }
 
-bool FakeCrostiniFeatures::IsMultiContainerAllowed(Profile* profile) const {
-  return multi_container_allowed_.value_or(
-      original_features_->IsMultiContainerAllowed(profile));
-}
-
 }  // namespace crostini

@@ -129,7 +129,7 @@ enum Subpage {
   // Note: Value 804 was for deprecated kCrostiniDevelopAndroidApps.
   // Do not reuse.
   kCrostiniPortForwarding = 805,
-  kCrostiniExtraContainers = 806,
+  // Note: Value 806 was for deprecated. Do not reuse.
   kBruschettaDetails = 850,
   kBruschettaUsbPreferences = 851,
   kBruschettaManageSharedFolders = 852,
@@ -281,7 +281,6 @@ const string kCrostiniManageSharedFoldersSubpagePath = "crostini/sharedPaths";
 const string kCrostiniUsbPreferencesSubpagePath = "crostini/sharedUsbDevices";
 const string kCrostiniBackupAndRestoreSubpagePath = "crostini/exportImport";
 const string kCrostiniPortForwardingSubpagePath = "crostini/portForwarding";
-const string kCrostiniExtraContainersSubpagePath = "crostini/extraContainers";
 const string kBruschettaDetailsSubpagePath = "bruschetta/details";
 const string kBruschettaUsbPreferencesSubpagePath =
      "bruschetta/sharedUsbDevices";

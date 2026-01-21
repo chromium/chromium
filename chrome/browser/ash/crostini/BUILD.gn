@@ -30,8 +30,6 @@ static_library("crostini") {
     "crostini_export_import_status_tracker.h",
     "crostini_features.cc",
     "crostini_features.h",
-    "crostini_file_selector.cc",
-    "crostini_file_selector.h",
     "crostini_force_close_watcher.cc",
     "crostini_force_close_watcher.h",
     "crostini_installer.cc",

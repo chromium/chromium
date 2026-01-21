@@ -69,7 +69,6 @@ suite('<settings-crostini-subpage> for baguette', () => {
       showCrostiniExportImport: true,
       showCrostiniPortForwarding: true,
       showCrostiniDiskResize: true,
-      showCrostiniExtraContainers: false,
     });
 
     crostiniBrowserProxy = new TestCrostiniBrowserProxy();
@@ -104,8 +103,6 @@ suite('<settings-crostini-subpage> for baguette', () => {
         subpage.shadowRoot!.querySelector('#crostini-mic-permission-toggle')));
     assertTrue(
         isVisible(subpage.shadowRoot!.querySelector('#crostiniDiskResizeRow')));
-    assertFalse(isVisible(
-        subpage.shadowRoot!.querySelector('#crostiniExtraContainersRow')));
   });
 });
 
@@ -152,7 +149,6 @@ suite('<settings-crostini-subpage>', () => {
       showCrostiniExportImport: true,
       showCrostiniPortForwarding: true,
       showCrostiniDiskResize: true,
-      showCrostiniExtraContainers: true,
     });
 
     crostiniBrowserProxy = new TestCrostiniBrowserProxy();
@@ -188,8 +184,6 @@ suite('<settings-crostini-subpage>', () => {
           '#crostini-mic-permission-toggle')));
       assertTrue(isVisible(
           subpage.shadowRoot!.querySelector('#crostiniDiskResizeRow')));
-      assertTrue(isVisible(
-          subpage.shadowRoot!.querySelector('#crostiniExtraContainersRow')));
     });
 
     test('Shared paths', () => {

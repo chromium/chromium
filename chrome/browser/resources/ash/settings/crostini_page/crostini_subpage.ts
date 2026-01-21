@@ -79,13 +79,6 @@ export class SettingsCrostiniSubpageElement extends
         },
       },
 
-      showCrostiniExtraContainers_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('showCrostiniExtraContainers');
-        },
-      },
-
       showDiskResizeConfirmationDialog_: {
         type: Boolean,
         value: false,
@@ -152,7 +145,6 @@ export class SettingsCrostiniSubpageElement extends
   private installerShowing_: boolean;
   private isDiskUserChosenSize_: boolean;
   private readonly showCrostiniExportImport_: boolean;
-  private readonly showCrostiniExtraContainers_: boolean;
   private showCrostiniMicPermissionDialog_: boolean;
   private readonly showCrostiniPortForwarding_: boolean;
   private showDiskResizeConfirmationDialog_: boolean;
@@ -192,8 +184,6 @@ export class SettingsCrostiniSubpageElement extends
     this.addFocusConfig(r.CROSTINI_EXPORT_IMPORT, '#crostiniExportImportRow');
     this.addFocusConfig(
         r.CROSTINI_PORT_FORWARDING, '#crostiniPortForwardingRow');
-    this.addFocusConfig(
-        r.CROSTINI_EXTRA_CONTAINERS, '#crostiniExtraContainersRow');
   }
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
@@ -311,10 +301,6 @@ export class SettingsCrostiniSubpageElement extends
 
   private onPortForwardingClick_(): void {
     Router.getInstance().navigateTo(routes.CROSTINI_PORT_FORWARDING);
-  }
-
-  private onExtraContainersClick_(): void {
-    Router.getInstance().navigateTo(routes.CROSTINI_EXTRA_CONTAINERS);
   }
 
   private getMicToggle_(): SettingsToggleButtonElement {

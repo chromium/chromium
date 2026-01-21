@@ -18,7 +18,6 @@ import '/strings.m.js';
 /** Subpages */
 import './crostini_page/bruschetta_subpage.js';
 import './crostini_page/crostini_export_import.js';
-import './crostini_page/crostini_extra_containers.js';
 import './crostini_page/crostini_port_forwarding.js';
 import './crostini_page/crostini_shared_usb_devices.js';
 import './crostini_page/crostini_subpage.js';
@@ -123,8 +122,6 @@ export type {CrostiniBrowserProxy, CrostiniDiskInfo, CrostiniPortActiveSetting, 
 export {CrostiniBrowserProxyImpl, CrostiniPortProtocol, VmType} from './crostini_page/crostini_browser_proxy.js';
 export {SettingsCrostiniDiskResizeDialogElement} from './crostini_page/crostini_disk_resize_dialog.js';
 export {SettingsCrostiniExportImportElement} from './crostini_page/crostini_export_import.js';
-export {ExtraContainersElement} from './crostini_page/crostini_extra_containers.js';
-export {ExtraContainersCreateDialog} from './crostini_page/crostini_extra_containers_create_dialog.js';
 export {CrostiniPortForwardingElement} from './crostini_page/crostini_port_forwarding.js';
 export {CrostiniSettingsCardElement} from './crostini_page/crostini_settings_card.js';
 export {CrostiniSharedUsbDevicesElement} from './crostini_page/crostini_shared_usb_devices.js';

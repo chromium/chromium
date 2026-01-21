@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crostini/crostini_export_import.h"
-#include "chrome/browser/ash/crostini/crostini_file_selector.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_port_forwarder.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
@@ -137,32 +136,10 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
   void FetchCanChangeAdbSideloading();
   // Callback of FetchCanChangeAdbSideloading.
   void OnCanChangeArcAdbSideloading(bool can_change_arc_adb_sideloading);
-  // Handle a request for creating a container
-  void HandleCreateContainer(const base::Value::List& args);
-  // Callback of HandleCreateContainer
-  void OnContainerCreated(guest_os::GuestId container_id,
-                          crostini::CrostiniResult result);
-  // Handle a request for deleting a container
-  void HandleDeleteContainer(const base::Value::List& args);
   // Handle a request for the running info of all known containers
   void HandleRequestContainerInfo(const base::Value::List& args);
   // Handle a request to set the badge color for a container
   void HandleSetContainerBadgeColor(const base::Value::List& args);
-  // Handle a request to stop a running lxd container
-  void HandleStopContainer(const base::Value::List& args);
-
-  // Handle a request to open a file selector
-  void HandleOpenContainerFileSelector(const base::Value::List& args);
-  // Callback for CrostiniFileSelector
-  void OnContainerFileSelected(std::string callback_id,
-                               const base::FilePath& path);
-
-  // Handle a request for the shared vmdevice info of all known containers
-  void HandleRequestSharedVmDevices(const base::Value::List& args);
-  // Handle a request to query the sharing status of a VmDevice
-  void HandleIsVmDeviceShared(const base::Value::List& args);
-  // Handle a request to set the sharing status of a VmDevice
-  void HandleSetVmDeviceShared(const base::Value::List& args);
   // Handle a request to show the installer for Bruschetta
   void HandleRequestBruschettaInstallerView(const base::Value::List& args);
   // Handle a request to start uninstalling Bruschetta
@@ -171,7 +148,6 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
   raw_ptr<Profile> profile_;
   base::CallbackListSubscription adb_sideloading_device_policy_subscription_;
   PrefChangeRegistrar pref_change_registrar_;
-  std::unique_ptr<crostini::CrostiniFileSelector> file_selector_;
 
   // |handler_weak_ptr_factory_| is used for callbacks handling messages from
   // the WebUI page, and certain observers. These callbacks usually have the

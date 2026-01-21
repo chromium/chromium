@@ -688,22 +688,6 @@ void GuestOsRegistryService::LoadIcon(const std::string& app_id,
                                       bool allow_placeholder_icon,
                                       int fallback_icon_resource_id,
                                       apps::LoadIconCallback callback) {
-  // Add container-badging to all crostini apps except the terminal, which is
-  // shared between containers. This is part of the multi-container UI, so is
-  // guarded by a flag.
-  if (crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
-    auto reg = GetRegistration(app_id);
-    if (reg && reg->VmType() == VmType::TERMINA) {
-      callback = base::BindOnce(
-          &GuestOsRegistryService::ApplyContainerBadgeWithCallback,
-          weak_ptr_factory_.GetWeakPtr(),
-          crostini::GetContainerBadgeColor(
-              profile_, guest_os::GuestId(reg->VmType(), reg->VmName(),
-                                          reg->ContainerName())),
-          std::move(callback));
-    }
-  }
-
   if (icon_key.resource_id != apps::IconKey::kInvalidResourceId) {
     // The icon is a resource built into the Chrome OS binary.
     constexpr bool is_placeholder_icon = false;
@@ -739,59 +723,6 @@ void GuestOsRegistryService::LoadIcon(const std::string& app_id,
   apps::LoadIconFromFileWithFallback(
       icon_type, size_hint_in_dip, GetIconPath(app_id, scale_factor),
       icon_effects, std::move(callback), std::move(transcode_svg_fallback));
-}
-
-void GuestOsRegistryService::ApplyContainerBadge(
-    const std::optional<std::string>& app_id,
-    gfx::ImageSkia* image_skia) {
-  if (crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
-    auto reg = GetRegistration(*app_id);
-    if (reg && reg->VmType() == guest_os::VmType::TERMINA) {
-      ApplyContainerBadgeForImageSkiaIcon(
-          crostini::GetContainerBadgeColor(
-              profile_, guest_os::GuestId(reg->VmType(), reg->VmName(),
-                                          reg->ContainerName())),
-          image_skia);
-    }
-  }
-}
-
-void GuestOsRegistryService::ApplyContainerBadgeForImageSkiaIcon(
-    SkColor badge_color,
-    gfx::ImageSkia* icon_out) {
-  gfx::ImageSkia badge_mask =
-      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-          IDR_ICON_BADGE_MASK);
-
-  if (badge_mask.size() != icon_out->size()) {
-    badge_mask = gfx::ImageSkiaOperations::CreateResizedImage(
-        badge_mask, skia::ImageOperations::RESIZE_BEST, icon_out->size());
-  }
-  badge_mask =
-      gfx::ImageSkiaOperations::CreateColorMask(badge_mask, badge_color);
-  *icon_out =
-      gfx::ImageSkiaOperations::CreateSuperimposedImage(*icon_out, badge_mask);
-}
-
-void GuestOsRegistryService::ApplyContainerBadgeWithCallback(
-    SkColor badge_color,
-    apps::LoadIconCallback callback,
-    apps::IconValuePtr icon) {
-  gfx::ImageSkia badge_mask =
-      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-          IDR_ICON_BADGE_MASK);
-
-  if (badge_mask.size() != icon->uncompressed.size()) {
-    badge_mask = gfx::ImageSkiaOperations::CreateResizedImage(
-        badge_mask, skia::ImageOperations::RESIZE_BEST,
-        icon->uncompressed.size());
-  }
-  badge_mask =
-      gfx::ImageSkiaOperations::CreateColorMask(badge_mask, badge_color);
-  icon->uncompressed = gfx::ImageSkiaOperations::CreateSuperimposedImage(
-      icon->uncompressed, badge_mask);
-
-  std::move(callback).Run(std::move(icon));
 }
 
 void GuestOsRegistryService::TranscodeIconFromSvg(

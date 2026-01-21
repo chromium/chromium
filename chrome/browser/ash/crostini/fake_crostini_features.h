@@ -33,7 +33,6 @@ class FakeCrostiniFeatures : public CrostiniFeatures {
       Profile* profile,
       CanChangeAdbSideloadingCallback callback) const override;
   bool IsPortForwardingAllowed(Profile* profile) const override;
-  bool IsMultiContainerAllowed(Profile* profile) const override;
 
   void SetAll(bool flag);
   void ClearAll();

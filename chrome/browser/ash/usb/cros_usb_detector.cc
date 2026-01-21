@@ -182,16 +182,7 @@ class CrosUsbNotificationDelegate
       LOG(WARNING)
           << "Share USB device with [some guest] notification was clicked";
       if (vm_names_[*button_index] == crostini::kCrostiniDefaultVmName) {
-        // When multi-container is enabled, show the settings page instead of
-        // directly attaching the device to the VM. Otherwise, the device is
-        // attached to the default container in the VM.
-        if (crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(
-                profile())) {
-          HandleShowSettings(
-              chromeos::settings::mojom::kCrostiniUsbPreferencesSubpagePath);
-        } else {
-          HandleConnectToGuest(crostini::DefaultContainerId());
-        }
+        HandleConnectToGuest(crostini::DefaultContainerId());
       } else {
         HandleConnectToGuest(vm_names_[*button_index]);
       }

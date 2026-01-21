@@ -47,7 +47,6 @@ class CrostiniSection : public OsSettingsSection {
   bool IsExportImportAllowed() const;
   bool IsPortForwardingAllowed() const;
   bool IsBaguette() const;
-  bool IsMultiContainerAllowed() const;
 
   void UpdateSearchTags();
 

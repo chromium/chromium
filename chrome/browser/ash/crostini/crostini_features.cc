@@ -221,9 +221,4 @@ bool CrostiniFeatures::IsBaguette(Profile* profile) const {
   return is_baguette;
 }
 
-bool CrostiniFeatures::IsMultiContainerAllowed(Profile* profile) const {
-  return g_crostini_features->IsAllowedNow(profile) &&
-         base::FeatureList::IsEnabled(ash::features::kCrostiniMultiContainer);
-}
-
 }  // namespace crostini
