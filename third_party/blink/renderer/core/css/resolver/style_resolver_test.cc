@@ -679,6 +679,32 @@ TEST_F(StyleResolverTest, FetchForAtPage) {
   EXPECT_FALSE(To<CSSImageValue>(bg_img_list->Item(0)).IsCachePending());
 }
 
+TEST_F(StyleResolverTest, SingleAxisAdjustOverflow) {
+  auto run_test = [&](String overflow_style, EOverflow expected_x,
+                      EOverflow expected_y) {
+    StringBuilder builder;
+    builder.Append("<div id='target' style='overflow-x: ");
+    builder.Append(overflow_style);
+    builder.Append("; overflow-y: scroll;'></div>");
+    SetBodyInnerHTML(builder.ToString());
+    const auto* style = StyleForId("target");
+    EXPECT_EQ(expected_x, style->OverflowX());
+    EXPECT_EQ(expected_y, style->OverflowY());
+  };
+
+  {
+    ScopedSingleAxisScrollContainersForTest single_axis_feature(false);
+    run_test("clip", EOverflow::kHidden, EOverflow::kScroll);
+    run_test("visible", EOverflow::kAuto, EOverflow::kScroll);
+  }
+
+  {
+    ScopedSingleAxisScrollContainersForTest single_axis_feature(true);
+    run_test("clip", EOverflow::kClip, EOverflow::kScroll);
+    run_test("visible", EOverflow::kVisible, EOverflow::kScroll);
+  }
+}
+
 TEST_F(StyleResolverTest, NoFetchForAtPage) {
   // The list-style-image property doesn't apply in an @page context, since
   // it's not in https://drafts.csswg.org/css-page-3/#page-property-list
