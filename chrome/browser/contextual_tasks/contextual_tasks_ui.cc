@@ -329,7 +329,7 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddBoolean("composeboxShowLensSearchChip", false);
   source->AddBoolean("composeboxShowRecentTabChip", false);
   source->AddBoolean("composeboxShowSubmit", true);
-  source->AddBoolean("composeboxContextDragAndDropEnabled", false);
+  source->AddBoolean("composeboxContextDragAndDropEnabled", true);
   source->AddBoolean(
       "steadyComposeboxShowVoiceSearch",
       contextual_tasks::GetIsExpandedComposeboxVoiceSearchEnabled());
