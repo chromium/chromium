@@ -1280,6 +1280,8 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
   map->Add<blink::mojom::DedicatedWorkerHostFactory>(
       base::BindRepeating(&DedicatedWorkerHost::CreateNestedDedicatedWorker,
                           base::Unretained(host)));
+  map->Add<blink::mojom::LockManager>(base::BindRepeating(
+      &DedicatedWorkerHost::CreateLockManager, base::Unretained(host)));
 
   map->Add<blink::mojom::FileUtilitiesHost>(
       base::BindRepeating(FileUtilitiesHostImpl::Create,
@@ -1359,8 +1361,6 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
   map->Add<blink::mojom::IDBFactory>(
       BindWorkerReceiverForStorageKeyAndBucketContext(
           &RenderProcessHostImpl::BindIndexedDB, host));
-  map->Add<blink::mojom::LockManager>(BindWorkerReceiverForStorageKey(
-      &RenderProcessHostImpl::CreateLockManager, host));
   map->Add<blink::mojom::QuotaManagerHost>(BindWorkerReceiverForStorageKey(
       &RenderProcessHostImpl::BindQuotaManagerHost, host));
   map->Add<blink::mojom::NotificationService>(BindNotificationService(
@@ -1477,6 +1477,8 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
                           base::Unretained(GetContentClient()->browser()),
                           host->GetProcessHost()->GetBrowserContext(),
                           base::Unretained(host), /*rfh=*/nullptr));
+  map->Add<blink::mojom::LockManager>(base::BindRepeating(
+      &SharedWorkerHost::CreateLockManager, base::Unretained(host)));
 
 #if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
   if (base::FeatureList::IsEnabled(blink::features::kComputePressure)) {
@@ -1536,8 +1538,6 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
   map->Add<blink::mojom::IDBFactory>(
       BindWorkerReceiverForStorageKeyAndBucketContext(
           &RenderProcessHostImpl::BindIndexedDB, host));
-  map->Add<blink::mojom::LockManager>(BindWorkerReceiverForStorageKey(
-      &RenderProcessHostImpl::CreateLockManager, host));
   map->Add<blink::mojom::QuotaManagerHost>(BindWorkerReceiverForStorageKey(
       &RenderProcessHostImpl::BindQuotaManagerHost, host));
   map->Add<blink::mojom::NotificationService>(BindNotificationService(

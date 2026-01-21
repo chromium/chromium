@@ -567,6 +567,12 @@ void SharedWorkerHost::BindCacheStorageInternal(
       std::move(dip_reporter), bucket_locator, std::move(receiver));
 }
 
+void SharedWorkerHost::CreateLockManager(
+    mojo::PendingReceiver<blink::mojom::LockManager> receiver) {
+  static_cast<StoragePartitionImpl*>(GetProcessHost()->GetStoragePartition())
+      ->BindLockManager(GetStorageKey(), token().value(), std::move(receiver));
+}
+
 void SharedWorkerHost::GetSandboxedFileSystemForBucket(
     const storage::BucketInfo& bucket,
     const std::vector<std::string>& directory_path_components,

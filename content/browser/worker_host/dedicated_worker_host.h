@@ -165,6 +165,8 @@ class CONTENT_EXPORT DedicatedWorkerHost final
       mojo::PendingReceiver<blink::mojom::BlobURLStore> receiver);
   void CreateBucketManagerHost(
       mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver);
+  void CreateLockManager(
+      mojo::PendingReceiver<blink::mojom::LockManager> receiver);
   void GetFileSystemAccessManager(
       mojo::PendingReceiver<blink::mojom::FileSystemAccessManager> receiver);
 

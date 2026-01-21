@@ -199,6 +199,13 @@ void DedicatedWorkerHost::CreateContentSecurityNotifier(
       std::move(receiver));
 }
 
+void DedicatedWorkerHost::CreateLockManager(
+    mojo::PendingReceiver<blink::mojom::LockManager> receiver) {
+  static_cast<StoragePartitionImpl*>(GetProcessHost()->GetStoragePartition())
+      ->BindLockManager(GetStorageKey(), GetToken().value(),
+                        std::move(receiver));
+}
+
 void DedicatedWorkerHost::OnMojoDisconnect() {
   // This function is known to be heap allocation heavy and performance
   // critical. Extra memory safety checks can introduce regression
