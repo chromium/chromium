@@ -2885,16 +2885,9 @@ Google Chrome is unable to recover your settings.
 
       <!-- Memory Saver IPH strings -->
       <if expr="not is_android">
-        <if expr="use_titlecase">
-          <message name="IDS_MEMORY_SAVER_MODE_PROMO_TITLE" desc="In Title Case: The title for the Memory Saver mode in-product promo bubble">
-            Make Chrome Faster
-          </message>
-        </if>
-        <if expr="not use_titlecase">
-          <message name="IDS_MEMORY_SAVER_MODE_PROMO_TITLE" desc="The title for the Memory Saver mode in-product promo bubble">
-            Make Chrome faster
-          </message>
-        </if>
+        <message name="IDS_MEMORY_SAVER_MODE_PROMO_TITLE" desc="The title for the Memory Saver mode in-product promo bubble">
+          Make Chrome faster
+        </message>
       </if>
 
       <!-- Performance Intervention Dialog strings -->
