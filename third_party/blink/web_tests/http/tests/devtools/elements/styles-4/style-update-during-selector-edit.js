@@ -44,7 +44,9 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   }
 
   function step1() {
-    TestRunner.addSniffer(Elements.StylesSidebarPane.StylesSidebarPane.prototype, 'doUpdate', rebuildUpdate);
+    TestRunner.addSniffer(
+        Elements.StylesSidebarPane.StylesSidebarPane.prototype, 'performUpdate',
+        rebuildUpdate);
     TestRunner.domModel.addEventListener(SDK.DOMModel.Events.AttrModified, attributeChanged, this);
     // Click "Add new rule".
     Elements.ElementsPanel.ElementsPanel.instance()

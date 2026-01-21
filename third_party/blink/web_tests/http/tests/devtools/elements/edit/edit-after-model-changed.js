@@ -22,12 +22,14 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
   const treeElement = section.addNewBlankProperty(0);
 
   // Flush the pane's throttler and then stall it.
-  const originalDoUpdate = () => treeElement.parentPane().doUpdate();
-  await treeElement.parentPane().update();
+  const originalDoUpdate = () => treeElement.parentPane().performUpdate();
+  treeElement.parentPane().requestUpdate();
 
   // Trigger a model change that will schedule a pane update.
   // Once editing begins, we expect any scheduled updates to be suppressed.
-  TestRunner.addSniffer(ElementsModule.StylesSidebarPane.StylesSidebarPane.prototype, 'doUpdate', onUpdateScheduled);
+  TestRunner.addSniffer(
+      ElementsModule.StylesSidebarPane.StylesSidebarPane.prototype,
+      'performUpdate', onUpdateScheduled);
   treeElement.applyStyleText('color: red');
   treeElement.startEditingName();
 
