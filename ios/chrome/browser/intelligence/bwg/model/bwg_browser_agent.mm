@@ -265,9 +265,16 @@ void BwgBrowserAgent::PresentFloatyWithPendingContext(
     UIViewController* base_view_controller,
     std::unique_ptr<optimization_guide::proto::PageContext> page_context,
     gemini::EntryPoint entry_point) {
-  PresentFloatyWithState(
-      base_view_controller, std::move(page_context),
-      ios::provider::BWGPageContextComputationState::kPending, entry_point);
+  web::WebState* active_web_state =
+      browser_->GetWebStateList()->GetActiveWebState();
+  BwgTabHelper* tab_helper = GetActiveTabHelper(active_web_state);
+  if (!tab_helper) {
+    return;
+  }
+  GeminiPageContext* gemini_page_context = tab_helper->GetPartialPageContext();
+  PresentFloatyWithState(base_view_controller, std::move(page_context),
+                         gemini_page_context.BWGPageContextComputationState,
+                         entry_point);
 }
 
 void BwgBrowserAgent::PresentFloatyWithPendingContext(
@@ -276,9 +283,11 @@ void BwgBrowserAgent::PresentFloatyWithPendingContext(
     UIImage* image_attachment) {
   web::WebState* active_web_state =
       browser_->GetWebStateList()->GetActiveWebState();
-  if (!active_web_state) {
+  BwgTabHelper* tab_helper = GetActiveTabHelper(active_web_state);
+  if (!tab_helper) {
     return;
   }
+  GeminiPageContext* gemini_page_context = tab_helper->GetPartialPageContext();
 
   std::unique_ptr<optimization_guide::proto::PageContext> partial_page_context =
       std::make_unique<optimization_guide::proto::PageContext>();
@@ -286,19 +295,26 @@ void BwgBrowserAgent::PresentFloatyWithPendingContext(
   partial_page_context->set_title(
       base::UTF16ToUTF8(active_web_state->GetTitle()));
 
-  PresentFloatyWithState(
-      base_view_controller, std::move(partial_page_context),
-      ios::provider::BWGPageContextComputationState::kPending, entry_point,
-      image_attachment);
+  PresentFloatyWithState(base_view_controller, std::move(partial_page_context),
+                         gemini_page_context.BWGPageContextComputationState,
+                         entry_point, image_attachment);
 }
 
 void BwgBrowserAgent::UpdateFloatyPageContext(
     base::expected<std::unique_ptr<optimization_guide::proto::PageContext>,
                    PageContextWrapperError> expected_page_context) {
+  web::WebState* active_web_state =
+      browser_->GetWebStateList()->GetActiveWebState();
+  BwgTabHelper* tab_helper = GetActiveTabHelper(active_web_state);
+  if (!tab_helper) {
+    return;
+  }
+
   GeminiPageContext* gemini_page_context = [[GeminiPageContext alloc] init];
   gemini_page_context.BWGPageContextComputationState =
-      ios::provider::BWGPageContextComputationState::kSuccess;
-
+      tab_helper->GetIsGeminiEligible().value_or(true)
+          ? ios::provider::BWGPageContextComputationState::kSuccess
+          : ios::provider::BWGPageContextComputationState::kBlocked;
   std::unique_ptr<optimization_guide::proto::PageContext> page_context_proto =
       nullptr;
   if (expected_page_context.has_value()) {
