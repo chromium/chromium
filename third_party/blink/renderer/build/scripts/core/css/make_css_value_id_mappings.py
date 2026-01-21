@@ -140,7 +140,7 @@ class CSSValueIDMappingsWriter(make_style_builder.StyleBuilderWriter):
                     'mapping':
                     [enum_key_for_css_keyword(k) for k in property_.keywords],
                 }
-            elif property_.field_template == 'keyword':
+            elif property_.field_template in ('keyword', 'keyword_custom'):
                 enum_pair_list, enum_segment, p_segment = _find_enum_longest_continuous_segment(
                     property_, name_to_position_dictionary)
                 mappings[property_.type_name] = {

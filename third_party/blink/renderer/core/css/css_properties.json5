@@ -250,7 +250,14 @@
         // Field is stored as an enum and has a initial/getter/setter/resetter.
         // If include_paths is empty, we would also generate the corresponding
         // enum definition in ComputedStyleConstants.h.
+        // "keyword" properties are required to be parsed in
+        // CSSParserFastPaths.
+        // Use "keyword_custom" if a custom ParseSingleValue implementation is
+        // necessary.
         "keyword",
+        // Same as "keyword" except the implementation is allowed to implement a
+        // custom ParseSingleValue. See Cursor and RubyPosition.
+        "keyword_custom",
         // Field can take on any subset of values from a list of keywords.
         "multi_keyword",
         // Semantically equivalent to keyword, but the type is represented as a
@@ -3158,7 +3165,7 @@
       field_group: "inherited",
       inherited: true,
       independent: true,
-      field_template: "keyword",
+      field_template: "keyword_custom",
       keywords: [
         "auto", "default", "none", "context-menu", "help", "pointer",
         "progress", "wait", "cell", "crosshair", "text", "vertical-text",
@@ -7168,7 +7175,7 @@
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       inherited: true,
       field_group: "*",
-      field_template: "keyword",
+      field_template: "keyword_custom",
       keywords: ["over", "under"],
       default_value: "over",
       type_name: "RubyPosition",

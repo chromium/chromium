@@ -218,8 +218,8 @@ def _create_enums(properties):
     for property_ in properties:
         # Only generate enums for keyword properties that do not
         # require includes.
-        if (property_.field_template in ('keyword', 'multi_keyword',
-                                         'bitset_keyword')
+        if (property_.field_template in ('keyword', 'keyword_custom',
+                                         'multi_keyword', 'bitset_keyword')
                 and len(property_.include_paths) == 0):
             if property_.field_template == 'multi_keyword':
                 set_type = 'multi'
@@ -252,7 +252,7 @@ def _create_enums(properties):
 
 
 def _find_size_for_property(property_):
-    if property_.field_template == 'keyword':
+    if property_.field_template in ('keyword', 'keyword_custom'):
         assert property_.field_size is None, \
             ("'" + property_.name + "' is a keyword field, "
              "so it should not specify a field_size")
