@@ -195,7 +195,8 @@ class SceneControllerTest : public PlatformTest {
                                                  });
   }
   web::WebTaskEnvironment task_environment_{
-      web::WebTaskEnvironment::MainThreadType::IO,
+      web::WebTaskEnvironment::MainThreadType::UI,
+      web::WebTaskEnvironment::IOThreadType::REAL_THREAD,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
