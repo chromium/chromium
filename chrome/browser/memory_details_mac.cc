@@ -74,7 +74,7 @@ MemoryDetails::MemoryDetails() {
       base::GetProcessExecutablePath(base::GetCurrentProcessHandle());
 
   ProcessData process;
-  process.name = l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
+  process.name = base::ASCIIToUTF16(version_info::GetProductName());
   process.process_name =
       base::UTF8ToUTF16(browser_process_path.BaseName().value());
   process_data_.push_back(process);

@@ -35,7 +35,7 @@ MemoryDetails::MemoryDetails() {
   base::PathService::Get(base::FILE_EXE, &browser_process_path);
 
   ProcessData process;
-  process.name = l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
+  process.name = base::ASCIIToUTF16(version_info::GetProductName());
   process.process_name = browser_process_path.BaseName().AsUTF16Unsafe();
   process_data_.push_back(process);
 }
