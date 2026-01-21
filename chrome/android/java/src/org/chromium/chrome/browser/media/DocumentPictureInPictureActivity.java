@@ -4,27 +4,36 @@
 
 package org.chromium.chrome.browser.media;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.app.ActivityManager.AppTask;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.Log;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
+import org.chromium.chrome.browser.media.document_picture_in_picture_header.DocumentPictureInPictureHeaderCoordinator;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -32,6 +41,8 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.toolbar.AppThemeColorProvider;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderCoordinator;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
@@ -54,9 +65,13 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
             "org.chromium.chrome.browser.media.DocumentPictureInPicture.WindowOptions";
     private WebContents mWebContents;
     private Tab mInitiatorTab;
-    private @Nullable ThinWebView mThinWebView;
-    private @Nullable TabObserver mInitiatorTabObserver;
-    private @Nullable @SuppressWarnings("unused") PictureInPictureWindowOptions mWindowOptions;
+    private @MonotonicNonNull ThinWebView mThinWebView;
+    private @MonotonicNonNull TabObserver mInitiatorTabObserver;
+    private @MonotonicNonNull @SuppressWarnings("unused") PictureInPictureWindowOptions
+            mWindowOptions;
+    private @MonotonicNonNull AppHeaderCoordinator mAppHeaderCoordinator;
+    private @MonotonicNonNull DocumentPictureInPictureHeaderCoordinator mHeaderCoordinator;
+    private @MonotonicNonNull AppThemeColorProvider mAppThemeColorProvider;
 
     @Override
     protected void onPreCreate() {
@@ -135,6 +150,26 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
                     }
                 };
         mInitiatorTab.addObserver(mInitiatorTabObserver);
+
+        // EdgeToEdgeStateProvider is set in ChromeBaseAppCompatActivity#onCreate.
+        var edgeToEdgeStateProvider = getEdgeToEdgeStateProvider();
+        assert edgeToEdgeStateProvider != null;
+
+        mAppHeaderCoordinator =
+                new AppHeaderCoordinator(
+                        this,
+                        getWindow().getDecorView().getRootView(),
+                        new BrowserStateBrowserControlsVisibilityDelegate(
+                                new ObservableSupplierImpl<>(false)),
+                        getInsetObserver(),
+                        getLifecycleDispatcher(),
+                        getSavedInstanceState(),
+                        getPersistentInstanceState(),
+                        edgeToEdgeStateProvider);
+
+        mAppThemeColorProvider =
+                new AppThemeColorProvider(this, getLifecycleDispatcher(), mAppHeaderCoordinator);
+        mAppThemeColorProvider.onIncognitoStateChanged(mInitiatorTab.isIncognitoBranded());
     }
 
     private void goIntoPinnedMode() {
@@ -189,10 +224,21 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
                 windowAndroid,
                 WebContents.createDefaultInternalsHolder());
 
-        addContentView(
+        View rootLayout =
+                getLayoutInflater().inflate(R.layout.document_picture_in_picture_main_layout, null);
+        FrameLayout contentLayout =
+                rootLayout.findViewById(R.id.document_picture_in_picture_content);
+        contentLayout.addView(
                 mThinWebView.getView(),
-                new ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
+        setContentView(rootLayout);
+
+        mHeaderCoordinator =
+                new DocumentPictureInPictureHeaderCoordinator(
+                        findViewById(R.id.document_picture_in_picture_header),
+                        assumeNonNull(mAppHeaderCoordinator),
+                        assumeNonNull(mAppThemeColorProvider));
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTO_DOC_PIP_PERMISSION_PROMPT_ANDROID)) {
             WebContents webContents = mInitiatorTab.getWebContents();
@@ -272,6 +318,16 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
 
         mInitiatorTab = null;
         mInitiatorTabObserver = null;
+
+        if (mHeaderCoordinator != null) {
+            mHeaderCoordinator.destroy();
+            mHeaderCoordinator = null;
+        }
+
+        if (mAppThemeColorProvider != null) {
+            mAppThemeColorProvider.destroy();
+            mAppThemeColorProvider = null;
+        }
 
         super.onDestroy();
     }

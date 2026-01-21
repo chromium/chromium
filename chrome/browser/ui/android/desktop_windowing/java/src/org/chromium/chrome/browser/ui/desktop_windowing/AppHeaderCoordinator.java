@@ -114,8 +114,8 @@ public class AppHeaderCoordinator
             BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate,
             InsetObserver insetObserver,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            Bundle savedInstanceState,
-            PersistableBundle persistentState,
+            @Nullable Bundle savedInstanceState,
+            @Nullable PersistableBundle persistentState,
             EdgeToEdgeStateProvider edgeToEdgeStateProvider) {
         mActivity = activity;
         mEdgeToEdgeStateProvider = edgeToEdgeStateProvider;
