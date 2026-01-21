@@ -9,6 +9,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/background_script_executor.h"
+#include "extensions/browser/script_result_queue.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -100,15 +101,26 @@ class UserScriptsUITest
   auto RegisterUserScript(const ExtensionId& extension_id) {
     // Register the user script in the extension background script and confirm
     // it registered successfully.
-    return CheckResult(
-        [this, &extension_id]() -> std::string {
-          return BackgroundScriptExecutor::ExecuteScript(
-                     profile(), extension_id, "registerUserScripts();",
-                     BackgroundScriptExecutor::ResultCapture::kSendScriptResult)
-              .TakeString();
-        },
-        /*matcher=*/"success", /*check_description=*/
-        "Registering dynamic user script and checking that it completed");
+    return Do([this, extension_id]() {
+      ScriptResultQueue queue;
+      BackgroundScriptExecutor::ExecuteScriptAsync(profile(), extension_id,
+                                                   "registerUserScripts();");
+      SCOPED_TRACE("Waiting for user script registration result");
+      while (true) {
+        // We use a manual ScriptResultQueue loop to filter out potential
+        // "available" messages from the API availability poller that is running
+        // concurrently when this step executes.
+        std::string result = queue.GetNextResult().GetString();
+        if (result == "success") {
+          return;
+        }
+        if (result == "available" || result == "unavailable") {
+          continue;
+        }
+        ADD_FAILURE() << "Unexpected API registration result: " << result;
+        return;
+      }
+    });
   }
 };
 
@@ -157,16 +169,7 @@ IN_PROC_BROWSER_TEST_P(UserScriptsUITest, ToggleControls_UserScriptsAPIUsage) {
                  : ToggleDevModeInUI(kTab, /*enabled=*/true),
       WaitForState(kApiAvailability, "available"),
 
-      // Stop polling to avoid race condition with `RegisterUserScript`, which
-      // also uses the background script result channel.
-      StopObservingState(kApiAvailability),
-
       RegisterUserScript(extension->id()),
-
-      PollState(kApiAvailability,
-                [this, &extension]() {
-                  return CheckUserScriptsAPIAvailability(extension->id());
-                }),
 
       // Navigate tab to a webpage where the user script should inject a <div>.
       NavigateWebContents(
