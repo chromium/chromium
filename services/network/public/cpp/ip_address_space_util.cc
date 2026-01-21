@@ -19,6 +19,8 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/parsed_headers.mojom.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/url_loader_network_service_observer.mojom-data-view.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -370,6 +372,36 @@ IPAddressSpace IPEndPointToIPAddressSpace(const IPEndPoint& endpoint) {
   return IPAddressToIPAddressSpace(endpoint.address());
 }
 
+std::string_view LocalNetworkAccessResultToStringPiece(
+    mojom::LocalNetworkAccessResult result) {
+  switch (result) {
+    case mojom::LocalNetworkAccessResult::kGranted:
+      return "granted";
+    case mojom::LocalNetworkAccessResult::kDenied:
+      return "denied";
+    case mojom::LocalNetworkAccessResult::kRetryDueToCache:
+      return "retryDueToCache";
+  }
+  // In case enum value gets corrupted going accross process boundaries.
+  return "unknown";
+}
+
+std::string_view TransportTypeToStringPiece(
+    mojom::TransportType transport_type) {
+  switch (transport_type) {
+    case mojom::TransportType::kDirect:
+      return "direct";
+    case mojom::TransportType::kProxied:
+      return "proxied";
+    case mojom::TransportType::kCached:
+      return "cached";
+    case mojom::TransportType::kCachedFromProxy:
+      return "cachedFromProxy";
+  }
+  // In case enum value gets corrupted going accross process boundaries.
+  return "unknown";
+}
+
 std::string_view IPAddressSpaceToStringPiece(IPAddressSpace space) {
   switch (space) {
     case IPAddressSpace::kUnknown:
@@ -381,6 +413,8 @@ std::string_view IPAddressSpaceToStringPiece(IPAddressSpace space) {
     case IPAddressSpace::kLoopback:
       return "loopback";
   }
+  // In case enum value gets corrupted going accross process boundaries.
+  return "unknown";
 }
 
 IPAddressSpace TransportInfoToIPAddressSpace(const net::TransportInfo& info) {

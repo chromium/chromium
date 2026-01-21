@@ -14,6 +14,7 @@
 #include "base/memory/stack_allocated.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/parsed_headers.mojom-forward.h"
+#include "services/network/public/mojom/url_loader_network_service_observer.mojom-forward.h"
 
 class GURL;
 
@@ -26,6 +27,16 @@ struct TransportInfo;
 }  // namespace net
 
 namespace network {
+
+// Returns a human-readable string representing `result`, suitable for logging.
+std::string_view COMPONENT_EXPORT(NETWORK_CPP)
+    LocalNetworkAccessResultToStringPiece(
+        mojom::LocalNetworkAccessResult result);
+
+// Returns a human-readable string representing `transport_type`, suitable for
+// logging.
+std::string_view COMPONENT_EXPORT(NETWORK_CPP)
+    TransportTypeToStringPiece(mojom::TransportType transport_type);
 
 // Returns a human-readable string representing `space`, suitable for logging.
 std::string_view COMPONENT_EXPORT(NETWORK_CPP)

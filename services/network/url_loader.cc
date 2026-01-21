@@ -456,6 +456,10 @@ URLLoader::URLLoader(
   receiver_.set_disconnect_handler(
       base::BindOnce(&URLLoader::OnMojoDisconnect, base::Unretained(this)));
 
+  url_request_ = url_request_context_->CreateRequest(
+      request.url, request.priority, this, traffic_annotation,
+      /*is_for_websockets=*/false, request.net_log_create_info);
+
   // If the request is to a URL that we can determine is an LNA request from
   // just the URL, then trigger the LNA prompt. We only trigger this for request
   // where GetAddressSpaceFromUrl() returns a value as those would also trigger
@@ -485,14 +489,29 @@ URLLoader::URLLoader(
         // the result.
         url_loader_network_observer_->OnLocalNetworkAccessPermissionRequired(
             mojom::TransportType::kDirect, *url_address_space,
-            base::BindOnce([](mojom::LocalNetworkAccessResult result) {}));
+            base::BindOnce(
+                [](const net::NetLogWithSource& net_log,
+                   const mojom::TransportType transport_type,
+                   const mojom::IPAddressSpace address_space,
+                   mojom::LocalNetworkAccessResult result) {
+                  net_log.AddEvent(
+                      net::NetLogEventType::
+                          LOCAL_NETWORK_ACCESS_PERMISSION_REQUESTED,
+                      [&] {
+                        return base::Value::Dict()
+                            .Set("address_space",
+                                 IPAddressSpaceToStringPiece(address_space))
+                            .Set("transport_type",
+                                 TransportTypeToStringPiece(transport_type))
+                            .Set("result",
+                                 LocalNetworkAccessResultToStringPiece(result));
+                      });
+                },
+                url_request_->net_log(), mojom::TransportType::kDirect,
+                *url_address_space));
       }
     }
   }
-
-  url_request_ = url_request_context_->CreateRequest(
-      request.url, request.priority, this, traffic_annotation,
-      /*is_for_websockets=*/false, request.net_log_create_info);
 
   TRACE_EVENT("loading", "URLLoader::URLLoader",
               net::NetLogWithSourceToFlow(url_request_->net_log()));

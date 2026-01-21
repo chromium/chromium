@@ -112,6 +112,8 @@ net::Error PrivateNetworkAccessUrlLoaderInterceptor::OnConnected(
             [](base::WeakPtr<PrivateNetworkAccessUrlLoaderInterceptor>
                    weak_self,
                const net::NetLogWithSource& net_log,
+               const mojom::TransportType transport_type,
+               const mojom::IPAddressSpace address_space,
                base::OnceCallback<void(net::Error)> callback,
                mojom::LocalNetworkAccessResult result) {
               if (!weak_self) {
@@ -120,6 +122,20 @@ net::Error PrivateNetworkAccessUrlLoaderInterceptor::OnConnected(
                 // pipe may outlive `this` and the owner `URLLoader`.
                 return;
               }
+
+              net_log.AddEvent(
+                  net::NetLogEventType::
+                      LOCAL_NETWORK_ACCESS_PERMISSION_REQUESTED,
+                  [&] {
+                    return base::Value::Dict()
+                        .Set("address_space",
+                             IPAddressSpaceToStringPiece(address_space))
+                        .Set("transport_type",
+                             TransportTypeToStringPiece(transport_type))
+                        .Set("result",
+                             LocalNetworkAccessResultToStringPiece(result));
+                  });
+
               if (result == mojom::LocalNetworkAccessResult::kRetryDueToCache) {
                 weak_self->checker_.ResetForRetry();
                 std::move(callback).Run(
@@ -133,6 +149,8 @@ net::Error PrivateNetworkAccessUrlLoaderInterceptor::OnConnected(
                       : net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
             },
             weak_ptr_factory_.GetWeakPtr(), net_log,
+            MapTransportTypeToMojomTransportType(info.type),
+            *checker_.ResponseAddressSpace(),
             std::move(callback_getter).Run()));
     return net::ERR_IO_PENDING;
   }

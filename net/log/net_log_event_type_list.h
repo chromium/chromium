@@ -4827,10 +4827,10 @@ EVENT_TYPE(CORS_PREFLIGHT_URL_REQUEST)
 EVENT_TYPE(CORS_PREFLIGHT_CACHED_RESULT)
 
 // ------------------------------------------------------------------------
-// Private Network Access
+// Local Network Access
 // ------------------------------------------------------------------------
 
-// This event is logged when a new connection is checked against Private
+// This event is logged when a new connection is checked against Local
 // Network Access rules.
 //
 // It contains the following parameters:
@@ -4839,12 +4839,18 @@ EVENT_TYPE(CORS_PREFLIGHT_CACHED_RESULT)
 //    "resource_address_space": <the IP address space of the remote endpoint>,
 //    "result": <the result of the check>,
 //  }
-//
-// If the result is "unexpected-private-network", then the request is
-// interrupted and a preflight request is retried, this time with PNA headers
-// attached. If this second connection fails the check again, the request is
-// failed.
 EVENT_TYPE(PRIVATE_NETWORK_ACCESS_CHECK)
+
+// This event is logged when the result of a Local Network Access permission
+// request finishes.
+//
+// It contains the following parameters:
+//  {
+//    "address_space": <the IP address space for the prompt>,
+//    "transport_type": <the transport type>,
+//    "result": <the result of the permission request>,
+//  }
+EVENT_TYPE(LOCAL_NETWORK_ACCESS_PERMISSION_REQUESTED)
 
 // This event is logged when a Local Network Access request is retried due
 // to the resource being cached from a local IP address, in order to bypass

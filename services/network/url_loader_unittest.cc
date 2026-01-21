@@ -1900,6 +1900,8 @@ TEST_F(URLLoaderTest, SecurePublicToLoopbackPermissionDenied) {
       mojom::LocalNetworkAccessResult::kDenied);
   set_network_observer_for_next_request(&observer);
 
+  net::RecordingNetLogObserver net_log_observer;
+
   ResourceRequest request = CreateCrossOriginResourceRequest();
 
   EXPECT_EQ(net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
@@ -1908,6 +1910,29 @@ TEST_F(URLLoaderTest, SecurePublicToLoopbackPermissionDenied) {
               Optional(CorsErrorStatus(
                   mojom::CorsError::kLocalNetworkAccessPermissionDenied,
                   mojom::IPAddressSpace::kLoopback)));
+
+  std::vector<net::NetLogEntry> entries = net_log_observer.GetEntriesWithType(
+      net::NetLogEventType::LOCAL_NETWORK_ACCESS_PERMISSION_REQUESTED);
+  ASSERT_THAT(entries, SizeIs(2));
+  {
+    const base::Value::Dict& params = entries[0].params;
+
+    EXPECT_THAT(params.FindString("address_space"), Pointee(Eq("loopback")));
+
+    EXPECT_THAT(params.FindString("transport_type"), Pointee(Eq("direct")));
+
+    EXPECT_THAT(params.FindString("result"), Pointee(Eq("denied")));
+  }
+
+  {
+    const base::Value::Dict& params = entries[1].params;
+
+    EXPECT_THAT(params.FindString("address_space"), Pointee(Eq("loopback")));
+
+    EXPECT_THAT(params.FindString("transport_type"), Pointee(Eq("direct")));
+
+    EXPECT_THAT(params.FindString("result"), Pointee(Eq("denied")));
+  }
 }
 
 TEST_F(URLLoaderTest, SecurePublicToLoopbackPermissionGranted) {
@@ -1924,6 +1949,8 @@ TEST_F(URLLoaderTest, SecurePublicToLoopbackPermissionGranted) {
       mojom::LocalNetworkAccessResult::kGranted);
   set_network_observer_for_next_request(&observer);
 
+  net::RecordingNetLogObserver net_log_observer;
+
   ResourceRequest request = CreateCrossOriginResourceRequest();
 
   EXPECT_EQ(net::OK, LoadRequest(request));
@@ -1931,6 +1958,29 @@ TEST_F(URLLoaderTest, SecurePublicToLoopbackPermissionGranted) {
               Optional(CorsErrorStatus(
                   mojom::CorsError::kLocalNetworkAccessPermissionDenied,
                   mojom::IPAddressSpace::kLoopback)));
+
+  std::vector<net::NetLogEntry> entries = net_log_observer.GetEntriesWithType(
+      net::NetLogEventType::LOCAL_NETWORK_ACCESS_PERMISSION_REQUESTED);
+  ASSERT_THAT(entries, SizeIs(2));
+  {
+    const base::Value::Dict& params = entries[0].params;
+
+    EXPECT_THAT(params.FindString("address_space"), Pointee(Eq("loopback")));
+
+    EXPECT_THAT(params.FindString("transport_type"), Pointee(Eq("direct")));
+
+    EXPECT_THAT(params.FindString("result"), Pointee(Eq("granted")));
+  }
+
+  {
+    const base::Value::Dict& params = entries[1].params;
+
+    EXPECT_THAT(params.FindString("address_space"), Pointee(Eq("loopback")));
+
+    EXPECT_THAT(params.FindString("transport_type"), Pointee(Eq("direct")));
+
+    EXPECT_THAT(params.FindString("result"), Pointee(Eq("granted")));
+  }
 }
 
 TEST_F(URLLoaderTest, SecureLocalToLoopbackLNAPermissionNotRequired) {
