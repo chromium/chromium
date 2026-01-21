@@ -125,6 +125,36 @@ base::android::ScopedJavaLocalRef<jobject> ExtensionsToolbarBridge::GetAction(
       env, action_id, base::UTF16ToUTF8(action->GetActionName()));
 }
 
+base::android::ScopedJavaLocalRef<jobject> ExtensionsToolbarBridge::GetIcon(
+    JNIEnv* env,
+    const ToolbarActionsModel::ActionId& action_id,
+    content::WebContents* web_contents,
+    int canvas_width_dp,
+    int canvas_height_dp,
+    float scale_factor) {
+  gfx::Size size(canvas_width_dp, canvas_height_dp);
+
+  ToolbarActionViewModel* action =
+      toolbar_view_model_->GetActionModelForId(action_id);
+  DCHECK(action);
+  ui::ImageModel model = action->GetIcon(web_contents, size);
+
+  if (model.IsEmpty() || !model.IsImage()) {
+    return nullptr;
+  }
+
+  gfx::ImageSkia image_skia = model.GetImage().AsImageSkia();
+
+  const gfx::ImageSkiaRep& rep = image_skia.GetRepresentation(scale_factor);
+  const SkBitmap& bitmap = rep.GetBitmap();
+
+  if (bitmap.isNull()) {
+    return nullptr;
+  }
+
+  return gfx::ConvertToJavaBitmap(bitmap);
+}
+
 std::vector<ToolbarActionsModel::ActionId>
 ExtensionsToolbarBridge::GetAllActionIds(JNIEnv* env) {
   const auto& ids = toolbar_view_model_->GetAllActionIds();

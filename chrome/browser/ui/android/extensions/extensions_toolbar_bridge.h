@@ -54,6 +54,13 @@ class ExtensionsToolbarBridge : public ExtensionsToolbarViewModel::Delegate,
   base::android::ScopedJavaLocalRef<jobject> GetAction(
       JNIEnv* env,
       const ToolbarActionsModel::ActionId& action_id);
+  base::android::ScopedJavaLocalRef<jobject> GetIcon(
+      JNIEnv* env,
+      const ToolbarActionsModel::ActionId& action_id,
+      content::WebContents* web_contents,
+      int canvas_width_dp,
+      int canvas_height_dp,
+      float scale_factor);
   std::vector<ToolbarActionsModel::ActionId> GetAllActionIds(JNIEnv* env);
   std::vector<ToolbarActionsModel::ActionId> GetPinnedActionIds(JNIEnv* env);
   void ExecuteUserAction(const ToolbarActionsModel::ActionId& action_id,

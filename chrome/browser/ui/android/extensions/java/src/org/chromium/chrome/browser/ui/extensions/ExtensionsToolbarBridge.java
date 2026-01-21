@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.extensions;
 
+import android.graphics.Bitmap;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
@@ -16,6 +18,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.toolbar.InvocationSource;
+import org.chromium.content_public.browser.WebContents;
 
 /** A JNI bridge to interact with extension actions for the toolbar. */
 @NullMarked
@@ -58,6 +61,23 @@ public class ExtensionsToolbarBridge implements Destroyable {
     @Nullable
     public ExtensionAction getAction(String actionId) {
         return ExtensionsToolbarBridgeJni.get().getAction(mNativeExtensionsToolbarBridge, actionId);
+    }
+
+    @Nullable
+    public Bitmap getIcon(
+            String actionId,
+            @Nullable WebContents webContents,
+            int canvasWidthDp,
+            int canvasHeightDp,
+            float scaleFactor) {
+        return ExtensionsToolbarBridgeJni.get()
+                .getIcon(
+                        mNativeExtensionsToolbarBridge,
+                        actionId,
+                        webContents,
+                        canvasWidthDp,
+                        canvasHeightDp,
+                        scaleFactor);
     }
 
     public String[] getAllActionIds() {
@@ -146,6 +166,14 @@ public class ExtensionsToolbarBridge implements Destroyable {
 
         @Nullable ExtensionAction getAction(
                 long nativeExtensionsToolbarBridge, @JniType("std::string") String actionId);
+
+        @Nullable Bitmap getIcon(
+                long nativeExtensionsToolbarBridge,
+                @JniType("std::string") String actionId,
+                @Nullable @JniType("content::WebContents*") WebContents webContents,
+                int canvasWidthDp,
+                int canvasHeightDp,
+                float scaleFactor);
 
         @JniType("std::vector<std::string>")
         String[] getAllActionIds(long nativeExtensionsToolbarBridge);
