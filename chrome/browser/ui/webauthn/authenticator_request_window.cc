@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -240,8 +241,22 @@ class AuthenticatorRequestWindow
     }
 
     content::NavigationController::LoadURLParams load_params(url);
-    web_contents->GetController().LoadURLWithParams(load_params);
+    base::WeakPtr<content::NavigationHandle> navigation_handle =
+        web_contents->GetController().LoadURLWithParams(load_params);
     web_contents_weak_ptr_ = web_contents->GetWeakPtr();
+
+    if (navigation_handle &&
+        step_ ==
+            AuthenticatorRequestDialogModel::Step::kGPMRecoverSecurityDomain) {
+      TrustedVaultEncryptionKeysTabHelper* encryption_keys_tab_helper =
+          TrustedVaultEncryptionKeysTabHelper::FromWebContents(
+              navigation_handle->GetWebContents());
+      if (encryption_keys_tab_helper) {
+        encryption_keys_tab_helper->SetUserActionTrigger(
+            trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                kPasskeyBootstrappingFlow);
+      }
+    }
 
     browser->tab_strip_model()->AddWebContents(
         std::move(web_contents), /*index=*/0,

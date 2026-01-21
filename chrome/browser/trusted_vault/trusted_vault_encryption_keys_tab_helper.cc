@@ -161,7 +161,7 @@ class EncryptionKeyApi
     if (security_domain == trusted_vault::SecurityDomainId::kPasskeys) {
       if (enclave_manager_) {
         enclave_manager_->StoreKeys(gaia_id, std::move(keys_as_bytes),
-                                    last_key_version);
+                                    last_key_version, user_action_trigger_);
       }
       return;
     }

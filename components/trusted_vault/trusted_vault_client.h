@@ -45,7 +45,11 @@ enum class TrustedVaultUserActionTriggerForUMA {
   kPasswordManagerSettings = 6,
   // From the passwords keyboard accessory (only used on Android).
   kPasswordManagerKeyboardAccessory = 7,
-  kMaxValue = kPasswordManagerKeyboardAccessory
+  // From the passkey unlock error UI (only used on Desktop).
+  kPasskeyUnlockProfileMenu = 8,
+  // From the passkey authenticator window (only used on Desktop).
+  kPasskeyBootstrappingFlow = 9,
+  kMaxValue = kPasskeyBootstrappingFlow
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:TrustedVaultUserActionTrigger)
 

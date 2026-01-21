@@ -3755,10 +3755,18 @@ void EnclaveManager::TemporarilyCachePendingOpportunisticKeys(
       base::Seconds(ttl_seconds));
 }
 
-void EnclaveManager::StoreKeys(const GaiaId& gaia_id,
-                               std::vector<std::vector<uint8_t>> keys,
-                               int last_key_version) {
+void EnclaveManager::StoreKeys(
+    const GaiaId& gaia_id,
+    std::vector<std::vector<uint8_t>> keys,
+    int last_key_version,
+    std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA>
+        user_action_trigger) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (user_action_trigger.has_value()) {
+    base::UmaHistogramEnumeration(
+        "PasswordManager.UserActionTriggerThatRetrievedPasskeySecret",
+        user_action_trigger.value());
+  }
   if (base::FeatureList::IsEnabled(device::kWebAuthnOpportunisticRetrieval)) {
     if (store_keys_lock_depth_) {
       webauthn::metrics::RecordGPMRecoveryEvent(
@@ -4101,7 +4109,8 @@ void EnclaveManager::HandleIdentityChange(bool is_post_load) {
       // the primary account was either empty or had a different Gaia Id. Now
       // the primary account is available so we can store them.
       StoreKeys(store_keys_arg->gaia_id, std::move(store_keys_arg->keys),
-                store_keys_arg->last_key_version);
+                store_keys_arg->last_key_version,
+                /*user_action_trigger=*/std::nullopt);
       webauthn::metrics::RecordGPMCachedOpportunisticallyRetrievedKeyEvent(
           webauthn::metrics::
               WebAuthenticationGPMCachedOpportunisticallyRetrievedKeyEvent::

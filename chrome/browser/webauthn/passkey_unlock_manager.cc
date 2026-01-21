@@ -20,6 +20,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
+#include "content/public/browser/navigation_handle.h"
 #include "device/fido/public/features.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -95,12 +96,25 @@ void PasskeyUnlockManager::NotifyObservers() {
   }
 }
 
-void PasskeyUnlockManager::OpenTabWithPasskeyUnlockChallenge(Browser* browser) {
+void PasskeyUnlockManager::OpenTabWithPasskeyUnlockChallenge(
+    Browser* browser,
+    trusted_vault::TrustedVaultUserActionTriggerForUMA trigger) {
   NavigateParams params(GetSingletonTabNavigateParams(
       browser, GaiaUrls::GetInstance()->signin_chrome_passkey_unlock_url()));
   // Allow the window to close itself.
   params.opened_by_another_window = true;
-  Navigate(&params);
+
+  base::WeakPtr<content::NavigationHandle> navigation_handle =
+      Navigate(&params);
+
+  if (navigation_handle) {
+    TrustedVaultEncryptionKeysTabHelper* encryption_keys_tab_helper =
+        TrustedVaultEncryptionKeysTabHelper::FromWebContents(
+            navigation_handle->GetWebContents());
+    if (encryption_keys_tab_helper) {
+      encryption_keys_tab_helper->SetUserActionTrigger(trigger);
+    }
+  }
 }
 
 std::u16string PasskeyUnlockManager::GetPasskeyErrorProfilePillTitle() const {

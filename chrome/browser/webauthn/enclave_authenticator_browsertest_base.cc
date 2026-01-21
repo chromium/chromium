@@ -270,11 +270,11 @@ void EnclaveAuthenticatorTestBase::SimulateTrustedVaultKeyRetrieval(
     auto store_keys_lock = enclave_manager().GetStoreKeysLock();
     enclave_manager().StoreKeys(kSyncGaiaId,
                                 {base::ToVector(trusted_vault_key)},
-                                trusted_vault_key_version);
+                                trusted_vault_key_version, std::nullopt);
   } else {
     enclave_manager().StoreKeys(kSyncGaiaId,
                                 {base::ToVector(trusted_vault_key)},
-                                trusted_vault_key_version);
+                                trusted_vault_key_version, std::nullopt);
   }
 }
 

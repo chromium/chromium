@@ -27,6 +27,7 @@
 #include "chrome/browser/webauthn/enclave_manager_interface.h"
 #include "chrome/browser/webauthn/local_authentication_token.h"
 #include "components/os_crypt/async/common/encryptor.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "content/public/browser/global_routing_id.h"
 #include "crypto/user_verifying_key.h"
@@ -372,9 +373,12 @@ class EnclaveManager : public EnclaveManagerInterface {
   // successfully completes recovery. It must be called either with a lock
   // outstanding from `GetStoreKeysLock`, or without a lock (but in this case
   // the keys will be stored only if a system UV is available).
-  void StoreKeys(const GaiaId& gaia_id,
-                 std::vector<std::vector<uint8_t>> keys,
-                 int last_key_version);
+  void StoreKeys(
+      const GaiaId& gaia_id,
+      std::vector<std::vector<uint8_t>> keys,
+      int last_key_version,
+      std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA>
+          user_action_trigger);
 
   // Slowly compute a PIN claim for the given PIN for submission to the enclave.
   static std::unique_ptr<device::enclave::ClaimedPIN> MakeClaimedPINSlowly(

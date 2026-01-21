@@ -3445,7 +3445,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
     {
       auto store_keys_lock = second_manager.GetStoreKeysLock();
       second_manager.StoreKeys(kSyncGaiaId, {*security_domain_secret},
-                               /*last_key_version=*/kSecretVersion);
+                               /*last_key_version=*/kSecretVersion,
+                               /*user_action_trigger=*/std::nullopt);
     }
 
     base::test::TestFuture<bool> add_future;

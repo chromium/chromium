@@ -58,6 +58,11 @@ class TrustedVaultEncryptionKeysTabHelper
   bool HasEncryptionKeysApiForTesting(
       content::RenderFrameHost* render_frame_host);
 
+  std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA>
+  user_action_trigger() const {
+    return user_action_trigger_;
+  }
+
  private:
   friend class content::WebContentsUserData<
       TrustedVaultEncryptionKeysTabHelper>;

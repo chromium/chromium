@@ -322,7 +322,9 @@ void ProfileMenuView::OnPasskeyUnlockButtonClicked() {
   if (!perform_menu_actions()) {
     return;
   }
-  webauthn::PasskeyUnlockManager::OpenTabWithPasskeyUnlockChallenge(&browser());
+  webauthn::PasskeyUnlockManager::OpenTabWithPasskeyUnlockChallenge(
+      &browser(), trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                      kPasskeyUnlockProfileMenu);
 }
 
 void ProfileMenuView::OnSyncErrorButtonClicked(

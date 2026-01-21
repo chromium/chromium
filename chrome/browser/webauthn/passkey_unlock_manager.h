@@ -9,6 +9,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
+#include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/enclave_manager_interface.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -73,7 +74,9 @@ class PasskeyUnlockManager : public KeyedService,
   virtual bool ShouldDisplayErrorUi() const;
 
   // Opens a browser tab with a challenge for unlocking passkeys.
-  static void OpenTabWithPasskeyUnlockChallenge(Browser* browser);
+  static void OpenTabWithPasskeyUnlockChallenge(
+      Browser* browser,
+      trusted_vault::TrustedVaultUserActionTriggerForUMA trigger);
 
   // Methods providing the UI strings. Results depend on the experiment arms
   // configured by the feature parameter `kPasskeyUnlockErrorUiExperimentArm`.

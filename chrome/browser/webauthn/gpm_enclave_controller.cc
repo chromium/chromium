@@ -926,7 +926,7 @@ void GPMEnclaveController::OnICloudKeysRetrievedForRecovery(
   store_keys_lock_ = enclave_manager_->GetStoreKeysLock();
   enclave_manager_->StoreKeys(user_gaia_id_,
                               {std::move(*security_domain_secret)},
-                              member_key_it->version);
+                              member_key_it->version, std::nullopt);
 }
 
 #endif  // BUILDFLAG(IS_MAC)

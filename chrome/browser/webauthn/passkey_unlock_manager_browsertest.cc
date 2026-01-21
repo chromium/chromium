@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
+#include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/webauthn/enclave_authenticator_browsertest_base.h"
@@ -134,7 +135,9 @@ IN_PROC_BROWSER_TEST_F(PasskeyUnlockManagerBrowserTest,
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   int initial_tab_count = tab_strip_model->count();
 
-  PasskeyUnlockManager::OpenTabWithPasskeyUnlockChallenge(browser());
+  PasskeyUnlockManager::OpenTabWithPasskeyUnlockChallenge(
+      browser(), trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                     kPasskeyUnlockProfileMenu);
 
   // Ensure that a new tab with an expected URL has been added.
   EXPECT_EQ(initial_tab_count + 1, tab_strip_model->count());
@@ -149,6 +152,12 @@ IN_PROC_BROWSER_TEST_F(PasskeyUnlockManagerBrowserTest,
                  "desktop?kdi=CAESDgoMaHdfcHJvdGVjdGVk"),
             new_contents->GetVisibleURL());
 #endif
+  TrustedVaultEncryptionKeysTabHelper* tab_helper =
+      TrustedVaultEncryptionKeysTabHelper::FromWebContents(new_contents);
+  ASSERT_TRUE(tab_helper);
+  EXPECT_EQ(tab_helper->user_action_trigger(),
+            trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                kPasskeyUnlockProfileMenu);
 }
 
 IN_PROC_BROWSER_TEST_F(PasskeyUnlockManagerBrowserTest,

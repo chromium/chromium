@@ -4281,6 +4281,16 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.UserActionTriggerThatRetrievedPasskeySecret"
+    enum="TrustedVaultUserActionTrigger" expires_after="2026-07-12">
+  <owner>izuzic@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Tracks the trigger of the Magic Arch challenge initiated to obtain the
+    passkey secret. Recorded when the challenge is completed.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.UsernameDetectionMethod"
     enum="UsernameDetectionMethod" expires_after="2026-03-22">
   <owner>kazinova@google.com</owner>
