@@ -312,41 +312,6 @@ AwContents::AwContents(std::unique_ptr<WebContents> web_contents)
       web_contents_.get(), &browser_view_renderer_);
   AwContentsLifecycleNotifier::GetInstance().OnWebViewCreated(this);
   AwBrowserProcess::GetInstance()->visibility_metrics_logger()->AddClient(this);
-
-  if (base::FeatureList::IsEnabled(features::kWebViewRendererKeepAlive)) {
-    UpdateAwRenderProcessAssociation();
-  }
-}
-
-void AwContents::UpdateAwRenderProcessAssociation() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  // Get the current RPH ID.
-  content::RenderProcessHost* rph =
-      web_contents_->GetPrimaryMainFrame()->GetProcess();
-  content::ChildProcessId new_id = rph->GetID();
-
-  if (new_id == associated_rph_id_) {
-    return;
-  }
-
-  if (associated_rph_id_) {
-    if (auto* old_rph =
-            content::RenderProcessHost::FromID(associated_rph_id_)) {
-      // Use GetInstanceIfExisting to avoid recreating the AwRenderProcess
-      // instance if it has been destroyed due to renderer termination.
-      if (auto* aw_render_process =
-              AwRenderProcess::GetInstanceIfExisting(old_rph)) {
-        aw_render_process->RemoveAwContents();
-      }
-    }
-  }
-
-  if (rph) {
-    AwRenderProcess::GetInstanceForRenderProcessHost(rph)->AddAwContents();
-  }
-
-  associated_rph_id_ = new_id;
 }
 
 void AwContents::SetJavaPeers(
@@ -408,22 +373,6 @@ void AwContents::InitSensitiveContentClient(JNIEnv* env) {
 
 AwContents::~AwContents() {
   DCHECK_EQ(this, AwContents::FromWebContents(web_contents_.get()));
-
-  if (base::FeatureList::IsEnabled(features::kWebViewRendererKeepAlive)) {
-    if (associated_rph_id_) {
-      if (auto* old_rph =
-              content::RenderProcessHost::FromID(associated_rph_id_)) {
-        // Use GetInstanceIfExisting to avoid recreating the AwRenderProcess
-        // instance if it has been destroyed due to renderer termination.
-        if (auto* aw_render_process =
-                AwRenderProcess::GetInstanceIfExisting(old_rph)) {
-          aw_render_process->RemoveAwContents();
-        }
-      }
-      associated_rph_id_ = content::ChildProcessId();
-    }
-  }
-
   web_contents_->RemoveUserData(kAwContentsUserDataKey);
   AwContentsClientBridge::Dissociate(web_contents_.get());
   if (find_helper_.get())
@@ -1664,9 +1613,6 @@ void LogSiteVisitOnBackgroundThread(int64_t site_hash) {
 }  // namespace
 
 void AwContents::PrimaryPageChanged(content::Page& page) {
-  if (base::FeatureList::IsEnabled(features::kWebViewRendererKeepAlive)) {
-    UpdateAwRenderProcessAssociation();
-  }
   // TODO(https://crbug.com/378601799): Consider allowing prerendered pages
   // triggered by the WebView prerender API to outlive PrimaryPageChanged. See
   // the issue for the context.

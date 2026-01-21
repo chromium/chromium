@@ -28853,24 +28853,6 @@
             ]
         }
     ],
-    "WebViewRendererKeepAlive": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "webview_renderer_keep_alive_duration": "30s"
-                    },
-                    "enable_features": [
-                        "WebViewRendererKeepAlive"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebViewSafeAreaIncludesSystemBars": [
         {
             "platforms": [

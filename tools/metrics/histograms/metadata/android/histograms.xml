@@ -8235,30 +8235,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.RendererKeepAlive.Event"
-    enum="WebViewRendererKeepAliveEvent" expires_after="2027-01-11">
-  <owner>ziadyoussef@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records the fate of a renderer process that was kept alive pending reuse.
-    Recorded when a renderer enters the pending reuse state, when it is reused
-    by a new WebView, or when the keep-alive timer expires. This metric is only
-    recorded if the WebViewRendererKeepAlive feature is enabled.
-  </summary>
-</histogram>
-
-<histogram name="Android.WebView.RendererKeepAlive.TimeToReuse" units="ms"
-    expires_after="2027-01-11">
-  <owner>ziadyoussef@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records the time elapsed from when a renderer process entered the pending
-    reuse state until it was reused by a new WebView. Only recorded if the
-    process was reused before the keep-alive timer expired. This metric is only
-    recorded if the WebViewRendererKeepAlive feature is enabled.
-  </summary>
-</histogram>
-
 <histogram name="Android.WebView.RendererLibraryPrefetchMode"
     enum="RendererLibraryPrefetchMode" expires_after="2026-03-01">
   <owner>ashleynewson@chromium.org</owner>

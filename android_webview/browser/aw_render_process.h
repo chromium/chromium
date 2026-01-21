@@ -6,12 +6,10 @@
 #define ANDROID_WEBVIEW_BROWSER_AW_RENDER_PROCESS_H_
 
 #include "android_webview/common/mojom/renderer.mojom.h"
-#include "base/android/child_process_binding_types.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
-#include "base/timer/timer.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 
@@ -26,16 +24,11 @@ class AwRenderProcess : public content::RenderProcessHostObserver,
   static AwRenderProcess* GetInstanceForRenderProcessHost(
       content::RenderProcessHost* host);
 
-  static AwRenderProcess* GetInstanceIfExisting(
-      content::RenderProcessHost* host);
-
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
   bool TerminateChildProcess(JNIEnv* env);
 
   bool IsProcessLockedToSiteForTesting(JNIEnv* env);
-
-  base::android::ChildBindingState GetEffectiveChildBindingState(JNIEnv* env);
 
   explicit AwRenderProcess(content::RenderProcessHost* render_process_host);
 
@@ -55,13 +48,9 @@ class AwRenderProcess : public content::RenderProcessHostObserver,
   // has never been created and RPH::Unused() returns true.
   static bool IsUnused(content::RenderProcessHost* host);
 
-  void AddAwContents();
-  void RemoveAwContents();
-
  private:
   void Ready();
   void Cleanup();
-  void OnKeepAliveTimerFired();
 
   // content::RenderProcessHostObserver implementation
   void RenderProcessReady(content::RenderProcessHost* host) override;
@@ -77,11 +66,6 @@ class AwRenderProcess : public content::RenderProcessHostObserver,
   raw_ptr<content::RenderProcessHost> render_process_host_;
 
   mojo::AssociatedRemote<mojom::Renderer> renderer_remote_;
-
-  int aw_contents_count_ = 0;
-  bool kept_alive_ = false;
-  base::TimeTicks keep_alive_start_time_;
-  base::OneShotTimer keep_alive_timer_;
 
   base::WeakPtrFactory<AwRenderProcess> weak_factory_{this};
 };

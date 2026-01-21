@@ -478,21 +478,9 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
             final AwContentsClient awContentsClient,
             boolean supportsLegacyQuirks,
             final TestDependencyFactory testDependencyFactory) {
-        return createAwTestContainerView(
-                awContentsClient, supportsLegacyQuirks, testDependencyFactory, null);
-    }
-
-    public AwTestContainerView createAwTestContainerView(
-            final AwContentsClient awContentsClient,
-            boolean supportsLegacyQuirks,
-            final TestDependencyFactory testDependencyFactory,
-            AwBrowserContext browserContext) {
         AwTestContainerView testContainerView =
                 createDetachedAwTestContainerView(
-                        awContentsClient,
-                        supportsLegacyQuirks,
-                        testDependencyFactory,
-                        browserContext);
+                        awContentsClient, supportsLegacyQuirks, testDependencyFactory);
         getActivity().addView(testContainerView);
         testContainerView.requestFocus();
         return testContainerView;
@@ -524,15 +512,6 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
             final AwContentsClient awContentsClient,
             boolean supportsLegacyQuirks,
             TestDependencyFactory testDependencyFactory) {
-        return createDetachedAwTestContainerView(
-                awContentsClient, supportsLegacyQuirks, testDependencyFactory, null);
-    }
-
-    public AwTestContainerView createDetachedAwTestContainerView(
-            final AwContentsClient awContentsClient,
-            boolean supportsLegacyQuirks,
-            TestDependencyFactory testDependencyFactory,
-            AwBrowserContext browserContext) {
         if (testDependencyFactory == null) {
             testDependencyFactory = createTestDependencyFactory();
         }
@@ -546,7 +525,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
         if (mMaybeMutateAwSettings != null) mMaybeMutateAwSettings.accept(awSettings);
         AwContents awContents =
                 testDependencyFactory.createAwContents(
-                        browserContext != null ? browserContext : sBrowserContext,
+                        sBrowserContext,
                         testContainerView,
                         testContainerView.getContext(),
                         testContainerView.getInternalAccessDelegate(),
@@ -583,20 +562,6 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
                 () ->
                         createAwTestContainerView(
                                 client, supportsLegacyQuirks, testDependencyFactory));
-    }
-
-    public AwTestContainerView createAwTestContainerViewOnMainSync(
-            final AwContentsClient client,
-            final boolean supportsLegacyQuirks,
-            final TestDependencyFactory testDependencyFactory,
-            final AwBrowserContext browserContext) {
-        return ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        createAwTestContainerView(
-                                client,
-                                supportsLegacyQuirks,
-                                testDependencyFactory,
-                                browserContext));
     }
 
     public void destroyAwContentsOnMainSync(final AwContents awContents) {
