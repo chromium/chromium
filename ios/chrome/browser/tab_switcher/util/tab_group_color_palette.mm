@@ -62,7 +62,12 @@ UIColor* SRGBColorFromColor(UIColor* color) {
 
   self = [super init];
   if (self) {
-    UIColor* standardColor = SRGBColorFromColor(groupColor);
+    UITraitCollection* lightTraitCollection = [UITraitCollection
+        traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleLight];
+    UIColor* lightGroupColor =
+        [groupColor resolvedColorWithTraitCollection:lightTraitCollection];
+
+    UIColor* standardColor = SRGBColorFromColor(lightGroupColor);
 
     std::unique_ptr<ui::Palette> palette =
         ui::GeneratePalette(skia::UIColorToSkColor(standardColor),

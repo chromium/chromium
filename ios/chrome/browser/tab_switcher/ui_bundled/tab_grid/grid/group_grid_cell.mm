@@ -337,10 +337,7 @@ const CGFloat kTopBarLargeInset = 20;
 }
 
 - (void)setGroupColor:(UIColor*)groupColor {
-  // The group has the wrong theme when created, this ensures the groupColor is
-  // retrieved using the current theme.
-  _groupColor =
-      [groupColor resolvedColorWithTraitCollection:self.traitCollection];
+  _groupColor = groupColor;
 
   if (!IsTabGroupColorOnSurfaceEnabled()) {
     // Apply the default coloring to each surfaces.
