@@ -14328,23 +14328,6 @@
             ]
         }
     ],
-    "IOSReaderModeTriggerHeuristic": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableReadabilityHeuristic",
-                        "EnableReaderModeOptimizationGuideEligibility",
-                        "ReaderModeUseReadability"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSReaderModeWithTranslateSettings": [
         {
             "platforms": [
