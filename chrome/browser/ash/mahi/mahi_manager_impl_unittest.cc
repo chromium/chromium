@@ -131,8 +131,7 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
   // NoSessionAshTestBase::
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kMahi,
-                              chromeos::features::kFeatureManagementMahi},
+        /*enabled_features=*/{chromeos::features::kFeatureManagementMahi},
         /*disabled_features=*/{});
     NoSessionAshTestBase::SetUp();
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -291,8 +290,7 @@ TEST_F(MahiManagerImplTest, NoContentCallWhenContentIsInCache) {
 TEST_F(MahiManagerImplTest, SendingTitleOnly) {
   feature_list_.Reset();
   feature_list_.InitWithFeatures(
-      /*enabled_features=*/{chromeos::features::kMahi,
-                            chromeos::features::kFeatureManagementMahi},
+      /*enabled_features=*/{chromeos::features::kFeatureManagementMahi},
       /*disabled_features=*/{chromeos::features::kMahiSendingUrl});
   RequestSummary();
 
@@ -303,10 +301,9 @@ TEST_F(MahiManagerImplTest, SendingTitleOnly) {
 // Url, on the other hand, is controlled by kMahiSendingUrl.
 TEST_F(MahiManagerImplTest, SendingTitleAndUrl) {
   feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      {chromeos::features::kMahi, chromeos::features::kMahiSendingUrl,
-       chromeos::features::kFeatureManagementMahi},
-      /*disabled_features=*/{});
+  feature_list_.InitWithFeatures({chromeos::features::kMahiSendingUrl,
+                                  chromeos::features::kFeatureManagementMahi},
+                                 /*disabled_features=*/{});
 
   RequestSummary();
 

@@ -75,9 +75,6 @@ BASE_FEATURE(kMagicBoostRevamp, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kMagicBoostRevampForQuickAnswers,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls enabling / disabling the mahi feature.
-BASE_FEATURE(kMahi, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls enabling / disabling the mahi feature from the feature management
 // module.
 BASE_FEATURE(kFeatureManagementMahi, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -359,8 +356,7 @@ bool IsMagicBoostRevampForQuickAnswersEnabled() {
 }
 
 bool IsMahiEnabled() {
-  return base::FeatureList::IsEnabled(kMahi) &&
-         base::FeatureList::IsEnabled(kFeatureManagementMahi);
+  return base::FeatureList::IsEnabled(kFeatureManagementMahi);
 }
 
 // Mahi requests are composed & sent from ash.

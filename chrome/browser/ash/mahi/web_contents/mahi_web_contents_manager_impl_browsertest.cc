@@ -65,8 +65,7 @@ class MahiWebContentsManagerBrowserTest : public InProcessBrowserTest {
  public:
   MahiWebContentsManagerBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kMahi, chromeos::features::kFeatureManagementMahi},
-        {});
+        {chromeos::features::kFeatureManagementMahi}, {});
   }
   ~MahiWebContentsManagerBrowserTest() override = default;
 

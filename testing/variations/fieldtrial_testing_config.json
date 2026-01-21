@@ -16092,14 +16092,12 @@
                 {
                     "name": "MahiEnabled",
                     "enable_features": [
-                        "Mahi",
                         "MediaAppPdfMahi"
                     ]
                 },
                 {
                     "name": "ManagedDisabled",
                     "enable_features": [
-                        "Mahi",
                         "MediaAppPdfMahi"
                     ],
                     "disable_features": [
@@ -16109,7 +16107,6 @@
                 {
                     "name": "Disabled",
                     "disable_features": [
-                        "Mahi",
                         "MediaAppPdfMahi"
                     ]
                 }

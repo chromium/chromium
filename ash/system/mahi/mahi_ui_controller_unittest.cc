@@ -78,8 +78,7 @@ class MahiUiControllerTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kMahi,
-                              chromeos::features::kFeatureManagementMahi},
+        /*enabled_features=*/{chromeos::features::kFeatureManagementMahi},
         /*disabled_features=*/{});
 
     ON_CALL(mock_mahi_manager_, IsEnabled).WillByDefault(Return(true));
@@ -550,8 +549,7 @@ class MahiUiControllerWithSessionTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
     scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kMahi, chromeos::features::kFeatureManagementMahi},
-        {});
+        {chromeos::features::kFeatureManagementMahi}, {});
     ui_controller_ = std::make_unique<NiceMock<MahiUiController>>();
     delegate_ = std::make_unique<NiceMock<MockMahiUiControllerDelegate>>(
         ui_controller_.get());

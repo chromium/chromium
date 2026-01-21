@@ -170,7 +170,6 @@ class ReadWriteCardsManagerImplWithAndWithoutMahiTest
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/
           {
-              chromeos::features::kMahi,
               chromeos::features::kOrca,
               chromeos::features::kFeatureManagementMahi,
               chromeos::features::kFeatureManagementOrca,
@@ -180,8 +179,7 @@ class ReadWriteCardsManagerImplWithAndWithoutMahiTest
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/{chromeos::features::kOrca,
                                 chromeos::features::kFeatureManagementOrca},
-          /*disabled_features=*/{chromeos::features::kMahi,
-                                 chromeos::features::kFeatureManagementMahi,
+          /*disabled_features=*/{chromeos::features::kFeatureManagementMahi,
                                  chromeos::features::kMagicBoostRevamp});
     }
     ReadWriteCardsManagerImplTest::SetUp();
@@ -538,8 +536,7 @@ class ReadWriteCardsManagerImplWithMagicBoostRevampTest
   // ReadWriteCardsManagerImplTest overrides
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kMahi,
-                              chromeos::features::kOrca,
+        /*enabled_features=*/{chromeos::features::kOrca,
                               chromeos::features::kFeatureManagementMahi,
                               chromeos::features::kFeatureManagementOrca,
                               chromeos::features::kMagicBoostRevamp},

@@ -58,10 +58,9 @@ class FakeObserver : public QuickAnswersStateObserver {
 class QuickAnswersStateWithMagicBoostTest : public testing::Test {
  protected:
   QuickAnswersStateWithMagicBoostTest() {
-    // Note that `kMahi` is associated with the Magic Boost feature.
-    feature_list_.InitWithFeatures(
-        {chromeos::features::kMahi, chromeos::features::kFeatureManagementMahi},
-        {});
+    // Note that the Mahi feature is associated with the Magic Boost feature.
+    feature_list_.InitWithFeatures({chromeos::features::kFeatureManagementMahi},
+                                   {});
   }
 
   base::test::ScopedFeatureList feature_list_;

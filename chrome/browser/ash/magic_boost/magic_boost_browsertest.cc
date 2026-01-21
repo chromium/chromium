@@ -98,16 +98,14 @@ class MagicBoostBrowserTest
   void SetUp() override {
     if (IsMagicBoostRevampEnabled()) {
       feature_list_.InitWithFeatures(
-          /*enabled_features=*/{chromeos::features::kMahi,
-                                chromeos::features::kOrca,
+          /*enabled_features=*/{chromeos::features::kOrca,
                                 chromeos::features::kFeatureManagementMahi,
                                 chromeos::features::kFeatureManagementOrca,
                                 chromeos::features::kMagicBoostRevamp},
           /*disabled_features=*/{});
     } else {
       feature_list_.InitWithFeatures(
-          /*enabled_features=*/{chromeos::features::kMahi,
-                                chromeos::features::kOrca,
+          /*enabled_features=*/{chromeos::features::kOrca,
                                 chromeos::features::kFeatureManagementMahi,
                                 chromeos::features::kFeatureManagementOrca},
           /*disabled_features=*/{chromeos::features::kMagicBoostRevamp});
@@ -1122,7 +1120,6 @@ class MahiUiWithOptInCardBrowserTest
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kFeatureManagementOrca,
                               chromeos::features::kFeatureManagementMahi,
-                              chromeos::features::kMahi,
                               chromeos::features::kOrca},
         /*disabled_features=*/{chromeos::features::kMagicBoostRevamp});
 
@@ -1211,7 +1208,6 @@ class MahiUiWithMagicBoostRevampBrowserTest
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kFeatureManagementOrca,
                               chromeos::features::kFeatureManagementMahi,
-                              chromeos::features::kMahi,
                               chromeos::features::kOrca,
                               chromeos::features::kMagicBoostRevamp},
         /*disabled_features=*/{});
