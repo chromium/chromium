@@ -7,7 +7,9 @@
 
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 
 namespace webrtc_logging {
 
@@ -27,20 +29,19 @@ namespace webrtc_logging {
 // is finished before reading is started.
 class PartialCircularBuffer {
  public:
-  // Use for reading. |buffer_size| is in bytes and must be larger than the
-  // header size (see above).
-  PartialCircularBuffer(void* buffer, uint32_t buffer_size);
+  // Use for reading. |buffer| length must be larger than the header size
+  // (see above).
+  explicit PartialCircularBuffer(base::span<uint8_t> buffer);
 
-  // Use for writing. |buffer_size| is in bytes and must be larger than the
-  // header size (see above). If |append| is true, the header data is not reset
+  // Use for writing. |buffer| length must be larger than the header size
+  // (see above). If |append| is true, the header data is not reset
   // and writing will continue were left off, |wrap_position| is then ignored.
-  PartialCircularBuffer(void* buffer,
-                        uint32_t buffer_size,
+  PartialCircularBuffer(base::span<uint8_t> buffer,
                         uint32_t wrap_position,
                         bool append);
 
-  uint32_t Read(void* buffer, uint32_t buffer_size);
-  void Write(const void* buffer, uint32_t buffer_size);
+  uint32_t Read(base::span<uint8_t> buffer);
+  void Write(base::span<const uint8_t> buffer);
 
  private:
   friend class PartialCircularBufferTest;
@@ -55,12 +56,11 @@ class PartialCircularBuffer {
   };
 #pragma pack(pop)
 
-  void DoWrite(const uint8_t* input, uint32_t input_size);
+  void DoWrite(base::span<const uint8_t> input);
 
   // Used for reading and writing.
   raw_ptr<BufferData, DanglingUntriaged> buffer_data_;
-  uint32_t memory_buffer_size_;
-  uint32_t data_size_;
+  base::raw_span<uint8_t, DanglingUntriaged> buffer_data_span_;
   uint32_t position_;
 
   // Used for reading.

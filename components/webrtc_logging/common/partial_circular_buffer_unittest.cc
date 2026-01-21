@@ -20,6 +20,8 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span_writer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace webrtc_logging {
@@ -27,25 +29,24 @@ namespace webrtc_logging {
 namespace {
 
 const uint32_t kWrapPosition = 20;
-const uint8_t kInputData[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
-const uint8_t kOutputRefDataWrap[] =
-    // The 20 bytes in the non-wrapping part.
-    {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 1, 2, 3, 4, 5, 6,
+const auto kInputData = std::to_array<const uint8_t>(
+    {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14});
+const auto kOutputRefDataWrap = std::to_array<const uint8_t>(
+    {// The 20 bytes in the non-wrapping part.
+     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 1, 2, 3, 4, 5, 6,
      // The 32 bytes in wrapping part.
      11, 12, 13, 14, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 1, 2, 3, 4,
-     5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
+     5, 6, 7, 8, 9, 10, 11, 12, 13, 14});
 
 }  // namespace
 
 class PartialCircularBufferTest : public testing::Test {
  public:
   PartialCircularBufferTest() {
-    PartialCircularBuffer::BufferData test_struct;
-    buffer_header_size_ =
-        &test_struct.data[0] - reinterpret_cast<uint8_t*>(&test_struct);
+    buffer_header_size_ = offsetof(PartialCircularBuffer::BufferData, data);
 
-    buffer_.reset(
-        new uint8_t[buffer_header_size_ + sizeof(kOutputRefDataWrap)]);
+    buffer_ = base::HeapArray<uint8_t>::Uninit(buffer_header_size_ +
+                                               sizeof(kOutputRefDataWrap));
   }
 
   PartialCircularBufferTest(const PartialCircularBufferTest&) = delete;
@@ -53,25 +54,23 @@ class PartialCircularBufferTest : public testing::Test {
       delete;
 
   void InitWriteBuffer(bool append) {
-    pcb_write_ = std::make_unique<PartialCircularBuffer>(
-        buffer_.get(), buffer_header_size_ + sizeof(kOutputRefDataWrap),
-        kWrapPosition, append);
+    pcb_write_ =
+        std::make_unique<PartialCircularBuffer>(buffer_, kWrapPosition, append);
   }
 
   void WriteToBuffer(int num) {
     for (int i = 0; i < num; ++i)
-      pcb_write_->Write(kInputData, sizeof(kInputData));
+      pcb_write_->Write(kInputData);
   }
 
   void InitReadBuffer() {
-    pcb_read_ = std::make_unique<PartialCircularBuffer>(
-        buffer_.get(), buffer_header_size_ + sizeof(kOutputRefDataWrap));
+    pcb_read_ = std::make_unique<PartialCircularBuffer>(buffer_);
   }
 
  protected:
   std::unique_ptr<PartialCircularBuffer> pcb_write_;
   std::unique_ptr<PartialCircularBuffer> pcb_read_;
-  std::unique_ptr<uint8_t[]> buffer_;
+  base::HeapArray<uint8_t> buffer_;
   uint32_t buffer_header_size_;
 };
 
@@ -80,14 +79,12 @@ TEST_F(PartialCircularBufferTest, NoWrapBeginningPartOnly) {
   WriteToBuffer(1);
   InitReadBuffer();
 
-  uint8_t output_data[sizeof(kInputData)] = {};
-  EXPECT_EQ(sizeof(output_data),
-            pcb_read_->Read(output_data, sizeof(output_data)));
+  std::array<uint8_t, sizeof(kInputData)> output_data = {};
+  EXPECT_EQ(output_data.size(), pcb_read_->Read(output_data));
 
-  UNSAFE_TODO(
-      EXPECT_EQ(0, memcmp(kInputData, output_data, sizeof(kInputData))));
+  EXPECT_EQ(kInputData, output_data);
 
-  EXPECT_EQ(0u, pcb_read_->Read(output_data, sizeof(output_data)));
+  EXPECT_EQ(0u, pcb_read_->Read(output_data));
 }
 
 TEST_F(PartialCircularBufferTest, NoWrapBeginningAndEndParts) {
@@ -96,8 +93,7 @@ TEST_F(PartialCircularBufferTest, NoWrapBeginningAndEndParts) {
   InitReadBuffer();
 
   uint8_t output_data[2 * sizeof(kInputData)] = {};
-  EXPECT_EQ(sizeof(output_data),
-            pcb_read_->Read(output_data, sizeof(output_data)));
+  EXPECT_EQ(sizeof(output_data), pcb_read_->Read(output_data));
 
   const uint8_t output_ref_data[2 * sizeof(kInputData)] = {
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
@@ -105,7 +101,7 @@ TEST_F(PartialCircularBufferTest, NoWrapBeginningAndEndParts) {
   UNSAFE_TODO(
       EXPECT_EQ(0, memcmp(output_ref_data, output_data, sizeof(output_data))));
 
-  EXPECT_EQ(0u, pcb_read_->Read(output_data, sizeof(output_data)));
+  EXPECT_EQ(0u, pcb_read_->Read(output_data));
 }
 
 TEST_F(PartialCircularBufferTest, WrapOnce) {
@@ -113,14 +109,12 @@ TEST_F(PartialCircularBufferTest, WrapOnce) {
   WriteToBuffer(4);
   InitReadBuffer();
 
-  uint8_t output_data[sizeof(kOutputRefDataWrap)] = {};
-  EXPECT_EQ(sizeof(output_data),
-            pcb_read_->Read(output_data, sizeof(output_data)));
+  std::array<uint8_t, sizeof(kOutputRefDataWrap)> output_data = {};
+  EXPECT_EQ(output_data.size(), pcb_read_->Read(output_data));
 
-  UNSAFE_TODO(EXPECT_EQ(
-      0, memcmp(kOutputRefDataWrap, output_data, sizeof(output_data))));
+  EXPECT_EQ(kOutputRefDataWrap, output_data);
 
-  EXPECT_EQ(0u, pcb_read_->Read(output_data, sizeof(output_data)));
+  EXPECT_EQ(0u, pcb_read_->Read(output_data));
 }
 
 TEST_F(PartialCircularBufferTest, WrapTwice) {
@@ -128,14 +122,12 @@ TEST_F(PartialCircularBufferTest, WrapTwice) {
   WriteToBuffer(7);
   InitReadBuffer();
 
-  uint8_t output_data[sizeof(kOutputRefDataWrap)] = {};
-  EXPECT_EQ(sizeof(output_data),
-            pcb_read_->Read(output_data, sizeof(output_data)));
+  std::array<uint8_t, sizeof(kOutputRefDataWrap)> output_data = {};
+  EXPECT_EQ(output_data.size(), pcb_read_->Read(output_data));
 
-  UNSAFE_TODO(EXPECT_EQ(
-      0, memcmp(kOutputRefDataWrap, output_data, sizeof(output_data))));
+  EXPECT_EQ(kOutputRefDataWrap, output_data);
 
-  EXPECT_EQ(0u, pcb_read_->Read(output_data, sizeof(output_data)));
+  EXPECT_EQ(0u, pcb_read_->Read(output_data));
 }
 
 TEST_F(PartialCircularBufferTest, WrapOnceSmallerOutputBuffer) {
@@ -143,20 +135,20 @@ TEST_F(PartialCircularBufferTest, WrapOnceSmallerOutputBuffer) {
   WriteToBuffer(4);
   InitReadBuffer();
 
-  uint8_t output_data[sizeof(kOutputRefDataWrap)] = {};
+  std::array<uint8_t, sizeof(kOutputRefDataWrap)> output_data = {};
   const uint32_t size_per_read = 16;
   uint32_t read = 0;
-  for (; read + size_per_read <= sizeof(output_data); read += size_per_read) {
-    UNSAFE_TODO(EXPECT_EQ(size_per_read,
-                          pcb_read_->Read(output_data + read, size_per_read)));
+  for (; read + size_per_read <= output_data.size(); read += size_per_read) {
+    EXPECT_EQ(
+        size_per_read,
+        pcb_read_->Read(base::span(output_data).subspan(read, size_per_read)));
   }
-  UNSAFE_TODO(EXPECT_EQ(sizeof(output_data) - read,
-                        pcb_read_->Read(output_data + read, size_per_read)));
+  EXPECT_EQ(output_data.size() - read,
+            pcb_read_->Read(base::span(output_data).subspan(read)));
 
-  UNSAFE_TODO(EXPECT_EQ(
-      0, memcmp(kOutputRefDataWrap, output_data, sizeof(output_data))));
+  EXPECT_EQ(kOutputRefDataWrap, output_data);
 
-  EXPECT_EQ(0u, pcb_read_->Read(output_data, sizeof(output_data)));
+  EXPECT_EQ(0u, pcb_read_->Read(output_data));
 }
 
 TEST_F(PartialCircularBufferTest, WrapOnceWithAppend) {
@@ -166,14 +158,12 @@ TEST_F(PartialCircularBufferTest, WrapOnceWithAppend) {
   WriteToBuffer(2);
   InitReadBuffer();
 
-  uint8_t output_data[sizeof(kOutputRefDataWrap)] = {};
-  EXPECT_EQ(sizeof(output_data),
-            pcb_read_->Read(output_data, sizeof(output_data)));
+  std::array<uint8_t, sizeof(kOutputRefDataWrap)> output_data = {};
+  EXPECT_EQ(output_data.size(), pcb_read_->Read(output_data));
 
-  UNSAFE_TODO(EXPECT_EQ(
-      0, memcmp(kOutputRefDataWrap, output_data, sizeof(output_data))));
+  EXPECT_EQ(kOutputRefDataWrap, output_data);
 
-  EXPECT_EQ(0u, pcb_read_->Read(output_data, sizeof(output_data)));
+  EXPECT_EQ(0u, pcb_read_->Read(output_data));
 }
 
 TEST_F(PartialCircularBufferTest, WrapTwiceWithAppend) {
@@ -183,14 +173,12 @@ TEST_F(PartialCircularBufferTest, WrapTwiceWithAppend) {
   WriteToBuffer(3);
   InitReadBuffer();
 
-  uint8_t output_data[sizeof(kOutputRefDataWrap)] = {};
-  EXPECT_EQ(sizeof(output_data),
-            pcb_read_->Read(output_data, sizeof(output_data)));
+  std::array<uint8_t, sizeof(kOutputRefDataWrap)> output_data = {};
+  EXPECT_EQ(output_data.size(), pcb_read_->Read(output_data));
 
-  UNSAFE_TODO(EXPECT_EQ(
-      0, memcmp(kOutputRefDataWrap, output_data, sizeof(output_data))));
+  EXPECT_EQ(kOutputRefDataWrap, output_data);
 
-  EXPECT_EQ(0u, pcb_read_->Read(output_data, sizeof(output_data)));
+  EXPECT_EQ(0u, pcb_read_->Read(output_data));
 }
 
 TEST_F(PartialCircularBufferTest, WrapOnceThenOverwriteWithNoWrap) {
@@ -200,35 +188,32 @@ TEST_F(PartialCircularBufferTest, WrapOnceThenOverwriteWithNoWrap) {
   WriteToBuffer(1);
   InitReadBuffer();
 
-  uint8_t output_data[sizeof(kInputData)] = {};
-  EXPECT_EQ(sizeof(output_data),
-            pcb_read_->Read(output_data, sizeof(output_data)));
+  std::array<uint8_t, sizeof(kInputData)> output_data = {};
+  EXPECT_EQ(output_data.size(), pcb_read_->Read(output_data));
 
-  UNSAFE_TODO(
-      EXPECT_EQ(0, memcmp(kInputData, output_data, sizeof(kInputData))));
+  EXPECT_EQ(kInputData, output_data);
 
-  EXPECT_EQ(0u, pcb_read_->Read(output_data, sizeof(output_data)));
+  EXPECT_EQ(0u, pcb_read_->Read(output_data));
 }
 
 TEST_F(PartialCircularBufferTest, WrapTwiceWithSingleWrite) {
   const size_t kInputSize = sizeof(kInputData);
   const size_t kLargeSize = kInputSize * 7;
-  uint8_t large_input[kLargeSize] = {};
+  std::array<uint8_t, kLargeSize> large_input = {};
+  base::SpanWriter<uint8_t> large_input_writer(large_input);
   for (size_t offset = 0; offset < kLargeSize; offset += kInputSize)
-    UNSAFE_TODO(memcpy(large_input + offset, kInputData, kInputSize));
+    EXPECT_TRUE(large_input_writer.Write(kInputData));
 
   InitWriteBuffer(false);
-  pcb_write_->Write(large_input, kLargeSize);
+  pcb_write_->Write(large_input);
   InitReadBuffer();
 
-  uint8_t output_data[sizeof(kOutputRefDataWrap)] = {};
-  EXPECT_EQ(sizeof(output_data),
-            pcb_read_->Read(output_data, sizeof(output_data)));
+  std::array<uint8_t, sizeof(kOutputRefDataWrap)> output_data = {};
+  EXPECT_EQ(output_data.size(), pcb_read_->Read(output_data));
 
-  UNSAFE_TODO(EXPECT_EQ(
-      0, memcmp(kOutputRefDataWrap, output_data, sizeof(output_data))));
+  EXPECT_EQ(kOutputRefDataWrap, output_data);
 
-  EXPECT_EQ(0u, pcb_read_->Read(output_data, sizeof(output_data)));
+  EXPECT_EQ(0u, pcb_read_->Read(output_data));
 }
 
 }  // namespace webrtc_logging

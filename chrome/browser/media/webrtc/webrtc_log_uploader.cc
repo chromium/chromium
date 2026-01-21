@@ -457,8 +457,7 @@ std::string WebRtcLogUploader::CompressLog(WebRtcLogBuffer* buffer) {
   webrtc_logging::PartialCircularBuffer read_buffer(buffer->Read());
   do {
     if (stream.avail_in == 0) {
-      uint32_t read = read_buffer.Read(&intermediate_buffer[0],
-                                       sizeof(intermediate_buffer));
+      uint32_t read = read_buffer.Read(intermediate_buffer);
       stream.next_in = &intermediate_buffer[0];
       stream.avail_in = read;
       if (read != kIntermediateCompressionBufferBytes)
