@@ -24,6 +24,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_IMPL_H_
 
+#include <hwy/highway.h>
 #include <limits.h>
 #include <string.h>
 
@@ -357,12 +358,51 @@ class WTF_EXPORT StringImpl {
     destination.copy_from(source);
   }
 
+#if HWY_TARGET != HWY_SCALAR
+  ALWAYS_INLINE static void SimdCopyChars(base::span<UChar> destination,
+                                          base::span<const LChar> source) {
+    namespace hw = hwy::HWY_NAMESPACE;
+
+    constexpr hw::FixedTag<uint16_t, 8> d16;
+    constexpr hw::FixedTag<uint8_t, 16> d8;
+    constexpr size_t kLanes = hw::Lanes(d8);
+
+    const size_t length = source.size();
+    const LChar* src = source.data();
+    UChar* dst = destination.data();
+
+    // SAFETY: The SIMD code requires raw buffer access.
+    UNSAFE_BUFFERS({
+      size_t i = 0;
+      if (length >= kLanes) {
+        for (; i + kLanes <= length; i += kLanes) {
+          const auto v8 = hw::LoadU(d8, src + i);
+          const auto v16_low = hw::PromoteLowerTo(d16, v8);
+          const auto v16_high = hw::PromoteUpperTo(d16, v8);
+          hw::StoreU(v16_low, d16, reinterpret_cast<uint16_t*>(dst + i));
+          hw::StoreU(v16_high, d16,
+                     reinterpret_cast<uint16_t*>(dst + i + hw::Lanes(d16)));
+        }
+      }
+
+      for (; i < length; ++i) {
+        dst[i] = src[i];
+      }
+    });
+  }
+#endif  // HWY_TARGET != HWY_SCALAR
+
   ALWAYS_INLINE static void CopyChars(base::span<UChar> destination,
                                       base::span<const LChar> source) {
     CHECK_EQ(destination.size(), source.size());
+
+#if HWY_TARGET != HWY_SCALAR
+    return SimdCopyChars(destination, source);
+#else
     for (size_t i = 0; i < source.size(); ++i) {
       destination[i] = source[i];
     }
+#endif  // HWY_TARGET != HWY_SCALAR
   }
 
   // It is no longer required to create isolated copies for thread-safety
@@ -736,6 +776,149 @@ inline bool EqualIgnoringASCIICase(base::span<const CharacterTypeA> a,
     }
   }
   return true;
+}
+
+#if HWY_TARGET != HWY_SCALAR
+ALWAYS_INLINE bool SimdEqualIgnoringASCIICase(base::span<const LChar> a,
+                                              base::span<const LChar> b) {
+  namespace hw = hwy::HWY_NAMESPACE;
+  constexpr hw::FixedTag<uint8_t, 16> d;
+  constexpr size_t kLanes = hw::Lanes(d);
+
+  // SAFETY: The SIMD code requires raw buffer access.
+  UNSAFE_BUFFERS({
+    size_t i = 0;
+    if (a.size() >= kLanes) {
+      const auto upper_A = hw::Set(d, 'A');
+      const auto upper_Z = hw::Set(d, 'Z');
+      const auto case_bit = hw::Set(d, 0x20);
+      for (; i + kLanes <= a.size(); i += kLanes) {
+        auto va = hw::LoadU(d, reinterpret_cast<const uint8_t*>(a.data() + i));
+        auto vb = hw::LoadU(d, reinterpret_cast<const uint8_t*>(b.data() + i));
+        auto is_upper_a = hw::And(hw::Ge(va, upper_A), hw::Le(va, upper_Z));
+        va = hw::IfThenElse(is_upper_a, hw::Or(va, case_bit), va);
+        auto is_upper_b = hw::And(hw::Ge(vb, upper_A), hw::Le(vb, upper_Z));
+        vb = hw::IfThenElse(is_upper_b, hw::Or(vb, case_bit), vb);
+        if (!hw::AllTrue(d, hw::Eq(va, vb))) {
+          return false;
+        }
+      }
+    }
+    for (; i < a.size(); ++i) {
+      if (ToASCIILower(a.data()[i]) != ToASCIILower(b.data()[i])) {
+        return false;
+      }
+    }
+  });
+  return true;
+}
+
+ALWAYS_INLINE bool SimdEqualIgnoringASCIICase(base::span<const UChar> a,
+                                              base::span<const LChar> b) {
+  namespace hw = hwy::HWY_NAMESPACE;
+  constexpr hw::FixedTag<uint16_t, 8> d16;
+  constexpr hw::FixedTag<uint8_t, 8> d8;
+  constexpr size_t kLanes = hw::Lanes(d16);
+
+  // SAFETY: The SIMD code requires raw buffer access.
+  UNSAFE_BUFFERS({
+    size_t i = 0;
+    if (a.size() >= kLanes) {
+      const auto upper_A = hw::Set(d16, 'A');
+      const auto upper_Z = hw::Set(d16, 'Z');
+      const auto case_bit = hw::Set(d16, 0x20);
+      for (; i + kLanes <= a.size(); i += kLanes) {
+        auto va =
+            hw::LoadU(d16, reinterpret_cast<const uint16_t*>(a.data() + i));
+        auto vb_8 =
+            hw::LoadU(d8, reinterpret_cast<const uint8_t*>(b.data() + i));
+        auto vb = hw::PromoteTo(d16, vb_8);
+        auto is_upper_a = hw::And(hw::Ge(va, upper_A), hw::Le(va, upper_Z));
+        va = hw::IfThenElse(is_upper_a, hw::Or(va, case_bit), va);
+        auto is_upper_b = hw::And(hw::Ge(vb, upper_A), hw::Le(vb, upper_Z));
+        vb = hw::IfThenElse(is_upper_b, hw::Or(vb, case_bit), vb);
+        if (!hw::AllTrue(d16, hw::Eq(va, vb))) {
+          return false;
+        }
+      }
+    }
+    for (; i < a.size(); ++i) {
+      if (ToASCIILower(a.data()[i]) != ToASCIILower(b.data()[i])) {
+        return false;
+      }
+    }
+  });
+  return true;
+}
+
+ALWAYS_INLINE bool SimdEqualIgnoringASCIICase(base::span<const UChar> a,
+                                              base::span<const UChar> b) {
+  namespace hw = hwy::HWY_NAMESPACE;
+  constexpr hw::FixedTag<uint16_t, 8> d;
+  constexpr size_t kLanes = hw::Lanes(d);
+
+  // SAFETY: The SIMD code requires raw buffer access.
+  UNSAFE_BUFFERS({
+    size_t i = 0;
+    if (a.size() >= kLanes) {
+      const auto upper_A = hw::Set(d, 'A');
+      const auto upper_Z = hw::Set(d, 'Z');
+      const auto case_bit = hw::Set(d, 0x20);
+      for (; i + kLanes <= a.size(); i += kLanes) {
+        auto va = hw::LoadU(d, reinterpret_cast<const uint16_t*>(a.data() + i));
+        auto vb = hw::LoadU(d, reinterpret_cast<const uint16_t*>(b.data() + i));
+        auto is_upper_a = hw::And(hw::Ge(va, upper_A), hw::Le(va, upper_Z));
+        va = hw::IfThenElse(is_upper_a, hw::Or(va, case_bit), va);
+        auto is_upper_b = hw::And(hw::Ge(vb, upper_A), hw::Le(vb, upper_Z));
+        vb = hw::IfThenElse(is_upper_b, hw::Or(vb, case_bit), vb);
+        if (!hw::AllTrue(d, hw::Eq(va, vb))) {
+          return false;
+        }
+      }
+    }
+    for (; i < a.size(); ++i) {
+      if (ToASCIILower(a.data()[i]) != ToASCIILower(b.data()[i])) {
+        return false;
+      }
+    }
+  });
+  return true;
+}
+#endif  // HWY_TARGET != HWY_SCALAR
+
+ALWAYS_INLINE bool EqualIgnoringASCIICase(base::span<const LChar> a,
+                                          base::span<const LChar> b) {
+  CHECK_EQ(a.size(), b.size());
+#if HWY_TARGET != HWY_SCALAR
+  return SimdEqualIgnoringASCIICase(a, b);
+#else
+  return EqualIgnoringASCIICase<LChar, LChar>(a, b);
+#endif  // HWY_TARGET != HWY_SCALAR
+}
+
+ALWAYS_INLINE bool EqualIgnoringASCIICase(base::span<const UChar> a,
+                                          base::span<const LChar> b) {
+  CHECK_EQ(a.size(), b.size());
+#if HWY_TARGET != HWY_SCALAR
+  return SimdEqualIgnoringASCIICase(a, b);
+#else
+  return EqualIgnoringASCIICase<UChar, LChar>(a, b);
+#endif  // HWY_TARGET != HWY_SCALAR
+}
+
+ALWAYS_INLINE bool EqualIgnoringASCIICase(base::span<const LChar> a,
+                                          base::span<const UChar> b) {
+  return EqualIgnoringASCIICase(b, a);
+}
+
+ALWAYS_INLINE bool EqualIgnoringASCIICase(base::span<const UChar> a,
+                                          base::span<const UChar> b) {
+  CHECK_EQ(a.size(), b.size());
+#if HWY_TARGET != HWY_SCALAR
+  return SimdEqualIgnoringASCIICase(a, b);
+#else
+  return EqualIgnoringASCIICase<UChar, UChar>(a, b);
+#endif  // HWY_TARGET != HWY_SCALAR
 }
 
 WTF_EXPORT int CodeUnitCompareIgnoringASCIICase(const StringImpl*,
