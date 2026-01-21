@@ -38,7 +38,9 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
     // Sets `enable_chrome_send` to true to allow chrome.send() to be called in
     // TypeScript to record non-timestamp histograms, which can't be done by
     // MetricsReporter.
-    : TopChromeWebUIController(web_ui, /*enable_chrome_send=*/true) {
+    : TopChromeWebUIController(web_ui,
+                               /*enable_chrome_send=*/true,
+                               /*enable_chrome_histograms=*/true) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIWebUIToolbarHost);
