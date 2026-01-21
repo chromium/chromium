@@ -169,8 +169,10 @@ void GamepadPlatformDataFetcherMac::DeviceAdd(IOHIDDeviceRef device) {
     return;
 
   const auto& gamepad_id_list = GamepadIdList::Get();
-  DCHECK_EQ(kXInputTypeNone,
-            gamepad_id_list.GetXInputType(vendor_int, product_int));
+  if (gamepad_id_list.GetXInputType(vendor_int, product_int) ==
+      kXInputTypeNone) {
+    VLOG(1) << "XInput gamepad claimed by GamepadPlatformDataFetcherMac";
+  }
 
   if (devices_.contains(location_int)) {
     return;
