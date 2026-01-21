@@ -557,6 +557,16 @@ builder.
   * [`//components/cast_streaming/.+`](https://cs.chromium.org/chromium/src/components/cast_streaming/)
   * [`//third_party/cast_core/.+`](https://cs.chromium.org/chromium/src/third_party/cast_core/)
   * [`//third_party/openscreen/.+`](https://cs.chromium.org/chromium/src/third_party/openscreen/)
+  * [`//ui/events/platform/platform_event_dispatcher\.h`](https://cs.chromium.org/search?q=+file:ui/events/platform/platform_event_dispatcher\.h)
+  * [`//ui/gfx/client_native_pixmap\.h`](https://cs.chromium.org/search?q=+file:ui/gfx/client_native_pixmap\.h)
+  * [`//ui/gfx/client_native_pixmap_factory\.h`](https://cs.chromium.org/search?q=+file:ui/gfx/client_native_pixmap_factory\.h)
+  * [`//ui/gl/gl_surface_egl\.h`](https://cs.chromium.org/search?q=+file:ui/gl/gl_surface_egl\.h)
+  * [`//ui/ozone/common/gl_ozone_egl\.h`](https://cs.chromium.org/search?q=+file:ui/ozone/common/gl_ozone_egl\.h)
+  * [`//ui/ozone/platform/cast/.+`](https://cs.chromium.org/chromium/src/ui/ozone/platform/cast/)
+  * [`//ui/platform_window/stub/stub_window\.h`](https://cs.chromium.org/search?q=+file:ui/platform_window/stub/stub_window\.h)
+  * [`//ui/ozone/public/overlay_manager_ozone\.h`](https://cs.chromium.org/search?q=+file:ui/ozone/public/overlay_manager_ozone\.h)
+  * [`//ui/ozone/public/ozone_platform\.h`](https://cs.chromium.org/search?q=+file:ui/ozone/public/ozone_platform\.h)
+  * [`//ui/ozone/public/surface_factory_ozone\.h`](https://cs.chromium.org/search?q=+file:ui/ozone/public/surface_factory_ozone\.h)
 
 * [linux-cast-x64-dbg](https://ci.chromium.org/p/chromium/builders/try/linux-cast-x64-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-cast-x64-dbg""))
 
