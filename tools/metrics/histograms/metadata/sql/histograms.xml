@@ -38,6 +38,7 @@ chromium-metrics-reviews@google.com.
   <variant name="BrowsingTopics" summary="BrowsingTopics"/>
   <variant name="CdmStorage" summary="CdmStorage"/>
   <variant name="Chromoting" summary="Chromoting"/>
+  <variant name="CodeCache"/>
   <variant name="CollaborationMessageStorage"
       summary="CollaborationMessageStorage"/>
   <variant name="Conversions" summary="Conversions"/>
@@ -70,7 +71,6 @@ chromium-metrics-reviews@google.com.
   <variant name="PageContentStore" summary="Page Content Store"/>
   <variant name="Passwords" summary="Passwords"/>
   <variant name="PermissionAuditingLogs" summary="PermissionAuditingLogs"/>
-  <variant name="PersistentCache" summary="PersistentCache"/>
   <variant name="PowerBookmarks" summary="PowerBookmarks"/>
   <variant name="Predictor" summary="Predictor"/>
   <variant name="PrivateAggregation" summary="PrivateAggregation"/>
@@ -79,6 +79,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Recovery" summary="Recovery"/>
   <variant name="ReportingAndNEL" summary="ReportingAndNEL"/>
   <variant name="ServerCertificate" summary="ServerCertificate"/>
+  <variant name="ShaderCache"/>
   <variant name="SharedDictionary" summary="SharedDictionary"/>
   <variant name="SharedStorage" summary="SharedStorage"/>
   <variant name="Shortcuts" summary="Shortcuts"/>

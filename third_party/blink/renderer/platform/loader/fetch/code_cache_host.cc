@@ -17,6 +17,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "components/persistent_cache/client.h"
 #include "components/persistent_cache/pending_backend.h"
 #include "components/persistent_cache/persistent_cache.h"
 #include "components/persistent_cache/transaction_error.h"
@@ -330,7 +331,7 @@ class CodeCacheWithPersistentCacheHostImpl
           return;
         }
         cache_ = persistent_cache::PersistentCache::Bind(
-            *std::move(pending_backend));
+            persistent_cache::Client::kCodeCache, *std::move(pending_backend));
         if (!cache_) {  // Failed to open the cache.
           InvalidateAndRejectPendingRequests();
           return;

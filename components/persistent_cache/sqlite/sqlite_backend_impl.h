@@ -23,9 +23,12 @@
 
 namespace persistent_cache {
 
+enum class Client;
+
 class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteBackendImpl : public Backend {
  public:
-  static std::unique_ptr<Backend> Bind(PendingBackend pending_backend);
+  static std::unique_ptr<Backend> Bind(PendingBackend pending_backend,
+                                       Client client);
 
   using Passkey = base::PassKey<SqliteBackendImpl>;
   ~SqliteBackendImpl() override;
@@ -56,7 +59,8 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteBackendImpl : public Backend {
  private:
   FRIEND_TEST_ALL_PREFIXES(PersistentCacheTest, RecoveryFromTransientError);
 
-  explicit SqliteBackendImpl(sqlite_vfs::SqliteVfsFileSet vfs_file_set);
+  explicit SqliteBackendImpl(sqlite_vfs::SqliteVfsFileSet vfs_file_set,
+                             Client client);
   [[nodiscard]] bool Initialize();
 
   // Returns a SQLite error code in case of failure.

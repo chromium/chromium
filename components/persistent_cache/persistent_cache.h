@@ -26,6 +26,7 @@
 namespace persistent_cache {
 
 class Backend;
+enum class Client;
 struct PendingBackend;
 enum class TransactionError;
 
@@ -94,9 +95,10 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) PersistentCache {
  public:
   // Returns a new instance on success or null on failure. Unconditionally
   // consumes `pending_backend`.
-  static std::unique_ptr<PersistentCache> Bind(PendingBackend pending_backend);
+  static std::unique_ptr<PersistentCache> Bind(Client client,
+                                               PendingBackend pending_backend);
 
-  explicit PersistentCache(std::unique_ptr<Backend> backend);
+  explicit PersistentCache(Client client, std::unique_ptr<Backend> backend);
   ~PersistentCache();
 
   // Not copyable or moveable.
@@ -145,8 +147,8 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) PersistentCache {
   const Backend& backend() const { return *backend_; }
 
   std::optional<base::ElapsedTimer> MaybeGetTimerForHistogram();
-  std::string GetFullHistogramName(std::string_view name) const;
 
+  const Client client_;
   std::unique_ptr<Backend> backend_;
 
   static constexpr double kTimingLoggingProbability = 0.01;

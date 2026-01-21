@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "components/persistent_cache/backend_storage.h"
 #include "components/persistent_cache/backend_type.h"
+#include "components/persistent_cache/client.h"
 #include "components/persistent_cache/pending_backend.h"
 #include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
 #include "components/persistent_cache/test_utils.h"
@@ -85,7 +86,7 @@ class PersistentCachePerftest : public testing::TestWithParam<CacheOption> {
     if (auto pending_backend = backend_storage_->MakePendingBackend(
             base::FilePath(kBaseName), single_connection, journal_mode_wal);
         pending_backend.has_value()) {
-      return PersistentCache::Bind(*std::move(pending_backend));
+      return PersistentCache::Bind(Client::kTest, *std::move(pending_backend));
     }
     ADD_FAILURE() << "Failed to make PendingBackend";
     return nullptr;
@@ -201,8 +202,8 @@ TEST_P(PersistentCachePerftest, OpenClose) {
   RunAndTimeTest(
       "OpenClose", kIterationCount, [this, &cache = *cache, &success_count] {
         for (size_t i = 0; i < kIterationCount; ++i) {
-          auto persistent_cache_under_test =
-              PersistentCache::Bind(*ShareReadWriteConnection(cache));
+          auto persistent_cache_under_test = PersistentCache::Bind(
+              Client::kTest, *ShareReadWriteConnection(cache));
           if (persistent_cache_under_test) {
             ++success_count;
           }

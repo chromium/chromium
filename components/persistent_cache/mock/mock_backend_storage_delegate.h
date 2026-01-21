@@ -29,7 +29,8 @@ class MockBackendStorageDelegate : public BackendStorage::Delegate {
               (const base::FilePath& directory,
                const base::FilePath& base_name,
                bool single_connection,
-               bool journal_mode_wal),
+               bool journal_mode_wal,
+               Client client),
               (override));
   MOCK_METHOD(std::optional<PendingBackend>,
               ShareReadOnlyConnection,

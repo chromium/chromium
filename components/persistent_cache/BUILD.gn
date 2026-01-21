@@ -7,6 +7,7 @@ component("persistent_cache") {
     "backend_storage.h",
     "backend_type.h",
     "buffer_provider.h",
+    "client.h",
     "entry_metadata.h",
     "lock_state.h",
     "pending_backend.h",
@@ -19,6 +20,8 @@ component("persistent_cache") {
     "backend.cc",
     "backend.h",
     "backend_storage.cc",
+    "metrics_util.cc",
+    "metrics_util.h",
     "pending_backend.cc",
     "persistent_cache_collection.cc",
   ]

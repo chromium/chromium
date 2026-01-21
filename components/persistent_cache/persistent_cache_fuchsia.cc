@@ -19,11 +19,14 @@ namespace persistent_cache {
 
 // static
 std::unique_ptr<PersistentCache> PersistentCache::Bind(
+    Client client,
     PendingBackend pending_backend) {
   NOTREACHED();
 }
 
-PersistentCache::PersistentCache(std::unique_ptr<Backend> backend) {
+PersistentCache::PersistentCache(Client client,
+                                 std::unique_ptr<Backend> backend)
+    : client_(client) {
   NOTREACHED();
 }
 

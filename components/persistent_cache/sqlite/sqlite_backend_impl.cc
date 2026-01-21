@@ -15,13 +15,14 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_view_util.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "components/persistent_cache/backend_type.h"
+#include "components/persistent_cache/client.h"
+#include "components/persistent_cache/metrics_util.h"
 #include "components/persistent_cache/transaction_error.h"
 #include "components/sqlite_vfs/lock_state.h"
 #include "components/sqlite_vfs/pending_file_set.h"
@@ -32,20 +33,26 @@
 #include "sql/statement.h"
 #include "sql/transaction.h"
 
+namespace persistent_cache {
+
 namespace {
 
-std::string GetFullHistogramName(std::string_view name, bool read_write) {
-  return base::StrCat({"PersistentCache.", name, ".SQLite",
-                       (read_write ? ".ReadWrite" : ".ReadOnly")});
+sql::Database::Tag TagFromClient(Client client) {
+  switch (client) {
+    case Client::kCodeCache:
+      return sql::Database::Tag("CodeCache");
+    case Client::kShaderCache:
+      return sql::Database::Tag("ShaderCache");
+    case Client::kTest:
+      return sql::Database::Tag("Test");
+  }
 }
 
 }  // namespace
 
-namespace persistent_cache {
-
 // static
-std::unique_ptr<Backend> SqliteBackendImpl::Bind(
-    PendingBackend pending_backend) {
+std::unique_ptr<Backend> SqliteBackendImpl::Bind(PendingBackend pending_backend,
+                                                 Client client) {
   const auto access_rights =
       pending_backend.pending_file_set.read_write
           ? sqlite_vfs::SandboxedFile::AccessRights::kReadWrite
@@ -56,20 +63,23 @@ std::unique_ptr<Backend> SqliteBackendImpl::Bind(
   if (!file_set.has_value()) {
     return nullptr;
   }
-  auto instance = base::WrapUnique(new SqliteBackendImpl(*std::move(file_set)));
+  auto instance =
+      base::WrapUnique(new SqliteBackendImpl(*std::move(file_set), client));
+
   base::ElapsedTimer timer;
   if (!instance->Initialize()) {
     return nullptr;
   }
   base::UmaHistogramMicrosecondsTimes(
-      GetFullHistogramName(
-          "BackendInitialize",
+      GetHistogramName(
+          client, "BackendInitialize",
           access_rights == sqlite_vfs::SandboxedFile::AccessRights::kReadWrite),
       timer.Elapsed());
   return instance;
 }
 
-SqliteBackendImpl::SqliteBackendImpl(sqlite_vfs::SqliteVfsFileSet vfs_file_set)
+SqliteBackendImpl::SqliteBackendImpl(sqlite_vfs::SqliteVfsFileSet vfs_file_set,
+                                     Client client)
     : database_path_(vfs_file_set.GetDbVirtualFilePath()),
       vfs_file_set_(std::move(vfs_file_set)),
       unregister_runner_(sqlite_vfs::SqliteSandboxedVfsDelegate::GetInstance()
@@ -87,7 +97,7 @@ SqliteBackendImpl::SqliteBackendImpl(sqlite_vfs::SqliteVfsFileSet vfs_file_set)
               // Prevent SQLite from trying to use mmap, as SandboxedVfs does
               // not currently support this.
               .set_mmap_enabled(false),
-          sql::Database::Tag("PersistentCache")) {}
+          TagFromClient(client)) {}
 
 SqliteBackendImpl::~SqliteBackendImpl() {
   base::AutoLock lock(lock_, base::subtle::LockTracking::kEnabled);

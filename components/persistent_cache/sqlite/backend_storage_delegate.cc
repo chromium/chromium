@@ -34,11 +34,12 @@ std::unique_ptr<Backend> BackendStorageDelegate::MakeBackend(
     const base::FilePath& directory,
     const base::FilePath& base_name,
     bool single_connection,
-    bool journal_mode_wal) {
+    bool journal_mode_wal,
+    Client client) {
   if (auto pending_backend = MakePendingBackend(
           directory, base_name, single_connection, journal_mode_wal);
       pending_backend.has_value()) {
-    return SqliteBackendImpl::Bind((*std::move(pending_backend)));
+    return SqliteBackendImpl::Bind(*std::move(pending_backend), client);
   }
   return nullptr;
 }

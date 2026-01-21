@@ -27,6 +27,7 @@
 #include "third_party/blink/public/common/features.h"
 
 #if !BUILDFLAG(IS_FUCHSIA)
+#include "components/persistent_cache/client.h"
 #include "components/persistent_cache/persistent_cache_collection.h"
 #endif
 
@@ -162,7 +163,8 @@ void GeneratedCodeCacheContext::InitializeOnThread(const base::FilePath& path,
 
     persistent_cache_collection_ = {
         new persistent_cache::PersistentCacheCollection(
-            persistent_cache_collection_path, disk_cache_max_size),
+            persistent_cache_collection_path, disk_cache_max_size,
+            persistent_cache::Client::kCodeCache),
         base::OnTaskRunnerDeleter(task_runner_)};
 
     // Delete the GeneratedCodeCache files that won't be used to avoid wasting

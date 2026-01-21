@@ -77,10 +77,12 @@ std::optional<PendingBackend> BackendStorage::MakePendingBackend(
 std::unique_ptr<Backend> BackendStorage::MakeBackend(
     const base::FilePath& base_name,
     bool single_connection,
-    bool journal_mode_wal) {
-  return is_valid_ ? delegate_->MakeBackend(directory_, base_name,
-                                            single_connection, journal_mode_wal)
-                   : nullptr;
+    bool journal_mode_wal,
+    Client client) {
+  return is_valid_
+             ? delegate_->MakeBackend(directory_, base_name, single_connection,
+                                      journal_mode_wal, client)
+             : nullptr;
 }
 
 std::optional<PendingBackend> BackendStorage::ShareReadOnlyConnection(

@@ -17,6 +17,7 @@ namespace persistent_cache {
 
 class Backend;
 enum class BackendType;
+enum class Client;
 class PersistentCache;
 struct PendingBackend;
 
@@ -55,7 +56,8 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendStorage {
         const base::FilePath& directory,
         const base::FilePath& base_name,
         bool single_connection,
-        bool journal_mode_wal) = 0;
+        bool journal_mode_wal,
+        Client client) = 0;
 
     // Returns a pending backend for a read-only connection to the backend named
     // `base_name` within `directory`. This allows another party to bind to an
@@ -122,7 +124,8 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendStorage {
   // could not be opened or created, or the backend's storage is corrupt).
   std::unique_ptr<Backend> MakeBackend(const base::FilePath& base_name,
                                        bool single_connection,
-                                       bool journal_mode_wal);
+                                       bool journal_mode_wal,
+                                       Client client);
 
   // Returns a pending backend for a read-only connection to the backend named
   // `base_name` within the instance's directory. This allows another party to
