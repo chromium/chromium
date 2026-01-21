@@ -32,19 +32,27 @@ IOSChromePasskeyClient::IOSChromePasskeyClient(web::WebState* web_state) {
   CHECK(web_state);
   web_state_ = web_state->GetWeakPtr();
   profile_ = ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
-  bool metrics_reporting_enabled =
-      GetApplicationContext()->GetLocalState()->GetBoolean(
-          metrics::prefs::kMetricsReportingEnabled);
-  passkey_keychain_provider_ =
-      std::make_unique<PasskeyKeychainProvider>(metrics_reporting_enabled);
 }
 
 IOSChromePasskeyClient::~IOSChromePasskeyClient() {}
 
 PasskeyKeychainProvider* IOSChromePasskeyClient::GetPasskeyKeychainProvider() {
   // Returns the test provider if it's set, or the regular provider otherwise.
-  return ScopedPasskeyKeychainProviderOverride::Get()
-             ?: passkey_keychain_provider_.get();
+  PasskeyKeychainProvider* test_provider =
+      ScopedPasskeyKeychainProviderOverride::Get();
+  if (test_provider) {
+    return test_provider;
+  }
+
+  if (!passkey_keychain_provider_) {
+    bool metrics_reporting_enabled =
+        GetApplicationContext()->GetLocalState()->GetBoolean(
+            metrics::prefs::kMetricsReportingEnabled);
+    passkey_keychain_provider_ =
+        std::make_unique<PasskeyKeychainProvider>(metrics_reporting_enabled);
+  }
+
+  return passkey_keychain_provider_.get();
 }
 
 bool IOSChromePasskeyClient::PerformUserVerification() {
