@@ -67,7 +67,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
-import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.OmniboxFeatureList;
@@ -292,33 +291,6 @@ public class LocationBarTest {
                 () -> {
                     Criteria.checkThat(mUrlBar.getTextWithoutAutocomplete(), Matchers.is(query));
                     Criteria.checkThat(mLocationBarMediator.isUrlBarFocused(), Matchers.is(true));
-                });
-    }
-
-    @Test
-    @MediumTest
-    public void testPerformSearchQuery() {
-        startActivityNormally();
-        doReturn(mSearchUrl)
-                .when(mTemplateUrlService)
-                .getUrlForSearchQuery(TEST_QUERY, TEST_PARAMS);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mLocationBarMediator.performSearchQuery(TEST_QUERY, TEST_PARAMS));
-
-        ChromeTabUtils.waitForTabPageLoaded(mActivityTestRule.getActivityTab(), mSearchUrl);
-    }
-
-    @Test
-    @MediumTest
-    public void testPerformSearchQuery_emptyUrl() {
-        startActivityNormally();
-        doReturn("").when(mTemplateUrlService).getUrlForSearchQuery(TEST_QUERY, TEST_PARAMS);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mLocationBarMediator.performSearchQuery(TEST_QUERY, TEST_PARAMS);
-                    Assert.assertEquals(TEST_QUERY, mUrlBar.getTextWithoutAutocomplete());
                 });
     }
 

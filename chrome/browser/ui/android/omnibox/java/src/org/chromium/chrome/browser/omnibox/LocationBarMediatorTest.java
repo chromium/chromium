@@ -125,10 +125,7 @@ import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.ref.WeakReference;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /** Unit tests for LocationBarMediator. */
@@ -754,67 +751,6 @@ public class LocationBarMediatorTest {
 
         verify(mLocationBarLayout).post(mRunnableCaptor.capture());
         mRunnableCaptor.getValue().run();
-
-        verify(mUrlCoordinator).requestFocus();
-        verify(mUrlCoordinator)
-                .setUrlBarData(
-                        argThat(matchesUrlBarDataForQuery(query)),
-                        eq(UrlBar.ScrollType.NO_SCROLL),
-                        eq(SelectionState.SELECT_ALL));
-        verify(mAutocompleteCoordinator).startAutocompleteForQuery(query);
-        verify(mUrlCoordinator).setKeyboardVisibility(true, false);
-    }
-
-    public void testPerformSearchQuery_base() {
-        mMediator.onFinishNativeInitialization();
-        String query = "example search";
-        List<String> params = Arrays.asList("param 1", "param 2");
-        doReturn("http://www.search.com")
-                .when(mTemplateUrlService)
-                .getUrlForSearchQuery("example search", params);
-        doReturn(mTab).when(mLocationBarDataProvider).getTab();
-        mMediator.performSearchQuery(query, params);
-
-        verify(mTab).loadUrl(mLoadUrlParamsCaptor.capture());
-        assertEquals("http://www.search.com", mLoadUrlParamsCaptor.getValue().getUrl());
-        assertEquals(
-                PageTransition.GENERATED | PageTransition.FROM_ADDRESS_BAR,
-                mLoadUrlParamsCaptor.getValue().getTransitionType());
-    }
-
-    @Test
-    @DisableFeatures({OmniboxFeatureList.POST_DELAYED_TASK_FOCUS_TAB})
-    public void testPerformSearchQueryNoPostDelayedTaskFocusTab() {
-        testPerformSearchQuery_base();
-    }
-
-    @Test
-    @EnableFeatures({OmniboxFeatureList.POST_DELAYED_TASK_FOCUS_TAB})
-    public void testPerformSearchQueryPostDelayedTaskFocusTab() {
-        testPerformSearchQuery_base();
-    }
-
-    @Test
-    public void testPerformSearchQuery_empty() {
-        mMediator.performSearchQuery("", Collections.emptyList());
-        verify(mUrlCoordinator, never()).requestFocus();
-        verify(mLocationBarLayout, never()).post(any());
-
-        mMediator.onFinishNativeInitialization();
-        verify(mUrlCoordinator, never()).requestFocus();
-
-        mMediator.setSearchQuery("");
-        verify(mUrlCoordinator, never()).requestFocus();
-        verify(mLocationBarLayout, never()).post(any());
-    }
-
-    @Test
-    public void testPerformSearchQuery_emptyUrl() {
-        String query = "example search";
-        List<String> params = Arrays.asList("param 1", "param 2");
-        mMediator.onFinishNativeInitialization();
-        doReturn("").when(mTemplateUrlService).getUrlForSearchQuery("example search", params);
-        mMediator.performSearchQuery(query, params);
 
         verify(mUrlCoordinator).requestFocus();
         verify(mUrlCoordinator)

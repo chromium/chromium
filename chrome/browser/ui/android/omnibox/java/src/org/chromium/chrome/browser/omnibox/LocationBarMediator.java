@@ -1912,24 +1912,6 @@ class LocationBarMediator
     }
 
     @Override
-    public void performSearchQuery(String query, List<String> searchParams) {
-        if (TextUtils.isEmpty(query)) return;
-
-        TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
-        assert templateUrlService != null;
-        String queryUrl = templateUrlService.getUrlForSearchQuery(query, searchParams);
-
-        if (!TextUtils.isEmpty(queryUrl)) {
-            loadUrl(
-                    new OmniboxLoadUrlParams.Builder(queryUrl, PageTransition.GENERATED)
-                            .setOpenInNewTab(false)
-                            .build());
-        } else {
-            setSearchQuery(query);
-        }
-    }
-
-    @Override
     public @Nullable VoiceRecognitionHandler getVoiceRecognitionHandler() {
         return mVoiceRecognitionHandler;
     }

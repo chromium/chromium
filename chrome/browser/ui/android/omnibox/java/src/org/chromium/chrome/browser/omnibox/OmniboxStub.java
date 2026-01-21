@@ -10,8 +10,6 @@ import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 
-import java.util.List;
-
 /**
  * Handles user interaction with the stubbed Omnibox (a.k.a. fakebox) used in the pages such as NTP
  * and tasks surface.
@@ -31,16 +29,6 @@ public interface OmniboxStub {
             @Nullable String pastedText,
             @OmniboxFocusReason int reason,
             @AutocompleteRequestType int requestType);
-
-    /**
-     * Performs a search query on the current {@link Tab}. This calls {@link
-     * TemplateUrlService#getUrlForSearchQuery(String)} to get a url based on {@code query} and
-     * loads that url in the current {@link Tab}.
-     *
-     * @param query The {@link String} that represents the text query that should be searched for.
-     * @param searchParams A list of params for the search query.
-     */
-    void performSearchQuery(String query, List<String> searchParams);
 
     /**
      * @return Whether the URL bar is currently focused.
