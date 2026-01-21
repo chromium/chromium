@@ -1307,6 +1307,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Media.Audio.Layouts.Ambisonic.ChannelCount" units="channels"
+    expires_after="2026-07-20">
+  <owner>lowkey@google.com</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Channel count of Ambisonic layouts as determined by FFmpeg. This is to track
+    how often 1st order, 2nd, 3rd, etc. layouts are seen in media. This will
+    only be logged in media/ffmpeg/ffmpeg_common.cc.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.LoopbackReference.HadRuntimeError"
     enum="BooleanRuntimeError" expires_after="2026-07-03">
   <owner>henrika@google.com</owner>

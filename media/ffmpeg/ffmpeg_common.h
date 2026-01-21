@@ -188,8 +188,8 @@ MEDIA_EXPORT bool AVCodecContextToAudioDecoderConfig(
 // Converts FFmpeg's channel layout to chrome's ChannelLayout.  |channels| can
 // be used when FFmpeg's channel layout is not informative in order to make a
 // good guess about the plausible channel layout based on number of channels.
-MEDIA_EXPORT ChannelLayout ChannelLayoutToChromeChannelLayout(int64_t layout,
-                                                              int channels);
+MEDIA_EXPORT ChannelLayout
+ChannelLayoutToChromeChannelLayout(const AVChannelLayout& layout);
 
 MEDIA_EXPORT AVCodecID AudioCodecToCodecID(AudioCodec audio_codec,
                                            SampleFormat sample_format);

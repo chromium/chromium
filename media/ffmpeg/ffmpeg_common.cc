@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -17,6 +18,7 @@
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/encryption_scheme.h"
+#include "media/base/limits.h"
 #include "media/base/media_util.h"
 #include "media/base/supported_types.h"
 #include "media/base/video_aspect_ratio.h"
@@ -411,9 +413,7 @@ bool AVCodecContextToAudioDecoderConfig(const AVCodecContext* codec_context,
   ChannelLayout channel_layout =
       codec_context->ch_layout.nb_channels > 8
           ? CHANNEL_LAYOUT_DISCRETE
-          : ChannelLayoutToChromeChannelLayout(
-                codec_context->ch_layout.u.mask,
-                codec_context->ch_layout.nb_channels);
+          : ChannelLayoutToChromeChannelLayout(codec_context->ch_layout);
 
   switch (codec) {
     // For AC3/EAC3 we enable only demuxing, but not decoding, so FFmpeg does
@@ -914,8 +914,22 @@ void VideoDecoderConfigToAVCodecContext(
   ApplyCodecContextSecuritySettings(codec_context);
 }
 
-ChannelLayout ChannelLayoutToChromeChannelLayout(int64_t layout, int channels) {
-  switch (layout) {
+ChannelLayout ChannelLayoutToChromeChannelLayout(
+    const AVChannelLayout& layout) {
+  // TODO(crbug.com/475344578): We currently register 1st order ambisonics to be
+  // seen as a quad channel layout. While this is incorrect (we should return
+  // DISCRETE), we are not sure how common this case exists. Need to see
+  // histograms first before a potential breaking change.
+  if (layout.order == AV_CHANNEL_ORDER_AMBISONIC) {
+    constexpr int kMaxAmbisonicsChannels = 32;
+    static_assert(kMaxAmbisonicsChannels == media::limits::kMaxChannels,
+                  "kMaxAmbisonicsChannels does not match kMaxChannels.");
+    base::UmaHistogramExactLinear("Media.Audio.Layouts.Ambisonic.ChannelCount",
+                                  layout.nb_channels,
+                                  kMaxAmbisonicsChannels + 1);
+  }
+
+  switch (layout.u.mask) {
     case AV_CH_LAYOUT_MONO:
       return CHANNEL_LAYOUT_MONO;
     case AV_CH_LAYOUT_STEREO:
@@ -978,7 +992,7 @@ ChannelLayout ChannelLayoutToChromeChannelLayout(int64_t layout, int channels) {
     default:
       // FFmpeg channel_layout is 0 for .wav and .mp3.  Attempt to guess layout
       // based on the channel count.
-      return GuessChannelLayout(channels);
+      return GuessChannelLayout(layout.nb_channels);
   }
 }
 
