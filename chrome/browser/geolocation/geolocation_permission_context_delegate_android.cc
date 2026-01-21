@@ -10,11 +10,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/webapps/installable/installed_webapp_bridge.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/android/android_permission_util.h"
 #include "components/permissions/permission_prompt_decision.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/request_type.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/permission_descriptor_util.h"
@@ -62,8 +64,13 @@ bool GeolocationPermissionContextDelegateAndroid::DecidePermission(
             &permissions::GeolocationPermissionContext::NotifyPermissionSet,
             context->GetWeakPtr(), std::move(data), std::move(*callback),
             /*persist=*/false);
+    ContentSettingsType type = permissions::RequestTypeToContentSettingsType(
+                                   request_data.request_type.value())
+                                   .value();
+    CHECK(type == ContentSettingsType::GEOLOCATION ||
+          type == ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
     InstalledWebappBridge::DecidePermission(
-        ContentSettingsType::GEOLOCATION, request_data.requesting_origin,
+        type, request_data.requesting_origin,
         web_contents->GetLastCommittedURL(), std::move(permission_callback));
     return true;
   }

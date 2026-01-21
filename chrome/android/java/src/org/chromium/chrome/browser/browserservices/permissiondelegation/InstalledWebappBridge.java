@@ -93,6 +93,7 @@ public class InstalledWebappBridge {
         }
         switch (type) {
             case ContentSettingsType.GEOLOCATION:
+            case ContentSettingsType.GEOLOCATION_WITH_OPTIONS:
                 PermissionUpdater.getLocationPermission(origin, lastCommittedUrl, callback);
                 break;
             case ContentSettingsType.NOTIFICATIONS:
