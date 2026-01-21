@@ -152,12 +152,14 @@ template("buildflag_header") {
     forward_variables_from(invoker,
                            [
                              "deps",
-                             "public_deps",
                              "testonly",
                              "visibility",
                            ])
 
     public_deps = [ "//build:buildflag_header_h" ]
+    if (defined(invoker.public_deps)) {
+      public_deps += invoker.public_deps
+    }
   }
 
   config("${target_name}_rust_cfg") {
