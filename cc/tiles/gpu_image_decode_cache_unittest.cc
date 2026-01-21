@@ -110,27 +110,6 @@ class FakeGPUImageDecodeTestGLES2Interface : public viz::TestGLES2Interface,
     return std::make_pair(static_cast<TransferCacheEntryType>(type), id);
   }
 
-  // viz::TestGLES2Interface:
-  void GetIntegerv(GLenum name, GLint* params) override {
-    switch (name) {
-      case GL_MAX_TEXTURE_IMAGE_UNITS:
-        *params = 8;
-        return;
-      case GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS:
-        *params = 8;
-        return;
-      case GL_MAX_RENDERBUFFER_SIZE:
-        *params = 2048;
-        return;
-      case GL_MAX_VERTEX_ATTRIBS:
-        *params = 8;
-        return;
-      default:
-        break;
-    }
-    TestGLES2Interface::GetIntegerv(name, params);
-  }
-
  private:
   raw_ptr<TransferCacheTestHelper> transfer_cache_helper_;
   size_t mapped_entry_size_ = 0;
