@@ -6,9 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_HANDLERS_DEVICE_NAME_POLICY_HANDLER_H_
 
 #include <optional>
-
-#include "base/observer_list.h"
-#include "base/observer_list_types.h"
+#include <string>
 
 namespace policy {
 
@@ -33,16 +31,6 @@ class DeviceNamePolicyHandler {
     kPolicyHostnameNotConfigurable,
   };
 
-  class Observer : public base::CheckedObserver {
-   public:
-    ~Observer() override = default;
-
-    // Called when the policy type and/or hostname has changed.
-    // Use GetDeviceNamePolicy() to get the new policy and
-    // GetHostnameChosenByAdministrator() to get the new hostname.
-    virtual void OnHostnamePolicyChanged() = 0;
-  };
-
   virtual ~DeviceNamePolicyHandler();
 
   // Provides hostname if requested by administrator.
@@ -50,16 +38,8 @@ class DeviceNamePolicyHandler {
   virtual std::optional<std::string> GetHostnameChosenByAdministrator()
       const = 0;
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
-
  protected:
   DeviceNamePolicyHandler();
-
-  void NotifyHostnamePolicyChanged();
-
- private:
-  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace policy

@@ -20,23 +20,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
-namespace {
-
-class FakeObserver : public DeviceNamePolicyHandler::Observer {
- public:
-  FakeObserver() = default;
-  ~FakeObserver() override = default;
-
-  size_t num_calls() const { return num_calls_; }
-
-  // DeviceNamePolicyHandler::Observer:
-  void OnHostnamePolicyChanged() override { ++num_calls_; }
-
- private:
-  size_t num_calls_ = 0;
-};
-
-}  // namespace
 
 class DeviceNamePolicyHandlerImplTest : public testing::Test {
  public:
@@ -50,7 +33,6 @@ class DeviceNamePolicyHandlerImplTest : public testing::Test {
   }
 
   void TearDown() override {
-    handler_->RemoveObserver(&fake_observer_);
     handler_.reset();
   }
 
@@ -104,11 +86,9 @@ class DeviceNamePolicyHandlerImplTest : public testing::Test {
             ->browser_policy_connector_ash(),
         ash::CrosSettings::Get(), &fake_statistics_provider_,
         ash::NetworkHandler::Get()->network_state_handler()));
-    handler_->AddObserver(&fake_observer_);
+
     base::RunLoop().RunUntilIdle();
   }
-
-  size_t GetNumObserverCalls() const { return fake_observer_.num_calls(); }
 
   // Verifies that for unmanaged devices the policy state is kNoPolicy by
   // default and the hostname chosen by the administrator is nullopt.
@@ -171,45 +151,6 @@ class DeviceNamePolicyHandlerImplTest : public testing::Test {
         handler_->GetDeviceNamePolicyForTesting());
   }
 
-  // Verifies the number of calls received by the observer for any changes in
-  // |kDeviceHostnameTemplate| policy and hostname.
-  void VerifyObserverNumCalls() {
-    // Neither hostname or policy changes on initialization of handler
-    EXPECT_EQ(0u, GetNumObserverCalls());
-
-    // Both hostname and policy change, hence observer should be notified once
-    EXPECT_EQ(DeviceNamePolicyHandler::DeviceNamePolicy::
-                  kPolicyHostnameNotConfigurable,
-              handler_->GetDeviceNamePolicyForTesting());
-    EXPECT_FALSE(handler_->GetHostnameChosenByAdministrator());
-    std::string hostname_template = "template1";
-    SetTemplate(hostname_template);
-    EXPECT_EQ(
-        DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameChosenByAdmin,
-        handler_->GetDeviceNamePolicyForTesting());
-    EXPECT_EQ(hostname_template, handler_->GetHostnameChosenByAdministrator());
-    EXPECT_EQ(1u, GetNumObserverCalls());
-
-    // Hostname changes every time, hence observer should be notified each time.
-    hostname_template = "template2";
-    SetTemplate(hostname_template);
-    EXPECT_EQ(hostname_template, handler_->GetHostnameChosenByAdministrator());
-    EXPECT_EQ(2u, GetNumObserverCalls());
-    hostname_template = "template3";
-    SetTemplate(hostname_template);
-    EXPECT_EQ(hostname_template, handler_->GetHostnameChosenByAdministrator());
-    EXPECT_EQ(3u, GetNumObserverCalls());
-
-    // Hostname is unchanged, hence observer should not be notified.
-    const std::string const_template = "const_template";
-    SetTemplate(const_template);
-    EXPECT_EQ(const_template, handler_->GetHostnameChosenByAdministrator());
-    EXPECT_EQ(4u, GetNumObserverCalls());
-    SetTemplate(const_template);
-    EXPECT_EQ(const_template, handler_->GetHostnameChosenByAdministrator());
-    EXPECT_EQ(4u, GetNumObserverCalls());
-  }
-
   std::unique_ptr<DeviceNamePolicyHandlerImpl> handler_;
 
  private:
@@ -219,7 +160,6 @@ class DeviceNamePolicyHandlerImplTest : public testing::Test {
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   std::unique_ptr<ash::ScopedStubInstallAttributes> attributes_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
-  FakeObserver fake_observer_;
 };
 
 TEST_F(DeviceNamePolicyHandlerImplTest, NoPoliciesManagedDevice) {
@@ -262,39 +202,23 @@ TEST_F(DeviceNamePolicyHandlerImplTest,
       handler_->GetDeviceNamePolicyForTesting());
 }
 
-// Verifies that OnHostnamePolicyChanged() correctly notifies observer when
-// hostname and/or policy changes.
-TEST_F(DeviceNamePolicyHandlerImplTest, ObserverTests) {
+// Verifies that when `kDeviceHostnameTemplate` policy is unset, the device name
+// policy is reset to `kDeviceHostnameUserConfigurable`.
+TEST_F(DeviceNamePolicyHandlerImplTest, DeviceHostnameTemplatePolicyUnset) {
   InitializeHandler(/*is_device_managed=*/true);
-  VerifyObserverNumCalls();
 
-  // Policy changes every time but observer should be notified only for changes
-  // in the hostname template policy since SetConfigurable has no effect.
-  UnsetTemplate();
-  EXPECT_EQ(
-      DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,
-      handler_->GetDeviceNamePolicyForTesting());
-  EXPECT_EQ(5u, GetNumObserverCalls());
-  SetTemplate("hostname_template");
-  EXPECT_EQ(
+  const std::string hostname_template = "chromebook";
+  SetTemplate(hostname_template);
+  ASSERT_EQ(
       DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameChosenByAdmin,
       handler_->GetDeviceNamePolicyForTesting());
-  EXPECT_EQ(6u, GetNumObserverCalls());
+  ASSERT_EQ(handler_->GetHostnameChosenByAdministrator(), hostname_template);
+
   UnsetTemplate();
   EXPECT_EQ(
       DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,
       handler_->GetDeviceNamePolicyForTesting());
-  EXPECT_EQ(7u, GetNumObserverCalls());
-  SetConfigurable(false);
-  EXPECT_EQ(
-      DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,
-      handler_->GetDeviceNamePolicyForTesting());
-  EXPECT_EQ(7u, GetNumObserverCalls());
-  SetConfigurable(true);
-  EXPECT_EQ(
-      DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,
-      handler_->GetDeviceNamePolicyForTesting());
-  EXPECT_EQ(7u, GetNumObserverCalls());
+  EXPECT_FALSE(handler_->GetHostnameChosenByAdministrator());
 }
 
 }  // namespace policy

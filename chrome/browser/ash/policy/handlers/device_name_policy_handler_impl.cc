@@ -182,7 +182,6 @@ void DeviceNamePolicyHandlerImpl::SetDeviceNamePolicy(
 
   device_name_policy_ = policy;
   hostname_ = new_hostname;
-  NotifyHostnamePolicyChanged();
 }
 
 std::ostream& operator<<(

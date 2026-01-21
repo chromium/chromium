@@ -10,17 +10,4 @@ DeviceNamePolicyHandler::DeviceNamePolicyHandler() = default;
 
 DeviceNamePolicyHandler::~DeviceNamePolicyHandler() = default;
 
-void DeviceNamePolicyHandler::AddObserver(Observer* observer) {
-  observer_list_.AddObserver(observer);
-}
-
-void DeviceNamePolicyHandler::RemoveObserver(Observer* observer) {
-  observer_list_.RemoveObserver(observer);
-}
-
-void DeviceNamePolicyHandler::NotifyHostnamePolicyChanged() {
-  for (auto& observer : observer_list_)
-    observer.OnHostnamePolicyChanged();
-}
-
 }  // namespace policy
