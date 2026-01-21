@@ -2963,14 +2963,6 @@ const CSSValue* RowRuleWidth::CSSValueFromComputedStyleInternal(
       style.RowRuleWidth(), style, value_phase);
 }
 
-const CSSValue* ColumnSpan::ParseSingleValue(
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    CSSParserLocalContext& local_context) const {
-  return css_parsing_utils::ConsumeIdent<CSSValueID::kAll, CSSValueID::kNone>(
-      stream);
-}
-
 const CSSValue* ColumnSpan::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
