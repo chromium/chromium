@@ -411,10 +411,12 @@ const char kHostFrameKey[] = "host_frame";
   autofill::FieldDataManager* fieldDataManager =
       autofill::FieldDataManagerFactoryIOS::FromWebFrame(frame);
 
-  if (std::optional<FormData> form = autofill::ExtractFormData(
-          dict, false, std::u16string(), *pageURL,
-          url::Origin::Create(*pageURL), *fieldDataManager, *host_frame)) {
-    [self.delegate formHelper:self didSubmitForm:*form inFrame:frame];
+  if (base::expected<FormData, autofill::ExtractFormDataFailure> form =
+          autofill::ExtractFormData(dict, false, std::u16string(), *pageURL,
+                                    url::Origin::Create(*pageURL),
+                                    *fieldDataManager, *host_frame);
+      form.has_value()) {
+    [self.delegate formHelper:self didSubmitForm:form.value() inFrame:frame];
 
     return HandleSubmittedFormStatus::kHandled;
   }

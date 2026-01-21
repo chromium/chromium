@@ -78,12 +78,7 @@ std::optional<base::UnguessableToken> DeserializeJavaScriptFrameId(
 
 // Processes the JSON form data extracted from the page into the format expected
 // by BrowserAutofillManager.
-// `filtered` and `form_name` limit the field that will be returned.
-// `host_frame` is the isolated world frame corresponding to the page content
-// world frame where the forms were extracted. For forms extracted in the
-// isolated world pass a null `host_frame` as the frame token is derived from
-// `frame_id`. Returns an std::optional that contains the extracted vector of
-// FormData or nullopt if the data was invalid.
+// See `ExtractFormData` for details on the function parameters.
 std::optional<std::vector<FormData>> ExtractFormsData(
     NSString* form_json,
     bool filtered,
@@ -94,33 +89,17 @@ std::optional<std::vector<FormData>> ExtractFormsData(
     const std::string& frame_id,
     LocalFrameToken host_frame = LocalFrameToken());
 
-// Converts |form| into FormData.
-// `host_frame` is the isolated world frame corresponding to the page content
-// world frame where the forms were extracted. For forms extracted in the
-// isolated world pass a null `host_frame` as the frame token is derived from
-// `frame_id`. Returns nullopt if a form can not be extracted. Returns nullopt
-// if |filtered| == true and |form["name"]| != |formName|. Returns false if
-// |form["origin"]| != |form_frame_origin|. Returns an std::optional that
-// contains a FormData if the conversion succeeds. Use ExtractFormDataOrFailure
-// instead if you need to know the reason for failure.
-std::optional<FormData> ExtractFormData(
-    const base::Value::Dict& form,
-    bool filtered,
-    const std::u16string& form_name,
-    const GURL& main_frame_url,
-    const url::Origin& form_frame_origin,
-    const FieldDataManager& field_data_manager,
-    const std::string& frame_id,
-    LocalFrameToken host_frame = LocalFrameToken());
-
-// Converts |form| into FormData.
-// `host_frame` is the isolated world frame corresponding to the page content
-// world frame where the forms were extracted. For forms extracted in the
-// isolated world pass a null `host_frame` as the frame token is derived from
-// `frame_id`. Returns a base::expected containing either a FormData if the
-// conversion succeeds, or an ExtractFormDataFailure enum indicating the reason
-// for failure.
-base::expected<FormData, ExtractFormDataFailure> ExtractFormDataOrFailure(
+// Converts `form` into FormData.
+// - `filtered` and `form_name` limit the forms that
+// will be returned: if `filtered` is true, only a form with
+// `form_data.name == form_name` is returned.
+// - If a form's origin does not match `frame_origin`, the form is dropped.
+// - `host_frame` is the isolated world frame corresponding to the page content
+//   world frame where the forms were extracted. For forms extracted in the
+//   isolated world, pass a null `host_frame`, and the frame token is derived
+//   from `frame_id`.
+// - Returns std::nullopt if the data was invalid.
+base::expected<FormData, ExtractFormDataFailure> ExtractFormData(
     const base::Value::Dict& form,
     bool filtered,
     const std::u16string& form_name,

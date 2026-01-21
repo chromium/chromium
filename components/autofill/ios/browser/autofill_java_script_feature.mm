@@ -163,11 +163,13 @@ void AutofillJavaScriptFeature::ScriptMessageReceived(
   const scoped_refptr<FieldDataManager> field_data_manager =
       FieldDataManagerFactoryIOS::GetRetainable(frame);
 
-  if (std::optional<autofill::FormData> form_data = ExtractFormData(
-          *form_dict, /*filtered=*/false, /*form_name=*/u"",
-          web_state->GetLastCommittedURL(), frame->GetSecurityOrigin(),
-          *field_data_manager, frame->GetFrameId())) {
-    driver->DidAutofillForm(*std::move(form_data));
+  if (base::expected<autofill::FormData, ExtractFormDataFailure> form_data =
+          ExtractFormData(*form_dict, /*filtered=*/false, /*form_name=*/u"",
+                          web_state->GetLastCommittedURL(),
+                          frame->GetSecurityOrigin(), *field_data_manager,
+                          frame->GetFrameId());
+      form_data.has_value()) {
+    driver->DidAutofillForm(std::move(form_data).value());
   }
 }
 

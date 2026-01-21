@@ -10,6 +10,7 @@
 #import "base/json/json_writer.h"
 #import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/gmock_expected_support.h"
 #import "base/test/ios/wait_util.h"
 #import "base/values.h"
 #import "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
@@ -35,6 +36,7 @@
 #import "testing/platform_test.h"
 
 using base::SysUTF8ToNSString;
+using base::test::ValueIs;
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 using ::testing::IsTrue;
@@ -912,14 +914,12 @@ TEST_F(PasswordControllerJsTest, TouchendAsSubmissionIndicator) {
       autofill::FieldDataManagerFactoryIOS::FromWebFrame(
           delegate.lastSubmittedFormFrame);
 
-  std::optional<autofill::FormData> expected_form_data =
-      autofill::ExtractFormData(
+  base::expected<autofill::FormData, autofill::ExtractFormDataFailure>
+      expected_form_data = autofill::ExtractFormData(
           expected_form, false, std::u16string(), GURL(BaseUrl()),
           url::Origin::Create(GURL(base::SysNSStringToUTF8(FormOrigin()))),
           *fieldDataManager, GetMainWebFrame()->GetFrameId());
-  ASSERT_TRUE(expected_form_data);
-
-  EXPECT_EQ(expected_form_data.value(), delegate.lastSubmittedForm);
+  EXPECT_THAT(expected_form_data, ValueIs(delegate.lastSubmittedForm));
 }
 
 // Check that a form is filled if url of a page and url in form fill data are

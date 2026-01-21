@@ -58,8 +58,14 @@ std::optional<autofill::FormData> JsonStringToFormData(
     return std::nullopt;
   }
 
-  return autofill::ExtractFormData(*dict, false, std::u16string(), page_url,
-                                   frame_origin, field_data_manager, frame_id);
+  base::expected<autofill::FormData, autofill::ExtractFormDataFailure>
+      form_or_failure =
+          autofill::ExtractFormData(*dict, false, std::u16string(), page_url,
+                                    frame_origin, field_data_manager, frame_id);
+  if (form_or_failure.has_value()) {
+    return std::move(form_or_failure).value();
+  }
+  return std::nullopt;
 }
 
 bool IsCrossOriginIframe(web::WebState* web_state,

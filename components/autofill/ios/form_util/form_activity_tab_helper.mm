@@ -498,7 +498,7 @@ void FormActivityTabHelper::FormSubmissionHandler(
   // FormData::host_frame with the corresponding isolated world frame in
   // `local_frame_token`.
   base::expected<FormData, ExtractFormDataFailure> form_or_failure =
-      autofill::ExtractFormDataOrFailure(
+      autofill::ExtractFormData(
           *form_data, true, base::UTF8ToUTF16(form_name),
           web_state->GetLastCommittedURL(), sender_frame->GetSecurityOrigin(),
           *fieldDataManager, *frame_id, local_frame_token);

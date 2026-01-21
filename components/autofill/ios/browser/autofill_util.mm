@@ -146,35 +146,17 @@ std::optional<std::vector<FormData>> ExtractFormsData(
       continue;
     }
 
-    if (std::optional<FormData> form = ExtractFormData(
+    if (base::expected<FormData, ExtractFormDataFailure> form = ExtractFormData(
             *form_dict, filtered, form_name, main_frame_url, frame_origin,
-            field_data_manager, frame_id, host_frame)) {
-      forms_data.push_back(*std::move(form));
+            field_data_manager, frame_id, host_frame);
+        form.has_value()) {
+      forms_data.push_back(std::move(form).value());
     }
   }
   return forms_data;
 }
 
-std::optional<FormData> ExtractFormData(
-    const base::Value::Dict& form,
-    bool filtered,
-    const std::u16string& form_name,
-    const GURL& main_frame_url,
-    const url::Origin& form_frame_origin,
-    const FieldDataManager& field_data_manager,
-    const std::string& frame_id,
-    LocalFrameToken host_frame) {
-  base::expected<FormData, ExtractFormDataFailure> form_or_failure =
-      ExtractFormDataOrFailure(form, filtered, form_name, main_frame_url,
-                               form_frame_origin, field_data_manager, frame_id);
-  if (!form_or_failure.has_value()) {
-    return std::nullopt;
-  }
-
-  return std::move(form_or_failure).value();
-}
-
-base::expected<FormData, ExtractFormDataFailure> ExtractFormDataOrFailure(
+base::expected<FormData, ExtractFormDataFailure> ExtractFormData(
     const base::Value::Dict& form,
     bool filtered,
     const std::u16string& form_name,
