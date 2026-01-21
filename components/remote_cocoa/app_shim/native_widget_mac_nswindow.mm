@@ -829,6 +829,18 @@ struct NSEdgeAndCornerThicknesses {
                                             forHandler:_commandHandler];
 }
 
+// Override performClose: to forward to the parent window when this window
+// doesn't have NSWindowStyleMaskClosable. This ensures that when a bubble
+// (child window) is focused in a PWA and the user presses Cmd+W, the action
+// closes the parent window.
+- (void)performClose:(id)sender {
+  if (!(self.styleMask & NSWindowStyleMaskClosable) && self.parentWindow) {
+    [self.parentWindow performClose:sender];
+    return;
+  }
+  [super performClose:sender];
+}
+
 // NSWindow overrides (NSAccessibility informal protocol implementation).
 
 - (NSString*)accessibilityDocument {
