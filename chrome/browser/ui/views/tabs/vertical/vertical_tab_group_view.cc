@@ -234,6 +234,10 @@ void VerticalTabGroupView::OnDataChanged() {
 
 void VerticalTabGroupView::UpdateChildVisibilityForCollapseState(
     bool collapsed) {
+  // Collection node may not exist at this point during browser shutdown.
+  if (!collection_node_) {
+    return;
+  }
   group_line_->SetVisible(!collapsed);
   for (auto* child : collection_node_->GetDirectChildren()) {
     child->SetVisible(!collapsed);
