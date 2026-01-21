@@ -2269,6 +2269,14 @@ BASE_FEATURE_PARAM(bool,
                    "report_inconsistent_header",
                    false);
 
+// If true, the synthetic response uses the didcated data pipe reader which
+// skips unnecessary buffering on memory to transfer the response body.
+BASE_FEATURE_PARAM(bool,
+                   kServiceWorkerSyntheticResponseSkipUnnecessaryBuffering,
+                   &kServiceWorkerSyntheticResponse,
+                   "skip_unnecessary_buffering",
+                   false);
+
 // If true, the browser enables synthetic response with the dry run mode. With
 // this mode, the navigation request is involved with the service worker code
 // path, and the synthetic response eligiblity is evaluated as if the feature is

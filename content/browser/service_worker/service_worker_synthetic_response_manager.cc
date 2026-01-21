@@ -18,6 +18,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/service_worker/service_worker_fetch_dispatcher.h"
+#include "content/browser/service_worker/service_worker_synthetic_response_data_pipe_connector.h"
 #include "content/common/service_worker/race_network_request_url_loader_client.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/http/http_status_code.h"
@@ -66,9 +67,8 @@ const base::FeatureParam<std::string>
         "ignored_headers_for_bypass", ""};
 
 bool IsBypassSyntheticResponseHeaderCheckEnabled() {
-  static const bool kIsEnabled = base::FeatureList::IsEnabled(
+  return base::FeatureList::IsEnabled(
       kServiceWorkerBypassSyntheticResponseHeaderCheck);
-  return kIsEnabled;
 }
 
 const std::string& GetIgnoredHeadersForBypass() {
@@ -154,6 +154,13 @@ bool IsServiceWorkerSyntheticResponseOffMainThread() {
   static const bool is_off_main_thread(
       blink::features::kServiceWorkerSyntheticResponseOffMainThread.Get());
   return is_off_main_thread;
+}
+
+bool IsServiceWorkerSyntheticResponseSkipUnnecessaryBuffering() {
+  static const bool skip_unnecessary_buffering(
+      blink::features::kServiceWorkerSyntheticResponseSkipUnnecessaryBuffering
+          .Get());
+  return skip_unnecessary_buffering;
 }
 }  // namespace
 
@@ -369,32 +376,79 @@ void ServiceWorkerSyntheticResponseManager::CloneBufferInBackground(
     mojo::ScopedDataPipeConsumerHandle consumer,
     mojo::ScopedDataPipeProducerHandle producer,
     base::OnceCallback<void()> callback) {
+  if (IsServiceWorkerSyntheticResponseSkipUnnecessaryBuffering()) {
+    auto data_pipe_connector =
+        std::make_unique<ServiceWorkerSyntheticResponseDataPipeConnector>(
+            std::move(consumer));
+    // To keep `data_pipe_connector` alive for the duration of the async
+    // `Transfer` operation, we move its `std::unique_ptr` into a callback that
+    // is chained to run after the main `callback`. The `data_pipe_connector`
+    // is destroyed when this chained callback runs and the `unique_ptr` goes
+    // out of scope.
+    //
+    // TODO(crbug.com/447039330): Consider using `RefCountedThreadSafe`, we
+    // should guarantee `data_pipe_connector` is successfully destroyed even
+    // if the callback chain is never run.
+    data_pipe_connector->Transfer(
+        std::move(producer),
+        std::move(callback).Then(base::BindOnce(
+            [](std::unique_ptr<ServiceWorkerSyntheticResponseDataPipeConnector>
+                   keep_alive_connector) {
+              // This lambda is executed as the `on_complete_` from
+              // `ServiceWorkerSyntheticResponseDataPipeConnector::Finish`. If
+              // we allow `keep_alive_connector` to be destructed
+              // synchronously here, `Finish()` will still be on the call stack,
+              // leading to a use-after-free. `DeleteSoon()` defers the
+              // deletion, avoiding this issue.
+              base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+                  FROM_HERE, keep_alive_connector.release());
+            },
+            std::move(data_pipe_connector))));
+    return;
+  }
   auto simple_buffer_manager =
       std::make_unique<RaceNetworkRequestSimpleBufferManager>(
           std::move(consumer));
-  // To keep `simple_buffer_manager` alive for the duration of the async `Clone`
-  // operation, we move its `std::unique_ptr` into a callback that is chained
-  // to run after the main `callback`. The `simple_buffer_manager` is destroyed
-  // when this chained callback runs and the `unique_ptr` goes out of scope.
-  //
-  // TODO(crbug.com/447039330): Consider using `RefCountedThreadSafe`, we should
-  // guarantee `simple_buffer_manager` is successfully destroyed even if the
-  // callback chain is never run.
   simple_buffer_manager->Clone(
       std::move(producer),
       std::move(callback).Then(base::BindOnce(
           [](std::unique_ptr<RaceNetworkRequestSimpleBufferManager>
                  simple_buffer_manager) {
-            // This lambda is executed as the `clone_complete_callback_` from
-            // `RaceNetworkRequestSimpleBufferManager::Finish`. If we allow
-            // `simple_buffer_manager` to be destructed synchronously here,
-            // `Finish()` will still be on the call stack, leading to a
-            // use-after-free. `DeleteSoon()` defers the deletion, avoiding
-            // this issue.
             base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
                 FROM_HERE, simple_buffer_manager.release());
           },
           std::move(simple_buffer_manager))));
+}
+
+void ServiceWorkerSyntheticResponseManager::TransferResponseBody(
+    mojo::ScopedDataPipeConsumerHandle body) {
+  if (IsServiceWorkerSyntheticResponseOffMainThread()) {
+    // Offload the buffer cloning to a background thread.
+    base::OnceCallback<void()> callback = base::BindPostTaskToCurrentDefault(
+        base::BindOnce(&ServiceWorkerSyntheticResponseManager::OnCloneCompleted,
+                       weak_factory_.GetWeakPtr()));
+    base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                &ServiceWorkerSyntheticResponseManager::CloneBufferInBackground,
+                std::move(body), write_buffer_manager_->ReleaseProducerHandle(),
+                std::move(callback)));
+    return;
+  }
+  if (IsServiceWorkerSyntheticResponseSkipUnnecessaryBuffering()) {
+    data_pipe_connector_.emplace(std::move(body));
+    data_pipe_connector_->Transfer(
+        write_buffer_manager_->ReleaseProducerHandle(),
+        base::BindOnce(&ServiceWorkerSyntheticResponseManager::OnCloneCompleted,
+                       weak_factory_.GetWeakPtr()));
+    return;
+  }
+  simple_buffer_manager_.emplace(std::move(body));
+  simple_buffer_manager_->Clone(
+      write_buffer_manager_->ReleaseProducerHandle(),
+      base::BindOnce(&ServiceWorkerSyntheticResponseManager::OnCloneCompleted,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void ServiceWorkerSyntheticResponseManager::OnReceiveResponse(
@@ -414,28 +468,7 @@ void ServiceWorkerSyntheticResponseManager::OnReceiveResponse(
       if (version_->GetResponseHeadForSyntheticResponse()) {
         is_header_consistent = CheckHeaderConsistency(response_head->headers);
         if (is_header_consistent) {
-          if (IsServiceWorkerSyntheticResponseOffMainThread()) {
-            // Offload the buffer cloning to a background thread.
-            base::OnceCallback<void()> callback =
-                base::BindPostTaskToCurrentDefault(base::BindOnce(
-                    &ServiceWorkerSyntheticResponseManager::OnCloneCompleted,
-                    weak_factory_.GetWeakPtr()));
-            base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
-                ->PostTask(FROM_HERE,
-                           base::BindOnce(
-                               &ServiceWorkerSyntheticResponseManager::
-                                   CloneBufferInBackground,
-                               std::move(body),
-                               write_buffer_manager_->ReleaseProducerHandle(),
-                               std::move(callback)));
-          } else {
-            simple_buffer_manager_.emplace(std::move(body));
-            simple_buffer_manager_->Clone(
-                write_buffer_manager_->ReleaseProducerHandle(),
-                base::BindOnce(
-                    &ServiceWorkerSyntheticResponseManager::OnCloneCompleted,
-                    weak_factory_.GetWeakPtr()));
-          }
+          TransferResponseBody(std::move(body));
         } else {
           // Clear the stored header when it's inconsistent with the header from
           // the network so that the next navigation won't get the header

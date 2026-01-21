@@ -2199,6 +2199,8 @@ source_set("browser") {
     "service_worker/service_worker_security_utils.h",
     "service_worker/service_worker_single_script_update_checker.cc",
     "service_worker/service_worker_single_script_update_checker.h",
+    "service_worker/service_worker_synthetic_response_data_pipe_connector.cc",
+    "service_worker/service_worker_synthetic_response_data_pipe_connector.h",
     "service_worker/service_worker_synthetic_response_manager.cc",
     "service_worker/service_worker_synthetic_response_manager.h",
     "service_worker/service_worker_type_converters.cc",
