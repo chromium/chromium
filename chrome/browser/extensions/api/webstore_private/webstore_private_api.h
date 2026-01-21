@@ -11,7 +11,6 @@
 
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/webstore_private/extension_install_status.h"
@@ -207,8 +206,6 @@ class WebstorePrivateCompleteInstallFunction : public ExtensionFunction {
 
   std::unique_ptr<InstallApproval> approval_;
   std::unique_ptr<ScopedActiveInstall> scoped_active_install_;
-  base::WeakPtrFactory<WebstorePrivateCompleteInstallFunction>
-      weak_ptr_factory_{this};
 };
 
 class WebstorePrivateEnableAppLauncherFunction : public ExtensionFunction {
