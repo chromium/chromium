@@ -85,6 +85,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     private final Set<View> mTouchFilterableViews = new HashSet<>();
     private ViewGroup mFooterContainer;
     private TextView mFooterMessageView;
+    private View mDialogBottomSpacer;
     private long mStartProtectingButtonTimestamp = -1;
     // The duration for which dialog buttons should not react to any tap event after this view is
     // displayed to prevent potentially unintentional user interactions. A value of zero turns off
@@ -163,6 +164,8 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mButtonGroup = findViewById(R.id.button_group);
         mFooterContainer.setBackgroundColor(
                 SemanticColorUtils.getColorSurfaceContainerLow(getContext()));
+        mDialogBottomSpacer = findViewById(R.id.dialog_bottom_spacer);
+
         updateContentVisibility();
         updateCheckboxVisibility();
         updateButtonVisibility();
@@ -552,6 +555,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         } else {
             mCustomViewContainer.setVisibility(View.GONE);
         }
+        updateContentVisibility();
     }
 
     /** @param view The customized button bar for the dialog. */
@@ -631,6 +635,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
      */
     void setPadding(Rect padding) {
         setPadding(padding.left, padding.top, padding.right, padding.bottom);
+        updateContentVisibility();
     }
 
     /**
@@ -718,6 +723,23 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mModalDialogScrollView.setVisibility(
                 modalDialogScrollViewVisible ? View.VISIBLE : View.GONE);
         mFooterContainer.setVisibility(footerMessageVisible ? View.VISIBLE : View.GONE);
+
+        boolean buttonBarVisible = mButtonBar.getVisibility() == View.VISIBLE;
+        boolean customButtonBarVisible =
+                mCustomButtonBarViewContainer.getVisibility() == View.VISIBLE;
+        boolean buttonGroupVisible = mButtonGroup.getVisibility() == View.VISIBLE;
+
+        int bottomSpacerHeight =
+                getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.modal_dialog_bottom_spacer_height);
+        boolean spacerVisible =
+                !buttonBarVisible
+                        && !customButtonBarVisible
+                        && !buttonGroupVisible
+                        && !footerMessageVisible
+                        && getPaddingBottom() < bottomSpacerHeight;
+        mDialogBottomSpacer.setVisibility(spacerVisible ? View.VISIBLE : View.GONE);
     }
 
     private void updateCheckboxVisibility() {
@@ -737,6 +759,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mPositiveButton.setVisibility(positiveButtonVisible ? View.VISIBLE : View.GONE);
         mNegativeButton.setVisibility(negativeButtonVisible ? View.VISIBLE : View.GONE);
         mButtonBar.setVisibility(defaultButtonBarVisible ? View.VISIBLE : View.GONE);
+        updateContentVisibility();
     }
 
     public static void disableButtonTapProtectionForTesting() {
