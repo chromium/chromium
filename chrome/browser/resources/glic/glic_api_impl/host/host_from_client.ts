@@ -610,10 +610,6 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
         request.model, timeDeltaFromClient(request.duration));
   }
 
-  glicBrowserOnModelChanged(request: {model: number}): void {
-    this.handler.onModelChanged(request.model);
-  }
-
   glicBrowserOnRecordUseCounter(request: {counter: number}): void {
     this.handler.onRecordUseCounter(request.counter);
   }

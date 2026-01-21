@@ -332,7 +332,7 @@ chromium-metrics-reviews@google.com.
   <int value="41" label="OnResponseStopped"/>
   <int value="42" label="OnSessionTerminated"/>
   <int value="43" label="OnTurnCompleted"/>
-  <int value="44" label="OnModelChanged"/>
+  <int value="44" label="(Obsolete) OnModelChanged"/>
   <int value="45" label="ScrollTo"/>
   <int value="46" label="SetSyntheticExperimentState"/>
   <int value="47" label="OpenOsPermissionSettingsMenu"/>

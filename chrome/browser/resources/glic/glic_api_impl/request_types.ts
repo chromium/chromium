@@ -418,12 +418,6 @@ export declare type HostRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
-  glicBrowserOnModelChanged: {
-    request: {
-      model: number,
-    },
-    backgroundAllowed: true,
-  },
   glicBrowserOnRecordUseCounter: {
     request: {
       counter: number,
@@ -892,7 +886,7 @@ export const HOST_REQUEST_TYPES: HostRequestEnumNamesType&{MAX_VALUE: number} =
         OnResponseStopped: 41,
         OnSessionTerminated: 42,
         OnTurnCompleted: 43,
-        OnModelChanged: 44,
+        // Do not reuse deleted request ID: 44,
         ScrollTo: 45,
         SetSyntheticExperimentState: 46,
         OpenOsPermissionSettingsMenu: 47,

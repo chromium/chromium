@@ -1127,15 +1127,12 @@ export declare interface GlicBrowserHostMetrics {
   onTurnCompleted?(model: WebClientModel, duration: number): void;
 
   /**
-   * Called when the model is changed. Metrics may be recorded with a separate
-   * scope.
-   */
-  onModelChanged?(model: WebClientModel): void;
-
-  /**
    * Called when we want to record an use counter metric.
    */
   onRecordUseCounter?(action: WebUseCounter): void;
+
+  // Removed fields and methods :
+  onModelChanged?(): never;  // Last seen on Canary 146.0.7639.0
 }
 
 export enum ResponseStopCause {

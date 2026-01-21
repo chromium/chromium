@@ -569,10 +569,6 @@ void GlicMetrics::OnTurnCompleted(mojom::WebClientModel model,
                                 duration);
 }
 
-void GlicMetrics::OnModelChanged(mojom::WebClientModel model) {
-  current_model_ = model;
-}
-
 void GlicMetrics::OnRecordUseCounter(uint16_t counter) {
   static_assert(1000u > static_cast<uint32_t>(mojom::WebUseCounter::kMaxValue));
   // Since the front end can contain a newer version than what chrome is

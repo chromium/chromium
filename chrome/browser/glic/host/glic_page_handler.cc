@@ -433,15 +433,13 @@ class JournalHandler {
                 .Build());
   }
 
-  void LogEndAsyncEvent(mojom::WebClientModel model,
-                        uint64_t event_async_id,
-                        const std::string& details) {
+  void LogEndAsyncEvent(uint64_t event_async_id, const std::string& details) {
     auto it = active_journal_events_.find(event_async_id);
     if (it != active_journal_events_.end()) {
       it->second->EndEntry(
           actor::JournalDetailsBuilder().Add("end_details", details).Build());
 
-      if (model == mojom::WebClientModel::kActor) {
+      if (!it->second->GetTaskId().is_null()) {
         // Log a histogram for each async event.
         std::string histogram_name;
         // The event name may have whitespaces and that won't work as a
@@ -1479,8 +1477,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void LogEndAsyncEvent(uint64_t event_async_id,
                         const std::string& details) override {
 #if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
-    journal_handler_.LogEndAsyncEvent(glic_service_->metrics()->current_model(),
-                                      event_async_id, details);
+    journal_handler_.LogEndAsyncEvent(event_async_id, details);
 #endif
   }
 
@@ -1590,10 +1587,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     if (auto* instance_metrics = host().instance_metrics()) {
       instance_metrics->OnTurnCompleted(model, duration);
     }
-  }
-
-  void OnModelChanged(glic::mojom::WebClientModel model) override {
-    glic_service_->metrics()->OnModelChanged(model);
   }
 
   void OnRecordUseCounter(uint16_t counter) override {

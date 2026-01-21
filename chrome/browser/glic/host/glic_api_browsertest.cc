@@ -2156,6 +2156,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetDisplayMedia) {
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testJournal) {
   ExecuteJsTest();
+  histogram_tester->ExpectTotalCount("Glic.Actor.JournalEvent.async_event", 1);
 }
 
 // TODO(crbug.com/438812885): This is flaky.

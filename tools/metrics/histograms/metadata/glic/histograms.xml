@@ -183,7 +183,6 @@ chromium-metrics-reviews@google.com.
     <variant name="OnContextUploadCompleted"/>
     <variant name="OnContextUploadStarted"/>
     <variant name="OnModeChange"/>
-    <variant name="OnModelChanged"/>
     <variant name="OnReaction"/>
     <variant name="OnRecordUseCounter"/>
     <variant name="OnResponseRated"/>
