@@ -931,6 +931,11 @@ export class CdpTarget {
       // `userAgent` is required if `userAgentMetadata` is provided.
       userAgent: userAgent || (userAgentMetadata ? this.#defaultUserAgent : ''),
       acceptLanguage: acceptLanguage ?? undefined,
+      // We need to provide the platform to enable platform emulation.
+      // Note that the value might be different from the one expected by the
+      // legacy `navigator.platform` (e.g. `Win32` vs `Windows`).
+      // https://github.com/w3c/webdriver-bidi/issues/1065
+      platform: clientHints?.platform ?? undefined,
       userAgentMetadata,
     });
   }

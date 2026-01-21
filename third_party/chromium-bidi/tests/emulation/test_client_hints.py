@@ -103,6 +103,7 @@ async def get_navigator_client_hints(websocket, local_server_good_ssl):
                             brands: navigator.userAgentData.brands,
                             mobile: navigator.userAgentData.mobile,
                             platform: navigator.userAgentData.platform,
+                            navigatorPlatform: navigator.platform,
                             architecture: highEntropy.architecture,
                             bitness: highEntropy.bitness,
                             formFactors: highEntropy.formFactors,
@@ -218,6 +219,8 @@ async def test_client_hints_override_global(websocket, context_id,
 
     # Verify via fixtures
     navigator_hints = await get_navigator_client_hints(context_id)
+    assert navigator_hints.pop(
+        'navigatorPlatform') == SOME_CLIENT_HINTS['platform']
     assert navigator_hints == (SOME_CLIENT_HINTS)
 
     # Verify Network Headers
@@ -230,6 +233,8 @@ async def test_client_hints_override_global(websocket, context_id,
     # Verify new context inherits
     new_context_id = await create_context()
     navigator_hints_new = await get_navigator_client_hints(new_context_id)
+    assert navigator_hints_new.pop(
+        'navigatorPlatform') == SOME_CLIENT_HINTS['platform']
     assert navigator_hints_new == (SOME_CLIENT_HINTS)
 
     network_hints_new = await get_network_client_hints(new_context_id)
@@ -275,6 +280,8 @@ async def test_client_hints_override_per_context(websocket, context_id,
 
     # Verify initial context
     navigator_hints_1 = await get_navigator_client_hints(context_id)
+    assert navigator_hints_1.pop(
+        'navigatorPlatform') == SOME_CLIENT_HINTS['platform']
     assert navigator_hints_1 == (SOME_CLIENT_HINTS)
     # Check headers for initial context
     network_hints_1 = await get_network_client_hints(context_id)
@@ -284,6 +291,8 @@ async def test_client_hints_override_per_context(websocket, context_id,
 
     # Verify new context
     navigator_hints_2 = await get_navigator_client_hints(new_context_id)
+    assert navigator_hints_2.pop(
+        'navigatorPlatform') == ANOTHER_CLIENT_HINTS['platform']
     assert navigator_hints_2 == (ANOTHER_CLIENT_HINTS)
     # Check headers for new context
     network_hints_2 = await get_network_client_hints(new_context_id)
@@ -313,6 +322,8 @@ async def test_client_hints_override_per_user_context(
 
     # Verify context in user context has the override
     navigator_hints = await get_navigator_client_hints(context_in_user_context)
+    assert navigator_hints.pop(
+        'navigatorPlatform') == SOME_CLIENT_HINTS['platform']
     assert navigator_hints == SOME_CLIENT_HINTS
 
     network_hints = await get_network_client_hints(context_in_user_context)
@@ -329,4 +340,6 @@ async def test_client_hints_override_per_user_context(
         user_context_id=user_context)
     navigator_hints_new = await get_navigator_client_hints(
         new_context_in_user_context)
+    assert navigator_hints_new.pop(
+        'navigatorPlatform') == SOME_CLIENT_HINTS['platform']
     assert navigator_hints_new == SOME_CLIENT_HINTS
