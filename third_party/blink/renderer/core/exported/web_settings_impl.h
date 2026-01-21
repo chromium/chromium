@@ -163,7 +163,6 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
                              UScriptCode = USCRIPT_COMMON) override;
   void SetStrictMixedContentChecking(bool) override;
   void SetStrictMixedContentCheckingForPlugin(bool) override;
-  void SetStrictPowerfulFeatureRestrictions(bool) override;
   void SetStrictlyBlockBlockableMixedContent(bool) override;
   void SetSupportDeprecatedTargetDensityDPI(bool) override;
   void SetSupportsMultipleWindows(bool) override;

@@ -220,7 +220,6 @@ crbug.com/459377 http/tests/websocket/multiple-connections-throttled.html [ Slow
 crbug.com/346259 http/tests/websocket/no-crash-on-cookie-flood.html [ Slow ]
 
 crbug.com/522646 http/tests/media/encrypted-media/encrypted-media-encrypted-event-different-origin.html [ Slow ]
-crbug.com/411164 [ Win ] http/tests/security/powerfulFeatureRestrictions/serviceworker-on-insecure-origin.html [ Slow ]
 crbug.com/357427 [ Debug Linux ] http/tests/workers/terminate-during-sync-operation-file.html [ Slow ]
 crbug.com/357427 [ Release ] http/tests/workers/terminate-during-sync-operation-file.html [ Slow ]
 crbug.com/357427 http/tests/workers/terminate-during-sync-operation-filesystem.html [ Slow ]

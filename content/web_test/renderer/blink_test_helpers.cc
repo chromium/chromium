@@ -105,8 +105,6 @@ void ExportWebTestSpecificPreferences(const TestPreferences& from,
   to->web_security_enabled = from.web_security_enabled;
   to->disable_reading_from_canvas = from.disable_reading_from_canvas;
   to->strict_mixed_content_checking = from.strict_mixed_content_checking;
-  to->strict_powerful_feature_restrictions =
-      from.strict_powerful_feature_restrictions;
   to->spatial_navigation_enabled = from.spatial_navigation_enabled;
 }
 

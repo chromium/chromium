@@ -1711,8 +1711,6 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   settings->SetStrictMixedContentCheckingForPlugin(
       prefs.block_mixed_plugin_content);
 
-  settings->SetStrictPowerfulFeatureRestrictions(
-      prefs.strict_powerful_feature_restrictions);
   settings->SetAllowGeolocationOnInsecureOrigins(
       prefs.allow_geolocation_on_insecure_origins);
   settings->SetPasswordEchoEnabledPhysical(

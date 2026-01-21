@@ -404,11 +404,6 @@ const char kEnableSpatialNavigation[]       = "enable-spatial-navigation";
 const char kEnableStrictMixedContentChecking[] =
     "enable-strict-mixed-content-checking";
 
-// Blocks insecure usage of a number of powerful features (device orientation,
-// for example) that we haven't yet deprecated for the web at large.
-const char kEnableStrictPowerfulFeatureRestrictions[] =
-    "enable-strict-powerful-feature-restrictions";
-
 // When specified along with a value in the range (0,1] will --enable-tracing
 // for (roughly) that percentage of tests being run. This is done in a stable
 // manner such that the same tests are chosen each run, and under the assumption

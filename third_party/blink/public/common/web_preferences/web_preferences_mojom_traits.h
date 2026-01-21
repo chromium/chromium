@@ -256,11 +256,6 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.strict_mixed_content_checking;
   }
 
-  static bool strict_powerful_feature_restrictions(
-      const blink::web_pref::WebPreferences& r) {
-    return r.strict_powerful_feature_restrictions;
-  }
-
   static bool allow_geolocation_on_insecure_origins(
       const blink::web_pref::WebPreferences& r) {
     return r.allow_geolocation_on_insecure_origins;

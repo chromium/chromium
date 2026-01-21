@@ -215,7 +215,6 @@ class WebSettings {
                                      UScriptCode = USCRIPT_COMMON) = 0;
   virtual void SetStrictMixedContentChecking(bool) = 0;
   virtual void SetStrictMixedContentCheckingForPlugin(bool) = 0;
-  virtual void SetStrictPowerfulFeatureRestrictions(bool) = 0;
   virtual void SetStrictlyBlockBlockableMixedContent(bool) = 0;
   virtual void SetSupportDeprecatedTargetDensityDPI(bool) = 0;
   virtual void SetSupportsMultipleWindows(bool) = 0;

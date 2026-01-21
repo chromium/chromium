@@ -553,10 +553,6 @@ void WebSettingsImpl::SetStrictMixedContentCheckingForPlugin(bool enabled) {
   settings_->SetStrictMixedContentCheckingForPlugin(enabled);
 }
 
-void WebSettingsImpl::SetStrictPowerfulFeatureRestrictions(bool enabled) {
-  settings_->SetStrictPowerfulFeatureRestrictions(enabled);
-}
-
 void WebSettingsImpl::SetStrictlyBlockBlockableMixedContent(bool enabled) {
   settings_->SetStrictlyBlockBlockableMixedContent(enabled);
 }

@@ -1593,8 +1593,6 @@ void TestRunnerBindings::OverridePreference(gin::Arguments* args) {
     ConvertAndSet(args, &prefs_.disable_reading_from_canvas);
   } else if (key == "WebKitStrictMixedContentChecking") {
     ConvertAndSet(args, &prefs_.strict_mixed_content_checking);
-  } else if (key == "WebKitStrictPowerfulFeatureRestrictions") {
-    ConvertAndSet(args, &prefs_.strict_powerful_feature_restrictions);
   } else if (key == "WebKitWebSecurityEnabled") {
     ConvertAndSet(args, &prefs_.web_security_enabled);
   } else if (key == "WebKitSpatialNavigationEnabled") {

@@ -4611,7 +4611,6 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
           switches::kEnablePotentiallyAnnoyingSecurityFeatures)) {
     web_prefs->disable_reading_from_canvas = true;
     web_prefs->strict_mixed_content_checking = true;
-    web_prefs->strict_powerful_feature_restrictions = true;
   }
 
   web_prefs->data_saver_enabled = IsDataSaverEnabled(profile);
