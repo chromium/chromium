@@ -2109,6 +2109,13 @@
          {}
         ]
        ],
+       "dialog-backdrop-display-none-crash.html": [
+        "7cb3826ffcb350cc9e1667def2a0dd2f8c4dc244",
+        [
+         null,
+         {}
+        ]
+       ],
        "dirty-rowgroup-crash.html": [
         "2a66cd452a7a86283d28a287a1e2005f40bfc1f7",
         [
@@ -10597,6 +10604,13 @@
    },
    "selection": {
     "crashtests": {
+     "find-with-moving-iframe.html": [
+      "a40ed60aaf3dcaca55461d330afa00744810d993",
+      [
+       null,
+       {}
+      ]
+     ],
      "selectall-and-find-svg-text-on-selectstart.html": [
       "b49dee225fcda5c14bd840973024a0d6c5e80a42",
       [
@@ -140852,19 +140866,6 @@
         {}
        ]
       ],
-      "grid-gap-decorations-058.html": [
-       "ec5cddae3592e9294f4264107d05024328fc5966",
-       [
-        null,
-        [
-         [
-          "/css/css-gaps/grid/grid-gap-decorations-058-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
       "subgrid": {
        "fragmentation": {
         "subgrid-gap-decorations-fragmentation-001.html": [
@@ -198637,7 +198638,7 @@
       ]
      ],
      "outside-marker-paint-order.html": [
-      "94d0c42eca8cffbd5637a1039028925c19e1f851",
+      "01f1745cbb9ae9914139777fe48613156c430a7a",
       [
        null,
        [
@@ -364702,16 +364703,16 @@
       "e752f4110c6f62ae66b7f96ff9995b4f4e660c71",
       []
      ],
-     "fontfaceset-add-css-connected-expected.txt": [
-      "1f89c6cdeac139bcf7242011c481513c2afec434",
-      []
-     ],
      "fontfaceset-clear-css-connected-2-ref.html": [
       "4c13ebc11c5e9e06f01a26289fddfa8376276247",
       []
      ],
      "fontfaceset-delete-css-connected-2-ref.html": [
       "e183c44e890ff8fa8e3baa68f767eac9c18a84d3",
+      []
+     ],
+     "historical-expected.txt": [
+      "7552ecaa884d335c59516a40d39e6fbf96cd6ad9",
       []
      ],
      "idlharness.https-expected.txt": [
@@ -372957,10 +372958,6 @@
        "738deafb0ef05405d0a479ca63b55446c29c7e91",
        []
       ],
-      "grid-gap-decorations-058-ref.html": [
-       "b1562c4a9914cb70e6208dc69d4e0bb0f439e047",
-       []
-      ],
       "subgrid": {
        "fragmentation": {
         "subgrid-gap-decorations-fragmentation-006-ref.html": [
@@ -376080,10 +376077,6 @@
      }
     },
     "css-highlight-api": {
-     "HighlightRegistry-maplike-tampered-Map-prototype-expected.txt": [
-      "2436e0c3bd61eb1750f4e8caf74b720b2884a209",
-      []
-     ],
      "META.yml": [
       "61d26feb5437a20eac67ea7fb503d9196d502e80",
       []
@@ -376329,12 +376322,12 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "85cc04f71d30f7cd4c36e8dc8cf0e2b8af07ec2c",
+      "5b60f42e30d0b87586d4d652cbfb60817289eb02",
       []
      ],
      "animation": {
       "WEB_FEATURES.yml": [
-       "ce2e2c31f99ddc63cd868ebea90fc65cbf23cfc4",
+       "f9eb80ffd2b019dd84a8e72b91c38dc3f887d75f",
        []
       ]
      },
@@ -377290,7 +377283,7 @@
      ],
      "parsing": {
       "WEB_FEATURES.yml": [
-       "fac5808163014952949985e9d77ef4b7939cc4ea",
+       "b1da95db30bf2d615594e8e3d22d7c7f19cd1877",
        []
       ],
       "image-rendering-computed-expected.txt": [
@@ -379054,7 +379047,7 @@
      ],
      "animations": {
       "WEB_FEATURES.yml": [
-       "12d684e80a708641d3874a53378a67719c5ad44f",
+       "4dd78af86f86b31f22b42d44ce702c3ea24bba10",
        []
       ],
       "clip-path-interpolation-shape-arc-direction-agnostic-radius-ref.html": [
@@ -380063,6 +380056,10 @@
       }
      },
      "mask-svg-content": {
+      "WEB_FEATURES.yml": [
+       "2230b92bf679ed17ccb5553d5f36f98ce7725c4f",
+       []
+      ],
       "reference": {
        "mask-green-square-001-ref.svg": [
         "c83ec87e7bd06b73983b6c80c9712b8b924e9375",
@@ -380080,7 +380077,7 @@
      },
      "parsing": {
       "WEB_FEATURES.yml": [
-       "0837d0ddf902333b45942311cc585e6e385af634",
+       "44f3661cef139ab4321c0d5121efb181eba84581",
        []
       ],
       "mask-size-computed-expected.txt": [
@@ -383938,6 +383935,12 @@
       "b42bf53a923d351f4702db63213870da9e572b5d",
       []
      ],
+     "animations": {
+      "WEB_FEATURES.yml": [
+       "b9835ff5a7663d381a357121a65906cecc262998",
+       []
+      ]
+     },
      "backdrop-inherit-rendered-ref.html": [
       "6343f8d1410ae90dba9be945504478ac00207b0f",
       []
@@ -384010,7 +384013,7 @@
      },
      "parsing": {
       "WEB_FEATURES.yml": [
-       "09651aeaa90b013d6a3a07f561c40e74b259b3b8",
+       "71be9782da8358dfaf8ec4047546c84c3440234a",
        []
       ]
      },
@@ -385091,7 +385094,7 @@
       []
      ],
      "outside-marker-paint-order-ref.html": [
-      "441a354732fc6690ea0d8af93dd33d57c8049374",
+      "ba29d864b8ba1490ee49dee8139f637946186086",
       []
      ],
      "parsing": {
@@ -412234,7 +412237,7 @@
      },
      "basic": {
       "WEB_FEATURES.yml": [
-       "01cfa8b696c8a325184e664f1fdd839b947916cc",
+       "dd86fddab14f65d4fbc0133138ed0283405078a7",
        []
       ],
       "header-value-combining.any.serviceworker-expected.txt": [
@@ -431430,6 +431433,10 @@
        ],
        "wrap-reflect-1-ref.html": [
         "98a7f8a3af6999f798d47b280b10247bd5f01b2f",
+        []
+       ],
+       "wrapping-transformation.window-expected.txt": [
+        "9ccbf28cb2b927c767a2c9a03417d94137f2ca2d",
         []
        ]
       }
@@ -460800,7 +460807,7 @@
      []
     ],
     "idlharness.https.window-expected.txt": [
-     "775d0564c831fe19d89a680f48c15e8c01303fc7",
+     "97696af6e09d3b2cd8117fe07c600ffd0faa4d2e",
      []
     ],
     "js": {
@@ -462831,6 +462838,24 @@
         []
        ]
       },
+      "external": {
+       "README.md": [
+        "78565fdb575c56942e02df0877195483a56f5c94",
+        []
+       ],
+       "global_privacy_control": {
+        "__init__.py": [
+         "112560c90812da108817ea8466cf5053c874b464",
+         []
+        ]
+       },
+       "permissions": {
+        "__init__.py": [
+         "f47138d86e46f1e4cb361eb4ec8721a146bf42cc",
+         []
+        ]
+       }
+      },
       "find_element": {
        "__init__.py": [
         "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
@@ -463007,12 +463032,6 @@
         []
        ]
       },
-      "global_privacy_control": {
-       "__init__.py": [
-        "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
-        []
-       ]
-      },
       "is_element_enabled": {
        "__init__.py": [
         "9a6d884000ea8b377f54a38b529a51152d1044ba",
@@ -463100,12 +463119,6 @@
          []
         ]
        }
-      },
-      "permissions": {
-       "__init__.py": [
-        "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
-        []
-       ]
       },
       "print": {
        "__init__.py": [
@@ -537298,6 +537311,13 @@
        {}
       ]
      ],
+     "historical.html": [
+      "19f2c1a66f6d68cf0af336c346ce2d07544fa88a",
+      [
+       null,
+       {}
+      ]
+     ],
      "idlharness.https.html": [
       "23fc2cb9e631797de57076128a052a22bc95198a",
       [
@@ -538937,21 +538957,21 @@
        ]
       ],
       "rule-visibility-items-computed.html": [
-       "7ed50cc551343e84e61e61b80e27e162ee05bcf3",
+       "161a4baf6ea82d70e63d27fcb4aeab0b4b85e20d",
        [
         null,
         {}
        ]
       ],
       "rule-visibility-items-invalid.html": [
-       "b93d30b2489186f84b3763f8c7f7032623c1f7eb",
+       "8577f749cb4fbeb29b4bcec58ccdb7352ae0df10",
        [
         null,
         {}
        ]
       ],
       "rule-visibility-items-valid.html": [
-       "89510d7611299679d009d4f007f97d2bb869237f",
+       "4758929496095901cd85748e218e9f0c4590f0e1",
        [
         null,
         {}
@@ -543299,7 +543319,7 @@
       ]
      ],
      "HighlightRegistry-maplike-tampered-Map-prototype.html": [
-      "edfda1db0e9a3db719cf41d1c8605843e21446aa",
+      "47bf2b39a8292d265fe86cf4abe6c5d7b9e141a2",
       [
        null,
        {}
@@ -546622,8 +546642,8 @@
        {}
       ]
      ],
-     "overflow-auto-scrolling-with-margins.html": [
-      "2acb543483c3bea7d4032785b2a1d1b77b5ed8ea",
+     "overflow-auto-scrolling-with-margin-and-transform.html": [
+      "fd6495d7d72d428538458f82b4ae6f1796ebd8fd",
       [
        null,
        {
@@ -572269,6 +572289,15 @@
        [
         null,
         {}
+       ]
+      ],
+      "open-pseudo-class-in-has.html": [
+       "0e9c798af7e86eff53c66a6c2eb20adbe3454937",
+       [
+        null,
+        {
+         "testdriver": true
+        }
        ]
       ],
       "part-dir.html": [
@@ -677791,7 +677820,7 @@
           ]
          ],
          "dynamic-changes.html": [
-          "1bbd2703b58b15f6cc5269eaf71d9bdf0f6fac2a",
+          "f2e84ed80f441c80c10ee7574f6432259b3d24b9",
           [
            null,
            {
@@ -677809,7 +677838,7 @@
           ]
          ],
          "focusgroup-segments.html": [
-          "058e042538ba9858c996e2e9b689e2e53a754f53",
+          "206419dd5523c929e50d3a08553e9401134ab2f7",
           [
            null,
            {
@@ -677818,7 +677847,7 @@
           ]
          ],
          "guaranteed-tab-stop-priority.html": [
-          "4da81d0b5d013499874e38656dbc4dfd50c3c22a",
+          "d6ce5c3411506d656f26066f93c95dfd6713c8ca",
           [
            null,
            {
@@ -677827,7 +677856,7 @@
           ]
          ],
          "memory-behavior.html": [
-          "ec946e12791d1b133b5ccaccd2439f9b7a58a697",
+          "93243e16a4bc065f30021ca5b33fb93f1716017b",
           [
            null,
            {
@@ -677836,7 +677865,7 @@
           ]
          ],
          "nested-focusgroups.html": [
-          "47463a71365dea03e3da8835faee99f98d5c0d8f",
+          "b8debbf54f44905025c71ccdafb1020ab2e857bf",
           [
            null,
            {
@@ -677864,7 +677893,16 @@
            }
           ]
          ]
-        }
+        },
+        "untraversable-tabindex-minus-one.html": [
+         "2bd1b0ffe2ab3fc520bca5cdd0cda8bdd6527e69",
+         [
+          null,
+          {
+           "testdriver": true
+          }
+         ]
+        ]
        }
       },
       "processing-model": {
@@ -688119,7 +688157,7 @@
         ]
        ],
        "wrapping-transformation.window.js": [
-        "70e0c3ce9fecbae6ca2f7a1c3b70c82ddbea9b4f",
+        "19b1006a8c2221bdd26d6e32b4de232787e9f479",
         [
          "html/semantics/forms/the-textarea-element/wrapping-transformation.window.html",
          {}
@@ -742944,14 +742982,14 @@
       ]
      ],
      "pseudo-on-scroller-named-timeline.html": [
-      "be93144a458c4bbd7bd8797075d921b8b9c8b14b",
+      "c2e68b418415067752afcc84ec5c33a0dd4c4955",
       [
        null,
        {}
       ]
      ],
      "pseudo-on-scroller.html": [
-      "bdeb140a041e27e04d81c40e1cfc88f033f1a250",
+      "cac0d25749e27da359bd501892c93d8558acf7d6",
       [
        null,
        {}
@@ -743287,7 +743325,7 @@
       ]
      ],
      "view-timeline-pseudo-on-scroller.html": [
-      "1cd0e021d2f066b17f81485a1cf52032079ddb05",
+      "54c73bd6d33cd220a3560665b10ceb7bda8436ba",
       [
        null,
        {}
@@ -796488,6 +796526,13 @@
         {}
        ]
       ],
+      "audiocontext-rendersizehint.html": [
+       "2ddd5fc8b42ff270d5945f6ded9dc95494528561",
+       [
+        null,
+        {}
+       ]
+      ],
       "audiocontext-sinkid-constructor.https.html": [
        "6e1bdb22d52f3da2f57c10103291575af2695faa",
        [
@@ -797797,6 +797842,13 @@
       ],
       "offlineaudiocontext-detached-execution-context.html": [
        "6eafd15fd243d3004ca887c61755c97d85f9f025",
+       [
+        null,
+        {}
+       ]
+      ],
+      "offlineaudiocontext-rendersizehint.html": [
+       "ecb1052ac0c8c6fb265d951acb4f356ab2236068",
        [
         null,
         {}
@@ -885431,6 +885483,33 @@
         ]
        ]
       },
+      "external": {
+       "global_privacy_control": {
+        "get.py": [
+         "0df6b9cdee842a03e07c57247eeb9263561986cf",
+         [
+          null,
+          {}
+         ]
+        ],
+        "set.py": [
+         "320161d8ce300ac7161b000e4dc89a58d88bc60c",
+         [
+          null,
+          {}
+         ]
+        ]
+       },
+       "permissions": {
+        "set.py": [
+         "f1ec05291067faa25130ea76bc20eef66d4338e7",
+         [
+          null,
+          {}
+         ]
+        ]
+       }
+      },
       "find_element": {
        "find.py": [
         "563a4dd6aee8b485180f5c2f64858a68a8053c8a",
@@ -885954,22 +886033,6 @@
         ]
        ]
       },
-      "global_privacy_control": {
-       "get.py": [
-        "2682b4de5bf88b9c7c74811c1972ee11acf808a6",
-        [
-         null,
-         {}
-        ]
-       ],
-       "set.py": [
-        "ba6cbfab64073194ac235059c2419b812a4f6f80",
-        [
-         null,
-         {}
-        ]
-       ]
-      },
       "interface": {
        "interface.py": [
         "6a7afcd26358aaad3779a912fd4bc00a66ca9571",
@@ -886398,15 +886461,6 @@
        ],
        "wheel.py": [
         "052de8d64e1971e1268ef781c977d4de7138c3de",
-        [
-         null,
-         {}
-        ]
-       ]
-      },
-      "permissions": {
-       "set.py": [
-        "0bee5d39146cbcc276da015aac82ddf881b51370",
         [
          null,
          {}

@@ -2967,6 +2967,8 @@ crbug.com/440811029 [ Win ] external/wpt/bluetooth/bidi/server/getPrimaryService
 crbug.com/475042067 external/wpt/webrtc-encoded-transform/idlharness.https.window.html?include=(SFrameDecrypterStream|SFrameEncrypterStream|SFrameSenderTransform|SFrameReceiverTransform|SFrameTransform.\*) [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/webdriver/tests/classic/external/global_privacy_control/get.py [ Failure ]
+external/wpt/webdriver/tests/classic/external/global_privacy_control/set.py [ Failure ]
 crbug.com/477312398 external/wpt/css/css-text/text-autospace/text-autospace-preformatted-001.html [ Failure ]
 crbug.com/477312424 external/wpt/webdriver/tests/bidi/external/emulation/set_client_hints_override/client_hints.py [ Failure ]
 crbug.com/477312424 external/wpt/webdriver/tests/bidi/external/emulation/set_client_hints_override/contexts.py [ Failure ]
