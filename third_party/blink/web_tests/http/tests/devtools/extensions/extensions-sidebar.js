@@ -10,7 +10,8 @@ import {ExtensionsTestRunner} from 'extensions_test_runner';
 
   TestRunner.dumpSidebarContent = function(panelName, callback) {
     var sidebar = TestRunner._extensionSidebar(panelName);
-    TestRunner.deprecatedRunAfterPendingDispatches(function() {
+    TestRunner.deprecatedRunAfterPendingDispatches(async function() {
+      await new Promise(requestAnimationFrame);
       TestRunner.addResult(panelName + " sidebar content: " + TestRunner.textContentWithoutStyles(sidebar.element));
       callback();
     });
