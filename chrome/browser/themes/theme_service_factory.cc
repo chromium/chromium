@@ -51,7 +51,13 @@ ThemeService* ThemeServiceFactory::GetForProfile(Profile* profile) {
   TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("loading"),
               "ThemeServiceFactory::GetForProfile");
   return static_cast<ThemeService*>(
-      GetInstance()->GetServiceForBrowserContext(profile, true));
+      GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
+}
+
+// static
+ThemeService* ThemeServiceFactory::GetForProfileIfExists(Profile* profile) {
+  return static_cast<ThemeService*>(
+      GetInstance()->GetServiceForBrowserContext(profile, /*create=*/false));
 }
 
 // static
