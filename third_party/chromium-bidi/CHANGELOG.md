@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [13.0.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v13.0.0...chromium-bidi-v13.0.1) (2026-01-21)
+
+
+### Bug Fixes
+
+* emulate `navigator.platform` based on CH-UA ([#3994](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3994)) ([c03ccf4](https://github.com/GoogleChromeLabs/chromium-bidi/commit/c03ccf450c6eeed01dcd6e5bb167736f1645fefe))
+
 ## [13.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v12.1.0...chromium-bidi-v13.0.0) (2026-01-20)
 
 
