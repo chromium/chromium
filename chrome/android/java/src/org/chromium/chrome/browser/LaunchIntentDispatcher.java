@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -117,7 +118,8 @@ public class LaunchIntentDispatcher {
 
     private LaunchIntentDispatcher(Activity activity, Intent intent) {
         mActivity = activity;
-        mIntent = assertNonNull(IntentUtils.sanitizeIntent(intent));
+        boolean unparcelFds = ChromeFeatureList.sUnparcelIntentFileDescriptors.isEnabled();
+        mIntent = assertNonNull(IntentUtils.sanitizeIntent(intent, unparcelFds));
     }
 
     /** When started with an intent, maybe pre-resolve the domain. */

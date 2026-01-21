@@ -16,15 +16,18 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.os.SystemClock;
 import android.os.TransactionTooLargeException;
 import android.text.TextUtils;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 /** Utilities dealing with extracting information from intents and creating common intents. */
 @NullMarked
@@ -420,15 +423,24 @@ public class IntentUtils {
     /**
      * Sanitizes an intent. In case the intent cannot be unparcelled, all extras will be removed to
      * make it safe to use.
+     *
      * @return A safe to use version of this intent.
      */
-    public static @Nullable Intent sanitizeIntent(final Intent incomingIntent) {
-        // On Android T+, items are only deserialized when the items themselves are queried, so the
-        // code below is a no-op.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) return incomingIntent;
+    public static @Nullable Intent sanitizeIntent(
+            final Intent incomingIntent, boolean sanitizeFds) {
         if (incomingIntent == null) return null;
         try {
-            incomingIntent.getBooleanExtra("TriggerUnparcel", false);
+            // On Android API B+, if we attempt to launch an Intent that contains a file
+            // descriptor that hasn't been unparcelled we crash. This can happen any time we forward
+            // extras from the received intent.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA && sanitizeFds) {
+                deepSanitizeIntentFds(incomingIntent);
+            } else {
+                // On Android T+, items are only deserialized when the items themselves are queried,
+                // so the code below is a no-op.
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) return incomingIntent;
+                incomingIntent.getBooleanExtra("TriggerUnparcel", false);
+            }
             return incomingIntent;
         } catch (BadParcelableException e) {
             return logInvalidIntent(incomingIntent, e);
@@ -437,6 +449,35 @@ public class IntentUtils {
                 return logInvalidIntent(incomingIntent, e);
             }
             throw e;
+        }
+    }
+
+    private static void deepSanitizeIntentFds(final Intent intent) {
+        Bundle extras = intent.getExtras();
+        if (extras == null) return;
+        boolean hasFd = intent.hasFileDescriptors();
+        RecordHistogram.recordBooleanHistogram("MobileStartup.IntentHasFileDescriptor", hasFd);
+        if (!hasFd) return;
+        long start = SystemClock.uptimeMillis();
+        forceUnparcelBundleRecursive(extras);
+        RecordHistogram.recordTimesHistogram(
+                "MobileStartup.UnparcelBundleRecursiveDuration",
+                SystemClock.uptimeMillis() - start);
+    }
+
+    private static void forceUnparcelBundleRecursive(Bundle bundle) {
+        // 1. Calling .keySet() triggers the initial unparcelling of the Bundle map.
+        for (String key : bundle.keySet()) {
+            // Calling .get(key) forces the LazyValue to materialize into a Java object.
+            Object value = bundle.get(key);
+            // 3. If it's a nested Bundle (very common in Custom Tabs), we must recurse.
+            if (value instanceof Bundle) {
+                forceUnparcelBundleRecursive((Bundle) value);
+            } else if (value instanceof List) {
+                for (Object item : (List<?>) value) {
+                    if (item instanceof Bundle) forceUnparcelBundleRecursive((Bundle) item);
+                }
+            }
         }
     }
 
