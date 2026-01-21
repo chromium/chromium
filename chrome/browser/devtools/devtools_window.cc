@@ -92,8 +92,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/blink/public/common/input/web_gesture_event.h"
-#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/public_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -1066,6 +1064,7 @@ void DevToolsWindow::Show(const DevToolsToggleAction& action) {
     // Tell inspected browser to update splitter and switch to inspected panel.
     BrowserWindow* inspected_window = inspected_browser->window();
     main_web_contents_->SetDelegate(this);
+    main_web_contents_->SetIgnoreZoomGestures(true);
 
     // Inspected tab needs to be activated, however, this cannot be done from
     // here because TabStripModel does not allow reentrancy for its public
@@ -1659,13 +1658,6 @@ void DevToolsWindow::RunFileChooser(
     const blink::mojom::FileChooserParams& params) {
   FileSelectHelper::RunFileChooser(render_frame_host, std::move(listener),
                                    params);
-}
-
-bool DevToolsWindow::PreHandleGestureEvent(
-    WebContents* source,
-    const blink::WebGestureEvent& event) {
-  // Disable pinch zooming.
-  return blink::WebInputEvent::IsPinchGestureEventType(event.GetType());
 }
 
 void DevToolsWindow::ActivateWindow() {

@@ -456,8 +456,6 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
-  bool PreHandleGestureEvent(content::WebContents* source,
-                             const blink::WebGestureEvent& event) override;
   void Close(DevToolsClosedByAction closed_by);
 
   // content::DevToolsUIBindings::Delegate overrides
