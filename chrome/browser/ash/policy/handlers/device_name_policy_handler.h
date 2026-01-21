@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_HANDLERS_DEVICE_NAME_POLICY_HANDLER_IMPL_H_
-#define CHROME_BROWSER_ASH_POLICY_HANDLERS_DEVICE_NAME_POLICY_HANDLER_IMPL_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_HANDLERS_DEVICE_NAME_POLICY_HANDLER_H_
+#define CHROME_BROWSER_ASH_POLICY_HANDLERS_DEVICE_NAME_POLICY_HANDLER_H_
 
 #include <memory>
 #include <string>
@@ -27,7 +27,7 @@ class BrowserPolicyConnectorAsh;
 // This class observes the device setting |DeviceHostname|, and calls
 // NetworkStateHandler::SetHostname() appropriately based on the value of that
 // setting.
-class DeviceNamePolicyHandlerImpl : public ash::NetworkStateHandlerObserver {
+class DeviceNamePolicyHandler : public ash::NetworkStateHandlerObserver {
  public:
   // Types of policies for device name functionality.
   enum class DeviceNamePolicy {
@@ -44,15 +44,14 @@ class DeviceNamePolicyHandlerImpl : public ash::NetworkStateHandlerObserver {
 
   // `browser_policy_connector_ash` and `cros_settings` must be non-null and
   // must outlive `this`.
-  DeviceNamePolicyHandlerImpl(
+  DeviceNamePolicyHandler(
       BrowserPolicyConnectorAsh* browser_policy_connector_ash,
       ash::CrosSettings* cros_settings);
 
-  DeviceNamePolicyHandlerImpl(const DeviceNamePolicyHandlerImpl&) = delete;
-  DeviceNamePolicyHandlerImpl& operator=(const DeviceNamePolicyHandlerImpl&) =
-      delete;
+  DeviceNamePolicyHandler(const DeviceNamePolicyHandler&) = delete;
+  DeviceNamePolicyHandler& operator=(const DeviceNamePolicyHandler&) = delete;
 
-  ~DeviceNamePolicyHandlerImpl() override;
+  ~DeviceNamePolicyHandler() override;
 
   std::optional<std::string> GetHostnameChosenByAdministrator() const;
 
@@ -62,9 +61,9 @@ class DeviceNamePolicyHandlerImpl : public ash::NetworkStateHandlerObserver {
   }
 
  private:
-  friend class DeviceNamePolicyHandlerImplTest;
+  friend class DeviceNamePolicyHandlerTest;
 
-  DeviceNamePolicyHandlerImpl(
+  DeviceNamePolicyHandler(
       BrowserPolicyConnectorAsh* browser_policy_connector_ash,
       ash::CrosSettings* cros_settings,
       ash::system::StatisticsProvider* statistics_provider,
@@ -106,13 +105,13 @@ class DeviceNamePolicyHandlerImpl : public ash::NetworkStateHandlerObserver {
   base::CallbackListSubscription template_policy_subscription_;
   base::CallbackListSubscription configurable_policy_subscription_;
   std::string hostname_;
-  base::WeakPtrFactory<DeviceNamePolicyHandlerImpl> weak_factory_{this};
+  base::WeakPtrFactory<DeviceNamePolicyHandler> weak_factory_{this};
 };
 
 std::ostream& operator<<(
     std::ostream& stream,
-    const DeviceNamePolicyHandlerImpl::DeviceNamePolicy& state);
+    const DeviceNamePolicyHandler::DeviceNamePolicy& state);
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_HANDLERS_DEVICE_NAME_POLICY_HANDLER_IMPL_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_HANDLERS_DEVICE_NAME_POLICY_HANDLER_H_

@@ -50,7 +50,7 @@
 #include "chrome/browser/ash/policy/handlers/bluetooth_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/device_dlc_predownload_list_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/device_dock_mac_address_source_handler.h"
-#include "chrome/browser/ash/policy/handlers/device_name_policy_handler_impl.h"
+#include "chrome/browser/ash/policy/handlers/device_name_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/device_wifi_allowed_handler.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler_delegate_impl.h"
@@ -285,8 +285,8 @@ void BrowserPolicyConnectorAsh::Init(
   bluetooth_policy_handler_ =
       std::make_unique<BluetoothPolicyHandler>(ash::CrosSettings::Get());
 
-  device_name_policy_handler_ = std::make_unique<DeviceNamePolicyHandlerImpl>(
-      this, ash::CrosSettings::Get());
+  device_name_policy_handler_ =
+      std::make_unique<DeviceNamePolicyHandler>(this, ash::CrosSettings::Get());
 
   minimum_version_policy_handler_delegate_ =
       std::make_unique<MinimumVersionPolicyHandlerDelegateImpl>();

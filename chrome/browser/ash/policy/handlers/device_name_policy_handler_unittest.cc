@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/handlers/device_name_policy_handler_impl.h"
+#include "chrome/browser/ash/policy/handlers/device_name_policy_handler.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
@@ -21,11 +21,11 @@
 
 namespace policy {
 
-using DeviceNamePolicy = DeviceNamePolicyHandlerImpl::DeviceNamePolicy;
+using DeviceNamePolicy = DeviceNamePolicyHandler::DeviceNamePolicy;
 
-class DeviceNamePolicyHandlerImplTest : public testing::Test {
+class DeviceNamePolicyHandlerTest : public testing::Test {
  public:
-  DeviceNamePolicyHandlerImplTest() = default;
+  DeviceNamePolicyHandlerTest() = default;
 
   // testing::Test
   void SetUp() override {
@@ -34,9 +34,7 @@ class DeviceNamePolicyHandlerImplTest : public testing::Test {
         std::make_unique<ash::NetworkHandlerTestHelper>();
   }
 
-  void TearDown() override {
-    handler_.reset();
-  }
+  void TearDown() override { handler_.reset(); }
 
   // Sets kDeviceHostnameTemplate policy which will eventually cause
   // OnDeviceHostnamePropertyChangedAndMachineStatisticsLoaded() to run
@@ -82,7 +80,7 @@ class DeviceNamePolicyHandlerImplTest : public testing::Test {
           ash::StubInstallAttributes::CreateConsumerOwned());
     }
 
-    handler_ = base::WrapUnique(new DeviceNamePolicyHandlerImpl(
+    handler_ = base::WrapUnique(new DeviceNamePolicyHandler(
         TestingBrowserProcess::GetGlobal()
             ->platform_part()
             ->browser_policy_connector_ash(),
@@ -92,7 +90,7 @@ class DeviceNamePolicyHandlerImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  std::unique_ptr<DeviceNamePolicyHandlerImpl> handler_;
+  std::unique_ptr<DeviceNamePolicyHandler> handler_;
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -105,7 +103,7 @@ class DeviceNamePolicyHandlerImplTest : public testing::Test {
 
 // Verifies that for unmanaged devices the policy state is kNoPolicy by
 // default and the hostname chosen by the administrator is nullopt.
-TEST_F(DeviceNamePolicyHandlerImplTest, NoPoliciesUnmanagedDevice) {
+TEST_F(DeviceNamePolicyHandlerTest, NoPoliciesUnmanagedDevice) {
   InitializeHandler(/*is_device_managed=*/false);
 
   EXPECT_EQ(DeviceNamePolicy::kNoPolicy,
@@ -123,7 +121,7 @@ TEST_F(DeviceNamePolicyHandlerImplTest, NoPoliciesUnmanagedDevice) {
 // Verifies that for managed devices the policy state is
 // kPolicyHostnameNotConfigurable by default and the hostname chosen by the
 // administrator is nullopt.
-TEST_F(DeviceNamePolicyHandlerImplTest, NoPoliciesManagedDevice) {
+TEST_F(DeviceNamePolicyHandlerTest, NoPoliciesManagedDevice) {
   InitializeHandler(/*is_device_managed=*/true);
 
   EXPECT_EQ(DeviceNamePolicy::kPolicyHostnameNotConfigurable,
@@ -139,7 +137,7 @@ TEST_F(DeviceNamePolicyHandlerImplTest, NoPoliciesManagedDevice) {
 // policy is set to |kPolicyHostnameChosenByAdmin| and is unaffected by the
 // |kDeviceHostnameUserConfigurable| policy. Also verifies that the hostname
 // is the one set by the template.
-TEST_F(DeviceNamePolicyHandlerImplTest, DeviceHostnameTemplatePolicyOn) {
+TEST_F(DeviceNamePolicyHandlerTest, DeviceHostnameTemplatePolicyOn) {
   InitializeHandler(/*is_device_managed=*/true);
 
   // Check that DeviceNamePolicy changes from kPolicyHostnameNotConfigurable
@@ -168,7 +166,7 @@ TEST_F(DeviceNamePolicyHandlerImplTest, DeviceHostnameTemplatePolicyOn) {
 
 // Verifies that when `kDeviceHostnameTemplate` policy is unset, the device name
 // policy is reset to `kDeviceHostnameUserConfigurable`.
-TEST_F(DeviceNamePolicyHandlerImplTest, DeviceHostnameTemplatePolicyUnset) {
+TEST_F(DeviceNamePolicyHandlerTest, DeviceHostnameTemplatePolicyUnset) {
   InitializeHandler(/*is_device_managed=*/true);
 
   const std::string hostname_template = "chromebook";
@@ -186,7 +184,7 @@ TEST_F(DeviceNamePolicyHandlerImplTest, DeviceHostnameTemplatePolicyUnset) {
 // Verifies that when |kDeviceHostnameTemplate| policy is not set, setting
 // kDeviceHostnameUserConfigurable policy should not change the
 // DeviceNamePolicy.
-TEST_F(DeviceNamePolicyHandlerImplTest,
+TEST_F(DeviceNamePolicyHandlerTest,
        DeviceHostnameTemplatePolicyOffManagedDevices) {
   InitializeHandler(/*is_device_managed=*/true);
   EXPECT_EQ(DeviceNamePolicy::kPolicyHostnameNotConfigurable,

@@ -7,7 +7,7 @@
 #include <string>
 
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/ash/policy/handlers/device_name_policy_handler_impl.h"
+#include "chrome/browser/ash/policy/handlers/device_name_policy_handler.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chromeos/ash/components/system/statistics_provider.h"

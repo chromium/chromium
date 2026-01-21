@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/handlers/device_name_policy_handler_impl.h"
+#include "chrome/browser/ash/policy/handlers/device_name_policy_handler.h"
 
 #include <string_view>
 
@@ -25,29 +25,29 @@ namespace {
 
 // By default, device name policy should be kPolicyHostnameNotConfigurable for
 // managed devices and kNoPolicy for unmanaged devices.
-DeviceNamePolicyHandlerImpl::DeviceNamePolicy ComputeInitialPolicy() {
+DeviceNamePolicyHandler::DeviceNamePolicy ComputeInitialPolicy() {
   if (ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
     // We assume that the device name is not configurable unless/until we know
     // about any policies that are set.
-    return DeviceNamePolicyHandlerImpl::DeviceNamePolicy::
+    return DeviceNamePolicyHandler::DeviceNamePolicy::
         kPolicyHostnameNotConfigurable;
   }
 
-  return DeviceNamePolicyHandlerImpl::DeviceNamePolicy::kNoPolicy;
+  return DeviceNamePolicyHandler::DeviceNamePolicy::kNoPolicy;
 }
 
 }  // namespace
 
-DeviceNamePolicyHandlerImpl::DeviceNamePolicyHandlerImpl(
+DeviceNamePolicyHandler::DeviceNamePolicyHandler(
     BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     ash::CrosSettings* cros_settings)
-    : DeviceNamePolicyHandlerImpl(
+    : DeviceNamePolicyHandler(
           browser_policy_connector_ash,
           cros_settings,
           ash::system::StatisticsProvider::GetInstance(),
           ash::NetworkHandler::Get()->network_state_handler()) {}
 
-DeviceNamePolicyHandlerImpl::DeviceNamePolicyHandlerImpl(
+DeviceNamePolicyHandler::DeviceNamePolicyHandler(
     BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     ash::CrosSettings* cros_settings,
     ash::system::StatisticsProvider* statistics_provider,
@@ -60,12 +60,12 @@ DeviceNamePolicyHandlerImpl::DeviceNamePolicyHandlerImpl(
   template_policy_subscription_ = cros_settings_->AddSettingsObserver(
       ash::kDeviceHostnameTemplate,
       base::BindRepeating(
-          &DeviceNamePolicyHandlerImpl::OnDeviceHostnamePropertyChanged,
+          &DeviceNamePolicyHandler::OnDeviceHostnamePropertyChanged,
           weak_factory_.GetWeakPtr()));
   configurable_policy_subscription_ = cros_settings_->AddSettingsObserver(
       ash::kDeviceHostnameUserConfigurable,
       base::BindRepeating(
-          &DeviceNamePolicyHandlerImpl::OnDeviceHostnamePropertyChanged,
+          &DeviceNamePolicyHandler::OnDeviceHostnamePropertyChanged,
           weak_factory_.GetWeakPtr()));
 
   network_state_handler_observer_.Observe(
@@ -75,41 +75,42 @@ DeviceNamePolicyHandlerImpl::DeviceNamePolicyHandlerImpl(
   OnDeviceHostnamePropertyChanged();
 }
 
-DeviceNamePolicyHandlerImpl::~DeviceNamePolicyHandlerImpl() = default;
+DeviceNamePolicyHandler::~DeviceNamePolicyHandler() = default;
 
 std::optional<std::string>
-DeviceNamePolicyHandlerImpl::GetHostnameChosenByAdministrator() const {
+DeviceNamePolicyHandler::GetHostnameChosenByAdministrator() const {
   if (device_name_policy_ == DeviceNamePolicy::kPolicyHostnameChosenByAdmin) {
     return hostname_;
   }
   return std::nullopt;
 }
 
-void DeviceNamePolicyHandlerImpl::DefaultNetworkChanged(
+void DeviceNamePolicyHandler::DefaultNetworkChanged(
     const ash::NetworkState* network) {
   OnDeviceHostnamePropertyChanged();
 }
 
-void DeviceNamePolicyHandlerImpl::OnShuttingDown() {
+void DeviceNamePolicyHandler::OnShuttingDown() {
   network_state_handler_observer_.Reset();
 }
 
-void DeviceNamePolicyHandlerImpl::OnDeviceHostnamePropertyChanged() {
+void DeviceNamePolicyHandler::OnDeviceHostnamePropertyChanged() {
   ash::CrosSettingsProvider::TrustedStatus status =
       cros_settings_->PrepareTrustedValues(base::BindOnce(
-          &DeviceNamePolicyHandlerImpl::OnDeviceHostnamePropertyChanged,
+          &DeviceNamePolicyHandler::OnDeviceHostnamePropertyChanged,
           weak_factory_.GetWeakPtr()));
-  if (status != ash::CrosSettingsProvider::TRUSTED)
+  if (status != ash::CrosSettingsProvider::TRUSTED) {
     return;
+  }
 
   // Continue when machine statistics are loaded, to avoid blocking.
   statistics_provider_->ScheduleOnMachineStatisticsLoaded(base::BindOnce(
-      &DeviceNamePolicyHandlerImpl::
+      &DeviceNamePolicyHandler::
           OnDeviceHostnamePropertyChangedAndMachineStatisticsLoaded,
       weak_factory_.GetWeakPtr()));
 }
 
-void DeviceNamePolicyHandlerImpl::
+void DeviceNamePolicyHandler::
     OnDeviceHostnamePropertyChangedAndMachineStatisticsLoaded() {
   std::string hostname_template;
   DeviceNamePolicy policy = ComputePolicy(&hostname_template);
@@ -122,8 +123,8 @@ void DeviceNamePolicyHandlerImpl::
   SetDeviceNamePolicy(policy, new_hostname);
 }
 
-DeviceNamePolicyHandlerImpl::DeviceNamePolicy
-DeviceNamePolicyHandlerImpl::ComputePolicy(std::string* hostname_template_out) {
+DeviceNamePolicyHandler::DeviceNamePolicy
+DeviceNamePolicyHandler::ComputePolicy(std::string* hostname_template_out) {
   if (cros_settings_->GetString(ash::kDeviceHostnameTemplate,
                                 hostname_template_out)) {
     // Do not set an empty hostname (which would overwrite any custom hostname
@@ -135,13 +136,14 @@ DeviceNamePolicyHandlerImpl::ComputePolicy(std::string* hostname_template_out) {
   // If no policies are set, device name policy should be
   // kPolicyHostnameNotConfigurable for managed devices and kNoPolicy for
   // unmanaged devices.
-  if (ash::InstallAttributes::Get()->IsEnterpriseManaged())
+  if (ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
     return DeviceNamePolicy::kPolicyHostnameNotConfigurable;
+  }
 
   return DeviceNamePolicy::kNoPolicy;
 }
 
-std::string DeviceNamePolicyHandlerImpl::GenerateHostname(
+std::string DeviceNamePolicyHandler::GenerateHostname(
     const std::string& hostname_template) const {
   const std::string_view serial =
       statistics_provider_->GetMachineID().value_or(std::string_view());
@@ -168,11 +170,12 @@ std::string DeviceNamePolicyHandlerImpl::GenerateHostname(
                         location);
 }
 
-void DeviceNamePolicyHandlerImpl::SetDeviceNamePolicy(
+void DeviceNamePolicyHandler::SetDeviceNamePolicy(
     DeviceNamePolicy policy,
     const std::string& new_hostname) {
-  if (device_name_policy_ == policy && hostname_ == new_hostname)
+  if (device_name_policy_ == policy && hostname_ == new_hostname) {
     return;
+  }
 
   // If the hostname has changed, set it using NetworkStateHandler.
   if (policy == DeviceNamePolicy::kPolicyHostnameChosenByAdmin &&
@@ -186,16 +189,16 @@ void DeviceNamePolicyHandlerImpl::SetDeviceNamePolicy(
 
 std::ostream& operator<<(
     std::ostream& stream,
-    const DeviceNamePolicyHandlerImpl::DeviceNamePolicy& state) {
+    const DeviceNamePolicyHandler::DeviceNamePolicy& state) {
   switch (state) {
-    case DeviceNamePolicyHandlerImpl::DeviceNamePolicy::kNoPolicy:
+    case DeviceNamePolicyHandler::DeviceNamePolicy::kNoPolicy:
       stream << "[No policy]";
       break;
-    case DeviceNamePolicyHandlerImpl::DeviceNamePolicy::
+    case DeviceNamePolicyHandler::DeviceNamePolicy::
         kPolicyHostnameChosenByAdmin:
       stream << "[Admin chooses hostname template]";
       break;
-    case DeviceNamePolicyHandlerImpl::DeviceNamePolicy::
+    case DeviceNamePolicyHandler::DeviceNamePolicy::
         kPolicyHostnameNotConfigurable:
       stream << "[Managed user cannot choose hostname]";
       break;
