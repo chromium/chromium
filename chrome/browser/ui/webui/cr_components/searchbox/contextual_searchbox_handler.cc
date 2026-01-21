@@ -41,6 +41,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
+#include "third_party/omnibox_proto/searchbox_config.pb.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
@@ -307,8 +308,11 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
       get_session_callback_(std::move(get_session_callback)) {
   // This implicitly also initializes the file upload status observer.
   if (auto* session_handle = GetContextualSessionHandle()) {
-    input_state_model_ =
-        std::make_unique<contextual_search::InputStateModel>(*session_handle);
+    // TODO(crbug.com/476105004): Get `SearchboxConfig` from
+    // `AIMEligibilityService`
+    //   and pass it through here.
+    input_state_model_ = std::make_unique<contextual_search::InputStateModel>(
+        *session_handle, omnibox::SearchboxConfig());
   }
 
   auto* browser_window_interface =

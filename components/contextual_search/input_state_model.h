@@ -15,12 +15,14 @@
 #include "third_party/omnibox_proto/aim_input_types.pb.h"
 #include "third_party/omnibox_proto/aim_models.pb.h"
 #include "third_party/omnibox_proto/aim_tools.pb.h"
+#include "third_party/omnibox_proto/searchbox_config.pb.h"
 
 namespace contextual_search {
 
-using ToolMode = omnibox::ToolMode;
 using omnibox::InputType;
 using omnibox::ModelMode;
+using omnibox::SearchboxConfig;
+using omnibox::ToolMode;
 
 // Represents a valid searchbox inputs state.
 struct InputState {
@@ -48,7 +50,8 @@ class InputStateModel {
   // Constructor takes in a `ContextualSearchSessionHandle` to get uploaded file
   // info.
   explicit InputStateModel(
-      contextual_search::ContextualSearchSessionHandle& session_handle);
+      contextual_search::ContextualSearchSessionHandle& session_handle,
+      const SearchboxConfig& config);
   virtual ~InputStateModel();
 
   // Add a subscriber to this model.

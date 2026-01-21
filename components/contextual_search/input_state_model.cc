@@ -7,14 +7,18 @@
 #include <vector>
 
 #include "components/contextual_search/contextual_search_session_handle.h"
+#include "third_party/omnibox_proto/searchbox_config.pb.h"
 
 namespace contextual_search {
+
+using omnibox::SearchboxConfig;
 
 InputState::InputState() = default;
 InputState::~InputState() = default;
 
 InputStateModel::InputStateModel(
-    contextual_search::ContextualSearchSessionHandle& session_handle)
+    contextual_search::ContextualSearchSessionHandle& session_handle,
+    const SearchboxConfig& config)
     : session_handle_(session_handle) {
   // TODO(crbug.com/474389216): Implement setting eligibility of
   //   tools and models from the allowed primitives.
