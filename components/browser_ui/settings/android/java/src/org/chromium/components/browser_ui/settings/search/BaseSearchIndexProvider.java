@@ -20,6 +20,8 @@ import java.util.Set;
 @NullMarked
 public class BaseSearchIndexProvider implements SearchIndexProvider {
 
+    public static int INDEX_OPT_OUT = -1;
+
     private final int mXmlRes;
     private final String mPrefFragment;
 
@@ -79,7 +81,7 @@ public class BaseSearchIndexProvider implements SearchIndexProvider {
             Context context,
             SettingsIndexData indexData,
             Map<String, SearchIndexProvider> providerMap) {
-        if (mXmlRes != 0) {
+        if (mXmlRes != 0 && mXmlRes != INDEX_OPT_OUT) {
             PreferenceParser.parseAndPopulate(
                     context, mXmlRes, indexData, mPrefFragment, getExtras(), providerMap);
         }

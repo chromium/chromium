@@ -362,8 +362,7 @@ public class ChosenObjectSettings extends BaseSiteSettingsFragment
         return AnimationType.PROPERTY;
     }
 
-    // TODO(crbug.com/444470792): Determine what entries need to be created and added under
-    // #updateDynamicPreferences.
     public static final BaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
-            new BaseSearchIndexProvider(ChosenObjectSettings.class.getName(), 0);
+            new BaseSearchIndexProvider(
+                    ChosenObjectSettings.class.getName(), BaseSearchIndexProvider.INDEX_OPT_OUT);
 }
