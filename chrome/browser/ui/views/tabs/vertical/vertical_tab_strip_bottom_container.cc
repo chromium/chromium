@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "chrome/browser/ui/views/tabs/vertical/bottom_container_button.h"
@@ -46,20 +47,24 @@ VerticalTabStripBottomContainer::VerticalTabStripBottomContainer(
           &VerticalTabStripBottomContainer::OnCollapsedStateChanged,
           base::Unretained(this)));
 
-  tab_group_button_ = AddChildButtonFor(kActionTabGroupsMenu);
+  if (tab_groups::SavedTabGroupUtils::IsEnabledForProfile(
+          browser_->GetProfile())) {
+    tab_group_button_ = AddChildButtonFor(kActionTabGroupsMenu);
 
-  // Creating MenuButtonController because tab_group_button is a LabelButton.
-  auto controller = std::make_unique<views::MenuButtonController>(
-      tab_group_button_,
-      base::BindRepeating(&VerticalTabStripBottomContainer::ShowEverythingMenu,
-                          base::Unretained(this)),
-      std::make_unique<views::Button::DefaultButtonControllerDelegate>(
-          tab_group_button_));
-  everything_menu_controller_ = controller.get();
+    // Creating MenuButtonController because tab_group_button is a LabelButton.
+    auto controller = std::make_unique<views::MenuButtonController>(
+        tab_group_button_,
+        base::BindRepeating(
+            &VerticalTabStripBottomContainer::ShowEverythingMenu,
+            base::Unretained(this)),
+        std::make_unique<views::Button::DefaultButtonControllerDelegate>(
+            tab_group_button_));
+    everything_menu_controller_ = controller.get();
 
-  tab_group_button_->SetButtonController(std::move(controller));
-  tab_group_button_->SetProperty(views::kElementIdentifierKey,
-                                 kSavedTabGroupButtonElementId);
+    tab_group_button_->SetButtonController(std::move(controller));
+    tab_group_button_->SetProperty(views::kElementIdentifierKey,
+                                   kSavedTabGroupButtonElementId);
+  }
 
   new_tab_button_ = AddChildButtonFor(kActionNewTab);
   new_tab_button_->SetProperty(views::kElementIdentifierKey,
@@ -114,6 +119,14 @@ void VerticalTabStripBottomContainer::UpdateButtonStyles(
   SetOrientation(controller->IsCollapsed()
                      ? views::LayoutOrientation::kVertical
                      : views::LayoutOrientation::kHorizontal);
+
+  if (!tab_group_button_) {
+    // If in incognito mode, the tab groups button will not be visible. In that
+    // case, we don't want to assign any flat edges or different flex behaviors.
+    new_tab_button_->SetProperty(views::kFlexBehaviorKey,
+                                 uncollapsed_flex_specification_.WithWeight(1));
+    return;
+  }
 
   if (controller->IsCollapsed()) {
     // If collapsed, the tab group button and the new tab button share the same
