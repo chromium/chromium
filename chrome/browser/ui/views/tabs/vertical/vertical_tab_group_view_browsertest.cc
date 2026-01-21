@@ -7,12 +7,16 @@
 #include "base/test/run_until.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/tabs/tab_group_attention_indicator.h"
+#include "chrome/browser/ui/tabs/tab_group_features.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_header_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/models/image_model.h"
@@ -42,16 +46,18 @@ class VerticalTabGroupViewTest
     RunScheduledLayouts();
   }
 
-  void CreateInactiveTabGroup() {
+  tab_groups::TabGroupId CreateInactiveTabGroup() {
     AppendTab();
     AppendTab();
 
-    browser()->tab_strip_model()->AddToNewGroup({1});
+    tab_groups::TabGroupId group_id =
+        browser()->tab_strip_model()->AddToNewGroup({1});
 
     browser()->tab_strip_model()->ActivateTabAt(
         2, TabStripUserGestureDetails(
                TabStripUserGestureDetails::GestureType::kOther));
     RunScheduledLayouts();
+    return group_id;
   }
 
   void ClickTabGroupHeaderToToggleCollapse() {
@@ -261,5 +267,35 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
       kTabGroupEditorBubbleId));
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return tab_group_header->editor_bubble_button()->GetVisible();
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest, AttentionIndicator) {
+  tab_groups::TabGroupId group_id = CreateInactiveTabGroup();
+
+  TabCollectionNode* tab_node =
+      root_node()->children()[1]->children()[1]->children()[0].get();
+  VerticalTabView* tab =
+      static_cast<VerticalTabView*>(tab_node->get_view_for_testing());
+  // Verify the tab in the group is visible.
+  EXPECT_TRUE(tab->GetVisible());
+
+  // Collapse the tab group and verify the tab in the group is not visible.
+  ClickTabGroupHeaderToToggleCollapse();
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !tab->GetVisible(); }));
+  // Set the attention indicator to true and verify its visibility.
+  browser()
+      ->tab_strip_model()
+      ->group_model()
+      ->GetTabGroup(group_id)
+      ->GetTabGroupFeatures()
+      ->attention_indicator()
+      ->SetHasAttention(true);
+  VerticalTabGroupHeaderView* const tab_group_header =
+      static_cast<VerticalTabGroupHeaderView*>(
+          BrowserElementsViews::From(browser())->GetView(
+              kTabGroupHeaderElementId));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return tab_group_header->attention_indicator_for_testing()->GetVisible();
   }));
 }
