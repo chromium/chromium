@@ -1850,6 +1850,11 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
                       std::move(ai_assistance_file_agent_dict));
   }
 
+  response_dict.Set("devToolsAiAssistanceV2",
+                    base::Value::Dict().Set(
+                        "enabled", base::FeatureList::IsEnabled(
+                                       ::features::kDevToolsAiAssistanceV2)));
+
   if (base::FeatureList::IsEnabled(::features::kDevToolsAiCodeCompletion)) {
     base::Value::Dict ai_code_completion_dict;
     ai_code_completion_dict.Set(

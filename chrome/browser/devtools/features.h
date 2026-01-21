@@ -126,6 +126,8 @@ BASE_DECLARE_FEATURE(kDevToolsConsoleInsightsTeasers);
 extern const base::FeatureParam<bool>
     kDevToolsConsoleInsightsTeasersAllowWithoutGpu;
 
+BASE_DECLARE_FEATURE(kDevToolsAiAssistanceV2);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_DEVTOOLS_FEATURES_H_

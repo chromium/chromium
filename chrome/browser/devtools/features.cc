@@ -216,4 +216,6 @@ const base::FeatureParam<bool> kDevToolsConsoleInsightsTeasersAllowWithoutGpu{
     &kDevToolsConsoleInsightsTeasers, "allow_without_gpu",
     /*default_value=*/false};
 
+BASE_FEATURE(kDevToolsAiAssistanceV2, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
