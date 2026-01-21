@@ -514,7 +514,7 @@ TEST_F(IOSChromePaymentsAutofillClientWithSaveCardBottomSheetTest,
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptResult.IOS.Server.BottomSheet.NumStrikes.1."
-      "NoFixFlow",
+      "NoFixFlow.SavingWithoutCvc",
       autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kNotShown,
       /*expected_count=*/1);
 }
@@ -534,7 +534,7 @@ TEST_F(IOSChromePaymentsAutofillClientWithSaveCardBottomSheetTest,
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptResult.IOS.Server.BottomSheet.NumStrikes.0."
-      "RequestingCardHolderName",
+      "RequestingCardHolderName.SavingWithoutCvc",
       autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kNotShown,
       /*expected_count=*/1);
 }
@@ -554,7 +554,7 @@ TEST_F(IOSChromePaymentsAutofillClientWithSaveCardBottomSheetTest,
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptResult.IOS.Server.BottomSheet.NumStrikes.0."
-      "RequestingExpiryDate",
+      "RequestingExpiryDate.SavingWithoutCvc",
       autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kNotShown,
       /*expected_count=*/1);
 }
@@ -577,7 +577,7 @@ TEST_F(IOSChromePaymentsAutofillClientWithSaveCardBottomSheetTest,
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptResult.IOS.Server.BottomSheet.NumStrikes.0."
-      "RequestingCardHolderNameAndExpiryDate",
+      "RequestingCardHolderNameAndExpiryDate.SavingWithoutCvc",
       autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kNotShown,
       /*expected_count=*/1);
 }
@@ -732,7 +732,7 @@ TEST_F(IOSChromePaymentsAutofillClientWithLocalSaveCardBottomSheetTest,
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptResult.IOS.Local.BottomSheet.NumStrikes.1."
-      "NoFixFlow",
+      "NoFixFlow.SavingWithoutCvc",
       autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kNotShown,
       /*expected_count=*/1);
 }
@@ -752,7 +752,7 @@ TEST_F(IOSChromePaymentsAutofillClientWithLocalSaveCardBottomSheetTest,
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptResult.IOS.Local.BottomSheet.NumStrikes.0."
-      "RequestingCardHolderName",
+      "RequestingCardHolderName.SavingWithoutCvc",
       autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kNotShown,
       /*expected_count=*/0);
 }
@@ -772,7 +772,7 @@ TEST_F(IOSChromePaymentsAutofillClientWithLocalSaveCardBottomSheetTest,
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptResult.IOS.Local.BottomSheet.NumStrikes.0."
-      "RequestingExpiryDate",
+      "RequestingExpiryDate.SavingWithoutCvc",
       autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kNotShown,
       /*expected_count=*/0);
 }
@@ -795,7 +795,7 @@ TEST_F(IOSChromePaymentsAutofillClientWithLocalSaveCardBottomSheetTest,
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptResult.IOS.Local.BottomSheet.NumStrikes.0."
-      "RequestingCardHolderNameAndExpiryDate",
+      "RequestingCardHolderNameAndExpiryDate.SavingWithoutCvc",
       autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kNotShown,
       /*expected_count=*/0);
 }

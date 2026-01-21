@@ -54,6 +54,7 @@ constexpr std::string_view kSaveCreditCardPromptResultIOSPrefix =
 constexpr std::string_view kSaveCreditCardPromptResultIOSPrefixForLocalSave =
     "Autofill.SaveCreditCardPromptResult.IOS.Local.BottomSheet.NumStrikes.0."
     "NoFixFlow";
+constexpr std::string_view kSavingWithoutCvcSuffix = ".SavingWithoutCvc";
 constexpr std::string_view kCreditCardUploadLoadingShownPrefix =
     "Autofill.CreditCardUpload.LoadingShown";
 constexpr std::string_view kCreditCardUploadLoadingResultPrefix =
@@ -241,19 +242,22 @@ TEST_F(SaveCardBottomSheetMediatorTest, SetConsumer) {
   }
 
   histogram_tester.ExpectUniqueSample(
-      base::StrCat(
-          {kSaveCreditCardPromptOfferBaseHistogram, ".Server.BottomSheet"}),
+      base::StrCat({kSaveCreditCardPromptOfferBaseHistogram,
+                    ".Server.BottomSheet", kSavingWithoutCvcSuffix}),
       SaveCardPromptOffer::kShown,
       /*expected_count=*/1);
   histogram_tester.ExpectUniqueSample(
       base::StrCat({kSaveCreditCardPromptOfferBaseHistogram,
-                    ".Server.BottomSheet.NumStrikes.0.NoFixFlow"}),
+                    ".Server.BottomSheet.NumStrikes.0.NoFixFlow",
+                    kSavingWithoutCvcSuffix}),
       SaveCardPromptOffer::kShown,
       /*expected_count=*/1);
 
-  histogram_tester.ExpectUniqueSample(kSaveCreditCardPromptResultIOSPrefix,
-                                      SaveCreditCardPromptResultIOS::kShown,
-                                      /*expected_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {kSaveCreditCardPromptResultIOSPrefix, kSavingWithoutCvcSuffix}),
+      SaveCreditCardPromptResultIOS::kShown,
+      /*expected_count=*/1);
 }
 
 // Test that mediator provides logoType and logoAccessibilityLabel as a data
@@ -296,9 +300,11 @@ TEST_F(SaveCardBottomSheetMediatorTest,
 
   [mediator_ didAccept];
 
-  histogram_tester.ExpectUniqueSample(kSaveCreditCardPromptResultIOSPrefix,
-                                      SaveCreditCardPromptResultIOS::kAccepted,
-                                      /*expected_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {kSaveCreditCardPromptResultIOSPrefix, kSavingWithoutCvcSuffix}),
+      SaveCreditCardPromptResultIOS::kAccepted,
+      /*expected_count=*/1);
   histogram_tester.ExpectUniqueSample(kCreditCardUploadLoadingShownPrefix, true,
                                       1);
 }
@@ -422,9 +428,11 @@ TEST_F(SaveCardBottomSheetMediatorTest, OnCancelLogs_DeniedMetric) {
 
   [mediator_ didCancel];
 
-  histogram_tester.ExpectUniqueSample(kSaveCreditCardPromptResultIOSPrefix,
-                                      SaveCreditCardPromptResultIOS::kDenied,
-                                      /*expected_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {kSaveCreditCardPromptResultIOSPrefix, kSavingWithoutCvcSuffix}),
+      SaveCreditCardPromptResultIOS::kDenied,
+      /*expected_count=*/1);
 }
 
 // Test that `OnCanceled` is called on the model when bottomsheet is dismissed
@@ -450,7 +458,8 @@ TEST_F(SaveCardBottomSheetMediatorTest,
   [mediator_ onBottomSheetDismissedWithLinkClicked:YES];
 
   histogram_tester.ExpectUniqueSample(
-      kSaveCreditCardPromptResultIOSPrefix,
+      base::StrCat(
+          {kSaveCreditCardPromptResultIOSPrefix, kSavingWithoutCvcSuffix}),
       SaveCreditCardPromptResultIOS::kLinkClicked,
       /*expected_count=*/1);
 }
@@ -477,9 +486,11 @@ TEST_F(SaveCardBottomSheetMediatorTest,
             autofill::SaveCardBottomSheetModel::SaveCardState::kOffered);
   [mediator_ onBottomSheetDismissedWithLinkClicked:NO];
 
-  histogram_tester.ExpectUniqueSample(kSaveCreditCardPromptResultIOSPrefix,
-                                      SaveCreditCardPromptResultIOS::kSwiped,
-                                      /*expected_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {kSaveCreditCardPromptResultIOSPrefix, kSavingWithoutCvcSuffix}),
+      SaveCreditCardPromptResultIOS::kSwiped,
+      /*expected_count=*/1);
 }
 
 // Test that `onBottomSheetDismissedWithLinkClicked` is a no-op when bottomsheet
@@ -496,18 +507,22 @@ TEST_F(SaveCardBottomSheetMediatorTest,
             autofill::SaveCardBottomSheetModel::SaveCardState::kOffered);
 
   // Pressing `No thanks` cancel button logs bottomsheet result `kDenied`.
-  histogram_tester.ExpectUniqueSample(kSaveCreditCardPromptResultIOSPrefix,
-                                      SaveCreditCardPromptResultIOS::kDenied,
-                                      /*expected_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {kSaveCreditCardPromptResultIOSPrefix, kSavingWithoutCvcSuffix}),
+      SaveCreditCardPromptResultIOS::kDenied,
+      /*expected_count=*/1);
 
   // Verify `onBottomSheetDismissedWithLinkClicked` doesn't call `OnCanceled` on
   // the model again and bottomsheet result is not logged.
   EXPECT_CALL(*model_, OnCanceled()).Times(0);
   [mediator_ onBottomSheetDismissedWithLinkClicked:NO];
 
-  histogram_tester.ExpectBucketCount(kSaveCreditCardPromptResultIOSPrefix,
-                                     SaveCreditCardPromptResultIOS::kSwiped,
-                                     /*expected_count=*/0);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat(
+          {kSaveCreditCardPromptResultIOSPrefix, kSavingWithoutCvcSuffix}),
+      SaveCreditCardPromptResultIOS::kSwiped,
+      /*expected_count=*/0);
 }
 
 // Test that bottomsheet dismissal in progress state is logged with loading
@@ -573,17 +588,19 @@ TEST_F(SaveCardBottomSheetMediatorTestForLocalSave, SetConsumer) {
   ASSERT_EQ(nil, consumer.legalMessages);
 
   histogram_tester.ExpectUniqueSample(
-      base::StrCat(
-          {kSaveCreditCardPromptOfferBaseHistogram, ".Local.BottomSheet"}),
+      base::StrCat({kSaveCreditCardPromptOfferBaseHistogram,
+                    ".Local.BottomSheet", kSavingWithoutCvcSuffix}),
       SaveCardPromptOffer::kShown,
       /*expected_count=*/1);
   histogram_tester.ExpectUniqueSample(
       base::StrCat({kSaveCreditCardPromptOfferBaseHistogram,
-                    ".Local.BottomSheet.NumStrikes.0.NoFixFlow"}),
+                    ".Local.BottomSheet.NumStrikes.0.NoFixFlow",
+                    kSavingWithoutCvcSuffix}),
       SaveCardPromptOffer::kShown,
       /*expected_count=*/1);
   histogram_tester.ExpectUniqueSample(
-      kSaveCreditCardPromptResultIOSPrefixForLocalSave,
+      base::StrCat({kSaveCreditCardPromptResultIOSPrefixForLocalSave,
+                    kSavingWithoutCvcSuffix}),
       SaveCreditCardPromptResultIOS::kShown,
       /*expected_count=*/1);
 }
@@ -614,7 +631,8 @@ TEST_F(SaveCardBottomSheetMediatorTestForLocalSave,
   [mediator_ didAccept];
 
   histogram_tester.ExpectUniqueSample(
-      kSaveCreditCardPromptResultIOSPrefixForLocalSave,
+      base::StrCat({kSaveCreditCardPromptResultIOSPrefixForLocalSave,
+                    kSavingWithoutCvcSuffix}),
       SaveCreditCardPromptResultIOS::kAccepted,
       /*expected_count=*/1);
 }
@@ -722,7 +740,7 @@ class SaveCardBottomSheetMediatorMetricsTestWithCardSaveType
     return save_type == autofill::payments::PaymentsAutofillClient::
                             CardSaveType::kCardSaveWithCvc
                ? ".SavingWithCvc"
-               : "";
+               : ".SavingWithoutCvc";
   }
 };
 

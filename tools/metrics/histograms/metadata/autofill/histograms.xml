@@ -749,8 +749,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </variants>
 
 <variants name="AutofillSaveCardWithCvcSituation">
-  <variant name="" summary="not saved with CVC"/>
-  <variant name=".SavingWithCvc" summary="saved with CVC"/>
+  <variant name="SavingWithCvc" summary="saved with CVC"/>
+  <variant name="SavingWithoutCvc" summary="not saved with CVC"/>
 </variants>
 
 <!-- TODO(crbug.com/430588721): Replace use of AutofillSaveCreditCardPromptDestination with AutofillSaveCardDestination. -->
@@ -6734,7 +6734,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram
-    name="Autofill.SaveCreditCardPromptOffer.IOS.{SaveDestination}.{OverlayType}.NumStrikes.{Strikes}.{FixFlow}{SaveCardWithCvcSituation}"
+    name="Autofill.SaveCreditCardPromptOffer.IOS.{SaveDestination}.{OverlayType}.NumStrikes.{Strikes}.{FixFlow}.{SaveCardWithCvcSituation}"
     enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2026-06-01">
   <owner>kavitasoni@google.com</owner>
   <owner>yiwenqian@google.com</owner>
@@ -6766,7 +6766,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram
-    name="Autofill.SaveCreditCardPromptOffer.IOS.{SaveDestination}.{OverlayType}{SaveCardWithCvcSituation}"
+    name="Autofill.SaveCreditCardPromptOffer.IOS.{SaveDestination}.{OverlayType}.{SaveCardWithCvcSituation}"
     enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2026-06-01">
   <owner>kavitasoni@google.com</owner>
   <owner>yiwenqian@google.com</owner>

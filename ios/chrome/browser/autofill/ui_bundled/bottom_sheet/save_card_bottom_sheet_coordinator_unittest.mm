@@ -126,7 +126,7 @@ TEST_F(SaveCardBottomSheetCoordinatorTest, OpensNewTabForLinkClicked) {
 
   histogram_tester.ExpectBucketCount(
       "Autofill.SaveCreditCardPromptResult.IOS.Server.BottomSheet.NumStrikes.0."
-      "NoFixFlow",
+      "NoFixFlow.SavingWithoutCvc",
       autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kLinkClicked,
       /*expected_count=*/1);
 }
@@ -145,7 +145,7 @@ TEST_F(SaveCardBottomSheetCoordinatorTest, OnViewDisappeared) {
 
   histogram_tester.ExpectBucketCount(
       "Autofill.SaveCreditCardPromptResult.IOS.Server.BottomSheet.NumStrikes.0."
-      "NoFixFlow",
+      "NoFixFlow.SavingWithoutCvc",
       autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kSwiped,
       /*expected_count=*/1);
 }

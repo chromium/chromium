@@ -1457,7 +1457,7 @@ TEST_F(AutofillControllerWithoutLocalSaveCardBottomSheetTest,
   ExpectMetric("Autofill.CreditCardInfoBar.Local",
                AutofillMetrics::INFOBAR_SHOWN);
   ExpectMetric("Autofill.SaveCreditCardPromptResult.IOS.Local.Banner."
-               "NumStrikes.0.NoFixFlow",
+               "NumStrikes.0.NoFixFlow.SavingWithoutCvc",
                static_cast<int>(
                    autofill_metrics::SaveCreditCardPromptResultIOS::kShown));
   ASSERT_EQ(1U, infobar_manager->infobars().size());
