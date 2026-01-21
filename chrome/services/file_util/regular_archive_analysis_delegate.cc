@@ -92,6 +92,7 @@ RegularArchiveAnalysisDelegate::CreateZipWriterDelegate(base::File file) {
   return std::make_unique<ZipWriterDelegate>(std::move(file));
 }
 
+#if USE_UNRAR
 std::unique_ptr<third_party_unrar::RarReaderDelegate>
 RegularArchiveAnalysisDelegate::CreateRarReaderDelegate(base::File file) {
   return std::make_unique<third_party_unrar::FileReader>(std::move(file));
@@ -101,6 +102,7 @@ std::unique_ptr<third_party_unrar::RarWriterDelegate>
 RegularArchiveAnalysisDelegate::CreateRarWriterDelegate(base::File file) {
   return std::make_unique<third_party_unrar::FileWriter>(std::move(file));
 }
+#endif
 
 std::unique_ptr<ArchiveAnalysisDelegate>
 RegularArchiveAnalysisDelegate::CreateNestedDelegate(

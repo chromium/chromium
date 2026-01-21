@@ -104,6 +104,7 @@ class ObfuscatedZipWriterDelegate : public zip::FileWriterDelegate,
   bool closed_ = false;
 };
 
+#if USE_UNRAR
 class ObfuscatedRarReaderDelegate
     : public third_party_unrar::RarReaderDelegate {
  public:
@@ -175,6 +176,7 @@ class ObfuscatedRarWriterDelegate
   std::unique_ptr<enterprise_obfuscation::DownloadObfuscator> obfuscator_;
   bool init_ = false;
 };
+#endif
 
 }  // namespace
 
@@ -203,6 +205,7 @@ ObfuscatedArchiveAnalysisDelegate::CreateZipWriterDelegate(base::File file) {
   return std::make_unique<ObfuscatedZipWriterDelegate>(std::move(file));
 }
 
+#if USE_UNRAR
 std::unique_ptr<third_party_unrar::RarReaderDelegate>
 ObfuscatedArchiveAnalysisDelegate::CreateRarReaderDelegate(base::File file) {
   base::expected<enterprise_obfuscation::ObfuscatedFileReader,
@@ -220,6 +223,7 @@ std::unique_ptr<third_party_unrar::RarWriterDelegate>
 ObfuscatedArchiveAnalysisDelegate::CreateRarWriterDelegate(base::File file) {
   return std::make_unique<ObfuscatedRarWriterDelegate>(std::move(file));
 }
+#endif
 
 std::unique_ptr<ArchiveAnalysisDelegate>
 ObfuscatedArchiveAnalysisDelegate::CreateNestedDelegate(

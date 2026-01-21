@@ -22,10 +22,12 @@ class ObfuscatedArchiveAnalysisDelegate : public ArchiveAnalysisDelegate {
       base::File file) override;
   std::unique_ptr<SafeBrowsingZipWriterDelegate> CreateZipWriterDelegate(
       base::File file) override;
+#if USE_UNRAR
   std::unique_ptr<third_party_unrar::RarReaderDelegate> CreateRarReaderDelegate(
       base::File file) override;
   std::unique_ptr<third_party_unrar::RarWriterDelegate> CreateRarWriterDelegate(
       base::File file) override;
+#endif
   std::unique_ptr<ArchiveAnalysisDelegate> CreateNestedDelegate(
       base::File extracted_file) override;
 

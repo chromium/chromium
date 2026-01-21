@@ -28,6 +28,7 @@ class ArchiveAnalysisDelegate {
   virtual std::unique_ptr<SafeBrowsingZipWriterDelegate>
   CreateZipWriterDelegate(base::File file) = 0;
 
+#if USE_UNRAR
   // Creates a reader delegate for reading the RAR archive.
   virtual std::unique_ptr<third_party_unrar::RarReaderDelegate>
   CreateRarReaderDelegate(base::File file) = 0;
@@ -35,6 +36,7 @@ class ArchiveAnalysisDelegate {
   // Creates a writer delegate for writing extracted RAR entries.
   virtual std::unique_ptr<third_party_unrar::RarWriterDelegate>
   CreateRarWriterDelegate(base::File file) = 0;
+#endif
 
   // Creates a delegate for analyzing a nested archive extracted from the
   // current archive. Returns nullptr if the nested archive cannot be handled
