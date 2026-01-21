@@ -32,6 +32,7 @@ export interface SpeechListener {
   onEngineStateChange(): void;
   onPreviewVoicePlaying(): void;
   onPlayingFromSelection(): void;
+  onWordBoundary(segments: Segment[]): void;
 }
 
 export class SpeechController {
@@ -456,8 +457,9 @@ export class SpeechController {
     // boundaries (if available) to resume at the beginning of the current
     // word.
     if (isInterrupted && this.wordBoundaries_.hasBoundaries()) {
+      const resumeBoundary = this.wordBoundaries_.getResumeBoundary();
       const utteranceTextForWordBoundary =
-          utteranceText.substring(this.wordBoundaries_.getResumeBoundary());
+          utteranceText.substring(resumeBoundary);
       // If we paused right at the end of the sentence, no need to speak the
       // ending punctuation.
       if (isInvalidHighlightForWordHighlighting(
@@ -478,9 +480,11 @@ export class SpeechController {
         return skippedPosition;
 
       } else {
+        this.notifyWordBoundary_(resumeBoundary);
         this.playText_(utteranceTextForWordBoundary);
       }
     } else {
+      this.notifyWordBoundary_(0);
       this.playText_(utteranceText);
     }
 
@@ -684,6 +688,13 @@ export class SpeechController {
 
         this.wordBoundaries_.updateBoundary(event.charIndex, event.charLength);
 
+        const {
+          speechUtteranceStartIndex,
+          previouslySpokenIndex,
+        } = this.wordBoundaries_.state;
+        const index = speechUtteranceStartIndex + previouslySpokenIndex;
+        this.notifyWordBoundary_(index);
+
         // No need to update the highlight on word boundary events if
         // highlighting is off or if sentence highlighting is used.
         // Therefore, we don't need to pass in axIds because these are
@@ -693,6 +704,13 @@ export class SpeechController {
             /*shouldUpdateSentenceHighlight= */ false);
       }
     };
+  }
+
+  private notifyWordBoundary_(index: number) {
+    const highlightSegments =
+        this.readAloudModel_.getHighlightForCurrentSegmentIndex(
+            index, /* highlightPhrases= */ false);
+    this.listeners_.forEach(l => l.onWordBoundary(highlightSegments));
   }
 
   private speakMessage_(message: SpeechSynthesisUtterance) {

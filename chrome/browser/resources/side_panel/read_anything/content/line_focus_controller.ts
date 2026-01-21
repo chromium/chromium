@@ -4,8 +4,9 @@
 import {assert} from '//resources/js/assert.js';
 
 import {getLineFocusValues, LineFocusMovement, LineFocusStyle, LineFocusType} from '../content/read_anything_types.js';
-import {currentReadHighlightClass, PARENT_OF_HIGHLIGHT_CLASS} from '../read_aloud/movement.js';
+import type {Segment} from '../read_aloud/read_aloud_types.js';
 import {SpeechController} from '../read_aloud/speech_controller.js';
+import {getTextNodeOffsets} from '../shared/dom_queries.js';
 import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import {LineFocusModel} from './line_focus_model.js';
@@ -20,18 +21,14 @@ export interface LineFocusListener {
 // new line heights as it can be distracting for no functional difference.
 // Determined by experimentation and should be tweaked as needed.
 const WINDOW_DIFF_THRESHOLD = 5;
+const SCROLL_THRESHOLD = 10;
 
 // Handles the business logic for managing the line focus feature.
 export class LineFocusController {
   private readonly listeners_: LineFocusListener[] = [];
   private model_: LineFocusModel = new LineFocusModel();
-  private highlightObserver_: MutationObserver;
   private speechController_ = SpeechController.getInstance();
   private logger_ = ReadAnythingLogger.getInstance();
-
-  constructor() {
-    this.highlightObserver_ = new MutationObserver(this.onMutation_.bind(this));
-  }
 
   getTop(): number {
     return this.model_.getTop();
@@ -132,6 +129,45 @@ export class LineFocusController {
     this.listeners_.forEach(l => l.onLineFocusMove());
   }
 
+  onWordBoundary(segments: Segment[]) {
+    const rects: DOMRect[] = [];
+    for (const {node, start} of segments) {
+      const domNode = node.domNode();
+      if (!domNode) {
+        continue;
+      }
+      const {node: finalNode, offset} = getTextNodeOffsets(domNode, start);
+      const startOffset = start - offset;
+      const range = document.createRange();
+
+      range.setStart(finalNode, startOffset);
+      range.setEndAfter(finalNode);
+      rects.push(...Array.from(range.getClientRects()));
+    }
+
+    const sortedRects =
+        Array.from(new Set(rects)).sort((a, b) => a.bottom - b.bottom);
+    if (!sortedRects.length) {
+      return;
+    }
+
+    if (this.model_.getY() !== this.getNewY_(sortedRects[0]!)) {
+      chrome.readingMode.incrementLineFocusSpeechLines();
+    }
+    this.setyOrScroll_(sortedRects[0]!);
+
+    // If line focus would go off screen, scroll the text to the center.
+    const height = this.getHeight() || 0;
+    const bottom = this.getTop() + height;
+    if (bottom > this.model_.getMaxY()) {
+      this.scroll_(bottom - (this.model_.getMaxY() / 2));
+    } else if (this.getTop() < this.model_.getMinY()) {
+      this.scroll_(
+          this.model_.getMinY() + this.model_.getY() -
+          (this.model_.getMaxY() / 2));
+    }
+  }
+
   onTextLocationsChange(container: HTMLElement, height: number) {
     if (this.isEnabled()) {
       const previousMaxY = this.model_.getMaxY();
@@ -145,13 +181,7 @@ export class LineFocusController {
         return;
       }
 
-      if (this.speechController_.isSpeechActive()) {
-        const highlights = container.querySelectorAll<HTMLElement>(
-            `.${currentReadHighlightClass}`);
-        this.moveBelowHighlights_(Array.from(highlights));
-      } else {
-        this.setY_(this.model_.getY());
-      }
+      this.setY_(this.model_.getY());
     }
   }
 
@@ -202,7 +232,6 @@ export class LineFocusController {
       this.model_.setTextBounds([]);
       this.model_.setCurrentLineIndex(null);
       this.model_.setLastScrollTop(0);
-      this.highlightObserver_.disconnect();
     } else {
       // This is the start of a line focus session if it was off before this.
       if (!wasEnabled) {
@@ -355,12 +384,16 @@ export class LineFocusController {
     return this.getCurrentLineFocusMovement() === LineFocusMovement.STATIC;
   }
 
+  private getNewY_(newBounds: DOMRect) {
+    return this.getCurrentLineFocusType() === LineFocusType.LINE ?
+        newBounds.bottom :
+        (newBounds.top + newBounds.bottom) / 2;
+  }
+
   // When the current line focus mode is static, scroll the content instead of
   // moving the line focus element.
   private setyOrScroll_(newBounds: DOMRect) {
-    const newY = this.getCurrentLineFocusType() === LineFocusType.LINE ?
-        newBounds.bottom :
-        (newBounds.top + newBounds.bottom) / 2;
+    const newY = this.getNewY_(newBounds);
     if (this.isStatic_()) {
       const scrollDiff = newY - this.model_.getY();
       this.scroll_(scrollDiff);
@@ -370,6 +403,9 @@ export class LineFocusController {
   }
 
   private scroll_(scrollDiff: number) {
+    if (Math.abs(scrollDiff) < SCROLL_THRESHOLD) {
+      return;
+    }
     this.model_.setInitiatedScroll(true);
     this.listeners_.forEach(l => l.onNeedScrollForLineFocus(scrollDiff));
   }
@@ -430,45 +466,6 @@ export class LineFocusController {
     if (!this.isStatic_() && currentLineIndex && currentLineIndex >= 0 &&
         currentLineIndex < newLines.length - 1) {
       this.setY_(newLines[currentLineIndex]!);
-    }
-
-    this.highlightObserver_.disconnect();
-    // Listen for node additions because speech is highlighted by replacing a
-    // node with its parts split into multiple nodes and styled differently.
-    this.highlightObserver_.observe(container, {
-      childList: true,
-      subtree: true,
-    });
-  }
-
-  private onMutation_(mutations: MutationRecord[]) {
-    if (!this.isEnabled()) {
-      return;
-    }
-
-    // Extract the current highlights from the mutations.
-    const isHighlightParent = (node: Node): node is HTMLElement =>
-        node instanceof HTMLElement &&
-        node.classList.contains(PARENT_OF_HIGHLIGHT_CLASS);
-    const getCurrentHighlights = (el: HTMLElement): HTMLElement[] => Array.from(
-        el.querySelectorAll<HTMLElement>(`.${currentReadHighlightClass}`));
-    const highlights = mutations.flatMap(m => Array.from(m.addedNodes))
-                           .filter(isHighlightParent)
-                           .flatMap(getCurrentHighlights);
-    this.moveBelowHighlights_(highlights);
-  }
-
-  private moveBelowHighlights_(highlights: HTMLElement[]) {
-    if (highlights.length > 0) {
-      const bounds = highlights.map(h => h.getBoundingClientRect());
-      // TODO(crbug.com/447427066): Follow speech better with the line focus
-      // window. We should encompass the highlights, and if the highlights go
-      // beyond the window, use word boundaries to determine when to move line
-      // focus to the next line.
-      const maxBounds = bounds.reduce(
-          (max, rect) => rect.bottom > max.bottom ? rect : max, bounds[0]!);
-      this.setyOrScroll_(maxBounds);
-      chrome.readingMode.incrementLineFocusSpeechLines();
     }
   }
 

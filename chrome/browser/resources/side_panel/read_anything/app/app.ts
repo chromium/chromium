@@ -22,6 +22,7 @@ import {NodeStore} from '../content/node_store.js';
 import {DEFAULT_SETTINGS, type LineFocusMovement, type LineFocusStyle, LineFocusType, type SettingsPrefs} from '../content/read_anything_types.js';
 import {SelectionController} from '../content/selection_controller.js';
 import type {LanguageToastElement} from '../read_aloud/language_toast.js';
+import type {Segment} from '../read_aloud/read_aloud_types.js';
 import {SpeechController} from '../read_aloud/speech_controller.js';
 import type {SpeechListener} from '../read_aloud/speech_controller.js';
 import {TextSegmenter} from '../read_aloud/text_segmenter.js';
@@ -470,6 +471,12 @@ export class AppElement extends AppElementBase implements SpeechListener,
     // Clear the selection so we don't keep trying to play from the same
     // selection every time they press play.
     this.getSelection()?.removeAllRanges();
+  }
+
+  onWordBoundary(segments: Segment[]): void {
+    if (chrome.readingMode.isLineFocusEnabled) {
+      this.lineFocusController_.onWordBoundary(segments);
+    }
   }
 
   onIsSpeechActiveChange(): void {

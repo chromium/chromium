@@ -70,6 +70,8 @@ suite('SpeechController', () => {
       onPlayingFromSelection() {
 
       },
+
+      onWordBoundary() {},
     };
 
     readAloudModel = new TestReadAloudModelBrowserProxy();

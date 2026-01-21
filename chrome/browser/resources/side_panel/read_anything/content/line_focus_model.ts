@@ -12,7 +12,7 @@ export class LineFocusModel {
 
   // The y position of the line focus element. If the element is a line, this is
   // where the top of the line should go. If the element is a window, this is
-  // where the bottom of the window should go.
+  // where the center of the window should go.
   private y_: number = 0;
 
   // The top value of the line focus element. If the element is a line, this is
