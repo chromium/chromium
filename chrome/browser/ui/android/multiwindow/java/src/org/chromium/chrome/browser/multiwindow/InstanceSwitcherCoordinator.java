@@ -19,7 +19,6 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
 import androidx.annotation.StringRes;
@@ -181,6 +180,7 @@ public class InstanceSwitcherCoordinator {
         addInstanceListGlobalLayoutListener(
                 mInstanceListContainer,
                 mActiveInstancesList,
+                mInactiveInstancesList,
                 mIsInactiveListShowing,
                 mNewWindowLayout,
                 mMinCommandItemHeightPx);
@@ -198,6 +198,7 @@ public class InstanceSwitcherCoordinator {
                         addInstanceListGlobalLayoutListener(
                                 mInstanceListContainer,
                                 mActiveInstancesList,
+                                mInactiveInstancesList,
                                 mIsInactiveListShowing,
                                 mNewWindowLayout,
                                 mMinCommandItemHeightPx);
@@ -231,6 +232,7 @@ public class InstanceSwitcherCoordinator {
     /* package */ static OnGlobalLayoutListener addInstanceListGlobalLayoutListener(
             View instanceListContainer,
             RecyclerView activeInstancesList,
+            RecyclerView inactiveInstancesList,
             boolean isInactiveListShowing,
             View newWindowLayout,
             int minCommandItemHeightPx) {
@@ -244,6 +246,7 @@ public class InstanceSwitcherCoordinator {
                         maybeUpdateInstanceListContainerParams(
                                 instanceListContainer,
                                 activeInstancesList,
+                                inactiveInstancesList,
                                 isInactiveListShowing,
                                 newWindowLayout,
                                 minCommandItemHeightPx);
@@ -256,41 +259,59 @@ public class InstanceSwitcherCoordinator {
     private static void maybeUpdateInstanceListContainerParams(
             View instanceListContainer,
             RecyclerView activeInstancesList,
+            RecyclerView inactiveInstancesList,
             boolean isInactiveListShowing,
             View newWindowLayout,
             int minCommandItemHeightPx) {
-        LayoutParams params = (LayoutParams) instanceListContainer.getLayoutParams();
+        LinearLayout.LayoutParams params =
+                (LinearLayout.LayoutParams) instanceListContainer.getLayoutParams();
 
         int newWindowLayoutHeight =
                 (newWindowLayout != null && newWindowLayout.getVisibility() == View.VISIBLE)
                         ? newWindowLayout.getMeasuredHeight()
                         : 0;
 
-        // Default height / weight params should be applied for the inactive instance list, or a
-        // scrollable active instance list so that the command item sticks while the instance list
-        // is scrolled.
-        boolean shouldUseDefaultWeight =
-                isInactiveListShowing
-                        || activeInstancesList.getMeasuredHeight()
-                                < activeInstancesList.computeVerticalScrollRange()
-                        || newWindowLayoutHeight < minCommandItemHeightPx;
+        boolean shouldFillVerticalSpace;
 
-        // Do nothing if params are already as expected.
-        if ((shouldUseDefaultWeight && params.weight == 1f)
-                || (!shouldUseDefaultWeight && params.weight == 0)) {
+        if (isInactiveListShowing) {
+            boolean isInactiveListEmpty =
+                    inactiveInstancesList.getAdapter() == null
+                            || inactiveInstancesList.getAdapter().getItemCount() == 0;
+            shouldFillVerticalSpace = !isInactiveListEmpty;
+        } else {
+            boolean isActiveListScrollable =
+                    activeInstancesList.getMeasuredHeight()
+                            < activeInstancesList.computeVerticalScrollRange();
+            boolean isCommandLayoutCompressed = newWindowLayoutHeight < minCommandItemHeightPx;
+
+            shouldFillVerticalSpace = isActiveListScrollable || isCommandLayoutCompressed;
+        }
+
+        // Optimization: Do nothing if the parameters are already in the correct state.
+        if ((shouldFillVerticalSpace && params.weight == 1f)
+                || (!shouldFillVerticalSpace && params.weight == 0)) {
             return;
         }
 
-        if (shouldUseDefaultWeight) {
+        if (shouldFillVerticalSpace) {
+            // Configuration 1: Fill Vertical Space
+            // This forces the container to expand and occupy all vertical space in the dialog.
+            // When used:
+            // - For long, scrollable lists: It ensures the RecyclerView takes up max space while
+            //   pushing the command item to the very bottom (sticky footer).
+            // - For the populated inactive list: It maintains the expected scrolling behavior.
             params.weight = 1f;
             params.height = 0;
         } else {
-            // Special height / weight params, for when the active instance list does not have
-            // enough items to make it scrollable. It is specifically required in a fullscreen
-            // dialog layout where the list will occupy most of the container space pushing the
-            // command item to the bottom of the container if weight=1, which is not desirable.
+            // Configuration 2: Wrap Content
+            // This allows the container to shrink and only take up as much height as its items.
+            // When used:
+            // - For short active lists: It ensures the "New Window" button sits directly below
+            //   the last item, preventing a large empty gap between the list and the button.
+            // - For the empty inactive list: It ensures the "No inactive windows" message sits
+            //   right below the tabs.
             params.weight = 0f;
-            params.height = LayoutParams.WRAP_CONTENT;
+            params.height = LinearLayout.LayoutParams.WRAP_CONTENT;
         }
         instanceListContainer.setLayoutParams(params);
     }
@@ -635,6 +656,7 @@ public class InstanceSwitcherCoordinator {
             addInstanceListGlobalLayoutListener(
                     assumeNonNull(mInstanceListContainer),
                     assumeNonNull(mActiveInstancesList),
+                    assumeNonNull(mInactiveInstancesList),
                     mIsInactiveListShowing,
                     assumeNonNull(mNewWindowLayout),
                     mMinCommandItemHeightPx);
