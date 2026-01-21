@@ -43,6 +43,8 @@ BASE_FEATURE(kAnnotatedPageContentAutofillCreditCardRedactions,
 
 namespace {
 
+constexpr char kHasMediaTranscripts[] = "has_media_transcripts";
+
 std::optional<AutofillFieldMetadata> GetAutofillFieldData(
     std::optional<content::GlobalRenderFrameHostToken> source_frame_token,
     ConvertAIPageContentToProtoSession& session,
@@ -835,8 +837,13 @@ void ConvertFrameData(
 
   if (render_frame_info.media_data) {
     *proto_frame_data->mutable_media_data() = *render_frame_info.media_data;
+    if (!render_frame_info.media_data->transcripts().empty()) {
+      auto meta_tag = blink::mojom::MetaTag::New();
+      meta_tag->name = kHasMediaTranscripts;
+      meta_tag->content = "true";
+      metadata.frame_metadata.back()->meta_tags.push_back(std::move(meta_tag));
+    }
   }
-
   for (const auto& tool : mojom_frame_data.script_tools) {
     ConvertScriptTool(*tool, proto_frame_data->add_script_tools());
   }
