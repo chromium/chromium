@@ -1662,7 +1662,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryRefreshAshBrowserTest,
   GetEventGenerator()->ClickRightButton();
 
   // Expect the menu item that hosts the clipboard history submenu exists.
-  const views::MenuItemView* const submenu_item = ash::WaitForMenuItemWithLabel(
+  views::MenuItemView* const submenu_item = ash::WaitForMenuItemWithLabel(
       l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_PASTE_FROM_CLIPBOARD));
   ASSERT_TRUE(submenu_item);
 

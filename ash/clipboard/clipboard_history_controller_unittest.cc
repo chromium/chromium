@@ -1088,7 +1088,7 @@ TEST_P(ClipboardHistoryRefreshDisplayFormatTest,
   ShowTextfieldContextMenu(*textfield_);
 
   // Expect the menu item that hosts the clipboard history submenu exists.
-  const views::MenuItemView* const submenu_item = WaitForMenuItemWithLabel(
+  views::MenuItemView* const submenu_item = WaitForMenuItemWithLabel(
       l10n_util::GetStringUTF16(IDS_APP_PASTE_FROM_CLIPBOARD));
   ASSERT_TRUE(submenu_item);
 

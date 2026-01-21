@@ -493,7 +493,11 @@ bool MenuItemView::HasSubmenu() const {
   return (submenu_ != nullptr);
 }
 
-SubmenuView* MenuItemView::GetSubmenu() const {
+SubmenuView* MenuItemView::GetSubmenu() {
+  return submenu_.get();
+}
+
+const SubmenuView* MenuItemView::GetSubmenu() const {
   return submenu_.get();
 }
 

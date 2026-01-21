@@ -87,6 +87,12 @@ MenuItemView* SubmenuView::GetMenuItemAt(size_t index) {
   return menu_items[index];
 }
 
+const MenuItemView* SubmenuView::GetMenuItemAt(size_t index) const {
+  const auto menu_items = GetMenuItems();
+  CHECK_LT(index, menu_items.size());
+  return menu_items[index];
+}
+
 int SubmenuView::GetPreferredItemHeight() const {
   EmptyMenuMenuItem menu_item(parent_menu_item_);
   menu_item.set_controller(parent_menu_item_->GetMenuController());
@@ -634,6 +640,11 @@ MenuScrollViewContainer* SubmenuView::GetScrollViewContainer() {
 }
 
 MenuItemView* SubmenuView::GetLastItem() {
+  const auto menu_items = GetMenuItems();
+  return menu_items.empty() ? nullptr : menu_items.back();
+}
+
+const MenuItemView* SubmenuView::GetLastItem() const {
   const auto menu_items = GetMenuItems();
   return menu_items.empty() ? nullptr : menu_items.back();
 }

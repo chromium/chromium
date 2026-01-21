@@ -241,7 +241,8 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   bool HasSubmenu() const;
 
   // Returns the view containing child menu items.
-  SubmenuView* GetSubmenu() const;
+  SubmenuView* GetSubmenu();
+  const SubmenuView* GetSubmenu() const;
 
   // Returns true if this menu item has a submenu and it is showing
   bool SubmenuIsShowing() const;
