@@ -41,11 +41,13 @@ AutofillAiSaveUpdateEntityPromptController::
         content::WebContents* web_contents,
         std::unique_ptr<AutofillAiSaveUpdateEntityPromptView> prompt_view,
         EntityInstance entity_instance,
+        std::optional<EntityInstance> old_entity_instance,
         std::string app_locale,
         AutofillClient::EntityImportPromptResultCallback prompt_closed_callback)
     : web_contents_(web_contents),
       prompt_view_(std::move(prompt_view)),
       entity_instance_(std::move(entity_instance)),
+      old_entity_instance_(std::move(old_entity_instance)),
       app_locale_(std::move(app_locale)),
       prompt_closed_callback_(std::move(prompt_closed_callback)),
       java_object_(Java_AutofillAiSaveUpdateEntityPromptController_create(
@@ -84,9 +86,8 @@ AutofillAiSaveUpdateEntityPromptController::GetNegativeButtonText() const {
 
 std::vector<EntityAttributeUpdateDetails>
 AutofillAiSaveUpdateEntityPromptController::GetEntityUpdateDetails() const {
-  // TODO: crbug.com/460410690 - Handle entity updates as well.
   return EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
-      entity_instance_, std::nullopt, app_locale_);
+      entity_instance_, old_entity_instance_, app_locale_);
 }
 
 std::u16string AutofillAiSaveUpdateEntityPromptController::GetSourceNotice()

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill.autofill_ai;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Paint;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -113,7 +114,7 @@ public class AutofillAiSaveUpdateEntityPrompt {
 
     @CalledByNative
     @VisibleForTesting
-    void setSaveOrMigrateDetails(
+    void setEntityUpdateDetails(
             @JniType("std::vector<autofill::EntityAttributeUpdateDetails>")
                     List<EntityAttributeUpdateDetails> updateDetailsList) {
         LinearLayout attributeList = mDialogView.findViewById(R.id.autofill_ai_attribute_infos);
@@ -125,9 +126,13 @@ public class AutofillAiSaveUpdateEntityPrompt {
 
             TextView attributeName = attributeInfo.findViewById(R.id.attribute_name);
             TextView attributeValue = attributeInfo.findViewById(R.id.attribute_value);
+            TextView oldAttributeValue = attributeInfo.findViewById(R.id.old_attribute_value);
+            oldAttributeValue.setPaintFlags(
+                    oldAttributeValue.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
 
             attributeName.setText(updateDetails.getAttributeName());
             attributeValue.setText(updateDetails.getAttributeValue());
+            showTextIfNotEmpty(oldAttributeValue, updateDetails.getOldAttributeValue());
 
             attributeList.addView(attributeInfo);
         }

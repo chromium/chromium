@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.autofill.autofill_ai;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -11,6 +14,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.graphics.Paint;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -119,13 +123,19 @@ public class AutofillAiSaveUpdateEntityPromptTest {
 
     @Test
     @SmallTest
-    public void saveOrMigrateDetails() {
+    public void entityAttributeUpdateDetails() {
         final EntityAttributeUpdateDetails passportNumber =
                 new EntityAttributeUpdateDetails(
                         /* attributeName= */ "Passport number",
                         /* attributeValue= */ "AA1111",
                         /* oldAttributeValue= */ "",
                         /* updateType= */ EntityAttributeUpdateType.NEW_ENTITY_ATTRIBUTE_UNCHANGED);
+        final EntityAttributeUpdateDetails passportName =
+                new EntityAttributeUpdateDetails(
+                        /* attributeName= */ "Passport name",
+                        /* attributeValue= */ "John Doe",
+                        /* oldAttributeValue= */ "Seb Doe",
+                        /* updateType= */ EntityAttributeUpdateType.NEW_ENTITY_ATTRIBUTE_UPDATED);
         final EntityAttributeUpdateDetails passportExpirationDate =
                 new EntityAttributeUpdateDetails(
                         /* attributeName= */ "Passport expiration date",
@@ -133,27 +143,50 @@ public class AutofillAiSaveUpdateEntityPromptTest {
                         /* oldAttributeValue= */ "",
                         /* updateType= */ EntityAttributeUpdateType.NEW_ENTITY_ATTRIBUTE_UNCHANGED);
         List<EntityAttributeUpdateDetails> updateDetailsList =
-                List.of(passportNumber, passportExpirationDate);
+                List.of(passportNumber, passportName, passportExpirationDate);
 
-        mPrompt.setSaveOrMigrateDetails(updateDetailsList);
+        mPrompt.setEntityUpdateDetails(updateDetailsList);
         mPrompt.show();
 
         View dialogView = mPrompt.getDialogViewForTesting();
         LinearLayout attributeList = dialogView.findViewById(R.id.autofill_ai_attribute_infos);
-        assertEquals(2, attributeList.getChildCount());
+        assertEquals(3, attributeList.getChildCount());
 
-        assertAttributeNameAndValue(attributeList.getChildAt(0), "Passport number", "AA1111");
+        assertAttributeNameAndValue(
+                /* attributeInfo= */ attributeList.getChildAt(0),
+                /* attributeName= */ "Passport number",
+                /* attributeValue= */ "AA1111",
+                /* oldAttributeValue= */ "");
         assertAttributeNameAndValue(
                 /* attributeInfo= */ attributeList.getChildAt(1),
+                /* attributeName= */ "Passport name",
+                /* attributeValue= */ "John Doe",
+                /* oldAttributeValue= */ "Seb Doe");
+        assertAttributeNameAndValue(
+                /* attributeInfo= */ attributeList.getChildAt(2),
                 /* attributeName= */ "Passport expiration date",
-                /* attributeValue= */ "12/12/2030");
+                /* attributeValue= */ "12/12/2030",
+                /* oldAttributeValue= */ "");
     }
 
     private void assertAttributeNameAndValue(
-            View attributeInfo, String attributeName, String attributeValue) {
+            View attributeInfo,
+            String attributeName,
+            String attributeValue,
+            String oldAttributeValue) {
         TextView nameTextView = attributeInfo.findViewById(R.id.attribute_name);
         assertEquals(attributeName, nameTextView.getText());
+        assertThat(nameTextView.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG, is(0));
         TextView valueTextView = attributeInfo.findViewById(R.id.attribute_value);
         assertEquals(attributeValue, valueTextView.getText());
+        assertThat(valueTextView.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG, is(0));
+        TextView oldValueTextView = attributeInfo.findViewById(R.id.old_attribute_value);
+        if (oldAttributeValue.isEmpty()) {
+            assertEquals(View.GONE, oldValueTextView.getVisibility());
+        } else {
+            assertEquals(View.VISIBLE, oldValueTextView.getVisibility());
+            assertEquals(oldAttributeValue, oldValueTextView.getText());
+            assertThat(oldValueTextView.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG, not(0));
+        }
     }
 }

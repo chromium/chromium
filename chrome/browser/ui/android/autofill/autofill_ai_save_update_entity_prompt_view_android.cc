@@ -78,7 +78,7 @@ void AutofillAiSaveUpdateEntityPromptViewAndroid::SetContent(
       env, java_object_, controller->GetTitle(),
       controller->GetPositiveButtonText(), controller->GetNegativeButtonText());
 
-  Java_AutofillAiSaveUpdateEntityPrompt_setSaveOrMigrateDetails(
+  Java_AutofillAiSaveUpdateEntityPrompt_setEntityUpdateDetails(
       env, java_object_, controller->GetEntityUpdateDetails());
 
   Java_AutofillAiSaveUpdateEntityPrompt_setSourceNotice(

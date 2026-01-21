@@ -5,6 +5,7 @@
 #include "chrome/browser/autofill/android/autofill_ai_save_update_entity_prompt_controller.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/android/jni_android.h"
 #include "base/strings/utf_string_conversions.h"
@@ -52,7 +53,7 @@ class AutofillAiSaveUpdateEntityPromptControllerTest
         web_contents(), std::move(prompt_view),
         test::GetPassportEntityInstance(
             {.name = u"Jon doe", .record_type = record_type}),
-        "en-US", prompt_closed_callback_.Get());
+        std::nullopt, "en-US", prompt_closed_callback_.Get());
   }
 
   void SigninUser(const std::string& email,
@@ -133,7 +134,7 @@ TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
 }
 
 TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
-       PromptUiStrings_LocalEntity) {
+       PromptUiStrings_SaveLocalEntity) {
   CreateController();
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE),

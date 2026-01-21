@@ -48,18 +48,19 @@ class AutofillAiSaveUpdateEntityFlowManager {
   // Triggers a confirmation flow for saving or updating an Autofill AI entity.
   // If another flow is in progress, the incoming offer will be auto-declined.
   void OfferSave(
-      const EntityInstance& entity,
+      EntityInstance entity,
       std::optional<EntityInstance> old_entity,
       AutofillClient::EntityImportPromptResultCallback prompt_closed_callback);
 
  private:
-  void OnMessagePrimaryAction(const EntityInstance& entity);
+  void OnMessagePrimaryAction(EntityInstance entity,
+                              std::optional<EntityInstance> old_entity);
 
   void OnMessageDismissed(messages::DismissReason dismiss_reason);
 
   std::unique_ptr<AutofillMessageModel> CreateMessageModel(
-      const EntityInstance& entity,
-      bool is_save_prompt);
+      EntityInstance entity,
+      std::optional<EntityInstance> old_entity);
 
   void RunPromptClosedCallback(
       AutofillClient::AutofillAiBubbleClosedReason decision);
