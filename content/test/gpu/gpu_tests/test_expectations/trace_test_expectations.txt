@@ -298,7 +298,9 @@ crbug.com/453704683 [ win11 qualcomm-0x36334330 ] OverlayModeTraceTest_DirectCom
 
 
 # Readback assertion on macOS
-crbug.com/474873836 [ mac intel-0x3e9b angle-metal ] WebGLCanvasCaptureTraceTest_VideoStreamFrom2DAlphaCanvas_DisableReadbackFromTexture [ Failure ]
+crbug.com/474873836 [ angle-metal clang-coverage intel-0x3e9b no-asan release sonoma ] WebGLCanvasCaptureTraceTest_VideoStreamFrom2DAlphaCanvas_DisableReadbackFromTexture [ Failure ]
+crbug.com/474873836 [ angle-metal debug intel-0x3e9b no-asan no-clang-coverage sonoma ] WebGLCanvasCaptureTraceTest_VideoStreamFrom2DAlphaCanvas_DisableReadbackFromTexture [ Failure ]
+crbug.com/474873836 [ angle-metal intel-0x3e9b no-asan no-clang-coverage release sequoia ] WebGLCanvasCaptureTraceTest_VideoStreamFrom2DAlphaCanvas_DisableReadbackFromTexture [ Failure ]
 
 ###############################
 # Permanent Slow Expectations #
