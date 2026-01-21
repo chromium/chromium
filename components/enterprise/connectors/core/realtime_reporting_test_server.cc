@@ -127,7 +127,6 @@ std::optional<Event> ParseEvent(const base::Value::Dict* event_json) {
   }
   Event event;
   const base::Value::Dict* event_details_json;
-  // TODO(crbug.com/412683254): Add branches for other event types.
   if ((event_details_json = event_json->FindDict("loginEvent"))) {
     ParseLoginEvent(event_details_json, event.mutable_login_event());
   } else if ((event_details_json =
