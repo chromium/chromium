@@ -16,6 +16,7 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -358,9 +359,24 @@ void XdgToplevel::SetIcon(const gfx::ImageSkia& icon) {
   for (const auto& rep : icon.image_reps()) {
     const auto& bitmap = rep.GetBitmap();
     gfx::Size image_size = gfx::SkISizeToSize(bitmap.dimensions());
-    if (image_size.IsEmpty() || image_size.width() != image_size.height()) {
-      // The toplevel icon protocol requires square icons.
+    if (image_size.IsEmpty()) {
       continue;
+    }
+
+    const SkBitmap* bitmap_to_draw = &bitmap;
+    SkBitmap square_bitmap;
+    if (image_size.width() != image_size.height()) {
+      // The toplevel icon protocol requires square icons. Pad the icon with
+      // transparent pixels.
+      int size = std::max(image_size.width(), image_size.height());
+      square_bitmap.allocN32Pixels(size, size);
+      square_bitmap.eraseColor(SK_ColorTRANSPARENT);
+      square_bitmap.writePixels(bitmap.pixmap(),
+                                (size - image_size.width()) / 2,
+                                (size - image_size.height()) / 2);
+
+      bitmap_to_draw = &square_bitmap;
+      image_size = gfx::Size(size, size);
     }
 
     WaylandShmBuffer buffer(connection()->buffer_factory(), image_size);
@@ -369,7 +385,7 @@ void XdgToplevel::SetIcon(const gfx::ImageSkia& icon) {
       return;
     }
 
-    wl::DrawBitmap(bitmap, &buffer);
+    wl::DrawBitmap(*bitmap_to_draw, &buffer);
     buffers.emplace_back(std::move(buffer), rep.scale());
   }
   for (const auto& [buffer, scale] : buffers) {
