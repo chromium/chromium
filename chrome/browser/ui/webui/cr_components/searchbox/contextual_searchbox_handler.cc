@@ -177,11 +177,17 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
     };
     std::vector<TabTime> tab_times;
     for (tabs::TabInterface* tab : *tab_strip_model) {
-      tab_times.push_back({
-          .tab = tab,
-          .time = std::max(tab->GetContents()->GetLastActiveTimeTicks(),
-                           tab->GetContents()->GetLastInteractionTimeTicks()),
-      });
+      content::WebContents* web_contents = tab->GetContents();
+      const GURL& url = web_contents->GetLastCommittedURL();
+      // Skip tabs that are still loading, and skip webui (internal pages).
+      if (url.is_valid() && !url.SchemeIs(content::kChromeUIScheme) &&
+          !url.SchemeIs(content::kChromeUIUntrustedScheme)) {
+        tab_times.push_back({
+            .tab = tab,
+            .time = std::max(web_contents->GetLastActiveTimeTicks(),
+                             web_contents->GetLastInteractionTimeTicks()),
+        });
+      }
     }
 
     // Sort the tabs by last active time, and truncate to the maximum number of
@@ -199,16 +205,7 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
     std::vector<searchbox::mojom::TabInfoPtr> tabs;
     for (const TabTime& tab_time : tab_times) {
       content::WebContents* web_contents = tab_time.tab->GetContents();
-      const auto& last_committed_url = web_contents->GetLastCommittedURL();
-      // Skip tabs that are still loading, and skip webui.
-      const bool is_invalid_url = !last_committed_url.is_valid();
-      const bool is_internal_page =
-          last_committed_url.SchemeIs(content::kChromeUIScheme) ||
-          last_committed_url.SchemeIs(content::kChromeUIUntrustedScheme);
-
-      if (is_invalid_url || is_internal_page) {
-        continue;
-      }
+      const GURL& last_committed_url = web_contents->GetLastCommittedURL();
 
       auto tab_data = searchbox::mojom::TabInfo::New();
       tab_data->tab_id = tab_time.tab->GetHandle().raw_value();
