@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_apply_update_command.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/scheduler/apply_pending_manifest_update_result.h"
+#include "chrome/browser/web_applications/scheduler/fetch_install_info_from_install_url_result.h"
 #include "chrome/browser/web_applications/ui_manager/update_dialog_types.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
@@ -170,13 +171,13 @@ class WebAppCommandScheduler {
       webapps::ManifestId manifest_id,
       GURL install_url,
       webapps::ManifestId parent_manifest_id,
-      base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)> callback);
+      FetchInstallInfoFromInstallUrlCallback callback);
 
   // Same as the overload above, but without parent_manifest_id.
   void FetchInstallInfoFromInstallUrl(
       webapps::ManifestId manifest_id,
       GURL install_url,
-      base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)> callback);
+      FetchInstallInfoFromInstallUrlCallback callback);
 
   // Installs a web app from a pre-filled `WebAppInstallInfo` struct, bypassing
   // the manifest fetching step. This is for programmatic installations where

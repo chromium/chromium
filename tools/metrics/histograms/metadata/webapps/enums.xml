@@ -146,7 +146,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Shutdown"/>
 </enum>
 
-<!-- LINT.ThenChange(/chrome/browser/web_applications/commands/fetch_install_info_from_install_url_command.h:FetchInstallInfoResult) -->
+<!-- LINT.ThenChange(//chrome/browser/web_applications/scheduler/fetch_install_info_from_install_url_result.h:FetchInstallInfoResult) -->
 
 <!-- LINT.IfChange(FetchManifestAndUpdateResult) -->
 

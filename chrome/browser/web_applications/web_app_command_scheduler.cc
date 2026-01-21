@@ -76,6 +76,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/scheduler/apply_pending_manifest_update_result.h"
+#include "chrome/browser/web_applications/scheduler/fetch_install_info_from_install_url_result.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
@@ -145,7 +146,7 @@ void WebAppCommandScheduler::FetchInstallInfoFromInstallUrl(
     webapps::ManifestId manifest_id,
     GURL install_url,
     webapps::ManifestId parent_manifest_id,
-    base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)> callback) {
+    FetchInstallInfoFromInstallUrlCallback callback) {
   provider_->command_manager().ScheduleCommand(
       std::make_unique<FetchInstallInfoFromInstallUrlCommand>(
           std::move(manifest_id), std::move(install_url),
@@ -155,7 +156,7 @@ void WebAppCommandScheduler::FetchInstallInfoFromInstallUrl(
 void WebAppCommandScheduler::FetchInstallInfoFromInstallUrl(
     webapps::ManifestId manifest_id,
     GURL install_url,
-    base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)> callback) {
+    FetchInstallInfoFromInstallUrlCallback callback) {
   provider_->command_manager().ScheduleCommand(
       std::make_unique<FetchInstallInfoFromInstallUrlCommand>(
           std::move(manifest_id), std::move(install_url), std::nullopt,

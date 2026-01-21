@@ -27,25 +27,6 @@
 
 namespace web_app {
 
-std::ostream& operator<<(std::ostream& os, FetchInstallInfoResult result) {
-  switch (result) {
-    case FetchInstallInfoResult::kAppInfoObtained:
-      return os << "kAppInfoObtained";
-    case FetchInstallInfoResult::kWebContentsDestroyed:
-      return os << "kWebContentsDestroyed";
-    case FetchInstallInfoResult::kUrlLoadingFailure:
-      return os << "kUrlLoadingFailure";
-    case FetchInstallInfoResult::kNoValidManifest:
-      return os << "kNoValidManifest";
-    case FetchInstallInfoResult::kWrongManifestId:
-      return os << "kWrongManifestId";
-    case FetchInstallInfoResult::kFailure:
-      return os << "kFailure";
-    case FetchInstallInfoResult::kShutdown:
-      return os << "kShutdown";
-  }
-}
-
 bool FetchInstallInfoFromInstallUrlCommand::
     FetchInstallInfoFromInstallUrlCommand::IsWebContentsDestroyed() {
   return lock_->shared_web_contents().IsBeingDestroyed();
@@ -101,7 +82,7 @@ void FetchInstallInfoFromInstallUrlCommand::StartWithLock(
 
   if (IsWebContentsDestroyed()) {
     CompleteCommandAndSelfDestruct(
-        FetchInstallInfoResult::kWebContentsDestroyed,
+        FetchInstallInfoResult::kWebContentsWasDestroyed,
         /*install_info=*/nullptr);
     return;
   }

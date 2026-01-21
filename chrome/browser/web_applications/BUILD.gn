@@ -295,6 +295,8 @@ source_set("web_applications") {
     "preinstalled_web_apps/preinstalled_web_apps.h",
     "scheduler/apply_pending_manifest_update_result.cc",
     "scheduler/apply_pending_manifest_update_result.h",
+    "scheduler/fetch_install_info_from_install_url_result.cc",
+    "scheduler/fetch_install_info_from_install_url_result.h",
     "scope_extension_info.cc",
     "scope_extension_info.h",
     "url_pattern_with_regex_matcher.cc",
