@@ -3018,6 +3018,17 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.DistillationScheme"
+    enum="ReadAnythingDistillationScheme" expires_after="2027-01-01">
+  <owner>davidsegovia@google.com</owner>
+  <owner>ammedina@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the URL scheme present when Reading Mode distillation is triggered
+    while the IsReadAnythingWithReadabilityEnabled flag is active.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.DistillationStatusAfterOmnibox"
     enum="ReadAnythingDistillationStatus" expires_after="2026-06-01">
   <owner>kristislee@google.com</owner>

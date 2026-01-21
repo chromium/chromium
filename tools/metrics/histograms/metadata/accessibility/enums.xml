@@ -2138,6 +2138,21 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//chrome/common/read_anything/read_anything.mojom:Colors) -->
 
+<!-- LINT.IfChange(ReadAnythingDistillationScheme) -->
+
+<enum name="ReadAnythingDistillationScheme">
+  <int value="0" label="HTTP/HTTPS (Success)"/>
+  <int value="1" label="File"/>
+  <int value="2" label="Internal (chrome://)"/>
+  <int value="3" label="About (about:blank)"/>
+  <int value="4" label="Data"/>
+  <int value="5" label="Chrome Extension"/>
+  <int value="6" label="Blob"/>
+  <int value="7" label="Other"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.h:ReadAnythingDistillationScheme) -->
+
 <!-- LINT.IfChange(ReadAnythingDistillationStatus) -->
 
 <enum name="ReadAnythingDistillationStatus">

@@ -53,6 +53,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_registry.h"
 #include "net/http/http_status_code.h"
 #include "pdf/buildflags.h"
@@ -69,6 +70,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
@@ -1271,11 +1273,11 @@ void ReadAnythingUntrustedPageHandler::RequestDomDistillerDistillation(
     return;
   }
   const GURL& url = content->GetLastCommittedURL();
+  RecordDistillationSchemeHistogram(url);
+
   if (!url.SchemeIsHTTPOrHTTPS()) {
     VLOG(1) << kReadAnythingPrefix << ": URL is not HTTP/HTTPS, skipping for "
             << url.spec();
-    // TODO(crbug.com/467084642): Create UMA / UKM metric to track non
-    // HTTP/HTTPS readability distillation attempt.
     return;
   }
 
@@ -1284,6 +1286,31 @@ void ReadAnythingUntrustedPageHandler::RequestDomDistillerDistillation(
           content->GetBrowserContext());
   DCHECK(dom_distiller_service);
   distiller_delegate_->StartDistillation(dom_distiller_service, content);
+}
+
+void ReadAnythingUntrustedPageHandler::RecordDistillationSchemeHistogram(
+    const GURL& url) const {
+  ReadAnythingDistillationScheme scheme =
+      ReadAnythingDistillationScheme::kOther;
+
+  if (url.SchemeIsHTTPOrHTTPS()) {
+    scheme = ReadAnythingDistillationScheme::kHttpOrHttps;
+  } else if (url.SchemeIsFile()) {
+    scheme = ReadAnythingDistillationScheme::kFile;
+  } else if (url.SchemeIs(url::kDataScheme)) {
+    scheme = ReadAnythingDistillationScheme::kData;
+  } else if (url.SchemeIs(extensions::kExtensionScheme)) {
+    scheme = ReadAnythingDistillationScheme::kExtension;
+  } else if (url.IsAboutBlank() || url.IsAboutSrcdoc()) {
+    scheme = ReadAnythingDistillationScheme::kAbout;
+  } else if (url.SchemeIsBlob()) {
+    scheme = ReadAnythingDistillationScheme::kBlob;
+  } else if (url.SchemeIs(content::kChromeUIScheme)) {
+    scheme = ReadAnythingDistillationScheme::kInternal;
+  }
+
+  base::UmaHistogramEnumeration("Accessibility.ReadAnything.DistillationScheme",
+                                scheme);
 }
 
 void ReadAnythingUntrustedPageHandler::ProcessDistilledArticle(

@@ -39,6 +39,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_web_ui.h"
 #include "mojo/public/mojom/base/values.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1967,6 +1968,71 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerDistillerTest,
       [&]() { return handler_->dom_distiller_title().has_value(); }));
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return handler_->dom_distiller_content().has_value(); }));
+}
+
+IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerDistillerTest,
+                       RecordNonHttpDistillationAttempt) {
+  const std::string_view histogram =
+      "Accessibility.ReadAnything.DistillationScheme";
+  base::HistogramTester histogram_tester;
+
+  histogram_tester.ExpectTotalCount(histogram, 0);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // It will start at about/blank.
+  handler_ = CreateHandler();
+
+  histogram_tester.ExpectBucketCount(histogram,
+                                     ReadAnythingDistillationScheme::kAbout, 1);
+
+  // Http/https.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(embedded_test_server()->GetURL("/simple.html")),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  histogram_tester.ExpectBucketCount(
+      histogram, ReadAnythingDistillationScheme::kHttpOrHttps, 1);
+
+  // Data.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("data:text/html,<html><body>Main content</body></html>"),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  histogram_tester.ExpectBucketCount(histogram,
+                                     ReadAnythingDistillationScheme::kData, 1);
+
+  // File.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), content::GetTestUrl(".", "simple_page.html"),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  histogram_tester.ExpectBucketCount(histogram,
+                                     ReadAnythingDistillationScheme::kFile, 1);
+
+  // Blob.
+  // new Blob(["This is a test for Reading Mode."], {type: 'text/plain'});
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("blob:null/5e556357-49b2-4749-b18d-1bd57a1be47f"),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  histogram_tester.ExpectBucketCount(histogram,
+                                     ReadAnythingDistillationScheme::kBlob, 1);
+
+  // Extension.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("chrome-extension://test/options.html"),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  histogram_tester.ExpectBucketCount(
+      histogram, ReadAnythingDistillationScheme::kExtension, 1);
+
+  histogram_tester.ExpectTotalCount(histogram, 6);
 }
 
 }  // namespace
