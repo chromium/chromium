@@ -1916,12 +1916,17 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "hover_dwell_time",
                    base::Milliseconds(10));
 BASE_FEATURE(kPreloadingEagerViewportHeuristics,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kPreloadingEagerViewportHeuristicsPresentTime,
                    &kPreloadingEagerViewportHeuristics,
                    "viewport_present_time",
-                   base::Milliseconds(100));
+                   base::Milliseconds(50));
 
 BASE_FEATURE(kPreloadingHeuristicsMLModel, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(int,

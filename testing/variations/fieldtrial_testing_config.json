@@ -20140,51 +20140,6 @@
             ]
         }
     ],
-    "PreloadingEagerViewportHeuristics": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "50ms",
-                    "params": {
-                        "viewport_present_time": "50ms"
-                    },
-                    "enable_features": [
-                        "PreloadingEagerViewportHeuristics"
-                    ]
-                },
-                {
-                    "name": "200ms",
-                    "params": {
-                        "viewport_present_time": "200ms"
-                    },
-                    "enable_features": [
-                        "PreloadingEagerViewportHeuristics"
-                    ]
-                },
-                {
-                    "name": "400ms",
-                    "params": {
-                        "viewport_present_time": "400ms"
-                    },
-                    "enable_features": [
-                        "PreloadingEagerViewportHeuristics"
-                    ]
-                },
-                {
-                    "name": "1000ms",
-                    "params": {
-                        "viewport_present_time": "1000ms"
-                    },
-                    "enable_features": [
-                        "PreloadingEagerViewportHeuristics"
-                    ]
-                }
-            ]
-        }
-    ],
     "Prerender2EarlyDocumentLifecycleUpdateV2": [
         {
             "platforms": [
