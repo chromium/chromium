@@ -8,8 +8,6 @@ source_set("indexed_db") {
   public = [ "indexed_db_control_wrapper.h" ]
 
   sources = [
-    "blob_reader.cc",
-    "blob_reader.h",
     "file_path_util.cc",
     "file_path_util.h",
     "file_stream_reader_to_data_pipe.cc",
@@ -37,6 +35,9 @@ source_set("indexed_db") {
     "instance/backing_store_pre_close_task_queue.h",
     "instance/backing_store_util.cc",
     "instance/backing_store_util.h",
+    "instance/blob_endpoint.h",
+    "instance/blob_reader.cc",
+    "instance/blob_reader.h",
     "instance/bucket_context.cc",
     "instance/bucket_context.h",
     "instance/bucket_context_handle.cc",

@@ -305,6 +305,7 @@ chromium-metrics-reviews@google.com.
              length"/>
   <int value="17"
       label="Failed to decompress a value when reading from the DB"/>
+  <int value="18" label="Failed to delete a legacy blob file"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/indexed_db/instance/sqlite/database_connection.h:SpecificEvent) -->

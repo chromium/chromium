@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/indexed_db/blob_reader.h"
+#include "content/browser/indexed_db/instance/blob_reader.h"
 
 #include <limits>
 #include <memory>

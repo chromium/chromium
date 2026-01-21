@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_INDEXED_DB_BLOB_READER_H_
-#define CONTENT_BROWSER_INDEXED_DB_BLOB_READER_H_
+#ifndef CONTENT_BROWSER_INDEXED_DB_INSTANCE_BLOB_READER_H_
+#define CONTENT_BROWSER_INDEXED_DB_INSTANCE_BLOB_READER_H_
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
-#include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
+#include "content/browser/indexed_db/instance/blob_endpoint.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "services/network/public/mojom/data_pipe_getter.mojom.h"
-#include "third_party/blink/public/mojom/blob/blob.mojom.h"
 
 namespace content::indexed_db {
 
@@ -25,9 +23,7 @@ namespace content::indexed_db {
 // * In cases where the blob registry needs to read bytes, such as for copying
 //   to a local file or to serve data for blob:// URLs, this class reads from
 //   disk and returns the bytes via `BlobDataItemReader`.
-class BlobReader : public blink::mojom::Blob,
-                   public network::mojom::DataPipeGetter,
-                   public storage::mojom::BlobDataItemReader {
+class BlobReader : public BlobEndpoint {
  public:
   BlobReader(const IndexedDBExternalObject& blob_info,
              base::OnceClosure on_last_receiver_disconnected);
@@ -36,9 +32,9 @@ class BlobReader : public blink::mojom::Blob,
   BlobReader(const BlobReader&) = delete;
   BlobReader& operator=(const BlobReader&) = delete;
 
-  // Like Clone(), but called by the BucketContext (which owns `this`).
+  // BlobEndpoint:
   void AddReceiver(mojo::PendingReceiver<blink::mojom::Blob> receiver,
-                   storage::mojom::BlobStorageContext& blob_registry);
+                   storage::mojom::BlobStorageContext& blob_registry) override;
 
   // blink::mojom::Blob:
   void Clone(mojo::PendingReceiver<blink::mojom::Blob> receiver) override;
@@ -120,4 +116,4 @@ class BlobReader : public blink::mojom::Blob,
 
 }  // namespace content::indexed_db
 
-#endif  // CONTENT_BROWSER_INDEXED_DB_BLOB_READER_H_
+#endif  // CONTENT_BROWSER_INDEXED_DB_INSTANCE_BLOB_READER_H_

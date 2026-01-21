@@ -4,8 +4,12 @@
 
 #include <string>
 
+#include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
+#include "base/test/run_until.h"
+#include "content/browser/indexed_db/file_path_util.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/browser/indexed_db/instance/backing_store_test_base.h"
 #include "content/browser/indexed_db/instance/sqlite/backing_store_database_impl.h"
@@ -13,6 +17,9 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "sql/database.h"
+#include "sql/statement.h"
+#include "sql/test/test_helpers.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 
 namespace content::indexed_db::sqlite {
@@ -129,31 +136,144 @@ class BackingStoreSqliteTest : public BackingStoreTestBase {
 
     return output_blob_contents;
   }
+
+  base::FilePath GetDatabasePath(std::u16string_view name) {
+    return temp_dir_.GetPath().Append(
+        GetSqliteDbDirectory(bucket_context_->bucket_locator())
+            .Append(DatabaseNameToFileName(name)));
+  }
+
+  // Rewrites blobs that are inlined in the SQLite db to instead be stored as
+  // standalone files, as if they had been migrated from a LevelDB store.
+  std::vector<base::FilePath> ConvertInlinedBlobsToLegacyFileBlobs(
+      std::u16string_view name) {
+    base::FilePath db_path = GetDatabasePath(name);
+    sql::Database db(sql::DatabaseOptions()
+                         .set_exclusive_locking(true)
+                         .set_wal_mode(true)
+                         .set_enable_triggers(true),
+                     sql::test::kTestTag);
+
+    EXPECT_TRUE(db.Open(db_path));
+    std::vector<base::FilePath> blob_files;
+    {
+      sql::Statement statement(
+          db.GetUniqueStatement("SELECT row_id, bytes FROM blobs"));
+      while (statement.Step()) {
+        int64_t row_id = statement.ColumnInt64(0);
+        base::span<const uint8_t> bytes = statement.ColumnBlob(1);
+
+        base::FilePath path = db_path.InsertBeforeExtensionASCII(
+            absl::StrFormat("_%" PRIx64, row_id));
+        base::WriteFile(path, bytes);
+        blob_files.push_back(path);
+      }
+    }
+    {
+      sql::Statement statement(
+          db.GetUniqueStatement("UPDATE blobs SET bytes = NULL "));
+      EXPECT_TRUE(statement.Run());
+    }
+    db.Close();
+    return blob_files;
+  }
 };
 
 TEST_F(BackingStoreSqliteTest, BlobBasics) {
-  auto db_creation_result = backing_store()->CreateOrOpenDatabase(u"name");
-  ASSERT_TRUE(db_creation_result.has_value());
-  BackingStore::Database& db = **db_creation_result;
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db,
+                       backing_store()->CreateOrOpenDatabase(u"name"));
 
   const int64_t object_store_id = 1;
   const std::string payload("payload");
   IndexedDBKey key(u"key");
   IndexedDBValue value("non_blob_payload", {CreateBlobInfo(u"type", payload)});
-  PutRecord(db, object_store_id, key, value);
-  EXPECT_EQ(ReadBlobContents(db, object_store_id, key), payload);
+  PutRecord(*db, object_store_id, key, value);
+  EXPECT_EQ(ReadBlobContents(*db, object_store_id, key), payload);
+}
+
+TEST_F(BackingStoreSqliteTest, LegacyBlobBasics) {
+  const int64_t object_store_id = 1;
+  const std::string payload("payload");
+  const IndexedDBKey key1(u"key1");
+  const IndexedDBKey key2(u"key2");
+  const IndexedDBKey key3(u"key3");
+
+  // Setup: write two blobs into a database.
+  {
+    ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db,
+                         backing_store()->CreateOrOpenDatabase(u"name"));
+
+    std::unique_ptr<BackingStore::Transaction> transaction =
+        CreateAndBeginTransaction(
+            *db, blink::mojom::IDBTransactionMode::VersionChange);
+
+    EXPECT_TRUE(transaction
+                    ->CreateObjectStore(object_store_id, u"object_store_name",
+                                        IndexedDBKeyPath(u"object_store_key"),
+                                        /*auto_increment=*/true)
+                    .ok());
+    EXPECT_TRUE(transaction->SetDatabaseVersion(1).ok());
+
+    IndexedDBValue value("non_blob_payload",
+                         {CreateBlobInfo(u"type", payload)});
+    EXPECT_TRUE(transaction->PutRecord(object_store_id, key1, value.Clone())
+                    .has_value());
+    EXPECT_TRUE(transaction->PutRecord(object_store_id, key2, value.Clone())
+                    .has_value());
+    EXPECT_TRUE(transaction->PutRecord(object_store_id, key3, value.Clone())
+                    .has_value());
+    CommitTransactionAndVerify(*transaction);
+  }
+
+  // Test hack: convert these blobs to standalone files, as if they'd been
+  // migrated from a LevelDB store.
+  std::vector<base::FilePath> blob_files =
+      ConvertInlinedBlobsToLegacyFileBlobs(u"name");
+  ASSERT_EQ(blob_files.size(), 3U);
+  EXPECT_TRUE(base::PathExists(blob_files[0]));
+  EXPECT_TRUE(base::PathExists(blob_files[1]));
+  EXPECT_TRUE(base::PathExists(blob_files[2]));
+
+  {
+    ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db,
+                         backing_store()->CreateOrOpenDatabase(u"name"));
+    // Verify that one of these blobs can be read correctly.
+    EXPECT_EQ(ReadBlobContents(*db, object_store_id, key2), payload);
+
+    // Now overwrite two of the rows, such that they don't contain blobs. The
+    // blobs should be removed from the backing store.
+    IndexedDBValue value_without_blob("non_blob_payload", {});
+    PutRecord(*db, object_store_id, key1, value_without_blob);
+    PutRecord(*db, object_store_id, key2, value_without_blob);
+
+    // In the case of the blob that was never active (being read), the file can
+    // be deleted as soon as the RW txn is finalized. This verifies the
+    // `DatabaseConnection::EndTransaction` deletion path.
+    EXPECT_FALSE(base::PathExists(blob_files[0]));
+
+    // In the case of the blob that we read above, the file will still be there
+    // because `WholeBlobReader` has not released its reference yet. This
+    // verifies the `OnBlobBecameInactive` deletion path.
+    EXPECT_TRUE(base::PathExists(blob_files[1]));
+    // It's eventually deleted after `WholeBlobReader` releases its reference
+    // by way of closing the mojo pipe.
+    EXPECT_TRUE(base::test::RunUntil(
+        [&blob_files]() { return !base::PathExists(blob_files[1]); }));
+
+    // And finally, the blob that was not overwritten is still there.
+    EXPECT_TRUE(base::PathExists(blob_files[2]));
+  }
 }
 
 // Regression test for https://crbug.com/454824963. Tests that blob IDs are not
 // reused, which is important when building `blobs_staged_for_commit_`.
 TEST_F(BackingStoreSqliteTest, PutPutCommitBlob) {
-  auto db_creation_result = backing_store()->CreateOrOpenDatabase(u"name");
-  ASSERT_TRUE(db_creation_result.has_value());
-  BackingStore::Database& db = **db_creation_result;
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db,
+                       backing_store()->CreateOrOpenDatabase(u"name"));
 
   auto transaction =
-      db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
-                           blink::mojom::IDBTransactionMode::ReadWrite);
+      db->CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                            blink::mojom::IDBTransactionMode::ReadWrite);
   transaction->Begin(CreateDummyLock());
 
   const int64_t object_store_id = 1;
@@ -170,20 +290,19 @@ TEST_F(BackingStoreSqliteTest, PutPutCommitBlob) {
       transaction->PutRecord(object_store_id, key, value2.Clone()).has_value());
   CommitTransactionAndVerify(*transaction);
 
-  EXPECT_EQ(ReadBlobContents(db, object_store_id, key), payload + payload);
+  EXPECT_EQ(ReadBlobContents(*db, object_store_id, key), payload + payload);
 }
 
 // Regression test for https://crbug.com/454824963. Tests that blobs that are
 // staged for commit will be discarded if the associated record is deleted
 // before committing.
 TEST_F(BackingStoreSqliteTest, PutDeleteCommitBlob) {
-  auto db_creation_result = backing_store()->CreateOrOpenDatabase(u"name");
-  ASSERT_TRUE(db_creation_result.has_value());
-  BackingStore::Database& db = **db_creation_result;
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db,
+                       backing_store()->CreateOrOpenDatabase(u"name"));
 
   auto transaction =
-      db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
-                           blink::mojom::IDBTransactionMode::ReadWrite);
+      db->CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                            blink::mojom::IDBTransactionMode::ReadWrite);
   transaction->Begin(CreateDummyLock());
 
   const int64_t object_store_id = 1;
@@ -216,9 +335,8 @@ TEST_F(BackingStoreSqliteTest, BlobChunking) {
   DatabaseConnection::OverrideMaxBlobSizeForTesting(
       base::ByteSize(kBlobChunkSizeForTest));
 
-  auto db_creation_result = backing_store()->CreateOrOpenDatabase(u"name");
-  ASSERT_TRUE(db_creation_result.has_value());
-  BackingStore::Database& db = **db_creation_result;
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db,
+                       backing_store()->CreateOrOpenDatabase(u"name"));
 
   const int64_t object_store_id = 1;
   std::array blob_sizes{0,
@@ -240,8 +358,8 @@ TEST_F(BackingStoreSqliteTest, BlobChunking) {
     std::string_view payload = std::string_view(data).substr(0, blob_size);
     IndexedDBValue value("non_blob_payload",
                          {CreateBlobInfo(u"type", payload)});
-    PutRecord(db, object_store_id, key, value);
-    EXPECT_EQ(ReadBlobContents(db, object_store_id, key), payload);
+    PutRecord(*db, object_store_id, key, value);
+    EXPECT_EQ(ReadBlobContents(*db, object_store_id, key), payload);
   }
 }
 
