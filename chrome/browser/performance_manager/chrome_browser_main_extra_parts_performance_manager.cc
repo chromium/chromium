@@ -96,7 +96,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/path_service.h"
-#include "chrome/browser/performance_manager/policies/priority_boost_disabler.h"
 #endif
 
 namespace {
@@ -203,12 +202,6 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
           switches::kSingleProcess)) {
     graph->PassToGraph(
         std::make_unique<performance_manager::TerminationTargetPolicy>());
-  }
-  if (base::FeatureList::IsEnabled(features::kDisableBoostPriority) &&
-      features::kDisableBoostPriorityMode.Get() ==
-          features::DisableBoostPriorityMode::kAfterLoading) {
-    graph->PassToGraph(
-        std::make_unique<performance_manager::PriorityBoostDisabler>());
   }
 #endif  // BUILDFLAG(IS_WIN)
 

@@ -35,14 +35,6 @@ const base::FeatureParam<base::TimeDelta>
 BASE_FEATURE(kAppSpecificNotifications, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDisableBoostPriority, base::FEATURE_DISABLED_BY_DEFAULT);
-static constexpr base::FeatureParam<DisableBoostPriorityMode>::Option
-    kDisableBoostPriorityOptions[] = {
-        {DisableBoostPriorityMode::kAfterLoading, "AfterLoading"},
-        {DisableBoostPriorityMode::kAtStartup, "AtStartup"}};
-constinit const base::FeatureParam<DisableBoostPriorityMode>
-    kDisableBoostPriorityMode{&kDisableBoostPriority, "mode",
-                              DisableBoostPriorityMode::kAtStartup,
-                              &kDisableBoostPriorityOptions};
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)

@@ -9033,33 +9033,6 @@
             ]
         }
     ],
-    "DisableBoostPriority": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledAfterLoading",
-                    "params": {
-                        "mode": "AfterLoading"
-                    },
-                    "enable_features": [
-                        "DisableBoostPriority"
-                    ]
-                },
-                {
-                    "name": "EnabledAtStartup",
-                    "params": {
-                        "mode": "AtStartup"
-                    },
-                    "enable_features": [
-                        "DisableBoostPriority"
-                    ]
-                }
-            ]
-        }
-    ],
     "DisableBruschettaInstallChecks": [
         {
             "platforms": [

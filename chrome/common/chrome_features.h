@@ -48,15 +48,6 @@ BASE_DECLARE_FEATURE(kAppSpecificNotifications);
 // primitives.
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kDisableBoostPriority);
-enum class DisableBoostPriorityMode {
-  // In renderer processes: wait until after the first load completes before
-  // disabling the boost. In all other processes, disable boost at startup.
-  kAfterLoading,
-  // Priority boosting is disabled for all processes at startup.
-  kAtStartup,
-};
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE_PARAM(DisableBoostPriorityMode, kDisableBoostPriorityMode);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)

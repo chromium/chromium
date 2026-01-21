@@ -947,17 +947,6 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
       command_line->GetSwitchValueASCII(switches::kProcessType);
   bool is_browser_process = process_type.empty();
 
-#if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(features::kDisableBoostPriority) &&
-      features::kDisableBoostPriorityMode.Get() ==
-          features::DisableBoostPriorityMode::kAtStartup) {
-    // The second argument to this function *disables* boosting if true. See
-    // https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-setprocesspriorityboost
-    SetProcessPriorityBoost(/*hProcess=*/base::GetCurrentProcessHandle(),
-                            /*bDisablePriorityBoost=*/true);
-  }
-#endif
-
   // Enable Split cache by default here and not in content/ so as to not
   // impact non-Chrome embedders like WebView, Cronet etc. This only enables
   // it if not already overridden by command line, field trial etc.
