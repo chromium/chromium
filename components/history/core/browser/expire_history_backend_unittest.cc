@@ -539,6 +539,51 @@ TEST_F(ExpireHistoryTest, DeleteURLAndContextAnnotations) {
   EXPECT_FALSE(main_db_->GetContextAnnotationsForVisit(test_visit_id, &unused));
 }
 
+// Expires a URL with a 404 visit. Verifies the visit is expired and typed and
+// visit counts are updated.
+TEST_F(ExpireHistoryTest, Expire404Visit) {
+  URLID url_ids[3];
+  base::Time visit_times[4];
+  AddExampleData(url_ids, visit_times);
+
+  // Add 404 context annotations for the second URL row.
+  URLRow second_row;
+  ASSERT_TRUE(main_db_->GetURLRow(url_ids[1], &second_row));
+
+  VisitVector visits;
+  main_db_->GetVisitsForURL(url_ids[1], &visits);
+  ASSERT_EQ(2U, visits.size());
+  int test_visit_id = visits[1].visit_id;
+
+  VisitContextAnnotations annotations;
+  annotations.on_visit.response_code = 404;
+  main_db_->AddContextAnnotationsForVisit(test_visit_id, annotations);
+
+  // Verify that the context annotation is there for that visit.
+  VisitContextAnnotations actual_annotations;
+  EXPECT_TRUE(main_db_->GetContextAnnotationsForVisit(test_visit_id,
+                                                      &actual_annotations));
+  EXPECT_EQ(404, actual_annotations.on_visit.response_code);
+
+  // Verify the initial visit count and typed count.
+  EXPECT_EQ(2, second_row.visit_count());
+  EXPECT_EQ(1, second_row.typed_count());
+
+  // Expire the visit.
+  expirer_.ExpireHistoryForTimes({visit_times[2]});
+
+  // The URL should still exist, but with only 1 visit remaining.
+  visits.clear();
+  main_db_->GetVisitsForURL(url_ids[1], &visits);
+  EXPECT_EQ(1U, visits.size());
+  EXPECT_FALSE(main_db_->GetContextAnnotationsForVisit(test_visit_id,
+                                                       &actual_annotations));
+  ASSERT_TRUE(main_db_->GetURLRow(url_ids[1], &second_row));
+  // Visit count and typed count should have changed.
+  EXPECT_EQ(1, second_row.visit_count());
+  EXPECT_EQ(0, second_row.typed_count());
+}
+
 // DeleteURL should delete the history of starred urls, but the URL should
 // remain starred and its favicon should remain too.
 TEST_F(ExpireHistoryTest, DeleteStarredVisitedURL) {
