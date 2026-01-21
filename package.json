@@ -1,0 +1,10 @@
+{
+  "//1": "This file exists for the following reasons:",
+  "//2": " 1) Prevent the TS compiler from reaching outside of the repository",
+  "//3": "    root when traversing upwards looking for package.json files",
+  "//4": "    during module resolution.",
+  "//5": " 2) Make the TS compiler emit ES modules with the default",
+  "//6": "    module=\"NodeNext\" configuration in",
+  "//7": "    tools/typescript/tsconfig_base.json",
+  "type": "module"
+}

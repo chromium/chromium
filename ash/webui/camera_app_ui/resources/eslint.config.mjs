@@ -663,20 +663,6 @@ export default [
       'no-new-native-nonconstructor': 'error',
       'no-object-constructor': 'error',
       'prefer-promise-reject-errors': 'error',
-
-      // @typescript-eslint rules
-
-      // go/tsstyle#return-types
-      '@typescript-eslint/explicit-module-boundary-types': 'error',
-
-      '@typescript-eslint/no-invalid-this': 'error',
-      // TODO(b/451650623): Disabling because it throws new errors with
-      // TypeScript v5.9.3.
-      //'@typescript-eslint/no-non-null-assertion': 'error',
-
-      // TODO(pihsun): This rule is deprecated, remove this after considering if
-      // it's beneficial to add eslint-plugin-perfectionist.
-      '@typescript-eslint/sort-type-constituents': 'error',
     },
   },
   {
@@ -798,6 +784,20 @@ export default [
     // source instead of from gen folder, and exclude mojo related things from
     // the checks.
     rules: {
+      // @typescript-eslint rules
+
+      // go/tsstyle#return-types
+      '@typescript-eslint/explicit-module-boundary-types': 'error',
+
+      '@typescript-eslint/no-invalid-this': 'error',
+
+      // TODO(b/451650623): Disabling because it throws new errors with
+      // TypeScript v5.9.3.
+      //'@typescript-eslint/no-non-null-assertion': 'error',
+
+      // TODO(pihsun): This rule is deprecated, remove this after considering if
+      // it's beneficial to add eslint-plugin-perfectionist.
+      '@typescript-eslint/sort-type-constituents': 'error',
       // go/tsstyle#omit-comments-that-are-redundant-with-typescript
       'jsdoc/check-tag-names': ['error', {typed: true}],
       'jsdoc/no-types': 'error',
