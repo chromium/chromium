@@ -68,6 +68,7 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
@@ -2279,46 +2280,18 @@ class AutofillMetricsParseQueryResponseTest : public AutofillMetricsTest {
  public:
   void SetUp() override {
     AutofillMetricsTest::SetUp();
-    FormData form;
-    form.set_host_frame(test::MakeLocalFrameToken());
-    form.set_renderer_id(test::MakeFormRendererId());
-    form.set_url(GURL("http://foo.com"));
-    form.set_main_frame_origin(
-        url::Origin::Create(GURL("http://foo_root.com")));
-    FormFieldData field;
-    field.set_form_control_type(FormControlType::kInputText);
 
-    field.set_label(u"fullname");
-    field.set_name(u"fullname");
-    test_api(form).Append(field);
+    forms_.push_back(test::GetFormData(
+        {.fields = {{.role = NAME_FULL},
+                    {.role = ADDRESS_HOME_LINE1},
+                    {.label = u"radio_button",
+                     // Checkable fields should be ignored in parsing.
+                     .form_control_type = FormControlType::kInputRadio}}}));
+    SeeForm(forms_.back());
 
-    field.set_label(u"address");
-    field.set_name(u"address");
-    test_api(form).Append(field);
-
-    // Checkable fields should be ignored in parsing.
-    FormFieldData checkable_field;
-    checkable_field.set_label(u"radio_button");
-    checkable_field.set_form_control_type(FormControlType::kInputRadio);
-    checkable_field.set_check_status(
-        FormFieldData::CheckStatus::kCheckableButUnchecked);
-    test_api(form).Append(checkable_field);
-
-    SeeForm(form);
-    forms_.push_back(form);
-
-    form.set_renderer_id(test::MakeFormRendererId());
-    field.set_label(u"email");
-    field.set_name(u"email");
-    test_api(form).Append(field);
-
-    field.set_label(u"password");
-    field.set_name(u"password");
-    field.set_form_control_type(FormControlType::kInputPassword);
-    test_api(form).Append(field);
-
-    SeeForm(form);
-    forms_.push_back(form);
+    forms_.push_back(test::GetFormData(
+        {.fields = {{.role = EMAIL_ADDRESS}, {.role = PASSWORD}}}));
+    SeeForm(forms_.back());
   }
 
  protected:
