@@ -6148,24 +6148,6 @@
             ]
         }
     ],
-    "ChromnientUpdatedVisuals": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "VisualUpdatesEnabled",
-                    "enable_features": [
-                        "LensOverlayVisualSelectionUpdates"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromnientVideoCitations": [
         {
             "platforms": [
@@ -7199,7 +7181,8 @@
                     "enable_features": [
                         "LensOverlayContextualSearchbox",
                         "LensOverlayEntrypointLabelAlt",
-                        "LensOverlayNonBlockingPrivacyNotice"
+                        "LensOverlayNonBlockingPrivacyNotice",
+                        "LensOverlayVisualSelectionUpdates"
                     ]
                 }
             ]
