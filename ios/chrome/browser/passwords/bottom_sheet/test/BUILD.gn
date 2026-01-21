@@ -12,6 +12,7 @@ source_set("eg2_tests") {
     "//components/password_manager/core/common:features",
     "//components/password_manager/ios:features",
     "//components/url_formatter",
+    "//components/webauthn/ios:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/autofill/model:features",

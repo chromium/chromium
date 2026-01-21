@@ -12,6 +12,7 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/features.h"
 #import "components/url_formatter/elide_url.h"
+#import "components/webauthn/ios/features.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/autofill/model/features.h"
@@ -246,6 +247,11 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
         password_manager::features::kIOSFillRecoveryPassword);
   }
 
+  if ([self isRunningTest:@selector
+            (testOpenCredentialBottomSheetUsePasswordOnConditionalLogin)]) {
+    config.features_enabled.push_back(kIOSPasskeyConditionalLoginWithShim);
+  }
+
   if ([self useNewBlur]) {
     config.features_enabled.push_back(kAutofillBottomSheetNewBlur);
   } else {
@@ -474,6 +480,34 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
       performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
 
   [ChromeEarlGrey waitForKeyboardToAppear];
+}
+
+// Tests that a password from the credential bottom sheet can be used on a
+// webpage where conditional passkey login is enabled.
+- (void)testOpenCredentialBottomSheetUsePasswordOnConditionalLogin {
+  // TODO(crbug.com/349804536): Test is disabled on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test is disabled on iPad.")
+  }
+
+  [PasswordManagerAppInterface
+      storeCredentialWithUsername:@"user"
+                         password:@"password"
+                              URL:net::NSURLWithGURL(
+                                      [self loginPasskeyPageURL])];
+
+  [self loadLoginPasskeyPage];
+
+  [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
+
+  [[EarlGrey selectElementWithMatcher:UsePasswordButton()]
+      performAction:grey_tap()];
+
+  [self verifyPasswordFieldsHaveBeenFilled:@"user"];
 }
 
 // This test will allow us to know if we're using a coherent browser state to
