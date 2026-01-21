@@ -23,16 +23,20 @@ source_set("model") {
   ]
   public_deps = [ "//base" ]
   deps = [
+    "//components/omnibox/browser",
+    "//components/omnibox/browser:location_bar",
     "//components/search_engines",
     "//components/sessions",
     "//ios/chrome/app:mode",
     "//ios/chrome/app/application_delegate:tab_opening",
+    "//ios/chrome/browser/autocomplete/model",
     "//ios/chrome/browser/crash_report/model:model_internal",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_scene_agent",
     "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/prerender/model",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/sessions/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",

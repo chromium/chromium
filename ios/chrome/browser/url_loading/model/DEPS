@@ -7,6 +7,7 @@ include_rules = [
   "+ios/chrome/browser/prerender/model",
   "+ios/chrome/browser/tab_insertion/model",
   "+ios/chrome/browser/sessions/model",
+  "+ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h",
 ]
 
 specific_include_rules = {

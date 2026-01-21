@@ -45,6 +45,9 @@ class UrlLoadingBrowserAgent : public BrowserUserData<UrlLoadingBrowserAgent> {
   // Applies load strategy then calls `Dispatch`.
   void Load(const UrlLoadParams& params);
 
+  // Loads URL representing the `query`.
+  void LoadURLForQuery(NSString* query);
+
  private:
   friend class BrowserUserData<UrlLoadingBrowserAgent>;
   friend class FakeUrlLoadingBrowserAgent;

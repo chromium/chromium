@@ -9,13 +9,20 @@
 #import "base/functional/callback_helpers.h"
 #import "base/immediate_crash.h"
 #import "base/strings/string_number_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
 #import "base/task/thread_pool.h"
+#import "components/omnibox/browser/autocomplete_input.h"
+#import "components/omnibox/browser/autocomplete_scheme_classifier.h"
+#import "components/omnibox/browser/omnibox_text_util.h"
+#import "components/search_engines/util.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
 #import "ios/chrome/browser/crash_report/model/crash_reporter_url_observer.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/prerender/model/prerender_browser_agent.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -159,6 +166,32 @@ void UrlLoadingBrowserAgent::Load(const UrlLoadParams& params) {
       Dispatch(params);
       break;
     }
+  }
+}
+
+void UrlLoadingBrowserAgent::LoadURLForQuery(NSString* query) {
+  // Since the query is not user typed, sanitize it to make sure it's safe.
+  std::u16string sanitized_query =
+      omnibox::SanitizeTextForPaste(base::SysNSStringToUTF16(query));
+
+  GURL search_url;
+  metrics::OmniboxInputType type = AutocompleteInput::Parse(
+      sanitized_query, std::string(), AutocompleteSchemeClassifierImpl(),
+      nullptr, nullptr, &search_url);
+  ProfileIOS* profile = browser_->GetProfile();
+  if (type != metrics::OmniboxInputType::URL || !search_url.is_valid()) {
+    search_url = GetDefaultSearchURLForSearchTerms(
+        ios::TemplateURLServiceFactory::GetForProfile(profile),
+        sanitized_query);
+  }
+  if (search_url.is_valid()) {
+    // It is necessary to include PAGE_TRANSITION_FROM_ADDRESS_BAR in the
+    // transition type is so that query-in-the-omnibox is triggered for the
+    // URL.
+    UrlLoadParams params = UrlLoadParams::InCurrentTab(search_url);
+    params.web_params.transition_type = ui::PageTransitionFromInt(
+        ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+    Load(params);
   }
 }
 
