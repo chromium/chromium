@@ -9,6 +9,7 @@
 #import "base/check_op.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_view_controller.h"
+#import "ios/chrome/browser/composebox/ui/composebox_ui_constants.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ntp/ui_bundled/incognito/incognito_view.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
@@ -23,8 +24,7 @@ namespace {
 /// The padding for the close button.
 const CGFloat kCloseButtonTopMargin = 6.0f;
 const CGFloat kCloseButtonDefaultPadding = 10.0f;
-/// The horizontal and bottom padding for the input plate container.
-const CGFloat kInputPlatePadding = 10.0f;
+/// The trailing and top padding for the input plate container.
 const CGFloat kInputPlateTrailingPadding = 8.0f;
 const CGFloat kInputPlateTopPadding = 4.0f;
 /// The size for the close button.
@@ -357,7 +357,7 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
       NSLayoutConstraint* attachInputPlateToKeyboard =
           [_inputViewController.view.bottomAnchor
               constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor
-                             constant:-kInputPlatePadding];
+                             constant:-kInputPlateMargin];
       attachInputPlateToKeyboard.priority = UILayoutPriorityDefaultHigh;
 
       [_constraintsForCurrentPosition addObjectsFromArray:@[
@@ -368,17 +368,17 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
                            constant:kCloseButtonDefaultPadding],
         [_inputViewController.view.leadingAnchor
             constraintEqualToAnchor:safeAreaGuide.leadingAnchor
-                           constant:kInputPlatePadding],
+                           constant:kInputPlateMargin],
         [_inputViewController.view.trailingAnchor
             constraintEqualToAnchor:safeAreaGuide.trailingAnchor
-                           constant:-kInputPlatePadding],
+                           constant:-kInputPlateMargin],
         attachInputPlateToKeyboard,
         [_inputViewController.view.bottomAnchor
             constraintLessThanOrEqualToAnchor:safeAreaGuide.bottomAnchor
-                                     constant:-kInputPlatePadding],
+                                     constant:-kInputPlateMargin],
         [_inputViewController.view.topAnchor
             constraintGreaterThanOrEqualToAnchor:_closeButton.bottomAnchor
-                                        constant:kInputPlatePadding],
+                                        constant:kInputPlateMargin],
       ]];
       [_constraintsForCurrentPosition
           addObjectsFromArray:closeButtonConstraints];
@@ -422,14 +422,14 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
             constraintEqualToAnchor:safeAreaGuide.trailingAnchor],
         [_inputViewController.view.leadingAnchor
             constraintEqualToAnchor:safeAreaGuide.leadingAnchor
-                           constant:kInputPlatePadding],
+                           constant:kInputPlateMargin],
         [_inputViewController.view.topAnchor
             constraintEqualToAnchor:safeAreaGuide.topAnchor
                            constant:kInputPlateTopPadding],
         [_inputViewController.view.bottomAnchor
             constraintLessThanOrEqualToAnchor:self.view.keyboardLayoutGuide
                                                   .topAnchor
-                                     constant:-kInputPlatePadding],
+                                     constant:-kInputPlateMargin],
       ]];
       [_constraintsForCurrentPosition
           addObjectsFromArray:closeButtonConstraints];
@@ -452,7 +452,7 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
       [_constraintsForCurrentPosition addObjectsFromArray:@[
         [_inputViewController.view.leadingAnchor
             constraintEqualToAnchor:safeAreaGuide.leadingAnchor
-                           constant:kInputPlatePadding],
+                           constant:kInputPlateMargin],
         [_inputViewController.view.topAnchor
             constraintEqualToAnchor:safeAreaGuide.topAnchor
                            constant:kInputPlateTopPadding],
@@ -462,7 +462,7 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
         [closeButtonConstraints addObjectsFromArray:@[
           [_inputViewController.view.trailingAnchor
               constraintEqualToAnchor:safeAreaGuide.trailingAnchor
-                             constant:-kInputPlatePadding]
+                             constant:-kInputPlateMargin]
         ]];
         _closeButton.hidden = YES;
       } else {
@@ -575,27 +575,13 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
                                    : ComposeboxInputPlatePosition::kMissing;
 }
 
-#pragma mark - UIAdaptivePresentationControllerDelegate
-
-- (UIModalPresentationStyle)
-    adaptivePresentationStyleForPresentationController:
-        (UIPresentationController*)controller
-                                       traitCollection:
-                                           (UITraitCollection*)traitCollection {
-  if (IsRegularXRegularSizeClass(traitCollection)) {
-    return UIModalPresentationNone;
-  } else {
-    return UIModalPresentationOverFullScreen;
-  }
-}
-
 #pragma mark - UIContentContainer
 
 - (void)preferredContentSizeDidChangeForChildContentContainer:
     (id<UIContentContainer>)container {
   [super preferredContentSizeDidChangeForChildContentContainer:container];
   if (IsComposeboxIpadEnabled() &&
-      IsRegularXRegularSizeClass(self.traitCollection)) {
+      UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
     [self updatePreferredContentSize:container.preferredContentSize.height +
                                      kOmniboxPopupTopPadding];
   }
@@ -607,7 +593,7 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
   CGFloat popupHeight =
       _inputViewController.inputHeight + std::max(height, kBlurBottomMargin);
 
-  CGFloat totalHeight = popupHeight + kInputPlatePadding;
+  CGFloat totalHeight = popupHeight + kInputPlateMargin;
   if (self.preferredContentSize.height != totalHeight) {
     self.preferredContentSize =
         CGSizeMake(self.view.bounds.size.width, totalHeight);

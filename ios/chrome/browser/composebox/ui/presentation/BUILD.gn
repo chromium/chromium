@@ -15,5 +15,6 @@ source_set("presentation") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:util_swift",
+    "//ios/chrome/common/ui/util",
   ]
 }

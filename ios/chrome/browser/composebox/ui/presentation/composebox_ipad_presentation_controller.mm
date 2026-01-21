@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 
 namespace {
 
@@ -18,9 +19,6 @@ const CGFloat kComposeboxCornerRadius = 16.0f;
 // The additional horizontal margin to ensure the composebox covers the top
 // omnibox.
 const CGFloat kComposeboxOmniboxLayoutGuideHorizontalMargin = 10.0f;
-
-// The top offset of the composebox from the omnibox layout guide.
-const CGFloat kComposeboxOmniboxLayoutGuideTopOffset = 20.0f;
 
 }  // namespace
 
@@ -101,12 +99,13 @@ const CGFloat kComposeboxOmniboxLayoutGuideTopOffset = 20.0f;
   CGRect omniboxFrame =
       [_layoutGuide.owningView convertRect:_layoutGuide.layoutFrame
                                     toView:containerView];
-  CGFloat top =
-      CGRectGetMinY(omniboxFrame) - kComposeboxOmniboxLayoutGuideTopOffset;
-  CGFloat width = omniboxFrame.size.width +
-                  kComposeboxOmniboxLayoutGuideHorizontalMargin * 2;
-  CGFloat x =
-      omniboxFrame.origin.x - kComposeboxOmniboxLayoutGuideHorizontalMargin;
+  CGFloat top = CGRectGetMinY(omniboxFrame) - kInputPlateMargin;
+  CGFloat width = omniboxFrame.size.width;
+  CGFloat x = omniboxFrame.origin.x;
+  if (IsRegularXRegularSizeClass(self.traitCollection)) {
+    x -= kComposeboxOmniboxLayoutGuideHorizontalMargin;
+    width += kComposeboxOmniboxLayoutGuideHorizontalMargin * 2;
+  }
 
   CGFloat preferredHeight =
       self.presentedViewController.preferredContentSize.height;

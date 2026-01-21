@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/composebox/coordinator/composebox_coordinator.h"
 
+#import "base/ios/ios_util.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/prefs/pref_service.h"
@@ -191,8 +192,7 @@
     animationControllerForPresentedController:(UIViewController*)presented
                          presentingController:(UIViewController*)presenting
                              sourceController:(UIViewController*)source {
-  if (IsComposeboxIpadEnabled() &&
-      [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+  if ([self shouldUseIpadPresentationController]) {
     ComposeboxiPadAnimator* animator = [[ComposeboxiPadAnimator alloc] init];
     animator.layoutGuideCenter = LayoutGuideCenterForBrowser(self.browser);
     animator.presenting = YES;
@@ -207,8 +207,7 @@
 
 - (id<UIViewControllerAnimatedTransitioning>)
     animationControllerForDismissedController:(UIViewController*)dismissed {
-  if (IsComposeboxIpadEnabled() &&
-      [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+  if ([self shouldUseIpadPresentationController]) {
     ComposeboxiPadAnimator* animator = [[ComposeboxiPadAnimator alloc] init];
     animator.layoutGuideCenter = LayoutGuideCenterForBrowser(self.browser);
     animator.presenting = NO;
@@ -225,8 +224,7 @@
                             presentingViewController:
                                 (UIViewController*)presenting
                                 sourceViewController:(UIViewController*)source {
-  if (IsComposeboxIpadEnabled() &&
-      [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+  if ([self shouldUseIpadPresentationController]) {
     ComposeboxiPadPresentationController* controller =
         [[ComposeboxiPadPresentationController alloc]
             initWithPresentedViewController:presented
@@ -313,6 +311,13 @@
   }
 
   return ComposeboxInputPlatePosition::kTop;
+}
+
+// Returns YES if the iPad popover presentation controller should be used.
+- (BOOL)shouldUseIpadPresentationController {
+  return IsComposeboxIpadEnabled() &&
+         UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad &&
+         base::ios::IsRunningOnIOS26OrLater();
 }
 
 #pragma mark - Clipboard checks
