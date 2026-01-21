@@ -397,17 +397,12 @@ export class LineFocusController {
 
     const currentLineIndex =
         this.model_.getCurrentLineIndex() || this.getFirstLineIndex_(true);
-    console.error(
-        'currentLineIndex:', currentLineIndex,
-        this.model_.getCurrentLineIndex());
 
     const numLines = this.getCurrentLineFocusStyle().lines;
     const topIndex = currentLineIndex - ((numLines - 1) / 2);
     const maxTopIndex = bounds.length - numLines;
-    console.error('bounds', bounds.length, 'numLines', numLines);
     const validTopIndex = Math.max(0, Math.min(maxTopIndex, topIndex));
     const topLine = bounds[validTopIndex]!;
-    console.error('top', topIndex, maxTopIndex, validTopIndex, topLine.top);
     this.model_.setTop(topLine.top);
     const bottomIndex = (validTopIndex + numLines - 1);
     const bottom = bottomIndex < bounds.length ? bounds[bottomIndex]!.bottom :
@@ -495,6 +490,13 @@ export class LineFocusController {
     for (let i = 1; i < sortedRects.length; i++) {
       const currentRect = sortedRects[i]!;
       const lastRect = combinedRects[combinedRects.length - 1]!;
+
+      // The rects are sorted by their bottom values. If the current rect top is
+      // above the previous rect top, then it encompasses the previous line (or
+      // more), so this rect is not a single line of text.
+      if (currentRect.top < lastRect.top) {
+        continue;
+      }
 
       // Skip duplicate rects.
       if (lastRect.top === currentRect.top &&
