@@ -522,6 +522,7 @@ if (!is_android) {
       "//chrome/browser/background/glic",
       "//chrome/browser/contextual_cueing:test_support",
       "//chrome/browser/extensions",
+      "//chrome/browser/glic/common",
       "//chrome/browser/glic/common:browser_tests",
       "//chrome/browser/glic/fre:browser_tests",
       "//chrome/browser/glic/test_support",

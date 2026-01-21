@@ -158,7 +158,8 @@ bool GlicSidePanelUi::IsShowing() const {
   if (!glic_side_panel_coordinator) {
     return false;
   }
-  return glic_side_panel_coordinator->IsShowing();
+  return glic_side_panel_coordinator->state() !=
+         GlicSidePanelCoordinator::State::kClosed;
 }
 
 void GlicSidePanelUi::Focus() {
