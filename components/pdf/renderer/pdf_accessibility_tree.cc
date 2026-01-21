@@ -65,28 +65,6 @@ enum class AttributeUpdateType {
   kAdd,
 };
 
-ui::AXNode* GetStaticTextNodeFromNode(ui::AXNode* node) {
-  // Returns the appropriate static text node given `node`'s type.
-  // Returns nullptr if there is no appropriate static text node.
-  if (!node)
-    return nullptr;
-  ui::AXNode* static_node = node;
-  // Get the static text from the link node.
-  if (node->GetRole() == ax::mojom::Role::kLink &&
-      node->children().size() == 1) {
-    static_node = node->children()[0];
-  }
-  // Get the static text from the highlight node.
-  if (node->GetRole() == ax::mojom::Role::kPdfActionableHighlight &&
-      !node->children().empty()) {
-    static_node = node->children()[0];
-  }
-  // If it's static text node, then it holds text.
-  if (static_node && static_node->GetRole() == ax::mojom::Role::kStaticText)
-    return static_node;
-  return nullptr;
-}
-
 template <typename T>
 bool CompareTextRuns(const T& a, const T& b) {
   return a.text_run_index < b.text_run_index;
@@ -716,14 +694,27 @@ void PdfAccessibilityTree::UpdateAXTreeDataFromSelection() {
     tree_data_.sel_is_backward = true;
   }
 
-  FindNodeOffset(selection_.start.page_index, selection_.start.char_index,
-                 &tree_data_.sel_anchor_object_id,
+  FindNodeOffset(tree_data_.sel_is_backward, selection_.start.page_index,
+                 selection_.start.char_index, &tree_data_.sel_anchor_object_id,
                  &tree_data_.sel_anchor_offset);
-  FindNodeOffset(selection_.end.page_index, selection_.end.char_index,
-                 &tree_data_.sel_focus_object_id, &tree_data_.sel_focus_offset);
+
+  FindNodeOffset(!tree_data_.sel_is_backward, selection_.end.page_index,
+                 selection_.end.char_index, &tree_data_.sel_focus_object_id,
+                 &tree_data_.sel_focus_offset);
 }
 
-void PdfAccessibilityTree::FindNodeOffset(uint32_t page_index,
+void PdfAccessibilityTree::FindNodeOffsetForTesting(
+    bool end_of_selection,
+    uint32_t page_index,
+    uint32_t page_char_index,
+    int32_t* out_node_id,
+    int32_t* out_node_char_index) const {
+  FindNodeOffset(end_of_selection, page_index, page_char_index, out_node_id,
+                 out_node_char_index);
+}
+
+void PdfAccessibilityTree::FindNodeOffset(bool end_of_selection,
+                                          uint32_t page_index,
                                           uint32_t page_char_index,
                                           int32_t* out_node_id,
                                           int32_t* out_node_char_index) const {
@@ -737,30 +728,57 @@ void PdfAccessibilityTree::FindNodeOffset(uint32_t page_index,
   }
   ui::AXNode* page = root->children()[page_index + 1];
 
-  // Iterate over all paragraphs within this given page, and static text nodes
-  // within each paragraph.
-  for (ui::AXNode* para : page->children()) {
-    for (ui::AXNode* child_node : para->children()) {
-      ui::AXNode* static_text = GetStaticTextNodeFromNode(child_node);
-      if (!static_text)
-        continue;
-      // Look up the page-relative character index for static nodes from a map
-      // we built while the document was initially built.
-      auto iter = node_id_to_page_char_index_.find(static_text->id());
-      uint32_t char_index = iter->second.char_index;
-      uint32_t len = static_text->data()
-                         .GetStringAttribute(ax::mojom::StringAttribute::kName)
-                         .size();
-
-      // If the character index we're looking for falls within the range
-      // of this node, return the node ID and index within this node's text.
-      if (page_char_index <= char_index + len) {
-        *out_node_id = static_text->id();
-        *out_node_char_index = page_char_index - char_index;
-        return;
-      }
+  for (ui::AXNode* child : page->children()) {
+    if (RecursiveFindNodeOffset(end_of_selection, child, page_char_index,
+                                out_node_id, out_node_char_index)) {
+      return;
     }
   }
+}
+
+bool PdfAccessibilityTree::RecursiveFindNodeOffset(
+    bool end_of_selection,
+    ui::AXNode* node,
+    uint32_t page_char_index,
+    int32_t* out_node_id,
+    int32_t* out_node_char_index) const {
+  if (node->GetRole() == ax::mojom::Role::kStaticText) {
+    // Look up the page-relative character index for static nodes from a map
+    // we built while the document was initially built.
+    auto iter = node_id_to_page_char_index_.find(node->id());
+    uint32_t char_index = iter->second.char_index;
+    uint32_t len = node->data()
+                       .GetStringAttribute(ax::mojom::StringAttribute::kName)
+                       .size();
+
+    // For the end of the selection, the `char_index` is the index of the last
+    // character selected + 1. If the selection ends on a node boundary, that
+    // is, all for the text of a single node is selected and none after that,
+    // return the node that contains the text, not the following node that
+    // `char_index` technically points to. For the beginning of the selection,
+    // choose the node that contains the indexed char.
+    bool contained;
+    if (end_of_selection) {
+      contained = page_char_index <= char_index + len;
+    } else {
+      contained = page_char_index < char_index + len;
+    }
+
+    if (contained) {
+      *out_node_id = node->id();
+      *out_node_char_index = page_char_index - char_index;
+      return true;
+    }
+    // Do not need to search children of static text node.
+    return false;
+  }
+  for (ui::AXNode* child : node->children()) {
+    if (RecursiveFindNodeOffset(end_of_selection, child, page_char_index,
+                                out_node_id, out_node_char_index)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 bool PdfAccessibilityTree::FindCharacterOffset(
