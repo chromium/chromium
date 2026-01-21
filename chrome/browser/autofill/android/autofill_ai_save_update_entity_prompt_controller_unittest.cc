@@ -45,7 +45,8 @@ class AutofillAiSaveUpdateEntityPromptControllerTest
 
  protected:
   void CreateController(EntityInstance::RecordType record_type =
-                            EntityInstance::RecordType::kLocal) {
+                            EntityInstance::RecordType::kLocal,
+                        bool entity_updated = false) {
     std::unique_ptr<MockAutofillAiSaveUpdateEntityPromptView> prompt_view =
         std::make_unique<MockAutofillAiSaveUpdateEntityPromptView>();
     prompt_view_ = prompt_view.get();
@@ -53,7 +54,10 @@ class AutofillAiSaveUpdateEntityPromptControllerTest
         web_contents(), std::move(prompt_view),
         test::GetPassportEntityInstance(
             {.name = u"Jon doe", .record_type = record_type}),
-        std::nullopt, "en-US", prompt_closed_callback_.Get());
+        (entity_updated ? std::optional(test::GetPassportEntityInstance(
+                              {.name = u"Seb doe", .record_type = record_type}))
+                        : std::nullopt),
+        "en-US", prompt_closed_callback_.Get());
   }
 
   void SigninUser(const std::string& email,
@@ -138,6 +142,24 @@ TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
   CreateController();
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE),
+            prompt_controller().GetTitle());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON),
+            prompt_controller().GetPositiveButtonText());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_NO_THANKS_BUTTON),
+      prompt_controller().GetNegativeButtonText());
+
+  EXPECT_THAT(prompt_controller().GetSourceNotice(), testing::IsEmpty());
+}
+
+TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
+       PromptUiStrings_UpdateLocalEntity) {
+  CreateController(EntityInstance::RecordType::kLocal,
+                   /*entity_updated=*/true);
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_AI_UPDATE_PASSPORT_ENTITY_DIALOG_TITLE),
             prompt_controller().GetTitle());
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON),
