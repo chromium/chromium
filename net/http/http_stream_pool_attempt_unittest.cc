@@ -23,6 +23,7 @@
 #include "net/http/http_stream_pool_group.h"
 #include "net/http/http_stream_pool_handle.h"
 #include "net/http/http_stream_pool_test_util.h"
+#include "net/log/net_log_source_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/socket_test_util.h"
@@ -88,8 +89,12 @@ class TestAttemptDelegate final
     CHECK(!attempt_);
     CHECK(!key_.has_value());
     key_ = key_builder_.Build();
+    // Using HTTP_STREAM_POOL_ATTEMPT_MANAGER as the source type here
+    // because it will be the source type in production code.
     attempt_ = std::make_unique<HttpStreamPool::Attempt>(
-        *this, *pool_->stream_attempt_params());
+        *this, *pool_->stream_attempt_params(),
+        NetLogWithSource::Make(
+            NetLog::Get(), NetLogSourceType::HTTP_STREAM_POOL_ATTEMPT_MANAGER));
     attempt_->Start();
   }
 

@@ -33,6 +33,7 @@
 #include "net/http/http_network_session.h"
 #include "net/http/http_stream_key.h"
 #include "net/http/http_stream_pool.h"
+#include "net/log/net_log_with_source.h"
 #include "net/socket/stream_attempt.h"
 #include "net/socket/tcp_stream_attempt.h"
 #include "net/socket/tls_stream_attempt.h"
@@ -172,12 +173,14 @@ class HttpStreamPool::Attempt::TcpAttempt : public TlsStreamAttempt::Delegate {
 
 HttpStreamPool::Attempt::Attempt(
     Delegate& delegate,
-    const StreamAttemptParams& stream_attempt_params)
+    const StreamAttemptParams& stream_attempt_params,
+    NetLogWithSource net_log)
     : delegate_(delegate),
       stream_attempt_params_(stream_attempt_params),
       using_tls_(GURL::SchemeIsCryptographic(
           delegate_->GetHttpStreamKey().destination().scheme())),
-      track_(base::trace_event::GetNextGlobalTraceId()) {
+      track_(base::trace_event::GetNextGlobalTraceId()),
+      net_log_(std::move(net_log)) {
   if (delegate_->GetServiceEndpointRequest().EndpointsCryptoReady()) {
     is_crypto_ready_ = true;
   }
@@ -255,6 +258,17 @@ void HttpStreamPool::Attempt::StartAttempt(IPEndPoint ip_endpoint) {
 
   attempt = std::make_unique<TcpAttempt>(*this, std::move(ip_endpoint));
   TcpAttempt* raw_attempt = attempt.get();
+  net_log_.AddEvent(
+      NetLogEventType::HTTP_STREAM_POOL_TCP_BASED_ATTEMPT_START, [&] {
+        base::Value::Dict dict;
+        dict.Set("ip_endpoint", raw_attempt->ip_endpoint().ToString());
+        raw_attempt->stream_attempt().net_log().source().AddToEventParameters(
+            dict);
+        return dict;
+      });
+  raw_attempt->stream_attempt().net_log().AddEventReferencingSource(
+      NetLogEventType::TCP_BASED_ATTEMPT_BOUND_TO_POOL, net_log_.source());
+
   int rv = attempt->Start(base::BindOnce(&Attempt::OnTcpAttemptComplete,
                                          weak_ptr_factory_.GetWeakPtr(),
                                          raw_attempt));
@@ -361,12 +375,29 @@ HttpStreamPool::Attempt::GetServiceEndpointForTlsHandshake(
 
 void HttpStreamPool::Attempt::OnTcpAttemptSlow(TcpAttempt* attempt) {
   CHECK(attempt == ipv4_attempt_.get() || attempt == ipv6_attempt_.get());
+  net_log_.AddEvent(
+      NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_TCP_BASED_ATTEMPT_SLOW,
+      [&] {
+        base::Value::Dict dict;
+        dict.Set("ip_endpoint", attempt->ip_endpoint().ToString());
+        attempt->stream_attempt().net_log().source().AddToEventParameters(dict);
+        return dict;
+      });
   observed_slow_attempt_ = true;
   MaybeAttempt();
 }
 
 void HttpStreamPool::Attempt::OnTcpAttemptComplete(TcpAttempt* attempt,
                                                    int rv) {
+  net_log_.AddEvent(
+      NetLogEventType::HTTP_STREAM_POOL_TCP_BASED_ATTEMPT_END, [&] {
+        base::Value::Dict dict;
+        dict.Set("ip_endpoint", attempt->ip_endpoint().ToString());
+        dict.Set("net_error", rv);
+        attempt->stream_attempt().net_log().source().AddToEventParameters(dict);
+        return dict;
+      });
+
   std::unique_ptr<TcpAttempt> completed_attempt;
   if (attempt->ip_endpoint().address().IsIPv4()) {
     completed_attempt = std::move(ipv4_attempt_);

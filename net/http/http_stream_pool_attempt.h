@@ -81,7 +81,9 @@ class HttpStreamPool::Attempt {
         scoped_refptr<SSLCertRequestInfo> cert_info) = 0;
   };
 
-  Attempt(Delegate& delegate, const StreamAttemptParams& stream_attempt_params);
+  Attempt(Delegate& delegate,
+          const StreamAttemptParams& stream_attempt_params,
+          NetLogWithSource net_log);
 
   ~Attempt();
 
@@ -140,6 +142,8 @@ class HttpStreamPool::Attempt {
   const bool using_tls_;
 
   const perfetto::Track track_;
+
+  const NetLogWithSource net_log_;
 
   std::unique_ptr<TcpAttempt> ipv4_attempt_;
   std::unique_ptr<TcpAttempt> ipv6_attempt_;
