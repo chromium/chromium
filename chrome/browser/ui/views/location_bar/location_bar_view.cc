@@ -350,7 +350,12 @@ void LocationBarView::Init() {
   omnibox_view_ = AddChildView(std::move(omnibox_view));
   omnibox_view_->Init();
 
-  if (omnibox::IsAimPopupFeatureEnabled()) {
+  const bool is_web_app =
+      browser_ && web_app::AppBrowserController::IsWebApp(browser_);
+
+  // Skip creating the AIM WebUI for web apps since it's not supported there
+  // and results in an extra Omnibox process being created.
+  if (!is_web_app && omnibox::IsAimPopupFeatureEnabled()) {
     omnibox_popup_aim_presenter_ = std::make_unique<OmniboxPopupAimPresenter>(
         this, omnibox_controller_.get());
   }
@@ -359,9 +364,16 @@ void LocationBarView::Init() {
       base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup) &&
       !base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup);
 
-  if ((web_ui_popup_dropdown_only &&
-       !base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopupDebug)) ||
-      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
+  // Default to the legacy popup view for web apps since creating the WebUI
+  // popup results in an extra Omnibox process being created (note that the
+  // address bar is not shown in web apps). When the legacy
+  // `OmniboxPopupViewViews` is deprecated we will need to ensure that a null
+  // `omnibox_popup_view_` doesn't cause any issues (or aim for a cleaner
+  // solution).
+  if (!is_web_app &&
+      ((web_ui_popup_dropdown_only &&
+        !base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopupDebug)) ||
+       base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup))) {
     omnibox_popup_view_ = std::make_unique<OmniboxPopupViewWebUI>(
         /*omnibox_view=*/omnibox_view_, omnibox_controller_.get(),
         /*location_bar_view=*/this);
