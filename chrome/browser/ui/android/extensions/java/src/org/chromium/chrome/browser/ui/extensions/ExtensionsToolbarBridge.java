@@ -15,6 +15,7 @@ import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.toolbar.InvocationSource;
 
 /** A JNI bridge to interact with extension actions for the toolbar. */
 @NullMarked
@@ -23,6 +24,10 @@ public class ExtensionsToolbarBridge implements Destroyable {
     private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
     private long mNativeExtensionsToolbarBridge;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
+
+    // The delegate is set via a setter because of a bidirectional dependency
+    // with {@code ExtensionActionListMediator}.
+    private @Nullable Delegate mDelegate;
 
     public ExtensionsToolbarBridge(ChromeAndroidTask task) {
         mNativeExtensionsToolbarBridge =
@@ -44,6 +49,23 @@ public class ExtensionsToolbarBridge implements Destroyable {
 
     public void removeObserver(Observer observer) {
         mObservers.removeObserver(observer);
+    }
+
+    public void setDelegate(@Nullable Delegate delegate) {
+        mDelegate = delegate;
+    }
+
+    public void executeUserAction(String actionId, @InvocationSource int source) {
+        ExtensionsToolbarBridgeJni.get()
+                .executeUserAction(mNativeExtensionsToolbarBridge, actionId, source);
+    }
+
+    @CalledByNative
+    public void triggerPopup(@JniType("std::string") String actionId, long nativeHostPtr) {
+        // {@link mDelegate} should be set in {@code ExtensionActionListMediator}'s constructor.
+        assert mDelegate != null;
+
+        mDelegate.triggerPopup(actionId, nativeHostPtr);
     }
 
     @CalledByNative
@@ -98,10 +120,20 @@ public class ExtensionsToolbarBridge implements Destroyable {
         void onPinnedActionsChanged();
     }
 
+    public interface Delegate {
+        // Called when the popup should be shown.
+        void triggerPopup(String actionId, long nativeHostPtr);
+    }
+
     @NativeMethods
     public interface Natives {
         long init(ExtensionsToolbarBridge bridge, long browserWindowInterfacePtr);
 
         void destroy(long nativeExtensionsToolbarBridge);
+
+        void executeUserAction(
+                long nativeExtensionsToolbarBridge,
+                @JniType("std::string") String actionId,
+                @JniType("ToolbarActionViewModel::InvocationSource") int source);
     }
 }

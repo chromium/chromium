@@ -6,6 +6,7 @@
 
 #include "base/android/jni_string.h"
 #include "base/notimplemented.h"
+#include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/ui/android/extensions/extension_action_delegate_android.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 
@@ -32,13 +33,22 @@ ExtensionsToolbarBridge::ExtensionsToolbarBridge(
 
 ExtensionsToolbarBridge::~ExtensionsToolbarBridge() = default;
 
+void ExtensionsToolbarBridge::TriggerPopup(
+    const ToolbarActionsModel::ActionId& action_id,
+    std::unique_ptr<ExtensionViewHost> host) {
+  Java_ExtensionsToolbarBridge_triggerPopup(
+      AttachCurrentThread(), java_object_, action_id,
+      reinterpret_cast<jlong>(host.release()));
+}
+
 std::unique_ptr<ExtensionActionViewModel>
 ExtensionsToolbarBridge::CreateActionViewModel(
     const ToolbarActionsModel::ActionId& action_id,
     ExtensionsContainer* extensions_container) {
   return ExtensionActionViewModel::Create(
       action_id, browser_,
-      std::make_unique<ExtensionActionDelegateAndroid>(browser_.get()));
+      std::make_unique<ExtensionActionDelegateAndroid>(browser_.get(),
+                                                       action_id, this));
 }
 
 void ExtensionsToolbarBridge::HideActivePopup() {
@@ -98,6 +108,12 @@ void ExtensionsToolbarBridge::OnActiveWebContentsChanged() {
 
 void ExtensionsToolbarBridge::Destroy(JNIEnv* env) {
   delete this;
+}
+
+void ExtensionsToolbarBridge::ExecuteUserAction(
+    const ToolbarActionsModel::ActionId& action_id,
+    ToolbarActionViewModel::InvocationSource source) {
+  toolbar_view_model_->ExecuteUserAction(action_id, source);
 }
 
 static int64_t JNI_ExtensionsToolbarBridge_Init(

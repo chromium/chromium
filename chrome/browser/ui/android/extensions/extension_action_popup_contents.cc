@@ -136,30 +136,10 @@ void ExtensionActionPopupContents::HandleCloseExtensionHost(
 // popup.
 static ScopedJavaLocalRef<jobject> JNI_ExtensionActionPopupContents_Create(
     JNIEnv* env,
-    int64_t browser_window_interface_ptr,
-    std::string& action_id,
-    int tab_id) {
-  BrowserWindowInterface* browser =
-      reinterpret_cast<BrowserWindowInterface*>(browser_window_interface_ptr);
-  Profile* profile = browser->GetProfile();
-
-  ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
-  DCHECK(registry);
-
-  ExtensionActionManager* manager = ExtensionActionManager::Get(profile);
-  DCHECK(manager);
-
-  const Extension* extension =
-      registry->enabled_extensions().GetByID(action_id);
-  DCHECK(extension);
-
-  ExtensionAction* action = manager->GetExtensionAction(*extension);
-  DCHECK(action);
-
-  GURL popup_url = action->GetPopupUrl(tab_id);
-
-  std::unique_ptr<ExtensionViewHost> host =
-      ExtensionViewHostFactory::CreatePopupHost(*extension, popup_url, browser);
+    int64_t extension_view_host_ptr) {
+  std::unique_ptr<ExtensionViewHost> host(
+      reinterpret_cast<extensions::ExtensionViewHost*>(
+          extension_view_host_ptr));
   DCHECK(host);
 
   // The ExtensionActionPopupContents C++ object's lifetime is managed by its

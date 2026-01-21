@@ -127,6 +127,12 @@ ExtensionsToolbarViewModel::GetButtonState(
   return ExtensionsToolbarButtonState::kDefault;
 }
 
+void ExtensionsToolbarViewModel::ExecuteUserAction(
+    const ToolbarActionsModel::ActionId& action_id,
+    ToolbarActionViewModel::InvocationSource source) {
+  GetActionModelForId(action_id)->ExecuteUserAction(source);
+}
+
 ToolbarActionViewModel* ExtensionsToolbarViewModel::GetActionForId(
     const std::string& action_id) {
   return GetActionModelForId(action_id);

@@ -56,6 +56,7 @@ android_library("java") {
     srcjar_deps += [
       ":jni_headers",
       "//chrome/browser/extensions:extension_context_menu_model_enums",
+      "//chrome/browser/ui/toolbar:toolbar_action_view_model_enums",
       "//extensions/browser:extension_action_enums",
       "//extensions/common:java_features_srcjar",
     ]

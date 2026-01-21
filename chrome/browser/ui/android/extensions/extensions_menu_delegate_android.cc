@@ -30,9 +30,11 @@ void ExtensionsMenuDelegateAndroid::Destroy(JNIEnv* env) {
 std::unique_ptr<ExtensionActionViewModel>
 ExtensionsMenuDelegateAndroid::CreateActionViewModel(
     const extensions::ExtensionId& extension_id) {
+  // TODO(crbug.com/461981075): Pass a `bridge` instance instead of a nullptr.
   return ExtensionActionViewModel::Create(
       extension_id, browser_,
-      std::make_unique<ExtensionActionDelegateAndroid>(browser_));
+      std::make_unique<ExtensionActionDelegateAndroid>(browser_, extension_id,
+                                                       nullptr));
 }
 
 void ExtensionsMenuDelegateAndroid::OnActiveWebContentsChanged(

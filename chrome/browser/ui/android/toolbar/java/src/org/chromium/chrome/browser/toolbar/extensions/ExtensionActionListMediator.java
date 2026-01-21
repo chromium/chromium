@@ -8,7 +8,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.View;
 
-import org.chromium.base.Log;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -23,8 +22,9 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionAction;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionPopupContents;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
+import org.chromium.chrome.browser.ui.toolbar.InvocationSource;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.extensions.ShowAction;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -33,15 +33,16 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 @NullMarked
 class ExtensionActionListMediator implements Destroyable {
-    private static final String TAG = "EALMediator";
-
     private final Context mContext;
     private final WindowAndroid mWindowAndroid;
     private final ModelList mModels;
     private final ChromeAndroidTask mTask;
     private final ExtensionActionsUpdateHelper mExtensionActionsUpdateHelper;
-
     private final ActionsUpdateDelegate mActionsUpdateDelegate = new ActionsUpdateDelegate();
+
+    private final ExtensionActionListContainer mContainer;
+    private final ExtensionsToolbarBridge mExtensionsToolbarBridge;
+    private final ToolbarDelegate mDelegate = new ToolbarDelegate();
 
     @Nullable private final LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
 
@@ -52,72 +53,64 @@ class ExtensionActionListMediator implements Destroyable {
             WindowAndroid windowAndroid,
             ModelList models,
             ChromeAndroidTask task,
-            NullableObservableSupplier<Tab> currentTabSupplier) {
+            NullableObservableSupplier<Tab> currentTabSupplier,
+            ExtensionActionListContainer container,
+            ExtensionsToolbarBridge extensionsToolbarBridge) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mModels = models;
         mTask = task;
+        mContainer = container;
+        mExtensionsToolbarBridge = extensionsToolbarBridge;
 
         mExtensionActionsUpdateHelper =
                 new ExtensionActionsUpdateHelper(
                         mModels, task, currentTabSupplier, mActionsUpdateDelegate);
+
+        mExtensionsToolbarBridge.setDelegate(mDelegate);
     }
 
     @Override
     public void destroy() {
         closePopup();
         assert mCurrentPopup == null;
+        mExtensionsToolbarBridge.setDelegate(null);
         mExtensionActionsUpdateHelper.destroy();
         LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
     }
 
-    private void onPrimaryClick(View buttonView, String actionId) {
-        ExtensionActionsBridge extensionActionsBridge =
-                mExtensionActionsUpdateHelper.getExtensionActionsBridge();
-        Tab currentTab = mExtensionActionsUpdateHelper.getCurrentTab();
-        if (extensionActionsBridge == null || currentTab == null) {
-            return;
-        }
-
-        WebContents webContents = currentTab.getWebContents();
-        if (webContents == null) {
-            // TODO(crbug.com/385985177): Revisit how to handle this case.
-            return;
-        }
-
-        @ShowAction
-        int showAction =
-                extensionActionsBridge.runAction(actionId, currentTab.getId(), webContents);
-        switch (showAction) {
-            case ShowAction.NONE:
-                break;
-            case ShowAction.SHOW_POPUP:
-                openPopup(buttonView, actionId);
-                break;
-            case ShowAction.TOGGLE_SIDE_PANEL:
-                Log.e(TAG, "Extension side panels are not implemented yet");
-                break;
-        }
+    private void onPrimaryClick(String actionId) {
+        mExtensionsToolbarBridge.executeUserAction(actionId, InvocationSource.TOOLBAR_BUTTON);
     }
 
-    private void openPopup(View buttonView, String actionId) {
+    private void triggerPopup(String actionId, long nativeHostPtr) {
         // TODO(crbug.com/385987224): Do not open a popup again when the user clicks the action
         // button while its popup is open.
         closePopup();
 
-        Tab currentTab = mExtensionActionsUpdateHelper.getCurrentTab();
-        if (currentTab == null) {
+        ExtensionActionPopupContents contents = ExtensionActionPopupContents.create(nativeHostPtr);
+
+        View buttonView = getButtonViewForId(actionId);
+        if (buttonView == null) {
             return;
         }
-        int tabId = currentTab.getId();
 
-        ExtensionActionPopupContents contents =
-                ExtensionActionPopupContents.create(mTask, actionId, tabId);
         assert mCurrentPopup == null;
         mCurrentPopup =
                 new ExtensionActionPopup(mContext, mWindowAndroid, buttonView, actionId, contents);
         mCurrentPopup.loadInitialPage();
         mCurrentPopup.addOnDismissListener(this::closePopup);
+    }
+
+    @Nullable
+    private View getButtonViewForId(String actionId) {
+        for (int i = 0; i < mModels.size(); i++) {
+            PropertyModel model = mModels.get(i).model;
+            if (actionId.equals(model.get(ExtensionActionButtonProperties.ID))) {
+                return mContainer.getChildAt(i);
+            }
+        }
+        return null;
     }
 
     private void onContextClick(ListMenuButton buttonView, String actionId) {
@@ -180,7 +173,7 @@ class ExtensionActionListMediator implements Destroyable {
                             .with(ExtensionActionButtonProperties.ID, action.getId())
                             .with(
                                     ExtensionActionButtonProperties.ON_CLICK_LISTENER,
-                                    (view) -> onPrimaryClick(view, actionId))
+                                    (view) -> onPrimaryClick(actionId))
                             .with(
                                     ExtensionActionButtonProperties.ON_CONTEXT_CLICK_LISTENER,
                                     (view) -> {
@@ -193,5 +186,12 @@ class ExtensionActionListMediator implements Destroyable {
 
         @Override
         public void onUpdateFinished() {}
+    }
+
+    private class ToolbarDelegate implements ExtensionsToolbarBridge.Delegate {
+        @Override
+        public void triggerPopup(String actionId, long nativeHostPtr) {
+            ExtensionActionListMediator.this.triggerPopup(actionId, nativeHostPtr);
+        }
     }
 }

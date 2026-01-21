@@ -15,6 +15,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionButtonProperties.ListItemType;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuButton;
@@ -38,13 +39,20 @@ public class ExtensionActionListCoordinator implements Destroyable {
             ExtensionActionListContainer container,
             WindowAndroid windowAndroid,
             ChromeAndroidTask task,
-            NullableObservableSupplier<Tab> currentTabSupplier) {
+            NullableObservableSupplier<Tab> currentTabSupplier,
+            ExtensionsToolbarBridge extensionsToolbarBridge) {
         mContainer = container;
 
         mModels = new ModelList();
         mMediator =
                 new ExtensionActionListMediator(
-                        context, windowAndroid, mModels, task, currentTabSupplier);
+                        context,
+                        windowAndroid,
+                        mModels,
+                        task,
+                        currentTabSupplier,
+                        container,
+                        extensionsToolbarBridge);
         mAdapter =
                 new ViewGroupAdapter.Builder(mContainer, mModels)
                         .registerType(

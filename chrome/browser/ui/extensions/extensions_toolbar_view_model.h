@@ -128,6 +128,11 @@ class ExtensionsToolbarViewModel : public ExtensionsContainer,
   ExtensionsToolbarButtonState GetButtonState(
       content::WebContents* web_contents) const;
 
+  // Executes the default behavior associated with the action. This should only
+  // be called as a result of a user action.
+  void ExecuteUserAction(const ToolbarActionsModel::ActionId& action_id,
+                         ToolbarActionViewModel::InvocationSource source);
+
   // ExtensionsContainer:
   ToolbarActionViewModel* GetActionForId(const std::string& action_id) override;
   void HideActivePopup() override;

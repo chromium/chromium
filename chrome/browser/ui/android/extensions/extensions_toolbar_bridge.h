@@ -27,6 +27,10 @@ class ExtensionsToolbarBridge : public ExtensionsToolbarViewModel::Delegate,
   ExtensionsToolbarBridge& operator=(const ExtensionsToolbarBridge&) = delete;
   ~ExtensionsToolbarBridge() override;
 
+  // Triggers the display of an extension popup in the Java UI.
+  void TriggerPopup(const ToolbarActionsModel::ActionId& action_id,
+                    std::unique_ptr<ExtensionViewHost> host);
+
   // ExtensionsToolbarViewModel::Delegate:
   std::unique_ptr<ExtensionActionViewModel> CreateActionViewModel(
       const ToolbarActionsModel::ActionId& action_id,
@@ -47,6 +51,8 @@ class ExtensionsToolbarBridge : public ExtensionsToolbarViewModel::Delegate,
 
   // JNI implementations.
   void Destroy(JNIEnv* env);
+  void ExecuteUserAction(const ToolbarActionsModel::ActionId& action_id,
+                         ToolbarActionViewModel::InvocationSource source);
 
  private:
   const raw_ptr<BrowserWindowInterface> browser_;
