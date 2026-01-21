@@ -34,13 +34,18 @@ renderer processes require almost no DEX.
 Chrome's splits look like:
 
 ```
-base.apk <-- chrome.apk <-- image_editor.apk
-                        <-- feedv2.apk
-                        <-- ...
+base.apk <-- chrome.apk <-- on_demand.apk
+                        <-- xr.apk
+                        <-- dev_ui.apk
 ```
 
 * The browser process loads the `chrome` split on start-up, and other splits are
   loaded on-demand.
+  * `on_demand` is always installed, but contains code that is not necessary to
+    handle VIEW intents.
+  * `xr` is installed only for XR devices.
+  * `dev_ui` is downloaded and and installed the first time you visit a
+    chrome:// internals page (and remains installed forevermore).
 * Renderer and GPU processes do not load any feature splits.
   * The `chrome` split exists to minimize the amount of DEX loaded by renderer
     processes. However, it also enables faster browser process start-up by
