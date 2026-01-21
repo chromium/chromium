@@ -356,6 +356,7 @@ enum class ReauthenticationStatus {
                       completionHandler:^(
                           NSString* activityType, BOOL completed,
                           NSArray* returnedItems, NSError* activityError) {
+                        [weakSelf resetExportState];
                         [weakSelf deleteTemporaryFile:passwordsTempFileURL];
                       }];
 }
