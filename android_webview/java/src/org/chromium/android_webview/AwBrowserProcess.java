@@ -966,10 +966,6 @@ public final class AwBrowserProcess {
         AwBrowserProcessJni.get().initPerfetto(enableSystemConsumer);
     }
 
-    public static void disablePerfettoInitDuringBrowserMain() {
-        AwBrowserProcessJni.get().disablePerfettoInitDuringBrowserMain();
-    }
-
     private static void configureDisplayAndroidManager() {
         DisplayAndroidManager.disableHdrSdrRatioCallback();
     }
@@ -986,7 +982,5 @@ public final class AwBrowserProcess {
         void onStartupComplete();
 
         void initPerfetto(@JniType("bool") boolean enableSystemConsumer);
-
-        void disablePerfettoInitDuringBrowserMain();
     }
 }
