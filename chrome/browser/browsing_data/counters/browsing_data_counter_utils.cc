@@ -77,35 +77,23 @@ std::u16string FormatBytesMBOrHigher(base::ByteSize bytes) {
 }  // namespace
 
 bool ShouldShowCookieException(Profile* profile) {
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   if (AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile)) {
     signin::ConsentLevel consent_level =
         base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
             ? signin::ConsentLevel::kSignin
             : signin::ConsentLevel::kSync;
-    auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
     return identity_manager->HasPrimaryAccount(consent_level);
   }
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+
   if (AccountConsistencyModeManager::IsDiceEnabledForProfile(profile)) {
-    const syncer::SyncService* service =
-        SyncServiceFactory::GetForProfile(profile);
-    if (!service || !service->HasSyncConsent()) {
-      return false;
-    }
-#if BUILDFLAG(IS_CHROMEOS)
-    if (service->GetUserSettings()->IsSyncFeatureDisabledViaDashboard()) {
-      return false;
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-    syncer::SyncService::UserActionableError error =
-        service->GetUserActionableError();
-    return error == syncer::SyncService::UserActionableError::kNone ||
-           error == syncer::SyncService::UserActionableError::
-                        kTrustedVaultRecoverabilityDegradedForPasswords ||
-           error == syncer::SyncService::UserActionableError::
-                        kTrustedVaultRecoverabilityDegradedForEverything;
+    CoreAccountId account_id =
+        identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+    return !account_id.empty() &&
+           !identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+               account_id);
   }
-#endif
+
   return false;
 }
 
@@ -183,24 +171,6 @@ std::u16string GetChromeCounterTextFromResult(
         IDS_ANDROID_DEL_COOKIES_COUNTER_ADVANCED, origins);
 #else
     // Determines whether or not to show the count with exception message.
-    auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-    // Notes:
-    // * `ShouldShowCookieException()` returns true if the exception footer is
-    //   shown. This is a sufficient condition to use the exception string,
-    // * `AreGoogleCookiesRebuiltAfterClearingWhenSignedIn()` may return false
-    //   when the user is signed out and always return false if syncing. The
-    //   counter should only be shown if the user is signed in, non-syncing, and
-    //   has no error.
-    bool is_signed_in = false;
-    if (identity_manager) {
-      CoreAccountId account_id =
-          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-      if (!account_id.empty() &&
-          !identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-              account_id)) {
-        is_signed_in = true;
-      }
-    }
 
 #if !BUILDFLAG(IS_CHROMEOS)
     if (base::FeatureList::IsEnabled(
@@ -211,10 +181,7 @@ std::u16string GetChromeCounterTextFromResult(
       if (origins > 0 &&
           ChromeSigninClientFactory::GetForProfile(profile)
               ->IsClearPrimaryAccountAllowed() &&
-          (ShouldShowCookieException(profile) ||
-           (is_signed_in &&
-            signin::AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
-                *identity_manager, *profile->GetPrefs())))) {
+          ShouldShowCookieException(profile)) {
         cookies_counter_text +=
             (l10n_util::GetStringUTF16(IDS_SENTENCE_END) + u" " +
              l10n_util::GetStringUTF16(IDS_DEL_GOOGLE_COOKIES_SIGNOUT_LINK));
@@ -224,10 +191,7 @@ std::u16string GetChromeCounterTextFromResult(
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
     int del_cookie_counter_msg_id =
-        ShouldShowCookieException(profile) ||
-                (is_signed_in &&
-                 signin::AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
-                     *identity_manager, *profile->GetPrefs()))
+        ShouldShowCookieException(profile)
             ? IDS_DEL_COOKIES_COUNTER_ADVANCED_WITH_SIGNED_IN_EXCEPTION
             : IDS_DEL_COOKIES_COUNTER_ADVANCED;
 
@@ -248,7 +212,7 @@ std::u16string GetChromeCounterTextFromResult(
 
     std::vector<std::u16string> replacements;
     if (hosted_apps_count > 0) {
-      replacements.push_back(                                     // App1,
+      replacements.push_back(  // App1,
           base::UTF8ToUTF16(hosted_apps_result->examples()[0]));
     }
     if (hosted_apps_count > 1) {
@@ -257,18 +221,16 @@ std::u16string GetChromeCounterTextFromResult(
     }
     if (hosted_apps_count > 2) {
       replacements.push_back(l10n_util::GetPluralStringFUTF16(  // and X-2 more.
-          IDS_DEL_HOSTED_APPS_COUNTER_AND_X_MORE,
-          hosted_apps_count - 2));
+          IDS_DEL_HOSTED_APPS_COUNTER_AND_X_MORE, hosted_apps_count - 2));
     }
 
     // The output string has both the number placeholder (#) and substitution
     // placeholders ($1, $2, $3). First fetch the correct plural string first,
     // then substitute the $ placeholders.
     return base::ReplaceStringPlaceholders(
-        l10n_util::GetPluralStringFUTF16(
-            IDS_DEL_HOSTED_APPS_COUNTER, hosted_apps_count),
-        replacements,
-        nullptr);
+        l10n_util::GetPluralStringFUTF16(IDS_DEL_HOSTED_APPS_COUNTER,
+                                         hosted_apps_count),
+        replacements, nullptr);
   }
 #endif
 

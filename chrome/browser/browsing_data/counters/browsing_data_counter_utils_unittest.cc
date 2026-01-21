@@ -334,8 +334,7 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
   enum class SigninState {
     kSignedOut,
     kAccountAware,
-    kImplicitSignin,  // Legacy Dice automatic signin.
-    kExplicitSignin,
+    kSignin,
     kSigninPending,
     // TODO(crbug.com/417950948): Remove sync-related states.
     kSyncing,
@@ -368,13 +367,11 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
       signin::ConsentLevel consent_level,
       signin::IdentityTestEnvironment* identity_test_env,
       syncer::TestSyncService* test_sync_service,
-      PrefService* prefs,
-      bool explicit_signin) {
+      PrefService* prefs) {
     CoreAccountInfo account_info =
         identity_test_env->MakePrimaryAccountAvailable("user@gmail.com",
                                                        consent_level);
     test_sync_service->SetSignedIn(consent_level, account_info);
-    prefs->SetBoolean(prefs::kExplicitBrowserSignin, explicit_signin);
     return account_info;
   }
 
@@ -383,8 +380,7 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
                              PrefService* prefs) {
     CoreAccountInfo account_info =
         SetSignedInState(signin::ConsentLevel::kSignin, identity_test_env,
-                         test_sync_service, prefs,
-                         /*explicit_signin=*/true);
+                         test_sync_service, prefs);
     identity_test_env->UpdatePersistentErrorOfRefreshTokenForAccount(
         account_info.account_id,
         GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
@@ -401,8 +397,7 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
                           PrefService* prefs) {
     CoreAccountInfo account_info =
         SetSignedInState(signin::ConsentLevel::kSync, identity_test_env,
-                         test_sync_service, prefs,
-                         /*explicit_signin=*/true);
+                         test_sync_service, prefs);
     identity_test_env->UpdatePersistentErrorOfRefreshTokenForAccount(
         account_info.account_id,
         GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
@@ -450,15 +445,9 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
       case SigninState::kAccountAware:
         SetAccountAwareState(identity_test_env, test_sync_service);
         break;
-      case SigninState::kExplicitSignin:
+      case SigninState::kSignin:
         SetSignedInState(signin::ConsentLevel::kSignin, identity_test_env,
-                         test_sync_service, testing_profile->GetPrefs(),
-                         /*explicit_signin=*/true);
-        break;
-      case SigninState::kImplicitSignin:
-        SetSignedInState(signin::ConsentLevel::kSignin, identity_test_env,
-                         test_sync_service, testing_profile->GetPrefs(),
-                         /*explicit_signin=*/false);
+                         test_sync_service, testing_profile->GetPrefs());
         break;
       case SigninState::kSigninPending:
         SetSigninPendingState(identity_test_env, test_sync_service,
@@ -468,8 +457,7 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
         CHECK(!base::FeatureList::IsEnabled(
             syncer::kReplaceSyncPromosWithSignInPromos));
         SetSignedInState(signin::ConsentLevel::kSync, identity_test_env,
-                         test_sync_service, testing_profile->GetPrefs(),
-                         /*explicit_signin=*/true);
+                         test_sync_service, testing_profile->GetPrefs());
         break;
       case SigninState::kSyncPaused:
         CHECK(!base::FeatureList::IsEnabled(
@@ -505,9 +493,8 @@ TEST_F(CookieBrowsingDataCounterUtilsTest, CookieCounterResult) {
       {/*num_sites= */ 0, SigninState::kSignedOut, "None"},
       {/*num_sites= */ 1, SigninState::kSignedOut, "From 1 site"},
       {/*num_sites= */ 42, SigninState::kAccountAware, "From 42 sites"},
-      {/*num_sites= */ 1, SigninState::kImplicitSignin, "From 1 site"},
       {/*num_sites= */ 5, SigninState::kSigninPending, "From 5 sites"},
-      {/*num_sites= */ 1, SigninState::kExplicitSignin,
+      {/*num_sites= */ 1, SigninState::kSignin,
        "From 1 site (you'll stay signed in to your Google Account)"},
   };
 
@@ -533,14 +520,13 @@ TEST_F(CookieBrowsingDataCounterUtilsTest, CookieCounterResult_RevampEnabled) {
   // the locale is set to the default "en".
   ASSERT_EQ("en", TestingBrowserProcess::GetGlobal()->GetApplicationLocale());
 
-  // Test the output for various forms of cookie results.
+  // Test the output for various forms of cookie results.b
   std::vector<TestCase> test_cases = {
       {/*num_sites= */ 0, SigninState::kSignedOut, "None"},
       {/*num_sites= */ 1, SigninState::kSignedOut, "From 1 site"},
       {/*num_sites= */ 42, SigninState::kAccountAware, "From 42 sites"},
-      {/*num_sites= */ 1, SigninState::kImplicitSignin, "From 1 site"},
       {/*num_sites= */ 5, SigninState::kSigninPending, "From 5 sites"},
-      {/*num_sites= */ 1, SigninState::kExplicitSignin,
+      {/*num_sites= */ 1, SigninState::kSignin,
        "From 1 site. To delete Google cookies from this device, <a href=\"#\" "
        "target=\"_blank\" id=\"signOutLink\">sign out of Chrome</a>."},
   };
