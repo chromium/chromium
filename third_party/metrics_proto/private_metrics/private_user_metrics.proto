@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto2";
+edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.metrics";
@@ -19,7 +19,7 @@ import "histogram_event.proto";
 message PrivateUserMetrics {
   // The PrivateUserMetrics client_id. Not joinable with UMA / UKM or any other
   // client ids.
-  optional fixed64 client_id = 1;
+  fixed64 client_id = 1;
 
   // A list of histogram events which is the actual metric data being reported
   repeated metrics.HistogramEventProto histogram_events = 2;

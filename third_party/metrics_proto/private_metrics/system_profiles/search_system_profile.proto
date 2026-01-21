@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto2";
+edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.metrics";
@@ -11,12 +11,14 @@ package private_metrics;
 
 import "private_metrics/system_profiles/coarse_system_profile.proto";
 
+option features.enum_type = CLOSED;
+
 // System profile for Search.
 // All fields in this proto should be populated by the client before sending
 // the report.
 // Next tag: 3
 message SearchSystemProfile {
-  optional Platform platform = 1;
+  Platform platform = 1;
 
   // Client RAM, 2 bits allocated.
   enum ClientRam {
@@ -30,5 +32,5 @@ message SearchSystemProfile {
     // <4 GB
     RAM_LOW_END = 4;
   }
-  optional ClientRam client_ram_bucketed = 2;
+  ClientRam client_ram_bucketed = 2;
 }

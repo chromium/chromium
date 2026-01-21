@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto2";
+edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.metrics";
@@ -16,6 +16,8 @@ package metrics;
 // The system's thermal state, as defined by the power monitor in chromium
 // https://source.chromium.org/chromium/chromium/src/+/main:base/power_monitor/power_observer.h;l=49;drc=e4622aaeccea84652488d1822c28c78b7115684f
 enum ThermalState {
+  option features.enum_type = CLOSED;
+
   THERMAL_STATE_UNKNOWN = 0;
   THERMAL_STATE_NOMINAL = 1;
   THERMAL_STATE_FAIR = 2;

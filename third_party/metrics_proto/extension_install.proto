@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto2";
+edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.metrics";
@@ -10,6 +10,8 @@ option java_package = "org.chromium.components.metrics";
 option java_outer_classname = "ExtensionInstallProtos";
 
 package metrics;
+
+option features.enum_type = CLOSED;
 
 // Stores information about an extension installed on a fully-initialized
 // profile. If a single extension is installed in multiple profiles, it will be
@@ -28,7 +30,7 @@ message ExtensionInstallProto {
     LOGIN_SCREEN_EXTENSION = 8;  // An extension running on the login screen
   }
 
-  optional Type type = 1;
+  Type type = 1;
 
   // The source of the extension.
   enum InstallLocation {
@@ -53,12 +55,12 @@ message ExtensionInstallProto {
                               // externally via an update url.
   }
 
-  optional InstallLocation install_location = 2;
+  InstallLocation install_location = 2;
 
   // The manifest version in the extension. Note: this refers to the
   // Chrome-required versioning of the manifest, not the extension version.
   // Currently, it is always 1 or 2.
-  optional int32 manifest_version = 3;
+  int32 manifest_version = 3;
 
   // The associated UI action in the extension. Each extension can have at most
   // one type of action.
@@ -77,13 +79,13 @@ message ExtensionInstallProto {
     ACTION = 4;
   }
 
-  optional ActionType action_type = 4;
+  ActionType action_type = 4;
 
   // If the extension has been granted file access.
-  optional bool has_file_access = 5;
+  bool has_file_access = 5;
 
   // If the extension has been granted permission to run in incognito contexts.
-  optional bool has_incognito_access = 6;
+  bool has_incognito_access = 6;
 
   // If the extension originated from the Chrome Web Store according to the
   // prefs.
@@ -91,33 +93,33 @@ message ExtensionInstallProto {
   // on the user’s machine from where the install originated, but not whether
   // the extension is hosted in the store. For instance, sideloaded extensions
   // that are specified via ID in the registry are downloaded from the store.
-  optional bool is_from_store = 7;
+  bool is_from_store = 7;
 
   // If the extension automatically updates from the Chrome Web Store.
-  optional bool updates_from_store = 8;
+  bool updates_from_store = 8;
 
   // If the extension is a bookmark app that was generated from a web page. This
   // is distinct from install_location above, which specifies from where on the
   // user’s machine the install originated.
   // Deprecated: This field is no longer populated as bookmark apps are no
   // longer supported.
-  optional bool is_from_bookmark = 9;
+  bool is_from_bookmark = 9;
 
   // If the extension was created from a user script. This is distinct from
   // install_location above, which specifies from where on the user’s machine
   // the install originated.
-  optional bool is_converted_from_user_script = 10;
+  bool is_converted_from_user_script = 10;
 
   // If the extension was installed by default when the profile was created.
   // These extensions are specified by Chrome.
-  optional bool is_default_installed = 11;
+  bool is_default_installed = 11;
 
   // If the extension was installed by an OEM. This differs from
   // "is_default_installed", since these extensions are specified by the OEM
   // rather than by Chrome. These are specified in a file that is created as
   // part of the creation of the Chrome image, and can be specific to different
   // OEMs.
-  optional bool is_oem_installed = 12;
+  bool is_oem_installed = 12;
 
   // The type of background page this extension has. Each extension can have at
   // most one type of background presence.
@@ -130,7 +132,7 @@ message ExtensionInstallProto {
                                      // background context.
   }
 
-  optional BackgroundScriptType background_script_type = 13;
+  BackgroundScriptType background_script_type = 13;
 
   // The reasons an extension may be disabled.
   enum DisableReason {
@@ -220,17 +222,17 @@ message ExtensionInstallProto {
     BLACKLISTED_UNKNOWN = 5;
   }
 
-  optional BlacklistState blacklist_state = 15;
+  BlacklistState blacklist_state = 15;
 
   // Whether the extension was installed in the current sampling period. This
   // is useful if trying to use extension installation in conjunction with other
   // metrics (e.g. page load). Since some of the metrics from this period will
   // have the extension installed and others won't, these records can be
   // discarded for that analysis.
-  optional bool installed_in_this_sample_period = 16;
+  bool installed_in_this_sample_period = 16;
 
   // Whether the profile this extension is installed on has developer mode in
   // chrome://extensions toggled ON. Note: this refers to the current developer
   // mode status of the profile, not when the extension was installed.
-  optional bool in_extensions_developer_mode = 17;
+  bool in_extensions_developer_mode = 17;
 }

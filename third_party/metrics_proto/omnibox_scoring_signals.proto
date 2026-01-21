@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto2";
+edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.metrics";
@@ -21,46 +21,46 @@ message OmniboxScoringSignals {
   // profile. Only include typed visits from the last 90 days. Discounted by
   // a time-decaying factor with a 30-day half-life based on the last visit
   // timestamp.
-  optional int32 typed_count = 1;
+  int32 typed_count = 1;
 
   // Number of times the URL was visited in general for this profile on this
   // device. Note that this will soon be across syncing devices with the
   // rollout of full history sync in 2023. Only include visits from the last
   // 90 days. Discounted by a time-decaying factor with a 30-day half-life
   // based on the last visit timestamp.
-  optional int32 visit_count = 2;
+  int32 visit_count = 2;
 
   // Elapsed time since last visit for this profile on this device. Uses the
   // local client-side timestamps. Can be unreliable as local times can
   // change in between different runs of Chrome.
-  optional int64 elapsed_time_last_visit_secs = 3;
+  int64 elapsed_time_last_visit_secs = 3;
 
   // Number of times the suggestion was visited with the current input or
   // prefix of it for this profile on this device.
   // Discounted by a time-decaying factor with a 1-week half-life based on
   // the last visit timestamp.
-  optional int32 shortcut_visit_count = 4;
+  int32 shortcut_visit_count = 4;
 
   // Length of the shortest shortcut text.
   // Useful in comparison with |typed_length|.
-  optional int32 shortest_shortcut_len = 5;
+  int32 shortest_shortcut_len = 5;
 
   // Elapsed time since last shortcut visit for this profile on this device.
   // Uses the local client-side timestamps. Can be unreliable as local times
   // can change in between different runs of Chrome.
-  optional int64 elapsed_time_last_shortcut_visit_sec = 6;
+  int64 elapsed_time_last_shortcut_visit_sec = 6;
 
   // URL points to the root page of a website, i.e., no query, path words,
   // or references after "/".
-  optional bool is_host_only = 7;
+  bool is_host_only = 7;
 
   // Number of bookmarks for this profile with this URL.
-  optional int32 num_bookmarks_of_url = 8;
+  int32 num_bookmarks_of_url = 8;
 
   // Position of the first matched bookmark title term.
   // E.g. 4 for input 'x' and title "0123x56".
   // Not set when there is no match in the bookmark title.
-  optional int32 first_bookmark_title_match_position = 9;
+  int32 first_bookmark_title_match_position = 9;
 
   // Total length of matched strings in the bookmark title. Can be larger
   // than the input text length. The input text is split by whitespaces, and
@@ -68,74 +68,74 @@ message OmniboxScoringSignals {
   // lengths are summed. Similarly for other text matching signals below.
   // E.g. 9 for input "[abc] ijk [xyz]" and title "[abc] def [xyz] - [xyz]".
   // Set to 0 when there is no match in the title.
-  optional int32 total_bookmark_title_match_length = 10;
+  int32 total_bookmark_title_match_length = 10;
 
   // Number of input terms matched by bookmark title. Take the maximum when
   // there are multiple matching bookmarks of this URL.
   // E.g., 1 for input "[a] b" and bookmark title "[a] book title".
   // Not set when the user does not have this URL bookmarked.
-  optional int32 num_input_terms_matched_by_bookmark_title = 11;
+  int32 num_input_terms_matched_by_bookmark_title = 11;
 
   // Position of the first matched URL substring.
   // URL scheme or TLD matches are excluded, though those characters are
   // counted when assessing match position. E.g., 11 for 't' in
   // "https://hos[t].com" Not set when there is no URL match.
-  optional int32 first_url_match_position = 12;
+  int32 first_url_match_position = 12;
 
   // Total length of the matched URL strings. Can be longer than the input
   // string. E.g., Given input "ab abc" and url "abc.com/ab", total is 7 (4
   // for "ab" in "[ab]c.com/[ab]" and 3 for "abc" in
   // "[abc].com"). Set to 0 when there is no URL string match.
-  optional int32 total_url_match_length = 13;
+  int32 total_url_match_length = 13;
 
   // One word matches host at a word boundary. E.g., true for input "[h] a"
   // and "[h].com", Set to false when there are matches in the host but none
   // at word boundaries. E.g., false for input "a" and "h[a].com". Not set
   // when there is no host match.
-  optional bool host_match_at_word_boundary = 14;
+  bool host_match_at_word_boundary = 14;
 
   // Total length of the matched host substrings.
   // Can be larger than the input text.
   // E.g., 3 for input "h a" and "[h]ost[aa].com".
   // Set to 0 when there is no host match.
-  optional int32 total_host_match_length = 15;
+  int32 total_host_match_length = 15;
 
   // Total length of the matched substrings in the path at word boundaries.
   // Can be larger than the input text. E.g. 3 for 'p' in
   // 'a.com/[p]ath_[p]ath/[p]ath'. Set to 0 when there are no such matches.
-  optional int32 total_path_match_length = 16;
+  int32 total_path_match_length = 16;
 
   // Total length of the matched substrings in the query_or_ref at word
   // boundaries. Can be larger than the input text.
   // E.g., 3 for input '[qu] [a]' and 'a.com/a?[qu]ery_[a]'.
   // Set to 0 when there are no such matches.
-  optional int32 total_query_or_ref_match_length = 17;
+  int32 total_query_or_ref_match_length = 17;
 
   // Total length of the matched substrings in the page title at word
   // boundaries. Can be larger than the input text.
   // E.g., 2 for input "[a] [t] x" and page title "[a]bc [t]itle".
   // Set to 0 when there is no title match.
-  optional int32 total_title_match_length = 18;
+  int32 total_title_match_length = 18;
 
   // Has matches that are not in schemes (e.g., "https") or "www".
-  optional bool has_non_scheme_www_match = 19;
+  bool has_non_scheme_www_match = 19;
 
   // Number of input terms matched by title.
   // E.g., 1 for input "[a] b" and title "[a] title [a]".
   // Useful in comparison with |num_typed_terms|.
-  optional int32 num_input_terms_matched_by_title = 20;
+  int32 num_input_terms_matched_by_title = 20;
 
   // Number of input terms matched by url.
   // Useful in comparison with |num_typed_terms|.
   // E.g., 1 for input "[a] b" and url "[a].com".
-  optional int32 num_input_terms_matched_by_url = 21;
+  int32 num_input_terms_matched_by_url = 21;
 
   // Length of url. E.g., 22 for "https://www.host.com/p".
-  optional int32 length_of_url = 22;
+  int32 length_of_url = 22;
 
   // Site engagement score for the site the URL is on. See
   // https://www.chromium.org/developers/design-documents/site-engagement/
-  optional float site_engagement = 23;
+  float site_engagement = 23;
 
   // True if url can be default match.
   // Currently, this requires single-term input, and match needs to begin
@@ -143,7 +143,7 @@ message OmniboxScoringSignals {
   // input 'w', true for "https://www.[w]sj.com" or "[w]ww.a.com", false for
   // "host[w].com". ref:
   // https://source.chromium.org/chromium/chromium/src/+/main:components/omnibox/browser/scored_history_match.cc;l=187?q=inline%20autocomplete
-  optional bool allowed_to_be_default_match = 24;
+  bool allowed_to_be_default_match = 24;
 
   // Server-generated relevance score provided by the remote Suggest service
   // for this suggestion.
@@ -155,7 +155,7 @@ message OmniboxScoringSignals {
   //   - Zero:     Search suggestion with `relevance_from_server` set to `false`
   //               OR non-Search suggestion (obtained from any source)
   //   - Unset:    Otherwise (due to unexpected client-side behavior)
-  optional int32 search_suggest_relevance = 25;
+  int32 search_suggest_relevance = 25;
 
   // Whether this particular Search suggestion (or one of the duplicates deduped
   // under it) refers to an entity.
@@ -164,7 +164,7 @@ message OmniboxScoringSignals {
   //   - False: Neither this suggestion nor any of its duplicates refers to an
   //            entity
   //   - Unset: Otherwise (due to unexpected client-side behavior)
-  optional bool is_search_suggest_entity = 26;
+  bool is_search_suggest_entity = 26;
 
   // Whether this suggestion (or one of the duplicates deduped under it) is a
   // verbatim match with respect to the user's input (e.g. URL_WHAT_YOU_TYPED).
@@ -174,7 +174,7 @@ message OmniboxScoringSignals {
   //   - False: Neither this suggestion nor any of its duplicates is a verbatim
   //            match
   //   - Unset: Otherwise (due to unexpected client-side behavior)
-  optional bool is_verbatim = 27;
+  bool is_verbatim = 27;
 
   // Whether this suggestion (or one of the duplicates deduped under it) is a
   // NAVSUGGEST match.
@@ -183,7 +183,7 @@ message OmniboxScoringSignals {
   //   - False: Neither this suggestion nor any of its duplicates is a
   //            NAVSUGGEST match
   //   - Unset: Otherwise (due to unexpected client-side behavior)
-  optional bool is_navsuggest = 28;
+  bool is_navsuggest = 28;
 
   // Whether this suggestion (or one of the duplicates deduped under it) is a
   // SEARCH_SUGGEST_TAIL match.
@@ -193,7 +193,7 @@ message OmniboxScoringSignals {
   //   - False: Neither this suggestion nor any of its duplicates is a
   //            SEARCH_SUGGEST_TAIL match
   //   - Unset: Otherwise (due to unexpected client-side behavior)
-  optional bool is_search_suggest_tail = 29;
+  bool is_search_suggest_tail = 29;
 
   // Whether this suggestion (or one of the duplicates deduped under it)
   // contains an answer with respect to the user's input (i.e.
@@ -203,7 +203,7 @@ message OmniboxScoringSignals {
   //   - False: Neither this suggestion nor any of its duplicates contains an
   //            answer
   //   - Unset: Otherwise (due to unexpected client-side behavior)
-  optional bool is_answer_suggest = 30;
+  bool is_answer_suggest = 30;
 
   // Whether this suggestion (or one of the duplicates deduped under it) is a
   // CALCULATOR match.
@@ -212,7 +212,8 @@ message OmniboxScoringSignals {
   //   - False: Neither this suggestion nor any of its duplicates is a
   //            CALCULATOR match
   //   - Unset: Otherwise (due to unexpected client-side behavior)
-  optional bool is_calculator_suggest = 31;
+  bool is_calculator_suggest = 31;
+
   // Whether this suggestion was shown in the NTP page context.
   // This signal is inclusive of situations in which an extension replaces
   // the NTP or the user has selected a default search engine other than Google.
@@ -225,7 +226,8 @@ message OmniboxScoringSignals {
   //   - Unset: Otherwise (due to unexpected client-side behavior)
   // NOTE: The "page contexts" listed above are sourced from the
   //       `PageClassification` enum in omnibox_event.proto.
-  optional bool is_ntp_page_context = 32;
+  bool is_ntp_page_context = 32;
+
   // Whether this suggestion was shown when the user interacted with the Omnibox
   // on the Search Results Page (SRP) of their default search engine.
   // More specifically, this signal will take on the following values:
@@ -235,7 +237,8 @@ message OmniboxScoringSignals {
   //   - Unset: Otherwise (due to unexpected client-side behavior)
   // NOTE: The "page contexts" listed above are sourced from the
   //       `PageClassification` enum in omnibox_event.proto.
-  optional bool is_srp_page_context = 33;
+  bool is_srp_page_context = 33;
+
   // Whether this suggestion was shown in the Web page context.
   // More specifically, this signal will take on the following values:
   //   - True:  Suggestion was surfaced with one of the following page contexts:
@@ -244,7 +247,8 @@ message OmniboxScoringSignals {
   //   - Unset: Otherwise (due to unexpected client-side behavior)
   // NOTE: The "page contexts" listed above are sourced from the
   //       `PageClassification` enum in omnibox_event.proto.
-  optional bool is_web_page_context = 34;
+  bool is_web_page_context = 34;
+
   // Whether the host part of the `destination_url` associated with this
   // suggestion matches the host part of the URL for the page the user is
   // currently on.
@@ -256,7 +260,8 @@ message OmniboxScoringSignals {
   //            OR `destination_url` does not have the same host as the
   //            current page.
   //   - Unset: Otherwise (due to unexpected client-side behavior).
-  optional bool destination_host_match_for_current_page = 35;
+  bool destination_host_match_for_current_page = 35;
+
   // Whether selecting this suggestion would navigate to a page that's already
   // open in another tab in the current browser session (across all browser
   // windows on the current device). Cross-device tab sync does NOT have any
@@ -267,7 +272,8 @@ message OmniboxScoringSignals {
   //   - False: The destination associated with this suggestion is not open in
   //            another tab.
   //   - Unset: Otherwise (due to unexpected client-side behavior)
-  optional bool has_open_tab_match = 36;
+  bool has_open_tab_match = 36;
+
   // Whether this suggestion (or one of the duplicates deduped under it) is a
   // SEARCH_HISTORY match.
   // As such, this signal will take on the following values:
@@ -275,5 +281,5 @@ message OmniboxScoringSignals {
   //   - False: Neither this suggestion nor any of its duplicates is a
   //            SEARCH_HISTORY match
   //   - Unset: Otherwise (due to unexpected client-side behavior)
-  optional bool is_search_history = 37;
+  bool is_search_history = 37;
 }

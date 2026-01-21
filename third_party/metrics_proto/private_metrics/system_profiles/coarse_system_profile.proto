@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto2";
+edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.metrics";
 
 package private_metrics;
+
+option features.enum_type = CLOSED;
 
 // All fields in this message should be populated by the client before sending
 // the report to comply with the entropy requirements (an unset field
@@ -15,10 +17,10 @@ package private_metrics;
 // Next tag: 7
 message CoarseSystemProfile {
   // Stable or not-stable channel, 1 bit allocated.
-  optional ChannelType channel = 1;
+  ChannelType channel = 1;
 
   // Platform and activity type, 4 bits allocated.
-  optional Platform platform = 2;
+  Platform platform = 2;
 
   // Geo designation, 1 bit allocated.
   // GEO_DESIGNATION_INVALID is an invalid value and should never used. The
@@ -29,7 +31,7 @@ message CoarseSystemProfile {
     GEO_DESIGNATION_ROW = 2;  // Rest of the world.
   }
 
-  optional GeoDesignation geo_designation = 3;
+  GeoDesignation geo_designation = 3;
 
   // An indicator of whether this is a recent (week old) client install or
   // not, 1 bit allocated.
@@ -45,13 +47,13 @@ message CoarseSystemProfile {
     CLIENT_AGE_NOT_RECENT = 2;
   }
 
-  optional ClientAge client_age = 4;
+  ClientAge client_age = 4;
 
   // First 3 digits of the milestone mod (%) 16, 4 bits allocated.
-  optional int32 milestone_prefix_trimmed = 5;
+  int32 milestone_prefix_trimmed = 5;
 
   // Whether UKM logging is enabled, 1 bit allocated.
-  optional bool is_ukm_enabled = 6;
+  bool is_ukm_enabled = 6;
 }
 
 // Stable or not-stable channel, 1 bit allocated.
