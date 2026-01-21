@@ -17,7 +17,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -461,5 +464,43 @@ public class AuthenticatorImplTest {
                 mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.NOT_ALLOWED_ERROR));
         Assert.assertNull(mCallback.getGetAssertionResponse());
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
+    }
+
+    @Test
+    @SmallTest
+    public void testAuthenticatorImplMakeCredential_CloseBeforeBottomSheetCallback_NoCrash() {
+        CreateConfirmationUiDelegate createConfirmationUiDelegate =
+                Mockito.mock(CreateConfirmationUiDelegate.class);
+        Mockito.when(
+                        createConfirmationUiDelegate.show(
+                                ArgumentMatchers.any(), ArgumentMatchers.any()))
+                .thenReturn(true);
+
+        AuthenticatorImpl authenticator =
+                new AuthenticatorImpl(
+                        mContext,
+                        mWebContents,
+                        mIntentSender,
+                        createConfirmationUiDelegate,
+                        mFrameHost,
+                        mOrigin);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    authenticator.makeCredential(
+                            mCreationOptions,
+                            (status, response, dom_exception) ->
+                                    mCallback.onRegisterResponse(status, response));
+                });
+
+        ArgumentCaptor<Runnable> rejectCaptor = ArgumentCaptor.forClass(Runnable.class);
+        Mockito.verify(createConfirmationUiDelegate)
+                .show(ArgumentMatchers.any(), rejectCaptor.capture());
+
+        // Simulate the race condition: Close the authenticator (e.g. tab closed)
+        ThreadUtils.runOnUiThreadBlocking(authenticator::close);
+
+        // Now simulate the bottom sheet being dismissed/cancelled
+        ThreadUtils.runOnUiThreadBlocking(rejectCaptor.getValue());
     }
 }

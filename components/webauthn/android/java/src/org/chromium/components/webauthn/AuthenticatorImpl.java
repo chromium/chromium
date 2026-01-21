@@ -185,6 +185,9 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
             if (!mCreateConfirmationUiDelegate.show(
                     () -> continueMakeCredential(options),
                     () -> {
+                        if (mRequestCallback == null) {
+                            return;
+                        }
                         RequestMetrics metrics =
                                 new RequestMetrics.Builder()
                                         .setMakeCredentialOutcome(
@@ -192,10 +195,9 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
                                         .setMakeCredentialResult(
                                                 CredentialRequestResult.USER_CANCELLED)
                                         .build();
-                        assumeNonNull(mRequestCallback)
-                                .onComplete(
-                                        WebauthnRequestResponse.forFailedMakeCredential(
-                                                AuthenticatorStatus.NOT_ALLOWED_ERROR, metrics));
+                        mRequestCallback.onComplete(
+                                WebauthnRequestResponse.forFailedMakeCredential(
+                                        AuthenticatorStatus.NOT_ALLOWED_ERROR, metrics));
                     })) {
                 continueMakeCredential(options);
             }
