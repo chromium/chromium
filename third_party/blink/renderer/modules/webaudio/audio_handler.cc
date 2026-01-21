@@ -45,7 +45,7 @@ AudioHandler::AudioHandler(NodeType node_type,
       stderr,
       "[%16p]: %16p: %2d: AudioHandler::AudioHandler() %d [%d] total: %u\n",
       Context(), this, GetNodeType(), connection_ref_count_,
-      UNSAFE_TODO(node_count_[static_cast<int>(GetNodeType())]),
+      node_count_[static_cast<int>(GetNodeType())],
       InstanceCounters::CounterValue(InstanceCounters::kAudioHandlerCounter));
 #endif
   node.context()->WarnIfContextClosed(this);
@@ -57,13 +57,13 @@ AudioHandler::~AudioHandler() {
   DCHECK(IsMainThread());
   InstanceCounters::DecrementCounter(InstanceCounters::kAudioHandlerCounter);
 #if DEBUG_AUDIONODE_REFERENCES
-  UNSAFE_TODO(--node_count_[static_cast<int>(GetNodeType())]);
+  --node_count_[static_cast<int>(GetNodeType())];
   fprintf(
       stderr,
       "[%16p]: %16p: %2d: AudioHandler::~AudioHandler() %d [%d] remaining: "
       "%u\n",
       Context(), this, GetNodeType(), connection_ref_count_,
-      UNSAFE_TODO(node_count_[static_cast<int>(GetNodeType())]),
+      node_count_[static_cast<int>(GetNodeType())],
       InstanceCounters::CounterValue(InstanceCounters::kAudioHandlerCounter));
 #endif
 }
@@ -161,10 +161,10 @@ void AudioHandler::SetNodeType(NodeType type) {
   node_type_ = type;
 
 #if DEBUG_AUDIONODE_REFERENCES
-  UNSAFE_TODO(++node_count_[static_cast<int>(type)]);
+  ++node_count_[static_cast<int>(type)];
   fprintf(stderr, "[%16p]: %16p: %2d: AudioHandler::AudioHandler [%3d]\n",
           Context(), this, GetNodeType(),
-          UNSAFE_TODO(node_count_[static_cast<int>(GetNodeType())]));
+          node_count_[static_cast<int>(GetNodeType())]);
 #endif
 }
 
@@ -481,8 +481,7 @@ void AudioHandler::MakeConnection() {
       stderr,
       "[%16p]: %16p: %2d: AudioHandler::MakeConnection   %3d [%3d] @%.15g\n",
       Context(), this, GetNodeType(), connection_ref_count_,
-      UNSAFE_TODO(node_count_[static_cast<int>(GetNodeType())]),
-      Context()->currentTime());
+      node_count_[static_cast<int>(GetNodeType())], Context()->currentTime());
 #endif
 
   // See the disabling code in disableOutputsIfNecessary(). This handles
@@ -500,7 +499,7 @@ void AudioHandler::BreakConnectionWithLock() {
           "[%16p]: %16p: %2d: AudioHandler::BreakConnectionWitLock %3d [%3d] "
           "@%.15g\n",
           Context(), this, GetNodeType(), connection_ref_count_,
-          UNSAFE_TODO(node_count_[static_cast<int>(GetNodeType())]),
+          node_count_[static_cast<int>(GetNodeType())],
           Context()->currentTime());
 #endif
 
@@ -512,7 +511,8 @@ void AudioHandler::BreakConnectionWithLock() {
 #if DEBUG_AUDIONODE_REFERENCES
 
 bool AudioHandler::is_node_count_initialized_ = false;
-int AudioHandler::node_count_[static_cast<int>(NodeType::kNodeTypeEnd)];
+std::array<int, static_cast<int>(AudioHandler::NodeType::kNodeTypeEnd)>
+    AudioHandler::node_count_;
 
 void AudioHandler::PrintNodeCounts() {
   fprintf(stderr, "\n\n");
@@ -520,8 +520,8 @@ void AudioHandler::PrintNodeCounts() {
   fprintf(stderr, "AudioNode: reference counts\n");
   fprintf(stderr, "===========================\n");
 
-  for (unsigned i = 0; i < static_cast<unsigned>(NodeType::kNodeTypeEnd); ++i) {
-    fprintf(stderr, "%2d: %d\n", i, UNSAFE_TODO(node_count_[i]));
+  for (size_t i = 0; i < node_count_.size(); ++i) {
+    fprintf(stderr, "%2zu: %d\n", i, node_count_[i]);
   }
 
   fprintf(stderr, "===========================\n\n\n");
