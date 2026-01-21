@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -1185,21 +1186,19 @@ class DownloadContentTest : public ContentBrowserTest {
     int64_t file_length = file.GetLength();
     ASSERT_EQ(expected_size, file_length);
 
-    const int64_t kBufferSize = 64 * 1024;
+    constexpr size_t kBufferSize = 64 * 1024;
     std::string pattern;
-    std::vector<char> data;
+    std::vector<uint8_t> data;
     pattern.resize(kBufferSize);
     data.resize(kBufferSize);
     for (int64_t offset = 0; offset < file_length;) {
-      int bytes_read =
-          UNSAFE_TODO(file.Read(offset, &data.front(), kBufferSize));
+      const size_t bytes_read = file.Read(offset, data).value_or(0);
       ASSERT_LT(0, bytes_read);
       ASSERT_GE(kBufferSize, bytes_read);
-
       pattern =
           TestDownloadHttpResponse::GetPatternBytes(seed, offset, bytes_read);
-      UNSAFE_TODO(
-          ASSERT_EQ(0, memcmp(pattern.data(), &data.front(), bytes_read)))
+      ASSERT_EQ(base::as_byte_span(pattern).first(bytes_read),
+                base::span(data).first(bytes_read))
           << "Comparing block at offset " << offset << " and length "
           << bytes_read;
       offset += bytes_read;
@@ -1353,9 +1352,7 @@ class ParallelDownloadTest : public DownloadContentTest {
               length - offset > kBufferSize ? kBufferSize : length - offset;
           output = TestDownloadHttpResponse::GetPatternBytes(
               parameters.pattern_generator_seed, offset, bytes_to_write);
-          EXPECT_EQ(
-              bytes_to_write,
-              UNSAFE_TODO(file.Write(offset, output.data(), bytes_to_write)));
+          EXPECT_TRUE(file.WriteAndCheck(offset, base::as_byte_span(output)));
           total_bytes += bytes_to_write;
           offset += bytes_to_write;
         }
