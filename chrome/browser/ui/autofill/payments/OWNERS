@@ -1,2 +1,5 @@
+osaul@google.com
+vinnypersky@google.com
+
 per-file chrome_payments_autofill_client*=file://components/autofill/core/browser/payments/OWNERS
 per-file *payments_window_manager*=vinnypersky@google.com
