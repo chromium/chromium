@@ -258,9 +258,9 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, InitializeAfterFirstFrame) {
         outputs_count++;
       });
 
-  VideoPixelFormat expected_input_format = PIXEL_FORMAT_I420;
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  expected_input_format = PIXEL_FORMAT_NV12;
+  VideoPixelFormat expected_input_format = PIXEL_FORMAT_NV12;
+#if BUILDFLAG(IS_FUCHSIA)
+  expected_input_format = PIXEL_FORMAT_I420;
 #endif
   vea()->SetEncodingCallback(base::BindLambdaForTesting(
       [&](BitstreamBuffer&, bool keyframe, scoped_refptr<VideoFrame> frame) {
@@ -367,9 +367,9 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, FlushDuringInitialize) {
         outputs_count++;
       });
 
-  VideoPixelFormat expected_input_format = PIXEL_FORMAT_I420;
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  expected_input_format = PIXEL_FORMAT_NV12;
+  VideoPixelFormat expected_input_format = PIXEL_FORMAT_NV12;
+#if BUILDFLAG(IS_FUCHSIA)
+  expected_input_format = PIXEL_FORMAT_I420;
 #endif
 
   vea()->SetEncodingCallback(base::BindLambdaForTesting(
@@ -465,9 +465,9 @@ TEST_P(VideoEncodeAcceleratorAdapterTest, TwoFramesResize) {
   auto large_frame =
       CreateGreenFrame(large_size, pixel_format, base::Milliseconds(2));
 
-  VideoPixelFormat expected_input_format = PIXEL_FORMAT_I420;
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-    expected_input_format = PIXEL_FORMAT_NV12;
+  VideoPixelFormat expected_input_format = PIXEL_FORMAT_NV12;
+#if BUILDFLAG(IS_FUCHSIA)
+  expected_input_format = PIXEL_FORMAT_I420;
 #endif
   const gfx::ColorSpace expected_color_space =
       ExpectedColorSpace(pixel_format, expected_input_format);
@@ -586,10 +586,12 @@ TEST_P(VideoEncodeAcceleratorAdapterTest, RunWithAllPossibleInputConversions) {
           : VideoEncodeAcceleratorAdapter::InputBufferKind::CpuMemBuf;
   adapter()->SetInputBufferPreferenceForTesting(input_kind);
 
-  const VideoPixelFormat expected_input_format =
-      input_kind == VideoEncodeAcceleratorAdapter::InputBufferKind::GpuMemBuf
-          ? PIXEL_FORMAT_NV12
-          : PIXEL_FORMAT_I420;
+  VideoPixelFormat expected_input_format = PIXEL_FORMAT_NV12;
+  if (input_kind != VideoEncodeAcceleratorAdapter::InputBufferKind::GpuMemBuf) {
+#if BUILDFLAG(IS_FUCHSIA)
+    expected_input_format = PIXEL_FORMAT_I420;
+#endif
+  }
 
   constexpr auto get_source_format = [](int i) {
     // Every 4 frames switch between the 3 supported formats.
@@ -712,9 +714,9 @@ TEST_F(VideoEncodeAcceleratorAdapterTest,
         output_count_after_change++;
       });
 
-  VideoPixelFormat expected_input_format = PIXEL_FORMAT_I420;
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  expected_input_format = PIXEL_FORMAT_NV12;
+  VideoPixelFormat expected_input_format = PIXEL_FORMAT_NV12;
+#if BUILDFLAG(IS_FUCHSIA)
+  expected_input_format = PIXEL_FORMAT_I420;
 #endif
   vea()->SetEncodingCallback(base::BindLambdaForTesting(
       [&](BitstreamBuffer&, bool keyframe, scoped_refptr<VideoFrame> frame) {

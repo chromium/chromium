@@ -466,7 +466,6 @@ void VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread(
         // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
-  auto format = PIXEL_FORMAT_I420;
   auto storage_type = VideoEncodeAccelerator::Config::StorageType::kShmem;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Linux/ChromeOS require a special configuration to use dmabuf storage.
@@ -476,12 +475,12 @@ void VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread(
   if (input_buffer_preference_ == InputBufferKind::Any) {
     input_buffer_preference_ = InputBufferKind::GpuMemBuf;
   }
-  format = PIXEL_FORMAT_NV12;
   storage_type = VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
 #endif
 
-  auto vea_config = SetUpVeaConfig(profile_, options_, format, storage_type,
-                                   supported_rc_modes_, required_encoder_type_);
+  auto vea_config =
+      SetUpVeaConfig(profile_, options_, kDefaultPixelFormat, storage_type,
+                     supported_rc_modes_, required_encoder_type_);
 
   if (auto status =
           accelerator_->Initialize(vea_config, this, media_log_->Clone());
@@ -1015,7 +1014,8 @@ T VideoEncodeAcceleratorAdapter::WrapCallback(T cb) {
 }
 
 // Copy a frame into a shared mem buffer and resize it as the same time. Input
-// frames can I420, NV12, or RGB -- they'll be converted to I420 if needed.
+// frames can I420, NV12, or RGB.
+// They'll be converted to kDefaultPixelFormat if needed.
 EncoderStatus::Or<scoped_refptr<VideoFrame>>
 VideoEncodeAcceleratorAdapter::PrepareCpuFrame(
     scoped_refptr<VideoFrame> src_frame) {
@@ -1029,7 +1029,8 @@ VideoEncodeAcceleratorAdapter::PrepareCpuFrame(
   // It is because VEAAdapter recycles the SharedMemoryRegion, but
   // mojo_video_frame_traits doesn't.
   if (src_frame->storage_type() == VideoFrame::STORAGE_SHMEM &&
-      src_frame->format() == PIXEL_FORMAT_I420 &&
+      (src_frame->format() == kDefaultPixelFormat ||
+       src_frame->format() == PIXEL_FORMAT_I420) &&
       src_frame->visible_rect() == dest_visible_rect &&
       src_frame->coded_size() == dest_coded_size) {
     // Nothing to do here, the input frame is already what we need.
@@ -1038,7 +1039,7 @@ VideoEncodeAcceleratorAdapter::PrepareCpuFrame(
 
   if (!input_pool_) {
     const size_t input_buffer_size =
-        VideoFrame::AllocationSize(PIXEL_FORMAT_I420, dest_coded_size);
+        VideoFrame::AllocationSize(kDefaultPixelFormat, dest_coded_size);
     input_pool_ = base::MakeRefCounted<ReadOnlyRegionPool>(input_buffer_size);
   }
 
@@ -1052,7 +1053,7 @@ VideoEncodeAcceleratorAdapter::PrepareCpuFrame(
                               ? ConvertToMemoryMappedFrame(src_frame)
                               : src_frame;
   auto shared_frame = VideoFrame::WrapExternalData(
-      PIXEL_FORMAT_I420, dest_coded_size, dest_visible_rect,
+      kDefaultPixelFormat, dest_coded_size, dest_visible_rect,
       dest_visible_rect.size(), *mapping, src_frame->timestamp());
 
   if (!shared_frame || !mapped_src_frame)
