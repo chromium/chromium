@@ -100,8 +100,8 @@ class ToolbarActionViewModel {
   // the extension id; for component actions, this is the name of the component.
   virtual std::string GetId() const = 0;
 
-  // Registers an update observer of the view model.
-  virtual base::CallbackListSubscription RegisterUpdateObserver(
+  // Registers an update observer of the action's icon.
+  virtual base::CallbackListSubscription RegisterIconUpdateObserver(
       base::RepeatingClosure observer) = 0;
 
   // Returns the icon to use for the given |web_contents| and |size|.

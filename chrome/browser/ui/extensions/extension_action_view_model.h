@@ -69,7 +69,7 @@ class ExtensionActionViewModel
 
   // ToolbarActionViewModel:
   std::string GetId() const override;
-  base::CallbackListSubscription RegisterUpdateObserver(
+  base::CallbackListSubscription RegisterIconUpdateObserver(
       base::RepeatingClosure observer) override;
   ui::ImageModel GetIcon(content::WebContents* web_contents,
                          const gfx::Size& size) override;
@@ -136,8 +136,8 @@ class ExtensionActionViewModel
   // Returns the current web contents.
   content::WebContents* GetCurrentWebContents() const;
 
-  // Notifies observers that the underlying data has been updated.
-  void NotifyObservers();
+  // Notifies observers that icon has been updated.
+  void NotifyIconObservers();
 
   // extensions::ExtensionActionIconFactory::Observer:
   void OnIconUpdated() override;
@@ -182,8 +182,8 @@ class ExtensionActionViewModel
   // The context menu model for the extension.
   std::unique_ptr<extensions::ExtensionContextMenuModel> context_menu_model_;
 
-  // Our observers.
-  base::RepeatingClosureList observers_;
+  // Our observers listening for updates to the icon.
+  base::RepeatingClosureList icon_observers_;
 
   // The delegate to handle platform-specific implementations.
   std::unique_ptr<ExtensionActionDelegate> delegate_;

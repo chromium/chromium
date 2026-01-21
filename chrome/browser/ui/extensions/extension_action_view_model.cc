@@ -186,9 +186,10 @@ std::string ExtensionActionViewModel::GetId() const {
   return extension_id_;
 }
 
-base::CallbackListSubscription ExtensionActionViewModel::RegisterUpdateObserver(
+base::CallbackListSubscription
+ExtensionActionViewModel::RegisterIconUpdateObserver(
     base::RepeatingClosure observer) {
-  return observers_.Add(observer);
+  return icon_observers_.Add(observer);
 }
 
 ui::ImageModel ExtensionActionViewModel::GetIcon(
@@ -480,15 +481,15 @@ content::WebContents* ExtensionActionViewModel::GetCurrentWebContents() const {
   return tab->GetContents();
 }
 
-void ExtensionActionViewModel::NotifyObservers() {
+void ExtensionActionViewModel::NotifyIconObservers() {
   if (!TabListInterface::From(browser_)->GetActiveTab()) {
     return;
   }
-  observers_.Notify();
+  icon_observers_.Notify();
 }
 
 void ExtensionActionViewModel::OnIconUpdated() {
-  NotifyObservers();
+  NotifyIconObservers();
 }
 
 extensions::SitePermissionsHelper::SiteInteraction

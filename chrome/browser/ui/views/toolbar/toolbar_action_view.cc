@@ -63,8 +63,9 @@ ToolbarActionView::ToolbarActionView(ToolbarActionViewModel* view_model,
   SetShowInkDropWhenHotTracked(true);
   SetID(VIEW_ID_BROWSER_ACTION);
   SetProperty(views::kElementIdentifierKey, kToolbarActionViewElementId);
-  model_subscription_ = view_model_->RegisterUpdateObserver(base::BindRepeating(
-      &ToolbarActionView::UpdateState, base::Unretained(this)));
+  model_subscription_ =
+      view_model_->RegisterIconUpdateObserver(base::BindRepeating(
+          &ToolbarActionView::UpdateState, base::Unretained(this)));
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   set_drag_controller(delegate_);
   // Normally, the notify action is determined by whether a view is draggable

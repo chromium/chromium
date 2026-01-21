@@ -43,10 +43,11 @@ class WebUIBrowserExtensionsContainer::ActionInfo {
       : extensions_container_(extensions_container),
         browser_(browser),
         model_(std::move(model)),
-        model_subscription_(model_->RegisterUpdateObserver(base::BindRepeating(
-            &WebUIBrowserExtensionsContainer::NotifyOfOneAction,
-            base::Unretained(extensions_container_),
-            model_->GetId()))) {}
+        model_subscription_(
+            model_->RegisterIconUpdateObserver(base::BindRepeating(
+                &WebUIBrowserExtensionsContainer::NotifyOfOneAction,
+                base::Unretained(extensions_container_),
+                model_->GetId()))) {}
 
   ui::TrackedElement* GetAnchor() {
     // TODO(webium): Use the proper button once TrackedElement supports
