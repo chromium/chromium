@@ -293,6 +293,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
   testing::NiceMock<MockContextualTasksPage> mock_page;
 
   mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> handler_receiver;
+  // The initial call to CreatePageHandler should call OnLensOverlayStateChanged.
+  EXPECT_CALL(mock_page, OnLensOverlayStateChanged(false));
   controller_->CreatePageHandler(mock_page.BindAndGetRemote(),
                                  std::move(handler_receiver));
 

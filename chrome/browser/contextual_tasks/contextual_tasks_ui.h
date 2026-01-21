@@ -198,6 +198,8 @@ class ContextualTasksUI
   // hidden.
   void OnLensOverlayStateChanged(bool is_showing);
 
+  virtual bool IsLensOverlayShowing() const;
+
   // signin::IdentityManager::Observer:
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
@@ -323,6 +325,7 @@ class ContextualTasksUI
   };
   WebUIState previous_web_ui_state_ = WebUIState::kUnknown;
   bool was_ai_page_ = false;
+  bool is_lens_overlay_showing_ = false;
 
   // Scoped observation for contextual_tasks_service_.
   base::ScopedObservation<contextual_tasks::ContextualTasksService,

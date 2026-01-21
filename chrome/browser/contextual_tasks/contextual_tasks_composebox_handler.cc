@@ -225,12 +225,14 @@ void ContextualTasksComposeboxHandler::SubmitQuery(
 
 void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
     const std::string& query) {
+  bool was_overlay_open_on_submit = web_ui_controller_->IsLensOverlayShowing();
   // Every time a query is submitted, close the Lens overlay if it's open.
   CloseLensOverlay(
       lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted);
   std::optional<base::Uuid> task_id = web_ui_controller_->GetTaskId();
   auto* contextual_tasks_service = GetContextualTasksService();
-  if (!task_id.has_value() || !contextual_tasks_service) {
+  if (!task_id.has_value() || !contextual_tasks_service ||
+      was_overlay_open_on_submit) {
     ContinueCreateAndSendQueryMessage(query, task_id);
     return;
   }

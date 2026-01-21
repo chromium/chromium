@@ -361,6 +361,13 @@ void ContextualTasksUI::CreatePageHandler(
   page_handler_ = std::make_unique<ContextualTasksPageHandler>(
       std::move(page_handler), this, ui_service_, contextual_tasks_service_);
 
+  // Determine if the Lens overlay is showing when the page is created.
+  if (auto* browser = GetBrowser()) {
+    if (auto* controller = LensSearchController::FromTabWebContents(
+            browser->GetTabStripModel()->GetActiveWebContents())) {
+      OnLensOverlayStateChanged(controller->IsShowingUI());
+    }
+  }
 }
 
 void ContextualTasksUI::OnRefreshTokenUpdatedForAccount(
@@ -663,9 +670,14 @@ void ContextualTasksUI::DisableActiveTabContextSuggestion() {
 }
 
 void ContextualTasksUI::OnLensOverlayStateChanged(bool is_showing) {
+  is_lens_overlay_showing_ = is_showing;
   if (page_) {
     page_->OnLensOverlayStateChanged(is_showing);
   }
+}
+
+bool ContextualTasksUI::IsLensOverlayShowing() const {
+  return is_lens_overlay_showing_;
 }
 
 void ContextualTasksUI::OnActiveTabContextStatusChanged() {
