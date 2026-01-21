@@ -224,7 +224,7 @@ public class ActionConfirmationManagerUnitTest {
         TextView descriptionTextView = customView.findViewById(R.id.description_text_view);
         assertEquals(
                 "This will permanently delete the group from your device",
-                descriptionTextView.getText());
+                descriptionTextView.getText().toString());
     }
 
     @Test
@@ -241,7 +241,7 @@ public class ActionConfirmationManagerUnitTest {
         TextView descriptionTextView = customView.findViewById(R.id.description_text_view);
         assertEquals(
                 "This will permanently delete the group from your device",
-                descriptionTextView.getText());
+                descriptionTextView.getText().toString());
     }
 
     @Test
@@ -258,7 +258,7 @@ public class ActionConfirmationManagerUnitTest {
         TextView descriptionTextView = customView.findViewById(R.id.description_text_view);
         assertEquals(
                 "This will permanently delete the group from your device",
-                descriptionTextView.getText());
+                descriptionTextView.getText().toString());
     }
 
     @Test
@@ -276,7 +276,7 @@ public class ActionConfirmationManagerUnitTest {
         TextView descriptionTextView = customView.findViewById(R.id.description_text_view);
         assertEquals(
                 "This will delete the group from all devices signed into test@gmail.com",
-                descriptionTextView.getText());
+                descriptionTextView.getText().toString());
     }
 
     @Test
