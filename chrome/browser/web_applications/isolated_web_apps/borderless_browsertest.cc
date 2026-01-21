@@ -77,10 +77,9 @@ IsolatedWebAppBuilder CreateBorderlessIwaBuilder() {
   return IsolatedWebAppBuilder(
              ManifestBuilder()
                  .SetDisplayMode(blink::mojom::DisplayMode::kStandalone)
-                 .SetDisplayModeOverride({web_app::DisplayOverride::Create(
-                     blink::mojom::DisplayMode::kBorderless)})
-                 .AddBorderlessUrlPattern(
-                     UrlPatternForPath(kBorderlessPagePath))
+                 .SetDisplayModeOverride(
+                     {web_app::DisplayOverride::CreateUnframed(
+                         {UrlPatternForPath(kBorderlessPagePath)})})
                  .AddPermissionsPolicy(
                      network::mojom::PermissionsPolicyFeature::
                          kWindowManagement,

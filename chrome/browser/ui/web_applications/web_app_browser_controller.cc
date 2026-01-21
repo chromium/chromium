@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/ui_manager/update_dialog_types.h"
 #include "chrome/browser/web_applications/url_pattern_with_regex_matcher.h"
@@ -58,6 +59,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/safe_url_pattern.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image.h"
@@ -210,11 +212,20 @@ bool WebAppBrowserController::UrlMatchesBorderlessPattern(
   if (app == nullptr) {
     return false;
   }
-  return app->borderless_url_patterns().empty() ||
-         std::ranges::any_of(app->borderless_url_patterns(),
-                             [&url](const blink::SafeUrlPattern& p) {
-                               return UrlPatternWithRegexMatcher(p).Match(url);
-                             });
+
+  auto it = std::ranges::find_if(
+      app->display_mode_override(), [](const DisplayOverride& item) {
+        return item.display_mode() == DisplayMode::kBorderless;
+      });
+  if (it == app->display_mode_override().end()) {
+    return false;
+  }
+
+  return it->url_patterns().empty() ||
+         std::ranges::any_of(
+             it->url_patterns(), [&url](const blink::SafeUrlPattern& pattern) {
+               return UrlPatternWithRegexMatcher(pattern).Match(url);
+             });
 }
 
 bool WebAppBrowserController::AppUsesTabbed() const {

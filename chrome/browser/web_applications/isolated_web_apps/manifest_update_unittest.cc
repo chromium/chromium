@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_discovery_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
+#include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -109,7 +110,7 @@ class ManifestUpdateTest : public IsolatedWebAppTest {
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
-  // The test IWA used in tests. Must be called after `InstallInitialApp`.
+  // The test IWA used in tests. Must be called after `InstallInitialTestIwa`.
   const WebApp& TestIwa() {
     return GetAppById(provider(), TestIwaWebBundleId());
   }
@@ -137,7 +138,7 @@ class ManifestUpdateTest : public IsolatedWebAppTest {
   // Updates the fake test app in the test server to version 2.0.0 with the
   // given `manifest`, and waits until the update is installed.
   //
-  // Must be called after `InstallInitialApp`.
+  // Must be called after `InstallInitialTestIwa`.
   void UpdateTestIwa(ManifestBuilder manifest = ManifestBuilder()) {
     EXPECT_THAT(TestIwa(), HasVersion("1.0.0"));
 
@@ -155,12 +156,14 @@ class ManifestUpdateTest : public IsolatedWebAppTest {
   }
 };
 
-TEST_F(ManifestUpdateTest, BorderlessUrlPatterns) {
+TEST_F(ManifestUpdateTest, DisplayOverride) {
   InstallInitialTestIwa();
-  EXPECT_THAT(TestIwa().borderless_url_patterns(), IsEmpty());
+  EXPECT_THAT(TestIwa().display_mode_override(), IsEmpty());
 
-  UpdateTestIwa(ManifestBuilder().AddBorderlessUrlPattern(FooPattern()));
-  EXPECT_THAT(TestIwa().borderless_url_patterns(), ElementsAre(FooPattern()));
+  UpdateTestIwa(ManifestBuilder().SetDisplayModeOverride(
+      {DisplayOverride::CreateUnframed({FooPattern()})}));
+  EXPECT_THAT(TestIwa().display_mode_override(),
+              ElementsAre(DisplayOverride::CreateUnframed({FooPattern()})));
 }
 
 }  // namespace web_app
