@@ -559,7 +559,7 @@ ci.thin_tester(
                 swarming = targets.swarming(
                     # This is for slow test execution that often becomes a
                     # critical path of swarming jobs. crbug.com/868114
-                    shards = 15,
+                    shards = 20,
                 ),
             ),
             "browser_tests_no_field_trial": targets.remove(
