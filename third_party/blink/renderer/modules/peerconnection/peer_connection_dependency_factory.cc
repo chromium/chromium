@@ -25,6 +25,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/webrtc/thread_wrapper.h"
@@ -780,7 +781,12 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
 
   // Wait for the worker thread, since `InitializeSignalingThread` needs to
   // refer to `worker_thread_`.
-  worker_thread_started_event.Wait();
+  {
+    TRACE_EVENT("latency",
+                "PeerConnectionDependencyFactory::CreatePeerConnectionFactory "
+                "- Wait for worker thread started");
+    worker_thread_started_event.Wait();
+  }
   CHECK(GetWorkerThread());
 
   // Only the JS main thread can establish mojo connection with a browser
@@ -803,7 +809,12 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
           CreateMojoVideoEncoderMetricsProviderFactory(DomWindow()->GetFrame()),
           CrossThreadUnretained(&start_signaling_event)));
 
-  start_signaling_event.Wait();
+  {
+    TRACE_EVENT("latency",
+                "PeerConnectionDependencyFactory::CreatePeerConnectionFactory "
+                "- Wait for start signaling");
+    start_signaling_event.Wait();
+  }
 
   CHECK(pc_factory_);
   CHECK(socket_factory_);
