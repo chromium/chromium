@@ -26,6 +26,26 @@ class RemoteSuggestionsServiceSimple {
  public:
   virtual ~RemoteSuggestionsServiceSimple();
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(ParseFailureReason)
+  enum class ParseFailureReason {
+    // Zero value. This should not occur in production.
+    kUnknown = 0,
+    // The response from the remote is empty.
+    kResponseEmpty = 1,
+    // The parse phase fails because the response was not a JSON or its format
+    // is not in the expected form.
+    kMalformedJson = 2,
+    // Used after successfully parsing the JSON response.
+    // The parse phase fails because some precondition is not met, an unknown
+    // enum value is contained, etc.
+    kSchemaMismatch = 3,
+    kMaxValue = kSchemaMismatch,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:ActionChipsParseError)
+
   struct NetworkError;
   struct ParseError;
   using Error = std::variant<NetworkError, ParseError>;
@@ -67,21 +87,7 @@ class RemoteSuggestionsServiceSimple {
     int http_response_code = 0;
   };
   struct ParseError {
-    enum class ParseErrorType {
-      // Zero value. This should not occur in production.
-      kUnknown,
-      // The response from the remote is empty.
-      kResponseEmpty,
-      // The parse phase fails because the response was not a JSON or its format
-      // is not in the expected form.
-      kMalformedJson,
-      // Used after successfully parsing the JSON response.
-      // The parse phase fails because some precondition is not met, an unknown
-      // enum value is contained, etc.
-      kParseFailure,
-    };
-
-    ParseErrorType parse_error_type = ParseErrorType::kUnknown;
+    ParseFailureReason parse_failure_reason = ParseFailureReason::kUnknown;
   };
 };
 

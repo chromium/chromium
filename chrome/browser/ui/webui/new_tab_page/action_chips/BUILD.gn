@@ -12,6 +12,8 @@ source_set("action_chips") {
     "action_chips_generator.h",
     "action_chips_handler.cc",
     "action_chips_handler.h",
+    "action_chips_metrics.cc",
+    "action_chips_metrics.h",
     "remote_suggestions_service_simple.cc",
     "remote_suggestions_service_simple.h",
     "tab_id_generator.cc",
@@ -36,6 +38,7 @@ source_set("action_chips") {
     "//content/public/browser",
     "//content/public/common",
     "//mojo/public/cpp/bindings",
+    "//third_party/abseil-cpp:absl",
     "//third_party/omnibox_proto",
     "//url",
   ]

@@ -88,19 +88,18 @@ base::expected<SearchSuggestionParser::SuggestResults,
 ParseZeroSuggestionsResponse(AutocompleteProviderClient* client,
                              const bool allow_empty_suggestion,
                              std::optional<std::string> response) {
-  using enum ::action_chips::RemoteSuggestionsServiceSimple::ParseError::
-      ParseErrorType;
+  using enum ::action_chips::RemoteSuggestionsServiceSimple::ParseFailureReason;
   DCHECK(response);
 
   if (!response || response->empty()) {
     return base::unexpected(RemoteSuggestionsServiceSimple::ParseError{
-        .parse_error_type = kResponseEmpty});
+        .parse_failure_reason = kResponseEmpty});
   }
 
   auto response_data = SearchSuggestionParser::DeserializeJsonData(*response);
   if (!response_data.has_value()) {
     return base::unexpected(RemoteSuggestionsServiceSimple::ParseError{
-        .parse_error_type = kMalformedJson});
+        .parse_failure_reason = kMalformedJson});
   }
 
   static const base::NoDestructor<AutocompleteInput> kInputForZeroSuggest([] {
@@ -117,7 +116,7 @@ ParseZeroSuggestionsResponse(AutocompleteProviderClient* client,
           /*is_keyword_result=*/false,
           {.allow_empty_suggestion = allow_empty_suggestion}, &results)) {
     return base::unexpected(RemoteSuggestionsServiceSimple::ParseError{
-        .parse_error_type = kParseFailure});
+        .parse_failure_reason = kSchemaMismatch});
   }
   return std::move(results.suggest_results);
 }
