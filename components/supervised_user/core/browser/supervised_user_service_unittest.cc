@@ -184,9 +184,6 @@ TEST_F(SupervisedUserServiceTestUnsupervised,
   EXPECT_EQ(static_cast<int>(FilteringBehavior::kAllow),
             supervised_user_test_environment_->pref_service()->GetInteger(
                 prefs::kDefaultSupervisedUserFilteringBehavior));
-
-  EXPECT_FALSE(supervised_user_test_environment_->service()->IsBlockedURL(
-      GURL("http://google.com")));
 }
 
 // Tests that supervision restrictions do not apply to unsupervised users.
@@ -201,16 +198,6 @@ TEST_F(SupervisedUserServiceTestUnsupervised,
          "reset to default.";
   EXPECT_FALSE(supervised_user_test_environment_->pref_service()->GetBoolean(
       prefs::kSupervisedUserSafeSites));
-
-  EXPECT_FALSE(supervised_user_test_environment_->service()->IsBlockedURL(
-      GURL("http://google.com")));
-}
-
-// Tests that supervision restrictions do not apply to unsupervised users.
-TEST_F(SupervisedUserServiceTestUnsupervised, UrlIsAllowedForUser) {
-  SetWebFilterType(WebFilterType::kCertainSites);
-  EXPECT_FALSE(supervised_user_test_environment_->service()->IsBlockedURL(
-      GURL("http://google.com")));
 }
 
 // This test suite verifies how web filter type changes are propagated from this

@@ -119,10 +119,6 @@ class SupervisedUserService : public KeyedService {
   std::optional<Custodian> GetCustodian() const;
   std::optional<Custodian> GetSecondCustodian() const;
 
-  // Returns true if the url is blocked due to supervision restrictions on the
-  // primary account user.
-  bool IsBlockedURL(const GURL& url) const;
-
   void AddObserver(SupervisedUserServiceObserver* observer);
   void RemoveObserver(SupervisedUserServiceObserver* observer);
 

@@ -111,15 +111,6 @@ std::optional<Custodian> SupervisedUserService::GetSecondCustodian() const {
       prefs::kSupervisedUserSecondCustodianProfileImageURL);
 }
 
-bool SupervisedUserService::IsBlockedURL(const GURL& url) const {
-  // TODO(b/359161670): prevent access to URL filtering through lifecycle events
-  // rather than individually checking active state.
-  if (!IsSubjectToParentalControls(user_prefs_.get())) {
-    return false;
-  }
-  return GetURLFilter()->GetFilteringBehavior(url).IsBlocked();
-}
-
 void SupervisedUserService::AddObserver(
     SupervisedUserServiceObserver* observer) {
   observer_list_.AddObserver(observer);

@@ -115,6 +115,24 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
   }
 };
 
+TEST_F(SupervisedUserURLFilterTest, DisabledParentalControlsDontBlockUrls) {
+  // All sites blocked by default.
+  supervised_user_test_environment_.SetWebFilterType(
+      WebFilterType::kCertainSites);
+  EXPECT_TRUE(IsSubjectToParentalControls(
+      *supervised_user_test_environment_.pref_service()));
+  EXPECT_TRUE(supervised_user_test_environment_.url_filter()
+                  ->GetFilteringBehavior(GURL("http://example.com"))
+                  .IsBlocked());
+
+  DisableParentalControls(*supervised_user_test_environment_.pref_service());
+  EXPECT_FALSE(IsSubjectToParentalControls(
+      *supervised_user_test_environment_.pref_service()));
+  EXPECT_FALSE(supervised_user_test_environment_.url_filter()
+                   ->GetFilteringBehavior(GURL("http://example.com"))
+                   .IsBlocked());
+}
+
 TEST_F(SupervisedUserURLFilterTest, Basic) {
   supervised_user_test_environment_.SetManualFilterForHost("*.google.com",
                                                            true);

@@ -580,8 +580,9 @@ void MostVisitedSites::OnMostVisitedURLsAvailable(
       break;  // This is the signal that there are no more real visited sites.
     }
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-    if (supervised_user_service_ &&
-        supervised_user_service_->IsBlockedURL(visited.url)) {
+    if (supervised_user_service_ && supervised_user_service_->GetURLFilter()
+                                        ->GetFilteringBehavior(visited.url)
+                                        .IsBlocked()) {
       continue;
     }
 #endif
@@ -838,8 +839,9 @@ void MostVisitedSites::ReloadCustomLinksCache() {
   for (size_t i = 0; i < num_tiles; ++i) {
     const CustomLinksManager::Link& link = links.at(i);
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-    if (supervised_user_service_ &&
-        supervised_user_service_->IsBlockedURL(link.url)) {
+    if (supervised_user_service_ && supervised_user_service_->GetURLFilter()
+                                        ->GetFilteringBehavior(link.url)
+                                        .IsBlocked()) {
       continue;
     }
 #endif
