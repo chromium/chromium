@@ -51,6 +51,11 @@ class ExtensionsToolbarBridge : public ExtensionsToolbarViewModel::Delegate,
 
   // JNI implementations.
   void Destroy(JNIEnv* env);
+  base::android::ScopedJavaLocalRef<jobject> GetAction(
+      JNIEnv* env,
+      const ToolbarActionsModel::ActionId& action_id);
+  std::vector<ToolbarActionsModel::ActionId> GetAllActionIds(JNIEnv* env);
+  std::vector<ToolbarActionsModel::ActionId> GetPinnedActionIds(JNIEnv* env);
   void ExecuteUserAction(const ToolbarActionsModel::ActionId& action_id,
                          ToolbarActionViewModel::InvocationSource source);
 

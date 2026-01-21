@@ -55,6 +55,19 @@ public class ExtensionsToolbarBridge implements Destroyable {
         mDelegate = delegate;
     }
 
+    @Nullable
+    public ExtensionAction getAction(String actionId) {
+        return ExtensionsToolbarBridgeJni.get().getAction(mNativeExtensionsToolbarBridge, actionId);
+    }
+
+    public String[] getAllActionIds() {
+        return ExtensionsToolbarBridgeJni.get().getAllActionIds(mNativeExtensionsToolbarBridge);
+    }
+
+    public String[] getPinnedActionIds() {
+        return ExtensionsToolbarBridgeJni.get().getPinnedActionIds(mNativeExtensionsToolbarBridge);
+    }
+
     public void executeUserAction(String actionId, @InvocationSource int source) {
         ExtensionsToolbarBridgeJni.get()
                 .executeUserAction(mNativeExtensionsToolbarBridge, actionId, source);
@@ -130,6 +143,15 @@ public class ExtensionsToolbarBridge implements Destroyable {
         long init(ExtensionsToolbarBridge bridge, long browserWindowInterfacePtr);
 
         void destroy(long nativeExtensionsToolbarBridge);
+
+        @Nullable ExtensionAction getAction(
+                long nativeExtensionsToolbarBridge, @JniType("std::string") String actionId);
+
+        @JniType("std::vector<std::string>")
+        String[] getAllActionIds(long nativeExtensionsToolbarBridge);
+
+        @JniType("std::vector<std::string>")
+        String[] getPinnedActionIds(long nativeExtensionsToolbarBridge);
 
         void executeUserAction(
                 long nativeExtensionsToolbarBridge,

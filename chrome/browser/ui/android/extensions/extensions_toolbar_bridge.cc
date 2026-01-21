@@ -6,16 +6,22 @@
 
 #include "base/android/jni_string.h"
 #include "base/notimplemented.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/ui/android/extensions/extension_action_delegate_android.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/gfx/android/java_bitmap.h"
+#include "ui/gfx/image/image_skia_rep.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/ui/android/extensions/jni_headers/ExtensionAction_jni.h"
 #include "chrome/browser/ui/android/extensions/jni_headers/ExtensionsToolbarBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
+using content::WebContents;
 
 namespace extensions {
 
@@ -110,6 +116,27 @@ void ExtensionsToolbarBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
+base::android::ScopedJavaLocalRef<jobject> ExtensionsToolbarBridge::GetAction(
+    JNIEnv* env,
+    const ToolbarActionsModel::ActionId& action_id) {
+  ToolbarActionViewModel* action =
+      toolbar_view_model_->GetActionModelForId(action_id);
+  return Java_ExtensionAction_Constructor(
+      env, action_id, base::UTF16ToUTF8(action->GetActionName()));
+}
+
+std::vector<ToolbarActionsModel::ActionId>
+ExtensionsToolbarBridge::GetAllActionIds(JNIEnv* env) {
+  const auto& ids = toolbar_view_model_->GetAllActionIds();
+  return std::vector(ids.begin(), ids.end());
+}
+
+std::vector<ToolbarActionsModel::ActionId>
+ExtensionsToolbarBridge::GetPinnedActionIds(JNIEnv* env) {
+  const auto& ids = toolbar_view_model_->GetPinnedActionIds();
+  return std::vector(ids.begin(), ids.end());
+}
+
 void ExtensionsToolbarBridge::ExecuteUserAction(
     const ToolbarActionsModel::ActionId& action_id,
     ToolbarActionViewModel::InvocationSource source) {
@@ -128,4 +155,5 @@ static int64_t JNI_ExtensionsToolbarBridge_Init(
 
 }  // namespace extensions
 
+DEFINE_JNI(ExtensionAction)
 DEFINE_JNI(ExtensionsToolbarBridge)
