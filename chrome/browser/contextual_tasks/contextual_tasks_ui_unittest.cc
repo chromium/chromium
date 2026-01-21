@@ -80,6 +80,8 @@ class MockTaskInfoDelegate : public TaskInfoDelegate {
 
   MOCK_METHOD(void, OnZeroStateChange, (bool is_zero_state), (override));
 
+  MOCK_METHOD(void, PrepareForTaskChange, (), (override));
+
   MOCK_METHOD(void, OnTaskChanged, (), (override));
 
  private:
@@ -223,6 +225,7 @@ TEST_F(ContextualTasksUiTest,
   EXPECT_CALL(*contextual_tasks_service_,
               UpdateThreadForTask(task_id2, _, thread_id2, _, _))
       .Times(1);
+  EXPECT_CALL(delegate, PrepareForTaskChange()).Times(1);
   EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, _, false)).Times(1);
 
   ContextualTask task(task_id2);
@@ -336,6 +339,7 @@ TEST_F(ContextualTasksUiTest, TaskCreated_ThreadIdChanged) {
       *contextual_tasks_service_,
       UpdateThreadForTask(task_id, _, thread_id.value(), _, Optional(query)))
       .Times(1);
+  EXPECT_CALL(delegate, PrepareForTaskChange()).Times(1);
   EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, task_id, false)).Times(1);
 
   std::unique_ptr<content::MockNavigationHandle> nav_handle =
@@ -380,6 +384,7 @@ TEST_F(ContextualTasksUiTest, TaskCreated_ThreadIdChanged_ShownInTab) {
       UpdateThreadForTask(task_id, _, thread_id.value(), _, Optional(query)))
       .Times(1);
   // Verify is_shown_in_tab is true.
+  EXPECT_CALL(delegate, PrepareForTaskChange()).Times(1);
   EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, task_id, true)).Times(1);
 
   std::unique_ptr<content::MockNavigationHandle> nav_handle =
@@ -422,6 +427,7 @@ TEST_F(ContextualTasksUiTest, TaskChanged_ThreadIdChanged_HasExistingTask) {
               UpdateThreadForTask(task_id, _, thread_id, _,
                                   Optional(std::string("koalas"))))
       .Times(1);
+  EXPECT_CALL(delegate, PrepareForTaskChange()).Times(1);
   EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, _, _)).Times(1);
 
   std::unique_ptr<content::MockNavigationHandle> nav_handle =
@@ -446,8 +452,9 @@ TEST_F(ContextualTasksUiTest, TaskCreated_ZeroState) {
 
   base::Uuid task_id = base::Uuid::ParseCaseInsensitive(kUuid);
   ContextualTask task(task_id);
-  EXPECT_CALL(*contextual_tasks_service_, CreateTask()).WillOnce(Return(task));
   // OnTaskChanged should be called with the created UUID.
+  EXPECT_CALL(delegate, PrepareForTaskChange()).Times(1);
+  EXPECT_CALL(*contextual_tasks_service_, CreateTask()).WillOnce(Return(task));
   EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, task_id, _)).Times(1);
 
   std::unique_ptr<content::MockNavigationHandle> nav_handle =
@@ -623,6 +630,7 @@ TEST_F(ContextualTasksUiTest, DidFinishNavigation_ZeroState) {
       ContextualTask task(task_id);
       EXPECT_CALL(*contextual_tasks_service_, CreateTask())
           .WillOnce(Return(task));
+      EXPECT_CALL(delegate, PrepareForTaskChange()).Times(1);
     }
 
     std::unique_ptr<content::MockNavigationHandle> nav_handle =
@@ -647,6 +655,7 @@ TEST_F(ContextualTasksUiTest, DidFinishNavigation_FiresOnReload) {
   ContextualTask task(task_id);
 
   EXPECT_CALL(delegate, OnZeroStateChange(true)).Times(2);
+  EXPECT_CALL(delegate, PrepareForTaskChange()).Times(1);
   EXPECT_CALL(*contextual_tasks_service_, CreateTask())
       .Times(1)
       .WillRepeatedly(Return(task));

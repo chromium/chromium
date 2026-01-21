@@ -127,6 +127,7 @@ class ContextualTasksUI
   BrowserWindowInterface* GetBrowser() override;
   content::WebContents* GetWebUIWebContents() override;
   void OnZeroStateChange(bool is_zero_state) override;
+  void PrepareForTaskChange() override;
   void OnTaskChanged() override;
 
   // ContextualTaskService::Observer impl:
