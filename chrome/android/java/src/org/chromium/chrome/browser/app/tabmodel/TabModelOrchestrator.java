@@ -36,6 +36,7 @@ public class TabModelOrchestrator {
     protected @MonotonicNonNull TabPersistentStore mTabPersistentStore;
     protected @MonotonicNonNull TabModelSelectorBase mTabModelSelector;
     protected @MonotonicNonNull TabPersistencePolicy mTabPersistencePolicy;
+    protected @Nullable TabPersistentStore mShadowTabPersistentStore;
     private boolean mTabModelsInitialized;
     private @Nullable Callback<String> mOnStandardActiveIndexRead;
     private boolean mTabPersistentStoreDestroyedEarly;
@@ -98,6 +99,11 @@ public class TabModelOrchestrator {
         if (mIsDestroyed) return;
         mIsDestroyed = true;
 
+        if (mShadowTabPersistentStore != null) {
+            mShadowTabPersistentStore.destroy();
+            mShadowTabPersistentStore = null;
+        }
+
         if (mTabPersistentStore != null && !mTabPersistentStoreDestroyedEarly) {
             mTabPersistentStore.destroy();
         }
@@ -115,6 +121,11 @@ public class TabModelOrchestrator {
      * details.
      */
     public void destroyTabPersistentStore() {
+        if (mShadowTabPersistentStore != null) {
+            mShadowTabPersistentStore.destroy();
+            mShadowTabPersistentStore = null;
+        }
+
         if (mTabPersistentStore != null) {
             mTabPersistentStore.destroy();
             mTabPersistentStoreDestroyedEarly = true;
@@ -135,7 +146,12 @@ public class TabModelOrchestrator {
     public void saveState() {
         assertInitialized();
         mTabModelSelector.commitAllTabClosures();
-        if (!mTabPersistentStoreDestroyedEarly) mTabPersistentStore.saveState();
+        if (!mTabPersistentStoreDestroyedEarly) {
+            mTabPersistentStore.saveState();
+            if (mShadowTabPersistentStore != null) {
+                mShadowTabPersistentStore.saveState();
+            }
+        }
     }
 
     /**
@@ -151,7 +167,13 @@ public class TabModelOrchestrator {
         assertInitialized();
         mIgnoreIncognitoFiles = ignoreIncognitoFiles;
         mOnStandardActiveIndexRead = onStandardActiveIndexRead;
-        if (!mTabPersistentStoreDestroyedEarly) mTabPersistentStore.loadState(ignoreIncognitoFiles);
+
+        if (!mTabPersistentStoreDestroyedEarly) {
+            mTabPersistentStore.loadState(ignoreIncognitoFiles);
+            if (mShadowTabPersistentStore != null) {
+                mShadowTabPersistentStore.loadState(ignoreIncognitoFiles);
+            }
+        }
     }
 
     /**
@@ -193,17 +215,32 @@ public class TabModelOrchestrator {
                             createdStandardTabOnStartup,
                             createdIncognitoTabOnStartup));
         }
-        if (!mTabPersistentStoreDestroyedEarly) mTabPersistentStore.restoreTabs(setActiveTab);
+        if (!mTabPersistentStoreDestroyedEarly) {
+            mTabPersistentStore.restoreTabs(setActiveTab);
+            if (mShadowTabPersistentStore != null) {
+                mShadowTabPersistentStore.restoreTabs(setActiveTab);
+            }
+        }
     }
 
     public void mergeState() {
         assertInitialized();
-        if (!mTabPersistentStoreDestroyedEarly) mTabPersistentStore.mergeState();
+        if (!mTabPersistentStoreDestroyedEarly) {
+            mTabPersistentStore.mergeState();
+            if (mShadowTabPersistentStore != null) {
+                mShadowTabPersistentStore.mergeState();
+            }
+        }
     }
 
     public void clearState() {
         assertInitialized();
-        if (!mTabPersistentStoreDestroyedEarly) mTabPersistentStore.clearState();
+        if (!mTabPersistentStoreDestroyedEarly) {
+            mTabPersistentStore.clearState();
+            if (mShadowTabPersistentStore != null) {
+                mShadowTabPersistentStore.clearState();
+            }
+        }
     }
 
     /**
@@ -221,6 +258,9 @@ public class TabModelOrchestrator {
         assertInitialized();
         if (!mTabModelSelector.isTabStateInitialized() && !mTabPersistentStoreDestroyedEarly) {
             mTabPersistentStore.restoreTabStateForUrl(url);
+            if (mShadowTabPersistentStore != null) {
+                mShadowTabPersistentStore.restoreTabStateForUrl(url);
+            }
         }
     }
 
@@ -233,6 +273,9 @@ public class TabModelOrchestrator {
         assertInitialized();
         if (!mTabModelSelector.isTabStateInitialized() && !mTabPersistentStoreDestroyedEarly) {
             mTabPersistentStore.restoreTabStateForId(id);
+            if (mShadowTabPersistentStore != null) {
+                mShadowTabPersistentStore.restoreTabStateForId(id);
+            }
         }
     }
 
@@ -316,16 +359,19 @@ public class TabModelOrchestrator {
      * Sets {@link TabPersistentStoreImpl} for testing.
      *
      * @param tabPersistentStore The {@link TabPersistentStoreImpl}.
+     * @param shadowPersistentStore The shadow {@link TabPersistentStore} to use.
      */
     void initForTesting(
             TabModelSelectorBase tabModelSelector,
             TabPersistentStore tabPersistentStore,
-            TabPersistencePolicy tabPersistencePolicy) {
+            TabPersistencePolicy tabPersistencePolicy,
+            @Nullable TabPersistentStore shadowPersistentStore) {
         assert tabModelSelector != null;
         assert tabPersistentStore != null;
         assert tabPersistencePolicy != null;
         mTabModelSelector = tabModelSelector;
         mTabPersistentStore = tabPersistentStore;
         mTabPersistencePolicy = tabPersistencePolicy;
+        mShadowTabPersistentStore = shadowPersistentStore;
     }
 }

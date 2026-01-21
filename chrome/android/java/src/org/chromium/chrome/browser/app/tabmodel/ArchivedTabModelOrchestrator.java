@@ -156,7 +156,6 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
 
     // Currently used to perform shadow operations for an alternative storage. Not always enabled.
     private final AccumulatingTabCreator mShadowTabCreator = new AccumulatingTabCreator();
-    private @Nullable TabPersistentStore mShadowTabPersistentStore;
 
     private @MonotonicNonNull WindowAndroid mWindow;
     private @MonotonicNonNull TabArchiver mTabArchiver;
@@ -273,11 +272,6 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         if (mArchivedTabCountTracker != null) {
             mArchivedTabCountTracker.destroy();
             mArchivedTabCountTracker = null;
-        }
-
-        if (mShadowTabPersistentStore != null) {
-            mShadowTabPersistentStore.destroy();
-            mShadowTabPersistentStore = null;
         }
 
         super.destroy();

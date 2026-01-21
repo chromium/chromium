@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -38,6 +39,7 @@ public class TabModelOrchestratorUnitTest {
     @Mock private TabModel mMockTabModel;
     @Mock private TabModelSelectorBase mMockTabModelSelectorBase;
     @Mock private TabPersistentStore mMockTabPersistentStore;
+    @Mock private TabPersistentStore mMockShadowPersistentStore;
     @Mock private TabPersistencePolicy mTabPersistencePolicy;
 
     private TabModelOrchestrator mTabModelOrchestrator;
@@ -50,7 +52,10 @@ public class TabModelOrchestratorUnitTest {
 
         mTabModelOrchestrator = new TabModelOrchestrator();
         mTabModelOrchestrator.initForTesting(
-                mMockTabModelSelectorBase, mMockTabPersistentStore, mTabPersistencePolicy);
+                mMockTabModelSelectorBase,
+                mMockTabPersistentStore,
+                mTabPersistencePolicy,
+                mMockShadowPersistentStore);
         when(mTabPersistencePolicy.getMetadataFileName()).thenReturn("metadata");
 
         mObserverCaptor = ArgumentCaptor.forClass(TabPersistentStoreObserver.class);
@@ -126,6 +131,7 @@ public class TabModelOrchestratorUnitTest {
     @Feature({"TabStripPerformance"})
     public void testTabModelStartupInfo_IgnoreIncognito() {
         mTabModelOrchestrator.loadState(true, null);
+        verify(mMockShadowPersistentStore).loadState(true);
 
         // Send test tab model info.
         int numIncognitoTabs = 2;
@@ -153,6 +159,104 @@ public class TabModelOrchestratorUnitTest {
                 startupInfo.incognitoActiveIndex);
     }
 
+    @Test
+    @SmallTest
+    public void testSaveState() {
+        mTabModelOrchestrator.saveState();
+        verify(mMockTabPersistentStore).saveState();
+        verify(mMockShadowPersistentStore).saveState();
+    }
+
+    @Test
+    @SmallTest
+    public void testMergeState() {
+        mTabModelOrchestrator.mergeState();
+        verify(mMockTabPersistentStore).mergeState();
+        verify(mMockShadowPersistentStore).mergeState();
+    }
+
+    @Test
+    @SmallTest
+    public void testClearState() {
+        mTabModelOrchestrator.clearState();
+        verify(mMockTabPersistentStore).clearState();
+        verify(mMockShadowPersistentStore).clearState();
+    }
+
+    @Test
+    @SmallTest
+    public void testTryToRestoreTabStateForUrl() {
+        when(mMockTabModelSelectorBase.isTabStateInitialized()).thenReturn(false);
+
+        String url = "https://www.google.com";
+        mTabModelOrchestrator.tryToRestoreTabStateForUrl(url);
+
+        verify(mMockTabPersistentStore).restoreTabStateForUrl(url);
+        verify(mMockShadowPersistentStore).restoreTabStateForUrl(url);
+    }
+
+    @Test
+    @SmallTest
+    public void testTryToRestoreTabStateForId() {
+        when(mMockTabModelSelectorBase.isTabStateInitialized()).thenReturn(false);
+
+        int id = 5;
+        mTabModelOrchestrator.tryToRestoreTabStateForId(id);
+
+        verify(mMockTabPersistentStore).restoreTabStateForId(id);
+        verify(mMockShadowPersistentStore).restoreTabStateForId(id);
+    }
+
+    @Test
+    @SmallTest
+    public void testDestroy() {
+        mTabModelOrchestrator.destroy();
+        verify(mMockTabPersistentStore).destroy();
+        verify(mMockTabModelSelectorBase).destroy();
+        verify(mMockShadowPersistentStore).destroy();
+    }
+
+    @Test
+    @SmallTest
+    public void testDestroyTabPersistentStore() {
+        mTabModelOrchestrator.destroyTabPersistentStore();
+        verify(mMockTabPersistentStore).destroy();
+        verify(mMockShadowPersistentStore).destroy();
+    }
+
+    @Test
+    @SmallTest
+    public void testDestroyAfterDestroyTabPersistentStore() {
+        mTabModelOrchestrator.destroyTabPersistentStore();
+        verify(mMockTabPersistentStore).destroy();
+        verify(mMockShadowPersistentStore).destroy();
+
+        mTabModelOrchestrator.destroy();
+        verify(mMockTabPersistentStore).destroy();
+        verify(mMockShadowPersistentStore).destroy();
+        verify(mMockTabModelSelectorBase).destroy();
+    }
+
+    @Test
+    @SmallTest
+    public void testMethodsNotCalledAfterEarlyDestroy() {
+        mTabModelOrchestrator.destroyTabPersistentStore();
+        verify(mMockTabPersistentStore).destroy();
+        verify(mMockShadowPersistentStore).destroy();
+
+        mTabModelOrchestrator.saveState();
+        mTabModelOrchestrator.mergeState();
+
+        verify(mMockTabPersistentStore, never()).saveState();
+        verify(mMockShadowPersistentStore, never()).saveState();
+        verify(mMockTabPersistentStore, never()).mergeState();
+        verify(mMockShadowPersistentStore, never()).mergeState();
+
+        mTabModelOrchestrator.destroy();
+        verify(mMockTabPersistentStore).destroy();
+        verify(mMockShadowPersistentStore).destroy();
+    }
+
     private void readTabState(
             int numStandardTabs,
             int numIncognitoTabs,
@@ -176,5 +280,6 @@ public class TabModelOrchestratorUnitTest {
 
         observer.onInitialized(numIncognitoTabs + numStandardTabs);
         mTabModelOrchestrator.restoreTabs(false);
+        verify(mMockShadowPersistentStore).restoreTabs(false);
     }
 }
