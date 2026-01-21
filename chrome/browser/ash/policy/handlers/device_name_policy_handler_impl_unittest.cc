@@ -90,67 +90,6 @@ class DeviceNamePolicyHandlerImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  // Verifies that for unmanaged devices the policy state is kNoPolicy by
-  // default and the hostname chosen by the administrator is nullopt.
-  void VerifyDefaultStateUnmanagedDevice() {
-    EXPECT_EQ(DeviceNamePolicyHandler::DeviceNamePolicy::kNoPolicy,
-              handler_->GetDeviceNamePolicyForTesting());
-
-    // GetHostnameChosenByAdministrator() should therefore return null.
-    const std::optional<std::string> hostname =
-        handler_->GetHostnameChosenByAdministrator();
-    EXPECT_FALSE(hostname);
-  }
-
-  // Verifies that for managed devices the policy state is
-  // kPolicyHostnameNotConfigurable by default and the hostname chosen by the
-  // administrator is nullopt.
-  void VerifyDefaultStateManagedDevice() {
-    EXPECT_EQ(DeviceNamePolicyHandler::DeviceNamePolicy::
-                  kPolicyHostnameNotConfigurable,
-              handler_->GetDeviceNamePolicyForTesting());
-
-    // GetHostnameChosenByAdministrator() should therefore return null.
-    const std::optional<std::string> hostname =
-        handler_->GetHostnameChosenByAdministrator();
-    EXPECT_FALSE(hostname);
-  }
-
-  // Verifies that when |kDeviceHostnameTemplate| policy is set, the device name
-  // policy is set to |kPolicyHostnameChosenByAdmin| and is unaffected by the
-  // |kDeviceHostnameUserConfigurable| policy. Also verifies that the hostname
-  // is the one set by the template.
-  void VerifyStateWithAdminPolicy() {
-    // Check that DeviceNamePolicy changes from kPolicyHostnameNotConfigurable
-    // to kPolicyHostnameChosenByAdmin on setting template.
-    EXPECT_EQ(DeviceNamePolicyHandler::DeviceNamePolicy::
-                  kPolicyHostnameNotConfigurable,
-              handler_->GetDeviceNamePolicyForTesting());
-    const std::string hostname_template = "chromebook";
-    SetTemplate(hostname_template);
-    DeviceNamePolicyHandler::DeviceNamePolicy after =
-        handler_->GetDeviceNamePolicyForTesting();
-    EXPECT_EQ(
-        DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameChosenByAdmin,
-        after);
-    // Check GetHostnameChosenByAdministrator() returns the expected hostname
-    // value.
-    const std::optional<std::string> hostname_chosen_by_administrator =
-        handler_->GetHostnameChosenByAdministrator();
-    EXPECT_EQ(hostname_chosen_by_administrator, hostname_template);
-
-    // Setting kDeviceHostnameUserConfigurable policy should not affect the
-    // DeviceNamePolicy because template is set.
-    SetConfigurable(true);
-    EXPECT_EQ(
-        DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameChosenByAdmin,
-        handler_->GetDeviceNamePolicyForTesting());
-    SetConfigurable(false);
-    EXPECT_EQ(
-        DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameChosenByAdmin,
-        handler_->GetDeviceNamePolicyForTesting());
-  }
-
   std::unique_ptr<DeviceNamePolicyHandlerImpl> handler_;
 
  private:
@@ -162,21 +101,93 @@ class DeviceNamePolicyHandlerImplTest : public testing::Test {
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };
 
-TEST_F(DeviceNamePolicyHandlerImplTest, NoPoliciesManagedDevice) {
-  InitializeHandler(/*is_device_managed=*/true);
-  VerifyDefaultStateManagedDevice();
-}
-
+// Verifies that for unmanaged devices the policy state is kNoPolicy by
+// default and the hostname chosen by the administrator is nullopt.
 TEST_F(DeviceNamePolicyHandlerImplTest, NoPoliciesUnmanagedDevice) {
   InitializeHandler(/*is_device_managed=*/false);
-  VerifyDefaultStateUnmanagedDevice();
+
+  EXPECT_EQ(DeviceNamePolicyHandler::DeviceNamePolicy::kNoPolicy,
+            handler_->GetDeviceNamePolicyForTesting());
+
+  // GetHostnameChosenByAdministrator() should therefore return null.
+  const std::optional<std::string> hostname =
+      handler_->GetHostnameChosenByAdministrator();
+  EXPECT_FALSE(hostname);
 }
 
-// This test applies only to managed devices since unmanaged devices do not
-// have any policies applied.
+// These tests below apply only to managed devices since unmanaged devices do
+// not have any policies applied.
+
+// Verifies that for managed devices the policy state is
+// kPolicyHostnameNotConfigurable by default and the hostname chosen by the
+// administrator is nullopt.
+TEST_F(DeviceNamePolicyHandlerImplTest, NoPoliciesManagedDevice) {
+  InitializeHandler(/*is_device_managed=*/true);
+
+  EXPECT_EQ(
+      DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,
+      handler_->GetDeviceNamePolicyForTesting());
+
+  // GetHostnameChosenByAdministrator() should therefore return null.
+  const std::optional<std::string> hostname =
+      handler_->GetHostnameChosenByAdministrator();
+  EXPECT_FALSE(hostname);
+}
+
+// Verifies that when |kDeviceHostnameTemplate| policy is set, the device name
+// policy is set to |kPolicyHostnameChosenByAdmin| and is unaffected by the
+// |kDeviceHostnameUserConfigurable| policy. Also verifies that the hostname
+// is the one set by the template.
 TEST_F(DeviceNamePolicyHandlerImplTest, DeviceHostnameTemplatePolicyOn) {
   InitializeHandler(/*is_device_managed=*/true);
-  VerifyStateWithAdminPolicy();
+
+  // Check that DeviceNamePolicy changes from kPolicyHostnameNotConfigurable
+  // to kPolicyHostnameChosenByAdmin on setting template.
+  EXPECT_EQ(
+      DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,
+      handler_->GetDeviceNamePolicyForTesting());
+  const std::string hostname_template = "chromebook";
+  SetTemplate(hostname_template);
+  DeviceNamePolicyHandler::DeviceNamePolicy after =
+      handler_->GetDeviceNamePolicyForTesting();
+  EXPECT_EQ(
+      DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameChosenByAdmin,
+      after);
+  // Check GetHostnameChosenByAdministrator() returns the expected hostname
+  // value.
+  const std::optional<std::string> hostname_chosen_by_administrator =
+      handler_->GetHostnameChosenByAdministrator();
+  EXPECT_EQ(hostname_chosen_by_administrator, hostname_template);
+
+  // Setting kDeviceHostnameUserConfigurable policy should not affect the
+  // DeviceNamePolicy because template is set.
+  SetConfigurable(true);
+  EXPECT_EQ(
+      DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameChosenByAdmin,
+      handler_->GetDeviceNamePolicyForTesting());
+  SetConfigurable(false);
+  EXPECT_EQ(
+      DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameChosenByAdmin,
+      handler_->GetDeviceNamePolicyForTesting());
+}
+
+// Verifies that when `kDeviceHostnameTemplate` policy is unset, the device name
+// policy is reset to `kDeviceHostnameUserConfigurable`.
+TEST_F(DeviceNamePolicyHandlerImplTest, DeviceHostnameTemplatePolicyUnset) {
+  InitializeHandler(/*is_device_managed=*/true);
+
+  const std::string hostname_template = "chromebook";
+  SetTemplate(hostname_template);
+  ASSERT_EQ(
+      DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameChosenByAdmin,
+      handler_->GetDeviceNamePolicyForTesting());
+  ASSERT_EQ(handler_->GetHostnameChosenByAdministrator(), hostname_template);
+
+  UnsetTemplate();
+  EXPECT_EQ(
+      DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,
+      handler_->GetDeviceNamePolicyForTesting());
+  EXPECT_FALSE(handler_->GetHostnameChosenByAdministrator());
 }
 
 // Verifies that when |kDeviceHostnameTemplate| policy is not set, setting
@@ -200,25 +211,6 @@ TEST_F(DeviceNamePolicyHandlerImplTest,
   EXPECT_EQ(
       DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,
       handler_->GetDeviceNamePolicyForTesting());
-}
-
-// Verifies that when `kDeviceHostnameTemplate` policy is unset, the device name
-// policy is reset to `kDeviceHostnameUserConfigurable`.
-TEST_F(DeviceNamePolicyHandlerImplTest, DeviceHostnameTemplatePolicyUnset) {
-  InitializeHandler(/*is_device_managed=*/true);
-
-  const std::string hostname_template = "chromebook";
-  SetTemplate(hostname_template);
-  ASSERT_EQ(
-      DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameChosenByAdmin,
-      handler_->GetDeviceNamePolicyForTesting());
-  ASSERT_EQ(handler_->GetHostnameChosenByAdministrator(), hostname_template);
-
-  UnsetTemplate();
-  EXPECT_EQ(
-      DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,
-      handler_->GetDeviceNamePolicyForTesting());
-  EXPECT_FALSE(handler_->GetHostnameChosenByAdministrator());
 }
 
 }  // namespace policy
