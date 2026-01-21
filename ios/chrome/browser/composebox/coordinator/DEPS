@@ -1,5 +1,5 @@
 include_rules = [
-  # go/keep-sorted start
+  # keep-sorted start
   "+components/contextual_search",
   "+components/omnibox/composebox",
   "+components/open_from_clipboard",
@@ -8,6 +8,7 @@ include_rules = [
   "+ios/chrome/browser/bookmarks/model",
   "+ios/chrome/browser/context_menu/ui_bundled",
   "+ios/chrome/browser/default_browser/model",
+  "+ios/chrome/browser/drag_and_drop/model",
   "+ios/chrome/browser/favicon/model/favicon_loader.h",
   "+ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h",
   "+ios/chrome/browser/feature_engagement/model",
@@ -39,10 +40,11 @@ include_rules = [
   "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/selected_grid_items.h",
   "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_mode_holder.h",
   "+ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item.h",
+  "+ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h",
   "+ios/chrome/browser/tabs/model/tab_helper_util.h",
   "+ios/chrome/browser/variations/model/client",
   "+ios/chrome/browser/web/model",
   "+mojo/public/cpp/base/big_buffer.h",
-  "+third_party/omnibox_proto/aim_tools.pb.h"
-  # go/keep-sorted end
+  "+third_party/omnibox_proto/aim_tools.pb.h",
+  # keep-sorted end
 ]

@@ -1,10 +1,13 @@
 include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h",
+  "+ios/chrome/browser/aim/model/mock_ios_chrome_aim_eligibility_service.h",
+  "+ios/chrome/browser/drag_and_drop/model",
   "+ios/chrome/browser/ntp/ui_bundled/incognito/incognito_view.h",
   "+ios/chrome/browser/omnibox/public/omnibox_constants.h",
   "+ios/chrome/browser/omnibox/ui",
   "+ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui/base_grid_view_controller.h",
   "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_empty_view.h",
   "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h",
-  "+ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h",
-  "+ios/chrome/browser/aim/model/mock_ios_chrome_aim_eligibility_service.h"
+  # keep-sorted end
 ]

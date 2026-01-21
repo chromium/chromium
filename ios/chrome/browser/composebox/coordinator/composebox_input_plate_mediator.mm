@@ -63,6 +63,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_util.h"
 #import "ios/chrome/common/NSString+Chromium.h"
@@ -374,6 +375,21 @@ CreateInputDataFromAnnotatedPageContent(
                                             std::move(callback));
 }
 
+- (void)processTab:(web::WebState*)webState
+        webStateID:(web::WebStateID)webStateID {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  CHECK(webState);
+  std::set<web::WebStateID> tabs = [self allAttachedWebStateIDs];
+  tabs.insert(webStateID);
+  [self attachSelectedTabsWithWebStateIDs:tabs
+                        cachedWebStateIDs:tabs
+                     fromExternalWebState:(_webStateList->GetIndexOfWebState(
+                                               webState) ==
+                                           WebStateList::kInvalidIndex)
+                                              ? webState
+                                              : nullptr];
+}
+
 - (void)processText:(NSString*)text {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [self.delegate refineWithText:text];
@@ -501,15 +517,42 @@ CreateInputDataFromAnnotatedPageContent(
 
 #pragma mark - ComposeboxTabPickerSelectionDelegate
 
-- (std::set<web::WebStateID>)webStateIDsForAttachedTabs {
+- (std::set<web::WebStateID>)allAttachedWebStateIDs {
   std::set<web::WebStateID> webStateIDs;
   for (ComposeboxInputItem* item in _items.containedItems) {
     web::WebStateID webStateID = _latestTabSelectionMapping[item.identifier];
-    if (webStateID.valid()) {
+
+    if (!webStateID.valid()) {
+      continue;
+    }
+
+    // Include web state IDs of tabs added to composebox context from other
+    // web states.
+    webStateIDs.insert(webStateID);
+  }
+  return webStateIDs;
+}
+
+- (std::set<web::WebStateID>)attachedWebStateIDsInCurrentContext {
+  std::set<web::WebStateID> webStateIDs;
+  for (ComposeboxInputItem* item in _items.containedItems) {
+    web::WebStateID webStateID = _latestTabSelectionMapping[item.identifier];
+
+    if (!webStateID.valid()) {
+      continue;
+    }
+
+    // Only get web state IDs for tabs in the current web state.
+    WebStateSearchCriteria searchCriteria{
+        .identifier = webStateID,
+        .pinned_state = WebStateSearchCriteria::PinnedState::kAny,
+    };
+
+    if (GetWebStateIndex(_webStateList, searchCriteria) !=
+        WebStateList::kInvalidIndex) {
       webStateIDs.insert(webStateID);
     }
   }
-
   return webStateIDs;
 }
 
@@ -521,59 +564,9 @@ CreateInputDataFromAnnotatedPageContent(
             (std::set<web::WebStateID>)selectedWebStateIDs
                         cachedWebStateIDs:
                             (std::set<web::WebStateID>)cachedWebStateIDs {
-  [self.metricsRecorder recordTabPickerTabsAttached:selectedWebStateIDs.size()];
-
-  _pageContextWrappers.clear();
-
-  std::set<web::WebStateID> alreadyProcessedIDs =
-      [self webStateIDsForAttachedTabs];
-
-  std::set<web::WebStateID> deselectedIDs;
-  set_difference(alreadyProcessedIDs.begin(), alreadyProcessedIDs.end(),
-                 selectedWebStateIDs.begin(), selectedWebStateIDs.end(),
-                 inserter(deselectedIDs, deselectedIDs.begin()));
-  [self removeDeselectedIDs:deselectedIDs];
-
-  std::set<web::WebStateID> newlyAddedIDs;
-  set_difference(selectedWebStateIDs.begin(), selectedWebStateIDs.end(),
-                 alreadyProcessedIDs.begin(), alreadyProcessedIDs.end(),
-                 inserter(newlyAddedIDs, newlyAddedIDs.begin()));
-
-  __weak __typeof(self) weakSelf = self;
-  for (int i = 0; i < _webStateList->count(); ++i) {
-    web::WebState* webState = _webStateList->GetWebStateAt(i);
-    web::WebStateID candidateID = webState->GetUniqueIdentifier();
-    if (!newlyAddedIDs.contains(candidateID)) {
-      continue;
-    }
-
-    base::UnguessableToken identifier =
-        [self createInputItemForWebState:webState];
-
-    // When attaching a tab, we must also send its snapshot. The
-    // snapshotTabHelper is only created if the webstate is realized. If the
-    // tab's APC is not cached, we must also load the webstate so its APC can be
-    // extracted on the fly.
-    if (cachedWebStateIDs.contains(candidateID)) {
-      [_webStateDeferredExecutor webState:webState
-                      executeOnceRealized:^{
-                        [weakSelf attachWebStateContent:webState
-                                             identifier:identifier
-                                           hasCachedAPC:YES];
-                      }];
-    } else {
-      [_webStateDeferredExecutor webState:webState
-                        executeOnceLoaded:^(BOOL success) {
-                          if (!success) {
-                            [weakSelf handleFailedAttachment:identifier];
-                            return;
-                          }
-                          [weakSelf attachWebStateContent:webState
-                                               identifier:identifier
-                                             hasCachedAPC:NO];
-                        }];
-    }
-  }
+  [self attachSelectedTabsWithWebStateIDs:selectedWebStateIDs
+                        cachedWebStateIDs:cachedWebStateIDs
+                     fromExternalWebState:nullptr];
 }
 
 - (void)removeDeselectedIDs:(std::set<web::WebStateID>)deselectedIDs {
@@ -638,7 +631,9 @@ CreateInputDataFromAnnotatedPageContent(
                                        webState:weakWebState.get()
                                      identifier:identifier];
           } else {
-            [weakSelf handleFailedAttachment:identifier];
+            [weakSelf attachWebState:weakWebState.get()
+                          identifier:identifier
+                            isCached:NO];
           }
         }));
     return;
@@ -664,8 +659,8 @@ CreateInputDataFromAnnotatedPageContent(
   _pageContextWrappers[webState->GetUniqueIdentifier()] = pageContextWrapper;
 }
 
-// Transforms the page context into input data and uploads the data after a page
-// snapshot is generated.
+// Transforms the page context into input data and uploads the data after a
+// page snapshot is generated.
 - (void)handlePageContextResponse:
             (std::unique_ptr<optimization_guide::proto::PageContext>)
                 page_context
@@ -726,8 +721,8 @@ CreateInputDataFromAnnotatedPageContent(
   }
 }
 
-// Invoked when a file context has been successfully uploaded to the server and
-// added to the session.
+// Invoked when a file context has been successfully uploaded to the server
+// and added to the session.
 - (void)onFileContextAdded:(base::UnguessableToken)serverToken
              forIdentifier:(base::UnguessableToken)identifier {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
@@ -773,7 +768,8 @@ CreateInputDataFromAnnotatedPageContent(
   [self.metricsRecorder
       recordAttachmentButtonUsed:FuseboxAttachmentButtonType::kCurrentTab];
 
-  std::set<web::WebStateID> webStateIDs = [self webStateIDsForAttachedTabs];
+  std::set<web::WebStateID> webStateIDs =
+      [self attachedWebStateIDsInCurrentContext];
   webStateIDs.insert(webState->GetUniqueIdentifier());
   [self attachSelectedTabsWithWebStateIDs:webStateIDs cachedWebStateIDs:{}];
 }
@@ -827,6 +823,99 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 #pragma mark - Private
+
+// Helper for `-attachSelectedTabsWithWebStateIDs:cachedWebStateIDs:`. Attaches
+// the selected tabs. `cachedWebStateIDs` contains the IDs of the tabs that have
+// their content cached. When a tab attachment is initiated for tabs with a
+// different web state than the current window (such as a UI drag-and-drop
+// action across windows), an `externalWebState` is provided to make tabs from
+// another eligible browser window visible. Otherwise, `externalWebState` should
+// be `nullptr`.
+- (void)attachSelectedTabsWithWebStateIDs:
+            (std::set<web::WebStateID>)selectedWebStateIDs
+                        cachedWebStateIDs:
+                            (std::set<web::WebStateID>)cachedWebStateIDs
+                     fromExternalWebState:(web::WebState*)externalWebState {
+  [self.metricsRecorder recordTabPickerTabsAttached:selectedWebStateIDs.size()];
+
+  _pageContextWrappers.clear();
+
+  // Remove tabs from context that were deselected in the tab picker.
+  std::set<web::WebStateID> alreadyProcessedIDsFromCurrentWebState =
+      [self attachedWebStateIDsInCurrentContext];
+  std::set<web::WebStateID> deselectedIDs;
+  set_difference(alreadyProcessedIDsFromCurrentWebState.begin(),
+                 alreadyProcessedIDsFromCurrentWebState.end(),
+                 selectedWebStateIDs.begin(), selectedWebStateIDs.end(),
+                 inserter(deselectedIDs, deselectedIDs.begin()));
+  [self removeDeselectedIDs:deselectedIDs];
+
+  // Prevent duplicate tabs from external web states from being added to
+  // context.
+  std::set<web::WebStateID> alreadyProcessedIDs = [self allAttachedWebStateIDs];
+  std::set<web::WebStateID> newlyAddedIDs;
+  set_difference(selectedWebStateIDs.begin(), selectedWebStateIDs.end(),
+                 alreadyProcessedIDs.begin(), alreadyProcessedIDs.end(),
+                 inserter(newlyAddedIDs, newlyAddedIDs.begin()));
+
+  if (newlyAddedIDs.empty()) {
+    return;
+  }
+
+  for (const web::WebStateID& candidateID : newlyAddedIDs) {
+    web::WebState* candidateWebState;
+
+    if (!externalWebState) {
+      WebStateSearchCriteria tabSearchCriteria = WebStateSearchCriteria{
+          .identifier = candidateID,
+          .pinned_state = WebStateSearchCriteria::PinnedState::kAny,
+      };
+      int tabIndex = GetWebStateIndex(_webStateList.get(), tabSearchCriteria);
+      candidateWebState = _webStateList->GetWebStateAt(tabIndex);
+    } else {
+      candidateWebState = externalWebState;
+    }
+
+    base::UnguessableToken identifier =
+        [self createInputItemForWebState:candidateWebState];
+    [self attachWebState:candidateWebState
+              identifier:identifier
+                isCached:cachedWebStateIDs.contains(candidateID)];
+  }
+}
+
+// Helper for
+// `-attachSelectedTabsWithWebStateIDs:cachedWebStateIDs:fromExternalWebState:`.
+// Attaches tabs to composebox context.
+- (void)attachWebState:(web::WebState*)webState
+            identifier:(base::UnguessableToken)identifier
+              isCached:(BOOL)isCached {
+  // When attaching a tab, we must also send its snapshot. The
+  // snapshotTabHelper is only created if the webstate is realized. If the
+  // tab's APC is not cached, we must also load the webstate so its APC can be
+  // extracted on the fly.
+  __weak __typeof(self) weakSelf = self;
+
+  if (isCached) {
+    [_webStateDeferredExecutor webState:webState
+                    executeOnceRealized:^{
+                      [weakSelf attachWebStateContent:webState
+                                           identifier:identifier
+                                         hasCachedAPC:YES];
+                    }];
+  } else {
+    [_webStateDeferredExecutor webState:webState
+                      executeOnceLoaded:^(BOOL success) {
+                        if (!success) {
+                          [weakSelf handleFailedAttachment:identifier];
+                          return;
+                        }
+                        [weakSelf attachWebStateContent:webState
+                                             identifier:identifier
+                                           hasCachedAPC:NO];
+                      }];
+  }
+}
 
 - (void)didCreateSearchURL:(GURL)URL {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
@@ -1344,7 +1433,7 @@ CreateInputDataFromAnnotatedPageContent(
   }
 
   std::set<web::WebStateID> alreadyProcessedIDs =
-      [self webStateIDsForAttachedTabs];
+      [self attachedWebStateIDsInCurrentContext];
   BOOL isNTP = IsUrlNtp(webState->GetVisibleURL());
   BOOL alreadyProcessed =
       alreadyProcessedIDs.contains(webState->GetUniqueIdentifier());

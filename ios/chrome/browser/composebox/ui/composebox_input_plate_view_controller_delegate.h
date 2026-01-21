@@ -67,6 +67,14 @@ enum class ComposeboxMode;
 - (void)didFailToAttachDueToIneligibleAttachments:
     (ComposeboxInputPlateViewController*)composeboxViewController;
 
+/// Returns whether the given `tabInfo` is present on the current profile, with
+/// the same off-the-record status.
+- (BOOL)tabExistsOnCurrentProfile:(TabInfo*)tabInfo;
+
+/// Returns the web state associated with a given `tabInfo` on the current
+/// profile.  Returns `nullptr` if none is found.
+- (web::WebState*)webStateForTabOnCurrentProfile:(TabInfo*)tabInfo;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_INPUT_PLATE_VIEW_CONTROLLER_DELEGATE_H_
