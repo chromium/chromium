@@ -267,6 +267,11 @@ void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
                           color_utils::kMinimumReadableContrastRatio),
       ui::PickGoogleColor(gfx::kGoogleGrey500, element_background_color,
                           color_utils::kMinimumReadableContrastRatio));
+
+  // Threads rail colors.
+  mixer[kColorNewTabPageThreadsRailBackground] =
+      SelectBasedOnWhiteInput({kColorNewTabPageBackground}, gfx::kGoogleGrey100,
+                              element_background_color);
 }
 
 }  // namespace
@@ -614,5 +619,9 @@ void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
                                                          : gfx::kGoogleGrey800};
   mixer[kColorNewTabPageActionChipDeepSearchIcon] = {
       dark_mode ? SK_ColorWHITE : gfx::kGoogleGrey800};
+
+  // Threads rail colors.
+  mixer[kColorNewTabPageThreadsRailBackground] = {
+      dark_mode ? gfx::kGoogleGrey800 : gfx::kGoogleGrey100};
   // LINT.ThenChange(//chrome/browser/ui/color/material_new_tab_page_color_mixer.cc)
 }

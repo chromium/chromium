@@ -11,7 +11,7 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  background-color: var(--google-grey-100);
+  background-color: var(--color-new-tab-page-threads-rail-background);
   display: block;
   height: 100%;
   left: 0;
@@ -37,6 +37,12 @@
   height: 100%;
   padding: 30px 18px 0 18px;
   width: 76px;
+}
+
+#logo {
+  --cr-icon-color: initial;
+  height: 24px;
+  width: 24px;
 }
 
 cr-icon-button {

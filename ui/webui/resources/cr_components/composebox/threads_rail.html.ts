@@ -9,8 +9,14 @@ export function getHtml(this: ThreadsRailElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
   <div id="rail">
+    ${this.displayLogo_ ? html`
+      <img src="chrome://resources/cr_components/searchbox/icons/google_g_gradient.svg"
+          id="logo">
+    ` : ''}
+    <!-- Note: The icon is the same as the one used for AI Mode, but exposed to
+         non-branded chrome builds as well. -->
     <cr-icon-button id="showHistoryButton"
-        iron-icon="cr:history"
+        iron-icon="composebox:threadsHistory"
         @click="${this.onShowHistoryClick_}"
         title="${this.i18n('aimThreadsHistoryLabel')}">
     </cr-icon-button>
