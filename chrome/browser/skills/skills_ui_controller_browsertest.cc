@@ -35,4 +35,16 @@ IN_PROC_BROWSER_TEST_F(SkillsUiControllerBrowserTest, OnSkillSavedShowToast) {
   EXPECT_EQ(toast_controller->GetCurrentToastId(), ToastId::kSkillSaved);
 }
 
+IN_PROC_BROWSER_TEST_F(SkillsUiControllerBrowserTest, OnSkillDeletedShowToast) {
+  // Ensure no toast is initially showing.
+  const auto* toast_controller = browser()->GetFeatures().toast_controller();
+  EXPECT_FALSE(toast_controller->IsShowingToast());
+
+  controller()->OnSkillDeleted();
+
+  // Verify that the toast is now showing.
+  EXPECT_TRUE(toast_controller->IsShowingToast());
+  EXPECT_EQ(toast_controller->GetCurrentToastId(), ToastId::kSkillDeleted);
+}
+
 }  // namespace skills

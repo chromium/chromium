@@ -32,13 +32,17 @@ void SkillsUiController::ShowDialog(std::string_view prompt) {
 
 void SkillsUiController::OnSkillSaved(std::string_view skill_id) {
   last_saved_skill_id_ = skill_id;
-  ShowSkillSavedToast();
+  ShowSkillToast(ToastId::kSkillSaved);
 }
 
-void SkillsUiController::ShowSkillSavedToast() {
+void SkillsUiController::OnSkillDeleted() {
+  ShowSkillToast(ToastId::kSkillDeleted);
+}
+
+void SkillsUiController::ShowSkillToast(ToastId toast_id) {
   ToastController* const controller =
       browser_window_interface_->GetFeatures().toast_controller();
-  controller->MaybeShowToast(ToastParams(ToastId::kSkillSaved));
+  controller->MaybeShowToast(ToastParams(toast_id));
 }
 
 void SkillsUiController::InvokeLastSavedSkill() {

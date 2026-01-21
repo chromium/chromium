@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
@@ -27,15 +28,18 @@ class SkillsUiController {
   void ShowDialog(std::string_view prompt);
   // Called when we want to update UI after a skill has been saved.
   void OnSkillSaved(std::string_view skill_id);
+  // Called after a skill has been deleted from the UI.
+  void OnSkillDeleted();
 
-  // Shows after a skill is saved.
-  void ShowSkillSavedToast();
   // Invokes last saved skill in sidepanel.
   void InvokeLastSavedSkill();
   // Invokes the skill with skill_id in sidepanel.
   void InvokeSkill(std::string_view skill_id);
 
  private:
+  // Shows after a skill is saved or deleted. Takes in toast_id to display.
+  void ShowSkillToast(ToastId toast_id);
+
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
   ::ui::ScopedUnownedUserData<SkillsUiController> scoped_data_holder_;
   std::string last_saved_skill_id_;

@@ -65,6 +65,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "cut_menu.icon",
     "default_touch_favicon.icon",
     "default_touch_favicon_mask.icon",
+    "delete.icon",
     "desktop_windows_chrome_refresh.icon",
     "developer_tools.icon",
     "devices.icon",

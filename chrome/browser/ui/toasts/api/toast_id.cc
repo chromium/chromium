@@ -34,6 +34,8 @@ std::string GetToastName(ToastId toast_id) {
       return "SyncEsbOff";
     case ToastId::kSkillSaved:
       return "SkillSaved";
+    case ToastId::kSkillDeleted:
+      return "SkillDeleted";
     case ToastId::kTabGroupSyncTabRemoved:
       return "TabGroupSyncTabRemoved";
     case ToastId::kTabGroupSyncUserJoined:

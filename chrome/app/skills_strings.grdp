@@ -7,4 +7,7 @@
   <message name="IDS_SKILL_SAVED_TOAST_BUTTON" desc="Text on the toast action button after a skill is saved" translateable="false">
     Try it
   </message>
+  <message name="IDS_SKILL_DELETED_TOAST_BODY" desc="Text on the toast action button after a skill is saved" translateable="false">
+    Deleted skill
+  </message>
 </grit-part>

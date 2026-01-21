@@ -44,7 +44,8 @@ enum class ToastId {
   kCopiedToClipboard = 22,
   kEnhancedBundledSecuritySettings = 23,
   kSkillSaved = 24,
-  kMaxValue = kSkillSaved
+  kSkillDeleted = 25,
+  kMaxValue = kSkillDeleted,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/toasts/enums.xml:ToastId)
 

@@ -360,5 +360,11 @@ void ToastService::RegisterToasts(
                                      ->InvokeLastSavedSkill();
                                },
                                base::Unretained(browser_window_interface)))
+          .AddGlobalScoped()
+          .Build());
+
+  toast_registry_->RegisterToast(
+      ToastId::kSkillDeleted,
+      ToastSpecification::Builder(kDeleteIcon, IDS_SKILL_DELETED_TOAST_BODY)
           .Build());
 }  // RegisterToasts() end.
