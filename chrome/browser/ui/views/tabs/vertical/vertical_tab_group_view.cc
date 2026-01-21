@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/tabs/tab_group_features.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
@@ -20,7 +19,6 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_header_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
-#include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/tabs/public/tab_collection_storage.h"
 #include "components/tabs/public/tab_group.h"
@@ -54,10 +52,6 @@ const TabGroup* GetTabGroupFromNode(TabCollectionNode* node) {
       ->GetTabGroup();
 }
 
-bool SupportsDataSharing() {
-  return data_sharing::features::IsDataSharingFunctionalityEnabled();
-}
-
 }  // namespace
 
 VerticalTabGroupView::VerticalTabGroupView(TabCollectionNode* collection_node)
@@ -87,10 +81,6 @@ VerticalTabGroupView::VerticalTabGroupView(TabCollectionNode* collection_node)
   data_changed_subscription_ =
       collection_node_->RegisterDataChangedCallback(base::BindRepeating(
           &VerticalTabGroupView::OnDataChanged, base::Unretained(this)));
-
-  attention_indicator_observation_.Observe(GetTabGroupFromNode(collection_node_)
-                                               ->GetTabGroupFeatures()
-                                               ->attention_indicator());
   OnDataChanged();
 }
 
@@ -183,10 +173,6 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
   return layouts;
 }
 
-void VerticalTabGroupView::OnAttentionStateChanged() {
-  OnDataChanged();
-}
-
 void VerticalTabGroupView::ToggleCollapsedState(
     ToggleTabGroupCollapsedStateOrigin origin) {
   collection_node_->GetController()->ToggleTabGroupCollapsedState(
@@ -222,18 +208,13 @@ void VerticalTabGroupView::OnAnimationEnded() {
 }
 
 void VerticalTabGroupView::ResetCollectionNode() {
-  attention_indicator_observation_.Reset();
   collection_node_ = nullptr;
 }
 
 void VerticalTabGroupView::OnDataChanged() {
-  const TabGroup* group = GetTabGroupFromNode(collection_node_);
-  tab_group_visual_data_ = *group->visual_data();
-  const bool has_attention =
-      SupportsDataSharing() &&
-      group->GetTabGroupFeatures()->attention_indicator()->GetHasAttention();
-  group_header_->OnDataChanged(&tab_group_visual_data_, has_attention,
-                               GetIsShared());
+  tab_group_visual_data_ =
+      *GetTabGroupFromNode(collection_node_)->visual_data();
+  group_header_->OnDataChanged(&tab_group_visual_data_);
 
   // If the tab group is not collapsed update child visibility immediately. This
   // allows tabs to be visible as they are animated in.
@@ -301,23 +282,6 @@ void VerticalTabGroupView::HandleTabDragInContainer(
   }
   CHECK(node);
   GetDragHandler().HandleDraggedTabsOverNode(*node);
-}
-
-bool VerticalTabGroupView::GetIsShared() {
-  if (!SupportsDataSharing()) {
-    return false;
-  }
-
-  tab_groups::TabGroupSyncService* tab_group_service =
-      collection_node_->GetController()->GetTabGroupSyncService();
-  if (!tab_group_service) {
-    return false;
-  }
-
-  std::optional<tab_groups::SavedTabGroup> saved_group =
-      tab_group_service->GetGroup(GetTabGroupFromNode(collection_node_)->id());
-
-  return saved_group && saved_group->is_shared_tab_group();
 }
 
 BEGIN_METADATA(VerticalTabGroupView)

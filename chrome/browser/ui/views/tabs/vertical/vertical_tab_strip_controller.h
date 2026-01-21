@@ -19,10 +19,6 @@ namespace tabs {
 class TabInterface;
 }
 
-namespace tab_groups {
-class TabGroupSyncService;
-}
-
 namespace views {
 class View;
 }
@@ -59,8 +55,6 @@ class VerticalTabStripController : public TabContextMenuController::Delegate {
                                        views::View* anchor_view,
                                        bool stop_context_menu_propagation);
   bool IsCollapsed();
-
-  tab_groups::TabGroupSyncService* GetTabGroupSyncService();
 
   TabContextMenuController* GetTabContextMenuController() {
     return context_menu_controller_.get();

@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_tracker.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/data_sharing/public/features.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -30,7 +30,6 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/layout_types.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -39,9 +38,6 @@ namespace {
 constexpr int kGroupHeaderCornerRadius = 8;
 constexpr int kGroupHeaderHorizontalInset = 8;
 constexpr int kIconSize = 16;
-constexpr int kAttentionIndicatorWidth = 8;
-// The amount of padding between the label and any sync icon.
-constexpr int kSyncIconLabelPadding = 2;
 
 void ConfigureEditorBubbleButton(views::LabelButton* button) {
   button->SetHasInkDropActionOnClick(true);
@@ -97,10 +93,8 @@ END_METADATA
 VerticalTabGroupHeaderView::VerticalTabGroupHeaderView(
     Delegate* delegate,
     const tab_groups::TabGroupVisualData* tab_group_visual_data)
-    : sync_icon_(AddChildView(std::make_unique<views::ImageView>())),
-      group_header_label_(
+    : group_header_label_(
           AddChildView(std::make_unique<VerticalTabGroupHeaderLabel>())),
-      attention_indicator_(AddChildView(std::make_unique<views::ImageView>())),
       editor_bubble_button_(AddChildView(std::make_unique<views::LabelButton>(
           base::BindRepeating(&VerticalTabGroupHeaderView::ShowEditorBubble,
                               base::Unretained(this))))),
@@ -119,7 +113,6 @@ VerticalTabGroupHeaderView::VerticalTabGroupHeaderView(
           &VerticalTabGroupHeaderView::UpdateEditorBubbleButtonVisibility,
           base::Unretained(this)));
 
-  SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
   SetInteriorMargin(gfx::Insets::VH(0, kGroupHeaderHorizontalInset));
   SetDefault(views::kFlexBehaviorKey,
              views::FlexSpecification(
@@ -135,19 +128,12 @@ VerticalTabGroupHeaderView::VerticalTabGroupHeaderView(
           views::MaximumFlexSizeRule::kUnbounded)
           .WithOrder(2));
   // The collapse icon should always be seen.
-  // Let the collapse icon grow to fill the remaining available space while
-  // keeping the icon trailing aligned.
-  collapse_icon_->SetHorizontalAlignment(
-      views::ImageViewBase::Alignment::kTrailing);
   collapse_icon_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kPreferred));
 
-  sync_icon_->SetProperty(views::kMarginsKey,
-                          gfx::Insets::TLBR(0, 0, 0, kSyncIconLabelPadding));
-  attention_indicator_->SetProperty(
-      views::kMarginsKey, gfx::Insets::TLBR(0, kSyncIconLabelPadding, 0, 0));
+  OnDataChanged(tab_group_visual_data);
 }
 
 VerticalTabGroupHeaderView::~VerticalTabGroupHeaderView() = default;
@@ -254,9 +240,7 @@ void VerticalTabGroupHeaderView::ShowContextMenuForViewImpl(
 }
 
 void VerticalTabGroupHeaderView::OnDataChanged(
-    const tab_groups::TabGroupVisualData* tab_group_visual_data,
-    bool needs_attention,
-    bool is_shared) {
+    const tab_groups::TabGroupVisualData* tab_group_visual_data) {
   group_header_label_->SetText(tab_group_visual_data->title());
   if (GetColorProvider()) {
     SkColor background_color = GetColorProvider()->GetColor(
@@ -264,37 +248,13 @@ void VerticalTabGroupHeaderView::OnDataChanged(
                                    GetWidget()->ShouldPaintAsActive()));
     SkColor foreground_color =
         color_utils::GetColorWithMaxContrast(background_color);
-
-    // Update label.
     group_header_label_->SetEnabledColor(foreground_color);
-
-    // Update save tab group related items, the sync icon and attention
-    // indicator.
-    sync_icon_->SetVisible(is_shared);
-    if (is_shared) {
-      sync_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-          kPeopleGroupIcon, foreground_color, kIconSize));
-    }
-    if (tab_group_visual_data->is_collapsed() && needs_attention) {
-      attention_indicator_->SetVisible(true);
-      attention_indicator_->SetImage(ui::ImageModel::FromVectorIcon(
-          kDefaultTouchFaviconMaskIcon, foreground_color,
-          kAttentionIndicatorWidth));
-    } else {
-      attention_indicator_->SetVisible(false);
-    }
-
-    // Update editor bubble button.
     UpdateEditorButtonColors(editor_bubble_button_, foreground_color);
-
-    // Update collapse icon.
     collapse_icon_->SetImage(
         ui::ImageModel::FromVectorIcon(tab_group_visual_data->is_collapsed()
                                            ? kKeyboardArrowDownChromeRefreshIcon
                                            : kKeyboardArrowUpChromeRefreshIcon,
                                        foreground_color, kIconSize));
-
-    // Update background.
     SetBackground(views::CreateRoundedRectBackground(background_color,
                                                      kGroupHeaderCornerRadius));
   }

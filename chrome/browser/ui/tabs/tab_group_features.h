@@ -37,9 +37,6 @@ class TabGroupFeatures {
   TabGroupAttentionIndicator* attention_indicator() {
     return attention_indicator_.get();
   }
-  TabGroupAttentionIndicator* attention_indicator() const {
-    return attention_indicator_.get();
-  }
 
  protected:
   TabGroupFeatures();
