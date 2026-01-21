@@ -1983,69 +1983,6 @@ TEST_F(ClientSideDetectionHostTest,
       "SBClientPhishing.RedirectChainContainsForceRequest", 0);
 }
 
-TEST_F(
-    ClientSideDetectionHostTest,
-    FullscreenApiCallChecksAllowlistInPreClassificationAndDoesNotProceedWithClassification) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
-  csd_host_->set_high_confidence_allowlist_acceptance_rate_for_testing(1.0f);
-  base::HistogramTester histogram_tester;
-
-  GURL url("http://host.com/");
-  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
-  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
-                                nullptr);
-  NavigateAndKeepLoading(web_contents(), url);
-  WaitAndCheckPreClassificationChecks();
-
-  histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.MatchHighConfidenceAllowlist.TriggerModel", 1);
-  histogram_tester.ExpectBucketCount(
-      "SBClientPhishing.PreClassificationCheckResult",
-      PreClassificationCheckResult::NO_CLASSIFY_MATCH_HC_ALLOWLIST, 1);
-
-  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
-                                nullptr);
-  csd_host_->DidToggleFullscreenModeForTab(false, false);
-  WaitAndCheckPreClassificationChecks();
-
-  histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.MatchCSDAllowlistOnFullscreenApi", 1);
-  histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.MatchHighConfidenceAllowlist.FullscreenApi", 1);
-  histogram_tester.ExpectBucketCount(
-      "SBClientPhishing.PreClassificationCheckResult.FullscreenApi",
-      PreClassificationCheckResult::NO_CLASSIFY_ALLOWLIST_METRIC, 1);
-}
-
-TEST_F(ClientSideDetectionHostTest,
-       TwoFullscreenApiTriggersOnSamePageOnlyLogsOnePreclassificationCheck) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
-  base::HistogramTester histogram_tester;
-
-  GURL url("http://host.com/");
-  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
-  ExpectPreClassificationChecks(url, nullptr, nullptr, nullptr, nullptr,
-                                nullptr);
-  csd_host_->DidToggleFullscreenModeForTab(false, false);
-  WaitAndCheckPreClassificationChecks();
-
-  histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.PreClassificationCheckResult.FullscreenApi", 1);
-
-  // We do not expect preclassification checks this time because we've done it
-  // already on the same page.
-  csd_host_->DidToggleFullscreenModeForTab(false, false);
-
-  histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.PreClassificationCheckResult.FullscreenApi", 1);
-}
-
 TEST_F(ClientSideDetectionHostTest,
        TwoKeyboardLockRequestsOnSamePageOnlyLogsOnePreclassificationCheck) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {

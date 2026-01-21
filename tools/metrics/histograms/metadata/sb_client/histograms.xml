@@ -932,7 +932,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   <token key="RequestType">
     <variant name="ClipboardCopyApi" summary="Clipboard copy API"/>
     <variant name="CreditCardForm" summary="Credit Card Form"/>
-    <variant name="FullscreenApi" summary="Fullscreen API"/>
   </token>
 </histogram>
 

@@ -140,16 +140,12 @@ class ClientSideDetectionHost
   // pending callbacks that could show an interstitial, and check to see whether
   // we should classify the new URL. If a request to lock the keyboard or
   // pointer or vibrate the page has arrived, we will re-trigger classification.
-  // If a request to fullscreen the tab happens, check in preclassification
-  // check for allowlist matches for metric collection.
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void PrimaryPageChanged(content::Page& page) override;
   void KeyboardLockRequested() override;
   void PointerLockRequested() override;
   void VibrationRequested() override;
-  void DidToggleFullscreenModeForTab(bool entered_fullscreen,
-                                     bool will_cause_resize) override;
   void OnTextCopiedToClipboard(content::RenderFrameHost* render_frame_host,
                                const std::u16string& copied_text) override;
 
@@ -221,14 +217,8 @@ class ClientSideDetectionHost
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest,
       KeyboardLockClassificationTriggersCSPPPing);
-  FRIEND_TEST_ALL_PREFIXES(
-      ClientSideDetectionHostTest,
-      FullscreenApiCallChecksAllowlistInPreClassificationAndDoesNotProceedWithClassification);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostTest,
                            SkipsImageEmbeddingIfAlreadyPresent);
-  FRIEND_TEST_ALL_PREFIXES(
-      ClientSideDetectionHostTest,
-      TwoFullscreenApiTriggersOnSamePageOnlyLogsOnePreclassificationCheck);
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostTest,
       TwoKeyboardLockRequestsOnSamePageOnlyLogsOnePreclassificationCheck);
@@ -518,11 +508,6 @@ class ClientSideDetectionHost
   content::GlobalRenderFrameHostId current_outermost_main_frame_id_;
   // The navigation ID that commits the current URL. Used to set UnsafeResource.
   int64_t current_navigation_id_;
-
-  // The last URL that the fullscreen API was called. This is used because the
-  // DidToggleFullscreenModeForTab can be called for both entering and exiting
-  // fullscreen.
-  GURL last_fullscreen_url_;
 
   // Records the start time of when phishing detection started.
   base::TimeTicks phishing_detection_start_time_;

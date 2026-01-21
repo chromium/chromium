@@ -565,7 +565,6 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
       switch (phishing_detection_request_type_) {
         case CREDIT_CARD_FORM:
         case CLIPBOARD_COPY_API:
-        case FULLSCREEN_API:
           base::UmaHistogramBoolean(
               "SBClientPhishing.MatchCSDAllowlistOn" +
                   GetRequestTypeName(phishing_detection_request_type_),
@@ -694,8 +693,6 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
 
   bool ShouldStopAtPreClassification() {
     switch (phishing_detection_request_type_) {
-      case FULLSCREEN_API:
-        return true;
       case CLIPBOARD_COPY_API:
         return base::RandDouble() >= kCsdClipboardCopyApiSampleRate.Get();
       case CREDIT_CARD_FORM:
@@ -1128,18 +1125,6 @@ void ClientSideDetectionHost::VibrationRequested() {
   if (!HasDonePreclassificationCheckOnSameURL(
           ClientSideDetectionType::VIBRATION_API)) {
     MaybeStartPreClassification(ClientSideDetectionType::VIBRATION_API);
-  }
-}
-
-void ClientSideDetectionHost::DidToggleFullscreenModeForTab(
-    bool entered_fullscreen,
-    bool will_cause_resize) {
-  // We do not check for entered_fullscreen, because although the user may never
-  // successfully enter fullscreen, we want to proceed with the
-  // preclassification check.
-  if (!HasDonePreclassificationCheckOnSameURL(
-          ClientSideDetectionType::FULLSCREEN_API)) {
-    MaybeStartPreClassification(ClientSideDetectionType::FULLSCREEN_API);
   }
 }
 
