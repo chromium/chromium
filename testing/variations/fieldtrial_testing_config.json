@@ -6353,7 +6353,11 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "EnableHeuristicFilter": "false",
+                        "EnableNewSiteFilter": "false",
+                        "EnableReferringAppFilter": "false",
                         "HCAcceptanceRate": "1.0",
+                        "MaxUserVisit": "1",
                         "SampleRate": "0.0"
                     },
                     "enable_features": [
