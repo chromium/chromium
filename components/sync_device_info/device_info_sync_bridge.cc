@@ -10,7 +10,6 @@
 #include <cstdio>
 #include <map>
 #include <optional>
-#include <unordered_set>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -43,6 +42,7 @@
 #include "components/sync_device_info/device_info_util.h"
 #include "components/sync_device_info/local_device_info_util.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace syncer {
 
@@ -1070,7 +1070,7 @@ void DeviceInfoSyncBridge::ExpireOldEntries() {
   TRACE_EVENT0("sync", "DeviceInfoSyncBridge::ExpireOldEntries");
   const base::Time expiration_threshold =
       base::Time::Now() - kExpirationThreshold;
-  std::unordered_set<std::string> cache_guids_to_expire;
+  absl::flat_hash_set<std::string> cache_guids_to_expire;
   // Just collecting cache guids to expire to avoid modifying |all_data_| via
   // DeleteSpecifics() while iterating over it.
   for (const auto& [cache_guid, device_info_and_specifics] : all_data_) {
