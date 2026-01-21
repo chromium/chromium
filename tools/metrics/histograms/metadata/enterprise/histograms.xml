@@ -1685,7 +1685,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.PrintingBlocked" enum="BooleanBlocked"
-    expires_after="2026-02-01">
+    expires_after="2027-02-01">
   <owner>poromov@chromium.org</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>Result of Data Leak Prevention evaluation for printing.</summary>
@@ -1724,7 +1724,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.PrivacyScreenEnforced" enum="BooleanForced"
-    expires_after="2026-02-01">
+    expires_after="2027-02-01">
   <owner>poromov@chromium.org</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
@@ -1772,7 +1772,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.ReportedWarnProceedLevelRestriction"
-    enum="EnterpriseDlpPolicyRestriction" expires_after="2026-02-01">
+    enum="EnterpriseDlpPolicyRestriction" expires_after="2027-02-01">
   <owner>poromov@chromium.org</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
@@ -1793,7 +1793,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.SameFileEventTimeDiff" units="ms"
-    expires_after="2026-02-01">
+    expires_after="2027-02-01">
   <owner>accorsi@google.com</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
@@ -1803,7 +1803,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.ScreenShareBlocked" enum="BooleanBlocked"
-    expires_after="2026-02-01">
+    expires_after="2027-02-01">
   <owner>poromov@chromium.org</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
@@ -1812,7 +1812,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.ScreenSharePausedOrResumed" enum="Boolean"
-    expires_after="2026-02-01">
+    expires_after="2027-02-01">
   <owner>poromov@chromium.org</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
@@ -1854,7 +1854,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.ScreenshotBlocked" enum="BooleanBlocked"
-    expires_after="2026-02-01">
+    expires_after="2027-02-01">
   <owner>poromov@chromium.org</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
@@ -1909,7 +1909,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.VideoCaptureInterrupted" enum="Boolean"
-    expires_after="2026-02-01">
+    expires_after="2027-02-01">
   <owner>poromov@chromium.org</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
