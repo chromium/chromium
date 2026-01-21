@@ -88,6 +88,11 @@ EmbedderKey CreateSidePanelEmbedderKey(tabs::TabInterface* tab) {
   CHECK(tab);
   return EmbedderKey(tab);
 }
+
+bool IsTrustFirstOnboardingPending(Profile* profile) {
+  return base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding) &&
+         !GlicEnabling::HasConsentedForProfile(profile);
+}
 }  // namespace
 
 // Web Contents Observer for the tab bound with its respective glic
@@ -429,8 +434,17 @@ tabs::TabInterface* GlicInstanceImpl::CreateTab(
     }
   }
 
+  bool is_onboarding = IsTrustFirstOnboardingPending(profile_);
+
   tabs::TabInterface* created_tab = service_->CreateTab(
-      url, open_in_background, window_id, std::move(callback));
+      url, open_in_background || is_onboarding, window_id, std::move(callback));
+
+  // Prevent links clicked inside the side panel during the onboarding from
+  // being daisy chained.
+  if (is_onboarding) {
+    return nullptr;
+  }
+
   if (!created_tab) {
     instance_metrics_.OnDaisyChain(DaisyChainSource::kGlicContents,
                                    /*success=*/false, nullptr, source_tab);
