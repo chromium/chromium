@@ -1378,6 +1378,64 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_DataURLIframe) {
             iframe_frame_data.security_origin().value());
 }
 
+// Tests that SVG anchor tags are correctly extracted which are special anchors
+// that have a .href that isn't a string which require special
+// handling. This is to validate that http://crbug.com/475208453 is fixed.
+TEST_P(PageContextWrapperTest, PopulatePageContextWithSVGAnchors) {
+  const std::string main_html =
+      "<html><body>"
+      "<svg width=\"200\" height=\"40\">"
+      "  <a href=\"http://example.com\">"
+      "    <text x=\"10\" y=\"25\" fill=\"blue\">SVG Text</text>"
+      "  </a>"
+      "</svg>"
+      "</body></html>";
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  base::RunLoop run_loop;
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context;
+
+  PageContextWrapper* wrapper = [[PageContextWrapper alloc]
+        initWithWebState:web_state()
+      completionCallback:base::BindOnce(
+                             [](base::RunLoop* run_loop,
+                                std::unique_ptr<
+                                    optimization_guide::proto::PageContext>*
+                                    out_page_context,
+                                PageContextWrapperCallbackResponse response) {
+                               if (response.has_value()) {
+                                 *out_page_context =
+                                     std::move(response.value());
+                               }
+                               run_loop->Quit();
+                             },
+                             &run_loop, &page_context)];
+
+  wrapper.shouldGetAnnotatedPageContent = YES;
+  [wrapper populatePageContextFieldsAsyncWithTimeout:base::Seconds(5)];
+
+  run_loop.Run();
+
+  ASSERT_TRUE(page_context);
+  ASSERT_TRUE(page_context->has_annotated_page_content());
+
+  const auto& annotated_page_content = page_context->annotated_page_content();
+  const auto& root_node = annotated_page_content.root_node();
+
+  // Verify that the SVG anchor is extracted.
+  bool found_anchor = false;
+  for (const auto& node : root_node.children_nodes()) {
+    if (node.content_attributes().attribute_type() ==
+        optimization_guide::proto::CONTENT_ATTRIBUTE_ANCHOR) {
+      found_anchor = true;
+      EXPECT_EQ(node.content_attributes().anchor_data().url(),
+                "http://example.com");
+    }
+  }
+  EXPECT_TRUE(found_anchor);
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          PageContextWrapperTest,
                          testing::Bool(),
