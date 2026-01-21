@@ -347,7 +347,7 @@ void SincResampler::Resample(base::span<float> destination) {
     r1_.first(kernel_size_).copy_from_nonoverlapping(r3_.first(kernel_size_));
 
     // Step (4) -- Reinitialize regions if necessary.
-    if (r0_ == r2_) {
+    if (r0_.data() == r2_.data()) {
       UpdateRegions(true);
     }
 
