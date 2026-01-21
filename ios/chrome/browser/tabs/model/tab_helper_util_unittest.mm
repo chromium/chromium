@@ -4,11 +4,13 @@
 
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 
+#import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
 #import "ios/chrome/browser/lens/model/lens_tab_helper.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_modality.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -44,6 +46,8 @@ class TabHelperUtilTest : public PlatformTest,
     web_state_.SetWebFramesManager(
         web::ContentWorld::kIsolatedWorld,
         std::make_unique<web::FakeWebFramesManager>());
+    web_state_.SetNavigationManager(
+        std::make_unique<web::FakeNavigationManager>());
   }
 
   TabHelperFilter tab_helper_filter() { return GetParam(); }
@@ -79,6 +83,28 @@ TEST_P(TabHelperUtilTest, LensTabHelper) {
     case TabHelperFilter::kLensOverlay:
       ASSERT_FALSE(LensTabHelper::FromWebState(&web_state_));
       break;
+  }
+}
+
+// Validate that InfobarBadgeTabHelper is created for tab helper setup with
+// standard navigation filter, which does not include special web states for
+// Reader Mode or Lens features.
+// This is a regression test for crbug.com/465908300.
+TEST_P(TabHelperUtilTest, InfobarBadgeTabHelper) {
+  AttachTabHelpers(&web_state_, tab_helper_filter());
+
+  InfobarBadgeTabHelper* tab_helper = static_cast<InfobarBadgeTabHelper*>(
+      web_state_.GetUserData(InfobarBadgeTabHelper::UserDataKey()));
+
+  switch (tab_helper_filter()) {
+    case TabHelperFilter::kEmpty:
+    case TabHelperFilter::kPrerender: {
+      ASSERT_TRUE(tab_helper);
+    } break;
+    case TabHelperFilter::kReaderMode:
+    case TabHelperFilter::kLensOverlay: {
+      ASSERT_FALSE(tab_helper);
+    } break;
   }
 }
 

@@ -248,6 +248,7 @@ source_set("unit_tests") {
     "//components/sync_sessions:test_support",
     "//components/tab_groups",
     "//ios/chrome/browser/download/model",
+    "//ios/chrome/browser/infobars/model:badge",
     "//ios/chrome/browser/lens/model",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/overlays/model",
