@@ -91,8 +91,9 @@ void AutofillAiSaveUpdateEntityFlowManager::OfferSave(
     EntityInstance entity,
     std::optional<EntityInstance> old_entity,
     AutofillClient::EntityImportPromptResultCallback prompt_closed_callback) {
-  // TODO: crbug.com/460410690 - Don't start the flow if the previous one wasn't
-  // finished.
+  if (prompt_closed_callback_) {
+    return;
+  }
   prompt_closed_callback_ = std::move(prompt_closed_callback);
   autofill_message_controller_->Show(
       CreateMessageModel(std::move(entity), std::move(old_entity)));

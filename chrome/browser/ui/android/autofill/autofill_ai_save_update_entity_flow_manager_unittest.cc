@@ -214,4 +214,39 @@ TEST_F(AutofillAiSaveUpdateEntityFlowManagerTest, ShowsMessage_MessageClosed) {
   message_model->OnDismissed(messages::DismissReason::GESTURE);
 }
 
+TEST_F(AutofillAiSaveUpdateEntityFlowManagerTest,
+       StartSecondFlowBeforePreviousIsFinished) {
+  std::unique_ptr<AutofillMessageModel> message_model;
+  // The message should be shown only once because the second flow is started
+  // before the previous one is aborted.
+  EXPECT_CALL(message_controller(), Show(_));
+  flow_manager().OfferSave(new_entity(), /*old_entity=*/std::nullopt,
+                           prompt_closed_callback().Get());
+  flow_manager().OfferSave(new_entity(), /*old_entity=*/std::nullopt,
+                           prompt_closed_callback().Get());
+}
+
+TEST_F(AutofillAiSaveUpdateEntityFlowManagerTest,
+       StartSecondFlowAfterPreviousIsFinished) {
+  std::unique_ptr<AutofillMessageModel> message_model;
+  // The message should be shown twice because the second flow is started after
+  // the previous one is aborted by the user.
+  EXPECT_CALL(message_controller(), Show(_))
+      .Times(2)
+      .WillRepeatedly(SaveArgByMove<0>(&message_model));
+  EXPECT_CALL(prompt_closed_callback(),
+              Run(AutofillClient::AutofillAiBubbleClosedReason::kClosed))
+      .Times(2);
+
+  flow_manager().OfferSave(new_entity(), /*old_entity=*/std::nullopt,
+                           prompt_closed_callback().Get());
+  // Dismiss the message first time.
+  message_model->OnDismissed(messages::DismissReason::GESTURE);
+
+  flow_manager().OfferSave(new_entity(), /*old_entity=*/std::nullopt,
+                           prompt_closed_callback().Get());
+  // Dismiss the message second time.
+  message_model->OnDismissed(messages::DismissReason::GESTURE);
+}
+
 }  // namespace autofill
