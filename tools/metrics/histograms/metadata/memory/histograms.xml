@@ -1536,6 +1536,45 @@ chromium-metrics-reviews@google.com.
   <token key="Name" variants="MemoryDumpProviderName"/>
 </histogram>
 
+<histogram name="Memory.DumpProvider.PostTaskTime" units="ms"
+    expires_after="2026-06-28">
+  <owner>joenotcharles@google.com</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    The length of time between a MemoryDumpProvider instance being posted to
+    take a memory dump on another thread, and Memory.DumpProvider.FinalStatus
+    being recorded for that instance, not including time the system was
+    suspended. If FinalStatus was recorded because the instance finished
+    running, Memory.DumpProvider.MemoryDumpTime will also be recorded with the
+    time that it took to run.
+
+    Variants of this metric are also logged for each type of MemoryDumpProvider,
+    with the provider name as a suffix.
+
+    Note: this metric is only recorded on clients with a high-resolution clock.
+  </summary>
+</histogram>
+
+<histogram name="Memory.DumpProvider.PostTaskTime.{Name}" units="ms"
+    expires_after="2026-06-28">
+  <owner>joenotcharles@google.com</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    The length of time between an instance of MemoryDumpProvider {Name} being
+    posted to take a memory dump on another thread, and
+    Memory.DumpProvider.FinalStatus being recorded for that instance, not
+    including time the system was suspended. If FinalStatus was recorded because
+    the instance finished running, Memory.DumpProvider.MemoryDumpTime will also
+    be recorded with the time that it took to run.
+
+    An unsuffixed variant of this metric is also logged, covering all types of
+    MemoryDumpProvider.
+
+    Note: this metric is only recorded on clients with a high-resolution clock.
+  </summary>
+  <token key="Name" variants="MemoryDumpProviderName"/>
+</histogram>
+
 <histogram name="Memory.DumpProvider.TotalTime2" units="ms"
     expires_after="2026-06-28">
   <owner>joenotcharles@google.com</owner>
