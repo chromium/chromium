@@ -50,6 +50,14 @@ void LocalPasswordSetupHandler::DeclareLocalizedValues(
                IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_CONFIRM_PLACEHOLDER);
   builder->Add("setLocalPasswordMinCharsHint",
                IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_MIN_CHARS_HINT);
+  builder->Add("setLocalPasswordComplexityErrorNone",
+               IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_COMPLEXITY_ERROR_NONE);
+  builder->Add("setLocalPasswordComplexityErrorLow",
+               IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_COMPLEXITY_ERROR_LOW);
+  builder->Add("setLocalPasswordComplexityErrorMedium",
+               IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_COMPLEXITY_ERROR_MEDIUM);
+  builder->Add("setLocalPasswordComplexityErrorHigh",
+               IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_COMPLEXITY_ERROR_HIGH);
   builder->Add("setLocalPasswordNoMatchError",
                IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_NO_MATCH_ERROR);
 }

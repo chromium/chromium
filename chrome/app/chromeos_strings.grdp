@@ -6297,6 +6297,18 @@ You can manage this account’s settings by installing the Family Link app on yo
   <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_MIN_CHARS_HINT" desc="The hint about the minimal length of a password when the user sets a new password.">
     Password must be at least 8 characters
   </message>
+  <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_COMPLEXITY_ERROR_NONE" desc="The hint about password requirements when the LocalPinAndPassword policy is set to None.">
+    Password must be at least 1 character
+  </message>
+  <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_COMPLEXITY_ERROR_LOW" desc="The hint about password requirements when the LocalPinAndPassword policy is set to Low.">
+    Password must be at least 6 characters and include at least one letter or symbol
+  </message>
+  <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_COMPLEXITY_ERROR_MEDIUM" desc="The hint about password requirements when the LocalPinAndPassword policy is set to Medium.">
+    Password must be at least 8 characters and include at least two of the following: uppercase letters, lowercase letters, numbers, or symbols
+  </message>
+  <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_COMPLEXITY_ERROR_HIGH" desc="The hint about password requirements when the LocalPinAndPassword policy is set to High.">
+    Password must be at least 12 characters and include uppercase and lowercase letters, numbers, and symbols
+  </message>
   <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_NO_MATCH_ERROR" desc="Error message shown when the user sets a password but the first entry does not match the second entry.">
     Passwords do not match
   </message>
