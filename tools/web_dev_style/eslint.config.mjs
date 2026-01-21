@@ -253,6 +253,8 @@ export default [
       'no-array-constructor': 'off',
       '@typescript-eslint/no-array-constructor': 'error',
 
+      '@stylistic/eol-last': ['error'],
+
       // https://google.github.io/styleguide/tsguide.html#automatic-semicolon-insertion
       semi: 'off',
       '@stylistic/semi': ['error'],

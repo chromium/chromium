@@ -63,7 +63,7 @@ class JsCheckerEsLintTest(unittest.TestCase):
     self._assertError(results, 'no-new-wrappers', 3)
 
   def testTypeScriptEslintPluginCheck(self):
-    results = self._runChecks('const a: number = 1;', 'ts')
+    results = self._runChecks('const a: number = 1;\n', 'ts')
     self._assertError(results, '@typescript-eslint/no-unused-vars', 1)
 
 
