@@ -47,6 +47,11 @@ suite('Main', function() {
     page = document.createElement('settings-security-page-v2');
     page.prefs = settingsPrefs.prefs;
     document.body.appendChild(page);
+    // Set initial pref values for test predictability.
+    page.setPrefValue(
+        'generated.security_settings_bundle',
+        SecuritySettingsBundleSetting.STANDARD);
+    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.STANDARD);
     flush();
   });
 
@@ -92,11 +97,6 @@ suite('Main', function() {
   });
 
   test('ResetStandardBundleToDefaultsButtonVisibility', async function() {
-    page.setPrefValue(
-        'generated.security_settings_bundle',
-        SecuritySettingsBundleSetting.STANDARD);
-    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.STANDARD);
-    await flushTasks();
     assertFalse(isChildVisible(page, '#resetStandardBundleToDefaultsButton'));
 
     page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.ENHANCED);
@@ -118,9 +118,6 @@ suite('Main', function() {
   });
 
   test('ResetStandardToDefaultsClick', async function() {
-    page.setPrefValue(
-        'generated.security_settings_bundle',
-        SecuritySettingsBundleSetting.STANDARD);
     page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.ENHANCED);
     await flushTasks();
     assertTrue(!!page.$.resetStandardBundleToDefaultsButton);
@@ -138,7 +135,6 @@ suite('Main', function() {
     page.setPrefValue(
         'generated.security_settings_bundle',
         SecuritySettingsBundleSetting.ENHANCED);
-    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.STANDARD);
     await flushTasks();
     assertTrue(!!page.$.resetEnhancedBundleToDefaultsButton);
     assertTrue(isVisible(page.$.resetEnhancedBundleToDefaultsButton));
@@ -245,11 +241,6 @@ suite('Main', function() {
   test('noValueChangePasswordLeakSwitchBundle', async () => {
     // Ensure password leak detection is initially disabled.
     page.setPrefValue('generated.password_leak_detection', false);
-
-    // Ensure bundle is initially set to Standard.
-    page.setPrefValue(
-        'generated.security_settings_bundle',
-        SecuritySettingsBundleSetting.STANDARD);
 
     // Click on Enhanced bundle.
     page.$.securitySettingsBundleEnhanced.click();
