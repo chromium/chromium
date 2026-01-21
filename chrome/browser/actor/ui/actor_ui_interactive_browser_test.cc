@@ -12,6 +12,14 @@ using actor::ExpectOkResult;
 using actor::TaskId;
 using base::test::TestFuture;
 
+ActorUiInteractiveBrowserTest::ActorUiInteractiveBrowserTest() {
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      features::kGlicActor,
+      {{features::kGlicActorPolicyControlExemption.name, "true"}});
+}
+
+ActorUiInteractiveBrowserTest::~ActorUiInteractiveBrowserTest() = default;
+
 void ActorUiInteractiveBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {
   InteractiveBrowserTest::SetUpCommandLine(command_line);
@@ -20,11 +28,6 @@ void ActorUiInteractiveBrowserTest::SetUpCommandLine(
   // Skips FRE experience.
   command_line->AppendSwitch(switches::kGlicAutomation);
 #endif
-}
-
-void ActorUiInteractiveBrowserTest::SetUpOnMainThread() {
-  InteractiveBrowserTest::SetUpOnMainThread();
-  actor_keyed_service()->GetPolicyChecker().set_act_on_web_for_testing(true);
 }
 
 void ActorUiInteractiveBrowserTest::StartActingOnTab() {

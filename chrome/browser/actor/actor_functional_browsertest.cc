@@ -263,9 +263,13 @@ class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
   static constexpr base::TimeDelta kLongWaitTime = base::Minutes(2);
 
   ActorFunctionalBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlicMultiInstance,
-                              actor::kActorBindCreatedTabToTask},
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::kGlicMultiInstance, {}},
+                              {actor::kActorBindCreatedTabToTask, {}},
+                              {features::kGlicActor,
+                               {{features::kGlicActorPolicyControlExemption
+                                     .name,
+                                 "true"}}}},
         /*disabled_features=*/{});
   }
   ~ActorFunctionalBrowserTest() override = default;
@@ -273,7 +277,6 @@ class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
  protected:
   void SetUpOnMainThread() override {
     glic::test::InteractiveGlicTest::SetUpOnMainThread();
-    actor_keyed_service()->GetPolicyChecker().set_act_on_web_for_testing(true);
     // TODO(crbug.com/461825458): Add support for kAttached window mode in test.
     RunTestSequence(OpenGlic());
   }

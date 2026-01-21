@@ -104,7 +104,8 @@ class ActorClickToolBrowserTest : public ActorToolsTest {
   ActorClickToolBrowserTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
         ::features::kGlicActor,
-        {{features::kGlicActorClickDelay.name, "200ms"}});
+        {{features::kGlicActorClickDelay.name, "200ms"},
+         {features::kGlicActorPolicyControlExemption.name, "true"}});
   }
 
   ~ActorClickToolBrowserTest() override = default;

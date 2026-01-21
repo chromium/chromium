@@ -47,7 +47,11 @@ class ActorKeyedServiceTest : public testing::Test {
  public:
   ActorKeyedServiceTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+        testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicActor,
+        {{features::kGlicActorPolicyControlExemption.name, "true"}});
+  }
   ~ActorKeyedServiceTest() override = default;
 
   // testing::Test:
@@ -56,7 +60,6 @@ class ActorKeyedServiceTest : public testing::Test {
     profile_ = testing_profile_manager()->CreateTestingProfile("profile");
     auto* actor_service = ActorKeyedService::Get(profile());
     ASSERT_TRUE(actor_service);
-    actor_service->GetPolicyChecker().set_act_on_web_for_testing(true);
     actor_service->SetActorUiStateManagerForTesting(BuildUiStateManagerMock());
   }
 
@@ -74,6 +77,7 @@ class ActorKeyedServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager testing_profile_manager_;
   raw_ptr<TestingProfile> profile_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Adds a task to ActorKeyedService

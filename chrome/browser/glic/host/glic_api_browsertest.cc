@@ -233,18 +233,18 @@ class GlicApiTest : public NonInteractiveGlicApiTest, public WithTestParams {
                                   std::forward<Args>(args)...) {
     features_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {
-            {features::kGlicScrollTo, {}},
-            {features::kGlicApiActivationGating, {}},
-            {mojom::features::kGlicMultiTab, {}},
-            {features::kGlicWebActuationSetting, {}},
-            {features::kGlicCaptureRegion, {}},
-            {features::kGlicPopupWindowsEnabled, {}},
-            {features::kGlicUserStatusCheck,
-             {{features::kGlicUserStatusRefreshApi.name, "true"},
-              {features::kGlicUserStatusThrottleInterval.name, "2s"}}},
-            {features::kGlicOpenPasswordManagerSettingsPageApi, {}},
-        },
+        {{features::kGlicScrollTo, {}},
+         {features::kGlicApiActivationGating, {}},
+         {mojom::features::kGlicMultiTab, {}},
+         {features::kGlicWebActuationSetting, {}},
+         {features::kGlicCaptureRegion, {}},
+         {features::kGlicPopupWindowsEnabled, {}},
+         {features::kGlicUserStatusCheck,
+          {{features::kGlicUserStatusRefreshApi.name, "true"},
+           {features::kGlicUserStatusThrottleInterval.name, "2s"}}},
+         {features::kGlicOpenPasswordManagerSettingsPageApi, {}},
+         {features::kGlicActor,
+          {{features::kGlicActorPolicyControlExemption.name, "true"}}}},
         /*disabled_features=*/
         {
             features::kGlicWarming,
@@ -573,7 +573,8 @@ class GlicApiTestWithGeminiActOnWebPolicy : public GlicApiTestWithOneTab {
         features::kGlicActor,
         {{features::kGlicActorEnterprisePrefDefault.name,
           features::kGlicActorEnterprisePrefDefault.GetName(
-              features::GlicActorEnterprisePrefDefault::kDisabledByDefault)}});
+              features::GlicActorEnterprisePrefDefault::kDisabledByDefault)},
+         {features::kGlicActorPolicyControlExemption.name, "false"}});
   }
   ~GlicApiTestWithGeminiActOnWebPolicy() override = default;
 
@@ -1081,7 +1082,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabInBackground) {
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testDialogResponseCallOrder) {
   auto* actor_service = actor::ActorKeyedService::Get(browser()->profile());
   ASSERT_TRUE(actor_service);
-  actor_service->GetPolicyChecker().set_act_on_web_for_testing(true);
 
   RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents),
                   CheckTabCount(1));

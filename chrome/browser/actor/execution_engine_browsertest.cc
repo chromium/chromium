@@ -134,9 +134,13 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
       : prerender_helper_(
             base::BindRepeating(&ExecutionEngineBrowserTest::web_contents,
                                 base::Unretained(this))) {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlic, features::kGlicActor,
-                              kGlicExternalProtocolActionResultCode},
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::kGlic, {}},
+                              {features::kGlicActor,
+                               {{features::kGlicActorPolicyControlExemption
+                                     .name,
+                                 "true"}}},
+                              {kGlicExternalProtocolActionResultCode, {}}},
         /*disabled_features=*/{features::kGlicWarming});
   }
   ExecutionEngineBrowserTest(const ExecutionEngineBrowserTest&) = delete;
@@ -159,8 +163,6 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
           net::EmbeddedTestServer::CERT_TEST_NAMES);
     }
     ASSERT_TRUE(embedded_https_test_server().Start());
-
-    actor_keyed_service()->GetPolicyChecker().set_act_on_web_for_testing(true);
 
     StartNewTask();
 

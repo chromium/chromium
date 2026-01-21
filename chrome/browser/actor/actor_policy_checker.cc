@@ -381,7 +381,7 @@ void ActorPolicyChecker::MayActOnUrl(const GURL& url,
 }
 
 bool ActorPolicyChecker::CanActOnWeb() const {
-  return can_act_on_web_for_testing_ || can_act_on_web_ != CanActOutcome::kNo;
+  return can_act_on_web_ != CanActOutcome::kNo;
 }
 
 ActorPolicyChecker::CannotActReason ActorPolicyChecker::CannotActOnWebReason()

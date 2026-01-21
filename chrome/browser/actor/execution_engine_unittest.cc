@@ -201,11 +201,14 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
  public:
   ExecutionEngineTest()
       : ChromeRenderViewHostTestHarness(
-            content::BrowserTaskEnvironment::TimeSource::MOCK_TIME) {}
+            content::BrowserTaskEnvironment::TimeSource::MOCK_TIME) {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicActor,
+        {{features::kGlicActorPolicyControlExemption.name, "true"}});
+  }
   ~ExecutionEngineTest() override = default;
 
   void SetUp() override {
-    SetUpFeatures();
     ChromeRenderViewHostTestHarness::SetUp();
     AssociateTabInterface();
 
@@ -246,10 +249,6 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
               base::BindRepeating(MakeOkResult,
                                   /*requires_page_stabilization=*/true)));
     }
-
-    ActorKeyedService::Get(profile())
-        ->GetPolicyChecker()
-        .set_act_on_web_for_testing(true);
   }
 
   void TearDown() override {
@@ -284,14 +283,6 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
-  virtual void SetUpFeatures() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlicActor},
-        /*disabled_features=*/{});
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   // Note: action must be generated from a callback because this method
   // navigates the render frame and the generated action must include a
   // document identifier token which is only available after the navigation.
@@ -352,6 +343,7 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
   };
   std::optional<TabState> tab_state_;
 
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ExecutionEngineTest, ActSucceedsOnSupportedUrl) {
@@ -928,11 +920,13 @@ INSTANTIATE_TEST_SUITE_P(
 
 class ExecutionEngineNavigationGatingTest : public ExecutionEngineTest {
  public:
-  ExecutionEngineNavigationGatingTest() = default;
-
-  void SetUpFeatures() override {
+  ExecutionEngineNavigationGatingTest() {
     scoped_feature_list_.InitAndEnableFeature(kGlicCrossOriginNavigationGating);
   }
+  ~ExecutionEngineNavigationGatingTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ExecutionEngineNavigationGatingTest,

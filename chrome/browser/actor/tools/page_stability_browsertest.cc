@@ -56,7 +56,11 @@ using optimization_guide::proto::ClickAction;
 // completion until the page is ready for an observation.
 class ActorPageStabilityTestBase : public PageStabilityTest {
  public:
-  ActorPageStabilityTestBase() = default;
+  ActorPageStabilityTestBase() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicActor,
+        {{features::kGlicActorPolicyControlExemption.name, "true"}});
+  }
   ActorPageStabilityTestBase(const ActorPageStabilityTestBase&) = delete;
   ActorPageStabilityTestBase& operator=(const ActorPageStabilityTestBase&) =
       delete;
@@ -75,9 +79,6 @@ class ActorPageStabilityTestBase : public PageStabilityTest {
         /*options=*/nullptr);
     task_id_ = ActorKeyedService::Get(browser()->profile())
                    ->AddActiveTask(std::move(actor_task));
-    ActorKeyedService::Get(browser()->profile())
-        ->GetPolicyChecker()
-        .set_act_on_web_for_testing(true);
   }
 
   void TearDownOnMainThread() override {
@@ -103,6 +104,7 @@ class ActorPageStabilityTestBase : public PageStabilityTest {
 
  protected:
   TaskId task_id_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class ActorPageStabilityTimeoutTest : public ActorPageStabilityTestBase {
@@ -116,7 +118,8 @@ class ActorPageStabilityTimeoutTest : public ActorPageStabilityTestBase {
     std::string paint_timeout = absl::StrFormat("%dms", kTimeoutInMs);
     timeout_scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kGlicActor,
-        {{"glic-actor-page-stability-timeout", timeout},
+        {{features::kGlicActorPolicyControlExemption.name, "true"},
+         {"glic-actor-page-stability-timeout", timeout},
          // Do not use min wait.
          {"glic-actor-page-stability-min-wait", "0ms"},
          {::features::kActorPaintStabilityIntialPaintTimeout.name,

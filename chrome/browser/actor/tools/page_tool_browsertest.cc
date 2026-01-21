@@ -88,7 +88,9 @@ class ActorPageToolTimeoutBrowserTest : public ActorPageToolBrowserTest {
   ActorPageToolTimeoutBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{features::kGlicActor, {{"glic-actor-page-tool-timeout", "2s"}}},
+        {{features::kGlicActor,
+          {{"glic-actor-page-tool-timeout", "2s"},
+           {features::kGlicActorPolicyControlExemption.name, "true"}}},
          {features::kGlicActorIncrementalTyping,
           {{"glic-actor-long-text-paste-threshold", "1000000000"},
            {"glic-actor-incremental-typing-long-text-threshold",
@@ -153,7 +155,8 @@ class ActorPageToolLongClickDelayBrowserTest
         {features::kGlicActor,
          // Delay holding the mouse down before mouse up.
          {{"glic-actor-click-delay", "2d"},
-          {"glic-actor-page-tool-timeout", "2d"}}});
+          {"glic-actor-page-tool-timeout", "2d"},
+          {features::kGlicActorPolicyControlExemption.name, "true"}}});
 
     if (GetParam()) {
       enabled_features_and_params.push_back(
@@ -232,7 +235,10 @@ class ActorPageToolLongMouseMoveDelayBrowserTest
  public:
   ActorPageToolLongMouseMoveDelayBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kGlicActor, {}},
+        /*enabled_features=*/{{features::kGlicActor,
+                               {{features::kGlicActorPolicyControlExemption
+                                     .name,
+                                 "true"}}},
                               {features::kGlicActorMoveBeforeClick,
                                // Delay after mouse move to target and before
                                // mouse down.
@@ -293,7 +299,8 @@ class ActorPageToolLongKeyDownDelayBrowserTest
         {{features::kGlicActor,
           // Delay holding down the keyboard key.
           {{"glic-actor-incremental-typing-key-down-duration", "2d"},
-           {"glic-actor-page-tool-timeout", "2d"}}}},
+           {"glic-actor-page-tool-timeout", "2d"},
+           {features::kGlicActorPolicyControlExemption.name, "true"}}}},
         /*disabled_features=*/{});
   }
 

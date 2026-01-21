@@ -29,18 +29,16 @@ class ActorUiHandoffButtonControllerPixelTest : public DialogBrowserTest {
  public:
   ActorUiHandoffButtonControllerPixelTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kGlicActor, {}},
+        /*enabled_features=*/{{features::kGlicActor,
+                               {{features::kGlicActorPolicyControlExemption
+                                     .name,
+                                 "true"}}},
                               {features::kGlicActorUi,
                                {{features::kGlicActorUiHandoffButtonName,
                                  "true"}}}},
         /*disabled_features=*/{});
   }
   ~ActorUiHandoffButtonControllerPixelTest() override = default;
-
-  void SetUpOnMainThread() override {
-    DialogBrowserTest::SetUpOnMainThread();
-    GetActorKeyedService()->GetPolicyChecker().set_act_on_web_for_testing(true);
-  }
 
   ActorKeyedService* GetActorKeyedService() {
     return ActorKeyedService::Get(browser()->profile());

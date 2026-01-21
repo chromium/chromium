@@ -76,12 +76,6 @@ class ActorPolicyChecker : public signin::IdentityManager::Observer,
                    TaskId task_id,
                    DecisionCallbackWithReason callback);
 
-  // Set the return value of `CanActOnWeb()` for testing. Use this to bypass
-  // all the checks enforced by this class.
-  void set_act_on_web_for_testing(bool enabled) {
-    can_act_on_web_for_testing_ = enabled;
-  }
-
   // Allows the test to bypass the enterprise account eligibility checking
   // completely. Does NOT bypass the policy checks for management.
   void set_account_eligible_for_actuation_for_testing(bool enabled) {
@@ -133,8 +127,6 @@ class ActorPolicyChecker : public signin::IdentityManager::Observer,
 
   CanActOutcome can_act_on_web_ = CanActOutcome::kYes;
   CannotActReason cannot_act_on_web_reason_;
-
-  bool can_act_on_web_for_testing_ = false;
 
   bool account_eligible_for_actuation_for_testing_ = false;
 

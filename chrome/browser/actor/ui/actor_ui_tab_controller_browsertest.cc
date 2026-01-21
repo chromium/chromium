@@ -65,6 +65,14 @@ class FutureTabStripModelObserver : public TabStripModelObserver {
 };
 
 class BaseActorUiTabControllerTest : public InProcessBrowserTest {
+ public:
+  BaseActorUiTabControllerTest() {
+    policy_exemption_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicActor,
+        {{features::kGlicActorPolicyControlExemption.name, "true"}});
+  }
+  ~BaseActorUiTabControllerTest() override = default;
+
  protected:
   views::AnimatedImageView* GetSpinner() {
     TabStripRegionView* tab_strip_view =
@@ -78,28 +86,24 @@ class BaseActorUiTabControllerTest : public InProcessBrowserTest {
     return spinner;
   }
 
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-    actor_keyed_service()->GetPolicyChecker().set_act_on_web_for_testing(true);
-  }
-
   ActorKeyedService* actor_keyed_service() {
     return ActorKeyedService::Get(browser()->profile());
   }
 
+  base::test::ScopedFeatureList policy_exemption_feature_list_;
   base::test::ScopedFeatureList feature_list_;
 };
 
 class ActorUiTabControllerTest : public BaseActorUiTabControllerTest {
  public:
-  void SetUp() override {
+  ActorUiTabControllerTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kGlicActorUi,
           {{features::kGlicActorUiTabIndicator.name, "true"}}},
          {features::kGlicActorUiTabIndicatorSpinnerIgnoreReducedMotion, {}}},
         {});
-    InProcessBrowserTest::SetUp();
   }
+  ~ActorUiTabControllerTest() override = default;
 };
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -150,7 +154,6 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
                        TabSpinnerNotVisibleWhenWaitingOnUser) {
   // Start task on tab.
   auto* actor_service = actor::ActorKeyedService::Get(browser()->GetProfile());
-  actor_service->GetPolicyChecker().set_act_on_web_for_testing(true);
   actor::TaskId task_id = actor_service->CreateTask();
   actor::ActorTask* task = actor_service->GetTask(task_id);
   actor::ui::StartTask start_task_event(task_id);
@@ -323,12 +326,12 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
 
 class ActorUiTabControllerDisabledTest : public BaseActorUiTabControllerTest {
  public:
-  void SetUp() override {
+  ActorUiTabControllerDisabledTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kGlicActorUi,
         {{features::kGlicActorUiTabIndicator.name, "false"}});
-    InProcessBrowserTest::SetUp();
   }
+  ~ActorUiTabControllerDisabledTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(ActorUiTabControllerDisabledTest,
@@ -364,13 +367,13 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerDisabledTest,
 class ActorUiTabIndicatorSpinnerIgnoreReducedMotionDisabled
     : public BaseActorUiTabControllerTest {
  public:
-  void SetUp() override {
+  ActorUiTabIndicatorSpinnerIgnoreReducedMotionDisabled() {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kGlicActorUi,
           {{features::kGlicActorUiTabIndicator.name, "true"}}}},
         {features::kGlicActorUiTabIndicatorSpinnerIgnoreReducedMotion});
-    InProcessBrowserTest::SetUp();
   }
+  ~ActorUiTabIndicatorSpinnerIgnoreReducedMotionDisabled() override = default;
 };
 
 #if BUILDFLAG(ENABLE_GLIC)

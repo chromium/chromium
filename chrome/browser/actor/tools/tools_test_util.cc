@@ -106,8 +106,13 @@ bool MockActorLoginService::last_permission_was_permanent() const {
 }
 
 ActorToolsTest::ActorToolsTest() {
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kGlic, features::kGlicActor},
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {
+          {features::kGlic, {}},
+          {features::kGlicActor,
+           {{features::kGlicActorPolicyControlExemption.name, "true"}}},
+      },
       /*disabled_features=*/{features::kGlicWarming, kGlicActionAllowlist});
 }
 
@@ -117,9 +122,6 @@ void ActorToolsTest::SetUpOnMainThread() {
   InProcessBrowserTest::SetUpOnMainThread();
   host_resolver()->AddRule("*", "127.0.0.1");
 
-  auto* actor_service = ActorKeyedService::Get(browser()->profile());
-  actor_service->GetPolicyChecker().set_act_on_web_for_testing(
-      ShouldForceActOnWeb());
   task_id_ = CreateNewTask();
 
   // Optimization guide uses this histogram to signal initialization in tests.
@@ -188,10 +190,6 @@ ActorTask& ActorToolsTest::actor_task() const {
 std::unique_ptr<ExecutionEngine> ActorToolsTest::CreateExecutionEngine(
     Profile* profile) {
   return std::make_unique<ExecutionEngine>(profile);
-}
-
-bool ActorToolsTest::ShouldForceActOnWeb() {
-  return true;
 }
 
 TaskId ActorToolsTest::CreateNewTask() {

@@ -61,7 +61,8 @@ class ActorUiHandoffButtonControllerInteractiveUiTest
             {features::kGlicURLConfig,
              { {features::kGlicGuestURL.name, "about:blank"} }},
 #endif
-            {features::kGlicActor, {}},
+            {features::kGlicActor,
+             {{features::kGlicActorPolicyControlExemption.name, "true"}}},
             {features::kGlicHandoffButtonShowInImmersiveMode, {}},
             {features::kGlicHandoffButtonHideWhenOmniboxPopupOpened, {}},
             {features::kGlicActorUi,
@@ -266,14 +267,14 @@ class ActorUiHandoffButtonSplitViewTest
          { {features::kGlicGuestURL.name, "about:blank"} }},
         {features::kGlic, {}},
 #endif
-        {features::kGlicActor, {}},
+        {features::kGlicActor,
+         {{features::kGlicActorPolicyControlExemption.name, "true"}}},
         {features::kGlicActorUi,
          {{features::kGlicActorUiHandoffButtonName, "true"}}}};
   }
 
   void SetUpOnMainThread() override {
     ActorUiInteractiveBrowserTest::SetUpOnMainThread();
-    actor_keyed_service()->GetPolicyChecker().set_act_on_web_for_testing(true);
     // Add a second tab
     ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank?second"),
                               ::ui::PAGE_TRANSITION_TYPED));

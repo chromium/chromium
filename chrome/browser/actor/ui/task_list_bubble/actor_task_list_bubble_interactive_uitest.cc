@@ -43,7 +43,8 @@ class ActorTaskListBubbleInteractiveUiTest
 #if BUILDFLAG(ENABLE_GLIC)
             {features::kGlicRollout, {}},
             {features::kGlicFreWarming, {}},
-            {features::kGlicActor, {}},
+            {features::kGlicActor,
+             {{features::kGlicActorPolicyControlExemption.name, "true"}}},
             {features::kGlicActorUi,
              {{features::kGlicActorUiTaskIconName, "true"}}},
             {features::kGlicActorUiGlobalTaskIndicator, {}},

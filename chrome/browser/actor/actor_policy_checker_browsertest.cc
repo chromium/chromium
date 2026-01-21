@@ -69,7 +69,11 @@ class ActorPolicyCheckerBrowserTestBase : public ActorToolsTest {
 #if !BUILDFLAG(ENABLE_GLIC)
     GTEST_SKIP() << "The policy checker is only tested with GLIC enabled.";
 #endif  // BUILDFLAG(ENABLE_GLIC)
-    scoped_feature_list_.InitAndEnableFeature(features::kGlicUserStatusCheck);
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicActor,
+          {{features::kGlicActorPolicyControlExemption.name, "false"}}},
+         {features::kGlicUserStatusCheck, {}}},
+        {});
   }
   ~ActorPolicyCheckerBrowserTestBase() override = default;
 
@@ -163,8 +167,6 @@ class ActorPolicyCheckerBrowserTestBase : public ActorToolsTest {
   }
 
  protected:
-  bool ShouldForceActOnWeb() override { return false; }
-
   raw_ptr<signin::IdentityManager> identity_manager_;
   raw_ptr<signin::IdentityTestEnvironment> identity_test_env_;
 

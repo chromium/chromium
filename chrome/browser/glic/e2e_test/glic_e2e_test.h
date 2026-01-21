@@ -87,6 +87,7 @@ class GlicE2ETest : public InteractiveBrowserTestMixin<signin::test::LiveTest> {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList exempt_actor_policy_control_feature_list_;
   bool enable_low_bandwidth_tests_ = false;
   bool running_actor_tests_ = false;
   GlicE2ETestMode test_mode_;

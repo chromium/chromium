@@ -85,7 +85,8 @@ class ExecutionEngineOriginGatingBrowserTestBase
         /*enabled_features=*/
         {
             {features::kGlic, {}},
-            {features::kGlicActor, {}},
+            {features::kGlicActor,
+             {{features::kGlicActorPolicyControlExemption.name, "true"}}},
             {kGlicCrossOriginNavigationGating,
              {{
                  {"confirm_navigation_to_new_origins", "true"},
@@ -99,8 +100,6 @@ class ExecutionEngineOriginGatingBrowserTestBase
     glic::test::InteractiveGlicTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_https_test_server().Start());
     host_resolver()->AddRule("*", "127.0.0.1");
-
-    actor_keyed_service().GetPolicyChecker().set_act_on_web_for_testing(true);
 
     // Optimization guide uses this histogram to signal initialization in tests.
     optimization_guide::RetryForHistogramUntilCountReached(

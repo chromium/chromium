@@ -646,13 +646,14 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTestWithDeferWhileInterrupted,
 class ActorToolAgnosticBrowserTestWithCustomDelay
     : public ActorToolAgnosticBrowserTest {
  public:
-  void SetUp() override {
+  ActorToolAgnosticBrowserTestWithCustomDelay() {
     // Ensure tool doesn't finish before the tab is closed.
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kGlicActor,
-        {{"glic-actor-page-stability-min-wait", "500ms"}});
-    ActorToolAgnosticBrowserTest::SetUp();
+        {{"glic-actor-page-stability-min-wait", "500ms"},
+         {features::kGlicActorPolicyControlExemption.name, "true"}});
   }
+  ~ActorToolAgnosticBrowserTestWithCustomDelay() override = default;
 
  private:
   base::test::ScopedFeatureList feature_list_;

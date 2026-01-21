@@ -1160,8 +1160,11 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest,
 class HistoryTaskTagBrowserTest : public HistoryBrowserTest {
  public:
   HistoryTaskTagBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlicActor},
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::kGlicActor,
+                               {{features::kGlicActorPolicyControlExemption
+                                     .name,
+                                 "true"}}}},
         /*disabled_features=*/{actor::kGlicActionAllowlist});
   }
 
@@ -1182,7 +1185,6 @@ class HistoryTaskTagBrowserTest : public HistoryBrowserTest {
 
   actor::TaskId CreateActingTask(content::WebContents* web_contents) {
     auto* actor_service = actor::ActorKeyedService::Get(profile());
-    actor_service->GetPolicyChecker().set_act_on_web_for_testing(true);
     actor::TaskId id = actor_service->CreateTask();
     std::unique_ptr<actor::ToolRequest> action = actor::MakeClickRequest(
         *tabs::TabInterface::GetFromContents(web_contents), gfx::Point(0, 0));

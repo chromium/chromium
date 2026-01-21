@@ -48,8 +48,12 @@ class ActorKeyedServiceBrowserTest : public InProcessBrowserTest {
   ActorKeyedServiceBrowserTest() {
     // TODO(crbug.com/443783931): Add test coverage for
     // kGlicTabScreenshotPaintPreviewBackend.
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlic, features::kGlicActor},
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::kGlic, {}},
+                              {features::kGlicActor,
+                               {{features::kGlicActorPolicyControlExemption
+                                     .name,
+                                 "true"}}}},
         /*disabled_features=*/{features::kGlicWarming});
   }
   ActorKeyedServiceBrowserTest(const ActorKeyedServiceBrowserTest&) = delete;
@@ -81,8 +85,6 @@ class ActorKeyedServiceBrowserTest : public InProcessBrowserTest {
         ->MaybeUpdateHintsComponent(
             {base::Version("123"),
              temp_dir_.GetPath().Append(FILE_PATH_LITERAL("dont_care"))});
-
-    actor_keyed_service()->GetPolicyChecker().set_act_on_web_for_testing(true);
   }
 
  protected:

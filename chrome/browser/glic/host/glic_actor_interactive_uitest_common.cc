@@ -79,7 +79,8 @@ GlicActorUiTest::GlicActorUiTest() {
       /*enabled_features=*/
       {// Increase timeout since tests are timing out with ASAN builds.
        {features::kGlic, {{"glic-max-loading-time-ms", "30000"}}},
-       {features::kGlicActor, {}},
+       {features::kGlicActor,
+        {{features::kGlicActorPolicyControlExemption.name, "true"}}},
        {features::kGlicActorToctouValidation, {}},
        {optimization_guide::features::
             kAnnotatedPageContentWithActionableElements,
@@ -94,9 +95,6 @@ void GlicActorUiTest::SetUpOnMainThread() {
   // Add rule for resolving cross origin host names.
   InteractiveGlicTest::SetUpOnMainThread();
   host_resolver()->AddRule("*", "127.0.0.1");
-  actor::ActorKeyedService::Get(browser()->profile())
-      ->GetPolicyChecker()
-      .set_act_on_web_for_testing(true);
 }
 
 const actor::ActorTask* GlicActorUiTest::GetActorTask() {

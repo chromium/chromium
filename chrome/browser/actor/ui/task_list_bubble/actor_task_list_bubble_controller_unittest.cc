@@ -37,17 +37,24 @@ class ActorTaskListBubbleControllerTest
     : public ChromeViewsTestBase,
       public testing::WithParamInterface<bool> {
  public:
-  ActorTaskListBubbleControllerTest() = default;
+  ActorTaskListBubbleControllerTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kGlicActor,
+         {{features::kGlicActorPolicyControlExemption.name, "true"}}}};
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam()) {
+      enabled_features.push_back(
+          {features::kGlicActorUiGlobalTaskIndicator, {}});
+    } else {
+      disabled_features.push_back(features::kGlicActorUiGlobalTaskIndicator);
+    }
+    feature_list_.InitWithFeaturesAndParameters(std::move(enabled_features),
+                                                std::move(disabled_features));
+  }
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          features::kGlicActorUiGlobalTaskIndicator);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          features::kGlicActorUiGlobalTaskIndicator);
-    }
+
 #if BUILDFLAG(ENABLE_GLIC)
     anchor_widget_ =
         CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
@@ -151,7 +158,6 @@ TEST_P(ActorTaskListBubbleControllerTest, ShowBubbleRecordsHistogram) {
       actor::ActorKeyedService::Get(profile_.get());
   tabs::GlicActorTaskIconManager* manager =
       tabs::GlicActorTaskIconManagerFactory::GetForProfile(profile_.get());
-  actor_service->GetPolicyChecker().set_act_on_web_for_testing(true);
   actor::TaskId task_id = actor_service->CreateTask();
   actor_service->GetTask(task_id)->Pause(true);
   manager->UpdateTaskIconComponents(task_id);

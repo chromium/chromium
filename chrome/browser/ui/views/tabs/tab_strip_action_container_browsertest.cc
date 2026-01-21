@@ -88,7 +88,8 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
 #if BUILDFLAG(ENABLE_GLIC)
             {features::kGlicRollout, {}},
             {features::kGlicFreWarming, {}},
-            {features::kGlicActor, {}},
+            {features::kGlicActor,
+             { {features::kGlicActorPolicyControlExemption.name, "true"} }},
             {features::kGlicActorUi,
              { {features::kGlicActorUiTaskIconName, "true"} }},
             {features::kGlicActorUiGlobalTaskIndicator, {}},
@@ -259,7 +260,6 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
   }
 
   actor::TaskId CreateTask() {
-    actor_service()->GetPolicyChecker().set_act_on_web_for_testing(true);
     actor::TaskId task_id = actor_service()->CreateTask();
     actor::ActorTask* task = actor_service()->GetTask(task_id);
     actor::ui::StartTask start_task_event(task_id);
@@ -663,7 +663,8 @@ class GlicActorGlobalFlagEnabledBrowserTest
             {features::kGlicRollout, {}},
             {features::kGlicFreWarming, {}},
             {features::kGlicActorUiGlobalTaskIndicator, {}},
-            {features::kGlicActor, {}},
+            {features::kGlicActor,
+             {{features::kGlicActorPolicyControlExemption.name, "true"}}},
             {features::kGlicActorUi,
              {{features::kGlicActorUiTaskIconName, "true"}}},
             {features::kTabstripDeclutter, {}},
@@ -684,7 +685,6 @@ IN_PROC_BROWSER_TEST_F(GlicActorGlobalFlagEnabledBrowserTest,
   EXPECT_FALSE(GlicActorButtonContainer()->GetVisible());
 
   auto* actor_service = actor::ActorKeyedService::Get(browser()->GetProfile());
-  actor_service->GetPolicyChecker().set_act_on_web_for_testing(true);
   actor::TaskId task_id = actor_service->CreateTask();
   actor::ui::StartTask start_task_event(task_id);
   actor_service->GetActorUiStateManager()->OnUiEvent(start_task_event);
@@ -752,7 +752,8 @@ class GlicActorGlobalFlagDisabledBrowserTest
             {features::kTabOrganization, {}},
             {features::kGlicRollout, {}},
             {features::kGlicFreWarming, {}},
-            {features::kGlicActor, {}},
+            {features::kGlicActor,
+             {{features::kGlicActorPolicyControlExemption.name, "true"}}},
             {features::kGlicActorUi,
              {{features::kGlicActorUiTaskIconName, "true"}}},
             {features::kTabstripDeclutter, {}},
