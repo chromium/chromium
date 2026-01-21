@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_VIEW_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -54,6 +55,8 @@ class VerticalTabView : public views::View,
 
   void StepLoadingAnimation(const base::TimeDelta& elapsed_time);
   void UpdateHovered(bool hovered);
+
+  std::optional<SkColor> GetBackgroundColor();
 
   const TabCollectionNode* collection_node() const { return collection_node_; }
   const TabStyle* tab_style() { return tab_style_; }

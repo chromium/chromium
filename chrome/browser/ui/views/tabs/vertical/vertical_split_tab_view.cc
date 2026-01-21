@@ -77,6 +77,27 @@ void VerticalSplitTabView::OnMouseMoved(const ui::MouseEvent& event) {
   UpdateHovered(true);
 }
 
+void VerticalSplitTabView::OnPaint(gfx::Canvas* canvas) {
+  if (pinned_) {
+    const std::vector<views::View*> children =
+        collection_node_ ? collection_node_->GetDirectChildren()
+                         : std::vector<views::View*>();
+    std::optional<SkColor> background_color =
+        static_cast<VerticalTabView*>(children[0])->GetBackgroundColor();
+    if (background_color.has_value()) {
+      cc::PaintFlags flags;
+      flags.setAntiAlias(true);
+      flags.setColor(background_color.value());
+      const float corner_radius =
+          GetLayoutConstant(LayoutConstant::kVerticalTabCornerRadius) -
+          GetInsets().top() / 2.0;
+      canvas->DrawRoundRect(GetContentsBounds(), corner_radius, flags);
+    }
+  }
+
+  views::View::OnPaint(canvas);
+}
+
 views::ProposedLayout VerticalSplitTabView::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
   views::ProposedLayout layouts;

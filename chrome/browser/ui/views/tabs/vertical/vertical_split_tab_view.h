@@ -31,6 +31,7 @@ class VerticalSplitTabView : public views::View, public views::LayoutDelegate {
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   void OnMouseMoved(const ui::MouseEvent& event) override;
+  void OnPaint(gfx::Canvas* canvas) override;
 
   // LayoutDelegate:
   views::ProposedLayout CalculateProposedLayout(
