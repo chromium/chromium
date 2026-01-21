@@ -153,29 +153,6 @@ const std::string& GetWindowsPlatformVersion() {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-// For desktop:
-// Returns true if kReduceUserAgentMinorVersionName is enabled.
-//
-// For android:
-// Returns true if both kReduceUserAgentMinorVersionName and
-// kReduceUserAgentAndroidVersionDeviceModel are enabled. It makes
-// kReduceUserAgentAndroidVersionDeviceModel depend on
-// kReduceUserAgentMinorVersionName.
-//
-// It helps us avoid introducing individual enterprise policy controls for
-// sending unified platform for the user agent string.
-bool ShouldSendUserAgentUnifiedPlatform() {
-  bool reduce_minor_version = base::FeatureList::IsEnabled(
-      blink::features::kReduceUserAgentMinorVersion);
-#if BUILDFLAG(IS_ANDROID)
-  return reduce_minor_version &&
-         base::FeatureList::IsEnabled(
-             blink::features::kReduceUserAgentAndroidVersionDeviceModel);
-#else
-  return reduce_minor_version;
-#endif
-}
-
 const blink::UserAgentBrandList GetUserAgentBrandList(
     const std::string& major_version,
     const std::string& full_version,
@@ -211,6 +188,16 @@ const blink::UserAgentBrandList GetUserAgentBrandMajorVersionListInternal(
                                additional_brand_version);
 }
 
+// For desktop and android:
+// Returns true if kReduceUserAgentMinorVersionName is enabled.
+//
+// It helps us avoid introducing individual enterprise policy controls for
+// sending unified platform for the user agent string.
+bool ShouldSendUserAgentUnifiedPlatform() {
+  return base::FeatureList::IsEnabled(
+      blink::features::kReduceUserAgentMinorVersion);
+}
+
 // Return UserAgentBrandList with the full version populated in the brand
 // `version` value.
 // TODO(crbug.com/1291612): Consolidate *FullVersionList() methods by using
@@ -237,10 +224,6 @@ std::string GetUserAgentInternal() {
   }
 #endif
 
-  // In User-Agent reduction phase 5, only apply the <unifiedPlatform> to
-  // desktop UA strings.
-  // In User-Agent reduction phase 6, only apply the <unifiedPlatform> to
-  // android UA strings.
   return ShouldSendUserAgentUnifiedPlatform()
              ? BuildUnifiedPlatformUserAgentFromProduct(product)
              : BuildUserAgentFromProduct(product);

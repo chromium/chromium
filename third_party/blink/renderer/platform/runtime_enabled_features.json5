@@ -4257,14 +4257,6 @@
       name: "ReduceAcceptLanguage",
       base_feature: "none",
     },
-    {
-      // If enabled, the deviceModel will be reduced to "K" and the
-      // androidVersion will be reduced to a static "10" string in android
-      // User-Agent string.
-      name: "ReduceUserAgentAndroidVersionDeviceModel",
-      depends_on: ["ReduceUserAgentMinorVersion"],
-      status: {"Android": "stable"},
-    },
     // If enabled, the platform version in User-Agent Data will be removed.
     // This feature is limited to Linux only.
     {

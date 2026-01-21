@@ -12704,8 +12704,6 @@ from previous Chrome versions.
   <int value="-562875191" label="WebAppDedupeInstallUrls:disabled"/>
   <int value="-562771426" label="InstantStart:disabled"/>
   <int value="-562274241" label="enable-extension-action-redesign"/>
-  <int value="-561563844"
-      label="ReduceUserAgentAndroidVersionDeviceModel:disabled"/>
   <int value="-561194974" label="AutofillExpandedPopupViews:enabled"/>
   <int value="-560818413" label="BackgroundListening:disabled"/>
   <int value="-560750110"
@@ -14881,8 +14879,6 @@ from previous Chrome versions.
   <int value="199237368" label="RenameJourneys:disabled"/>
   <int value="200347243" label="WebVRExperimentalRendering:disabled"/>
   <int value="200711930" label="PictureInPictureShowWindowAnimation:disabled"/>
-  <int value="201203491"
-      label="ReduceUserAgentAndroidVersionDeviceModel:enabled"/>
   <int value="201274915" label="TabStorageSqlitePrototype:enabled"/>
   <int value="201343576" label="enable-password-change-support:enabled"/>
   <int value="201641586"

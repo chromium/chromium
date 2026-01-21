@@ -12,7 +12,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/blink/public/common/features.h"
 
-// Browser tests that consider ReduceUserAgentAndroidVersionDeviceModel feature
+// Browser tests that consider kReduceUserAgentMinorVersion feature
 // enabled.
 class ReduceUserAgentAndroidPlatformBrowserTest : public AndroidBrowserTest {
  public:
@@ -30,9 +30,7 @@ class ReduceUserAgentAndroidPlatformBrowserTest : public AndroidBrowserTest {
  protected:
   virtual void SetupFeatures() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kReduceUserAgentMinorVersion,
-                              blink::features::
-                                  kReduceUserAgentAndroidVersionDeviceModel},
+        /*enabled_features=*/{blink::features::kReduceUserAgentMinorVersion},
         /*disabled_features=*/{});
   }
 
@@ -41,18 +39,19 @@ class ReduceUserAgentAndroidPlatformBrowserTest : public AndroidBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(ReduceUserAgentAndroidPlatformBrowserTest,
                        NavigatorPlatform) {
-  // We should reduce android navigator.platform in phase 6.
+  // navigator.platform is always "Linux armv81" on Android.
   EXPECT_EQ("Linux armv81",
             content::EvalJs(GetActiveWebContents(), "navigator.platform"));
 }
 
-// Browser tests that consider ReduceUserAgentAndroidVersionDeviceModel feature
+// Browser tests that consider kReduceUserAgentMinorVersion feature
 // disabled.
 class DisableFeatureReduceUserAgentAndroidPlatformBrowserTest
     : public ReduceUserAgentAndroidPlatformBrowserTest {
  public:
   // TODO(crbug.com/469458271): We shouldn't copy the implementation here once
-  // we remove "Phase 6", or we can just delete this test.
+  // we remove kReduceUserAgentMinorVersion (since that flag now controls
+  // sending the unified platform), or we can just delete this test.
   // Copy the implementation of NavigatorID::platform()
   std::string GetPlatform() {
     struct utsname osname;
@@ -69,14 +68,17 @@ class DisableFeatureReduceUserAgentAndroidPlatformBrowserTest
  protected:
   void SetupFeatures() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{}, /*disabled_features=*/{
-            blink::features::kReduceUserAgentAndroidVersionDeviceModel});
+        /*enabled_features=*/{},
+        /*disabled_features=*/{blink::features::kReduceUserAgentMinorVersion});
   }
 };
 
 IN_PROC_BROWSER_TEST_F(DisableFeatureReduceUserAgentAndroidPlatformBrowserTest,
                        NavigatorPlatform) {
-  // We should not reduce android navigator.platform when feature is disabled.
+  // If kReduceUserAgentMinorVersion is disabled (which it will be for Android
+  // WebView), navigator.platform() should not be "reduced" (and the
+  // implementation of GetPlatform in this test will return the un-reduced
+  // value).
   EXPECT_EQ(GetPlatform(),
             content::EvalJs(GetActiveWebContents(), "navigator.platform"));
 }
