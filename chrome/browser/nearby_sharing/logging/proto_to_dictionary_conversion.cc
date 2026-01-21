@@ -5,9 +5,11 @@
 #include "chrome/browser/nearby_sharing/logging/proto_to_dictionary_conversion.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/base64url.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 
@@ -19,10 +21,11 @@ std::string Encode(const std::string& str) {
   return encoded_string;
 }
 
-std::string TruncateString(const std::string& str) {
+std::string TruncateString(std::string_view str) {
   if (str.length() <= 10)
-    return str;
-  return str.substr(0, 5) + "..." + str.substr(str.length() - 5, str.length());
+    return std::string(str);
+  return base::StrCat(
+      {str.substr(0, 5), "...", str.substr(str.length() - 5, str.length())});
 }
 }  // namespace
 
