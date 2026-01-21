@@ -240,6 +240,7 @@ class ExtensionsToolbarDesktop : public ToolbarIconContainerView,
   void OnActionRemoved(const ToolbarActionsModel::ActionId& action_id) override;
   void OnActionUpdated(const ToolbarActionsModel::ActionId& action_id) override;
   void OnPinnedActionsChanged() override;
+  void OnActiveWebContentsChanged() override;
 
  private:
   friend class ToolbarActionHoverCardBubbleViewUITest;

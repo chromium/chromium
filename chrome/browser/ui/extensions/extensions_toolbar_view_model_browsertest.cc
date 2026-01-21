@@ -10,11 +10,13 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_action_delegate.h"
 #include "chrome/browser/ui/extensions/extension_action_view_model.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension_builder.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -90,6 +92,7 @@ class MockExtensionsToolbarObserver
               (const ToolbarActionsModel::ActionId&),
               (override));
   MOCK_METHOD(void, OnPinnedActionsChanged, (), (override));
+  MOCK_METHOD(void, OnActiveWebContentsChanged, (), (override));
 };
 
 }  // namespace
@@ -110,6 +113,9 @@ class ExtensionsToolbarViewModelBrowserTest
       const std::string& name,
       const std::vector<std::string>& permissions,
       const std::vector<std::string>& host_permissions);
+
+  // Navigates the active web contents to a URL on `host_name`.
+  void NavigateTo(std::string_view host_name);
 
   // ExtensionBrowserTest:
   void SetUpOnMainThread() override;
@@ -145,13 +151,22 @@ ExtensionsToolbarViewModelBrowserTest::AddExtension(
   return extension;
 }
 
+void ExtensionsToolbarViewModelBrowserTest::NavigateTo(
+    std::string_view host_name) {
+  const GURL url = embedded_test_server()->GetURL(host_name, "/simple.html");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
+}
+
 void ExtensionsToolbarViewModelBrowserTest::SetUpOnMainThread() {
   ExtensionBrowserTest::SetUpOnMainThread();
+  host_resolver()->AddRule("*", "127.0.0.1");
+  ASSERT_TRUE(embedded_test_server()->Start());
 
   toolbar_delegate_ = std::make_unique<TestExtensionsToolbarDelegate>(
       browser_window_interface());
   toolbar_model_ = std::make_unique<ExtensionsToolbarViewModel>(
-      toolbar_delegate_.get(), ToolbarActionsModel::Get(profile()));
+      toolbar_delegate_.get(), browser_window_interface(),
+      ToolbarActionsModel::Get(profile()));
 
   toolbar_model_->AddObserver(&mock_observer());
 }
@@ -179,7 +194,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
   auto delegate = std::make_unique<TestExtensionsToolbarDelegate>(
       browser_window_interface());
   auto model = std::make_unique<ExtensionsToolbarViewModel>(
-      delegate.get(), ToolbarActionsModel::Get(profile()));
+      delegate.get(), browser_window_interface(),
+      ToolbarActionsModel::Get(profile()));
 
   // Verify that action models were added and that sorted in alphabetical order.
   std::vector<std::string> expected = {extension1->id(), extension2->id(),
@@ -275,4 +291,23 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
   EXPECT_THAT(
       toolbar_model()->GetPinnedActionIds(),
       ElementsAre(extension2->id(), extension1->id(), extension3->id()));
+}
+
+// Tests that the observer is notified when navigation happens.
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
+                       ObserverCalledOnNavigation) {
+  EXPECT_CALL(mock_observer(), OnActiveWebContentsChanged())
+      .Times(testing::AtLeast(1));
+
+  NavigateTo("example.com");
+}
+
+// Tests that the observer is notified when the active tab changes.
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
+                       ObserverCalledOnActiveTabChanged) {
+  EXPECT_CALL(mock_observer(), OnActiveWebContentsChanged())
+      .Times(testing::AtLeast(1));
+
+  toolbar_model()->OnActiveTabChanged(
+      TabListInterface::From(browser_window_interface())->GetActiveTab());
 }

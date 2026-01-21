@@ -11,7 +11,6 @@
 #include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_list_interface_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -29,7 +28,6 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 class ExtensionActionDelegate;
 class IconWithBadgeImageSource;
 enum class PopupShowAction;
-class TabListInterface;
 
 namespace extensions {
 class Command;
@@ -55,9 +53,6 @@ class ImageModel;
 // they will typically return empty or default values, except GetId().
 class ExtensionActionViewModel
     : public ToolbarActionViewModel,
-      public content::WebContentsObserver,
-      public TabListInterfaceObserver,
-      public ToolbarActionsModel::Observer,
       public extensions::ExtensionActionIconFactory::Observer,
       public extensions::CommandService::Observer,
       public extensions::ExtensionContextMenuModel::PopupDelegate {
@@ -99,22 +94,6 @@ class ExtensionActionViewModel
   void TriggerPopupForAPI(ShowPopupCallback callback) override;
   void RegisterCommand() override;
   void UnregisterCommand() override;
-
-  // content::WebContentsObserver:
-  void DidFinishNavigation(content::NavigationHandle* handle) override;
-
-  // TabListInterfaceObserver:
-  void OnActiveTabChanged(tabs::TabInterface* tab) override;
-
-  // ToolbarActionsModel::Observer:
-  void OnToolbarActionAdded(
-      const ToolbarActionsModel::ActionId& action_id) override;
-  void OnToolbarActionRemoved(
-      const ToolbarActionsModel::ActionId& action_id) override;
-  void OnToolbarActionUpdated(
-      const ToolbarActionsModel::ActionId& action_id) override;
-  void OnToolbarModelInitialized() override;
-  void OnToolbarPinnedActionsChanged() override;
 
   // extensions::CommandService::Observer:
   void OnExtensionCommandAdded(const std::string& extension_id,
@@ -217,12 +196,6 @@ class ExtensionActionViewModel
 
   // The associated ExtensionRegistry; cached for quick checking.
   raw_ptr<extensions::ExtensionRegistry> extension_registry_;
-
-  base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
-      toolbar_model_observation_{this};
-
-  base::ScopedObservation<TabListInterface, TabListInterfaceObserver>
-      tab_list_observation_{this};
 
   base::ScopedObservation<extensions::CommandService,
                           extensions::CommandService::Observer>

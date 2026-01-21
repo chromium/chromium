@@ -1229,42 +1229,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
   EXPECT_FALSE(model->IsEnabled(web_contents));
 }
 
-// Ensures that the observer is called on navigation.
-IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
-                       ObserverCalledOnNavigation) {
-  Init();
-  const std::string id =
-      CreateAndAddExtension("extension", extensions::ActionInfo::Type::kPage)
-          ->id();
-
-  // Register an observer.
-  ExtensionActionViewModel* const model = GetViewModelForId(id);
-  ASSERT_TRUE(model);
-
-  bool observer_called = false;
-  auto registration = model->RegisterUpdateObserver(base::BindRepeating(
-      [](bool* observer_called) { *observer_called = true; },
-      &observer_called));
-
-  // The observer is not immediately called.
-  EXPECT_FALSE(observer_called);
-
-  // Navigate to a different page.
-  NavigateAndCommitActiveTab(GURL("https://www.example.com/2"));
-  EXPECT_TRUE(observer_called);
-  observer_called = false;
-
-  // Create a new tab.
-  AddTab(browser(), GURL("https://www.example.com/3"));
-  EXPECT_TRUE(observer_called);
-  observer_called = false;
-
-  // Navigate to a different page.
-  NavigateAndCommitActiveTab(GURL("https://www.example.com/4"));
-  EXPECT_TRUE(observer_called);
-  observer_called = false;
-}
-
 // A fake implementation of ExtensionActionDelegate that does nothing.
 class FakeExtensionActionDelegate : public ExtensionActionDelegate {
  public:

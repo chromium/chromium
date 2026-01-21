@@ -95,7 +95,7 @@ ExtensionsToolbarDesktop::ExtensionsToolbarDesktop(Browser* browser,
       action_hover_card_controller_(
           std::make_unique<ToolbarActionHoverCardController>(this)),
       toolbar_view_model_(
-          std::make_unique<ExtensionsToolbarViewModel>(this, model_)),
+          std::make_unique<ExtensionsToolbarViewModel>(this, browser, model_)),
       extensions_menu_coordinator_(
           base::FeatureList::IsEnabled(
               extensions_features::kExtensionsMenuAccessControl)
@@ -731,6 +731,10 @@ void ExtensionsToolbarDesktop::OnPinnedActionsChanged() {
   ReorderAllChildViews();
 
   drop_weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
+void ExtensionsToolbarDesktop::OnActiveWebContentsChanged() {
+  UpdateAllIcons();
 }
 
 void ExtensionsToolbarDesktop::HideActivePopup() {

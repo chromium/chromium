@@ -24,6 +24,7 @@ ExtensionsToolbarBridge::ExtensionsToolbarBridge(
     : browser_(browser),
       toolbar_view_model_(std::make_unique<ExtensionsToolbarViewModel>(
           this,
+          browser,
           ToolbarActionsModel::Get(browser_->GetProfile()))),
       java_object_(java_object) {
   toolbar_view_model_observation_.Observe(toolbar_view_model_.get());
@@ -89,6 +90,10 @@ void ExtensionsToolbarBridge::OnActionUpdated(
 void ExtensionsToolbarBridge::OnPinnedActionsChanged() {
   Java_ExtensionsToolbarBridge_onPinnedActionsChanged(AttachCurrentThread(),
                                                       java_object_);
+}
+
+void ExtensionsToolbarBridge::OnActiveWebContentsChanged() {
+  // TODO(crbug.c/476295562)
 }
 
 void ExtensionsToolbarBridge::Destroy(JNIEnv* env) {

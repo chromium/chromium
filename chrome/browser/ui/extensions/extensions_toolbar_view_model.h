@@ -9,17 +9,23 @@
 #include "chrome/browser/ui/extensions/extension_action_delegate.h"
 #include "chrome/browser/ui/extensions/extension_action_view_model.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
+#include "chrome/browser/ui/tabs/tab_list_interface_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "extensions/buildflags/buildflags.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
+class TabListInterface;
 
 // ViewModel for the ExtensionsToolbarDesktop. This class manages the business
 // logic for the order and state of extension actions in the toolbar. It serves
 // as the single source of truth for the ordering of the list of actions.
 class ExtensionsToolbarViewModel : public ExtensionsContainer,
-                                   public ToolbarActionsModel::Observer {
+                                   public ToolbarActionsModel::Observer,
+                                   public content::WebContentsObserver,
+                                   public TabListInterfaceObserver {
  public:
   // Delegate used to retrieve platform-specific information.
   class Delegate {
@@ -71,6 +77,10 @@ class ExtensionsToolbarViewModel : public ExtensionsContainer,
 
     // Called when the pinned actions in the model are changed.
     virtual void OnPinnedActionsChanged() = 0;
+
+    // Called when the active WebContents is changed (e.g. tab change or page
+    // navigation).
+    virtual void OnActiveWebContentsChanged() = 0;
   };
 
   enum class ExtensionsToolbarButtonState {
@@ -82,6 +92,7 @@ class ExtensionsToolbarViewModel : public ExtensionsContainer,
   };
 
   ExtensionsToolbarViewModel(Delegate* delegate,
+                             BrowserWindowInterface* browser,
                              ToolbarActionsModel* actions_model);
   ExtensionsToolbarViewModel(const ExtensionsToolbarViewModel&) = delete;
   ExtensionsToolbarViewModel& operator=(ExtensionsToolbarViewModel&) = delete;
@@ -136,9 +147,22 @@ class ExtensionsToolbarViewModel : public ExtensionsContainer,
       const ToolbarActionsModel::ActionId& action_id) override;
   void OnToolbarPinnedActionsChanged() override;
 
+  // content::WebContentsObserver:
+  void DidFinishNavigation(content::NavigationHandle* handle) override;
+
+  // TabListInterfaceObserver:
+  void OnActiveTabChanged(tabs::TabInterface* tab) override;
+  void OnTabListDestroyed(TabListInterface& tab_list) override;
+
  private:
   // Creates and appends an action model to `actions_` vector.
   void AppendActionModel(const ToolbarActionsModel::ActionId& action_id);
+
+  // Returns the current web contents.
+  content::WebContents* GetCurrentWebContents() const;
+
+  // The corresponding browser window.
+  const raw_ptr<BrowserWindowInterface> browser_;
 
   // The delegate to retrieve platform-specific information.
   const raw_ptr<Delegate> delegate_;
@@ -146,6 +170,9 @@ class ExtensionsToolbarViewModel : public ExtensionsContainer,
   const raw_ptr<ToolbarActionsModel> actions_model_;
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
       actions_model_observation_{this};
+
+  base::ScopedObservation<TabListInterface, TabListInterfaceObserver>
+      tab_list_observation_{this};
 
   // The observers that handles platform-specific UI.
   base::ObserverList<Observer> observers_;

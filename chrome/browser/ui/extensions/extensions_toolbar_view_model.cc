@@ -5,24 +5,32 @@
 #include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "url/origin.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
+using content::WebContentsObserver;
+
 ExtensionsToolbarViewModel::ExtensionsToolbarViewModel(
     Delegate* delegate,
+    BrowserWindowInterface* browser,
     ToolbarActionsModel* actions_model)
-    : delegate_(delegate), actions_model_(actions_model) {
+    : browser_(browser), delegate_(delegate), actions_model_(actions_model) {
+  WebContentsObserver::Observe(GetCurrentWebContents());
   actions_model_observation_.Observe(actions_model_);
+  tab_list_observation_.Observe(TabListInterface::From(browser_));
 
   if (actions_model_->actions_initialized()) {
     OnToolbarModelInitialized();
   }
 }
 
-ExtensionsToolbarViewModel::~ExtensionsToolbarViewModel() = default;
+ExtensionsToolbarViewModel::~ExtensionsToolbarViewModel() {
+  WebContentsObserver::Observe(nullptr);
+}
 
 void ExtensionsToolbarViewModel::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
@@ -213,8 +221,36 @@ void ExtensionsToolbarViewModel::OnToolbarPinnedActionsChanged() {
   }
 }
 
+void ExtensionsToolbarViewModel::DidFinishNavigation(
+    content::NavigationHandle* handle) {
+  for (Observer& obs : observers_) {
+    obs.OnActiveWebContentsChanged();
+  }
+}
+
+void ExtensionsToolbarViewModel::OnActiveTabChanged(tabs::TabInterface* tab) {
+  WebContentsObserver::Observe(tab->GetContents());
+  for (Observer& obs : observers_) {
+    obs.OnActiveWebContentsChanged();
+  }
+}
+
+void ExtensionsToolbarViewModel::OnTabListDestroyed(
+    TabListInterface& tab_list) {
+  tab_list_observation_.Reset();
+}
+
 void ExtensionsToolbarViewModel::AppendActionModel(
     const ToolbarActionsModel::ActionId& action_id) {
   actions_.emplace(action_id,
                    delegate_->CreateActionViewModel(action_id, this));
+}
+
+content::WebContents* ExtensionsToolbarViewModel::GetCurrentWebContents()
+    const {
+  tabs::TabInterface* tab = TabListInterface::From(browser_)->GetActiveTab();
+  if (!tab) {
+    return nullptr;
+  }
+  return tab->GetContents();
 }

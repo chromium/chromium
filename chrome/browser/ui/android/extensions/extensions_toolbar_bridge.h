@@ -43,6 +43,7 @@ class ExtensionsToolbarBridge : public ExtensionsToolbarViewModel::Delegate,
   void OnActionRemoved(const ToolbarActionsModel::ActionId& action_id) override;
   void OnActionUpdated(const ToolbarActionsModel::ActionId& action_id) override;
   void OnPinnedActionsChanged() override;
+  void OnActiveWebContentsChanged() override;
 
   // JNI implementations.
   void Destroy(JNIEnv* env);
