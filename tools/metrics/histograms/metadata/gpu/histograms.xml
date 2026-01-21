@@ -925,7 +925,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.FenceSyncRelease.GraphValidation.ForceReleaseNamespace"
-    enum="CommandBufferNamespace" expires_after="2026-01-18">
+    enum="CommandBufferNamespace" expires_after="2027-01-18">
   <owner>vasilyt@chromium.org</owner>
   <owner>sunnyps@chromium.org</owner>
   <owner>yzshen@chromium.org</owner>
@@ -937,7 +937,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.FenceSyncRelease.{TaskGraphValidationType}.Cause"
-    enum="ReleaseCause" expires_after="2026-01-18">
+    enum="ReleaseCause" expires_after="2027-01-18">
   <owner>vasilyt@chromium.org</owner>
   <owner>sunnyps@chromium.org</owner>
   <owner>yzshen@chromium.org</owner>
