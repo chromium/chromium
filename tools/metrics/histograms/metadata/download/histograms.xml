@@ -93,6 +93,15 @@ chromium-metrics-reviews@google.com.
   <variant name=".UserDownload" summary="User download."/>
 </variants>
 
+<variants name="DownloadUrlChainLengthLocation">
+  <variant name="CreateDownloadCreateInfo"
+      summary="creating DownloadCreateInfo
+               (DownloadResponseHandler::CreateDownloadCreateInfo)"/>
+  <variant name="CreateResponseHandler"
+      summary="creating DownloadResponseHandler
+               (DownloadResponseHandler::DownloadResponseHandler)"/>
+</variants>
+
 <variants name="TransientType">
   <variant name="NonTransient"/>
   <variant name="Transient"/>
@@ -744,6 +753,28 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records events when using media parser to analyze local media files.
   </summary>
+</histogram>
+
+<histogram name="Download.Memory.UrlChainLength.{Location}" units="count"
+    expires_after="2026-07-30">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Records the number of URLs in the URL chain (url_chain_ member of
+    DownloadResponseHandler) when {Location}.
+  </summary>
+  <token key="Location" variants="DownloadUrlChainLengthLocation"/>
+</histogram>
+
+<histogram name="Download.Memory.UrlChainSizeKb.{Location}" units="KB"
+    expires_after="2026-07-30">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Records the estimated memory usage of the URL chain (url_chain_ member of
+    DownloadResponseHandler) in KB when {Location}.
+  </summary>
+  <token key="Location" variants="DownloadUrlChainLengthLocation"/>
 </histogram>
 
 <histogram name="Download.NetworkConnectionType.StartNew{DownloadSource}"

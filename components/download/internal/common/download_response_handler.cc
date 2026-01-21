@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/byte_size.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/download/public/common/download_stats.h"
 #include "components/download/public/common/download_url_parameters.h"
@@ -47,6 +48,14 @@ mojom::NetworkRequestStatus ConvertInterruptReasonToMojoNetworkRequestStatus(
     default:
       NOTREACHED();
   }
+}
+
+base::ByteSize ComputeUrlChainByteSize(const std::vector<GURL>& url_chain) {
+  base::ByteSize size;
+  for (const GURL& url : url_chain) {
+    size += base::ByteSize(url.EstimateMemoryUsage());
+  }
+  return size;
 }
 
 }  // namespace
@@ -94,6 +103,13 @@ DownloadResponseHandler::DownloadResponseHandler(
 
   if (resource_request->trusted_params)
     isolation_info_ = resource_request->trusted_params->isolation_info;
+
+  base::UmaHistogramCounts1000(
+      "Download.Memory.UrlChainLength.CreateResponseHandler",
+      url_chain_.size());
+  base::UmaHistogramMemoryKB(
+      "Download.Memory.UrlChainSizeKb.CreateResponseHandler",
+      ComputeUrlChainByteSize(url_chain_));
 }
 
 DownloadResponseHandler::~DownloadResponseHandler() = default;
@@ -152,6 +168,13 @@ DownloadResponseHandler::CreateDownloadCreateInfo(
           ? HandleSuccessfulServerResponse(
                 *head.headers, create_info->save_info.get(), fetch_error_body_)
           : DOWNLOAD_INTERRUPT_REASON_NONE;
+
+  base::UmaHistogramCounts1000(
+      "Download.Memory.UrlChainLength.CreateDownloadCreateInfo",
+      url_chain_.size());
+  base::UmaHistogramMemoryKB(
+      "Download.Memory.UrlChainSizeKb.CreateDownloadCreateInfo",
+      ComputeUrlChainByteSize(url_chain_));
 
   create_info->total_bytes = head.content_length > 0 ? head.content_length : 0;
   create_info->result = result;
