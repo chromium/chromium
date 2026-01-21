@@ -16,7 +16,7 @@ console-log-linkify-…ack-in-errors.js:47 Error: some error
 console-log-linkify-…ack-in-errors.js:53 Error message without stacks http://www.chromium.org/
 console-log-linkify-…ack-in-errors.js:55 Error valid stack #2
     at www.chromium.org/boo.js:40:70
-    at foo(www.chromium.org/foo.js:10:50)
+    at foo (www.chromium.org/foo.js:10:50)
 console-log-linkify-…ack-in-errors.js:56 Error valid stack #3
     at www.chromium.org/foo.js:40
 console-log-linkify-…ack-in-errors.js:57 Error: MyError
