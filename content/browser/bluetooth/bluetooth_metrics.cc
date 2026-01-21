@@ -7,14 +7,12 @@
 #include <stdint.h>
 
 #include <algorithm>
-#include <map>
-#include <set>
-#include <unordered_set>
 
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 using device::BluetoothUUID;
 
@@ -24,7 +22,7 @@ namespace {
 // base::UmaHistogramSparse(positive int).
 //
 // Hash values can be produced manually using tool: bluetooth_metrics_hash.
-int HashUUID(const std::string& canonical_uuid) {
+int HashUUID(std::string_view canonical_uuid) {
   DCHECK(canonical_uuid.size() == 36) << "HashUUID requires 128 bit UUID "
                                          "strings in canonical format to "
                                          "ensure consistent hash results.";
@@ -52,7 +50,7 @@ namespace content {
 
 void RecordRequestDeviceOptions(
     const blink::mojom::WebBluetoothRequestDeviceOptionsPtr& options) {
-  std::unordered_set<std::string> union_of_services;
+  absl::flat_hash_set<std::string_view> union_of_services;
   for (const BluetoothUUID& service : options->optional_services) {
     union_of_services.insert(service.canonical_value());
   }
@@ -68,7 +66,7 @@ void RecordRequestDeviceOptions(
     }
   }
 
-  for (const std::string& service : union_of_services) {
+  for (const std::string_view service : union_of_services) {
     // TODO(ortuno): Use a macro to histogram strings.
     // http://crbug.com/520284
     base::UmaHistogramSparse(
