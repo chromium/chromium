@@ -10,6 +10,10 @@
 // See media::VP9Decoder for example usage.
 //
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
 #ifndef MEDIA_PARSERS_VP9_PARSER_H_
 #define MEDIA_PARSERS_VP9_PARSER_H_
 
@@ -23,7 +27,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/memory/raw_span.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/media_export.h"
 #include "media/base/video_color_space.h"
@@ -31,13 +34,13 @@
 
 namespace media {
 
-inline constexpr int kVp9MaxProfile = 4;
-inline constexpr int kVp9NumRefFramesLog2 = 3;
-inline constexpr size_t kVp9NumRefFrames = 1 << kVp9NumRefFramesLog2;
-inline constexpr uint8_t kVp9MaxProb = 255;
-inline constexpr size_t kVp9NumRefsPerFrame = 3;
-inline constexpr size_t kVp9NumFrameContextsLog2 = 2;
-inline constexpr size_t kVp9NumFrameContexts = 1 << kVp9NumFrameContextsLog2;
+const int kVp9MaxProfile = 4;
+const int kVp9NumRefFramesLog2 = 3;
+const size_t kVp9NumRefFrames = 1 << kVp9NumRefFramesLog2;
+const uint8_t kVp9MaxProb = 255;
+const size_t kVp9NumRefsPerFrame = 3;
+const size_t kVp9NumFrameContextsLog2 = 2;
+const size_t kVp9NumFrameContexts = 1 << kVp9NumFrameContextsLog2;
 
 using Vp9Prob = uint8_t;
 
@@ -86,27 +89,20 @@ struct MEDIA_EXPORT Vp9SegmentationParams {
     SEG_LVL_MAX
   };
 
-  Vp9SegmentationParams();
-  Vp9SegmentationParams(const Vp9SegmentationParams&);
-  Vp9SegmentationParams(Vp9SegmentationParams&&);
-  Vp9SegmentationParams& operator=(const Vp9SegmentationParams&);
-  Vp9SegmentationParams& operator=(Vp9SegmentationParams&&);
-  ~Vp9SegmentationParams();
+  bool enabled;
 
-  bool enabled = false;
+  bool update_map;
+  uint8_t tree_probs[kNumTreeProbs];
+  bool temporal_update;
+  uint8_t pred_probs[kNumPredictionProbs];
 
-  bool update_map = false;
-  bool update_data = false;
-  bool temporal_update = false;
-  bool abs_or_delta_update = false;
-  std::array<uint8_t, kNumTreeProbs> tree_probs = {};
-  std::array<uint8_t, kNumPredictionProbs> pred_probs = {};
+  bool update_data;
+  bool abs_or_delta_update;
+  bool feature_enabled[kNumSegments][SEG_LVL_MAX];
+  std::array<std::array<int16_t, SEG_LVL_MAX>, kNumSegments> feature_data;
 
-  std::array<std::array<bool, SEG_LVL_MAX>, kNumSegments> feature_enabled = {};
-  std::array<std::array<int16_t, SEG_LVL_MAX>, kNumSegments> feature_data = {};
-
-  std::array<std::array<int16_t, 2>, kNumSegments> y_dequant = {};
-  std::array<std::array<int16_t, 2>, kNumSegments> uv_dequant = {};
+  std::array<std::array<int16_t, 2>, kNumSegments> y_dequant;
+  std::array<std::array<int16_t, 2>, kNumSegments> uv_dequant;
 
   bool FeatureEnabled(size_t seg_id, SegmentLevelFeature feature) const {
     return feature_enabled[seg_id][feature];
@@ -120,20 +116,19 @@ struct MEDIA_EXPORT Vp9SegmentationParams {
 struct MEDIA_EXPORT Vp9LoopFilterParams {
   static const size_t kNumModeDeltas = 2;
 
-  uint8_t level = 0;
-  uint8_t sharpness = 0;
+  uint8_t level;
+  uint8_t sharpness;
 
-  bool delta_enabled = false;
-  bool delta_update = false;
-  std::array<bool, VP9_FRAME_MAX> update_ref_deltas = {};
-  std::array<int8_t, VP9_FRAME_MAX> ref_deltas = {};
-  std::array<bool, kNumModeDeltas> update_mode_deltas = {};
-  std::array<int8_t, kNumModeDeltas> mode_deltas = {};
+  bool delta_enabled;
+  bool delta_update;
+  std::array<bool, VP9_FRAME_MAX> update_ref_deltas;
+  std::array<int8_t, VP9_FRAME_MAX> ref_deltas;
+  std::array<bool, kNumModeDeltas> update_mode_deltas;
+  int8_t mode_deltas[kNumModeDeltas];
 
   // Calculated from above fields.
-  std::array<std::array<std::array<uint8_t, kNumModeDeltas>, VP9_FRAME_MAX>,
-             Vp9SegmentationParams::kNumSegments>
-      lvl = {};
+  uint8_t lvl[Vp9SegmentationParams::kNumSegments][VP9_FRAME_MAX]
+             [kNumModeDeltas];
 };
 
 // Members of Vp9FrameHeader will be 0-initialized by Vp9Parser::ParseNextFrame.
@@ -229,7 +224,7 @@ struct MEDIA_EXPORT Vp9FrameHeader {
   uint8_t reset_frame_context = 0;
   uint8_t refresh_frame_flags = 0;
   std::array<uint8_t, kVp9NumRefsPerFrame> ref_frame_idx = {};
-  std::array<bool, Vp9RefType::VP9_FRAME_MAX> ref_frame_sign_bias = {false};
+  bool ref_frame_sign_bias[Vp9RefType::VP9_FRAME_MAX] = {false};
   bool allow_high_precision_mv = false;
   Vp9InterpolationFilter interpolation_filter{Vp9InterpolationFilter::EIGHTTAP};
 
@@ -277,16 +272,16 @@ class MEDIA_EXPORT Vp9Parser {
 
   // The parsing context to keep track of references.
   struct ReferenceSlot {
-    bool initialized = false;
-    uint32_t frame_width = 0;
-    uint32_t frame_height = 0;
-    uint8_t subsampling_x = 0;
-    uint8_t subsampling_y = 0;
-    uint8_t bit_depth = 0;
+    bool initialized;
+    uint32_t frame_width;
+    uint32_t frame_height;
+    uint8_t subsampling_x;
+    uint8_t subsampling_y;
+    uint8_t bit_depth;
 
     // More fields for consistency checking.
-    uint8_t profile = 0;
-    Vp9ColorSpace color_space = Vp9ColorSpace::UNKNOWN;
+    uint8_t profile;
+    Vp9ColorSpace color_space;
   };
 
   // The parsing context that persists across frames.
@@ -315,13 +310,13 @@ class MEDIA_EXPORT Vp9Parser {
     Vp9LoopFilterParams loop_filter_;
 
     // Frame references.
-    std::array<ReferenceSlot, kVp9NumRefFrames> ref_slots_;
+    ReferenceSlot ref_slots_[kVp9NumRefFrames];
   };
 
   // Stores start pointer and size of each frame within the current superframe.
   struct FrameInfo {
     FrameInfo();
-    explicit FrameInfo(base::span<const uint8_t> data);
+    FrameInfo(const uint8_t* ptr, off_t size);
     FrameInfo(FrameInfo&& other);
     FrameInfo& operator=(FrameInfo&& other);
 
@@ -332,11 +327,14 @@ class MEDIA_EXPORT Vp9Parser {
 
     ~FrameInfo();
 
-    bool IsValid() const { return !data.empty(); }
-    void Reset() { data = {}; }
+    bool IsValid() const { return ptr != nullptr; }
+    void Reset() { ptr = nullptr; }
 
     // Starting address of the frame.
-    base::raw_span<const uint8_t> data;
+    raw_ptr<const uint8_t, AllowPtrArithmetic> ptr = nullptr;
+
+    // Size of the frame in bytes.
+    off_t size = 0;
 
     // Necessary height and width to decode the frame.
     // This is filled only if the stream is SVC.
@@ -396,14 +394,16 @@ class MEDIA_EXPORT Vp9Parser {
   void Reset();
 
   // Determines if the passed in VP9 frame data contains a superframe or not.
-  static bool IsSuperframe(base::span<const uint8_t> stream,
+  static bool IsSuperframe(const uint8_t* stream,
+                           off_t stream_size,
                            const DecryptConfig* decrypt_config);
 
   // Extracts the frame information for a frame, if this is a superframe then
   // the returned list will contain each of the frames in decode order. An empty
   // list will be returned in the error case.
   static base::circular_deque<FrameInfo> ExtractFrames(
-      base::span<const uint8_t> stream,
+      const uint8_t* stream,
+      off_t stream_size,
       const DecryptConfig* decrypt_config);
 
  private:
@@ -427,7 +427,10 @@ class MEDIA_EXPORT Vp9Parser {
   void UpdateSlots(Vp9Parser::Context* context);
 
   // Current address in the bitstream buffer.
-  base::raw_span<const uint8_t> stream_;
+  raw_ptr<const uint8_t> stream_;
+
+  // Remaining bytes in stream_.
+  off_t bytes_left_;
 
   // FrameInfo for the remaining frames in the current superframe to be parsed.
   base::circular_deque<FrameInfo> frames_;

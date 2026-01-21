@@ -10,7 +10,6 @@
 
 #include <memory>
 
-#include "base/containers/span.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -28,8 +27,8 @@ class MEDIA_EXPORT Vp9RawBitsReader {
 
   ~Vp9RawBitsReader();
 
-  // |data| is the input buffer.
-  void Initialize(base::span<const uint8_t> data);
+  // |data| is the input buffer with |size| bytes.
+  void Initialize(const uint8_t* data, size_t size);
 
   // Returns true if none of the reads since the last Initialize() call has
   // gone beyond the end of available data.

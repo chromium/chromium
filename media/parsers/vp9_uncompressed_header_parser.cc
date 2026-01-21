@@ -8,7 +8,6 @@
 #include <type_traits>
 
 #include "base/compiler_specific.h"
-#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 
@@ -775,8 +774,10 @@ Vp9InterpolationFilter Vp9UncompressedHeaderParser::ReadInterpolationFilter() {
 }
 
 void Vp9UncompressedHeaderParser::SetupPastIndependence(Vp9FrameHeader* fhdr) {
-  context_->segmentation_ = {};
-  fhdr->ref_frame_sign_bias.fill(false);
+  UNSAFE_TODO(
+      memset(&context_->segmentation_, 0, sizeof(context_->segmentation_)));
+  UNSAFE_TODO(
+      memset(fhdr->ref_frame_sign_bias, 0, sizeof(fhdr->ref_frame_sign_bias)));
 
   ResetLoopfilter();
   fhdr->frame_context = kVp9DefaultFrameContext;
@@ -805,7 +806,8 @@ void Vp9UncompressedHeaderParser::ReadLoopFilterParams() {
       for (size_t i = 0; i < Vp9LoopFilterParams::kNumModeDeltas; i++) {
         loop_filter.update_mode_deltas[i] = reader_.ReadBool();
         if (loop_filter.update_mode_deltas[i]) {
-          loop_filter.mode_deltas[i] = reader_.ReadSignedLiteral(6);
+          UNSAFE_TODO(loop_filter.mode_deltas[i]) =
+              reader_.ReadSignedLiteral(6);
         }
       }
     }
@@ -862,8 +864,8 @@ bool Vp9UncompressedHeaderParser::ReadSegmentationParams() {
     for (size_t i = 0; i < Vp9SegmentationParams::kNumSegments; i++) {
       for (size_t j = 0; j < Vp9SegmentationParams::SEG_LVL_MAX; j++) {
         int16_t data = 0;
-        segmentation.feature_enabled[i][j] = reader_.ReadBool();
-        if (segmentation.feature_enabled[i][j]) {
+        UNSAFE_TODO(segmentation.feature_enabled[i][j]) = reader_.ReadBool();
+        if (UNSAFE_TODO(segmentation.feature_enabled[i][j])) {
           data = reader_.ReadLiteral(kFeatureDataBits[j]);
           if (kFeatureDataSigned[j])
             if (reader_.ReadBool()) {
@@ -876,7 +878,7 @@ bool Vp9UncompressedHeaderParser::ReadSegmentationParams() {
               data = -data;
             }
         }
-        segmentation.feature_data[i][j] = data;
+        UNSAFE_TODO(segmentation.feature_data[i][j]) = data;
       }
     }
   }
@@ -924,16 +926,20 @@ void Vp9UncompressedHeaderParser::ResetLoopfilter() {
   loop_filter.ref_deltas[VP9_FRAME_GOLDEN] = -1;
   loop_filter.ref_deltas[VP9_FRAME_ALTREF] = -1;
 
-  loop_filter.mode_deltas.fill(0);
+  UNSAFE_TODO(
+      memset(loop_filter.mode_deltas, 0, sizeof(loop_filter.mode_deltas)));
 }
 
 // 6.2 Uncompressed header syntax
-bool Vp9UncompressedHeaderParser::Parse(base::span<const uint8_t> stream,
+bool Vp9UncompressedHeaderParser::Parse(const uint8_t* stream,
+                                        off_t frame_size,
                                         Vp9FrameHeader* fhdr) {
   DVLOG(2) << "Vp9UncompressedHeaderParser::Parse";
-  reader_.Initialize(stream);
+  reader_.Initialize(stream, frame_size);
 
-  fhdr->data = stream;
+  fhdr->data =
+      UNSAFE_TODO(base::span(stream, base::checked_cast<size_t>(frame_size)));
+
   // frame marker
   if (reader_.ReadLiteral(2) != 0x2) {
     DVLOG(1) << "frame marker shall be equal to 2";
@@ -1005,12 +1011,12 @@ bool Vp9UncompressedHeaderParser::Parse(base::span<const uint8_t> stream,
     } else {
       fhdr->refresh_frame_flags = reader_.ReadLiteral(8);
 
-      static_assert(std::tuple_size_v<decltype(fhdr->ref_frame_sign_bias)> >=
+      static_assert(std::extent<decltype(fhdr->ref_frame_sign_bias)>() >=
                         Vp9RefType::VP9_FRAME_LAST + kVp9NumRefsPerFrame,
                     "ref_frame_sign_bias is not big enough");
       for (size_t i = 0; i < kVp9NumRefsPerFrame; i++) {
         fhdr->ref_frame_idx[i] = reader_.ReadLiteral(kVp9NumRefFramesLog2);
-        fhdr->ref_frame_sign_bias[Vp9RefType::VP9_FRAME_LAST + i] =
+        UNSAFE_TODO(fhdr->ref_frame_sign_bias[Vp9RefType::VP9_FRAME_LAST + i]) =
             reader_.ReadBool();
 
         // 8.2 Frame order constraints

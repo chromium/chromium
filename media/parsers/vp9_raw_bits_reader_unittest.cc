@@ -14,7 +14,7 @@ namespace media {
 TEST(Vp9RawBitsReaderTest, ReadBool) {
   uint8_t data[] = {0xf1};
   Vp9RawBitsReader reader;
-  reader.Initialize(data);
+  reader.Initialize(data, 1);
 
   EXPECT_TRUE(reader.IsValid());
   EXPECT_EQ(0u, reader.GetBytesRead());
@@ -38,7 +38,7 @@ TEST(Vp9RawBitsReaderTest, ReadBool) {
 TEST(Vp9RawBitsReader, ReadLiteral) {
   uint8_t data[] = {0x3d, 0x67, 0x9a};
   Vp9RawBitsReader reader;
-  reader.Initialize(data);
+  reader.Initialize(data, 3);
 
   EXPECT_TRUE(reader.IsValid());
   EXPECT_EQ(0x03, reader.ReadLiteral(4));
@@ -54,7 +54,7 @@ TEST(Vp9RawBitsReader, ReadLiteral) {
 TEST(Vp9RawBitsReader, ReadSignedLiteral) {
   uint8_t data[] = {0x3d, 0x67, 0x9a};
   Vp9RawBitsReader reader;
-  reader.Initialize(data);
+  reader.Initialize(data, 3);
 
   EXPECT_TRUE(reader.IsValid());
   EXPECT_EQ(-0x03, reader.ReadSignedLiteral(4));

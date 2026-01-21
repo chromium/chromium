@@ -17,8 +17,9 @@ Vp9RawBitsReader::Vp9RawBitsReader() : valid_(true) {}
 
 Vp9RawBitsReader::~Vp9RawBitsReader() = default;
 
-void Vp9RawBitsReader::Initialize(base::span<const uint8_t> data) {
-  reader_ = std::make_unique<BitReader>(data);
+void Vp9RawBitsReader::Initialize(const uint8_t* data, size_t size) {
+  DCHECK(data);
+  reader_ = std::make_unique<BitReader>(data, size);
   valid_ = true;
 }
 

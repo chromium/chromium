@@ -15,7 +15,7 @@ namespace media {
 
 class MEDIA_EXPORT Vp9UncompressedHeaderParser {
  public:
-  explicit Vp9UncompressedHeaderParser(Vp9Parser::Context* context);
+  Vp9UncompressedHeaderParser(Vp9Parser::Context* context);
 
   Vp9UncompressedHeaderParser(const Vp9UncompressedHeaderParser&) = delete;
   Vp9UncompressedHeaderParser& operator=(const Vp9UncompressedHeaderParser&) =
@@ -23,7 +23,7 @@ class MEDIA_EXPORT Vp9UncompressedHeaderParser {
 
   // Parses VP9 uncompressed header in |stream| with |frame_size| into |fhdr|.
   // Returns true if no error.
-  bool Parse(base::span<const uint8_t> stream, Vp9FrameHeader* fhdr);
+  bool Parse(const uint8_t* stream, off_t frame_size, Vp9FrameHeader* fhdr);
 
   const Vp9FrameContext& GetVp9DefaultFrameContextForTesting() const;
 

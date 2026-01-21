@@ -178,7 +178,7 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
   slice_param.slice_data_flag = VA_SLICE_DATA_FLAG_ALL;
 
   static_assert(
-      std::tuple_size_v<decltype(Vp9SegmentationParams::feature_enabled)> ==
+      std::extent<decltype(Vp9SegmentationParams::feature_enabled)>() ==
           std::extent<decltype(slice_param.seg_param)>(),
       "seg_param array of incorrect size");
   for (size_t i = 0; i < std::size(slice_param.seg_param); ++i) {

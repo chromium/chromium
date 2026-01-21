@@ -42,7 +42,7 @@ class VideoToolboxVP9AcceleratorTest : public testing::Test {
 TEST_F(VideoToolboxVP9AcceleratorTest, Construct) {}
 
 TEST_F(VideoToolboxVP9AcceleratorTest, DecodeRaw) {
-  const Vp9SegmentationParams segm_params = {};
+  const Vp9SegmentationParams segm_params = {0};
   const Vp9LoopFilterParams lf_params = {0};
   const Vp9ReferenceFrameVector reference_frames;
 
@@ -71,7 +71,7 @@ TEST_F(VideoToolboxVP9AcceleratorTest, DecodeRaw) {
 }
 
 TEST_F(VideoToolboxVP9AcceleratorTest, DecodeSuperframe) {
-  const Vp9SegmentationParams segm_params = {};
+  const Vp9SegmentationParams segm_params = {0};
   const Vp9LoopFilterParams lf_params = {0};
   const Vp9ReferenceFrameVector reference_frames;
 

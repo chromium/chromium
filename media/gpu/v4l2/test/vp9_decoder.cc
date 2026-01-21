@@ -302,7 +302,7 @@ void Vp9Decoder::SetupFrameParams(
   v4l2_frame_params->tile_cols_log2 = frame_hdr.tile_cols_log2;
   v4l2_frame_params->tile_rows_log2 = frame_hdr.tile_rows_log2;
   static_assert(Vp9RefType::VP9_FRAME_MAX - VP9_FRAME_LAST <
-                    std::tuple_size_v<decltype(frame_hdr.ref_frame_sign_bias)>,
+                    std::extent<decltype(frame_hdr.ref_frame_sign_bias)>::value,
                 "array sizes are incompatible");
   for (size_t i = 0; i < Vp9RefType::VP9_FRAME_MAX - VP9_FRAME_LAST; i++) {
     v4l2_frame_params->ref_frame_sign_bias |=

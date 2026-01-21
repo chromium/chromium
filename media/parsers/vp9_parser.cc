@@ -9,20 +9,22 @@
 //  2 parsing steps
 //  3 parsed values (selected)
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/parsers/vp9_parser.h"
 
 #include <algorithm>
 #include <array>
 
-#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
-#include "base/containers/span_reader.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/types/zip.h"
 #include "media/parsers/vp9_uncompressed_header_parser.h"
 
 namespace media {
@@ -263,18 +265,18 @@ std::unique_ptr<DecryptConfig> SplitSubsamples(
                                                   frame_dc_iv);
 }
 
-bool IsByteNEncrypted(size_t byte,
+bool IsByteNEncrypted(off_t byte,
                       const std::vector<SubsampleEntry>& subsamples) {
-  size_t original_byte = byte;
+  off_t original_byte = byte;
   for (const SubsampleEntry& subsample : subsamples) {
     if (byte < 0) {
       return false;
     }
-    if (byte < subsample.clear_bytes) {
+    if (static_cast<uint32_t>(byte) < subsample.clear_bytes) {
       return false;
     }
     byte -= subsample.clear_bytes;
-    if (byte < subsample.cypher_bytes) {
+    if (static_cast<uint32_t>(byte) < subsample.cypher_bytes) {
       return true;
     }
     byte -= subsample.cypher_bytes;
@@ -283,25 +285,7 @@ bool IsByteNEncrypted(size_t byte,
   return false;
 }
 
-template <typename T>
-bool ContainsZero(const T& data) {
-  base::span<const uint8_t> span = base::as_byte_span(data);
-  // TODO(crbug.com/40284755): We should compare the performance differences
-  // between `memchr` and `std::range::find`.
-  return UNSAFE_TODO(memchr(span.data(), 0, span.size())) != nullptr;
-}
-
 }  // namespace
-
-Vp9SegmentationParams::Vp9SegmentationParams() = default;
-Vp9SegmentationParams::Vp9SegmentationParams(const Vp9SegmentationParams&) =
-    default;
-Vp9SegmentationParams::Vp9SegmentationParams(Vp9SegmentationParams&&) = default;
-Vp9SegmentationParams& Vp9SegmentationParams::operator=(
-    const Vp9SegmentationParams&) = default;
-Vp9SegmentationParams& Vp9SegmentationParams::operator=(
-    Vp9SegmentationParams&&) = default;
-Vp9SegmentationParams::~Vp9SegmentationParams() = default;
 
 Vp9FrameHeader::Vp9FrameHeader() = default;
 Vp9FrameHeader::Vp9FrameHeader(const Vp9FrameHeader&) = default;
@@ -361,8 +345,8 @@ VideoColorSpace Vp9FrameHeader::GetColorSpace() const {
 
 Vp9Parser::FrameInfo::FrameInfo() = default;
 
-Vp9Parser::FrameInfo::FrameInfo(base::span<const uint8_t> input)
-    : data(input) {}
+Vp9Parser::FrameInfo::FrameInfo(const uint8_t* ptr, off_t size)
+    : ptr(ptr), size(size) {}
 
 Vp9Parser::FrameInfo::FrameInfo(FrameInfo&& other) = default;
 
@@ -375,85 +359,87 @@ bool Vp9FrameContext::IsValid() const {
   // probs should be in [1, 255] range.
   static_assert(sizeof(Vp9Prob) == 1,
                 "following checks assuming Vp9Prob is single byte");
-  if (ContainsZero(tx_probs_8x8)) {
+  if (memchr(tx_probs_8x8, 0, sizeof(tx_probs_8x8))) {
     return false;
   }
-  if (ContainsZero(tx_probs_16x16)) {
+  if (memchr(tx_probs_16x16, 0, sizeof(tx_probs_16x16))) {
     return false;
   }
-  if (ContainsZero(tx_probs_32x32)) {
+  if (memchr(tx_probs_32x32, 0, sizeof(tx_probs_32x32))) {
     return false;
   }
 
   for (auto& a : coef_probs) {
     for (auto& ai : a) {
       for (auto& aj : ai) {
-        auto [dc, ac] = base::span(aj).split_at<1u>();
-        if (std::ranges::contains(
-                base::as_byte_span(base::span(dc[0]).first<3u>()), 0)) {
-          return false;
-        }
-        if (std::ranges::contains(base::as_byte_span(ac), 0)) {
-          return false;
+        for (auto& ak : aj) {
+          int max_l = (+ak == +aj[0]) ? 3 : 6;
+          for (int l = 0; l < max_l; l++) {
+            for (auto& x : ak[l]) {
+              if (x == 0) {
+                return false;
+              }
+            }
+          }
         }
       }
     }
   }
-  if (ContainsZero(skip_prob)) {
+  if (memchr(skip_prob, 0, sizeof(skip_prob))) {
     return false;
   }
-  if (ContainsZero(inter_mode_probs)) {
+  if (memchr(inter_mode_probs, 0, sizeof(inter_mode_probs))) {
     return false;
   }
-  if (ContainsZero(interp_filter_probs)) {
+  if (memchr(interp_filter_probs, 0, sizeof(interp_filter_probs))) {
     return false;
   }
-  if (ContainsZero(is_inter_prob)) {
+  if (memchr(is_inter_prob, 0, sizeof(is_inter_prob))) {
     return false;
   }
-  if (ContainsZero(comp_mode_prob)) {
+  if (memchr(comp_mode_prob, 0, sizeof(comp_mode_prob))) {
     return false;
   }
-  if (ContainsZero(single_ref_prob)) {
+  if (memchr(single_ref_prob, 0, sizeof(single_ref_prob))) {
     return false;
   }
-  if (ContainsZero(comp_ref_prob)) {
+  if (memchr(comp_ref_prob, 0, sizeof(comp_ref_prob))) {
     return false;
   }
-  if (ContainsZero(y_mode_probs)) {
+  if (memchr(y_mode_probs, 0, sizeof(y_mode_probs))) {
     return false;
   }
-  if (ContainsZero(uv_mode_probs)) {
+  if (memchr(uv_mode_probs, 0, sizeof(uv_mode_probs))) {
     return false;
   }
-  if (ContainsZero(partition_probs)) {
+  if (memchr(partition_probs, 0, sizeof(partition_probs))) {
     return false;
   }
-  if (ContainsZero(mv_joint_probs)) {
+  if (memchr(mv_joint_probs, 0, sizeof(mv_joint_probs))) {
     return false;
   }
-  if (ContainsZero(mv_sign_prob)) {
+  if (memchr(mv_sign_prob, 0, sizeof(mv_sign_prob))) {
     return false;
   }
-  if (ContainsZero(mv_class_probs)) {
+  if (memchr(mv_class_probs, 0, sizeof(mv_class_probs))) {
     return false;
   }
-  if (ContainsZero(mv_class0_bit_prob)) {
+  if (memchr(mv_class0_bit_prob, 0, sizeof(mv_class0_bit_prob))) {
     return false;
   }
-  if (ContainsZero(mv_bits_prob)) {
+  if (memchr(mv_bits_prob, 0, sizeof(mv_bits_prob))) {
     return false;
   }
-  if (ContainsZero(mv_class0_fr_probs)) {
+  if (memchr(mv_class0_fr_probs, 0, sizeof(mv_class0_fr_probs))) {
     return false;
   }
-  if (ContainsZero(mv_fr_probs)) {
+  if (memchr(mv_fr_probs, 0, sizeof(mv_fr_probs))) {
     return false;
   }
-  if (ContainsZero(mv_class0_hp_prob)) {
+  if (memchr(mv_class0_hp_prob, 0, sizeof(mv_class0_hp_prob))) {
     return false;
   }
-  if (ContainsZero(mv_hp_prob)) {
+  if (memchr(mv_hp_prob, 0, sizeof(mv_hp_prob))) {
     return false;
   }
 
@@ -461,9 +447,9 @@ bool Vp9FrameContext::IsValid() const {
 }
 
 void Vp9Parser::Context::Reset() {
-  segmentation_ = {};
-  loop_filter_ = {};
-  ref_slots_ = {};
+  memset(&segmentation_, 0, sizeof(segmentation_));
+  memset(&loop_filter_, 0, sizeof(loop_filter_));
+  memset(&ref_slots_, 0, sizeof(ref_slots_));
 }
 
 const Vp9Parser::ReferenceSlot& Vp9Parser::Context::GetRefSlot(
@@ -490,8 +476,8 @@ void Vp9Parser::SetStream(const uint8_t* stream,
                           const std::vector<uint32_t>& spatial_layer_frame_size,
                           std::unique_ptr<DecryptConfig> stream_config) {
   DCHECK(stream);
-  stream_ =
-      UNSAFE_TODO(base::span(stream, base::checked_cast<size_t>(stream_size)));
+  stream_ = stream;
+  bytes_left_ = stream_size;
   frames_.clear();
   spatial_layer_frame_size_ = spatial_layer_frame_size;
   stream_decrypt_config_ = std::move(stream_config);
@@ -504,7 +490,8 @@ void Vp9Parser::SetStream(const uint8_t* stream,
 }
 
 void Vp9Parser::Reset() {
-  stream_ = {};
+  stream_ = nullptr;
+  bytes_left_ = 0;
   frames_.clear();
   spatial_layer_frame_size_.clear();
 
@@ -515,24 +502,25 @@ bool Vp9Parser::ParseUncompressedHeader(const FrameInfo& frame_info,
                                         Vp9FrameHeader* fhdr,
                                         Result* result,
                                         Vp9Parser::Context* context) {
-  curr_frame_header_ = {};
+  memset(&curr_frame_header_, 0, sizeof(curr_frame_header_));
   *result = kInvalidStream;
 
   Vp9UncompressedHeaderParser uncompressed_parser(context);
-  if (!uncompressed_parser.Parse(frame_info.data, &curr_frame_header_)) {
+  if (!uncompressed_parser.Parse(frame_info.ptr, frame_info.size,
+                                 &curr_frame_header_)) {
     *result = kInvalidStream;
     return true;
   }
 
   if (curr_frame_header_.header_size_in_bytes == 0) {
     // Verify padding bits are zero.
-    const bool is_padding_bit_all_zero = std::ranges::all_of(
-        frame_info.data.subspan(curr_frame_header_.uncompressed_header_size),
-        [](const auto& v) { return v == 0; });
-    if (!is_padding_bit_all_zero) {
-      DVLOG(1) << "Padding bits are not zeros.";
-      *result = kInvalidStream;
-      return true;
+    for (off_t i = curr_frame_header_.uncompressed_header_size;
+         i < frame_info.size; i++) {
+      if (frame_info.ptr[i] != 0) {
+        DVLOG(1) << "Padding bits are not zeros.";
+        *result = kInvalidStream;
+        return true;
+      }
     }
     *fhdr = curr_frame_header_;
     *result = kOk;
@@ -540,12 +528,11 @@ bool Vp9Parser::ParseUncompressedHeader(const FrameInfo& frame_info,
   }
   if (curr_frame_header_.uncompressed_header_size +
           curr_frame_header_.header_size_in_bytes >
-      frame_info.data.size()) {
+      base::checked_cast<size_t>(frame_info.size)) {
     DVLOG(1) << "header_size_in_bytes="
              << curr_frame_header_.header_size_in_bytes
              << " is larger than bytes left in buffer: "
-             << frame_info.data.size() -
-                    curr_frame_header_.uncompressed_header_size;
+             << frame_info.size - curr_frame_header_.uncompressed_header_size;
     *result = kInvalidStream;
     return true;
   }
@@ -565,7 +552,7 @@ Vp9Parser::Result Vp9Parser::ParseNextFrame(
 
   if (frames_.empty()) {
     // No frames to be decoded, if there is no more stream, request more.
-    if (stream_.empty()) {
+    if (!stream_) {
       return kEOStream;
     }
 
@@ -622,7 +609,7 @@ Vp9Parser::Result Vp9Parser::ParseNextFrame(
 std::unique_ptr<DecryptConfig> Vp9Parser::NextFrameDecryptContextForTesting() {
   if (frames_.empty()) {
     // No frames to be decoded, if there is no more stream, request more.
-    if (stream_.empty()) {
+    if (!stream_) {
       return nullptr;
     }
 
@@ -642,15 +629,16 @@ std::string Vp9Parser::IncrementIVForTesting(std::string_view iv, uint32_t by) {
 }
 
 // static
-bool Vp9Parser::IsSuperframe(base::span<const uint8_t> stream,
+bool Vp9Parser::IsSuperframe(const uint8_t* stream,
+                             off_t stream_size,
                              const DecryptConfig* decrypt_config) {
-  if (stream.size() < 1) {
+  if (!stream || stream_size < 1) {
     return false;
   }
 
   // The marker byte might be encrypted, in which case we should treat
   // the stream as a single frame.
-  size_t marker_offset = stream.size() - 1;
+  off_t marker_offset = stream_size - 1;
   if (decrypt_config &&
       IsByteNEncrypted(marker_offset, decrypt_config->subsamples())) {
     return false;
@@ -658,50 +646,53 @@ bool Vp9Parser::IsSuperframe(base::span<const uint8_t> stream,
 
   // If this is a superframe, the last byte in the stream will contain the
   // superframe marker. If not, the whole buffer contains a single frame.
-  uint8_t marker = stream.back();
+  uint8_t marker = *(stream + marker_offset);
   return ((marker & 0xe0) == 0xc0);
 }
 
 // static
 base::circular_deque<Vp9Parser::FrameInfo> Vp9Parser::ExtractFrames(
-    base::span<const uint8_t> stream,
+    const uint8_t* stream,
+    off_t stream_size,
     const DecryptConfig* decrypt_config) {
   base::circular_deque<FrameInfo> frames;
+  off_t bytes_left = stream_size;
 
-  if (stream.size() < 1) {
+  if (!stream || bytes_left < 1) {
     return frames;
   }
 
-  if (!IsSuperframe(stream, decrypt_config)) {
-    frames.push_back(FrameInfo(stream));
+  if (!IsSuperframe(stream, bytes_left, decrypt_config)) {
+    frames.push_back(FrameInfo(stream, bytes_left));
     if (decrypt_config) {
       frames[0].decrypt_config = decrypt_config->Clone();
     }
     return frames;
   }
 
-  const uint8_t marker = stream.back();
+  off_t marker_offset = stream_size - 1;
+  uint8_t marker = *(stream + marker_offset);
 
   DVLOG(1) << "Parsing a superframe";
 
   // The bytes immediately before the superframe marker constitute superframe
   // index, which stores information about sizes of each frame in it.
   // Calculate its size and set index_ptr to the beginning of it.
-  const size_t num_frames = (marker & 0x7) + 1;
-  const size_t mag = ((marker >> 3) & 0x3) + 1;
-  const size_t index_size = 2 + mag * num_frames;
+  size_t num_frames = (marker & 0x7) + 1;
+  size_t mag = ((marker >> 3) & 0x3) + 1;
+  off_t index_size = 2 + mag * num_frames;
 
-  if (stream.size() < index_size) {
+  if (bytes_left < index_size) {
     return base::circular_deque<FrameInfo>();
   }
 
-  auto [frame_buffer, index] = stream.split_at(stream.size() - index_size);
-  if (marker != index[0]) {
+  const uint8_t* index_ptr = stream + bytes_left - index_size;
+  if (marker != *index_ptr) {
     return base::circular_deque<FrameInfo>();
   }
 
-  base::SpanReader index_reader(index.subspan<1u>());
-  base::SpanReader frame_reader(frame_buffer);
+  ++index_ptr;
+  bytes_left -= index_size;
 
   // Parse frame information contained in the index and add a pointer to and
   // size of each frame to frames.
@@ -719,18 +710,18 @@ base::circular_deque<Vp9Parser::FrameInfo> Vp9Parser::ExtractFrames(
   for (size_t i = 0; i < num_frames; ++i) {
     uint32_t size = 0;
     for (size_t j = 0; j < mag; ++j) {
-      uint8_t value = 0;
-      index_reader.ReadU8LittleEndian(value);
-      size |= value << (j * 8);
+      size |= *index_ptr << (j * 8);
+      ++index_ptr;
     }
 
-    if (size > frame_reader.remaining()) {
+    if (!base::IsValueInRangeForNumericType<off_t>(size) ||
+        static_cast<off_t>(size) > bytes_left) {
       DVLOG(1) << "Not enough data in the buffer for frame " << i;
       frames.clear();
       return frames;
     }
 
-    FrameInfo frame = FrameInfo(frame_reader.Read(size).value());
+    FrameInfo frame = FrameInfo(stream, size);
     if (subsamples.size()) {
       std::unique_ptr<DecryptConfig> frame_dc = SplitSubsamples(
           size, &current_subsample, &extra_clear_subsample_bytes,
@@ -745,6 +736,8 @@ base::circular_deque<Vp9Parser::FrameInfo> Vp9Parser::ExtractFrames(
     }
 
     frames.push_back(std::move(frame));
+    stream += size;
+    bytes_left -= size;
 
     DVLOG(1) << "Frame " << i << ", size: " << size;
   }
@@ -754,12 +747,14 @@ base::circular_deque<Vp9Parser::FrameInfo> Vp9Parser::ExtractFrames(
 
 // Annex B Superframes
 base::circular_deque<Vp9Parser::FrameInfo> Vp9Parser::ParseSuperframe() {
-  base::span<const uint8_t> stream = stream_;
+  const uint8_t* stream = stream_;
+  off_t bytes_left = bytes_left_;
 
   // Make sure we don't parse stream_ more than once.
-  stream_ = {};
+  stream_ = nullptr;
+  bytes_left_ = 0;
 
-  return ExtractFrames(stream, stream_decrypt_config_.get());
+  return ExtractFrames(stream, bytes_left, stream_decrypt_config_.get());
 }
 
 base::circular_deque<Vp9Parser::FrameInfo> Vp9Parser::ParseSVCFrame() {
@@ -768,23 +763,26 @@ base::circular_deque<Vp9Parser::FrameInfo> Vp9Parser::ParseSVCFrame() {
     return {};
   }
 
-  base::span<const uint8_t> stream = stream_;
+  const uint8_t* stream = stream_;
+  off_t bytes_left = bytes_left_;
 
   // Make sure we don't parse stream_ more than once.
-  stream_ = {};
+  stream_ = nullptr;
+  bytes_left_ = 0;
 
   base::circular_deque<FrameInfo> frames;
 
   for (size_t i = 0; i < spatial_layer_frame_size_.size(); i++) {
     const uint32_t size = spatial_layer_frame_size_[i];
-    if (size > stream.size()) {
+    if (!base::IsValueInRangeForNumericType<off_t>(size) ||
+        static_cast<off_t>(size) > bytes_left) {
       DVLOG(1) << "Not enough data in the buffer for frame " << i;
       return {};
     }
 
-    auto [frame, remaining] = stream.split_at(size);
-    frames.emplace_back(frame);
-    stream = remaining;
+    frames.emplace_back(stream, size);
+    stream += size;
+    bytes_left -= size;
     DVLOG(1) << "Frame " << i << ", size: " << size;
   }
 
@@ -799,8 +797,8 @@ base::circular_deque<Vp9Parser::FrameInfo> Vp9Parser::ParseSVCFrame() {
   Context tmp_context;
   tmp_context.segmentation_ = context_.segmentation_;
   tmp_context.loop_filter_ = context_.loop_filter_;
-  base::span(tmp_context.ref_slots_)
-      .copy_from_nonoverlapping(context_.ref_slots_);
+  memcpy(tmp_context.ref_slots_, context_.ref_slots_,
+         sizeof(context_.ref_slots_));
   for (const auto& frame_info : frames) {
     // |curr_frame_header_| is used safely because it is reset every
     // ParseUncompressedHeader().
@@ -885,7 +883,6 @@ void Vp9Parser::SetupLoopFilter() {
 
   int scale = loop_filter.level < 32 ? 1 : 2;
 
-  std::array<int, Vp9SegmentationParams::kNumSegments> levels;
   for (size_t i = 0; i < Vp9SegmentationParams::kNumSegments; ++i) {
     int level = loop_filter.level;
     const Vp9SegmentationParams& segmentation = context_.segmentation();
@@ -896,28 +893,23 @@ void Vp9Parser::SetupLoopFilter() {
       level = ClampLf(segmentation.abs_or_delta_update ? feature_data
                                                        : level + feature_data);
     }
-    levels[i] = level;
-  }
 
-  if (loop_filter.delta_enabled) {
-    for (auto [lvl, level] : base::zip(loop_filter.lvl, levels)) {
-      lvl[Vp9RefType::VP9_FRAME_INTRA][0] = ClampLf(
+    if (!loop_filter.delta_enabled) {
+      memset(loop_filter.lvl[i], level, sizeof(loop_filter.lvl[i]));
+    } else {
+      loop_filter.lvl[i][Vp9RefType::VP9_FRAME_INTRA][0] = ClampLf(
           level + loop_filter.ref_deltas[Vp9RefType::VP9_FRAME_INTRA] * scale);
-      lvl[Vp9RefType::VP9_FRAME_INTRA][1] = 0;
+      loop_filter.lvl[i][Vp9RefType::VP9_FRAME_INTRA][1] = 0;
 
-      auto remain_lvl = base::span(lvl).subspan<1u>();
-      auto remain_ref_deltas = base::span(loop_filter.ref_deltas).subspan<1u>();
-      DCHECK_EQ(remain_lvl.size(), remain_ref_deltas.size());
-      for (auto [lvl_type, delta] : base::zip(remain_lvl, remain_ref_deltas)) {
-        std::ranges::transform(loop_filter.mode_deltas, lvl_type.begin(),
-                               ClampLf, [level, delta, scale](auto m) {
-                                 return level + (delta + m) * scale;
-                               });
+      for (size_t type = Vp9RefType::VP9_FRAME_LAST;
+           type < Vp9RefType::VP9_FRAME_MAX; ++type) {
+        for (size_t mode = 0; mode < Vp9LoopFilterParams::kNumModeDeltas;
+             ++mode) {
+          loop_filter.lvl[i][type][mode] =
+              ClampLf(level + loop_filter.ref_deltas[type] * scale +
+                      loop_filter.mode_deltas[mode] * scale);
+        }
       }
-    }
-  } else {
-    for (auto [lvl, level] : base::zip(loop_filter.lvl, levels)) {
-      std::ranges::fill(base::as_writable_byte_span(lvl), level);
     }
   }
 }
