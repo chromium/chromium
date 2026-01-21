@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -826,12 +827,15 @@ void ExtensionManagement::Refresh() {
   if (dict_pref) {
     // Parse new extension management preference.
 
-    std::unordered_set<std::string> installed_extensions;
     auto* extension_prefs = ExtensionPrefs::Get(profile_);
     auto extensions_info = extension_prefs->GetInstalledExtensionsInfo();
-    for (const auto& extension_info : extensions_info) {
-      installed_extensions.insert(extension_info.extension_id);
+    std::vector<std::string> installed_extension_ids;
+    installed_extension_ids.reserve(extensions_info.size());
+    for (auto& extension_info : extensions_info) {
+      installed_extension_ids.push_back(std::move(extension_info.extension_id));
     }
+    base::flat_set<std::string> installed_extension_ids_set(
+        std::move(installed_extension_ids));
 
     for (auto iter : *dict_pref) {
       if (iter.first == schema_constants::kWildcard)
@@ -865,7 +869,7 @@ void ExtensionManagement::Refresh() {
             continue;
           }
 
-          auto should_defer = [&extension_id, &installed_extensions](
+          auto should_defer = [&extension_id, &installed_extension_ids_set](
                                   const base::Value::Dict& dict,
                                   const SettingsIdMap* settings_by_id) {
             // If in legacy force list, don't defer since already have an
@@ -873,7 +877,7 @@ void ExtensionManagement::Refresh() {
             // the entry in the forcelist. Also don't defer if the extension
             // is installed.
             if (settings_by_id->contains(extension_id) ||
-                installed_extensions.contains(extension_id)) {
+                installed_extension_ids_set.contains(extension_id)) {
               return false;
             }
             auto* install_mode =
