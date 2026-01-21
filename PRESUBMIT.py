@@ -7816,9 +7816,20 @@ def CheckDanglingUntriaged(input_api, output_api):
         )
 
     count = 0
-    for f in input_api.AffectedFiles(file_filter=FilterFile):
-        count -= sum([l.count('DanglingUntriaged') for l in f.OldContents()])
-        count += sum([l.count('DanglingUntriaged') for l in f.NewContents()])
+    try:
+         for f in input_api.AffectedFiles(file_filter=FilterFile):
+            count -= sum(
+                [l.count('DanglingUntriaged') for l in f.OldContents()])
+            count += sum(
+                [l.count('DanglingUntriaged') for l in f.NewContents()])
+    except RuntimeError as e:
+        if 'Provided diff does not apply cleanly' in str(e):
+            # When files are moved.
+            return [
+                output_api.PresubmitNotifyResult(
+                    'Skipping CheckDanglingUntriaged due to moved files.')
+            ]
+        raise
 
     # Most likely, nothing changed:
     if count == 0:
