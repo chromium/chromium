@@ -390,7 +390,9 @@ void ComposeboxQueryController::CreateSearchUrl(
         if (search_url_request_info->lens_overlay_selection_type.has_value()) {
           auto interaction_request_id = request_id_generator_.GetNextRequestId(
               lens::RequestIdUpdateMode::kInteractionRequest,
-              last_active_file->request_id.media_type(),
+              search_url_request_info->image_crop.has_value()
+                  ? lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE
+                  : last_active_file->request_id.media_type(),
               std::make_optional<int64_t>(last_active_file->GetContextId()));
           SendInteractionRequest(
               std::move(interaction_request_id),
@@ -409,7 +411,9 @@ void ComposeboxQueryController::CreateSearchUrl(
           lens::LensOverlayRequestId* request_id_for_vsrid;
           search_url_request_id = request_id_generator_.GetNextRequestId(
               lens::RequestIdUpdateMode::kSearchUrl,
-              last_active_file->request_id.media_type());
+              search_url_request_info->image_crop.has_value()
+                  ? lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE
+                  : last_active_file->request_id.media_type());
           request_id_for_vsrid = search_url_request_id.get();
           std::string serialized_request_id;
           CHECK(
