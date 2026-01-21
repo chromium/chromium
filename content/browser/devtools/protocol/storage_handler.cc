@@ -9,7 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <unordered_set>
+#include <string_view>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -86,6 +86,7 @@
 #include "storage/browser/quota/quota_manager_observer.mojom-forward.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/quota_override_handle.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/interest_group/devtools_serialization.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -626,38 +627,38 @@ Response StorageHandler::GetStorageKey(std::optional<std::string> frame_id,
 
 namespace {
 uint32_t GetRemoveDataMask(const std::string& storage_types) {
-  std::vector<std::string> types = base::SplitString(
+  std::vector<std::string_view> types = base::SplitStringPiece(
       storage_types, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  std::unordered_set<std::string> set(types.begin(), types.end());
+  absl::flat_hash_set<std::string_view> set = {types.begin(), types.end()};
   uint32_t remove_mask = 0;
-  if (set.count(Storage::StorageTypeEnum::Cookies)) {
+  if (set.contains(Storage::StorageTypeEnum::Cookies)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_COOKIES;
   }
-  if (set.count(Storage::StorageTypeEnum::File_systems)) {
+  if (set.contains(Storage::StorageTypeEnum::File_systems)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS;
   }
-  if (set.count(Storage::StorageTypeEnum::Indexeddb)) {
+  if (set.contains(Storage::StorageTypeEnum::Indexeddb)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_INDEXEDDB;
   }
-  if (set.count(Storage::StorageTypeEnum::Local_storage)) {
+  if (set.contains(Storage::StorageTypeEnum::Local_storage)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_LOCAL_STORAGE;
   }
-  if (set.count(Storage::StorageTypeEnum::Shader_cache)) {
+  if (set.contains(Storage::StorageTypeEnum::Shader_cache)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_SHADER_CACHE;
   }
-  if (set.count(Storage::StorageTypeEnum::Service_workers)) {
+  if (set.contains(Storage::StorageTypeEnum::Service_workers)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_SERVICE_WORKERS;
   }
-  if (set.count(Storage::StorageTypeEnum::Cache_storage)) {
+  if (set.contains(Storage::StorageTypeEnum::Cache_storage)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_CACHE_STORAGE;
   }
-  if (set.count(Storage::StorageTypeEnum::Interest_groups)) {
+  if (set.contains(Storage::StorageTypeEnum::Interest_groups)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS;
   }
-  if (set.count(Storage::StorageTypeEnum::Shared_storage)) {
+  if (set.contains(Storage::StorageTypeEnum::Shared_storage)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_SHARED_STORAGE;
   }
-  if (set.count(Storage::StorageTypeEnum::All)) {
+  if (set.contains(Storage::StorageTypeEnum::All)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_ALL;
   }
   return remove_mask;
