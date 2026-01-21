@@ -170,7 +170,6 @@ source_set("impl") {
       "//chrome/browser/app_mode",
       "//chrome/browser/apps:icon_standardizer",
       "//chrome/browser/apps/app_service",
-      "//chrome/browser/apps/app_service:constants",
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/engagement",
       "//chrome/browser/infobars",
@@ -188,6 +187,7 @@ source_set("impl") {
       "//components/keep_alive_registry",
       "//components/omnibox/browser:vector_icons",
       "//components/security_state/content",
+      "//components/services/app_service",
       "//ui/native_window_tracker",
     ]
     if (is_chromeos) {

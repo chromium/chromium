@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_EXTENSIONS_WEB_FILE_HANDLERS_MULTICLIENT_UTIL_H_
 #define CHROME_BROWSER_UI_EXTENSIONS_WEB_FILE_HANDLERS_MULTICLIENT_UTIL_H_
 
-#include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "extensions/common/manifest_handlers/web_file_handlers_info.h"
 
 class Profile;

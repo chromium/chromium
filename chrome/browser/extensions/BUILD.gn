@@ -899,7 +899,6 @@ source_set("extensions") {
       "//chrome/browser/accessibility/tree_fixing:prefs",
       "//chrome/browser/affiliations",
       "//chrome/browser/apps:user_type_filter",
-      "//chrome/browser/apps/app_service:constants",
       "//chrome/browser/chooser_controller",
       "//chrome/browser/device_identity",
       "//chrome/browser/feedback",
@@ -932,6 +931,7 @@ source_set("extensions") {
       "//chrome/browser/ui/window_sizer",
       "//chrome/browser/ui/zoom",
       "//chrome/browser/webauthn",
+      "//components/services/app_service",
 
       # Only for allow_circular_includes_from
       "//chrome/browser/apps/app_service/app_icon",
@@ -1017,7 +1017,6 @@ source_set("extensions") {
       "//components/safe_browsing/content/browser/web_ui",
       "//components/safe_browsing/core/common/proto:csd_proto",
       "//components/search_engines",
-      "//components/services/app_service",
       "//components/services/unzip/public/cpp",
       "//components/sessions",
       "//components/signin/public/identity_manager",

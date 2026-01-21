@@ -16,8 +16,8 @@
 #include "ui/gfx/image/image_unittest_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/services/app_service/public/cpp/app_launch_params.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace apps {

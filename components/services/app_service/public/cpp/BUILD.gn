@@ -147,6 +147,25 @@ source_set("app_icon_info") {
   visibility = [ "//components/services/app_service/*" ]
 }
 
+source_set("app_launch_params") {
+  sources = [
+    "app_launch_params.cc",
+    "app_launch_params.h",
+  ]
+
+  deps = [
+    ":app_types",
+    ":intents",
+    "//base",
+    "//ui/base:types",
+    "//ui/display/types",
+    "//ui/gfx/geometry",
+    "//url",
+  ]
+
+  visibility = [ "//components/services/app_service/*" ]
+}
+
 source_set("app_share_target") {
   sources = [
     "share_target.cc",

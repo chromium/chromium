@@ -21,7 +21,6 @@ source_set("browser_tests") {
     ":test_support",
     "//base",
     "//chrome/browser/apps/app_service",
-    "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/ui",
     "//chrome/common:non_code_constants",
     "//chrome/test:test_support",
@@ -29,6 +28,7 @@ source_set("browser_tests") {
     "//components/permissions",
     "//components/permissions:permissions_common",
     "//components/permissions:test_support",
+    "//components/services/app_service",
     "//components/services/app_service/public/cpp:app_types",
   ]
 

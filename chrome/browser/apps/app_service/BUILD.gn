@@ -41,10 +41,7 @@ source_set("app_service") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  public_deps = [
-    ":constants",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
     "//base",
@@ -267,24 +264,6 @@ source_set("app_service") {
   }
 }
 
-source_set("constants") {
-  sources = [
-    "app_launch_params.cc",
-    "app_launch_params.h",
-  ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
-  deps = [
-    "//base",
-    "//components/services/app_service",
-    "//ui/base:types",
-    "//ui/display/types",
-    "//ui/gfx/geometry",
-    "//url",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
 
@@ -296,7 +275,6 @@ source_set("unit_tests") {
 
   deps = [
     ":app_service",
-    ":constants",
     ":test_support",
     "//base/test:test_support",
     "//chrome/browser/apps/app_service/publishers",

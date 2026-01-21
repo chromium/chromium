@@ -7,7 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "build/build_config.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "components/services/app_service/public/cpp/app_launch_params.h"
 
 class Profile;
 

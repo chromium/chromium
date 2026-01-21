@@ -79,13 +79,13 @@ source_set("extensions") {
 
     public_deps += [
       "//base",
-      "//chrome/browser/apps/app_service:constants",
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
       "//chrome/browser/ui/toolbar",
       "//chrome/browser/ui/web_applications",
       "//components/infobars/core",
       "//components/omnibox/browser",
+      "//components/services/app_service",
       "//components/services/app_service/public/cpp:app_types",
       "//extensions/browser",
       "//extensions/browser/install",
@@ -215,7 +215,6 @@ source_set("impl") {
       "//apps",
       "//chrome/browser/app_mode",
       "//chrome/browser/apps/app_service",
-      "//chrome/browser/apps/app_service:constants",
       "//chrome/browser/apps/platform_apps",
       "//chrome/browser/extensions",
       "//chrome/browser/infobars",
@@ -228,6 +227,7 @@ source_set("impl") {
       "//chrome/browser/web_applications",
       "//components/prefs",
       "//components/security_state/content",
+      "//components/services/app_service",
       "//components/signin/public/base:signin_switches",
     ]
   }

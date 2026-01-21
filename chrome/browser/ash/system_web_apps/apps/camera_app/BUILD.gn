@@ -43,7 +43,6 @@ static_library("camera_app") {
     "//ash/webui/camera_app_ui/resources/strings",
     "//ash/webui/resources:camera_app_resources",
     "//ash/webui/settings/public/constants:mojom",
-    "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/policy/skyvault",
