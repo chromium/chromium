@@ -732,7 +732,7 @@ bool V4L2WritableBufferRef::QueueDMABuf(scoped_refptr<FrameResource> frame,
   // TODO(andrescj): consider replacing this by a DCHECK.
   if (frame->storage_type() != VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE &&
       frame->storage_type() != VideoFrame::STORAGE_DMABUFS) {
-    VLOGF(1) << "Only frames with GpuMemoryBuffer and dma-buf are supported";
+    VLOGF(1) << "Only frames with MappableSI and dma-buf are supported";
     return false;
   }
 
