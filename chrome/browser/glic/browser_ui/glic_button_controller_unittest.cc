@@ -12,11 +12,13 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/glic/browser_ui/glic_button_controller_delegate.h"
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
+#include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
+#include "chrome/browser/glic/test_support/mock_glic_window_controller.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -41,6 +43,38 @@
 namespace glic {
 namespace {
 
+class TestingGlicWindowController : public glic::MockGlicWindowController {
+ public:
+  base::CallbackListSubscription AddGlobalShowHideCallback(
+      base::RepeatingClosure callback) override {
+    return global_show_hide_subscriptions_.Add(std::move(callback));
+  }
+
+  void NotifyShowHide() { global_show_hide_subscriptions_.Notify(); }
+
+ private:
+  base::RepeatingClosureList global_show_hide_subscriptions_;
+};
+
+class TestingGlicFreController : public glic::GlicFreController {
+ public:
+  TestingGlicFreController(Profile* profile,
+                           signin::IdentityManager* identity_manager)
+      : GlicFreController(profile, identity_manager) {}
+
+  base::CallbackListSubscription AddWebUiStateChangedCallback(
+      WebUiStateChangedCallback callback) override {
+    return webui_state_callback_list_.Add(std::move(callback));
+  }
+
+  void NotifyStateChanged() {
+    webui_state_callback_list_.Notify(mojom::FreWebUiState::kReady);
+  }
+
+  base::RepeatingCallbackList<void(mojom::FreWebUiState)>
+      webui_state_callback_list_;
+};
+
 class MockGlicKeyedService : public glic::GlicKeyedService {
  public:
   MockGlicKeyedService(
@@ -55,20 +89,58 @@ class MockGlicKeyedService : public glic::GlicKeyedService {
                          profile_manager,
                          glic_profile_manager,
                          contextual_cueing_service,
-                         actor_keyed_service) {}
+                         actor_keyed_service),
+        window_controller_(std::make_unique<TestingGlicWindowController>()),
+        fre_controller_(std::make_unique<TestingGlicFreController>(
+            Profile::FromBrowserContext(browser_context),
+            identity_manager)) {}
   MOCK_METHOD(void, TryPreload, (), (override));
+
+  bool IsPanelShowingForBrowser(
+      const BrowserWindowInterface& bwi) const override {
+    return browser_with_open_panel_ == &bwi;
+  }
+
+  bool IsFreShowing() const override { return fre_open_; }
+
+  GlicWindowController& window_controller() const override {
+    return *window_controller_;
+  }
+
+  GlicFreController& fre_controller() override { return *fre_controller_; }
+
+  // For these tests, pretend only one browser can show the panel at a time.
+  void SimulatePanelShownForBrowser(BrowserWindowInterface* bwi) {
+    browser_with_open_panel_ = bwi;
+    window_controller_->NotifyShowHide();
+  }
+
+  void SimulateFREShown(bool open) {
+    fre_open_ = open;
+    fre_controller_->NotifyStateChanged();
+  }
+
+ private:
+  raw_ptr<BrowserWindowInterface> browser_with_open_panel_ = nullptr;
+  bool fre_open_ = false;
+  std::unique_ptr<TestingGlicWindowController> window_controller_;
+  std::unique_ptr<TestingGlicFreController> fre_controller_;
 };
 
 class MockGlicButtonControllerDelegate
     : public glic::GlicButtonControllerDelegate {
  public:
   void SetGlicShowState(bool show) override { show_state_ = show; }
-  void SetGlicPanelIsOpen(bool open) override {}
+  void SetGlicPanelIsOpen(bool panel_open) override {
+    panel_open_ = panel_open;
+  }
 
   bool show_state() const { return show_state_; }
+  bool panel_open() const { return panel_open_; }
 
  private:
   bool show_state_ = false;
+  bool panel_open_ = false;
 };
 
 }  // namespace
@@ -107,6 +179,12 @@ class GlicButtonControllerTest : public testing::Test {
         &mock_glic_controller_delegate_, mock_glic_service_.get());
 
     glic_test_env_.SetupProfile(profile());
+
+    PrefService* prefs = profile()->GetPrefs();
+    prefs->SetInteger(
+        ::prefs::kGeminiSettings,
+        static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
+    prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, true);
   }
 
   void TearDown() override {
@@ -132,6 +210,12 @@ class GlicButtonControllerTest : public testing::Test {
   }
 
   Profile* profile() { return profile_; }
+  MockGlicKeyedService* glic_keyed_service() {
+    return mock_glic_service_.get();
+  }
+  BrowserWindowInterface* browser_window_interface() {
+    return mock_browser_window_interface_.get();
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -183,6 +267,29 @@ TEST_F(GlicButtonControllerTest, GlicSettings) {
       static_cast<int>(glic::prefs::SettingsPolicyState::kDisabled));
   prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, false);
   EXPECT_FALSE(controller_delegate()->show_state());
+}
+
+TEST_F(GlicButtonControllerTest, PanelStateChangedSameBrowser) {
+  EXPECT_TRUE(controller_delegate()->show_state());
+  EXPECT_FALSE(controller_delegate()->panel_open());
+
+  glic_keyed_service()->SimulatePanelShownForBrowser(
+      browser_window_interface());
+  EXPECT_TRUE(controller_delegate()->panel_open());
+
+  glic_keyed_service()->SimulatePanelShownForBrowser(nullptr);
+  EXPECT_FALSE(controller_delegate()->panel_open());
+}
+
+TEST_F(GlicButtonControllerTest, FREStateChanged) {
+  EXPECT_TRUE(controller_delegate()->show_state());
+  EXPECT_FALSE(controller_delegate()->panel_open());
+
+  glic_keyed_service()->SimulateFREShown(true);
+  EXPECT_TRUE(controller_delegate()->panel_open());
+
+  glic_keyed_service()->SimulateFREShown(false);
+  EXPECT_FALSE(controller_delegate()->panel_open());
 }
 
 }  // namespace glic

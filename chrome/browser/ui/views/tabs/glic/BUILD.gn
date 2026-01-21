@@ -18,7 +18,6 @@ source_set("glic") {
     deps = [
       "//base",
       "//chrome/browser/glic",
-      "//chrome/browser/glic/fre:mojo_bindings",
       "//chrome/browser/ui:layout_constants",
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/tabs:tab_strip",

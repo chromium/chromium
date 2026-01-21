@@ -154,8 +154,8 @@ class GlicKeyedService : public KeyedService,
   GlicEnabling& enabling() { return *enabling_.get(); }
 
   GlicMetrics* metrics() { return metrics_.get(); }
-  GlicFreController& fre_controller();
-  GlicWindowController& window_controller() const;
+  virtual GlicFreController& fre_controller();
+  virtual GlicWindowController& window_controller() const;
 #if !BUILDFLAG(IS_ANDROID)  // Single instance only
   GlicWindowControllerInterface& GetSingleInstanceWindowController() const;
 #endif
@@ -172,9 +172,12 @@ class GlicKeyedService : public KeyedService,
 
   // Virtual for testing.
   virtual bool IsWindowShowing() const;
+  virtual bool IsFreShowing() const;
 
-  // Returns true if `bwi` has a glic panel showing for its active tab.
-  bool IsPanelShowingForBrowser(const BrowserWindowInterface& bwi) const;
+  // Returns true if `bwi` has a glic panel showing for its active tab. Virtual
+  // for testing.
+  virtual bool IsPanelShowingForBrowser(
+      const BrowserWindowInterface& bwi) const;
 
   // Virtual for testing.
   virtual bool IsWindowDetached() const;

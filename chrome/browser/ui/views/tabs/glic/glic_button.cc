@@ -12,7 +12,6 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
-#include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -311,17 +310,6 @@ GlicButton::GlicButton(BrowserWindowInterface* browser_window_interface,
       SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout_manager->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kStart);
-
-  // Subscribe to changes in state of glic FRE dialog and glic window.
-  glic::GlicKeyedService* const service = glic::GlicKeyedService::Get(profile_);
-  glic_window_activation_subscription_ =
-      service->window_controller().AddWindowActivationChangedCallback(
-          base::BindRepeating(&GlicButton::PanelStateChanged,
-                              base::Unretained(this)));
-
-  fre_subscription_ = service->fre_controller().AddWebUiStateChangedCallback(
-      base::BindRepeating(&GlicButton::OnFreWebUiStateChanged,
-                          base::Unretained(this)));
 }
 
 GlicButton::~GlicButton() = default;
@@ -413,27 +401,18 @@ void GlicButton::RestoreDefaultLabel() {
 }
 
 void GlicButton::SetGlicPanelIsOpen(bool open) {
-  if (glic_panel_is_open_ != open) {
-    glic_panel_is_open_ = open;
-    UpdateTextAndBackgroundColors();
+  if (glic_panel_is_open_ == open) {
+    return;
   }
-}
 
-void GlicButton::OnFreWebUiStateChanged(mojom::FreWebUiState new_state) {
-  UpdateTooltipText();
-}
+  glic_panel_is_open_ = open;
+  UpdateTextAndBackgroundColors();
 
-void GlicButton::PanelStateChanged(bool active) {
-  UpdateTooltipText();
-}
-
-void GlicButton::UpdateTooltipText() {
-  GlicKeyedService* const service = GlicKeyedService::Get(profile_);
   // Set tooltip and accessibility text based on whether any glic UI (window or
   // FRE) is open.
-  std::u16string tooltip_text = l10n_util::GetStringUTF16(
-      service->IsWindowOrFreShowing() ? IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP_CLOSE
-                                      : IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP);
+  std::u16string tooltip_text =
+      l10n_util::GetStringUTF16(open ? IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP_CLOSE
+                                     : IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP);
 
   SetTooltipText(tooltip_text);
   GetViewAccessibility().SetName(tooltip_text);

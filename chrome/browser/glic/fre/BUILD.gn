@@ -36,7 +36,6 @@ source_set("fre") {
     ]
     deps += [
       "//chrome/browser/background/glic",
-      "//chrome/browser/glic/browser_ui",
       "//chrome/browser/themes",
     ]
   }

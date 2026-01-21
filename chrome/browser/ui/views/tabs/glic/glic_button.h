@@ -162,22 +162,7 @@ class GlicButton : public TabStripNudgeButton,
   WidthState width_state() { return width_state_; }
 
 #if BUILDFLAG(ENABLE_GLIC)
-  void PanelStateChanged(bool active);
-
-  void OnFreWebUiStateChanged(mojom::FreWebUiState new_state);
-
-  // Used to update the tooltip text when the showing states of the Glic
-  // window/FRE change.
-  void UpdateTooltipText();
-
   void OnLabelVisibilityChanged();
-
-  // Callback subscription for listening to changes to the Glic window
-  // activation changes.
-  base::CallbackListSubscription glic_window_activation_subscription_;
-
-  // Callback subscription for listening to changes to the FRE WebUI state.
-  base::CallbackListSubscription fre_subscription_;
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
   // The model adapter for the context menu.

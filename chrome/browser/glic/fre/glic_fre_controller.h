@@ -87,7 +87,7 @@ class GlicFreController {
 
   GlicFreController(Profile* profile,
                     signin::IdentityManager* identity_manager);
-  ~GlicFreController();
+  virtual ~GlicFreController();
 
   mojom::FreWebUiState GetWebUiState() const { return webui_state_; }
   void WebUiStateChanged(mojom::FreWebUiState new_state);
@@ -95,8 +95,9 @@ class GlicFreController {
   using WebUiStateChangedCallback =
       base::RepeatingCallback<void(mojom::FreWebUiState new_state)>;
 
-  // Registers |callback| to be called whenever the WebUi state changes.
-  base::CallbackListSubscription AddWebUiStateChangedCallback(
+  // Registers |callback| to be called whenever the WebUi state changes. Virtual
+  // for testing.
+  virtual base::CallbackListSubscription AddWebUiStateChangedCallback(
       WebUiStateChangedCallback callback);
 
   // Close any windows and destroy web contents.

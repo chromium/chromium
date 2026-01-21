@@ -506,7 +506,11 @@ bool GlicKeyedService::IsWindowDetached() const {
 }
 
 bool GlicKeyedService::IsWindowOrFreShowing() const {
-  return IsWindowShowing() || fre_controller_->IsShowingDialog();
+  return IsWindowShowing() || IsFreShowing();
+}
+
+bool GlicKeyedService::IsFreShowing() const {
+  return fre_controller_->IsShowingDialog();
 }
 
 base::CallbackListSubscription

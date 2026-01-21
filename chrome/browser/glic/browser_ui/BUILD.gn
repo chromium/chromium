@@ -80,6 +80,7 @@ source_set("browser_ui") {
   ]
   deps = [
     "//chrome/browser/actor/ui",
+    "//chrome/browser/glic/fre",
     "//chrome/browser/themes",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/user_education",
@@ -99,6 +100,7 @@ source_set("unit_tests") {
     "//chrome/browser:global_features",
     "//chrome/browser/actor:test_support",
     "//chrome/browser/glic",
+    "//chrome/browser/glic/fre",
     "//chrome/browser/glic/test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:ui_features",

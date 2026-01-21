@@ -6,6 +6,7 @@
 
 #include "chrome/browser/glic/browser_ui/glic_button_controller_delegate.h"
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
+#include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -44,6 +45,10 @@ GlicButtonController::GlicButtonController(
   subscriptions_.push_back(
       glic_keyed_service_->window_controller().AddGlobalShowHideCallback(
           update_callback));
+  subscriptions_.push_back(
+      glic_keyed_service_->fre_controller().AddWebUiStateChangedCallback(
+          base::BindRepeating(&GlicButtonController::OnFreStateChanged,
+                              base::Unretained(this))));
 }
 
 GlicButtonController::~GlicButtonController() = default;
@@ -63,10 +68,13 @@ void GlicButtonController::UpdateButton() {
   // Try preloading since we know the button is visible.
   glic_keyed_service_->TryPreload();
 
-  if (base::FeatureList::IsEnabled(features::kGlicButtonPressedState)) {
-    glic_controller_delegate_->SetGlicPanelIsOpen(
-        glic_keyed_service_->IsPanelShowingForBrowser(*browser_));
-  }
+  glic_controller_delegate_->SetGlicPanelIsOpen(
+      glic_keyed_service_->IsFreShowing() ||
+      glic_keyed_service_->IsPanelShowingForBrowser(*browser_));
+}
+
+void GlicButtonController::OnFreStateChanged(mojom::FreWebUiState) {
+  UpdateButton();
 }
 
 }  // namespace glic

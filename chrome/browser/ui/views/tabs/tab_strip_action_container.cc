@@ -1065,17 +1065,17 @@ void TabStripActionContainer::SetGlicShowState(bool show) {
 
 void TabStripActionContainer::SetGlicPanelIsOpen(bool open) {
 #if BUILDFLAG(ENABLE_GLIC)
-  if (!base::FeatureList::IsEnabled(features::kGlicButtonPressedState) ||
-      !glic_button_) {
+  if (!glic_button_) {
     return;
   }
 
-  // Update glic_button_ first, then have the container match its background
-  // color.
   glic_button_->SetGlicPanelIsOpen(open);
-  glic_actor_button_container_->SetBackgroundColor(
-      glic_button_->GetBackgroundColor());
-  glic_actor_button_container_->SetHighlighted(open);
+
+  if (base::FeatureList::IsEnabled(features::kGlicButtonPressedState)) {
+    glic_actor_button_container_->SetBackgroundColor(
+        glic_button_->GetBackgroundColor());
+    glic_actor_button_container_->SetHighlighted(open);
+  }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
