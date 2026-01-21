@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="PrivateMetrics.DataUploadConfig.DownloadSize" units="KiB"
-    expires_after="2026-03-01">
+    expires_after="2026-09-01">
   <owner>zhouzj@google.com</owner>
   <owner>private-metrics@google.com</owner>
   <summary>
@@ -43,7 +43,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrivateMetrics.LogUpload.Canceled.CellularConstraint"
-    enum="BooleanCanceled" expires_after="2026-03-01">
+    enum="BooleanCanceled" expires_after="2026-09-01">
   <owner>zhouzj@google.com</owner>
   <owner>private-metrics@google.com</owner>
   <summary>
@@ -63,7 +63,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrivateMetrics.PersistentLogRecall.Status"
-    enum="PersistedLogsLogReadStatus" expires_after="2026-03-01">
+    enum="PersistedLogsLogReadStatus" expires_after="2026-09-01">
   <owner>zhouzj@google.com</owner>
   <owner>private-metrics@google.com</owner>
   <summary>
@@ -72,7 +72,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrivateMetrics.ProtoCompressionRatio" units="%"
-    expires_after="2026-03-01">
+    expires_after="2026-09-01">
   <owner>zhouzj@google.com</owner>
   <owner>private-metrics@google.com</owner>
   <summary>
@@ -111,7 +111,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrivateMetrics.UnsentLogs.DroppedSize" units="bytes"
-    expires_after="2026-03-01">
+    expires_after="2026-09-01">
   <owner>zhouzj@google.com</owner>
   <owner>private-metrics@google.com</owner>
   <summary>
@@ -121,7 +121,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrivateMetrics.UnsentLogs.NumDropped" units="units"
-    expires_after="2026-03-01">
+    expires_after="2026-09-01">
   <owner>zhouzj@google.com</owner>
   <owner>private-metrics@google.com</owner>
   <summary>
