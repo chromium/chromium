@@ -538,6 +538,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
   bool exclusive_cookie_database_locking_ = true;
 
+  // When this is set, it overrides the default setting used by the net stack.
+  std::optional<bool> tls_13_early_data_enabled_;
+
   std::unique_ptr<DevtoolsDurableMessageCollectorManager>
       durable_message_collector_manager_;
 
