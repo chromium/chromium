@@ -189,4 +189,10 @@ NetworkPredictionSetting SettingWithItemType(ItemType item_type) {
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
+#pragma mark - SettingsControllerProtocol
+
+- (void)settingsWillBeDismissed {
+  _settingPreference.Destroy();
+}
+
 @end
