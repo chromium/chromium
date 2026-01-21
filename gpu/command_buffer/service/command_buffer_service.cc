@@ -235,8 +235,8 @@ void CommandBufferService::Flush(int32_t put_offset,
     return;
   }
 
-  TRACE_EVENT1("gpu", "CommandBufferService:PutChanged", "handler",
-               std::string(handler->GetLogPrefix()));
+  TRACE_EVENT2("gpu", "CommandBufferService:PutChanged", "handler",
+               std::string(handler->GetLogPrefix()), "put_offset", put_offset);
 
   put_offset_ = put_offset;
 
