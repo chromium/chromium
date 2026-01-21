@@ -111,10 +111,11 @@ class SettingsOverriddenDialogBrowserTest : public DialogBrowserTest {
   // Creates, shows, and returns a dialog anchored to the given `browser`. The
   // dialog is owned by the views framework.
   views::Widget* ShowSimpleDialog(bool show_icon, Browser* browser) {
-    SettingsOverriddenDialogController::ShowParams params{
+    SettingsOverriddenDialogController::ShowParams params(
         u"Settings overridden dialog title",
         u"Settings overriden dialog body, which is quite a bit "
-        u"longer than the title alone"};
+        u"longer than the title alone",
+        nullptr);
     if (show_icon) {
       params.icon = &vector_icons::kProductIcon;
     }

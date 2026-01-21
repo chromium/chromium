@@ -207,6 +207,7 @@ source_set("impl") {
       "installation_error_infobar_delegate.cc",
       "mv2_disabled_dialog_controller.cc",
       "settings_api_bubble_helpers.cc",
+      "settings_overridden_dialog_controller.cc",
       "settings_overridden_params_providers.cc",
       "web_file_handlers/multiclient_util.cc",
     ]

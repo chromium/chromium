@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_UI_EXTENSIONS_SETTINGS_OVERRIDDEN_DIALOG_CONTROLLER_H_
 #define CHROME_BROWSER_UI_EXTENSIONS_SETTINGS_OVERRIDDEN_DIALOG_CONTROLLER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/models/image_model.h"
+#include "ui/gfx/image/image.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -18,8 +21,28 @@ struct VectorIcon;
 // the result of the dialog (i.e., the user input).
 class SettingsOverriddenDialogController {
  public:
+  // Describes the visual elements (texts, icon) of a selectable option in the
+  // dialog.
+  struct ChoiceOption {
+    // The primary text of the option.
+    std::u16string text;
+
+    // Additional subtext describing the option.
+    std::u16string description;
+
+    // An icon pertaining to the option.
+    ui::ImageModel image;
+  };
+
   // A struct describing the contents to be displayed in the dialog.
   struct ShowParams {
+    ShowParams();
+    ~ShowParams();
+    ShowParams(const SettingsOverriddenDialogController::ShowParams& params);
+    ShowParams(std::u16string dialog_title,
+               std::u16string dialog_message,
+               const gfx::VectorIcon* icon);
+
     std::u16string dialog_title;
     std::u16string message;
 
@@ -27,6 +50,13 @@ class SettingsOverriddenDialogController {
     // all its colors fully specified; otherwise a placehold grey color will
     // be used.
     raw_ptr<const gfx::VectorIcon> icon = nullptr;
+
+    // If present, the dialog will present a radio-button-based choice as to
+    // whether to use the new setting or previous, rather than a
+    // keep-or-go-back presentation. The dialog will issue the same dialog
+    // result, either way.
+    std::optional<ChoiceOption> previous_setting;
+    std::optional<ChoiceOption> new_setting;
   };
 
   // The result (i.e., user input) from the dialog being shown.

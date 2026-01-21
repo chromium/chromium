@@ -234,9 +234,10 @@ std::optional<ExtensionSettingsOverriddenDialog::Params> GetNtpOverriddenParams(
       IDS_EXTENSION_NTP_OVERRIDDEN_DIALOG_BODY_GENERIC,
       extensions::util::GetFixupExtensionNameForUIDisplay(extension->name()));
 
+  SettingsOverriddenDialogController::ShowParams show_params(
+      std::move(dialog_title), std::move(dialog_message), icon);
   return ExtensionSettingsOverriddenDialog::Params(
-      extension->id(), preference_name, histogram_name, std::move(dialog_title),
-      std::move(dialog_message), icon);
+      extension->id(), preference_name, histogram_name, std::move(show_params));
 }
 
 std::optional<ExtensionSettingsOverriddenDialog::Params>
@@ -325,9 +326,10 @@ GetSearchOverriddenParams(Profile* profile) {
       IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_BODY_GENERIC, formatted_search_url,
       extensions::util::GetFixupExtensionNameForUIDisplay(extension->name()));
 
+  SettingsOverriddenDialogController::ShowParams show_params(
+      std::move(dialog_title), std::move(dialog_message), icon);
   return ExtensionSettingsOverriddenDialog::Params(
-      extension->id(), preference_name, histogram_name, std::move(dialog_title),
-      std::move(dialog_message), icon);
+      extension->id(), preference_name, histogram_name, std::move(show_params));
 }
 
 }  // namespace settings_overridden_params

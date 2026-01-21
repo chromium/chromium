@@ -116,13 +116,13 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
   ASSERT_TRUE(params);
   EXPECT_EQ(search_extension->id(), params->controlling_extension_id);
 
-  EXPECT_EQ(u"Change back to Google Search?", params->dialog_title);
+  EXPECT_EQ(u"Change back to Google Search?", params->content.dialog_title);
 
   // Validate the body message, since it has a bit of formatting applied.
   EXPECT_EQ(
       u"The \"Search Override Extension\" extension changed search to use "
       "example.com",
-      params->dialog_message);
+      params->content.message);
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
@@ -147,8 +147,8 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
   ASSERT_LT(truncated_name.size(), extension_name.size());
 
   // The dialog message should contain the truncated name.
-  EXPECT_TRUE(params->dialog_message.contains(truncated_name));
-  EXPECT_FALSE(params->dialog_message.contains(extension_name));
+  EXPECT_TRUE(params->content.message.contains(truncated_name));
+  EXPECT_FALSE(params->content.message.contains(extension_name));
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
       settings_overridden_params::GetSearchOverriddenParams(profile());
   ASSERT_TRUE(params);
   EXPECT_EQ(base::StringPrintf("Change back to %s?", new_search_name.c_str()),
-            base::UTF16ToUTF8(params->dialog_title));
+            base::UTF16ToUTF8(params->content.dialog_title));
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
@@ -187,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
       settings_overridden_params::GetSearchOverriddenParams(profile());
   ASSERT_TRUE(params);
   EXPECT_EQ("Did you mean to change your search provider?",
-            base::UTF16ToUTF8(params->dialog_title));
+            base::UTF16ToUTF8(params->content.dialog_title));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(
       settings_overridden_params::GetSearchOverriddenParams(profile());
   ASSERT_TRUE(params);
   EXPECT_EQ(u"Did you mean to change your search provider?",
-            params->dialog_title);
+            params->content.dialog_title);
 }
 
 // Tests that null params are returned (indicating no dialog should be shown)
@@ -269,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
 
   std::optional<ExtensionSettingsOverriddenDialog::Params> params =
       settings_overridden_params::GetSearchOverriddenParams(profile());
-  EXPECT_FALSE(params) << "Unexpected params: " << params->dialog_title;
+  EXPECT_FALSE(params) << "Unexpected params: " << params->content.dialog_title;
 }
 
 // Tests that null params are returned (indicating no dialog should be shown)
@@ -318,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
 
   std::optional<ExtensionSettingsOverriddenDialog::Params> params =
       settings_overridden_params::GetSearchOverriddenParams(profile());
-  EXPECT_FALSE(params) << "Unexpected params: " << params->dialog_title;
+  EXPECT_FALSE(params) << "Unexpected params: " << params->content.dialog_title;
 }
 
 // Tests that the settings overridden dialog isn't shown for a simple override
@@ -483,7 +483,8 @@ IN_PROC_BROWSER_TEST_F(
   {
     std::optional<ExtensionSettingsOverriddenDialog::Params> params =
         settings_overridden_params::GetSearchOverriddenParams(profile());
-    EXPECT_FALSE(params) << "Unexpected params: " << params->dialog_title;
+    EXPECT_FALSE(params) << "Unexpected params: "
+                         << params->content.dialog_title;
   }
 }
 
@@ -515,5 +516,5 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
       settings_overridden_params::GetNtpOverriddenParams(profile());
   ASSERT_TRUE(params);
   EXPECT_EQ(extension->id(), params->controlling_extension_id);
-  EXPECT_EQ(u"Did you mean to change this page?", params->dialog_title);
+  EXPECT_EQ(u"Did you mean to change this page?", params->content.dialog_title);
 }

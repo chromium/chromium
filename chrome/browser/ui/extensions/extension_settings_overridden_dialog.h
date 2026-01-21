@@ -44,9 +44,7 @@ class ExtensionSettingsOverriddenDialog
     Params(extensions::ExtensionId controlling_extension_id,
            const char* extension_acknowledged_preference_name,
            const char* dialog_result_histogram_name,
-           std::u16string dialog_title,
-           std::u16string dialog_message,
-           const gfx::VectorIcon* icon);
+           ShowParams show_params);
     Params(Params&& params);
     Params(const Params& params) = delete;
     ~Params();
@@ -60,13 +58,8 @@ class ExtensionSettingsOverriddenDialog
     // dialog.
     std::string dialog_result_histogram_name;
 
-    std::u16string dialog_title;
-    std::u16string dialog_message;
-
-    // The icon to display in the dialog, if any.
-    // RAW_PTR_EXCLUSION: Seems to always point to nullptr (other VectorIncon*
-    // typically point to a global).
-    RAW_PTR_EXCLUSION const gfx::VectorIcon* icon = nullptr;
+    // The text and similar content required for the dialog.
+    ShowParams content;
   };
 
   ExtensionSettingsOverriddenDialog(Params params, Profile* profile);

@@ -66,16 +66,13 @@ ExtensionSettingsOverriddenDialog::Params::Params(
     extensions::ExtensionId controlling_extension_id,
     const char* extension_acknowledged_preference_name,
     const char* dialog_result_histogram_name,
-    std::u16string dialog_title,
-    std::u16string dialog_message,
-    const gfx::VectorIcon* icon)
+    ShowParams show_params)
     : controlling_extension_id(std::move(controlling_extension_id)),
       extension_acknowledged_preference_name(
           extension_acknowledged_preference_name),
       dialog_result_histogram_name(dialog_result_histogram_name),
-      dialog_title(std::move(dialog_title)),
-      dialog_message(std::move(dialog_message)),
-      icon(icon) {}
+      content(std::move(show_params)) {}
+
 ExtensionSettingsOverriddenDialog::Params::~Params() = default;
 ExtensionSettingsOverriddenDialog::Params::Params(Params&& params) = default;
 
@@ -145,7 +142,7 @@ ExtensionSettingsOverriddenDialog::GetShowParams() {
 
   DCHECK(extension);
 
-  return {params_.dialog_title, params_.dialog_message, params_.icon};
+  return params_.content;
 }
 
 void ExtensionSettingsOverriddenDialog::OnDialogShown() {

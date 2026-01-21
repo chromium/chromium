@@ -30,7 +30,8 @@ struct DialogState {
 class TestDialogController : public SettingsOverriddenDialogController {
  public:
   explicit TestDialogController(DialogState* state)
-      : state_(state), show_params_{u"Dialog Title", u"Dialog Body"} {}
+      : state_(state),
+        show_params_(u"Dialog Title", u"Dialog Body", /*icon=*/nullptr) {}
   TestDialogController(const TestDialogController&) = delete;
   TestDialogController& operator=(const TestDialogController&) = delete;
   ~TestDialogController() override = default;
