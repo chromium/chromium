@@ -11,20 +11,25 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/legion/phosphor/blind_sign_auth_factory.h"
 #include "components/legion/phosphor/oauth_token_provider.h"
-#include "components/legion/phosphor/token_fetcher_impl.h"
-#include "components/legion/phosphor/token_manager.h"
-#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 class Profile;
+class PrefService;
+
+namespace signin {
+class PrimaryAccountAccessTokenFetcher;
+}
 
 namespace legion {
+
+namespace phosphor {
+class BlindSignAuthFactory;
+class TokenFetcherImpl;
+class TokenManager;
+}  // namespace phosphor
 
 class Client;
 

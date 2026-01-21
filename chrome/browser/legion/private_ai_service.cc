@@ -13,11 +13,14 @@
 #include "components/legion/phosphor/blind_sign_auth_factory.h"
 #include "components/legion/phosphor/token_fetcher_impl.h"
 #include "components/legion/phosphor/token_manager_impl.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace legion {
 
