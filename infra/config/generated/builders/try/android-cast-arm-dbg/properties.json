@@ -45,8 +45,7 @@
           "project": "chromium-m144"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/try/android-cast-arm-dbg/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/try/android-cast-arm-dbg/targets"
     }
   },
   "$build/flakiness": {
@@ -59,11 +58,10 @@
       "remote-link"
     ],
     "enable_cloud_monitoring": true,
-    "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
-    "metrics_project": "chromium-reclient-metrics",
     "output_local_strategy": "greedy",
+    "profile_mode": "cloud",
     "project": "rbe-chromium-untrusted",
     "remote_jobs": -1
   },

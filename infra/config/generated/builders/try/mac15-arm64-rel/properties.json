@@ -82,8 +82,7 @@
           "project": "chromium-m144"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/try/mac15-arm64-rel/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/try/mac15-arm64-rel/targets"
     }
   },
   "$build/flakiness": {
@@ -95,10 +94,9 @@
       "builder"
     ],
     "enable_cloud_monitoring": true,
-    "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
-    "metrics_project": "chromium-reclient-metrics",
+    "profile_mode": "cloud",
     "project": "rbe-chromium-untrusted",
     "remote_jobs": -1
   },

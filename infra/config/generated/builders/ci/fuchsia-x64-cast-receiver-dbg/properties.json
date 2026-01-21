@@ -48,8 +48,7 @@
         }
       ],
       "retry_failed_shards": true,
-      "targets_spec_directory": "infra/config/generated/builders/ci/fuchsia-x64-cast-receiver-dbg/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/ci/fuchsia-x64-cast-receiver-dbg/targets"
     }
   },
   "$build/siso": {
@@ -57,10 +56,9 @@
       "builder"
     ],
     "enable_cloud_monitoring": true,
-    "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
-    "metrics_project": "chromium-reclient-metrics",
+    "profile_mode": "cloud",
     "project": "rbe-chromium-trusted",
     "remote_jobs": 500
   },

@@ -72,8 +72,7 @@
           "group": "tryserver.chromium.dawn"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/ci/Dawn Mac arm64 DEPS Release (Apple M2)/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/ci/Dawn Mac arm64 DEPS Release (Apple M2)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

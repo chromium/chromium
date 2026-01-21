@@ -72,8 +72,7 @@
         }
       ],
       "retry_failed_shards": true,
-      "targets_spec_directory": "infra/config/generated/builders/ci/mac15-tests-dbg/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/ci/mac15-tests-dbg/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

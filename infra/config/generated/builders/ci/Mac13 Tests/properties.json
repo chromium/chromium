@@ -75,8 +75,7 @@
         }
       ],
       "retry_failed_shards": true,
-      "targets_spec_directory": "infra/config/generated/builders/ci/Mac13 Tests/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/ci/Mac13 Tests/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

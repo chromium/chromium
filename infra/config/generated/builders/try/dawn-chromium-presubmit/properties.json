@@ -46,8 +46,7 @@
       ],
       "retry_failed_shards": false,
       "retry_without_patch": false,
-      "targets_spec_directory": "infra/config/generated/builders/try/dawn-chromium-presubmit/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/try/dawn-chromium-presubmit/targets"
     }
   },
   "$build/siso": {
@@ -55,10 +54,9 @@
       "builder"
     ],
     "enable_cloud_monitoring": true,
-    "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
-    "metrics_project": "chromium-reclient-metrics",
+    "profile_mode": "cloud",
     "project": "rbe-chromium-untrusted",
     "remote_jobs": 150
   },
