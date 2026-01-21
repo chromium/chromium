@@ -147,6 +147,10 @@ void ContextualCueingHelper::DidFinishNavigation(
                                ui::PAGE_TRANSITION_RELOAD)) {
     return;
   }
+  if (navigation_handle->GetPreviousPrimaryMainFrameURL() ==
+      navigation_handle->GetURL()) {
+    return;
+  }
 
   // Reset FCP state.
   has_first_contentful_paint_ = false;
@@ -159,7 +163,7 @@ void ContextualCueingHelper::DidFinishNavigation(
         web_contents()->GetPrimaryPage());
   }
 
-  // Ignore fragment changes.
+  // Ignore fragment changes for cueing only.
   if (navigation_handle->GetPreviousPrimaryMainFrameURL().GetWithoutRef() ==
       navigation_handle->GetURL().GetWithoutRef()) {
     return;
