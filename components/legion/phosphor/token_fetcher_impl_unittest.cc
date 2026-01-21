@@ -103,17 +103,6 @@ struct MockOAuthTokenProvider : public OAuthTokenProvider {
   std::optional<std::string> response_access_token = "access_token";
 };
 
-// A mock BlindSignAuthFactory for use in testing the fetcher.
-struct MockBlindSignAuthFactory : public BlindSignAuthFactory {
-  std::unique_ptr<quiche::BlindSignAuthInterface> CreateBlindSignAuth(
-      std::unique_ptr<network::PendingSharedURLLoaderFactory>
-          pending_url_loader_factory) override {
-    return std::move(bsa_to_return);
-  }
-
-  std::unique_ptr<quiche::BlindSignAuthInterface> bsa_to_return;
-};
-
 class TokenFetcherImplTest : public testing::Test {
  protected:
   using GetAuthnTokensFuture = base::test::TestFuture<
@@ -145,10 +134,7 @@ class TokenFetcherImplTest : public testing::Test {
   void ExpectGetAuthnTokensResult(
       std::vector<BlindSignedAuthToken> bsa_tokens) {
     auto& result = tokens_future_.Get();
-    EXPECT_TRUE(result.has_value());
-    if (!result.has_value()) {
-      return;
-    }
+    CHECK(result.has_value());
     EXPECT_EQ(result.value(), bsa_tokens);
   }
 
@@ -156,10 +142,7 @@ class TokenFetcherImplTest : public testing::Test {
   // `try_again_after` within the expected range.
   void ExpectGetAuthnTokensResultFailed(base::TimeDelta try_again_delta) {
     auto& result = tokens_future_.Get();
-    EXPECT_FALSE(result.has_value());
-    if (result.has_value()) {
-      return;
-    }
+    CHECK(!result.has_value());
     EXPECT_THAT(result.error() - base::Time::Now(),
                 IsNearWithJitter(try_again_delta));
     // Clear future so it can be reused and accept new tokens.
@@ -185,7 +168,6 @@ class TokenFetcherImplTest : public testing::Test {
 
   // Mock providers for the fetcher under test.
   MockOAuthTokenProvider oauth_token_provider_;
-  MockBlindSignAuthFactory bsa_factory_;
 
   // Fetcher under test.
   std::unique_ptr<TokenFetcherImpl> fetcher_;
@@ -550,10 +532,7 @@ TEST_F(ProdBlindSignAuthTokenFetcherImplTest, FetchFails) {
 
   ASSERT_TRUE(tokens_future.Wait());
   auto& result = tokens_future.Get();
-  EXPECT_FALSE(result.has_value());
-  if (result.has_value()) {
-    return;
-  }
+  ASSERT_FALSE(result.has_value());
   EXPECT_THAT(
       result.error() - base::Time::Now(),
       IsNearWithJitter(legion::kLegionTryGetAuthTokensTransientBackoff.Get()));
