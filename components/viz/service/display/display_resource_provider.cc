@@ -122,7 +122,7 @@ bool DisplayResourceProvider::IsBackedBySurfaceView(ResourceId id) const {
 }
 #endif
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_ANDROID)
 bool DisplayResourceProvider::DoesResourceWantPromotionHint(
     ResourceId id) const {
   const ChildResource* resource = TryGetResource(id);

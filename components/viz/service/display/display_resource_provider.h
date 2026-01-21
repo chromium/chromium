@@ -78,7 +78,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   bool IsBackedBySurfaceView(ResourceId id) const;
 #endif
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_ANDROID)
   // Indicates if this resource wants to receive promotion hints.
   bool DoesResourceWantPromotionHint(ResourceId id) const;
 #endif

@@ -400,8 +400,7 @@ void MediaFoundationRendererClient::OnDCOMPSurfaceHandleSet(bool success) {
 }
 
 void MediaFoundationRendererClient::OnVideoFrameCreated(
-    scoped_refptr<VideoFrame> video_frame,
-    const gpu::Mailbox& mailbox) {
+    scoped_refptr<VideoFrame> video_frame) {
   DVLOG_FUNC(1);
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(has_video_);

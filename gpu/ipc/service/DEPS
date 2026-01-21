@@ -3,7 +3,6 @@ include_rules = [
   "+components/crash/core/common/crash_key.h",
   "+components/viz/common/features.h",
   "+components/viz/common/gpu/vulkan_context_provider.h",
-  "+components/viz/common/overlay_state/win/overlay_state_service.h",
   "+components/viz/common/resources/shared_image_format.h",
   "+components/viz/common/resources/shared_image_format_utils.h",
   "+mojo/public",

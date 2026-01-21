@@ -3193,7 +3193,6 @@ test("content_unittests") {
       "../browser/renderer_host/renderer_sandboxed_process_launcher_delegate_unittest.cc",
       "../browser/service_host/utility_sandbox_delegate_unittest.cc",
       "../browser/speech/tts_win_utils_unittest.cc",
-      "../renderer/media/win/overlay_state_observer_impl_unittest.cc",
     ]
   }
 

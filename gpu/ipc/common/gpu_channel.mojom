@@ -172,15 +172,6 @@ interface GpuChannel {
       int32 route_id,
       pending_associated_receiver<DCOMPTexture> receiver) => (bool success);
 
-  // This interface is used by MediaFoundationRendererClient to subscribe
-  // to overlay state information from the Viz layer (as provided by the
-  // DCOverlayProcessor). The MediaFoundationRendererClient uses the overlay
-  // state associated with a Video Frame texture (correlated via 'mailbox') as
-  // a heuristic to determine the best video presentation mode to use.
-  [Sync, EnableIf=is_win] RegisterOverlayStateObserver(
-    pending_remote<OverlayStateObserver> promotion_hint_observer,
-    gpu.mojom.Mailbox mailbox) => (bool success);
-
   // Instructs the command buffer to wait asynchronously until its State is
   // changed by the reader to have a current token value within the (inclusive)
   // range [start, end]. Once in range, the command buffer will reply and
@@ -328,17 +319,6 @@ interface DCOMPTextureClient {
 
   // Informs the client of a change in video composition parameter.
   OnOutputRectChange(gfx.mojom.Rect output_rect);
-};
-
-// Interface used by GPU to notify clients when the overlay promotion hint state
-// has changed.
-[EnableIf=is_win]
-interface OverlayStateObserver {
-  // Called when the texture associated with the specified mailbox has had a
-  // change in promotion state. If promoted is true then the texture is
-  // currently using a DC Layer Overlay. If promoted is false then the texture
-  // is not using a DC Layer Overlay.
-  OnStateChanged(bool promoted);
 };
 
 // DeferredRequests are batched locally by clients and sent to the service only

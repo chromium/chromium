@@ -188,11 +188,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
   // Called by DCOMPTexture to remove the GpuChannel's reference to the
   // DCOMPTexture.
   void DestroyDCOMPTexture(int32_t route_id);
-
-  bool RegisterOverlayStateObserver(
-      mojo::PendingRemote<gpu::mojom::OverlayStateObserver>
-          promotion_hint_observer,
-      const gpu::Mailbox& mailbox);
 #endif  // BUILDFLAG(IS_WIN)
 
   SharedImageStub* shared_image_stub() const {

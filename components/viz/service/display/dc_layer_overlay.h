@@ -368,7 +368,6 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   const int allowed_yuv_overlay_count_;
   uint64_t frames_since_last_qualified_multi_overlays_ = 0;
 
-  bool allow_promotion_hinting_ = false;
   bool is_on_battery_power_ = false;
 
   // Information about overlays from the previous frame.

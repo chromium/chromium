@@ -211,7 +211,7 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
   frame->set_color_space(shared_image->color_space());
   frame->metadata().dcomp_surface = true;
 
-  std::move(create_video_frame_cb).Run(frame, mailbox_);
+  std::move(create_video_frame_cb).Run(frame);
 }
 
 void DCOMPTextureWrapperImpl::OnSharedImageMailboxBound(gpu::Mailbox mailbox) {

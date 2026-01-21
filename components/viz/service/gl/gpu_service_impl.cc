@@ -96,9 +96,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
-#include "components/viz/common/overlay_state/win/overlay_state_service.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing_factory.h"
-#include "media/base/win/mf_feature_checks.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "ui/gl/dcomp_surface_registry.h"
 #include "ui/gl/direct_composition_support.h"
@@ -267,16 +265,6 @@ GpuServiceImpl::GpuServiceImpl(
     }
 #endif  // BUILDFLAG(SKIA_USE_METAL)
   }
-
-#if BUILDFLAG(IS_WIN)
-  if (media::SupportMediaFoundationClearPlayback()) {
-    // Initialize the OverlayStateService using the GPUServiceImpl task
-    // sequence.
-    auto* overlay_state_service = OverlayStateService::GetInstance();
-    overlay_state_service->Initialize(
-        base::SequencedTaskRunner::GetCurrentDefault());
-  }
-#endif
 
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
 }
