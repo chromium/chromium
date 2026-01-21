@@ -20,6 +20,12 @@ class PageContextEligibility;
 
 namespace page_content_annotations {
 
+using FetchPageContextCallback =
+    base::RepeatingCallback<void(content::WebContents&,
+                                 const FetchPageContextOptions&,
+                                 std::unique_ptr<FetchPageProgressListener>,
+                                 FetchPageContextResultCallback)>;
+
 using GetTabIdCallback =
     base::RepeatingCallback<std::optional<int64_t>(content::WebContents*)>;
 
@@ -27,19 +33,16 @@ using GetTabIdCallback =
 // extracts page content.
 class AnnotatedPageContentRequest {
  public:
-  using FetchPageContextCallback =
-      base::RepeatingCallback<void(content::WebContents&,
-                                   const FetchPageContextOptions&,
-                                   std::unique_ptr<FetchPageProgressListener>,
-                                   FetchPageContextResultCallback)>;
-
   static std::unique_ptr<AnnotatedPageContentRequest> Create(
       content::WebContents* web_contents,
+      FetchPageContextCallback fetch_page_context_callback,
       GetTabIdCallback get_tab_id_callback);
 
-  AnnotatedPageContentRequest(content::WebContents* web_contents,
-                              blink::mojom::AIPageContentOptionsPtr request,
-                              GetTabIdCallback get_tab_id_callback);
+  AnnotatedPageContentRequest(
+      content::WebContents* web_contents,
+      blink::mojom::AIPageContentOptionsPtr request,
+      FetchPageContextCallback fetch_page_context_callback,
+      GetTabIdCallback get_tab_id_callback);
 
   AnnotatedPageContentRequest(const AnnotatedPageContentRequest&) = delete;
   AnnotatedPageContentRequest& operator=(const AnnotatedPageContentRequest&) =
@@ -59,8 +62,6 @@ class AnnotatedPageContentRequest {
   // Returns the cached APC for `page` and whether it is eligible for
   // server upload. Will return nullopt if not available.
   std::optional<ExtractedPageContentResult> GetCachedContentAndEligibility();
-
-  void SetFetchPageContextCallbackForTesting(FetchPageContextCallback callback);
 
  private:
   void ResetForNewNavigation();

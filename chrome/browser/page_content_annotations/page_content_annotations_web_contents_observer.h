@@ -46,9 +46,9 @@ class PageContentAnnotationsWebContentsObserver
     return content_visibility_score_;
   }
 
- protected:
   explicit PageContentAnnotationsWebContentsObserver(
       content::WebContents* web_contents,
+      FetchPageContextCallback fetch_page_context_callback,
       GetTabIdCallback get_tab_id_callback);
 
  private:
@@ -91,6 +91,8 @@ class PageContentAnnotationsWebContentsObserver
   // |web_contents|.
   continuous_search::SearchResultExtractorClient
       search_result_extractor_client_;
+
+  const FetchPageContextCallback fetch_page_context_callback_;
 
   const GetTabIdCallback get_tab_id_callback_;
 

@@ -11,7 +11,6 @@
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_types.h"
@@ -58,8 +57,10 @@ void RecordPdfPageCountMetrics(
 
 // static
 std::unique_ptr<AnnotatedPageContentRequest>
-AnnotatedPageContentRequest::Create(content::WebContents* web_contents,
-                                    GetTabIdCallback get_tab_id_callback) {
+AnnotatedPageContentRequest::Create(
+    content::WebContents* web_contents,
+    FetchPageContextCallback fetch_page_context_callback,
+    GetTabIdCallback get_tab_id_callback) {
   auto request = blink::mojom::AIPageContentOptions::New();
   request->mode =
       (page_content_annotations::features::AnnotatedPageContentMode() ==
@@ -70,20 +71,21 @@ AnnotatedPageContentRequest::Create(content::WebContents* web_contents,
       IsAnnotatedPageContentOnCriticalPath();
 
   return std::make_unique<AnnotatedPageContentRequest>(
-      web_contents, std::move(request), std::move(get_tab_id_callback));
+      web_contents, std::move(request), std::move(fetch_page_context_callback),
+      std::move(get_tab_id_callback));
 }
 
 AnnotatedPageContentRequest::AnnotatedPageContentRequest(
     content::WebContents* web_contents,
     blink::mojom::AIPageContentOptionsPtr request,
+    FetchPageContextCallback fetch_page_context_callback,
     GetTabIdCallback get_tab_id_callback)
     : web_contents_(web_contents),
       request_(std::move(request)),
       delay_(features::GetAnnotatedPageContentCaptureDelay()),
       include_inner_text_(
           features::ShouldAnnotatedPageContentStudyIncludeInnerText()),
-      fetch_page_context_callback_(
-          base::BindRepeating(&page_content_annotations::FetchPageContext)),
+      fetch_page_context_callback_(std::move(fetch_page_context_callback)),
       get_tab_id_callback_(std::move(get_tab_id_callback)) {
   // Post to a background thread to avoid blocking the set up of the overlay.
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -251,10 +253,6 @@ void AnnotatedPageContentRequest::RequestAnnotatedPageContentSync() {
   }
 }
 
-void AnnotatedPageContentRequest::SetFetchPageContextCallbackForTesting(
-    FetchPageContextCallback callback) {
-  fetch_page_context_callback_ = std::move(callback);
-}
 
 bool AnnotatedPageContentRequest::ShouldScheduleExtraction() const {
   auto triggering_mode = features::GetPageContentExtractionTriggeringMode();

@@ -17,6 +17,7 @@
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_web_contents_observer.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
@@ -674,6 +675,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
   EXPECT_TRUE(
       PageContentAnnotationsWebContentsObserver::GetOrCreateForWebContents(
           browser()->tab_strip_model()->GetActiveWebContents(),
+          base::BindRepeating(&page_content_annotations::FetchPageContext),
           base::BindRepeating(&MakeTabId))
           ->content_visibility_score()
           .has_value());

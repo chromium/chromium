@@ -44,10 +44,12 @@ HistoryVisit CreateHistoryVisitFromWebContents(
 PageContentAnnotationsWebContentsObserver::
     PageContentAnnotationsWebContentsObserver(
         content::WebContents* web_contents,
+        FetchPageContextCallback fetch_page_context_callback,
         GetTabIdCallback get_tab_id_callback)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<PageContentAnnotationsWebContentsObserver>(
           *web_contents),
+      fetch_page_context_callback_(std::move(fetch_page_context_callback)),
       get_tab_id_callback_(std::move(get_tab_id_callback)) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -71,7 +73,7 @@ PageContentAnnotationsWebContentsObserver::GetAnnotatedPageContentRequest() {
   if (should_enable) {
     if (!annotated_page_content_request_) {
       annotated_page_content_request_ = AnnotatedPageContentRequest::Create(
-          web_contents(), get_tab_id_callback_);
+          web_contents(), fetch_page_context_callback_, get_tab_id_callback_);
     }
   } else {
     annotated_page_content_request_.reset();

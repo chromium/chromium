@@ -77,19 +77,19 @@ class AnnotatePageContentRequestTest : public ChromeRenderViewHostTestHarness {
 
     request_ = AnnotatedPageContentRequest::Create(
         web_contents(),
-        base::BindRepeating([](content::WebContents* web_contents) {
-          return std::make_optional(reinterpret_cast<int64_t>(web_contents));
-        }));
-    request_->SetFetchPageContextCallbackForTesting(base::BindRepeating(
-        [](content::WebContents&, const FetchPageContextOptions&,
-           std::unique_ptr<FetchPageProgressListener>,
-           FetchPageContextResultCallback callback) {
+        base::BindRepeating([](content::WebContents&,
+                               const FetchPageContextOptions&,
+                               std::unique_ptr<FetchPageProgressListener>,
+                               FetchPageContextResultCallback callback) {
           auto page_content =
               std::make_unique<optimization_guide::AIPageContentResult>();
           auto result = std::make_unique<FetchPageContextResult>();
           result->annotated_page_content_result =
               PageContentResultWithEndTime(std::move(*page_content));
           std::move(callback).Run(std::move(result));
+        }),
+        base::BindRepeating([](content::WebContents* web_contents) {
+          return std::make_optional(reinterpret_cast<int64_t>(web_contents));
         }));
   }
 
