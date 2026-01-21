@@ -5862,7 +5862,7 @@
   {
     "name": "ios-tips-notifications-string-alternatives",
     "owners": [ "gayane@google.com", "bling-mony-pod@google.com" ],
-    "expiry_milestone": 146
+    "expiry_milestone": 150
   },
   {
     "name": "ios-trusted-vault-notification",
