@@ -173,7 +173,8 @@
             label="[[attributeInstanceItem.type.typeNameAsString]]"
             value="{{attributeInstanceItem.value}}"
             spellcheck="false" maxlength="1000"
-            on-input="onAttributeInstanceFieldInput_">
+            on-input="onAttributeInstanceFieldInput_"
+            invalid="[[isFieldInvalid_(attributeInstanceItem, validationError_)]]">
         </cr-input>
       </template>
 

@@ -734,6 +734,9 @@
   <message name="IDS_SETTINGS_AUTOFILL_AI_ADD_OR_EDIT_DIALOG_VALIDATION_ERROR" desc="An error message if the user clicks Save without having filled at least one value in the form.">
     Fill at least one field before saving
   </message>
+  <message name="IDS_AUTOFILL_AI_ADD_OR_EDIT_DIALOG_REQUIRED_FIELD_ERROR" desc="Error message displayed in the Autofill AI add/edit dialog when a required field is missing.">
+    <ph name="FIELD_LIST">$1<ex>Name, Address, or Phone Number</ex></ph> is required
+  </message>
   <message name="IDS_SETTINGS_WALLETABLE_PASS_DETECTION_TOGGLE_LABEL" desc="Label for the toggle in Settings that allows managing the full page save settings for wallet.">
     Save info to Google Wallet from pages you view
   </message>

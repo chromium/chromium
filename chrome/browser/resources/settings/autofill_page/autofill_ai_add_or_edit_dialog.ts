@@ -376,8 +376,6 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
     this.onAttributeInstanceFieldInput_(e);
   }
 
-
-
   private isExistingYearOutOfBounds_(
       attributeInstance: AttributeInstance, years: string[]): boolean {
     const year = this.getExistingYear_(attributeInstance);
@@ -403,6 +401,11 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
         !this.userClickedSaveButton_) {
       return false;
     }
+
+    if (this.isFieldInvalid_(attributeInstance, this.validationError_)) {
+      return true;
+    }
+
     const value: DateValue = attributeInstance.value as DateValue;
     const month = value.month;
     const day = value.day;
@@ -430,6 +433,25 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
     // overflow into the next month.
     return (date.getFullYear() !== +year) || (date.getMonth() !== +month - 1) ||
         (date.getDate() !== +day);
+  }
+
+  /**
+   * Returns true if the field should be highlighted as invalid due to
+   * missing requirements.
+   */
+  private isFieldInvalid_(
+      attributeInstance: AttributeInstance, validationError: string): boolean {
+    // Don't show errors before the user tries to save.
+    if (!this.userClickedSaveButton_ || !validationError) {
+      return false;
+    }
+
+    // Check if this specific field is one of the required candidates.
+    const isRequiredCandidate = this.requiredAttributeTypes_.some(
+        req => req.typeName === attributeInstance.type.typeName);
+
+    return isRequiredCandidate &&
+        !this.isAttributeInstanceNotEmpty(attributeInstance);
   }
 
   /**
@@ -465,11 +487,22 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
     const requiredFieldsMet = this.checkRequiredFields_();
 
     if (this.allFieldsAreEmpty_) {
+      // TODO(crbug.com/454892936): Remove this string as well as the
+      // implementation of `allFieldsAreEmpty_`.
       this.validationError_ =
           this.i18n('autofillAiAddOrEditDialogValidationError');
     } else if (!requiredFieldsMet) {
-      // TODO(crbug.com/454892936): Use i18n string.
-      this.validationError_ = 'Required fields missing';
+      const requiredFieldNames =
+          this.requiredAttributeTypes_.map(type => type.typeNameAsString);
+
+      const formatter = new Intl.ListFormat(document.documentElement.lang, {
+        style: 'long',
+        type: 'disjunction',
+      });
+
+      const formattedList = formatter.format(requiredFieldNames);
+      this.validationError_ = this.i18n(
+          'autofillAiAddOrEditDialogRequiredFieldError', formattedList);
     } else {
       this.validationError_ = '';
     }

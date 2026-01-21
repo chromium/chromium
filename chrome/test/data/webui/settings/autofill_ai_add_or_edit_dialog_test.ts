@@ -275,6 +275,7 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
   });
 
   test('RequiredFieldsValidation', async function() {
+    document.documentElement.lang = 'en';
     const requiredAttributes = [testAttributeTypes[0]!];
 
     entityDataManager.setGetRequiredAttributeTypesForEntityTypeNameResponse(
@@ -335,12 +336,24 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
         'Should stay disabled if only non-required field is filled');
     assertTrue(isVisible(validationError));
 
+    // Index 0 is required and empty.
+    assertTrue(inputs[0]!.invalid, 'Required field should be marked invalid');
+    // Index 1 is not required.
+    assertFalse(
+        inputs[1]!.invalid, 'Optional field should not be marked invalid');
+    // Verify error message.
+    assertTrue(
+        validationError!.innerText.includes('Make'),
+        'Error message should explicitly list missing field names');
+
     // Fill the required field.
     await simulateInput(0, 'Toyota');
 
     // Valid!
     assertFalse(saveButton!.disabled, 'Should be enabled');
     assertFalse(isVisible(validationError));
+    assertFalse(
+        inputs[0]!.invalid, 'Required field should be valid after input');
   });
 });
 
