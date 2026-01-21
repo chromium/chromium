@@ -455,7 +455,7 @@ void SyncPointManager::EnsureFenceSyncReleased(const SyncToken& release,
         UMA_HISTOGRAM_ENUMERATION("GPU.FenceSyncRelease.GraphValidation.Cause",
                                   cause);
       } else {
-        UMA_HISTOGRAM_ENUMERATION("GPU.FenceSyncrelease.OrderValidation.Cause",
+        UMA_HISTOGRAM_ENUMERATION("GPU.FenceSyncRelease.OrderValidation.Cause",
                                   cause);
       }
     }
