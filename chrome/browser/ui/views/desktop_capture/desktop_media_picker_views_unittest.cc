@@ -864,14 +864,8 @@ class DesktopMediaPickerViewsApplicationAudioTest
       return false;
     }
 #endif  // BUILDFLAG(IS_MAC)
-    return RequestAudio() &&
-           WindowAudioPreference() !=
-               blink::mojom::WindowAudioPreference::kExclude &&
-           (((media::IsApplicationLoopbackCaptureSupported() &&
-              WindowAudioPreference() ==
-                  blink::mojom::WindowAudioPreference::kWindow)) ||
-            (WindowAudioPreference() ==
-             blink::mojom::WindowAudioPreference::kSystem));
+    return RequestAudio() && WindowAudioPreference() !=
+                                 blink::mojom::WindowAudioPreference::kExclude;
   }
 
   // Returns the expected label for the screen pane's audio toggle of the

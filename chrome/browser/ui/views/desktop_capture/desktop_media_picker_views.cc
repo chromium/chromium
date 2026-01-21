@@ -364,9 +364,13 @@ DesktopMediaID::AudioType GetWindowCaptureAudioType(
   }
 
   if (params.window_audio_preference ==
-          blink::mojom::WindowAudioPreference::kWindow &&
-      media::IsApplicationLoopbackCaptureSupported()) {
-    return DesktopMediaID::AudioType::kApplication;
+      blink::mojom::WindowAudioPreference::kWindow) {
+    if (media::IsApplicationLoopbackCaptureSupported()) {
+      return DesktopMediaID::AudioType::kApplication;
+    } else if (DesktopMediaPickerController::IsSystemAudioCaptureSupported(
+                   params.request_source)) {
+      return DesktopMediaID::AudioType::kSystem;
+    }
   }
 
   if (params.window_audio_preference ==
