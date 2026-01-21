@@ -284,7 +284,9 @@ void TracesInternalsHandler::GetTrackEventCategories(
 
   AddCategoriesToList(base::perfetto_track_event::internal::kCategoryRegistry,
                       categories);
+#ifdef V8_USE_PERFETTO
   AddCategoriesToList(v8::GetTrackEventCategoryRegistry(), categories);
+#endif  // V8_USE_PERFETTO
   AddCategoriesToList(GetWebRtcTrackEventCategoryRegistry(), categories);
 
   std::move(callback).Run(std::move(categories));

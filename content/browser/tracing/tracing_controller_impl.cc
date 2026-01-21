@@ -236,7 +236,9 @@ bool TracingControllerImpl::GetCategories(GetCategoriesDoneCallback callback) {
 
   AddCategoriesToSet(base::perfetto_track_event::internal::kCategoryRegistry,
                      category_set);
+#ifdef V8_USE_PERFETTO
   AddCategoriesToSet(v8::GetTrackEventCategoryRegistry(), category_set);
+#endif  // V8_USE_PERFETTO
   AddCategoriesToSet(GetWebRtcTrackEventCategoryRegistry(), category_set);
 
   std::move(callback).Run(category_set);
@@ -247,7 +249,9 @@ std::vector<uint8_t> TracingControllerImpl::GetTrackEventDescriptor() {
   perfetto::protos::gen::TrackEventDescriptor track_event;
   AddCategoriesToDescriptor(
       base::perfetto_track_event::internal::kCategoryRegistry, track_event);
+#ifdef V8_USE_PERFETTO
   AddCategoriesToDescriptor(v8::GetTrackEventCategoryRegistry(), track_event);
+#endif  // V8_USE_PERFETTO
   AddCategoriesToDescriptor(GetWebRtcTrackEventCategoryRegistry(), track_event);
   return track_event.SerializeAsArray();
 }
