@@ -6,7 +6,6 @@
 
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/vr/elements/ui_texture.h"
-#include "chrome/browser/vr/skia_surface_provider.h"
 #include "chrome/browser/vr/ui_element_renderer.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -43,7 +42,7 @@ TexturedElement::TexturedElement() = default;
 
 TexturedElement::~TexturedElement() = default;
 
-void TexturedElement::Initialize(SkiaSurfaceProvider* provider) {
+void TexturedElement::Initialize() {
   TRACE_EVENT0("gpu", "TexturedElement::Initialize");
   DCHECK(GetTexture());
   GetTexture()->OnInitialized();

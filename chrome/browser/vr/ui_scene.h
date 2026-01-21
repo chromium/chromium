@@ -74,13 +74,11 @@ class VR_UI_EXPORT UiScene {
 
   void set_dirty() { is_dirty_ = true; }
 
-  void OnGlInitialized(SkiaSurfaceProvider* provider);
+  void OnGlInitialized();
 
   // The callback to call on every new frame. This is used for things we want to
   // do every frame regardless of element or subtree visibility.
   void AddPerFrameCallback(PerFrameCallback callback);
-
-  SkiaSurfaceProvider* SurfaceProviderForTesting() { return provider_; }
 
   void RunFirstFrameForTest();
 
@@ -106,8 +104,6 @@ class VR_UI_EXPORT UiScene {
   std::vector<raw_ptr<UiElement, VectorExperimental>> all_elements_;
 
   std::vector<PerFrameCallback> per_frame_callback_;
-
-  raw_ptr<SkiaSurfaceProvider, DanglingUntriaged> provider_ = nullptr;
 };
 
 }  // namespace vr

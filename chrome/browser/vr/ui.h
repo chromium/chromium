@@ -23,7 +23,6 @@
 
 namespace vr {
 
-class SkiaSurfaceProvider;
 class UiRenderer;
 struct Model;
 
@@ -90,7 +89,6 @@ class VR_UI_EXPORT Ui : public UiInterface,
   std::unique_ptr<Model> model_;
   std::unique_ptr<UiElementRenderer> ui_element_renderer_;
   std::unique_ptr<UiRenderer> ui_renderer_;
-  std::unique_ptr<SkiaSurfaceProvider> provider_;
 
   base::WeakPtrFactory<Ui> weak_ptr_factory_{this};
 };

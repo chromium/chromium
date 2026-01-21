@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_VR_ELEMENTS_TEXTURED_ELEMENT_H_
 #define CHROME_BROWSER_VR_ELEMENTS_TEXTURED_ELEMENT_H_
 
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/elements/ui_element.h"
-#include "chrome/browser/vr/skia_surface_provider.h"
 #include "chrome/browser/vr/vr_ui_export.h"
 #include "device/vr/gl_bindings.h"
-#include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace vr {
@@ -26,7 +26,7 @@ class VR_UI_EXPORT TexturedElement : public UiElement {
 
   ~TexturedElement() override;
 
-  void Initialize(SkiaSurfaceProvider* provider) final;
+  void Initialize() final;
 
   bool HasDirtyTexture() const override;
   void UpdateTexture() override;
