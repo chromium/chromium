@@ -40,9 +40,11 @@
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/autofill_external_delegate.h"
+#include "components/autofill/core/browser/ui/autofill_resource_utils.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "url/origin.h"
 
 namespace autofill {
@@ -129,6 +131,26 @@ std::optional<ActorSuggestionWithFillData> GetActorAddressSuggestion(
                                      std::move(fill_data)};
 }
 
+// Retrieves an icon for a payment suggestion
+std::optional<gfx::Image> GetCreditCardSuggestionIcon(
+    const Suggestion& suggestion) {
+  // TODO(crbug.com/463396455): Credit cards will contain either a gfx::Image in
+  // the `custom_icon` or a generic resource icon id in the `icon` field.
+  // None-the-less, all types of icons should be converted.
+  if (std::holds_alternative<gfx::Image>(suggestion.custom_icon)) {
+    gfx::Image image = std::get<gfx::Image>(suggestion.custom_icon);
+    if (!image.IsEmpty()) {
+      return image;
+    }
+  }
+  if (int icon_resource_id = GetIconResourceID(suggestion.icon)) {
+    return ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+        icon_resource_id);
+  } else {
+    return std::nullopt;
+  }
+}
+
 // Generates an `ActorSuggestion` to fill a credit card or returns
 // `std::nullopt` if it cannot generate a filling payload.
 std::optional<ActorSuggestionWithFillData> GetActorCreditCardSuggestion(
@@ -146,8 +168,6 @@ std::optional<ActorSuggestionWithFillData> GetActorCreditCardSuggestion(
     return std::nullopt;
   }
 
-  // TODO(crbug.com/455788947): Add the network/card art icon to the
-  // ActorSuggestion.
   ActorSuggestion actor_suggestion;
   std::vector<std::u16string> title_components = {suggestion.main_text.value};
   base::Extend(title_components, suggestion.minor_texts,
@@ -158,6 +178,8 @@ std::optional<ActorSuggestionWithFillData> GetActorCreditCardSuggestion(
       (!suggestion.labels.empty() && !suggestion.labels[0].empty())
           ? base::UTF16ToUTF8(suggestion.labels[0][0].value)
           : "";
+  // TODO(crbug.com/475192853): Move icon fetching to a higher layer.
+  actor_suggestion.icon = GetCreditCardSuggestionIcon(suggestion);
   ActorFormFillingServiceImpl::FillData fill_data = {base::ToVector(fields),
                                                      *credit_card};
   return ActorSuggestionWithFillData{std::move(actor_suggestion),
