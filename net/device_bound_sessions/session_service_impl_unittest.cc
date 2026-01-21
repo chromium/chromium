@@ -2247,7 +2247,8 @@ TEST_F(SessionServiceImplTest, SessionUsage) {
   DbscRequest dbsc_request(request.get());
   service().ShouldDefer(dbsc_request, &extra_headers, FirstPartySetMetadata());
 
-  EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kNoUsage);
+  EXPECT_EQ(request->device_bound_session_usage(),
+            SessionUsage::kNoSiteMatchNotInScope);
 
   AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
   service().ShouldDefer(dbsc_request, &extra_headers, FirstPartySetMetadata());
@@ -2778,6 +2779,8 @@ TEST_F(SessionServiceImplTest, ProactiveRefreshBlocksDeferring) {
       service().ShouldDefer(*dbsc_request, &extra_headers,
                             FirstPartySetMetadata());
   ASSERT_FALSE(maybe_deferral);
+  EXPECT_EQ(request->device_bound_session_usage(),
+            SessionUsage::kInScopeProactiveRefreshAttempted);
 
   EXPECT_EQ(tracker.num_pending_refreshes(), 1);
 
@@ -2925,6 +2928,8 @@ TEST_F(SessionServiceImplTest, DeferringRefreshBlocksProactive) {
 
   EXPECT_EQ(tracker.num_pending_refreshes(), 1);
 
+  EXPECT_EQ(request->device_bound_session_usage(),
+            SessionUsage::kInScopeProactiveRefreshNotPossible);
   histograms.ExpectUniqueSample(
       "Net.DeviceBoundSessions.ProactiveRefreshAttempt",
       SessionServiceImpl::ProactiveRefreshAttempt::kExistingDeferringRefresh,
@@ -2999,6 +3004,43 @@ TEST_F(SessionServiceImplTest, FailedProactiveRefreshBlocksProactiveRefresh) {
       SessionServiceImpl::ProactiveRefreshAttempt::
           kPreviousFailedProactiveRefresh,
       1);
+}
+
+TEST_F(SessionServiceImplTest, NoProactiveRefreshNeededYet) {
+  // Register a session with kSessionId.
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+  auto site = SchemefulSite(kTestUrl);
+  ASSERT_TRUE(service().GetSession({site, Session::Id(kSessionId)}));
+
+  // Create a request and try to defer it.
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  // The request needs to be samesite for it to be considered
+  // candidate for deferral.
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  // Attach the required cookie. Set expiration for 10 minutes for now (beyond
+  // the proactive refresh threshold).
+  CookieInclusionStatus status;
+  auto source = CookieSourceType::kHTTP;
+  auto cookie = CanonicalCookie::Create(
+      kTestUrl, "test_cookie=v; Secure; Max-Age=600", base::Time::Now(),
+      std::nullopt, std::nullopt, source, &status);
+  ASSERT_TRUE(cookie);
+  CookieAccessResult access_result;
+  request->set_maybe_sent_cookies({{*cookie.get(), access_result}});
+
+  // We should not want to defer this request, and it should not trigger a
+  // proactive refresh.
+  HttpRequestHeaders extra_headers;
+  auto dbsc_request = std::make_unique<DbscRequest>(request.get());
+  std::optional<SessionService::DeferralParams> maybe_deferral =
+      service().ShouldDefer(*dbsc_request, &extra_headers,
+                            FirstPartySetMetadata());
+  ASSERT_FALSE(maybe_deferral);
+  EXPECT_EQ(request->device_bound_session_usage(),
+            SessionUsage::kInScopeRefreshNotYetNeeded);
 }
 
 TEST_F(SessionServiceImplTest, SessionDeletionDuringRefresh_ConfigChange) {

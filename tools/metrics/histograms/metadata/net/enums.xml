@@ -260,11 +260,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.IfChange(DeviceBoundSessionUsage) -->
 
-<enum name="DeviceBoundSessionUsage">
+<enum name="DeviceBoundSessionUsage2">
   <int value="0" label="Unknown"/>
-  <int value="1" label="Not in scope of any session"/>
-  <int value="2" label="In scope but not deferred"/>
-  <int value="3" label="In scope and deferred"/>
+  <int value="1" label="Does not match site of any session"/>
+  <int value="2" label="Not in scope of any session (but matches site)"/>
+  <int value="3" label="In scope but no refresh needed yet"/>
+  <int value="4"
+      label="In scope but request is not allowed to trigger refresh"/>
+  <int value="5" label="In scope but proactive refresh not possible"/>
+  <int value="6" label="In scope and proactive refresh attempted"/>
+  <int value="7" label="In scope and deferred for refresh"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/device_bound_sessions/session_usage.h:DeviceBoundSessionUsage) -->

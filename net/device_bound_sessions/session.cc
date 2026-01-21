@@ -13,6 +13,7 @@
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "net/base/features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/schemeful_site.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_params.h"
 #include "net/cookies/cookie_constants.h"
@@ -276,14 +277,21 @@ SessionDisplay Session::ToDisplay() const {
 }
 
 bool Session::IsInScope(DbscRequest& request) {
+  if (SchemefulSite(request.url()) == SchemefulSite(this->origin()) &&
+      request.device_bound_session_usage() <
+          SessionUsage::kSiteMatchNotInScope) {
+    request.set_device_bound_session_usage(SessionUsage::kSiteMatchNotInScope);
+  }
+
   if (!IncludesUrl(request.url())) {
     // Request is not in scope for this session.
     return false;
   }
 
   if (request.device_bound_session_usage() <
-      SessionUsage::kInScopeNotDeferred) {
-    request.set_device_bound_session_usage(SessionUsage::kInScopeNotDeferred);
+      SessionUsage::kInScopeRefreshNotYetNeeded) {
+    request.set_device_bound_session_usage(
+        SessionUsage::kInScopeRefreshNotYetNeeded);
   }
 
   request.net_log().AddEvent(
@@ -307,6 +315,11 @@ bool Session::IsInScope(DbscRequest& request) {
       });
 
   if (!AllowedToInitiateRefresh(request.initiator())) {
+    if (request.device_bound_session_usage() <
+        SessionUsage::kInScopeRefreshNotAllowed) {
+      request.set_device_bound_session_usage(
+          SessionUsage::kInScopeRefreshNotAllowed);
+    }
     request.net_log().AddEvent(
         net::NetLogEventType::CHECK_DBSC_REFRESH_REQUIRED,
         [&](NetLogCaptureMode capture_mode) {

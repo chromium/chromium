@@ -387,11 +387,12 @@ TEST_F(SessionTest, NotDeferredAsExcluded) {
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
   // The SessionService typically sets this once it starts looking for a
   // session on the same site as `request`.
-  request->set_device_bound_session_usage(SessionUsage::kNoUsage);
+  request->set_device_bound_session_usage(SessionUsage::kNoSiteMatchNotInScope);
 
   DbscRequest dbsc_request(request.get());
   EXPECT_FALSE(session->IsInScope(dbsc_request));
-  EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kNoUsage);
+  EXPECT_EQ(request->device_bound_session_usage(),
+            SessionUsage::kSiteMatchNotInScope);
 }
 
 TEST_F(SessionTest, NotDeferredSubdomain) {
@@ -407,11 +408,12 @@ TEST_F(SessionTest, NotDeferredSubdomain) {
   request->set_site_for_cookies(SiteForCookies::FromUrl(url_subdomain));
   // The SessionService typically sets this once it starts looking for a
   // session on the same site as `request`.
-  request->set_device_bound_session_usage(SessionUsage::kNoUsage);
+  request->set_device_bound_session_usage(SessionUsage::kNoSiteMatchNotInScope);
 
   DbscRequest dbsc_request(request.get());
   EXPECT_FALSE(session->IsInScope(dbsc_request));
-  EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kNoUsage);
+  EXPECT_EQ(request->device_bound_session_usage(),
+            SessionUsage::kSiteMatchNotInScope);
 }
 
 TEST_F(SessionTest, DeferredIncludedSubdomain) {
@@ -490,11 +492,12 @@ TEST_F(SessionTest, NotDeferredInsecure) {
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
   // The SessionService typically sets this once it starts looking for a
   // session on the same site as `request`.
-  request->set_device_bound_session_usage(SessionUsage::kNoUsage);
+  request->set_device_bound_session_usage(SessionUsage::kNoSiteMatchNotInScope);
 
   DbscRequest dbsc_request(request.get());
   EXPECT_FALSE(session->IsInScope(dbsc_request));
-  EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kNoUsage);
+  EXPECT_EQ(request->device_bound_session_usage(),
+            SessionUsage::kNoSiteMatchNotInScope);
 }
 
 TEST_F(SessionTest, DeferredEmptyCookieAttributesCredentialsField) {
@@ -553,11 +556,12 @@ TEST_F(SessionTest, NotDeferredNarrowerScopeOrigin) {
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
   // The SessionService typically sets this once it starts looking for a
   // session on the same site as `request`.
-  request->set_device_bound_session_usage(SessionUsage::kNoUsage);
+  request->set_device_bound_session_usage(SessionUsage::kNoSiteMatchNotInScope);
 
   DbscRequest dbsc_request(request.get());
   EXPECT_FALSE(session->IsInScope(dbsc_request));
-  EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kNoUsage);
+  EXPECT_EQ(request->device_bound_session_usage(),
+            SessionUsage::kSiteMatchNotInScope);
 }
 
 TEST_F(SessionTest, DeferredMissingScopeOrigin) {
@@ -596,36 +600,49 @@ TEST_F(SessionTest, DeferredAllowedRefreshInitiators) {
   std::unique_ptr<URLRequest> request =
       context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+  // The SessionService typically sets this once it starts looking for a
+  // session on the same site as `request`.
+  request->set_device_bound_session_usage(SessionUsage::kNoSiteMatchNotInScope);
 
   // Browser-initiated requests can always be deferred
   request->set_initiator(std::nullopt);
   DbscRequest dbsc_request(request.get());
-
   EXPECT_TRUE(session->IsInScope(dbsc_request));
   EXPECT_TRUE(
       session->MinimumBoundCookieLifetime(dbsc_request, FirstPartySetMetadata())
           .is_zero());
+  EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
 
   // Initiators on the site can always be deferred, despite no matching
   // initiator pattern.
   request->set_initiator(url::Origin::Create(GURL("https://example.test/")));
+  // Reset session usage.
+  request->set_device_bound_session_usage(SessionUsage::kNoSiteMatchNotInScope);
   EXPECT_TRUE(session->IsInScope(dbsc_request));
   EXPECT_TRUE(
       session->MinimumBoundCookieLifetime(dbsc_request, FirstPartySetMetadata())
           .is_zero());
+  EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
 
   // Initiators matching the pattern can be deferred.
   request->set_initiator(
       url::Origin::Create(GURL("https://subdomain.not-example.test/")));
+  // Reset session usage.
+  request->set_device_bound_session_usage(SessionUsage::kNoSiteMatchNotInScope);
   EXPECT_TRUE(session->IsInScope(dbsc_request));
   EXPECT_TRUE(
       session->MinimumBoundCookieLifetime(dbsc_request, FirstPartySetMetadata())
           .is_zero());
+  EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
 
   // Initiators not on the site or matching a rule cannot be deferred.
   request->set_initiator(
       url::Origin::Create(GURL("https://some-other-not-example.test/")));
+  // Reset session usage.
+  request->set_device_bound_session_usage(SessionUsage::kNoSiteMatchNotInScope);
   EXPECT_FALSE(session->IsInScope(dbsc_request));
+  EXPECT_EQ(request->device_bound_session_usage(),
+            SessionUsage::kInScopeRefreshNotAllowed);
 }
 
 class InsecureDelegate : public CookieAccessDelegate {
@@ -685,7 +702,7 @@ TEST_F(SessionTest, NotDeferredNotSameSiteForCookies) {
       session->MinimumBoundCookieLifetime(dbsc_request, FirstPartySetMetadata())
           .is_zero());
   EXPECT_EQ(request->device_bound_session_usage(),
-            SessionUsage::kInScopeNotDeferred);
+            SessionUsage::kInScopeRefreshNotYetNeeded);
 }
 
 TEST_F(SessionTest, DeferredNotSameSiteDelegate) {
@@ -758,7 +775,7 @@ TEST_F(SessionTest, NotDeferredIncludedSubdomainHostCraving) {
       session->MinimumBoundCookieLifetime(dbsc_request, FirstPartySetMetadata())
           .is_zero());
   EXPECT_EQ(request->device_bound_session_usage(),
-            SessionUsage::kInScopeNotDeferred);
+            SessionUsage::kInScopeRefreshNotYetNeeded);
 }
 
 TEST_F(SessionTest, CreationDate) {

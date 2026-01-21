@@ -46,9 +46,13 @@ struct DeviceBoundSessionAccess {
 // LINT.IfChange
 enum DeviceBoundSessionUsage {
   kUnknown = 0,
-  kNoUsage = 1,
-  kInScopeNotDeferred = 2,
-  kDeferred = 3,
+  kNoSiteMatchNotInScope = 1,
+  kSiteMatchNotInScope = 2,
+  kInScopeRefreshNotYetNeeded = 3,
+  kInScopeRefreshNotAllowed = 4,
+  kInScopeProactiveRefreshNotPossible = 5,
+  kInScopeProactiveRefreshAttempted = 6,
+  kDeferred = 7,
 };
 
 // LINT.ThenChange(//net/device_bound_sessions/session_usage.h)

@@ -3538,10 +3538,16 @@ void DocumentLoader::RecordUseCountersForCommit() {
     case network::mojom::DeviceBoundSessionUsage::kDeferred:
       CountUse(WebFeature::kDeviceBoundSessionRequestDeferral);
       [[fallthrough]];
-    case network::mojom::DeviceBoundSessionUsage::kInScopeNotDeferred:
+    case network::mojom::DeviceBoundSessionUsage::kInScopeRefreshNotYetNeeded:
+    case network::mojom::DeviceBoundSessionUsage::kInScopeRefreshNotAllowed:
+    case network::mojom::DeviceBoundSessionUsage::
+        kInScopeProactiveRefreshNotPossible:
+    case network::mojom::DeviceBoundSessionUsage::
+        kInScopeProactiveRefreshAttempted:
       CountUse(WebFeature::kDeviceBoundSessionRequestInScope);
       break;
-    case network::mojom::DeviceBoundSessionUsage::kNoUsage:
+    case network::mojom::DeviceBoundSessionUsage::kNoSiteMatchNotInScope:
+    case network::mojom::DeviceBoundSessionUsage::kSiteMatchNotInScope:
     case network::mojom::DeviceBoundSessionUsage::kUnknown:
       break;
   }

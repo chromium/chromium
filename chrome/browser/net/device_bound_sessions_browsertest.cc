@@ -310,8 +310,9 @@ IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest, NotDeferredLogs) {
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histogram_tester.ExpectBucketCount(
-      "Net.DeviceBoundSessions.RequestDeferralDecision2",
-      /*sample=*/net::device_bound_sessions::SessionUsage::kInScopeNotDeferred,
+      "Net.DeviceBoundSessions.RequestDeferralDecision3",
+      /*sample=*/
+      net::device_bound_sessions::SessionUsage::kInScopeRefreshNotYetNeeded,
       /*expected_count=*/1);
 }
 
@@ -335,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest, DeferredLogs) {
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histogram_tester.ExpectBucketCount(
-      "Net.DeviceBoundSessions.RequestDeferralDecision2",
+      "Net.DeviceBoundSessions.RequestDeferralDecision3",
       /*sample=*/net::device_bound_sessions::SessionUsage::kDeferred,
       /*expected_count=*/1);
 }

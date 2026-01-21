@@ -562,8 +562,10 @@ std::optional<SessionService::DeferralParams> SessionServiceImpl::ShouldDefer(
     return DeferralParams();
   }
 
-  if (request.device_bound_session_usage() < SessionUsage::kNoUsage) {
-    request.set_device_bound_session_usage(SessionUsage::kNoUsage);
+  if (request.device_bound_session_usage() <
+      SessionUsage::kNoSiteMatchNotInScope) {
+    request.set_device_bound_session_usage(
+        SessionUsage::kNoSiteMatchNotInScope);
   }
 
   SchemefulSite site(request.url());
@@ -1476,6 +1478,12 @@ void SessionServiceImpl::MaybeStartProactiveRefresh(
     return;
   }
 
+  if (request.device_bound_session_usage() <
+      SessionUsage::kInScopeProactiveRefreshNotPossible) {
+    request.set_device_bound_session_usage(
+        SessionUsage::kInScopeProactiveRefreshNotPossible);
+  }
+
   if (deferred_requests_.find(session_key) != deferred_requests_.end()) {
     // It's not a proactive refresh if we're in the middle of a regular refresh.
     LogProactiveRefreshAttempt(
@@ -1525,6 +1533,11 @@ void SessionServiceImpl::MaybeStartProactiveRefresh(
     return;
   }
 
+  if (request.device_bound_session_usage() <
+      SessionUsage::kInScopeProactiveRefreshAttempted) {
+    request.set_device_bound_session_usage(
+        SessionUsage::kInScopeProactiveRefreshAttempted);
+  }
   NotifySessionAccess(per_request_callback, SessionAccess::AccessType::kUpdate,
                       session_key, *session);
   LogProactiveRefreshAttempt(ProactiveRefreshAttempt::kAttempted);

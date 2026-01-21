@@ -1470,7 +1470,7 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
       /*sample=*/1,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
-      "Net.DeviceBoundSessions.RequestDeferralDecision2",
+      "Net.DeviceBoundSessions.RequestDeferralDecision3",
       /*sample=*/device_bound_sessions::SessionUsage::kDeferred,
       /*expected_bucket_count=*/1);
 }
