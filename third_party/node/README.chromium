@@ -670,7 +670,7 @@ Local Modifications:
 Name: Stylelint
 Short Name: stylelint
 URL: https://www.npmjs.com/package/stylelint
-Version: 16.26.1
+Version: 17.0.0
 Update Mechanism: Manual
 License: MIT
 License Android Compatible: Yes
@@ -679,6 +679,24 @@ Shipped: no
 
 Description:
 A mighty CSS linter that helps you avoid errors and enforce conventions.
+
+Local Modifications:
+(none)
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: @stylistic/stylelint-plugin
+Short Name: @stylistic/stylelint-plugin
+URL: https://www.npmjs.com/package/@stylistic/stylelint-plugin
+Version: 5.0.0
+Update Mechanism: Manual
+License: MIT
+License Android Compatible: Yes
+Security Critical: no
+Shipped: no
+
+Description:
+A collection of stylistic rules for Stylelintin in a form of a plugin.
 
 Local Modifications:
 (none)
