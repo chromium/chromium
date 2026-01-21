@@ -465,7 +465,27 @@ class ExternalAppResolutionCommandCspBrowserTest
             response->set_code(response_map_.manifest_response_codes.front());
             response_map_.manifest_response_codes.pop();
             return std::move(response);
+          } else if (request.relative_url ==
+                     "/manifest_test_page_with_strict_csp.html") {
+            EXPECT_FALSE(response_map_.manifest_response_codes.empty());
+            response->set_code(response_map_.manifest_response_codes.front());
+            response_map_.manifest_response_codes.pop();
+            // This CSP prevents icon loads from any url.
+            response->set_content(R"(
+              <!DOCTYPE html>
+              <html>
+                <head>
+                    <meta http-equiv="Content-Security-Policy"
+                      content="default-src 'self';
+                      img-src 'none';">
+                </head>
+                <body>
+                </body>
+              </html>
+              )");
+            return std::move(response);
           } else if (request.relative_url == "/icon.png") {
+            EXPECT_FALSE(response_map_.icon_response_codes.empty());
             const net::HttpStatusCode status_code =
                 response_map_.icon_response_codes.front();
             response_map_.icon_response_codes.pop();
@@ -614,6 +634,54 @@ IN_PROC_BROWSER_TEST_F(
   install_options.install_placeholder = true;
   install_options.force_reinstall = true;
   // Set a custom icon.
+  install_options.override_icon_url = https_server()->GetURL("/icon.png");
+
+  base::test::TestFuture<ExternallyManagedAppManager::InstallResult> future;
+  provider().scheduler().InstallExternallyManagedApp(
+      install_options,
+      /*installed_placeholder_app_id=*/"someplaceholderappid",
+      future.GetCallback());
+
+  const ExternallyManagedAppManager::InstallResult& result =
+      future.Get<ExternallyManagedAppManager::InstallResult>();
+  const webapps::AppId& app_id = *result.app_id;
+  webapps::InstallResultCode install_code = result.code;
+  EXPECT_EQ(install_code, webapps::InstallResultCode::kSuccessNewInstall);
+  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
+
+  base::test::TestFuture<WebAppIconManager::WebAppBitmaps> icon_future;
+  provider().icon_manager().ReadAllIcons(app_id, icon_future.GetCallback());
+  const WebAppIconManager::WebAppBitmaps bitmaps = icon_future.Get();
+
+  EXPECT_FALSE(bitmaps.manifest_icons.empty());
+  EXPECT_FALSE(bitmaps.trusted_icons.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ExternalAppResolutionCommandCspBrowserTest,
+    PlaceholderInstallCustomIconLoadWithStrictCspSuccessful) {
+  const GURL kWebAppUrl =
+      https_server()->GetURL("/manifest_test_page_with_strict_csp.html");
+
+  std::queue<net::HttpStatusCode> manifest_response_codes(
+      {net::HttpStatusCode::HTTP_PERMANENT_REDIRECT});
+  std::queue<net::HttpStatusCode> icon_response_codes(
+      {// URL navigation succeeds.
+       net::HttpStatusCode::HTTP_OK,
+       // Icon load succeeds.
+       net::HttpStatusCode::HTTP_OK});
+  SetResponseMap({.manifest_response_codes = std::move(manifest_response_codes),
+                  .icon_response_codes = icon_response_codes});
+
+  ExternalInstallOptions install_options(
+      kWebAppUrl, mojom::UserDisplayMode::kStandalone,
+      ExternalInstallSource::kInternalDefault);
+  install_options.install_placeholder = true;
+  install_options.force_reinstall = true;
+  // Set a custom icon. This URL is blocked by the manifest test page csp
+  // (manifest_test_page_with_strict_csp.html). We expect the custom icon load
+  // to still work correctly.
   install_options.override_icon_url = https_server()->GetURL("/icon.png");
 
   base::test::TestFuture<ExternallyManagedAppManager::InstallResult> future;
