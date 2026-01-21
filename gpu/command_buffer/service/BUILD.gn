@@ -435,6 +435,9 @@ target(link_target_type, "gles2_sources") {
       "//ui/base:features",
       "//ui/ozone",
     ]
+    if (is_chromeos) {
+      deps += [ "//ash/constants" ]
+    }
   }
 
   if (enable_vulkan) {

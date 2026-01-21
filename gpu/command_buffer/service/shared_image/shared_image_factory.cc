@@ -94,6 +94,10 @@
 #include "gpu/command_buffer/service/shared_image/dawn_image_backing_factory.h"
 #endif  // BUILDFLAG(USE_DAWN)
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_switches.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #include "base/feature_list.h"
 
 namespace gpu {
@@ -1011,6 +1015,14 @@ void SharedImageFactory::LogGetFactoryFailed(gpu::SharedImageUsageSet usage,
              << ", gmb_type: " << GmbTypeToString(gmb_type)
              << ", size: " << size.ToString()
              << ", debug_label: " << debug_label;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Do not dump crash reports for Reven ChromeOS boards.
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(ash::switches::kRevenBranding)) {
+    return;
+  }
+#endif
 
   std::string new_debug_label = debug_label;
   // Get the debug label with Process Id for filtering crash reports by label as
