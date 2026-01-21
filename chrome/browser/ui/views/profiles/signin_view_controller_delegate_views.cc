@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/signin/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/color_provider_browser_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
@@ -221,6 +222,11 @@ SigninViewControllerDelegateViews::CreateSignoutConfirmationWebView(
       views::kElementIdentifierKey,
       SigninViewController::kSignoutConfirmationDialogViewElementId);
 
+  auto* helper = ColorProviderBrowserHelper::From(browser);
+  if (helper && helper->color_provider_source()) {
+    web_view->GetWebContents()->SetColorProviderSource(
+        helper->color_provider_source());
+  }
   SignoutConfirmationUI* web_ui = web_view->GetWebContents()
                                       ->GetWebUI()
                                       ->GetController()
