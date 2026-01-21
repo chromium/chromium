@@ -74,6 +74,7 @@ class DeviceNamePolicyHandlerImplTest : public testing::Test {
   // Sets kDeviceHostnameUserConfigurable policy which will eventually cause
   // the class to stop making direct calls to NetworkStateHandler::SetHostname()
   void SetConfigurable(bool configurable) {
+    // This should not have any effect because the hostname setting was removed.
     scoped_testing_cros_settings_.device_settings()->SetBoolean(
         ash::kDeviceHostnameUserConfigurable, configurable);
     // Makes sure that template is set before continuing.
@@ -87,11 +88,7 @@ class DeviceNamePolicyHandlerImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void InitializeHandler(bool is_hostname_setting_flag_enabled,
-                         bool is_device_managed) {
-    if (is_hostname_setting_flag_enabled)
-      feature_list_.InitAndEnableFeature(ash::features::kEnableHostnameSetting);
-
+  void InitializeHandler(bool is_device_managed) {
     if (is_device_managed) {
       attributes_ = std::make_unique<ash::ScopedStubInstallAttributes>(
           ash::StubInstallAttributes::CreateCloudManaged(
@@ -114,8 +111,7 @@ class DeviceNamePolicyHandlerImplTest : public testing::Test {
   size_t GetNumObserverCalls() const { return fake_observer_.num_calls(); }
 
   // Verifies that for unmanaged devices the policy state is kNoPolicy by
-  // default and the hostname chosen by the administrator is nullopt. Flag state
-  // does not matter.
+  // default and the hostname chosen by the administrator is nullopt.
   void VerifyDefaultStateUnmanagedDevice() {
     EXPECT_EQ(DeviceNamePolicyHandler::DeviceNamePolicy::kNoPolicy,
               handler_->GetDeviceNamePolicyForTesting());
@@ -128,7 +124,7 @@ class DeviceNamePolicyHandlerImplTest : public testing::Test {
 
   // Verifies that for managed devices the policy state is
   // kPolicyHostnameNotConfigurable by default and the hostname chosen by the
-  // administrator is nullopt. Flag state does not matter.
+  // administrator is nullopt.
   void VerifyDefaultStateManagedDevice() {
     EXPECT_EQ(DeviceNamePolicyHandler::DeviceNamePolicy::
                   kPolicyHostnameNotConfigurable,
@@ -143,7 +139,7 @@ class DeviceNamePolicyHandlerImplTest : public testing::Test {
   // Verifies that when |kDeviceHostnameTemplate| policy is set, the device name
   // policy is set to |kPolicyHostnameChosenByAdmin| and is unaffected by the
   // |kDeviceHostnameUserConfigurable| policy. Also verifies that the hostname
-  // is the one set by the template. Flag state does not matter.
+  // is the one set by the template.
   void VerifyStateWithAdminPolicy() {
     // Check that DeviceNamePolicy changes from kPolicyHostnameNotConfigurable
     // to kPolicyHostnameChosenByAdmin on setting template.
@@ -176,7 +172,7 @@ class DeviceNamePolicyHandlerImplTest : public testing::Test {
   }
 
   // Verifies the number of calls received by the observer for any changes in
-  // |kDeviceHostnameTemplate| policy and hostname. Flag state does not matter.
+  // |kDeviceHostnameTemplate| policy and hostname.
   void VerifyObserverNumCalls() {
     // Neither hostname or policy changes on initialization of handler
     EXPECT_EQ(0u, GetNumObserverCalls());
@@ -226,75 +222,29 @@ class DeviceNamePolicyHandlerImplTest : public testing::Test {
   FakeObserver fake_observer_;
 };
 
-TEST_F(DeviceNamePolicyHandlerImplTest, NoPoliciesFlagOnManagedDevice) {
-  InitializeHandler(/*is_hostname_setting_flag_enabled=*/true,
-                    /*is_device_managed=*/true);
+TEST_F(DeviceNamePolicyHandlerImplTest, NoPoliciesManagedDevice) {
+  InitializeHandler(/*is_device_managed=*/true);
   VerifyDefaultStateManagedDevice();
 }
 
-TEST_F(DeviceNamePolicyHandlerImplTest, NoPoliciesFlagOnUnmanagedDevice) {
-  InitializeHandler(/*is_hostname_setting_flag_enabled=*/true,
-                    /*is_device_managed=*/false);
+TEST_F(DeviceNamePolicyHandlerImplTest, NoPoliciesUnmanagedDevice) {
+  InitializeHandler(/*is_device_managed=*/false);
   VerifyDefaultStateUnmanagedDevice();
 }
 
-TEST_F(DeviceNamePolicyHandlerImplTest, NoPoliciesFlagOffManagedDevice) {
-  InitializeHandler(/*is_hostname_setting_flag_enabled=*/false,
-                    /*is_device_managed=*/true);
-  VerifyDefaultStateManagedDevice();
-}
-
-TEST_F(DeviceNamePolicyHandlerImplTest, NoPoliciesFlagOffUnmanagedDevice) {
-  InitializeHandler(/*is_hostname_setting_flag_enabled=*/false,
-                    /*is_device_managed=*/false);
-  VerifyDefaultStateUnmanagedDevice();
-}
-
-// The tests below apply only to managed devices since unmanaged devices do not
+// This test applies only to managed devices since unmanaged devices do not
 // have any policies applied.
-
-TEST_F(DeviceNamePolicyHandlerImplTest, DeviceHostnameTemplatePolicyOnFlagOn) {
-  InitializeHandler(/*is_hostname_setting_flag_enabled=*/true,
-                    /*is_device_managed=*/true);
+TEST_F(DeviceNamePolicyHandlerImplTest, DeviceHostnameTemplatePolicyOn) {
+  InitializeHandler(/*is_device_managed=*/true);
   VerifyStateWithAdminPolicy();
 }
 
-TEST_F(DeviceNamePolicyHandlerImplTest, DeviceHostnameTemplatePolicyOnFlagOff) {
-  InitializeHandler(/*is_hostname_setting_flag_enabled=*/false,
-                    /*is_device_managed=*/true);
-  VerifyStateWithAdminPolicy();
-}
-
-// Verifies that when |kDeviceHostnameTemplate| policy is not set and flag
-// is on, setting kDeviceHostnameUserConfigurable policy should change the
-// DeviceNamePolicy.
-TEST_F(DeviceNamePolicyHandlerImplTest, DeviceHostnameTemplatePolicyOffFlagOn) {
-  InitializeHandler(/*is_hostname_setting_flag_enabled=*/true,
-                    /*is_device_managed=*/true);
-  EXPECT_EQ(
-      DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,
-      handler_->GetDeviceNamePolicyForTesting());
-  SetConfigurable(true);
-  EXPECT_EQ(DeviceNamePolicyHandler::DeviceNamePolicy::
-                kPolicyHostnameConfigurableByManagedUser,
-            handler_->GetDeviceNamePolicyForTesting());
-  SetConfigurable(false);
-  EXPECT_EQ(
-      DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,
-      handler_->GetDeviceNamePolicyForTesting());
-  UnsetConfigurable();
-  EXPECT_EQ(
-      DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,
-      handler_->GetDeviceNamePolicyForTesting());
-}
-
-// Verifies that when |kDeviceHostnameTemplate| policy is not set and flag
-// is off, setting kDeviceHostnameUserConfigurable policy should not change the
+// Verifies that when |kDeviceHostnameTemplate| policy is not set, setting
+// kDeviceHostnameUserConfigurable policy should not change the
 // DeviceNamePolicy.
 TEST_F(DeviceNamePolicyHandlerImplTest,
-       DeviceHostnameTemplatePolicyOffFlagOffManagedDevices) {
-  InitializeHandler(/*is_hostname_setting_flag_enabled=*/false,
-                    /*is_device_managed=*/true);
+       DeviceHostnameTemplatePolicyOffManagedDevices) {
+  InitializeHandler(/*is_device_managed=*/true);
   EXPECT_EQ(
       DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,
       handler_->GetDeviceNamePolicyForTesting());
@@ -313,49 +263,13 @@ TEST_F(DeviceNamePolicyHandlerImplTest,
 }
 
 // Verifies that OnHostnamePolicyChanged() correctly notifies observer when
-// hostname and/or policy changes, while the flag is on.
-TEST_F(DeviceNamePolicyHandlerImplTest, ObserverTestsFlagOn) {
-  InitializeHandler(/*is_hostname_setting_flag_enabled=*/true,
-                    /*is_device_managed=*/true);
-  VerifyObserverNumCalls();
-
-  // Policy changes every time, hence observer should be notified each time.
-  UnsetTemplate();
-  EXPECT_EQ(
-      DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,
-      handler_->GetDeviceNamePolicyForTesting());
-  EXPECT_EQ(5u, GetNumObserverCalls());
-  SetTemplate("hostname_template");
-  EXPECT_EQ(
-      DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameChosenByAdmin,
-      handler_->GetDeviceNamePolicyForTesting());
-  EXPECT_EQ(6u, GetNumObserverCalls());
-  UnsetTemplate();
-  EXPECT_EQ(
-      DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,
-      handler_->GetDeviceNamePolicyForTesting());
-  EXPECT_EQ(7u, GetNumObserverCalls());
-  SetConfigurable(true);
-  EXPECT_EQ(DeviceNamePolicyHandler::DeviceNamePolicy::
-                kPolicyHostnameConfigurableByManagedUser,
-            handler_->GetDeviceNamePolicyForTesting());
-  EXPECT_EQ(8u, GetNumObserverCalls());
-  SetConfigurable(false);
-  EXPECT_EQ(
-      DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,
-      handler_->GetDeviceNamePolicyForTesting());
-  EXPECT_EQ(9u, GetNumObserverCalls());
-}
-
-// Verifies that OnHostnamePolicyChanged() correctly notifies observer when
-// hostname and/or policy changes, while the flag is off.
-TEST_F(DeviceNamePolicyHandlerImplTest, ObserverTestsFlagOff) {
-  InitializeHandler(/*is_hostname_setting_flag_enabled=*/false,
-                    /*is_device_managed=*/true);
+// hostname and/or policy changes.
+TEST_F(DeviceNamePolicyHandlerImplTest, ObserverTests) {
+  InitializeHandler(/*is_device_managed=*/true);
   VerifyObserverNumCalls();
 
   // Policy changes every time but observer should be notified only for changes
-  // in the hostname template policy since flag is off.
+  // in the hostname template policy since SetConfigurable has no effect.
   UnsetTemplate();
   EXPECT_EQ(
       DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameNotConfigurable,

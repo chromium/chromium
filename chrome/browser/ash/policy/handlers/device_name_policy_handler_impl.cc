@@ -6,7 +6,6 @@
 
 #include <string_view>
 
-#include "ash/constants/ash_features.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
@@ -133,15 +132,6 @@ DeviceNamePolicyHandlerImpl::ComputePolicy(std::string* hostname_template_out) {
     return DeviceNamePolicy::kPolicyHostnameChosenByAdmin;
   }
 
-  bool hostname_user_configurable;
-  if (ash::features::IsHostnameSettingEnabled() &&
-      cros_settings_->GetBoolean(ash::kDeviceHostnameUserConfigurable,
-                                 &hostname_user_configurable)) {
-    return hostname_user_configurable
-               ? DeviceNamePolicy::kPolicyHostnameConfigurableByManagedUser
-               : DeviceNamePolicy::kPolicyHostnameNotConfigurable;
-  }
-
   // If no policies are set, device name policy should be
   // kPolicyHostnameNotConfigurable for managed devices and kNoPolicy for
   // unmanaged devices.
@@ -184,11 +174,8 @@ void DeviceNamePolicyHandlerImpl::SetDeviceNamePolicy(
   if (device_name_policy_ == policy && hostname_ == new_hostname)
     return;
 
-  // If the hostname has changed, set it using NetworkStateHandler. Note that
-  // this process is skipped when the hostname settings flag is enabled since
-  // this is handled elsewhere. See https://crbug.com/126802.
-  if (!ash::features::IsHostnameSettingEnabled() &&
-      policy == DeviceNamePolicy::kPolicyHostnameChosenByAdmin &&
+  // If the hostname has changed, set it using NetworkStateHandler.
+  if (policy == DeviceNamePolicy::kPolicyHostnameChosenByAdmin &&
       hostname_ != new_hostname) {
     handler_->SetHostname(new_hostname);
   }
