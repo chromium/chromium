@@ -17,6 +17,8 @@
 #include "chrome/test/base/android/android_browser_test.h"
 #include "components/feed/feed_feature_list.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -171,4 +173,101 @@ IN_PROC_BROWSER_TEST_F(AndroidBrowserWindowBrowserTest,
   // The wrapper callback in OpenURL checks for a null handle and suppresses
   // the user callback if the handle is null.
   EXPECT_FALSE(future.IsReady());
+}
+
+IN_PROC_BROWSER_TEST_F(AndroidBrowserWindowBrowserTest, OpenURL_PopupBlocked) {
+  AndroidBrowserWindow* window = GetBrowserWindow();
+  GURL url = embedded_test_server()->GetURL("/title1.html");
+
+  // 1. Navigate to a page first to have a valid source.
+  content::OpenURLParams source_params(
+      embedded_test_server()->GetURL("/simple.html"), content::Referrer(),
+      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false);
+
+  base::test::TestFuture<GURL> source_future;
+  content::WebContents* source_contents = window->OpenURL(
+      source_params,
+      base::BindLambdaForTesting([&](content::NavigationHandle& handle) {
+        source_future.SetValue(handle.GetURL());
+      }));
+  ASSERT_TRUE(source_contents);
+  ASSERT_TRUE(source_future.Wait());
+
+  content::RenderFrameHost* source_rfh = source_contents->GetPrimaryMainFrame();
+
+  // 2. Create params for a popup without a user gesture.
+  content::OpenURLParams params(url, content::Referrer(),
+                                WindowOpenDisposition::NEW_POPUP,
+                                ui::PAGE_TRANSITION_LINK,
+                                /*is_renderer_initiated=*/false);
+  params.user_gesture = false;
+  params.source_render_process_id =
+      source_rfh->GetProcess()->GetID().GetUnsafeValue();
+  params.source_render_frame_id = source_rfh->GetRoutingID();
+
+  base::test::TestFuture<GURL> future;
+  content::WebContents* result = window->OpenURL(
+      params,
+      base::BindLambdaForTesting([&](content::NavigationHandle& handle) {
+        future.SetValue(handle.GetURL());
+      }));
+
+  // The popup should be blocked, so OpenURL should return nullptr.
+  EXPECT_EQ(nullptr, result);
+
+  // To verify the callback is NOT called, we need to wait to ensure no async
+  // task was posted.
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_FALSE(future.IsReady());
+}
+
+IN_PROC_BROWSER_TEST_F(AndroidBrowserWindowBrowserTest, OpenURL_PopupAllowed) {
+  AndroidBrowserWindow* window = GetBrowserWindow();
+  GURL url = embedded_test_server()->GetURL("/title1.html");
+
+  // 1. Navigate to a page first to have a valid source.
+  content::OpenURLParams source_params(
+      embedded_test_server()->GetURL("/simple.html"), content::Referrer(),
+      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false);
+
+  base::test::TestFuture<GURL> source_future;
+  content::WebContents* source_contents = window->OpenURL(
+      source_params,
+      base::BindLambdaForTesting([&](content::NavigationHandle& handle) {
+        source_future.SetValue(handle.GetURL());
+      }));
+  ASSERT_TRUE(source_contents);
+  ASSERT_TRUE(source_future.Wait());
+
+  content::RenderFrameHost* source_rfh = source_contents->GetPrimaryMainFrame();
+
+  // 2. Create params for a popup WITH a user gesture.
+  content::OpenURLParams params(url, content::Referrer(),
+                                WindowOpenDisposition::NEW_POPUP,
+                                ui::PAGE_TRANSITION_LINK,
+                                /*is_renderer_initiated=*/false);
+  params.user_gesture = true;
+  params.source_render_process_id =
+      source_rfh->GetProcess()->GetID().GetUnsafeValue();
+  params.source_render_frame_id = source_rfh->GetRoutingID();
+
+  base::test::TestFuture<GURL> future;
+  content::WebContents* result = window->OpenURL(
+      params,
+      base::BindLambdaForTesting([&](content::NavigationHandle& handle) {
+        future.SetValue(handle.GetURL());
+      }));
+
+  // The popup should be allowed.
+  if (result) {
+    EXPECT_EQ(url, result->GetVisibleURL());
+  }
+
+  // Callback should eventually be called.
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(url, future.Get());
 }

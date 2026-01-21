@@ -34,9 +34,12 @@ source_set("internal") {
     ]
     deps += [
       ":jni",
+      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/prefs",
       "//chrome/browser/profiles:profile_util",
       "//chrome/browser/ui:browser_navigator_params_headers",
+      "//chrome/browser/ui/blocked_content",
+      "//components/blocked_content",
       "//ui/android",
     ]
   } else {
