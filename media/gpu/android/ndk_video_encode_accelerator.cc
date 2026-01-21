@@ -999,7 +999,7 @@ void NdkVideoEncodeAccelerator::OnSyncDone(VideoFrame::ID frame_id) {
 void NdkVideoEncodeAccelerator::FeedInputBuffer(scoped_refptr<VideoFrame> frame,
                                                 base::TimeDelta timestamp) {
   TRACE_EVENT1("media", "NdkVideoEncodeAccelerator::FeedInputBuffer",
-               "timestamp", timestamp.InMicroseconds());
+               "timestamp", timestamp);
   const size_t buffer_idx = media_codec_->TakeInput();
   auto mc_input_buffer = media_codec_->GetInputBuffer(buffer_idx);
   if (mc_input_buffer.empty()) {
@@ -1095,7 +1095,7 @@ void NdkVideoEncodeAccelerator::FeedGLSurface(scoped_refptr<VideoFrame> frame,
                                               base::TimeDelta timestamp) {
   DCHECK(use_surface_as_input_);
   TRACE_EVENT1("media", "NdkVideoEncodeAccelerator::FeedGLSurface", "timestamp",
-               timestamp.InMicroseconds());
+               timestamp);
   if (!gl_renderer_) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderHardwareDriverError,
                        "GL renderer is not initialized"});

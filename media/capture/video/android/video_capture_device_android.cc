@@ -338,6 +338,8 @@ void VideoCaptureDeviceAndroid::OnI420FrameAvailable(
     int32_t height,
     int32_t rotation,
     int64_t timestamp) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureDeviceAndroid::OnI420FrameAvailable");
   if (!IsClientConfigured())
     return;
   const base::TimeDelta capture_time = base::Nanoseconds(timestamp);
@@ -386,6 +388,9 @@ void VideoCaptureDeviceAndroid::OnHardwareBufferAvailableOnMainThread(
     int32_t rotation,
     int64_t timestamp) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
+  TRACE_EVENT0(
+      TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+      "VideoCaptureDeviceAndroid::OnHardwareBufferAvailableOnMainThread");
 
   const base::TimeTicks current_time = base::TimeTicks::Now();
   ProcessFirstFrameAvailable(current_time);
