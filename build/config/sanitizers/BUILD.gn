@@ -501,7 +501,12 @@ config("coverage_flags") {
       cflags += [ "-fsanitize-coverage-allowlist=" +
                   rebase_path(sanitizer_coverage_allowlist, root_build_dir) ]
     }
+    if (sanitizer_coverage_ignorelist != "") {
+      cflags += [ "-fsanitize-coverage-ignorelist=" +
+                  rebase_path(sanitizer_coverage_ignorelist, root_build_dir) ]
+    }
   }
+
   if (use_centipede) {
     # Centipede intercepts calls such as memcmp and memcpy in order to improve
     # its testcase generation.
@@ -699,7 +704,7 @@ config("default_sanitizer_flags_but_coverage") {
 }
 
 # This config is used by parts of code that aren't targeted in fuzzers and
-# therefore don't need coverage instrumentation and possibly wont need
+# therefore don't need coverage instrumentation and possibly won't need
 # sanitizer instrumentation either. The config also tells the compiler to
 # perform additional optimizations on the configured code and ensures that
 # linking it to the rest of the binary which is instrumented with sanitizers

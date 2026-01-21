@@ -1,0 +1,6 @@
+# Skip coverage instrumentation of standard library code for performance reasons.
+fun:*std::__Cr*
+fun:*St4__Cr*
+# Also skip absl containers.
+fun:*absl::container_internal*
+fun:*4absl18container_internal*
