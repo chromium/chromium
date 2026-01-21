@@ -1220,6 +1220,11 @@ void PrintRenderFrameHelper::DidFinishLoadForPrinting() {
 }
 
 void PrintRenderFrameHelper::ScriptedPrint(bool user_initiated) {
+  // This method is a known source of high input latency. Emit an event in the
+  // "latency" category so it can easily be identified in traces captured to
+  // diagnose latency.
+  TRACE_EVENT("latency", "PrintRenderFrameHelper::ScriptedPrint");
+
   blink::WebLocalFrame* web_frame = render_frame()->GetWebFrame();
   if (!IsScriptInitiatedPrintAllowed(web_frame, user_initiated))
     return;
