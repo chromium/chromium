@@ -1391,10 +1391,6 @@ void PrerenderHost::RecordFailedFinalStatusImpl(
 void PrerenderHost::RecordActivation(NavigationRequest& navigation_request) {
   CHECK(!final_status_);
   final_status_ = PrerenderFinalStatus::kActivated;
-
-  // TODO(crbug.com/40215894): Replace
-  // `navigation_request.GetNextPageUkmSourceId()` with prerendered page's UKM
-  // source ID.
   ReportSuccessActivation(attributes_,
                           navigation_request.GetNextPageUkmSourceId());
 }
