@@ -3814,7 +3814,8 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
         },
         "test": "chrome_junit_tests",
         "test_id_prefix": "ninja://chrome/android:chrome_junit_tests/"

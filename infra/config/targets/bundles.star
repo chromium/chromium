@@ -565,6 +565,13 @@ targets.bundle(
         "linux-jammy",
         "x86-64",
     ],
+    per_test_modifications = {
+        "chrome_junit_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 5,
+            ),
+        ),
+    },
 )
 
 targets.bundle(
@@ -1885,6 +1892,13 @@ targets.bundle(
                 "pie-x86-emulator",
                 "10-x86-emulator",
                 "16-x64-emulator",
+            ],
+            mixins = [
+                targets.mixin(
+                    swarming = targets.swarming(
+                        shards = 5,
+                    ),
+                ),
             ],
         ),
         "components_junit_tests": targets.per_test_modification(
