@@ -417,7 +417,7 @@ class GpuImageDecodeCacheTest
     cache->DrawWithImageFinished(draw_image, decoded_draw_image);
   }
 
-  GPUImageDecodeTestMockContextProvider* context_provider() {
+  viz::TestContextProvider* context_provider() {
     return context_provider_.get();
   }
 
