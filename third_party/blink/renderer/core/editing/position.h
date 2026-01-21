@@ -145,7 +145,7 @@ class PositionTemplate {
   Node* ComputeNodeAfterPosition() const;
 
   // Returns node as |Range::firstNode()|. This position must be a
-  // |PositionAnchorType::OffsetInAhcor| to behave as |Range| boundary point.
+  // |PositionAnchorType::OffsetInAnchor| to behave as |Range| boundary point.
   Node* NodeAsRangeFirstNode() const;
 
   // Similar to |nodeAsRangeLastNode()|, but returns a node in a range.
@@ -153,7 +153,7 @@ class PositionTemplate {
 
   // Returns a node as past last as same as |Range::pastLastNode()|. This
   // function is supposed to used in HTML serialization and plain text
-  // iterator. This position must be a |PositionAnchorType::OffsetInAhcor| to
+  // iterator. This position must be a |PositionAnchorType::OffsetInAnchor| to
   // behave as |Range| boundary point.
   Node* NodeAsRangePastLastNode() const;
 
