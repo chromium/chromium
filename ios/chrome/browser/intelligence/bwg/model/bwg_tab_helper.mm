@@ -117,7 +117,6 @@ struct BwgTabHelper::ZeroStateSuggestions {
   std::unique_ptr<ai::ZeroStateSuggestionsServiceImpl> service_impl;
 
   // The zero-state suggestions data for the current page.
-  GURL url;
   std::optional<std::vector<std::string>> suggestions;
   bool can_apply = false;
 };
@@ -210,7 +209,7 @@ void BwgTabHelper::ExecuteZeroStateSuggestions(
   if (zero_state_suggestions_->suggestions.has_value()) {
     // Ensure the cached suggestions are for the current URL.
     if (web_state_->GetVisibleURL().GetWithoutRef() ==
-        zero_state_suggestions_->url) {
+        current_url_.GetWithoutRef()) {
       std::move(callback).Run(ZeroStateSuggestionsAsNSArray(
           zero_state_suggestions_->suggestions.value()));
     } else {
@@ -257,6 +256,10 @@ bool BwgTabHelper::GetIsFirstRun() {
   return is_first_run_;
 }
 
+std::optional<bool> BwgTabHelper::GetIsGeminiEligible() {
+  return is_gemini_eligible_;
+}
+
 bool BwgTabHelper::ShouldPreventContextualPanelEntryPoint() {
   return prevent_contextual_panel_entry_point_;
 }
@@ -280,7 +283,9 @@ void BwgTabHelper::SetContextualCueLabel(NSString* cue_label) {
 GeminiPageContext* BwgTabHelper::GetPartialPageContext() {
   GeminiPageContext* gemini_page_context = [[GeminiPageContext alloc] init];
   gemini_page_context.BWGPageContextComputationState =
-      ios::provider::BWGPageContextComputationState::kPending;
+      is_gemini_eligible_.value_or(true)
+          ? ios::provider::BWGPageContextComputationState::kPending
+          : ios::provider::BWGPageContextComputationState::kBlocked;
   gemini_page_context.favicon = current_favicon_;
 
   std::unique_ptr<optimization_guide::proto::PageContext> page_context =
@@ -431,47 +436,46 @@ void BwgTabHelper::DidStartNavigation(
   // page.
   page_loaded_callback_.Reset();
 
-  if (IsZeroStateSuggestionsEnabled()) {
-    const GURL& current_url = navigation_context->GetUrl().GetWithoutRef();
-    if (current_url != zero_state_suggestions_->url) {
-      weak_ptr_factory_.InvalidateWeakPtrs();
-      ClearZeroStateSuggestions();
-      zero_state_suggestions_->url = current_url;
-      ProfileIOS* profile =
-          ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
-      if (profile->GetPrefs()->GetBoolean(prefs::kIOSBWGPageContentSetting)) {
-        bool can_request_metadata = optimization_guide::
-            IsUserPermittedToFetchFromRemoteOptimizationGuide(
-                profile->IsOffTheRecord(), profile->GetPrefs());
-        if (can_request_metadata) {
-          optimization_guide_decider_->CanApplyOptimization(
-              current_url,
-              optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
-              base::BindOnce(
-                  &BwgTabHelper::OnCanApplyZeroStateSuggestionsDecision,
-                  weak_ptr_factory_.GetWeakPtr(), current_url));
-        } else {
-          optimization_guide_decider_->CanApplyOptimizationOnDemand(
-              {current_url},
-              {optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS},
-              optimization_guide::proto::RequestContext::
-                  CONTEXT_GLIC_ZERO_STATE_SUGGESTIONS,
-              base::BindRepeating(
-                  &BwgTabHelper::OnCanApplyZeroStateSuggestionsOnDemandDecision,
-                  weak_ptr_factory_.GetWeakPtr()),
-              std::nullopt);
-        }
-      }
-    }
+  const GURL& new_url = navigation_context->GetUrl();
+  const GURL& new_url_without_ref = new_url.GetWithoutRef();
+  // No change in URL means we don't need to recompute optimization guides.
+  if (new_url_without_ref == current_url_.GetWithoutRef()) {
+    return;
   }
 
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  is_gemini_eligible_ = std::nullopt;
+  current_url_ = new_url;
   if (IsGeminiCopresenceEnabled()) {
-    const GURL& new_url = navigation_context->GetUrl();
-    if (new_url != current_url_) {
-      current_url_ = new_url;
-    }
-    for (auto& observer : observers_) {
-      observer.OnPageContextUpdated(web_state_);
+    NotifyPageContextUpdated(web_state_);
+  }
+
+  if (IsZeroStateSuggestionsEnabled()) {
+    ClearZeroStateSuggestions();
+  }
+
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  if (profile->GetPrefs()->GetBoolean(prefs::kIOSBWGPageContentSetting)) {
+    bool can_request_metadata =
+        optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
+            profile->IsOffTheRecord(), profile->GetPrefs());
+    if (can_request_metadata) {
+      optimization_guide_decider_->CanApplyOptimization(
+          new_url_without_ref,
+          optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
+          base::BindOnce(&BwgTabHelper::OnGeminiEligibilityDecision,
+                         weak_ptr_factory_.GetWeakPtr(), new_url_without_ref));
+    } else {
+      optimization_guide_decider_->CanApplyOptimizationOnDemand(
+          {new_url_without_ref},
+          {optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS},
+          optimization_guide::proto::RequestContext::
+              CONTEXT_GLIC_ZERO_STATE_SUGGESTIONS,
+          base::BindRepeating(
+              &BwgTabHelper::OnGeminiEligibilityOnDemandDecision,
+              weak_ptr_factory_.GetWeakPtr()),
+          std::nullopt);
     }
   }
 }
@@ -490,9 +494,7 @@ void BwgTabHelper::DidFinishNavigation(
 
   if (IsGeminiCopresenceEnabled()) {
     current_title_ = web_state->GetTitle();
-    for (auto& observer : observers_) {
-      observer.OnPageContextUpdated(web_state_);
-    }
+    NotifyPageContextUpdated(web_state_);
   }
 
   previous_main_frame_url_ = current_url;
@@ -516,9 +518,7 @@ void BwgTabHelper::TitleWasSet(web::WebState* web_state) {
     const std::u16string& new_title = web_state->GetTitle();
     if (new_title != current_title_) {
       current_title_ = new_title;
-      for (auto& observer : observers_) {
-        observer.OnPageContextUpdated(web_state);
-      }
+      NotifyPageContextUpdated(web_state);
     }
   }
 }
@@ -561,9 +561,7 @@ void BwgTabHelper::FaviconUrlUpdated(
     if (new_favicon != current_favicon_ &&
         ![new_favicon isEqual:current_favicon_]) {
       current_favicon_ = new_favicon;
-      for (auto& observer : observers_) {
-        observer.OnPageContextUpdated(web_state_);
-      }
+      NotifyPageContextUpdated(web_state_);
     }
   }
 }
@@ -594,9 +592,14 @@ void BwgTabHelper::ClearZeroStateSuggestions() {
     return;
   }
 
-  zero_state_suggestions_->url = GURL();
   zero_state_suggestions_->suggestions.reset();
   zero_state_suggestions_->can_apply = false;
+}
+
+void BwgTabHelper::NotifyPageContextUpdated(web::WebState* web_state) {
+  for (auto& observer : observers_) {
+    observer.OnPageContextUpdated(web_state);
+  }
 }
 
 void BwgTabHelper::CreateOrUpdateSessionInPrefs(std::string client_id,
@@ -739,47 +742,60 @@ void BwgTabHelper::OnCanApplyContextualCueingDecision(
   [location_bar_badge_commands_handler_ updateBadgeConfig:badge_config];
 }
 
-void BwgTabHelper::OnCanApplyZeroStateSuggestionsDecision(
-    const GURL& url,
+// Computes Gemini eligibility based on the presence of metadata.
+bool BwgTabHelper::ComputeGeminiEligibility(
     optimization_guide::OptimizationGuideDecision decision,
     const optimization_guide::OptimizationMetadata& metadata) {
-  // The URL has changed so the metadata is obsolete.
-  if (url != zero_state_suggestions_->url) {
-    return;
-  }
-
-  // `can_apply` is true by default. If the decision is `kTrue`, then we need to
-  // do more checks.
+  // When decision == `kTrue`, then the metadata drives the computation.
+  // Otherwise, eligibility defaults to true.
   if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
-    zero_state_suggestions_->can_apply = true;
-    return;
+    return true;
   }
 
   optimization_guide::OptimizationMetadata mutable_metadata = metadata;
   auto suggestions_metadata = mutable_metadata.ParsedMetadata<
       optimization_guide::proto::GlicZeroStateSuggestionsMetadata>();
+  // Defaults to true for cases where there are no metadata.
   if (!suggestions_metadata) {
-    zero_state_suggestions_->can_apply = true;
+    return true;
+  }
+
+  return suggestions_metadata->contextual_suggestions_eligible();
+}
+
+void BwgTabHelper::OnGeminiEligibilityDecision(
+    const GURL& url_without_ref,
+    optimization_guide::OptimizationGuideDecision decision,
+    const optimization_guide::OptimizationMetadata& metadata) {
+  // The URL has changed so the metadata is obsolete.
+  if (url_without_ref != current_url_.GetWithoutRef()) {
     return;
   }
-  zero_state_suggestions_->can_apply =
-      suggestions_metadata->contextual_suggestions_eligible();
+
+  const bool eligible = ComputeGeminiEligibility(decision, metadata);
+  is_gemini_eligible_ = eligible;
+  if (IsGeminiCopresenceEnabled()) {
+    NotifyPageContextUpdated(web_state_);
+  }
+
+  if (IsZeroStateSuggestionsEnabled()) {
+    zero_state_suggestions_->can_apply = eligible;
+  }
 
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
-  if (zero_state_suggestions_->can_apply && IsGeminiImageRemixToolEnabled() &&
+  if (eligible && IsGeminiImageRemixToolEnabled() &&
       feature_engagement::TrackerFactory::GetForProfile(profile)
           ->WouldTriggerHelpUI(
               feature_engagement::kIPHiOSGeminiImageRemixFeature) &&
       !IsUrlNtp(web_state_->GetVisibleURL())) {
     [help_commands_handler_
         presentInProductHelpWithType:InProductHelpType::kGeminiImageRemix];
-    return;
   }
 }
 
-void BwgTabHelper::OnCanApplyZeroStateSuggestionsOnDemandDecision(
-    const GURL& url,
+void BwgTabHelper::OnGeminiEligibilityOnDemandDecision(
+    const GURL& url_without_ref,
     const base::flat_map<
         optimization_guide::proto::OptimizationType,
         optimization_guide::OptimizationGuideDecisionWithMetadata>& decisions) {
@@ -787,14 +803,14 @@ void BwgTabHelper::OnCanApplyZeroStateSuggestionsOnDemandDecision(
       decisions.find(optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS);
   if (it == decisions.end()) {
     // If the optimization type is missing, treat it as kTrue.
-    OnCanApplyZeroStateSuggestionsDecision(
-        url, optimization_guide::OptimizationGuideDecision::kTrue,
+    OnGeminiEligibilityDecision(
+        url_without_ref, optimization_guide::OptimizationGuideDecision::kTrue,
         optimization_guide::OptimizationMetadata());
     return;
   }
 
-  OnCanApplyZeroStateSuggestionsDecision(url, it->second.decision,
-                                         it->second.metadata);
+  OnGeminiEligibilityDecision(url_without_ref, it->second.decision,
+                              it->second.metadata);
 }
 
 void BwgTabHelper::ParseSuggestionsResponse(

@@ -54,7 +54,6 @@ struct TestZeroStateSuggestions {
   ~TestZeroStateSuggestions() = default;
   mojo::Remote<ai::mojom::ZeroStateSuggestionsService> service;
   std::unique_ptr<ai::ZeroStateSuggestionsServiceImpl> service_impl;
-  GURL url;
   std::optional<std::vector<std::string>> suggestions;
   bool can_apply = false;
 };
@@ -153,14 +152,14 @@ class BwgTabHelperTest : public PlatformTest {
     ForceFirstRunRecency(days);
   }
 
-  void SimulateZeroStateSuggestionsDecisionReceived(
+  void SimulateGeminiEligibilityDecisionReceived(
       const GURL& url,
       const optimization_guide::OptimizationMetadata& metadata) {
     auto* suggestions_struct = reinterpret_cast<TestZeroStateSuggestions*>(
         tab_helper_->zero_state_suggestions_.get());
-    suggestions_struct->url = GURL("https://www.chromium.org");
     suggestions_struct->can_apply = true;
-    tab_helper_->OnCanApplyZeroStateSuggestionsDecision(
+    tab_helper_->current_url_ = url;
+    tab_helper_->OnGeminiEligibilityDecision(
         url, optimization_guide::OptimizationGuideDecision::kTrue, metadata);
   }
 };
@@ -368,8 +367,8 @@ TEST_F(BwgTabHelperTest, TestDidStartNavigation_ShowsImageRemixIPH) {
   suggestions_metadata.SerializeToString(any_metadata.mutable_value());
   optimization_guide::OptimizationMetadata metadata;
   metadata.set_any_metadata(any_metadata);
-  SimulateZeroStateSuggestionsDecisionReceived(web_state_->GetVisibleURL(),
-                                               metadata);
+  SimulateGeminiEligibilityDecisionReceived(web_state_->GetVisibleURL(),
+                                            metadata);
 
   EXPECT_OCMOCK_VERIFY(mock_help_handler_);
 }

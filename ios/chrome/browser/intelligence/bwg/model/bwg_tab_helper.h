@@ -104,6 +104,11 @@ class BwgTabHelper : public web::WebStateObserver,
   // Gets the state of `is_first_run`.
   bool GetIsFirstRun();
 
+  // Gets the state of Gemini eligibility for the tab. The value starts as
+  // `std::nullopt` until the computation occurs in `ComputeGeminiEligibility`.
+  // Whenever a new navigation starts, it is reset to `std::nullopt`.
+  std::optional<bool> GetIsGeminiEligible();
+
   // Returns whether to prevent contextual panel entrypoint based on Gemini IPH
   // criteria.
   bool ShouldPreventContextualPanelEntryPoint();
@@ -162,19 +167,28 @@ class BwgTabHelper : public web::WebStateObserver,
   // Clears the zero-state suggestions and resets the service.
   void ClearZeroStateSuggestions();
 
+  // Notifies observers of the web state that the page context changed.
+  void NotifyPageContextUpdated(web::WebState* web_state);
+
   // Populates the page context fields if the wrapper exists.
   void PopulatePageContextFields();
 
+  // Computes the actual Gemini eligibility based on the response from
+  // `OnGeminiEligibilityDecision`.
+  bool ComputeGeminiEligibility(
+      optimization_guide::OptimizationGuideDecision decision,
+      const optimization_guide::OptimizationMetadata& metadata);
+
   // Callback for the OptimizationGuide with the result of whether the
   // zero-state suggestions should be shown for the current URL.
-  void OnCanApplyZeroStateSuggestionsDecision(
-      const GURL& url,
+  void OnGeminiEligibilityDecision(
+      const GURL& url_without_ref,
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
 
   // Callback for the OptimizationGuide with the result to the on-demand call.
-  void OnCanApplyZeroStateSuggestionsOnDemandDecision(
-      const GURL& url,
+  void OnGeminiEligibilityOnDemandDecision(
+      const GURL& url_without_ref,
       const base::flat_map<
           optimization_guide::proto::OptimizationType,
           optimization_guide::OptimizationGuideDecisionWithMetadata>&
@@ -246,6 +260,10 @@ class BwgTabHelper : public web::WebStateObserver,
 
   // Whether this is a first run experience.
   bool is_first_run_ = false;
+
+  // Whether the content has been deemed eligible for Gemini usage. Optional
+  // because we don't know the true value until it gets computed async.
+  std::optional<bool> is_gemini_eligible_;
 
   // The URL from the previous successful main frame navigation. This will be
   // empty if this is the first navigation for this tab or post-restart.
