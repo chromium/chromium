@@ -35,7 +35,7 @@ class Longhand : public CSSProperty {
   virtual const CSSValue* ParseSingleValue(CSSParserTokenStream& stream,
                                            const CSSParserContext& context,
                                            CSSParserLocalContext&) const {
-    return nullptr;
+    NOTREACHED();
   }
   virtual void ApplyInitial(StyleResolverState&) const { NOTREACHED(); }
   virtual void ApplyInherit(StyleResolverState&) const { NOTREACHED(); }
