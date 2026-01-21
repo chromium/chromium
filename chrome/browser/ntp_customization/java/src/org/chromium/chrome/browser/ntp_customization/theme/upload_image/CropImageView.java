@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ntp_customization.theme.upload_image;
 import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -20,6 +21,7 @@ import android.view.ScaleGestureDetector;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.AppCompatImageView;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.ViewUtils;
@@ -112,8 +114,23 @@ public class CropImageView extends AppCompatImageView {
     protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
         super.onSizeChanged(width, height, oldWidth, oldHeight);
         if (width > 0 && height > 0) {
+            // Can't use width and height given in this function, since they are affected by the
+            // dialog's window constraints (e.g. system bars or dialog padding), making them smaller
+            // than the actual New Tab Page background area. We use the full window dimensions to
+            // ensure the saved matrix is calculated for the same "canvas" size as the NTP,
+            // preventing the matrix from being auto-adjusted or "drifting" when applied
+            // full-screen.
+            Activity activity = ContextUtils.activityFromContext(getContext());
+            Point windowSize;
+            if (activity != null) {
+                windowSize = CropImageUtils.getCurrentWindowDimensions(activity);
+            } else {
+                // Fallback to view bounds if the Activity context is unavailable which is very
+                // rare.
+                windowSize = new Point(width, height);
+            }
             int orientation = getResources().getConfiguration().orientation;
-            mImageInfo.setWindowSize(orientation, new Point(width, height));
+            mImageInfo.setWindowSize(orientation, windowSize);
             configureMatrixForCurrentOrientation(oldWidth, oldHeight);
         }
     }
