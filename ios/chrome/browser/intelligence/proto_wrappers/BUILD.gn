@@ -14,7 +14,35 @@ optimize_ts("page_context_extractor_js") {
   sources = [ "resources/page_context_extractor.ts" ]
   deps = [
     ":page_content_types_ts",
+    "//components/autofill/ios/form_util:child_frame_registration_ts",
     "//ios/web/public/js_messaging:gcrweb",
+  ]
+}
+
+optimize_ts("page_context_wrapper_test_js") {
+  testonly = true
+  visibility = [
+    ":page_context_wrapper_test_feature",
+    ":unit_tests",
+  ]
+  sources = [ "resources/page_context_wrapper_test.ts" ]
+  deps = [
+    "//components/autofill/ios/form_util:child_frame_registration_test_ts",
+    "//components/autofill/ios/form_util:child_frame_registration_ts",
+    "//ios/web/public/js_messaging:gcrweb",
+  ]
+}
+
+source_set("page_context_wrapper_test_feature") {
+  testonly = true
+  sources = [
+    "page_context_wrapper_test_java_script_feature.h",
+    "page_context_wrapper_test_java_script_feature.mm",
+  ]
+  deps = [
+    ":page_context_wrapper_test_js",
+    "//base",
+    "//ios/web/public/js_messaging",
   ]
 }
 
@@ -26,6 +54,7 @@ source_set("page_context_extractor_feature") {
   deps = [
     ":page_context_extractor_js",
     "//base",
+    "//components/autofill/ios/form_util:frame_registration_feature",
     "//ios/public/provider/chrome/browser/bwg:bwg_api",
     "//ios/web/public/js_messaging",
   ]
@@ -33,6 +62,8 @@ source_set("page_context_extractor_feature") {
 
 source_set("proto_wrappers") {
   sources = [
+    "frame_grafter.h",
+    "frame_grafter.mm",
     "page_context_wrapper.h",
     "page_context_wrapper.mm",
     "page_context_wrapper_config.h",
@@ -44,7 +75,10 @@ source_set("proto_wrappers") {
   deps = [
     ":page_context_extractor_feature",
     ":page_context_metrics",
+    ":utils",
     "//base",
+    "//components/autofill/core/common",
+    "//components/autofill/ios/form_util:child_frame_registrar",
     "//components/optimization_guide:optimization_guide_buildflags",
     "//components/optimization_guide/core:page_content",
     "//components/optimization_guide/proto:optimization_guide_proto",
@@ -94,6 +128,8 @@ source_set("utils") {
     "page_context_utils.mm",
   ]
   deps = [
+    "//components/autofill/core/common",
+    "//components/autofill/ios/browser:util",
     "//ios/web/public",
     "//ios/web/util",
     "//url",
@@ -103,6 +139,7 @@ source_set("utils") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "frame_grafter_unittest.mm",
     "page_context_extractor_java_script_feature_unittest.mm",
     "page_context_utils_unittest.mm",
     "page_context_wrapper_metrics_unittest.mm",
@@ -112,9 +149,14 @@ source_set("unit_tests") {
     ":metrics_constants",
     ":page_context_extractor_feature",
     ":page_context_metrics",
+    ":page_context_wrapper_test_feature",
     ":proto_wrappers",
     ":utils",
     "//base/test:test_support",
+    "//components/autofill/core/common",
+    "//components/autofill/ios/common",
+    "//components/autofill/ios/form_util:child_frame_registrar",
+    "//components/autofill/ios/form_util:frame_registration_feature",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/model/profile/test",
@@ -124,6 +166,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/snapshots/model:test_utils",
     "//ios/chrome/test:test_support",
     "//ios/testing:embedded_test_server_support",
+    "//ios/web/common:features",
     "//ios/web/find_in_page",
     "//ios/web/js_messaging:java_script_feature_manager_header",
     "//ios/web/public/js_messaging",

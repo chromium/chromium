@@ -10,10 +10,14 @@
 #import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
+#import "components/autofill/ios/form_util/remote_frame_registration_java_script_feature.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
+
+// TODO(crbug.com/458081684): Move away from all autofill dependencies once
+// the migration in ios/web is done for frame registration.
 
 namespace {
 constexpr char kScriptName[] = "page_context_extractor";
@@ -39,7 +43,9 @@ PageContextExtractorJavaScriptFeature::PageContextExtractorJavaScriptFeature()
                   kInjectOncePerWindow,
               base::BindRepeating(
                   &PageContextExtractorJavaScriptFeature::GetReplacements,
-                  base::Unretained(this)))}) {}
+                  base::Unretained(this)))},
+          {autofill::RemoteFrameRegistrationJavaScriptFeature::GetInstance()}) {
+}
 
 PageContextExtractorJavaScriptFeature::
     ~PageContextExtractorJavaScriptFeature() = default;
@@ -59,12 +65,16 @@ PageContextExtractorJavaScriptFeature::GetReplacements() {
 void PageContextExtractorJavaScriptFeature::ExtractPageContext(
     web::WebFrame* frame,
     bool include_anchors,
+    bool include_cross_origin_frame_content,
     const std::string& nonce,
     base::TimeDelta timeout,
     base::OnceCallback<void(const base::Value*)> callback) {
+  // TODO(crbug.com/464503759): Use one single config to pass all the
+  // parameters.
   base::Value::List parameters;
   parameters.Append(include_anchors);
   parameters.Append(nonce);
+  parameters.Append(include_cross_origin_frame_content);
   CallJavaScriptFunction(frame, "pageContextExtractor.extractPageContext",
                          parameters, std::move(callback), timeout);
 }

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
 
+#import "components/autofill/ios/browser/autofill_util.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/util/content_type_util.h"
 #import "url/gurl.h"
@@ -19,4 +20,20 @@ bool CanExtractPageContextForWebState(web::WebState* web_state) {
       web::IsContentTypeHtml(mime_type) || web::IsContentTypeImage(mime_type);
 
   return url.SchemeIsHTTPOrHTTPS() && mime_type_ok;
+}
+
+std::optional<autofill::LocalFrameToken> DeserializeFrameIdAsLocalFrameToken(
+    const std::string& serialized_id) {
+  std::optional<base::UnguessableToken> token =
+      autofill::DeserializeJavaScriptFrameId(serialized_id);
+  return token ? std::make_optional(autofill::LocalFrameToken(*token))
+               : std::nullopt;
+}
+
+std::optional<autofill::RemoteFrameToken> DeserializeFrameIdAsRemoteFrameToken(
+    const std::string& serialized_id) {
+  std::optional<base::UnguessableToken> token =
+      autofill::DeserializeJavaScriptFrameId(serialized_id);
+  return token ? std::make_optional(autofill::RemoteFrameToken(*token))
+               : std::nullopt;
 }

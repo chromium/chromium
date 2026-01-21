@@ -45,6 +45,7 @@ class PageContextExtractorJavaScriptFeature : public web::JavaScriptFeature {
   void ExtractPageContext(
       web::WebFrame* frame,
       bool include_anchors,
+      bool include_cross_origin_frame_content,
       const std::string& nonce,
       base::TimeDelta timeout,
       base::OnceCallback<void(const base::Value*)> callback);

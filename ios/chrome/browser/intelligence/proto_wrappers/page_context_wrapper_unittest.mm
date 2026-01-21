@@ -7,9 +7,12 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <UIKit/UIKit.h>
 
+#import <vector>
+
 #import "base/base64.h"
 #import "base/containers/span.h"
 #import "base/files/scoped_temp_dir.h"
+#import "base/no_destructor.h"
 #import "base/run_loop.h"
 #import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
@@ -17,9 +20,17 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/values_test_util.h"
 #import "base/time/time.h"
+#import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/core/common/unique_ids.h"
+#import "components/autofill/ios/common/features.h"
+#import "components/autofill/ios/form_util/child_frame_registrar.h"
+#import "components/autofill/ios/form_util/remote_frame_registration_java_script_feature.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_extractor_java_script_feature.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_config.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_test_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
@@ -28,10 +39,12 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/testing/embedded_test_server_handlers.h"
+#import "ios/web/common/features.h"
 #import "ios/web/find_in_page/find_in_page_java_script_feature.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
@@ -49,6 +62,10 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "url/origin.h"
+
+// TODO(crbug.com/458081684): Move away from all autofill dependencies once
+// the migration in ios/web is done for frame registration.
 
 namespace {
 
@@ -123,6 +140,7 @@ class PageContextWrapperTest : public PlatformTest,
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
     enabled_features.push_back(kPageActionMenu);
+    enabled_features.push_back(autofill::features::kAutofillAcrossIframesIos);
     if (IsRefactored()) {
       enabled_features.push_back(kPageContextExtractorRefactored);
     } else {
@@ -154,8 +172,11 @@ class PageContextWrapperTest : public PlatformTest,
     snapshot_delegate_.view = web_state_->GetView();
     snapshot_tab_helper->SetDelegate(snapshot_delegate_);
 
-    GetWebClient()->SetJavaScriptFeatures(
-        {web::FindInPageJavaScriptFeature::GetInstance(), extractor_feature()});
+    GetWebClient()->SetJavaScriptFeatures({
+        web::FindInPageJavaScriptFeature::GetInstance(),
+        extractor_feature(),
+        PageContextWrapperTestJavaScriptFeature::GetInstance(),
+    });
 
     test_server_.RegisterRequestHandler(base::BindRepeating(
         &net::test_server::HandlePrefixedRequest, kIframe1Path,
@@ -222,9 +243,9 @@ class PageContextWrapperTest : public PlatformTest,
   net::EmbeddedTestServer test_server_;
   net::EmbeddedTestServer xorigin_test_server_;
   net::EmbeddedTestServer xorigin_test_server_b_;
+  net::EmbeddedTestServer xorigin_test_server_c_;
   id<SnapshotStorage> snapshot_storage_ = nil;
   ControllableFakeSnapshotGeneratorDelegate* snapshot_delegate_ = nil;
-
   std::unique_ptr<web::FakeBrowserState> fake_browser_state_;
   std::unique_ptr<web::FakeWebState> fake_web_state_;
 };
@@ -1434,6 +1455,677 @@ TEST_P(PageContextWrapperTest, PopulatePageContextWithSVGAnchors) {
     }
   }
   EXPECT_TRUE(found_anchor);
+}
+
+// Tests that extraction can preserve the tree structure for nested frames on
+// different origins when frame grafting is enabled.
+//      +----------------------------------+
+//      | Main page (test_server_)         |  - Main frame (Origin M)
+//      |                                  |    |
+//      |   +--------------------------+   |    +-- Iframe A (Origin A)
+//      |   | Iframe A (Origin A)      |   |    |     |
+//      |   |                          |   |    |     +-- Iframe B (Origin B)
+//      |   |   +------------------+   |   |
+//      |   |   | Iframe B         |   |   |
+//      |   |   | (Origin B)       |   |   |
+//      |   |   +------------------+   |   |
+//      |   |                          |   |
+//      |   +--------------------------+   |
+//      |                                  |
+//      +----------------------------------+
+TEST_P(PageContextWrapperTest,
+       PopulatePageContextWithNestedDifferentCrossOriginFrame_GraftingEnabled) {
+  if (!IsRefactored()) {
+    GTEST_SKIP()
+        << "Frame grafter not supported for the non-refactored APC wrapper";
+  }
+
+  const char kCrossOriginIframeAPath[] = "/iframe_cross_a.html";
+  const char kCrossOriginIframeBPath[] = "/iframe_cross_b.html";
+  const char kCrossOriginIframeBHtml[] =
+      "<html><head><title>Child Cross Origin B</title></head><body><p>Child "
+      "frame cross-origin text B</p></body></html>";
+
+  xorigin_test_server_b_.RegisterRequestHandler(base::BindRepeating(
+      &net::test_server::HandlePrefixedRequest, kCrossOriginIframeBPath,
+      base::BindRepeating(&testing::HandlePageWithHtml,
+                          kCrossOriginIframeBHtml)));
+  ASSERT_TRUE(xorigin_test_server_b_.Start());
+  GURL iframe_b_url = xorigin_test_server_b_.GetURL(kCrossOriginIframeBPath);
+
+  const std::string kCrossOriginIframeAHtml = base::StrCat(
+      {"<html><head><title>Child Cross Origin A</title></head><body><p>Child "
+       "frame cross-origin text A</p><iframe src=\"",
+       iframe_b_url.spec(), "\"></iframe></body></html>"});
+
+  xorigin_test_server_.RegisterRequestHandler(base::BindRepeating(
+      &net::test_server::HandlePrefixedRequest, kCrossOriginIframeAPath,
+      base::BindRepeating(&testing::HandlePageWithHtml,
+                          kCrossOriginIframeAHtml)));
+  ASSERT_TRUE(xorigin_test_server_.Start());
+
+  GURL iframe_a_url = xorigin_test_server_.GetURL(kCrossOriginIframeAPath);
+  const std::string main_html = base::StrCat(
+      {"<html><head><title>Main Cross Origin</title></head><body><p>Main "
+       "frame cross-origin text</p><iframe src=\"",
+       iframe_a_url.spec(), "\"></iframe></body></html>"});
+  GURL main_url = test_server_.GetURL(kMainPagePath);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html), main_url,
+                      web_state());
+
+  // Wait for all frames to load.
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(5), ^{
+    return web_state()
+               ->GetWebFramesManager(web::ContentWorld::kIsolatedWorld)
+               ->GetAllWebFrames()
+               .size() == 3;
+  }));
+
+  base::RunLoop run_loop;
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context;
+
+  PageContextWrapperConfig config = PageContextWrapperConfigBuilder()
+                                        .SetGraftCrossOriginFrameContent(true)
+                                        .Build();
+  PageContextWrapper* wrapper = [[PageContextWrapper alloc]
+        initWithWebState:web_state()
+                  config:config
+      completionCallback:base::BindOnce(
+                             [](base::RunLoop* run_loop,
+                                std::unique_ptr<
+                                    optimization_guide::proto::PageContext>*
+                                    out_page_context,
+                                PageContextWrapperCallbackResponse response) {
+                               if (response.has_value()) {
+                                 *out_page_context =
+                                     std::move(response.value());
+                               }
+                               run_loop->Quit();
+                             },
+                             &run_loop, &page_context)];
+
+  wrapper.shouldGetAnnotatedPageContent = YES;
+  wrapper.shouldGetInnerText = YES;
+  [wrapper populatePageContextFieldsAsyncWithTimeout:base::Seconds(5)];
+
+  run_loop.Run();
+
+  ASSERT_TRUE(page_context);
+
+  const auto& inner_text = page_context->inner_text();
+  EXPECT_THAT(inner_text, testing::HasSubstr("Main frame cross-origin text"));
+  EXPECT_THAT(inner_text,
+              testing::HasSubstr("Child frame cross-origin text A"));
+  EXPECT_THAT(inner_text,
+              testing::HasSubstr("Child frame cross-origin text B"));
+
+  const auto& annotated_page_content = page_context->annotated_page_content();
+  const auto& root_node = annotated_page_content.root_node();
+  ASSERT_EQ(root_node.children_nodes_size(), 2);
+
+  const optimization_guide::proto::ContentNode* text_node = nullptr;
+  const optimization_guide::proto::ContentNode* iframe_a_node = nullptr;
+
+  for (const auto& node : root_node.children_nodes()) {
+    if (node.content_attributes().attribute_type() ==
+        optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT) {
+      text_node = &node;
+    } else if (node.content_attributes().attribute_type() ==
+               optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME) {
+      if (node.content_attributes().iframe_data().frame_data().url() ==
+          iframe_a_url.spec()) {
+        iframe_a_node = &node;
+      }
+    }
+  }
+
+  ASSERT_TRUE(text_node);
+  ASSERT_TRUE(iframe_a_node);
+
+  EXPECT_EQ(text_node->content_attributes().text_data().text_content(),
+            "Main frame cross-origin text");
+
+  // Verify iframe A.
+  const auto& iframe_a_frame_data =
+      iframe_a_node->content_attributes().iframe_data().frame_data();
+  EXPECT_EQ(iframe_a_frame_data.title(), "Child Cross Origin A");
+  ASSERT_EQ(iframe_a_node->children_nodes_size(), 1);
+  const auto& iframe_a_root_node = iframe_a_node->children_nodes(0);
+  ASSERT_EQ(iframe_a_root_node.children_nodes_size(), 2);
+
+  const auto& iframe_a_text_node = iframe_a_root_node.children_nodes(0);
+  EXPECT_EQ(iframe_a_text_node.content_attributes().text_data().text_content(),
+            "Child frame cross-origin text A");
+
+  // Verify iframe B is nested inside iframe A.
+  const auto& iframe_b_node = iframe_a_root_node.children_nodes(1);
+  EXPECT_EQ(iframe_b_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  const auto& iframe_b_frame_data =
+      iframe_b_node.content_attributes().iframe_data().frame_data();
+  EXPECT_EQ(iframe_b_frame_data.title(), "Child Cross Origin B");
+  EXPECT_EQ(iframe_b_frame_data.url(), iframe_b_url.spec());
+  ASSERT_EQ(iframe_b_node.children_nodes_size(), 1);
+  const auto& iframe_b_root_node = iframe_b_node.children_nodes(0);
+  ASSERT_EQ(iframe_b_root_node.children_nodes_size(), 1);
+  const auto& iframe_b_text_node = iframe_b_root_node.children_nodes(0);
+  EXPECT_EQ(iframe_b_text_node.content_attributes().text_data().text_content(),
+            "Child frame cross-origin text B");
+}
+
+// Tests that the grafter correctly handles unregistered frame content.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContextWithOrphanFrame_GraftingEnabled) {
+  if (!IsRefactored()) {
+    GTEST_SKIP()
+        << "Frame grafter not supported for the non-refactored APC wrapper";
+  }
+
+  const char kCrossOriginIframeAPath[] = "/iframe_cross_a.html";
+  const char kCrossOriginIframeBPath[] = "/iframe_cross_b.html";
+  const char kCrossOriginIframeBHtml[] =
+      "<html><head><title>Child Cross Origin B</title></head><body><p>Child "
+      "frame cross-origin text B</p></body></html>";
+
+  xorigin_test_server_b_.RegisterRequestHandler(base::BindRepeating(
+      &net::test_server::HandlePrefixedRequest, kCrossOriginIframeBPath,
+      base::BindRepeating(&testing::HandlePageWithHtml,
+                          kCrossOriginIframeBHtml)));
+  ASSERT_TRUE(xorigin_test_server_b_.Start());
+  GURL iframe_b_url = xorigin_test_server_b_.GetURL(kCrossOriginIframeBPath);
+
+  const std::string kCrossOriginIframeAHtml = base::StrCat(
+      {"<html><head><title>Child Cross Origin A</title></head><body><p>Child "
+       "frame cross-origin text A</p><iframe src=\"",
+       iframe_b_url.spec(), "\"></iframe></body></html>"});
+
+  xorigin_test_server_.RegisterRequestHandler(base::BindRepeating(
+      &net::test_server::HandlePrefixedRequest, kCrossOriginIframeAPath,
+      base::BindRepeating(&testing::HandlePageWithHtml,
+                          kCrossOriginIframeAHtml)));
+  ASSERT_TRUE(xorigin_test_server_.Start());
+
+  GURL iframe_a_url = xorigin_test_server_.GetURL(kCrossOriginIframeAPath);
+  const std::string main_html =
+      base::StrCat({"<html><head><title>Main Title</title></head><body><p>Main "
+                    "frame text</p><iframe src=\"",
+                    iframe_a_url.spec(), "\"></iframe></body></html>"});
+  GURL main_url = test_server_.GetURL(kMainPagePath);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html), main_url,
+                      web_state());
+
+  // Wait for all frames to load.
+  web::WebFramesManager* frames_manager =
+      web_state()->GetWebFramesManager(web::ContentWorld::kIsolatedWorld);
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(5), ^{
+    return frames_manager->GetAllWebFrames().size() == 3;
+  }));
+
+  // Sabotage remote frame discovery in frame A (it won't see frame B hence not
+  // claim its content which will remain orphan).
+  web::WebFrame* iframe_a = nullptr;
+  for (web::WebFrame* frame : frames_manager->GetAllWebFrames()) {
+    if (frame->GetSecurityOrigin() == url::Origin::Create(iframe_a_url)) {
+      iframe_a = frame;
+      break;
+    }
+  }
+  ASSERT_TRUE(iframe_a);
+  ASSERT_TRUE(iframe_a->ExecuteJavaScript(
+      u"Element.prototype.getElementsByTagName = () => []; true"));
+
+  base::RunLoop run_loop;
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context;
+
+  PageContextWrapperConfig config = PageContextWrapperConfigBuilder()
+                                        .SetGraftCrossOriginFrameContent(true)
+                                        .Build();
+  PageContextWrapper* wrapper = [[PageContextWrapper alloc]
+        initWithWebState:web_state()
+                  config:config
+      completionCallback:base::BindOnce(
+                             [](base::RunLoop* run_loop,
+                                std::unique_ptr<
+                                    optimization_guide::proto::PageContext>*
+                                    out_page_context,
+                                PageContextWrapperCallbackResponse response) {
+                               if (response.has_value()) {
+                                 *out_page_context =
+                                     std::move(response.value());
+                               }
+                               run_loop->Quit();
+                             },
+                             &run_loop, &page_context)];
+
+  wrapper.shouldGetAnnotatedPageContent = YES;
+  [wrapper populatePageContextFieldsAsyncWithTimeout:base::Seconds(5)];
+
+  run_loop.Run();
+
+  ASSERT_TRUE(page_context);
+
+  const auto& annotated_page_content = page_context->annotated_page_content();
+  const auto& root_node = annotated_page_content.root_node();
+  // Expect text node, iframe_a node, and a placeholder for iframe_b.
+  ASSERT_EQ(root_node.children_nodes_size(), 3);
+
+  const optimization_guide::proto::ContentNode* text_node = nullptr;
+  const optimization_guide::proto::ContentNode* iframe_a_node = nullptr;
+  const optimization_guide::proto::ContentNode* iframe_b_node = nullptr;
+
+  for (const auto& node : root_node.children_nodes()) {
+    if (node.content_attributes().attribute_type() ==
+        optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT) {
+      text_node = &node;
+    } else if (node.content_attributes().iframe_data().frame_data().url() ==
+               iframe_a_url.spec()) {
+      iframe_a_node = &node;
+    } else if (node.content_attributes().iframe_data().frame_data().url() ==
+               iframe_b_url.spec()) {
+      iframe_b_node = &node;
+    }
+  }
+
+  ASSERT_TRUE(text_node);
+  ASSERT_TRUE(iframe_a_node);
+  ASSERT_TRUE(iframe_b_node);
+
+  // Verify main frame text.
+  EXPECT_EQ(text_node->content_attributes().text_data().text_content(),
+            "Main frame text");
+
+  // Verify iframe A.
+  EXPECT_EQ(iframe_a_node->content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  const auto& iframe_a_frame_data =
+      iframe_a_node->content_attributes().iframe_data().frame_data();
+  EXPECT_EQ(iframe_a_frame_data.title(), "Child Cross Origin A");
+  ASSERT_EQ(iframe_a_node->children_nodes_size(), 1);
+  const auto& iframe_a_root_node = iframe_a_node->children_nodes(0);
+  ASSERT_EQ(iframe_a_root_node.children_nodes_size(), 1);
+
+  const auto& iframe_a_text_node = iframe_a_root_node.children_nodes(0);
+  EXPECT_EQ(iframe_a_text_node.content_attributes().text_data().text_content(),
+            "Child frame cross-origin text A");
+
+  // Verify iframe B is nested inside the main frame content instead of frame A
+  // because the frame B was left orphan by the grafter.
+  EXPECT_EQ(iframe_b_node->content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  const auto& iframe_b_frame_data =
+      iframe_b_node->content_attributes().iframe_data().frame_data();
+  EXPECT_EQ(iframe_b_frame_data.title(), "Child Cross Origin B");
+  EXPECT_EQ(iframe_b_frame_data.url(), iframe_b_url.spec());
+  ASSERT_EQ(iframe_b_node->children_nodes_size(), 1);
+  const auto& iframe_b_root_node = iframe_b_node->children_nodes(0);
+  ASSERT_EQ(iframe_b_root_node.children_nodes_size(), 1);
+  const auto& iframe_b_text_node = iframe_b_root_node.children_nodes(0);
+  EXPECT_EQ(iframe_b_text_node.content_attributes().text_data().text_content(),
+            "Child frame cross-origin text B");
+}
+
+// Tests that extraction with frame grafting works across origins with a complex
+// frame structure. Remote frame registration is disabled for Iframe D to make
+// it an unregistered frame that should be directly grafted under the main
+// frame.
+//      +----------------------------------+
+//      | Main page (Origin M)             |  - Main frame (Origin M)
+//      |                                  |    |
+//      |   +--------------------------+   |    +-- Iframe A (Origin A)
+//      |   | Iframe A (Origin A)      |   |    |     |
+//      |   |  +------------------+    |   |    |     +-- Iframe A1 (Origin A)
+//      |   |  | Iframe A1        |    |   |    |     |
+//      |   |  +------------------+    |   |    |     +-- Iframe B (Origin B)
+//      |   |  +------------------+    |   |    |        |
+//      |   |  | Iframe B         |    |   |    |        +-- Iframe B1
+//      |   |  | (Origin B)       |    |   |    |
+//      |   |  |  +------------+  |    |   |    |        |   (Origin B)
+//      |   |  |  | Iframe B1  |  |    |   |    |        |
+//      |   |  |  +------------+  |    |   |    |        +-- Iframe D
+//      |   |  |                  |    |   |    |            (Origin C)
+//      |   |  |  +------------+  |    |   |    |            Orphan frame
+//      |   |  |  | Iframe D   |  |    |   |    |
+//      |   |  |  | (Origin C) |  |    |   |    |
+//      |   |  |  +------------+  |    |   |    |
+//      |   |  +------------------+    |   |    |
+//      |   +--------------------------+   |    |
+//      |   +--------------------------+   |    +-- Iframe C (Origin B)
+//      |   | Iframe C (Origin B)      |   |
+//      |   +--------------------------+   |
+//      +----------------------------------+
+TEST_P(PageContextWrapperTest,
+       PopulatePageContextWithComplexFrameTree_GraftingEnabled) {
+  if (!IsRefactored()) {
+    GTEST_SKIP()
+        << "Frame grafter not supported for the non-refactored APC wrapper";
+  }
+
+  const char kIframeAPath[] = "/iframe_a.html";
+  const char kIframeA1Path[] = "/iframe_a1.html";
+  const char kIframeBPath[] = "/iframe_b.html";
+  const char kIframeB1Path[] = "/iframe_b1.html";
+  const char kIframeDPath[] = "/iframe_d.html";
+  const char kIframeCPath[] = "/iframe_c.html";
+
+  const char kIframeB1Html[] =
+      "<html><head><title>Child B1</title></head><body><p>Child frame B1 "
+      "text</p></body></html>";
+  const char kIframeDHtml[] =
+      "<html><head><title>Child D</title></head><body><p>Child frame D "
+      "text</p></body></html>";
+  const char kIframeA1Html[] =
+      "<html><head><title>Child A1</title></head><body><p>Child frame A1 "
+      "text</p></body></html>";
+  const char kIframeCHtml[] =
+      "<html><head><title>Child C</title></head><body><p>Child frame C "
+      "text</p></body></html>";
+
+  xorigin_test_server_.RegisterRequestHandler(base::BindRepeating(
+      &net::test_server::HandlePrefixedRequest, kIframeA1Path,
+      base::BindRepeating(&testing::HandlePageWithHtml, kIframeA1Html)));
+  xorigin_test_server_b_.RegisterRequestHandler(base::BindRepeating(
+      &net::test_server::HandlePrefixedRequest, kIframeB1Path,
+      base::BindRepeating(&testing::HandlePageWithHtml, kIframeB1Html)));
+  xorigin_test_server_c_.RegisterRequestHandler(base::BindRepeating(
+      &net::test_server::HandlePrefixedRequest, kIframeDPath,
+      base::BindRepeating(&testing::HandlePageWithHtml, kIframeDHtml)));
+  xorigin_test_server_b_.RegisterRequestHandler(base::BindRepeating(
+      &net::test_server::HandlePrefixedRequest, kIframeCPath,
+      base::BindRepeating(&testing::HandlePageWithHtml, kIframeCHtml)));
+
+  ASSERT_TRUE(xorigin_test_server_c_.Start());
+  GURL iframe_d_url = xorigin_test_server_c_.GetURL(kIframeDPath);
+  const std::string kIframeBHtml = base::StrCat(
+      {"<html><head><title>Child B</title></head><body><p>Child frame B "
+       "text</p><iframe src=\"/iframe_b1.html\"></iframe><iframe "
+       "src=\"",
+       iframe_d_url.spec(), "\"></iframe></body></html>"});
+  xorigin_test_server_b_.RegisterRequestHandler(base::BindRepeating(
+      &net::test_server::HandlePrefixedRequest, kIframeBPath,
+      base::BindRepeating(&testing::HandlePageWithHtml, kIframeBHtml)));
+
+  ASSERT_TRUE(xorigin_test_server_b_.Start());
+  GURL iframe_b_url = xorigin_test_server_b_.GetURL(kIframeBPath);
+  const std::string kIframeAHtml = base::StrCat(
+      {"<html><head><title>Child A</title></head><body><p>Child frame A "
+       "text</p><iframe src=\"/iframe_a1.html\"></iframe><iframe src=\"",
+       iframe_b_url.spec(), "\"></iframe></body></html>"});
+  xorigin_test_server_.RegisterRequestHandler(base::BindRepeating(
+      &net::test_server::HandlePrefixedRequest, kIframeAPath,
+      base::BindRepeating(&testing::HandlePageWithHtml, kIframeAHtml)));
+
+  ASSERT_TRUE(xorigin_test_server_.Start());
+
+  GURL iframe_a_url = xorigin_test_server_.GetURL(kIframeAPath);
+  GURL iframe_c_url = xorigin_test_server_b_.GetURL(kIframeCPath);
+  const std::string main_html =
+      base::StrCat({"<html><head><title>Main</title></head><body><p>Main frame "
+                    "text</p><iframe src=\"",
+                    iframe_a_url.spec(), "\"></iframe><iframe src=\"",
+                    iframe_c_url.spec(), "\"></iframe></body></html>"});
+  GURL main_url = test_server_.GetURL(kMainPagePath);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html), main_url,
+                      web_state());
+
+  // Wait for all 7 frames to load.
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(5), ^{
+    return web_state()
+               ->GetWebFramesManager(web::ContentWorld::kIsolatedWorld)
+               ->GetAllWebFrames()
+               .size() == 7;
+  }));
+
+  // Sabotage remote frame discovery in frame B (it won't see frame B2 hence not
+  // claim its content which will remain orphan).
+  web::WebFrame* iframe_b = nullptr;
+  base::RunLoop find_frame_run_loop;
+  std::set<web::WebFrame*> all_frames =
+      web_state()
+          ->GetWebFramesManager(web::ContentWorld::kIsolatedWorld)
+          ->GetAllWebFrames();
+  size_t pending_callbacks = all_frames.size();
+  for (web::WebFrame* frame : all_frames) {
+    frame->ExecuteJavaScript(
+        u"window.location.href",
+        base::BindOnce(
+            [](web::WebFrame* frame, GURL expected_url,
+               web::WebFrame** out_frame, size_t* pending_callbacks,
+               base::RepeatingClosure quit_closure, const base::Value* result) {
+              if (result && result->is_string()) {
+                if (GURL(result->GetString()) == expected_url) {
+                  *out_frame = frame;
+                  quit_closure.Run();
+                  return;
+                }
+              }
+              (*pending_callbacks)--;
+              if (*pending_callbacks == 0) {
+                quit_closure.Run();
+              }
+            },
+            frame, iframe_b_url, &iframe_b, &pending_callbacks,
+            find_frame_run_loop.QuitClosure()));
+  }
+  find_frame_run_loop.Run();
+
+  ASSERT_TRUE(iframe_b);
+
+  iframe_b->ExecuteJavaScript(uR"((() => {
+    const originalGetElementsByTagName = Element.prototype.getElementsByTagName;
+    Element.prototype.getElementsByTagName = function(tagName) {
+      const elements = originalGetElementsByTagName.call(this, tagName);
+      if (tagName.toLowerCase() !== 'iframe') {
+        return elements;
+      }
+      return Array.from(elements).filter(el => !el.src.endsWith('/iframe_d.html'));
+    };
+    return true;
+  })(); true;)");
+
+  base::RunLoop run_loop;
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context;
+
+  PageContextWrapperConfig config = PageContextWrapperConfigBuilder()
+                                        .SetGraftCrossOriginFrameContent(true)
+                                        .Build();
+  PageContextWrapper* wrapper = [[PageContextWrapper alloc]
+        initWithWebState:web_state()
+                  config:config
+      completionCallback:base::BindOnce(
+                             [](base::RunLoop* run_loop,
+                                std::unique_ptr<
+                                    optimization_guide::proto::PageContext>*
+                                    out_page_context,
+                                PageContextWrapperCallbackResponse response) {
+                               if (response.has_value()) {
+                                 *out_page_context =
+                                     std::move(response.value());
+                               }
+                               run_loop->Quit();
+                             },
+                             &run_loop, &page_context)];
+
+  wrapper.shouldGetAnnotatedPageContent = YES;
+  [wrapper populatePageContextFieldsAsyncWithTimeout:base::Seconds(5)];
+
+  run_loop.Run();
+
+  ASSERT_TRUE(page_context);
+
+  const auto& annotated_page_content = page_context->annotated_page_content();
+  const auto& root_node = annotated_page_content.root_node();
+  ASSERT_EQ(root_node.children_nodes_size(), 4);
+
+  const optimization_guide::proto::ContentNode* iframe_a_node = nullptr;
+  const optimization_guide::proto::ContentNode* iframe_c_node = nullptr;
+
+  for (const auto& node : root_node.children_nodes()) {
+    if (node.content_attributes().attribute_type() ==
+        optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME) {
+      if (node.content_attributes().iframe_data().frame_data().url() ==
+          iframe_a_url.spec()) {
+        iframe_a_node = &node;
+      } else if (node.content_attributes().iframe_data().frame_data().url() ==
+                 iframe_c_url.spec()) {
+        iframe_c_node = &node;
+      }
+    }
+  }
+
+  ASSERT_TRUE(iframe_a_node);
+  ASSERT_TRUE(iframe_c_node);
+
+  // Verify Iframe A's subtree.
+  ASSERT_EQ(iframe_a_node->children_nodes_size(), 1);
+  const auto& iframe_a_root = iframe_a_node->children_nodes(0);
+  ASSERT_EQ(iframe_a_root.children_nodes_size(), 3);  // text, A1, B
+
+  const auto& iframe_a1_node = iframe_a_root.children_nodes(1);
+  EXPECT_EQ(
+      iframe_a1_node.content_attributes().iframe_data().frame_data().title(),
+      "Child A1");
+
+  const auto& iframe_b_node = iframe_a_root.children_nodes(2);
+  EXPECT_EQ(
+      iframe_b_node.content_attributes().iframe_data().frame_data().title(),
+      "Child B");
+
+  // Verify Iframe B's subtree (nested in A).
+  ASSERT_EQ(iframe_b_node.children_nodes_size(), 1);
+  const auto& iframe_b_root = iframe_b_node.children_nodes(0);
+  ASSERT_EQ(iframe_b_root.children_nodes_size(), 2);  // text, B1
+
+  const auto& iframe_b1_node = iframe_b_root.children_nodes(1);
+  EXPECT_EQ(
+      iframe_b1_node.content_attributes().iframe_data().frame_data().title(),
+      "Child B1");
+
+  // Verify Iframe C's content.
+  ASSERT_EQ(iframe_c_node->children_nodes_size(), 1);
+  const auto& iframe_c_root = iframe_c_node->children_nodes(0);
+  ASSERT_EQ(iframe_c_root.children_nodes_size(), 1);  // text
+  EXPECT_EQ(iframe_c_root.children_nodes(0)
+                .content_attributes()
+                .text_data()
+                .text_content(),
+            "Child frame C text");
+}
+
+// Tests extraction when the registration of a cross-origin frame fails.
+TEST_P(PageContextWrapperTest, PopulatePageContextWithRegistrationFailure) {
+  if (!IsRefactored()) {
+    GTEST_SKIP()
+        << "Frame grafter not supported for the non-refactored APC wrapper";
+  }
+
+  const char kCrossOriginIframePath[] = "/iframe_cross.html";
+  const char kCrossOriginIframeHtml[] =
+      "<html><head><title>Child Cross Origin</title></head><body><p>Child "
+      "frame cross-origin text</p></body></html>";
+
+  xorigin_test_server_.RegisterRequestHandler(base::BindRepeating(
+      &net::test_server::HandlePrefixedRequest, kCrossOriginIframePath,
+      base::BindRepeating(&testing::HandlePageWithHtml,
+                          kCrossOriginIframeHtml)));
+  ASSERT_TRUE(xorigin_test_server_.Start());
+
+  GURL iframe_url = xorigin_test_server_.GetURL(kCrossOriginIframePath);
+  const std::string main_html =
+      base::StrCat({"<html><head><title>Main</title></head><body><p>Main "
+                    "frame text</p><iframe src=\"",
+                    iframe_url.spec(), "\"></iframe></body></html>"});
+  GURL main_url = test_server_.GetURL(kMainPagePath);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html), main_url,
+                      web_state());
+
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(5), ^{
+    return web_state()
+               ->GetWebFramesManager(web::ContentWorld::kIsolatedWorld)
+               ->GetAllWebFrames()
+               .size() == 2;
+  }));
+
+  // Sabotage registration in the cross-origin frame by blocking the
+  // registration message in the child frame.
+  web::WebFrame* child_frame = nullptr;
+  for (web::WebFrame* frame :
+       web_state()
+           ->GetWebFramesManager(web::ContentWorld::kIsolatedWorld)
+           ->GetAllWebFrames()) {
+    if (!frame->IsMainFrame()) {
+      child_frame = frame;
+      break;
+    }
+  }
+  ASSERT_TRUE(child_frame);
+  child_frame->ExecuteJavaScript(uR"(
+    window.addEventListener('message', function(event) {
+        if (event.data && event.data.command === 'registerAsChildFrame') {
+            event.stopImmediatePropagation();
+            event.preventDefault();
+        }
+    }, true);
+    true;
+  )");
+
+  base::RunLoop run_loop;
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context;
+
+  PageContextWrapperConfig config = PageContextWrapperConfigBuilder()
+                                        .SetGraftCrossOriginFrameContent(true)
+                                        .Build();
+  PageContextWrapper* wrapper = [[PageContextWrapper alloc]
+        initWithWebState:web_state()
+                  config:config
+      completionCallback:base::BindOnce(
+                             [](base::RunLoop* run_loop,
+                                std::unique_ptr<
+                                    optimization_guide::proto::PageContext>*
+                                    out_page_context,
+                                PageContextWrapperCallbackResponse response) {
+                               if (response.has_value()) {
+                                 *out_page_context =
+                                     std::move(response.value());
+                               }
+                               run_loop->Quit();
+                             },
+                             &run_loop, &page_context)];
+
+  wrapper.shouldGetAnnotatedPageContent = YES;
+  [wrapper populatePageContextFieldsAsyncWithTimeout:base::Seconds(5)];
+
+  // This should finish only after the registration timeout expires.
+  run_loop.Run();
+
+  ASSERT_TRUE(page_context);
+
+  const auto& annotated_page_content = page_context->annotated_page_content();
+  const auto& root_node = annotated_page_content.root_node();
+
+  // We expect:
+  // 1. Main Text.
+  // 2. Empty placeholder node (from main frame's iframe tag).
+  // 3. Child frame content node (orphan).
+  ASSERT_EQ(root_node.children_nodes_size(), 3);
+
+  // Verify that the content of the unregistered frame was still added despite
+  // the timeout in the default location (as a children of the root node).
+  bool found_unregistered_frame_text = false;
+  for (const auto& node : root_node.children_nodes()) {
+    if (node.content_attributes().has_iframe_data()) {
+      // Check if it's the full child frame (orphan).
+      if (node.children_nodes_size() > 0 &&
+          node.children_nodes(0).children_nodes_size() > 0 &&
+          node.children_nodes(0)
+                  .children_nodes(0)
+                  .content_attributes()
+                  .text_data()
+                  .text_content() == "Child frame cross-origin text") {
+        found_unregistered_frame_text = true;
+      }
+    }
+  }
+  EXPECT_TRUE(found_unregistered_frame_text);
 }
 
 INSTANTIATE_TEST_SUITE_P(,

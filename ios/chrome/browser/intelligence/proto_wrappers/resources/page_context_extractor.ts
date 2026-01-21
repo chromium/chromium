@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {registerChildFrame} from '//components/autofill/ios/form_util/resources/child_frame_registration_lib.js';
 import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 // Model that contains the link data for anchor tags that are extracted.
@@ -10,22 +11,35 @@ interface LinkData {
   linkText: string|null;
 }
 
-// Model that contains the frame data for the frames that are extracted.
-interface FrameData {
+// Model that represents a frame on a different origin from the main frame that
+// can't have its content extracted which is identified with a `remoteToken` to
+// let the browser graft the content for this frame later on.
+interface CrossOriginFrameData {
+  remoteToken: string;
+}
+
+// Model that contains the frame data of a frame on the same origin as the
+// parent frame (this frame). This can be the main frame itself.
+interface SameOriginFrameData {
   currentNodeInnerText: string;
-  children: FrameData[];
+  children: RemoteFrameData[];
   sourceURL: string;
   title: string;
   links?: LinkData[];
 }
+
+// Data extracted on remote frames (other than the main frame) on the same
+// or different origin.
+type RemoteFrameData = SameOriginFrameData|CrossOriginFrameData;
 
 // Model for when the page context should be detached.
 interface DetachData {
   shouldDetachPageContext: boolean;
 }
 
-// The result of the extraction can be one of the following types.
-type ExtractionResult = FrameData|DetachData|null;
+// The result of the extraction can be one of the following types. `null` is
+// used if extraction failed for some reason.
+type ExtractionResult = SameOriginFrameData|DetachData|null;
 
 // A function will be defined here by the placeholder replacement.
 // It will be called to determine if the page context should be detached.
@@ -35,11 +49,23 @@ declare const SHOULD_DETACH_PAGE_CONTEXT: () => boolean;
 
 const NONCE_ATTR = 'data-__gCrWeb-innerText-processed';
 
+// Returns the remote frame token for the remote `frame` element and triggers
+// a registration.
+function getRemoteFrameRemoteToken(frame: HTMLIFrameElement): string {
+  return registerChildFrame(frame);
+}
+
 // Recursively constructs the innerText tree for the passed node and its
-// children same-origin iframes.
-const constructSameOriginInnerTextTree =
+// children iframes. Content extraction can only take place on nodes on the same
+// origin as the main frame which is represented by SameOriginFrameData. Iframes
+// on a different origin that can't have their content extracted from here are
+// represented by CrossOriginFrameData that contains a token that allows the
+// browser grafting the frame content later. Returns null if extraction can't be
+// done.
+const constructInnerTextTree =
     (node: HTMLElement|null, frameURL: string, frameTitle: string,
-     nonceAttributeValue: string, includeAnchors: boolean): FrameData|null => {
+     nonceAttributeValue: string, includeAnchors: boolean,
+     keepCrossOriginFrameData: boolean): SameOriginFrameData|null => {
       // Early return if the node is null, not an HTMLElement, or already
       // processed.
       if (!node || node.getAttribute(NONCE_ATTR) === nonceAttributeValue) {
@@ -60,25 +86,35 @@ const constructSameOriginInnerTextTree =
         // iframes).
         let iframeBody: HTMLElement|null = null;
         let iframeTitle: string = '';
+        let contentDoc = null;
         try {
-          const contentDoc = iframe.contentDocument;
-          iframeBody = contentDoc ? contentDoc.body : null;
-          iframeTitle = contentDoc ? contentDoc.title : '';
+          contentDoc = iframe.contentDocument;
+          if (contentDoc) {
+            iframeBody = contentDoc.body;
+            iframeTitle = contentDoc.title;
+          }
         } catch (error) {
-          return null;
+        }
+
+        if (!contentDoc) {
+          return keepCrossOriginFrameData ? {
+            remoteToken: getRemoteFrameRemoteToken(iframe),
+          } as CrossOriginFrameData :
+                                            null;
         }
 
         // Recursively construct the innerText tree for the iframe's body.
-        return iframeBody ? constructSameOriginInnerTextTree(
-                                iframeBody, iframe.src, iframeTitle,
-                                nonceAttributeValue, includeAnchors) :
-                            null;
+        return iframeBody ?
+            constructInnerTextTree(
+                iframeBody, iframe.src, iframeTitle, nonceAttributeValue,
+                includeAnchors, keepCrossOriginFrameData) :
+            null;
       });
 
-      const result: FrameData = {
+      const result: SameOriginFrameData = {
         currentNodeInnerText: node.innerText,
         children: childNodeInnerTexts.filter((item) => item !== null) as
-            FrameData[],
+            RemoteFrameData[],
         sourceURL: frameURL,
         title: frameTitle,
       };
@@ -109,10 +145,11 @@ const constructSameOriginInnerTextTree =
 // frames, but only for the current run. Early returns if the PageContext should
 // be detached, or the frame is not the top-most same-origin frame.
 function extractPageContext(
-    includeAnchors: boolean, nonce: string): ExtractionResult {
+    includeAnchors: boolean, nonce: string,
+    keepCrossOriginFrameData: boolean): ExtractionResult {
   // If the PageContext should be detached, early return.
   if (SHOULD_DETACH_PAGE_CONTEXT()) {
-    return {shouldDetachPageContext: true};
+    return {shouldDetachPageContext: true} as DetachData;
   }
 
   // The script should only run if it has no same-origin parent. (The script
@@ -124,9 +161,9 @@ function extractPageContext(
   }
 
   // Recursively constructs the tree from the root node.
-  return constructSameOriginInnerTextTree(
+  return constructInnerTextTree(
       document.body, window.location.href, document.title, nonce,
-      includeAnchors);
+      includeAnchors, keepCrossOriginFrameData);
 }
 
 const pageExtractorApi = new CrWebApi();
