@@ -425,6 +425,12 @@ class CONTENT_EXPORT StoragePartitionImpl
           client_state_checker_remote,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver);
 
+  // Binds the mojo endpoint for a `LockManager`.
+  void BindLockManager(
+      const blink::StorageKey& storage_key,
+      const base::UnguessableToken& token,
+      mojo::PendingReceiver<blink::mojom::LockManager> receiver);
+
   // Called by each renderer process to bind its global DomStorage interface.
   // Returns the id of the created receiver.
   mojo::ReceiverId BindDomStorage(
@@ -753,6 +759,12 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   void ClearNoncesInNetworkContextAfterDelayCallback(
       const std::vector<base::UnguessableToken>& nonces);
+
+  // The callback for BindLockManager, invoked after bucket info is resolved.
+  void CreateLockManagerWithBucketInfo(
+      mojo::PendingReceiver<blink::mojom::LockManager> receiver,
+      const base::UnguessableToken& token,
+      storage::QuotaErrorOr<storage::BucketInfo> bucket);
 
   // Raw pointer that should always be valid. The BrowserContext owns the
   // StoragePartitionImplMap which then owns StoragePartitionImpl. When the

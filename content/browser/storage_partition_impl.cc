@@ -3585,6 +3585,28 @@ void StoragePartitionImpl::BindIndexedDB(
       std::move(receiver));
 }
 
+void StoragePartitionImpl::BindLockManager(
+    const blink::StorageKey& storage_key,
+    const base::UnguessableToken& token,
+    mojo::PendingReceiver<blink::mojom::LockManager> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  GetQuotaManagerProxy()->UpdateOrCreateBucket(
+      storage::BucketInitParams::ForDefaultBucket(storage_key),
+      GetUIThreadTaskRunner({}),
+      base::BindOnce(&StoragePartitionImpl::CreateLockManagerWithBucketInfo,
+                     weak_factory_.GetWeakPtr(), std::move(receiver), token));
+}
+
+void StoragePartitionImpl::CreateLockManagerWithBucketInfo(
+    mojo::PendingReceiver<blink::mojom::LockManager> receiver,
+    const base::UnguessableToken& token,
+    storage::QuotaErrorOr<storage::BucketInfo> bucket) {
+  GetLockManager()->BindReceiver(
+      bucket.has_value() ? bucket->id : storage::BucketId(), token,
+      std::move(receiver));
+}
+
 mojo::ReceiverId StoragePartitionImpl::BindDomStorage(
     int process_id,
     mojo::PendingReceiver<blink::mojom::DomStorage> receiver,

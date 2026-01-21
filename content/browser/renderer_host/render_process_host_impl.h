@@ -1202,12 +1202,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // the RenderProcessHost is needed but the renderer process is not.
   bool HasOnlyNonLiveRenderFrameHosts();
 
-  // Helper method for CreateLockManager() which facilitates use of |bucket|
-  // instead of |origin| for binding |receiver|
-  void CreateLockManagerWithBucketInfo(
-      mojo::PendingReceiver<blink::mojom::LockManager> receiver,
-      storage::QuotaErrorOr<storage::BucketInfo> bucket);
-
   // Get an existing RenderProcessHost associated with the given browser
   // context, if possible.  The renderer process is chosen randomly from
   // suitable renderers that share the same context and type (determined by the

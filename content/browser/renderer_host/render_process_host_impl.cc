@@ -2314,19 +2314,9 @@ void RenderProcessHostImpl::CreateLockManager(
     mojo::PendingReceiver<blink::mojom::LockManager> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  storage_partition_impl_->GetQuotaManager()->proxy()->UpdateOrCreateBucket(
-      storage::BucketInitParams::ForDefaultBucket(storage_key),
-      GetUIThreadTaskRunner({}),
-      base::BindOnce(&RenderProcessHostImpl::CreateLockManagerWithBucketInfo,
-                     instance_weak_factory_.GetWeakPtr(), std::move(receiver)));
-}
-
-void RenderProcessHostImpl::CreateLockManagerWithBucketInfo(
-    mojo::PendingReceiver<blink::mojom::LockManager> receiver,
-    storage::QuotaErrorOr<storage::BucketInfo> bucket) {
-  storage_partition_impl_->GetLockManager()->BindReceiver(
-      bucket.has_value() ? bucket->id : storage::BucketId(),
-      std::move(receiver));
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  storage_partition_impl_->BindLockManager(storage_key, token,
+                                           std::move(receiver));
 }
 
 void RenderProcessHostImpl::CreatePermissionService(
