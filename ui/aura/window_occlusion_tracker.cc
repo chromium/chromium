@@ -288,9 +288,8 @@ WindowOcclusionTracker::ComputeTargetOcclusionForWindow(Window* window) {
   return tracked_window_iter->second;
 }
 
-const std::vector<raw_ptr<WindowTreeHost>>&
-WindowOcclusionTracker::GetObservingWindowTreeHostsForTest() const {
-  return window_tree_host_observations_.sources();
+bool WindowOcclusionTracker::IsObservingWindowTreeHostsForTest() const {
+  return window_tree_host_observations_.IsObservingAnySource();
 }
 
 WindowOcclusionTracker::WindowOcclusionTracker() = default;

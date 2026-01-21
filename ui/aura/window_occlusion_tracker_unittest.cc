@@ -3055,9 +3055,7 @@ TEST_F(WindowOcclusionTrackerTest, DoNotCountTwice) {
     TestObserver obs(w.get());
     root_window()->AddChild(w.get());
   }
-  auto& sources =
-      window_occlusion_tracker->GetObservingWindowTreeHostsForTest();
-  EXPECT_EQ(0u, sources.size());
+  EXPECT_FALSE(window_occlusion_tracker->IsObservingWindowTreeHostsForTest());
 
   // This test requires DCHECK enabled.
 #if defined(GTEST_HAS_DEATH_TEST) && DCHECK_IS_ON()

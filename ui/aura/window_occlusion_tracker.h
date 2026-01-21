@@ -181,8 +181,7 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
 
   bool IsPaused() const { return num_pause_occlusion_tracking_; }
 
-  const std::vector<raw_ptr<WindowTreeHost>>&
-  GetObservingWindowTreeHostsForTest() const;
+  bool IsObservingWindowTreeHostsForTest() const;
 
   void set_num_tracked_windows_count_check_for_test(bool check) {
     num_tracked_windows_count_check_ = check;
