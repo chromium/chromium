@@ -6,6 +6,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
@@ -270,6 +271,7 @@ class ActorLoginCredentialFillerTest : public ::testing::TestWithParam<bool> {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_{
       {.disable_server_communication = true}};
+  base::HistogramTester histogram_tester_;
   testing::NiceMock<MockPasswordManager> mock_password_manager_;
   testing::NiceMock<MockPasswordFormCache> mock_form_cache_;
   base::MockCallback<ActorLoginCredentialFiller::IsTaskInFocus>
@@ -826,9 +828,11 @@ TEST_P(ActorLoginCredentialFillerTest,
       form_managers[2]->GetParsedObservedForm();
 
   base::test::TestFuture<LoginStatusResultOrError> future;
+  base::TimeTicks start_time = base::TimeTicks::Now();
+
   auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      mqls_logger(), start_time, mock_is_task_in_focus_.Get(),
       future.GetCallback());
 
   ON_CALL(mock_form_cache_, GetFormManagers)
@@ -859,16 +863,23 @@ TEST_P(ActorLoginCredentialFillerTest,
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .WillOnce(RunOnceCallback<3>(true));
 
+  const int attempt_login_time = 50;
+  base::TimeDelta delay = base::Milliseconds(attempt_login_time);
+  task_environment_.AdvanceClock(delay);
   filler->AttemptLogin(&mock_password_manager_);
   const LoginStatusResultOrError& result = future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(),
             LoginStatusResult::kSuccessUsernameAndPasswordFilled);
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "PasswordManager.ActorLogin.TimeToUsernameAndPasswordFilled", delay, 1);
+
   AttemptLoginDetails expected_details;
   expected_details.set_outcome(
       optimization_guide::proto::
           ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
-  expected_details.set_attempt_login_time_ms(0);
+  expected_details.set_attempt_login_time_ms(attempt_login_time);
   *expected_details.add_parsed_form_details() = CreateExpectedLoginFormDetails(
       *parsed_form, /*is_username_visible=*/true, /*is_password_visible=*/true);
   *expected_details.add_parsed_form_details() = CreateExpectedLoginFormDetails(
@@ -1363,9 +1374,10 @@ TEST_P(ActorLoginCredentialFillerTest, FillOnlyUsernameInAllEligibleFields) {
       form_managers[2]->GetParsedObservedForm();
 
   base::test::TestFuture<LoginStatusResultOrError> future;
+  base::TimeTicks start_time = base::TimeTicks::Now();
   auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      mqls_logger(), start_time, mock_is_task_in_focus_.Get(),
       future.GetCallback());
 
   ON_CALL(mock_form_cache_, GetFormManagers)
@@ -1397,15 +1409,26 @@ TEST_P(ActorLoginCredentialFillerTest, FillOnlyUsernameInAllEligibleFields) {
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .WillOnce(RunOnceCallback<3>(false));
 
+  const int attempt_login_time = 50;
+  base::TimeDelta delay = base::Milliseconds(attempt_login_time);
+  task_environment_.AdvanceClock(delay);
   filler->AttemptLogin(&mock_password_manager_);
   const LoginStatusResultOrError& result = future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), LoginStatusResult::kSuccessUsernameFilled);
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "PasswordManager.ActorLogin.TimeToUsernameFilled", delay, 1);
+  histogram_tester_.ExpectTotalCount(
+      "PasswordManager.ActorLogin.TimeToPasswordFilled", 0);
+  histogram_tester_.ExpectTotalCount(
+      "PasswordManager.ActorLogin.TimeToUsernameAndPasswordFilled", 0);
+
   AttemptLoginDetails expected_details;
   expected_details.set_outcome(
       optimization_guide::proto::
           ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
-  expected_details.set_attempt_login_time_ms(0);
+  expected_details.set_attempt_login_time_ms(attempt_login_time);
 
   // The async check is not executed, so there are only details
   // about the form data.
@@ -1464,9 +1487,10 @@ TEST_P(ActorLoginCredentialFillerTest, FillOnlyPasswordInAllEligibleFields) {
       form_managers[2]->GetParsedObservedForm();
 
   base::test::TestFuture<LoginStatusResultOrError> future;
+  base::TimeTicks start_time = base::TimeTicks::Now();
   auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      mqls_logger(), start_time, mock_is_task_in_focus_.Get(),
       future.GetCallback());
 
   ON_CALL(mock_form_cache_, GetFormManagers)
@@ -1498,15 +1522,26 @@ TEST_P(ActorLoginCredentialFillerTest, FillOnlyPasswordInAllEligibleFields) {
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .WillOnce(RunOnceCallback<3>(false));
 
+  const int attempt_login_time = 50;
+  base::TimeDelta delay = base::Milliseconds(attempt_login_time);
+  task_environment_.AdvanceClock(delay);
   filler->AttemptLogin(&mock_password_manager_);
   const LoginStatusResultOrError& result = future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), LoginStatusResult::kSuccessPasswordFilled);
+
+  histogram_tester_.ExpectTotalCount(
+      "PasswordManager.ActorLogin.TimeToUsernameFilled", 0);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "PasswordManager.ActorLogin.TimeToPasswordFilled", delay, 1);
+  histogram_tester_.ExpectTotalCount(
+      "PasswordManager.ActorLogin.TimeToUsernameAndPasswordFilled", 0);
+
   AttemptLoginDetails expected_details;
   expected_details.set_outcome(
       optimization_guide::proto::
           ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
-  expected_details.set_attempt_login_time_ms(0);
+  expected_details.set_attempt_login_time_ms(attempt_login_time);
   *expected_details.add_parsed_form_details() = CreateExpectedLoginFormDetails(
       *parsed_form, /*is_username_visible=*/true, /*is_password_visible=*/true);
   *expected_details.add_parsed_form_details() = CreateExpectedLoginFormDetails(
@@ -1564,9 +1599,11 @@ TEST_P(ActorLoginCredentialFillerTest, FillingFailsInAllEligibleFields) {
       form_managers[2]->GetParsedObservedForm();
 
   base::test::TestFuture<LoginStatusResultOrError> future;
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  task_environment_.AdvanceClock(base::Milliseconds(50));
   auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      mqls_logger(), start_time, mock_is_task_in_focus_.Get(),
       future.GetCallback());
 
   ON_CALL(mock_form_cache_, GetFormManagers)
@@ -1601,6 +1638,14 @@ TEST_P(ActorLoginCredentialFillerTest, FillingFailsInAllEligibleFields) {
   const LoginStatusResultOrError& result = future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), LoginStatusResult::kErrorNoFillableFields);
+
+  histogram_tester_.ExpectTotalCount(
+      "PasswordManager.ActorLogin.TimeToUsernameFilled", 0);
+  histogram_tester_.ExpectTotalCount(
+      "PasswordManager.ActorLogin.TimeToPasswordFilled", 0);
+  histogram_tester_.ExpectTotalCount(
+      "PasswordManager.ActorLogin.TimeToUsernameAndPasswordFilled", 0);
+
   AttemptLoginDetails expected_details;
   expected_details.set_outcome(
       optimization_guide::proto::
