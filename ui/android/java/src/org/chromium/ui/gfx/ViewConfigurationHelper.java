@@ -7,7 +7,6 @@ package org.chromium.ui.gfx;
 import android.content.ComponentCallbacks;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.os.Build;
 import android.util.TypedValue;
 import android.view.ViewConfiguration;
 
@@ -15,15 +14,16 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.R;
-import org.chromium.ui.accessibility.AccessibilityState;
 
 /**
- * This class facilitates access to ViewConfiguration-related properties, also providing native-code
- * notifications when such properties have changed.
+ * This class facilitates access to ViewConfiguration-related properties, also
+ * providing native-code notifications when such properties have changed.
+ *
  */
 @JNINamespace("gfx")
 @NullMarked
@@ -128,12 +128,12 @@ public class ViewConfigurationHelper {
 
     @CalledByNative
     private int getTextCursorBlinkInterval() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA
-                && Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES_FULL.BAKLAVA_1) {
-            return mViewConfiguration.getTextCursorBlinkIntervalMillis();
-        } else {
-            return AccessibilityState.DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS;
+        AconfigFlaggedApiDelegate aconfigFlaggedApiDelegate =
+                AconfigFlaggedApiDelegate.getInstance();
+        if (aconfigFlaggedApiDelegate == null) {
+            return AconfigFlaggedApiDelegate.DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS;
         }
+        return aconfigFlaggedApiDelegate.getTextCursorBlinkInterval(mViewConfiguration);
     }
 
     private int getScaledMinScalingSpan() {
