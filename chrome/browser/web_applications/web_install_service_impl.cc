@@ -89,7 +89,7 @@ std::optional<webapps::AppId> IsAppInstalled(
   // launching the wrong app.
   if (manifest_id) {
     webapps::AppId app_id_from_manifest_id =
-        GenerateAppIdFromManifestId(manifest_id.value());
+        GenerateAppIdFromManifestId(webapps::ManifestId(manifest_id.value()));
 
     bool found_app = provider->registrar_unsafe().AppMatches(
         app_id_from_manifest_id, filter);
@@ -636,7 +636,7 @@ void WebInstallServiceImpl::OnBackgroundAppLaunchDialogClosed(
     auto* provider = WebAppProvider::GetForWebApps(profile);
     CHECK(provider);
 
-    webapps::AppId app_id = GenerateAppIdFromManifestId(manifest_id);
+    webapps::AppId app_id = GenerateAppIdFromManifestId(webapps::ManifestId(manifest_id));
     provider->scheduler().ScheduleCallback<AppLock>(
         "CheckInstalledByAndMaybeUpdate", AppLockDescription(app_id),
         base::BindOnce(&CheckInstalledByAndMaybeUpdate, provider->clock().Now(),
@@ -650,7 +650,7 @@ void WebInstallServiceImpl::OnBackgroundAppLaunchDialogClosed(
       .Run(web_app::WebInstallApiResult::kSuccessAlreadyInstalled,
            accepted ? blink::mojom::WebInstallServiceResult::kSuccess
                     : blink::mojom::WebInstallServiceResult::kAbortError,
-           accepted ? manifest_id : webapps::ManifestId());
+           accepted ? webapps::ManifestId(manifest_id) : webapps::ManifestId());
 }
 
 void WebInstallServiceImpl::OnAppInstalled(

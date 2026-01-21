@@ -107,7 +107,7 @@ webapps::AppId GenerateAppIdFromManifestId(
 
 webapps::ManifestId GenerateManifestIdFromStartUrlOnly(const GURL& start_url) {
   CHECK(start_url.is_valid()) << start_url.spec();
-  return start_url.GetWithoutRef();
+  return webapps::ManifestId(start_url.GetWithoutRef());
 }
 
 webapps::ManifestId GenerateManifestId(const std::string& manifest_id_path,
@@ -128,7 +128,7 @@ webapps::ManifestId GenerateManifestIdUnsafe(
   // with slash.
   const GURL manifest_id(start_url.DeprecatedGetOriginAsURL().spec() +
                          manifest_id_path);
-  return manifest_id.GetWithoutRef();
+  return webapps::ManifestId(manifest_id.GetWithoutRef());
 }
 
 namespace {

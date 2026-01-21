@@ -204,7 +204,7 @@ void WebappsClientDesktop::SaveInstallationDismissedForMl(
   Profile* profile = Profile::FromBrowserContext(browser_context);
   CHECK(profile);
   web_app::WebAppPrefGuardrails::GetForMlInstallPrompt(profile->GetPrefs())
-      .RecordDismiss(web_app::GenerateAppIdFromManifestId(manifest_id),
+      .RecordDismiss(web_app::GenerateAppIdFromManifestId(ManifestId(manifest_id)),
                      base::Time::Now());
 }
 
@@ -215,7 +215,7 @@ void WebappsClientDesktop::SaveInstallationIgnoredForMl(
   Profile* profile = Profile::FromBrowserContext(browser_context);
   CHECK(profile);
   web_app::WebAppPrefGuardrails::GetForMlInstallPrompt(profile->GetPrefs())
-      .RecordIgnore(web_app::GenerateAppIdFromManifestId(manifest_id),
+      .RecordIgnore(web_app::GenerateAppIdFromManifestId(ManifestId(manifest_id)),
                     base::Time::Now());
 }
 
@@ -226,7 +226,7 @@ void WebappsClientDesktop::SaveInstallationAcceptedForMl(
   Profile* profile = Profile::FromBrowserContext(browser_context);
   CHECK(profile);
   web_app::WebAppPrefGuardrails::GetForMlInstallPrompt(profile->GetPrefs())
-      .RecordAccept(web_app::GenerateAppIdFromManifestId(manifest_id));
+      .RecordAccept(web_app::GenerateAppIdFromManifestId(ManifestId(manifest_id)));
 }
 
 bool WebappsClientDesktop::IsMlPromotionBlockedByHistoryGuardrail(
@@ -239,7 +239,7 @@ bool WebappsClientDesktop::IsMlPromotionBlockedByHistoryGuardrail(
   if (!manifest_id.is_empty() &&
       web_app::WebAppPrefGuardrails::GetForMlInstallPrompt(profile->GetPrefs())
           .IsBlockedByGuardrails(
-              web_app::GenerateAppIdFromManifestId(manifest_id))) {
+              web_app::GenerateAppIdFromManifestId(ManifestId(manifest_id)))) {
     return true;
   }
 
