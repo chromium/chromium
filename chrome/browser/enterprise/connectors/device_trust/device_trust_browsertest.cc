@@ -235,9 +235,6 @@ class DeviceTrustDelayedManagementBrowserTest
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {
-#if BUILDFLAG(IS_MAC)
-            kDTCKeyRotationUploadedBySharedAPIEnabled,
-#endif  // BUILDFLAG(IS_MAC)
             kDTCKeyUploadedBySharedAPIEnabled,
 #if BUILDFLAG(IS_CHROMEOS)
             ash::features::kUnmanagedDeviceDeviceTrustConnectorEnabled
@@ -491,9 +488,6 @@ class DeviceTrustBrowserTestWithConsent
         {
             enterprise_signals::features::kDeviceSignalsConsentDialog,
             kDTCKeyUploadedBySharedAPIEnabled,
-#if BUILDFLAG(IS_MAC)
-            kDTCKeyRotationUploadedBySharedAPIEnabled,
-#endif  // BUILDFLAG(IS_MAC)
         },
         /*disabled_features=*/{});
   }

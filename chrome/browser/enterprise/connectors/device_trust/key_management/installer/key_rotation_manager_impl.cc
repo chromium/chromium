@@ -46,7 +46,6 @@ KeyRotationManagerImpl::KeyRotationManagerImpl(
 KeyRotationManagerImpl::KeyRotationManagerImpl(
     std::unique_ptr<KeyPersistenceDelegate> persistence_delegate)
     : persistence_delegate_(std::move(persistence_delegate)) {
-  CHECK(IsDTCKeyRotationUploadedBySharedAPI());
   CHECK(persistence_delegate_);
 }
 

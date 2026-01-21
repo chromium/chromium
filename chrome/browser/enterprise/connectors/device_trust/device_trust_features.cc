@@ -19,14 +19,6 @@ bool IsDTCKeyUploadedBySharedAPI() {
   return base::FeatureList::IsEnabled(kDTCKeyUploadedBySharedAPIEnabled);
 }
 
-BASE_FEATURE(kDTCKeyRotationUploadedBySharedAPIEnabled,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsDTCKeyRotationUploadedBySharedAPI() {
-  return base::FeatureList::IsEnabled(
-      kDTCKeyRotationUploadedBySharedAPIEnabled);
-}
-
 BASE_FEATURE(kDTCAntivirusSignalEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsDTCAntivirusSignalEnabled() {

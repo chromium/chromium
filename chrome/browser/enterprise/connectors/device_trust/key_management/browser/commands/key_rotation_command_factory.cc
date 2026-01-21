@@ -56,14 +56,11 @@ std::unique_ptr<KeyRotationCommand> KeyRotationCommandFactory::CreateCommand(
 #elif BUILDFLAG(IS_LINUX)
   return std::make_unique<LinuxKeyRotationCommand>(url_loader_factory);
 #elif BUILDFLAG(IS_MAC)
-  if (IsDTCKeyRotationUploadedBySharedAPI()) {
-    auto cloud_delegate = std::make_unique<
-        enterprise_attestation::BrowserCloudManagementDelegate>(
-        enterprise_attestation::DMServerClient::Create(
-            device_management_service, url_loader_factory));
-    return std::make_unique<MacKeyRotationCommand>(std::move(cloud_delegate));
-  }
-  return std::make_unique<MacKeyRotationCommand>(url_loader_factory);
+  auto cloud_delegate =
+      std::make_unique<enterprise_attestation::BrowserCloudManagementDelegate>(
+          enterprise_attestation::DMServerClient::Create(
+              device_management_service, url_loader_factory));
+  return std::make_unique<MacKeyRotationCommand>(std::move(cloud_delegate));
 #else
   return nullptr;
 #endif  // BUILDFLAG(IS_WIN)
