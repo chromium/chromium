@@ -253,6 +253,27 @@
             ]
         }
     ],
+    "AccessibilityHandleOccludingViews": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AccessibilityHandleOccludingViews"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "AccessibilityHandleOccludingViews"
+                    ]
+                }
+            ]
+        }
+    ],
     "AccessibilityImproveLiveRegionsOnAndroid": [
         {
             "platforms": [

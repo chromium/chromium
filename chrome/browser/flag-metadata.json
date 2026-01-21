@@ -2545,6 +2545,11 @@
     "expiry_milestone": 149
   },
   {
+    "name": "enable-accessibility-handle-occluding-views",
+    "owners": [ "gmarcoesau@google.com", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 152
+  },
+  {
     "name": "enable-accessibility-improve-live-region-announce",
     "owners": ["kyraseevers@chromium.org", "//ui/accessibility/OWNERS"],
     "expiry_milestone": 155

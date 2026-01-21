@@ -4729,6 +4729,12 @@ inline constexpr char
         "When enabled, registering and un-registering the broadcast "
         "receiver will be on the background thread.";
 
+inline constexpr char kAccessibilityHandleOccludingViewsName[] =
+    "Handle occluding views";
+inline constexpr char kAccessibilityHandleOccludingViewsDescription[] =
+    "When enabled, handle occluding views belonging to overlayed "
+    "browser's UI.";
+
 inline constexpr char kAccessibilityPopulateSupplementalDescriptionApiName[] =
     "Accessibility populate supplemental description";
 inline constexpr char

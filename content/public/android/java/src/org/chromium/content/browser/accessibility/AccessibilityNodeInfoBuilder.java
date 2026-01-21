@@ -61,6 +61,7 @@ import android.text.style.SuperscriptSpan;
 import android.text.style.TypefaceSpan;
 import android.text.style.URLSpan;
 import android.text.style.UnderlineSpan;
+import android.util.SparseArray;
 import android.view.View;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
@@ -169,6 +170,9 @@ public class AccessibilityNodeInfoBuilder {
 
         // Set of coordinates for providing the correct size and scroll of the View.
         AccessibilityDelegate.AccessibilityCoordinates getAccessibilityCoordinates();
+
+        // The set of rects that are occluding the view.
+        SparseArray<Rect> getOccludingRects();
     }
 
     public final BuilderDelegate mDelegate;
@@ -651,6 +655,38 @@ public class AccessibilityNodeInfoBuilder {
             // In case of a cached node, remove the offscreen extra if it is there.
             if (node.getExtras().containsKey(EXTRAS_KEY_OFFSCREEN)) {
                 node.getExtras().remove(EXTRAS_KEY_OFFSCREEN);
+            }
+
+            updateNodeVisibilityForOcclusion(node);
+        }
+    }
+
+    /**
+     * Updates the visibility of an accessibility node based on whether it is occluded by other
+     * rects. If it is, it should be invisible to accessibility.
+     *
+     * @param info The {@link AccessibilityNodeInfoCompat} for the web content node.
+     */
+    private void updateNodeVisibilityForOcclusion(AccessibilityNodeInfoCompat info) {
+        if (!AccessibilityFeaturesMap.isEnabled(
+                AccessibilityFeatures.ACCESSIBILITY_HANDLE_OCCLUDING_VIEWS)) {
+            return;
+        }
+
+        if (!info.isVisibleToUser()) return;
+
+        Rect webNodeBounds = new Rect();
+        info.getBoundsInScreen(webNodeBounds);
+        if (webNodeBounds.isEmpty()) return;
+
+        SparseArray<Rect> occludingRects = mDelegate.getOccludingRects();
+        for (int i = 0; i < occludingRects.size(); i++) {
+            Rect occludingRect = occludingRects.valueAt(i);
+            Rect intersection = new Rect(webNodeBounds);
+            if (intersection.intersect(occludingRect)) {
+                info.setVisibleToUser(false);
+                // No need to check other occluding rects if the node is already invisible.
+                return;
             }
         }
     }
