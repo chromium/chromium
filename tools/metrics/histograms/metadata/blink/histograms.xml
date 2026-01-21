@@ -1059,6 +1059,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.DecodedImage.JxlDensity.Count.{ImageArea}"
+    units="0.01 bits per pixel" expires_after="2027-01-12">
+  <owner>veluca@chromium.org</owner>
+  <owner>helmut@januschka.com</owner>
+  <owner>
+    src/third_party/blink/renderer/platform/image-decoders/jxl/OWNERS
+  </owner>
+  <summary>
+    The number of images per image density measured in 0.01 bits per pixel for
+    image size in {ImageArea} megapixels. This is logged once per image load
+    after the whole image is loaded and only for 8-bit JXL color still images
+    without alpha.
+  </summary>
+  <token key="ImageArea">
+    <variant name="0.1MP" summary="(0.0, 0.1]"/>
+    <variant name="0.2MP" summary="(0.1, 0.2]"/>
+    <variant name="0.3MP" summary="(0.2, 0.3]"/>
+    <variant name="0.4MP" summary="(0.3, 0.4]"/>
+    <variant name="0.5MP" summary="(0.4, 0.5]"/>
+    <variant name="0.6MP" summary="(0.5, 0.6]"/>
+    <variant name="0.7MP" summary="(0.6, 0.7]"/>
+    <variant name="0.8MP" summary="(0.7, 0.8]"/>
+    <variant name="0.9MP" summary="(0.8, 0.9]"/>
+    <variant name="01MP" summary="(0.9, 1]"/>
+    <variant name="02MP" summary="(1, 2]"/>
+    <variant name="03MP" summary="(2, 3]"/>
+    <variant name="04MP" summary="(3, 4]"/>
+    <variant name="05MP" summary="(4, 5]"/>
+    <variant name="06MP" summary="(5, 6]"/>
+    <variant name="07MP" summary="(6, 7]"/>
+    <variant name="08MP" summary="(7, 8]"/>
+    <variant name="09MP" summary="(8, 9]"/>
+    <variant name="10MP" summary="(9, 10]"/>
+    <variant name="11MP" summary="(10, 11]"/>
+    <variant name="12MP" summary="(11, 12]"/>
+    <variant name="13MP" summary="(12, 13]"/>
+    <variant name="14+MP" summary="(13, inf)"/>
+  </token>
+</histogram>
+
 <histogram name="Blink.DecodedImage.WebPDensity.Count.{ImageArea}"
     units="0.01 bits per pixel" expires_after="2026-06-28">
   <owner>wtc@google.com</owner>

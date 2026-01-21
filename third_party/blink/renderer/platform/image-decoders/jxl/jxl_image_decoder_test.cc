@@ -896,4 +896,43 @@ TEST_F(JXLImageDecoderTest, AnimationDurationPrecisionNoDrift) {
       << "Got " << expected_timestamp_us << " us.";
 }
 
+// =============================================================================
+// BPP (Bits Per Pixel) Histogram Tests
+// =============================================================================
+
+namespace {
+
+void TestJxlBppHistogram(const char* image_name,
+                         const char* histogram_name = nullptr,
+                         base::HistogramBase::Sample32 sample = 0) {
+  TestBppHistogram(CreateJXLDecoder, "Jxl", image_name, histogram_name, sample);
+}
+
+}  // namespace
+
+// Test that 8-bit still image without alpha records histogram.
+TEST_F(JXLImageDecoderTest, BppHistogramSmall) {
+  constexpr int kImageArea = 3 * 3;  // = 9
+  constexpr int kFileSize = 66;      // Size of 3x3_srgb_lossless.jxl
+  constexpr int kSample =
+      (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 5867
+  TestJxlBppHistogram("/external/wpt/jpegxl/resources/3x3_srgb_lossless.jxl",
+                      "Blink.DecodedImage.JxlDensity.Count.0.1MP", kSample);
+}
+
+// Test that animated images do NOT record histogram.
+TEST_F(JXLImageDecoderTest, BppHistogramAnimated) {
+  TestJxlBppHistogram("/images/resources/5_frames_numbered.jxl");
+}
+
+// Test that images with alpha do NOT record histogram.
+TEST_F(JXLImageDecoderTest, BppHistogramAlpha) {
+  TestJxlBppHistogram("/external/wpt/jpegxl/resources/3x3a_srgb_lossless.jxl");
+}
+
+// Test that grayscale images do NOT record histogram.
+TEST_F(JXLImageDecoderTest, BppHistogramGrayscale) {
+  TestJxlBppHistogram("/images/resources/3x3_gray_lossless.jxl");
+}
+
 }  // namespace blink

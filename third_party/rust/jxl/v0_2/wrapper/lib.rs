@@ -8,8 +8,9 @@
 //! State tracking is handled by the C++ caller (JXLImageDecoder).
 
 use jxl::api::{
-    check_signature, Endianness, JxlBasicInfo, JxlColorType, JxlDataFormat, JxlDecoderInner,
-    JxlDecoderOptions, JxlOutputBuffer, JxlPixelFormat, JxlProgressiveMode, ProcessingResult,
+    check_signature, Endianness, JxlBasicInfo, JxlColorEncoding, JxlColorProfile, JxlColorType,
+    JxlDataFormat, JxlDecoderInner, JxlDecoderOptions, JxlOutputBuffer, JxlPixelFormat,
+    JxlProgressiveMode, ProcessingResult,
 };
 use jxl::headers::extra_channels::ExtraChannel;
 
@@ -45,6 +46,7 @@ mod ffi {
         animation_tps_denominator: u32,
         uses_original_profile: bool,
         orientation: u32,
+        is_grayscale: bool,
     }
 
     #[derive(Debug, Clone)]
@@ -411,10 +413,21 @@ impl JxlRsDecoder {
     }
 
     fn get_basic_info(&self) -> JxlRsBasicInfo {
-        self.decoder
+        let mut info = self
+            .decoder
             .basic_info()
             .map(JxlRsBasicInfo::from)
-            .unwrap_or_default()
+            .unwrap_or_default();
+
+        // Check if the image is grayscale based on the embedded color profile.
+        if let Some(profile) = self.decoder.embedded_color_profile() {
+            info.is_grayscale = matches!(
+                profile,
+                JxlColorProfile::Simple(JxlColorEncoding::GrayscaleColorSpace { .. })
+            );
+        }
+
+        info
     }
 
     fn get_frame_header(&self) -> JxlRsFrameHeader {
@@ -445,6 +458,7 @@ impl Default for JxlRsBasicInfo {
             animation_tps_denominator: 1000,
             uses_original_profile: false,
             orientation: 1,
+            is_grayscale: false,
         }
     }
 }
@@ -473,6 +487,9 @@ impl From<&JxlBasicInfo> for JxlRsBasicInfo {
             animation_tps_denominator: tps_den,
             uses_original_profile: info.uses_original_profile,
             orientation: info.orientation as u32,
+            // Note: is_grayscale is set by get_basic_info() after checking the
+            // color profile, since JxlBasicInfo doesn't contain color info.
+            is_grayscale: false,
         }
     }
 }

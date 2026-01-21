@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/rust/jxl/v0_2/wrapper/lib.rs.h"
@@ -94,6 +95,11 @@ class PLATFORM_EXPORT JXLImageDecoder final : public ImageDecoder {
   // Color management.
   bool is_high_bit_depth_ = false;
   bool decode_to_half_float_ = false;
+
+  // Used to call UpdateBppHistogram<"Jxl">() at most once to record the
+  // bits-per-pixel value of the image when the image is successfully decoded.
+  CrossThreadOnceFunction<void(gfx::Size, size_t)>
+      update_bpp_histogram_callback_;
 };
 
 }  // namespace blink

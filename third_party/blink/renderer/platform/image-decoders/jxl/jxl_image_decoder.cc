@@ -7,6 +7,7 @@
 #include "base/containers/span.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkTypes.h"
 
@@ -293,6 +294,16 @@ void JXLImageDecoder::Decode(wtf_size_t index, bool only_size) {
           }
         }
 
+        // Record bpp information only for 8-bit, color, still images without
+        // alpha.
+        if (!have_basic_info_ && basic_info_.bits_per_sample == 8 &&
+            !basic_info_.is_grayscale && !basic_info_.have_animation &&
+            !basic_info_.has_alpha) {
+          static constexpr char kType[] = "Jxl";
+          update_bpp_histogram_callback_ =
+              CrossThreadBindOnce(&UpdateBppHistogram<kType>);
+        }
+
         have_basic_info_ = true;
         decoder_state_ = DecoderState::kHaveBasicInfo;
 
@@ -424,6 +435,11 @@ void JXLImageDecoder::Decode(wtf_size_t index, bool only_size) {
         }
 
         num_decoded_frames_++;
+
+        // Record bpp histogram for still images when fully decoded.
+        if (IsAllDataReceived() && update_bpp_histogram_callback_) {
+          std::move(update_bpp_histogram_callback_).Run(Size(), data_->size());
+        }
 
         // Check if there are more frames after this one.
         if (!(*decoder_)->has_more_frames()) {
